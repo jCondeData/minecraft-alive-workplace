@@ -349,9 +349,14 @@ public final class WorkplaceConfig {
 	public int classGraceDays = 7;
 	/** Grown villagers count their days and become elders (ROADMAP 34.19). Off: nobody is an elder, so nobody passes of old age; the day they grew up stays saved. */
 	public boolean villagerAges = Expansions.on(Expansions.M34);
-	/** Grown days before a villager is an elder. */
-	public int villagerElderDays = 120;
-	/** An elder passes away in the night after 40 elder days and leaves a grave (owner, 2026-10-06). Off: elders never die of old age. */
+	/** Grown days before a villager is an elder (36.16: 1200, ten times the first 120; a file of before with 120 moves to 1200). */
+	public int villagerElderDays = 1200;
+	/**
+	 * A death matters (ROADMAP 36.16): the village is told who died, their job and years, their family grieve for 3 days,
+	 * and the Undertaker leads a funeral at the grave. Off: none of it (a partner still mourns, as before).
+	 */
+	public boolean villageMourning = true;
+	/** An elder passes away in the night after 400 elder days (36.16; 40 before) and leaves a grave (owner, 2026-10-06). Off: elders never die of old age. */
 	public boolean elderPassing = Expansions.on(Expansions.M34);
 	/** An Evergreen Charm makes an elder with good traits ageless (ROADMAP 34.19a). Off: charms are refused; elders already ageless stay so. */
 	public boolean agelessElders = Expansions.on(Expansions.M34);
@@ -450,7 +455,7 @@ public final class WorkplaceConfig {
 	 */
 	@SuppressWarnings("unused")
 	private int configVersion = VERSION;
-	static final int VERSION = 3;
+	static final int VERSION = 4;
 	/**
 	 * The expansions whose gates were open when the file was written ({@link Expansions#open()}; not an option). A gated
 	 * switch saved while its gate was closed holds its closed default, {@code false}, which is no player's choice: when
@@ -506,6 +511,12 @@ public final class WorkplaceConfig {
 		boolean old = tree.isJsonObject() && !tree.getAsJsonObject().has("configVersion");
 		if (old && config.seasonDays == 8) {
 			config.seasonDays = 16;
+		}
+		// Format 4 (36.16): villagers live ten times longer. A file of before holding the old default 120 moves to the new
+		// default; any other number was someone's choice and stays.
+		int format = tree.isJsonObject() && tree.getAsJsonObject().has("configVersion") ? tree.getAsJsonObject().get("configVersion").getAsInt() : 0;
+		if (format < 4 && config.villagerElderDays == 120) {
+			config.villagerElderDays = new WorkplaceConfig().villagerElderDays;
 		}
 		config.configVersion = VERSION;
 		// Which gates were open when the file was written: its list, or none in a file a jar of format 2 wrote (0.139.0 to
@@ -567,7 +578,7 @@ public final class WorkplaceConfig {
 		"classRiseDays", 1, 30,
 		"classFallDays", 1, 30,
 		"classGraceDays", 0, 30,
-		"villagerElderDays", 20, 1000,
+		"villagerElderDays", 20, 10_000,
 		"giftedChance", 0, 1000,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
@@ -830,6 +841,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Guilds.PER_RANK = guildsPerRank;
 		io.github.jcondedata.aliveworkplace.people.LifeStages.AGES = villagerAges && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.people.LifeStages.ELDER_DAYS = villagerElderDays;
+		io.github.jcondedata.aliveworkplace.people.Mourning.ENABLED = villageMourning; // 36.16
 		io.github.jcondedata.aliveworkplace.people.LifeStages.PASSING = elderPassing && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.people.LifeStages.AGELESS = agelessElders && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.people.ClassLook.ENABLED = classOutfits && Expansions.on(Expansions.M34);

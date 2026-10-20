@@ -18,6 +18,8 @@ public class GraveBlockEntity extends BlockEntity {
 	private String profession = "minecraft:none";
 	private int villagerLevel = 1;
 	private long died;
+	/** A funeral the village's Undertaker is still to lead here (36.16). Old graves: none. */
+	private boolean funeral;
 
 	public GraveBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlocks.GRAVE_ENTITY, pos, state);
@@ -52,6 +54,15 @@ public class GraveBlockEntity extends BlockEntity {
 		return died;
 	}
 
+	public boolean funeralDue() {
+		return funeral;
+	}
+
+	public void setFuneral(boolean due) {
+		funeral = due;
+		setChanged();
+	}
+
 	@Override
 	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
 		super.loadAdditional(tag, registries);
@@ -60,6 +71,7 @@ public class GraveBlockEntity extends BlockEntity {
 		profession = tag.contains("profession") ? Nbt.getString(tag, "profession") : "minecraft:none";
 		villagerLevel = Math.max(1, Nbt.getInt(tag, "level"));
 		died = Nbt.getLong(tag, "died");
+		funeral = Nbt.getBoolean(tag, "funeral");
 	}
 
 	@Override
@@ -72,5 +84,8 @@ public class GraveBlockEntity extends BlockEntity {
 		tag.putString("profession", profession);
 		tag.putInt("level", villagerLevel);
 		tag.putLong("died", died);
+		if (funeral) {
+			tag.putBoolean("funeral", true);
+		}
 	}
 }

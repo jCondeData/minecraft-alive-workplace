@@ -163,8 +163,9 @@ range is in brackets.
 | `tailors` | on | 1.8 | Villagers at a loom can be made Tailors with string. Off: no Tailor job, and Tailors already hired stand idle. |
 | `printers` | on | 1.8 | Villagers at a cartography table can be made Printers with an ink sac. Off: no Printer job, Printers already hired stand idle, and no Spread the news quest goes up. |
 | `villagerAges` | on | 1.8 | Grown villagers count their days and become elders (a slower walk, a quiet old age, their own talk). Off: nobody is an elder, so nobody passes; the day each grew up stays saved. See [Elders](elders.md). |
-| `villagerElderDays` | 120 (20 to 1000) | 1.8 | Grown days before a villager is an elder. |
-| `elderPassing` | on | 1.8 | Elders pass in their sleep after 40 elder days and leave a grave. Off: nobody dies of old age, and an Evergreen Charm is refused as not needed. |
+| `villagerElderDays` | 1200 (20 to 10000) | 1.8 | Grown days before a villager is an elder (36.16: 120 before; a file of before with 120 moves to 1200). |
+| `villageMourning` | on |  | A death matters (36.16): the village is told who died, their job and years, their family grieve 3 days (lower mood, slower work), and the Undertaker leads a funeral at the grave. Off: none of it (a partner still mourns). |
+| `elderPassing` | on | 1.8 | Elders pass in their sleep after 400 elder days and leave a grave. Off: nobody dies of old age, and an Evergreen Charm is refused as not needed. |
 | `agelessElders` | on | 1.8 | Evergreen Charms work: a good elder who takes one never passes. Off: charms are refused and kept; elders already ageless stay ageless. |
 | `classOutfits` | on | 1.8 | Villagers wear their class over their job's outfit, and elders gray brows and a beard. Off: only the job's outfit is drawn. |
 | `elderRetirement` | on | 1.8 | An elder with a job retires once a jobless villager can take over (one a village every 3 days) and mentors Novices and Apprentices of their old trade. Off: nobody starts retiring; those retired stay retired. |

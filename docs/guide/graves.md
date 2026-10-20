@@ -25,6 +25,15 @@ from the chest. See [Porters, post and services](jobs-services.md).
 
 A villager a zombie turns into a zombie villager leaves no grave: cure them the vanilla way instead.
 
+## A funeral
+
+A death matters. When a villager of a village with a [Village Hall](village-hall.md) dies, everyone near the village
+reads who it was, their job and their years: "Mira, the village's Farmer, has died aged 31. The village mourns." The
+chronicle says the same. Before anything else the **Undertaker** goes to the grave and leads a **funeral**: the
+villagers near gather round, the bell tolls, and the chronicle notes "Mira's funeral, led by Ulric; 4 came to say
+goodbye". Her family grieve for three days and her partner for five: their mood is lower and they work 10% slower,
+then it passes. **Village Mourning** in the settings turns it off.
+
 ## Laid to rest
 
 Graves don't stay in the street. The Undertaker moves each grave lying about the village to the village's
@@ -35,5 +44,6 @@ its [Village Hall](village-hall.md). They can still be brought back from there.
 
 - **Fed by:** deaths in [raids](raids.md) and accidents. Guards and walls mean fewer graves.
 - **Names.** Named villagers are remembered by name on their headstone ([Names](names.md)).
-- **Couples.** When one of a couple dies, the other mourns for five days
-  ([Couples and weddings](couples-and-weddings.md)).
+- **Couples and family.** When one of a couple dies, the other mourns for five days
+  ([Couples and weddings](couples-and-weddings.md)); their parents, children, brothers and sisters grieve for three.
+- **Elders.** Villagers live a long time: an elder after 1200 grown days, passing 400 days later ([Elders](elders.md)).

@@ -158,7 +158,7 @@ public final class Graves {
 		level.playSound(null, pos, SoundEvents.TOTEM_USE, SoundSource.NEUTRAL, 0.6f, 1.1f);
 		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, pos, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.REVIVED, Component.translatable("chronicle.aliveworkplace.revived", villager.getDisplayName()));
 		io.github.jcondedata.aliveworkplace.legend.LegendSlots.onRevived(level, was, villager); // a Legend back as they were
-		io.github.jcondedata.aliveworkplace.people.LifeStages.onRevived(level, villager); // an elder whose time had come has 40 more days (34.19a)
+		io.github.jcondedata.aliveworkplace.people.LifeStages.onRevived(level, villager); // an elder whose time had come has 400 more days (34.19a, 36.16)
 		io.github.jcondedata.aliveworkplace.story.RequestErrands.onRevived(level, was, villager); // "Bring back my love" (31.10)
 		return villager;
 	}

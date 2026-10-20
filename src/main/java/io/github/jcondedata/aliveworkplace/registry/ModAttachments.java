@@ -387,10 +387,12 @@ public final class ModAttachments {
 	public static final Attachment<Boolean> AGELESS = Attachment.saved("ageless", com.mojang.serialization.Codec.BOOL);
 	/** Days running their mood has been 80 or more, and the last day counted (34.19a: 20 make an elder worth a charm). Absent: none. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.people.LifeStages.Streak> HAPPY_STREAK = Attachment.saved("happy_streak", io.github.jcondedata.aliveworkplace.people.LifeStages.Streak.CODEC);
-	/** The day an Undertaker brought back an elder whose time had come (34.19a): they have 40 more days from it. Absent: never. */
+	/** The day an Undertaker brought back an elder whose time had come (34.19a): they have 400 more days from it (36.16). Absent: never. */
 	public static final Attachment<Long> PASSED_DAY = Attachment.saved("passed_day", com.mojang.serialization.Codec.LONG);
 	/** The chronicle has noted that they became an elder (34.19: "Bram is an elder now", once). Absent: not yet. */
 	public static final Attachment<Boolean> ELDER_NOTED = Attachment.saved("elder_noted", com.mojang.serialization.Codec.BOOL);
+	/** Family grieving a death (36.16): the day and who they lost; a few days of lower mood and slower work. Absent: none, or over. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Mourning.Grief> GRIEF = Attachment.saved("grief", io.github.jcondedata.aliveworkplace.people.Mourning.Grief.CODEC);
 	/** The family a villager belongs to (34.21): the number of its name, 1 to 60 ({@code family_name.aliveworkplace.<n>}). Absent: not given yet (the hall's round or a birth gives it). */
 	public static final Attachment<Integer> FAMILY_NAME = Attachment.saved("family_name", com.mojang.serialization.Codec.INT);
 	/** Brought back from a grave (31.7), set by {@code Graves.revive}. Absent: never, or revived before 31.7. */

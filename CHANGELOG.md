@@ -65,6 +65,13 @@ asks for the steps, `latest.log` and any crash report).
 ## 0.146.0 — 2026-10-19
 
 ### Added
+- **Villagers live much longer, and a death matters** (36.16). Every life is ten times longer: an elder after 1200
+  grown days (Days Until Elder, now up to 10000), passing 400 elder days later; your world keeps each villager's age and
+  counts it against the new span, and a settings file still on the old default 120 moves to 1200. When a villager of a
+  village with a hall dies, the players near are told who it was, their job and their years ("Mira, the village's
+  Farmer, has died aged 31. The village mourns."), the chronicle says the same, their family grieve for three days and
+  their partner for five (a lower mood and 10% slower work), and the Undertaker leads a funeral at the grave first.
+  Village Mourning in the settings turns it off.
 - **Upgrade a home from the Village Hall** (36.14). A new Upgrades tab (the bricks) lists the village's finished builds
   that have a next level, nearest first: the level and the next, where, what it costs in blocks, and whether the space
   is free. Click one and the village's Builder builds the next level over the old one. Natural ground, trees and water

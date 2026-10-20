@@ -48,7 +48,9 @@ public final class Chronicle {
 		/** A feud declared, peace offered or made, a war raised and ended with the guards each side lost (33.20). */
 		FEUD(Items.IRON_SWORD),
 		/** A Wonder begun, a stage of it done, finished or abandoned (M35). */
-		WONDER(Items.BEACON);
+		WONDER(Items.BEACON),
+		/** A funeral the Undertaker led at a grave (36.16). */
+		FUNERAL(Items.WITHER_ROSE);
 
 		public final Item icon;
 

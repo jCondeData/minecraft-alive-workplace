@@ -4811,7 +4811,7 @@ Depends on: nothing open.
   not now, cancel mid-repair, moving the Builder to another job, the switch, save and reload; text in `en_us.json`; scene
   `repair_ask`.
 
-- [ ] **36.16** **Villagers live much longer, and a death matters** (owner, 2026-10-20). Villagers die too soon: make
+- [x] **36.16** (review: pending 2026-10-20) **Villagers live much longer, and a death matters** (owner, 2026-10-20). Villagers die too soon: make
   their whole life about 10x longer (adulthood and elder days, `villagerElderDays` and the ages the life stages use;
   old saves keep each villager's age but use the new lengths). A death should be a bigger deal: the village mourns (a
   chronicle entry and a message to players near the village naming who died, their job and years, a few days of lower

@@ -2428,6 +2428,38 @@ final class JobScenes {
 			return l -> !street.isEmpty() && !l.getBlockState(street.get(0)).is(ModBlocks.GRAVE)
 				&& io.github.jcondedata.aliveworkplace.grave.Graveyards.plot(l, hall).stream().anyMatch(p -> l.getBlockState(p).is(ModBlocks.GRAVE));
 		}, null));
+		// 36.16: Mira, the village's Farmer, dies; the village is told, Tom (her husband) and Pip (her son) mourn, and the
+		// undertaker leads her funeral at the grave (no golden apple in the chest: nobody brings her back here)
+		SCENES.put("village_mourns", new Job("the undertaker led Mira's funeral and the village mourned her", 2400,
+			new Vec3(4.5, -54, 12), new Vec3(-2, -59.5, 0), (level, player) -> {
+			BlockPos hall = new BlockPos(-3, -60, -8);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			Villager mira = EntityType.VILLAGER.spawn(level, new BlockPos(6, -60, 6), MobSpawnType.COMMAND);
+			mira.setVillagerData(mira.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(3));
+			mira.setCustomName(Component.literal("Mira"));
+			io.github.jcondedata.aliveworkplace.people.LifeStages.setAdultSince(mira, today - 22L * io.github.jcondedata.aliveworkplace.people.Mourning.yearDays());
+			Villager tom = EntityType.VILLAGER.spawn(level, new BlockPos(3, -60, 6), MobSpawnType.COMMAND);
+			tom.setVillagerData(tom.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(2));
+			tom.setCustomName(Component.literal("Tom"));
+			Villager pip = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 7), MobSpawnType.COMMAND);
+			pip.setCustomName(Component.literal("Pip"));
+			ModAttachments.PARTNER.set(mira, new io.github.jcondedata.aliveworkplace.people.Couples.Partner(tom.getUUID(), tom.getDisplayName().copy(), today - 40, true));
+			ModAttachments.PARTNER.set(tom, new io.github.jcondedata.aliveworkplace.people.Couples.Partner(mira.getUUID(), mira.getDisplayName().copy(), today - 40, true));
+			ModAttachments.PARENTS.set(pip, new io.github.jcondedata.aliveworkplace.people.Families.Parents(Component.literal("Mira"), Component.literal("Tom"), "", "", true));
+			Villager u = picked(level, player, STATION, Blocks.BREWING_STAND, Items.GOLDEN_APPLE);
+			u.setCustomName(Component.literal("Ulric"));
+			chest(level, STATION.east(2));
+			mira.kill();
+			// B236: the grave's record is filed in vanilla's next task, so file it now
+			ScreenshotHarness.fileRecords(level, new BlockPos(6, -60, 6), 4);
+			List<BlockPos> graves = io.github.jcondedata.aliveworkplace.grave.Graves.near(level, new BlockPos(6, -60, 6), 4);
+			Showcase.check(!graves.isEmpty() && io.github.jcondedata.aliveworkplace.people.Mourning.funeralDue(level, graves.get(0)), "Mira's grave waits for her funeral");
+			Showcase.check(io.github.jcondedata.aliveworkplace.people.Mourning.mourning(level, tom)
+				&& io.github.jcondedata.aliveworkplace.people.Mourning.mourning(level, pip), "Tom and Pip mourn her");
+			return l -> l.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity e
+				&& e.chronicle().stream().anyMatch(c -> c.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.FUNERAL);
+		}, null));
 		SCENES.put("innkeeper", new Job("a traveller came to stay at the inn", 1200, CAMERA, TARGET, (level, player) -> {
 			for (int x = 3; x <= 5; x += 2) {
 				level.setBlockAndUpdate(new BlockPos(x, -60, -3), Blocks.RED_BED.defaultBlockState()

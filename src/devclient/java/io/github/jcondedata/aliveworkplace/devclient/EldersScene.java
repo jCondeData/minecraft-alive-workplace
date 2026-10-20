@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.Blocks;
 /**
  * SCENE=elders (ROADMAP 34.19): Bram, a farmer one day short of 120 grown days, and Tom, a young one, by a Village
  * Hall. A day passes: the chronicle notes "Bram is an elder now". Stills: Bram's card on the hall's list ("Elder · grown
- * 120 days", and "a quiet old age" first in his mood: he is fed and has a bed); Bram saying "In my day this was all
+ * 1200 days", and "a quiet old age" first in his mood: he is fed and has a bed); Bram saying "In my day this was all
  * fields."; the two walking the same way side by side, Bram behind. Its checks: each of those read from the game, and
  * Bram covering about 15% less ground than Tom in the same time. (The elder's look, 34.18, shows on Bram from his first elder day.)
  */
@@ -79,7 +79,7 @@ final class EldersScene {
 		if (tick == 40) {
 			server.execute(() -> stage(server));
 		}
-		// The next morning Bram has been grown 120 days: the hall's round notes it, once.
+		// The next morning Bram has been grown 1200 days: the hall's round notes it, once.
 		if (tick == 60) {
 			server.execute(() -> {
 				ServerLevel level = server.overworld();
@@ -99,7 +99,7 @@ final class EldersScene {
 		if (tick == 80) {
 			server.execute(() -> {
 				List<String> card = findBram(server);
-				Showcase.check(card.contains("Elder · grown 120 days"), "Bram's card says he is an elder (" + String.join(" | ", card) + ")");
+				Showcase.check(card.contains("Elder · grown 1200 days"), "Bram's card says he is an elder (" + String.join(" | ", card) + ")");
 				Moods.Mood mood = Moods.work(server.overworld(), bram);
 				Showcase.check(!mood.good().isEmpty() && mood.good().get(0).getString().equals("a quiet old age")
 					&& card.stream().anyMatch(l -> l.contains("a quiet old age")), "fed and housed, his mood has \"a quiet old age\" and his card shows it");
@@ -187,7 +187,7 @@ final class EldersScene {
 		return server.getPlayerList().getPlayers().get(0);
 	}
 
-	/** A Village Hall, Bram (grown 119 days, fed, with a bed of his own) and Tom (grown 30 days) in front of it facing the player. */
+	/** A Village Hall, Bram (grown 1199 days, fed, with a bed of his own) and Tom (grown 30 days) in front of it facing the player. */
 	private void stage(MinecraftServer server) {
 		ServerLevel level = server.overworld();
 		ServerPlayer player = player(server);

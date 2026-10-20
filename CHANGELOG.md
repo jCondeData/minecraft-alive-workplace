@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.146.1 — 2026-10-20
+
 ### Fixed
 
 - A Builder repairing a building now takes what it needs from the chests inside that building. Repairing a Storehouse

@@ -255,6 +255,37 @@ public class SophisticatedControllerCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A builder adds a barrel to a controller's network, touching only a barrel the controller already links (a builder
+	 * sets blocks without the placing that would link it; B238): once the builder's after-block hook has run, the
+	 * controller links the new barrel too, so what lies in it is counted through the controller.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"sophisticated_controller_added"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "sophisticated_controller_added")
+	public void aBarrelBuiltOntoTheNetworkIsLinked(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		networks(helper, true);
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		PartnerShowsCompatTests.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		BlockPos first = helper.absolutePos(new BlockPos(4, 2, 4));
+		level.setBlockAndUpdate(first, block("barrel").defaultBlockState());
+		BlockPos controller = helper.absolutePos(new BlockPos(3, 2, 4));
+		placeAsPlayer(level, controller, block("controller"), player);
+		helper.assertTrue(SupplyContainers.insert(level, List.of(first), new ItemStack(Items.COBBLESTONE, 10)).isEmpty(), "the first barrel took nothing");
+		helper.assertTrue(SupplyContainers.count(level, List.of(controller), Items.COBBLESTONE) == 10, "the controller doesn't link the first barrel");
+
+		// The builder sets the second barrel beside the first (two blocks from the controller) and calls its hook.
+		BlockPos added = helper.absolutePos(new BlockPos(5, 2, 4));
+		level.setBlock(added, block("barrel").defaultBlockState(), Block.UPDATE_ALL);
+		StorageNetworks.afterBuilt(level, added, level.getBlockState(added));
+		helper.assertTrue(SupplyContainers.insert(level, List.of(added), new ItemStack(Items.OAK_PLANKS, 7)).isEmpty(), "the added barrel took nothing");
+		helper.succeedWhen(() -> {
+			long planks = SupplyContainers.count(level, List.of(controller), Items.OAK_PLANKS);
+			helper.assertTrue(planks == 7, "the controller counts " + planks + " planks of the built barrel's 7: it wasn't linked");
+		});
+	}
+
 	/** Sets {@code moddedStorageNetworks} for this test and puts it back afterwards. */
 	private static void networks(GameTestHelper helper, boolean on) {
 		boolean was = StorageNetworks.ENABLED;

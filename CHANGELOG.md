@@ -16,7 +16,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.146.0 — 2026-10-19
+
 ### Added
+- **Upgrade a home from the Village Hall** (36.14). A new Upgrades tab (the bricks) lists the village's finished builds
+  that have a next level, nearest first: the level and the next, where, what it costs in blocks, and whether the space
+  is free. Click one and the village's Builder builds the next level over the old one. Natural ground, trees and water
+  in the way are cleared as part of the job; a wall, fence, path or another build blocks it, and the row says what's in
+  the way and where. Residents keep their beds: a Builder no longer breaks a bed somebody sleeps in while clearing for
+  any upgrade.
 - **A Quarry that grows back** (36.12). A new blueprint in the Blueprint Table: a fenced pit with steps cut down its side,
   a hoist and the Miner's shed with its blast furnace. The Miner who works at that furnace digs the pit by themselves (no
   Quarry Marker), and what they dig grows back slowly from the bottom up: mostly stone, some coal and copper, now and
@@ -54,6 +62,22 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Raiders no longer spawn stuck on their war camp's fences** (B130). A raid that gathered in or next to its own camp
+  put each raider on top of whatever stood highest where it was drawn, so pillagers stood on the camp's fences and the
+  ravager on a tent, and never set off (the ram never reached the Palisade Gate). Raiders now gather only on ground a
+  mob can stand and walk from, no higher than a step over the gathering point; another spot is drawn, else the nearest.
+- **Villagers no longer get stuck under flower boxes** (B156). The game's path finding counts every trapdoor as open,
+  so a villager walking along a house front could walk into the gap under a window's flower box (a closed trapdoor at
+  head height), bump its head and stand there for the rest of the day; a Printer walking up to the Print Shop sometimes
+  never reached its cartography table. Villagers now walk round closed trapdoors they can't fit under, in our builds
+  and yours; closed trapdoors used as a floor are walked on as before.
+- **A Firewarden no longer stops a step short of a fire on a high roof** (B230). For a fire on a roof's ridge they now
+  walk onto the very spot they throw the bucket up from; before, they could stop one block away, just out of throwing
+  range, and stand there watching it burn.
+- **A Create schematic named like a Windows device no longer breaks the Blueprint Table.** A schematic uploaded to
+  Create's table as `con.nbt` (or `aux`, `nul`, `com1`...) made the game refuse to save its blueprint with an error
+  nobody caught, so the Blueprint Table failed every time it was opened. The table now says once that it couldn't
+  import that schematic and opens as usual.
 - **No more client crash near a turning Windmill with shaders on** (B231). With shaders, Create draws spinning
   contraptions the slow way, and in packs where Sodium and Continuity write a block one corner at a time (Cobbleverse)
   the Windmill's sails crashed the game ("ShadedBlockSbbBuilder only supports putBulkData!"). Each corner now goes into

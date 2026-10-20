@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
+import io.github.jcondedata.aliveworkplace.work.Pace;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,10 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  * builds (2026-10-05, here and in CI) four took 28-44% (on average 34%) and two 50-62% (mostly 50%). With one run, CI
  * failed on a 44% (4d1ee21). So the whole run is made three times, each with new villagers (a builder levels up as it
  * builds, so the same villagers again would be faster), and each crew's middle share of the time alone is checked.
+ *
+ * <p>B181: a Village Hall an earlier batch left nearby (halls reach 64 blocks) makes this a village, and its needs and
+ * the builders' moods changed their pace from one build to the next (alone 105% of the usual time, crews 89-98%), so the
+ * hall is removed first. Each build's line logs every builder's pace and level, the conditions it was measured in.
  */
 public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
@@ -64,6 +69,7 @@ public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1
 	@GameTest(template = HUGE, timeoutTicks = 36000, batch = "crewScaling")
 	public void aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.halls(helper); // B181: not a village, so its needs and moods don't change a builder's pace between builds
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(3000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(8, level.getServer());
@@ -99,7 +105,8 @@ public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1
 			int total = 0;
 			for (Villager v : crew) {
 				int n = site[0].placedBy(v.getUUID(), false);
-				shares.append(' ').append(n);
+				shares.append(' ').append(n).append(" (level ").append(v.getVillagerData().getLevel()).append(", pace ")
+					.append(Math.round(100 * Pace.factor(v))).append("%)"); // B181: the conditions each build was measured in
 				least = Math.min(least, n);
 				total += n;
 			}

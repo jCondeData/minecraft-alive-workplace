@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.npc.Villager;
@@ -90,9 +91,15 @@ final class JobPlateScene {
 		v.setYBodyRot(0);
 	}
 
-	/** The player stands two blocks in front of the villager and looks at its chest, so it's the crosshair's target. */
+	/**
+	 * The player stands two blocks in front of the villager and looks at its chest, so it's the crosshair's target.
+	 * hoverLookingAt aims from the player's feet, but the crosshair's ray starts at the eyes: aiming from the feet at the
+	 * chest tilted the view up over the villager's head and the crosshair hit nothing (B232). The target is lowered by
+	 * the eye height so the ray from the eyes meets the chest.
+	 */
 	private static void lookAt(MinecraftServer server, BlockPos villager) {
+		ServerPlayer player = server.getPlayerList().getPlayers().get(0);
 		Vec3 feet = Vec3.atBottomCenterOf(villager);
-		ScreenshotHarness.hoverLookingAt(server.getPlayerList().getPlayers().get(0), feet.add(0, 0, 2.2), feet.add(0, 1.3, 0));
+		ScreenshotHarness.hoverLookingAt(player, feet.add(0, 0, 2.2), feet.add(0, 1.3 - player.getEyeHeight(), 0));
 	}
 }

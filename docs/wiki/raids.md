@@ -49,6 +49,9 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 - **How many.** As before: 3, one more for every 4 villagers, plus up to 4 in iron (helmet and chestplate) for a village
   with guards, 16 at most; from a lair, no more than the band it has at home (32.3, [Lairs](lairs.md)). Each raider is picked from the roster by its share and gets its role's gear, which never
   drops.
+- **Where they appear.** Round the gathering point, a few blocks each way, each on ground a mob can stand and walk
+  from: never on a fence, a wall or a roof (a tent in their own war camp), and no higher than a step above the point
+  (B130). When no such spot is drawn, the nearest good ground round the point is taken.
 - **The threat clock.** At dusk (18:00, day time 12000) the hall's round rolls the next night: the chance is the usual
   one (15% at 8 villagers, +1% a villager, at most 35%; twice that with a bandit camp; times the chance hook below), and
   never within 3 days of the last raid. If raiders are to come, the clock keeps the day, the culture, the side and the

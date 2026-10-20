@@ -199,4 +199,46 @@ public class RaidGameTests implements FabricGameTest {
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Gates.round(level, hall, 1) == 0, "shut twice");
 		helper.succeed();
 	}
+	/**
+	 * B130: a raid gathering in its own war camp puts every raider on real ground, never on the camp's fences or on top of
+	 * a tent, where it stood stuck (the warband's ravager never reached the Palisade Gate).
+	 */
+	//$ gametest_batch AREA '"raidersOnGround"'
+	@GameTest(template = AREA, batch = "raidersOnGround")
+	public void raidersGatheringInACampStandOnTheGround(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos middle = new BlockPos(11, 2, 11);
+		java.util.Set<BlockPos> open = java.util.Set.of(new BlockPos(3, 0, 3), new BlockPos(-3, 0, -3), new BlockPos(3, 0, -1), new BlockPos(-1, 0, 3));
+		for (int dx = -3; dx <= 3; dx++) {
+			for (int dz = -3; dz <= 3; dz++) {
+				if (open.contains(new BlockPos(dx, 0, dz))) {
+					continue;
+				}
+				BlockPos at = middle.offset(dx, 0, dz);
+				if (Math.abs(dx) + Math.abs(dz) == 2 && (dx == 0 || dz == 0)) { // a tent's corner posts, two high
+					helper.setBlock(at, net.minecraft.world.level.block.Blocks.SPRUCE_PLANKS);
+					helper.setBlock(at.above(), net.minecraft.world.level.block.Blocks.SPRUCE_PLANKS);
+				} else {
+					helper.setBlock(at, net.minecraft.world.level.block.Blocks.SPRUCE_FENCE);
+				}
+			}
+		}
+		// Open sky over the camp, as out in the world (the test area's barrier roof would be taken for the ground).
+		for (BlockPos p : BlockPos.betweenClosed(helper.absolutePos(middle).offset(-8, 1, -8), helper.absolutePos(middle).offset(8, 40, 8))) {
+			if (level.getBlockState(p).is(net.minecraft.world.level.block.Blocks.BARRIER)) {
+				level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+			}
+		}
+		BlockPos from = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, helper.absolutePos(middle));
+		net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(130);
+		int floor = helper.absolutePos(middle).getY();
+		for (int i = 0; i < 24; i++) {
+			BlockPos spot = VillageRaids.spawnSpot(level, from, 3, random);
+			net.minecraft.world.level.block.state.BlockState under = level.getBlockState(spot.below());
+			helper.assertTrue(spot.getY() == floor && under.is(net.minecraft.world.level.block.Blocks.SMOOTH_STONE),
+				"raider " + i + " put down at " + helper.relativePos(spot).toShortString() + " on " + under.getBlock());
+		}
+		helper.succeed();
+	}
 }

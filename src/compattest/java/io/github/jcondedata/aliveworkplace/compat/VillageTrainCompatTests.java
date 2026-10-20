@@ -610,4 +610,36 @@ public class VillageTrainCompatTests implements FabricGameTest {
 			helper.assertTrue(CaravanTrains.find(level, hall).contains(placement.origin().offset(6, 1, 4)), "the station isn't found from a hall nearby");
 		});
 	}
+
+	/**
+	 * Stations at both ends and the list saying the track is laid, but no Create track joins them (one railway network
+	 * Create knows): the pair isn't aimed, and no village train is opened for a builder to put up.
+	 */
+	//$ gametest_ticks_batch AREA '300' '"villageTrainNotLinked"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "villageTrainNotLinked")
+	public void stationsNotOnOneRailwayGetNoTrain(GameTestHelper helper) throws ReflectiveOperationException {
+		ServerLevel level = helper.getLevel();
+		Villages v = skyVillages(helper);
+		stations(helper, v);
+		v.data().setTracked(v.a(), v.b(), true);
+		v.data().setTracked(v.b(), v.a(), true);
+		BlockPos station = v.data().stations(v.a()).get(0);
+		BlockPos far = v.data().stations(v.b()).get(0);
+		helper.assertTrue(level.isLoaded(station) && level.isLoaded(far), "setup: a station isn't loaded");
+		helper.assertTrue(!CaravanTrains.RAILWAY.call(r -> r.linked(level, station, far), true), "setup: the stations are on one railway with no track");
+		java.lang.reflect.Method aimed = CaravanTrains.class.getDeclaredMethod("aimed", ServerLevel.class, BlockPos.class, BlockPos.class, Caravans.Data.class);
+		aimed.setAccessible(true);
+		Object pair = aimed.invoke(null, level, v.a(), v.b(), v.data());
+		helper.assertTrue(pair == null, "two stations no track joins are aimed at each other: " + (pair == null ? "" : java.util.Arrays.toString((BlockPos[]) pair)));
+		java.lang.reflect.Method build = CaravanTrains.class.getDeclaredMethod("build", ServerLevel.class, BlockPos.class, BlockPos.class,
+			VillageHallBlockEntity.class, Caravans.Data.class, java.util.UUID.class);
+		build.setAccessible(true);
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		List<java.util.UUID> before = sites.all().stream().map(s -> s.id()).toList();
+		build.invoke(null, level, v.a(), v.b(), hall(helper, v.a()), v.data(), CaravanTrains.railwayId(v.a(), v.b()));
+		List<String> opened = sites.all().stream().filter(s -> !before.contains(s.id())).map(s -> s.structure().toString()).toList();
+		opened.forEach(id -> sites.all().stream().filter(s -> s.structure().toString().equals(id)).toList().forEach(s -> sites.remove(s.id())));
+		helper.assertTrue(opened.isEmpty(), "a village train was opened between stations no track joins: " + opened);
+		helper.succeed();
+	}
 }

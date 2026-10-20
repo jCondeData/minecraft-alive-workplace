@@ -178,6 +178,10 @@ public class B224GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	//$ gametest_ticks_batch AREA '4000' '"b224_store"'
 	@GameTest(template = AREA, timeoutTicks = 4000, batch = "b224_store")
 	public void minerWithNoChestsStoresInTheStorehouse(GameTestHelper helper) {
+		// B229: a Village Hall an earlier batch left within reach makes the Miner's village store that hall's kitchens and
+		// Storehouses (VillageNeeds.store), which can be another test's chests: in a full build 2 of the 11 cobblestone
+		// went there. Only this test's Storehouse may be the village store.
+		Leftovers.halls(helper);
 		Leftovers.storehouses(helper);
 		Map<Item, Integer> expect = fillMixed(helper);
 		BlockPos storehouse = new BlockPos(14, 2, 14);
@@ -196,9 +200,30 @@ public class B224GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 				if (e.getKey() == Items.GRAVEL) {
 					have += count(helper, Items.FLINT, storeChest, storeBarrel);
 				}
-				helper.assertTrue(have == e.getValue(), "the Storehouse holds " + have + " " + e.getKey() + ", dug " + e.getValue());
+				helper.assertTrue(have == e.getValue(), "the Storehouse holds " + have + " " + e.getKey() + ", dug " + e.getValue()
+					+ elsewhere(helper, s, e.getKey()));
 			}
 		});
+	}
+
+	/** Where else {@code item} is (for a failure message): the bag, the ground, the pit, the quarry's skipped blocks. */
+	private static String elsewhere(GameTestHelper helper, Setup s, Item item) {
+		int bag = ModAttachments.BUILDER_BAG.getOrCreate(s.miner()).count(item);
+		int ground = 0;
+		for (net.minecraft.world.entity.item.ItemEntity e : helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+			helper.getBounds().inflate(64))) {
+			if (e.getItem().is(item)) {
+				ground += e.getItem().getCount();
+			}
+		}
+		int standing = 0;
+		for (BlockPos p : BlockPos.betweenClosed(MIN, MAX)) {
+			if (!helper.getLevel().getBlockState(helper.absolutePos(p)).isAir()) {
+				standing++;
+			}
+		}
+		return " (bag " + bag + ", on the ground " + ground + ", blocks left in the pit " + standing + ", mined " + s.site().mined()
+			+ ", skipped " + s.site().skipped() + ")";
 	}
 
 	/**

@@ -1719,9 +1719,14 @@ final class JobScenes {
 			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
 			int[] ticks = {0};
 			boolean[] turned = {false};
-			int[] turnedAt = {0};
+			long[] turnedAt = {-1};
+			boolean[] felled = {false};
+			long start = level.getGameTime();
 			return l -> {
+				// B130: this check is asked once every 10 client ticks, so ticks[0] counts checks, not ticks: the walk and
+				// the Warlord's fall go by the game time (counting checks put the fall at about 3000 ticks, past the limit)
 				ticks[0]++;
+				long t = l.getGameTime() - start;
 				if (ticks[0] == 5) {
 					// B130: mustered a few ticks in: the guards take their jobs in a server task after the staging one (picked)
 					var mustered = io.github.jcondedata.aliveworkplace.guard.WarParties.muster(l, hall, player);
@@ -1741,17 +1746,18 @@ final class JobScenes {
 				}
 				// The player walks south at the head of the war party, stopping short of the camp's fire.
 				if (player.getZ() < STATION.getZ() + 20) {
-					player.connection.teleport(player.getX(), player.getY(), player.getZ() + 0.12, 0f, 0f);
+					player.connection.teleport(player.getX(), player.getY(), Math.min(STATION.getZ() + 20.5, STATION.getZ() + 0.5 + 0.12 * t), 0f, 0f);
 				}
 				if (!turned[0] && io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, standing.get()).size() > 1
 						&& !io.github.jcondedata.aliveworkplace.guard.WarParties.at(l, standing.get()).isEmpty()) {
 					turned[0] = true;
-					turnedAt[0] = ticks[0];
+					turnedAt[0] = t;
 					Showcase.check(true, "the band turned out to meet the war party");
 				}
 				// The Warlord falls at the front (a scene can't wait out a whole battle): 300 ticks after the band turned out,
 				// or at 500 if it never did (B130: at a fixed 900 a slow runner at about 10 ticks a second hit the 80-second limit first).
-				boolean fall = turnedAt[0] > 0 ? ticks[0] == turnedAt[0] + 300 : ticks[0] == 500;
+				boolean fall = !felled[0] && (turnedAt[0] >= 0 ? t >= turnedAt[0] + 300 : t >= 500);
+				felled[0] |= fall;
 				if (fall && l.getEntity(standing.get().captain()) instanceof net.minecraft.world.entity.LivingEntity warlord) {
 					warlord.hurt(l.damageSources().playerAttack(player), 10000f);
 				} else if (fall) {
@@ -4334,6 +4340,65 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES, player);
 						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.SCAFFOLDING),
 							"after Yes the page shows the cottage being repaired: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40)),
+			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
+		// Upgrade a built home from the Village Hall (ROADMAP 36.14): a finished Starter Cottage and a finished Stone House II
+		// stand north of the hall; the hall's Upgrades page lists the cottage (level I, next the Starter Cottage II, its cost,
+		// the space free) and the Stone House II (next level III, blocked by a garden fence where its new back rooms go, with
+		// where); a click on the cottage sends Bram to build its level II over it.
+		SCREENS.put("hall_upgrade", new Screen("the hall's Upgrades page listed the Starter Cottage (level I, next the Starter Cottage II, its cost, the space free) "
+			+ "and the Stone House II blocked by a garden fence where its level III goes; a click on the cottage sent Bram to build it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BuildSiteManager sites = BuildSiteManager.get(level);
+				BlockPos cottage = STATION.offset(-8, 0, -15);
+				BlockPos house = STATION.offset(6, 0, -16);
+				for (var built : List.of(java.util.Map.entry(StarterBlueprints.STARTER_COTTAGE.id(), cottage), java.util.Map.entry(StarterBlueprints.STONE_HOUSE_2.id(), house))) {
+					level.getStructureManager().get(built.getKey()).orElseThrow().placeInWorld(level, built.getValue(), built.getValue(),
+						new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+					sites.recordFinished(built.getKey(), new BlueprintData.Placement(level.dimension().location(), built.getValue(),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				}
+				// a garden fence behind the Stone House II, where its level III's back rooms go
+				for (int x = 2; x <= 8; x++) {
+					level.setBlockAndUpdate(house.offset(x, 0, 11), Blocks.OAK_FENCE.defaultBlockState());
+				}
+				BlockPos bench = new BlockPos(4, -60, -3);
+				place(level, bench, ModBlocks.BUILDERS_BENCH);
+				chest(level, bench.east(), new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.OAK_LOG, 64),
+					new ItemStack(Items.GLASS_PANE, 32), new ItemStack(Items.SPRUCE_PLANKS, 64));
+				Villager builder = EntityType.VILLAGER.create(level);
+				builder.moveTo(4.5, -60, -1.5, 180, 0);
+				builder.setCustomName(Component.literal("Bram"));
+				level.addFreshEntity(builder);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_EMPLOYER.set(builder,
+					new io.github.jcondedata.aliveworkplace.build.Employer(player.getUUID(), player.getGameProfile().getName()));
+				classPeople.clear();
+				classPeople.add(builder);
+			},
+			List.of(new Step("01_upgrades_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.UpgradesPage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.BRICKS),
+							"the cottage first on the Upgrades page, its space free: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("02_blocked_by_a_fence", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).is(Items.BARRIER),
+							"the Stone House II blocked by the fence: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1));
+					}
+				}, 40),
+				new Step("03_bram_builds_it", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.SCAFFOLDING),
+							"after the click the cottage is being upgraded: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
 					}
 				}, 40)),
 			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));

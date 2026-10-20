@@ -221,4 +221,33 @@ public class MegaShrineCompatTests implements FabricGameTest {
 		helper.assertTrue(ModAttachments.MEGA_SHOW_DAY.get(watcher) == null, "a show after its hours");
 		helper.succeed();
 	}
+
+	/**
+	 * The crowd is remembered for the whole festival day: a villager who came to the shrine and wandered off again still
+	 * counts as come (the show doesn't wait for them) and still sees the show once the last one arrives.
+	 */
+	//$ gametest_batch AREA '"mega_shrine_came_and_left"'
+	@GameTest(template = AREA, batch = "mega_shrine_came_and_left")
+	public void oneWhoCameAndWanderedOffStillCounts(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		shrine(helper);
+		Festivals.forget();
+		BlockPos hall = helper.absolutePos(HALL);
+		villager(helper, new BlockPos(5, 4, 7), true); // at the pedestal already
+		Villager early = villager(helper, new BlockPos(5, 2, 2), false); // at the crowd's spot
+		Villager late = villager(helper, new BlockPos(5, 2, 0), false);
+		early.setNoGravity(true);
+		late.setNoGravity(true);
+		late.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(5.5, 2, -12.5))); // still on the way, off work
+		MegaShrines.tick(level, hall);
+		helper.assertTrue(ModAttachments.MEGA_SHOW_DAY.get(early) == null, "the show was held before the crowd had come");
+		// The early one wanders off; the late one arrives.
+		early.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(6.5, 2, -12.5)));
+		late.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(5.5, 2, 2.5)));
+		MegaShrines.tick(level, hall);
+		long today = Chronicle.day(level);
+		helper.assertTrue(Long.valueOf(today).equals(ModAttachments.MEGA_SHOW_DAY.get(late)), "the show waited for one who had already come and wandered off");
+		helper.assertTrue(Long.valueOf(today).equals(ModAttachments.MEGA_SHOW_DAY.get(early)), "one who came and wandered off missed the show");
+		helper.succeed();
+	}
 }

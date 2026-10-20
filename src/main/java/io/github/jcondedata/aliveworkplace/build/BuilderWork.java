@@ -777,6 +777,9 @@ public class BuilderWork extends Behavior<Villager> {
 			if (isProtected(level, pos, world, bench)) {
 				return Action.NONE;
 			}
+			if (wantedEmpty && someonesBed(level, pos, world)) {
+				return Action.NONE; // 36.14: a bed a villager sleeps in stays through an upgrade over the room it stands in
+			}
 			// 27.19: the Steward's sites clear only natural blocks; a player's block in the way stays
 			return site.isSteward() && StewardSafety.playersBlock(level, pos, world) ? Action.PLAYER_BLOCK : Action.BREAK;
 		}
@@ -791,6 +794,17 @@ public class BuilderWork extends Behavior<Villager> {
 			return site.isSteward() && StewardSafety.playersBlock(level, pos, world) ? Action.PLAYER_BLOCK : Action.BREAK;
 		}
 		return Action.PLACE;
+	}
+
+	/** Whether {@code state} at {@code pos} is (half of) a bed a villager has claimed as their home. */
+	static boolean someonesBed(ServerLevel level, BlockPos pos, BlockState state) {
+		if (!(state.getBlock() instanceof net.minecraft.world.level.block.BedBlock)) {
+			return false;
+		}
+		BlockPos head = state.getValue(net.minecraft.world.level.block.BedBlock.PART) == net.minecraft.world.level.block.state.properties.BedPart.HEAD
+			? pos : pos.relative(state.getValue(net.minecraft.world.level.block.BedBlock.FACING));
+		net.minecraft.world.entity.ai.village.poi.PoiManager pois = level.getPoiManager();
+		return pois.existsAtPosition(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME, head) && pois.getFreeTickets(head) == 0;
 	}
 
 	private static boolean isProtected(ServerLevel level, BlockPos pos, BlockState state, BlockPos bench) {

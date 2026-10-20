@@ -305,7 +305,7 @@ SCENES = [
        ("03_healing", "In the Healing Machine")], cobblemon=True),
     # Shopkeeper
     S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,
-      [("01_shop_menu", "Shop screen"), ("01_shop_counter", "The counter")], cobblemon=True),
+      [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),
     S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list, the owner's sales log and a Price Tag's screen opened", 55,
       [("01_counter_screen", "Price list"), ("02_counter_price", "A price"), ("03_counter_sales", "Sales log"), ("04_price_tag", "Price Tag")]),
     # Ferryman

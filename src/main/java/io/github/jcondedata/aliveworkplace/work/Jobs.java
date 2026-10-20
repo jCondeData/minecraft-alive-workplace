@@ -21,6 +21,9 @@ public final class Jobs {
 	 */
 	public static void employ(ServerLevel level, Villager villager, BlockPos station, ResourceKey<PoiType> poi, VillagerProfession profession) {
 		level.getPoiManager().take(h -> h.is(poi), (h, p) -> p.equals(station), station, 1);
+		// B251: a jobless villager already walking to this block holds its one ticket (so the take above found none): the
+		// walk is forgotten without letting go, else the brain refresh below stops it and its stop frees the ticket.
+		Stations.forgetWalkedTo(villager, GlobalPos.of(level.dimension(), station));
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), station));
 		JobSiteTickets.hold(level, villager);
 		WorkerLimits.order(villager, profession);

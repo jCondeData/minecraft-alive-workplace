@@ -354,6 +354,9 @@ public class WallGameTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '4000' '"wallTowerBuilt"'
 	@GameTest(template = AREA, timeoutTicks = 4000, batch = "wallTowerBuilt")
 	public void aBuilderBuildsThePalisadeTower(GameTestHelper helper) {
+		// B259: builders work by day and rest at night; the tower takes about 1,500 ticks of work, so a run that began in
+		// the evening (whatever hour the suite had reached) stood still past its timeout. It starts in the morning.
+		helper.setDayTime(2000);
 		ServerLevel level = helper.getLevel();
 		Village v = village(helper, new BlockPos(24, 2, 24));
 		Blueprint tower = BlueprintLibrary.get(level, AliveWorkplace.id("palisade_tower")).orElseThrow();

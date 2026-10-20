@@ -144,6 +144,9 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 	public void aJoblessVillagerOpensTheHealingCentersShutDoorAndTakesItsBrewingStand(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
+		// villagers look for a job by day and go to bed at dusk (B258): at whatever hour the suite had reached, this one
+		// failed whenever it began at night. It starts in the morning.
+		helper.setDayTime(2000);
 		place(helper, "healing_center", new BlockPos(8, 1, 6));
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(13, 2, 4));
 		villager.getRandom().setSeed(203L);

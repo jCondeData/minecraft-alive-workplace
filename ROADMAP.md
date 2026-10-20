@@ -5221,6 +5221,23 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-e-1020-1913): fourth mutation pass on M39 (Create) code, seed 52 (mutate.py `--list` per file),
+  hand-picked from lines no earlier pass names: the two VillageMachines mutants the third pass left (:61, :69) and new
+  lines in MechanicRound, Kinetics, MachineWorkFiles, Contraptions, CreateSchematics, CreateTrains and CaravanTrains
+  (the Conductor's railway code). Run one at a time against the ten Create compat classes alone (trimmed compat
+  fabric.mod.json, `--no-daemon`, `./gradlew --stop` before each, about 3 min a run). 14 mutants, all compiled: 9
+  killed (VillageMachines:61 `return true`, :69 `out.add` deleted; Kinetics:84 `||` to `&&`; MachineWorkFiles:106 drop
+  `!`; CreateSchematics:123 `==` to `!=`, :212 `!=` to `==`; Contraptions:186 drop `!`; CreateTrains:205 drop `!`,
+  :355 `<` to `<=`), 5 survived (lines as at edb62f7d). Four real gaps, now killed: MechanicRound:33 (`next + 1` to
+  `- 1`: the round walked backwards, the farthest machine second; it survived because every round test had two
+  machines) by MechanicGameTests.theRoundIsWalkedInItsOrder; Kinetics:62 (`==` to `!=`: every part in group 0, so parts
+  went back nearest first, a cogwheel before its shaft) by MechanicCompatTests.aShaftGoesBackBeforeANearerCogwheel (a
+  line with the cogwheel at the near end); Contraptions:239 (`<= 0` to `<= 1`: a part turning at 1 RPM listed as still)
+  by ContraptionCompatTests.aSlowTurningPartIsNotListedAsStill (a creative motor set to 1 RPM by its saved
+  `ScrollValue`); Contraptions:259 (`tries + 1` to `- 1`: two more looks, the owner told 200 ticks late; the long
+  build tests' timeouts hid it) by ContraptionCompatTests.theThirdLookListsWhatStillDoesntTurn. One equivalent:
+  CaravanTrains:462 `>` to `>=` (a list of exactly MAX_STATIONS cut to its first MAX_STATIONS is the same list). Each
+  new test passes on the real code and fails on its mutant (one run with all four planted). No mod bug found.
 - 2026-10-20 (lane-e-1020-1614): third mutation pass on M39 (Create) code, seed 48, only the lines B243 (dfc2b578,
   VillageMachines and its callers in MachineWork and MechanicWork) and B244 (6f14cfa5, MachineWork.tickTrip, goesOn,
   endTrip) changed, which no pass had covered. Run against the ten Create compat classes alone (trimmed compat

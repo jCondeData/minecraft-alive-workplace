@@ -807,7 +807,10 @@ final class JobScenes {
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
 			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
 			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("pillager_warband");
-			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, 34), id);
+			// The camp stands past where the raid gathers (0.6 of the hall's radius out, about z 26, a few blocks each way), as a
+			// real one does (80 to 104 out, B130): at z 34 its ring of logs (z 24 to 44, turned at random) took the gathering
+			// ground in, the ravager was put down inside it and never got out to the gate.
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, 52), id);
 			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.named(lair)
 				&& io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().startsWith("Warlord "), "the warband made its war camp, with a named Warlord");
 			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();

@@ -341,6 +341,63 @@ public class StewardJobsGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * B132 (the steward_jobs scene): a guard the Steward appoints (Run the village, three jobless, a free composter, grindstone
+	 * and fletching table) starts his shift and is still walking the ground round his new post a long while later, like a
+	 * guard who took a Guard Post himself. The clock stands still at the scene's hour, inside his morning watch.
+	 */
+	//$ gametest_ticks_batch AREA '900' '"jobsGuardPatrols"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "jobsGuardPatrols")
+	public void aGuardTheStewardAppointsStartsHisPatrol(GameTestHelper helper) {
+		int before = VillageHalls.RADIUS;
+		boolean selfRun = StewardDesk.SELF_RUN;
+		ServerLevel level = helper.getLevel();
+		boolean daylight = level.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_DAYLIGHT);
+		List<Villager> jobless = new ArrayList<>();
+		try {
+			VillageHalls.RADIUS = RADIUS;
+			StewardDesk.SELF_RUN = true;
+			Village v = village(helper, new StewardWishes.Wish(JOBS_RULE, new StewardRules.Effect(StewardRules.Kind.ASSIGN_JOBS, Optional.empty(),
+				Optional.empty(), Optional.empty(), Optional.empty()), 75, "steward.aliveworkplace.why.jobless", List.of(3L)));
+			level.getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			helper.setDayTime(2500); // the scene's hour: the guard's morning watch (work from dawn till 3000)
+			helper.setBlock(new BlockPos(8, 2, 24), Blocks.COMPOSTER);
+			helper.setBlock(new BlockPos(23, 2, 25), Blocks.GRINDSTONE);
+			helper.setBlock(new BlockPos(16, 2, 27), Blocks.FLETCHING_TABLE);
+			for (int i = 0; i < 3; i++) {
+				jobless.add(jobless(helper, new BlockPos(13 + 2 * i, 2, 18 + i)));
+			}
+			helper.assertTrue(StewardDesk.setMode(v.level(), v.hall(), v.owner(), CityPlan.Mode.RUN), "Run refused");
+			StewardDesk.plan(v.level(), v.steward(), v.hall());
+		} finally {
+			VillageHalls.RADIUS = before;
+			StewardDesk.SELF_RUN = selfRun;
+		}
+		Villager guard = jobless.stream().filter(j -> j.getVillagerData().getProfession() == ModVillagers.GUARD).findFirst().orElse(null);
+		helper.assertTrue(guard != null, "no guard appointed: " + jobless.stream().map(j -> j.getVillagerData().getProfession()).toList());
+		jobless.forEach(j -> j.setNoAi(false)); // off they go
+		long from = level.getGameTime();
+		boolean[] done = {false};
+		helper.onEachTick(() -> {
+			if (done[0] || level.getGameTime() - from < 700) {
+				return;
+			}
+			done[0] = true;
+			io.github.jcondedata.aliveworkplace.work.WorkerStatus.Entry status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(guard, level.getGameTime());
+			boolean patrolling = status != null && status.line().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+				&& t.getKey().equals("message.aliveworkplace.guard.state.patrolling");
+			level.getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_DAYLIGHT).set(daylight, level.getServer());
+			if (patrolling) {
+				helper.succeed();
+			} else {
+				helper.fail("the guard isn't patrolling at tick 700: " + (status == null ? "no status" : status.line().getString())
+					+ ", activity " + guard.getBrain().getActiveNonCoreActivity() + ", schedule " + BuiltInRegistries.SCHEDULE.getKey(guard.getBrain().getSchedule())
+					+ ", day time " + level.getDayTime() + ", at " + helper.relativePos(guard.blockPosition()) + ", job site "
+					+ guard.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> helper.relativePos(g.pos())));
+			}
+		});
+	}
+
 	private static Research.State levels(Map<Research.Topic, Integer> levels) {
 		Map<String, Integer> out = new java.util.HashMap<>();
 		levels.forEach((t, n) -> out.put(t.key(), n));

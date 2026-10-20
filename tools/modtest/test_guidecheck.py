@@ -84,6 +84,23 @@ def expect(name, problems, fragment):
     return ok
 
 
+def site_odd_lines():
+    """site.py's renderer finishes on lines no block rule takes: a picture with words after it hung it forever (B256)."""
+    import importlib.util
+    import threading
+    spec = importlib.util.spec_from_file_location("guide_site", Path(__file__).resolve().parents[1] / "playerguide/site.py")
+    site = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(site)
+    md = f"# Page\n\n![A builder]({SITE}builders/still-2.jpg) Words after it.\nMore words.\n\n#### Deep heading\n\n![broken\n"
+    out = {}
+    worker = threading.Thread(target=lambda: out.update(body=site.render(md)[1]), daemon=True)
+    worker.start()
+    worker.join(5)
+    if worker.is_alive():
+        return ["render() never finished on a picture with words after it"]
+    return [] if "Words after it." in out["body"] and "More words." in out["body"] else [f"words lost: {out['body']}"]
+
+
 def main():
     results = [
         expect("a clean guide passes", run(GOOD), None),
@@ -114,6 +131,7 @@ def main():
         expect("a portal no page is in fails", run(GOOD, index=INDEX.replace("Builder |", "Nowhere |")),
                "portal 'Nowhere'"),
         expect("site.py leaves a gated page out until its switch flips", site_gating(), None),
+        expect("site.py finishes on a picture with words after it", site_odd_lines(), None),
     ]
     failed = results.count(False)
     print(f"{len(results) - failed} of {len(results)} passed")

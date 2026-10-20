@@ -512,6 +512,32 @@ public class MechanicCompatTests implements FabricGameTest {
 		helper.assertTrue(stores0 > 0, "setup: none of Create's work blocks has item storage");
 		helper.assertTrue(listed.isEmpty(), "Create's work blocks listed as supply chests: " + listed);
 		helper.assertTrue(found.contains(helper.absolutePos(vault)), "an item vault isn't listed as a supply chest");
+		MachineWorkCompatTests.clearMachines(helper);
 		helper.succeed();
+	}
+
+	/**
+	 * A Create item vault built of several blocks is one store: every block of it hands out the same inventory, so it's
+	 * listed once and its items counted once (as a double chest is), not once per block.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"create_vault_once"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "create_vault_once")
+	public void aBigVaultIsCountedOnce(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		for (int x = 4; x <= 6; x++) {
+			helper.setBlock(new BlockPos(x, 2, 0), with(create("item_vault").defaultBlockState(), "axis", "x"));
+		}
+		helper.runAfterDelay(20, () -> {
+			var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+			BlockPos first = helper.absolutePos(new BlockPos(4, 2, 0));
+			helper.assertTrue(stores.insert(level, List.of(first), new ItemStack(Items.DIAMOND, 10)).isEmpty(), "setup: the vault takes no diamonds");
+			List<BlockPos> found = SupplyContainers.find(level, helper.absolutePos(new BlockPos(3, 2, 3)), null);
+			long vaults = found.stream().filter(p -> level.getBlockState(p).is(create("item_vault"))).count();
+			long counted = SupplyContainers.count(level, found, Items.DIAMOND);
+			helper.assertTrue(counted == 10, "10 diamonds in a three-block vault counted as " + counted + " (" + vaults + " vault blocks listed)");
+			MachineWorkCompatTests.clearMachines(helper); // the vault, without spilling its diamonds for later tests
+			helper.succeed();
+		});
 	}
 }

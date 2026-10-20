@@ -23,6 +23,14 @@ public interface ItemStores {
 	/** The same, for a block and block entity the caller already has. */
 	boolean isStore(Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity);
 
+	/**
+	 * What stands for the inventory the block at {@code pos} hands out: two blocks with the same one are one store (every
+	 * block of a Create item vault hands out its controller's). Its own position when it has none.
+	 */
+	default Object identity(Level level, BlockPos pos) {
+		return pos.immutable();
+	}
+
 	/** Empty slots across the stores. */
 	int freeSlots(Level level, List<BlockPos> stores);
 

@@ -30,6 +30,8 @@ asks for the steps, `latest.log` and any crash report).
 - Create: workers no longer use Create's work blocks as supply chests: a train station's schedule slot, a saw, an
   ejector, a brass tunnel, a portable storage interface, a packager, a frogport or postbox, a stock ticker or a
   creative crate (a farmer filled them with wheat, and a builder could take endlessly from a creative crate).
+- Create: an item vault built of several blocks counts as one store: its items were counted once per block (a
+  three-block vault with 10 diamonds showed 30), so workers and builders thought the store held more than it did.
 
 ## 0.146.0 — 2026-10-19
 

@@ -792,4 +792,33 @@ public class MachineWorkCompatTests implements FabricGameTest {
 			clearMachines(helper);
 		});
 	}
+
+	/**
+	 * B244: a farmer saved mid-trip with 12 wheat for the millstone (the work day over) who takes another job, an
+	 * armorer's at a blast furnace, keeps no millstone trip: the 12 wheat go back into the village's store, none kept in
+	 * the record, though the new job has machine work of its own (the press).
+	 */
+	//$ gametest_ticks_batch AREA '300' '"machine_trip_new_job"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "machine_trip_new_job")
+	public void aWorkerWhoTakesAnotherJobMidTripPutsTheLoadBack(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		villageWorkshop(helper);
+		Container chest = chest(helper);
+		BlockPos mill = rig(helper, Kind.MILL, false);
+		Villager villager = worker(helper, Kind.MILL);
+		ModAttachments.MACHINE_JOB.set(villager, new MachineJob(helper.absolutePos(mill), file(Kind.MILL).id(), MachineJob.Stage.FEED,
+			List.of(new ItemStack(Items.WHEAT, 12))));
+		helper.setDayTime(13000);
+		BlockPos furnace = new BlockPos(2, 2, 6);
+		helper.setBlock(furnace, Blocks.BLAST_FURNACE);
+		Stations.assign(helper.getLevel(), villager, helper.absolutePos(furnace), VillagerProfession.ARMORER);
+		helper.assertTrue(villager.getVillagerData().getProfession() == VillagerProfession.ARMORER, "setup: the farmer didn't become an armorer");
+		helper.succeedWhen(() -> {
+			helper.assertTrue(!MachineWork.busy(villager), "the armorer still holds the farmer's millstone trip: " + ModAttachments.MACHINE_JOB.get(villager));
+			helper.assertTrue(count(chest, Items.WHEAT) == 12, "the store got " + count(chest, Items.WHEAT) + " of the 12 wheat carried");
+			helper.assertTrue(wheatAround(helper, chest) == 12, "the wheat came to " + wheatAround(helper, chest) + ", not 12");
+			clearMachines(helper);
+		});
+	}
 }

@@ -5224,6 +5224,23 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-e-1020-1614): third mutation pass on M39 (Create) code, seed 48, only the lines B243 (dfc2b578,
+  VillageMachines and its callers in MachineWork and MechanicWork) and B244 (6f14cfa5, MachineWork.tickTrip, goesOn,
+  endTrip) changed, which no pass had covered. Run against the ten Create compat classes alone (trimmed compat
+  fabric.mod.json, `--no-daemon`, about 3 min a run); the first batch also ran the four plain M39 classes, dropped after
+  since no plain test reaches these lines. 15 mutants, 1 didn't compile, 14 ran: 9 killed, 5 survived (lines as at
+  f4876075). Two real gaps, now killed: MechanicWork:343 (`!VillageMachines.village` negation dropped: a machine that
+  stops being the village's halfway round stayed on it) by MechanicCompatTests.aMachineNoLongerTheVillagesLeavesTheRound,
+  and :343 (`current == null` to `!=`: the round found again on every call) by .aRoundHalfwayKeepsItsMachines (the round
+  is kept until it comes back to its start, as round()'s javadoc says). One more gap found by reading, proved with a
+  hand-planted mutant (MachineWork:137, `file == null` to `!=`, so a trip went on for any file): nothing tested a worker
+  who takes another job with machine work of its own mid-trip; MachineWorkCompatTests
+  .aWorkerWhoTakesAnotherJobMidTripPutsTheLoadBack (a farmer carrying 12 wheat becomes an armorer) kills it. Three
+  equivalent: MachineWork:143 (endTrip's walker.reset: stop() resets the walker whenever the behaviour ends, and reach()
+  picks a new stand spot for a new target), VillageMachines:39 `< KEEP` to `<=` and `now >= readAt` to `>` (the outline
+  cache kept one tick longer or read again on the same tick; changes() still drops it when a building is added or
+  forgotten). Two VillageMachines mutants weren't run (time box). No mod bug found. Gradle's first run in a fresh
+  container got HTTP 429 from Maven Central for about 20 minutes; a retry loop (25 s apart) got it through.
 - 2026-10-20 (lane-c-1020-1553): sixth M37 mutation pass, seed 48, StorageNetworks (13 of its 105 mutants; :358 had
   been run before) against the three storage compat classes (SophisticatedStorage, SophisticatedController, TomsStorage;
   trimmed compat fabric.mod.json, `--no-daemon`, ~2.5 min a run). 4 killed (:96 drop `!`, :290 `!=` to `==`, :358 and

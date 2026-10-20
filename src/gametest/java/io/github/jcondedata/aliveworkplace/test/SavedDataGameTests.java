@@ -139,6 +139,14 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("MACHINE_JOB", new io.github.jcondedata.aliveworkplace.mechanic.MachineJob(new net.minecraft.core.BlockPos(5, 70, -3),
 			io.github.jcondedata.aliveworkplace.AliveWorkplace.id("millstone"), io.github.jcondedata.aliveworkplace.mechanic.MachineJob.Stage.FEED,
 			java.util.List.of(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.WHEAT, 16)))); // (39.3)
+		samples.put("CRAFTER_JOB", new io.github.jcondedata.aliveworkplace.craft.CrafterJob(new BlockPos(6, 64, -4),
+			Optional.of(new BoundingBox(0, 63, -10, 12, 70, 2)), net.minecraft.world.item.Items.OAK_FENCE, 6,
+			List.of(new io.github.jcondedata.aliveworkplace.craft.Crafting.Step(Map.of(net.minecraft.world.item.Items.OAK_LOG, 1),
+					new ItemStack(net.minecraft.world.item.Items.OAK_PLANKS, 4), 2),
+				new io.github.jcondedata.aliveworkplace.craft.Crafting.Step(Map.of(net.minecraft.world.item.Items.OAK_PLANKS, 2),
+					new ItemStack(net.minecraft.world.item.Items.STICK, 4), 1)),
+			Map.of(net.minecraft.world.item.Items.OAK_LOG, 2), List.of(new BlockPos(8, 64, -2)), "carpenter:oak_fence",
+			io.github.jcondedata.aliveworkplace.craft.CrafterJob.Phase.CRAFTING, 1)); // (37.14)
 		return samples;
 	}
 

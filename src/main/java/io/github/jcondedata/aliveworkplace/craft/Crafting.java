@@ -76,6 +76,16 @@ public final class Crafting {
 
 	/** One recipe made {@code times} times: what goes in (per craft) and what comes out (per craft). */
 	public record Step(Map<Item, Integer> in, ItemStack out, int times) {
+		/** Equal when the same recipe makes the same stack as often (an {@link ItemStack} has no equals of its own). */
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof Step other && times == other.times && in.equals(other.in) && ItemStack.matches(out, other.out);
+		}
+
+		@Override
+		public int hashCode() {
+			return java.util.Objects.hash(in, out.getItem(), out.getCount(), times);
+		}
 	}
 
 	/**

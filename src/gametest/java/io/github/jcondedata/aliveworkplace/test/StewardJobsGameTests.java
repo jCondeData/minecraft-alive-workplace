@@ -344,7 +344,9 @@ public class StewardJobsGameTests implements FabricGameTest {
 	/**
 	 * B132 (the steward_jobs scene): a guard the Steward appoints (Run the village, three jobless, a free composter, grindstone
 	 * and fletching table) starts his shift and is still walking the ground round his new post a long while later, like a
-	 * guard who took a Guard Post himself. The clock stands still at the scene's hour, inside his morning watch.
+	 * guard who took a Guard Post himself. The clock stands still at the scene's hour, inside his morning watch. His
+	 * grindstone stands by the hall in the middle of the ground, so his whole round (up to 14 blocks out) stays on the
+	 * test's own chunks: in a full suite a point beyond them is a chunk where mobs don't move, and he froze there (B132).
 	 */
 	//$ gametest_ticks_batch AREA '900' '"jobsGuardPatrols"'
 	@GameTest(template = AREA, timeoutTicks = 900, batch = "jobsGuardPatrols")
@@ -362,7 +364,7 @@ public class StewardJobsGameTests implements FabricGameTest {
 			level.getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_DAYLIGHT).set(false, level.getServer());
 			helper.setDayTime(2500); // the scene's hour: the guard's morning watch (work from dawn till 3000)
 			helper.setBlock(new BlockPos(8, 2, 24), Blocks.COMPOSTER);
-			helper.setBlock(new BlockPos(23, 2, 25), Blocks.GRINDSTONE);
+			helper.setBlock(new BlockPos(15, 2, 14), Blocks.GRINDSTONE); // his post: the round stays on the 30x30 ground
 			helper.setBlock(new BlockPos(16, 2, 27), Blocks.FLETCHING_TABLE);
 			for (int i = 0; i < 3; i++) {
 				jobless.add(jobless(helper, new BlockPos(13 + 2 * i, 2, 18 + i)));
@@ -392,7 +394,8 @@ public class StewardJobsGameTests implements FabricGameTest {
 			} else {
 				helper.fail("the guard isn't patrolling at tick 700: " + (status == null ? "no status" : status.line().getString())
 					+ ", activity " + guard.getBrain().getActiveNonCoreActivity() + ", schedule " + BuiltInRegistries.SCHEDULE.getKey(guard.getBrain().getSchedule())
-					+ ", day time " + level.getDayTime() + ", at " + helper.relativePos(guard.blockPosition()) + ", job site "
+					+ ", day time " + level.getDayTime() + ", at " + helper.relativePos(guard.blockPosition())
+					+ (level.isPositionEntityTicking(guard.blockPosition()) ? "" : " (where mobs don't move)") + ", job site "
 					+ guard.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> helper.relativePos(g.pos())));
 			}
 		});

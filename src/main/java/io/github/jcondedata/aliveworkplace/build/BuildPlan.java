@@ -228,6 +228,9 @@ public final class BuildPlan {
 	 * {@value #LANDSCAPE_CUT_HEIGHT} blocks up (top down; trees, flowers, farmland and anything built are
 	 * left alone), then holes at floor level
 	 * are filled with dirt, up to {@value #LANDSCAPE_FILL_DEPTH} deep (bottom up; water is left alone).
+	 * B280: a hole is ground lower than the ground beyond the levelled ring ({@link #gradeBeyond}); the fill never goes
+	 * above that. A build standing higher than the land round it (on a bump, or clicked onto a flower) had the whole
+	 * ring filled up to its floor: a raised band of dirt on the grass, with holes where flowers stood.
 	 */
 	private static List<Step> landscape(Level level, BoundingBox bounds, int margin) {
 		List<Step> cut = new ArrayList<>();
@@ -246,12 +249,15 @@ public final class BuildPlan {
 						cut.add(new Step(p, air, null, null, null));
 					}
 				}
+				int grade = gradeBeyond(level, bounds, margin, x, z, ground);
 				for (int d = 0; d < LANDSCAPE_FILL_DEPTH; d++) {
 					BlockPos p = new BlockPos(x, ground - d, z);
 					if (p.getY() < level.getMinBuildHeight() || !level.isLoaded(p) || isGround(level, p) || !level.getFluidState(p).isEmpty()) {
 						break;
 					}
-					fill.add(new Step(p, dirt, null, null, null));
+					if (p.getY() <= grade) {
+						fill.add(new Step(p, dirt, null, null, null));
+					}
 				}
 			}
 		}
@@ -260,6 +266,39 @@ public final class BuildPlan {
 		List<Step> out = new ArrayList<>(cut);
 		out.addAll(fill);
 		return out;
+	}
+
+	/**
+	 * B280: the height of the land round the build, seen from the levelled column at {@code x, z}: the ground just beyond
+	 * the ring, straight out from the build (the middle of the 3 x 3 columns there, so one hole or post out there doesn't
+	 * count), no higher than the build's {@code ground}. Water counts as ground at its surface.
+	 */
+	private static int gradeBeyond(Level level, BoundingBox bounds, int margin, int x, int z, int ground) {
+		int px = x < bounds.minX() ? bounds.minX() - margin - 1 : x > bounds.maxX() ? bounds.maxX() + margin + 1 : x;
+		int pz = z < bounds.minZ() ? bounds.minZ() - margin - 1 : z > bounds.maxZ() ? bounds.maxZ() + margin + 1 : z;
+		int[] heights = new int[9];
+		int n = 0;
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dz = -1; dz <= 1; dz++) {
+				heights[n++] = surface(level, px + dx, pz + dz, ground);
+			}
+		}
+		java.util.Arrays.sort(heights);
+		return heights[4];
+	}
+
+	/** The top of the ground at {@code x, z}, looking down from {@code ground} as deep as levelling fills (lower: below that). */
+	private static int surface(Level level, int x, int z, int ground) {
+		for (int y = ground; y >= ground - LANDSCAPE_FILL_DEPTH; y--) {
+			BlockPos p = new BlockPos(x, y, z);
+			if (y < level.getMinBuildHeight() || !level.isLoaded(p)) {
+				return ground; // nothing to go by: as before, level with the floor
+			}
+			if (isGround(level, p) && !level.getBlockState(p).getCollisionShape(level, p).isEmpty() || !level.getFluidState(p).isEmpty()) {
+				return y; // a flower or a sapling isn't the ground it grows on
+			}
+		}
+		return ground - LANDSCAPE_FILL_DEPTH - 1;
 	}
 
 	/**

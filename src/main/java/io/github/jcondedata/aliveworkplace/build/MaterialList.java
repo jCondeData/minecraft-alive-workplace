@@ -36,14 +36,28 @@ public final class MaterialList {
 
 	/** The pages for {@code list}: a heading page, then the lines, still-to-bring first. */
 	public static List<Component> pages(Component name, BlueprintSupplies.Checklist list) {
+		return pages(name, list, null);
+	}
+
+	/**
+	 * B279: with an {@code intro}, the list of a build under way (what it says goes under the heading), always counted
+	 * against what the builder can get at, so it never asks for the blueprint to be placed.
+	 */
+	public static List<Component> pages(Component name, BlueprintSupplies.Checklist list, @org.jetbrains.annotations.Nullable Component intro) {
 		List<Component> pages = new ArrayList<>();
 		MutableComponent first = Component.empty()
 			.append(Component.translatable("book.aliveworkplace.material_list.heading", name).withStyle(ChatFormatting.BOLD))
 			.append("\n\n");
-		if (list.bench().isPresent()) {
-			BlockPos b = list.bench().get();
-			first.append(Component.translatable("book.aliveworkplace.material_list.from_chests", b.getX(), b.getY(), b.getZ()));
+		if (intro != null) {
+			first.append(intro);
 			first.append("\n\n");
+		}
+		if (list.bench().isPresent() || intro != null) {
+			if (list.bench().isPresent()) {
+				BlockPos b = list.bench().get();
+				first.append(Component.translatable("book.aliveworkplace.material_list.from_chests", b.getX(), b.getY(), b.getZ()));
+				first.append("\n\n");
+			}
 			first.append(list.toBring() == 0
 				? Component.translatable("book.aliveworkplace.material_list.all_there").withStyle(ChatFormatting.DARK_GREEN)
 				: Component.translatable("book.aliveworkplace.material_list.to_bring", list.toBring(),
@@ -88,9 +102,13 @@ public final class MaterialList {
 	}
 
 	private static ItemStack book(Component name, BlueprintSupplies.Checklist list, String author) {
+		return book(name, list, null, author);
+	}
+
+	static ItemStack book(Component name, BlueprintSupplies.Checklist list, @org.jetbrains.annotations.Nullable Component intro, String author) {
 		ItemStack book = new ItemStack(Items.WRITTEN_BOOK);
 		String title = Component.translatable("book.aliveworkplace.material_list.title", name).getString();
-		List<Filterable<Component>> pages = pages(name, list).stream().map(Filterable::passThrough).toList();
+		List<Filterable<Component>> pages = pages(name, list, intro).stream().map(Filterable::passThrough).toList();
 		book.set(DataComponents.WRITTEN_BOOK_CONTENT, new WrittenBookContent(
 			Filterable.passThrough(title.length() > TITLE_MAX ? title.substring(0, TITLE_MAX) : title), author, 0, pages, true));
 		return book;

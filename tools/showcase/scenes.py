@@ -299,6 +299,16 @@ SCENES = [
       "the capped builder's status line says \"at the cap\", and ill they're held back", 40,
       [("01_pace_capped", "Three partners, a kept village, research, a happy mood: 100% faster, at the cap"),
        ("02_pace_ill", "The same builder ill: held back to the usual pace")], cobblemon=True),
+    # B279: the material list of a build under way, from the builder himself: a Book and Quill, or the whole list in chat
+    S("builder_list", "Builder", "What the build still needs, from the builder",
+      "a Book and Quill used on the builder became the rest of his build's list with the chest's share checked off, and a sneak-click with an empty hand put the whole list in chat", 40,
+      [("00_half_built", "Halfway up, a Book and Quill in hand"), ("01_list_book", "The list: how far along, what's counted"),
+       ("02_list_page", "What's still to bring, checked off"), ("03_chat_list", "Sneak-click: the whole list in chat")]),
+    # B280: the Terrace a block above the lawn round it, landscaped: the pit filled, no raised band of dirt on the grass
+    S("terrace_grade", "Builder", "Levelling leaves the lawn level round a raised build",
+      "round the finished Terrace the lawn stayed level: the pit was filled, nothing was raised above the grass and no sand or gravel was left", 120,
+      [("01_before", "Before: a bump a block above the lawn, a pit beside it"), ("02_front", "Landscaped: the lawn as it was, the pit filled"),
+       ("03_corner", "The corner: no band of dirt on the grass")]),
     S("partners_land", "Builder", "Pokémon partners at work: building and the land",
       "the Machamp carried the beams and the Wartortle watered the farmer's patch", 60,
       [("01_partners_carry", "Beams on its shoulder"), ("02_partners_at_work", "At work"), ("03_watered_field", "The patch watered")],

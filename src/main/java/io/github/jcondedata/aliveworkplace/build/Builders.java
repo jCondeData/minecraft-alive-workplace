@@ -364,6 +364,9 @@ public final class Builders {
 			return;
 		}
 		Chat.system(player, statusText(level, site, villager));
+		if (!site.isQueued() && !site.isDeconstruction()) {
+			Chat.system(player, SiteList.chat(level, site, villager)); // B279: the whole list, not just the first few
+		}
 	}
 
 	public static Component statusText(ServerLevel level, BuildSite site, @Nullable Villager villager) {

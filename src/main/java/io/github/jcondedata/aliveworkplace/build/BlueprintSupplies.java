@@ -105,7 +105,7 @@ public final class BlueprintSupplies {
 	}
 
 	/** How many of {@code key}'s family the chests hold (37.13: of a furniture piece, any mod's equivalent piece). */
-	private static long have(ServerLevel level, List<BlockPos> supplies, Item key) {
+	static long have(ServerLevel level, List<BlockPos> supplies, Item key) {
 		long have = 0;
 		for (Item piece : io.github.jcondedata.aliveworkplace.furnish.FurnitureEquivalents.options(key)) {
 			for (Item member : MaterialFamilies.accepted(piece)) {
@@ -170,10 +170,14 @@ public final class BlueprintSupplies {
 			}
 			need.forEach((item, n) -> lines.add(new Line(item, n, n)));
 		}
-		// Still to bring first, biggest first; then what's all there, biggest first.
+		sort(lines);
+		return Optional.of(new Checklist(bench, List.copyOf(lines)));
+	}
+
+	/** Still to bring first, biggest first; then what's all there, biggest first. */
+	static void sort(List<Line> lines) {
 		lines.sort(java.util.Comparator.comparing((Line l) -> l.toBring() == 0).thenComparing(Line::need, java.util.Comparator.reverseOrder())
 			.thenComparing(l -> net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(l.item())));
-		return Optional.of(new Checklist(bench, List.copyOf(lines)));
 	}
 
 	private BlueprintSupplies() {

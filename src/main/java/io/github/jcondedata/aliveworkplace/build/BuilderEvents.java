@@ -13,7 +13,8 @@ import net.minecraft.world.item.ItemStack;
 /** Player ↔ builder interactions and lifecycle hooks. */
 public final class BuilderEvents {
 	public static void init() {
-		// Right-click a builder with a blueprint: hand it over. Sneak-right-click with an empty hand: status.
+		// Right-click a builder with a blueprint: hand it over; with a Book and Quill: the material list (B279).
+		// Sneak-right-click with an empty hand: status and the whole list.
 		Platform.get().onUseEntity((player, level, hand, entity, hit) -> {
 			if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !(entity instanceof Villager villager)) {
 				return InteractionResult.PASS;
@@ -403,6 +404,12 @@ public final class BuilderEvents {
 			if (held.is(ModItems.WONDER_PLAN)) { // a placed Wonder Plan: the Foundation Stone goes down, stage I begins (35.4)
 				return level.isClientSide() ? InteractionResult.SUCCESS
 					: io.github.jcondedata.aliveworkplace.wonder.WonderStages.handOver((ServerPlayer) player, villager, held);
+			}
+			if (held.is(net.minecraft.world.item.Items.WRITABLE_BOOK)) { // B279: the material list of the build under way
+				if (!level.isClientSide()) {
+					SiteList.write((ServerLevel) level, player, Builders.activeSite((ServerLevel) level, villager), villager, hand);
+				}
+				return InteractionResult.SUCCESS;
 			}
 			if (held.is(ModItems.BLUEPRINT)) {
 				if (level.isClientSide()) {

@@ -49,6 +49,14 @@ asks for the steps, `latest.log` and any crash report).
   home kept spruce stand-ins because its table stands against the party wall. Tables against a wall in the village
   kitchens, the Crafter's Workshop, the School and the Winery are swapped too. Every furnished room now has its own
   light: a lantern in each Terrace kitchen and in the Townhouse's sitting room and loft (B281).
+- **No more raised band of dirt round a finished build** (B280). A build standing a block above the ground round it
+  (on a bump, or with its blueprint clicked onto a flower) had the strip round it filled up to its floor: a jagged
+  band of dirt on the grass, with holes where flowers stood. Leveling now only fills holes up to the land round the
+  build, and a blueprint clicked onto a flower or tall grass stands on the ground under it.
+- You can now see everything a build still needs after you hand the blueprint over. Right-click the Builder (or their
+  Builder's Bench) with a Book and Quill to get the list for the rest of the build, with what the chests, the
+  Builder's bag and the village storehouse already hold ticked off. Sneak-right-click the Builder with an empty hand
+  to see the whole list in chat. Before, the only list was the 3-4 lines over the Builder's head (B279).
 - A guest Legend who settles in a village has their powers at once: a Seer made the village's at dawn foretold at
   that dawn, where before their powers could wait up to ten seconds and the dawn's foretelling was missed (B269).
 - Builders take from the chests only what their work still needs. Each trip took one block too many, so two Builders

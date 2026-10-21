@@ -376,6 +376,13 @@ def run(tmp):
           re.search(r"B2 .*package: NO PACKAGE", r.stdout) is not None
           and re.search(r"not yet sent .*22\.1", r.stdout) is not None, r.stdout)
 
+    # A bug's lane tag counts in square brackets too (B272 was filed "[lane: c]" and next missed it).
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import sessions as sessions_mod
+    tagged = sessions_mod.parse("## Bugs\n- [ ] **B9** [lane: c] showcase selftest red\n- [ ] **B10** (lane: d) x\n")
+    check("a bug tagged [lane: c] or (lane: d) goes back to that lane",
+          [sessions_mod.mark(i, "lane") for i in tagged] == ["lane: c", "lane: d"], tagged)
+
     # Nothing left behind: no stray worktrees.
     check("no stray worktrees", len(sh("git worktree list", C).stdout.strip().splitlines()) == 1)
 

@@ -363,6 +363,34 @@ final class JobScenes {
 	/** The printer scene's chest, for the Gazette the player takes out and reads (34.11). */
 	private static volatile Container printerChest;
 	private static volatile Villager subject;
+	/**
+	 * personal_request (B287): the villager whose ask is watched, and how far from the player they were when they asked
+	 * (-1 before). Once asked they are free to walk on, so a distance measured later says nothing about the walk-up.
+	 */
+	private static volatile Villager askWatch;
+	private static volatile double askedFrom = -1;
+	private static boolean askHooked;
+
+	/** Watches {@code villager}'s personal request: the tick they ask, their distance is kept and they stay put beside the player. */
+	private static synchronized void watchAsk(Villager villager) {
+		askedFrom = -1;
+		askWatch = villager;
+		if (!askHooked) {
+			askHooked = true;
+			net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+				Villager v = askWatch;
+				if (v == null || server.getPlayerList().getPlayers().isEmpty()) {
+					return;
+				}
+				var offer = io.github.jcondedata.aliveworkplace.story.PersonalRequests.offer(v);
+				if (offer != null && offer.asked) {
+					askedFrom = Math.sqrt(v.distanceToSqr(server.getPlayerList().getPlayers().get(0)));
+					v.setNoAi(true);
+					askWatch = null;
+				}
+			});
+		}
+	}
 	/** The cuisine_kitchen scene's hall (38.8a), for the board's Dishes tab shown after. */
 	private static volatile BlockPos cuisineHall;
 	/** classes (34.6): the couple first, then three Peasants. */
@@ -6239,6 +6267,7 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
 					Villager dara = subject;
 					dara.setNoAi(false);
+					watchAsk(dara);
 					// Three hearts, her two-heart story already told (so she comes over to ask, not to tell it).
 					io.github.jcondedata.aliveworkplace.story.Friendship.told(dara, player, "aliveworkplace:before_hall");
 					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, player, 300);
@@ -6255,9 +6284,12 @@ final class JobScenes {
 				new Step("02_accept", -1, 0, (level, player) -> {
 					Villager dara = subject;
 					var offer = io.github.jcondedata.aliveworkplace.story.PersonalRequests.offer(dara);
-					double off = Math.sqrt(dara.distanceToSqr(player));
-					Showcase.check(offer != null && offer.asked && off <= io.github.jcondedata.aliveworkplace.story.PersonalRequests.TALK_RANGE + 0.5,
-						"Dara walked up to the player and asked: " + (offer == null ? "no offer" : offer.asked ? "asked" : "not asked yet") + ", " + String.format("%.1f", off) + " blocks off");
+					// Her distance the tick she asked (B287): measured here, 90 ticks on, she had walked off again (5.5 blocks).
+					double off = askedFrom;
+					double now = Math.sqrt(dara.distanceToSqr(player));
+					Showcase.check(offer != null && offer.asked && off >= 0 && off <= io.github.jcondedata.aliveworkplace.story.PersonalRequests.TALK_RANGE + 0.5,
+						"Dara walked up to the player and asked: " + (offer == null ? "no offer" : offer.asked ? "asked" : "not asked yet") + ", "
+							+ (off < 0 ? "no ask seen" : String.format("%.1f", off) + " blocks off when she asked") + " (" + String.format("%.1f", now) + " now)");
 					if (offer != null) {
 						// [I'll help], as the click in the chat runs it.
 						level.getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "workplace quest accept " + offer.quest.id);

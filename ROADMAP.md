@@ -5285,6 +5285,7 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-21 (lane-c-1021-0052, for the owner): Milestone 37 had no open item, so lane C wrote and built two from 37.14's open ends: 37.15 (the Crafter makes the pack's furniture: Handcrafted chairs from logs for a builder; CobbleFurnies' Furni Crafter is the only pack bench with its own recipes, used only while it stands in the workshop; scene `crafter_furniture`) and 37.16 (Crafter's Workshops grow in villages of all five styles, the Steward plans one when builders are short of 3+ crafted parts, the blueprint hides with `crafters` off; scene `crafter_workshop`), then an eighth mutation pass (5 new tests). Risk noted: a Furni Crafter in the Crafter's workshop is also the Furnicrafter's job block, so a jobless villager may take it. Question for the owner: Milestones 37-39 are empty again; which big update next for lanes C, D and E (or pause their scheduled tasks)?
 - 2026-10-21 (lane-c-1021-0052): eighth M37 mutation pass, seed 49, the Crafter's code no pass had covered: CrafterShift
   (the Crafter's work), CrafterBenches, Crafting's 37.14 lines (124-245) and 37.16's `builders_short_of_parts`
   (StewardConditions 698-760), against CrafterGameTests, CrafterWorkshopGameTests, FurnicrafterGameTests and

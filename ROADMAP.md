@@ -4978,6 +4978,24 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   lacks, no partial waste), a builder's shortfall filled and the build finishing, two askers at once, save and reload
   mid-chain, its config switch off; text in `en_us.json`; wiki and guide pages; scene `crafter_chain`.
 
+- [ ] **37.15** **The Crafter makes the pack's furniture** (lane-c-1021-0052, from 37.14's open ends: its chain test ends in a
+  barrel because vanilla has no chair, and `crafter_benches` ships no bench). With Handcrafted (and the pack's other furniture
+  mods) installed, the Crafter fills a builder's shortfall of a modded chair through the whole chain: log to planks to
+  slabs (or whatever the mod's recipe asks) to the chair, by recipe type and ids only. Read each pack furniture mod's jar
+  (Handcrafted 4.0.3, CobbleFurnies, Beautify, Cozy Home from the pack test's mods) for a bench block with its own recipe
+  type; ship a `crafter_benches` file for each one found (none for a mod that crafts on the crafting table: say which in the
+  Notes). Done when: compat GameTests: a Handcrafted chair crafted from logs for a builder's shortfall and the build
+  finishing with it; a bench recipe used only while its bench stands in the workshop (if any pack mod has a bench); the
+  bench file ignored when its mod isn't installed; wiki and guide lines; scene `crafter_furniture` (with `-Pfurniture`).
+
+- [ ] **37.16** **Crafter's workshops in villages** (lane-c-1021-0052, from 37.14's open ends). The Crafter's Workshop
+  blueprint is offered where the other job workshops are (the same unlock or shop path they use), the Steward plans one
+  when the village's builders keep running short of crafted parts (a `steward_rules` entry, as the other jobs' rules), and
+  the Crafter's job block and workshop appear in village generation the way the other new jobs' do, all behind the
+  Crafter's switch and `Expansions.M37`. Done when: GameTests for the blueprint being offered (and not with the switch
+  off), the Steward's rule firing on repeated shortfalls and not otherwise, a generated village with the workshop when on;
+  text in `en_us.json`; wiki and guide lines; scene `crafter_workshop`.
+
 ## Milestone 38: Cobblemon depth (2.2)
 
 Three of the pack's Pokémon mods come into village life. **Raid Dens** (Cobblemon Raid Dens): the village knows the

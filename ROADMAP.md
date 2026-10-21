@@ -5334,6 +5334,10 @@ the owner's port jar; M33's caravans (39.7).
   reader in compat/cobblefurnies), looked up by recipe id (`mc/Recipes.byId`); and a `crafter_benches` file whose recipe
   type isn't registered is dropped at load. A Furni Crafter in the Crafter's workshop is also the Furnicrafter's job
   block; left as is (a jobless villager may take it). Scene `crafter_furniture` not filmed here (GitHub films it).
+- 2026-10-21 (lane-b-1021-0338, **owner question still open: Milestone 36 is empty**): this run fixed B268 only (the
+  village_mourns scene killed Mira the tick its hall was placed, before the hall registered, so nobody mourned; staging
+  fix, the feature was right; scene passes locally). Full build green (2498 + 471 tests). The quick lane has nothing
+  else to take until you add quick additions.
 - 2026-10-21 (lane-b-1021-0038, **owner question: Milestone 36 is empty again**): 36.16 and 36.17 landed last run
   (pending your review); `sessions.py next` gives the quick lane nothing. Which quick additions next? Until you add
   some, quick-lane runs end without work. Nothing left on wip/lane-b-* for M36 (wip/lane-b holds old bug fixes for lane a).

@@ -256,6 +256,50 @@ public class JobChainGameTests {
 	}
 
 	/**
+	 * A dyer's concrete mixed from sand, gravel and dye is made step by step like any chain (the powder mixed, then
+	 * hardened at the cauldron): saved and loaded just as it starts, it carries on, the build gets its three white
+	 * concrete and the five spare powder (a mix makes eight) come back to the chest instead of being lost in the reload.
+	 */
+	//$ gametest_ticks_batch AREA '3600' '"jobChainDyer"'
+	@GameTest(template = AREA, timeoutTicks = 3600, batch = "jobChainDyer")
+	public void theDyersConcreteIsMixedThenHardenedAndSurvivesAReload(GameTestHelper helper) {
+		prepare(helper);
+		Asker a = asker(helper, BENCH, CHEST, new BlockPos(6, 2, 9), Blocks.WHITE_CONCRETE, new ItemStack(Items.SAND, 4), new ItemStack(Items.GRAVEL, 4),
+			new ItemStack(Items.WHITE_DYE, 1));
+		helper.setBlock(STATION, Blocks.CAULDRON);
+		Villager first = helper.spawn(EntityType.VILLAGER, STATION.south());
+		Jobs.employ(helper.getLevel(), first, helper.absolutePos(STATION), PoiTypes.LEATHERWORKER, VillagerProfession.LEATHERWORKER);
+		AtomicReference<Villager> dyer = new AtomicReference<>(first);
+		AtomicReference<CrafterJob> saved = new AtomicReference<>();
+		java.util.concurrent.atomic.AtomicInteger steps = new java.util.concurrent.atomic.AtomicInteger();
+		helper.onEachTick(() -> {
+			CrafterJob job = ModAttachments.CRAFTER_JOB.get(dyer.get());
+			if (job == null || job.phase() != CrafterJob.Phase.CRAFTING) {
+				return;
+			}
+			steps.accumulateAndGet(job.step(), Math::max);
+			if (saved.get() == null) {
+				saved.set(job);
+				Villager copy = reload(helper.getLevel(), dyer.get());
+				helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(copy).count(Items.SAND) == 4, "the sand should be in the bag across the reload");
+				dyer.set(copy);
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(saved.get() != null, "the dyer never started making the concrete");
+			assertBuilt(helper, a);
+			Container chest = helper.getBlockEntity(a.chest());
+			helper.assertTrue(chest.countItem(Items.SAND) == 0 && chest.countItem(Items.GRAVEL) == 0 && chest.countItem(Items.WHITE_DYE) == 0,
+				"the makings should be used up: " + chest.countItem(Items.SAND) + " sand, " + chest.countItem(Items.GRAVEL) + " gravel, "
+					+ chest.countItem(Items.WHITE_DYE) + " dye left");
+			helper.assertTrue(chest.countItem(Items.WHITE_CONCRETE_POWDER) == 5, "the five spare powder should be in the chest, not "
+				+ chest.countItem(Items.WHITE_CONCRETE_POWDER));
+			helper.assertTrue(ModAttachments.CRAFTER_JOB.get(dyer.get()) == null, "the finished job is still saved on the dyer");
+			helper.assertTrue(steps.get() >= 1, "the concrete wasn't made step by step (the powder, then the hardening)");
+		});
+	}
+
+	/**
 	 * An old save with a Crafter at its workbench, a chain in hand and planks in its bag loads clean: the Crafter is jobless
 	 * the moment it ticks, the planks are dropped at its feet, the job is let go, the workbench is free and nobody takes it;
 	 * the profession and the block are still registered by their ids.

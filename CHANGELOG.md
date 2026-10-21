@@ -45,6 +45,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- The dyer mixing concrete powder from sand, gravel and dye now makes it step by step like the other chains (the powder,
+  then the hardening), so a world saved mid-job no longer loses the spare powder a mix makes.
 - **A broken bandit camp's ground comes back at the right height everywhere** (B288). Where grass had crept over the
   dirt a camp filled its floor with while it stood, that patch stayed a block too high once the camp came down; now it
   goes back to the land as it was too.

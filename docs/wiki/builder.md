@@ -28,7 +28,8 @@ stopped, chunk unloaded, Builder asleep) and carry on exactly where it was. `Bui
 restartable at any tick for this reason.
 
 **Stages, in order:** CLEAR (top-down), FOUNDATION, STRUCTURE (bottom-up), DECORATION, LANDSCAPE, DONE.
-- CLEAR takes away what is in the way, but never breaks containers or the bench.
+- CLEAR takes away what is in the way, but never breaks containers, its own bench or any other Builder's Bench (a
+  neighbour's bench inside the build's box stays, and the build finishes round it, B132).
 - FOUNDATION fills under a build standing on uneven ground. How deep is the `workplaceFoundationDepth` rule.
 - STRUCTURE goes bottom-up so every block has something to stand on.
 - DECORATION is what needs something to hang on or stand on (torches, doors, ladders, carpets...), placed after
@@ -189,7 +190,8 @@ claims and trip counts.
 - Placing must feel good: turn, mirror, ghost preview, move, cancel with materials returned (23.8, approved
   2026-10-04).
 - A builder's steps need exactly the build's material list, nothing more (B22), and it fetches from its own site's
-  bench chests and keeps its bench, never swapping to another builder's (B22, B28).
+  bench chests and keeps its bench, never swapping to another builder's (B22, B28); no build breaks a bench, and a
+  builder employed at a bench put down by a command holds it at once (B132).
 - Progress never drops after a restart (B46, B64).
 - Unfinished blocks are never claimed done: `MaterialRules.matches` ignores neighbor-dependent properties.
 - An upgrade is a whole new blueprint on the same spot. Where its new room's roof runs in under the old roof's edge,
@@ -241,7 +243,8 @@ claims and trip counts.
 
 GameTests (`src/gametest/java/.../test/`): `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
 `BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
-`BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`,
+`BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbour's bench outlasts a build;
+a bench put down and employed at in one command is held),
 `TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `TablePreviewGameTests` (7, the table's
 3D preview data; 36.1: Starter Cottage IV's preview has cells below the ground and its fitted height counts them, and
 at scale 2 no cellar block shares a cell with a ground-floor block), `DoorwayHeadroomGameTests` (7, B173: a villager

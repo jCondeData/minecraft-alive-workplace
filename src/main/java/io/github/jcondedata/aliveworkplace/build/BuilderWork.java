@@ -872,8 +872,15 @@ public class BuilderWork extends Behavior<Villager> {
 		return pois.existsAtPosition(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME, head) && pois.getFreeTickets(head) == 0;
 	}
 
+	/**
+	 * Blocks a build leaves standing: its own bench, containers and the like ({@link MaterialRules#isProtected}), and any
+	 * other Builder's Bench (B132: in the soak a build reaching a neighbour's bench pad cleared his bench, he lost his job
+	 * site, took another builder's and his build's chests dropped out of reach for good). A Blueprint Table, the other
+	 * builders' workstation, has a block entity and is kept as a container is.
+	 */
 	private static boolean isProtected(ServerLevel level, BlockPos pos, BlockState state, BlockPos bench) {
-		return pos.equals(bench) || MaterialRules.isProtected(state, state.getDestroySpeed(level, pos));
+		return pos.equals(bench) || state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH)
+			|| MaterialRules.isProtected(state, state.getDestroySpeed(level, pos));
 	}
 
 	// --- moving ------------------------------------------------------------------------------

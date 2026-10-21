@@ -150,6 +150,7 @@
 			"io.github.jcondedata.aliveworkplace.test.M38MutantGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B211GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B132GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B132BenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SelfHealingSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildReserveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MaterialListGameTests",

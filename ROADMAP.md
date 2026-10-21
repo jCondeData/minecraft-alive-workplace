@@ -372,6 +372,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B286** Showcase scene ageless_elder failed (showcase run 39638706972, main 46fd168, 2026-10-21): 'Bram took the charm' not done although its line reads right ('Bram (Gifted) takes the Evergreen Charm and will never leave us.'). Expected: the check passes when the charm is taken. Test: SCENE=ageless_elder tools/screenshots/run.sh (found by lane-a-1021-1823, 2026-10-21)
 - [ ] **B287** Showcase scene personal_request failed (showcase run 39638706972, main 46fd168, 2026-10-21): 'Dara walked up to the player and asked: asked, 5.5 blocks off' (the check wants her nearer). Expected: she walks up to the player before asking, or the check's distance matches the talk range. Test: SCENE=personal_request tools/screenshots/run.sh (found by lane-a-1021-1823, 2026-10-21)
 - [ ] **B288** Showcase scene camp_cleared failed (showcase run 39638706972, main 46fd168, 2026-10-21): 'the rise the camp levelled is back as it was, grass on top, no trampled earth (1 columns off)' (player-visible if real: B225's ground restore misses a column). Expected: every column restored. Test: SCENE=camp_cleared tools/screenshots/run.sh and B225's GameTests (found by lane-a-1021-1823, 2026-10-21)
+- [ ] **B289** Showcase scene realm_builds failed (showcase run 39638706972, main 46fd168, 2026-10-21): ran over its time limit (test-only). Expected: the scene finishes inside its limit. Test: SCENE=realm_builds tools/screenshots/run.sh (found by lane-a-1021-1823, 2026-10-21)
 
 ## Milestone 21: Finish 0.138.0
 

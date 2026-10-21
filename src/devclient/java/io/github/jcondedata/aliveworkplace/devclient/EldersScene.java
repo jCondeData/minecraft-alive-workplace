@@ -9,11 +9,14 @@ import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.people.Chatter;
 import io.github.jcondedata.aliveworkplace.people.LifeStages;
 import io.github.jcondedata.aliveworkplace.people.Moods;
+import io.github.jcondedata.aliveworkplace.people.Traits;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -35,7 +38,7 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 
 /**
- * SCENE=elders (ROADMAP 34.19): Bram, a farmer one day short of 120 grown days, and Tom, a young one, by a Village
+ * SCENE=elders (ROADMAP 34.19): Bram, a farmer one day short of 1200 grown days, and Tom, a young one, by a Village
  * Hall. A day passes: the chronicle notes "Bram is an elder now". Stills: Bram's card on the hall's list ("Elder · grown
  * 1200 days", and "a quiet old age" first in his mood: he is fed and has a bed); Bram saying "In my day this was all
  * fields."; the two walking the same way side by side, Bram behind. Its checks: each of those read from the game, and
@@ -217,12 +220,26 @@ final class EldersScene {
 		v.setVillagerData(v.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
 		v.setVillagerXp(10);
 		v.setCustomName(Component.literal(name));
+		v.setUUID(walker(name));
 		v.setNoAi(true); // they stay in the picture until the walk
 		v.moveTo(x, -60, 0.5, 0f, 0f);
 		v.setYHeadRot(0f);
 		v.setYBodyRot(0f);
 		level.addFreshEntity(v);
 		return v;
+	}
+
+	/**
+	 * A fixed UUID for {@code name} whose traits (drawn from the UUID) don't include NIMBLE: a nimble villager walks 15%
+	 * faster, so a random one made the comparison measure a trait, not age (B273: Tom asked 0.575, Bram 0.461).
+	 */
+	private static UUID walker(String name) {
+		for (int i = 0; ; i++) {
+			UUID id = UUID.nameUUIDFromBytes(("elders-scene/" + name + "/" + i).getBytes(StandardCharsets.UTF_8));
+			if (!Traits.of(id).contains(Traits.Trait.NIMBLE)) {
+				return id;
+			}
+		}
 	}
 
 	/** Finds Bram's card on the hall's list (its slot is kept for the pointer) and returns its lines. */

@@ -5353,6 +5353,7 @@ the owner's port jar; M33's caravans (39.7).
   type isn't registered is dropped at load. A Furni Crafter in the Crafter's workshop is also the Furnicrafter's job
   block; left as is (a jobless villager may take it). Scene `crafter_furniture` not filmed here (GitHub films it).
 - 2026-10-21 (lane-b-1021-0638, **owner question still open: Milestone 36 is empty**): no quick additions to take. Checked B268 on GitHub: the village_mourns scene passes in showcase run 39545755620 (8d8ec3f). That run's selftest is red (furnished_home lists 6 stills, the catalog allows 2-4): filed as B272 for lane c. Nothing left on wip/lane-b-* for M36.
+- 2026-10-21 (lane-b-1021-1238, **owner question still open: Milestone 36 is empty**): no quick additions and no `(lane: b)` bug to take. main a329763 is green (build 39594096293, showcase 39594096279). The four `wip/lane-b*` branches hold nothing new: 36.4 and 36.6a are on main, 36.9fix is superseded by B201's fix, and wip/lane-b's B128/B130/B142 are closed; they can be deleted.
 - 2026-10-21 (lane-b-1021-0338, **owner question still open: Milestone 36 is empty**): this run fixed B268 only (the
   village_mourns scene killed Mira the tick its hall was placed, before the hall registered, so nobody mourned; staging
   fix, the feature was right; scene passes locally). Full build green (2498 + 471 tests). The quick lane has nothing

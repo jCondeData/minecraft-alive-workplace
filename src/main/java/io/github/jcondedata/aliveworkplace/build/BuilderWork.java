@@ -327,6 +327,7 @@ public class BuilderWork extends Behavior<Villager> {
 			}
 		}
 		boolean standingStill = !helping && gameTime - markSince >= GIVEN_UP_WAIT;
+		boolean gaveUpOver = false;
 		BuildPlan.Step crewPick = null;
 		if (!helping && crew && !site.isDone()) {
 			crewPick = crewStep(level, villager, site, plan, bench); // the lead of a crew takes a column too
@@ -378,10 +379,12 @@ public class BuilderWork extends Behavior<Villager> {
 				site.defer(); // (lead only: helpers pick their own steps)
 			} else if (crew && site.isRetrying() && standingStill && action == Action.PLACE && overGivenUp(level, site, plan, candidate)) {
 				// B254: it waits on a block under it the lead gave up and nobody has laid since, and the crew has done
-				// nothing for a while: given up too (a hole, never a block in the air), rather than wait for good (B139)
+				// nothing for a while: given up too (a hole, never a block in the air), rather than wait for good (B139).
+				// B270: every one waiting so in this stand-still, not one each 200 ticks: the Hanging Gardens' crew stood
+				// still for minutes giving up the blocks over a terrace's holes one by one. A crewmate who can lay a hole
+				// later in the stage still does, and the block over it after (given-up blocks are taken again once clear).
 				site.defer();
-				standingStill = false; // one at a time: the crew may lay the one under it now
-				markSince = gameTime;
+				gaveUpOver = true;
 			} else if (crew && crewBlocked(level, villager, site, plan, candidate, bench)
 				|| helperWait < HELPER_WAIT && site.claimedByOther(villager.getUUID(), candidate.pos())) {
 				// A helper is on this block (23.1a): leave it to them rather than both walking over to it. If they don't
@@ -403,6 +406,9 @@ public class BuilderWork extends Behavior<Villager> {
 				}
 				break;
 			}
+		}
+		if (gaveUpOver) {
+			lastMark = site.progressMark(); // B270: giving those up isn't the crew moving on: the stand-still goes on
 		}
 		if (!helping && site.isDone()) {
 			Builders.finish(level, villager, site);

@@ -72,8 +72,8 @@ else the builder it was handed to; each next stage goes to the highest-level bui
   on, out of reach, doesn't hold the rest back; leveling the ground round it isn't layered), and no structure block
   goes up before the block the drawing puts under it, not even over one the lead gave up (someone stood in it the whole
   time): the crew lays a given-up block once nothing stands in it, and the wall goes on from there. If nobody can lay
-  it and the crew has stood still for 10 seconds, the lead gives up the block over it too, so a part may end with a
-  hole but never with a block in the air (B254); given-up blocks stay given up after a restart (B139). A block
+  it and the crew has stood still for 10 seconds, the lead gives up the block over it too (every block waiting so at once, B270), so a
+  part may end with a hole but never with a block in the air (B254); given-up blocks stay given up after a restart (B139). A block
   the crew laid that then changes by itself (farmland drying out to dirt before its water comes) is left as it is,
   not laid again, and a crop due on dried-out farmland is planted once the builder has tilled it again.
 - Crews add hands, not speed: each builder keeps their own pace. Eight builders raise the folly in about 2,500 to

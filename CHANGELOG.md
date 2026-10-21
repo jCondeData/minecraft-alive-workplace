@@ -41,6 +41,9 @@ asks for the steps, `latest.log` and any crash report).
   first when they're short. A red bobble beanie, a walnut apron with a Poké Ball on it and a tape measure; trades in
   planks, wool and furniture. Without CobbleFurnies nothing changes. Switch: `furnicrafters`.
 - Fixed: a Sophisticated Storage link tied to a controller with the Storage Tool, standing away from the controller's network, no longer has the storage behind it counted twice at the Storehouse (B262).
+- Fixed: a Wonder's crew no longer stands still for minutes when many blocks wait over holes it can't fill: once the
+  crew has stood still for 10 seconds the lead gives them all up together, not one every 10 seconds (the Hanging
+  Gardens' time-lapse ran out of time over one terrace's holes) (B270).
 
 ## 0.146.1 — 2026-10-20
 

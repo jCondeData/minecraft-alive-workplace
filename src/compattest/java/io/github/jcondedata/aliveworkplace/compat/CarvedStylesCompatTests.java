@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.furnish.Furnishings;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
+import io.github.jcondedata.aliveworkplace.work.Stations;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -150,7 +151,8 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 	/**
 	 * A builder builds the Library in the Spruce style with Carved Wood (and the pack's furniture mods): every block is
 	 * right, nothing skipped, its shelves are Carved Wood's spruce bookshelves (no vanilla one left), its lectern Carved
-	 * Wood's, and a villager without a job walks up to that lectern and becomes the Librarian.
+	 * Wood's (a Librarian's job site), and a villager without a job walks up to that lectern and takes one of its jobs
+	 * (36.17: a Librarian, a Scholar or a Teacher, drawn at random).
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '32000' '"carved_spruce_library"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 32000, batch = "carved_spruce_library")
@@ -197,9 +199,13 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 				throw new GameTestAssertException("a villager without a job is in the Library");
 			}
 			Villager v = librarian.get();
-			// 36.17: the lectern is shared, so its villager is a Librarian or a Teacher
-			helper.assertTrue(v.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN
-					|| v.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.TEACHER,
+			// 36.17: the lectern is shared, so its villager takes one of the lectern's jobs at random (a Librarian, a
+			// Scholar or a Teacher, B266: the Scholar was missing here), read from Stations so a new lectern job counts too
+			List<VillagerProfession> lecternJobs = Stations.ALL.stream().filter(s -> s.poi().test(level.registryAccess()
+					.registryOrThrow(net.minecraft.core.registries.Registries.POINT_OF_INTEREST_TYPE).getHolderOrThrow(PoiTypes.LIBRARIAN)))
+				.findFirst().orElseThrow().jobs().stream().map(j -> j.profession().get()).toList();
+			helper.assertTrue(lecternJobs.contains(VillagerProfession.LIBRARIAN), "the lectern's jobs: " + lecternJobs);
+			helper.assertTrue(lecternJobs.contains(v.getVillagerData().getProfession()),
 				"the villager is " + v.getVillagerData().getProfession() + " (job site " + v.getBrain().getMemory(MemoryModuleType.JOB_SITE) + ")"
 					+ diagnose(helper, v, lectern));
 			helper.assertTrue(v.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).map(lectern::equals).orElse(false),

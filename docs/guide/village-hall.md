@@ -47,7 +47,7 @@ Each worker is shown as their workstation, stacked as high as their level, with 
 wheel scrolls through everything about them (the × or Esc puts them away). Click a
 villager without a job to see the free workstations, and click one to give them that job.
 
-**Changing a villager's job.** Click a villager who already works and their page opens, with a **Change job** button
+**Changing a villager's job.** Right-click a villager who already works and their page opens, with a **Change job** button
 (the emerald). It lists every free job block in the village, plus the Builder (who needs a free Blueprint Table: with
 none free, the Builder's entry tells you to place one). Click a job to see the price, then click it again to pay: 5
 emeralds for a Novice up to 50 for a Master, the same as [retraining at a Blueprint Table](jobs.md). The new job is

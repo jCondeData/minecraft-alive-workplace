@@ -4529,10 +4529,10 @@ final class JobScenes {
 			(level, player) -> !classPeople.isEmpty() && classPeople.get(0).getVillagerData().getProfession() == ModVillagers.PORTER
 				&& classPeople.get(0).getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(new BlockPos(-4, -60, -3))).orElse(false)));
-		// Change job from the hall (ROADMAP 36.18): Dara, a Journeyman Librarian, is clicked in the residents list; her page
+		// Change job from the hall (ROADMAP 36.18): Dara, a Journeyman Librarian, is right-clicked in the residents list; her page
 		// has Change job, which lists the empty Storehouse (and the Builder, with no Blueprint Table free) with her price;
 		// a click shows the price, a second pays, and she's the Porter at once and walks over.
-		SCREENS.put("hall_retrain", new Screen("Dara, a Journeyman Librarian, was clicked in the hall's list; Change job listed the free Storehouse "
+		SCREENS.put("hall_retrain", new Screen("Dara, a Journeyman Librarian, was right-clicked in the hall's list; Change job listed the free Storehouse "
 			+ "for 20 emeralds and the Builder; two clicks made her the Porter at once, her lectern left free",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
@@ -4563,7 +4563,7 @@ final class JobScenes {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						for (int s = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON; s < ChoiceMenu.SIZE; s++) {
 							if (m.icon(s).getHoverName().getString().startsWith("Dara")) {
-								m.press(s, player);
+								m.clicked(s, 1, net.minecraft.world.inventory.ClickType.PICKUP, player); // a right-click, as the client sends it
 								break;
 							}
 						}

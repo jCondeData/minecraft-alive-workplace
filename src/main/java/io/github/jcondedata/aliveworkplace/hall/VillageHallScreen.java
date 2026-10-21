@@ -377,13 +377,12 @@ public final class VillageHallScreen {
 				} else if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
 					renderJobs(menu, level, hall, villager, shown);
 					menu.broadcastChanges();
+				} else if (menu.rightClicked() && HallRetraining.canRetrain(level, villager)) {
+					// A worker's page, with its Change job button (36.18); a plain click still only makes them glow.
+					HallRetraining.renderWorker(menu, level, hall, villager, shown);
+					menu.broadcastChanges();
 				} else {
 					glow(level, villager, p);
-					if (HallRetraining.canRetrain(level, villager)) {
-						// A worker's page, with its Change job button (36.18); the click still makes them glow.
-						HallRetraining.renderWorker(menu, level, hall, villager, shown);
-						menu.broadcastChanges();
-					}
 				}
 			});
 		}
@@ -891,9 +890,11 @@ public final class VillageHallScreen {
 		lore.add(line(where(hall, villager), ChatFormatting.DARK_GRAY));
 		boolean canBeGivenAJob = !working && !villager.isBaby() && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT
 			&& legendName == null;
-		boolean canChangeJob = working && legendName == null && HallRetraining.canRetrain(level, villager); // 36.18
-		lore.add(line(canBeGivenAJob ? "screen.aliveworkplace.hall.jobless_click" : canChangeJob ? "screen.aliveworkplace.hall.worker_click"
-			: "screen.aliveworkplace.hall.click_to_find", canBeGivenAJob ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
+		lore.add(line(canBeGivenAJob ? "screen.aliveworkplace.hall.jobless_click" : "screen.aliveworkplace.hall.click_to_find",
+			canBeGivenAJob ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
+		if (working && legendName == null && HallRetraining.canRetrain(level, villager)) {
+			lore.add(line("screen.aliveworkplace.hall.worker_click", ChatFormatting.GREEN)); // right-click: Change job (36.18)
+		}
 		if (villager.hasCustomName()) {
 			lore.add(line("screen.aliveworkplace.hall.life_story_hint", ChatFormatting.DARK_GRAY)); // shift-click: their life story (31.7)
 		}

@@ -17,8 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
-- **Change any villager's job from the Village Hall** (36.18). Click a working villager in the hall's residents list
-  and press **Change job**: pick any free job block in the village (or the Builder, at a free Blueprint Table), see the
+- **Change any villager's job from the Village Hall** (36.18). Right-click a working villager in the hall's residents
+  list and press **Change job**: pick any free job block in the village (or the Builder, at a free Blueprint Table), see the
   price (5 to 50 emeralds by their level, as at the Blueprint Table) and click again to pay. The new job and its block
   are theirs at once, with no breaking and carrying job blocks; they walk over, and one who can't get there within
   about a minute is moved beside the block. Their old block is left free; a builder hands back their build. Children

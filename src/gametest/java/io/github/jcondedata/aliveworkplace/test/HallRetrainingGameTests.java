@@ -106,10 +106,15 @@ public class HallRetrainingGameTests implements FabricGameTest {
 		throw new net.minecraft.gametest.framework.GameTestAssertException(name + " isn't on the hall's list");
 	}
 
-	/** Opens the hall, clicks {@code name} on the list and then Change job: the page of jobs they could change to. */
+	/** Right-clicks {@code name} on the list, as the client sends it: their page, with Change job. */
+	private static void rightClick(ChoiceMenu menu, int slot, ServerPlayer player) {
+		menu.clicked(slot, 1, net.minecraft.world.inventory.ClickType.PICKUP, player);
+	}
+
+	/** Opens the hall, right-clicks {@code name} on the list and then Change job: the page of jobs they could change to. */
 	private static ChoiceMenu jobsPage(GameTestHelper helper, ServerPlayer player, String name) {
 		ChoiceMenu menu = VillageHallScreen.forTest(player, helper.absolutePos(HALL));
-		menu.press(resident(helper, menu, name), player);
+		rightClick(menu, resident(helper, menu, name), player);
 		ItemStack change = menu.icon(HallRetraining.CHANGE);
 		helper.assertTrue(change.is(Items.EMERALD) && change.getHoverName().getString().equals("Change job"), "no Change job button: " + change);
 		menu.press(HallRetraining.CHANGE, player);
@@ -139,10 +144,14 @@ public class HallRetrainingGameTests implements FabricGameTest {
 		ServerPlayer player = payer(helper, seen, 25);
 		helper.runAfterDelay(2, () -> {
 			ChoiceMenu list = VillageHallScreen.forTest(player, hall);
-			helper.assertTrue(lore(list.icon(resident(helper, list, "Dara"))).contains("Click: make them glow, or change their job"),
-				"the list doesn't say a click changes her job: " + lore(list.icon(resident(helper, list, "Dara"))));
+			int daraSlot = resident(helper, list, "Dara");
+			helper.assertTrue(lore(list.icon(daraSlot)).contains("Right-click: change their job"),
+				"the list doesn't say a right-click changes her job: " + lore(list.icon(daraSlot)));
+			// a plain click only makes her glow, as before: the list stays
+			list.clicked(daraSlot, 0, net.minecraft.world.inventory.ClickType.PICKUP, player);
+			helper.assertTrue(dara.hasEffect(MobEffects.GLOWING) && !list.icon(HallRetraining.CHANGE).is(Items.EMERALD)
+				&& resident(helper, list, "Dara") == daraSlot, "a plain click didn't just make her glow");
 			ChoiceMenu menu = jobsPage(helper, player, "Dara");
-			helper.assertTrue(dara.hasEffect(MobEffects.GLOWING), "the click on her no longer makes her glow");
 			ItemStack storeIcon = menu.icon(VillageHallScreen.FIRST_ROW);
 			helper.assertTrue(storeIcon.is(ModBlocks.STOREHOUSE.asItem()) && storeIcon.getHoverName().getString().equals("Porter"), "the Storehouse first: " + storeIcon);
 			helper.assertTrue(lore(storeIcon).contains("Retraining costs 20 emeralds (Journeyman)"), "the price: " + lore(storeIcon));
@@ -188,7 +197,7 @@ public class HallRetrainingGameTests implements FabricGameTest {
 			for (int i = 0; i < 5; i++) {
 				dara.setVillagerData(dara.getVillagerData().setLevel(i + 1));
 				ChoiceMenu menu = VillageHallScreen.forTest(player, helper.absolutePos(HALL));
-				menu.press(resident(helper, menu, "Dara"), player);
+				rightClick(menu, resident(helper, menu, "Dara"), player);
 				String line = "Retraining costs " + prices[i] + " emeralds (" + levels[i] + ")";
 				helper.assertTrue(lore(menu.icon(HallRetraining.CHANGE)).contains(line), "not '" + line + "': " + lore(menu.icon(HallRetraining.CHANGE)));
 			}
@@ -377,15 +386,17 @@ public class HallRetrainingGameTests implements FabricGameTest {
 		helper.runAfterDelay(2, () -> {
 			helper.assertTrue(!HallRetraining.canRetrain(level, child) && !HallRetraining.canRetrain(level, nitwit), "a child or a nitwit could be retrained");
 			ChoiceMenu menu = VillageHallScreen.forTest(player, helper.absolutePos(HALL));
-			menu.press(resident(helper, menu, "Nim"), player);
+			rightClick(menu, resident(helper, menu, "Nim"), player);
 			helper.assertTrue(!menu.icon(HallRetraining.CHANGE).is(Items.EMERALD), "a nitwit has a Change job button");
 			level.getGameRules().getRule(ModGameRules.RETRAINING).set(false, level.getServer());
 			try {
 				menu = VillageHallScreen.forTest(player, helper.absolutePos(HALL));
 				int slot = resident(helper, menu, "Dara");
-				helper.assertTrue(lore(menu.icon(slot)).contains("Click: make them glow so you can find them"), "the list still offers a job change: " + lore(menu.icon(slot)));
+				helper.assertTrue(lore(menu.icon(slot)).contains("Click: make them glow so you can find them"), "the list's click line: " + lore(menu.icon(slot)));
+				helper.assertTrue(!lore(menu.icon(slot)).contains("Right-click: change their job"), "the list still offers a job change");
 				menu.press(slot, player);
 				helper.assertTrue(dara.hasEffect(MobEffects.GLOWING), "she doesn't glow");
+				rightClick(menu, slot, player);
 				helper.assertTrue(!menu.icon(HallRetraining.CHANGE).is(Items.EMERALD) && menu.icon(slot).is(Items.LECTERN), "the rule off still opens a Change job page");
 				helper.assertTrue(dara.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN && player.getInventory().countItem(Items.EMERALD) == 64,
 					"something changed with the rule off");

@@ -58,7 +58,7 @@ as a Novice Builder. Short of money, you're told how much you're missing and not
 can't be retrained. A jobless villager by the table takes the job for free, as always.
 
 **Changing any villager's job from the Village Hall.** You don't have to break job blocks and carry them around: in
-the [Village Hall](village-hall.md), click a working villager and press **Change job**. Pick any free job block in the
+the [Village Hall](village-hall.md), right-click a working villager and press **Change job**. Pick any free job block in the
 village (or the Builder, at a free Blueprint Table), check the price (the same as above), and click again to pay. The
 new job is theirs at once; they walk to the block, and one who can't get there within about a minute is moved beside
 it. Their old block is left free for someone else.

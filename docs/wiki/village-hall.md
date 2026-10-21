@@ -33,7 +33,7 @@ and walk over to it. So an empty Storehouse or a lectern left in a finished home
 leading anyone into the house. A villager who already works isn't listed; they change job from their own page (36.18, below) or
 at the block itself (26.6, see [Villager jobs](villager-jobs.md)), for a price.
 
-**Change job (36.18).** Clicking a worker in the residents list makes them glow, as before, and opens their page (back,
+**Change job (36.18).** A plain click on a worker in the residents list only makes them glow, as before; a right-click opens their page (back,
 the worker, Find, and a **Change job** emerald at slot 22). It's offered when `HallRetraining.canRetrain` holds: rule
 `workplaceRetraining` on, a grown villager with a job and a job site, not a nitwit, Legend or caravan carter. Change job
 lists `VillageHalls.freeStations` of a job other than theirs, each with the price (`Retraining.price`, 5/10/20/35/50 by

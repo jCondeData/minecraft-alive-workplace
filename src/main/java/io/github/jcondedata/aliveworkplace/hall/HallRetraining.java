@@ -34,7 +34,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Changing a villager's job from the Village Hall (ROADMAP 36.18, the owner: "it would be easier if you can just do it at
- * the Village Hall"). A worker's page in the residents list has a Change job button; it lists the village's free job
+ * the Village Hall"). Right-clicking a worker in the residents list opens their page, with a Change job button (a
+ * plain click still only makes them glow); it lists the village's free job
  * blocks (the Free job blocks page's, 36.9) and the Builder. A first click on one shows the price (the Blueprint Table's
  * retraining price by level, {@link Retraining#price}), a second pays: the old job and its level go (its block stays,
  * free for someone else; a builder hands their builds back), and the new job and its block are theirs on the click, never

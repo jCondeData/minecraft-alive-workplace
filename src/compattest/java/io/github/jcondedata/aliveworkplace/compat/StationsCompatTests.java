@@ -239,7 +239,7 @@ public class StationsCompatTests implements FabricGameTest {
 		helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.TUTOR, "a book gave " + name(villager.getVillagerData().getProfession()));
 		sneakClick(player, villager, new ItemStack(cobblemon("poke_ball")));
 		helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.TRAINER, "a Poké Ball gave the tutor " + name(villager.getVillagerData().getProfession()));
-		helper.assertTrue(site(villager).equals(Optional.of(helper.absolutePos(STATION))), "the trainer works at " + site(villager));
+		helper.assertTrue(site(villager).equals(Optional.of(helper.absolutePos(STATION))), "the trainer or tutor works at " + site(villager));
 		helper.succeed();
 	}
 
@@ -254,7 +254,8 @@ public class StationsCompatTests implements FabricGameTest {
 		helper.setBlock(STATION, ModBlocks.TRAINING_POST);
 		Villager villager = helper.spawn(EntityType.VILLAGER, STANDING);
 		helper.succeedWhen(() -> {
-			helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.TRAINER, "by the Training Post: " + name(villager.getVillagerData().getProfession()));
+			// 36.17: a block several jobs share gives one of them at random (the post: Trainer or Tutor)
+			helper.assertTrue(villager.getVillagerData().getProfession() == ModVillagers.TRAINER || villager.getVillagerData().getProfession() == ModVillagers.TUTOR, "by the Training Post: " + name(villager.getVillagerData().getProfession()));
 			helper.assertTrue(site(villager).equals(Optional.of(helper.absolutePos(STATION))), "the trainer works at " + site(villager));
 		});
 	}

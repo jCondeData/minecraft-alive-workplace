@@ -132,6 +132,8 @@ public final class Pace {
 	public static final Source DISASTER = register(new Source("disaster", Kind.PENALTY, io.github.jcondedata.aliveworkplace.threat.Disasters::pace));
 	public static final Source ILL = register(new Source("ill", Kind.PENALTY, Sickness::pace));
 	public static final Source UNHAPPY = register(new Source("unhappy", Kind.PENALTY, Moods::pace));
+	/** Mourning a partner or grieving family (36.16): 10% slower for those days. */
+	public static final Source MOURNING = register(new Source("mourning", Kind.PENALTY, io.github.jcondedata.aliveworkplace.people.Mourning::pace));
 	public static final Source LAZY = register(new Source("lazy", Kind.PENALTY, Traits::pace));
 	public static final Source BADLY_KEPT = register(new Source("badly_kept", Kind.PENALTY, VillageNeeds::kept));
 

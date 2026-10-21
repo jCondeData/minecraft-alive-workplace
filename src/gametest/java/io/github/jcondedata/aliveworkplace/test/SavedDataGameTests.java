@@ -147,6 +147,7 @@ public class SavedDataGameTests implements FabricGameTest {
 					new ItemStack(net.minecraft.world.item.Items.STICK, 4), 1)),
 			Map.of(net.minecraft.world.item.Items.OAK_LOG, 2), List.of(new BlockPos(8, 64, -2)), "carpenter:oak_fence",
 			io.github.jcondedata.aliveworkplace.craft.CrafterJob.Phase.CRAFTING, 1)); // (37.14)
+		samples.put("GRIEF", new io.github.jcondedata.aliveworkplace.people.Mourning.Grief(41L, Component.literal("Mira"))); // (36.16)
 		return samples;
 	}
 

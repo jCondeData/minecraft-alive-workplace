@@ -33,7 +33,7 @@ import net.minecraft.world.level.GameType;
  * SCENE=ageless_elder (ROADMAP 34.19a): two elders by a Village Hall, Bram (a Master farmer, two days from his time)
  * and Dara (an ordinary fletcher, her time tonight), and a player with one Evergreen Charm. Stills: Bram's card on the
  * hall's list before (an elder, his time near); the charm's tooltip; Dara refusing it (the reason over the hotbar, the
- * charm kept); Bram taking it (used up); the night after both have had 45 elder days, Dara's grave beside Bram, who is
+ * charm kept); Bram taking it (used up); the night after both have had 405 elder days, Dara's grave beside Bram, who is
  * still there; Bram's card after, with the gold leaf badge. Its checks: each of those, read from the game.
  */
 final class AgelessElderScene {
@@ -72,7 +72,7 @@ final class AgelessElderScene {
 		if (tick == 85) {
 			server.execute(() -> {
 				List<String> card = findBram(server);
-				Showcase.check(card.contains("Elder · grown 158 days") && card.contains("Their time comes in 2 days (an Evergreen Charm keeps them)")
+				Showcase.check(card.contains("Elder · grown 1598 days") && card.contains("Their time comes in 2 days (an Evergreen Charm keeps them)")
 					&& !card.contains(BADGE), "Bram's card before: an elder of 158 grown days, his time in 2 days (" + String.join(" | ", card) + ")");
 			});
 		}
@@ -131,17 +131,17 @@ final class AgelessElderScene {
 		if (tick == 280) {
 			ScreenshotHarness.shot(mc, "04_ageless_elder_accepted");
 		}
-		// 45 elder days for both, and night falls: Dara passes and leaves a grave; Bram stays.
+		// 405 elder days for both (36.16: 400 to live as an elder), and night falls: Dara passes and leaves a grave; Bram stays.
 		if (tick == 350) {
 			server.execute(() -> {
 				ServerLevel level = server.overworld();
 				long today = Chronicle.day(level);
-				LifeStages.setAdultSince(bram, today - LifeStages.ELDER_DAYS - 45);
-				LifeStages.setAdultSince(dara, today - LifeStages.ELDER_DAYS - 45);
+				LifeStages.setAdultSince(bram, today - LifeStages.ELDER_DAYS - LifeStages.PASSING_DAYS - 5);
+				LifeStages.setAdultSince(dara, today - LifeStages.ELDER_DAYS - LifeStages.PASSING_DAYS - 5);
 				level.setDayTime(13500);
 				LifeStages.round(level, HALL, List.of(bram, dara)); // the hall's round, tonight
-				Showcase.check(!dara.isAlive(), "Dara, an elder of 45 days, passed in the night");
-				Showcase.check(bram.isAlive() && LifeStages.daysLeft(bram, today) == -1, "Bram, ageless, is still here after 45 elder days");
+				Showcase.check(!dara.isAlive(), "Dara, an elder of 405 days, passed in the night");
+				Showcase.check(bram.isAlive() && LifeStages.daysLeft(bram, today) == -1, "Bram, ageless, is still here after 405 elder days");
 			});
 		}
 		if (tick == 395) {
@@ -167,7 +167,7 @@ final class AgelessElderScene {
 		if (tick == 420) {
 			server.execute(() -> {
 				List<String> card = findBram(server);
-				Showcase.check(card.contains("Elder · grown 165 days") && card.contains(BADGE) && card.stream().noneMatch(l -> l.startsWith("Their time")),
+				Showcase.check(card.contains("Elder · grown 1605 days") && card.contains(BADGE) && card.stream().noneMatch(l -> l.startsWith("Their time")),
 					"Bram's card after: the gold leaf badge, no time coming (" + String.join(" | ", card) + ")");
 			});
 		}
@@ -195,9 +195,9 @@ final class AgelessElderScene {
 		hall.setOwner(player.getUUID(), player.getGameProfile().getName());
 		long today = Chronicle.day(level);
 		bram = elder(level, "Bram", VillagerProfession.FARMER, 5, -1.5);
-		LifeStages.setAdultSince(bram, today - LifeStages.ELDER_DAYS - 38);
+		LifeStages.setAdultSince(bram, today - LifeStages.ELDER_DAYS - LifeStages.PASSING_DAYS + 2);
 		dara = elder(level, "Dara", VillagerProfession.FLETCHER, 2, 2.5);
-		LifeStages.setAdultSince(dara, today - LifeStages.ELDER_DAYS - 40);
+		LifeStages.setAdultSince(dara, today - LifeStages.ELDER_DAYS - LifeStages.PASSING_DAYS);
 		player.getInventory().clearContent();
 		player.getInventory().setItem(0, new ItemStack(ModItems.EVERGREEN_CHARM));
 		player.getInventory().selected = 0;

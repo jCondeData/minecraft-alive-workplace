@@ -208,6 +208,11 @@ SCENES = [
     job("undertaker", "Undertaker", "Bringing a worker back from the grave", "the undertaker revived the villager"),
     # B222: graves lying about the village go to its Graveyard (here the plot by the hall, the village having no Graveyard)
     job("undertaker_graveyard", "Undertaker", "Laying a grave to rest", "the undertaker moved Mira's grave from the street to the plot by the hall"),
+    # 36.16: a death matters: the village is told who died, the family mourns, the undertaker leads the funeral
+    job("village_mourns", "Undertaker", "The village mourns", "the undertaker led Mira's funeral at her grave, and her husband and son mourned her", 160),
+    # 36.17: a block several jobs share gives one at random, likelier the fewer the village has
+    job("random_job", "Picking a job", "Four composters, four jobs at random",
+        "four jobless villagers took four composters by themselves, and not all became farmers", 120),
     # Legends (ROADMAP 29.2): the engine, with a Legend of the scene's own: the plain outfit, Master level, a pace power
     job("legend", "Legends", "A villager becomes a Legend",
         "a villager became a Legend, a Master who speeds up the builder beside them"),
@@ -764,15 +769,15 @@ SCENES = [
        ("02_village_talk_shift_bell", "Reformed: \"The shift bell's rung. Home we go.\"")]),
     # The Evergreen Charm (ROADMAP 34.19a): an ordinary elder refuses it, a Master takes it and outlives his days; the other leaves a grave
     S("ageless_elder", "Village Hall", "The Evergreen Charm: an ageless elder",
-      "Bram's card on the hall's list showed an elder two days from his time, the charm's tooltip said what it does, Dara (an ordinary elder) refused it and the player kept it, Bram (a Master farmer) took it and it was used up, the chronicle said he will never leave us, and after 45 elder days Dara passed in the night and left a grave while Bram stayed, his card wearing the gold leaf badge", 40,
+      "Bram's card on the hall's list showed an elder two days from his time, the charm's tooltip said what it does, Dara (an ordinary elder) refused it and the player kept it, Bram (a Master farmer) took it and it was used up, the chronicle said he will never leave us, and after 405 elder days Dara passed in the night and left a grave while Bram stayed, his card wearing the gold leaf badge", 40,
       [("03_ageless_elder_refused", "Dara, an ordinary elder, won't take it: the reason, and the charm kept"),
        ("04_ageless_elder_accepted", "Bram, a Master, takes it: he will never leave us"),
-       ("05_ageless_elder_night", "45 elder days on, at nightfall: Dara's grave, and Bram still here"),
+       ("05_ageless_elder_night", "405 elder days on, at nightfall: Dara's grave, and Bram still here"),
        ("06_ageless_elder_badge", "Bram's card now: the gold leaf badge")]),
     # Elders (ROADMAP 34.19): the day Bram becomes one, his card, his talk, and his slower walk beside a young villager
     S("elders", "Village Hall", "Elders: a quiet old age",
-      "a day on, Bram had been grown 120 days and the chronicle said \"Bram is an elder now\" once; his card on the hall's list said \"Elder · grown 120 days\" with \"a quiet old age\" first in his mood (fed, a bed of his own); he said \"In my day this was all fields.\"; and walking side by side with young Tom he covered about 15% less ground in the same time", 35,
-      [("01_elders_card", "Bram's card: an elder, grown 120 days, with a quiet old age"),
+      "a day on, Bram had been grown 1200 days and the chronicle said \"Bram is an elder now\" once; his card on the hall's list said \"Elder · grown 1200 days\" with \"a quiet old age\" first in his mood (fed, a bed of his own); he said \"In my day this was all fields.\"; and walking side by side with young Tom he covered about 15% less ground in the same time", 35,
+      [("01_elders_card", "Bram's card: an elder, grown 1200 days, with a quiet old age"),
        ("02_elders_talk", "\"In my day this was all fields.\""),
        ("03_elders_walk", "The same walk, side by side: Bram, the elder, falls behind Tom")]),
     # Dressed by class (ROADMAP 34.18): the four classes in three jobs each, and an elder, in daylight

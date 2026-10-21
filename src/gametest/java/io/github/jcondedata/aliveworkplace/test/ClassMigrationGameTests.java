@@ -268,7 +268,7 @@ public class ClassMigrationGameTests implements net.fabricmc.fabric.api.gametest
 	 * The old village is seeded 16 a round: a reload after the first round loses nothing and re-seeds nobody; the second
 	 * round finishes it. The couple and their child are Burghers (a grade II home, fed, a varied diet, school and chapel,
 	 * the Market Square: everything but luxuries), the builder in his cottage an Artisan, the Scholar in a plain house and
-	 * everyone homeless Peasants; nobody is a Noble. Grown-ups get ages within the last 100 days (nobody an elder), everyone
+	 * everyone homeless Peasants; nobody is a Noble. Grown-ups get ages within the last 1000 days (nobody an elder), everyone
 	 * a family name (the child its parent's); the mercenary and the inn guest are left alone. One chronicle entry with the
 	 * counts and one chat line to the player in the village; a third round changes nothing.
 	 */
@@ -338,7 +338,7 @@ public class ClassMigrationGameTests implements net.fabricmc.fabric.api.gametest
 		Set<Long> ages = new java.util.HashSet<>();
 		for (Villager g : r.grown()) {
 			Long since = LifeStages.adultSince(g);
-			helper.assertTrue(since != null && since <= today && since > today - 100, g.getName().getString() + " grew up on day " + since);
+			helper.assertTrue(since != null && since <= today && since > today - ClassMigration.AGE_SPREAD, g.getName().getString() + " grew up on day " + since);
 			helper.assertTrue(!LifeStages.isElder(g, today), "nobody is an elder at the switch");
 			helper.assertTrue(FamilyBook.family(g) > 0, g.getName().getString() + " has no family name");
 			ages.add(since);
@@ -463,7 +463,7 @@ public class ClassMigrationGameTests implements net.fabricmc.fabric.api.gametest
 		Villager elder = v.others().get(0);
 		Villager son = v.others().get(1);
 		elder.setVillagerData(elder.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(3));
-		LifeStages.setAdultSince(elder, Chronicle.day(level) - 300);
+		LifeStages.setAdultSince(elder, Chronicle.day(level) - 1380);
 		ModAttachments.PARENTS.set(son, new Families.Parents(elder.getDisplayName(), Component.literal("Ilse"), "", "", true, false, false, elder.getUUID(), null));
 		List<Villager> grown = v.grown();
 		v.hall().setClasses(1, Chronicle.day(level) + 3);
@@ -507,7 +507,7 @@ public class ClassMigrationGameTests implements net.fabricmc.fabric.api.gametest
 		helper.assertTrue(v.hall().classesVersion() == 1 && v.hall().classGraceUntil() == later + 7, "its own grace: " + v.hall().classGraceUntil());
 		for (Villager g : v.grown()) {
 			long since = LifeStages.adultSince(g);
-			helper.assertTrue(since <= later && since > later - 100, "ages counted back from the day it loaded: " + since);
+			helper.assertTrue(since <= later && since > later - ClassMigration.AGE_SPREAD, "ages counted back from the day it loaded: " + since);
 		}
 		Villager newcomer = villager(helper, new BlockPos(12, 2, 10), "Newcomer");
 		wellFed(level, newcomer);

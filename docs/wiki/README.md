@@ -7,6 +7,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 
 **Villagers and their work**
 - [Villager jobs](villager-jobs.md): how a villager gets a job, what every job shares, and the list of all jobs.
+- [Random jobs at shared blocks](random-jobs.md): a jobless villager taking a block several jobs share gets one of them at random, likeliest the fewest (36.17).
 - [Builder](builder.md): the villager who builds blueprints.
 - [Crafter](crafter.md): the villager who makes what the other workers are short of, through whole recipe chains (37.14).
 - [Blueprint library](blueprint-library.md): the Blueprint Table as a collection each village unlocks (26.10).

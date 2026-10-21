@@ -4,12 +4,12 @@
 type: Village life
 expansion: M34
 image: https://jcondedata.github.io/minecraft-alive-workplace/elders/still-1.jpg
-caption: Bram's card: an elder, grown 120 days, with a quiet old age
-Becomes an elder: after 120 grown days
+caption: Bram's card: an elder, with a quiet old age
+Becomes an elder: after 1200 grown days (about 36 years old)
 Walks: 15% slower
 Mood: "a quiet old age", while fed and in a bed of their own
 Retires: once someone can take over their trade
-Passes away: 40 days after becoming an elder, in their sleep
+Passes away: 400 days after becoming an elder, in their sleep (about 43)
 Kept for good by: an [Evergreen Charm](evergreen-charm.md)
 categories: Village life, Classes
 related: evergreen-charm.md, family-names.md, households.md, graves.md, undertaker.md
@@ -21,8 +21,8 @@ a [Village Hall](village-hall.md) counts their days.
 
 ## Becoming an elder
 
-After **120 grown days** the chronicle says "Bram is an elder now", and his card on the hall's list reads "Elder ·
-grown 131 days". An elder:
+After **1200 grown days** the chronicle says "Bram is an elder now", and his card on the hall's list reads "Elder ·
+grown 1211 days". A villager is 18 when they grow up and a year older every four seasons. An elder:
 
 - **walks 15% slower** wherever their work takes them: beside a younger villager they fall behind;
 - has **"a quiet old age"** in their [mood](moods.md) (+5) while they're fed and have a bed of their own;
@@ -45,16 +45,18 @@ their old trade, who learns **50% faster** ("taught by Bram"), or sit by the hal
 
 ## Passing away
 
-**Forty elder days** later, an elder passes away in their sleep (or after nightfall, with no bed) and leaves a
-[grave](graves.md). The village is told in chat and the chronicle notes it. From ten days before, their card warns:
+**Four hundred elder days** later, an elder passes away in their sleep (or after nightfall, with no bed) and leaves a
+[grave](graves.md). The village is told in chat who it was, their job and their years, the chronicle notes it, the
+family mourns and the Undertaker leads a funeral at the grave. From ten days before, their card warns:
 "Their time comes in 5 days (an Evergreen Charm keeps them)". An [Undertaker](undertaker.md) can bring them back, for
-another 40 days. An [Evergreen Charm](evergreen-charm.md) given in time keeps a good elder for good.
+another 400 days. An [Evergreen Charm](evergreen-charm.md) given in time keeps a good elder for good.
 
 ## How it fits with the rest
 
 - **What it affects:** work (a slower walk, then a new worker one level down), faster learning for the young of their
   trade, the village's [moods](moods.md) and its [family trees](family-names.md).
-- **Settings:** **Villager Ages** (off: nobody is an elder), **Days Until Elder** (120), **Elders Pass Away**,
+- **Settings:** **Villager Ages** (off: nobody is an elder), **Days Until Elder** (1200), **Village Mourning**, **Elders Pass Away**,
   **Elders Retire** and **Evergreen Charms**.
-- When classes first switch on in an old world, everyone grown is given an age spread over the last 100 days, so the
-  first elders come about three weeks later, one at a time.
+- When classes first switch on in an old world, everyone grown is given an age spread over the last 1000 days, so the
+  first elders come about 200 days later, one at a time. A world from before keeps everyone's age and counts it
+  against the longer life: an elder of the old 120 days is a grown villager again for a long while.

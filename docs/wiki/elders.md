@@ -7,15 +7,15 @@ with every other expansion. It covers: ages, the slower walk, the "quiet old age
 Families, the Family page and the Printer's family tree (34.21), and the seeding of everyone's age when classes switch
 on (34.22, [Classes](classes.md)).
 
-Roadmap items: 34.19, 34.19a, 34.20, 34.21, B95, B99, B102, B187
+Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
 
 ## What a player sees
 
-A villager who grew up in a village with a Village Hall counts their days. After 120 grown days they are an **elder**:
-their card on the hall's list says "Elder · grown 131 days", and the chronicle notes the day ("Bram is an elder now").
+A villager who grew up in a village with a Village Hall counts their days. After 1200 grown days (36.16: ten times the
+first 120) they are an **elder**: their card on the hall's list says "Elder · grown 1211 days", and the chronicle notes the day ("Bram is an elder now").
 An elder:
 
 - **walks 15% slower** wherever their work takes them (a builder to the site, a miner to the quarry, a courier on the
@@ -45,9 +45,9 @@ A **retired** elder never takes a job again, but players can still trade with th
 card says "Retired Farmer · mentors the young". By day they stand by a Novice or Apprentice of their old trade in the
 village, who learns 50% faster ("taught by Bram" over their head and on their card), or else sit by the hall.
 
-Forty elder days later their time comes: they pass away in
+Four hundred elder days later (36.16; forty before) their time comes: they pass away in
 their sleep (or, with no bed, once night has fallen) and leave a grave. The village is told in chat, the chronicle
-notes it ("Bram passed away in their sleep, an elder"), and an Undertaker can bring them back for another 40 days.
+notes it ("Bram passed away in their sleep, an elder: the village's Farmer, aged 43"), and an Undertaker can bring them back for another 400 days.
 From ten days before, the card warns: "Their time comes in 5 days (an Evergreen Charm keeps them)", then "Their time
 comes tonight".
 
@@ -78,6 +78,31 @@ living are name tags, babies eggs, the dead skulls with a cross ("Bram (Ashby) �
 opens their own family. With a Printer in the village, the page's book button prints the family's tree for 2 emeralds:
 a written book, "The Ashby Family", with a cover (the village, the day, how many people in how many generations) and
 everyone of the family, generation by generation, two to a page.
+
+### A death matters (36.16)
+
+Villagers live ten times longer than they first did (owner, 2026-10-20): an elder after 1200 grown days, passing 400
+elder days later. A villager is 18 the day they grow up and a year older every village year (four seasons; with the
+default 16-day seasons an elder is about 36 and passes at about 43). An old save keeps the day each villager grew up
+and counts it against the new span, so an elder of the old 120 days is a grown villager again, noted an elder anew
+when they reach 1200.
+
+When a grown villager of a village with a hall dies, of anything:
+
+- every player near the village reads "Mira, the village's Farmer, has died aged 31. The village mourns." (an unnamed
+  one: "The village's Mason has died ..."; one whose days nobody counted: "at an age nobody had counted");
+- the chronicle's line of the death gives the cause, then the same: "Mira was slain by Zombie: the village's Farmer,
+  aged 31";
+- their **family** (parents, children, brothers and sisters) grieve for 3 days: "grieving for family" (-10) in their
+  mood, and they work 10% slower ("mourning" in the work-pace line); their **partner** mourns 5 days as before (-15),
+  and works 10% slower too. Then it's over: the hall's round takes the grief off;
+- their grave waits for a **funeral**: the village's Undertaker goes to it before anything else ("going to a funeral",
+  then "leading a funeral"), the villagers near come to stand by it, the bell tolls over candle smoke for 8 seconds,
+  and the chronicle (with the players near) notes "Mira's funeral, led by Ulric; 4 came to say goodbye". After that
+  the Undertaker brings them back or lays the grave in the graveyard as before.
+
+Mercenaries, inn guests and caravan carters are not the village's own: nobody is told and nobody grieves. Outside a
+village with a hall a death is as before.
 
 ## How it works
 
@@ -111,11 +136,11 @@ everyone of the family, generation by generation, two to a page.
   nitwit); or 20 **happy days**. Happy days are counted in the hall's round, once a day per villager: a mood of 80 or
   more adds one, a lower mood starts again from 0. Days nobody counted (the village not loaded, moods off) neither add
   nor break the run.
-- **Passing.** The hall's round (every 30 seconds) checks each grown villager: an elder with 40 or more elder days who
+- **Passing.** The hall's round (every 30 seconds) checks each grown villager: an elder with 400 or more elder days who
   is not ageless passes if asleep, or if it is night (13000 to 23000 on the day clock). They die as any villager does
   (damage type `aliveworkplace:old_age`), so their work is handed back, a Legend's slot is freed, and the usual grave is
   left; an elder always gets a grave, even with no job and no name.
-- **Brought back.** An elder whose time had come and whom an Undertaker revives gets `passed_day` = that day and 40 more
+- **Brought back.** An elder whose time had come and whom an Undertaker revives gets `passed_day` = that day and 400 more
   days from it (otherwise they would pass again the same night and waste the golden apple). A charm clears it.
 - **Retirement** (`people/Retirement`) runs in the hall's round, after the passing. A successor's shadowing ends in the
   hand-over once 2 `Chronicle.day`s have passed and the elder holds nothing; if the elder dies, retires otherwise or the
@@ -157,17 +182,19 @@ everyone of the family, generation by generation, two to a page.
 
 ## Switches
 
-All six belong to 1.8 (`Expansions.M34`), which 1.0 switches on with every other expansion; while that gate is closed they are off whatever the file says.
+All but `villageMourning` belong to 1.8 (`Expansions.M34`), which 1.0 switches on with every other expansion; while that gate is closed they are off whatever the file says.
 
 - `villagerAges` (true): villagers become elders. Off: nobody is an elder, so nobody is slowed, has the quiet old age,
   talks like one or passes; `adult_since` is kept, so turning it on again makes them the elders they were all along.
-- `villagerElderDays` (120, 20 to 1000): grown days before a villager is an elder. Its settings button reads "Days
+- `villagerElderDays` (1200, 20 to 10000; 36.16, 120 and 20 to 1000 before): grown days before a villager is an elder. Its settings button reads "Days
   Until Elder" (B102: the longer "Days to Become an Elder: 120" was cut off on its button).
-- `elderPassing` (true; owner, 2026-10-06): elders pass after 40 elder days. Off: nobody dies of old age, and a charm is
+- `elderPassing` (true; owner, 2026-10-06): elders pass after 400 elder days (36.16; 40 before). Off: nobody dies of old age, and a charm is
   refused as not needed.
 - `agelessElders` (true): Evergreen Charms work. Off: charms are refused and kept; elders already ageless stay ageless.
 - `elderRetirement` (true, 34.20): elders retire and mentor. Off: nobody starts retiring; a shadowing under way still
   ends in its hand-over, and those retired stay retired and still mentor.
+- `villageMourning` (true, 36.16; not gated): the word of a death, the family's grief and the funeral. Off: none of it
+  (the chronicle's line is the cause alone, as before; a partner still mourns 5 days).
 - `familyNames` (true, 34.21): family names are shown. Off: the hall says "Dara", the chronicle's birth lines name the
   grandparents by first name ("grandchild of Bram and Ilse") and the third generation by its founder ("Bram's family
   has its third generation"), and the printed tree is "Bram's Family". The names are still given and kept, so turning
@@ -188,13 +215,16 @@ On the villager (attachments; every one optional, so older saves load unchanged)
 - `mentoring` (a pupil's id) and `taught_by`: {`mentor`, `mentor_name`, `until`} (absent: no teaching);
 - `family_name`: the family's number, 1 to 60 (absent: none yet; the next round or a birth gives one);
 - in `parents`: `mother_id` and `father_id` (absent in records from before 34.21, which keep the names only).
+- `grief`: {`day`, `name`}, a death in the family being grieved (36.16; absent: none, or over).
+
+On a grave: `funeral` (36.16; absent: no funeral due, as for every grave from before).
 
 On the hall: `families`, the Book of Families, a list of {`id`, `name`, `family`, `born`, `born_here`, `died` (absent
 for the living), `mother`, `father`, `partner` (each absent when unknown), `trade`}; and `familiesNoted`, the families
 whose third generation the chronicle noted. Both absent in halls saved before: the book starts empty and fills at the
 next round.
 
-The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknown kind as `FOUNDED`.
+The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.16); an older version reads an unknown kind as `FOUNDED`.
 
 ## Items, blocks, jobs, commands
 
@@ -248,6 +278,19 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 - 34.21: a record from before the ids is matched to a living villager by the first parent's name for the family name
   only; the book keeps such a child's parents unknown, as the roadmap says.
 
+- 36.16 (owner, 2026-10-20: "villagers die too soon"): every span ten times longer: `villagerElderDays` 1200 (its
+  range up to 10000), `PASSING_DAYS` 400, a revived elder's 400 more days, and the age spread given when classes first
+  switch on 1000 days (so the first elders still come one at a time). A config file written before (format 3 or
+  older) holding the old default 120 moves to 1200; any other number was a choice and stays. A villager's age is never
+  rewritten: `adult_since` is the same day, counted against the new span.
+- 36.16: "years" are village years (four seasons) from 18 on growing up, so the numbers read like a life (an elder at
+  about 36, gone at about 43) without a birth day being saved; a child's or an uncounted villager's death says no age.
+- 36.16: the funeral comes first at a grave, before a revival or a move to the graveyard, and needs nothing from the
+  chest; it lasts 160 ticks, and mourners are those within 24 blocks (counted within 8 at the end). Without an
+  Undertaker there is no funeral, and the mourning still ends on its own.
+- 36.16: elders' own "passed away in the night" chat line gives way to the village's word of the death while
+  `villageMourning` is on (one line, not two).
+
 ## Known limits
 
 - The elder look (gray brows and a short beard, under any hat) is drawn by the class layers (34.18, see [Classes](classes.md)); `classOutfits` off hides it.
@@ -289,6 +332,14 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
   passing in the hall's own round with a grave and the chronicle, the revival's 40 more days
   (`anElderPassesInTheirSleepAndLeavesAGrave`); each switch off, and a child grown up getting today
   (`theConfigSwitches`).
+- GameTests: `MourningGameTests`: not an elder at 1199 grown days, one at 1200 with 400 days left, 160 grown days an
+  early grown life, the years, a config file of before moving to 1200 and a choice kept (`aVillagerIsAnElderOnlyAfterTheNewSpan`);
+  an old save's villager, the same day after a reload, noted an elder anew at 1200 (`anOldSavesVillagerKeepsTheirAge`);
+  the word to a player near and the chronicle's line, a son grieving, a husband mourning, no kin not, the mood reason,
+  the pace, a reload, and both ending (`aDeathIsMournedAndTheMourningEnds`); the words of an unnamed, a jobless and an
+  uncounted death and outside a village (`theWordsOfADeath`); `villageMourning` off (`mourningSwitchedOff`); the
+  Undertaker's funeral and the grave's saved flag, an old grave without one (`theUndertakerLeadsAFuneral`).
+- Showcase scene: `village_mourns` (Mira dies, Tom and Pip mourn, Ulric the undertaker leads her funeral).
 - Showcase scene: `ageless_elder` (a refusal, the charm taken, the night after 45 elder days, the badge).
 - GameTests: `RetirementGameTests`: the full hand-over in order, the own child chosen over another, two days of
   shadowing kept through a save, then the composter, the level one below, the assignments, the kept trades and both

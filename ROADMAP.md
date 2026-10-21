@@ -4815,14 +4815,14 @@ Depends on: nothing open.
   not now, cancel mid-repair, moving the Builder to another job, the switch, save and reload; text in `en_us.json`; scene
   `repair_ask`.
 
-- [ ] **36.16** **Villagers live much longer, and a death matters** (owner, 2026-10-20). Villagers die too soon: make
+- [x] **36.16** (review: pending 2026-10-20) **Villagers live much longer, and a death matters** (owner, 2026-10-20). Villagers die too soon: make
   their whole life about 10x longer (adulthood and elder days, `villagerElderDays` and the ages the life stages use;
   old saves keep each villager's age but use the new lengths). A death should be a bigger deal: the village mourns (a
   chronicle entry and a message to players near the village naming who died, their job and years, a few days of lower
   mood/work for their partner and family, a funeral the Undertaker leads at the grave or graveyard). Done when:
   GameTests for the new lengths (a villager reaches elder only after the new span), an old save's villager keeps its
   age, the death message and chronicle entry, the mourning ends; text in `en_us.json`; scene `village_mourns`.
-- [ ] **36.17** **A job block with several jobs gives one at random** (owner, 2026-10-20). Where one block can hire more
+- [x] **36.17** (review: pending 2026-10-20) **A job block with several jobs gives one at random** (owner, 2026-10-20). Where one block can hire more
   than one job, which job a villager takes from it is chosen at random (weighted toward the jobs the village has
   fewest of is fine: the lane decides and writes it in the Notes), not always the same one. Done when: a list of every
   block that offers several jobs in the wiki page; GameTests that over many hires (fixed `RandomSource`) each job of a
@@ -5267,6 +5267,11 @@ the owner's port jar; M33's caravans (39.7).
 ## Notes / blocked
 
 - 2026-10-20 (lane-c-1020-2153, for the owner): built B260 (furnished rooms follow placement rules; every furnished build regenerated; `FurnishedRoomsGameTests`; scene `furnished_home`), 37.14 the Crafter (`CrafterGameTests`, scene `crafter_chain`) and B262 (a far tool-linked Sophisticated link no longer double-counts its barrel). Decisions, no answer needed: vanilla has no chair, so the Crafter's three-step chain test ends in a barrel (log, planks, slabs); no furniture-mod bench data file ships yet in `crafter_benches` (the mods' bench and recipe-type ids weren't confirmed from their jars), so it crafts with vanilla crafting and stonecutting only for now; the Crafter isn't in the Steward's rules or village generation and its workshop blueprint isn't sold yet: candidates for a follow-up item. Merged lane D's 38.12 Furnicrafter alongside it (settings now 149). Question for the owner: none.
+- 2026-10-20 (lane-b-1020-2138): 36.17 decided: a jobless villager taking a shared block by themselves draws its job
+  with weight 1 / (1 + n), n = villagers within 48 blocks already doing it; only that vanilla path draws (item, hall,
+  Steward, family trade, successor keep the named job); the Trainer Leader is never drawn; class-barred jobs are left
+  out; switch `randomStationJobs` (on). Replaces 21.1a's "vanilla job by itself" on shared blocks (the Shop Counter
+  now Shopkeeper or Innkeeper). See docs/wiki/random-jobs.md.
 - 2026-10-20 (lane-e-1020-2213, for the owner): lane E built nothing this run, on purpose. Milestone 39 and its `(lane: e)` bugs are empty; `next` gave lane E only 37.14 (the Crafter) and 38.12 (the Furnicrafter), and lanes C (started 21:53, B260 then 37.14) and D (started 22:08, 38.12 then 37.14) were already running with those as their own top items. With no claims, a third copy would only be thrown away (as 38.8a and 39.7d were). Main's CI was green (1314cdc building); no M39 scene fails on the showcase. `wip/lane-e` is fully merged into main; deleting it from here was refused again. Question for the owner: give lane E new work (a 2.4 milestone, Create recipes for the Crafter, or a share of 37.14), or pause its scheduled task until there is some.
 - 2026-10-20 (lane-e-1020-1913): fourth mutation pass on M39 (Create) code, seed 52 (mutate.py `--list` per file),
   hand-picked from lines no earlier pass names: the two VillageMachines mutants the third pass left (:61, :69) and new

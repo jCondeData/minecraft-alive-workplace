@@ -60,8 +60,11 @@ import org.jetbrains.annotations.Nullable;
 public final class LifeStages {
 	/** {@code villagerAges} in the config. Off: nobody is an elder (so nobody passes); {@code adult_since} is still kept. */
 	public static boolean AGES = true;
-	/** {@code villagerElderDays}: grown days before a villager is an elder. */
-	public static int ELDER_DAYS = 120;
+	/**
+	 * {@code villagerElderDays}: grown days before a villager is an elder. 36.16 (owner, 2026-10-20): ten times the first
+	 * 120, so a villager's life lasts; a save keeps each villager's {@code adult_since} and counts it against this.
+	 */
+	public static int ELDER_DAYS = 1200;
 	/** {@code elderPassing}. Off: elders never die of old age. */
 	public static boolean PASSING = true;
 	/** {@code agelessElders}. Off: Evergreen Charms are refused; those already ageless stay so. */
@@ -73,8 +76,8 @@ public final class LifeStages {
 	public static final float ELDER_WALK = 0.922f;
 	/** What "a quiet old age" adds to the mood of an elder who is fed and housed. */
 	public static final int QUIET_OLD_AGE = 5;
-	/** Elder days before an elder passes. */
-	public static final int PASSING_DAYS = 40;
+	/** Elder days before an elder passes (36.16: ten times the first 40). */
+	public static final int PASSING_DAYS = 400;
 	/** The mood, and the days running, that make an elder worth a charm. */
 	public static final int HAPPY_MOOD = 80;
 	public static final int HAPPY_DAYS = 20;
@@ -201,8 +204,14 @@ public final class LifeStages {
 				continue;
 			}
 			countMood(villager, day);
-			if (isElder(villager, day) && !ModAttachments.ELDER_NOTED.getOrElse(villager, false)) {
+			Mourning.endIfOver(level, villager, day); // grief for family has run its days (36.16)
+			boolean noted = ModAttachments.ELDER_NOTED.getOrElse(villager, false);
+			if (isElder(villager, day) && !noted) {
 				becameElder(level, hall, villager);
+			} else if (noted && AGES && !isElder(villager, day) && !isAgeless(villager)) {
+				// An elder under the old, shorter span (36.16) is grown again: noted anew when the new span is reached.
+				ModAttachments.ELDER_NOTED.remove(villager);
+				ClassLook.update(villager);
 			}
 			if (daysLeft(villager, day) == 0 && resting(level, villager)) {
 				pass(level, villager);
@@ -267,6 +276,9 @@ public final class LifeStages {
 		villager.stopSleeping();
 		villager.setHealth(0f);
 		villager.die(source);
+		if (Mourning.ENABLED) {
+			return; // the village's own word of a death (36.16) says who it was, with their job and years
+		}
 		VillageHalls.nearest(level, at).ifPresent(hall -> {
 			Component told = Component.translatable(AGELESS ? "message.aliveworkplace.elder.passed_charm" : "message.aliveworkplace.elder.passed", who)
 				.withStyle(ChatFormatting.GRAY);

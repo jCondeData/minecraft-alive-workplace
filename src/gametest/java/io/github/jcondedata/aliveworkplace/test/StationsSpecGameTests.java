@@ -449,8 +449,8 @@ public class StationsSpecGameTests implements FabricGameTest {
 
 	/**
 	 * The owner's answers: "The kept blocks' own job still takes a jobless villager by itself" — the Shop Counter
-	 * (Shopkeeper, not the Innkeeper or Pokémon Trader who share it), the Storehouse (Porter) and the Travel Post
-	 * (Ferryman). The Training Post's Trainer: CobblemonCompatTests. Which of the jobless villagers takes which block is
+	 * (Shopkeeper; since 36.17 the Shopkeeper or, at random, the Innkeeper who shares it, as every shared block), the
+	 * Storehouse (Porter) and the Travel Post (Ferryman). The Training Post's Trainer: CobblemonCompatTests. Which of the jobless villagers takes which block is
 	 * the game's choice (a villager may walk to a farther one first), so the check is per block: each is someone's
 	 * workstation, for its own job.
 	 */
@@ -472,7 +472,7 @@ public class StationsSpecGameTests implements FabricGameTest {
 				BlockPos at = helper.absolutePos(spots.get(i));
 				Optional<Villager> worker = villagers.stream().filter(v -> site(v).equals(Optional.of(at))).findFirst();
 				helper.assertTrue(worker.isPresent(), "nobody works at the " + BuiltInRegistries.BLOCK.getKey(blocks.get(i)));
-				helper.assertTrue(job(worker.get()) == jobs.get(i),
+				helper.assertTrue(job(worker.get()) == jobs.get(i) || blocks.get(i) == ModBlocks.SHOP_COUNTER && job(worker.get()) == ModVillagers.INNKEEPER,
 					"at the " + BuiltInRegistries.BLOCK.getKey(blocks.get(i)) + ": a " + name(job(worker.get())) + ", not a " + name(jobs.get(i)));
 			}
 		});

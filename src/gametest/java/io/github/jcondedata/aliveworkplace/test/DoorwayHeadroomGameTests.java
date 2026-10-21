@@ -152,7 +152,10 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		villager.getRandom().setSeed(203L);
 		// the brewing stand is template (3, 1, 7), behind the door (5, 1, 2)
 		double past = helper.absolutePos(new BlockPos(0, 0, 10)).getZ();
-		helper.succeedWhen(() -> helper.assertTrue(villager.getZ() > past && villager.getVillagerData().getProfession() == VillagerProfession.CLERIC,
+		// (a job of the brewing stand's: the Cleric or, since 36.17 and at random, one of ours who share it)
+		helper.succeedWhen(() -> helper.assertTrue(villager.getZ() > past && villager.getVillagerData().getProfession() != VillagerProfession.NONE
+			&& io.github.jcondedata.aliveworkplace.work.Stations.at(net.minecraft.world.level.block.Blocks.BREWING_STAND).orElseThrow()
+				.has(villager.getVillagerData().getProfession()),
 			"the villager hasn't come in and taken the brewing stand: at " + villager.position() + ", "
 				+ villager.getVillagerData().getProfession()));
 	}

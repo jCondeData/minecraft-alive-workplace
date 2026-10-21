@@ -23,6 +23,15 @@ things, and every job there is.
 
 **Vanilla jobs work as in vanilla.** Put the block near a villager without a job and they take it.
 
+**A block several jobs share gives one at random.** A villager without a job who takes a composter, a lectern, a Shop
+Counter or any other shared block by themselves becomes one of its jobs, not always the vanilla one: a composter can
+make a Farmer, an Orchard Keeper, a Florist or a Composter. The jobs your village has fewest of are the likeliest, so a
+village with three farmers and no florist will probably get a florist next. Once they've taken a job they keep it. A
+gym leader is never made this way, and a job you've switched off in the settings never comes up. Want the old way, the
+vanilla job every time? Turn off **Random Station Jobs** in the settings.
+
+![Four composters, four villagers: not all became farmers](https://jcondedata.github.io/minecraft-alive-workplace/random_job/still-3.jpg)
+
 **Most of our jobs share a vanilla block.** To pick one of ours, stand the villager within about 4 blocks of the block
 and **sneak-right-click them holding the job's item**. A villager who already works there switches the same way, and the
 block's own job comes back with its own item (wheat for a Farmer, coal for an Armorer). You're told what happened

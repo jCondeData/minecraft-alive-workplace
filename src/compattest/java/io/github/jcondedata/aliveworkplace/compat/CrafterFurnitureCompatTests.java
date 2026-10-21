@@ -142,6 +142,47 @@ public class CrafterFurnitureCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * The Furni Crafter is also the Furnicrafter's job block (38.12), so a jobless villager may take the one in the
+	 * Crafter's workshop. That's harmless: the Crafter keeps its own workbench and job, and its bench recipes go by the
+	 * block standing there, not by who holds the job site, so it still plans CobbleFurnies' chair with the bench taken
+	 * (and the two share their claims on a builder's request, CrafterWork's CLAIMS, so they never make the same one).
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aFurnicrafterAtTheWorkshopsFurniCrafterLeavesTheCrafterItsBench(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Item chair = item("cobblefurnies:oak_chair");
+		BlockPos workbench = new BlockPos(0, 2, 0);
+		BlockPos furni = new BlockPos(2, 2, 0);
+		helper.setBlock(new BlockPos(0, 1, 0), Blocks.STONE);
+		helper.setBlock(new BlockPos(2, 1, 0), Blocks.STONE);
+		helper.setBlock(workbench, ModBlocks.CRAFTERS_WORKBENCH);
+		helper.setBlock(furni, block("cobblefurnies:furnicrafter"));
+		BlockPos station = helper.absolutePos(workbench);
+		Villager crafter = helper.spawn(EntityType.VILLAGER, workbench.south());
+		Jobs.employ(level, crafter, station, ModVillagers.CRAFTERS_WORKBENCH_POI, ModVillagers.CRAFTER);
+		Villager furnicrafter = helper.spawn(EntityType.VILLAGER, furni.south());
+		Jobs.employ(level, furnicrafter, helper.absolutePos(furni), ModVillagers.FURNICRAFTER_POI, ModVillagers.FURNICRAFTER);
+		helper.assertTrue(furnicrafter.getVillagerData().getProfession() == ModVillagers.FURNICRAFTER,
+			"the villager by the workshop's Furni Crafter didn't become a Furnicrafter");
+		helper.runAfterDelay(40, () -> {
+			helper.assertTrue(crafter.getVillagerData().getProfession() == ModVillagers.CRAFTER,
+				"the Crafter lost its job to the Furnicrafter: " + crafter.getVillagerData().getProfession());
+			helper.assertTrue(Builders.benchPos(crafter).map(station::equals).orElse(false),
+				"the Crafter's workbench should still be its job site: " + Builders.benchPos(crafter));
+			Crafting.Plan plan = Crafting.chain(level, chair, 1, Map.of(Items.OAK_LOG, 1L), CrafterBenches.usableAt(level, station));
+			helper.assertTrue(plan != null && plan.count() == 1,
+				"the Crafter should still make CobbleFurnies' chair with a Furnicrafter at the workshop's Furni Crafter: " + plan);
+			crafter.discard();
+			furnicrafter.discard();
+			for (BlockPos pos : List.of(workbench, furni, new BlockPos(0, 1, 0), new BlockPos(2, 1, 0))) {
+				helper.setBlock(pos, Blocks.AIR);
+			}
+			helper.succeed();
+		});
+	}
+
+	/**
 	 * A bench file for a mod that isn't installed (the compat suite's {@code not_installed.json}: a recipe type and block
 	 * nobody registers) is left out of the benches, so nothing is looked for or planned by it; the installed ones load.
 	 */

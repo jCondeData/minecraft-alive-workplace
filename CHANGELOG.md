@@ -49,6 +49,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- You can now see everything a build still needs after you hand the blueprint over. Right-click the Builder (or their
+  Builder's Bench) with a Book and Quill to get the list for the rest of the build, with what the chests, the
+  Builder's bag and the village storehouse already hold ticked off. Sneak-right-click the Builder with an empty hand
+  to see the whole list in chat. Before, the only list was the 3-4 lines over the Builder's head (B279).
 - A guest Legend who settles in a village has their powers at once: a Seer made the village's at dawn foretold at
   that dawn, where before their powers could wait up to ten seconds and the dawn's foretelling was missed (B269).
 - Builders take from the chests only what their work still needs. Each trip took one block too many, so two Builders

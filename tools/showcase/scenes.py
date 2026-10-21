@@ -305,6 +305,11 @@ SCENES = [
       "the capped builder's status line says \"at the cap\", and ill they're held back", 40,
       [("01_pace_capped", "Three partners, a kept village, research, a happy mood: 100% faster, at the cap"),
        ("02_pace_ill", "The same builder ill: held back to the usual pace")], cobblemon=True),
+    # B279: the material list of a build under way, from the builder himself: a Book and Quill, or the whole list in chat
+    S("builder_list", "Builder", "What the build still needs, from the builder",
+      "a Book and Quill used on the builder became the rest of his build's list with the chest's share checked off, and a sneak-click with an empty hand put the whole list in chat", 40,
+      [("00_half_built", "Halfway up, a Book and Quill in hand"), ("01_list_book", "The list: how far along, what's counted"),
+       ("02_list_page", "What's still to bring, checked off"), ("03_chat_list", "Sneak-click: the whole list in chat")]),
     S("partners_land", "Builder", "Pokémon partners at work: building and the land",
       "the Machamp carried the beams and the Wartortle watered the farmer's patch", 60,
       [("01_partners_carry", "Beams on its shoulder"), ("02_partners_at_work", "At work"), ("03_watered_field", "The patch watered")],

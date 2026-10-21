@@ -140,6 +140,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final CityPlanGroundScene cityPlanGround = new CityPlanGroundScene();
 	private final PartnersScene partners = new PartnersScene();
 	private final PartnersLandScene partnersLand = new PartnersLandScene();
+	private final BuilderListScene builderList = new BuilderListScene();
 	private final PokemonCenterScene pokemonCenter = new PokemonCenterScene();
 	private final ArenaScene arena = new ArenaScene();
 	private final PokemonBuildsScene pokemonBuilds = new PokemonBuildsScene();
@@ -394,6 +395,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("village_habitat".equals(System.getProperty("aliveworkplace.scene"))) {
 			villageHabitat.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("builder_list".equals(System.getProperty("aliveworkplace.scene"))) {
+			builderList.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_land".equals(System.getProperty("aliveworkplace.scene"))) {

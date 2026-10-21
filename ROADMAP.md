@@ -5267,6 +5267,9 @@ the owner's port jar; M33's caravans (39.7).
 ## Notes / blocked
 
 - 2026-10-20 (lane-c-1020-2153, for the owner): built B260 (furnished rooms follow placement rules; every furnished build regenerated; `FurnishedRoomsGameTests`; scene `furnished_home`), 37.14 the Crafter (`CrafterGameTests`, scene `crafter_chain`) and B262 (a far tool-linked Sophisticated link no longer double-counts its barrel). Decisions, no answer needed: vanilla has no chair, so the Crafter's three-step chain test ends in a barrel (log, planks, slabs); no furniture-mod bench data file ships yet in `crafter_benches` (the mods' bench and recipe-type ids weren't confirmed from their jars), so it crafts with vanilla crafting and stonecutting only for now; the Crafter isn't in the Steward's rules or village generation and its workshop blueprint isn't sold yet: candidates for a follow-up item. Merged lane D's 38.12 Furnicrafter alongside it (settings now 149). Question for the owner: none.
+- 2026-10-21 (lane-b-1021-0038, **owner question: Milestone 36 is empty again**): 36.16 and 36.17 landed last run
+  (pending your review); `sessions.py next` gives the quick lane nothing. Which quick additions next? Until you add
+  some, quick-lane runs end without work. Nothing left on wip/lane-b-* for M36 (wip/lane-b holds old bug fixes for lane a).
 - 2026-10-20 (lane-b-1020-2138): 36.17 decided: a jobless villager taking a shared block by themselves draws its job
   with weight 1 / (1 + n), n = villagers within 48 blocks already doing it; only that vanilla path draws (item, hall,
   Steward, family trade, successor keep the named job); the Trainer Leader is never drawn; class-barred jobs are left

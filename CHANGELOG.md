@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.147.0 — 2026-10-21
+
 ### Added
 - **Change any villager's job from the Village Hall** (36.18). Right-click a working villager in the hall's residents
   list and press **Change job**: pick any free job block in the village (or the Builder, at a free Blueprint Table), see the

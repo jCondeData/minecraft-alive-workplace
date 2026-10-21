@@ -63,6 +63,35 @@ public class FurnicrafterWork extends CrafterWork {
 		return plan(level, item, count, usable);
 	}
 
+	/**
+	 * What's short of a piece (37.14a): by its first recipe, each material not in the chests, or what that material is
+	 * made from with the crafting table's recipes (logs for the planks), for the builder's shortage line.
+	 */
+	@Override
+	protected Map<Item, Integer> lackFor(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
+		List<FurnitureRecipes.Recipe> recipes = FurnitureRecipes.making(level.getServer(), item);
+		if (recipes.isEmpty()) {
+			return Map.of();
+		}
+		FurnitureRecipes.Recipe recipe = recipes.get(0);
+		int times = Math.max(1, (Math.min(count, Crafting.MAX_CRAFTS) + Math.max(1, recipe.result().getCount()) - 1) / Math.max(1, recipe.result().getCount()));
+		Map<Item, Integer> lack = new LinkedHashMap<>();
+		for (Map.Entry<Item, Integer> material : recipe.materials().entrySet()) {
+			long short_ = (long) material.getValue() * times - usable.getOrDefault(material.getKey(), 0L);
+			if (short_ <= 0) {
+				continue;
+			}
+			Map<Item, Integer> under = Crafting.recipesFor(level, Crafting.Kind.CRAFTING, material.getKey()).isEmpty() ? Map.of()
+				: Crafting.lacking(level, Crafting.Kind.CRAFTING, material.getKey(), (int) short_, usable);
+			if (under.isEmpty()) {
+				lack.merge(material.getKey(), (int) short_, Integer::sum);
+			} else {
+				under.forEach((k, n) -> lack.merge(k, n, Integer::sum));
+			}
+		}
+		return lack;
+	}
+
 	@Override
 	protected void workEffects(ServerLevel level, BlockPos station) {
 		level.playSound(null, station, level.random.nextBoolean() ? SoundEvents.WOOD_HIT : SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.5f,

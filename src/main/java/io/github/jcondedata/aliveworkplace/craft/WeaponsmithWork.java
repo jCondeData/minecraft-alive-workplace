@@ -26,6 +26,12 @@ import org.jetbrains.annotations.Nullable;
  * Mending worn gear is {@link MendingWork}'s part of the same shift.
  */
 public class WeaponsmithWork extends CrafterWork {
+	/** Not one of the jobs that took over the Crafter's chains (37.14a): a weaponsmith arms the guards. */
+	@Override
+	protected boolean chainsForBuilders() {
+		return false;
+	}
+
 	static final List<Item> SWORDS = List.of(Items.IRON_SWORD, Items.STONE_SWORD);
 
 	public WeaponsmithWork() {

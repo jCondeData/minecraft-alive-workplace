@@ -670,7 +670,7 @@ public final class StarterBlueprints {
 	 * Crafter's Workshop with config {@code crafters} off. Loading by id is untouched, as for B119.
 	 */
 	private static final java.util.Map<String, java.util.function.BooleanSupplier> JOB_ON = java.util.Map.of(
-		"crafters", () -> io.github.jcondedata.aliveworkplace.craft.Crafters.ENABLED);
+		"crafters", () -> false); // 37.16a: the Crafter is retired, the Table no longer offers its workshop
 
 	private StarterBlueprints() {
 	}

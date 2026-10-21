@@ -62,7 +62,8 @@ public class MasonWork extends CrafterWork {
 			return cut;
 		}
 		// The kiln: stone, smooth stone, terracotta, bricks... fired in the furnace by the stonecutter (and cut or laid after).
-		Crafting.Plan kiln = Crafting.plan(level, Crafting.Kind.KILN, item, count, usable);
+		// 37.14a: with Milestone 37 open, the kiln's whole chain (clay into bricks into a brick block into stairs), a bagful at a time
+		Crafting.Plan kiln = chains() ? chainPlan(level, Crafting.Kind.KILN, item, count, usable) : Crafting.plan(level, Crafting.Kind.KILN, item, count, usable);
 		if (kiln == null || !fires(level, kiln, Crafting.Kind.KILN)) {
 			return cut;
 		}
@@ -90,7 +91,17 @@ public class MasonWork extends CrafterWork {
 		return null;
 	}
 
-	/** The same plan, with {@code n} of {@code made} turned into {@code into} at the end. */
+	/** What's short of the stonecutter's chain, or with a furnace by it, the kiln's (37.14a). */
+	@Override
+	protected Map<Item, Integer> lackFor(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
+		Map<Item, Integer> cut = super.lackFor(level, item, count, usable);
+		if (!cut.isEmpty() || !hasFurnace(level) || Crafting.recipesFor(level, Crafting.Kind.KILN, item).isEmpty()) {
+			return cut;
+		}
+		return Crafting.lacking(level, Crafting.Kind.KILN, item, Math.min(Math.max(1, count), Crafting.MAX_CRAFTS), usable);
+	}
+
+	/** The same plan, with {@code n} of {@code made} turned into {@code into} at the end (the firing its last step). */
 	private static Crafting.Plan swap(Crafting.Plan plan, Item made, Item into, int n) {
 		Map<Item, Integer> makes = new LinkedHashMap<>(plan.makes());
 		makes.merge(made, -n, Integer::sum);
@@ -98,7 +109,9 @@ public class MasonWork extends CrafterWork {
 			makes.remove(made);
 		}
 		makes.merge(into, n, Integer::sum);
-		return new Crafting.Plan(into, n, plan.steps(), plan.takes(), makes);
+		List<Crafting.Step> steps = new java.util.ArrayList<>(plan.steps());
+		steps.add(new Crafting.Step(Map.of(made, 1), new ItemStack(into), n));
+		return new Crafting.Plan(into, n, steps, plan.takes(), makes);
 	}
 
 	/** A furnace by our stonecutter to fire glass in. */

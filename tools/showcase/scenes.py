@@ -251,22 +251,16 @@ SCENES = [
     # Crafters
     S("carpenter", "Carpenter", "Making a builder's woodwork", "the carpenter made woodwork for the builder", 150,
       [("*_carpenter@first", "Start"), ("*_carpenter@middle", "Working"), ("30_carpenter_closeup", "At the crafting table")]),
-    # The Crafter (ROADMAP 37.14): logs sawn into planks, then sticks, fences and slabs, for the builder's Market Stall
-    S("crafter_chain", "Crafter", "Making a builder's woodwork from logs, one step after another",
-      "the crafter made the builder's woodwork from logs", 150,
-      [("*_crafter_chain@first", "Start"), ("*_crafter_chain@middle", "Working through the chain"),
-       ("30_crafter_chain_closeup", "At the Crafter's Workbench")]),
-    # The Crafter's Workshop (ROADMAP 37.16): the build the Table offers and the Steward plans, then as villages grow it
-    S("crafter_workshop", "Crafter", "The Crafter's Workshop, and the one villages grow in three styles",
-      "the Crafter's Workshop stands with its Crafter's Workbench, and the village's in three styles came with their Crafters", 90,
-      [("10_crafters_workshop", "The Crafter's Workshop: board walls in a spruce frame, the store lean-to beside"),
-       ("12_village_plains", "A plains village's Crafter's Workshop: its gable to the street, the work hatch by the door"),
-       ("15_village_desert_back", "A desert village's: the lean-to parts store of boards and logs"),
-       ("16_village_snowy", "A snowy village's, its Crafter at the bench")]),
-    # The Crafter makes the pack's furniture (ROADMAP 37.15): Handcrafted's chairs on the crafting table, CobbleFurnies'
-    # at the Furni Crafter in its workshop, from oak logs, for a builder's dining corner
-    S("crafter_furniture", "Crafter", "Making the pack's furniture from logs: Handcrafted chairs, and a CobbleFurnies chair at its Furni Crafter",
-      "the crafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them", 150,
+    # Job chains (ROADMAP 37.14a, which retired the Crafter): several jobs filling one builder's Market Stall list from raw
+    # makings, each its own kind a step at a time (the Carpenter's woodwork, the dyer's red wool, the Tinkerer's lantern)
+    S("job_chains", "Carpenter", "Several jobs filling one builder's list, each making its own kind a step at a time",
+      "several jobs filled the builder's list", 150,
+      [("*_job_chains@first", "Start: only raw makings in the builder's chest"), ("*_job_chains@middle", "The jobs working through their chains"),
+       ("30_job_chains_closeup", "At the workstations")]),
+    # The pack's furniture from logs (ROADMAP 37.15, 37.14a): Handcrafted's chairs by the Carpenter at the crafting table's
+    # recipe, CobbleFurnies' by the Furnicrafter at its Furni Crafter, for a builder's dining corner
+    S("crafter_furniture", "Carpenter", "Making the pack's furniture from logs: Handcrafted chairs by the Carpenter, a CobbleFurnies chair by the Furnicrafter",
+      "the Carpenter and the Furnicrafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them", 150,
       [("*_crafter_furniture@first", "Start: a table and oak logs in the chest"), ("*_crafter_furniture@middle", "Sawing, cutting and crafting"),
        ("30_crafter_furniture_corner", "The dining corner, built")], cobblemon=True, furniture=True),
     job("mason", "Mason", "Cutting stone for a builder", "the mason cut stone bricks the builder needed", 240),

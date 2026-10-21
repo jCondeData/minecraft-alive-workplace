@@ -49,8 +49,10 @@ or carrying.
 - **Fed by:** the [Lumberjack](lumberjack.md)'s logs and the [Miner](miner.md)'s stone, from the Storehouse.
 - **Works beside:** the [Carpenter](carpenter.md) and the [Mason](mason.md): they share the work, and never make the
   same thing twice.
-- **Furniture mods:** with a furniture mod's own crafting bench standing in the workshop, the Crafter uses its
-  recipes too.
+- **Furniture mods:** the Crafter makes the furniture mods' pieces too. Handcrafted's, Beautify's and Cozy Home's are
+  made at the workbench like anything else: a builder short of Handcrafted oak chairs only needs oak logs. For
+  CobbleFurnies' pieces, place its **Furni Crafter** in the workshop (within 6 blocks of the workbench): while it stands
+  there, the Crafter uses its recipes too.
 
 ## Switching it off
 

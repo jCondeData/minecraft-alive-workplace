@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Crafter makes the pack's furniture** (37.15). A builder short of Handcrafted chairs (or another piece Handcrafted,
+  Beautify or Cozy Home crafts on the crafting table) gets them made from logs, the planks, slabs and sticks cut on
+  the way. CobbleFurnies'
+  pieces are made too while its Furni Crafter stands in the Crafter's workshop.
 - **A job block with several jobs gives one at random** (36.17). A villager without a job who takes a composter, a
   lectern, a Shop Counter or any block several jobs share by themselves now becomes one of its jobs, not always the
   vanilla one: a composter can make a Farmer, an Orchard Keeper, a Florist or a Composter. The jobs the village has

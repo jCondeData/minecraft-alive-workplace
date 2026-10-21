@@ -256,6 +256,12 @@ SCENES = [
       "the crafter made the builder's woodwork from logs", 150,
       [("*_crafter_chain@first", "Start"), ("*_crafter_chain@middle", "Working through the chain"),
        ("30_crafter_chain_closeup", "At the Crafter's Workbench")]),
+    # The Crafter makes the pack's furniture (ROADMAP 37.15): Handcrafted's chairs on the crafting table, CobbleFurnies'
+    # at the Furni Crafter in its workshop, from oak logs, for a builder's dining corner
+    S("crafter_furniture", "Crafter", "Making the pack's furniture from logs: Handcrafted chairs, and a CobbleFurnies chair at its Furni Crafter",
+      "the crafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them", 150,
+      [("*_crafter_furniture@first", "Start: a table and oak logs in the chest"), ("*_crafter_furniture@middle", "Sawing, cutting and crafting"),
+       ("30_crafter_furniture_corner", "The dining corner, built")], cobblemon=True, furniture=True),
     job("mason", "Mason", "Cutting stone for a builder", "the mason cut stone bricks the builder needed", 240),
     job("dyer", "Leatherworker (dyer)", "Dyeing wool for a builder", "the dyer made colored wool the builder needed", 240),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone

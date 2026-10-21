@@ -4,7 +4,7 @@ A villager at a Crafter's Workbench who makes what the village's workers are sho
 logs sawn into planks, planks cut into slabs, then the barrel, chair or fence asked for. Part of Furnished homes and
 modded storage (2.1), behind its expansion gate (`Expansions.M37`) and its own switch.
 
-Roadmap items: 37.14
+Roadmap items: 37.14, 37.15
 
 ## 1. What a player sees
 
@@ -15,6 +15,10 @@ and the village's stores, walks to the workbench and makes it one step after ano
 the build carries on. A big order is made a bagful at a time until there's enough. When something can't be made, the
 Crafter takes nothing and says what's short: "short of 2 Oak Log to make 2 Barrel". After the builders, they fill the
 Storehouse's stock orders and a Wonder's goods, then what any other worker nearby is waiting for (a miner's ladders).
+
+With the pack's furniture mods (37.15) the Crafter makes their pieces too: a builder short of Handcrafted Oak Chairs
+with only oak logs in the chest gets them sawn, cut and crafted (planks, a slab and sticks, then the chairs), and with
+CobbleFurnies' Furni Crafter standing in the workshop, CobbleFurnies' pieces as well.
 
 The Crafter's Workshop is in the Blueprint Table: birch boards in a spruce frame under a dark oak roof, the workbench
 facing the door between two chests, and an open store lean-to of logs, planks and slabs against its east wall.
@@ -29,6 +33,16 @@ count: the crafting table's and the stonecutter's, and a furniture mod's bench's
 stands within 6 blocks of the workbench (`crafter_benches` data files). Chains go 3 steps down (a chair from slabs from
 planks from logs, with one to spare for sticks). Repeated steps are merged: planks for the barrel and planks for its
 slabs are one step.
+
+A bench recipe that doesn't list its materials as ingredients (CobbleFurnies' `cobblefurnies:furni_crafting`, which
+takes so many of each item) is read with its counts from the mod's own recipe files (the Furnicrafter's reader, 38.12,
+filled by `compat/cobblefurnies`) and planned the same way, by its recipe type id, only while its bench is there. A
+`crafter_benches` file whose recipe type isn't registered (its mod isn't installed) is left out when the data loads.
+
+Which pack furniture mods have a bench (read from their jars, 2026-10-21): only CobbleFurnies 1.2 (the Furni Crafter,
+348 recipes). Handcrafted 4.0.3 and Beautify 2.0.0 craft every piece on the crafting table, and Lucky's Cozy Home
+1.1.20 on the crafting table and the stonecutter, so the Crafter makes theirs with no bench file. Handcrafted's
+"benches" are seats, not workstations.
 
 The whole plan is checked against the stock before anything is taken, so a short raw material wastes nothing. To say
 what's short, the plan is worked out again noting each raw material (something no recipe of theirs makes) that runs
@@ -61,7 +75,8 @@ where it came from. A step takes 6 ticks a craft (at least a second), faster wit
   mined with an axe).
 - Job: `aliveworkplace:crafter`.
 - Blueprint: `aliveworkplace:crafters_workshop`.
-- Data: `data/<namespace>/crafter_benches/*.json`, each `{"recipe_type": "...", "blocks": ["..."]}`.
+- Data: `data/<namespace>/crafter_benches/*.json`, each `{"recipe_type": "...", "blocks": ["..."]}`. Shipped:
+  `aliveworkplace:cobblefurnies` (`cobblefurnies:furni_crafting` at `cobblefurnies:furnicrafter`).
 
 ## 6. Decisions
 
@@ -70,8 +85,12 @@ where it came from. A step takes 6 ticks a craft (at least a second), faster wit
   the Crafter does both, so it gets a workbench of its own (and the workshop has neither, so nobody else moves in).
 - The vanilla stand-in for "a chair from slabs and planks" is the barrel (six planks and two slabs): vanilla has no
   chair. With Handcrafted installed its chairs are planned the same way from their own recipes.
-- A furniture mod's bench is named by recipe type id and block ids in a data file, never its classes; none is shipped
-  yet, since the pack's furniture mods (Handcrafted, Beautify, CobbleFurnies) make their pieces at the crafting table.
+- A furniture mod's bench is named by recipe type id and block ids in a data file, never its classes.
+- 37.15: one bench file shipped, CobbleFurnies' Furni Crafter, the only bench among the pack's furniture mods. A Furni
+  Crafter in the workshop is also the Furnicrafter's job block (38.12); a Crafter and a Furnicrafter there may both make
+  CobbleFurnies pieces for the builders.
+- 37.15: a bench file is dropped when its recipe type isn't registered, rather than kept and never matched, so a
+  server without the mod doesn't scan the workshop for its blocks.
 
 ## 7. Known limits
 
@@ -89,5 +108,11 @@ where it came from. A step takes 6 ticks a craft (at least a second), faster wit
 - `CrafterGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `CrafterGameTests.withTheSwitchOffTheCrafterMakesNothing`: the switch off.
 - `CrafterGameTests.aBenchsRecipesOnlyWhileTheBenchIsThere`: a bench's recipes.
+- `CrafterGameTests.theCobbleFurniesBenchIsIgnoredWithoutCobbleFurnies`: the shipped bench file left out without its mod.
+- `CrafterFurnitureCompatTests.theCrafterMakesHandcraftedChairsFromLogsForTheBuilder`: Handcrafted chairs from logs for
+  a builder's shortfall, and the build finishing with them (compat suite).
+- `CrafterFurnitureCompatTests.theFurniCraftersRecipesOnlyWhileItStandsInTheWorkshop`: CobbleFurnies' bench recipes only
+  while the Furni Crafter stands in the workshop (compat suite).
+- `CrafterFurnitureCompatTests.aBenchFileForAModThatIsntInstalledIsIgnored`: a bench file for an absent mod (compat suite).
 
-Showcase scenes: `crafter_chain`
+Showcase scenes: `crafter_chain`, `crafter_furniture`

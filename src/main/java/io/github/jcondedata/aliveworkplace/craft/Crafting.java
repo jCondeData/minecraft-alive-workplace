@@ -398,6 +398,47 @@ public final class Crafting {
 			pool.addMade(target, (long) out.getCount() * times);
 			return true;
 		}
+		if (kind == Kind.CRAFTER && !CrafterBenches.all().isEmpty()) {
+			return makeAtBench(level, kind, target, count, pool, steps, depth, allowed);
+		}
+		return false;
+	}
+
+	/**
+	 * A Crafter's bench recipe that doesn't list its materials as ingredients (37.15: CobbleFurnies' Furni Crafter takes
+	 * so many of each item, read from its files by {@link FurnitureRecipes}): made the same way, with each material's
+	 * count, if its recipe type is a {@code crafter_benches} bench's and the bench stands in the workshop.
+	 */
+	private static boolean makeAtBench(ServerLevel level, Kind kind, Item target, int count, Pool pool, List<Step> steps, int depth,
+			Predicate<LuxuryRecipes.Recipe> allowed) {
+		RecipeManager manager = Recipes.manager(level);
+		for (FurnitureRecipes.Recipe recipe : FurnitureRecipes.making(level.getServer(), target)) {
+			RecipeType<?> type = Recipes.byId(manager, recipe.id()).map(h -> (RecipeType<?>) h.value().getType()).orElse(null);
+			if (type == null || !CrafterBenches.isBenchType(type) || !pool.budget.types.test(type)) {
+				continue; // not a bench's, or the bench isn't in the workshop
+			}
+			if (!recipe.result().is(target) || !recipe.result().getComponentsPatch().isEmpty()) {
+				continue;
+			}
+			if (!pool.budget.tryOne()) {
+				return false;
+			}
+			int each = recipe.result().getCount();
+			int times = Math.min(MAX_CRAFTS, (count + each - 1) / each);
+			List<Slot> slots = new ArrayList<>();
+			recipe.materials().forEach((item, n) -> slots.add(new Slot(List.of(item), n, true, false)));
+			Pool trial = pool.copy();
+			List<Step> trialSteps = new ArrayList<>();
+			Map<Item, Integer> in = pick(level, kind, slots, times, trial, trialSteps, depth, allowed);
+			if (in == null) {
+				continue;
+			}
+			pool.set(trial);
+			steps.addAll(trialSteps);
+			steps.add(new Step(in, recipe.result().copy(), times));
+			pool.addMade(target, (long) each * times);
+			return true;
+		}
 		return false;
 	}
 

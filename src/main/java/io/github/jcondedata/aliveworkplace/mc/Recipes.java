@@ -48,6 +48,11 @@ public final class Recipes {
 		return manager.getRecipeFor(type, input, level);
 	}
 
+	/** The recipe loaded with id {@code id}, if there is one. */
+	public static Optional<RecipeHolder<?>> byId(RecipeManager manager, ResourceLocation id) {
+		return manager.byKey(id);
+	}
+
 	public static ResourceLocation id(RecipeHolder<?> holder) {
 		return holder.id();
 	}

@@ -4978,7 +4978,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   lacks, no partial waste), a builder's shortfall filled and the build finishing, two askers at once, save and reload
   mid-chain, its config switch off; text in `en_us.json`; wiki and guide pages; scene `crafter_chain`.
 
-- [ ] **37.15** **The Crafter makes the pack's furniture** (lane-c-1021-0052, from 37.14's open ends: its chain test ends in a
+- [x] **37.15** (approved auto 2026-10-21) **The Crafter makes the pack's furniture** (lane-c-1021-0052, from 37.14's open ends: its chain test ends in a
   barrel because vanilla has no chair, and `crafter_benches` ships no bench). With Handcrafted (and the pack's other furniture
   mods) installed, the Crafter fills a builder's shortfall of a modded chair through the whole chain: log to planks to
   slabs (or whatever the mod's recipe asks) to the chair, by recipe type and ids only. Read each pack furniture mod's jar
@@ -5285,6 +5285,17 @@ the owner's port jar; M33's caravans (39.7).
 ## Notes / blocked
 
 - 2026-10-20 (lane-c-1020-2153, for the owner): built B260 (furnished rooms follow placement rules; every furnished build regenerated; `FurnishedRoomsGameTests`; scene `furnished_home`), 37.14 the Crafter (`CrafterGameTests`, scene `crafter_chain`) and B262 (a far tool-linked Sophisticated link no longer double-counts its barrel). Decisions, no answer needed: vanilla has no chair, so the Crafter's three-step chain test ends in a barrel (log, planks, slabs); no furniture-mod bench data file ships yet in `crafter_benches` (the mods' bench and recipe-type ids weren't confirmed from their jars), so it crafts with vanilla crafting and stonecutting only for now; the Crafter isn't in the Steward's rules or village generation and its workshop blueprint isn't sold yet: candidates for a follow-up item. Merged lane D's 38.12 Furnicrafter alongside it (settings now 149). Question for the owner: none.
+- 2026-10-21 (lane-c-1021-0052): 37.15, which pack furniture mods have a bench, read from their jars: only
+  **CobbleFurnies 1.2** (the Furni Crafter `cobblefurnies:furnicrafter`, recipe type `cobblefurnies:furni_crafting`, 348
+  recipes), shipped as `data/aliveworkplace/crafter_benches/cobblefurnies.json`. **Handcrafted 4.0.3** (317 recipes, all
+  `crafting_shaped`/`shapeless`; its "benches" are seats) and **Beautify 2.0.0** (crafting plus one smelting) craft on the
+  crafting table, and **Lucky's Cozy Home 1.1.20** (Modrinth, not in the compat runtime) on the crafting table and the
+  stonecutter: no bench file for them. Handcrafted's Oak Chair is a slab, two planks and two sticks for two chairs, so the
+  chain from logs is planks, then slab and sticks, then chairs. Decisions: furni_crafting lists no ingredients, so
+  `Crafting` (Kind.CRAFTER) now also plans a bench type's counted-material recipes from `FurnitureRecipes` (the 38.12
+  reader in compat/cobblefurnies), looked up by recipe id (`mc/Recipes.byId`); and a `crafter_benches` file whose recipe
+  type isn't registered is dropped at load. A Furni Crafter in the Crafter's workshop is also the Furnicrafter's job
+  block; left as is (a jobless villager may take it). Scene `crafter_furniture` not filmed here (GitHub films it).
 - 2026-10-21 (lane-b-1021-0038, **owner question: Milestone 36 is empty again**): 36.16 and 36.17 landed last run
   (pending your review); `sessions.py next` gives the quick lane nothing. Which quick additions next? Until you add
   some, quick-lane runs end without work. Nothing left on wip/lane-b-* for M36 (wip/lane-b holds old bug fixes for lane a).

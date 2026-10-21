@@ -205,6 +205,23 @@ public class CrafterGameTests {
 		helper.succeed();
 	}
 
+	/**
+	 * The shipped bench file for CobbleFurnies' Furni Crafter (37.15) is left out while CobbleFurnies isn't installed (its
+	 * recipe type isn't registered), and a Furni Crafter's block id near the workbench opens nothing; the test bench loads.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void theCobbleFurniesBenchIsIgnoredWithoutCobbleFurnies(GameTestHelper helper) {
+		helper.assertTrue(!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cobblefurnies"), "CobbleFurnies is loaded in the plain suite");
+		ResourceLocation type = ResourceLocation.fromNamespaceAndPath("cobblefurnies", "furni_crafting");
+		helper.assertTrue(helper.getLevel().getServer().getResourceManager()
+				.getResource(ResourceLocation.fromNamespaceAndPath("aliveworkplace", CrafterBenches.FOLDER + "/cobblefurnies.json")).isPresent(),
+			"the CobbleFurnies bench file isn't shipped");
+		helper.assertTrue(!CrafterBenches.all().containsKey(type), "the CobbleFurnies bench loaded without CobbleFurnies: " + CrafterBenches.all());
+		helper.assertTrue(CrafterBenches.all().containsKey(ResourceLocation.withDefaultNamespace("smelting")), "the test bench should still load: " + CrafterBenches.all());
+		helper.succeed();
+	}
+
 	// --- helpers ---------------------------------------------------------------------------------------------------
 
 	private static void prepare(GameTestHelper helper) {

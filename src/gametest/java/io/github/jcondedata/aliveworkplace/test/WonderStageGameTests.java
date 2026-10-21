@@ -143,10 +143,11 @@ public class WonderStageGameTests implements FabricGameTest {
 				}
 				if (stage == 3) {
 					helper.assertTrue(plan.steps(BuildPlan.Stage.LANDSCAPE).isEmpty(), "the dome levels round itself: " + plan.steps(BuildPlan.Stage.LANDSCAPE).size());
-					// the old rule, levelling round the dome's own bottom: the band beside the cornice
+					// the old rule, levelling round the dome's own bottom, made a band beside the cornice; since B280 the ring is
+					// filled no higher than the land beyond it, so even levelled that way no dirt goes up there
 					BuildPlan old = BuildPlan.create(BlueprintLibrary.get(level.getServer(), part.structure()).orElseThrow(), part.placement(), level, 0, margin);
-					helper.assertTrue(old.steps(BuildPlan.Stage.LANDSCAPE).stream().anyMatch(s -> s.state().is(Blocks.DIRT) && s.pos().getY() == origin.getY() + 12),
-						"the test doesn't see the band the old rule made");
+					helper.assertTrue(old.steps(BuildPlan.Stage.LANDSCAPE).stream().noneMatch(s -> s.state().is(Blocks.DIRT) && s.pos().getY() >= origin.getY()),
+						"levelled round its own bottom, the dome fills dirt above the ground: the band beside the cornice (B280)");
 				}
 				for (BuildPlan.Stage kind : new BuildPlan.Stage[] {BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION}) {
 					for (BuildPlan.Step step : plan.steps(kind)) {

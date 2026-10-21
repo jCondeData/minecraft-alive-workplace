@@ -54,6 +54,8 @@ final class ColonyDepartureScene {
 	private volatile boolean gone;
 	private volatile boolean onRoad;
 	private volatile BlockPos hall;
+	/** The Storehouse's chest with the settlers' supplies (B284). */
+	private volatile BlockPos chestAt;
 	/** B253: when the muster began and the bell rang (game ticks, 0: not seen), and the settlers as last seen before it. */
 	private volatile long musterAt;
 	private volatile long bellAt;
@@ -110,6 +112,13 @@ final class ColonyDepartureScene {
 				ServerPlayer player = player(server);
 				city(server);
 				Settlers.MUSTER_DELAY = 100;
+				// B284: the supplies aren't the settlers' until the order is given, and the live plains village round the hall
+				// may eat from the Storehouse in the 50 ticks before it (once a bread went, and the order waited for it). The
+				// chest is filled again just before the charter is used, and what had gone is printed.
+				String gone = stock(level);
+				if (!gone.isEmpty()) {
+					System.out.println("[showcase] colony_departure: the village used " + gone + " from the Storehouse before the order; filled again");
+				}
 				player.gameMode.useItemOn(player, level, player.getMainHandItem(), InteractionHand.MAIN_HAND,
 					new BlockHitResult(Vec3.atCenterOf(hall), Direction.UP, hall, false));
 				RealmData.Order order = order(server);
@@ -280,16 +289,9 @@ final class ColonyDepartureScene {
 		// The Storehouse and its chest, with everything the settlers take.
 		BlockPos store = ground(level, hall.getX() - 3, hall.getZ());
 		level.setBlockAndUpdate(store, ModBlocks.STOREHOUSE.defaultBlockState());
-		BlockPos chestAt = ground(level, hall.getX() - 4, hall.getZ());
+		chestAt = ground(level, hall.getX() - 4, hall.getZ());
 		level.setBlockAndUpdate(chestAt, Blocks.CHEST.defaultBlockState());
-		if (level.getBlockEntity(chestAt) instanceof ChestBlockEntity chest) {
-			ItemStack[] stacks = {new ItemStack(Items.OAK_LOG, 64), new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(Items.COBBLESTONE, 64),
-				new ItemStack(Items.BREAD, 32), new ItemStack(Items.TORCH, 16), new ItemStack(Items.GLASS_PANE, 12), new ItemStack(Items.RED_BED),
-				new ItemStack(Items.RED_BED), new ItemStack(Items.RED_BED)};
-			for (int i = 0; i < stacks.length; i++) {
-				chest.setItem(i, stacks[i]);
-			}
-		}
+		stock(level);
 		// The Storehouse's own porter (B132): with the Storehouse free, Dara or Tomas took it as a porter within the 50 ticks
 		// before the order, so a villager from across the village volunteered instead and couldn't reach the hall before
 		// the muster's bell rang without them.
@@ -321,6 +323,34 @@ final class ColonyDepartureScene {
 			stand = hall.south(2);
 		}
 		player.teleportTo(level, stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, -140, 8);
+	}
+
+	/** Fills the Storehouse's chest with exactly the settlers' supplies; returns what was short of them before ("" if nothing). */
+	private String stock(ServerLevel level) {
+		if (chestAt == null || !(level.getBlockEntity(chestAt) instanceof ChestBlockEntity chest)) {
+			return "";
+		}
+		ItemStack[] stacks = {new ItemStack(Items.OAK_LOG, 64), new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(Items.COBBLESTONE, 64),
+			new ItemStack(Items.BREAD, 32), new ItemStack(Items.TORCH, 16), new ItemStack(Items.GLASS_PANE, 12), new ItemStack(Items.RED_BED),
+			new ItemStack(Items.RED_BED), new ItemStack(Items.RED_BED)};
+		List<String> short_ = new ArrayList<>();
+		if (!chest.isEmpty()) {
+			java.util.Map<net.minecraft.world.item.Item, Integer> want = new java.util.LinkedHashMap<>();
+			for (ItemStack stack : stacks) {
+				want.merge(stack.getItem(), stack.getCount(), Integer::sum);
+			}
+			want.forEach((item, n) -> {
+				int had = chest.countItem(item);
+				if (had < n) {
+					short_.add((n - had) + " " + net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath());
+				}
+			});
+		}
+		chest.clearContent();
+		for (int i = 0; i < stacks.length; i++) {
+			chest.setItem(i, stacks[i]);
+		}
+		return String.join(", ", short_);
 	}
 
 	private static BlockPos ground(ServerLevel level, int x, int z) {

@@ -45,6 +45,11 @@ final class PartnersAllScene {
 		return new BlockPos((i % 4) * 10 - 15, -60, (i / 4) * 10 - 10);
 	}
 
+	/** Where each job's partner is pastured. */
+	private static BlockPos pastureOf(BlockPos base) {
+		return base.offset(-4, 0, 2);
+	}
+
 	private static final List<Stop> STOPS = List.of(
 		new Stop("miner", () -> ModBlocks.MINERS_BENCH, ModVillagers.MINERS_BENCH_POI, () -> ModVillagers.MINER, "geodude", "dig",
 			new BlockPos(3, 0, 0), new ItemStack(Items.STONE)),
@@ -136,10 +141,19 @@ final class PartnersAllScene {
 			});
 		}
 		if (at == 5) {
-			// Back by its pasture first: a partner that wandered off (out of the worker's reach) would miss its cue.
+			// Back by its pasture first: a partner that wandered off (out of the worker's reach) would miss its cue (B276).
+			// Found by its pasture anywhere it may roam (64 blocks each way): a Pidgey flew more than 30 blocks off during
+			// the earlier stops, the old 30-block search missed it, and the cue found no partner near the workstation. Set
+			// down on open ground 1.5 blocks clear of the pasture block: half a block off it, a wide partner (a Tauros)
+			// overlapped it and was pushed up onto it, where Cobblemon's pathfinder found no way down to the work.
+			BlockPos pasture = pastureOf(base);
 			server.execute(() -> server.overworld().getEntitiesOfClass(com.cobblemon.mod.common.entity.pokemon.PokemonEntity.class,
-				new AABB(base).inflate(30), e -> e.getTethering() != null && e.getPokemon().getSpecies().getName().equalsIgnoreCase(stop.species()))
-				.forEach(e -> e.teleportTo(base.getX() - 2.5, base.getY(), base.getZ() + 2.5)));
+				new AABB(pasture).inflate(70), e -> e.getTethering() != null && e.getTethering().getPasturePos().equals(pasture))
+				.forEach(e -> {
+					e.getNavigation().stop();
+					e.setDeltaMovement(Vec3.ZERO);
+					e.teleportTo(base.getX() - 1.5, base.getY(), base.getZ() + 3.5);
+				}));
 		}
 		if (at == 10) {
 			server.execute(() -> {
@@ -155,8 +169,10 @@ final class PartnersAllScene {
 		// The still: once the partner is at the work, a moment into its show (or at the time limit).
 		if (at > 10 && (playing && at % 2 == 1 || at >= SHOT_BY)) {
 			if (!playing) {
-				Showcase.check(false, "the " + stop.species() + " reached the " + stop.name() + "'s work in time");
+				server.execute(() -> Showcase.check(false, "the " + stop.species() + " reached the " + stop.name() + "'s work in time: "
+					+ Probe.whereIs(server.overworld(), stop, base) + "; the cue sent out " + PartnerShows.lastPartner(workers.get(i))));
 			}
+			System.out.println("[partners_all] " + stop.name() + (playing ? " playing " : " not playing ") + at + " ticks after the stop began");
 			int wait = playing ? 12 : 0;
 			stopAt = Integer.MAX_VALUE / 2; // paused: the shot is taken below, after a short wait for the effect
 			pendingShot = tick + wait;
@@ -166,6 +182,32 @@ final class PartnersAllScene {
 			pendingShot = -1;
 			stopIndex++;
 			stopAt = tick + 40; // the next stop, after this show has gone back
+		}
+	}
+
+	/**
+	 * Where the stop's partner is when its still is due without it at work (B276): position, distance to the work, its show and tether.
+	 * In its own class (B278): this method hands a {@code PokemonEntity} to {@code PartnerShows.describe(Entity)}, so the verifier loads
+	 * Cobblemon's class to check it is an {@code Entity}. Kept in {@code PartnersAllScene} itself, that happened when the harness built the
+	 * scene at start-up, and every scene crashed without Cobblemon. A nested class is only verified when the probe first runs.
+	 */
+	private static final class Probe {
+		private Probe() {
+		}
+
+		static String whereIs(ServerLevel level, Stop stop, BlockPos base) {
+			Vec3 work = Vec3.atBottomCenterOf(base.offset(stop.work()));
+			List<String> seen = new ArrayList<>();
+			for (var e : level.getEntitiesOfClass(com.cobblemon.mod.common.entity.pokemon.PokemonEntity.class, new AABB(base).inflate(80),
+				e -> e.getPokemon().getSpecies().getName().equalsIgnoreCase(stop.species()))) {
+				var tether = e.getTethering();
+				seen.add(e.getUUID().toString().substring(0, 8) + String.format(java.util.Locale.ROOT, " at %.1f %.1f %.1f, %.1f across and %.1f up from the work, %s, %s, %s",
+					e.getX(), e.getY(), e.getZ(), Math.hypot(e.getX() - work.x, e.getZ() - work.z), e.getY() - work.y, PartnerShows.describe(e),
+					tether == null ? "not pastured" : "tether box " + tether.getMinRoamPos().toShortString() + " to " + tether.getMaxRoamPos().toShortString(),
+					(e.isRemoved() ? "removed" : e.getNavigation().isDone() ? "navigation idle" : "navigating") + (e.isBusy() ? ", busy" : "")
+						+ (e.isBattling() ? ", battling" : "")));
+			}
+			return seen.isEmpty() ? "no " + stop.species() + " within 60 blocks (recalled?)" : String.join("; ", seen);
 		}
 	}
 
@@ -216,8 +258,7 @@ final class PartnersAllScene {
 				default -> {
 				}
 			}
-			BlockPos pasture = base.offset(-4, 0, 2);
-			pasture(level, player, pasture, stop.species() + " level=25");
+			pasture(level, player, pastureOf(base), stop.species() + " level=25");
 		}
 		ScreenshotHarness.hover(player, Vec3.atCenterOf(corner(0)).add(1.5, 3.5, 8.5), 180, 20);
 	}

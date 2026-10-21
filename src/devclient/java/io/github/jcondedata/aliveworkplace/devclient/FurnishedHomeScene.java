@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.devclient;
 
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
@@ -34,6 +35,8 @@ final class FurnishedHomeScene {
 	private static final BlockPos VANILLA = new BlockPos(24, -60, 0);
 	private static final ResourceLocation STONE_HOUSE = StarterBlueprints.STONE_HOUSE.id();
 	private static final BlockPos STONE = new BlockPos(48, -60, 0);
+	private static final ResourceLocation TERRACE = AliveWorkplace.id("terrace");
+	private static final BlockPos TERRACE_AT = new BlockPos(72, -60, 0);
 
 	/** The stills: a name, where the camera is and what it looks at (relative to a cottage's origin), which cottage. */
 	private record View(String name, Vec3 eye, Vec3 at, BlockPos cottage) {
@@ -47,7 +50,9 @@ final class FurnishedHomeScene {
 		new View("05_sitting", new Vec3(4.5, 8.1, 6.8), new Vec3(6.5, 6.6, 2), FURNISHED),
 		new View("06_vanilla_dining", new Vec3(7.5, 3.1, 4.2), new Vec3(2.5, 1.6, 5), VANILLA),
 		new View("07_stone_doorway", new Vec3(6.5, 3.4, 5.5), new Vec3(5.5, 1.2, 1.5), STONE),
-		new View("08_stone_attic", new Vec3(7.5, 7.7, 4.5), new Vec3(2.5, 6.4, 4.5), STONE));
+		new View("08_stone_attic", new Vec3(7.5, 7.7, 4.5), new Vec3(2.5, 6.4, 4.5), STONE),
+		new View("09_terrace_west", new Vec3(2.6, 3.2, 2.3), new Vec3(4.5, 1.4, 5.5), TERRACE_AT),
+		new View("10_terrace_east", new Vec3(10.4, 3.2, 2.3), new Vec3(7.5, 1.4, 5.5), TERRACE_AT));
 	private static final int FIRST = 80;
 	private static final int EACH = 50;
 
@@ -118,6 +123,29 @@ final class FurnishedHomeScene {
 		}
 	}
 
+	/**
+	 * The Terrace as a builder here would build it (B281): both homes' kitchens get the mods' table and chair (the east
+	 * one's table stands against the party wall), and each kitchen has its own lantern.
+	 */
+	private void placeTerrace(ServerLevel level) {
+		Blueprint base = BlueprintLibrary.get(level, TERRACE).orElse(null);
+		if (base == null) {
+			wrong.add("no Terrace blueprint");
+			return;
+		}
+		FurnitureChoice choice = FurnitureChoice.forNewBuild(TERRACE);
+		for (Blueprint.Entry e : choice.apply(base, TERRACE).blocks()) {
+			level.setBlock(TERRACE_AT.offset(e.pos()), e.state(), 2 | 16);
+		}
+		boolean modsHere = BuiltInRegistries.BLOCK.containsKey(ResourceLocation.parse("handcrafted:oak_chair"));
+		for (boolean east : new boolean[] {false, true}) {
+			long modded = choice.spots().values().stream().filter(p -> p.pos().getY() == 1 && (p.pos().getX() > 6) == east).count();
+			if (modsHere && modded < 2) {
+				wrong.add("the Terrace's " + (east ? "east" : "west") + " kitchen has " + modded + " modded pieces");
+			}
+		}
+	}
+
 	/** The furnished cottage as a builder on this server would build it, and the vanilla one beside it. */
 	private void place(ServerLevel level) {
 		Blueprint base = BlueprintLibrary.get(level, COTTAGE).orElse(null);
@@ -133,6 +161,7 @@ final class FurnishedHomeScene {
 			level.setBlock(VANILLA.offset(e.pos()), e.state(), 2 | 16);
 		}
 		placeStoneHouse(level);
+		placeTerrace(level);
 		java.util.Set<String> mods = new java.util.TreeSet<>();
 		int pieces = 0;
 		for (FurnitureChoice.Placed placed : choice.spots().values()) {

@@ -251,22 +251,16 @@ SCENES = [
     # Crafters
     S("carpenter", "Carpenter", "Making a builder's woodwork", "the carpenter made woodwork for the builder", 150,
       [("*_carpenter@first", "Start"), ("*_carpenter@middle", "Working"), ("30_carpenter_closeup", "At the crafting table")]),
-    # The Crafter (ROADMAP 37.14): logs sawn into planks, then sticks, fences and slabs, for the builder's Market Stall
-    S("crafter_chain", "Crafter", "Making a builder's woodwork from logs, one step after another",
-      "the crafter made the builder's woodwork from logs", 150,
-      [("*_crafter_chain@first", "Start"), ("*_crafter_chain@middle", "Working through the chain"),
-       ("30_crafter_chain_closeup", "At the Crafter's Workbench")]),
-    # The Crafter's Workshop (ROADMAP 37.16): the build the Table offers and the Steward plans, then as villages grow it
-    S("crafter_workshop", "Crafter", "The Crafter's Workshop, and the one villages grow in three styles",
-      "the Crafter's Workshop stands with its Crafter's Workbench, and the village's in three styles came with their Crafters", 90,
-      [("10_crafters_workshop", "The Crafter's Workshop: board walls in a spruce frame, the store lean-to beside"),
-       ("12_village_plains", "A plains village's Crafter's Workshop: its gable to the street, the work hatch by the door"),
-       ("15_village_desert_back", "A desert village's: the lean-to parts store of boards and logs"),
-       ("16_village_snowy", "A snowy village's, its Crafter at the bench")]),
-    # The Crafter makes the pack's furniture (ROADMAP 37.15): Handcrafted's chairs on the crafting table, CobbleFurnies'
-    # at the Furni Crafter in its workshop, from oak logs, for a builder's dining corner
-    S("crafter_furniture", "Crafter", "Making the pack's furniture from logs: Handcrafted chairs, and a CobbleFurnies chair at its Furni Crafter",
-      "the crafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them", 150,
+    # Job chains (ROADMAP 37.14a, which retired the Crafter): several jobs filling one builder's Market Stall list from raw
+    # makings, each its own kind a step at a time (the Carpenter's woodwork, the dyer's red wool, the Tinkerer's lantern)
+    S("job_chains", "Carpenter", "Several jobs filling one builder's list, each making its own kind a step at a time",
+      "several jobs filled the builder's list", 150,
+      [("*_job_chains@first", "Start: only raw makings in the builder's chest"), ("*_job_chains@middle", "The jobs working through their chains"),
+       ("30_job_chains_closeup", "At the workstations")]),
+    # The pack's furniture from logs (ROADMAP 37.15, 37.14a): Handcrafted's chairs by the Carpenter at the crafting table's
+    # recipe, CobbleFurnies' by the Furnicrafter at its Furni Crafter, for a builder's dining corner
+    S("crafter_furniture", "Carpenter", "Making the pack's furniture from logs: Handcrafted chairs by the Carpenter, a CobbleFurnies chair by the Furnicrafter",
+      "the Carpenter and the Furnicrafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them", 150,
       [("*_crafter_furniture@first", "Start: a table and oak logs in the chest"), ("*_crafter_furniture@middle", "Sawing, cutting and crafting"),
        ("30_crafter_furniture_corner", "The dining corner, built")], cobblemon=True, furniture=True),
     job("mason", "Mason", "Cutting stone for a builder", "the mason cut stone bricks the builder needed", 240),
@@ -305,6 +299,21 @@ SCENES = [
       "the capped builder's status line says \"at the cap\", and ill they're held back", 40,
       [("01_pace_capped", "Three partners, a kept village, research, a happy mood: 100% faster, at the cap"),
        ("02_pace_ill", "The same builder ill: held back to the usual pace")], cobblemon=True),
+    # B279: the material list of a build under way, from the builder himself: a Book and Quill, or the whole list in chat
+    S("builder_list", "Builder", "What the build still needs, from the builder",
+      "a Book and Quill used on the builder became the rest of his build's list with the chest's share checked off, and a sneak-click with an empty hand put the whole list in chat", 40,
+      [("00_half_built", "Halfway up, a Book and Quill in hand"), ("01_list_book", "The list: how far along, what's counted"),
+       ("02_list_page", "What's still to bring, checked off"), ("03_chat_list", "Sneak-click: the whole list in chat")]),
+    # B290: a builder at a workshop's table counts the village Storehouse, and a sneak-click moves him to another table
+    S("builder_table_move", "Builder", "Moving a builder to another Blueprint Table",
+      "the builder at the workshop's table counted the Storehouse's stone, and a sneak-click on the second table moved him there with both tables standing", 40,
+      [("00_counts_the_storehouse", "At the workshop's table, the Storehouse counted"), ("01_moved", "Sneak-click: he works at the new table"),
+       ("02_status_names_the_table", "His status names the table")]),
+    # B280: the Terrace a block above the lawn round it, landscaped: the pit filled, no raised band of dirt on the grass
+    S("terrace_grade", "Builder", "Levelling leaves the lawn level round a raised build",
+      "round the finished Terrace the lawn stayed level: the pit was filled, nothing was raised above the grass and no sand or gravel was left", 120,
+      [("01_before", "Before: a bump a block above the lawn, a pit beside it"), ("02_front", "Landscaped: the lawn as it was, the pit filled"),
+       ("03_corner", "The corner: no band of dirt on the grass")]),
     S("partners_land", "Builder", "Pokémon partners at work: building and the land",
       "the Machamp carried the beams and the Wartortle watered the farmer's patch", 60,
       [("01_partners_carry", "Beams on its shoulder"), ("02_partners_at_work", "At work"), ("03_watered_field", "The patch watered")],
@@ -455,6 +464,11 @@ SCENES = [
       "the empty Storehouse was listed with its building and distance, and Dara, picked for it, became the Porter", 50,
       [("01_free_jobs", "The Free job blocks page: the Storehouse and a bench"), ("02_who_takes_it", "Who could take the Storehouse"),
        ("03_dara_porter", "Dara picked: now the Porter, walking over")]),
+    # Change job from the hall (ROADMAP 36.18): a working villager's page, the free jobs with the price, paid on a second click
+    S("hall_retrain", "Village Hall", "Changing a villager's job from the hall",
+      "Dara, a Journeyman Librarian, became the Porter from the hall's Change job for 20 emeralds, at once, her lectern left free", 55,
+      [("01_worker_page", "Dara's page in the residents list, with Change job"), ("02_price", "The free Storehouse and the Builder, with her price"),
+       ("03_dara_porter", "Paid: the list shows her as the Porter straight away"), ("04_walking", "Dara walks to her new Storehouse")]),
     # The Builder asks before repairing a house (ROADMAP 36.15): the question in chat and on the hall's Repairs page, then Yes
     S("repair_ask", "Village Hall", "The Builder asks before repairing a house",
       "Bram found 5 blocks missing from the Starter Cottage and asked in chat; the hall's Repairs page listed it waiting for an answer, "
@@ -1169,13 +1183,14 @@ SCENES = [
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
     # Furnished homes (ROADMAP 37.4): Starter Cottage II as a server with the pack's furniture mods builds it, room by room
     # B260: and the owner's Stone House, its way in clear and its attic a bedroom
-    # four stills on the card (the selftest's 2-4, B272); the harness still films 05_sitting and 06_vanilla_dining
-    S("furnished_home", "Build families", "A furnished Starter Cottage, room by room, and the Stone House's doorway and attic bedroom (Handcrafted, Beautify, CobbleFurnies)",
-      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats",
-      100, [("02_dining", "The dining corner: a Handcrafted table and chairs, a shelf of crockery, a picture on the wall"),
-           ("03_bedroom", "The bedroom corner: the fancy bed, a nightstand, a lamp and the couch"),
-           ("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
-           ("08_stone_attic", "The Stone House attic: the bed's head to the gable, a nightstand, a chest at its foot, a lamp hung from the ridge")],
+    # B281: and the Terrace's two kitchens. Four stills on the card (the selftest's 2-4, B272): the owner's B260 and B281
+    # rooms; the harness still films the cottage's 02_dining, 03_bedroom, 05_sitting and 06_vanilla_dining
+    S("furnished_home", "Build families", "Furnished homes: the Stone House's doorway and attic bedroom, and the Terrace's two lit kitchens (Handcrafted, Beautify, CobbleFurnies)",
+      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats; both Terrace kitchens hold modded pieces",
+      100, [("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
+           ("08_stone_attic", "The Stone House attic: the bed's head to the gable, a nightstand, a chest at its foot, a lamp hung from the ridge"),
+           ("09_terrace_west", "The Terrace's west kitchen: the mods' table and chair, a lantern hung from the bedroom floor"),
+           ("10_terrace_east", "The Terrace's east kitchen: its own mods' table (against the party wall) and chair, and its own lantern")],
       cobblemon=True, furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",

@@ -1677,7 +1677,7 @@ public class BuilderWork extends Behavior<Villager> {
 	 * What village-mates' chests hold that this build may take, by family key: everything in theirs, but in another
 	 * builder's only what their own builds don't need (B31: counting it all left a builder waiting with nothing missing).
 	 */
-	private static Map<Item, Long> spareElsewhere(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
+	static Map<Item, Long> spareElsewhere(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
 		Map<Item, Long> out = new HashMap<>();
 		for (Village.Stash stash : Village.stashes(level, villager, bench, plan.supplyExclude())) {
 			Map<Item, Long> held = new HashMap<>();

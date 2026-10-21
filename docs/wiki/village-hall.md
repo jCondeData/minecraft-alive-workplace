@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18
 
 ## What a player sees
 
@@ -30,8 +30,24 @@ village nobody works at, nearest the hall first. Each shows the block, the job i
 ("In the Storehouse", or "Not in a building"), how far and which way from the hall, and how many villagers without a
 job could take it. Click a block and its page lists those villagers; click one and they get the block: they claim it
 and walk over to it. So an empty Storehouse or a lectern left in a finished home can be filled from the hall, without
-leading anyone into the house. A villager who already works isn't listed; they are retrained at the block itself, for
-a price (26.6, see [Villager jobs](villager-jobs.md)).
+leading anyone into the house. A villager who already works isn't listed; they change job from their own page (36.18, below) or
+at the block itself (26.6, see [Villager jobs](villager-jobs.md)), for a price.
+
+**Change job (36.18).** A plain click on a worker in the residents list only makes them glow, as before; a right-click opens their page (back,
+the worker, Find, and a **Change job** emerald at slot 22). It's offered when `HallRetraining.canRetrain` holds: rule
+`workplaceRetraining` on, a grown villager with a job and a job site, not a nitwit, Legend or caravan carter. Change job
+lists `VillageHalls.freeStations` of a job other than theirs, each with the price (`Retraining.price`, 5/10/20/35/50 by
+level, config `retrainPrices`), and the Builder: a free Blueprint Table is listed like any block; with none, a grey
+Builder entry says to place one. The first click marks the block (glint, "Click again to pay") and posts the 26.6 offer
+text; the second runs `HallRetraining.retrain`: the hired-worker check (`Friends.mayCommand`), the class check (34.8),
+the block still free, the money (`Money`, CobbleDollars when present), then `Retraining.retrain` (a builder's
+builds handed back, level and XP reset, `Stations.assign`: profession, job site memory and the POI claim all on the click). The
+villager gets a walk target and the saved attachment `retrain_walk` (`HallRetraining.Walk`: block, game time). Each
+second, `HallRetraining.tick` (from `VillagerMixin`) ends the walk when they're within 3 blocks, the block is gone or no
+longer their job site; keeps them walking (and clears vanilla's `CANT_REACH_WALK_TARGET_SINCE`, so vanilla never drops
+the job site meanwhile); and after `ARRIVE_TICKS` (1,000, about a minute) moves them to the nearest standing spot by the
+block (`Walker.standingSpot`). Asleep, they wait till they wake. The list then shows the new job. Tests:
+`HallRetrainingGameTests`; scene `hall_retrain`.
 
 **Repairs (36.15).** A tab with an anvil opens the "Repairs" page: the village's damaged builds, each with what's missing
 and where its question stands (waiting for your answer, being repaired by a named Builder, agreed, paused, left for

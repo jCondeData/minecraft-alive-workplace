@@ -145,6 +145,45 @@ public class B225GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		});
 	}
 
+	/**
+	 * B288 (a showcase run of camp_cleared: one column of the rise came back a block too high): while the camp stands, grass
+	 * creeps over the bare dirt it filled its floor with (and its trampled dirt); once it is down, that grass goes too and the
+	 * land is as it was. (Here the creeping is done at once, as random ticks do over time.)
+	 */
+	//$ gametest_ticks_batch AREA '400' '"b288Grass"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "b288Grass")
+	public void b288GrassCreptOverTheCampsFloorStillGoes(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos ground = slope(helper);
+		helper.runAfterDelay(2, () -> {
+			Map<BlockPos, BlockState> before = snapshot(helper);
+			Lairs.Lair lair = camp(helper, hall, ground);
+			// (the fire stands one above the camp's floor; relative y as the helper counts it)
+			int floor = lair.pos().getY() - 1 - helper.absolutePos(BlockPos.ZERO).getY();
+			int crept = 0;
+			for (int x = FROM; x <= TO; x++) {
+				for (int z = FROM; z <= TO; z++) {
+					BlockPos p = new BlockPos(x, floor, z);
+					if (helper.getBlockState(p).is(Blocks.DIRT) && helper.getBlockState(p.above()).isAir()) {
+						helper.setBlock(p, Blocks.GRASS_BLOCK);
+						if (before.get(p).isAir()) {
+							crept++; // (camp's own fill, where the land was lower)
+						}
+					}
+				}
+			}
+			helper.assertTrue(crept > 0, "no bare fill on the camp's floor for grass to creep over");
+			killChief(level, lair);
+			helper.runAfterDelay(GONE, () -> {
+				helper.assertTrue(CampCleanup.clearing(level).isEmpty(), "the clearing never ended");
+				String diff = changed(helper, before);
+				helper.assertTrue(diff == null, "the land isn't as it was: " + diff);
+				helper.succeed();
+			});
+		});
+	}
+
 	/** Saved and reloaded before and halfway through: the ground's record carries over and the land comes back. */
 	//$ gametest_ticks_batch AREA '400' '"b225Reload"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "b225Reload")

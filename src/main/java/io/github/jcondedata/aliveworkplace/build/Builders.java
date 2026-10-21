@@ -361,9 +361,13 @@ public final class Builders {
 			tell(player, Component.translatable(benchPos(villager).isPresent()
 				? "message.aliveworkplace.status.idle" : "message.aliveworkplace.status.no_bench", villager.getDisplayName()), ChatFormatting.GRAY);
 			tell(player, Component.literal("  ").append(BuilderLevels.describe(villager)), ChatFormatting.DARK_AQUA);
+			BenchMoves.statusLine(villager).ifPresent(line -> tell(player, Component.literal("  ").append(line), ChatFormatting.GRAY)); // B290
 			return;
 		}
 		Chat.system(player, statusText(level, site, villager));
+		if (!site.isQueued() && !site.isDeconstruction()) {
+			Chat.system(player, SiteList.chat(level, site, villager)); // B279: the whole list, not just the first few
+		}
 	}
 
 	public static Component statusText(ServerLevel level, BuildSite site, @Nullable Villager villager) {
@@ -396,6 +400,7 @@ public final class Builders {
 				text.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY));
 				text.append(Component.translatable("message.aliveworkplace.status.works_for", employer.name()).withStyle(ChatFormatting.DARK_AQUA));
 			}
+			BenchMoves.statusLine(villager).ifPresent(line -> text.append(Component.literal("\n  ")).append(line.copy().withStyle(ChatFormatting.GRAY)));
 		}
 
 		if (site.detail() != null) {
@@ -406,7 +411,9 @@ public final class Builders {
 		if (villager != null && supplyBench.isPresent() && !site.isDeconstruction()) {
 			List<BlockPos> supplies = SupplyContainers.find(level, supplyBench.get(), plan.supplyExclude());
 			BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
-			site.setMissing(computeMissing(level, site, plan, bag, supplies));
+			// B290: what the village's Storehouse and the other workers' chests can spare isn't missing either (counting the
+			// bench's chests only said "Needs" for what the Storehouse held, and left that on the overhead line too)
+			site.setMissing(computeMissing(level, site, plan, bag, supplies, BuilderWork.spareElsewhere(level, villager, site, plan, supplyBench.get())));
 		}
 		if (!site.missing().isEmpty()) {
 			text.append(Component.literal("\n  "));

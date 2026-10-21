@@ -35,52 +35,38 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 
 /**
- * ROADMAP 37.16: the Crafter's Workshop where the other job workshops are. In the Blueprint Table (not while Crafters are
- * off or Milestone 37 is closed), planned by the Steward when the village's builders keep running short of crafted parts
- * (and not for one shortfall, raw materials, with Crafters off or a workshop already built), and grown by villages in
- * every style while Crafters are on. The house's Crafter taking its workbench is VillageGameTests'.
+ * ROADMAP 37.16a: the Crafter's Workshop retired with the Crafter (37.14a). The Blueprint Table no longer offers it, the
+ * Steward no longer plans it, villages no longer grow it; one already built, bought or grown still loads by id and stands
+ * as a plain building. The shortfall count the Steward's rule read is still kept (the village's edge, below).
  */
 public class CrafterWorkshopGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 	private static final BlockPos HALL = new BlockPos(11, 2, 11);
 	private static final ResourceLocation WORKSHOP = StarterBlueprints.CRAFTERS_WORKSHOP.id();
 
-	/** In the Blueprint Table, on the Village Map as a workshop and named; gone with Crafters off or Milestone 37 closed. */
+	/** Not in the Blueprint Table even with Milestone 37 open; still loads by id, named, and on the Village Map as a workshop. */
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
-	public void theWorkshopIsOfferedOnlyWhileCraftersAreOn(GameTestHelper helper) {
+	public void theWorkshopIsNoLongerOfferedButStillLoads(GameTestHelper helper) {
 		var server = helper.getLevel().getServer();
-		helper.assertTrue(StarterBlueprints.offered(WORKSHOP), "not offered with Crafters on");
-		helper.assertTrue(BlueprintLibrary.list(server, false).contains(WORKSHOP), "not in the Blueprint Table with Crafters on");
+		helper.assertTrue(Expansions.isOpen("M37"), "Milestone 37 should be open in GameTests");
+		helper.assertTrue(!StarterBlueprints.offered(WORKSHOP), "the retired Crafter's Workshop is still offered");
+		helper.assertTrue(!BlueprintLibrary.list(server, false).contains(WORKSHOP), "the retired Crafter's Workshop is in the Blueprint Table");
+		helper.assertTrue(StarterBlueprints.offered(StarterBlueprints.JEWELLERS_WORKSHOP.id()), "another job's workshop went with it");
+		helper.assertTrue(BlueprintLibrary.get(server, WORKSHOP).isPresent(), "a Crafter's Workshop already bought no longer loads by id");
 		helper.assertTrue(VillageMaps.kindOf(WORKSHOP).orElse(null) == VillageMaps.Kind.WORKSHOPS, "on the map as " + VillageMaps.kindOf(WORKSHOP));
 		helper.assertTrue(net.minecraft.locale.Language.getInstance().has("blueprint.aliveworkplace.crafters_workshop"), "no blueprint name");
 		helper.assertTrue(net.minecraft.locale.Language.getInstance().has("village_piece.aliveworkplace.crafters_workshop"), "no village house name");
-		boolean on = Crafters.ENABLED;
-		boolean open = Expansions.openForTests;
-		try {
-			Crafters.ENABLED = false;
-			helper.assertTrue(!StarterBlueprints.offered(WORKSHOP), "offered with Crafters off");
-			helper.assertTrue(!BlueprintLibrary.list(server, false).contains(WORKSHOP), "in the Blueprint Table with Crafters off");
-			helper.assertTrue(StarterBlueprints.offered(StarterBlueprints.JEWELLERS_WORKSHOP.id()), "another job's workshop went with it");
-			Crafters.ENABLED = true;
-			Expansions.openForTests = false;
-			helper.assertTrue(Expansions.M37 || !StarterBlueprints.offered(WORKSHOP), "offered while Milestone 37 is closed");
-		} finally {
-			Crafters.ENABLED = on;
-			Expansions.openForTests = open;
-		}
-		helper.assertTrue(StarterBlueprints.offered(WORKSHOP), "not offered again with Crafters back on");
 		helper.succeed();
 	}
 
 	/**
-	 * The Steward's rule: nothing waiting, one site short of one crafted part, or short only of raw and smelted materials
-	 * (logs, cobblestone, glass) doesn't hold; three crafted parts waited for over two sites does, and the morning's wishes
-	 * then plan a Crafter's Workshop in the workshops quarter. With Crafters off it doesn't, nor once a workshop is built.
+	 * The Steward no longer plans it: no rule builds a Crafter's Workshop, and the parts-shortfall condition reads off
+	 * (with its reason) however many crafted parts the builders wait for.
 	 */
 	//$ gametest_ticks_batch AREA '40' '"crafterWorkshopRule"'
 	@GameTest(template = AREA, timeoutTicks = 40, batch = "crafterWorkshopRule")
-	public void theStewardPlansAWorkshopWhenBuildersKeepRunningShortOfParts(GameTestHelper helper) {
+	public void theStewardNoLongerPlansAWorkshop(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		int radius = VillageHalls.RADIUS;
 		VillageHalls.RADIUS = 16;
@@ -88,45 +74,15 @@ public class CrafterWorkshopGameTests implements FabricGameTest {
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		ServerLevel level = helper.getLevel();
 		BlockPos hall = helper.absolutePos(HALL);
-		StewardRules.Rule rule = StewardRules.all().stream().filter(r -> r.id().equals(AliveWorkplace.id("workplace_crafters_workshop"))).findFirst()
-			.orElseThrow(() -> new GameTestAssertException("the Crafter's Workshop rule didn't load"));
-		helper.assertTrue(rule.effect().blueprint().map(WORKSHOP::equals).orElse(false), "the rule builds " + rule.effect().blueprint());
+		List<StewardRules.Rule> building = StewardRules.all().stream().filter(r -> r.effect().blueprint().map(WORKSHOP::equals).orElse(false)).toList();
+		helper.assertTrue(building.isEmpty(), "a Steward rule still builds the Crafter's Workshop: " + building.stream().map(StewardRules.Rule::id).toList());
 		BuildSiteManager sites = BuildSiteManager.get(level);
 		List<BuildSite> made = new java.util.ArrayList<>();
 		Leftovers.after(helper, () -> made.forEach(s -> sites.remove(s.id())));
-
-		expect(helper, rule, false, 0, "nothing waiting");
-		BuildSite first = waiting(helper, made, new BlockPos(2, 2, 2), Map.of(Items.OAK_STAIRS, 6));
-		expect(helper, rule, false, 1, "one site short of one crafted part");
-		BuildSite raw = waiting(helper, made, new BlockPos(2, 2, 16), Map.of(Items.OAK_LOG, 10, Items.COBBLESTONE, 20, Items.GLASS, 4));
-		expect(helper, rule, false, 1, "raw and smelted materials short");
+		waiting(helper, made, new BlockPos(2, 2, 2), Map.of(Items.OAK_STAIRS, 6));
 		waiting(helper, made, new BlockPos(16, 2, 2), Map.of(Items.OAK_SLAB, 8, Items.OAK_DOOR, 1));
-		expect(helper, rule, true, 3, "three crafted parts waited for over two sites");
-		// a site working again (its materials came) no longer counts
-		first.setStatus(BuildSite.Status.WORKING);
-		expect(helper, rule, false, 2, "one site supplied again");
-		first.setStatus(BuildSite.Status.WAITING_FOR_MATERIALS);
-		raw.setMissing(new HashMap<>(Map.of(Items.OAK_LOG, 10, Items.STONE_BRICK_STAIRS, 4)));
-		expect(helper, rule, true, 4, "four crafted parts");
-
-		List<StewardWishes.Wish> wishes = StewardWishes.rank(List.of(rule), StewardConditions.Facts.of(level, hall), StewardWishes.State.EMPTY,
-			StewardWishes.day(level));
-		helper.assertTrue(wishes.size() == 1 && wishes.get(0).effect().blueprint().map(WORKSHOP::equals).orElse(false)
-			&& wishes.get(0).effect().zone().map("workshops"::equals).orElse(false), "the morning's wishes: " + wishes);
-
-		boolean on = Crafters.ENABLED;
-		Crafters.ENABLED = false;
-		try {
-			expect(helper, rule, false, 0, "Crafters off");
-		} finally {
-			Crafters.ENABLED = on;
-		}
-
-		BlueprintData.Placement built = placement(helper, new BlockPos(16, 2, 16));
-		sites.recordFinished(WORKSHOP, built, UUID.randomUUID());
-		Leftovers.after(helper, () -> sites.forgetFinished(built));
-		StewardWishes.Verdict verdict = StewardWishes.judge(rule, StewardConditions.Facts.of(level, hall), StewardWishes.State.EMPTY, StewardWishes.day(level));
-		helper.assertTrue(verdict.status() == StewardWishes.Status.NOT_HELD, "a workshop is built and the rule still " + verdict.status());
+		StewardConditions.Check check = new StewardConditions.BuildersShortOfParts(3).test(StewardConditions.Facts.of(level, hall));
+		helper.assertTrue(!check.held(), "three crafted parts short and the retired workshop's condition holds: " + check);
 		helper.succeed();
 	}
 
@@ -155,30 +111,21 @@ public class CrafterWorkshopGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** Villages grow the Crafter's Workshop in every style while Crafters are on; off, it's left out of the houses. */
+	/** Villages no longer grow the workshop (37.16a); its pieces stay, so a workshop a village already grew still loads. */
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
-	public void villagesGrowTheWorkshopOnlyWhileCraftersAreOn(GameTestHelper helper) {
+	public void villagesNoLongerGrowTheWorkshop(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		helper.assertTrue(VillageHouses.houseNames().contains("crafters_workshop"), "Crafters on: " + VillageHouses.houseNames());
+		helper.assertTrue(!VillageHouses.houseNames().contains("crafters_workshop") && VillageHouses.houseNames().contains("jewellers_workshop"),
+			"the houses villages grow: " + VillageHouses.houseNames());
 		var pools = level.registryAccess().registryOrThrow(Registries.TEMPLATE_POOL);
 		for (String style : VillageHouses.STYLES) {
 			ResourceLocation id = AliveWorkplace.id("village/" + style + "_crafters_workshop");
 			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));
 			boolean listed = ((StructureTemplatePoolAccessor) pool).aliveworkplace$rawTemplates().stream()
 				.anyMatch(p -> p.getFirst().toString().matches(".*" + java.util.regex.Pattern.quote(id.toString()) + "(?![a-z_0-9]).*"));
-			helper.assertTrue(listed, style + " villages can't grow a Crafter's Workshop");
-			var template = level.getStructureManager().get(id).orElseThrow(() -> new GameTestAssertException("missing " + id));
-			helper.assertTrue(template.filterBlocks(BlockPos.ZERO, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
-				ModBlocks.CRAFTERS_WORKBENCH).size() == 1, id + " should have one Crafter's Workbench");
-		}
-		boolean on = Crafters.ENABLED;
-		try {
-			Crafters.ENABLED = false;
-			helper.assertTrue(!VillageHouses.houseNames().contains("crafters_workshop") && VillageHouses.houseNames().contains("jewellers_workshop"),
-				"Crafters off: " + VillageHouses.houseNames());
-		} finally {
-			Crafters.ENABLED = on;
+			helper.assertTrue(!listed, style + " villages can still grow a Crafter's Workshop");
+			helper.assertTrue(level.getStructureManager().get(id).isPresent(), "the " + style + " workshop's piece is gone: " + id);
 		}
 		helper.succeed();
 	}

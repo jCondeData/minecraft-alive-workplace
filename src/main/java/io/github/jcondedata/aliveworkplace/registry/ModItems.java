@@ -167,7 +167,6 @@ public final class ModItems {
 				output.accept(ModBlocks.TRAVEL_POST);
 				output.accept(ModBlocks.TRAINING_POST);
 				output.accept(ModBlocks.STOREHOUSE);
-				output.accept(ModBlocks.CRAFTERS_WORKBENCH);
 				output.accept(ModBlocks.TRAINING_DUMMY);
 				output.accept(ModBlocks.VILLAGE_HALL);
 				output.accept(ModBlocks.DROP_BOX);

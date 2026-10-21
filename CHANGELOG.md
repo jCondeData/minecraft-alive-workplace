@@ -17,13 +17,19 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
-- **Crafter's Workshops in villages** (37.16). The Steward plans a Crafter's Workshop when the builders keep running
-  short of crafted parts (planks, slabs, stairs, doors), and villages grow one now and then in all five styles, its
-  Crafter already at the workbench. Both follow the Crafters setting.
-- **The Crafter makes the pack's furniture** (37.15). A builder short of Handcrafted chairs (or another piece Handcrafted,
-  Beautify or Cozy Home crafts on the crafting table) gets them made from logs, the planks, slabs and sticks cut on
-  the way. CobbleFurnies'
-  pieces are made too while its Furni Crafter stands in the Crafter's workshop.
+- **Change any villager's job from the Village Hall** (36.18). Right-click a working villager in the hall's residents
+  list and press **Change job**: pick any free job block in the village (or the Builder, at a free Blueprint Table), see the
+  price (5 to 50 emeralds by their level, as at the Blueprint Table) and click again to pay. The new job and its block
+  are theirs at once, with no breaking and carrying job blocks; they walk over, and one who can't get there within
+  about a minute is moved beside the block. Their old block is left free; a builder hands back their build. Children
+  and nitwits can't, and the game rule `workplaceRetraining` off hides the button.
+- **Every crafting job works through whole recipe chains** (2.1, 37.14a, 37.16a). The Carpenter saws logs into planks,
+  cuts slabs and makes the barrel or chair a builder waits for; the Mason fires clay into bricks, lays and cuts them; the
+  Librarian, Tinkerer, Toolsmith, dyer and Furnicrafter do the same for their own kind, step by step ("step 2 of 3"),
+  a bagful at a time, carrying on after a restart. The builder's line says what can't be made ("Can't be made yet:
+  short of 4 Oak Log to make 3 Barrel", "Nobody here makes: Oak Stairs"). This replaces the Crafter, which is retired:
+  no Crafter's Workbench recipe, no Crafter's Workshop in the Blueprint Table, the Steward's plans or new villages, and a
+  Crafter on an existing world becomes jobless.
 - **A job block with several jobs gives one at random** (36.17). A villager without a job who takes a composter, a
   lectern, a Shop Counter or any block several jobs share by themselves now becomes one of its jobs, not always the
   vanilla one: a composter can make a Farmer, an Orchard Keeper, a Florist or a Composter. The jobs the village has
@@ -31,10 +37,6 @@ asks for the steps, `latest.log` and any crash report).
   are unchanged, and the Trainer Leader is never drawn. Random Station Jobs in the settings turns it off (the vanilla
   job every time, as before).
 
-- The Crafter (2.1, behind its switch `crafters`): a villager at the new Crafter's Workbench makes what the village's
-  workers are short of through whole recipe chains (logs into planks into slabs into a barrel), from the builders'
-  chests and the Storehouse, and puts it in the asker's chests; a raw material short is said, and nothing is wasted. A
-  chain half made carries on after a restart. With the Crafter's Workshop in the Blueprint Table (37.14).
 - The Furnicrafter (Cobblemon depth, 2.2, with CobbleFurnies): a villager without a job by CobbleFurnies' Furni
   Crafter takes it and makes CobbleFurnies furniture from the store's materials: the chairs, tables and lamps a builder
   nearby is waiting for (a furnished home's pieces) and the pieces the Storehouse orders, with sticks cut from planks
@@ -44,11 +46,37 @@ asks for the steps, `latest.log` and any crash report).
 - Fixed: a Wonder's crew no longer stands still for minutes when many blocks wait over holes it can't fill: once the
   crew has stood still for 10 seconds the lead gives them all up together, not one every 10 seconds (the Hanging
   Gardens' time-lapse ran out of time over one terrace's holes) (B270).
+- Fixed: a Builder working from another Blueprint Table (a Builder's Workshop's) now counts and takes what the village
+  Storehouse holds, in the line over his head, in the Book and Quill list, in his status and when fetching. A Storehouse
+  nobody placed (put up for the Steward) in a village whose hall you own is yours to your Builders, and your Storehouse
+  feeds the village's own Builder on your builds; before, the Storehouse counted only while his table stood by it. New:
+  sneak-right-click a Blueprint Table with an empty hand next to a Builder to move him there without breaking the old one
+  (or pick him for a free table on the Village Hall's free job blocks page); his status says which table he works at (B290).
 
 ## 0.146.1 — 2026-10-20
 
 ### Fixed
 
+- The dyer mixing concrete powder from sand, gravel and dye now makes it step by step like the other chains (the powder,
+  then the hardening), so a world saved mid-job no longer loses the spare powder a mix makes.
+- **A broken bandit camp's ground comes back at the right height everywhere** (B288). Where grass had crept over the
+  dirt a camp filled its floor with while it stood, that patch stayed a block too high once the camp came down; now it
+  goes back to the land as it was too.
+- **No more palisade tower stacked on another** (B283). While a Steward's corner tower was still being finished, its
+  roof counted as the ground there, so a second tower was started on top of it and stood half-built for good. A wall
+  piece now never starts on the spot of one still being built.
+- Both homes of the Terrace (and all three of Terrace II) get the furniture mods' table and chair downstairs: the east
+  home kept spruce stand-ins because its table stands against the party wall. Tables against a wall in the village
+  kitchens, the Crafter's Workshop, the School and the Winery are swapped too. Every furnished room now has its own
+  light: a lantern in each Terrace kitchen and in the Townhouse's sitting room and loft (B281).
+- **No more raised band of dirt round a finished build** (B280). A build standing a block above the ground round it
+  (on a bump, or with its blueprint clicked onto a flower) had the strip round it filled up to its floor: a jagged
+  band of dirt on the grass, with holes where flowers stood. Leveling now only fills holes up to the land round the
+  build, and a blueprint clicked onto a flower or tall grass stands on the ground under it.
+- You can now see everything a build still needs after you hand the blueprint over. Right-click the Builder (or their
+  Builder's Bench) with a Book and Quill to get the list for the rest of the build, with what the chests, the
+  Builder's bag and the village storehouse already hold ticked off. Sneak-right-click the Builder with an empty hand
+  to see the whole list in chat. Before, the only list was the 3-4 lines over the Builder's head (B279).
 - A guest Legend who settles in a village has their powers at once: a Seer made the village's at dawn foretold at
   that dawn, where before their powers could wait up to ten seconds and the dawn's foretelling was missed (B269).
 - Builders take from the chests only what their work still needs. Each trip took one block too many, so two Builders

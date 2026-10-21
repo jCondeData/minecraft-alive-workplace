@@ -1,153 +1,133 @@
-# Crafter
+# Job chains (the retired Crafter)
 
-A villager at a Crafter's Workbench who makes what the village's workers are short of, through whole recipe chains:
-logs sawn into planks, planks cut into slabs, then the barrel, chair or fence asked for. Part of Furnished homes and
-modded storage (2.1), behind its expansion gate (`Expansions.M37`) and its own switch.
+Every job that crafts for the builders now works through whole recipe chains of its own kind: the Carpenter saws logs
+into planks, cuts the planks into slabs, then makes the barrel or chair the builder was waiting for; the Mason fires
+clay into bricks, lays them into blocks and cuts the stairs. What no job in the village makes stays unmade and is named
+on the builder's shortage line. This replaced the Crafter, a separate job that made everything (37.14, retired by
+37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
+Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.15, 37.16
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a
 
 ## 1. What a player sees
 
-A jobless villager by a Crafter's Workbench takes it and becomes a Crafter, in a canvas apron and a green cap. When a
-builder nearby is waiting for something that can be crafted, the Crafter fetches the makings from the builder's chests
-and the village's stores, walks to the workbench and makes it one step after another (the line above their head says
-"making 24 Oak Planks (step 1 of 3)", then the slabs, then the barrels), and carries the result to the builder's chests;
-the build carries on. A big order is made a bagful at a time until there's enough. When something can't be made, the
-Crafter takes nothing and says what's short: "short of 2 Oak Log to make 2 Barrel". After the builders, they fill the
-Storehouse's stock orders and a Wonder's goods, then what any other worker nearby is waiting for (a miner's ladders).
+A builder short of three barrels with only oak logs in the chest: the village's Carpenter fetches the logs, and at the
+bench the line above their head says "making 3 Barrel (step 1 of 3)", then step 2 (the slabs), then step 3; the barrels
+go into the builder's chest and the build carries on. A Mason with a furnace by the stonecutter turns clay balls into
+brick stairs the same way (fired, laid, cut, a coal burnt for every eight fired). The Librarian makes the bookish parts,
+the Tinkerer the metal ones (raw iron fired into ingots, then bars or a lantern), the Toolsmith tools, the dyer dyed
+wool and concrete, and, with CobbleFurnies, the Furnicrafter its furniture (the planks and sticks first, then the
+piece). A big order is made a bagful at a time until there's enough.
 
-With the pack's furniture mods (37.15) the Crafter makes their pieces too: a builder short of Handcrafted Oak Chairs
-with only oak logs in the chest gets them sawn, cut and crafted (planks, a slab and sticks, then the chairs), and with
-CobbleFurnies' Furni Crafter standing in the workshop, CobbleFurnies' pieces as well.
+When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
+under "Short of": "Can't be made yet: short of 4 Oak Log to make 3 Barrel". When no job in the village makes a crafted
+part at all (oak stairs in a village with a Mason but no Carpenter), the line says "Nobody here makes: Oak Stairs".
 
-The Crafter's Workshop is in the Blueprint Table: birch boards in a spruce frame under a dark oak roof, the workbench
-facing the door between two chests, and an open store lean-to of logs, planks and slabs against its east wall.
-
-Villages find their own Crafter (37.16). The Steward plans a Crafter's Workshop when the village's builders keep running
-short of crafted parts (three or more waited for at once: planks, slabs, stairs, doors), and villages grow one now and
-then in every style: a board workshop with its plastered gable to the street, a work hatch with a counter beside the
-door and a lean-to parts store of boards and logs, its Crafter already at the workbench. With the `crafters` switch off
-(or before 2.1) the workshop isn't in the Blueprint Table, the Steward doesn't plan one and villages don't grow it.
+The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
+and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
+drops at its feet) and soon takes another job. A Crafter's Workbench already placed stays a block. The Crafter's
+Workshop (37.16) left with it (37.16a): the Blueprint Table no longer offers it, the Steward no longer plans it and
+villages no longer grow it; workshops already built or grown stay as plain buildings.
 
 ## 2. How it works
 
-Each look (every 5 seconds while there's nothing to do) the Crafter goes down the asks in order: builders within the
-village whose site is waiting for materials (their missing list, biggest first), the Storehouse's stock orders and a
-Wonder's goods (the same search the Carpenter uses, sharing its claims, so a carpenter and a crafter never both make
-the same thing), then the requests other workers post. Each is planned with the game's own recipes, so modded recipes
-count: the crafting table's and the stonecutter's, and a furniture mod's bench's recipe type while one of its blocks
-stands within 6 blocks of the workbench (`crafter_benches` data files). Chains go 3 steps down (a chair from slabs from
-planks from logs, with one to spare for sticks). Repeated steps are merged: planks for the barrel and planks for its
-slabs are one step.
+`CrafterWork` is the shared shift of every crafting job (the Carpenter's own, and `MasonWork`, `ScribeWork` for the
+Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). With Milestone 37 open (`chains()`, gated by
+`Expansions.isOpen("M37")`), each of those:
 
-A bench recipe that doesn't list its materials as ingredients (CobbleFurnies' `cobblefurnies:furni_crafting`, which
-takes so many of each item) is read with its counts from the mod's own recipe files (the Furnicrafter's reader, 38.12,
-filled by `compat/cobblefurnies`) and planned the same way, by its recipe type id, only while its bench is there. A
-`crafter_benches` file whose recipe type isn't registered (its mod isn't installed) is left out when the data loads.
+- plans with `Crafting.chain(level, kind, ...)`: its own recipes (the crafting table's; the stonecutter's, and the
+  kiln's with a furnace by it, for the Mason; the blast furnace's for the Tinkerer; CobbleFurnies' Furni Crafter's files
+  for the Furnicrafter), `Crafting.CHAIN_DEPTH` (3) steps down, a repeated recipe merged into one step;
+- tries the whole count, then half, down to one, so a big order is made a bagful at a time (12 stacks of makings);
+- when nothing fits, notes the chain's raw materials short (`Crafting.lacking`, or the Furnicrafter's own) for that
+  build site and item in `JobShortages`; when it can make it, or another job has claimed it, notes it as covered;
+- makes the plan's steps one after another at the workstation (each in its own time), saving the job on the villager
+  after every phase change and step (`crafter_job`); fuel a plan takes that no step uses is burnt at the end; a plan's
+  last change is its own step too (the Mason's glass fired from sand, the dyer's concrete hardened from the powder it
+  mixed); a plan whose steps still don't add up to what it makes is made all at once as before;
+- on its next shift after a restart or reload picks the saved job up where it was (the makings already made are in the
+  saved bag; the claim on the request is taken again).
 
-Which pack furniture mods have a bench (read from their jars, 2026-10-21): only CobbleFurnies 1.2 (the Furni Crafter,
-348 recipes). Handcrafted 4.0.3 and Beautify 2.0.0 craft every piece on the crafting table, and Lucky's Cozy Home
-1.1.20 on the crafting table and the stonecutter, so the Crafter makes theirs with no bench file. Handcrafted's
-"benches" are seats, not workstations.
+The builder's status (`BuilderStatusSync.supplyLines`) adds `JobShortages.line` under "Short of" while it waits:
+first up to two chains short of a raw material, else the crafted parts (something a crafting table, stonecutter,
+furnace or furniture bench makes) that no job has looked at in the last 600 ticks, once the site has waited that long.
+The cook, the luxury makers, the Weaponsmith and the Fletcher keep their old one-plan way.
 
-The whole plan is checked against the stock before anything is taken, so a short raw material wastes nothing. To say
-what's short, the plan is worked out again noting each raw material (something no recipe of theirs makes) that runs
-out, along the first way down the recipes that nothing else could make.
-
-What may be used: from a builder's own chests and their village-mates' stashes everything the rest of that build
-doesn't need; from another builder's chests only what their builds can spare (B33). Never a chest outside the village.
-The finished goods go into the asker's chests (the builder's, the Storehouse's, the Wonder's stockpile, the worker's).
-A bag's worth at a time: at most 12 stacks of makings, the rest of the 27-slot bag for what's made.
-
-The job in hand is saved on the villager after every step, so a chain half made carries on from the same step after a
-restart (the planks already made are in the saved bag). If the makings vanish while fetching, what was fetched goes back
-where it came from. A step takes 6 ticks a craft (at least a second), faster with the Crafter's level.
-
-The Steward's rule (37.16) is `steward_rules/workplace_crafters_workshop.json`: `builders_short_of_parts` (at least 3)
-and no Crafter's Workshop built yet, to build one in the workshops quarter (priority 60, a 2-day cooldown). The new
-condition `builders_short_of_parts {at_least}` counts, over every build site near the hall waiting for materials (the
-Steward's and the players'), each crafted part a site misses once; a part is anything the crafting table or the
-stonecutter makes (logs, cobblestone and glass don't count). It never holds while Crafters are off. The village house
-is `village/<style>_crafters_workshop` in the five vanilla house pools (and Repurposed Structures'), weight 2.
+The retired Crafter: `Crafters.tick` (every villager's AI step, from `VillagerMixin`) finds a villager whose profession is
+`aliveworkplace:crafter` and makes it jobless: the workbench's POI ticket let go, the `crafter_job` dropped (and its claim
+released), the bag's contents dropped where it stands, trades, level and experience cleared, its brain rebuilt. The
+profession can't acquire a workbench any more, and the workbench left the `acquirable_job_site` tag.
 
 ## 3. Switches
 
 | Key | Default | What it does |
 |---|---|---|
-| `crafters` | on from 2.1 | A jobless villager takes a free Crafter's Workbench and becomes a Crafter. Off: no villager takes one, and Crafters already hired stand idle (they keep their job); the workshop leaves the Blueprint Table, the Steward's rule and the village houses (37.16; workshops already built stay). |
+| (none of its own) | | The chain way follows Milestone 37's gate: before 2.1 every job crafts as it did before. The `crafters` switch (37.14) is gone with the Crafter; an old config file that has it loads fine and the key is ignored. |
 
 ## 4. Saved data
 
-- `crafter_job` on the villager: the job in hand (who it's for, the chain's steps, what it takes, the phase and the next
-  step). None: no job (an older save, or a Crafter with nothing to do).
+- `crafter_job` on the villager (since 37.14, now on every crafting job's villager): the job in hand (who it's for, the
+  chain's steps, what it takes, the phase and the next step). None: no job in hand, as on every older save.
 - The bag (`builder_bag`) and items made (`items_crafted`) are the ones every crafting job already saves.
+- Nothing new is saved: the shortage notes are kept in memory and renewed every look.
 
 ## 5. Items, blocks, jobs, commands
 
-- Block: `aliveworkplace:crafters_workbench` (crafted from two stonecutters, a crafting table, two planks and a chest;
-  mined with an axe).
-- Job: `aliveworkplace:crafter`.
-- Blueprint: `aliveworkplace:crafters_workshop`; village houses `aliveworkplace:village/<style>_crafters_workshop` (loot
-  `chests/village_crafters_workshop`: planks, logs, sticks, slabs, iron nuggets).
-- Steward rule: `aliveworkplace:workplace_crafters_workshop`; condition `builders_short_of_parts`.
-- Data: `data/<namespace>/crafter_benches/*.json`, each `{"recipe_type": "...", "blocks": ["..."]}`. Shipped:
-  `aliveworkplace:cobblefurnies` (`cobblefurnies:furni_crafting` at `cobblefurnies:furnicrafter`).
+- Block: `aliveworkplace:crafters_workbench` stays registered (no recipe, not in the creative tab); job
+  `aliveworkplace:crafter` stays registered so old saves load; nobody takes it.
+- Blueprint `aliveworkplace:crafters_workshop` and the village pieces `aliveworkplace:village/<style>_crafters_workshop`
+  still load by id; not offered, planned or grown.
+- Data: `data/<namespace>/crafter_benches/*.json` still read (CobbleFurnies' Furni Crafter's recipe type), used by
+  `Crafting.chain(level, target, count, usable, types)`.
+- Text: `message.aliveworkplace.job_chain.*` (the step, the lack line, "Can't be made yet", "Nobody here makes").
 
 ## 6. Decisions
 
-- 37.14 (owner, 2026-10-20, "the next build out"): a new job that makes what others need, through whole chains.
-- Its own job block rather than a vanilla one: the crafting table is the Carpenter's and the stonecutter the Mason's;
-  the Crafter does both, so it gets a workbench of its own (and the workshop has neither, so nobody else moves in).
-- The vanilla stand-in for "a chair from slabs and planks" is the barrel (six planks and two slabs): vanilla has no
-  chair. With Handcrafted installed its chairs are planned the same way from their own recipes.
-- A furniture mod's bench is named by recipe type id and block ids in a data file, never its classes.
-- 37.15: one bench file shipped, CobbleFurnies' Furni Crafter, the only bench among the pack's furniture mods. A Furni
-  Crafter in the workshop is also the Furnicrafter's job block (38.12); a Crafter and a Furnicrafter there may both make
-  CobbleFurnies pieces for the builders.
-- 37.15: a bench file is dropped when its recipe type isn't registered, rather than kept and never matched, so a
-  server without the mod doesn't scan the workshop for its blocks.
-
-- 37.16: "keep running short" is counted as several crafted parts waited for at once (3 by default), not as days in a
-  row: a site's missing list isn't saved, and counting days would need a new saved field on the hall. The rule's cooldown
-  and the built-count condition keep it from asking twice.
-- 37.16: the workshop is hidden from the Blueprint Table while `crafters` is off (not only while M37 is closed, as B119
-  does for other expansion builds): a workshop whose job can't start is no use. Other jobs' builds are unchanged.
-- 37.16: the village house comes with its Crafter already in the job, like the luxury houses, rather than a jobless
-  villager who'd take the workbench by themselves: the same in every village, and the house test can check it.
+- 37.14 (owner, 2026-10-20): a new job that makes what others need, through whole chains.
+- 37.14a (owner, 2026-10-21): the Crafter is retired and its way of working moved into the jobs that already craft for
+  builders, each for its own kind; what no job covers stays unmade and is said on the builder's line.
+- 37.14a: the chain way is behind Milestone 37's gate like the rest of 2.1, so the live server's jobs don't change
+  before the release; the Crafter's retirement isn't gated (the Crafter never shipped outside the gate; a stray one on a
+  test world is made jobless whatever the gate says).
+- 37.14a: the job is saved in the attachment the Crafter used (`crafter_job`), so no new saved field; a villager
+  without it has no job in hand.
+- 37.14a: "nobody here makes" waits 600 ticks after the builder starts waiting (the jobs look every 5 seconds), and
+  only names crafted parts, so a missing log is left to the "Short of" line above.
+- 37.14a: the other-workers requests the Crafter answered (a miner's ladders) aren't moved into the jobs; a question
+  for the owner is in the ROADMAP notes.
+- 37.16a: the Crafter's Workshop rule (`workplace_crafters_workshop`) is deleted; its condition
+  `builders_short_of_parts` stays (a pack's rule may name it) and never holds, saying why.
 
 ## 7. Known limits
 
-- The Crafter doesn't sell its workshop's blueprint; the Blueprint Table has it.
 - What's short is found along the first way down the recipes: with oak and spruce logs both short it names oak.
+- A job only looks at the parts of its own kind, so a part two jobs could make in turns (a lantern from a Tinkerer's
+  ingots and a Carpenter's torch) is made only if one job's own recipes go all the way down.
 - The showcase scene is filmed on GitHub, not in this session.
 
 ## 8. Proof
 
-- `CrafterGameTests.theCrafterMakesTheSlabsTheBuilderNeeds`: one step.
-- `CrafterGameTests.theCrafterMakesBarrelsFromLogsForTheBuilder`: the three-step chain and the build finishing.
-- `CrafterGameTests.theCrafterSaysWhatItLacksAndWastesNothing`: a raw material short.
-- `CrafterGameTests.theLackLineNamesEveryShortThingWithACommaBetween`: the "short of ..." line with two things short.
-- `CrafterGameTests.beingShortOfJustOneThingIsStillNamed`: short of a single log, and it's named.
-- `CrafterGameTests.theCrafterFetchesTheOneLogItNeeds`: a job that needs exactly one of something.
-- `CrafterGameTests.theCrafterMakesAnotherWorkersLaddersFromTheStorehouse`: another worker's request, made from the
-  Storehouse's chest.
-- `CrafterGameTests.oneCrafterServesTwoBuilders`: two askers at once.
-- `CrafterGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
-- `CrafterGameTests.withTheSwitchOffTheCrafterMakesNothing`: the switch off.
-- `CrafterGameTests.aBenchsRecipesOnlyWhileTheBenchIsThere`: a bench's recipes.
-- `CrafterWorkshopGameTests.theWorkshopIsOfferedOnlyWhileCraftersAreOn`: in the Blueprint Table, not with the switch off
-  or M37 closed.
-- `CrafterWorkshopGameTests.theStewardPlansAWorkshopWhenBuildersKeepRunningShortOfParts`: the rule on three or more
-  crafted parts short, not on one, on raw materials, with the switch off or a workshop built.
-- `CrafterWorkshopGameTests.aSiteAtTheVillagesEdgeCountsOneBeyondItDoesnt`: a site at the village's edge counts, one a
-  block further doesn't.
-- `CrafterWorkshopGameTests.villagesGrowTheWorkshopOnlyWhileCraftersAreOn` and
-  `VillageGameTests.theCraftersWorkshopsCrafterTakesItsBench`: the village house in every style, with its Crafter.
-- `CrafterGameTests.theCobbleFurniesBenchIsIgnoredWithoutCobbleFurnies`: the shipped bench file left out without its mod.
-- `CrafterFurnitureCompatTests.theCrafterMakesHandcraftedChairsFromLogsForTheBuilder`: Handcrafted chairs from logs for
-  a builder's shortfall, and the build finishing with them (compat suite).
-- `CrafterFurnitureCompatTests.theFurniCraftersRecipesOnlyWhileItStandsInTheWorkshop`: CobbleFurnies' bench recipes only
-  while the Furni Crafter stands in the workshop (compat suite).
-- `CrafterFurnitureCompatTests.aBenchFileForAModThatIsntInstalledIsIgnored`: a bench file for an absent mod (compat suite).
+- `JobChainGameTests.theCarpenterMakesBarrelsFromLogsInThreeSteps`: the Carpenter's three-step chain, its "step 2 of 3"
+  line, and the build finishing.
+- `JobChainGameTests.theMasonFiresLaysAndCutsBrickStairsFromClay`: a Mason's kiln chain, the fuel burnt.
+- `JobChainGameTests.aShortRawMaterialIsNamedOnTheBuildersLineAndNothingIsTaken`: a raw material short, said on the
+  builder's line, nothing taken.
+- `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
+- `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
+- `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.
+- `JobChainGameTests.theCarpenterMakesTheSlabsTheBuilderNeeds`, `theCarpenterFetchesTheOneLogItNeeds`,
+  `oneCarpenterServesTwoBuilders`: one step, exactly one log, two askers.
+- `JobChainGameTests.theLackLineNamesEveryShortThingWithACommaBetween`, `beingShortOfJustOneThingIsStillNamed`: the
+  lack line.
+- `JobChainGameTests.aBenchsRecipesOnlyWhileTheBenchIsThere`, `theCobbleFurniesBenchIsIgnoredWithoutCobbleFurnies`: the
+  bench files.
+- `CrafterWorkshopGameTests.theWorkshopIsNoLongerOfferedButStillLoads`, `theStewardNoLongerPlansAWorkshop`,
+  `villagesNoLongerGrowTheWorkshop`, `aSiteAtTheVillagesEdgeCountsOneBeyondItDoesnt`: 37.16a.
+- `CrafterFurnitureCompatTests.theCarpenterMakesHandcraftedChairsFromLogsForTheBuilder`: a chair from logs through the
+  whole chain, step by step (compat suite).
+- `FurnicrafterCompatTests.theFurnicrafterMakesAWaitingBuildersPieceFromLogs`: a Furnicrafter piece for a waiting
+  builder, planks first (compat suite).
+- `CrafterFurnitureCompatTests.theFurniCraftersRecipesOnlyWhileItStandsInTheWorkshop`,
+  `aBenchFileForAModThatIsntInstalledIsIgnored`: the bench files with the pack (compat suite).
 
-Showcase scenes: `crafter_chain`, `crafter_furniture`
+Showcase scenes: `job_chains`, `crafter_furniture`

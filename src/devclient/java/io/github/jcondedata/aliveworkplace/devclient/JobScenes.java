@@ -363,15 +363,82 @@ final class JobScenes {
 	/** The printer scene's chest, for the Gazette the player takes out and reads (34.11). */
 	private static volatile Container printerChest;
 	private static volatile Villager subject;
+	/**
+	 * personal_request (B287): the villager whose ask is watched, and how far from the player they were when they asked
+	 * (-1 before). Once asked they are free to walk on, so a distance measured later says nothing about the walk-up.
+	 */
+	private static volatile Villager askWatch;
+	private static volatile double askedFrom = -1;
+	private static boolean askHooked;
+
+	/** Watches {@code villager}'s personal request: the tick they ask, their distance is kept and they stay put beside the player. */
+	private static synchronized void watchAsk(Villager villager) {
+		askedFrom = -1;
+		askWatch = villager;
+		if (!askHooked) {
+			askHooked = true;
+			net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+				Villager v = askWatch;
+				if (v == null || server.getPlayerList().getPlayers().isEmpty()) {
+					return;
+				}
+				var offer = io.github.jcondedata.aliveworkplace.story.PersonalRequests.offer(v);
+				if (offer != null && offer.asked) {
+					askedFrom = Math.sqrt(v.distanceToSqr(server.getPlayerList().getPlayers().get(0)));
+					v.setNoAi(true);
+					askWatch = null;
+				}
+			});
+		}
+	}
 	/** The cuisine_kitchen scene's hall (38.8a), for the board's Dishes tab shown after. */
 	private static volatile BlockPos cuisineHall;
 	/** classes (34.6): the couple first, then three Peasants. */
 	private static final List<Villager> classPeople = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** curfew: the villagers who go to bed at dusk. */
 	private static final List<Villager> curfewSleepers = new java.util.concurrent.CopyOnWriteArrayList<>();
+	/** Each raider's health and last attacker, and each conscript's health, fight and nearest raider: why a strike is missing. */
+	private static String conscriptionState() {
+		StringBuilder out = new StringBuilder();
+		for (int i = 0; i < conscriptionRaiders.size(); i++) {
+			var z = conscriptionRaiders.get(i);
+			var by = z.getLastHurtByMob();
+			out.append("raider ").append(i).append(z.isAlive() ? " hp " + z.getHealth() : " dead").append(" hit by ")
+				.append(by instanceof Villager v ? v.getVillagerData().getProfession().toString() : by == null ? "none" : by.getType().toShortString())
+				.append(" at ").append(z.blockPosition().toShortString()).append("; ");
+		}
+		for (Villager v : conscripts) {
+			double near = conscriptionRaiders.stream().filter(net.minecraft.world.entity.LivingEntity::isAlive)
+				.mapToDouble(z -> Math.sqrt(z.distanceToSqr(v))).min().orElse(-1);
+			out.append(v.getVillagerData().getProfession()).append(conscriptsStruck.contains(v) ? " struck" : " never struck").append(v.isAlive() ? " hp " + v.getHealth() : " dead")
+				.append(io.github.jcondedata.aliveworkplace.guard.MilitiaCombat.isFighting(v) ? " fighting" : " not fighting")
+				.append(" activity ").append(v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("none"))
+				.append(" nearest raider ").append(String.format("%.1f", near)).append("; ");
+		}
+		return out.toString();
+	}
+
 	/** conscription: the villagers called up, and the raiders they beat back. */
 	private static final List<Villager> conscripts = new java.util.concurrent.CopyOnWriteArrayList<>();
 	private static final List<net.minecraft.world.entity.monster.Zombie> conscriptionRaiders = new java.util.concurrent.CopyOnWriteArrayList<>();
+	/**
+	 * The conscripts who landed a blow on a raider, recorded as each blow lands (B275): a raider's last attacker was the
+	 * old measure, but the guard's iron sword often dealt the killing blow and hid the conscripts' strikes.
+	 */
+	private static final java.util.Set<Villager> conscriptsStruck = java.util.concurrent.ConcurrentHashMap.newKeySet();
+	private static boolean conscriptBlowsWatched;
+
+	private static void watchConscriptBlows() {
+		if (conscriptBlowsWatched) {
+			return;
+		}
+		conscriptBlowsWatched = true;
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, base, taken, blocked) -> {
+			if (source.getEntity() instanceof Villager v && conscripts.contains(v) && conscriptionRaiders.contains(entity)) {
+				conscriptsStruck.add(v);
+			}
+		});
+	}
 	/** smith_orders: the slot where the Poké Ball turned up (found on the server). */
 	private static volatile int pickedSlot = -1;
 	/** A screen a job scene films while its job gets going (the Drop Box's). */
@@ -1868,13 +1935,19 @@ final class JobScenes {
 					&& !l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(lair.pos()).inflate(10)).isEmpty();
 				Showcase.check(gone, "the camp came down and its loot spilled out");
 				int off = 0;
+				StringBuilder which = new StringBuilder();
 				for (var e : land.entrySet()) {
 					BlockPos top = l.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, e.getKey()).below();
 					if (top.getY() != e.getValue() || !l.getBlockState(top).is(Blocks.GRASS_BLOCK)) {
 						off++;
+						if (off <= 3) { // (B288: which column, and what is on it)
+							which.append("; ").append(e.getKey().getX()).append(",").append(e.getKey().getZ()).append(" top ")
+								.append(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(l.getBlockState(top).getBlock()).getPath())
+								.append(" at y ").append(top.getY()).append(", was grass at y ").append(e.getValue());
+						}
 					}
 				}
-				Showcase.check(off == 0, "the rise the camp levelled is back as it was, grass on top, no trampled earth (" + off + " columns off)");
+				Showcase.check(off == 0, "the rise the camp levelled is back as it was, grass on top, no trampled earth (" + off + " columns off" + which + ")");
 				return true;
 			};
 		}, null));
@@ -4457,6 +4530,70 @@ final class JobScenes {
 			(level, player) -> !classPeople.isEmpty() && classPeople.get(0).getVillagerData().getProfession() == ModVillagers.PORTER
 				&& classPeople.get(0).getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(new BlockPos(-4, -60, -3))).orElse(false)));
+		// Change job from the hall (ROADMAP 36.18): Dara, a Journeyman Librarian, is right-clicked in the residents list; her page
+		// has Change job, which lists the empty Storehouse (and the Builder, with no Blueprint Table free) with her price;
+		// a click shows the price, a second pays, and she's the Porter at once and walks over.
+		SCREENS.put("hall_retrain", new Screen("Dara, a Journeyman Librarian, was right-clicked in the hall's list; Change job listed the free Storehouse "
+			+ "for 20 emeralds and the Builder; two clicks made her the Porter at once, her lectern left free",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos store = new BlockPos(-4, -60, -3);
+				place(level, store, ModBlocks.STOREHOUSE);
+				io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STOREHOUSE.id(),
+					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), new BlockPos(-12, -60, -7),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				BlockPos lectern = new BlockPos(4, -60, 2);
+				place(level, lectern, Blocks.LECTERN);
+				classPeople.clear();
+				Villager dara = EntityType.VILLAGER.create(level);
+				dara.moveTo(3.5, -60, 3.5, 180, 0);
+				dara.setNoAi(true); // stands by her lectern while the camera looks
+				dara.setCustomName(Component.literal("Dara"));
+				level.addFreshEntity(dara);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, dara, lectern, net.minecraft.world.entity.ai.village.poi.PoiTypes.LIBRARIAN,
+					VillagerProfession.LIBRARIAN);
+				dara.setVillagerData(dara.getVillagerData().setLevel(3));
+				dara.setVillagerXp(150);
+				classPeople.add(dara);
+				player.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.EMERALD, 32));
+			},
+			List.of(new Step("01_worker_page", io.github.jcondedata.aliveworkplace.hall.HallRetraining.CHANGE, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						for (int s = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON; s < ChoiceMenu.SIZE; s++) {
+							if (m.icon(s).getHoverName().getString().startsWith("Dara")) {
+								m.clicked(s, 1, net.minecraft.world.inventory.ClickType.PICKUP, player); // a right-click, as the client sends it
+								break;
+							}
+						}
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.HallRetraining.CHANGE).is(net.minecraft.world.item.Items.EMERALD),
+							"Dara's page has Change job: " + m.icon(io.github.jcondedata.aliveworkplace.hall.HallRetraining.CHANGE));
+					}
+				}, 40),
+				new Step("02_price", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallRetraining.CHANGE, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(ModBlocks.STOREHOUSE.asItem()),
+							"the Storehouse first, with the price: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("03_dara_porter", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+					}
+					Villager dara = classPeople.get(0);
+					Showcase.check(dara.getVillagerData().getProfession() == ModVillagers.PORTER, "Dara is the Porter: " + dara.getVillagerData().getProfession());
+				}, 40),
+				new Step("04_walking", -1, 0, (level, player) -> {
+					player.closeContainer();
+					classPeople.get(0).setNoAi(false); // and walks to her Storehouse
+				}, 60)),
+			(level, player) -> !classPeople.isEmpty() && classPeople.get(0).getVillagerData().getProfession() == ModVillagers.PORTER
+				&& classPeople.get(0).getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.map(g -> g.pos().equals(new BlockPos(-4, -60, -3))).orElse(false)));
 		// The Builder asks before repairing a house (ROADMAP 36.15): a Starter Cottage the player's builder finished has five
 		// blocks knocked out of its front wall; the builder asks in chat ("Repair it? [Yes] [Not now]"), the hall's Repairs
 		// page lists it waiting for an answer, its view has Yes and Not now, and Yes sets the builder to it.
@@ -4977,9 +5114,16 @@ final class JobScenes {
 						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
 						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
 					ScreenshotHarness.fileRecords(level, new BlockPos(5, -60, -5), 1); // the new bed's record now, so the round finds the home free
+					// B285: the hall counts its needs again every VillageNeeds.CHECK_EVERY ticks, and this staged village (an
+					// innkeeper and a guest) counts unhappy, so a count landing between the setup and here undid the happy
+					// village the scene stages. Set it again right before the round reads it, as holdTown does the rank.
+					((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION))
+						.setNeeds(new io.github.jcondedata.aliveworkplace.hall.VillageNeeds.Needs(1, 1, 1, 1, 1, 0, 0, 0.9f));
 					io.github.jcondedata.aliveworkplace.legend.LegendGuests.tend(level, STATION);
 					var data = io.github.jcondedata.aliveworkplace.registry.ModAttachments.LEGEND.get(subject);
-					Showcase.check(data != null && data.settled(), "she settled once the home was ready");
+					Showcase.check(data != null && data.settled(), "she settled once the home was ready"
+						+ (data != null && data.settled() ? "" : " (waiting on " + (data == null ? "no Legend data" : data.unmet().keySet()
+							+ ", free home " + io.github.jcondedata.aliveworkplace.legend.LegendGuests.freeHome(level, STATION)) + ")"));
 					Showcase.check(subject.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.MASON
 						&& subject.getVillagerData().getLevel() == 5, "she is a Master Mason");
 				}, 40),
@@ -6195,6 +6339,7 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
 					Villager dara = subject;
 					dara.setNoAi(false);
+					watchAsk(dara);
 					// Three hearts, her two-heart story already told (so she comes over to ask, not to tell it).
 					io.github.jcondedata.aliveworkplace.story.Friendship.told(dara, player, "aliveworkplace:before_hall");
 					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, player, 300);
@@ -6211,9 +6356,12 @@ final class JobScenes {
 				new Step("02_accept", -1, 0, (level, player) -> {
 					Villager dara = subject;
 					var offer = io.github.jcondedata.aliveworkplace.story.PersonalRequests.offer(dara);
-					double off = Math.sqrt(dara.distanceToSqr(player));
-					Showcase.check(offer != null && offer.asked && off <= io.github.jcondedata.aliveworkplace.story.PersonalRequests.TALK_RANGE + 0.5,
-						"Dara walked up to the player and asked: " + (offer == null ? "no offer" : offer.asked ? "asked" : "not asked yet") + ", " + String.format("%.1f", off) + " blocks off");
+					// Her distance the tick she asked (B287): measured here, 90 ticks on, she had walked off again (5.5 blocks).
+					double off = askedFrom;
+					double now = Math.sqrt(dara.distanceToSqr(player));
+					Showcase.check(offer != null && offer.asked && off >= 0 && off <= io.github.jcondedata.aliveworkplace.story.PersonalRequests.TALK_RANGE + 0.5,
+						"Dara walked up to the player and asked: " + (offer == null ? "no offer" : offer.asked ? "asked" : "not asked yet") + ", "
+							+ (off < 0 ? "no ask seen" : String.format("%.1f", off) + " blocks off when she asked") + " (" + String.format("%.1f", now) + " now)");
 					if (offer != null) {
 						// [I'll help], as the click in the chat runs it.
 						level.getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "workplace quest accept " + offer.quest.id);
@@ -6996,6 +7144,8 @@ final class JobScenes {
 				level.setDayTime((level.getDayTime() / 24000) * 24000 + 14000);
 				conscripts.clear();
 				conscriptionRaiders.clear();
+				conscriptsStruck.clear();
+				watchConscriptBlows();
 				VillagerProfession[] jobs = {VillagerProfession.FARMER, ModVillagers.BUILDER, VillagerProfession.LIBRARIAN};
 				for (int i = 0; i < 3; i++) {
 					Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(-4 + 4 * i, -60, -1), MobSpawnType.COMMAND);
@@ -7035,11 +7185,11 @@ final class JobScenes {
 				new Step("02_conscription_fight", -1, 0, (level, player) -> {
 					long armed = conscripts.stream().filter(v -> io.github.jcondedata.aliveworkplace.hall.Conscription.isMilitiaSword(v.getMainHandItem())).count();
 					Showcase.check(armed == 3, "the three took up the militia's swords: " + armed + " of 3");
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[showcase] conscription fight starts: {}", conscriptionState());
 				}, 160),
 				new Step("03_conscription_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
-					long struck = conscriptionRaiders.stream().filter(z -> z.getLastHurtByMob() instanceof Villager v
-						&& !io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(v)).count();
-					Showcase.check(struck >= 2, "the conscripts struck the raiders: " + struck + " of 3");
+					long struck = conscripts.stream().filter(conscriptsStruck::contains).count();
+					Showcase.check(struck == 3, "the conscripts struck the raiders: " + struck + " of 3 (" + conscriptionState() + ")");
 					Showcase.check(conscripts.stream().anyMatch(io.github.jcondedata.aliveworkplace.hall.Conscription::workStopped), "no work in the raid");
 					player.teleportTo(-5.5, -60, 1.5);
 					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION.offset(-7, 0, 0));

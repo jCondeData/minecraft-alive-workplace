@@ -108,7 +108,7 @@ public class VillageGameTests implements FabricGameTest {
 			// ROADMAP 34.14: a cartography table would make a cartographer and a stonecutter a mason
 			java.util.Map.entry("print_shop", new House(Blocks.CARTOGRAPHY_TABLE, ModVillagers.PRINTER)),
 			java.util.Map.entry("jewellers_workshop", new House(Blocks.STONECUTTER, ModVillagers.JEWELLER)),
-			// ROADMAP 37.16: the Crafter's own block; the house comes with its Crafter, like the luxury houses
+			// ROADMAP 37.16: the Crafter's own block; 37.16a took it out of the pools (the Crafter is retired), the pieces stay
 			java.util.Map.entry("crafters_workshop", new House(ModBlocks.CRAFTERS_WORKBENCH, ModVillagers.CRAFTER)),
 			// The Pokémon jobs' houses (ROADMAP 28.15): only with Cobblemon, so Cobblemon's blocks are checked by name
 			java.util.Map.entry("pokemon_center", new House(null, ModVillagers.NURSE, ModVillagers.HEALING_MACHINE_BLOCK)),
@@ -119,7 +119,7 @@ public class VillageGameTests implements FabricGameTest {
 		// No Cobblemon here: the Pokémon houses stay out of the pools.
 		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse", "carpenters_workshop", "kitchen",
 				"flower_shop", "ranch_house", "schoolhouse", "inn_room", "mortuary", "tinkers_shop", "sifting_shed", "compost_yard", "winery", "tailors_shop",
-				"print_shop", "jewellers_workshop", "crafters_workshop")),
+				"print_shop", "jewellers_workshop")),
 			"houses without Cobblemon: " + VillageHouses.houseNames());
 		for (String style : VillageHouses.STYLES) {
 			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));
@@ -555,13 +555,6 @@ public class VillageGameTests implements FabricGameTest {
 		helper.assertTrue(site.map(g -> g.pos().equals(at)).orElse(false), house + "'s villager works at "
 			+ site.map(g -> helper.relativePos(g.pos()).toShortString()).orElse("nothing") + ", not its " + block.getName().getString()
 			+ " at " + helper.relativePos(at).toShortString() + "; he's " + where);
-	}
-
-	/** ROADMAP 37.16: the village's Crafter's Workshop comes with its Crafter, who takes the house's Crafter's Workbench. */
-	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"theCraftersWorkshopsCrafterTakesItsBench"'
-	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "theCraftersWorkshopsCrafterTakesItsBench")
-	public void theCraftersWorkshopsCrafterTakesItsBench(GameTestHelper helper) {
-		theHousesWorkerTakesItsBlock(helper, "crafters_workshop", ModVillagers.CRAFTER, ModBlocks.CRAFTERS_WORKBENCH);
 	}
 
 	/**

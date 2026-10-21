@@ -35,9 +35,9 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 
 /**
- * ROADMAP 37.15 with the pack's real furniture mods: the Crafter (37.14) makes their furniture. Handcrafted's chairs are
- * crafting-table recipes (an Oak Chair: a slab, two planks and two sticks, making two), so a builder short of them gets
- * them from logs through the whole chain. CobbleFurnies is the one pack furniture mod with a bench of its own (the Furni
+ * ROADMAP 37.15 with the pack's real furniture mods, since 37.14a retired the Crafter: the Carpenter makes Handcrafted's
+ * chairs, crafting-table recipes (an Oak Chair: a slab, two planks and two sticks, making two), so a builder short of
+ * them gets them from logs through the whole chain (planks, then slabs and sticks, then the chairs). CobbleFurnies is the one pack furniture mod with a bench of its own (the Furni
  * Crafter, recipe type {@code cobblefurnies:furni_crafting}, shipped as a {@code crafter_benches} file): its pieces are
  * planned only while a Furni Crafter stands in the workshop. A bench file whose mod isn't installed is left out.
  */
@@ -57,12 +57,13 @@ public class CrafterFurnitureCompatTests implements FabricGameTest {
 	}
 
 	/**
-	 * A builder short of three Handcrafted Oak Chairs, with only oak logs in the chest: the Crafter saws planks, cuts slabs
-	 * and sticks and crafts the chairs (by the crafting table's recipe, by id), and the build finishes with them.
+	 * A builder short of three Handcrafted Oak Chairs, with only oak logs in the chest: the Carpenter saws planks, cuts
+	 * slabs and sticks and crafts the chairs (by the crafting table's recipe, by id), step by step with the job saved on
+	 * it, and the build finishes with them.
 	 */
 	//$ gametest_ticks_batch AREA '4000' '"crafter_handcrafted_chair"'
 	@GameTest(template = AREA, timeoutTicks = 4000, batch = "crafter_handcrafted_chair")
-	public void theCrafterMakesHandcraftedChairsFromLogsForTheBuilder(GameTestHelper helper) {
+	public void theCarpenterMakesHandcraftedChairsFromLogsForTheBuilder(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		FurnicrafterCompatTests.ownStoreOnly(helper);
 		ServerLevel level = helper.getLevel();
@@ -73,13 +74,13 @@ public class CrafterFurnitureCompatTests implements FabricGameTest {
 		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
 		Block chair = block("handcrafted:oak_chair");
 		helper.assertTrue(chair != Blocks.AIR, "no Handcrafted Oak Chair");
-		Crafting.Plan plan = Crafting.chain(level, chair.asItem(), 3, Map.of(Items.OAK_LOG, 3L), t -> true);
+		Crafting.Plan plan = Crafting.chain(level, Crafting.Kind.CRAFTING, chair.asItem(), 3, Map.of(Items.OAK_LOG, 3L));
 		helper.assertTrue(plan != null && plan.count() >= 3 && plan.takes().equals(Map.of(Items.OAK_LOG, 3)),
 			"three Oak Chairs from three logs: " + plan);
 		List<Item> outs = plan.steps().stream().map(s -> s.out().getItem()).toList();
 		helper.assertTrue(outs.get(0) == Items.OAK_PLANKS && outs.contains(Items.OAK_SLAB) && outs.contains(Items.STICK)
 			&& outs.get(outs.size() - 1) == chair.asItem(), "the chain should go planks, slabs and sticks, then the chairs: " + outs);
-		helper.assertTrue(Crafting.chain(level, chair.asItem(), 3, Map.of(Items.OAK_LOG, 2L), t -> true) == null,
+		helper.assertTrue(Crafting.chain(level, Crafting.Kind.CRAFTING, chair.asItem(), 3, Map.of(Items.OAK_LOG, 2L)) == null,
 			"three Oak Chairs planned from two logs");
 
 		ResourceLocation id = row(helper, ROW, chair);
@@ -94,8 +95,16 @@ public class CrafterFurnitureCompatTests implements FabricGameTest {
 		helper.assertTrue(site != null, "the chairs' build didn't start");
 		BuildPlan buildPlan = site.plan(level);
 		helper.assertTrue(buildPlan != null, "no plan for the chairs' build");
-		Villager crafter = crafter(helper);
+		Villager crafter = carpenter(helper);
+		java.util.concurrent.atomic.AtomicInteger steps = new java.util.concurrent.atomic.AtomicInteger();
+		helper.onEachTick(() -> {
+			var job = ModAttachments.CRAFTER_JOB.get(crafter);
+			if (job != null && job.phase() == io.github.jcondedata.aliveworkplace.craft.CrafterJob.Phase.CRAFTING) {
+				steps.accumulateAndGet(job.step() + 1, Math::max);
+			}
+		});
 		helper.succeedWhen(() -> {
+			helper.assertTrue(steps.get() >= 3, "the Carpenter's saved job never got to the third step: " + steps.get());
 			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null,
 				"still building: " + site.status() + " missing " + site.missing() + "; the crafter made " + ModAttachments.ITEMS_CRAFTED.getOrElse(crafter, 0)
 					+ ", chest " + chest.countItem(Items.OAK_LOG) + " logs " + chest.countItem(chair.asItem()) + " chairs");
@@ -104,7 +113,7 @@ public class CrafterFurnitureCompatTests implements FabricGameTest {
 				helper.assertBlockPresent(chair, ROW.offset(x, 0, 0));
 			}
 			helper.assertTrue(chest.countItem(Items.OAK_LOG) == 0, "the logs should be used up, " + chest.countItem(Items.OAK_LOG) + " left");
-			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(crafter, 0) >= 3, "the chairs weren't the Crafter's: it made "
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(crafter, 0) >= 3, "the chairs weren't the Carpenter's: it made "
 				+ ModAttachments.ITEMS_CRAFTED.getOrElse(crafter, 0));
 		});
 	}
@@ -142,47 +151,6 @@ public class CrafterFurnitureCompatTests implements FabricGameTest {
 	}
 
 	/**
-	 * The Furni Crafter is also the Furnicrafter's job block (38.12), so a jobless villager may take the one in the
-	 * Crafter's workshop. That's harmless: the Crafter keeps its own workbench and job, and its bench recipes go by the
-	 * block standing there, not by who holds the job site, so it still plans CobbleFurnies' chair with the bench taken
-	 * (and the two share their claims on a builder's request, CrafterWork's CLAIMS, so they never make the same one).
-	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
-	public void aFurnicrafterAtTheWorkshopsFurniCrafterLeavesTheCrafterItsBench(GameTestHelper helper) {
-		ServerLevel level = helper.getLevel();
-		Item chair = item("cobblefurnies:oak_chair");
-		BlockPos workbench = new BlockPos(0, 2, 0);
-		BlockPos furni = new BlockPos(2, 2, 0);
-		helper.setBlock(new BlockPos(0, 1, 0), Blocks.STONE);
-		helper.setBlock(new BlockPos(2, 1, 0), Blocks.STONE);
-		helper.setBlock(workbench, ModBlocks.CRAFTERS_WORKBENCH);
-		helper.setBlock(furni, block("cobblefurnies:furnicrafter"));
-		BlockPos station = helper.absolutePos(workbench);
-		Villager crafter = helper.spawn(EntityType.VILLAGER, workbench.south());
-		Jobs.employ(level, crafter, station, ModVillagers.CRAFTERS_WORKBENCH_POI, ModVillagers.CRAFTER);
-		Villager furnicrafter = helper.spawn(EntityType.VILLAGER, furni.south());
-		Jobs.employ(level, furnicrafter, helper.absolutePos(furni), ModVillagers.FURNICRAFTER_POI, ModVillagers.FURNICRAFTER);
-		helper.assertTrue(furnicrafter.getVillagerData().getProfession() == ModVillagers.FURNICRAFTER,
-			"the villager by the workshop's Furni Crafter didn't become a Furnicrafter");
-		helper.runAfterDelay(40, () -> {
-			helper.assertTrue(crafter.getVillagerData().getProfession() == ModVillagers.CRAFTER,
-				"the Crafter lost its job to the Furnicrafter: " + crafter.getVillagerData().getProfession());
-			helper.assertTrue(Builders.benchPos(crafter).map(station::equals).orElse(false),
-				"the Crafter's workbench should still be its job site: " + Builders.benchPos(crafter));
-			Crafting.Plan plan = Crafting.chain(level, chair, 1, Map.of(Items.OAK_LOG, 1L), CrafterBenches.usableAt(level, station));
-			helper.assertTrue(plan != null && plan.count() == 1,
-				"the Crafter should still make CobbleFurnies' chair with a Furnicrafter at the workshop's Furni Crafter: " + plan);
-			crafter.discard();
-			furnicrafter.discard();
-			for (BlockPos pos : List.of(workbench, furni, new BlockPos(0, 1, 0), new BlockPos(2, 1, 0))) {
-				helper.setBlock(pos, Blocks.AIR);
-			}
-			helper.succeed();
-		});
-	}
-
-	/**
 	 * A bench file for a mod that isn't installed (the compat suite's {@code not_installed.json}: a recipe type and block
 	 * nobody registers) is left out of the benches, so nothing is looked for or planned by it; the installed ones load.
 	 */
@@ -200,11 +168,11 @@ public class CrafterFurnitureCompatTests implements FabricGameTest {
 
 	// --- helpers ---------------------------------------------------------------------------------------------------
 
-	private static Villager crafter(GameTestHelper helper) {
-		helper.setBlock(WORKBENCH, ModBlocks.CRAFTERS_WORKBENCH);
-		Villager crafter = helper.spawn(EntityType.VILLAGER, WORKBENCH.south());
-		Jobs.employ(helper.getLevel(), crafter, helper.absolutePos(WORKBENCH), ModVillagers.CRAFTERS_WORKBENCH_POI, ModVillagers.CRAFTER);
-		return crafter;
+	private static Villager carpenter(GameTestHelper helper) {
+		helper.setBlock(WORKBENCH, ModBlocks.CARPENTERS_BENCH);
+		Villager carpenter = helper.spawn(EntityType.VILLAGER, WORKBENCH.south());
+		Jobs.employ(helper.getLevel(), carpenter, helper.absolutePos(WORKBENCH), ModVillagers.CARPENTERS_BENCH_POI, ModVillagers.CARPENTER);
+		return carpenter;
 	}
 
 	/** A blueprint of three {@code block} in a row, drawn where it's to be built (and taken away again). */

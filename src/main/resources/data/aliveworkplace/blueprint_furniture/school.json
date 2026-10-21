@@ -1,3 +1,7 @@
 {"spots": [
+  {"kind": "table", "pos": [3, 1, 4], "facing": "north", "wood": "oak", "blocks": [{"at": [0, 0, 0], "state": "minecraft:oak_fence[east=false,north=false,south=false,waterlogged=false,west=true]"}, {"at": [0, 1, 0], "state": "minecraft:oak_pressure_plate[powered=false]"}], "support": ["floor", "wall"]},
+  {"kind": "table", "pos": [13, 1, 4], "facing": "north", "wood": "oak", "blocks": [{"at": [0, 0, 0], "state": "minecraft:oak_fence[east=true,north=false,south=false,waterlogged=false,west=false]"}, {"at": [0, 1, 0], "state": "minecraft:oak_pressure_plate[powered=false]"}], "support": ["floor", "wall"]},
+  {"kind": "chair", "pos": [3, 1, 5], "facing": "north", "wood": "oak", "blocks": [{"at": [0, 0, 0], "state": "minecraft:oak_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor"]},
+  {"kind": "chair", "pos": [13, 1, 5], "facing": "north", "wood": "oak", "blocks": [{"at": [0, 0, 0], "state": "minecraft:oak_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor"]},
   {"kind": "bed", "pos": [14, 1, 10], "facing": "west", "wood": "oak", "colour": "light_blue", "blocks": [{"at": [0, 0, 0], "state": "minecraft:light_blue_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:light_blue_bed[facing=west,occupied=false,part=head]"}], "support": ["floor", "wall"]}
 ]}

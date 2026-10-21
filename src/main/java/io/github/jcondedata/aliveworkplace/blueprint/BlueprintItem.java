@@ -48,6 +48,28 @@ public class BlueprintItem extends Item {
 	}
 
 	/** Template-space point that lands on the block the player clicks: front edge, centre, floor. */
+	/**
+	 * Where a blueprint clicked onto {@code clicked}'s {@code face} stands. B280: clicked onto a plant (a flower, grass, the
+	 * top of tall grass) it takes the plant's place on the ground, as a block placed there would; it stood on top of the
+	 * plant, a block above the land round it, and the levelling raised a band round it.
+	 */
+	public static BlockPos standingSpot(Level level, BlockPos clicked, net.minecraft.core.Direction face) {
+		if (!isPlant(level, clicked)) {
+			return clicked.relative(face);
+		}
+		BlockPos spot = clicked;
+		while (isPlant(level, spot.below()) && spot.getY() > level.getMinBuildHeight()) {
+			spot = spot.below();
+		}
+		return level.getFluidState(spot.below()).isEmpty() ? spot : clicked.relative(face); // a lily pad: on top, as before
+	}
+
+	private static boolean isPlant(Level level, BlockPos pos) {
+		net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+		return !state.isAir() && state.getFluidState().isEmpty()
+			&& (state.canBeReplaced() || state.getBlock() instanceof net.minecraft.world.level.block.BushBlock);
+	}
+
 	public static BlockPos anchor(Vec3i size) {
 		return new BlockPos(size.getX() / 2, 0, 0);
 	}
@@ -149,7 +171,7 @@ public class BlueprintItem extends Item {
 			BlueprintData.Placement old = current.placement().get();
 			placement = placementAt(dimension, size, anchorWorld(old, size), old.rotation().getRotated(Rotation.CLOCKWISE_90), current.mirror());
 		} else {
-			BlockPos clicked = context.getClickedPos().relative(context.getClickedFace());
+			BlockPos clicked = standingSpot(level, context.getClickedPos(), context.getClickedFace());
 			placement = placementAt(dimension, size, clicked, rotationFacing(player.getDirection().getOpposite()), current.mirror());
 		}
 

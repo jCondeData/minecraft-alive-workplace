@@ -484,6 +484,17 @@ public final class Walls {
 		return !stands(level, piece) && finishedOn(level, piece).isPresent();
 	}
 
+	/**
+	 * Whether a piece laid out at {@code piece} is on the spot of a site being built at {@code site}: their footprints
+	 * overlap, at any height within {@link #GROUND_REACH}. B283: a piece's height is its ground's ({@link #groundY}), and
+	 * once a tower's roof is on (still decorating) that ground is its own top, so the same tower laid out again sat just
+	 * above it, clear of its box: a second tower was opened on the first (and stood unfinished on it).
+	 */
+	static boolean onSpot(BoundingBox site, BoundingBox piece) {
+		return site.minX() <= piece.maxX() && site.maxX() >= piece.minX() && site.minZ() <= piece.maxZ() && site.maxZ() >= piece.minZ()
+			&& site.minY() <= piece.maxY() + GROUND_REACH && site.maxY() >= piece.minY() - GROUND_REACH;
+	}
+
 	/** The wall's pieces still to build, in order. */
 	public static List<Piece> unbuilt(ServerLevel level, BlockPos hall) {
 		return pieces(level, hall).stream().filter(p -> !stands(level, p)).toList();
@@ -522,7 +533,7 @@ public final class Walls {
 		boolean replacing = open.stream().anyMatch(s -> pieces(level, hall).stream()
 			.anyMatch(p -> p.placement().equals(s.placement()) && replaces(level, p)));
 		for (Piece piece : unbuilt(level, hall)) {
-			if (taken.stream().anyMatch(box -> box.intersects(piece.box()))) {
+			if (taken.stream().anyMatch(box -> onSpot(box, piece.box()))) {
 				continue;
 			}
 			if (!StewardSafety.allowed(level, hall, piece.box(), false)) {

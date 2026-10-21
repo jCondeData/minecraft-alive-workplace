@@ -75,7 +75,8 @@ _TOPS = ("_carpet", "pressure_plate")
 
 def _leg(blocks, p):
     """A fence or wall post that is a table's leg: every side it joins leads to another such leg with a cloth or plate
-    on it (a long table), not into a fence line or a wall."""
+    on it (a long table) or into a room's solid wall (a table pushed against the wall: the post joins the wall, B281),
+    not into a fence line or a garden wall."""
     block = blocks.get(p)
     if block is None:
         return False
@@ -87,6 +88,8 @@ def _leg(blocks, p):
         if props.get(side, "false") not in ("false", "none"):
             q = (x + dx, y, z + dz)
             other = blocks.get(q)
+            if solid(blocks, q):  # against the room's wall (a fence post joins a full block beside it)
+                continue
             top = blocks.get((q[0], y + 1, q[2]))
             if other is None or not _short(other).endswith(("_fence", "_wall")) or top is None or not _short(top).endswith(_TOPS):
                 return False
@@ -309,6 +312,84 @@ def room_problems(b, spots):
     return out
 
 
+# --- Every furnished room has a light (B281, the owner 2026-10-21: "neither ground floor has a light") ---------------
+# Block light as the game spreads it: each emitter's level, one less per block it travels through anything but a full
+# opaque block. A piece indoors needs a level above 7 (a lantern within seven steps of it in its own room).
+_LIGHT = {"lantern": 15, "soul_lantern": 10, "torch": 14, "wall_torch": 14, "soul_torch": 10, "soul_wall_torch": 10,
+          "redstone_torch": 7, "redstone_wall_torch": 7, "glowstone": 15, "sea_lantern": 15, "shroomlight": 15,
+          "jack_o_lantern": 15, "ochre_froglight": 15, "verdant_froglight": 15, "pearlescent_froglight": 15,
+          "end_rod": 14, "beacon": 15, "lava": 15, "fire": 15, "soul_fire": 10, "conduit": 15, "glow_lichen": 7,
+          "crying_obsidian": 10, "magma_block": 3, "campfire": 15, "soul_campfire": 10, "furnace": 13, "smoker": 13,
+          "blast_furnace": 13, "redstone_lamp": 15, "copper_bulb": 15}
+_NEEDS_LIT = ("campfire", "soul_campfire", "furnace", "smoker", "blast_furnace", "redstone_lamp", "copper_bulb")
+LIT_ENOUGH = 8  # the owner: "a light level above 7 at night"
+# Raiders' camps and the story's forts (camp/, story/) are dark on purpose: lit only by their own fires and torches.
+UNLIT = ("camp/", "story/")
+_SHUTS = ("_door", "_pane", "glass", "_bars")  # a room's own light stops at its doors and windows
+
+
+def _emits(block):
+    name, props = block
+    s = name.split(":")[1]
+    if s.endswith("candle") or s.endswith("_candle"):
+        return 3 * int(props.get("candles", "1")) if props.get("lit") == "true" else 0
+    if s.endswith("copper_bulb"):
+        s = "copper_bulb"
+    level = _LIGHT.get(s, 0)
+    if s in _NEEDS_LIT and props.get("lit") != "true":
+        return 0
+    return level
+
+
+def _opaque(blocks, p):
+    n = _name(blocks, p)
+    return solid(blocks, p) and not n.endswith(("_slab", "_stairs", "leaves", "_lantern", "lantern")) and _emits(blocks[p]) == 0
+
+
+def light_map(blocks):
+    """Each cell's block light in the drawing from the lights inside its room: a flood from every emitter, as the game
+    spreads it, except that it stops at doors and windows (a porch lantern shining in through the door or a window is
+    not the room's light: the owner's Terrace kitchens were dark with one by each door)."""
+    level = {}
+    queue = []
+    for p, block in blocks.items():
+        e = _emits(block)
+        if e > level.get(p, 0):
+            level[p] = e
+            queue.append(p)
+    queue.sort(key=lambda p: -level[p])
+    i = 0
+    while i < len(queue):
+        p = queue[i]
+        i += 1
+        nxt = level[p] - 1
+        if nxt <= 0:
+            continue
+        x, y, z = p
+        for q in ((x + 1, y, z), (x - 1, y, z), (x, y + 1, z), (x, y - 1, z), (x, y, z + 1), (x, y, z - 1)):
+            if level.get(q, 0) < nxt and not _opaque(blocks, q) and not _name(blocks, q).endswith(_SHUTS):
+                level[q] = nxt
+                queue.append(q)
+    return level
+
+
+def dark_rooms(b, spots):
+    """Furniture indoors that stands in the dark: every furnished room, on every floor, gets a light (B260's rules: a
+    lantern hung from the ceiling or on a table)."""
+    blocks = {p: (n, dict(props)) for p, (n, props) in b.blocks.items() if n not in AIR}
+    light = light_map(blocks)
+    out = []
+    for s in spots:
+        cells = [tuple(c) for c in s["cells"]]
+        if "floor" not in support(blocks, s) or not any(indoors(blocks, c) for c in cells):
+            continue  # what hangs on a wall (blinds, a picture) is lit by the room's light on the floor under it
+        around = cells + [(c[0], c[1] + 1, c[2]) for c in cells]
+        lit = max((light.get(c, 0) for c in around if not _opaque(blocks, c)), default=0)
+        if lit < LIT_ENOUGH:
+            out.append(f"furniture {s['kind']}@{s['pos']} stands in the dark (light {lit}): give its room a lantern")
+    return out
+
+
 def write(b, rel):
     """Writes (or removes, when there are none) the spots file of the blueprint at structure path {@code rel}; returns
     the CHECK lines."""
@@ -318,6 +399,8 @@ def write(b, rel):
     bad = problems(b, spots)
     if getattr(b, "spots", None) and not bad:  # a furnished build (37.4, 37.5): its rooms must read as rooms (B260)
         bad = room_problems(b, spots)
+    if not bad and not rel.startswith(UNLIT):  # B281: every furnished room, on every floor, has its own light
+        bad = dark_rooms(b, spots)
     path = os.path.normpath(os.path.join(FURNITURE_ROOT, rel + ".json"))
     if bad:
         return bad

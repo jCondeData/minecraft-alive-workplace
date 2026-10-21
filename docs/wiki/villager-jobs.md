@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, B97, B101, B103, B226, B224, B220, B221
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221
 
 ## What a player sees
 
@@ -29,7 +29,10 @@ seconds pays and retrains them. The price goes by level: Novice 5, Apprentice 10
 50 emeralds (`retrainPrices`), or 100 CobbleDollars an emerald with the Cobbleverse pack. Too little money: "Retraining
 Dara costs 5 emeralds: you're 2 emeralds short. Nothing changed." A jobless villager becomes a Builder the same way
 for free. A builder given another job hands their builds back first: what's built stays, the blueprint comes back to
-its owner still placed, and another builder carries on from there.
+its owner still placed, and another builder carries on from there. The Village Hall's **Change job** (36.18, see
+[The Village Hall](village-hall.md)) retrains a worker to any free job block in the village, or the Builder, for the
+same price, with no need to bring them to the block: the job and the block's claim are set on the paying click, and one
+who can't walk there within about a minute is moved beside it.
 
 **Fishermen per village (26.13).** A barrel is the Fisherman's workstation, and builds are full of storage barrels,
 so a village takes only so many fishermen: 1, plus 1 more for every 10 villagers within the village radius (48 blocks)

@@ -170,6 +170,8 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		boolean delivered;
 		Phase phase = Phase.GO;
 		int phaseTicks;
+		/** Why the show stopped early (null: it didn't), for {@link #describe}. */
+		@Nullable String cutOff;
 
 		Running(Show show, ServerLevel level, Entity pokemon, Villager worker, BlockPos spot) {
 			this.show = show;
@@ -191,6 +193,10 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	private static String lastFlight = "";
 	/** The last show each worker's cue started, and its partner: for tests and the debug log. */
 	private static final Map<UUID, ResourceLocation> LAST_SHOW = new java.util.HashMap<>();
+	/** How each partner's last show ended (a cut-off and why, or played through): for diagnostics (B276). */
+	private static final Map<UUID, String> LAST_END = new java.util.HashMap<>();
+	/** The partner each worker's last cue sent out. */
+	private static final Map<UUID, UUID> LAST_PARTNER = new java.util.HashMap<>();
 
 	public static void init() {
 		Platform.get().onDataReload(ID, new PartnerShows());
@@ -357,6 +363,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 				}
 				LAST_CUE.put(worker, now);
 				LAST_SHOW.put(worker.getUUID(), show.name());
+				LAST_PARTNER.put(worker.getUUID(), pokemon.getUUID());
 				lastRefusal = "";
 				REFUSALS.remove(worker);
 				return true;
@@ -410,6 +417,24 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	/** Whether {@code pokemon} is doing its show now (arrived at the work, not walking there or back). */
 	public static boolean playing(Entity pokemon) {
 		return RUNNING.stream().anyMatch(r -> r.pokemon == pokemon && r.phase == Phase.PLAY);
+	}
+
+	/** Where {@code pokemon}'s show is ("no show" if none): its phase, ticks in it and the spot it was sent to (B276's diagnostics). */
+	public static String describe(Entity pokemon) {
+		return RUNNING.stream().filter(r -> r.pokemon == pokemon).findFirst()
+			.map(r -> r.phase + " for " + r.phaseTicks + " ticks, spot " + r.spot.toShortString() + " (" + String.format(Locale.ROOT, "%.1f",
+				Math.sqrt(pokemon.distanceToSqr(Vec3.atBottomCenterOf(r.spot)))) + " away)")
+			.orElseGet(() -> "no show (last: " + LAST_END.getOrDefault(pokemon.getUUID(), "none") + ")");
+	}
+
+	/** The partner {@code worker}'s last cue sent out and how its show went ("none" if no cue started one): diagnostics (B276). */
+	public static String lastPartner(Villager worker) {
+		UUID partner = LAST_PARTNER.get(worker.getUUID());
+		if (partner == null) {
+			return "none";
+		}
+		Optional<Running> run = RUNNING.stream().filter(r -> r.pokemon.getUUID().equals(partner)).findFirst();
+		return partner.toString().substring(0, 8) + ": " + run.map(r -> describe(r.pokemon)).orElseGet(() -> LAST_END.getOrDefault(partner, "?"));
 	}
 
 	/** How many shows are on in {@code level}. */
@@ -483,11 +508,13 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	private static boolean step(Running run) {
 		Entity pokemon = run.pokemon;
 		if (!pokemon.isAlive() || pokemon.isRemoved() || !PokemonPartners.EXTENSION.call(p -> p.canPerform(pokemon), false)) {
+			String why = !pokemon.isAlive() ? "gone" : pokemon.isRemoved() ? "removed (" + pokemon.getRemovalReason() + ")"
+				: "can't perform (battling, busy, ridden or no longer pastured)";
+			String cut = "cut off in " + run.phase + " after " + run.phaseTicks + " ticks: " + why;
 			if (run.show.fliesOff()) {
-				String why = !pokemon.isAlive() ? "gone" : pokemon.isRemoved() ? "removed (" + pokemon.getRemovalReason() + ")"
-					: "can't perform (battling, busy, ridden or no longer pastured)";
-				lastFlight += (lastFlight.isEmpty() ? "" : "; ") + "cut off in " + run.phase + " after " + run.phaseTicks + " ticks: " + why;
+				lastFlight += (lastFlight.isEmpty() ? "" : "; ") + cut;
 			}
+			run.cutOff = cut;
 			return false; // recalled, in a battle, picked up: the show stops there
 		}
 		run.phaseTicks++;
@@ -572,6 +599,8 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	}
 
 	private static void end(Running run) {
+		LAST_END.put(run.pokemon.getUUID(), (run.cutOff != null ? run.cutOff : "ended in " + run.phase + " after " + run.phaseTicks + " ticks")
+			+ " at game tick " + run.level.getGameTime());
 		if (run.takeOff != null && run.pokemon.isAlive()) {
 			land(run, run.pokemon); // cut off mid-flight: back on the ground, never left hanging in the air
 		}

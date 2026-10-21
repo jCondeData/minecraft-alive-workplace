@@ -26,6 +26,12 @@ import org.jetbrains.annotations.Nullable;
  * smelters, and brought to the chests by the Guard Post, where the guard picks them up.
  */
 public class FletcherWork extends CrafterWork {
+	/** Not one of the jobs that took over the Crafter's chains (37.14a): a fletcher's arrows are for the guards. */
+	@Override
+	protected boolean chainsForBuilders() {
+		return false;
+	}
+
 	static final List<Item> LAUNCHERS = List.of(Items.CROSSBOW, Items.BOW);
 	/** Spectral arrows made at a time. */
 	static final int ARROWS = 8;

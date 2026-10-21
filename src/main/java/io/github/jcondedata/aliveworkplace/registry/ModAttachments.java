@@ -433,6 +433,12 @@ public final class ModAttachments {
 	/** A worker's trip to a Create machine (39.3): which machine, how far along and what they carry. None: no trip. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.mechanic.MachineJob> MACHINE_JOB = Attachment.saved("machine_job",
 		io.github.jcondedata.aliveworkplace.mechanic.MachineJob.CODEC);
+	/**
+	 * A villager retrained at the Village Hall (36.18) on their way to the new job's block, and since when: moved beside it
+	 * if they haven't got there within about a minute. Absent: not on their way (an old save has none).
+	 */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.HallRetraining.Walk> RETRAIN_WALK = Attachment.saved("retrain_walk",
+		io.github.jcondedata.aliveworkplace.hall.HallRetraining.Walk.CODEC);
 
 	public static void init() {
 	}

@@ -176,9 +176,20 @@ public final class BuilderStatusSync {
 		List<Component> lines = new ArrayList<>();
 		BlockPos bench = Builders.siteBench(level, villager, site).orElse(site.bench());
 		List<BlockPos> supplies = bench == null ? List.of() : SupplyContainers.find(level, bench, plan.supplyExclude());
+		// B290: less what the village's Storehouse and the other workers' chests can spare, as when he waits and fetches
 		Map<Item, Integer> missing = Builders.computeMissing(level, site, plan,
-			io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(villager), supplies);
+			io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(villager), supplies,
+			bench == null ? Map.of() : BuilderWork.spareElsewhere(level, villager, site, plan, bench));
 		lines.add(missingLine(missing));
+		// 37.14a: what the village's jobs can't make of it (a raw material short), or that nobody here makes
+		if (io.github.jcondedata.aliveworkplace.Expansions.isOpen("M37") && site.status() == BuildSite.Status.WAITING_FOR_MATERIALS && !missing.isEmpty()) {
+			Component cant = io.github.jcondedata.aliveworkplace.craft.JobShortages.line(level, site.id(), missing);
+			if (cant != null) {
+				lines.add(cant.copy().withStyle(ChatFormatting.GOLD));
+			}
+		} else {
+			io.github.jcondedata.aliveworkplace.craft.JobShortages.forget(site.id());
+		}
 		if (bench != null) {
 			lines.add(sourcesLine(level, villager, bench, supplies, plan));
 		}

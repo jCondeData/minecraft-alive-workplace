@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280
 
 ## 1. What a player sees
 
@@ -40,6 +40,9 @@ restartable at any tick for this reason.
 - DECORATION is what needs something to hang on or stand on (torches, doors, ladders, carpets...), placed after
   the structure is up.
 - LANDSCAPE (leveling the ground round the build, dirt) never waits for materials.
+- LANDSCAPE digs away ground above the floor and fills holes with dirt, but never above the land just beyond the
+  leveled ring (B280): a build standing a block above the lawn round it leaves the lawn as it is, where it once got a
+  raised band of dirt round it. A blueprint clicked onto a flower or tall grass stands on the ground under the plant.
 - FOUNDATION and LANDSCAPE depend on the terrain, so a site loaded in the middle of those stages makes its list
   again from the terrain; steps already done are skipped.
 - A step that cannot be done yet is put off once, then skipped (counted in `skipped`).

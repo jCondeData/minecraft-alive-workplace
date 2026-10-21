@@ -45,6 +45,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- **No more raised band of dirt round a finished build** (B280). A build standing a block above the ground round it
+  (on a bump, or with its blueprint clicked onto a flower) had the strip round it filled up to its floor: a jagged
+  band of dirt on the grass, with holes where flowers stood. Leveling now only fills holes up to the land round the
+  build, and a blueprint clicked onto a flower or tall grass stands on the ground under it.
 - You can now see everything a build still needs after you hand the blueprint over. Right-click the Builder (or their
   Builder's Bench) with a Book and Quill to get the list for the rest of the build, with what the chests, the
   Builder's bag and the village storehouse already hold ticked off. Sneak-right-click the Builder with an empty hand

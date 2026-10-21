@@ -111,6 +111,14 @@ def catalog_tests(tmp):
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     check("catalog: every harness scene is in the catalog, and back", r.returncode == 0, r.stdout)
 
+    # B282: the harness makes each scene only when it runs (its Lazy fields). A scene built at client start loads its
+    # class for every scene, so one that names an optional mod's type (B278: Cobblemon's PokemonEntity) crashed them all.
+    harness = os.path.join(ROOT, "src/devclient/java/io/github/jcondedata/aliveworkplace/devclient/ScreenshotHarness.java")
+    with open(harness) as f:
+        eager = re.findall(r"^\s*private (?:static )?(?:final )?(\w*(?:Scene|Scenes|Timelapse)) (\w+)\s*=", f.read(), re.M)
+    check("harness: every scene object is made lazily (Lazy<...>), not at client start", not eager,
+          "eager scene fields (wrap each in Lazy<>): " + ", ".join(f"{t} {n}" for t, n in eager))
+
     # The check notices a scene added to the harness but not the catalog, and a catalog scene the harness lost.
     fake = os.path.join(tmp, "fake")
     dev = os.path.join(fake, "src/devclient/java/io/github/jcondedata/aliveworkplace/devclient")

@@ -98,102 +98,123 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 	}
 
-	private final JobScenes jobScenes = new JobScenes();
-	private final WordsScene words = new WordsScene();
-	private final CityPlanScene cityPlan = new CityPlanScene();
-	private final ColonyCharterScene colonyCharter = new ColonyCharterScene();
-	private final ColonyDepartureScene colonyDeparture = new ColonyDepartureScene();
-	private final ColonyScene colony = new ColonyScene();
-	private final ColonyScene founderColony = new ColonyScene(true);
-	private final RealmScene realm = new RealmScene();
-	private final RealmInviteScene realmInvite = new RealmInviteScene();
-	private final PactsScene pacts = new PactsScene();
-	private final FeudScene feud = new FeudScene();
-	private final LeaderboardScene leaderboard = new LeaderboardScene();
-	private final RealmTreasuryScene realmTreasury = new RealmTreasuryScene();
-	private final RealmMapScene realmMap = new RealmMapScene();
-	private final RealmResearchScene realmResearch = new RealmResearchScene();
-	private final RealmEdictsScene realmEdicts = new RealmEdictsScene();
-	private final ReliefScene relief = new ReliefScene();
-	private final LegendsHallScene legendsHall = new LegendsHallScene();
-	private final JobPlateScene jobPlate = new JobPlateScene();
-	private final CupPageScene cupPage = new CupPageScene();
-	private final CupBoutScene cupBout = new CupBoutScene();
-	private final CupMatchScene cupMatch = new CupMatchScene();
-	private final CupDayScene cupDay = new CupDayScene();
-	private final CupChampionsScene cupChampions = new CupChampionsScene();
-	private final CupThemesScene cupThemes = new CupThemesScene();
-	private final GiftedScene gifted = new GiftedScene();
-	private final WorkHornScene workHorn = new WorkHornScene();
-	private final GuildhallScene guildhall = new GuildhallScene();
-	private final GuildsScene guilds = new GuildsScene();
-	private final CradleScene cradle = new CradleScene();
-	private final HarvestIdolScene harvestIdol = new HarvestIdolScene();
-	private final VillageBannerScene villageBanner = new VillageBannerScene();
-	private final TonicsScene tonics = new TonicsScene();
-	private final AgelessElderScene agelessElder = new AgelessElderScene();
-	private final EldersScene elders = new EldersScene();
-	private final ClassOutfitsScene classOutfits = new ClassOutfitsScene();
-	private final RetirementScene retirement = new RetirementScene();
-	private final FamilyTreeScene familyTree = new FamilyTreeScene();
-	private final VillageTalkScene villageTalk = new VillageTalkScene();
-	private final CityPlanGroundScene cityPlanGround = new CityPlanGroundScene();
-	private final PartnersScene partners = new PartnersScene();
-	private final PartnersLandScene partnersLand = new PartnersLandScene();
-	private final BuilderListScene builderList = new BuilderListScene();
-	private final TerraceGradeScene terraceGrade = new TerraceGradeScene();
-	private final PokemonCenterScene pokemonCenter = new PokemonCenterScene();
-	private final ArenaScene arena = new ArenaScene();
-	private final PokemonBuildsScene pokemonBuilds = new PokemonBuildsScene();
-	private final LuxuryWorkshopsScene luxuryWorkshops = new LuxuryWorkshopsScene();
-	private final GrandHousesScene grandHouses = new GrandHousesScene();
-	private final FurnishedHomeScene furnishedHome = new FurnishedHomeScene();
-	private final FurnitureAnyModScene furnitureAnyMod = new FurnitureAnyModScene();
-	private final FurnishedWorkplacesScene furnishedWorkplaces = new FurnishedWorkplacesScene();
-	private final SeatsAndBedsScene seatsAndBeds = new SeatsAndBedsScene();
-	private final ModdedStorehouseScene moddedStorehouse = new ModdedStorehouseScene();
-	private final CarvedStylesScene carvedStyles = new CarvedStylesScene();
-	private final ModdedLibraryScene moddedLibrary = new ModdedLibraryScene();
-	private final VillageHallBuildScene villageHallBuild = new VillageHallBuildScene();
-	private final BuildFixesScene buildFixes = new BuildFixesScene();
-	private final RealmBuildsScene realmBuilds = new RealmBuildsScene();
-	private final WonderGalleryScene wonderGallery = new WonderGalleryScene();
+	/**
+	 * A scene made the first time it runs (B282). The harness used to build every scene at client start, so one scene
+	 * class that names an optional mod's type (B278: PartnersAllScene and Cobblemon's PokemonEntity) crashed every scene
+	 * without that mod. Now only the scene being filmed is loaded. tools/showcase/test_showcase.py refuses an eager one.
+	 */
+	private static final class Lazy<T> {
+		private final java.util.function.Supplier<T> make;
+		private T value;
+
+		Lazy(java.util.function.Supplier<T> make) {
+			this.make = make;
+		}
+
+		T get() {
+			if (value == null) {
+				value = make.get();
+			}
+			return value;
+		}
+	}
+
+	private final Lazy<JobScenes> jobScenes =new Lazy<>(() -> new JobScenes());
+	private final Lazy<WordsScene> words = new Lazy<>(() -> new WordsScene());
+	private final Lazy<CityPlanScene> cityPlan = new Lazy<>(() -> new CityPlanScene());
+	private final Lazy<ColonyCharterScene> colonyCharter = new Lazy<>(() -> new ColonyCharterScene());
+	private final Lazy<ColonyDepartureScene> colonyDeparture = new Lazy<>(() -> new ColonyDepartureScene());
+	private final Lazy<ColonyScene> colony = new Lazy<>(() -> new ColonyScene());
+	private final Lazy<ColonyScene> founderColony = new Lazy<>(() -> new ColonyScene(true));
+	private final Lazy<RealmScene> realm = new Lazy<>(() -> new RealmScene());
+	private final Lazy<RealmInviteScene> realmInvite = new Lazy<>(() -> new RealmInviteScene());
+	private final Lazy<PactsScene> pacts = new Lazy<>(() -> new PactsScene());
+	private final Lazy<FeudScene> feud = new Lazy<>(() -> new FeudScene());
+	private final Lazy<LeaderboardScene> leaderboard = new Lazy<>(() -> new LeaderboardScene());
+	private final Lazy<RealmTreasuryScene> realmTreasury = new Lazy<>(() -> new RealmTreasuryScene());
+	private final Lazy<RealmMapScene> realmMap = new Lazy<>(() -> new RealmMapScene());
+	private final Lazy<RealmResearchScene> realmResearch = new Lazy<>(() -> new RealmResearchScene());
+	private final Lazy<RealmEdictsScene> realmEdicts = new Lazy<>(() -> new RealmEdictsScene());
+	private final Lazy<ReliefScene> relief = new Lazy<>(() -> new ReliefScene());
+	private final Lazy<LegendsHallScene> legendsHall = new Lazy<>(() -> new LegendsHallScene());
+	private final Lazy<JobPlateScene> jobPlate = new Lazy<>(() -> new JobPlateScene());
+	private final Lazy<CupPageScene> cupPage = new Lazy<>(() -> new CupPageScene());
+	private final Lazy<CupBoutScene> cupBout = new Lazy<>(() -> new CupBoutScene());
+	private final Lazy<CupMatchScene> cupMatch = new Lazy<>(() -> new CupMatchScene());
+	private final Lazy<CupDayScene> cupDay = new Lazy<>(() -> new CupDayScene());
+	private final Lazy<CupChampionsScene> cupChampions = new Lazy<>(() -> new CupChampionsScene());
+	private final Lazy<CupThemesScene> cupThemes = new Lazy<>(() -> new CupThemesScene());
+	private final Lazy<GiftedScene> gifted = new Lazy<>(() -> new GiftedScene());
+	private final Lazy<WorkHornScene> workHorn = new Lazy<>(() -> new WorkHornScene());
+	private final Lazy<GuildhallScene> guildhall = new Lazy<>(() -> new GuildhallScene());
+	private final Lazy<GuildsScene> guilds = new Lazy<>(() -> new GuildsScene());
+	private final Lazy<CradleScene> cradle = new Lazy<>(() -> new CradleScene());
+	private final Lazy<HarvestIdolScene> harvestIdol = new Lazy<>(() -> new HarvestIdolScene());
+	private final Lazy<VillageBannerScene> villageBanner = new Lazy<>(() -> new VillageBannerScene());
+	private final Lazy<TonicsScene> tonics = new Lazy<>(() -> new TonicsScene());
+	private final Lazy<AgelessElderScene> agelessElder = new Lazy<>(() -> new AgelessElderScene());
+	private final Lazy<EldersScene> elders = new Lazy<>(() -> new EldersScene());
+	private final Lazy<ClassOutfitsScene> classOutfits = new Lazy<>(() -> new ClassOutfitsScene());
+	private final Lazy<RetirementScene> retirement = new Lazy<>(() -> new RetirementScene());
+	private final Lazy<FamilyTreeScene> familyTree = new Lazy<>(() -> new FamilyTreeScene());
+	private final Lazy<VillageTalkScene> villageTalk = new Lazy<>(() -> new VillageTalkScene());
+	private final Lazy<CityPlanGroundScene> cityPlanGround = new Lazy<>(() -> new CityPlanGroundScene());
+	private final Lazy<PartnersScene> partners = new Lazy<>(() -> new PartnersScene());
+	private final Lazy<PartnersLandScene> partnersLand = new Lazy<>(() -> new PartnersLandScene());
+	private final Lazy<BuilderListScene> builderList = new Lazy<>(() -> new BuilderListScene());
+	private final Lazy<TerraceGradeScene> terraceGrade = new Lazy<>(() -> new TerraceGradeScene());
+	private final Lazy<PokemonCenterScene> pokemonCenter = new Lazy<>(() -> new PokemonCenterScene());
+	private final Lazy<ArenaScene> arena = new Lazy<>(() -> new ArenaScene());
+	private final Lazy<PokemonBuildsScene> pokemonBuilds = new Lazy<>(() -> new PokemonBuildsScene());
+	private final Lazy<LuxuryWorkshopsScene> luxuryWorkshops = new Lazy<>(() -> new LuxuryWorkshopsScene());
+	private final Lazy<GrandHousesScene> grandHouses = new Lazy<>(() -> new GrandHousesScene());
+	private final Lazy<FurnishedHomeScene> furnishedHome = new Lazy<>(() -> new FurnishedHomeScene());
+	private final Lazy<FurnitureAnyModScene> furnitureAnyMod = new Lazy<>(() -> new FurnitureAnyModScene());
+	private final Lazy<FurnishedWorkplacesScene> furnishedWorkplaces = new Lazy<>(() -> new FurnishedWorkplacesScene());
+	private final Lazy<SeatsAndBedsScene> seatsAndBeds = new Lazy<>(() -> new SeatsAndBedsScene());
+	private final Lazy<ModdedStorehouseScene> moddedStorehouse = new Lazy<>(() -> new ModdedStorehouseScene());
+	private final Lazy<CarvedStylesScene> carvedStyles = new Lazy<>(() -> new CarvedStylesScene());
+	private final Lazy<ModdedLibraryScene> moddedLibrary = new Lazy<>(() -> new ModdedLibraryScene());
+	private final Lazy<VillageHallBuildScene> villageHallBuild = new Lazy<>(() -> new VillageHallBuildScene());
+	private final Lazy<BuildFixesScene> buildFixes = new Lazy<>(() -> new BuildFixesScene());
+	private final Lazy<RealmBuildsScene> realmBuilds = new Lazy<>(() -> new RealmBuildsScene());
+	private final Lazy<WonderGalleryScene> wonderGallery = new Lazy<>(() -> new WonderGalleryScene());
 	/** SCENE=wonder_finished (ROADMAP 35.8): the folly's time-lapse, ending in its festival's fireworks. */
-	private final WonderTimelapse wonderFinished = new WonderTimelapse(
-		net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly"), "wonder_finished");
+	private final Lazy<WonderTimelapse> wonderFinished = new Lazy<>(() -> new WonderTimelapse(
+		net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly"), "wonder_finished"));
 	/** SCENE=wonder_hanging_gardens (ROADMAP 35.20): the Gardens' time-lapse, ending the next morning with the falls running and farmers on the terraces. */
-	private final WonderTimelapse wonderGardens = WonderGardensScene.create();
+	private final Lazy<WonderTimelapse> wonderGardens = new Lazy<>(() -> WonderGardensScene.create());
 	/** SCENE=wonder_lighthouse (ROADMAP 35.12): the Lighthouse's time-lapse by the sea, ending at night with its lamps lit. */
-	private final WonderTimelapse wonderLighthouse = WonderLighthouseScene.create();
+	private final Lazy<WonderTimelapse> wonderLighthouse = new Lazy<>(() -> WonderLighthouseScene.create());
 	/** SCENE=wonder_great_library (ROADMAP 35.14): the Library's time-lapse, ending in its rotunda on the scholar's screen with the second tier. */
-	private final WonderTimelapse wonderLibrary = WonderLibraryScene.create();
+	private final Lazy<WonderTimelapse> wonderLibrary = new Lazy<>(() -> WonderLibraryScene.create());
 	/** SCENE=wonder_great_cathedral (ROADMAP 35.10): the Cathedral's time-lapse, ending at dusk with a wedding at its altar. */
-	private final WonderTimelapse wonderCathedral = new WonderTimelapse(
-		net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace", "great_cathedral"), "wonder_great_cathedral", WonderTimelapse.Ending.WEDDING);
+	private final Lazy<WonderTimelapse> wonderCathedral = new Lazy<>(() -> new WonderTimelapse(
+		net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace", "great_cathedral"), "wonder_great_cathedral", WonderTimelapse.Ending.WEDDING));
 	/** SCENE=wonder_colossus (ROADMAP 35.22): the Colossus's time-lapse with its scaffolding, ending at night with the lantern lit over the road. */
-	private final WonderTimelapse wonderColossus = WonderColossusScene.create();
+	private final Lazy<WonderTimelapse> wonderColossus = new Lazy<>(() -> WonderColossusScene.create());
 	/** SCENE=wonder_stadium (ROADMAP 35.24, with Cobblemon): the Stadium's time-lapse, then a Stadium Day with full stands and a battle with a visitor. */
-	private final WonderTimelapse wonderStadium = WonderStadiumScene.create();
+	private final Lazy<WonderTimelapse> wonderStadium = new Lazy<>(() -> WonderStadiumScene.create());
 	/** SCENE=wonder_great_wall (ROADMAP 35.16): the Great Wall's time-lapse, ending at midnight with a raid gathering on the open side while its sentries watch. */
-	private final WonderTimelapse wonderGreatWall = WonderGreatWallScene.create();
+	private final Lazy<WonderTimelapse> wonderGreatWall = new Lazy<>(() -> WonderGreatWallScene.create());
 	/** SCENE=wonder_observatory (ROADMAP 35.18): the Observatory's time-lapse, then the Sky Chart in hand and the Coming days page. */
-	private final WonderTimelapse wonderObservatory = WonderObservatoryScene.create();
-	private final VillageHabitatScene villageHabitat = new VillageHabitatScene();
-	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
-	private final PartnersAllScene partnersAll = new PartnersAllScene();
-	private final PaceScene pace = new PaceScene();
-	private final StewardRulesScene stewardRules = new StewardRulesScene();
-	private final StewardDeskScene stewardDesk = new StewardDeskScene();
-	private final StewardSafetyScene stewardSafety = new StewardSafetyScene();
-	private final OldHousesScene oldHouses = new OldHousesScene();
-	private final RenewalScene renewal = new RenewalScene();
-	private final StewardJobsScene stewardJobs = new StewardJobsScene();
-	private final StewardHomesScene stewardHomes = new StewardHomesScene();
-	private final StewardCivicScene stewardCivic = new StewardCivicScene();
-	private final CityTimelapseScene cityTimelapse = new CityTimelapseScene();
-	private final PieceLookScene pieceLook = new PieceLookScene();
+	private final Lazy<WonderTimelapse> wonderObservatory = new Lazy<>(() -> WonderObservatoryScene.create());
+	private final Lazy<VillageHabitatScene> villageHabitat = new Lazy<>(() -> new VillageHabitatScene());
+	private final Lazy<PartnersForgeScene> partnersForge = new Lazy<>(() -> new PartnersForgeScene());
+	private final Lazy<PartnersAllScene> partnersAll = new Lazy<>(() -> new PartnersAllScene());
+	private final Lazy<PaceScene> pace = new Lazy<>(() -> new PaceScene());
+	private final Lazy<StewardRulesScene> stewardRules = new Lazy<>(() -> new StewardRulesScene());
+	private final Lazy<StewardDeskScene> stewardDesk = new Lazy<>(() -> new StewardDeskScene());
+	private final Lazy<StewardSafetyScene> stewardSafety = new Lazy<>(() -> new StewardSafetyScene());
+	private final Lazy<OldHousesScene> oldHouses = new Lazy<>(() -> new OldHousesScene());
+	private final Lazy<RenewalScene> renewal = new Lazy<>(() -> new RenewalScene());
+	private final Lazy<StewardJobsScene> stewardJobs = new Lazy<>(() -> new StewardJobsScene());
+	private final Lazy<StewardHomesScene> stewardHomes = new Lazy<>(() -> new StewardHomesScene());
+	private final Lazy<StewardCivicScene> stewardCivic = new Lazy<>(() -> new StewardCivicScene());
+	private final Lazy<CityTimelapseScene> cityTimelapse = new Lazy<>(() -> new CityTimelapseScene());
+	private final Lazy<PieceLookScene> pieceLook = new Lazy<>(() -> new PieceLookScene());
 	/** SCENE=table_library (ROADMAP 36.13): blueprints stored in the Blueprint Table, listed with counts, one taken back out. */
-	private final TableLibraryScene tableLibrary = new TableLibraryScene();
+	private final Lazy<TableLibraryScene> tableLibrary = new Lazy<>(() -> new TableLibraryScene());
 
 	private void onTick(Minecraft mc) {
 		skipBackupQuestion(mc);
@@ -202,7 +223,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 			return;
 		}
 		if (JobScenes.has(System.getProperty("aliveworkplace.scene"))) {
-			jobScenes.tick(mc, mc.getSingleplayerServer(), System.getProperty("aliveworkplace.scene"));
+			jobScenes.get().tick(mc, mc.getSingleplayerServer(), System.getProperty("aliveworkplace.scene"));
 			return;
 		}
 		if ("table".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -210,7 +231,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 			return;
 		}
 		if ("table_library".equals(System.getProperty("aliveworkplace.scene"))) {
-			tableLibrary.tick(mc, mc.getSingleplayerServer());
+			tableLibrary.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("table_preview".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -242,331 +263,331 @@ public class ScreenshotHarness implements ClientModInitializer {
 			return;
 		}
 		if ("steward_rules".equals(System.getProperty("aliveworkplace.scene"))) {
-			stewardRules.tick(mc, mc.getSingleplayerServer());
+			stewardRules.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("steward_safety".equals(System.getProperty("aliveworkplace.scene"))) {
-			stewardSafety.tick(mc, mc.getSingleplayerServer());
+			stewardSafety.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("old_houses".equals(System.getProperty("aliveworkplace.scene"))) {
-			oldHouses.tick(mc, mc.getSingleplayerServer());
+			oldHouses.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("renewal".equals(System.getProperty("aliveworkplace.scene"))) {
-			renewal.tick(mc, mc.getSingleplayerServer());
+			renewal.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("steward_desk".equals(System.getProperty("aliveworkplace.scene"))) {
-			stewardDesk.tick(mc, mc.getSingleplayerServer());
+			stewardDesk.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("steward_jobs".equals(System.getProperty("aliveworkplace.scene"))) {
-			stewardJobs.tick(mc, mc.getSingleplayerServer());
+			stewardJobs.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("steward_homes".equals(System.getProperty("aliveworkplace.scene"))) {
-			stewardHomes.tick(mc, mc.getSingleplayerServer());
+			stewardHomes.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("city_timelapse".equals(System.getProperty("aliveworkplace.scene"))) {
-			cityTimelapse.tick(mc, mc.getSingleplayerServer());
+			cityTimelapse.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("steward_civic".equals(System.getProperty("aliveworkplace.scene"))) {
-			stewardCivic.tick(mc, mc.getSingleplayerServer());
+			stewardCivic.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("piece_look".equals(System.getProperty("aliveworkplace.scene"))) {
-			pieceLook.tick(mc, mc.getSingleplayerServer());
+			pieceLook.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_all".equals(System.getProperty("aliveworkplace.scene"))) {
-			partnersAll.tick(mc, mc.getSingleplayerServer());
+			partnersAll.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_forge".equals(System.getProperty("aliveworkplace.scene"))) {
-			partnersForge.tick(mc, mc.getSingleplayerServer());
+			partnersForge.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("pokemon_center".equals(System.getProperty("aliveworkplace.scene"))) {
-			pokemonCenter.tick(mc, mc.getSingleplayerServer());
+			pokemonCenter.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("arena".equals(System.getProperty("aliveworkplace.scene"))) {
-			arena.tick(mc, mc.getSingleplayerServer());
+			arena.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("pokemon_builds".equals(System.getProperty("aliveworkplace.scene"))) {
-			pokemonBuilds.tick(mc, mc.getSingleplayerServer());
+			pokemonBuilds.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("luxury_workshops".equals(System.getProperty("aliveworkplace.scene"))) {
-			luxuryWorkshops.tick(mc, mc.getSingleplayerServer());
+			luxuryWorkshops.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("realm_builds".equals(System.getProperty("aliveworkplace.scene"))) {
-			realmBuilds.tick(mc, mc.getSingleplayerServer());
+			realmBuilds.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_gallery".equals(System.getProperty("aliveworkplace.scene"))) {
-			wonderGallery.tick(mc, mc.getSingleplayerServer());
+			wonderGallery.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_finished".equals(System.getProperty("aliveworkplace.scene"))) {
-			wonderFinished.tick(mc, mc.getSingleplayerServer());
+			wonderFinished.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_hanging_gardens".equals(System.getProperty("aliveworkplace.scene"))) {
-			wonderGardens.tick(mc, mc.getSingleplayerServer());
+			wonderGardens.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_lighthouse".equals(System.getProperty("aliveworkplace.scene"))) {
-			wonderLighthouse.tick(mc, mc.getSingleplayerServer());
+			wonderLighthouse.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_great_library".equals(System.getProperty("aliveworkplace.scene"))) {
-			wonderLibrary.tick(mc, mc.getSingleplayerServer());
+			wonderLibrary.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_great_cathedral".equals(System.getProperty("aliveworkplace.scene"))) {
-			wonderCathedral.tick(mc, mc.getSingleplayerServer());
+			wonderCathedral.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_colossus".equals(System.getProperty("aliveworkplace.scene"))) {
-			wonderColossus.tick(mc, mc.getSingleplayerServer());
+			wonderColossus.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_stadium".equals(System.getProperty("aliveworkplace.scene"))) {
-			wonderStadium.tick(mc, mc.getSingleplayerServer());
+			wonderStadium.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_great_wall".equals(System.getProperty("aliveworkplace.scene"))) {
-			wonderGreatWall.tick(mc, mc.getSingleplayerServer());
+			wonderGreatWall.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_observatory".equals(System.getProperty("aliveworkplace.scene"))) {
-			wonderObservatory.tick(mc, mc.getSingleplayerServer());
+			wonderObservatory.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("village_hall".equals(System.getProperty("aliveworkplace.scene"))) {
-			villageHallBuild.tick(mc, mc.getSingleplayerServer());
+			villageHallBuild.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("build_fixes".equals(System.getProperty("aliveworkplace.scene"))) {
-			buildFixes.tick(mc, mc.getSingleplayerServer());
+			buildFixes.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {
-			grandHouses.tick(mc, mc.getSingleplayerServer());
+			grandHouses.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("furnished_home".equals(System.getProperty("aliveworkplace.scene"))) {
-			furnishedHome.tick(mc, mc.getSingleplayerServer());
+			furnishedHome.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("furniture_any_mod".equals(System.getProperty("aliveworkplace.scene"))) {
-			furnitureAnyMod.tick(mc, mc.getSingleplayerServer());
+			furnitureAnyMod.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("furnished_workplaces".equals(System.getProperty("aliveworkplace.scene"))) {
-			furnishedWorkplaces.tick(mc, mc.getSingleplayerServer());
+			furnishedWorkplaces.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("seats_and_beds".equals(System.getProperty("aliveworkplace.scene"))) {
-			seatsAndBeds.tick(mc, mc.getSingleplayerServer());
+			seatsAndBeds.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("modded_storehouse".equals(System.getProperty("aliveworkplace.scene"))) {
-			moddedStorehouse.tick(mc, mc.getSingleplayerServer());
+			moddedStorehouse.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("carved_styles".equals(System.getProperty("aliveworkplace.scene"))) {
-			carvedStyles.tick(mc, mc.getSingleplayerServer());
+			carvedStyles.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("modded_library".equals(System.getProperty("aliveworkplace.scene"))) {
-			moddedLibrary.tick(mc, mc.getSingleplayerServer());
+			moddedLibrary.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("village_habitat".equals(System.getProperty("aliveworkplace.scene"))) {
-			villageHabitat.tick(mc, mc.getSingleplayerServer());
+			villageHabitat.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("builder_list".equals(System.getProperty("aliveworkplace.scene"))) {
-			builderList.tick(mc, mc.getSingleplayerServer());
+			builderList.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("terrace_grade".equals(System.getProperty("aliveworkplace.scene"))) {
-			terraceGrade.tick(mc, mc.getSingleplayerServer());
+			terraceGrade.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_land".equals(System.getProperty("aliveworkplace.scene"))) {
-			partnersLand.tick(mc, mc.getSingleplayerServer());
+			partnersLand.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("pace".equals(System.getProperty("aliveworkplace.scene"))) {
-			pace.tick(mc, mc.getSingleplayerServer());
+			pace.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_engine".equals(System.getProperty("aliveworkplace.scene"))) {
-			partners.tick(mc, mc.getSingleplayerServer());
+			partners.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("words".equals(System.getProperty("aliveworkplace.scene"))) {
-			words.tick(mc);
+			words.get().tick(mc);
 			return;
 		}
 		if ("city_plan".equals(System.getProperty("aliveworkplace.scene"))) {
-			cityPlan.tick(mc);
+			cityPlan.get().tick(mc);
 			return;
 		}
 		if ("colony_charter".equals(System.getProperty("aliveworkplace.scene"))) {
-			colonyCharter.tick(mc);
+			colonyCharter.get().tick(mc);
 			return;
 		}
 		if ("colony_departure".equals(System.getProperty("aliveworkplace.scene"))) {
-			colonyDeparture.tick(mc);
+			colonyDeparture.get().tick(mc);
 			return;
 		}
 		if ("realm".equals(System.getProperty("aliveworkplace.scene"))) {
-			realm.tick(mc);
+			realm.get().tick(mc);
 			return;
 		}
 		if ("realm_invite".equals(System.getProperty("aliveworkplace.scene"))) {
-			realmInvite.tick(mc);
+			realmInvite.get().tick(mc);
 			return;
 		}
 		if ("pacts".equals(System.getProperty("aliveworkplace.scene"))) {
-			pacts.tick(mc);
+			pacts.get().tick(mc);
 			return;
 		}
 		if ("feud".equals(System.getProperty("aliveworkplace.scene"))) {
-			feud.tick(mc);
+			feud.get().tick(mc);
 			return;
 		}
 		if ("leaderboard".equals(System.getProperty("aliveworkplace.scene"))) {
-			leaderboard.tick(mc);
+			leaderboard.get().tick(mc);
 			return;
 		}
 		if ("realm_map".equals(System.getProperty("aliveworkplace.scene"))) {
-			realmMap.tick(mc);
+			realmMap.get().tick(mc);
 			return;
 		}
 		if ("realm_treasury".equals(System.getProperty("aliveworkplace.scene"))) {
-			realmTreasury.tick(mc);
+			realmTreasury.get().tick(mc);
 			return;
 		}
 		if ("realm_research".equals(System.getProperty("aliveworkplace.scene"))) {
-			realmResearch.tick(mc);
+			realmResearch.get().tick(mc);
 			return;
 		}
 		if ("realm_edicts".equals(System.getProperty("aliveworkplace.scene"))) {
-			realmEdicts.tick(mc);
+			realmEdicts.get().tick(mc);
 			return;
 		}
 		if ("relief".equals(System.getProperty("aliveworkplace.scene"))) {
-			relief.tick(mc);
+			relief.get().tick(mc);
 			return;
 		}
 		if ("colony".equals(System.getProperty("aliveworkplace.scene"))) {
-			colony.tick(mc);
+			colony.get().tick(mc);
 			return;
 		}
 		if ("founder_colony".equals(System.getProperty("aliveworkplace.scene"))) {
-			founderColony.tick(mc);
+			founderColony.get().tick(mc);
 			return;
 		}
 		if ("job_plate".equals(System.getProperty("aliveworkplace.scene"))) {
-			jobPlate.tick(mc);
+			jobPlate.get().tick(mc);
 			return;
 		}
 		if ("legends_hall".equals(System.getProperty("aliveworkplace.scene"))) {
-			legendsHall.tick(mc);
+			legendsHall.get().tick(mc);
 			return;
 		}
 		if ("cup_page".equals(System.getProperty("aliveworkplace.scene"))) {
-			cupPage.tick(mc);
+			cupPage.get().tick(mc);
 			return;
 		}
 		if ("cup_bout".equals(System.getProperty("aliveworkplace.scene"))) {
-			cupBout.tick(mc);
+			cupBout.get().tick(mc);
 			return;
 		}
 		if ("cup_match".equals(System.getProperty("aliveworkplace.scene"))) {
-			cupMatch.tick(mc);
+			cupMatch.get().tick(mc);
 			return;
 		}
 		if ("cup_day".equals(System.getProperty("aliveworkplace.scene"))) {
-			cupDay.tick(mc);
+			cupDay.get().tick(mc);
 			return;
 		}
 		if ("cup_champions".equals(System.getProperty("aliveworkplace.scene"))) {
-			cupChampions.tick(mc);
+			cupChampions.get().tick(mc);
 			return;
 		}
 		if ("cup_themes".equals(System.getProperty("aliveworkplace.scene"))) {
-			cupThemes.tick(mc);
+			cupThemes.get().tick(mc);
 			return;
 		}
 		if ("gifted".equals(System.getProperty("aliveworkplace.scene"))) {
-			gifted.tick(mc);
+			gifted.get().tick(mc);
 			return;
 		}
 		if ("work_horn".equals(System.getProperty("aliveworkplace.scene"))) {
-			workHorn.tick(mc);
+			workHorn.get().tick(mc);
 			return;
 		}
 		if ("guildhall".equals(System.getProperty("aliveworkplace.scene"))) {
-			guildhall.tick(mc);
+			guildhall.get().tick(mc);
 			return;
 		}
 		if ("guilds".equals(System.getProperty("aliveworkplace.scene"))) {
-			guilds.tick(mc);
+			guilds.get().tick(mc);
 			return;
 		}
 		if ("ageless_elder".equals(System.getProperty("aliveworkplace.scene"))) {
-			agelessElder.tick(mc);
+			agelessElder.get().tick(mc);
 			return;
 		}
 		if ("elders".equals(System.getProperty("aliveworkplace.scene"))) {
-			elders.tick(mc);
+			elders.get().tick(mc);
 			return;
 		}
 		if ("class_outfits".equals(System.getProperty("aliveworkplace.scene"))) {
-			classOutfits.tick(mc);
+			classOutfits.get().tick(mc);
 			return;
 		}
 		if ("retirement".equals(System.getProperty("aliveworkplace.scene"))) {
-			retirement.tick(mc);
+			retirement.get().tick(mc);
 			return;
 		}
 		if ("family_tree".equals(System.getProperty("aliveworkplace.scene"))) {
-			familyTree.tick(mc);
+			familyTree.get().tick(mc);
 			return;
 		}
 		if ("cradle".equals(System.getProperty("aliveworkplace.scene"))) {
-			cradle.tick(mc);
+			cradle.get().tick(mc);
 			return;
 		}
 		if ("harvest_idol".equals(System.getProperty("aliveworkplace.scene"))) {
-			harvestIdol.tick(mc);
+			harvestIdol.get().tick(mc);
 			return;
 		}
 		if ("village_banner".equals(System.getProperty("aliveworkplace.scene"))) {
-			villageBanner.tick(mc);
+			villageBanner.get().tick(mc);
 			return;
 		}
 		if ("tonics".equals(System.getProperty("aliveworkplace.scene"))) {
-			tonics.tick(mc);
+			tonics.get().tick(mc);
 			return;
 		}
 		if ("village_talk".equals(System.getProperty("aliveworkplace.scene"))) {
-			villageTalk.tick(mc);
+			villageTalk.get().tick(mc);
 			return;
 		}
 		if ("city_plan_ground".equals(System.getProperty("aliveworkplace.scene"))) {
-			cityPlanGround.tick(mc);
+			cityPlanGround.get().tick(mc);
 			return;
 		}
 		if ("config".equals(System.getProperty("aliveworkplace.scene"))) {

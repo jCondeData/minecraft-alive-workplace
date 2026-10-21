@@ -2450,6 +2450,10 @@ final class JobScenes {
 			Villager u = picked(level, player, STATION, Blocks.BREWING_STAND, Items.GOLDEN_APPLE);
 			u.setCustomName(Component.literal("Ulric"));
 			chest(level, STATION.east(2));
+			// B268: the hall's record now, not in vanilla's next task: Mira dies this tick, and without it her death finds no
+			// village (no one told, nobody grieving, no funeral waiting)
+			ScreenshotHarness.fileRecords(level, hall, 1);
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 			mira.kill();
 			// B236: the grave's record is filed in vanilla's next task, so file it now
 			ScreenshotHarness.fileRecords(level, new BlockPos(6, -60, 6), 4);

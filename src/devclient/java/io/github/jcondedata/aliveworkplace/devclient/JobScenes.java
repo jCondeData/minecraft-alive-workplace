@@ -5049,9 +5049,16 @@ final class JobScenes {
 						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
 						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
 					ScreenshotHarness.fileRecords(level, new BlockPos(5, -60, -5), 1); // the new bed's record now, so the round finds the home free
+					// B285: the hall counts its needs again every VillageNeeds.CHECK_EVERY ticks, and this staged village (an
+					// innkeeper and a guest) counts unhappy, so a count landing between the setup and here undid the happy
+					// village the scene stages. Set it again right before the round reads it, as holdTown does the rank.
+					((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION))
+						.setNeeds(new io.github.jcondedata.aliveworkplace.hall.VillageNeeds.Needs(1, 1, 1, 1, 1, 0, 0, 0.9f));
 					io.github.jcondedata.aliveworkplace.legend.LegendGuests.tend(level, STATION);
 					var data = io.github.jcondedata.aliveworkplace.registry.ModAttachments.LEGEND.get(subject);
-					Showcase.check(data != null && data.settled(), "she settled once the home was ready");
+					Showcase.check(data != null && data.settled(), "she settled once the home was ready"
+						+ (data != null && data.settled() ? "" : " (waiting on " + (data == null ? "no Legend data" : data.unmet().keySet()
+							+ ", free home " + io.github.jcondedata.aliveworkplace.legend.LegendGuests.freeHome(level, STATION)) + ")"));
 					Showcase.check(subject.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.MASON
 						&& subject.getVillagerData().getLevel() == 5, "she is a Master Mason");
 				}, 40),

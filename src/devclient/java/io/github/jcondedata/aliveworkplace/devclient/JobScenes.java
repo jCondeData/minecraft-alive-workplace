@@ -369,9 +369,48 @@ final class JobScenes {
 	private static final List<Villager> classPeople = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** curfew: the villagers who go to bed at dusk. */
 	private static final List<Villager> curfewSleepers = new java.util.concurrent.CopyOnWriteArrayList<>();
+	/** Each raider's health and last attacker, and each conscript's health, fight and nearest raider: why a strike is missing. */
+	private static String conscriptionState() {
+		StringBuilder out = new StringBuilder();
+		for (int i = 0; i < conscriptionRaiders.size(); i++) {
+			var z = conscriptionRaiders.get(i);
+			var by = z.getLastHurtByMob();
+			out.append("raider ").append(i).append(z.isAlive() ? " hp " + z.getHealth() : " dead").append(" hit by ")
+				.append(by instanceof Villager v ? v.getVillagerData().getProfession().toString() : by == null ? "none" : by.getType().toShortString())
+				.append(" at ").append(z.blockPosition().toShortString()).append("; ");
+		}
+		for (Villager v : conscripts) {
+			double near = conscriptionRaiders.stream().filter(net.minecraft.world.entity.LivingEntity::isAlive)
+				.mapToDouble(z -> Math.sqrt(z.distanceToSqr(v))).min().orElse(-1);
+			out.append(v.getVillagerData().getProfession()).append(conscriptsStruck.contains(v) ? " struck" : " never struck").append(v.isAlive() ? " hp " + v.getHealth() : " dead")
+				.append(io.github.jcondedata.aliveworkplace.guard.MilitiaCombat.isFighting(v) ? " fighting" : " not fighting")
+				.append(" activity ").append(v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("none"))
+				.append(" nearest raider ").append(String.format("%.1f", near)).append("; ");
+		}
+		return out.toString();
+	}
+
 	/** conscription: the villagers called up, and the raiders they beat back. */
 	private static final List<Villager> conscripts = new java.util.concurrent.CopyOnWriteArrayList<>();
 	private static final List<net.minecraft.world.entity.monster.Zombie> conscriptionRaiders = new java.util.concurrent.CopyOnWriteArrayList<>();
+	/**
+	 * The conscripts who landed a blow on a raider, recorded as each blow lands (B275): a raider's last attacker was the
+	 * old measure, but the guard's iron sword often dealt the killing blow and hid the conscripts' strikes.
+	 */
+	private static final java.util.Set<Villager> conscriptsStruck = java.util.concurrent.ConcurrentHashMap.newKeySet();
+	private static boolean conscriptBlowsWatched;
+
+	private static void watchConscriptBlows() {
+		if (conscriptBlowsWatched) {
+			return;
+		}
+		conscriptBlowsWatched = true;
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, base, taken, blocked) -> {
+			if (source.getEntity() instanceof Villager v && conscripts.contains(v) && conscriptionRaiders.contains(entity)) {
+				conscriptsStruck.add(v);
+			}
+		});
+	}
 	/** smith_orders: the slot where the Poké Ball turned up (found on the server). */
 	private static volatile int pickedSlot = -1;
 	/** A screen a job scene films while its job gets going (the Drop Box's). */
@@ -6995,6 +7034,8 @@ final class JobScenes {
 				level.setDayTime((level.getDayTime() / 24000) * 24000 + 14000);
 				conscripts.clear();
 				conscriptionRaiders.clear();
+				conscriptsStruck.clear();
+				watchConscriptBlows();
 				VillagerProfession[] jobs = {VillagerProfession.FARMER, ModVillagers.BUILDER, VillagerProfession.LIBRARIAN};
 				for (int i = 0; i < 3; i++) {
 					Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(-4 + 4 * i, -60, -1), MobSpawnType.COMMAND);
@@ -7034,11 +7075,11 @@ final class JobScenes {
 				new Step("02_conscription_fight", -1, 0, (level, player) -> {
 					long armed = conscripts.stream().filter(v -> io.github.jcondedata.aliveworkplace.hall.Conscription.isMilitiaSword(v.getMainHandItem())).count();
 					Showcase.check(armed == 3, "the three took up the militia's swords: " + armed + " of 3");
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[showcase] conscription fight starts: {}", conscriptionState());
 				}, 160),
 				new Step("03_conscription_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
-					long struck = conscriptionRaiders.stream().filter(z -> z.getLastHurtByMob() instanceof Villager v
-						&& !io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(v)).count();
-					Showcase.check(struck >= 2, "the conscripts struck the raiders: " + struck + " of 3");
+					long struck = conscripts.stream().filter(conscriptsStruck::contains).count();
+					Showcase.check(struck == 3, "the conscripts struck the raiders: " + struck + " of 3 (" + conscriptionState() + ")");
 					Showcase.check(conscripts.stream().anyMatch(io.github.jcondedata.aliveworkplace.hall.Conscription::workStopped), "no work in the raid");
 					player.teleportTo(-5.5, -60, 1.5);
 					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION.offset(-7, 0, 0));

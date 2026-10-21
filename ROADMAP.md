@@ -5328,6 +5328,11 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-21 (lane-b-1021-2138, for the owner, 36.18): decided that **right-clicking** a worker in the Village Hall's
+  residents list opens their page with Change job; a plain click still only makes them glow, as before (the life-story
+  shift-click and its test kept their meaning). Workers who can be retrained show a "Right-click: change their job"
+  line. A villager who hasn't reached the new block after 1000 ticks (~50 s) is moved beside it. Milestone 36 now has
+  no open item for lane b.
 - 2026-10-21 (lane-c-1021-1555, for the owner, 37.14a/37.16a): the Crafter is retired and its chain way lives in the
   crafting jobs (Carpenter, Mason with the kiln, Librarian, Tinkerer, Toolsmith, dyer, Furnicrafter), behind M37's gate
   like the rest of 2.1; the Crafter's retirement itself isn't gated. Decided: the cook, luxury makers, Weaponsmith and

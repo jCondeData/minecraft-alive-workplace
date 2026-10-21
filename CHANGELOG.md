@@ -47,6 +47,12 @@ asks for the steps, `latest.log` and any crash report).
 
 - The dyer mixing concrete powder from sand, gravel and dye now makes it step by step like the other chains (the powder,
   then the hardening), so a world saved mid-job no longer loses the spare powder a mix makes.
+- **A broken bandit camp's ground comes back at the right height everywhere** (B288). Where grass had crept over the
+  dirt a camp filled its floor with while it stood, that patch stayed a block too high once the camp came down; now it
+  goes back to the land as it was too.
+- **No more palisade tower stacked on another** (B283). While a Steward's corner tower was still being finished, its
+  roof counted as the ground there, so a second tower was started on top of it and stood half-built for good. A wall
+  piece now never starts on the spot of one still being built.
 - Both homes of the Terrace (and all three of Terrace II) get the furniture mods' table and chair downstairs: the east
   home kept spruce stand-ins because its table stands against the party wall. Tables against a wall in the village
   kitchens, the Crafter's Workshop, the School and the Winery are swapped too. Every furnished room now has its own

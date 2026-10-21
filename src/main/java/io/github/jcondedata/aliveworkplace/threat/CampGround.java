@@ -29,8 +29,8 @@ import org.jetbrains.annotations.Nullable;
  * patch of trampled earth and gravel for good, so camps coming and going scarred the land. Now a lair on land records the
  * ground it covers when it is made ({@link #take}: its box, and {@link #DEPTH} blocks under it where the camp fills the
  * hollows with dirt), saved with the lair and then with its clearing; once the camp is down that ground is put back
- * ({@link #restore}). Only where the camp's doing is still there: air, the camp's own ground blocks, its dirt filling,
- * fire, or plants grown since. A block a player set down, and every block with contents, stays.
+ * ({@link #restore}). Only where the camp's doing is still there: air, the camp's own ground blocks, its dirt filling
+ * and floor (even once grass has crept over them, B288), fire, or plants grown since. A block a player set down, and every block with contents, stays.
  *
  * <p>A camp made before this fix has no record: its pad is blended back into the land round it instead ({@link #blend}):
  * each column raised or lowered towards the height the ground round the camp has there, topped with that ground's own
@@ -148,7 +148,9 @@ public record CampGround(BlockPos min, int sizeX, int sizeY, int sizeZ, int rota
 					}
 					BlockState placed = camp.get(p);
 					boolean ours = now.isAir() || fire(now) || placed != null && MaterialRules.matches(now, placed)
-						|| p.getY() <= floor && now.is(Blocks.DIRT) // the camp's filling
+						// the camp's filling and its floor, as the dirt it laid or as grass (or mycelium) crept over it while
+						// the camp stood (B288: a grassy rise came back a block too high where grass had crept over the fill)
+						|| p.getY() <= floor && now.is(BlockTags.DIRT)
 						|| now.canBeReplaced() && now.getFluidState().isEmpty(); // grass or flowers grown since
 					if (ours) {
 						level.setBlock(p, was, Block.UPDATE_CLIENTS);

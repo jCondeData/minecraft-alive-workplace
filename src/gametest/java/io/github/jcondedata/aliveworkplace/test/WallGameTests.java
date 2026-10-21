@@ -405,6 +405,70 @@ public class WallGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B283: a Palisade Tower with its roof on, still being built (its ladders not in yet). Laid out again, the tower sits on
+	 * its own roof (a piece's height is its ground's), clear of the open site's box: the hall's round opened a second tower
+	 * there for the next free builder, and that one never finished (the City showcase: "palisade_tower at 540, -48, 562
+	 * waiting for 2 ladders", ten above the first, its hall at -58). No piece opens on a site's spot.
+	 */
+	//$ gametest_ticks_batch AREA '40' '"wallOnItself"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "wallOnItself")
+	public void noSecondTowerOpensOnATowerStillBeingBuilt(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Village v = village(helper, new BlockPos(14, 2, 14));
+		for (int x = 0; x < 30; x++) {
+			for (int z = 0; z < 30; z++) {
+				for (int y = 16; y < 30; y++) {
+					helper.setBlock(new BlockPos(x, y, z), Blocks.AIR); // the area's air up to its top, so nothing up there is ground
+				}
+			}
+		}
+		v.entity().setPlan(CityPlan.EMPTY.withWall(square(8).approvedWith("palisade")));
+		boolean was = Walls.ENABLED;
+		try {
+			Walls.ENABLED = true;
+			Walls.Piece tower = Walls.pieces(level, v.hall()).get(0);
+			helper.assertTrue(tower.kind() == Walls.Kind.TOWER, "setup: the first piece is a " + tower.kind());
+			BuildSite site = Builders.start(level, v.builders().get(0), v.owner().getUUID(), "", tower.blueprint(), tower.placement());
+			site.setStewardHall(v.hall());
+			site.setLevelGround(false);
+			// built up to its roof: every block but the ladders, which go in last (decoration)
+			io.github.jcondedata.aliveworkplace.build.BuildPlan plan = site.plan(level);
+			for (io.github.jcondedata.aliveworkplace.build.BuildPlan.Stage stage : List.of(io.github.jcondedata.aliveworkplace.build.BuildPlan.Stage.FOUNDATION,
+				io.github.jcondedata.aliveworkplace.build.BuildPlan.Stage.STRUCTURE, io.github.jcondedata.aliveworkplace.build.BuildPlan.Stage.DECORATION)) {
+				for (io.github.jcondedata.aliveworkplace.build.BuildPlan.Step step : plan.steps(stage)) {
+					if (!step.state().is(Blocks.LADDER)) {
+						level.setBlock(step.pos(), step.state(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+					}
+				}
+			}
+			Walls.Piece again = Walls.pieces(level, v.hall()).get(0);
+			helper.assertTrue(again.placement().origin().getY() > tower.placement().origin().getY(), "setup: the tower isn't laid out on its own roof ("
+				+ again.placement().origin().toShortString() + ", built at " + tower.placement().origin().toShortString() + ")");
+			// a second builder, free for the round
+			BlockPos table = new BlockPos(10, 2, 18);
+			helper.setBlock(table, ModBlocks.BLUEPRINT_TABLE);
+			Villager second = helper.spawn(EntityType.VILLAGER, table.east());
+			Builders.employ(level, second, helper.absolutePos(table));
+			Walls.round(level, v.hall(), v.entity());
+			for (BuildSite open : Walls.openSites(level, v.hall())) {
+				if (open.id().equals(site.id())) {
+					continue;
+				}
+				BoundingBox box = BlueprintLibrary.get(level, open.structure()).map(b -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(
+					open.placement(), b.size())).orElseThrow();
+				helper.assertTrue(box.maxX() < tower.box().minX() || box.minX() > tower.box().maxX() || box.maxZ() < tower.box().minZ()
+					|| box.minZ() > tower.box().maxZ(), "a second " + open.structure().getPath() + " opened on the tower still being built, at "
+					+ open.placement().origin().toShortString() + " (the tower at " + tower.placement().origin().toShortString() + ")");
+			}
+			helper.assertTrue(Walls.openSites(level, v.hall()).size() == 2, "the free builder got no other piece: "
+				+ Walls.openSites(level, v.hall()).size() + " wall sites open");
+		} finally {
+			Walls.ENABLED = was;
+		}
+		helper.succeed();
+	}
+
+	/**
 	 * B86: an approved road and an approved wall, one builder. The roads' round runs first in the hall's tick, so it took
 	 * every free builder and no wall piece opened until every road was built; now they take turns, each piece and segment
 	 * finished before the next round.

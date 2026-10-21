@@ -197,13 +197,24 @@ public final class CitySoak {
 			Item item = e.getKey();
 			int stepsNeed = 0;
 			int stepsDone = 0;
+			StringBuilder open = new StringBuilder();
 			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
 				for (BuildPlan.Step step : plan.steps(stage)) {
 					for (var req : step.requirements()) {
 						if (req.item() == item) {
 							stepsNeed += req.count();
-							if (io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(r.level.getBlockState(step.pos()), step.state())) {
+							net.minecraft.world.level.block.state.BlockState now = r.level.getBlockState(step.pos());
+							if (io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(now, step.state())) {
 								stepsDone += req.count();
+							} else if (open.length() < 600) {
+								// B283: each step still open, what stands there now and what it would hang on
+								open.append(" [").append(step.pos().toShortString()).append(" is ").append(now);
+								if (step.state().hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING)) {
+									BlockPos back = step.pos().relative(step.state().getValue(
+										net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING).getOpposite());
+									open.append(", behind ").append(r.level.getBlockState(back));
+								}
+								open.append(", placed ").append(s.placedThisStage(step.pos())).append(']');
 							}
 						}
 					}
@@ -212,7 +223,8 @@ public final class CitySoak {
 			out.append(" | ").append(BuiltInRegistries.ITEM.getKey(item).getPath()).append(" want ").append(e.getValue())
 				.append(" list ").append(plan.materials().getOrDefault(item, 0)).append(" steps ").append(stepsNeed).append(" done ").append(stepsDone)
 				.append(" given ").append(given.getOrDefault(item, 0))
-				.append(" store ").append(io.github.jcondedata.aliveworkplace.build.SupplyContainers.count(r.level, r.chests, item));
+				.append(" store ").append(io.github.jcondedata.aliveworkplace.build.SupplyContainers.count(r.level, r.chests, item))
+				.append(open);
 			for (int i = 0; i < r.builders.size(); i++) {
 				Villager b = r.builders.get(i);
 				out.append(" b").append(i).append(" bag ").append(ModAttachments.BUILDER_BAG.getOrCreate(b).count(item));

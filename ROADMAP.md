@@ -4852,6 +4852,17 @@ Depends on: nothing open.
   fewest of is fine: the lane decides and writes it in the Notes), not always the same one. Done when: a list of every
   block that offers several jobs in the wiki page; GameTests that over many hires (fixed `RandomSource`) each job of a
   multi-job block comes up, a single-job block is unchanged, save and reload keeps the job taken; scene `random_job`.
+- [ ] **36.18** **Retrain any villager to any job from the Village Hall** (owner, 2026-10-21: "do I have to break the block
+  and bring it to them, then put it back? it would be easier if you can just do it at the Village Hall"). Today only a
+  Builder can be retrained (at a Blueprint Table, 36.x/27.x); any other job change means breaking job blocks. In the
+  Village Hall's residents list, a villager with a job gets a **Change job** button: it lists the village's free job
+  blocks (as the Free job blocks tab does) and the Builder; picking one shows the price (the same 5-50 emeralds by level
+  as the Builder retraining), a second click pays, the old job is released (its block stays where it is, free for
+  someone else; a builder hands back their build as today), and they walk to the new block. Children and nitwits can't;
+  game rule `workplaceRetraining` off hides the button. Done when: GameTests for retraining to a free block through the
+  hall's own entry point, the price by level, not enough emeralds (nothing changes), the old block left free, a busy
+  builder handing back the build, the rule off, save and reload; text in `en_us.json`; guide (village-hall.md, jobs.md)
+  and wiki; scene `hall_retrain`.
 
 ## Milestone 37: Furnished homes and modded storage (2.1)
 

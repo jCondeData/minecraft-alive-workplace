@@ -4,7 +4,7 @@ The roads and the wall you draw on a City Plan get built by the village's builde
 steps, a road to each trading partner, and a wall once the village has been raided. Part of 1.1 (Villages that build
 themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18
+Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18, B283
 
 ## What a player sees
 

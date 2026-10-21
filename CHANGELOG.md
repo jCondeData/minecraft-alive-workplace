@@ -40,6 +40,12 @@ asks for the steps, `latest.log` and any crash report).
 - Fixed: a Wonder's crew no longer stands still for minutes when many blocks wait over holes it can't fill: once the
   crew has stood still for 10 seconds the lead gives them all up together, not one every 10 seconds (the Hanging
   Gardens' time-lapse ran out of time over one terrace's holes) (B270).
+- Fixed: a Builder working from another Blueprint Table (a Builder's Workshop's) now counts and takes what the village
+  Storehouse holds, in the line over his head, in the Book and Quill list, in his status and when fetching. A Storehouse
+  nobody placed (put up for the Steward) in a village whose hall you own is yours to your Builders, and your Storehouse
+  feeds the village's own Builder on your builds; before, the Storehouse counted only while his table stood by it. New:
+  sneak-right-click a Blueprint Table with an empty hand next to a Builder to move him there without breaking the old one
+  (or pick him for a free table on the Village Hall's free job blocks page); his status says which table he works at (B290).
 
 ## 0.146.1 — 2026-10-20
 

@@ -94,7 +94,10 @@ public class BlueprintTableBlock extends HorizontalDirectionalBlock implements E
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
 		if (player instanceof ServerPlayer serverPlayer) {
-			TableServer.open(serverPlayer, pos);
+			// B290: sneaking with an empty hand next to a builder moves them to this table (none near: it opens as usual)
+			if (!serverPlayer.isSecondaryUseActive() || !io.github.jcondedata.aliveworkplace.build.BenchMoves.sneakUse(serverPlayer, pos)) {
+				TableServer.open(serverPlayer, pos);
+			}
 		}
 		return Interact.success(level.isClientSide());
 	}

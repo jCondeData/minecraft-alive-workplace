@@ -45,7 +45,9 @@ masons, tinkerers and chefs keep that many in store, making more when it runs lo
 ## How it fits in
 
 - **Fed by** every worker's chests, and by [Drop Boxes](drop-box.md) within 48 blocks: the porter empties those first.
-- **Feeds** the builders and crafters: a builder short of stone finds it here.
+- **Feeds** the builders and crafters: a builder short of stone finds it here, from any Blueprint Table within 48
+  blocks, and counts what it holds in the list over their head. A storehouse nobody placed belongs to whoever owns the
+  village's hall.
 - **Breaking it.** Mine it with an axe; it drops itself (the chests round it are ordinary chests and keep what's in
   them).
 

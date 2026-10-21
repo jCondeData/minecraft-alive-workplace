@@ -304,6 +304,11 @@ SCENES = [
       "a Book and Quill used on the builder became the rest of his build's list with the chest's share checked off, and a sneak-click with an empty hand put the whole list in chat", 40,
       [("00_half_built", "Halfway up, a Book and Quill in hand"), ("01_list_book", "The list: how far along, what's counted"),
        ("02_list_page", "What's still to bring, checked off"), ("03_chat_list", "Sneak-click: the whole list in chat")]),
+    # B290: a builder at a workshop's table counts the village Storehouse, and a sneak-click moves him to another table
+    S("builder_table_move", "Builder", "Moving a builder to another Blueprint Table",
+      "the builder at the workshop's table counted the Storehouse's stone, and a sneak-click on the second table moved him there with both tables standing", 40,
+      [("00_counts_the_storehouse", "At the workshop's table, the Storehouse counted"), ("01_moved", "Sneak-click: he works at the new table"),
+       ("02_status_names_the_table", "His status names the table")]),
     # B280: the Terrace a block above the lawn round it, landscaped: the pit filled, no raised band of dirt on the grass
     S("terrace_grade", "Builder", "Levelling leaves the lawn level round a raised build",
       "round the finished Terrace the lawn stayed level: the pit was filled, nothing was raised above the grass and no sand or gravel was left", 120,

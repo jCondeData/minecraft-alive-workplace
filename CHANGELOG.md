@@ -45,6 +45,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Both homes of the Terrace (and all three of Terrace II) get the furniture mods' table and chair downstairs: the east
+  home kept spruce stand-ins because its table stands against the party wall. Tables against a wall in the village
+  kitchens, the Crafter's Workshop, the School and the Winery are swapped too. Every furnished room now has its own
+  light: a lantern in each Terrace kitchen and in the Townhouse's sitting room and loft (B281).
 - A guest Legend who settles in a village has their powers at once: a Seer made the village's at dawn foretold at
   that dawn, where before their powers could wait up to ten seconds and the dawn's foretelling was missed (B269).
 - Builders take from the chests only what their work still needs. Each trip took one block too many, so two Builders

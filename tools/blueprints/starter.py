@@ -1267,6 +1267,7 @@ def terrace_home(b, x0, door_x, window_x, beds, kitchen_west=True, flowers=("pot
     other = window_x + 1 if window_x + 1 in inner and window_x + 1 != table_x else window_x - 1
     chair(b, other, 1, 4, SPRUCE, "east" if other < table_x else "west")
     box(b, inner[0], 1, 5, inner[-1], 1, 6, "brown_carpet")
+    lantern(b, inner[1] if kitchen_west else inner[2], 4, 5, hanging=True)  # B281: the kitchen's own light, under the bedroom floor
     # Upstairs: the floor (with the ladder's hole), two beds against the back wall, a chest and a light
     box(b, inner[0], 5, 2, inner[-1], 5, 7, "spruce_planks")
     b.set(ladder_x, 5, 7, "ladder", facing="north", waterlogged=False)

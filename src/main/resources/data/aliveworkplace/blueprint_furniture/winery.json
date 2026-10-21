@@ -1,0 +1,4 @@
+{"spots": [
+  {"kind": "chair", "pos": [3, 4, 4], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor", "wall"]},
+  {"kind": "table", "pos": [3, 4, 5], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_fence[east=false,north=false,south=false,waterlogged=false,west=true]"}, {"at": [0, 1, 0], "state": "minecraft:spruce_pressure_plate[powered=false]"}], "support": ["floor"]}
+]}

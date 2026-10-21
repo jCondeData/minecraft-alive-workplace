@@ -351,6 +351,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B265** (approved auto 2026-10-21) FishermanCapGameTests.aVillageWithItsFishermanPassesTheBarrelBy failed on main in CI run 1319 (run 39526217422, f4a54b5c, a ROADMAP-only commit; the run before on 8c4fad6b was green): 'still lumberjack (held the barrel 0 ticks)': the jobless villager meant to take the free fletching table became a lumberjack instead. Expected: it passes the barrel by and becomes the fletcher every run. Test: FishermanCapGameTests.aVillageWithItsFishermanPassesTheBarrelBy (found by lane-a-1021-0023, 2026-10-21) Status (lane-a-1021-0023): a test fault, not the cap: since 36.17 (RandomJobs, on by default) a jobless villager taking a fletching table by themselves becomes the Fletcher or, at random, the Lumberjack who shares it; 36.17 updated the tests that assumed the vanilla job but missed this one, so it failed about half the time (passed locally by chance). Reproduced by forcing the draw to the Lumberjack (the exact CI message). Fix: the test accepts any of the fletching table's jobs (Stations.at(FLETCHING_TABLE).has), as BuiltInJobSiteGameTests does for the smoker; the cap checks (never a fisherman, the job site is the fletching table, the barrel never held) are unchanged. FishermanCap, RandomJobs and Stations GameTests (24) pass, and the fixed test passes with the Lumberjack forced.
 - [ ] **B266** CarvedStylesCompatTests.aSpruceLibraryHasCarvedShelvesAndALibrarian failed in lane-a-1021-0023's local full build (runCompatGameTest, main 837e70b7 + B132/B265 fixes, 2026-10-21 02:59Z), its only failure; it passed in the same run's previous full build before 37.15/37.16 (the Crafter makes furniture, Crafter's Workshops) were merged. Not read yet; main CI never reached the compat suite since B265 turned runGameTest red. Expected: passes every run. Test: CarvedStylesCompatTests under runCompatGameTest, repeated (found by lane-a-1021-0023, 2026-10-21)
 - [x] **B267** (approved auto 2026-10-21) SkyChartGameTests.aStepAndTheChartAreCheap turned main red (CI build 1323, b85240f2, 2026-10-21 03:15Z), its only runGameTest failure: 'a search step takes 5041 µs on average (worst 165342 µs; the machine 1.0 times slower than idle)' against its 5,000 µs x load limit; one 165 ms step (a GC or a busy runner) pulled the mean over. Expected: passes on a loaded CI runner while still catching a slow search. Test: SkyChartGameTests (found by red duty) (found by lane-a-1021-0322, 2026-10-21)
+- [ ] **B268** The village_mourns showcase scene (36.16) fails on GitHub (showcase run 39531013576, main 837e70b): Mira's grave never waits for her funeral, Tom and Pip don't mourn, the Undertaker leads no funeral within 120 s; expected all three as 36.16 says (lane: b); Test: village_mourns scene (found by lane-b-1021-0338, 2026-10-21)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -5286,6 +5287,31 @@ the owner's port jar; M33's caravans (39.7).
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-21 (lane-c-1021-0052, for the owner): Milestone 37 had no open item, so lane C wrote and built two from 37.14's open ends: 37.15 (the Crafter makes the pack's furniture: Handcrafted chairs from logs for a builder; CobbleFurnies' Furni Crafter is the only pack bench with its own recipes, used only while it stands in the workshop; scene `crafter_furniture`) and 37.16 (Crafter's Workshops grow in villages of all five styles, the Steward plans one when builders are short of 3+ crafted parts, the blueprint hides with `crafters` off; scene `crafter_workshop`), then an eighth mutation pass (5 new tests). Risk noted: a Furni Crafter in the Crafter's workshop is also the Furnicrafter's job block, so a jobless villager may take it. Question for the owner: Milestones 37-39 are empty again; which big update next for lanes C, D and E (or pause their scheduled tasks)?
+- 2026-10-21 (lane-c-1021-0052): eighth M37 mutation pass, seed 49, the Crafter's code no pass had covered: CrafterShift
+  (the Crafter's work), CrafterBenches, Crafting's 37.14 lines (124-245) and 37.16's `builders_short_of_parts`
+  (StewardConditions 698-760), against CrafterGameTests, CrafterWorkshopGameTests, FurnicrafterGameTests and
+  StewardRulesGameTests (`only_tests.py`, `--no-daemon`, ~1 min a run; mutate.py `--lines N-N --max 1` per chosen line).
+  29 run: 17 killed, 12 survived; 5 of the 12 now killed by new tests, 5 equivalent, 2 open. Killed by the old tests:
+  StewardConditions :718 `||` to `&&` and `!=` to `==`, :736, :710, :706, :719 and :734; CrafterShift :254, :281, :298;
+  CrafterBenches :81, :86, :57 (the main suite's test bench, so no compat run was needed); Crafting :175, :231 `&&` to
+  `||`, :202, and :186 (`!=` to `==`: the tick's planning budget never resets, so planning stops for good) by
+  RecipeIndexGameTests.b101ATicksPlanningIsSharedOut, outside the four classes. New tests, each passing on the real code
+  (baseline all pass) and failing on its mutant: `CrafterWorkshopGameTests.aSiteAtTheVillagesEdgeCountsOneBeyondItDoesnt`
+  kills :720 `>` to `>=` (a site exactly RADIUS from the hall counts, as in the hall's census; one beyond doesn't);
+  `CrafterGameTests.theLackLineNamesEveryShortThingWithACommaBetween` kills CrafterShift :381 (the comma between the
+  things short); `.theCrafterFetchesTheOneLogItNeeds` kills :229 `<= 0` to `<= 1` (a job needing exactly one of
+  something fetched nothing and stayed FETCHING); `.theCrafterMakesAnotherWorkersLaddersFromTheStorehouse` kills :158
+  drop `!` (the Storehouse's chests left out of a request's sources; no test covered the "other workers' needs" path at
+  all); `.beingShortOfJustOneThingIsStillNamed` kills Crafting :209 `n > 0` to `n > 1` (short of exactly one log: not
+  named). Equivalent: StewardConditions :747 x2 (`family()`'s 100-step cap, outside 37.16; upgrade chains are a few
+  tiers); CrafterShift :104 (`--lookTimer > 1`: the first look a tick early) and :276 (`>= 0`: a step one tick longer),
+  timing only; :163 `||` to `&&` in the middle (a request's worker is never null off a block, and the Crafter isn't in
+  `Village.takesPart`, so it never sees its own posts). Open: CrafterShift :213 (`chosen == null ?`: the makings vanish
+  mid-fetch, after a reload it'd throw; needs a vanish-after-reload layout) and Crafting :153 (`same >= 1` in `merged`:
+  a step equal to the first one with its input made in between). No bug found. Not run (time): the other ~90
+  CrafterShift and ~550 Crafting mutants, and the compat suite (CrafterFurnitureCompatTests).
 
 - 2026-10-21 (lane-c-1021-0052): 37.16 decisions. No existing Steward condition read the builders' shortfalls, so one
   was added, `builders_short_of_parts {at_least}` (default 3): over every build site near the hall waiting for materials,

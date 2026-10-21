@@ -68,6 +68,21 @@ public class CrafterGameTests {
 		});
 	}
 
+	/** A single making: a builder short of three oak planks, with one oak log, gets them (the crafter fetches the one log). */
+	//$ gametest_ticks_batch AREA '2400' '"crafterOneLog"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "crafterOneLog")
+	public void theCrafterFetchesTheOneLogItNeeds(GameTestHelper helper) {
+		prepare(helper);
+		Asker a = asker(helper, BENCH, CHEST, new BlockPos(6, 2, 9), Blocks.OAK_PLANKS, new ItemStack(Items.OAK_LOG, 1));
+		crafter(helper, WORKBENCH);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, a);
+			Container chest = helper.getBlockEntity(a.chest());
+			helper.assertTrue(chest.countItem(Items.OAK_LOG) == 0, "the log should be used, " + chest.countItem(Items.OAK_LOG) + " left");
+			helper.assertTrue(chest.countItem(Items.OAK_PLANKS) == 1, "the one spare plank should be in the chest, not " + chest.countItem(Items.OAK_PLANKS));
+		});
+	}
+
 	/** Three steps: barrels the builder needs, made from logs (planks, then slabs, then the barrels), and the build finishes. */
 	//$ gametest_ticks_batch AREA '3600' '"crafterChain"'
 	@GameTest(template = AREA, timeoutTicks = 3600, batch = "crafterChain")
@@ -86,6 +101,71 @@ public class CrafterGameTests {
 			helper.assertTrue(chest.countItem(Items.OAK_LOG) == 0, "the logs should be used up, " + chest.countItem(Items.OAK_LOG) + " left");
 			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(crafter, 0) == 3, "the crafter made " + ModAttachments.ITEMS_CRAFTED.getOrElse(crafter, 0) + " barrels");
 		});
+	}
+
+	/**
+	 * "Then other workers' needs" (37.14): an armorer waiting for three ladders gets them, made from sticks that lie only
+	 * in the Storehouse's chest (none by the workbench), and delivered to the chest by the armorer's blast furnace.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"crafterOtherWorker"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "crafterOtherWorker")
+	public void theCrafterMakesAnotherWorkersLaddersFromTheStorehouse(GameTestHelper helper) {
+		prepare(helper);
+		helper.setBlock(new BlockPos(2, 2, 12), ModBlocks.STOREHOUSE);
+		helper.setBlock(new BlockPos(3, 2, 12), Blocks.CHEST);
+		Container store = helper.getBlockEntity(new BlockPos(3, 2, 12));
+		store.setItem(0, new ItemStack(Items.STICK, 7));
+		BlockPos furnace = new BlockPos(14, 2, 12);
+		helper.setBlock(furnace, Blocks.BLAST_FURNACE);
+		helper.setBlock(new BlockPos(13, 2, 12), Blocks.CHEST);
+		Villager armorer = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 11));
+		Jobs.employ(helper.getLevel(), armorer, helper.absolutePos(furnace), net.minecraft.world.entity.ai.village.poi.PoiTypes.ARMORER,
+			net.minecraft.world.entity.npc.VillagerProfession.ARMORER);
+		helper.onEachTick(() -> {
+			if (helper.getLevel().getGameTime() % 20 == 0) {
+				io.github.jcondedata.aliveworkplace.work.Requests.post(armorer, new ItemStack(Items.LADDER), 3, Component.literal("ladders"),
+					io.github.jcondedata.aliveworkplace.work.Requests.exactly(Items.LADDER));
+			}
+		});
+		crafter(helper, WORKBENCH);
+		helper.succeedWhen(() -> {
+			Container theirs = helper.getBlockEntity(new BlockPos(13, 2, 12));
+			helper.assertTrue(theirs.countItem(Items.LADDER) == 3, "the armorer's chest holds " + theirs.countItem(Items.LADDER) + " ladders, "
+				+ store.countItem(Items.STICK) + " sticks left in the Storehouse's chest");
+		});
+	}
+
+	/** Short of a single thing: four oak planks from nothing are short of one log, and that one is named. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void beingShortOfJustOneThingIsStillNamed(GameTestHelper helper) {
+		Map<net.minecraft.world.item.Item, Integer> lacks = Crafting.lacking(helper.getLevel(), Items.OAK_PLANKS, 4, Map.of(), t -> true);
+		helper.assertTrue(lacks.size() == 1 && lacks.values().iterator().next() == 1,
+			"four oak planks from nothing should be short of one log: " + lacks);
+		helper.succeed();
+	}
+
+	/**
+	 * The line a crafter shows when it's short of several things lists each with its count, a comma between them
+	 * ("short of 2 Oak Log, 1 Stick to make 4 Barrel"); CrafterShift's lackLine is package-private, so read by reflection.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void theLackLineNamesEveryShortThingWithACommaBetween(GameTestHelper helper) {
+		Map<net.minecraft.world.item.Item, Integer> lack = new java.util.LinkedHashMap<>();
+		lack.put(Items.OAK_LOG, 2);
+		lack.put(Items.STICK, 1);
+		String line;
+		try {
+			java.lang.reflect.Method m = io.github.jcondedata.aliveworkplace.craft.CrafterShift.class.getDeclaredMethod("lackLine", Map.class, int.class,
+				net.minecraft.world.item.Item.class);
+			m.setAccessible(true);
+			line = ((Component) m.invoke(null, lack, 4, Items.BARREL)).getString();
+		} catch (ReflectiveOperationException e) {
+			throw new GameTestAssertException("CrafterShift.lackLine: " + e);
+		}
+		helper.assertTrue(line.equals("short of 2 Oak Log, 1 Stick to make 4 Barrel"), "the crafter's lack line reads \"" + line + "\"");
+		helper.succeed();
 	}
 
 	/** A raw material short: the crafter says what it lacks and takes nothing (no logs sawn into planks nobody can use). */

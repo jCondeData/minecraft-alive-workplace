@@ -90,7 +90,7 @@ public class MasonWork extends CrafterWork {
 		return null;
 	}
 
-	/** The same plan, with {@code n} of {@code made} turned into {@code into} at the end. */
+	/** The same plan, with {@code n} of {@code made} turned into {@code into} at the end (its own last step: the firing). */
 	private static Crafting.Plan swap(Crafting.Plan plan, Item made, Item into, int n) {
 		Map<Item, Integer> makes = new LinkedHashMap<>(plan.makes());
 		makes.merge(made, -n, Integer::sum);
@@ -98,7 +98,9 @@ public class MasonWork extends CrafterWork {
 			makes.remove(made);
 		}
 		makes.merge(into, n, Integer::sum);
-		return new Crafting.Plan(into, n, plan.steps(), plan.takes(), makes);
+		List<Crafting.Step> steps = new java.util.ArrayList<>(plan.steps());
+		steps.add(new Crafting.Step(Map.of(made, 1), new ItemStack(into), n)); // (a chain is made step by step: 37.14a)
+		return new Crafting.Plan(into, n, steps, plan.takes(), makes);
 	}
 
 	/** A furnace by our stonecutter to fire glass in. */

@@ -78,4 +78,10 @@ public class WeaponsmithWork extends CrafterWork {
 		}
 		return null;
 	}
+
+	/** Not one of the jobs that plan whole chains for the builders (37.14a): makes what it can in one go. */
+	@Override
+	protected boolean chains() {
+		return false;
+	}
 }

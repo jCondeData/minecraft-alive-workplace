@@ -63,6 +63,31 @@ public class FurnicrafterWork extends CrafterWork {
 		return plan(level, item, count, usable);
 	}
 
+	/** What's short for the first recipe of {@code item}: its materials, or what they're made from (37.14a). */
+	@Override
+	@Nullable
+	protected Component lackFor(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
+		for (FurnitureRecipes.Recipe recipe : FurnitureRecipes.making(level.getServer(), item)) {
+			int per = Math.max(1, recipe.result().getCount());
+			int times = Math.max(1, (Math.max(1, count) + per - 1) / per);
+			Map<Item, Integer> short_ = new LinkedHashMap<>();
+			for (Map.Entry<Item, Integer> material : recipe.materials().entrySet()) {
+				int missing = (int) (material.getValue() * times - usable.getOrDefault(material.getKey(), 0L));
+				if (missing <= 0 || Crafting.chain(level, Crafting.Kind.CRAFTING, material.getKey(), missing, usable) != null) {
+					continue;
+				}
+				Map<Item, Integer> raw = Crafting.lacking(level, Crafting.Kind.CRAFTING, material.getKey(), missing, usable);
+				if (raw.isEmpty()) {
+					short_.merge(material.getKey(), missing, Integer::sum);
+				} else {
+					raw.forEach((k, n) -> short_.merge(k, n, Integer::sum));
+				}
+			}
+			return short_.isEmpty() ? null : Chains.lackLine(short_, times * per, item);
+		}
+		return null;
+	}
+
 	@Override
 	protected void workEffects(ServerLevel level, BlockPos station) {
 		level.playSound(null, station, level.random.nextBoolean() ? SoundEvents.WOOD_HIT : SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.5f,
@@ -120,13 +145,25 @@ public class FurnicrafterWork extends CrafterWork {
 			}
 		}
 		for (Map.Entry<Item, Integer> missing : shortOf.entrySet()) {
-			Crafting.Plan sub = Crafting.plan(level, Crafting.Kind.CRAFTING, missing.getKey(), missing.getValue(), positive(pool));
+			// whole chains (37.14a): logs into planks into the piece's makings; what an earlier making left over (the three
+			// planks a log gave beyond the one wanted) is used before anything more is taken
+			Map<Item, Long> withLeft = positive(pool);
+			makes.forEach((item, n) -> withLeft.merge(item, (long) n, Long::sum));
+			Crafting.Plan sub = Chains.ENABLED ? Crafting.chain(level, Crafting.Kind.CRAFTING, missing.getKey(), missing.getValue(), withLeft)
+				: Crafting.plan(level, Crafting.Kind.CRAFTING, missing.getKey(), missing.getValue(), positive(pool));
 			if (sub == null || sub.count() < missing.getValue()) {
 				return null;
 			}
 			sub.takes().forEach((item, n) -> {
-				takes.merge(item, n, Integer::sum);
-				pool.merge(item, (long) -n, Long::sum);
+				int fromLeft = Chains.ENABLED ? Math.min(n, makes.getOrDefault(item, 0)) : 0;
+				if (fromLeft > 0) {
+					makes.merge(item, -fromLeft, Integer::sum);
+					makes.remove(item, 0);
+				}
+				if (n > fromLeft) {
+					takes.merge(item, n - fromLeft, Integer::sum);
+					pool.merge(item, (long) -(n - fromLeft), Long::sum);
+				}
 			});
 			steps.addAll(sub.steps());
 			sub.makes().forEach((item, n) -> {

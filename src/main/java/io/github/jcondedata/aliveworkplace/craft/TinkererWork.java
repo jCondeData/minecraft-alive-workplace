@@ -83,7 +83,8 @@ public class TinkererWork extends CrafterWork {
 	@Nullable
 	@Override
 	protected Crafting.Plan planFor(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
-		Crafting.Plan crafted = Crafting.plan(level, Crafting.Kind.CRAFTING, item, count, usable);
+		Crafting.Plan crafted = chains() ? Chains.plan(level, Crafting.Kind.CRAFTING, item, count, usable)
+			: Crafting.plan(level, Crafting.Kind.CRAFTING, item, count, usable);
 		if (fits(crafted)) {
 			return crafted;
 		}

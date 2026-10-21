@@ -27,7 +27,7 @@ import sys
 GROUPS = [
     "Picking a job", "Items", "Builder", "Miner", "Lumberjack", "Orchard Keeper", "Farmer", "Beekeeper", "Florist", "Scholar", "Sifter",
     "Tinkerer", "Composter", "Netherworker", "Undertaker", "Innkeeper", "Teacher", "Rancher", "Fisherman", "Porter",
-    "Carpenter", "Crafter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
+    "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
     "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Furnicrafter", "Mechanic", "Create", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
@@ -251,22 +251,16 @@ SCENES = [
     # Crafters
     S("carpenter", "Carpenter", "Making a builder's woodwork", "the carpenter made woodwork for the builder", 150,
       [("*_carpenter@first", "Start"), ("*_carpenter@middle", "Working"), ("30_carpenter_closeup", "At the crafting table")]),
-    # The Crafter (ROADMAP 37.14): logs sawn into planks, then sticks, fences and slabs, for the builder's Market Stall
-    S("crafter_chain", "Crafter", "Making a builder's woodwork from logs, one step after another",
-      "the crafter made the builder's woodwork from logs", 150,
-      [("*_crafter_chain@first", "Start"), ("*_crafter_chain@middle", "Working through the chain"),
-       ("30_crafter_chain_closeup", "At the Crafter's Workbench")]),
-    # The Crafter's Workshop (ROADMAP 37.16): the build the Table offers and the Steward plans, then as villages grow it
-    S("crafter_workshop", "Crafter", "The Crafter's Workshop, and the one villages grow in three styles",
-      "the Crafter's Workshop stands with its Crafter's Workbench, and the village's in three styles came with their Crafters", 90,
-      [("10_crafters_workshop", "The Crafter's Workshop: board walls in a spruce frame, the store lean-to beside"),
-       ("12_village_plains", "A plains village's Crafter's Workshop: its gable to the street, the work hatch by the door"),
-       ("15_village_desert_back", "A desert village's: the lean-to parts store of boards and logs"),
-       ("16_village_snowy", "A snowy village's, its Crafter at the bench")]),
-    # The Crafter makes the pack's furniture (ROADMAP 37.15): Handcrafted's chairs on the crafting table, CobbleFurnies'
-    # at the Furni Crafter in its workshop, from oak logs, for a builder's dining corner
-    S("crafter_furniture", "Crafter", "Making the pack's furniture from logs: Handcrafted chairs, and a CobbleFurnies chair at its Furni Crafter",
-      "the crafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them", 150,
+    # Job chains (ROADMAP 37.14a, the retired Crafter's whole chains in the jobs): the Carpenter saws spruce logs into the
+    # Market Stall's woodwork and the dyer crushes poppies into dye for its red wool, both for the one builder's list
+    S("job_chains", "Carpenter", "Two jobs filling one builder's list, each through its own chain",
+      "the carpenter and the dyer both filled the builder's list", 150,
+      [("*_job_chains@first", "Start: logs, white wool and poppies in the builder's chest"), ("*_job_chains@middle", "Working through the chains"),
+       ("30_job_chains_closeup", "At the carpenter's bench")]),
+    # The pack's furniture made from logs (ROADMAP 37.15, by the jobs since 37.14a): Handcrafted's chairs by the Carpenter
+    # on the crafting table's recipes, CobbleFurnies' by the Furnicrafter at its Furni Crafter, for a builder's dining corner
+    S("crafter_furniture", "Carpenter", "Making the pack's furniture from logs: Handcrafted chairs by the carpenter, a CobbleFurnies chair by the furnicrafter",
+      "the carpenter and the furnicrafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them", 150,
       [("*_crafter_furniture@first", "Start: a table and oak logs in the chest"), ("*_crafter_furniture@middle", "Sawing, cutting and crafting"),
        ("30_crafter_furniture_corner", "The dining corner, built")], cobblemon=True, furniture=True),
     job("mason", "Mason", "Cutting stone for a builder", "the mason cut stone bricks the builder needed", 240),

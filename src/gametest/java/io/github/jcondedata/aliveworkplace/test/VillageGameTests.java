@@ -108,7 +108,7 @@ public class VillageGameTests implements FabricGameTest {
 			// ROADMAP 34.14: a cartography table would make a cartographer and a stonecutter a mason
 			java.util.Map.entry("print_shop", new House(Blocks.CARTOGRAPHY_TABLE, ModVillagers.PRINTER)),
 			java.util.Map.entry("jewellers_workshop", new House(Blocks.STONECUTTER, ModVillagers.JEWELLER)),
-			// ROADMAP 37.16: the Crafter's own block; the house comes with its Crafter, like the luxury houses
+			// ROADMAP 37.16a: the Crafter's Workshop left the pools with the Crafter (its structures stay, for villages that grew one)
 			java.util.Map.entry("crafters_workshop", new House(ModBlocks.CRAFTERS_WORKBENCH, ModVillagers.CRAFTER)),
 			// The Pokémon jobs' houses (ROADMAP 28.15): only with Cobblemon, so Cobblemon's blocks are checked by name
 			java.util.Map.entry("pokemon_center", new House(null, ModVillagers.NURSE, ModVillagers.HEALING_MACHINE_BLOCK)),
@@ -119,7 +119,7 @@ public class VillageGameTests implements FabricGameTest {
 		// No Cobblemon here: the Pokémon houses stay out of the pools.
 		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse", "carpenters_workshop", "kitchen",
 				"flower_shop", "ranch_house", "schoolhouse", "inn_room", "mortuary", "tinkers_shop", "sifting_shed", "compost_yard", "winery", "tailors_shop",
-				"print_shop", "jewellers_workshop", "crafters_workshop")),
+				"print_shop", "jewellers_workshop")),
 			"houses without Cobblemon: " + VillageHouses.houseNames());
 		for (String style : VillageHouses.STYLES) {
 			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));
@@ -557,11 +557,46 @@ public class VillageGameTests implements FabricGameTest {
 			+ " at " + helper.relativePos(at).toShortString() + "; he's " + where);
 	}
 
-	/** ROADMAP 37.16: the village's Crafter's Workshop comes with its Crafter, who takes the house's Crafter's Workbench. */
-	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"theCraftersWorkshopsCrafterTakesItsBench"'
-	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "theCraftersWorkshopsCrafterTakesItsBench")
-	public void theCraftersWorkshopsCrafterTakesItsBench(GameTestHelper helper) {
-		theHousesWorkerTakesItsBlock(helper, "crafters_workshop", ModVillagers.CRAFTER, ModBlocks.CRAFTERS_WORKBENCH);
+	/**
+	 * ROADMAP 37.16a: a Crafter's Workshop a village grew before the Crafter was retired stays a plain building: it still
+	 * places in every style, workbench and all, and the Crafter it came with is jobless within a tick, the workbench left
+	 * to nobody (no villager takes it any more).
+	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '200' '"anOldCraftersWorkshopStaysAPlainBuilding"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 200, batch = "anOldCraftersWorkshopStaysAPlainBuilding")
+	public void anOldCraftersWorkshopStaysAPlainBuilding(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		List<String> styles = List.of("plains", "desert"); // (the room inside is the same in all five)
+		List<Villager> workers = new java.util.ArrayList<>();
+		List<BlockPos> benches = new java.util.ArrayList<>();
+		helper.startSequence().thenExecute(() -> {
+			for (int n = 0; n < styles.size(); n++) {
+				var id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("village/" + styles.get(n) + "_crafters_workshop");
+				StructureTemplate template = level.getStructureManager().get(id).orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("missing " + id));
+				BlockPos origin = helper.absolutePos(new BlockPos(1 + 11 * n, 1, 4));
+				AABB area = AABB.of(template.getBoundingBox(new StructurePlaceSettings(), origin)).inflate(1);
+				java.util.Set<Villager> before = new java.util.HashSet<>(level.getEntitiesOfClass(Villager.class, area));
+				template.placeInWorld(level, origin, origin, new StructurePlaceSettings().setFinalizeEntities(true)
+					.addProcessor(net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor.STRUCTURE_AND_AIR),
+					net.minecraft.util.RandomSource.create(1), 2);
+				benches.add(template.filterBlocks(origin, new StructurePlaceSettings(), ModBlocks.CRAFTERS_WORKBENCH).get(0).pos());
+				workers.addAll(level.getEntitiesOfClass(Villager.class, area, v -> !before.contains(v)));
+			}
+			helper.assertTrue(workers.size() == styles.size(), workers.size() + " villagers came with " + styles.size() + " workshops");
+		}).thenWaitUntil(() -> {
+			for (Villager worker : workers) {
+				helper.assertTrue(worker.isAlive(), "a workshop's villager is gone: " + worker.getRemovalReason());
+				// jobless (they may then take a free job block nearby like anyone else, but never the workbench again)
+				helper.assertTrue(worker.getVillagerData().getProfession() != ModVillagers.CRAFTER, "a workshop's villager is still a Crafter (ticks "
+					+ worker.tickCount + ")");
+			}
+			for (BlockPos bench : benches) {
+				helper.assertTrue(level.getBlockState(bench).is(ModBlocks.CRAFTERS_WORKBENCH), "the workbench went from " + helper.relativePos(bench).toShortString());
+				helper.assertTrue(level.getPoiManager().getFreeTickets(bench) == 1, "the workbench at " + helper.relativePos(bench).toShortString() + " is still taken");
+			}
+		}).thenSucceed();
 	}
 
 	/**

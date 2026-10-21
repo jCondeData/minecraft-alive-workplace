@@ -92,4 +92,10 @@ public class FletcherWork extends CrafterWork {
 	protected String partnerCue() {
 		return "fletch";
 	}
+
+	/** Not one of the jobs that plan whole chains for the builders (37.14a): makes what it can in one go. */
+	@Override
+	protected boolean chains() {
+		return false;
+	}
 }

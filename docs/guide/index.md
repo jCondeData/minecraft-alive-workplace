@@ -55,7 +55,7 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 - [Builder](builder.md): builds your blueprints.
 - [Butcher](butcher.md): the village's herder.
 - [Carpenter](carpenter.md): woodwork for the builders.
-- [Crafter](crafter.md): whole recipe chains for whoever is short.
+- [Crafting chains](job-chains.md): the jobs that make the builders' parts, whole recipe chains at a time.
 - [Cartographer](cartographer.md): expeditions and Explorer's Maps.
 - [Chef](chef.md): feeds the village.
 - [Cleric](cleric.md): potions for the guards.

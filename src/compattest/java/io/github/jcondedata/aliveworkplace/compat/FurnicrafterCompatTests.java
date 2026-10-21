@@ -213,6 +213,52 @@ public class FurnicrafterCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A Furnicrafter piece for a waiting builder, from logs (37.14a: the jobs' whole chains): with only an oak log in the
+	 * store, the Furnicrafter saws planks and sticks and makes the Oak Chair at its Furni Crafter, step by step (the job
+	 * saved with its steps), and the builder builds it.
+	 */
+	//$ gametest_ticks_batch AREA '3600' '"furnicrafter_chain"'
+	@GameTest(template = AREA, timeoutTicks = 3600, batch = "furnicrafter_chain")
+	public void theFurnicrafterMakesAPieceFromLogsForAWaitingBuilder(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ownStoreOnly(helper);
+		ServerLevel level = helper.getLevel();
+		Village.RADIUS = 48;
+		PartnerShowsCompatTests.after(helper, () -> Village.RADIUS = 0);
+		helper.setDayTime(2000);
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		ResourceLocation chairBuild = template(helper, furni("oak_chair"), "furnicrafter_log_chair_" + Long.toHexString(level.getGameTime()));
+		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
+		helper.setBlock(STORE_CHEST, Blocks.CHEST);
+		Container store = helper.getBlockEntity(STORE_CHEST);
+		store.setItem(0, new ItemStack(Items.OAK_LOG, 1));
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		helper.setBlock(BENCH_CHEST, Blocks.CHEST);
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Builders.employ(level, builder, helper.absolutePos(BENCH));
+		BuildSite site = Builders.start(level, builder, null, chairBuild,
+			new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(CHAIR_AT), Rotation.NONE, Mirror.NONE));
+		helper.assertTrue(site != null, "the chair's build didn't start");
+		Villager crafter = furnicrafter(helper);
+		java.util.concurrent.atomic.AtomicInteger steps = new java.util.concurrent.atomic.AtomicInteger();
+		helper.onEachTick(() -> {
+			io.github.jcondedata.aliveworkplace.craft.CrafterJob job = ModAttachments.CRAFTER_JOB.get(crafter);
+			if (job != null) {
+				steps.set(Math.max(steps.get(), job.steps().size()));
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null,
+				"still building: " + site.status() + " " + site.stage() + " missing " + site.missing() + "; made " + ModAttachments.ITEMS_CRAFTED.getOrElse(crafter, 0));
+			helper.assertBlockPresent(furni("oak_chair"), CHAIR_AT);
+			helper.assertTrue(store.countItem(Items.OAK_LOG) == 0, store.countItem(Items.OAK_LOG) + " log still in the store");
+			helper.assertTrue(steps.get() >= 2, "the Furnicrafter's saved job had " + steps.get() + " steps, not a chain from the log");
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(crafter, 0) >= 1, "the chair wasn't the Furnicrafter's");
+		});
+	}
+
 	/** The Furnicrafter trades at every level: planks and wool bought, CobbleFurnies pieces sold. */
 	//$ gametest_batch AREA '"furnicrafter_trades"'
 	@GameTest(template = AREA, batch = "furnicrafter_trades")

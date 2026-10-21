@@ -150,6 +150,11 @@ public final class BuilderStatusSync {
 			line = site.detail().copy().withStyle(ChatFormatting.YELLOW);
 		} else if (site.status() == BuildSite.Status.WAITING_FOR_MATERIALS && !site.missing().isEmpty()) {
 			line = Component.translatable("message.aliveworkplace.status.needs", Builders.formatMissing(site, 2)).withStyle(ChatFormatting.YELLOW);
+			// what the crafting jobs couldn't make for want of a raw material (37.14a): "short of 2 Oak Log to make 2 Barrel"
+			Component lack = io.github.jcondedata.aliveworkplace.craft.Chains.builderLack(villager, level.getGameTime());
+			if (lack != null) {
+				line = Component.translatable("message.aliveworkplace.status.needs_short", line, lack).withStyle(ChatFormatting.YELLOW);
+			}
 		} else if (site.status() == BuildSite.Status.FETCHING) {
 			line = Component.translatable("message.aliveworkplace.status.state.fetching").withStyle(ChatFormatting.GRAY);
 		} else {

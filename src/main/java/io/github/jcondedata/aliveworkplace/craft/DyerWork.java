@@ -72,7 +72,9 @@ public class DyerWork extends CrafterWork {
 				makes.put(powder, extra);
 			}
 			makes.merge(item, n, Integer::sum);
-			return new Crafting.Plan(item, n, mix.steps(), takes, makes);
+			List<Crafting.Step> steps = new java.util.ArrayList<>(mix.steps());
+			steps.add(new Crafting.Step(Map.of(powder, 1), new net.minecraft.world.item.ItemStack(item), n)); // hardened (made step by step: 37.14a)
+			return new Crafting.Plan(item, n, steps, takes, makes);
 		}
 		return new Crafting.Plan(item, n, List.of(new Crafting.Step(Map.of(powder, 1), new net.minecraft.world.item.ItemStack(item), n)),
 			takes, Map.of(item, n));

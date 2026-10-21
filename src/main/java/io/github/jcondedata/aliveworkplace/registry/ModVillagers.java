@@ -616,7 +616,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"crafter",
 			holder -> holder.is(CRAFTERS_WORKBENCH_POI),
-			holder -> io.github.jcondedata.aliveworkplace.craft.Crafters.ENABLED && holder.is(CRAFTERS_WORKBENCH_POI),
+			holder -> false, // retired (37.14a): nobody takes the workbench; the job stays registered for old saves
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_TOOLSMITH

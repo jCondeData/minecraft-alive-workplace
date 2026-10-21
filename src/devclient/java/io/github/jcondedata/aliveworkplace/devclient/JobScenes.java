@@ -473,6 +473,9 @@ final class JobScenes {
 	static Villager picked(ServerLevel level, ServerPlayer player, BlockPos station, BlockState state, Item item) {
 		level.setBlockAndUpdate(station, state);
 		Villager v = EntityType.VILLAGER.spawn(level, station.south(), MobSpawnType.COMMAND);
+		// B274: no gift by the UUID roll. Gifts are off in GameTests but rolled here; one villager in 240 is a Night Owl, who
+		// idles through the scenes' fixed morning (2500) and wanders off instead of working (the sifter's failing GIF).
+		io.github.jcondedata.aliveworkplace.legend.Gifted.set(v, null);
 		// Staging runs as a server task, and the game files a new block's workstation in a task of its own after this
 		// one: hand the item over once it's there, as a player's click always comes after the block is placed.
 		level.getServer().execute(() -> {
@@ -721,7 +724,14 @@ final class JobScenes {
 		SCENES.put("sifter", job("the sifter sifted gravel into loot", 1800, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.WATER_CAULDRON.defaultBlockState().setValue(BlockStateProperties.LEVEL_CAULDRON, 3), Items.GRAVEL);
 			chest(level, chestPos(), new ItemStack(Items.GRAVEL, 40));
-			return l -> n(ModAttachments.BLOCKS_SIFTED, v) >= 3;
+			return l -> {
+				// B274: on a timeout, say what the sifter was doing
+				timeoutWhy = "the sifter: " + v.getVillagerData().getProfession() + ", sifted " + n(ModAttachments.BLOCKS_SIFTED, v)
+					+ ", doing " + v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ ", schedule " + net.minecraft.core.registries.BuiltInRegistries.SCHEDULE.getKey(v.getBrain().getSchedule())
+					+ ", at " + v.blockPosition().toShortString();
+				return n(ModAttachments.BLOCKS_SIFTED, v) >= 3;
+			};
 		}));
 		SCENES.put("tinkerer", job("the tinkerer mended the iron golem", 2000, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.SMITHING_TABLE, Items.REDSTONE);

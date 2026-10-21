@@ -145,7 +145,6 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final ArenaScene arena = new ArenaScene();
 	private final PokemonBuildsScene pokemonBuilds = new PokemonBuildsScene();
 	private final LuxuryWorkshopsScene luxuryWorkshops = new LuxuryWorkshopsScene();
-	private final CrafterWorkshopScene crafterWorkshop = new CrafterWorkshopScene(); // 37.16
 	private final GrandHousesScene grandHouses = new GrandHousesScene();
 	private final FurnishedHomeScene furnishedHome = new FurnishedHomeScene();
 	private final FurnitureAnyModScene furnitureAnyMod = new FurnitureAnyModScene();
@@ -303,10 +302,6 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("luxury_workshops".equals(System.getProperty("aliveworkplace.scene"))) {
 			luxuryWorkshops.tick(mc, mc.getSingleplayerServer());
-			return;
-		}
-		if ("crafter_workshop".equals(System.getProperty("aliveworkplace.scene"))) {
-			crafterWorkshop.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("realm_builds".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -618,8 +613,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 			carpenterScene(mc, mc.getSingleplayerServer());
 			return;
 		}
-		if ("crafter_chain".equals(System.getProperty("aliveworkplace.scene"))) {
-			crafterChainScene(mc, mc.getSingleplayerServer());
+		if ("job_chains".equals(System.getProperty("aliveworkplace.scene"))) {
+			jobChainsScene(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("crafter_furniture".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -1729,9 +1724,17 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 	}
 
-	// --- Crafter (ROADMAP 37.14): a builder's woodwork made from logs, step by step -------------------------
+	// --- Job chains (ROADMAP 37.14a): several jobs filling one builder's list, each its own kind, step by step ----------
 
-	private void crafterChainScene(Minecraft mc, MinecraftServer server) {
+	/** The jobs filmed in {@link #jobChainsScene}: the Carpenter, the dyer and the Tinkerer. */
+	private final java.util.List<Villager> chainWorkers = new java.util.ArrayList<>();
+
+	/**
+	 * SCENE=job_chains: a builder's Market Stall with only raw makings in the chest (spruce logs, white wool and poppies,
+	 * a raw iron with a coal and a torch): the Carpenter saws, cuts and makes the woodwork, the dyer grinds the poppies
+	 * into dye and dyes the wool, the Tinkerer fires the iron, cuts nuggets and makes the lantern, each a step at a time.
+	 */
+	private void jobChainsScene(Minecraft mc, MinecraftServer server) {
 		tick++;
 		if (tick == 1) {
 			mc.options.renderDistance().set(6);
@@ -1748,10 +1751,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
-				// Everything for a Market Stall but the woodwork: spruce logs instead, for the Crafter to saw, cut and make.
+				// Everything for a Market Stall in its rawest form: the jobs make the rest.
 				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 20}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
-					{net.minecraft.world.item.Items.LANTERN, 1}, {net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 20},
-					{net.minecraft.world.item.Items.WHITE_WOOL, 15}};
+					{net.minecraft.world.item.Items.RAW_IRON, 1}, {net.minecraft.world.item.Items.COAL, 1}, {net.minecraft.world.item.Items.TORCH, 1},
+					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.WHITE_WOOL, 35}, {net.minecraft.world.item.Items.POPPY, 20}};
 				for (int i = 0; i < stock.length; i++) {
 					chest.setItem(i, new ItemStack((net.minecraft.world.item.Item) stock[i][0], (Integer) stock[i][1]));
 				}
@@ -1760,41 +1763,53 @@ public class ScreenshotHarness implements ClientModInitializer {
 				Builders.start(level, builder, null, io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.MARKET_STALL.id(),
 					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), new BlockPos(-4, -60, -12),
 						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
-				BlockPos workbench = new BlockPos(3, -60, -2);
-				level.setBlockAndUpdate(workbench, ModBlocks.CRAFTERS_WORKBENCH.defaultBlockState()
-					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
-				Villager crafter = EntityType.VILLAGER.spawn(level, workbench.south(), MobSpawnType.COMMAND);
-				worker = crafter;
-				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, crafter, workbench,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CRAFTERS_WORKBENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CRAFTER);
-				hover(server.getPlayerList().getPlayers().get(0), new Vec3(-0.5, -54.5, 5.5), 180, 32);
+				chainWorkers.clear();
+				chainWorkers.add(chainWorker(level, new BlockPos(3, -60, -2), ModBlocks.CARPENTERS_BENCH.defaultBlockState(),
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTER));
+				chainWorkers.add(chainWorker(level, new BlockPos(6, -60, -2), Blocks.CAULDRON.defaultBlockState(),
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.LEATHERWORKER, net.minecraft.world.entity.npc.VillagerProfession.LEATHERWORKER));
+				chainWorkers.add(chainWorker(level, new BlockPos(9, -60, -2), ModBlocks.TINKERS_BENCH.defaultBlockState(),
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TINKERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TINKERER));
+				worker = chainWorkers.get(0);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(1.5, -54.5, 5.5), 180, 32);
 			});
 		}
 		if (tick >= 60 && tick <= 1500 && tick % 60 == 0) {
-			shot(mc, String.format("%02d_crafter_chain", tick / 60));
+			shot(mc, String.format("%02d_job_chains", tick / 60));
 		}
 		if (tick == 1510) {
-			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(3.5, -58.3, 2.5), 180, 20));
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(6.5, -58.3, 2.5), 180, 20));
 		}
 		if (tick == 1550) {
 			server.execute(() -> {
-				int made = io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CRAFTED.getOrElse(worker, 0);
-				Showcase.check(made >= 1, "the crafter made the builder's woodwork from logs (" + made + " pieces)");
+				java.util.List<Integer> made = chainWorkers.stream()
+					.map(v -> io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CRAFTED.getOrElse(v, 0)).toList();
+				Showcase.check(made.stream().filter(n -> n >= 1).count() >= 2,
+					"several jobs filled the builder's list (Carpenter, dyer, Tinkerer made " + made + ")");
 			});
 		}
 		if (tick == 1560) {
-			shot(mc, "30_crafter_chain_closeup");
+			shot(mc, "30_job_chains_closeup");
 			mc.stop();
 		}
 	}
 
-	// --- Crafter (ROADMAP 37.15): the pack's furniture made from logs, Handcrafted's at the table, CobbleFurnies' at its bench --
+	/** A villager hired at {@code station} (the block {@code block}, of {@code poi}) as {@code job}, for {@link #jobChainsScene}. */
+	private static Villager chainWorker(ServerLevel level, BlockPos station, net.minecraft.world.level.block.state.BlockState block,
+			net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType> poi, net.minecraft.world.entity.npc.VillagerProfession job) {
+		level.setBlockAndUpdate(station, block);
+		Villager villager = EntityType.VILLAGER.spawn(level, station.south(), MobSpawnType.COMMAND);
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, villager, station, poi, job);
+		return villager;
+	}
+
+	// --- Furniture (ROADMAP 37.15, 37.14a): the pack's furniture made from logs by the Carpenter and the Furnicrafter -----
 
 	/**
 	 * SCENE=crafter_furniture, filmed with -Pfurniture=true (FURNITURE=true): a builder's dining corner (a Handcrafted oak
 	 * table, two Handcrafted oak chairs and a CobbleFurnies oak chair) with only the table and oak logs in the chest. The
-	 * Crafter saws planks, cuts slabs and sticks and crafts the Handcrafted chairs by the crafting table's recipe, and the
-	 * CobbleFurnies chair at the Furni Crafter standing in its workshop; the builder builds the corner.
+	 * Carpenter saws planks, cuts slabs and sticks and crafts the Handcrafted chairs by the crafting table's recipe, the
+	 * Furnicrafter the CobbleFurnies chair at its Furni Crafter (37.14a: the Crafter is retired); the builder builds the corner.
 	 */
 	private void crafterFurnitureScene(Minecraft mc, MinecraftServer server) {
 		tick++;
@@ -1836,22 +1851,23 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
-				// The table, and oak logs for the chairs: the Crafter makes those.
+				// The table, and oak logs for the chairs: the Carpenter and the Furnicrafter make those.
 				chest.setItem(0, new ItemStack(table.asItem(), 1));
 				chest.setItem(1, new ItemStack(net.minecraft.world.item.Items.OAK_LOG, 4));
 				Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
 				Builders.employ(level, builder, bench);
 				Builders.start(level, builder, null, id, new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(),
 					corner, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
-				BlockPos workbench = new BlockPos(3, -60, -2);
-				level.setBlockAndUpdate(workbench, ModBlocks.CRAFTERS_WORKBENCH.defaultBlockState()
-					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
-				// CobbleFurnies' bench in the workshop: its recipes are the Crafter's while it stands there
-				level.setBlockAndUpdate(workbench.east(), furniCrafter.defaultBlockState());
-				Villager crafter = EntityType.VILLAGER.spawn(level, workbench.south(), MobSpawnType.COMMAND);
-				worker = crafter;
-				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, crafter, workbench,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CRAFTERS_WORKBENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CRAFTER);
+				// 37.14a: the Carpenter makes Handcrafted's chairs at the crafting table's recipes, the Furnicrafter CobbleFurnies'
+				chainWorkers.clear();
+				chainWorkers.add(chainWorker(level, new BlockPos(3, -60, -2), ModBlocks.CARPENTERS_BENCH.defaultBlockState(),
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTER));
+				BlockPos furni = new BlockPos(6, -60, -2);
+				level.setBlockAndUpdate(furni, furniCrafter.defaultBlockState());
+				Villager furnicrafter = EntityType.VILLAGER.spawn(level, furni.south(), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Stations.assign(level, furnicrafter, furni, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FURNICRAFTER);
+				chainWorkers.add(furnicrafter);
+				worker = chainWorkers.get(0);
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(-0.5, -55.5, 4.5), 180, 32);
 			});
 		}
@@ -1867,9 +1883,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 				BlockPos corner = new BlockPos(-4, -60, -12);
 				String handcrafted = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(level.getBlockState(corner.offset(1, 0, 2)).getBlock()).toString();
 				String cobble = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(level.getBlockState(corner.offset(2, 0, 1)).getBlock()).toString();
-				int made = worker == null ? 0 : io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CRAFTED.getOrElse(worker, 0);
+				int made = chainWorkers.stream().mapToInt(v -> io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CRAFTED.getOrElse(v, 0)).sum();
 				Showcase.check(made >= 3 && handcrafted.equals("handcrafted:oak_chair") && cobble.equals("cobblefurnies:oak_chair"),
-					"the crafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them (" + made + " pieces; "
+					"the Carpenter and the Furnicrafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them (" + made + " pieces; "
 						+ handcrafted + ", " + cobble + ")");
 			});
 		}

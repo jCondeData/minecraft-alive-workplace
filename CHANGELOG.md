@@ -17,13 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
-- **Crafter's Workshops in villages** (37.16). The Steward plans a Crafter's Workshop when the builders keep running
-  short of crafted parts (planks, slabs, stairs, doors), and villages grow one now and then in all five styles, its
-  Crafter already at the workbench. Both follow the Crafters setting.
-- **The Crafter makes the pack's furniture** (37.15). A builder short of Handcrafted chairs (or another piece Handcrafted,
-  Beautify or Cozy Home crafts on the crafting table) gets them made from logs, the planks, slabs and sticks cut on
-  the way. CobbleFurnies'
-  pieces are made too while its Furni Crafter stands in the Crafter's workshop.
+- **Every crafting job works through whole recipe chains** (2.1, 37.14a, 37.16a). The Carpenter saws logs into planks,
+  cuts slabs and makes the barrel or chair a builder waits for; the Mason fires clay into bricks, lays and cuts them; the
+  Librarian, Tinkerer, Toolsmith, dyer and Furnicrafter do the same for their own kind, step by step ("step 2 of 3"),
+  a bagful at a time, carrying on after a restart. The builder's line says what can't be made ("Can't be made yet:
+  short of 4 Oak Log to make 3 Barrel", "Nobody here makes: Oak Stairs"). This replaces the Crafter, which is retired:
+  no Crafter's Workbench recipe, no Crafter's Workshop in the Blueprint Table, the Steward's plans or new villages, and a
+  Crafter on an existing world becomes jobless.
 - **A job block with several jobs gives one at random** (36.17). A villager without a job who takes a composter, a
   lectern, a Shop Counter or any block several jobs share by themselves now becomes one of its jobs, not always the
   vanilla one: a composter can make a Farmer, an Orchard Keeper, a Florist or a Composter. The jobs the village has
@@ -31,10 +31,6 @@ asks for the steps, `latest.log` and any crash report).
   are unchanged, and the Trainer Leader is never drawn. Random Station Jobs in the settings turns it off (the vanilla
   job every time, as before).
 
-- The Crafter (2.1, behind its switch `crafters`): a villager at the new Crafter's Workbench makes what the village's
-  workers are short of through whole recipe chains (logs into planks into slabs into a barrel), from the builders'
-  chests and the Storehouse, and puts it in the asker's chests; a raw material short is said, and nothing is wasted. A
-  chain half made carries on after a restart. With the Crafter's Workshop in the Blueprint Table (37.14).
 - The Furnicrafter (Cobblemon depth, 2.2, with CobbleFurnies): a villager without a job by CobbleFurnies' Furni
   Crafter takes it and makes CobbleFurnies furniture from the store's materials: the chairs, tables and lamps a builder
   nearby is waiting for (a furnished home's pieces) and the pieces the Storehouse orders, with sticks cut from planks

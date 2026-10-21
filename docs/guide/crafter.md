@@ -1,69 +1,53 @@
-# Crafter
+# Whole recipe chains
 
 ```infobox
-type: Job
+type: Feature
 expansion: M37
-image: https://jcondedata.github.io/minecraft-alive-workplace/crafter_chain/still-2.jpg
-caption: A crafter working through a chain at the Crafter's Workbench
-Workstation: Crafter's Workbench
-Pick it with: nothing: a jobless villager takes a free workbench by themselves
-Works for: the builders nearby first, then the Storehouse's stock orders, then any other worker waiting for something
-Needs: raw materials (logs are enough for anything wooden)
-Makes: anything a crafting table or a stonecutter makes, a whole chain at a time: logs into planks into slabs into a barrel
-Build: the Crafter's Workshop
+image: https://jcondedata.github.io/minecraft-alive-workplace/job_chains/still-2.jpg
+caption: Three jobs working through their chains for one builder's market stall
+Who: the Carpenter, the Mason, the Librarian, the Tinkerer, the Toolsmith, the dyer and the Furnicrafter
+Needs: raw materials (logs are enough for anything wooden, clay for bricks)
 categories: Jobs, Builder
-related: carpenter.md, mason.md, builder.md, porter.md, jobs-crafts.md
+related: carpenter.md, mason.md, builder.md, jobs-crafts.md, porter.md
 ```
 
-The Crafter makes whatever the village's workers are short of, and doesn't stop at one step: give the village logs and
-they saw them into planks, cut the planks into slabs, then make the barrel or chair the builder was waiting for.
+The village's crafting jobs don't stop at one step. Give the village logs and the Carpenter saws them into planks,
+cuts the planks into slabs, then makes the barrel or chair your builder was waiting for. Each job does this for its own
+kind of thing, all at once for one builder if they need it.
 
-## Getting a crafter
+## Who makes what
 
-Craft a **Crafter's Workbench** (two stonecutters and a crafting table over two planks and a chest) and place it in
-the village. A villager with no job takes it by themselves. Or build the **Crafter's Workshop** from the Blueprint Table:
-the workbench is inside it.
+- The **Carpenter**: anything wooden, from logs: planks, slabs, stairs, doors, barrels, and the furniture mods' chairs
+  and tables made at a crafting table.
+- The **Mason**: stone, from the stonecutter; with a furnace by it, the kiln too: clay balls fired into bricks, laid
+  into brick blocks and cut into stairs, a coal burnt for every eight things fired.
+- The **Librarian**: books, paper, bookshelves and lecterns. The **Tinkerer**: metal, raw iron fired into ingots, then
+  bars, chains or a lantern. The **Toolsmith**: tools. The **dyer**: dyed wool and concrete.
+- With CobbleFurnies, the **Furnicrafter**: its furniture, the planks and sticks first, then the piece.
 
-Villages find one by themselves too. When the builders keep running short of things that are crafted (planks, slabs,
-stairs, doors), the Steward plans a Crafter's Workshop. And some villages grow one already, a board workshop with a
-work hatch by the door and a lean-to of logs and boards beside it, with its Crafter inside.
+![Three jobs filling one builder's list](https://jcondedata.github.io/minecraft-alive-workplace/job_chains/still-3.jpg)
 
-![A village's Crafter's Workshop](https://jcondedata.github.io/minecraft-alive-workplace/crafter_workshop/still-2.jpg)
+## Watching them work
 
-## What they do
+Over their head you see where they are: "making 3 Barrel (step 2 of 3)". They check the whole chain before they take
+anything, so nothing is cut up for nothing, and a big order is made a bagful at a time. If you log off halfway through a
+chain, they carry on from the same step when you're back.
 
-They look at what the workers nearby are waiting for: first the builders' missing materials, then what you ordered on
-the Storehouse's board, then anything else a worker is waiting for, like a miner's ladders. For each one they work out
-the whole chain from what the village has, using the game's own recipes (so other mods' recipes count too), fetch the
-makings from the builder's chests and the Storehouse, and make it one step after another at the workbench. What's made
-goes straight into the chests of whoever asked. A big order is made a bagful at a time until there's enough.
+## When something can't be made
 
-They check everything before they take anything. If something can't be made, nothing is cut up for nothing: the line
-over their head says what's short, like "short of 2 Oak Log to make 2 Barrel". Put the logs in the Storehouse and
-they're on it.
+Look at the builder. Under "Short of" a second line says why the jobs can't help:
 
-They never take from a chest outside the village, and from another builder's chests only what that builder's own
-builds can spare.
+- "Can't be made yet: short of 4 Oak Log to make 3 Barrel": a job could make it, but the village is out of the raw
+  material. Put the logs in the builder's chest or the Storehouse and they're on it.
+- "Nobody here makes: Oak Stairs": no job in the village makes that part. Hire the job that does (a Carpenter for
+  wooden parts), or bring the part yourself.
 
-Over their head: how many things they've made, and what they're fetching, making ("making 24 Oak Planks (step 1 of 3)")
-or carrying.
+## The Crafter is gone
 
-![The Crafter's chain](https://jcondedata.github.io/minecraft-alive-workplace/crafter_chain/still-3.jpg)
-
-## How the crafter fits in
-
-- **Fed by:** the [Lumberjack](lumberjack.md)'s logs and the [Miner](miner.md)'s stone, from the Storehouse.
-- **Works beside:** the [Carpenter](carpenter.md) and the [Mason](mason.md): they share the work, and never make the
-  same thing twice.
-- **Furniture mods:** the Crafter makes the furniture mods' pieces too. Handcrafted's, Beautify's and Cozy Home's are
-  made at the workbench like anything else: a builder short of Handcrafted oak chairs only needs oak logs. For
-  CobbleFurnies' pieces, place its **Furni Crafter** in the workshop (within 6 blocks of the workbench): while it stands
-  there, the Crafter uses its recipes too.
-
-## Switching it off
-
-The **Crafters** setting (on by default once Furnished Homes is out) turns the job off: no villager takes a workbench,
-and crafters already hired stand idle. Off, the workshop also leaves the Blueprint Table, the Steward stops planning
-one and villages stop growing it.
+There used to be a Crafter, a villager who made everything at a Crafter's Workbench. Now every job makes its own kind,
+so the Crafter has retired: a Crafter on your world becomes jobless (whatever it carried drops at its feet) and soon
+finds another job. A Crafter's Workbench you placed stays a block, and a Crafter's Workshop that was built stays as a
+building, but you can't craft the workbench any more, the Blueprint Table no longer has the workshop, and villages no
+longer grow one.
 
 See also [Crafters and smiths](jobs-crafts.md).

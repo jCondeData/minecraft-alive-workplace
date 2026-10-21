@@ -25,6 +25,12 @@ import org.jetbrains.annotations.Nullable;
  * the dishes asked for at his village's hall board ({@link DishRequests}, 38.8a), which are never on the menu itself.
  */
 public class ChefWork extends CrafterWork {
+	/** Not one of the jobs that took over the Crafter's chains (37.14a): a cook cooks for the kitchen's menu, not a builder's list. */
+	@Override
+	protected boolean chainsForBuilders() {
+		return false;
+	}
+
 	private int next;
 
 	public ChefWork() {

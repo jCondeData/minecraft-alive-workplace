@@ -607,8 +607,8 @@ public final class ModVillagers {
 	public static final PoiType CRAFTERS_WORKBENCH_POI_TYPE = Platform.get().registerPoi(CRAFTERS_WORKBENCH_ID, 1, 1, ModBlocks.CRAFTERS_WORKBENCH);
 
 	/**
-	 * Makes what the village's workers are short of, through whole recipe chains (ROADMAP 37.14), at a Crafter's Workbench.
-	 * A jobless villager takes a free workbench by themselves only with config {@code crafters} on; one already hired keeps it.
+	 * The retired Crafter (ROADMAP 37.14, retired by 37.14a): registered still so old saves load, but no villager takes a
+	 * Crafter's Workbench, and one from an old save is made jobless ({@code craft/Crafters}).
 	 */
 	public static final VillagerProfession CRAFTER = Registry.register(
 		BuiltInRegistries.VILLAGER_PROFESSION,
@@ -616,7 +616,7 @@ public final class ModVillagers {
 		new VillagerProfession(
 			"crafter",
 			holder -> holder.is(CRAFTERS_WORKBENCH_POI),
-			holder -> io.github.jcondedata.aliveworkplace.craft.Crafters.ENABLED && holder.is(CRAFTERS_WORKBENCH_POI),
+			holder -> false, // 37.14a: retired, nobody takes the workbench
 			ImmutableSet.of(),
 			ImmutableSet.of(),
 			SoundEvents.VILLAGER_WORK_TOOLSMITH

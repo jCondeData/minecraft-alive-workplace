@@ -445,8 +445,6 @@ public final class WorkplaceConfig {
 	public boolean moddedStorageNetworks = Expansions.on(Expansions.M37);
 	/** Homes and workshops are built from the modded library (dressed with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted) when every one of its blocks is installed and furnished builds are on (M37, 37.12). Off: the vanilla library. */
 	public boolean moddedLibrary = Expansions.on(Expansions.M37);
-	/** A villager at a Crafter's Workbench makes what the village's workers are short of, through whole recipe chains (M37, 37.14). Off: no Crafter job, and Crafters already hired stand idle. */
-	public boolean crafters = Expansions.on(Expansions.M37);
 	/** Wonder ids that can't be started ({@code great_cathedral} or {@code pack:id}); one already finished keeps its blocks and powers. File only. */
 	public List<String> disabledWonders = new ArrayList<>();
 	/** Which of a host's festivals are Cups: every one (1), every second (2), ... (owner, 28.1a: every festival). */
@@ -1017,7 +1015,6 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.furnish.Furnishings.MODS = java.util.List.copyOf(io.github.jcondedata.aliveworkplace.furnish.Furnishings.cleanMods(furnitureMods));
 		io.github.jcondedata.aliveworkplace.store.StorageNetworks.ENABLED = moddedStorageNetworks && Expansions.on(Expansions.M37);
 		io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.ENABLED = moddedLibrary && Expansions.on(Expansions.M37); // 37.12
-		io.github.jcondedata.aliveworkplace.craft.Crafters.ENABLED = crafters && Expansions.on(Expansions.M37); // 37.14
 		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.VILLAGES = keepVillagesWorking && System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (a partner walking off mid-test would move the numbers); the show tests turn them on.

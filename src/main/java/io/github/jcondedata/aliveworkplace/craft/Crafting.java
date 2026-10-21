@@ -135,6 +135,24 @@ public final class Crafting {
 	}
 
 	/**
+	 * A job's whole chain (37.14a): {@code kind}'s recipes, {@link #CHAIN_DEPTH} steps down (a Carpenter's barrel from
+	 * logs: planks, slabs, the barrel), each recipe one step.
+	 */
+	@Nullable
+	public static Plan chain(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable) {
+		Plan plan = plan(level, kind, target, count, usable, r -> true, t -> true, CHAIN_DEPTH, false);
+		return plan == null ? null : new Plan(plan.target(), plan.count(), merged(plan.steps()), plan.takes(), plan.makes());
+	}
+
+	/** What a job of {@code kind} lacks to make {@code count} of {@code target} from {@code usable} (37.14a), as {@link #lacking}. */
+	public static Map<Item, Integer> lacking(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable) {
+		Plan plan = plan(level, kind, target, count, usable, r -> true, t -> true, CHAIN_DEPTH, true);
+		return plan == null ? Map.of() : plan.takes().entrySet().stream()
+			.filter(e -> e.getValue() < 0)
+			.collect(java.util.stream.Collectors.toMap(Map.Entry::getKey, e -> -e.getValue(), (a, b) -> a, LinkedHashMap::new));
+	}
+
+	/**
 	 * The steps with each recipe made once, at its first place: planks sawn for the barrel and more planks later for its
 	 * slabs are one step of planks (the first is before everything that needs either, so the order still holds).
 	 */

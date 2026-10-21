@@ -36,6 +36,12 @@ import org.jetbrains.annotations.Nullable;
  * while it lacks them the maker's line says what it should hold (38.6a).
  */
 public class LuxuryWork extends CrafterWork {
+	/** Not one of the jobs that took over the Crafter's chains (37.14a): a luxury maker's goods age; they aren't a builder's parts. */
+	@Override
+	protected boolean chainsForBuilders() {
+		return false;
+	}
+
 	/** The store is kept in this many of each good. */
 	public static final int KEEP = 8;
 	private int next;

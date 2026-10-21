@@ -68,7 +68,8 @@ public final class VillageHouses {
 		// Jeweller at a stonecutter, config jewellers)
 		"print_shop", () -> io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED,
 		"jewellers_workshop", () -> io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED,
-		"crafters_workshop", () -> io.github.jcondedata.aliveworkplace.craft.Crafters.ENABLED);
+		// 37.16a: the Crafter is retired (37.14a), so villages don't grow its workshop; ones already grown stay as buildings
+		"crafters_workshop", () -> false);
 
 	private static java.util.Map<String, Integer> houses() {
 		Integer override = Integer.getInteger("aliveworkplace.houseWeight");

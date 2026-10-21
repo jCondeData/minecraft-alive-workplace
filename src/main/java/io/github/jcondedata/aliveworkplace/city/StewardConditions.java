@@ -692,8 +692,8 @@ public final class StewardConditions {
 	 * a crafted part, counted over every build site near the hall that waits for materials (the Steward's and the
 	 * players'): each part one site misses counts once, a part being anything the crafting table or the stonecutter
 	 * makes (planks, slabs, stairs, doors, fences...), not what's dug, felled or smelted. Holds at {@code at_least} or
-	 * more (several shortfalls, not a builder waiting on one thing); never while the Crafter is off (config
-	 * {@code crafters}, or Milestone 37 not yet open), since the workshop it asks for would stand empty.
+	 * more (several shortfalls, not a builder waiting on one thing). Since 37.14a retired the Crafter (each job makes its
+	 * own kind of part) it never holds, so the Crafter's Workshop rule it was written for is gone (37.16a); the count stays.
 	 */
 	public record BuildersShortOfParts(int atLeast) implements Condition {
 		@Override

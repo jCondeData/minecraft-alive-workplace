@@ -219,6 +219,9 @@ final class AgelessElderScene {
 		v.setYHeadRot(0f);
 		v.setYBodyRot(0f);
 		level.addFreshEntity(v);
+		// No gift (B286): about one UUID in 30 rolls Gifted, which would make Bram's trait Gifted rather than Master
+		// and give Dara a good trait to take the charm with.
+		io.github.jcondedata.aliveworkplace.legend.Gifted.set(v, null);
 		return v;
 	}
 

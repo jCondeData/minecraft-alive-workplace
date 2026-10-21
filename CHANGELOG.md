@@ -45,6 +45,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- **No more palisade tower stacked on another** (B283). While a Steward's corner tower was still being finished, its
+  roof counted as the ground there, so a second tower was started on top of it and stood half-built for good. A wall
+  piece now never starts on the spot of one still being built.
 - **No more raised band of dirt round a finished build** (B280). A build standing a block above the ground round it
   (on a bump, or with its blueprint clicked onto a flower) had the strip round it filled up to its floor: a jagged
   band of dirt on the grass, with holes where flowers stood. Leveling now only fills holes up to the land round the

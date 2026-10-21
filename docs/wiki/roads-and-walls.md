@@ -52,7 +52,8 @@ time.
 gate, for a range of ranks. The line is laid out into pieces: a tower at every corner and at least every 28 blocks,
 whole segments between them, and a gate wherever a road of the plan crosses. Each piece sits at its own ground
 height. With no wall line drawn, the Steward draws one of his own, 4 blocks outside the zones. At most 3 wall pieces
-are open at once.
+are open at once, and never one on the spot of a piece still being built, at any height (B283: a tower with its roof
+on but its ladders not yet in had a second tower opened on top of it).
 
 ## Switches
 

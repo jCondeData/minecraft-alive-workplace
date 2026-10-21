@@ -1907,13 +1907,19 @@ final class JobScenes {
 					&& !l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(lair.pos()).inflate(10)).isEmpty();
 				Showcase.check(gone, "the camp came down and its loot spilled out");
 				int off = 0;
+				StringBuilder which = new StringBuilder();
 				for (var e : land.entrySet()) {
 					BlockPos top = l.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, e.getKey()).below();
 					if (top.getY() != e.getValue() || !l.getBlockState(top).is(Blocks.GRASS_BLOCK)) {
 						off++;
+						if (off <= 3) { // (B288: which column, and what is on it)
+							which.append("; ").append(e.getKey().getX()).append(",").append(e.getKey().getZ()).append(" top ")
+								.append(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(l.getBlockState(top).getBlock()).getPath())
+								.append(" at y ").append(top.getY()).append(", was grass at y ").append(e.getValue());
+						}
 					}
 				}
-				Showcase.check(off == 0, "the rise the camp levelled is back as it was, grass on top, no trampled earth (" + off + " columns off)");
+				Showcase.check(off == 0, "the rise the camp levelled is back as it was, grass on top, no trampled earth (" + off + " columns off" + which + ")");
 				return true;
 			};
 		}, null));

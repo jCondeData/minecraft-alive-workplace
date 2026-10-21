@@ -45,6 +45,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- **A broken bandit camp's ground comes back at the right height everywhere** (B288). Where grass had crept over the
+  dirt a camp filled its floor with while it stood, that patch stayed a block too high once the camp came down; now it
+  goes back to the land as it was too.
 - **No more palisade tower stacked on another** (B283). While a Steward's corner tower was still being finished, its
   roof counted as the ground there, so a second tower was started on top of it and stood half-built for good. A wall
   piece now never starts on the spot of one still being built.

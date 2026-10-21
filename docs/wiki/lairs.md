@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3, B208, B209, B211, B216, B225
+Roadmap items: 32.3, B208, B209, B211, B216, B225, B288
 
 ## What a player sees
 
@@ -33,7 +33,8 @@ Roadmap items: 32.3, B208, B209, B211, B216, B225
   (its box and 4 blocks under it, where it fills hollows with dirt; blocks with contents recorded as air), saved in the
   lairs' file under `grounds` by the lair's middle and moved into its clearing when it breaks. In the tick the camp is
   all down the ground is put back bottom up, but only where the camp's doing is still there: air, the camp's own blocks,
-  its dirt filling, fire, or plants grown since; a player's block and every block entity stay. Anything left inside
+  its dirt filling and floor (also once grass or mycelium has crept over them while it stood, B288), fire, or plants
+  grown since; a player's block and every block entity stay. Anything left inside
   ground that came back is lifted onto it. A camp made before B225 (no record) has its pad blended instead: each column
   goes to the height the natural land 3 blocks round the footprint has there (weighted by nearness), topped with that
   land's surface (grass, sand, snow...), the trampled earth, gravel and fire gone. With `campRuins` the columns under
@@ -163,6 +164,7 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - `B225GameTests`: a camp on a grassy slope taken down leaves every block round it as it was before the camp; the same
   after a save and reload before and halfway through the clearing; with `campRuins` the tents stay and every open column
   is as it was; a camp whose record was saved without its ground (before B225) is blended: grass on every top, no
-  trampled earth, gravel, cobblestone or fire, no step over one block, each column within 2 of the slope.
+  trampled earth, gravel, cobblestone or fire, no step over one block, each column within 2 of the slope; grass crept
+  over the camp's bare fill and floor while it stood still goes (B288).
 - Showcase scene `camp_cleared`: a bandit camp on a grassy rise, its chief falling, the camp coming down and the rise
   back as it was.

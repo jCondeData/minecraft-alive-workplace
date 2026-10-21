@@ -688,6 +688,57 @@ public final class StewardConditions {
 	}
 
 	/**
+	 * {@code builders_short_of_parts {at_least}} (ROADMAP 37.16): how often the village's builders are held up for want of
+	 * a crafted part, counted over every build site near the hall that waits for materials (the Steward's and the
+	 * players'): each part one site misses counts once, a part being anything the crafting table or the stonecutter
+	 * makes (planks, slabs, stairs, doors, fences...), not what's dug, felled or smelted. Holds at {@code at_least} or
+	 * more (several shortfalls, not a builder waiting on one thing); never while the Crafter is off (config
+	 * {@code crafters}, or Milestone 37 not yet open), since the workshop it asks for would stand empty.
+	 */
+	public record BuildersShortOfParts(int atLeast) implements Condition {
+		@Override
+		public String type() {
+			return "builders_short_of_parts";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			if (!io.github.jcondedata.aliveworkplace.craft.Crafters.ENABLED) {
+				return new Check(false, 0, key(type() + "_off"));
+			}
+			long shortfalls = shortfalls(facts.level, facts.hall);
+			return new Check(shortfalls >= atLeast, shortfalls, key(type(), shortfalls, atLeast));
+		}
+
+		/** The crafted parts the build sites near {@code hall} wait for, one per part per site. */
+		public static long shortfalls(ServerLevel level, BlockPos hall) {
+			long count = 0;
+			long reach = (long) VillageHalls.RADIUS * VillageHalls.RADIUS;
+			for (io.github.jcondedata.aliveworkplace.build.BuildSite site : BuildSiteManager.get(level).all()) {
+				if (site.isDone() || site.status() != io.github.jcondedata.aliveworkplace.build.BuildSite.Status.WAITING_FOR_MATERIALS
+					|| !site.placement().dimension().equals(level.dimension().location())
+					|| site.placement().origin().distSqr(hall) > reach) {
+					continue;
+				}
+				for (net.minecraft.world.item.Item item : site.missing().keySet()) {
+					if (crafted(level, item)) {
+						count++;
+					}
+				}
+			}
+			return count;
+		}
+
+		private static boolean crafted(ServerLevel level, net.minecraft.world.item.Item item) {
+			var manager = io.github.jcondedata.aliveworkplace.mc.Recipes.manager(level);
+			return !io.github.jcondedata.aliveworkplace.craft.Crafting.recipesFor(manager, level.registryAccess(),
+					io.github.jcondedata.aliveworkplace.craft.Crafting.Kind.CRAFTING, item).isEmpty()
+				|| !io.github.jcondedata.aliveworkplace.craft.Crafting.recipesFor(manager, level.registryAccess(),
+					io.github.jcondedata.aliveworkplace.craft.Crafting.Kind.STONECUTTING, item).isEmpty();
+		}
+	}
+
+	/**
 	 * A blueprint's family: the base of its style, its look and its tiers ({@code styled/cherry/.../stone_house_3} is
 	 * {@code stone_house}, {@code looks/lodge/pokemon_center_2} is {@code pokemon_center}).
 	 */
@@ -762,6 +813,7 @@ public final class StewardConditions {
 		register("children_at_least", f -> new ChildrenAtLeast(f.integer("n", 1, 0, 10000)));
 		register("courting_couples", f -> new CourtingCouples(f.integer("at_least", 1, 1, 10000)));
 		register("died_within", f -> new DiedWithin(f.integer("days", 30, 1, 10000)));
+		register("builders_short_of_parts", f -> new BuildersShortOfParts(f.integer("at_least", 3, 1, 10000))); // 37.16
 	}
 
 	private StewardConditions() {

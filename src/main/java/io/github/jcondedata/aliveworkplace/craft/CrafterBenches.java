@@ -114,7 +114,12 @@ public final class CrafterBenches {
 				}
 			}
 			Map<ResourceLocation, Set<ResourceLocation>> frozen = new LinkedHashMap<>();
-			found.forEach((type, blocks) -> frozen.put(type, Set.copyOf(blocks)));
+			// a bench whose mod isn't installed (its recipe type isn't registered) is left out: no block scan for it (37.15)
+			found.forEach((type, blocks) -> {
+				if (BuiltInRegistries.RECIPE_TYPE.containsKey(type)) {
+					frozen.put(type, Set.copyOf(blocks));
+				}
+			});
 			benches = Collections.unmodifiableMap(frozen);
 		}
 	}

@@ -658,8 +658,19 @@ public final class StarterBlueprints {
 			return false; // quarryBuild off (36.12)
 		}
 		String option = expansionSwitch(id);
+		if (option != null && JOB_ON.containsKey(option) && !JOB_ON.get(option).getAsBoolean()) {
+			return false; // its job switched off (37.16)
+		}
 		return option == null || io.github.jcondedata.aliveworkplace.Expansions.optionLive(option);
 	}
+
+	/**
+	 * ROADMAP 37.16: expansion builds that are also hidden while their job's own switch is off (the switch already carries
+	 * the expansion's gate: {@code WorkplaceConfig}), since a workplace whose job can't start is no use to anyone: the
+	 * Crafter's Workshop with config {@code crafters} off. Loading by id is untouched, as for B119.
+	 */
+	private static final java.util.Map<String, java.util.function.BooleanSupplier> JOB_ON = java.util.Map.of(
+		"crafters", () -> io.github.jcondedata.aliveworkplace.craft.Crafters.ENABLED);
 
 	private StarterBlueprints() {
 	}

@@ -256,6 +256,19 @@ SCENES = [
       "the crafter made the builder's woodwork from logs", 150,
       [("*_crafter_chain@first", "Start"), ("*_crafter_chain@middle", "Working through the chain"),
        ("30_crafter_chain_closeup", "At the Crafter's Workbench")]),
+    # The Crafter's Workshop (ROADMAP 37.16): the build the Table offers and the Steward plans, then as villages grow it
+    S("crafter_workshop", "Crafter", "The Crafter's Workshop, and the one villages grow in three styles",
+      "the Crafter's Workshop stands with its Crafter's Workbench, and the village's in three styles came with their Crafters", 90,
+      [("10_crafters_workshop", "The Crafter's Workshop: board walls in a spruce frame, the store lean-to beside"),
+       ("12_village_plains", "A plains village's Crafter's Workshop: its gable to the street, the work hatch by the door"),
+       ("15_village_desert_back", "A desert village's: the lean-to parts store of boards and logs"),
+       ("16_village_snowy", "A snowy village's, its Crafter at the bench")]),
+    # The Crafter makes the pack's furniture (ROADMAP 37.15): Handcrafted's chairs on the crafting table, CobbleFurnies'
+    # at the Furni Crafter in its workshop, from oak logs, for a builder's dining corner
+    S("crafter_furniture", "Crafter", "Making the pack's furniture from logs: Handcrafted chairs, and a CobbleFurnies chair at its Furni Crafter",
+      "the crafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them", 150,
+      [("*_crafter_furniture@first", "Start: a table and oak logs in the chest"), ("*_crafter_furniture@middle", "Sawing, cutting and crafting"),
+       ("30_crafter_furniture_corner", "The dining corner, built")], cobblemon=True, furniture=True),
     job("mason", "Mason", "Cutting stone for a builder", "the mason cut stone bricks the builder needed", 240),
     job("dyer", "Leatherworker (dyer)", "Dyeing wool for a builder", "the dyer made colored wool the builder needed", 240),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone

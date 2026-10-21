@@ -243,7 +243,7 @@ public class FurnicrafterCompatTests implements FabricGameTest {
 	 * Removes the Storehouses an earlier batch left standing beside this test's area (never cleared): a builder would
 	 * fetch from their stores, and a Furnicrafter fill their orders. As the regular suite's {@code Leftovers.village}.
 	 */
-	private static void ownStoreOnly(GameTestHelper helper) {
+	static void ownStoreOnly(GameTestHelper helper) {
 		net.minecraft.world.phys.AABB box = helper.getBounds();
 		int reach = 48 + (int) Math.ceil(Math.max(box.getXsize(), box.getZsize()));
 		for (BlockPos storehouse : helper.getLevel().getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI),

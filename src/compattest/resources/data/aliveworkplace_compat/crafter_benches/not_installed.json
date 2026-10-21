@@ -1,0 +1,4 @@
+{
+  "recipe_type": "notinstalledmod:bench_crafting",
+  "blocks": ["notinstalledmod:bench"]
+}

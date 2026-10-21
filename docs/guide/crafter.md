@@ -24,6 +24,12 @@ Craft a **Crafter's Workbench** (two stonecutters and a crafting table over two 
 the village. A villager with no job takes it by themselves. Or build the **Crafter's Workshop** from the Blueprint Table:
 the workbench is inside it.
 
+Villages find one by themselves too. When the builders keep running short of things that are crafted (planks, slabs,
+stairs, doors), the Steward plans a Crafter's Workshop. And some villages grow one already, a board workshop with a
+work hatch by the door and a lean-to of logs and boards beside it, with its Crafter inside.
+
+![A village's Crafter's Workshop](https://jcondedata.github.io/minecraft-alive-workplace/crafter_workshop/still-2.jpg)
+
 ## What they do
 
 They look at what the workers nearby are waiting for: first the builders' missing materials, then what you ordered on
@@ -49,12 +55,15 @@ or carrying.
 - **Fed by:** the [Lumberjack](lumberjack.md)'s logs and the [Miner](miner.md)'s stone, from the Storehouse.
 - **Works beside:** the [Carpenter](carpenter.md) and the [Mason](mason.md): they share the work, and never make the
   same thing twice.
-- **Furniture mods:** with a furniture mod's own crafting bench standing in the workshop, the Crafter uses its
-  recipes too.
+- **Furniture mods:** the Crafter makes the furniture mods' pieces too. Handcrafted's, Beautify's and Cozy Home's are
+  made at the workbench like anything else: a builder short of Handcrafted oak chairs only needs oak logs. For
+  CobbleFurnies' pieces, place its **Furni Crafter** in the workshop (within 6 blocks of the workbench): while it stands
+  there, the Crafter uses its recipes too.
 
 ## Switching it off
 
 The **Crafters** setting (on by default once Furnished Homes is out) turns the job off: no villager takes a workbench,
-and crafters already hired stand idle.
+and crafters already hired stand idle. Off, the workshop also leaves the Blueprint Table, the Steward stops planning
+one and villages stop growing it.
 
 See also [Crafters and smiths](jobs-crafts.md).

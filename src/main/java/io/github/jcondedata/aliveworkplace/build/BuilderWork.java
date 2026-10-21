@@ -1310,7 +1310,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,
 							List<BlockPos> supplies, BlockPos source, Map<Item, Integer> reserved, List<BlockPos> mine) {
 		Map<Item, Integer> wanted = new LinkedHashMap<>();
-		wanted.put(requirement.item(), requirement.count());
+		wanted.put(requirement.item(), 0); // first in line when the bag is short of room
 		// 23.5: chests far from the site (a village storehouse, a bench far away): take for a longer stretch, so the
 		// builder walks there less often (each trip was 30 s and more without placing a block).
 		boolean far = farFromChests(plan, source);
@@ -1321,6 +1321,10 @@ public class BuilderWork extends Behavior<Villager> {
 				}
 			}
 		}
+		// B132: the stretch ahead starts with the block this is for, so it counts once, as at least what that block
+		// asks. Counted on top of the stretch, every trip took one block's worth too many: in the city time-lapse two
+		// builders sharing the storehouse each carried the one log or slab the other waited for, and neither finished.
+		wanted.merge(requirement.item(), requirement.count(), Math::max);
 		boolean tookAny = false;
 		for (Map.Entry<Item, Integer> e : wanted.entrySet()) {
 			int want = e.getValue() - bag.count(e.getKey());

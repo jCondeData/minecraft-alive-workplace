@@ -46,6 +46,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Builders take from the chests only what their work still needs. Each trip took one block too many, so two Builders
+  building from the same Storehouse could each end up waiting for the one log or slab the other was carrying, and
+  neither build finished (the city time-lapse's last palisade pieces, B132).
 - Furnished homes and workplaces read as rooms: no furniture in a doorway's way, every bed's head against a wall,
   lanterns hung or on a table instead of the floor, chests against a wall or at a bed's foot. A modded piece goes only
   where it can stand (no Beautify picture frame or Handcrafted shelf floating mid-wall) and a two-block-tall piece gets

@@ -47,7 +47,9 @@ restartable at any tick for this reason.
 **Materials.** Each block costs an item (`MaterialRules`; some blocks you cannot hold in survival use their base
 material). A fixed set of blocks is never placed (bedrock, command blocks, spawners, portals, barrier, fire...).
 A Builder takes what it needs from the chests and barrels within `supplyRadius` of the bench (and 4 blocks up or
-down), carries up to 27 stacks in its bag (`BuilderBag`), and empties the bag at the chests when it finishes or
+down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing than the stretch of work ahead still
+needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
+other carried), and empties the bag at the chests when it finishes or
 stops helping. Builders never copy what is inside containers. The blueprint's tooltip and a Book and Quill list what
 is still missing. A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
 repair counts them (`BuildPlan.supplyExclude`, B261): the building stands, so a Storehouse Shed being repaired, or a

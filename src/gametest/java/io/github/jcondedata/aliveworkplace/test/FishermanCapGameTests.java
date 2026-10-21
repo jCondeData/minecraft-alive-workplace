@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.test;
 import io.github.jcondedata.aliveworkplace.WorkplaceConfig;
 import io.github.jcondedata.aliveworkplace.fish.FishermanCap;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
+import io.github.jcondedata.aliveworkplace.work.Stations;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
@@ -94,7 +95,8 @@ public class FishermanCapGameTests implements FabricGameTest {
 
 	/**
 	 * Cap reached: a village of two with its one fisherman. The jobless villager next to a free barrel never takes it (nor
-	 * holds it while walking), and takes the free fletching table farther away instead.
+	 * holds it while walking), and takes the free fletching table farther away instead, as one of its jobs (the Fletcher
+	 * or, at random, the Lumberjack who shares it, 36.17; B265).
 	 */
 	//$ gametest_ticks_batch AREA '1400' '"fishermanCapReached"'
 	@GameTest(template = AREA, timeoutTicks = 1400, batch = "fishermanCapReached")
@@ -110,7 +112,9 @@ public class FishermanCapGameTests implements FabricGameTest {
 		countHeld(helper, held);
 		helper.onEachTick(() -> helper.assertFalse(job(jobless) == VillagerProfession.FISHERMAN, "took the barrel: a second fisherman in a village of 2"));
 		helper.succeedWhen(() -> {
-			helper.assertTrue(job(jobless) == VillagerProfession.FLETCHER, "still " + job(jobless) + " (held the barrel " + held[0] + " ticks)");
+			VillagerProfession now = job(jobless);
+			helper.assertTrue(now != VillagerProfession.NONE && Stations.at(Blocks.FLETCHING_TABLE).orElseThrow().has(now),
+				"still " + now + " (held the barrel " + held[0] + " ticks)");
 			GlobalPos site = jobless.getBrain().getMemory(MemoryModuleType.JOB_SITE).orElse(null);
 			helper.assertTrue(site != null && site.pos().equals(helper.absolutePos(FLETCHING)), "works at " + site);
 			helper.assertTrue(held[0] < 20, "the free barrel was held " + held[0] + " ticks");

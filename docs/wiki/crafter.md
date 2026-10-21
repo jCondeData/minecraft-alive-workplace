@@ -42,8 +42,9 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
 - when nothing fits, notes the chain's raw materials short (`Crafting.lacking`, or the Furnicrafter's own) for that
   build site and item in `JobShortages`; when it can make it, or another job has claimed it, notes it as covered;
 - makes the plan's steps one after another at the workstation (each in its own time), saving the job on the villager
-  after every phase change and step (`crafter_job`); fuel a plan takes that no step uses is burnt at the end; a plan
-  whose steps don't add up to what it makes (the dyer's concrete, hardened in water) is made all at once as before;
+  after every phase change and step (`crafter_job`); fuel a plan takes that no step uses is burnt at the end; a plan's
+  last change is its own step too (the Mason's glass fired from sand, the dyer's concrete hardened from the powder it
+  mixed); a plan whose steps still don't add up to what it makes is made all at once as before;
 - on its next shift after a restart or reload picks the saved job up where it was (the makings already made are in the
   saved bag; the claim on the request is taken again).
 

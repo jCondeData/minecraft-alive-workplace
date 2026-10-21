@@ -45,6 +45,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- The dyer mixing concrete powder from sand, gravel and dye now makes it step by step like the other chains (the powder,
+  then the hardening), so a world saved mid-job no longer loses the spare powder a mix makes.
 - Both homes of the Terrace (and all three of Terrace II) get the furniture mods' table and chair downstairs: the east
   home kept spruce stand-ins because its table stands against the party wall. Tables against a wall in the village
   kitchens, the Crafter's Workshop, the School and the Winery are swapped too. Every furnished room now has its own

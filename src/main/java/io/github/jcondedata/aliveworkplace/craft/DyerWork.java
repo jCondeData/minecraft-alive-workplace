@@ -72,7 +72,11 @@ public class DyerWork extends CrafterWork {
 				makes.put(powder, extra);
 			}
 			makes.merge(item, n, Integer::sum);
-			return new Crafting.Plan(item, n, mix.steps(), takes, makes);
+			// the hardening is the plan's own last step, so the chain is made step by step and saved after each (37.14a):
+			// without it the plan was made all at once, and one loaded mid-job lost the spare powder
+			List<Crafting.Step> steps = new java.util.ArrayList<>(mix.steps());
+			steps.add(new Crafting.Step(Map.of(powder, 1), new net.minecraft.world.item.ItemStack(item), n));
+			return new Crafting.Plan(item, n, steps, takes, makes);
 		}
 		return new Crafting.Plan(item, n, List.of(new Crafting.Step(Map.of(powder, 1), new net.minecraft.world.item.ItemStack(item), n)),
 			takes, Map.of(item, n));

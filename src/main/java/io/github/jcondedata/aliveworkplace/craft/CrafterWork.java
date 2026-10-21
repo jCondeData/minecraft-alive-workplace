@@ -385,7 +385,7 @@ public class CrafterWork extends Behavior<Villager> {
 
 	/**
 	 * Whether {@code plan}'s steps, made in turn from what it takes, come to what it makes of the target (most plans; one
-	 * whose last change isn't a step, as a dyer's powder hardened in water, is made all at once as before).
+	 * whose last change isn't a step is made all at once as before).
 	 */
 	static boolean stepwise(Crafting.Plan plan) {
 		if (plan.steps().isEmpty()) {

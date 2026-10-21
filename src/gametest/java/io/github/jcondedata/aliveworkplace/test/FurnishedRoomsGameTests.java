@@ -5,9 +5,11 @@ import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture;
 import io.github.jcondedata.aliveworkplace.furnish.FurnishingTable;
+import io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot.Kind;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot.Support;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -26,6 +28,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChainBlock;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BedPart;
@@ -245,6 +249,135 @@ public class FurnishedRoomsGameTests implements FabricGameTest {
 		helper.assertTrue(lilac.resolve(low) == null, "a two-tall piece went where there is room for its lower half only");
 		FurnitureSpot unknown = new FurnitureSpot(Kind.CLOCK, new BlockPos(1, 1, 1), Direction.SOUTH, "oak", null, tall);
 		helper.assertTrue(lilac.resolve(unknown) != null, "a spot of a datapack (support not written) refuses the piece");
+		helper.succeed();
+	}
+
+	// --- B281 (the owner, 2026-10-21): the Terrace's east home had only vanilla stand-ins downstairs, and no kitchen had a light
+
+	/** The Terrace and Terrace II: each home's ground floor (x from its party wall + 1 to + 4) has a table and a chair spot. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everyTerraceHomeHasItsTableAndChairSpots(GameTestHelper helper) {
+		Map<String, Integer> homes = Map.of("terrace", 2, "terrace_2", 3);
+		homes.forEach((name, count) -> {
+			List<FurnitureSpot> spots = BlueprintFurniture.of(AliveWorkplace.id(name));
+			for (int home = 0; home < count; home++) {
+				int x0 = 1 + 5 * home;
+				for (Kind kind : List.of(Kind.TABLE, Kind.CHAIR)) {
+					long n = spots.stream().filter(s -> s.kind() == kind && s.pos().getY() == 1 && s.pos().getX() > x0 && s.pos().getX() < x0 + 5).count();
+					helper.assertTrue(n == 1, name + " home " + (home + 1) + " has " + n + " " + kind.id() + " spots downstairs");
+				}
+			}
+			// No furniture mod here: the order names Handcrafted, but nothing of it is in the registry, so all stays vanilla
+			FurnitureChoice choice = FurnitureChoice.choose(spots, List.of("handcrafted", "beautify", "cobblefurnies"), true);
+			helper.assertTrue(choice.isVanilla(), name + " without furniture mods swapped " + choice.spots().size() + " spots");
+		});
+		helper.succeed();
+	}
+
+	/** Builds dark on purpose: raiders' camps and the story's forts, lit by their own fires. */
+	private static boolean unlit(ResourceLocation id) {
+		return id.getPath().startsWith("camp/") || id.getPath().startsWith("story/");
+	}
+
+	/** A block that closes a room in (a wall, a window, a door), as tools/blueprints/furniture.py's indoors reads one. */
+	private static boolean walls(BlockState state) {
+		return !state.isAir() && (state.isCollisionShapeFullBlock(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)
+			|| state.getBlock() instanceof SlabBlock || state.getBlock() instanceof StairBlock || shuts(state));
+	}
+
+	/** Where a room's own light stops: its doors and windows (a porch lantern through the door isn't the room's light). */
+	private static boolean shuts(BlockState state) {
+		return state.getBlock() instanceof DoorBlock || state.getBlock() instanceof IronBarsBlock || state.getBlock() instanceof TransparentBlock;
+	}
+
+	private static boolean indoors(Map<BlockPos, BlockState> template, BlockPos p) {
+		boolean roof = false;
+		for (int d = 1; d < 12 && !roof; d++) {
+			roof = walls(at(template, p.above(d)));
+		}
+		if (!roof) {
+			return false;
+		}
+		for (Direction side : Direction.Plane.HORIZONTAL) {
+			boolean closed = false;
+			for (int d = 1; d < 12 && !closed; d++) {
+				closed = walls(at(template, p.relative(side, d)));
+			}
+			if (!closed) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** Block light in the template from the lights inside each room: the game's own emission, one less a block. */
+	private static Map<BlockPos, Integer> light(Map<BlockPos, BlockState> template) {
+		Map<BlockPos, Integer> level = new HashMap<>();
+		ArrayDeque<BlockPos> queue = new ArrayDeque<>();
+		template.entrySet().stream().filter(e -> e.getValue().getLightEmission() > 0)
+			.sorted((a, b) -> b.getValue().getLightEmission() - a.getValue().getLightEmission()).forEach(e -> {
+				level.put(e.getKey(), e.getValue().getLightEmission());
+				queue.add(e.getKey());
+			});
+		while (!queue.isEmpty()) {
+			BlockPos p = queue.poll();
+			int next = level.get(p) - 1;
+			if (next <= 0) {
+				continue;
+			}
+			for (Direction d : Direction.values()) {
+				BlockPos q = p.relative(d);
+				BlockState state = at(template, q);
+				if (level.getOrDefault(q, 0) < next && !state.isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO) && !shuts(state)) {
+					level.put(q, next);
+					queue.add(q);
+				}
+			}
+		}
+		return level;
+	}
+
+	/**
+	 * Every piece standing on a room's floor, in every blueprint with furniture spots and on every floor, has its room's
+	 * own light: a block light above 7 at it (the owner's "light level above 7 at night"), from a lantern hung or on a table.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everyFurnishedRoomHasALight(GameTestHelper helper) {
+		List<String> problems = new ArrayList<>();
+		int rooms = 0;
+		for (Map.Entry<ResourceLocation, List<FurnitureSpot>> e : BlueprintFurniture.all().entrySet()) {
+			if (!e.getKey().getNamespace().equals(AliveWorkplace.MOD_ID) || unlit(e.getKey())) {
+				continue;
+			}
+			Blueprint blueprint = BlueprintLibrary.get(helper.getLevel(), e.getKey()).orElse(null);
+			if (blueprint == null) {
+				continue;
+			}
+			Map<BlockPos, BlockState> template = new HashMap<>();
+			blueprint.blocks().forEach(b -> template.put(b.pos(), b.state()));
+			Map<BlockPos, Integer> light = light(template);
+			for (FurnitureSpot spot : e.getValue()) {
+				if (spot.support() == null || !spot.support().contains(Support.FLOOR) || spot.positions().stream().noneMatch(p -> indoors(template, p))) {
+					continue;
+				}
+				rooms++;
+				int lit = 0;
+				for (BlockPos p : spot.positions()) {
+					for (BlockPos q : List.of(p, p.above())) {
+						if (!at(template, q).isSolidRender(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)) {
+							lit = Math.max(lit, light.getOrDefault(q, 0));
+						}
+					}
+				}
+				if (lit <= 7) {
+					problems.add(e.getKey().getPath() + " " + spot.kind().id() + "@" + spot.pos().toShortString() + " in light " + lit);
+				}
+			}
+		}
+		helper.assertTrue(rooms > 200, "only " + rooms + " pieces indoors checked");
+		report(helper, problems, "pieces stand in the dark");
 		helper.succeed();
 	}
 }

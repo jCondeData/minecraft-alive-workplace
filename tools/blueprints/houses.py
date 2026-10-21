@@ -590,6 +590,7 @@ def townhouse_body(b):
     b.set(4, 11, 4, "dark_oak_pressure_plate", powered=False)
     box(b, 5, 10, 6, 7, 10, 7, "light_gray_carpet")
     lantern(b, 8, 11, 2)
+    lantern(b, 5, 12, 6, hanging=True)  # B281: the sitting corner and the couch need the room's light too
     # Furnished (37.4): a second seat at the table, a couch on the back wall, a nightstand by the bed, a picture
     stairs(b, 4, 10, 5, SPRUCE, "south")
     couch(b, 4, 10, 9, "north", "spruce", "light_gray", length=2)
@@ -665,6 +666,7 @@ def townhouse_courtyard(b):
     # (B260: the bed's head to the west wall with a nightstand by it, the chest at its foot, the lamp on a stand)
     b.bed(3, 14, 3, "green", facing="west")
     nightstand(b, 2, 14, 2, "east", "dark_oak")
+    lantern(b, 2, 15, 2)  # B281: a light on the nightstand (the lamp by the far wall doesn't reach the bed)
     b.set(4, 14, 3, "chest", facing="east", type="single", waterlogged=False)
     box(b, 4, 14, 6, 6, 14, 7, "green_carpet")
     floor_lamp(b, 6, 14, 8, "dark_oak")

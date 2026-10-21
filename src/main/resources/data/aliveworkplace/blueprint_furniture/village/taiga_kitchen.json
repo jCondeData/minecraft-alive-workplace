@@ -1,3 +1,5 @@
 {"spots": [
+  {"kind": "table", "pos": [2, 1, 4], "facing": "north", "wood": "oak", "blocks": [{"at": [0, 0, 0], "state": "minecraft:oak_fence[east=false,north=false,south=false,waterlogged=false,west=true]"}, {"at": [0, 1, 0], "state": "minecraft:oak_pressure_plate[powered=false]"}], "support": ["floor"]},
+  {"kind": "chair", "pos": [3, 1, 4], "facing": "west", "wood": "oak", "blocks": [{"at": [0, 0, 0], "state": "minecraft:oak_stairs[facing=east,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor"]},
   {"kind": "bed", "pos": [6, 1, 6], "facing": "south", "wood": "spruce", "colour": "brown", "blocks": [{"at": [0, 0, 0], "state": "minecraft:brown_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:brown_bed[facing=south,occupied=false,part=head]"}], "support": ["floor"]}
 ]}

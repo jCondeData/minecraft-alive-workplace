@@ -4858,9 +4858,13 @@ Depends on: nothing open.
   Village Hall's residents list, a villager with a job gets a **Change job** button: it lists the village's free job
   blocks (as the Free job blocks tab does) and the Builder; picking one shows the price (the same 5-50 emeralds by level
   as the Builder retraining), a second click pays, the old job is released (its block stays where it is, free for
-  someone else; a builder hands back their build as today), and they walk to the new block. Children and nitwits can't;
+  someone else; a builder hands back their build as today), and the new job is theirs AT ONCE (owner: "then I have to
+  wait for them to walk over to a certain table which they may never do"): the profession and the block's claim are set
+  on the click, never waiting on the villager reaching it; they then go to work there, and one who can't get there
+  within about a minute (blocked, too far, stuck) is moved beside it; the hall shows the new job straight away. Children and nitwits can't;
   game rule `workplaceRetraining` off hides the button. Done when: GameTests for retraining to a free block through the
-  hall's own entry point, the price by level, not enough emeralds (nothing changes), the old block left free, a busy
+  hall's own entry point (the job and claim set on the click, before any walking), a villager walled off from the
+  block still ending up working there, the price by level, not enough emeralds (nothing changes), the old block left free, a busy
   builder handing back the build, the rule off, save and reload; text in `en_us.json`; guide (village-hall.md, jobs.md)
   and wiki; scene `hall_retrain`.
 

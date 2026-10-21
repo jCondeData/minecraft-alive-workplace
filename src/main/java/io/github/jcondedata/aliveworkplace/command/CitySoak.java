@@ -167,12 +167,63 @@ public final class CitySoak {
 		lastResult = null;
 		Run run = start(level, origin, days * Soak.DAY, RandomSource.create(27_22L));
 		running = run;
+		StallWatch.detail = site -> running == null ? "" : why(running, site);
 		StewardCost.begin();
 		String text = "City: a Steward, " + run.builders.size() + " builders, " + VILLAGERS + " villagers, "
 			+ ((VillageHallBlockEntity) level.getBlockEntity(run.hall)).plan().zones().size() + " zones, 2 streets and a wall line; "
 			+ days + " days";
 		AliveWorkplace.LOG.info(text);
 		return text;
+	}
+
+	/**
+	 * B132: why a build of the city soak isn't finished, for its stall lines and the result line: its builder and bench,
+	 * and for each thing missing what its list asks, what its steps need and have, what the soak put in the storehouse
+	 * for it, what the storehouse holds now, and what each builder carries and has in the chests by his bench.
+	 */
+	static String why(Run r, BuildSite s) {
+		StringBuilder out = new StringBuilder(" site bench " + (s.bench() == null ? "none" : s.bench().toShortString()));
+		for (int i = 0; i < r.builders.size(); i++) {
+			if (r.builders.get(i).getUUID().equals(s.builder())) {
+				out.append(" builder#").append(i).append(" at ").append(r.builders.get(i).blockPosition().toShortString());
+			}
+		}
+		BuildPlan plan = s.plan(r.level);
+		if (plan == null) {
+			return out.toString();
+		}
+		Map<Item, Integer> given = r.stockedFor.getOrDefault(s.id(), Map.of());
+		for (var e : s.missingSorted()) {
+			Item item = e.getKey();
+			int stepsNeed = 0;
+			int stepsDone = 0;
+			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
+				for (BuildPlan.Step step : plan.steps(stage)) {
+					for (var req : step.requirements()) {
+						if (req.item() == item) {
+							stepsNeed += req.count();
+							if (io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(r.level.getBlockState(step.pos()), step.state())) {
+								stepsDone += req.count();
+							}
+						}
+					}
+				}
+			}
+			out.append(" | ").append(BuiltInRegistries.ITEM.getKey(item).getPath()).append(" want ").append(e.getValue())
+				.append(" list ").append(plan.materials().getOrDefault(item, 0)).append(" steps ").append(stepsNeed).append(" done ").append(stepsDone)
+				.append(" given ").append(given.getOrDefault(item, 0))
+				.append(" store ").append(io.github.jcondedata.aliveworkplace.build.SupplyContainers.count(r.level, r.chests, item));
+			for (int i = 0; i < r.builders.size(); i++) {
+				Villager b = r.builders.get(i);
+				out.append(" b").append(i).append(" bag ").append(ModAttachments.BUILDER_BAG.getOrCreate(b).count(item));
+				var bench = io.github.jcondedata.aliveworkplace.build.Builders.benchPos(b);
+				if (bench.isPresent()) {
+					out.append(" chests ").append(io.github.jcondedata.aliveworkplace.build.SupplyContainers.count(r.level,
+						io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(r.level, bench.get(), null), item));
+				}
+			}
+		}
+		return out.toString();
 	}
 
 	/** Builds the Steward started so far, those finished, and whether the soak is still running. */
@@ -538,7 +589,10 @@ public final class CitySoak {
 			if (manager.get(s.id()) == null) {
 				finished++;
 			} else {
-				unfinished.add(s.structure().getPath());
+				BuildSite site = manager.get(s.id());
+				// B132: what it's at and why, so a failed run names its cause
+				unfinished.add(s.structure().getPath() + " at " + site.placement().origin().toShortString() + " (" + site.stage() + ", "
+					+ site.status() + ", " + site.placed() + " placed, " + site.skipped() + " skipped" + StallWatch.missing(site) + ";" + why(run, site) + ")");
 			}
 			if (s.box() != null) {
 				String wrong = where(plan, run.hall, s.kind(), s.box());

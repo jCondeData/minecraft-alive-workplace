@@ -33,6 +33,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Builders take from the chests only what their work still needs. Each trip took one block too many, so two Builders
+  building from the same Storehouse could each end up waiting for the one log or slab the other was carrying, and
+  neither build finished (the city time-lapse's last palisade pieces, B132).
 - A Builder repairing a building now takes what it needs from the chests inside that building. Repairing a Storehouse
   Shed, it waited for a Hay Bale and an Oak Ladder that were in the shed's own chests by its bench, because chests
   inside the build were left out, as they are for a new build (B261).

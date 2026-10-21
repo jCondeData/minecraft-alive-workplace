@@ -82,7 +82,7 @@ public class RetirementGameTests implements FabricGameTest {
 			ModAttachments.PARENTS.set(tom, new Families.Parents(Component.literal("Ann"), Component.literal("Bram"), "", "minecraft:farmer", true));
 			long clock = level.getDayTime();
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(bram, today - 130);
+			LifeStages.setAdultSince(bram, today - 1210);
 			LifeStages.setAdultSince(tom, today - 20);
 			LifeStages.setAdultSince(ida, today - 40);
 			List<Villager> all = List.of(bram, tom, ida);
@@ -119,7 +119,7 @@ public class RetirementGameTests implements FabricGameTest {
 				helper.assertTrue(Retirement.isRetired(bram) && bram.getVillagerData().getProfession() == VillagerProfession.NONE
 					&& bram.getBrain().getMemory(MemoryModuleType.JOB_SITE).isEmpty(), "Bram not retired: " + bram.getVillagerData());
 				helper.assertTrue(bram.getOffers().size() == bramTrades, "Bram's trades for players: " + bram.getOffers().size() + " of " + bramTrades);
-				helper.assertTrue(chronicle(hall).contains("Bram retired from the Farmer trade after 132 days grown"), "the chronicle: " + chronicle(hall));
+				helper.assertTrue(chronicle(hall).contains("Bram retired from the Farmer trade after 1212 days grown"), "the chronicle: " + chronicle(hall));
 				helper.assertTrue(chronicle(hall).contains("Tom took over the Farmer trade from Bram, as Apprentice")
 					|| chronicle(hall).contains("Tom took over the Farmer trade from Bram, as Journeyman"), "the chronicle: " + chronicle(hall));
 				helper.assertTrue(lore(level, hallPos, bram).contains("Retired Farmer · mentors the young"), "Bram's card: " + lore(level, hallPos, bram));
@@ -146,7 +146,7 @@ public class RetirementGameTests implements FabricGameTest {
 			BlockPos hallPos = helper.absolutePos(HALL);
 			ready(helper);
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(bram, today - 130);
+			LifeStages.setAdultSince(bram, today - 1210);
 			LifeStages.setAdultSince(tom, today - 20);
 			List<Villager> all = List.of(bram, tom);
 			UUID owner = UUID.nameUUIDFromBytes("owner".getBytes());
@@ -205,8 +205,8 @@ public class RetirementGameTests implements FabricGameTest {
 			ready(helper);
 			long clock = level.getDayTime();
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(bram, today - 140);
-			LifeStages.setAdultSince(odo, today - 130);
+			LifeStages.setAdultSince(bram, today - 1220);
+			LifeStages.setAdultSince(odo, today - 1210);
 			LifeStages.setAdultSince(tom, today - 20);
 			LifeStages.setAdultSince(ida, today - 20);
 			try {
@@ -270,7 +270,7 @@ public class RetirementGameTests implements FabricGameTest {
 			BlockPos hallPos = helper.absolutePos(HALL);
 			ready(helper);
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(bram, today - 150);
+			LifeStages.setAdultSince(bram, today - 1230);
 			LifeStages.setAdultSince(odo, today - 20);
 			ModAttachments.RETIRED.set(bram, new Retirement.Retired(today - 10, "minecraft:farmer"));
 			bram.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), helper.absolutePos(lectern)));
@@ -299,7 +299,7 @@ public class RetirementGameTests implements FabricGameTest {
 			BlockPos hallPos = helper.absolutePos(HALL);
 			ready(helper);
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(bram, today - 150);
+			LifeStages.setAdultSince(bram, today - 1230);
 			for (Villager v : List.of(tom, ida, eli)) {
 				LifeStages.setAdultSince(v, today - 20);
 			}

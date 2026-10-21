@@ -137,6 +137,14 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Stage helperWaitStage;
 	/** After this long the lead does the blocks helpers claimed itself (a helper that claims and never places). */
 	private static final int HELPER_WAIT = 200;
+	/** B254: the lead's site's {@link BuildSite#progressMark} as last seen, and the game tick it last changed (not saved). */
+	private long lastMark = Long.MIN_VALUE;
+	private long markSince;
+	/**
+	 * B254: how long a crew's site may stand still before the lead gives up a block that waits on a given-up one under
+	 * it (nobody could lay that one): without it the column above waited for good (B139).
+	 */
+	private static final int GIVEN_UP_WAIT = 200;
 	/** True while this builder works on a Wonder with a crew, in columns (35.5). */
 	private boolean crew;
 	/** True while the lead works on a block away from its cursor, this tick (23.1a). */
@@ -149,6 +157,8 @@ public class BuilderWork extends Behavior<Villager> {
 	private BlockPos currentStep;
 	/** Steps a helper gave up on (left for the lead), for the stage in {@link #avoidStage}. */
 	private final Set<BlockPos> avoid = new HashSet<>();
+	/** B254: blocks the lead gave up on that this builder then failed to lay as well, for the stage in {@link #avoidStage}. */
+	private final Set<BlockPos> retakeFailed = new HashSet<>();
 	@Nullable
 	private BuildPlan.Stage avoidStage;
 	/** How close a crewmate must be to pass materials over without walking to them (23.1a). */
@@ -310,7 +320,14 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		if (!helping) {
 			site.helpers(gameTime); // lets go of the claims of helpers that have left, so the lead never waits on them
+			long mark = site.progressMark();
+			if (mark != lastMark) {
+				lastMark = mark;
+				markSince = gameTime;
+			}
 		}
+		boolean standingStill = !helping && gameTime - markSince >= GIVEN_UP_WAIT;
+		boolean gaveUpOver = false;
 		BuildPlan.Step crewPick = null;
 		if (!helping && crew && !site.isDone()) {
 			crewPick = crewStep(level, villager, site, plan, bench); // the lead of a crew takes a column too
@@ -334,6 +351,10 @@ public class BuilderWork extends Behavior<Villager> {
 				if (site.endsStage() && io.github.jcondedata.aliveworkplace.mechanic.Contraptions.goBack(level, site, plan)) {
 					continue; // 39.5: a kinetic part broken since it went in: back over the parts, before the build is called done
 				}
+				if (crew && site.endsStage() && !standingStill && crewOnGivenUp(site, gameTime)) {
+					setStatus(site, BuildSite.Status.WORKING);
+					return; // B254: a member is laying a block the lead gave up on: the stage waits for it, not for long
+				}
 				site.finishList();
 				continue;
 			}
@@ -356,6 +377,14 @@ public class BuilderWork extends Behavior<Villager> {
 					site.playerBlockInTheWay(); // 27.19: counted once, as it is skipped for good
 				}
 				site.defer(); // (lead only: helpers pick their own steps)
+			} else if (crew && site.isRetrying() && standingStill && action == Action.PLACE && overGivenUp(level, site, plan, candidate)) {
+				// B254: it waits on a block under it the lead gave up and nobody has laid since, and the crew has done
+				// nothing for a while: given up too (a hole, never a block in the air), rather than wait for good (B139).
+				// B270: every one waiting so in this stand-still, not one each 200 ticks: the Hanging Gardens' crew stood
+				// still for minutes giving up the blocks over a terrace's holes one by one. A crewmate who can lay a hole
+				// later in the stage still does, and the block over it after (given-up blocks are taken again once clear).
+				site.defer();
+				gaveUpOver = true;
 			} else if (crew && crewBlocked(level, villager, site, plan, candidate, bench)
 				|| helperWait < HELPER_WAIT && site.claimedByOther(villager.getUUID(), candidate.pos())) {
 				// A helper is on this block (23.1a): leave it to them rather than both walking over to it. If they don't
@@ -377,6 +406,9 @@ public class BuilderWork extends Behavior<Villager> {
 				}
 				break;
 			}
+		}
+		if (gaveUpOver) {
+			lastMark = site.progressMark(); // B270: giving those up isn't the crew moving on: the stand-still goes on
 		}
 		if (!helping && site.isDone()) {
 			Builders.finish(level, villager, site);
@@ -452,7 +484,7 @@ public class BuilderWork extends Behavior<Villager> {
 				} else {
 					// None to be had: asked for on the requests board, and the step is left as it always was (put off,
 					// then skipped and counted). A build never waits on scaffolding (coordinator, 2026-10-12).
-					site.setMissing(scaffolds.addMissing(level, site.missing(), bag, SupplyContainers.find(level, bench, plan.bounds())));
+					site.setMissing(scaffolds.addMissing(level, site.missing(), bag, SupplyContainers.find(level, bench, plan.supplyExclude())));
 					scaffolds.giveUp();
 					defer(site, villager, step.pos());
 				}
@@ -501,6 +533,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Step helperStep(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
 		if (avoidStage != site.stage()) {
 			avoid.clear();
+			retakeFailed.clear();
 			avoidStage = site.stage();
 		}
 		BuildPlan.Step leads = site.current(plan);
@@ -554,6 +587,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Step crewStep(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
 		if (avoidStage != site.stage()) {
 			avoid.clear();
+			retakeFailed.clear();
 			avoidStage = site.stage();
 		}
 		java.util.UUID me = villager.getUUID();
@@ -604,8 +638,11 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Step columnWork(ServerLevel level, BuildSite site, BuildPlan plan, List<BuildPlan.Step> column, int layer, BlockPos bench) {
 		boolean topDown = site.stage() == BuildPlan.Stage.CLEAR;
 		for (BuildPlan.Step s : column) {
-			if (avoid.contains(s.pos()) || site.gaveUp(s.pos()) || site.placedThisStage(s.pos())) {
+			if (site.placedThisStage(s.pos())) {
 				continue; // (B139: a block placed this stage that changed by itself since, as farmland drying out, stays)
+			}
+			if (site.gaveUp(s.pos()) ? retakeFailed.contains(s.pos()) || !retakeGivenUp(level, site, s.pos()) : avoid.contains(s.pos())) {
+				continue; // (B254: a given-up block is tried again, even by one who failed at it before it was given up)
 			}
 			if (io.github.jcondedata.aliveworkplace.mechanic.Contraptions.notYet(site, plan, s)) {
 				continue; // 39.5: a kinetic part waits for the lead to reach its group
@@ -648,16 +685,42 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	/**
-	 * A foundation or structure block goes up only once the block the drawing puts under it is there, or the lead gave
-	 * that one up (B139: a crewmate stood on top of the Colossus's half-built robe, the block under its feet was given
-	 * up, and the robe above it waited for it for good, the whole crew with it).
+	 * A foundation or structure block goes up only once the block the drawing puts under it is there. B254: not over one
+	 * the lead gave up either (B139 let it, and the crew laid the folly's dome over a hole, a block in the air): the crew
+	 * lays a given-up block once nothing stands in it ({@link #retakeGivenUp}), and if nobody can, the lead gives up the
+	 * one over it in time (B139: the Colossus's robe waited for good on the block under a crewmate's feet).
 	 */
 	private static boolean supported(ServerLevel level, BuildSite site, BuildPlan plan, BuildPlan.Step step) {
 		if (site.stage() != BuildPlan.Stage.STRUCTURE && site.stage() != BuildPlan.Stage.FOUNDATION) {
 			return true;
 		}
 		BlockPos below = step.pos().below();
-		return !plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced() || site.gaveUp(below);
+		return !plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced();
+	}
+
+	/** B254: whether {@code step} waits on a block under it that the lead gave up and nobody has laid since. */
+	private static boolean overGivenUp(ServerLevel level, BuildSite site, BuildPlan plan, BuildPlan.Step step) {
+		return !supported(level, site, plan, step) && site.gaveUp(step.pos().below());
+	}
+
+	/**
+	 * B254: a crew member takes a foundation or structure block the lead gave up on again once nothing stands in it (what
+	 * stood there has gone, or the lead had no spot to reach it from): the blocks over it wait for it.
+	 */
+	private static boolean retakeGivenUp(ServerLevel level, BuildSite site, BlockPos pos) {
+		return (site.stage() == BuildPlan.Stage.STRUCTURE || site.stage() == BuildPlan.Stage.FOUNDATION)
+			&& level.getEntities((Entity) null, new AABB(pos), e -> e.isAlive() && e.blocksBuilding && !e.isSpectator()).isEmpty();
+	}
+
+	/** B254: whether a member of the crew is on a block the lead gave up on. */
+	private static boolean crewOnGivenUp(BuildSite site, long gameTime) {
+		for (java.util.UUID m : site.helpers(gameTime)) {
+			BlockPos claim = site.claim(m);
+			if (claim != null && site.gaveUp(claim)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Whether any step of the stage still has work a builder can do (one the lead gave up on doesn't count). */
@@ -688,6 +751,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Step workInReach(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
 		if (avoidStage != site.stage()) {
 			avoid.clear();
+			retakeFailed.clear();
 			avoidStage = site.stage();
 		}
 		BuildPlan.Step pick = null;
@@ -716,11 +780,12 @@ public class BuilderWork extends Behavior<Villager> {
 
 	/** A step can't be done now. The lead retries it at the end of the stage; a helper leaves it to the lead. */
 	private void defer(BuildSite site, Villager villager, BlockPos pos) {
+		Set<BlockPos> leave = site.gaveUp(pos) ? retakeFailed : avoid; // B254: a given-up block is tried once more each
 		if (helping) {
-			avoid.add(pos);
+			leave.add(pos);
 			site.release(villager.getUUID());
 		} else if (offCursor) {
-			avoid.add(pos); // a block off the lead's cursor: it comes round in its turn
+			leave.add(pos); // a block off the lead's cursor: it comes round in its turn
 			site.setLeadClaim(null);
 		} else {
 			site.defer();
@@ -807,8 +872,15 @@ public class BuilderWork extends Behavior<Villager> {
 		return pois.existsAtPosition(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME, head) && pois.getFreeTickets(head) == 0;
 	}
 
+	/**
+	 * Blocks a build leaves standing: its own bench, containers and the like ({@link MaterialRules#isProtected}), and any
+	 * other Builder's Bench (B132: in the soak a build reaching a neighbour's bench pad cleared his bench, he lost his job
+	 * site, took another builder's and his build's chests dropped out of reach for good). A Blueprint Table, the other
+	 * builders' workstation, has a block entity and is kept as a container is.
+	 */
 	private static boolean isProtected(ServerLevel level, BlockPos pos, BlockState state, BlockPos bench) {
-		return pos.equals(bench) || MaterialRules.isProtected(state, state.getDestroySpeed(level, pos));
+		return pos.equals(bench) || state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH)
+			|| MaterialRules.isProtected(state, state.getDestroySpeed(level, pos));
 	}
 
 	// --- moving ------------------------------------------------------------------------------
@@ -910,7 +982,7 @@ public class BuilderWork extends Behavior<Villager> {
 			return Long.MAX_VALUE;
 		}
 		long n = bagNow == null ? 0 : bagNow.count(net.minecraft.world.item.Items.SCAFFOLDING);
-		return site.bench() == null ? n : n + SupplyContainers.count(level, SupplyContainers.find(level, site.bench(), plan.bounds()), net.minecraft.world.item.Items.SCAFFOLDING);
+		return site.bench() == null ? n : n + SupplyContainers.count(level, SupplyContainers.find(level, site.bench(), plan.supplyExclude()), net.minecraft.world.item.Items.SCAFFOLDING);
 	}
 
 	/** Ticks since a path to where we're going last failed (see {@link io.github.jcondedata.aliveworkplace.work.Walker#requestWalk}). */
@@ -1094,7 +1166,7 @@ public class BuilderWork extends Behavior<Villager> {
 	/** True if our chests, or the village's (23.5: a storehouse, another worker's), hold what {@code r} asks for. */
 	private static boolean inStock(ServerLevel level, Villager villager, BuildSite site, BlockPos bench, BuildPlan plan,
 								   MaterialRules.Requirement r) {
-		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
 		long have = 0;
 		for (Item item : MaterialFamilies.accepted(r.item())) {
 			have += SupplyContainers.count(level, supplies, item);
@@ -1117,7 +1189,7 @@ public class BuilderWork extends Behavior<Villager> {
 			deposit(level, villager, site, plan, bag, bench);
 			return;
 		}
-		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
 		int needed = requirement.count() - bag.count(requirement.item());
 		List<Item> accepted = MaterialFamilies.accepted(requirement.item());
 		long available = 0;
@@ -1155,7 +1227,7 @@ public class BuilderWork extends Behavior<Villager> {
 			// first only what the other builders near it can spare (23.5: one that could also reach another storehouse
 			// took what builders who can reach only this one were waiting for); if nothing anywhere is spare that way,
 			// first come first served, so builders short of the same thing never wait on each other.
-			List<Village.Stash> stashes = Village.stashes(level, villager, bench, plan.bounds());
+			List<Village.Stash> stashes = Village.stashes(level, villager, bench, plan.supplyExclude());
 			for (int pass = 0; pass < 2; pass++) {
 				for (Village.Stash stash : stashes) {
 					if (pass == 1 && stash.job() != ModVillagers.PORTER) {
@@ -1251,7 +1323,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private void takeWanted(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, MaterialRules.Requirement requirement,
 							List<BlockPos> supplies, BlockPos source, Map<Item, Integer> reserved, List<BlockPos> mine) {
 		Map<Item, Integer> wanted = new LinkedHashMap<>();
-		wanted.put(requirement.item(), requirement.count());
+		wanted.put(requirement.item(), 0); // first in line when the bag is short of room
 		// 23.5: chests far from the site (a village storehouse, a bench far away): take for a longer stretch, so the
 		// builder walks there less often (each trip was 30 s and more without placing a block).
 		boolean far = farFromChests(plan, source);
@@ -1262,6 +1334,10 @@ public class BuilderWork extends Behavior<Villager> {
 				}
 			}
 		}
+		// B132: the stretch ahead starts with the block this is for, so it counts once, as at least what that block
+		// asks. Counted on top of the stretch, every trip took one block's worth too many: in the city time-lapse two
+		// builders sharing the storehouse each carried the one log or slab the other waited for, and neither finished.
+		wanted.merge(requirement.item(), requirement.count(), Math::max);
 		boolean tookAny = false;
 		for (Map.Entry<Item, Integer> e : wanted.entrySet()) {
 			int want = e.getValue() - bag.count(e.getKey());
@@ -1603,7 +1679,7 @@ public class BuilderWork extends Behavior<Villager> {
 	 */
 	private static Map<Item, Long> spareElsewhere(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
 		Map<Item, Long> out = new HashMap<>();
-		for (Village.Stash stash : Village.stashes(level, villager, bench, plan.bounds())) {
+		for (Village.Stash stash : Village.stashes(level, villager, bench, plan.supplyExclude())) {
 			Map<Item, Long> held = new HashMap<>();
 			SupplyContainers.contents(level, stash.chests()).forEach((item, n) -> held.merge(MaterialFamilies.key(item), n, Long::sum));
 			Map<Item, Integer> reserved = reservedIn(level, stash, site, false);
@@ -1633,9 +1709,9 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	private void deposit(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench) {
-		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
 		if (supplies.isEmpty() || SupplyContainers.freeSlots(level, supplies) == 0) {
-			List<BlockPos> store = Builders.storehouseChests(level, villager, bench, plan.bounds());
+			List<BlockPos> store = Builders.storehouseChests(level, villager, bench, plan.supplyExclude());
 			if (!store.isEmpty() && SupplyContainers.freeSlots(level, store) > 0) {
 				supplies = store;
 			}
@@ -1663,7 +1739,7 @@ public class BuilderWork extends Behavior<Villager> {
 			ItemStack rest = SupplyContainers.insert(level, supplies, stack);
 			if (!rest.isEmpty()) {
 				if (store == null) {
-					store = Builders.storehouseChests(level, villager, bench, plan.bounds());
+					store = Builders.storehouseChests(level, villager, bench, plan.supplyExclude());
 				}
 				if (!store.equals(supplies)) {
 					rest = SupplyContainers.insert(level, store, rest);

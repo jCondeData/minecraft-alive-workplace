@@ -7,7 +7,7 @@
     "counter": {"block": "cozyhome:{wood}_counter", "facing": "front"},
     "cupboard": {"block": "cozyhome:{wood}_storage_counter", "facing": "front"},
     "drawer": {"block": "cozyhome:{wood}_drawer", "facing": "front"},
-    "lamp": {"block": "cozyhome:{wood}_lamp"},
-    "clock": {"block": ["cozyhome:{wood}_grandfather_clock", "cozyhome:{wood}_wall_clock"], "facing": "front"}
+    "lamp": {"needs": "floor", "block": "cozyhome:{wood}_lamp"},
+    "clock": {"needs": "floor", "block": ["cozyhome:{wood}_grandfather_clock", "cozyhome:{wood}_wall_clock"], "facing": "front"}
   }
 }

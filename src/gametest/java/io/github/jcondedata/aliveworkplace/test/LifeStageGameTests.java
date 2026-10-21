@@ -48,7 +48,7 @@ public class LifeStageGameTests implements FabricGameTest {
 	private static final List<String> ELDER_LINES = List.of("In my day this was all fields.", "I've seen more harvests than you've had hot dinners.",
 		"These knees knew every path in the village, once.", "Sit a while. The young ones are always in a hurry.");
 
-	/** With the clock moved on: not an elder on grown day 119, an elder on day 120, said by the hall and noted once by the chronicle. */
+	/** With the clock moved on: not an elder on grown day 1199, an elder on day 1200 (36.16: ten times the first 120), said by the hall and noted once by the chronicle. */
 	//$ gametest_ticks_batch AREA '100' '"lifeStageElder"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "lifeStageElder")
 	public void aVillagerIsAnElderAfterTheConfiguredDays(GameTestHelper helper) {
@@ -65,32 +65,32 @@ public class LifeStageGameTests implements FabricGameTest {
 			long today = Chronicle.day(level);
 			LifeStages.setAdultSince(bram, today); // grown up today
 			LifeStages.setAdultSince(tom, today + 20); // grows up in 20 days
-			LifeStages.setAdultSince(ida, today + 90);
+			LifeStages.setAdultSince(ida, today + 1170);
 			List<Villager> all = List.of(bram, tom, ida);
 			// Everything below happens within this tick, and the clock goes back: no other test sees the days pass.
 			try {
 				helper.assertTrue(LifeStages.grownDays(bram, today) == 0 && !LifeStages.isElder(bram) && LifeStages.stage(bram, today) == LifeStages.Stage.GROWN, "Bram today");
-				level.setDayTime(clock + 119 * VillageNeeds.DAY);
-				helper.assertTrue(Chronicle.day(level) == today + 119, "the clock didn't move: day " + Chronicle.day(level) + " from " + today);
+				level.setDayTime(clock + 1199 * VillageNeeds.DAY);
+				helper.assertTrue(Chronicle.day(level) == today + 1199, "the clock didn't move: day " + Chronicle.day(level) + " from " + today);
 				LifeStages.round(level, hallPos, all);
-				helper.assertTrue(!LifeStages.isElder(bram) && LifeStages.stage(bram, Chronicle.day(level)) == LifeStages.Stage.GROWN, "an elder after 119 grown days");
-				helper.assertTrue(lore(level, hallPos, bram).stream().noneMatch(l -> l.startsWith("Elder")), "the hall on day 119: " + lore(level, hallPos, bram));
-				helper.assertTrue(!chronicle(hall).contains(NOW_AN_ELDER) && !ModAttachments.ELDER_NOTED.has(bram), "the chronicle on day 119: " + chronicle(hall));
+				helper.assertTrue(!LifeStages.isElder(bram) && LifeStages.stage(bram, Chronicle.day(level)) == LifeStages.Stage.GROWN, "an elder after 1199 grown days");
+				helper.assertTrue(lore(level, hallPos, bram).stream().noneMatch(l -> l.startsWith("Elder")), "the hall on day 1199: " + lore(level, hallPos, bram));
+				helper.assertTrue(!chronicle(hall).contains(NOW_AN_ELDER) && !ModAttachments.ELDER_NOTED.has(bram), "the chronicle on day 1199: " + chronicle(hall));
 
-				level.setDayTime(clock + 120 * VillageNeeds.DAY);
+				level.setDayTime(clock + 1200 * VillageNeeds.DAY);
 				helper.assertTrue(LifeStages.isElder(bram) && LifeStages.stage(bram, Chronicle.day(level)) == LifeStages.Stage.ELDER
-					&& LifeStages.elderDays(bram, Chronicle.day(level)) == 0, "not an elder after 120 grown days");
-				helper.assertTrue(lore(level, hallPos, bram).contains("Elder · grown 120 days"), "the hall on day 120: " + lore(level, hallPos, bram));
+					&& LifeStages.elderDays(bram, Chronicle.day(level)) == 0, "not an elder after 1200 grown days");
+				helper.assertTrue(lore(level, hallPos, bram).contains("Elder · grown 1200 days"), "the hall on day 1200: " + lore(level, hallPos, bram));
 				LifeStages.round(level, hallPos, all);
-				helper.assertTrue(hall.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.LIFE && e.day() == today + 120
+				helper.assertTrue(hall.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.LIFE && e.day() == today + 1200
 					&& e.text().getString().equals(NOW_AN_ELDER)), "the chronicle on the day he became one: " + chronicle(hall));
 				// Once: not in the next round, nor the next days.
 				LifeStages.round(level, hallPos, all);
-				level.setDayTime(clock + 125 * VillageNeeds.DAY);
+				level.setDayTime(clock + 1205 * VillageNeeds.DAY);
 				LifeStages.round(level, hallPos, all);
 				helper.assertTrue(chronicle(hall).stream().filter(NOW_AN_ELDER::equals).count() == 1, "noted once: " + chronicle(hall));
-				helper.assertTrue(lore(level, hallPos, bram).contains("Elder · grown 125 days"), "the hall on day 125: " + lore(level, hallPos, bram));
-				// Tom (grown 105 days) and Ida (35) are not elders, and nothing is written for them.
+				helper.assertTrue(lore(level, hallPos, bram).contains("Elder · grown 1205 days"), "the hall on day 1205: " + lore(level, hallPos, bram));
+				// Tom (grown 1185 days) and Ida (35) are not elders, and nothing is written for them.
 				helper.assertTrue(!LifeStages.isElder(tom) && !LifeStages.isElder(ida), "Tom or Ida is an elder too soon");
 				helper.assertTrue(chronicle(hall).stream().filter(l -> l.endsWith(" is an elder now")).count() == 1, "others noted: " + chronicle(hall));
 
@@ -99,8 +99,8 @@ public class LifeStageGameTests implements FabricGameTest {
 				helper.assertTrue(LifeStages.isElder(ida) && LifeStages.elderDays(ida, Chronicle.day(level)) == 5, "an elder after 30 configured days");
 				LifeStages.round(level, hallPos, List.of(ida));
 				helper.assertTrue(chronicle(hall).contains("Ida is an elder now"), "Ida, with 30 days configured: " + chronicle(hall));
-				LifeStages.ELDER_DAYS = 120;
-				helper.assertTrue(!LifeStages.isElder(ida), "Ida with 120 days again");
+				LifeStages.ELDER_DAYS = 1200;
+				helper.assertTrue(!LifeStages.isElder(ida), "Ida with 1200 days again");
 			} finally {
 				level.setDayTime(clock);
 			}
@@ -120,9 +120,9 @@ public class LifeStageGameTests implements FabricGameTest {
 		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
 		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
 		Villager odo = walker(helper, new BlockPos(16, 2, 2), "Odo");
-		LifeStages.setAdultSince(bram, today - 130);
+		LifeStages.setAdultSince(bram, today - 1210);
 		LifeStages.setAdultSince(tom, today - 30);
-		LifeStages.setAdultSince(odo, today - 300);
+		LifeStages.setAdultSince(odo, today - 1380);
 		ModAttachments.AGELESS.set(odo, true);
 		BlockPos bramGoal = helper.absolutePos(new BlockPos(4, 2, 20));
 		BlockPos tomGoal = helper.absolutePos(new BlockPos(10, 2, 20));
@@ -210,7 +210,7 @@ public class LifeStageGameTests implements FabricGameTest {
 		long today = Chronicle.day(helper.getLevel());
 		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
 		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
-		LifeStages.setAdultSince(bram, today - 130);
+		LifeStages.setAdultSince(bram, today - 1210);
 		LifeStages.setAdultSince(tom, today - 30);
 		Leftovers.after(helper, () -> {
 			bram.discard();
@@ -367,7 +367,7 @@ public class LifeStageGameTests implements FabricGameTest {
 			bram.discard();
 			tom.discard();
 		});
-		LifeStages.setAdultSince(bram, today - 130);
+		LifeStages.setAdultSince(bram, today - 1210);
 		LifeStages.setAdultSince(tom, today - 30);
 		BlockPos bramGoal = helper.absolutePos(new BlockPos(4, 2, 20));
 		BlockPos tomGoal = helper.absolutePos(new BlockPos(10, 2, 20));
@@ -403,7 +403,7 @@ public class LifeStageGameTests implements FabricGameTest {
 			bram.discard();
 			tom.discard();
 		});
-		LifeStages.setAdultSince(bram, today - 130);
+		LifeStages.setAdultSince(bram, today - 1210);
 		LifeStages.setAdultSince(tom, today - 30);
 		BlockPos bramGoal = helper.absolutePos(new BlockPos(4, 2, 20));
 		BlockPos tomGoal = helper.absolutePos(new BlockPos(10, 2, 20));
@@ -471,7 +471,7 @@ public class LifeStageGameTests implements FabricGameTest {
 		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
 		bram.setNoAi(true);
 		tom.setNoAi(true);
-		LifeStages.setAdultSince(bram, today - 130);
+		LifeStages.setAdultSince(bram, today - 1210);
 		LifeStages.setAdultSince(tom, today - 30);
 		BlockPos bramGoal = helper.absolutePos(new BlockPos(4, 2, 12));
 		BlockPos tomGoal = helper.absolutePos(new BlockPos(10, 2, 12));
@@ -509,7 +509,7 @@ public class LifeStageGameTests implements FabricGameTest {
 			ready(helper);
 			Moods.ENABLED = true; // (off in GameTests otherwise)
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(bram, today - 131);
+			LifeStages.setAdultSince(bram, today - 1211);
 			LifeStages.setAdultSince(tom, today - 30);
 			for (Villager v : List.of(bram, tom)) {
 				ModAttachments.LAST_MEAL.set(v, level.getGameTime());
@@ -529,7 +529,7 @@ public class LifeStageGameTests implements FabricGameTest {
 			// On the hall's card.
 			Moods.forget();
 			List<String> card = lore(level, hallPos, bram);
-			helper.assertTrue(card.contains("Elder · grown 131 days") && card.stream().anyMatch(l -> l.contains("a quiet old age")), "Bram's card: " + card);
+			helper.assertTrue(card.contains("Elder · grown 1211 days") && card.stream().anyMatch(l -> l.contains("a quiet old age")), "Bram's card: " + card);
 			helper.assertTrue(lore(level, hallPos, tom).stream().noneMatch(l -> l.contains("a quiet old age")), "Tom's card: " + lore(level, hallPos, tom));
 
 			// Hungry: no quiet old age (and 20 less for the hunger, 15 less for no longer being fed).
@@ -585,21 +585,21 @@ public class LifeStageGameTests implements FabricGameTest {
 			BlockPos hallPos = helper.absolutePos(HALL);
 			VillageHallBlockEntity hall = ready(helper);
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(bram, today - 127);
+			LifeStages.setAdultSince(bram, today - 1207);
 			LifeStages.round(level, hallPos, List.of(bram));
 			helper.assertTrue(chronicle(hall).stream().filter(NOW_AN_ELDER::equals).count() == 1, "noted before the reload: " + chronicle(hall));
 
 			Villager copy = EntityType.VILLAGER.create(level);
 			copy.load(bram.saveWithoutId(new CompoundTag()));
-			helper.assertTrue(Long.valueOf(today - 127).equals(LifeStages.adultSince(copy)), "the day he grew up after a reload: " + LifeStages.adultSince(copy));
-			helper.assertTrue(LifeStages.isElder(copy, today) && LifeStages.grownDays(copy, today) == 127 && LifeStages.stage(copy, today) == LifeStages.Stage.ELDER,
-				"an elder of 127 grown days after a reload: " + LifeStages.grownDays(copy, today));
+			helper.assertTrue(Long.valueOf(today - 1207).equals(LifeStages.adultSince(copy)), "the day he grew up after a reload: " + LifeStages.adultSince(copy));
+			helper.assertTrue(LifeStages.isElder(copy, today) && LifeStages.grownDays(copy, today) == 1207 && LifeStages.stage(copy, today) == LifeStages.Stage.ELDER,
+				"an elder of 1207 grown days after a reload: " + LifeStages.grownDays(copy, today));
 			helper.assertTrue(LifeStages.walk(copy) == LifeStages.ELDER_WALK, "the reloaded elder's walk: " + LifeStages.walk(copy));
 			helper.assertTrue(Boolean.TRUE.equals(ModAttachments.ELDER_NOTED.get(copy)), "the chronicle's note after a reload: " + ModAttachments.ELDER_NOTED.get(copy));
 			LifeStages.round(level, hallPos, List.of(copy));
 			helper.assertTrue(chronicle(hall).stream().filter(NOW_AN_ELDER::equals).count() == 1, "noted again after the reload: " + chronicle(hall));
 			// A day more, and the count goes on from the saved day.
-			helper.assertTrue(LifeStages.grownDays(copy, today + 1) == 128, "the count after a reload: " + LifeStages.grownDays(copy, today + 1));
+			helper.assertTrue(LifeStages.grownDays(copy, today + 1) == 1208, "the count after a reload: " + LifeStages.grownDays(copy, today + 1));
 
 			// A villager from a save before all this: no age, not an elder, not slowed, and the round writes nothing on them.
 			Villager old = EntityType.VILLAGER.create(level);
@@ -609,7 +609,7 @@ public class LifeStageGameTests implements FabricGameTest {
 			helper.assertTrue(LifeStages.adultSince(old) == null && !LifeStages.isElder(old, today + 1000) && LifeStages.stage(old, today) == LifeStages.Stage.GROWN
 				&& LifeStages.walk(old) == 1f && !ModAttachments.ELDER_NOTED.has(old) && hall.chronicle().size() == lines, "an older save's villager");
 			// An elder made ageless before this version (no note saved): the charm wrote them in already, so no second line.
-			LifeStages.setAdultSince(odo, today - 150);
+			LifeStages.setAdultSince(odo, today - 1230);
 			helper.assertTrue(LifeStages.makeAgeless(level, odo, Component.literal("Tester")).outcome() == LifeStages.Outcome.ACCEPTED, "Odo takes a charm");
 			LifeStages.round(level, hallPos, List.of(odo));
 			helper.assertTrue(!chronicle(hall).contains("Odo is an elder now") && chronicle(hall).stream().anyMatch(l -> l.startsWith("Odo will never leave us")),
@@ -618,7 +618,7 @@ public class LifeStageGameTests implements FabricGameTest {
 		});
 	}
 
-	/** A child who grows up is grown from today (the hall's own round writes it), and the same round notes an elder; 120 days on the child is one. */
+	/** A child who grows up is grown from today (the hall's own round writes it), and the same round notes an elder; 1200 days on the child is one. */
 	//$ gametest_ticks_batch AREA '200' '"lifeStageGrowingUp"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "lifeStageGrowingUp")
 	public void aChildGrowingUpIsGrownFromToday(GameTestHelper helper) {
@@ -629,7 +629,7 @@ public class LifeStageGameTests implements FabricGameTest {
 		pip.setBaby(true);
 		ModAttachments.PARENTS.set(pip, new Families.Parents(Component.literal("Mara"), Component.literal("Tom"), "", "", false));
 		Villager bram = villager(helper, new BlockPos(9, 2, 6), "Bram", VillagerProfession.FARMER, 3);
-		LifeStages.setAdultSince(bram, today - 120);
+		LifeStages.setAdultSince(bram, today - 1200);
 		helper.assertTrue(LifeStages.stage(pip, today) == LifeStages.Stage.CHILD && LifeStages.adultSince(pip) == null && LifeStages.grownDays(pip, today) == -1
 			&& LifeStages.walk(pip) == 1f, "Pip as a child");
 		LifeStages.setAdultSince(pip, today - 500); // (a child is never an elder, whatever their record says)
@@ -644,7 +644,7 @@ public class LifeStageGameTests implements FabricGameTest {
 			VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(helper.absolutePos(HALL));
 			helper.assertTrue(chronicle(hall).stream().anyMatch(l -> l.startsWith("Pip") && l.endsWith("has grown up")), "chronicle: " + chronicle(hall));
 			helper.assertTrue(LifeStages.stage(pip, today) == LifeStages.Stage.GROWN && LifeStages.grownDays(pip, today + 3) == 3, "Pip's days");
-			helper.assertTrue(!LifeStages.isElder(pip, today + 119) && LifeStages.isElder(pip, today + 120), "Pip, 120 days on");
+			helper.assertTrue(!LifeStages.isElder(pip, today + 1199) && LifeStages.isElder(pip, today + 1200), "Pip, 1200 days on");
 			helper.assertTrue(!chronicle(hall).contains("Pip is an elder now"), "Pip noted as an elder: " + chronicle(hall));
 			// The same round, through the hall's own tick: Bram became an elder today.
 			helper.assertTrue(hall.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.LIFE && e.day() == today && e.text().getString().equals(NOW_AN_ELDER)),
@@ -669,7 +669,7 @@ public class LifeStageGameTests implements FabricGameTest {
 			VillageHallBlockEntity hall = ready(helper);
 			Moods.ENABLED = true;
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(bram, today - 200);
+			LifeStages.setAdultSince(bram, today - 1280);
 			ModAttachments.LAST_MEAL.set(bram, level.getGameTime());
 			bram.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(bed)));
 			BlockPos goal = helper.absolutePos(new BlockPos(4, 2, 16));
@@ -684,13 +684,13 @@ public class LifeStageGameTests implements FabricGameTest {
 			helper.assertTrue(!Chatter.topics(level, bram, hallPos).contains("elder"), "the talk with villagerAges off: " + Chatter.topics(level, bram, hallPos));
 			LifeStages.round(level, hallPos, List.of(bram));
 			helper.assertTrue(!chronicle(hall).contains(NOW_AN_ELDER) && !ModAttachments.ELDER_NOTED.has(bram), "the chronicle with villagerAges off: " + chronicle(hall));
-			helper.assertTrue(Long.valueOf(today - 200).equals(LifeStages.adultSince(bram)), "the day he grew up was lost");
+			helper.assertTrue(Long.valueOf(today - 1280).equals(LifeStages.adultSince(bram)), "the day he grew up was lost");
 
 			// On again: he is the elder he was all along, and the chronicle notes it now.
 			LifeStages.AGES = true;
 			bram.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 			Moods.forget();
-			helper.assertTrue(LifeStages.isElder(bram) && lore(level, hallPos, bram).contains("Elder · grown 200 days"), "on again: " + lore(level, hallPos, bram));
+			helper.assertTrue(LifeStages.isElder(bram) && lore(level, hallPos, bram).contains("Elder · grown 1280 days"), "on again: " + lore(level, hallPos, bram));
 			Walker.requestWalk(bram, goal, 0.5f, 1, 0);
 			helper.assertTrue(Math.abs(speed(bram) - 0.5f * LifeStages.ELDER_WALK) < 0.001f, "the walk, on again: " + speed(bram));
 			Moods.Mood old = Moods.work(level, bram);
@@ -711,7 +711,7 @@ public class LifeStageGameTests implements FabricGameTest {
 		Leftovers.after(helper, () -> {
 			VillageHalls.RADIUS = radius;
 			LifeStages.AGES = true;
-			LifeStages.ELDER_DAYS = 120;
+			LifeStages.ELDER_DAYS = 1200;
 			VillageNeeds.forget();
 			Moods.forget();
 		});

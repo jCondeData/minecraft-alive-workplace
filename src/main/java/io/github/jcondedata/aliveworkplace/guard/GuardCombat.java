@@ -164,6 +164,12 @@ public class GuardCombat extends Behavior<Villager> {
 			}
 			if (distance > BattleStations.range(villager, BOW_RANGE) || !villager.hasLineOfSight(foe)) {
 				if (posted) {
+					// He never climbs down after it: the nearest foe in sight and in reach instead, if there is one (B252: a raider
+					// under the walkway, hacking at the gate, stayed his target for a minute while the rest came on in plain sight)
+					LivingEntity other = gameTime % SEARCH_EVERY == 0 ? foeInReach(level, villager) : null;
+					if (other != null) {
+						target = other;
+					}
 					return;
 				}
 				// Out of range or out of sight: close in (not too close to a creeper).
@@ -316,11 +322,24 @@ public class GuardCombat extends Behavior<Villager> {
 				.min(Comparator.comparingDouble(villager::distanceToSqr))
 				.orElse(null);
 		}
-		BlockPos center = center(villager);
-		// In a raid, the whole village (or the pillagers' raid area) is the guard's to defend.
-		AABB area = VillageRaids.raidArea(level, center).orElseGet(() -> new AABB(center).inflate(Guards.RADIUS, 8, Guards.RADIUS));
-		return level.getEntitiesOfClass(LivingEntity.class, area, e -> Guards.isFoe(e, villager)).stream()
+		return level.getEntitiesOfClass(LivingEntity.class, area(level, villager), e -> Guards.isFoe(e, villager)).stream()
 			.filter(e -> villager.hasLineOfSight(e) || villager.distanceToSqr(e) < 16)
+			.min(Comparator.comparingDouble(villager::distanceToSqr))
+			.orElse(null);
+	}
+
+	/** Where {@code villager} looks for foes away from a Rally Banner: in a raid the whole village (or the pillagers' raid area), else round their post. */
+	private static AABB area(ServerLevel level, Villager villager) {
+		BlockPos center = center(villager);
+		return VillageRaids.raidArea(level, center).orElseGet(() -> new AABB(center).inflate(Guards.RADIUS, 8, Guards.RADIUS));
+	}
+
+	/** The nearest foe an archer on their battle station sees and reaches from it, or null. */
+	@Nullable
+	private static LivingEntity foeInReach(ServerLevel level, Villager villager) {
+		double range = BattleStations.range(villager, BOW_RANGE);
+		return level.getEntitiesOfClass(LivingEntity.class, area(level, villager), e -> Guards.isFoe(e, villager)
+				&& villager.distanceToSqr(e) <= range * range && villager.hasLineOfSight(e)).stream()
 			.min(Comparator.comparingDouble(villager::distanceToSqr))
 			.orElse(null);
 	}

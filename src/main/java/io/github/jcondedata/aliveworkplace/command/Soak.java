@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.MaterialLedger;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.StallWatch;
+import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
@@ -127,11 +128,59 @@ public final class Soak {
 		level.setDayTime(1000);
 		Run run = start(level, origin, RandomSource.create(23_1L), days * DAY);
 		running = run;
+		StallWatch.detail = site -> running == null ? "" : why(running, site, true);
 		int total = run.stocked().values().stream().mapToInt(Integer::intValue).sum();
 		String text = "Soak: " + run.builders().size() + " builders, " + run.builds().size() + " builds, " + total + " items in "
 			+ run.chests().size() + " chests, " + days + " days";
 		AliveWorkplace.LOG.info(text);
 		return text;
+	}
+
+	/**
+	 * B132: why a soak build isn't finished, for its stall lines and the result line: whose site it is (builder# in
+	 * the soak's order, where he stands, his bench and the site's), how many chests his bench reaches, and for each
+	 * thing missing how many of it are in reach, in the soak's chests anywhere, and in each builder's bag. With
+	 * {@code chests}, also which chests hold it.
+	 */
+	static String why(Run r, BuildSite s, boolean chests) {
+		StringBuilder out = new StringBuilder(" site bench " + (s.bench() == null ? "none" : s.bench().toShortString()));
+		for (int i = 0; i < r.builders().size(); i++) {
+			Villager v = r.builders().get(i);
+			if (v.getUUID().equals(s.builder())) {
+				out.append(", builder#").append(i).append(v.isAlive() ? "" : " (gone)").append(" at ").append(v.blockPosition().toShortString())
+					.append(" bench ").append(Builders.benchPos(v).map(BlockPos::toShortString).orElse("none"));
+			}
+		}
+		BuildPlan plan = s.plan(r.level());
+		if (s.bench() == null || plan == null) {
+			return out.toString();
+		}
+		List<BlockPos> reach = SupplyContainers.find(r.level(), s.bench(), plan.supplyExclude());
+		out.append(", ").append(reach.size()).append(" chests in reach");
+		for (var e : s.missingSorted()) {
+			StringBuilder bags = new StringBuilder();
+			for (int i = 0; i < r.builders().size(); i++) {
+				int n = ModAttachments.BUILDER_BAG.getOrCreate(r.builders().get(i)).count(e.getKey());
+				if (n > 0) {
+					bags.append(bags.isEmpty() ? "" : ",").append('#').append(i).append(' ').append(n);
+				}
+			}
+			out.append(" | ").append(e.getValue()).append(' ').append(BuiltInRegistries.ITEM.getKey(e.getKey()).getPath())
+				.append(": ").append(SupplyContainers.count(r.level(), reach, e.getKey())).append(" in reach, ")
+				.append(SupplyContainers.count(r.level(), r.chests(), e.getKey())).append(" in the soak's chests, bags ")
+				.append(bags.isEmpty() ? "none" : bags);
+			if (chests) {
+				StringBuilder where = new StringBuilder();
+				for (BlockPos c : r.chests()) {
+					long n = SupplyContainers.count(r.level(), List.of(c), e.getKey());
+					if (n > 0) {
+						where.append(where.isEmpty() ? "" : " ").append(c.toShortString().replace(", ", ",")).append('=').append(n);
+					}
+				}
+				out.append(" [").append(where).append(']');
+			}
+		}
+		return out.toString();
 	}
 
 	/** Builds finished so far and builds in the soak, or {0, 0} when none is running. */
@@ -367,7 +416,10 @@ public final class Soak {
 			if (manager.get(p.site().id()) == null) {
 				finished++;
 			} else {
-				unfinished.add(p.site().structure().getPath());
+				BuildSite site = manager.get(p.site().id());
+				// B132: what it's at and why, so a failed soak names its cause
+				unfinished.add(p.site().structure().getPath() + " (" + site.stage() + ", " + site.status() + ", " + site.placed() + " placed, "
+					+ site.skipped() + " skipped" + StallWatch.missing(site) + ";" + why(run, site, false) + ")");
 			}
 		}
 		long ticks = level.getGameTime() - run.start();
@@ -399,10 +451,16 @@ public final class Soak {
 				}
 			}
 		}
+		// B132: the builds' village hall makes the builders its residents, who eat meals (an apple, potatoes) from the
+		// chests: eaten, not lost, as the city soak counts them.
+		Map<Item, Integer> usedOrEaten = new TreeMap<>(Soak::byId);
+		usedOrEaten.putAll(MaterialLedger.used());
+		MaterialLedger.eaten().forEach((item, n) -> usedOrEaten.merge(item, n, Integer::sum));
+		int eaten = MaterialLedger.eaten().values().stream().mapToInt(Integer::intValue).sum();
 		return RESULT + " " + finished + "/" + run.builds().size() + " builds finished in " + ticks + " ticks ("
 			+ String.format(java.util.Locale.ROOT, "%.1f", ticks / (double) DAY) + " days); "
-			+ (StallWatch.stalls() - run.stallsBefore()) + " stalls; items off: " + itemsOff(run.stocked(), MaterialLedger.gained(),
-				MaterialLedger.used(), MaterialLedger.dropped(), left)
+			+ (StallWatch.stalls() - run.stallsBefore()) + " stalls; " + eaten + " meals eaten from the chests; items off: "
+			+ itemsOff(run.stocked(), MaterialLedger.gained(), usedOrEaten, MaterialLedger.dropped(), left)
 			+ (unfinished.isEmpty() ? "" : "; unfinished: " + String.join(", ", unfinished))
 			// 23.6: what villages would keep loaded with someone online (the soak's server has nobody on).
 			+ "; village chunks: " + io.github.jcondedata.aliveworkplace.work.KeepLoaded.villageChunks(level,

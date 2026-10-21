@@ -63,7 +63,11 @@ for materials he proposes nothing new and tells the owner the shopping list inst
 **Old houses (27.20, 27.21).** In zones with "renew old houses" on he finds the houses no builder built (by their
 beds and job blocks), never one with a chest, never one a player changed. One at a time, at most one every 2 days,
 he proposes to renew one in the zone's style: builders take the old house down (its blocks go to the store) and
-build the new one on the plot. The sleepers get the new beds and the worker keeps the job.
+build the new one on the plot. The sleepers get the new beds and the worker keeps the job. Two of them coming home
+through the one front door together no longer jam on the doorstep: the one further from the door steps back a moment
+and follows the other in, and the jam never counts towards vanilla giving a bed up (B255; this holds at any door, for
+any villagers walking to bed). A jobless villager walking to a workstation it picked before dusk gives that walk up at
+bedtime and goes to bed (B258).
 
 ## Switches
 
@@ -123,7 +127,7 @@ Roads and walls have their own switches: see [Roads and walls](roads-and-walls.m
 GameTests: `StewardGameTests` (12), `StewardRulesGameTests` (19), `StewardHomesRulesGameTests` (12),
 `StewardCivicRulesGameTests` (20), `StewardDeskGameTests` (7), `StewardJobsGameTests` (10),
 `StewardSafetyGameTests` (7), `StewardRoundsQaGameTests` (2), `CityPlanGameTests` (7), `CityPlanScreenGameTests` (3),
-`OldHousesGameTests` (7), `RenewalGameTests` (9).
+`OldHousesGameTests` (7), `RenewalGameTests` (9), `DoorJamGameTests` (1), `AtticBedGameTests` (1).
 
 Showcase scenes: `steward` (the morning rounds), `steward_rules`, `steward_desk`, `steward_safety`, `steward_jobs`,
 `steward_homes`, `steward_civic`, `old_houses`, `renewal`, `city_plan`, `city_plan_ground`, `city_timelapse` (a

@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -107,6 +108,8 @@ public class VillageGameTests implements FabricGameTest {
 			// ROADMAP 34.14: a cartography table would make a cartographer and a stonecutter a mason
 			java.util.Map.entry("print_shop", new House(Blocks.CARTOGRAPHY_TABLE, ModVillagers.PRINTER)),
 			java.util.Map.entry("jewellers_workshop", new House(Blocks.STONECUTTER, ModVillagers.JEWELLER)),
+			// ROADMAP 37.16: the Crafter's own block; the house comes with its Crafter, like the luxury houses
+			java.util.Map.entry("crafters_workshop", new House(ModBlocks.CRAFTERS_WORKBENCH, ModVillagers.CRAFTER)),
 			// The Pokémon jobs' houses (ROADMAP 28.15): only with Cobblemon, so Cobblemon's blocks are checked by name
 			java.util.Map.entry("pokemon_center", new House(null, ModVillagers.NURSE, ModVillagers.HEALING_MACHINE_BLOCK)),
 			java.util.Map.entry("camp_kitchen", new House(null, ModVillagers.CAMP_COOK, ModVillagers.CAMPFIRE_POT_BLOCK)),
@@ -116,7 +119,7 @@ public class VillageGameTests implements FabricGameTest {
 		// No Cobblemon here: the Pokémon houses stay out of the pools.
 		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse", "carpenters_workshop", "kitchen",
 				"flower_shop", "ranch_house", "schoolhouse", "inn_room", "mortuary", "tinkers_shop", "sifting_shed", "compost_yard", "winery", "tailors_shop",
-				"print_shop", "jewellers_workshop")),
+				"print_shop", "jewellers_workshop", "crafters_workshop")),
 			"houses without Cobblemon: " + VillageHouses.houseNames());
 		for (String style : VillageHouses.STYLES) {
 			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));
@@ -465,29 +468,29 @@ public class VillageGameTests implements FabricGameTest {
 	 * ROADMAP 34.13: the village's Winery comes with its Vintner, who takes the house's cauldron (a jobless villager
 	 * would take it as a leatherworker) and keeps the job.
 	 */
-	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '1200' '"theWinerysVintnerTakesItsVat"'
-	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 1200, batch = "theWinerysVintnerTakesItsVat")
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"theWinerysVintnerTakesItsVat"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "theWinerysVintnerTakesItsVat")
 	public void theWinerysVintnerTakesItsVat(GameTestHelper helper) {
 		theHousesWorkerTakesItsBlock(helper, "winery", ModVillagers.VINTNER, Blocks.CAULDRON);
 	}
 
 	/** ROADMAP 34.13: the village's Tailor's Shop comes with its Tailor, who takes the house's loom (a jobless villager would take it as a shepherd). */
-	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '1200' '"theTailorsShopsTailorTakesItsLoom"'
-	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 1200, batch = "theTailorsShopsTailorTakesItsLoom")
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"theTailorsShopsTailorTakesItsLoom"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "theTailorsShopsTailorTakesItsLoom")
 	public void theTailorsShopsTailorTakesItsLoom(GameTestHelper helper) {
 		theHousesWorkerTakesItsBlock(helper, "tailors_shop", ModVillagers.TAILOR, Blocks.LOOM);
 	}
 
 	/** ROADMAP 34.14: the village's Print Shop comes with its Printer, who takes the house's cartography table (a jobless villager would take it as a cartographer). */
-	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '1200' '"thePrintShopsPrinterTakesItsPress"'
-	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 1200, batch = "thePrintShopsPrinterTakesItsPress")
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"thePrintShopsPrinterTakesItsPress"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "thePrintShopsPrinterTakesItsPress")
 	public void thePrintShopsPrinterTakesItsPress(GameTestHelper helper) {
 		theHousesWorkerTakesItsBlock(helper, "print_shop", ModVillagers.PRINTER, Blocks.CARTOGRAPHY_TABLE);
 	}
 
 	/** ROADMAP 34.14: the village's Jeweller's Workshop comes with its Jeweller, who takes the house's stonecutter (a jobless villager would take it as a mason). */
-	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '1200' '"theJewellersWorkshopsJewellerTakesItsBench"'
-	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 1200, batch = "theJewellersWorkshopsJewellerTakesItsBench")
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"theJewellersWorkshopsJewellerTakesItsBench"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "theJewellersWorkshopsJewellerTakesItsBench")
 	public void theJewellersWorkshopsJewellerTakesItsBench(GameTestHelper helper) {
 		theHousesWorkerTakesItsBlock(helper, "jewellers_workshop", ModVillagers.JEWELLER, Blocks.STONECUTTER);
 	}
@@ -500,32 +503,65 @@ public class VillageGameTests implements FabricGameTest {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
-		// Two styles side by side (plains, with its gable roof, and the flat-roofed desert one): the room inside is the same in all five.
+		// B271: a free job site of this kind an earlier batch left outside its area (never cleared) is one this house's
+		// worker may take instead, walking off to it for good ('0 villagers in the plains crafters_workshop', 1 in a full run)
+		AABB bounds = helper.getBounds();
+		int reach = net.minecraft.world.entity.ai.behavior.AcquirePoi.SCAN_RANGE + (int) Math.ceil(Math.max(bounds.getXsize(), bounds.getZsize()));
+		for (BlockPos stale : level.getPoiManager().findAll(job.acquirableJobSite(), p -> !bounds.contains(net.minecraft.world.phys.Vec3.atCenterOf(p)),
+			BlockPos.containing(bounds.getCenter()), reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+			level.removeBlock(stale, false);
+		}
+		// Two styles (plains, with its gable roof, and the flat-roofed desert one): the room inside is the same in all five.
+		// B271: one after the other, the second placed once the first's worker has his block. Side by side at once, either
+		// worker may take either house's block (both free, both in reach), which is fine in a village but not this test's
+		// question; and each house's worker is followed by himself, not counted in a box he may step out of.
 		List<String> styles = List.of("plains", "desert");
 		List<BlockPos> blocks = new java.util.ArrayList<>();
-		List<net.minecraft.world.phys.AABB> areas = new java.util.ArrayList<>();
+		List<Villager> workers = new java.util.ArrayList<>();
+		var sequence = helper.startSequence();
 		for (int i = 0; i < styles.size(); i++) {
-			var id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("village/" + styles.get(i) + "_" + house);
-			StructureTemplate template = level.getStructureManager().get(id).orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("missing " + id));
-			BlockPos origin = helper.absolutePos(new BlockPos(1 + 11 * i, 1, 4));
-			template.placeInWorld(level, origin, origin, new StructurePlaceSettings().setFinalizeEntities(true)
-				.addProcessor(net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor.STRUCTURE_AND_AIR),
-				net.minecraft.util.RandomSource.create(1), 2);
-			blocks.add(template.filterBlocks(origin, new StructurePlaceSettings(), block).get(0).pos());
-			areas.add(net.minecraft.world.phys.AABB.of(template.getBoundingBox(new StructurePlaceSettings(), origin)).inflate(1));
+			int n = i;
+			String name = "the " + styles.get(i) + " " + house;
+			sequence.thenExecute(() -> {
+				var id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("village/" + styles.get(n) + "_" + house);
+				StructureTemplate template = level.getStructureManager().get(id).orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("missing " + id));
+				BlockPos origin = helper.absolutePos(new BlockPos(1 + 11 * n, 1, 4));
+				AABB area = AABB.of(template.getBoundingBox(new StructurePlaceSettings(), origin)).inflate(1);
+				java.util.Set<Villager> before = new java.util.HashSet<>(level.getEntitiesOfClass(Villager.class, area));
+				template.placeInWorld(level, origin, origin, new StructurePlaceSettings().setFinalizeEntities(true)
+					.addProcessor(net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor.STRUCTURE_AND_AIR),
+					net.minecraft.util.RandomSource.create(1), 2);
+				blocks.add(template.filterBlocks(origin, new StructurePlaceSettings(), block).get(0).pos());
+				List<Villager> placed = level.getEntitiesOfClass(Villager.class, area, v -> !before.contains(v));
+				helper.assertTrue(placed.size() == 1, placed.size() + " villagers came with " + name);
+				workers.add(placed.get(0));
+			});
+			sequence.thenWaitUntil(() -> {
+				for (int k = 0; k <= n; k++) {
+					worksAt(helper, "the " + styles.get(k) + " " + house, workers.get(k), job, blocks.get(k), block);
+				}
+			});
 		}
-		helper.succeedWhen(() -> {
-			for (int i = 0; i < styles.size(); i++) {
-				List<Villager> villagers = level.getEntitiesOfClass(Villager.class, areas.get(i));
-				helper.assertTrue(villagers.size() == 1, villagers.size() + " villagers in the " + styles.get(i) + " " + house);
-				Villager worker = villagers.get(0);
-				helper.assertTrue(worker.getVillagerData().getProfession() == job, "the " + styles.get(i) + " " + house + "'s villager is a " + worker.getVillagerData().getProfession());
-				BlockPos at = blocks.get(i);
-				helper.assertTrue(worker.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
-					.map(g -> g.pos().equals(at)).orElse(false), "the " + styles.get(i) + " " + house + "'s villager works at "
-					+ worker.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE) + ", not its " + block.getName().getString() + " at " + at);
-			}
-		});
+		sequence.thenSucceed();
+	}
+
+	/** {@code worker} (the villager {@code house} came with) is alive, still in {@code job}, and has its {@code block} at {@code at}. */
+	private static void worksAt(GameTestHelper helper, String house, Villager worker, VillagerProfession job, BlockPos at, net.minecraft.world.level.block.Block block) {
+		String where = String.format("at %.1f %.1f %.1f", helper.relativeVec(worker.position()).x, helper.relativeVec(worker.position()).y,
+			helper.relativeVec(worker.position()).z);
+		helper.assertTrue(worker.isAlive(), house + "'s villager is gone (" + worker.getRemovalReason() + ") " + where);
+		helper.assertTrue(worker.getVillagerData().getProfession() == job, house + "'s villager is a " + worker.getVillagerData().getProfession());
+		var site = worker.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE);
+		helper.assertTrue(site.map(g -> g.pos().equals(at)).orElse(false), house + "'s villager works at "
+			+ site.map(g -> helper.relativePos(g.pos()).toShortString()).orElse("nothing") + ", not its " + block.getName().getString()
+			+ " at " + helper.relativePos(at).toShortString() + "; he's " + where);
+	}
+
+	/** ROADMAP 37.16: the village's Crafter's Workshop comes with its Crafter, who takes the house's Crafter's Workbench. */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '2400' '"theCraftersWorkshopsCrafterTakesItsBench"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 2400, batch = "theCraftersWorkshopsCrafterTakesItsBench")
+	public void theCraftersWorkshopsCrafterTakesItsBench(GameTestHelper helper) {
+		theHousesWorkerTakesItsBlock(helper, "crafters_workshop", ModVillagers.CRAFTER, ModBlocks.CRAFTERS_WORKBENCH);
 	}
 
 	/**

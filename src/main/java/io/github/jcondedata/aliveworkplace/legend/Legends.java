@@ -197,6 +197,7 @@ public final class Legends implements ResourceManagerReloadListener {
 		}
 		ModAttachments.LEGEND.set(villager, LegendData.settled(legend.id(), "", hall, level.getDayTime() / 24000L, way));
 		LegendPowers.seen(villager);
+		LegendPowers.forget(); // B269: a guest already seen settles: their powers work at once, not when the list is next made
 		LegendLook.update(villager);
 		LegendRecord.get(level).settled(legend.id(), villager.getUUID(), level.dimension(), hall, legend.rarity(), villager.getName().getString(),
 			io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level));

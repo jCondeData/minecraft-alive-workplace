@@ -192,7 +192,7 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 		FurnishingTable.Piece own = FurnishingTable.of(mod).map(t -> t.pieces().get(spot.kind())).orElse(null);
 		FurnishingTable.Piece piece = own == null
 			? new FurnishingTable.Piece(List.of(id), "front", Map.of(), "oak", "white", List.of(new FurnishingTable.FootCell(BlockPos.ZERO, Map.of())))
-			: new FurnishingTable.Piece(List.of(id), own.facing(), own.states(), own.wood(), own.colour(), own.footprint());
+			: new FurnishingTable.Piece(List.of(id), own.facing(), own.states(), own.wood(), own.colour(), own.footprint(), own.needs());
 		Map<BlockPos, BlockState> cells = piece.resolve(spot);
 		return cells == null ? null : new Placed(spot.pos(), spot.kind(), mod, Collections.unmodifiableMap(cells));
 	}

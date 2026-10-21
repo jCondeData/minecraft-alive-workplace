@@ -103,6 +103,10 @@ public class FurnishedWorkplacesCompatTests implements FabricGameTest {
 				int desks = 0;
 				for (int i = 0; i < spots.size(); i++) {
 					FurnitureChoice.Placed placed = choice.spots().get(i);
+					if (placed == null && FurnishedHomesCompatTests.standing(spots.get(i), "beautify").equals("minecraft")
+						&& spots.get(i).kind() == Kind.PICTURE) {
+						continue; // B260: a picture on a wall stays a banner (Beautify's frame stands on a table)
+					}
 					helper.assertTrue(placed != null, name + ": " + spots.get(i).kind() + " at " + spots.get(i).pos().toShortString() + " stayed vanilla");
 					if (spots.get(i).kind() == Kind.DESK) {
 						desks++;
@@ -149,7 +153,7 @@ public class FurnishedWorkplacesCompatTests implements FabricGameTest {
 			FurnitureSpot spot = spots.get(i);
 			FurnitureChoice.Placed placed = choice.spots().get(i);
 			String mod = placed == null ? "minecraft" : placed.mod();
-			String want = expected().getOrDefault(spot.kind(), "minecraft");
+			String want = FurnishedHomesCompatTests.standing(spot, expected().getOrDefault(spot.kind(), "minecraft"));
 			if (!mod.equals(want)) {
 				wrong.put(spot.kind() + "@" + spot.pos().toShortString(), mod + " (expected " + want + ")");
 			}

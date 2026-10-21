@@ -152,6 +152,8 @@ public class VillageBannerGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "villageBannerHall")
 	public void aPlayerSetsTheColoursAtTheHallAndPlacesTheBanner(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B264: a protected hall an earlier batch left nearby made this player a stranger there, who gets the price board
+		Leftovers.halls(helper);
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);

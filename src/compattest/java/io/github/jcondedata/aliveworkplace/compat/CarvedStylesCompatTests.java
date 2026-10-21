@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.furnish.Furnishings;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
+import io.github.jcondedata.aliveworkplace.work.Stations;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,11 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 			BlockState hanging = BlueprintStyles.apply(spruce, Blocks.LANTERN.defaultBlockState().setValue(net.minecraft.world.level.block.LanternBlock.HANGING, true));
 			helper.assertTrue(hanging.getValues().entrySet().stream().anyMatch(p -> p.getKey().getName().equals("shape") && p.getValue().toString().equals("hanging")),
 				"a hanging lantern isn't hanging in spruce: " + hanging);
+			// Only the hanging flag hangs it: a standing lantern that is waterlogged (another true flag) still stands.
+			BlockState standing = BlueprintStyles.apply(spruce, Blocks.LANTERN.defaultBlockState()
+				.setValue(net.minecraft.world.level.block.LanternBlock.WATERLOGGED, true));
+			helper.assertTrue(standing.getValues().entrySet().stream().noneMatch(p -> p.getKey().getName().equals("shape") && p.getValue().toString().equals("hanging")),
+				"a standing waterlogged lantern hangs in spruce: " + standing);
 			Map<Block, String> grandWants = Map.of(Blocks.SPRUCE_PLANKS, "rechiseled:dark_oak_planks_flooring", Blocks.BIRCH_PLANKS, "rechiseled:andesite_squares",
 				Blocks.WHITE_TERRACOTTA, "rechiseled:andesite_squares", Blocks.POLISHED_ANDESITE, "rechiseled:andesite_tiles",
 				Blocks.COBBLESTONE, "minecraft:stone_bricks");
@@ -145,7 +151,8 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 	/**
 	 * A builder builds the Library in the Spruce style with Carved Wood (and the pack's furniture mods): every block is
 	 * right, nothing skipped, its shelves are Carved Wood's spruce bookshelves (no vanilla one left), its lectern Carved
-	 * Wood's, and a villager without a job walks up to that lectern and becomes the Librarian.
+	 * Wood's (a Librarian's job site), and a villager without a job walks up to that lectern and takes one of its jobs
+	 * (36.17: a Librarian, a Scholar or a Teacher, drawn at random).
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '32000' '"carved_spruce_library"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 32000, batch = "carved_spruce_library")
@@ -192,7 +199,13 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 				throw new GameTestAssertException("a villager without a job is in the Library");
 			}
 			Villager v = librarian.get();
-			helper.assertTrue(v.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN,
+			// 36.17: the lectern is shared, so its villager takes one of the lectern's jobs at random (a Librarian, a
+			// Scholar or a Teacher, B266: the Scholar was missing here), read from Stations so a new lectern job counts too
+			List<VillagerProfession> lecternJobs = Stations.ALL.stream().filter(s -> s.poi().test(level.registryAccess()
+					.registryOrThrow(net.minecraft.core.registries.Registries.POINT_OF_INTEREST_TYPE).getHolderOrThrow(PoiTypes.LIBRARIAN)))
+				.findFirst().orElseThrow().jobs().stream().map(j -> j.profession().get()).toList();
+			helper.assertTrue(lecternJobs.contains(VillagerProfession.LIBRARIAN), "the lectern's jobs: " + lecternJobs);
+			helper.assertTrue(lecternJobs.contains(v.getVillagerData().getProfession()),
 				"the villager is " + v.getVillagerData().getProfession() + " (job site " + v.getBrain().getMemory(MemoryModuleType.JOB_SITE) + ")"
 					+ diagnose(helper, v, lectern));
 			helper.assertTrue(v.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).map(lectern::equals).orElse(false),

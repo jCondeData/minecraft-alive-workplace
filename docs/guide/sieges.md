@@ -52,7 +52,8 @@ on any wall, yours too, but never against a gate. When it's over every ladder is
 When a siege begins, or at dusk on a day the village was warned, the guards go to their stations instead of the bell:
 
 - **Archers** climb to the tops of finished Wall Towers and Lookout Towers and the walkways of the Gatehouse, Stone Wall
-  and Palisade, on the raiders' side. From a station they shoot 24 blocks (16 from the ground) and hit a quarter harder
+  and Palisade, on the raiders' side, each to the spot with the best view of the ground in front of the gate (in a gap
+  of the battlements, not behind a merlon). From a station they shoot 24 blocks (16 from the ground) and hit a quarter harder
   at foes 3 or more blocks below. They never climb down to chase.
 - **Knights** stand 3 blocks inside the gate the rams go for, **medics** 3 blocks behind them.
 - Guards with only a sword, and anyone who finds no free station, answer the bell as before.

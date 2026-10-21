@@ -72,9 +72,10 @@ public class BattleStationGameTests implements FabricGameTest {
 	private static final BlockPos TOWER = new BlockPos(5, 2, 13);
 	/**
 	 * The station an archer takes with the raiders to the south or east: the tower's own door (7, 3, 13) is the breach
-	 * then, its outside the south, and this is the station nearest that side.
+	 * then, its outside the south, and this is the station on that side with the most of the ground in sight: behind
+	 * the crenel at (6, 9, 17), not the merlon at (7, 9, 17) right beside it (B252).
 	 */
-	private static final BlockPos STATION = new BlockPos(7, 9, 16);
+	private static final BlockPos STATION = new BlockPos(6, 9, 16);
 	/** A spot in the village (where a builder's bench could be). */
 	private static final BlockPos POST = new BlockPos(11, 2, 22);
 	/** The Palisade Gate's corner: its fence gates at x 15 to 17, z 26; the outside is to the south. */
@@ -89,13 +90,18 @@ public class BattleStationGameTests implements FabricGameTest {
 	}
 
 	private static Village village(GameTestHelper helper, boolean gate) {
+		return village(helper, gate, true, HALL);
+	}
+
+	/** The village: its hall at {@code hallAt}, with the Wall Tower if {@code tower} and the Palisade Gate if {@code gate}. */
+	private static Village village(GameTestHelper helper, boolean gate, boolean tower, BlockPos hallAt) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		int radius = VillageHalls.RADIUS;
 		long time = level.getDayTime();
 		VillageHalls.RADIUS = 24;
 		helper.setDayTime(6000);
-		BlockPos hall = helper.absolutePos(HALL);
+		BlockPos hall = helper.absolutePos(hallAt);
 		Culture culture = Culture.read(BESIEGERS, com.google.gson.JsonParser.parseString("{\"where\": {\"min_villagers\": 100000}, \"roster\": ["
 			+ "{\"entity\": \"minecraft:husk\", \"share\": 100, \"role\": \"melee\"}], \"tactics\": [\"ram_gates\"]}").getAsJsonObject());
 		Map<ResourceLocation, Culture> loaded = new java.util.LinkedHashMap<>();
@@ -117,8 +123,10 @@ public class BattleStationGameTests implements FabricGameTest {
 			level.setDayTime(time);
 			new WorkplaceConfig().apply();
 		});
-		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
-		finished(helper, StarterBlueprints.WALL_TOWER, TOWER);
+		helper.setBlock(hallAt, ModBlocks.VILLAGE_HALL);
+		if (tower) {
+			finished(helper, StarterBlueprints.WALL_TOWER, TOWER);
+		}
 		if (gate) {
 			finished(helper, StarterBlueprints.PALISADE_GATE, GATE);
 		}
@@ -179,7 +187,7 @@ public class BattleStationGameTests implements FabricGameTest {
 		ServerLevel level = village.level();
 		int reads = BattleStations.reads;
 		Villager archer = guard(helper, new ItemStack(Items.BOW), 12, 21);
-		Mob foe = raider(helper, 29.5, 16.5);
+		Mob foe = raider(helper, 28.5, 16.5);
 		BlockPos station = helper.absolutePos(STATION);
 		List<BlockPos> stations = BattleStations.stations(level, village.hall());
 		helper.assertTrue(stations.size() == 7 && stations.contains(station) && stations.stream().allMatch(s -> s.getY() == station.getY()),
@@ -265,6 +273,111 @@ public class BattleStationGameTests implements FabricGameTest {
 				}
 			} else if (since > 2) {
 				helper.fail("no station " + (level.getGameTime() - began[0]) + " ticks after the siege began; he is " + archer.distanceTo(foe) + " blocks from the foe");
+			}
+		});
+	}
+
+	/**
+	 * B252: the foe an archer on his station is shooting at goes out of his sight (as a raider hacking at a gate does,
+	 * under the walkway) while another comes on in plain sight: he turns to that one and hits it. Before, he kept his
+	 * eyes on the hidden one for a minute (the fight's longest), and on the showcase the archers on a Gatehouse and a
+	 * Wall Tower stood over the siege without loosing an arrow.
+	 */
+	//$ gametest_ticks_batch AREA '900' '"stationHidden"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "stationHidden")
+	public void anArcherTurnsFromAHiddenFoeToOneInSight(GameTestHelper helper) {
+		Village village = village(helper, false);
+		ServerLevel level = village.level();
+		Villager archer = guard(helper, new ItemStack(Items.BOW), 12, 21);
+		Mob hidden = raider(helper, 28.5, 16.5);
+		VillageRaids.track(level, village.hall(), village.culture(), List.of(hidden));
+		village.siege(helper);
+		Mob[] seen = {null};
+		long[] since = {-1};
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			if (seen[0] == null) {
+				if (BattleStations.onStation(archer) && io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(archer) == hidden) {
+					// Walled in where it stands: out of his sight from now on
+					for (int x = 27; x <= 29; x++) {
+						for (int z = 15; z <= 17; z++) {
+							helper.setBlock(new BlockPos(x, 4, z), Blocks.STONE);
+							if (x != 28 || z != 16) {
+								helper.setBlock(new BlockPos(x, 2, z), Blocks.STONE);
+								helper.setBlock(new BlockPos(x, 3, z), Blocks.STONE);
+							}
+						}
+					}
+					helper.assertFalse(archer.hasLineOfSight(hidden), "the walled-in raider is still in his sight");
+					seen[0] = raider(helper, 6.5, 28.5); // out in front of the tower, below his crenel
+					since[0] = tick;
+				} else if (tick > 500) {
+					helper.fail("the archer never stood on his station shooting at the first raider: at " + archer.position() + ", his place "
+						+ BattleStations.post(archer) + ", his foe " + io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(archer));
+				}
+				return;
+			}
+			Mob open = seen[0];
+			if (tick == since[0] + 2) {
+				double off = archer.distanceTo(open);
+				helper.assertTrue(archer.hasLineOfSight(open) && off < BattleStations.RANGE, "the second raider is " + off + " blocks off, in sight " + archer.hasLineOfSight(open));
+			}
+			if (open.getHealth() < open.getMaxHealth()) {
+				helper.assertTrue(BattleStations.onStation(archer), "he came down off his station to hit it: at " + archer.position());
+				helper.succeed();
+			} else if (tick > since[0] + 300) {
+				helper.fail("the archer on his station never hit the raider in plain sight " + archer.distanceTo(open) + " blocks off; his foe is "
+					+ (io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(archer) == hidden ? "the walled-in one" : io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(archer)));
+			}
+		});
+	}
+
+	/**
+	 * B252: a village behind a Gatehouse (its gate at z 10, the outside the south) and a raider coming at the gate,
+	 * 12 blocks out from its face. The archer takes a station on the walkway over the gate from which he sees the ground
+	 * in front of it (a crenel, not right behind a merlon: from there nothing below is in sight), and from it he hits
+	 * the raider. Before, he stood behind the merlon nearest the gate and never loosed an arrow.
+	 */
+	//$ gametest_ticks_batch AREA '900' '"stationView"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "stationView")
+	public void anArcherOverTheGateSeesAndHitsARaiderInFrontOfIt(GameTestHelper helper) {
+		Village village = village(helper, false, false, new BlockPos(13, 2, 2));
+		ServerLevel level = village.level();
+		BlueprintData.Placement gatehouse = finished(helper, StarterBlueprints.GATEHOUSE, new BlockPos(8, 2, 8));
+		Villager archer = guard(helper, new ItemStack(Items.BOW), 10, 3);
+		Mob foe = raider(helper, 13.5, 24.5); // 12 blocks out from the gate's face: farther than he shoots at from the ground on his way up
+		VillageRaids.track(level, village.hall(), village.culture(), List.of(foe));
+		ThreatData.Siege siege = village.siege(helper);
+		helper.assertTrue(siege.breach != null && siege.out == net.minecraft.core.Direction.SOUTH, "the breach is the Gatehouse's gate, its outside the south: "
+			+ siege.breach + ", " + siege.out);
+		long[] on = {-1};
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			if (on[0] < 0) {
+				helper.assertTrue(arrows(helper, archer) == 0 && foe.getHealth() == foe.getMaxHealth(), "he shot at the raider from the ground, " + archer.distanceTo(foe) + " blocks off");
+				if (BattleStations.onStation(archer)) {
+					on[0] = tick;
+					BlockPos station = BattleStations.post(archer).orElseThrow();
+					BlockPos o = gatehouse.origin();
+					helper.assertTrue(station.getX() >= o.getX() && station.getX() <= o.getX() + 10 && station.getZ() >= o.getZ() && station.getZ() <= o.getZ() + 4
+						&& station.getY() == o.getY() + 6, "his station " + station + " isn't on the Gatehouse's walkway (origin " + o + ")");
+				} else if (tick > 450) {
+					helper.fail("the archer isn't on the Gatehouse within 450 ticks: he is at " + archer.position() + ", his place " + BattleStations.post(archer));
+				}
+				return;
+			}
+			if (tick == on[0] + 5) {
+				BlockPos station = BattleStations.post(archer).orElseThrow();
+				helper.assertTrue(archer.hasLineOfSight(foe), "from his station " + station + " the raider in front of the gate is out of his sight (it sees "
+					+ BattleStations.view(level, siege, station, false) + " of the ground's spots; he stands at " + helper.relativeVec(archer.position()) + ", the raider at " + helper.relativeVec(foe.position()) + ")");
+			}
+			if (foe.getHealth() < foe.getMaxHealth()) {
+				helper.assertTrue(BattleStations.onStation(archer), "he came down off his station to hit it: at " + archer.position());
+				helper.succeed();
+			} else if (tick > on[0] + 300) {
+				helper.fail("from his station " + BattleStations.post(archer).orElse(null) + " the archer never hit the raider " + archer.distanceTo(foe)
+					+ " blocks off in front of the gate; in sight: " + archer.hasLineOfSight(foe) + "; he is at " + archer.position() + ", the siege " + Sieges.siege(level, village.hall()).map(x -> x.over ? "over" : "on").orElse("gone")
+					+ ", his foe " + io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(archer) + ", arrows " + arrows(helper, archer));
 			}
 		});
 	}

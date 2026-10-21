@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252
 
 ## What a player sees
 
@@ -53,7 +53,12 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176
   the rams go for, medics 3 blocks behind them. Guards with only a sword, and anyone who finds no free station, answer
   the bell as before. Their card says "going to their battle station" and "at their battle station".
 - **From a station an archer shoots 24 blocks** (16 from the ground) and does a quarter more damage to a foe 3 or
-  more blocks below. On a station he never climbs down to chase.
+  more blocks below. On a station he never climbs down to chase: when the raider he is shooting at goes out of his
+  sight (under the walkway, hacking at the gate), he turns to the nearest raider he can see and reach (B252).
+- **An archer takes the station with a view** (B252): on the same build, the spot from which he sees the most of
+  the ground in front of the gate, so he stands in a gap of the battlements (a crenel), not behind a merlon, where
+  he saw nothing below. The ground right at the foot of a wall stays hidden from any walkway (only murder holes see
+  it, as Gatehouse II's do), so archers shoot at raiders coming at the gate, and at those who get through.
 - **The morning after**, at the dawn the gates open, the chronicle has a siege report (a new kind with the iron bars
   icon): "The siege: 9 raiders came and 7 fell, 5 to the guards and 2 to players. The gate held. Hero of the night:
   Brannoc, with 3 kills."
@@ -123,15 +128,20 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176
   - When a station is taken it is checked against the world: its floor must stand and two blocks be free. A station
     built over or with its floor gone is skipped, and a guard on it gets another.
   - An archer's choice among the free stations within 24 blocks of his Guard Post: the breach's side of the village
-    first, then the build with the fewest archers, then the highest, then the nearest the breach (with no breach, the
-    farthest out from the hall).
+    first, then the build with the fewest archers, then the one with the most of the ground in front of the breach in
+    sight (`BattleStations.view`: of the spots 2 to 16 blocks out from the breach along its outside, on the ground near
+    the gate's height, how many have a raider's eyes in his sight and within 24 blocks, from his eyes over the station;
+    ahead of a warned attack, out from the station; read once a siege and breach), then the highest, then the nearest
+    the breach (with no breach, the farthest out from the hall).
   - **The climb**: villagers cannot path up a ladder. A guard walks as near his station as his path gets; once he
     is within 3.5 blocks of it and below it he is set on it, with a ladder's step sound.
   - On the way an archer fights only what comes within 8 blocks. From a station his bow's arrow flies faster and
     flatter so that it carries the range; its damage is scaled back so only the height rule adds to it.
   - A knight or medic fights only a foe within 6 blocks of his spot, so the gate's defenders wait for what comes
     through instead of pressing against the bars.
-  - An archer on a station is kept on it: any other walk of a villager's day is stopped while he stands there.
+  - An archer on a station is kept on it: any other walk of a villager's day is stopped while he stands there, and
+    one who drifts more than 0.2 blocks off its middle steps back (half a block aside, a crenel's archer is behind the
+    merlon beside it).
   - A guard is an archer, knight or medic by what is in the off hand (bow or crossbow, shield, healing potion), as
     everywhere else. A guard whose kind changes gives his place up.
   - Nothing of it is saved: after a restart the stations are read and handed out again.
@@ -245,7 +255,10 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 ## Known limits
 
 - Battle stations (32.6): a station only counts if the guard can get within 3.5 blocks of its foot. Merlons can
-  hide a foe from an archer standing behind one; he shoots when he has a line of sight. A blueprint whose walkway is
+  hide a foe from an archer standing behind one; he shoots when he has a line of sight. Stations are chosen without
+  regard to their view: on the Gatehouse the station picked is behind a merlon, and from the Gatehouse's walkway and
+  the Wall Tower's top a raider at the gate, or within about 12 blocks of it on the ground, is out of sight (B252).
+  A blueprint whose walkway is
   made of slabs' lower halves or stairs is not read as stations.
 
 - Ladders (32.5): anything at least two blocks high between a climber and the hall counts as a wall, so a house that

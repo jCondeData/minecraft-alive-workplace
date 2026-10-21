@@ -30,6 +30,11 @@ public final class StallWatch {
 	}
 
 	private static final Map<UUID, Watch> WATCHES = new HashMap<>();
+	/**
+	 * B132: what a running soak ({@code /workplace soak}, {@code /workplace city}) adds to a stall line: whose site it is,
+	 * where its materials are. Nothing outside a soak.
+	 */
+	public static java.util.function.Function<BuildSite, String> detail = site -> "";
 	private static int stalls;
 
 	private StallWatch() {
@@ -95,9 +100,9 @@ public final class StallWatch {
 		if (!w.logged() && now - w.since() >= STALL_TICKS) {
 			stalls++;
 			WATCHES.put(site.id(), new Watch(mark, w.since(), true));
-			AliveWorkplace.LOG.info("{} {} s: {} at {} (stage {}, status {}, {} placed, {} skipped, {} kinds missing{}) [stall #{}]",
+			AliveWorkplace.LOG.info("{} {} s: {} at {} (stage {}, status {}, {} placed, {} skipped, {} kinds missing{}) [stall #{}]{}",
 					PREFIX, (now - w.since()) / 20, site.structure(), site.placement().origin().toShortString(),
-					site.stage(), site.status(), site.placed(), site.skipped(), site.missing().size(), missing(site), stalls);
+					site.stage(), site.status(), site.placed(), site.skipped(), site.missing().size(), missing(site), stalls, detail.apply(site));
 		}
 	}
 }

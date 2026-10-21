@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.store;
 
 import io.github.jcondedata.aliveworkplace.Expansions;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.platform.ItemStores;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import java.util.ArrayDeque;
@@ -14,10 +15,15 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -31,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Sophisticated Storage (37.9) goes by block ids only, never the mod's classes: a {@code sophisticatedstorage:controller}
  * links the mod's chests, barrels, limited barrels and shulker boxes that touch it, or touch one it links, or touch a
- * {@code storage_link} it links, within its reach (15 blocks each way, the mod's own). The controller exposes their
+ * {@code storage_link} it links (one linked to it with the mod's Storage Tool), within its reach (15 blocks each way, the mod's own). The controller exposes their
  * contents through Fabric's transfer API (checked in the mod's jar: it registers {@code ItemStorage.SIDED} for its
  * block entity), so the Storehouse reads and fills it like one big chest.
  *
@@ -89,7 +95,9 @@ public final class StorageNetworks {
 
 	/**
 	 * The storage blocks {@code controller} links: walking from it through touching storage blocks and storage links,
-	 * within its reach, loaded blocks only. Empty if {@code controller} isn't one.
+	 * within its reach, loaded blocks only, and from every storage link linked to it with the Storage Tool within that
+	 * reach, touching its network or not (the mod's controller keeps those links whatever lies between, B262). Empty if
+	 * {@code controller} isn't one.
 	 */
 	public static Set<BlockPos> linkedTo(ServerLevel level, BlockPos controller) {
 		Set<BlockPos> storage = new LinkedHashSet<>();
@@ -100,6 +108,11 @@ public final class StorageNetworks {
 		Deque<BlockPos> open = new ArrayDeque<>();
 		seen.add(controller);
 		open.add(controller);
+		for (BlockPos link : toolLinkedLinks(level, controller)) {
+			if (seen.add(link)) {
+				open.add(link);
+			}
+		}
 		while (!open.isEmpty()) {
 			BlockPos at = open.poll();
 			for (Direction d : Direction.values()) {
@@ -113,12 +126,58 @@ public final class StorageNetworks {
 				if (isSophisticatedStorage(state)) {
 					storage.add(next.immutable());
 					open.add(next.immutable());
-				} else if (isLink(state)) {
+				} else if (isLink(state) && linkedToController(level, next, controller)) {
 					open.add(next.immutable());
 				}
 			}
 		}
 		return storage;
+	}
+
+	/**
+	 * The storage links within {@code controller}'s reach, in loaded chunks, that are linked to it with the Storage Tool
+	 * (B262): a link far from the network is still the controller's, and the storage behind it with it.
+	 */
+	private static List<BlockPos> toolLinkedLinks(ServerLevel level, BlockPos controller) {
+		List<BlockPos> links = new ArrayList<>();
+		int minCx = SectionPos.blockToSectionCoord(controller.getX() - CONTROLLER_REACH);
+		int maxCx = SectionPos.blockToSectionCoord(controller.getX() + CONTROLLER_REACH);
+		int minCz = SectionPos.blockToSectionCoord(controller.getZ() - CONTROLLER_REACH);
+		int maxCz = SectionPos.blockToSectionCoord(controller.getZ() + CONTROLLER_REACH);
+		for (int cx = minCx; cx <= maxCx; cx++) {
+			for (int cz = minCz; cz <= maxCz; cz++) {
+				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz); // loaded only, without waiting
+				if (chunk == null) {
+					continue;
+				}
+				for (BlockEntity be : chunk.getBlockEntities().values()) {
+					BlockPos p = be.getBlockPos();
+					if (Math.abs(p.getX() - controller.getX()) > CONTROLLER_REACH || Math.abs(p.getY() - controller.getY()) > CONTROLLER_REACH
+						|| Math.abs(p.getZ() - controller.getZ()) > CONTROLLER_REACH || !isLink(be.getBlockState())) {
+						continue;
+					}
+					if (linkedToController(level, p, controller)) {
+						links.add(p.immutable());
+					}
+				}
+			}
+		}
+		return links;
+	}
+
+	/**
+	 * True if the storage link at {@code link} is linked to {@code controller}. The mod links a link only with its
+	 * Storage Tool and saves the controller's position on the link ({@code controllerPos}, read from its 1.3.7.9 jar's
+	 * {@code IControllerBoundable}); a link placed without the tool, or built, has none, and the controller reaches
+	 * nothing through it, so the storage behind it stays a store of its own (B257).
+	 */
+	private static boolean linkedToController(ServerLevel level, BlockPos link, BlockPos controller) {
+		BlockEntity be = level.getBlockEntity(link);
+		if (be == null) {
+			return false;
+		}
+		CompoundTag tag = be.saveWithoutMetadata(level.registryAccess());
+		return Nbt.has(tag, "controllerPos", Tag.TAG_ANY_NUMERIC) && Nbt.getLong(tag, "controllerPos") == controller.asLong();
 	}
 
 	/** What the Storehouse's controllers stand for: the store list with their linked blocks folded in, and how many. */
@@ -157,8 +216,9 @@ public final class StorageNetworks {
 	 * placing it would (the mod links on placement, through the block's own {@code setPlacedBy}); a storage block it adds
 	 * joins the network the same way, through its own {@code setPlacedBy} (the mod's storage asks a touching controller,
 	 * or the controller of a touching storage block, to add it: the controller's own search stops at storage it already
-	 * links, so looking again from the controller misses a block added beyond one, B238); and a link it adds is linked by
-	 * its controller looking again. With the switch off, nothing.
+	 * links, so looking again from the controller misses a block added beyond one, B238). A storage link it adds stays
+	 * unlinked, as one a player places without the mod's Storage Tool: only the tool links a link, to the controller the
+	 * player picks, so the storage behind it stays a store of its own ({@link #linkedTo}, B257). With the switch off, nothing.
 	 */
 	public static void afterBuilt(ServerLevel level, BlockPos pos, BlockState state) {
 		if (!ENABLED || !BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace().equals(SOPHISTICATED)) {
@@ -168,14 +228,12 @@ public final class StorageNetworks {
 			relink(level, pos);
 			return;
 		}
-		if (!isSophisticatedStorage(state) && !isLink(state)) {
+		if (!isSophisticatedStorage(state)) {
 			return;
 		}
-		if (isSophisticatedStorage(state)) {
-			// As a player's placing it: the freshly built block reads the plain item (its default size, no wood or
-			// colours, no contents), then joins the controller beside it or beside a storage block it touches.
-			state.getBlock().setPlacedBy(level, pos, state, null, new ItemStack(state.getBlock().asItem()));
-		}
+		// As a player's placing it: the freshly built block reads the plain item (its default size, no wood or
+		// colours, no contents), then joins the controller beside it or beside a storage block it touches.
+		state.getBlock().setPlacedBy(level, pos, state, null, new ItemStack(state.getBlock().asItem()));
 		// The controllers whose network this block joins: walk out from it the way a controller walks.
 		Set<BlockPos> seen = new HashSet<>();
 		Deque<BlockPos> open = new ArrayDeque<>();
@@ -198,7 +256,7 @@ public final class StorageNetworks {
 			}
 		}
 		for (BlockPos controller : controllers) {
-			if (linkedTo(level, controller).contains(pos) || isLink(state)) {
+			if (linkedTo(level, controller).contains(pos)) {
 				relink(level, controller);
 			}
 		}

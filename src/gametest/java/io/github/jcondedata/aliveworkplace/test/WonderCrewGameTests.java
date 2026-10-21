@@ -205,7 +205,9 @@ public class WonderCrewGameTests implements FabricGameTest {
 						if (!level.getBlockState(s.pos()).isAir() && up.add(s.pos())) {
 							BlockPos below = s.pos().below();
 							helper.assertTrue(!plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced(),
-								"a structure block went up at " + s.pos().toShortString() + " with nothing under it (" + level.getBlockState(below) + ")");
+								"a structure block went up at " + s.pos().toShortString() + " with nothing under it (" + level.getBlockState(below) + ", given up "
+								+ part.gaveUp(below) + ", in it " + level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(below)).stream()
+								.map(e -> e.getUUID().equals(part.builder()) ? "the lead" : "a member").toList() + ", lead retrying " + part.isRetrying() + ")"); // B254
 						}
 					}
 				}
@@ -559,14 +561,105 @@ public class WonderCrewGameTests implements FabricGameTest {
 	//$ gametest_ticks_batch TALL '24000' '"crewGaveUpUnder"'
 	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewGaveUpUnder")
 	public void aBlockGivenUpMidWallDoesNotStallTheCrew(GameTestHelper helper) {
-		gaveUpMidWall(helper, false);
+		gaveUpMidWall(helper, false, false);
 	}
 
 	/** B139: the same, saved and loaded the moment the blocks are given up: they stay given up, and the crew finishes. */
 	//$ gametest_ticks_batch TALL '24000' '"crewGaveUpReload"'
 	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewGaveUpReload")
 	public void aBlockGivenUpMidWallStaysGivenUpAfterAReload(GameTestHelper helper) {
-		gaveUpMidWall(helper, true);
+		gaveUpMidWall(helper, true, false);
+	}
+
+	/**
+	 * B254: the wall over blocks the lead gave up (someone stood in them) never goes up over the hole: the folly's dome
+	 * once had a block laid in the air over its given-up centre tile. Once they step away the crew lays the given-up
+	 * blocks after all, and the folly is finished whole.
+	 */
+	//$ gametest_ticks_batch TALL '24000' '"crewGaveUpLaid"'
+	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewGaveUpLaid")
+	public void blocksGivenUpMidWallAreLaidOnceClearAndNothingGoesUpOverThem(GameTestHelper helper) {
+		gaveUpMidWall(helper, false, true);
+	}
+
+	/**
+	 * B270: several wall blocks of stage II nobody can ever lay (something stands in each for good): once the crew has
+	 * stood still, the lead gives up every block waiting over those holes together, not one each 200 ticks (the Hanging
+	 * Gardens' crew stood still for minutes giving a terrace's up one by one, and its time-lapse ran out of time). Still
+	 * nothing goes up over a hole, and the folly is finished with only those columns missing.
+	 */
+	//$ gametest_ticks_batch TALL '24000' '"crewManyHoles"'
+	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewManyHoles")
+	public void blocksOverManyHolesAreGivenUpTogether(GameTestHelper helper) {
+		Village v = village(helper, 4, 4);
+		ServerLevel level = v.level();
+		WonderSite begun = begin(helper, v);
+		stock(helper, level, begun.stone().orElseThrow());
+		BlueprintData.Placement at = begun.placement().orElseThrow();
+		UUID id = begun.id();
+		List<BlockPos> holes = new ArrayList<>();
+		List<ServerPlayer> standers = new ArrayList<>();
+		long[] allGivenUp = {-1};
+		long[] structureEnded = {-1};
+		Set<BlockPos> up = new HashSet<>();
+		helper.onEachTick(() -> {
+			if (level.getGameTime() % 200 == 0) {
+				helper.setDayTime(2000);
+			}
+			WonderSite now = WonderManager.get(level).site(id).orElse(null);
+			BuildSite part = now == null || now.done() || now.stage() != 2 || now.parts().isEmpty() ? null : BuildSiteManager.get(level).get(now.parts().get(0));
+			BuildPlan plan = part == null ? null : part.plan(level);
+			if (plan == null || part.stage() != BuildPlan.Stage.STRUCTURE) {
+				if (allGivenUp[0] >= 0 && structureEnded[0] < 0) {
+					structureEnded[0] = level.getGameTime(); // stage II's walls are over
+				}
+				return;
+			}
+			for (BuildPlan.Step built : plan.steps(BuildPlan.Stage.STRUCTURE)) { // nothing goes up over a hole
+				if (!level.getBlockState(built.pos()).isAir() && up.add(built.pos())) {
+					BlockPos below = built.pos().below();
+					helper.assertTrue(!plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced(), "a wall block went up at "
+						+ built.pos().toShortString() + " over the hole at " + below.toShortString());
+				}
+			}
+			if (holes.isEmpty()) {
+				// the lowest course of stage II, under two more courses: someone stands in each of four blocks, for good
+				Set<BlockPos> wall = new HashSet<>();
+				plan.steps(BuildPlan.Stage.STRUCTURE).forEach(s -> wall.add(s.pos()));
+				for (BlockPos p : plan.steps(BuildPlan.Stage.STRUCTURE).stream().map(BuildPlan.Step::pos).toList()) {
+					if (holes.size() < 4 && wall.contains(p.above()) && wall.contains(p.above(2)) && !wall.contains(p.below())
+						&& !level.getBlockState(p.below()).canBeReplaced() && level.getBlockState(p).isAir() && level.getBlockState(p.above()).isAir()
+						&& holes.stream().allMatch(h -> h.distManhattan(p) >= 3)) {
+						holes.add(p);
+					}
+				}
+				for (int i = 0; i < holes.size(); i++) {
+					standers.add(ProtectionSpecGameTests.player(helper));
+				}
+				Leftovers.after(helper, () -> standers.forEach(p -> level.getServer().getPlayerList().remove(p)));
+			}
+			for (int i = 0; i < holes.size(); i++) { // they stay put, whoever asks them to move
+				BlockPos h = holes.get(i);
+				standers.get(i).teleportTo(h.getX() + 0.5, h.getY(), h.getZ() + 0.5);
+			}
+			if (allGivenUp[0] < 0 && holes.stream().allMatch(part::gaveUp)) {
+				allGivenUp[0] = level.getGameTime();
+			}
+		});
+		helper.succeedWhen(() -> {
+			WonderSite now = WonderManager.get(level).site(id).orElseThrow();
+			helper.assertTrue(holes.size() == 4, "found only " + holes.size() + " spots for the holes: " + holes);
+			helper.assertTrue(now.done(), "still at stage " + now.stage() + ", " + Math.round(WonderStages.stageProgress(level, now) * 100) + "%" + parts(level, now));
+			helper.assertTrue(allGivenUp[0] >= 0 && structureEnded[0] >= 0, "the holes were never all given up (" + allGivenUp[0] + ") or stage II's walls never ended ("
+				+ structureEnded[0] + ")");
+			// the eight blocks over the holes, given up one each 200 ticks, took 1,600 and more; together, one stand-still
+			long took = structureEnded[0] - allGivenUp[0];
+			helper.assertTrue(took < 1000, "stage II's walls ended " + took + " ticks after the holes were given up");
+			List<BlockPos> left = unlikeButTheFinial(level, at);
+			helper.assertTrue(left.stream().allMatch(p -> holes.stream().anyMatch(h -> h.getX() == p.getX() && h.getZ() == p.getZ() && p.getY() >= h.getY())),
+				left.size() + " blocks unlike the drawing outside the holes' columns, e.g. " + left.stream()
+					.filter(p -> holes.stream().noneMatch(h -> h.getX() == p.getX() && h.getZ() == p.getZ())).limit(4).toList());
+		});
 	}
 
 	/**
@@ -692,7 +785,7 @@ public class WonderCrewGameTests implements FabricGameTest {
 		});
 	}
 
-	private static void gaveUpMidWall(GameTestHelper helper, boolean reload) {
+	private static void gaveUpMidWall(GameTestHelper helper, boolean reload, boolean whole) {
 		Village v = village(helper, 4, 4);
 		ServerLevel level = v.level();
 		var registries = level.registryAccess();
@@ -705,7 +798,22 @@ public class WonderCrewGameTests implements FabricGameTest {
 		AtomicBoolean placedStander = new AtomicBoolean(false);
 		AtomicBoolean gone = new AtomicBoolean(false);
 		List<CompoundTag> saved = new ArrayList<>();
+		Set<BlockPos> up = new HashSet<>();
 		helper.onEachTick(() -> {
+			if (whole) { // B254: every stage II wall block that goes up has what the drawing puts under it
+				WonderSite ws = WonderManager.get(level).site(id).orElse(null);
+				BuildSite wp = ws == null || ws.done() || ws.stage() != 2 || ws.parts().isEmpty() ? null : BuildSiteManager.get(level).get(ws.parts().get(0));
+				BuildPlan wpl = wp == null || wp.stage() != BuildPlan.Stage.STRUCTURE ? null : wp.plan(level);
+				if (wpl != null) {
+					for (BuildPlan.Step built : wpl.steps(BuildPlan.Stage.STRUCTURE)) {
+						if (!level.getBlockState(built.pos()).isAir() && up.add(built.pos())) {
+							BlockPos below = built.pos().below();
+							helper.assertTrue(!wpl.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced(), "a wall block went up at "
+								+ built.pos().toShortString() + " over the hole at " + below.toShortString() + " (given up " + wp.gaveUp(below) + ")");
+						}
+					}
+				}
+			}
 			if (level.getGameTime() % 200 == 0) {
 				helper.setDayTime(2000);
 			}
@@ -775,6 +883,7 @@ public class WonderCrewGameTests implements FabricGameTest {
 			List<BlockPos> left = unlikeButTheFinial(level, at);
 			helper.assertTrue(holes.containsAll(left), left.size() + " blocks unlike the drawing besides the given-up " + holes + ", e.g. "
 				+ left.stream().filter(p -> !holes.contains(p)).limit(4).toList());
+			helper.assertTrue(!whole || left.isEmpty(), "the crew never laid the given-up blocks once they were clear: " + left);
 		});
 	}
 

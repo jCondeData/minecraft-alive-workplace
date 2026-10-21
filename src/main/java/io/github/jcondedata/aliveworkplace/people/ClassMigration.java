@@ -41,7 +41,7 @@ public final class ClassMigration {
 	/** The rules seeding uses now ({@code classesVersion}). */
 	public static final int VERSION = 1;
 	/** Ages are spread over this many days before the switch. */
-	public static final int AGE_SPREAD = 100;
+	public static final int AGE_SPREAD = 1000; // 36.16: ten times the first 100, as lives are ten times longer
 	/** {@code classGraceDays}: days of settling in after a hall is first seeded. */
 	public static int GRACE_DAYS = 7;
 	/**

@@ -27,10 +27,10 @@ import sys
 GROUPS = [
     "Picking a job", "Items", "Builder", "Miner", "Lumberjack", "Orchard Keeper", "Farmer", "Beekeeper", "Florist", "Scholar", "Sifter",
     "Tinkerer", "Composter", "Netherworker", "Undertaker", "Innkeeper", "Teacher", "Rancher", "Fisherman", "Porter",
-    "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
+    "Carpenter", "Crafter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Mechanic", "Create", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Furnicrafter", "Mechanic", "Create", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -208,6 +208,11 @@ SCENES = [
     job("undertaker", "Undertaker", "Bringing a worker back from the grave", "the undertaker revived the villager"),
     # B222: graves lying about the village go to its Graveyard (here the plot by the hall, the village having no Graveyard)
     job("undertaker_graveyard", "Undertaker", "Laying a grave to rest", "the undertaker moved Mira's grave from the street to the plot by the hall"),
+    # 36.16: a death matters: the village is told who died, the family mourns, the undertaker leads the funeral
+    job("village_mourns", "Undertaker", "The village mourns", "the undertaker led Mira's funeral at her grave, and her husband and son mourned her", 160),
+    # 36.17: a block several jobs share gives one at random, likelier the fewer the village has
+    job("random_job", "Picking a job", "Four composters, four jobs at random",
+        "four jobless villagers took four composters by themselves, and not all became farmers", 120),
     # Legends (ROADMAP 29.2): the engine, with a Legend of the scene's own: the plain outfit, Master level, a pace power
     job("legend", "Legends", "A villager becomes a Legend",
         "a villager became a Legend, a Master who speeds up the builder beside them"),
@@ -246,6 +251,24 @@ SCENES = [
     # Crafters
     S("carpenter", "Carpenter", "Making a builder's woodwork", "the carpenter made woodwork for the builder", 150,
       [("*_carpenter@first", "Start"), ("*_carpenter@middle", "Working"), ("30_carpenter_closeup", "At the crafting table")]),
+    # The Crafter (ROADMAP 37.14): logs sawn into planks, then sticks, fences and slabs, for the builder's Market Stall
+    S("crafter_chain", "Crafter", "Making a builder's woodwork from logs, one step after another",
+      "the crafter made the builder's woodwork from logs", 150,
+      [("*_crafter_chain@first", "Start"), ("*_crafter_chain@middle", "Working through the chain"),
+       ("30_crafter_chain_closeup", "At the Crafter's Workbench")]),
+    # The Crafter's Workshop (ROADMAP 37.16): the build the Table offers and the Steward plans, then as villages grow it
+    S("crafter_workshop", "Crafter", "The Crafter's Workshop, and the one villages grow in three styles",
+      "the Crafter's Workshop stands with its Crafter's Workbench, and the village's in three styles came with their Crafters", 90,
+      [("10_crafters_workshop", "The Crafter's Workshop: board walls in a spruce frame, the store lean-to beside"),
+       ("12_village_plains", "A plains village's Crafter's Workshop: its gable to the street, the work hatch by the door"),
+       ("15_village_desert_back", "A desert village's: the lean-to parts store of boards and logs"),
+       ("16_village_snowy", "A snowy village's, its Crafter at the bench")]),
+    # The Crafter makes the pack's furniture (ROADMAP 37.15): Handcrafted's chairs on the crafting table, CobbleFurnies'
+    # at the Furni Crafter in its workshop, from oak logs, for a builder's dining corner
+    S("crafter_furniture", "Crafter", "Making the pack's furniture from logs: Handcrafted chairs, and a CobbleFurnies chair at its Furni Crafter",
+      "the crafter made the Handcrafted and CobbleFurnies chairs from logs and the builder built them", 150,
+      [("*_crafter_furniture@first", "Start: a table and oak logs in the chest"), ("*_crafter_furniture@middle", "Sawing, cutting and crafting"),
+       ("30_crafter_furniture_corner", "The dining corner, built")], cobblemon=True, furniture=True),
     job("mason", "Mason", "Cutting stone for a builder", "the mason cut stone bricks the builder needed", 240),
     job("dyer", "Leatherworker (dyer)", "Dyeing wool for a builder", "the dyer made colored wool the builder needed", 240),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone
@@ -394,6 +417,11 @@ SCENES = [
     job("campfire_pot", "Chef", "Campfire Pot recipes: candies from the Chef",
         "the Chef cooked EXP Candies and Berry Sweets from the Campfire Pot's recipes into the chest",
         cobblemon=True),
+    # The Furnicrafter (ROADMAP 38.12, CobbleFurnies): furniture the storehouse ordered, made from the store's materials
+    job("furnicrafter", "Furnicrafter", "The Furnicrafter: CobbleFurnies furniture from the store's materials",
+        "the Furnicrafter made the Oak Chairs, Red Lamps and Poke Ball Desk the storehouse ordered from the planks, wool, "
+        "redstone and concrete in its store",
+        cobblemon=True, furniture=True),
     # Bean farms (ROADMAP 38.9): the farmer cuts ripe Cobblecuisine beans, leaves the green ones and sows the bare rows
     job("bean_farm", "Farmer", "Cobblecuisine: beans for the menu",
         "the farmer cut the ripe Cobblecuisine beans into the chest, left the green ones and sowed the bare rows",
@@ -754,15 +782,15 @@ SCENES = [
        ("02_village_talk_shift_bell", "Reformed: \"The shift bell's rung. Home we go.\"")]),
     # The Evergreen Charm (ROADMAP 34.19a): an ordinary elder refuses it, a Master takes it and outlives his days; the other leaves a grave
     S("ageless_elder", "Village Hall", "The Evergreen Charm: an ageless elder",
-      "Bram's card on the hall's list showed an elder two days from his time, the charm's tooltip said what it does, Dara (an ordinary elder) refused it and the player kept it, Bram (a Master farmer) took it and it was used up, the chronicle said he will never leave us, and after 45 elder days Dara passed in the night and left a grave while Bram stayed, his card wearing the gold leaf badge", 40,
+      "Bram's card on the hall's list showed an elder two days from his time, the charm's tooltip said what it does, Dara (an ordinary elder) refused it and the player kept it, Bram (a Master farmer) took it and it was used up, the chronicle said he will never leave us, and after 405 elder days Dara passed in the night and left a grave while Bram stayed, his card wearing the gold leaf badge", 40,
       [("03_ageless_elder_refused", "Dara, an ordinary elder, won't take it: the reason, and the charm kept"),
        ("04_ageless_elder_accepted", "Bram, a Master, takes it: he will never leave us"),
-       ("05_ageless_elder_night", "45 elder days on, at nightfall: Dara's grave, and Bram still here"),
+       ("05_ageless_elder_night", "405 elder days on, at nightfall: Dara's grave, and Bram still here"),
        ("06_ageless_elder_badge", "Bram's card now: the gold leaf badge")]),
     # Elders (ROADMAP 34.19): the day Bram becomes one, his card, his talk, and his slower walk beside a young villager
     S("elders", "Village Hall", "Elders: a quiet old age",
-      "a day on, Bram had been grown 120 days and the chronicle said \"Bram is an elder now\" once; his card on the hall's list said \"Elder · grown 120 days\" with \"a quiet old age\" first in his mood (fed, a bed of his own); he said \"In my day this was all fields.\"; and walking side by side with young Tom he covered about 15% less ground in the same time", 35,
-      [("01_elders_card", "Bram's card: an elder, grown 120 days, with a quiet old age"),
+      "a day on, Bram had been grown 1200 days and the chronicle said \"Bram is an elder now\" once; his card on the hall's list said \"Elder · grown 1200 days\" with \"a quiet old age\" first in his mood (fed, a bed of his own); he said \"In my day this was all fields.\"; and walking side by side with young Tom he covered about 15% less ground in the same time", 35,
+      [("01_elders_card", "Bram's card: an elder, grown 1200 days, with a quiet old age"),
        ("02_elders_talk", "\"In my day this was all fields.\""),
        ("03_elders_walk", "The same walk, side by side: Bram, the elder, falls behind Tom")]),
     # Dressed by class (ROADMAP 34.18): the four classes in three jobs each, and an elder, in daylight
@@ -1140,12 +1168,15 @@ SCENES = [
            ("23_manor_2_back", "Manor II: the walled formal garden, its hedges, fountain and gravel walks"),
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
     # Furnished homes (ROADMAP 37.4): Starter Cottage II as a server with the pack's furniture mods builds it, room by room
-    S("furnished_home", "Build families", "A furnished Starter Cottage, room by room (Handcrafted, Beautify, CobbleFurnies)",
-      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods",
-      80, [("02_dining", "The dining corner: a Handcrafted table and chairs, a shelf of crockery, a Beautify picture"),
+    # B260: and the owner's Stone House, its way in clear and its attic a bedroom
+    # four stills on the card (the selftest's 2-4, B272); the harness still films 05_sitting and 06_vanilla_dining
+    S("furnished_home", "Build families", "A furnished Starter Cottage, room by room, and the Stone House's doorway and attic bedroom (Handcrafted, Beautify, CobbleFurnies)",
+      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats",
+      100, [("02_dining", "The dining corner: a Handcrafted table and chairs, a shelf of crockery, a picture on the wall"),
            ("03_bedroom", "The bedroom corner: the fancy bed, a nightstand, a lamp and the couch"),
-           ("05_sitting", "Upstairs: the sitting corner's couch, blinds and a picture"),
-           ("06_vanilla_dining", "The same corner without furniture mods: the vanilla pieces")], cobblemon=True, furniture=True),
+           ("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
+           ("08_stone_attic", "The Stone House attic: the bed's head to the gable, a nightstand, a chest at its foot, a lamp hung from the ridge")],
+      cobblemon=True, furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

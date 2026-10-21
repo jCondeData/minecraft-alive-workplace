@@ -47,6 +47,11 @@ public final class WorkplaceConfig {
 	public int postmanRange = 64;
 	/** At most this many workers per village (taken workstations within villageRadius); 0: no cap. */
 	public int maxWorkersPerVillage = 0;
+	/**
+	 * A jobless villager who takes a block several jobs share (a composter, a lectern...) by themselves gets one of its
+	 * jobs at random, likelier the fewer the village has (36.17). Off: always the block's vanilla job, as before.
+	 */
+	public boolean randomStationJobs = true;
 	/** A Miner with no pickaxe makes one at their workstation from what they mined (36.11). Off: they wait for one. */
 	public boolean minerCraftsPickaxe = true;
 	/** The Quarry build (36.12): its Miner works its pit without a marker, and what they dig grows back. Off: not offered, nothing grows back. */
@@ -205,6 +210,13 @@ public final class WorkplaceConfig {
 	 */
 	public boolean beanFarms = Expansions.on(Expansions.M38);
 	/**
+	 * With CobbleFurnies installed, a jobless villager by its Furnicrafter becomes the village's Furnicrafter (ROADMAP
+	 * 38.12), who makes the CobbleFurnies furniture the builders nearby are waiting for (a furnished home's chairs, tables
+	 * and lamps) and the storehouse's stock orders ask for, from the store's materials. Off: no new Furnicrafters, and
+	 * those hired stand idle. Without CobbleFurnies it does nothing.
+	 */
+	public boolean furnicrafters = Expansions.on(Expansions.M38);
+	/**
 	 * With Create installed, a jobless villager by a Create Toolbox becomes the village's Mechanic (ROADMAP 39.2): they walk
 	 * a round of the village's machines, empty full millstones into the store and refill empty ones, and put back the
 	 * shafts, cogwheels and belts gone from finished builds. Off: no new Mechanics, and those hired stand idle. Without
@@ -349,9 +361,14 @@ public final class WorkplaceConfig {
 	public int classGraceDays = 7;
 	/** Grown villagers count their days and become elders (ROADMAP 34.19). Off: nobody is an elder, so nobody passes of old age; the day they grew up stays saved. */
 	public boolean villagerAges = Expansions.on(Expansions.M34);
-	/** Grown days before a villager is an elder. */
-	public int villagerElderDays = 120;
-	/** An elder passes away in the night after 40 elder days and leaves a grave (owner, 2026-10-06). Off: elders never die of old age. */
+	/** Grown days before a villager is an elder (36.16: 1200, ten times the first 120; a file of before with 120 moves to 1200). */
+	public int villagerElderDays = 1200;
+	/**
+	 * A death matters (ROADMAP 36.16): the village is told who died, their job and years, their family grieve for 3 days,
+	 * and the Undertaker leads a funeral at the grave. Off: none of it (a partner still mourns, as before).
+	 */
+	public boolean villageMourning = true;
+	/** An elder passes away in the night after 400 elder days (36.16; 40 before) and leaves a grave (owner, 2026-10-06). Off: elders never die of old age. */
 	public boolean elderPassing = Expansions.on(Expansions.M34);
 	/** An Evergreen Charm makes an elder with good traits ageless (ROADMAP 34.19a). Off: charms are refused; elders already ageless stay so. */
 	public boolean agelessElders = Expansions.on(Expansions.M34);
@@ -428,6 +445,8 @@ public final class WorkplaceConfig {
 	public boolean moddedStorageNetworks = Expansions.on(Expansions.M37);
 	/** Homes and workshops are built from the modded library (dressed with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted) when every one of its blocks is installed and furnished builds are on (M37, 37.12). Off: the vanilla library. */
 	public boolean moddedLibrary = Expansions.on(Expansions.M37);
+	/** A villager at a Crafter's Workbench makes what the village's workers are short of, through whole recipe chains (M37, 37.14). Off: no Crafter job, and Crafters already hired stand idle. */
+	public boolean crafters = Expansions.on(Expansions.M37);
 	/** Wonder ids that can't be started ({@code great_cathedral} or {@code pack:id}); one already finished keeps its blocks and powers. File only. */
 	public List<String> disabledWonders = new ArrayList<>();
 	/** Which of a host's festivals are Cups: every one (1), every second (2), ... (owner, 28.1a: every festival). */
@@ -450,7 +469,7 @@ public final class WorkplaceConfig {
 	 */
 	@SuppressWarnings("unused")
 	private int configVersion = VERSION;
-	static final int VERSION = 3;
+	static final int VERSION = 4;
 	/**
 	 * The expansions whose gates were open when the file was written ({@link Expansions#open()}; not an option). A gated
 	 * switch saved while its gate was closed holds its closed default, {@code false}, which is no player's choice: when
@@ -506,6 +525,12 @@ public final class WorkplaceConfig {
 		boolean old = tree.isJsonObject() && !tree.getAsJsonObject().has("configVersion");
 		if (old && config.seasonDays == 8) {
 			config.seasonDays = 16;
+		}
+		// Format 4 (36.16): villagers live ten times longer. A file of before holding the old default 120 moves to the new
+		// default; any other number was someone's choice and stays.
+		int format = tree.isJsonObject() && tree.getAsJsonObject().has("configVersion") ? tree.getAsJsonObject().get("configVersion").getAsInt() : 0;
+		if (format < 4 && config.villagerElderDays == 120) {
+			config.villagerElderDays = new WorkplaceConfig().villagerElderDays;
 		}
 		config.configVersion = VERSION;
 		// Which gates were open when the file was written: its list, or none in a file a jar of format 2 wrote (0.139.0 to
@@ -567,7 +592,7 @@ public final class WorkplaceConfig {
 		"classRiseDays", 1, 30,
 		"classFallDays", 1, 30,
 		"classGraceDays", 0, 30,
-		"villagerElderDays", 20, 1000,
+		"villagerElderDays", 20, 10_000,
 		"giftedChance", 0, 1000,
 		"seasonDays", 1, 120,
 		"treasuryPerWorker", 0, 500,
@@ -830,6 +855,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Guilds.PER_RANK = guildsPerRank;
 		io.github.jcondedata.aliveworkplace.people.LifeStages.AGES = villagerAges && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.people.LifeStages.ELDER_DAYS = villagerElderDays;
+		io.github.jcondedata.aliveworkplace.people.Mourning.ENABLED = villageMourning; // 36.16
 		io.github.jcondedata.aliveworkplace.people.LifeStages.PASSING = elderPassing && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.people.LifeStages.AGELESS = agelessElders && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.people.ClassLook.ENABLED = classOutfits && Expansions.on(Expansions.M34);
@@ -873,6 +899,7 @@ public final class WorkplaceConfig {
 		// switch sharing on in batches of their own.
 		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = System.getProperty("fabric-api.gametest") != null ? 0 : villageRadius;
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.MAX_PER_VILLAGE = maxWorkersPerVillage;
+		io.github.jcondedata.aliveworkplace.work.RandomJobs.ENABLED = randomStationJobs; // 36.17
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.RADIUS = villageRadius;
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.PATH_RANGE = workerPathRange;
 		// Off in gametests (fishermen in the tests beside one would count against it); the cap's tests turn it on.
@@ -934,6 +961,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.ENABLED = villageMegas && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.craft.CuisineDishes.ENABLED = cuisineDishes && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.farm.BeanFarms.ENABLED = beanFarms && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.craft.FurnicrafterWork.ENABLED = furnicrafters && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.ENABLED = mechanics && Expansions.on(Expansions.M39);
 		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.ENABLED = machineWork && Expansions.on(Expansions.M39);
 		io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.ENABLED = createBuilds && Expansions.on(Expansions.M39);
@@ -989,6 +1017,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.furnish.Furnishings.MODS = java.util.List.copyOf(io.github.jcondedata.aliveworkplace.furnish.Furnishings.cleanMods(furnitureMods));
 		io.github.jcondedata.aliveworkplace.store.StorageNetworks.ENABLED = moddedStorageNetworks && Expansions.on(Expansions.M37);
 		io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.ENABLED = moddedLibrary && Expansions.on(Expansions.M37); // 37.12
+		io.github.jcondedata.aliveworkplace.craft.Crafters.ENABLED = crafters && Expansions.on(Expansions.M37); // 37.14
 		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.VILLAGES = keepVillagesWorking && System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (a partner walking off mid-test would move the numbers); the show tests turn them on.

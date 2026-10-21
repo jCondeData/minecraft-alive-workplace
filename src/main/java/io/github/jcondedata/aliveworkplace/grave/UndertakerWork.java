@@ -46,7 +46,7 @@ public class UndertakerWork extends Behavior<Villager> {
 	/** Ticks at a stray grave lifting it before it's laid in the graveyard (B222). */
 	static final int LIFT = 40;
 
-	private enum Task { NONE, FETCH, GO, RITES, MOVE_GO, MOVE_LIFT, MOVE_LAY }
+	private enum Task { NONE, FETCH, GO, RITES, MOVE_GO, MOVE_LIFT, MOVE_LAY, FUNERAL_GO, FUNERAL }
 
 	private final Walker walker = new Walker(0.5f);
 	private Task task = Task.NONE;
@@ -146,6 +146,15 @@ public class UndertakerWork extends Behavior<Villager> {
 				}
 			}
 			case MOVE_LIFT -> lift(level, villager);
+			case FUNERAL_GO -> {
+				if (walker.walkTo(level, villager, grave, 2.5)) {
+					task = Task.FUNERAL;
+					timer = io.github.jcondedata.aliveworkplace.people.Mourning.FUNERAL_TICKS;
+					io.github.jcondedata.aliveworkplace.people.Mourning.gather(level, grave, villager);
+					walker.reset();
+				}
+			}
+			case FUNERAL -> funeral(level, villager);
 			case MOVE_LAY -> {
 				if (laid == null || walker.walkTo(level, villager, laid, 2.5)) {
 					if (laid != null) {
@@ -187,6 +196,16 @@ public class UndertakerWork extends Behavior<Villager> {
 			state = "none";
 			Requests.clear(villager);
 			return;
+		}
+		// A grave waiting for its funeral (36.16) has it first, before anyone is brought back or moved.
+		for (BlockPos g : graves) {
+			if (io.github.jcondedata.aliveworkplace.people.Mourning.funeralDue(level, g)) {
+				grave = g;
+				task = Task.FUNERAL_GO;
+				state = "funeral_going";
+				walker.reset();
+				return;
+			}
 		}
 		boolean inBag = bag.stacks().stream().anyMatch(Graves::isRevivalItem) || needsNothing(level, villager);
 		if (!inBag && (own.isEmpty() || SupplyContainers.firstMatching(level, own, Graves::isRevivalItem) == null)) {
@@ -251,6 +270,23 @@ public class UndertakerWork extends Behavior<Villager> {
 					.withStyle(ChatFormatting.GREEN));
 			}
 		}
+		grave = null;
+		task = Task.NONE;
+		timer = LOOK_EVERY;
+	}
+
+	/** At the graveside for a funeral (36.16): a while with the mourners, then the chronicle notes it. */
+	private void funeral(ServerLevel level, Villager villager) {
+		state = "funeral";
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.BlockPosTracker(grave));
+		io.github.jcondedata.aliveworkplace.people.Mourning.beat(level, grave, villager, timer);
+		if (timer % 40 == 0) {
+			villager.swing(InteractionHand.MAIN_HAND);
+		}
+		if (--timer > 0) {
+			return;
+		}
+		io.github.jcondedata.aliveworkplace.people.Mourning.held(level, grave, villager);
 		grave = null;
 		task = Task.NONE;
 		timer = LOOK_EVERY;

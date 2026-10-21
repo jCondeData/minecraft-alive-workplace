@@ -57,8 +57,17 @@ public final class Crafting {
 		 * A luxury maker's (ROADMAP 34.5): the {@link LuxuryRecipes} files the maker may use, with the crafting table's for
 		 * the makings further down. An aged making is never made in the same plan (it has to have aged).
 		 */
-		LUXURY
+		LUXURY,
+		/**
+		 * The Crafter's (ROADMAP 37.14): the crafting table's and the stonecutter's together, and every recipe type a
+		 * {@code crafter_benches} file names (a furniture mod's bench, by recipe type id), used only while one of that file's
+		 * blocks stands by the Crafter's Workbench ({@link CrafterBenches}). Whole chains: {@link #CHAIN_DEPTH} steps down.
+		 */
+		CRAFTER
 	}
+
+	/** How far down a Crafter's chains go (a chair from slabs from planks from logs, and one more for the sticks). */
+	public static final int CHAIN_DEPTH = 3;
 
 	/** Recipes this deep below the thing asked for may be used for its ingredients (fences: sticks from planks from logs). */
 	static final int DEPTH = 2;
@@ -67,6 +76,16 @@ public final class Crafting {
 
 	/** One recipe made {@code times} times: what goes in (per craft) and what comes out (per craft). */
 	public record Step(Map<Item, Integer> in, ItemStack out, int times) {
+		/** Equal when the same recipe makes the same stack as often (an {@link ItemStack} has no equals of its own). */
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof Step other && times == other.times && in.equals(other.in) && ItemStack.matches(out, other.out);
+		}
+
+		@Override
+		public int hashCode() {
+			return java.util.Objects.hash(in, out.getItem(), out.getCount(), times);
+		}
 	}
 
 	/**
@@ -102,6 +121,65 @@ public final class Crafting {
 	/** {@link #plan} with only the luxury recipes {@code allowed} lets a maker use (for {@link Kind#LUXURY}). */
 	@Nullable
 	public static Plan plan(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable, Predicate<LuxuryRecipes.Recipe> allowed) {
+		return plan(level, kind, target, count, usable, allowed, t -> true, DEPTH, false);
+	}
+
+	/**
+	 * A Crafter's plan (37.14): {@link Kind#CRAFTER}'s recipes whose type {@code types} lets in (a bench's only while the
+	 * bench is there), {@link #CHAIN_DEPTH} steps down.
+	 */
+	@Nullable
+	public static Plan chain(ServerLevel level, Item target, int count, Map<Item, Long> usable, Predicate<RecipeType<?>> types) {
+		Plan plan = plan(level, Kind.CRAFTER, target, count, usable, r -> true, types, CHAIN_DEPTH, false);
+		return plan == null ? null : new Plan(plan.target(), plan.count(), merged(plan.steps()), plan.takes(), plan.makes());
+	}
+
+	/**
+	 * The steps with each recipe made once, at its first place: planks sawn for the barrel and more planks later for its
+	 * slabs are one step of planks (the first is before everything that needs either, so the order still holds).
+	 */
+	static List<Step> merged(List<Step> steps) {
+		List<Step> out = new ArrayList<>();
+		for (Step step : steps) {
+			int same = -1;
+			for (int i = 0; i < out.size(); i++) {
+				Step o = out.get(i);
+				if (o.in().equals(step.in()) && ItemStack.matches(o.out(), step.out())) {
+					same = i;
+					break;
+				}
+			}
+			// only if nothing it takes is made in between (it could only be made once that's done)
+			for (int i = same + 1; same >= 0 && i < out.size(); i++) {
+				if (step.in().containsKey(out.get(i).out().getItem())) {
+					same = -1;
+				}
+			}
+			if (same < 0) {
+				out.add(step);
+			} else {
+				Step o = out.get(same);
+				out.set(same, new Step(o.in(), o.out(), o.times() + step.times()));
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * What a Crafter lacks to make {@code count} of {@code target} from {@code usable} (37.14): the raw materials (things
+	 * no recipe of theirs makes) still short once everything that can be made is, by item. Empty when it can be made, or
+	 * when no recipe makes it at all; it says what's short of the first way down the recipes, the way a player would try.
+	 */
+	public static Map<Item, Integer> lacking(ServerLevel level, Item target, int count, Map<Item, Long> usable, Predicate<RecipeType<?>> types) {
+		Plan plan = plan(level, Kind.CRAFTER, target, count, usable, r -> true, types, CHAIN_DEPTH, true);
+		return plan == null ? Map.of() : plan.takes().entrySet().stream()
+			.filter(e -> e.getValue() < 0)
+			.collect(java.util.stream.Collectors.toMap(Map.Entry::getKey, e -> -e.getValue(), (a, b) -> a, LinkedHashMap::new));
+	}
+
+	@Nullable
+	private static Plan plan(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable, Predicate<LuxuryRecipes.Recipe> allowed,
+			Predicate<RecipeType<?>> types, int depth, boolean lenient) {
 		long[] tick;
 		synchronized (TICK_USE) {
 			tick = TICK_USE.computeIfAbsent(level, l -> new long[2]);
@@ -115,12 +193,24 @@ public final class Crafting {
 			return null; // this tick's planning is used up: the crafter asks again later
 		}
 		Pool pool = new Pool(usable, left);
+		pool.budget.types = types;
+		pool.budget.lenient = lenient;
 		List<Step> steps = new ArrayList<>();
-		boolean made = make(level, kind, target, count, pool, steps, DEPTH, allowed);
+		boolean made = make(level, kind, target, count, pool, steps, depth, allowed);
 		tick[1] += pool.budget.tried;
 		trials += pool.budget.tried;
 		if (!made) {
 			return null;
+		}
+		if (lenient) {
+			// what's short, as negative takes (only {@link #lacking} reads a lenient plan)
+			Map<Item, Integer> lacks = new LinkedHashMap<>();
+			pool.lacks.forEach((item, n) -> {
+				if (n > 0) {
+					lacks.put(item, (int) -n);
+				}
+			});
+			return new Plan(target, 0, steps, lacks, Map.of());
 		}
 		Map<Item, Integer> makes = new LinkedHashMap<>();
 		pool.made.forEach((item, n) -> {
@@ -151,6 +241,10 @@ public final class Crafting {
 	private static final class Budget {
 		final int max;
 		int tried;
+		/** The recipe types this plan may use (a Crafter's bench recipes only while the bench stands: 37.14). */
+		Predicate<RecipeType<?>> types = t -> true;
+		/** Planning what's short ({@link #lacking}): a raw material that's short is noted, and planning goes on. */
+		boolean lenient;
 
 		Budget(int max) {
 			this.max = max;
@@ -181,6 +275,8 @@ public final class Crafting {
 		final Map<Item, Long> chest;
 		final Map<Item, Long> made;
 		final Map<Item, Integer> takes;
+		/** Raw materials short (a lenient plan's only). */
+		final Map<Item, Long> lacks = new LinkedHashMap<>();
 
 		Pool(Map<Item, Long> chest, int budget) {
 			this.parent = null;
@@ -240,6 +336,7 @@ public final class Crafting {
 			trial.chest.forEach((item, n) -> chest.merge(item, n, Long::sum));
 			trial.made.forEach((item, n) -> made.merge(item, n, Long::sum));
 			trial.takes.forEach((item, n) -> takes.merge(item, n, Integer::sum));
+			trial.lacks.forEach((item, n) -> lacks.merge(item, n, Long::sum));
 		}
 	}
 
@@ -277,6 +374,9 @@ public final class Crafting {
 		}
 		for (RecipeHolder<?> holder : recipesFor(level, kind, target)) {
 			Recipe<?> recipe = holder.value();
+			if (!pool.budget.types.test(recipe.getType())) {
+				continue; // a bench's recipe while the bench isn't there (37.14)
+			}
 			ItemStack out = Recipes.result(recipe, level.registryAccess());
 			if (out.isEmpty() || !out.is(target) || !out.getComponentsPatch().isEmpty()) {
 				continue;
@@ -296,6 +396,47 @@ public final class Crafting {
 			steps.addAll(trialSteps);
 			steps.add(new Step(in, out.copy(), times));
 			pool.addMade(target, (long) out.getCount() * times);
+			return true;
+		}
+		if (kind == Kind.CRAFTER && !CrafterBenches.all().isEmpty()) {
+			return makeAtBench(level, kind, target, count, pool, steps, depth, allowed);
+		}
+		return false;
+	}
+
+	/**
+	 * A Crafter's bench recipe that doesn't list its materials as ingredients (37.15: CobbleFurnies' Furni Crafter takes
+	 * so many of each item, read from its files by {@link FurnitureRecipes}): made the same way, with each material's
+	 * count, if its recipe type is a {@code crafter_benches} bench's and the bench stands in the workshop.
+	 */
+	private static boolean makeAtBench(ServerLevel level, Kind kind, Item target, int count, Pool pool, List<Step> steps, int depth,
+			Predicate<LuxuryRecipes.Recipe> allowed) {
+		RecipeManager manager = Recipes.manager(level);
+		for (FurnitureRecipes.Recipe recipe : FurnitureRecipes.making(level.getServer(), target)) {
+			RecipeType<?> type = Recipes.byId(manager, recipe.id()).map(h -> (RecipeType<?>) h.value().getType()).orElse(null);
+			if (type == null || !CrafterBenches.isBenchType(type) || !pool.budget.types.test(type)) {
+				continue; // not a bench's, or the bench isn't in the workshop
+			}
+			if (!recipe.result().is(target) || !recipe.result().getComponentsPatch().isEmpty()) {
+				continue;
+			}
+			if (!pool.budget.tryOne()) {
+				return false;
+			}
+			int each = recipe.result().getCount();
+			int times = Math.min(MAX_CRAFTS, (count + each - 1) / each);
+			List<Slot> slots = new ArrayList<>();
+			recipe.materials().forEach((item, n) -> slots.add(new Slot(List.of(item), n, true, false)));
+			Pool trial = pool.copy();
+			List<Step> trialSteps = new ArrayList<>();
+			Map<Item, Integer> in = pick(level, kind, slots, times, trial, trialSteps, depth, allowed);
+			if (in == null) {
+				continue;
+			}
+			pool.set(trial);
+			steps.addAll(trialSteps);
+			steps.add(new Step(in, recipe.result().copy(), times));
+			pool.addMade(target, (long) each * times);
 			return true;
 		}
 		return false;
@@ -393,20 +534,56 @@ public final class Crafting {
 				}
 			}
 			if (pick == null && depth > 0 && slot.makeable()) {
-				for (Item option : slot.options()) {
-					if (make(level, kind, option, (int) (need - pool.have(option)), pool, steps, depth - 1, allowed)) {
-						pick = option;
-						break;
-					}
-				}
+				pick = makeOne(level, kind, slot, need, pool, steps, depth, allowed);
 			}
 			if (pick == null || pool.have(pick) < need) {
-				return null;
+				if (!pool.budget.lenient) {
+					return null;
+				}
+				// 37.14, what's short: the first raw option (logs, not wood made from logs), or the first one
+				if (pick == null) {
+					pick = slot.options().stream().filter(o -> recipesFor(level, kind, o).isEmpty()).findFirst().orElse(slot.options().get(0));
+				}
+				pool.lacks.merge(pick, need - Math.max(0, pool.have(pick)), Long::sum);
 			}
 			pool.use(pick, need);
 			perCraft.merge(pick, slot.count(), Integer::sum);
 		}
 		return perCraft.isEmpty() ? null : perCraft;
+	}
+
+	/**
+	 * Makes {@code need} of one of a slot's options from further down; the option made, or null. Planning what's short, each
+	 * option is tried properly first, so a lack is only noted down the way nothing could be made (37.14).
+	 */
+	@Nullable
+	private static Item makeOne(ServerLevel level, Kind kind, Slot slot, long need, Pool pool, List<Step> steps, int depth,
+			Predicate<LuxuryRecipes.Recipe> allowed) {
+		if (pool.budget.lenient) {
+			pool.budget.lenient = false;
+			try {
+				for (Item option : slot.options()) {
+					Pool trial = pool.copy();
+					List<Step> trialSteps = new ArrayList<>();
+					if (make(level, kind, option, (int) (need - trial.have(option)), trial, trialSteps, depth - 1, allowed) && trial.have(option) >= need) {
+						pool.set(trial);
+						steps.addAll(trialSteps);
+						return option;
+					}
+				}
+			} finally {
+				pool.budget.lenient = true;
+			}
+			if (slot.options().stream().anyMatch(o -> recipesFor(level, kind, o).isEmpty())) {
+				return null; // a raw material: noted as short
+			}
+		}
+		for (Item option : slot.options()) {
+			if (make(level, kind, option, (int) (need - pool.have(option)), pool, steps, depth - 1, allowed)) {
+				return option;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -551,6 +728,16 @@ public final class Crafting {
 					}
 					all.addAll(Recipes.all(manager, RecipeType.STONECUTTING));
 					all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
+				}
+				case CRAFTER -> {
+					all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
+					all.addAll(Recipes.all(manager, RecipeType.STONECUTTING));
+					// a furniture mod's bench (by recipe type id: no mod class), used only while its bench is there
+					for (RecipeHolder<?> holder : Recipes.all(manager)) {
+						if (CrafterBenches.isBenchType(holder.value().getType())) {
+							all.add(holder);
+						}
+					}
 				}
 				case WORKSHOP -> {
 					for (RecipeHolder<?> holder : Recipes.all(manager, RecipeType.BLASTING)) {

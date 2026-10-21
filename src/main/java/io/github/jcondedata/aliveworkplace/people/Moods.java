@@ -152,6 +152,9 @@ public final class Moods {
 		if (Couples.isMourning(level, villager)) {
 			score -= 15;
 			bad.add(reason("mourning"));
+		} else if (Mourning.grieving(villager, io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level))) { // a death in the family (36.16)
+			score -= Mourning.GRIEF_MOOD;
+			bad.add(reason("grieving"));
 		}
 		int questMood = io.github.jcondedata.aliveworkplace.story.Stories.mood(level, villager); // village_mood rewards (31.2)
 		if (questMood != 0) {

@@ -12,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.legend.Gifted;
 import io.github.jcondedata.aliveworkplace.legend.LegendData;
 import io.github.jcondedata.aliveworkplace.people.Families;
 import io.github.jcondedata.aliveworkplace.people.LifeStages;
+import io.github.jcondedata.aliveworkplace.people.Mourning;
 import io.github.jcondedata.aliveworkplace.people.Moods;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -52,7 +53,7 @@ import net.minecraft.world.level.block.Blocks;
  * tooltip and config; an elder taking it for each good trait (a Master, Gifted, a Legend, 20 happy days) through the
  * player's own sneak-right-click, the charm used up, the hall's gold badge and the chronicle; each refusal with its
  * reason and the charm kept (a plain elder, someone not yet an elder, a child, one already ageless); the happy days
- * counted from real moods; an ageless elder outliving 40 and more elder days and a reload while an ordinary one passes
+ * counted from real moods; an ageless elder outliving 400 and more elder days (36.16: ten times the first 40) and a reload while an ordinary one passes
  * in their sleep in the hall's own round and leaves a grave; an elder brought back from it; and each config switch off.
  */
 public class AgelessElderGameTests implements FabricGameTest {
@@ -85,10 +86,10 @@ public class AgelessElderGameTests implements FabricGameTest {
 			"tooltip: " + lines);
 
 		WorkplaceConfig defaults = WorkplaceConfig.parse("{}");
-		helper.assertTrue(defaults.agelessElders && defaults.elderPassing && defaults.villagerAges && defaults.villagerElderDays == 120, "defaults");
+		helper.assertTrue(defaults.agelessElders && defaults.elderPassing && defaults.villagerAges && defaults.villagerElderDays == 1200, "defaults");
 		helper.assertTrue(WorkplaceConfig.parse("{\"villagerElderDays\": 5}").villagerElderDays == 20, "clamped up to 20");
-		helper.assertTrue(WorkplaceConfig.parse("{\"villagerElderDays\": 5000}").villagerElderDays == 1000, "clamped down to 1000");
-		helper.assertTrue(LifeStages.AGELESS && LifeStages.PASSING && LifeStages.AGES && LifeStages.ELDER_DAYS == 120, "on in a GameTest");
+		helper.assertTrue(WorkplaceConfig.parse("{\"villagerElderDays\": 50000}").villagerElderDays == 10000, "clamped down to 10000");
+		helper.assertTrue(LifeStages.AGELESS && LifeStages.PASSING && LifeStages.AGES && LifeStages.ELDER_DAYS == 1200, "on in a GameTest");
 		// The file's switches reach the game (at once, so no other test sees them; the defaults go back after).
 		try {
 			WorkplaceConfig.parse("{\"agelessElders\": false}").apply();
@@ -100,7 +101,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 		} finally {
 			new WorkplaceConfig().apply();
 		}
-		helper.assertTrue(LifeStages.AGELESS && LifeStages.PASSING && LifeStages.AGES && LifeStages.ELDER_DAYS == 120, "the defaults again");
+		helper.assertTrue(LifeStages.AGELESS && LifeStages.PASSING && LifeStages.AGES && LifeStages.ELDER_DAYS == 1200, "the defaults again");
 		helper.succeed();
 	}
 
@@ -120,7 +121,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 			VillageHallBlockEntity hall = ready(helper);
 			long today = Chronicle.day(level);
 			for (Villager v : List.of(bram, ida, odo, wren)) {
-				LifeStages.setAdultSince(v, today - 131);
+				LifeStages.setAdultSince(v, today - 1211);
 			}
 			Gifted.set(ida, PRODIGY);
 			helper.assertTrue(Gifted.of(ida) != null, "the test's gift didn't load: " + Gifted.all().keySet());
@@ -134,7 +135,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 
 			// Bram, through the player's own sneak-right-click.
 			List<String> before = lore(level, hallPos, bram);
-			helper.assertTrue(before.contains("Elder · grown 131 days") && !before.contains(BADGE), "an elder's card before: " + before);
+			helper.assertTrue(before.contains("Elder · grown 1211 days") && !before.contains(BADGE), "an elder's card before: " + before);
 			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.EVERGREEN_CHARM));
 			player.setShiftKeyDown(false);
 			UseEntityCallback.EVENT.invoker().interact(player, level, InteractionHand.MAIN_HAND, bram, null);
@@ -149,7 +150,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 			helper.assertTrue(chronicle(hall).contains(line), "chronicle: " + chronicle(hall));
 			helper.assertTrue(hall.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.LIFE && e.text().getString().equals(line)), "its kind");
 			List<String> after = lore(level, hallPos, bram);
-			helper.assertTrue(after.contains("Elder · grown 131 days") && after.contains(BADGE), "the gold leaf badge: " + after);
+			helper.assertTrue(after.contains("Elder · grown 1211 days") && after.contains(BADGE), "the gold leaf badge: " + after);
 			ItemLore card = VillageHallScreen.person(level, hallPos, bram).get(DataComponents.LORE);
 			helper.assertTrue(card.lines().stream().anyMatch(l -> l.getString().equals(BADGE)
 				&& net.minecraft.network.chat.TextColor.fromLegacyFormat(net.minecraft.ChatFormatting.GOLD).equals(l.getStyle().getColor())), "the badge isn't gold");
@@ -166,7 +167,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 			say(helper, LifeStages.offer(player, bram, second), LifeStages.Outcome.ALREADY, "Bram is already ageless.");
 			helper.assertTrue(second.getCount() == 1, "a refused charm was used up");
 			Villager fenn = villager(helper, new BlockPos(15, 2, 6), "Fenn", VillagerProfession.MASON, 5);
-			LifeStages.setAdultSince(fenn, today - 200);
+			LifeStages.setAdultSince(fenn, today - 1300);
 			player.setGameMode(GameType.CREATIVE);
 			say(helper, LifeStages.offer(player, fenn, second), LifeStages.Outcome.ACCEPTED, "Fenn (a Master of their trade) takes the Evergreen Charm and will never leave us.");
 			helper.assertTrue(second.getCount() == 1, "a creative player's charm was used up");
@@ -190,11 +191,11 @@ public class AgelessElderGameTests implements FabricGameTest {
 			ServerLevel level = helper.getLevel();
 			ready(helper);
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(dara, today - 150);
+			LifeStages.setAdultSince(dara, today - 1250);
 			ModAttachments.HAPPY_STREAK.set(dara, new LifeStages.Streak(19, today));
 			LifeStages.setAdultSince(fenn, today - 30);
-			LifeStages.setAdultSince(nit, today - 150);
-			LifeStages.setAdultSince(pip, today - 150); // (a child is never an elder, whatever their record says)
+			LifeStages.setAdultSince(nit, today - 1250);
+			LifeStages.setAdultSince(pip, today - 1250); // (a child is never an elder, whatever their record says)
 			ServerPlayer player = helper.makeMockServerPlayerInLevel();
 			player.setGameMode(GameType.SURVIVAL);
 			player.setShiftKeyDown(true);
@@ -204,7 +205,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 				+ "trade, Gifted, a Legend, or happy (mood 80 or more) for 20 days running. Happy days so far: 19.");
 			say(helper, LifeStages.offer(player, nit, charm), LifeStages.Outcome.NO_GOOD_TRAIT, "Nit won't take it. The charm is for an elder who is a Master of their "
 				+ "trade, Gifted, a Legend, or happy (mood 80 or more) for 20 days running. Happy days so far: 0.");
-			say(helper, LifeStages.offer(player, fenn, charm), LifeStages.Outcome.NOT_AN_ELDER, "Fenn is not an elder yet (grown 30 of 120 days): the Evergreen Charm is for elders.");
+			say(helper, LifeStages.offer(player, fenn, charm), LifeStages.Outcome.NOT_AN_ELDER, "Fenn is not an elder yet (grown 30 of 1200 days): the Evergreen Charm is for elders.");
 			say(helper, LifeStages.offer(player, gus, charm), LifeStages.Outcome.NOT_AN_ELDER, "Gus is not an elder: the Evergreen Charm is for elders.");
 			say(helper, LifeStages.offer(player, pip, charm), LifeStages.Outcome.NOT_AN_ELDER, "Pip is not an elder: the Evergreen Charm is for elders.");
 			helper.assertTrue(charm.getCount() == 1, "a refused charm was used up");
@@ -215,9 +216,9 @@ public class AgelessElderGameTests implements FabricGameTest {
 			player.setItemInHand(InteractionHand.MAIN_HAND, charm);
 			UseEntityCallback.EVENT.invoker().interact(player, level, InteractionHand.MAIN_HAND, dara, null);
 			helper.assertTrue(player.getMainHandItem().is(ModItems.EVERGREEN_CHARM) && !LifeStages.isAgeless(dara), "the refused right-click");
-			// The day they turn 120 they are an elder; the day before, not.
-			LifeStages.setAdultSince(fenn, today - 119);
-			helper.assertTrue(!LifeStages.isElder(fenn, today) && LifeStages.isElder(fenn, today + 1), "an elder from 120 grown days");
+			// The day they turn 1200 they are an elder; the day before, not.
+			LifeStages.setAdultSince(fenn, today - 1199);
+			helper.assertTrue(!LifeStages.isElder(fenn, today) && LifeStages.isElder(fenn, today + 1), "an elder from 1200 grown days");
 			// A happy day more and Dara takes it.
 			ModAttachments.HAPPY_STREAK.set(dara, new LifeStages.Streak(20, today));
 			say(helper, LifeStages.offer(player, dara, charm), LifeStages.Outcome.ACCEPTED, "Dara (happy for many days) takes the Evergreen Charm and will never leave us.");
@@ -242,7 +243,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 			ready(helper);
 			Moods.ENABLED = true; // (off in GameTests otherwise)
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(wren, today - 150);
+			LifeStages.setAdultSince(wren, today - 1250);
 			// Fed, a bed of her own, a job, company.
 			ModAttachments.LAST_MEAL.set(wren, level.getGameTime());
 			wren.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(5, 2, 4))));
@@ -273,7 +274,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * Day by day past 40 elder days, asleep in the hall's round: the ageless elder stays, the ordinary one passes on the
+	 * Day by day (in steps) past 400 elder days, asleep in the hall's round: the ageless elder stays, the ordinary one passes on the
 	 * 40th and leaves a grave (so does one with no job and no name); the ageless one is still ageless after a reload.
 	 */
 	//$ gametest_ticks_batch AREA '100' '"agelessOutlives"'
@@ -296,39 +297,39 @@ public class AgelessElderGameTests implements FabricGameTest {
 			long today = Chronicle.day(level);
 			List<Villager> all = List.of(bram, dara, nobody);
 			for (Villager v : all) {
-				LifeStages.setAdultSince(v, today - 120);
+				LifeStages.setAdultSince(v, today - 1200);
 			}
 			helper.assertTrue(LifeStages.makeAgeless(level, bram, Component.literal("Tester")).outcome() == LifeStages.Outcome.ACCEPTED, "Bram takes the charm");
 			bram.startSleeping(helper.absolutePos(beds[0]));
 			dara.startSleeping(helper.absolutePos(beds[1]));
 			nobody.startSleeping(helper.absolutePos(beds[2]));
 			helper.assertTrue(dara.isSleeping(), "Dara isn't asleep");
-			for (int elderDays = 0; elderDays <= 45; elderDays++) {
+			for (int elderDays : new int[] {0, 1, 100, 200, 300, 389, 390, 395, 399, 400, 401, 405}) {
 				for (Villager v : all) {
-					LifeStages.setAdultSince(v, today - 120 - elderDays);
+					LifeStages.setAdultSince(v, today - 1200 - elderDays);
 				}
 				LifeStages.round(level, hallPos, all);
 				boolean gone = elderDays >= LifeStages.PASSING_DAYS;
 				helper.assertTrue(bram.isAlive(), "the ageless elder passed after " + elderDays + " elder days");
 				helper.assertTrue(dara.isAlive() != gone, "Dara after " + elderDays + " elder days: alive " + dara.isAlive());
 				helper.assertTrue(nobody.isAlive() != gone, "the nameless elder after " + elderDays + " elder days: alive " + nobody.isAlive());
-				if (elderDays == 35) {
+				if (elderDays == 395) {
 					List<String> card = lore(level, hallPos, dara);
 					helper.assertTrue(card.contains("Their time comes in 5 days (an Evergreen Charm keeps them)"), "five days before: " + card);
 					helper.assertTrue(lore(level, hallPos, bram).stream().noneMatch(l -> l.startsWith("Their time")), "the ageless elder's card warns");
 				}
 			}
-			helper.assertTrue(LifeStages.elderDays(bram, today) == 45 && LifeStages.isElder(bram, today), "Bram is an elder of 45 days");
+			helper.assertTrue(LifeStages.elderDays(bram, today) == 405 && LifeStages.isElder(bram, today), "Bram is an elder of 405 days");
 			helper.assertTrue(graves(helper).size() == 2, "a grave each for Dara and the nameless elder: " + graves(helper));
 			helper.assertTrue(graves(helper).stream().anyMatch(g -> g.name().getString().equals("Dara")), "Dara's grave");
-			helper.assertTrue(chronicle(hall).contains("Dara passed away in their sleep, an elder"), "chronicle: " + chronicle(hall));
+			helper.assertTrue(chronicle(hall).stream().anyMatch(l -> l.startsWith("Dara passed away in their sleep, an elder: the village's Farmer, aged ")), "chronicle: " + chronicle(hall));
 
 			// Saved and loaded: still ageless, the same age, still on the hall's list with the badge.
 			Villager copy = EntityType.VILLAGER.create(level);
 			copy.load(bram.saveWithoutId(new CompoundTag()));
 			helper.assertTrue(LifeStages.isAgeless(copy), "ageless after a reload");
-			helper.assertTrue(Long.valueOf(today - 165).equals(LifeStages.adultSince(copy)), "the day they grew up after a reload: " + LifeStages.adultSince(copy));
-			helper.assertTrue(LifeStages.daysLeft(copy, today) == -1 && LifeStages.daysLeft(copy, today + 1000) == -1, "the reloaded elder's days left");
+			helper.assertTrue(Long.valueOf(today - 1605).equals(LifeStages.adultSince(copy)), "the day they grew up after a reload: " + LifeStages.adultSince(copy));
+			helper.assertTrue(LifeStages.daysLeft(copy, today) == -1 && LifeStages.daysLeft(copy, today + 10000) == -1, "the reloaded elder's days left");
 			// A villager from a save before all this: not ageless, no age, nothing written.
 			Villager old = EntityType.VILLAGER.create(level);
 			old.load(EntityType.VILLAGER.create(level).saveWithoutId(new CompoundTag()));
@@ -338,7 +339,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 		});
 	}
 
-	/** In the hall's own round an elder of 40 elder days, asleep, passes and leaves a grave; brought back, they have 40 more days and can take a charm. */
+	/** In the hall's own round an elder of 400 elder days, asleep, passes and leaves a grave; brought back, they have 400 more days and can take a charm. */
 	//$ gametest_ticks_batch AREA '200' '"elderPasses"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "elderPasses")
 	public void anElderPassesInTheirSleepAndLeavesAGrave(GameTestHelper helper) {
@@ -348,9 +349,9 @@ public class AgelessElderGameTests implements FabricGameTest {
 		BlockPos bed = new BlockPos(5, 2, 4);
 		helper.setBlock(bed, Blocks.RED_BED);
 		Villager dara = villager(helper, new BlockPos(5, 2, 6), "Dara", VillagerProfession.FARMER, 5);
-		LifeStages.setAdultSince(dara, today - 160);
+		LifeStages.setAdultSince(dara, today - 1600);
 		Villager young = villager(helper, new BlockPos(9, 2, 6), "Tom", VillagerProfession.FARMER, 5);
-		LifeStages.setAdultSince(young, today - 159); // 39 elder days: not yet
+		LifeStages.setAdultSince(young, today - 1599); // 399 elder days: not yet
 		helper.setBlock(new BlockPos(9, 2, 4), Blocks.RED_BED);
 		dara.startSleeping(helper.absolutePos(bed));
 		young.startSleeping(helper.absolutePos(new BlockPos(9, 2, 4)));
@@ -377,11 +378,11 @@ public class AgelessElderGameTests implements FabricGameTest {
 	private static void afterPassing(GameTestHelper helper, GraveBlockEntity grave, Villager young, long today) {
 		ServerLevel level = helper.getLevel();
 		helper.assertTrue(Graves.epitaph(grave).getString().contains("Dara"), "epitaph: " + Graves.epitaph(grave).getString());
-		helper.assertTrue(young.isAlive(), "an elder of 39 days passed");
+		helper.assertTrue(young.isAlive(), "an elder of 399 days passed");
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(helper.absolutePos(HALL));
-		helper.assertTrue(hall.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.DEATH && e.text().getString().equals("Dara passed away in their sleep, an elder")),
+		helper.assertTrue(hall.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.DEATH && e.text().getString().equals("Dara passed away in their sleep, an elder: the village's Farmer, aged " + (Mourning.GROWN_UP_AGE + 1600 / Mourning.yearDays()))),
 			"chronicle: " + chronicle(hall));
-		// An Undertaker's work: back as she was, with 40 more days, and now she can be given a charm.
+		// An Undertaker's work: back as she was, with 400 more days, and now she can be given a charm.
 		Villager back = Graves.revive(level, grave.getBlockPos());
 		helper.assertTrue(back != null && back.isAlive() && back.getName().getString().equals("Dara")
 			&& back.getVillagerData().getProfession() == VillagerProfession.FARMER && back.getVillagerData().getLevel() == 5, "Dara isn't back as she was: " + back);
@@ -389,9 +390,9 @@ public class AgelessElderGameTests implements FabricGameTest {
 		helper.assertTrue(LifeStages.isElder(back, today) && LifeStages.daysLeft(back, today) == LifeStages.PASSING_DAYS, "days left once back: " + LifeStages.daysLeft(back, today));
 		LifeStages.round(level, helper.absolutePos(HALL), List.of(back));
 		helper.assertTrue(back.isAlive(), "she passed again the same night");
-		helper.assertTrue(LifeStages.daysLeft(back, today + 39) == 1 && LifeStages.daysLeft(back, today + 40) == 0, "her time comes again 40 days on: " + LifeStages.daysLeft(back, today + 40));
+		helper.assertTrue(LifeStages.daysLeft(back, today + 399) == 1 && LifeStages.daysLeft(back, today + 400) == 0, "her time comes again 400 days on: " + LifeStages.daysLeft(back, today + 400));
 		helper.assertTrue(LifeStages.makeAgeless(level, back, Component.literal("Tester")).outcome() == LifeStages.Outcome.ACCEPTED, "the charm, once back");
-		helper.assertTrue(LifeStages.daysLeft(back, today + 40) == -1, "ageless now");
+		helper.assertTrue(LifeStages.daysLeft(back, today + 400) == -1, "ageless now");
 	}
 
 	/** Each switch off: charms refused (those already ageless stay so), nobody passes, nobody is an elder. A child grown up gets today. */
@@ -410,8 +411,8 @@ public class AgelessElderGameTests implements FabricGameTest {
 			BlockPos hallPos = helper.absolutePos(HALL);
 			ready(helper);
 			long today = Chronicle.day(level);
-			LifeStages.setAdultSince(bram, today - 300);
-			LifeStages.setAdultSince(dara, today - 300);
+			LifeStages.setAdultSince(bram, today - 1600);
+			LifeStages.setAdultSince(dara, today - 1600);
 			ServerPlayer player = helper.makeMockServerPlayerInLevel();
 			player.setGameMode(GameType.SURVIVAL);
 			player.setShiftKeyDown(true);
@@ -434,7 +435,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 			LifeStages.round(level, hallPos, List.of(dara));
 			helper.assertTrue(dara.isAlive() && LifeStages.daysLeft(dara, today) == -1, "an elder passed with elderPassing off");
 			say(helper, LifeStages.offer(player, dara, charm), LifeStages.Outcome.NOT_NEEDED, "Elders don't pass away on this server: nobody needs an Evergreen Charm.");
-			helper.assertTrue(lore(level, hallPos, dara).contains("Elder · grown 300 days") && lore(level, hallPos, dara).stream().noneMatch(l -> l.startsWith("Their time")),
+			helper.assertTrue(lore(level, hallPos, dara).contains("Elder · grown 1600 days") && lore(level, hallPos, dara).stream().noneMatch(l -> l.startsWith("Their time")),
 				"Dara's card with elderPassing off: " + lore(level, hallPos, dara));
 
 			// villagerAges off: nobody is an elder, so nobody passes; the day they grew up is kept.
@@ -442,17 +443,17 @@ public class AgelessElderGameTests implements FabricGameTest {
 			LifeStages.AGES = false;
 			LifeStages.round(level, hallPos, List.of(dara));
 			helper.assertTrue(dara.isAlive() && !LifeStages.isElder(dara, today), "an elder with villagerAges off");
-			helper.assertTrue(Long.valueOf(today - 300).equals(LifeStages.adultSince(dara)), "the day she grew up was lost");
+			helper.assertTrue(Long.valueOf(today - 1600).equals(LifeStages.adultSince(dara)), "the day she grew up was lost");
 			say(helper, LifeStages.offer(player, dara, charm), LifeStages.Outcome.NOT_AN_ELDER, "Dara is not an elder: the Evergreen Charm is for elders.");
 			helper.assertTrue(lore(level, hallPos, dara).stream().noneMatch(l -> l.startsWith("Elder")), "an elder line with villagerAges off");
 
 			// villagerElderDays: an elder sooner or later.
 			LifeStages.AGES = true;
-			LifeStages.ELDER_DAYS = 400;
-			helper.assertTrue(!LifeStages.isElder(dara, today) && LifeStages.isElder(dara, today + 100), "an elder at 400 grown days");
+			LifeStages.ELDER_DAYS = 1700;
+			helper.assertTrue(!LifeStages.isElder(dara, today) && LifeStages.isElder(dara, today + 100), "an elder at 1700 grown days");
 
 			// All on again: the same charm is taken now, and Dara would have passed tonight.
-			LifeStages.ELDER_DAYS = 120;
+			LifeStages.ELDER_DAYS = 1200;
 			helper.assertTrue(LifeStages.daysLeft(dara, today) == 0, "Dara's time with everything on: " + LifeStages.daysLeft(dara, today));
 			say(helper, LifeStages.offer(player, dara, charm), LifeStages.Outcome.ACCEPTED, "Dara (a Master of their trade) takes the Evergreen Charm and will never leave us.");
 			LifeStages.round(level, hallPos, List.of(dara));
@@ -493,7 +494,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 			LifeStages.AGELESS = true;
 			LifeStages.PASSING = true;
 			LifeStages.AGES = true;
-			LifeStages.ELDER_DAYS = 120;
+			LifeStages.ELDER_DAYS = 1200;
 			VillageNeeds.forget();
 			Moods.forget();
 		});

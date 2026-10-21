@@ -52,13 +52,13 @@ public final class Expansions {
 	public static final boolean M35 = true;
 	/**
 	 * Milestone 37, Furnished homes and modded storage (2.1): {@code furnishedBuilds}, {@code furnitureMods},
-	 * {@code moddedStorageNetworks}, {@code moddedLibrary} (37.12) (design note M37).
+	 * {@code moddedStorageNetworks}, {@code moddedLibrary} (37.12), {@code crafters} (37.14) (design note M37).
 	 */
 	public static final boolean M37 = true;
 	/**
 	 * Milestone 38, Cobblemon depth (2.2): raid dens, more Megas and Cobblecuisine (design note M38). Its switches:
 	 * {@code denHelpers}, {@code denHelperPrice}, {@code villageMegas}, {@code cuisineDishes},
-	 * {@code beanFarms}; each comes into the config with the item that builds it (38.3 to 38.10).
+	 * {@code beanFarms}, {@code furnicrafters} (38.12); each comes into the config with the item that builds it (38.3 to 38.12).
 	 */
 	public static final boolean M38 = true;
 	/**
@@ -140,8 +140,8 @@ public final class Expansions {
 				"elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames" -> "M34";
 			case "wonders", "wonderCaps", "wonderLegends", "wonderServerLimit", "disabledWonders", "wonderCrew", "builderScaffolding",
 				"wonderStanding" -> "M35";
-			case "furnishedBuilds", "furnitureMods", "moddedStorageNetworks", "moddedLibrary" -> "M37";
-			case "denHelpers", "denHelperPrice", "villageMegas", "cuisineDishes", "beanFarms" -> "M38";
+			case "furnishedBuilds", "furnitureMods", "moddedStorageNetworks", "moddedLibrary", "crafters" -> "M37";
+			case "denHelpers", "denHelperPrice", "villageMegas", "cuisineDishes", "beanFarms", "furnicrafters" -> "M38";
 			case "mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains" -> "M39";
 			default -> null;
 		};

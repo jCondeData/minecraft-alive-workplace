@@ -144,12 +144,18 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 	public void aJoblessVillagerOpensTheHealingCentersShutDoorAndTakesItsBrewingStand(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
+		// villagers look for a job by day and go to bed at dusk (B258): at whatever hour the suite had reached, this one
+		// failed whenever it began at night. It starts in the morning.
+		helper.setDayTime(2000);
 		place(helper, "healing_center", new BlockPos(8, 1, 6));
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(13, 2, 4));
 		villager.getRandom().setSeed(203L);
 		// the brewing stand is template (3, 1, 7), behind the door (5, 1, 2)
 		double past = helper.absolutePos(new BlockPos(0, 0, 10)).getZ();
-		helper.succeedWhen(() -> helper.assertTrue(villager.getZ() > past && villager.getVillagerData().getProfession() == VillagerProfession.CLERIC,
+		// (a job of the brewing stand's: the Cleric or, since 36.17 and at random, one of ours who share it)
+		helper.succeedWhen(() -> helper.assertTrue(villager.getZ() > past && villager.getVillagerData().getProfession() != VillagerProfession.NONE
+			&& io.github.jcondedata.aliveworkplace.work.Stations.at(net.minecraft.world.level.block.Blocks.BREWING_STAND).orElseThrow()
+				.has(villager.getVillagerData().getProfession()),
 			"the villager hasn't come in and taken the brewing stand: at " + villager.position() + ", "
 				+ villager.getVillagerData().getProfession()));
 	}

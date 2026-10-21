@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "aliveworkplace:builders_bench",
+    "aliveworkplace:crafters_workbench",
     "aliveworkplace:blueprint_table",
     "aliveworkplace:miners_bench",
     "aliveworkplace:chopping_block",
@@ -38,6 +39,10 @@
     },
     {
       "id": "aliveworkplace:track_station",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:furnicrafter",
       "required": false
     }
   ]

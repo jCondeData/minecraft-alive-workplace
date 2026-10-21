@@ -37,7 +37,7 @@ public class ExpansionBuildsGameTests implements FabricGameTest {
 		return Stream.of(StarterBlueprints.GUILDHALL, StarterBlueprints.GUILDHALL_2, StarterBlueprints.FIRE_STATION, StarterBlueprints.WELL_HOUSE,
 			StarterBlueprints.PHYSICIANS_HOUSE, StarterBlueprints.WINERY, StarterBlueprints.WINERY_2, StarterBlueprints.TAILORS_SHOP,
 			StarterBlueprints.TAILORS_SHOP_2, StarterBlueprints.PRINT_SHOP, StarterBlueprints.PRINT_SHOP_2, StarterBlueprints.JEWELLERS_WORKSHOP,
-			StarterBlueprints.JEWELLERS_WORKSHOP_2).map(StarterBlueprints.Entry::id).toList();
+			StarterBlueprints.JEWELLERS_WORKSHOP_2, StarterBlueprints.CRAFTERS_WORKSHOP).map(StarterBlueprints.Entry::id).toList();
 	}
 
 	private static List<ResourceLocation> table(MinecraftServer server) {

@@ -58,7 +58,8 @@ public final class VillageHouses {
 	 * The luxury jobs' houses (ROADMAP 34.13) and the switch each needs: a Winery (a Vintner at a cauldron, config
 	 * {@code vintners}) and a Tailor's Shop (a Tailor at a loom, config {@code tailors}). With its switch off (or Classes
 	 * and luxuries not yet released) villages don't grow that house: its villager would have a job that does nothing.
-	 * Read when the server starts, which is when the pools are filled; houses already grown stay.
+	 * Read when the server starts, which is when the pools are filled; houses already grown stay. The Crafter's Workshop
+	 * (ROADMAP 37.16, a Crafter at a Crafter's Workbench, config {@code crafters} behind Milestone 37) goes the same way.
 	 */
 	public static final java.util.Map<String, java.util.function.BooleanSupplier> LUXURY_HOUSES = java.util.Map.of(
 		"winery", () -> io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED,
@@ -66,7 +67,8 @@ public final class VillageHouses {
 		// ROADMAP 34.14: a Print Shop (a Printer at a cartography table, config printers) and a Jeweller's Workshop (a
 		// Jeweller at a stonecutter, config jewellers)
 		"print_shop", () -> io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED,
-		"jewellers_workshop", () -> io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED);
+		"jewellers_workshop", () -> io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED,
+		"crafters_workshop", () -> io.github.jcondedata.aliveworkplace.craft.Crafters.ENABLED);
 
 	private static java.util.Map<String, Integer> houses() {
 		Integer override = Integer.getInteger("aliveworkplace.houseWeight");
@@ -107,6 +109,8 @@ public final class VillageHouses {
 		// The printer and the jeweller (ROADMAP 34.14): the same, by their jobs' switches.
 		out.put("print_shop", override != null ? override : 2);
 		out.put("jewellers_workshop", override != null ? override : 2);
+		// The Crafter (ROADMAP 37.16), who makes the parts the village's builders are short of: by the crafters switch.
+		out.put("crafters_workshop", override != null ? override : 2);
 		// The Pokémon jobs' houses (ROADMAP 28.15; Cobblemon and config pokemonVillageHouses): the Pokémon Center most often.
 		// (-Daliveworkplace.pokemonHouseWeight overrides these five, for the village screenshots.)
 		Integer pokemon = Integer.getInteger("aliveworkplace.pokemonHouseWeight", override);

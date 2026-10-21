@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, B238
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, B238, B260, B262
 
 ## 1. What a player sees
 
@@ -48,6 +48,17 @@ chairs, tables, nightstands, sofas, lamps and curtains. Cozy Home's clocks and s
 planned with a Pokémon partner (a Pokémon kept in a Pasture Block within 16 blocks of the plot) gets a Trainer's room:
 with CobbleFurnies installed, its first chair becomes the Poké Ball chair and the table beside it the Poké Ball desk,
 whatever the order (the owner's answer); the rest of the house follows the order.
+
+Rooms that read as rooms (B260): nothing stands in a door's way (two blocks in and out of every door), every bed has
+its head against a wall (or a window in it) and faces into the room, a lantern hangs or stands on a table or post,
+never on the bare floor, and a chest stands against a wall or at the foot of a bed. Each spot records what it stands
+on or against in the drawing (floor, wall, ceiling), and a modded piece goes only where what it needs is there: a
+Beautify picture frame stands on a table, so a picture on a wall stays a banner; a Handcrafted shelf stands on the
+floor, so a shelf on a wall stays a slab; a two-block-tall piece (a `half=lower|upper` block) is placed with its top
+half or not at all. The generator refuses a furnished build that breaks these rules, and `FurnishedRoomsGameTests`
+checks every shipped one. The Stone House was redone for it: the table by the west window and the clock by the bed
+(not beside the door), the attic a bedroom (the bed's head to the gable, a nightstand, a chest at its foot, a rug and a
+lamp hung from the ridge), and upstairs in II two beds with their heads to the back wall, a nightstand by each.
 
 The workplaces are furnished too (37.5), at every level: the Supply Shop's counter boards either side of the Shop
 Counter are counters, with a shelf of cups and a picture on the back wall, pots hanging from chains in the display
@@ -210,14 +221,16 @@ iron.
 **Sophisticated controllers (37.9).** The mod's jar registers Fabric's `ItemStorage.SIDED` for the controller's block
 entity, so the controller is one item storage over everything it links (checked in Sophisticated Storage 1.3.7.9 before
 building). `store/StorageNetworks` goes by block ids only: from a `sophisticatedstorage:controller` it walks through
-touching storage blocks (chests, barrels, limited barrels and shulker boxes of every tier) and `storage_link`s, within
-the controller's reach (15 blocks each way, the mod's `SEARCH_RANGE`). `SupplyContainers.find` around a Storehouse
+touching storage blocks (chests, barrels, limited barrels and shulker boxes of every tier) and the `storage_link`s
+linked to it (the mod links a link only with its Storage Tool and saves the controller's position on it; an unlinked
+link is passed over, so the storage behind it stays a store of its own, B257), within the controller's reach (15 blocks each way, the mod's `SEARCH_RANGE`). `SupplyContainers.find` around a Storehouse
 block, with the switch on, folds those blocks into the controller: they leave the list and the controller joins it, so
 the board, porters, builders and every job that reads the Storehouse see one store. Around any other workstation the
 blocks are read one by one as before (the controller stays out of those lists, `ModdedBlocks.STORAGE_NETWORK`). The mod
 links a controller's storage when a player places it; a builder sets blocks without that, so after a
-builder places a controller, or a storage block or link joining one's network, `MaterialRules.afterPlaced` has the
-controller look again (the block's vanilla placing hook) so it links. Styles gained three optional fields for it:
+builder places a controller, or a storage block joining one's network, `MaterialRules.afterPlaced` runs the block's
+vanilla placing hook (the controller's, or the storage block's, which joins the controller it touches) so it links. A
+link a builder places stays unlinked, as one a player places without the tool. Styles gained three optional fields for it:
 `"blueprints"` (a regex on the base blueprint ids the style is for), `"requires_switch"` (a config switch it is offered
 under) and a rule's `"near"` (the rule applies only to a block touching that block in the blueprint: the lantern on the
 Storehouse becomes the controller).
@@ -404,7 +417,15 @@ with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierS
 37.9 (compat, Sophisticated Storage): `SophisticatedControllerCompatTests.aControllerMakesThreeBarrelsOneStore` (counted
 once, a delivery put away and a builder's take through the controller, the board's line, three stores again once it
 breaks), `SophisticatedControllerCompatTests.aPorterDeliversThroughTheController`,
-`SophisticatedControllerCompatTests.switchOffKeepsThreeStores`, `SophisticatedControllerCompatTests.theSophisticatedStyleAddsAController`.
+`SophisticatedControllerCompatTests.switchOffKeepsThreeStores`, `SophisticatedControllerCompatTests.theSophisticatedStyleAddsAController`,
+`SophisticatedControllerCompatTests.aLinkToolLinkedToAnotherControllerIsntThisOnes` (a link tied to another controller
+isn't this one's way on: the barrel behind it isn't linked, its planks counted once),
+`SophisticatedControllerCompatTests.theSixteenthBarrelEachWayIsOutOfTheControllersReach` (rows of 16 barrels east, south
+and up: the controller links each 15th, not a 16th, as the mod's own controller does) and
+`SophisticatedControllerCompatTests.aBarrelBuiltBehindAToolLinkedLinkIsLinked` (a barrel a builder adds behind a
+tool-linked link is counted through the controller, once);
+no mods: `StyleGameTests.aNearRuleForAMissingBlockIsPassedOver` (a near rule swaps only the block beside its block, and one
+whose block isn't installed falls through to the next rule, not to air).
 Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, which now brings Sophisticated Storage).
 
 37.6 (no mods): `FurnitureSeatsGameTests.theSeatsTagLoadsWithoutTheFurnitureMods`; with Handcrafted (compat):
@@ -416,7 +437,7 @@ point of interest, the villager claims and sleeps in it, the Starter Cottage it 
 adds the furnished home's beauty). Scene `seats_and_beds` (`-Pfurniture=true`).
 
 37.7 (compat, with Carved Wood and Rechiseled): `CarvedStylesCompatTests.theStylesUseCarvedWoodAndRechiseled` (each
-swap, the Carved Wood lectern the Librarian's job site and barrel the Fisherman's, a hanging lantern still hanging; with
+swap, the Carved Wood lectern the Librarian's job site and barrel the Fisherman's, a hanging lantern still hanging and a standing waterlogged one standing; with
 the switch off no Spruce style and Grand as before), `CarvedStylesCompatTests.aCarvedWoodChestIsASupplyChest` (a
 builder builds from a Carved Wood chest; a Carved Wood barrel is listed and filled),
 `CarvedStylesCompatTests.aSpruceLibraryHasCarvedShelvesAndALibrarian` (built with nothing skipped, every shelf Carved
@@ -435,6 +456,12 @@ the Storehouse and gets Tom's terminal menu, listing 10 cobblestone, 20 planks a
 store) and `TomsStorageCompatTests.aConnectorInsideThePlotIsPassedOver` (a connector inside the area being built isn't
 read; its chests outside are each a store). `TomsStorageCompatTests.aBlockHoldingNoItemsIsntJoined` (an enchanting
 table on the connector isn't joined, and a chest touching only the table is its own store).
+`TomsStorageCompatTests.aCableRunsOnThroughACableConnector` (a cable on a cable connector's side leads on to another
+cable connector, whose chest the network joins: the connector stays the only store, its glass counted once) and
+`TomsStorageCompatTests.theSixteenthBarrelIsOutOfTheConnectorsRange` (in a row of 16 barrels from the connector, it
+joins the 15 within its 16-block range, as Tom's own connector does, and not the 16th).
+`TomsStorageCompatTests.anotherConnectorIsntJoined` (a second inventory connector touching a network chest isn't one
+of its inventories). Both classes check the store list is nearest first.
 Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
 the board's line and Tom's terminal screen.
 37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and

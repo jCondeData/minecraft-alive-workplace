@@ -16,7 +16,75 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Crafter's Workshops in villages** (37.16). The Steward plans a Crafter's Workshop when the builders keep running
+  short of crafted parts (planks, slabs, stairs, doors), and villages grow one now and then in all five styles, its
+  Crafter already at the workbench. Both follow the Crafters setting.
+- **The Crafter makes the pack's furniture** (37.15). A builder short of Handcrafted chairs (or another piece Handcrafted,
+  Beautify or Cozy Home crafts on the crafting table) gets them made from logs, the planks, slabs and sticks cut on
+  the way. CobbleFurnies'
+  pieces are made too while its Furni Crafter stands in the Crafter's workshop.
+- **A job block with several jobs gives one at random** (36.17). A villager without a job who takes a composter, a
+  lectern, a Shop Counter or any block several jobs share by themselves now becomes one of its jobs, not always the
+  vanilla one: a composter can make a Farmer, an Orchard Keeper, a Florist or a Composter. The jobs the village has
+  fewest of are the likeliest, and the job taken stays. Jobs picked with their item, from the hall or by the Steward
+  are unchanged, and the Trainer Leader is never drawn. Random Station Jobs in the settings turns it off (the vanilla
+  job every time, as before).
+
+- The Crafter (2.1, behind its switch `crafters`): a villager at the new Crafter's Workbench makes what the village's
+  workers are short of through whole recipe chains (logs into planks into slabs into a barrel), from the builders'
+  chests and the Storehouse, and puts it in the asker's chests; a raw material short is said, and nothing is wasted. A
+  chain half made carries on after a restart. With the Crafter's Workshop in the Blueprint Table (37.14).
+- The Furnicrafter (Cobblemon depth, 2.2, with CobbleFurnies): a villager without a job by CobbleFurnies' Furni
+  Crafter takes it and makes CobbleFurnies furniture from the store's materials: the chairs, tables and lamps a builder
+  nearby is waiting for (a furnished home's pieces) and the pieces the Storehouse orders, with sticks cut from planks
+  first when they're short. A red bobble beanie, a walnut apron with a Poké Ball on it and a tape measure; trades in
+  planks, wool and furniture. Without CobbleFurnies nothing changes. Switch: `furnicrafters`.
+- Fixed: a Sophisticated Storage link tied to a controller with the Storage Tool, standing away from the controller's network, no longer has the storage behind it counted twice at the Storehouse (B262).
+- Fixed: a Wonder's crew no longer stands still for minutes when many blocks wait over holes it can't fill: once the
+  crew has stood still for 10 seconds the lead gives them all up together, not one every 10 seconds (the Hanging
+  Gardens' time-lapse ran out of time over one terrace's holes) (B270).
+
+## 0.146.1 — 2026-10-20
+
 ### Fixed
+
+- A guest Legend who settles in a village has their powers at once: a Seer made the village's at dawn foretold at
+  that dawn, where before their powers could wait up to ten seconds and the dawn's foretelling was missed (B269).
+- Builders take from the chests only what their work still needs. Each trip took one block too many, so two Builders
+  building from the same Storehouse could each end up waiting for the one log or slab the other was carrying, and
+  neither build finished (the city time-lapse's last palisade pieces, B132).
+- Builders no longer lose their bench, or the chests by it, to a neighbour's build. A build whose box took in another
+  Builder's Bench cleared it; its Builder then took the nearest free bench, another Builder's, and his own build
+  waited forever for materials that sat in the chests by his old bench. Builds now leave every Builder's Bench
+  standing (B132).
+- Furnished homes and workplaces read as rooms: no furniture in a doorway's way, every bed's head against a wall,
+  lanterns hung or on a table instead of the floor, chests against a wall or at a bed's foot. A modded piece goes only
+  where it can stand (no Beautify picture frame or Handcrafted shelf floating mid-wall) and a two-block-tall piece gets
+  its top half. The Stone House was refurnished: a clear way in from the door, and its attic and upper floor are
+  proper bedrooms (B260).
+- A Builder repairing a building now takes what it needs from the chests inside that building. Repairing a Storehouse
+  Shed, it waited for a Hay Bale and an Oak Ladder that were in the shed's own chests by its bench, because chests
+  inside the build were left out, as they are for a new build (B261).
+- A villager without a job who had picked a workstation just before dusk no longer keeps walking to it at bedtime.
+  From a Stone House attic it used to stand by its bed all night and then lose the bed; now it goes to bed and picks a
+  workstation again by day (B258).
+- Two villagers coming home through one door together no longer get stuck on the doorstep, where one could lose
+  their bed for the night (seen at a renewed Stone House). The one further from the door now steps back a moment and
+  goes in after the other (B255).
+- Wonders: a crew no longer lays a block in the air over one the lead had to give up (someone stood in it, or there
+  was nowhere to reach it from), as once on the folly's dome. A crew member now lays the given-up block once it's
+  clear, and the wall goes on from there; if nobody can, the block over it is left too, never floating (B254).
+
+- Storehouse: a Sophisticated Storage link that isn't linked with the Storage Tool (one a builder built, or a player
+  placed without the tool) no longer hides the storage behind it: that barrel stays a store of its own, so villagers
+  see what's in it. A link linked to the controller still counts what's behind it through the controller (B257).
+
+- Sieges: an archer on a battle station whose raider goes out of sight (under the walkway, hacking at the gate) turns
+  to the nearest raider he can see and reach, instead of watching for the hidden one for up to a minute (B252).
+- Sieges: archers take the battle station with a view of the ground in front of the gate, in a gap of the
+  battlements rather than right behind a merlon, and stay in the middle of it, so they shoot at the raiders coming at
+  the gate instead of standing over the siege without seeing anyone (B252).
 
 - Create: a farmer, armorer, chef or miner who stops machine work in the middle of a trip (their workstation broken
   while still a Novice, or machine work switched off in the config) no longer keeps the wheat, iron or ore they
@@ -48,6 +116,13 @@ asks for the steps, `latest.log` and any crash report).
 ## 0.146.0 — 2026-10-19
 
 ### Added
+- **Villagers live much longer, and a death matters** (36.16). Every life is ten times longer: an elder after 1200
+  grown days (Days Until Elder, now up to 10000), passing 400 elder days later; your world keeps each villager's age and
+  counts it against the new span, and a settings file still on the old default 120 moves to 1200. When a villager of a
+  village with a hall dies, the players near are told who it was, their job and their years ("Mira, the village's
+  Farmer, has died aged 31. The village mourns."), the chronicle says the same, their family grieve for three days and
+  their partner for five (a lower mood and 10% slower work), and the Undertaker leads a funeral at the grave first.
+  Village Mourning in the settings turns it off.
 - **Upgrade a home from the Village Hall** (36.14). A new Upgrades tab (the bricks) lists the village's finished builds
   that have a next level, nearest first: the level and the next, where, what it costs in blocks, and whether the space
   is free. Click one and the village's Builder builds the next level over the old one. Natural ground, trees and water

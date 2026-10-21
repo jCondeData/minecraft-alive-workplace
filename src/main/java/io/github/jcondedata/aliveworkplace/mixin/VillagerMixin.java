@@ -68,6 +68,7 @@ abstract class VillagerMixin {
 	private void aliveworkplace$thought(CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.thinking(null);
 		io.github.jcondedata.aliveworkplace.work.BedLadders.tick((Villager) (Object) this); // up a ladder to a bed upstairs (B79)
+		io.github.jcondedata.aliveworkplace.work.DoorJams.tick((Villager) (Object) this); // two at one door: one gives way (B255)
 		io.github.jcondedata.aliveworkplace.legend.Pathfinder.hold((Villager) (Object) this); // after the brain: waiting stays put
 		io.github.jcondedata.aliveworkplace.work.StuckVillagers.tick((Villager) (Object) this); // never left inside a block (B185)
 	}
@@ -134,11 +135,17 @@ abstract class VillagerMixin {
 		}
 	}
 
-	/** A jobless villager at a Healing Machine takes Cobblemon's nurse job, not ours (28.7: ours only by a honey bottle). */
+	/**
+	 * A jobless villager at a Healing Machine takes Cobblemon's nurse job, not ours (28.7: ours only by a honey bottle);
+	 * one taking a block several jobs share by themselves gets one of them at random (36.17, {@code work/RandomJobs}).
+	 */
 	@Inject(method = "setVillagerData", at = @At("HEAD"), cancellable = true)
 	private void aliveworkplace$onlyByItem(net.minecraft.world.entity.npc.VillagerData data, CallbackInfo ci) {
 		Villager self = (Villager) (Object) this;
 		net.minecraft.world.entity.npc.VillagerProfession instead = io.github.jcondedata.aliveworkplace.work.Stations.insteadByItself(self, data);
+		if (instead == null) {
+			instead = io.github.jcondedata.aliveworkplace.work.RandomJobs.instead(self, data);
+		}
 		if (instead != null) {
 			ci.cancel();
 			self.setVillagerData(data.setProfession(instead));

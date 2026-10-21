@@ -419,7 +419,7 @@ public class CrafterWork extends Behavior<Villager> {
 			if (plan == null || builderStation == null) {
 				continue;
 			}
-			BoundingBox area = plan.bounds();
+			BoundingBox area = plan.supplyExclude(); // B261: none for a repair
 			// The builder's chests and village-mates' first; another builder's last, and only what its builds can spare (B33).
 			List<BlockPos> sources = new ArrayList<>(SupplyContainers.find(level, builderStation, area));
 			List<BlockPos> theirs = new ArrayList<>();
@@ -623,6 +623,13 @@ public class CrafterWork extends Behavior<Villager> {
 		synchronized (CLAIMS) {
 			CLAIMS.values().removeIf(until -> until < now);
 			return CLAIMS.containsKey(claim);
+		}
+	}
+
+	/** Lets {@code claim} go (the job is done or fell through): the asker is looked at again (the Crafter, 37.14). */
+	static void release(String claim) {
+		synchronized (CLAIMS) {
+			CLAIMS.remove(claim);
 		}
 	}
 

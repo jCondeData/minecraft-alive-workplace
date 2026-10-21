@@ -513,4 +513,54 @@ public class ContraptionCompatTests implements FabricGameTest {
 				+ ", not only the shaft nothing drives");
 		});
 	}
+
+	/**
+	 * A part that turns slowly still turns: a shaft on a creative motor set to 1 RPM (the slowest it turns) isn't listed
+	 * as still, the way the Mechanic's machines count 1 RPM as turning.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"contraption_slow_parts"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "contraption_slow_parts")
+	public void aSlowTurningPartIsNotListedAsStill(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos motor = new BlockPos(2, 2, 2);
+		BlockPos driven = motor.above();
+		helper.setBlock(motor, MechanicCompatTests.with(MechanicCompatTests.create("creative_motor").defaultBlockState(), "facing", "up"));
+		BlockEntity be = helper.getBlockEntity(motor);
+		CompoundTag tag = be.saveWithoutMetadata(level.registryAccess());
+		tag.putInt("ScrollValue", 1); // the motor's speed setting, by its saved name
+		be.loadWithComponents(tag, level.registryAccess());
+		helper.setBlock(driven, MechanicCompatTests.with(MechanicCompatTests.create("shaft").defaultBlockState(), "axis", "y"));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(Math.abs(speed(level, helper.absolutePos(driven))) == 1f, "setup: the shaft turns at "
+				+ speed(level, helper.absolutePos(driven)) + " RPM, not 1");
+			List<BlockPos> still = Contraptions.stillParts(level, List.of(helper.absolutePos(motor), helper.absolutePos(driven)));
+			helper.assertTrue(still.isEmpty(), "parts turning at 1 RPM are listed as still: " + still.stream().map(helper::relativePos).toList());
+		});
+	}
+
+	/**
+	 * The turning check looks three times, {@code CHECK_AFTER} apart, then lists what still doesn't turn: a check on its
+	 * third look (tries 2) with a part still standing is listed at once, not looked at again.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"contraption_last_look"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "contraption_last_look")
+	public void theThirdLookListsWhatStillDoesntTurn(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos idle = helper.absolutePos(new BlockPos(3, 2, 3));
+		helper.setBlock(new BlockPos(3, 2, 3), MechanicCompatTests.with(MechanicCompatTests.create("shaft").defaultBlockState(), "axis", "y"));
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(1, 2, 1)),
+			Rotation.NONE, Mirror.NONE);
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		manager.scheduleTurnCheck(new BuildSiteManager.TurnCheck(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("compat_test/last_look"),
+			placement, java.util.UUID.randomUUID(), "Bob", List.of(idle), level.getGameTime(), 2));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(manager.notTurning(placement).equals(java.util.Optional.of(List.of(idle))),
+				"the third look didn't list the shaft that doesn't turn (checks due "
+					+ manager.turnChecks().stream().filter(c -> c.placement().equals(placement)).map(c -> c.due() + "/" + c.tries()).toList()
+					+ ", now " + level.getGameTime() + ")");
+			helper.assertTrue(manager.turnChecks().stream().noneMatch(c -> c.placement().equals(placement)), "the check is still due after its third look");
+		});
+	}
 }

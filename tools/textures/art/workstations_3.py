@@ -820,7 +820,56 @@ def harvest_idol():
             post.save(block("harvest_idol_post"))]
 
 
-DRAW = [cradle, harvest_idol, sieve, storehouse, teachers_desk, tinkers_bench, trade_board, training_dummy, training_post, travel_post,
+# --- Crafter's Workbench ---------------------------------------------------------------------------------------------
+def crafters_workbench():
+    """The Crafter's (ROADMAP 37.14): a dark oak bench, the crafting table's cousin. Top: a crafting grid with a log,
+    planks and a slab in its cells, a stonecutter's blade in the corner; front: the chain the Crafter works, a log
+    end, a plank and a slab on a shelf with arrows between them, over a drawer; side: a hand saw on the wall and a
+    stack of slabs."""
+    log = P("oak_log")
+    oak = OAK
+    cell = {"g": oak[1], "c": CREAM[0], "C": CREAM[1]}
+    top = bench_face(491, DARK_OAK)
+    top.paste(grid("""
+        ggggggggggggg
+        gcccgcccgcccg
+        gcLcgPPPgcccg
+        gcccgcccgcccg
+        ggggggggggggg
+        gcccgcccgcccg
+        gPPPgSSSgcccg
+        gcccgcccgcccg
+        ggggggggggggg
+        gcccgcccgcccg
+        gcccgcccgcccg
+        gcccgcccgcccg
+        ggggggggggggg
+    """, cell | {"L": log[2], "P": oak[4], "S": oak[2]}), 1, 1)
+
+    front = bench_face(493, DARK_OAK)
+    front.paste(grid("""
+        bbb...ppp.....
+        bab.c.ooo.c...
+        bab.ccppp.ccss
+        bbb.c.ooo.c.ss
+    """, {"b": log[2], "a": oak[5], "p": oak[5], "o": oak[3], "c": CREAM[0], "s": oak[4]}), 1, 3)
+    front.fill(rect(1, 7, 14, 7), DARK_OAK[0])                             # the shelf they stand on
+    drawer(front, 3, 9, (BRASS[3], BRASS[1]), wood=DARK_OAK)
+
+    side = bench_face(495, DARK_OAK)
+    side.paste(grid("""
+        33333333hh
+        22222222hH
+        0101010.hh
+    """, {"h": oak[2], "H": oak[0]}, ramp=STEEL), 2, 3)
+    for y in (9, 11):                                                      # slabs stacked on the floor of the bench
+        side.fill(rect(3, y, 12, y), oak[4])
+        side.fill(rect(3, y + 1, 12, y + 1), oak[1])
+    return [top.save(block("crafters_workbench_top")), front.save(block("crafters_workbench_front")),
+            side.save(block("crafters_workbench_side"))]
+
+
+DRAW = [cradle, crafters_workbench, harvest_idol, sieve, storehouse, teachers_desk, tinkers_bench, trade_board, training_dummy, training_post, travel_post,
         tutors_desk, undertakers_table, village_hall]
 
 if __name__ == "__main__":

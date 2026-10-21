@@ -160,7 +160,7 @@ final class RetirementScene {
 		Jobs.employ(level, bram, COMPOSTER, PoiTypes.FARMER, VillagerProfession.FARMER);
 		bram.setVillagerData(bram.getVillagerData().setLevel(4));
 		bram.setVillagerXp(160);
-		LifeStages.setAdultSince(bram, today - 130);
+		LifeStages.setAdultSince(bram, today - LifeStages.ELDER_DAYS - 10); // an elder of 10 days (36.16: 1200 to become one)
 		tom = villager(level, "Tom", 0.5, VillagerProfession.NONE);
 		LifeStages.setAdultSince(tom, today - 20);
 		io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARENTS.set(tom,

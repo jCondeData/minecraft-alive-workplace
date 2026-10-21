@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261
 
 ## 1. What a player sees
 
@@ -28,7 +28,8 @@ stopped, chunk unloaded, Builder asleep) and carry on exactly where it was. `Bui
 restartable at any tick for this reason.
 
 **Stages, in order:** CLEAR (top-down), FOUNDATION, STRUCTURE (bottom-up), DECORATION, LANDSCAPE, DONE.
-- CLEAR takes away what is in the way, but never breaks containers or the bench.
+- CLEAR takes away what is in the way, but never breaks containers, its own bench or any other Builder's Bench (a
+  neighbour's bench inside the build's box stays, and the build finishes round it, B132).
 - FOUNDATION fills under a build standing on uneven ground. How deep is the `workplaceFoundationDepth` rule.
 - STRUCTURE goes bottom-up so every block has something to stand on.
 - DECORATION is what needs something to hang on or stand on (torches, doors, ladders, carpets...), placed after
@@ -47,9 +48,13 @@ restartable at any tick for this reason.
 **Materials.** Each block costs an item (`MaterialRules`; some blocks you cannot hold in survival use their base
 material). A fixed set of blocks is never placed (bedrock, command blocks, spawners, portals, barrier, fire...).
 A Builder takes what it needs from the chests and barrels within `supplyRadius` of the bench (and 4 blocks up or
-down), carries up to 27 stacks in its bag (`BuilderBag`), and empties the bag at the chests when it finishes or
+down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing than the stretch of work ahead still
+needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
+other carried), and empties the bag at the chests when it finishes or
 stops helping. Builders never copy what is inside containers. The blueprint's tooltip and a Book and Quill list what
-is still missing.
+is still missing. A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
+repair counts them (`BuildPlan.supplyExclude`, B261): the building stands, so a Storehouse Shed being repaired, or a
+shed the bench's chests stand in, hands the Builder what its chests hold.
 
 **Speed.** `workplaceBuildDelay` ticks per block (default 8) times a share by Builder level 1 to 5:
 100%, 100%, 85%, 70%, 55%, 40% (index 0 is unused). Then the village's mood, traits, edicts and so on change it
@@ -185,7 +190,8 @@ claims and trip counts.
 - Placing must feel good: turn, mirror, ghost preview, move, cancel with materials returned (23.8, approved
   2026-10-04).
 - A builder's steps need exactly the build's material list, nothing more (B22), and it fetches from its own site's
-  bench chests and keeps its bench, never swapping to another builder's (B22, B28).
+  bench chests and keeps its bench, never swapping to another builder's (B22, B28); no build breaks a bench, and a
+  builder employed at a bench put down by a command holds it at once (B132).
 - Progress never drops after a restart (B46, B64).
 - Unfinished blocks are never claimed done: `MaterialRules.matches` ignores neighbor-dependent properties.
 - An upgrade is a whole new blueprint on the same spot. Where its new room's roof runs in under the old roof's edge,
@@ -237,7 +243,8 @@ claims and trip counts.
 
 GameTests (`src/gametest/java/.../test/`): `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
 `BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
-`BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`,
+`BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbour's bench outlasts a build;
+a bench put down and employed at in one command is held),
 `TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `TablePreviewGameTests` (7, the table's
 3D preview data; 36.1: Starter Cottage IV's preview has cells below the ground and its fitted height counts them, and
 at scale 2 no cellar block shares a cell with a ground-floor block), `DoorwayHeadroomGameTests` (7, B173: a villager
@@ -254,7 +261,10 @@ bells, `DoorwayHeadroomGameTests.aVillagerOpensTheHealingCentersShutFrontDoorAnd
 Healing Center's door and takes its brewing stand as a cleric,
 `DoorwayHeadroomGameTests.aJoblessVillagerOpensTheHealingCentersShutDoorAndTakesItsBrewingStand`).
 
-`RepairAskGameTests` (9, 36.15: the ask with nothing started and the page's Yes and Not now,
+`B261GameTests` (8, B261: a Storehouse Shed missing its hay bale and bottom ladder is repaired from its own chest,
+`aStorehouseShedIsRepairedFromItsOwnChests`; a shed repaired from the chest, barrel, double chest (its second half),
+trapped chest or chest one block above the bench inside it, and after a reload; a new build still leaves its own box's
+chests out). `RepairAskGameTests` (9, 36.15: the ask with nothing started and the page's Yes and Not now,
 `theBuilderAsksBeforeRepairing`; Yes on the hall's page repairs it, `yesOnTheHallPageRepairsIt`; Not now from the chat
 command and asked again once more goes missing, a stranger refused, `notNowLeavesItUntilMoreGoesMissing`; Stop and
 Pause mid-repair with the builder going straight to its queued job, `aRepairGoingOnStopsAndPausesFromTheHall`; a new

@@ -473,6 +473,9 @@ final class JobScenes {
 	static Villager picked(ServerLevel level, ServerPlayer player, BlockPos station, BlockState state, Item item) {
 		level.setBlockAndUpdate(station, state);
 		Villager v = EntityType.VILLAGER.spawn(level, station.south(), MobSpawnType.COMMAND);
+		// B274: no gift by the UUID roll. Gifts are off in GameTests but rolled here; one villager in 240 is a Night Owl, who
+		// idles through the scenes' fixed morning (2500) and wanders off instead of working (the sifter's failing GIF).
+		io.github.jcondedata.aliveworkplace.legend.Gifted.set(v, null);
 		// Staging runs as a server task, and the game files a new block's workstation in a task of its own after this
 		// one: hand the item over once it's there, as a player's click always comes after the block is placed.
 		level.getServer().execute(() -> {
@@ -721,7 +724,14 @@ final class JobScenes {
 		SCENES.put("sifter", job("the sifter sifted gravel into loot", 1800, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.WATER_CAULDRON.defaultBlockState().setValue(BlockStateProperties.LEVEL_CAULDRON, 3), Items.GRAVEL);
 			chest(level, chestPos(), new ItemStack(Items.GRAVEL, 40));
-			return l -> n(ModAttachments.BLOCKS_SIFTED, v) >= 3;
+			return l -> {
+				// B274: on a timeout, say what the sifter was doing
+				timeoutWhy = "the sifter: " + v.getVillagerData().getProfession() + ", sifted " + n(ModAttachments.BLOCKS_SIFTED, v)
+					+ ", doing " + v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ ", schedule " + net.minecraft.core.registries.BuiltInRegistries.SCHEDULE.getKey(v.getBrain().getSchedule())
+					+ ", at " + v.blockPosition().toShortString();
+				return n(ModAttachments.BLOCKS_SIFTED, v) >= 3;
+			};
 		}));
 		SCENES.put("tinkerer", job("the tinkerer mended the iron golem", 2000, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.SMITHING_TABLE, Items.REDSTONE);
@@ -2051,6 +2061,24 @@ final class JobScenes {
 			Showcase.check(stations.stream().anyMatch(s -> s.getX() < STATION.getX() + 6) && stations.stream().anyMatch(s -> s.getX() >= STATION.getX() + 6),
 				"the Gatehouse and the Wall Tower both have battle stations");
 			return l -> {
+				// B252: on a timeout, say where each archer stood, their station and what they were shooting at
+				StringBuilder why = new StringBuilder();
+				for (Villager a : archers) {
+					net.minecraft.world.entity.LivingEntity foe = io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(a);
+					why.append(why.length() == 0 ? "" : "; ").append("archer at ").append(String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f", a.getX(), a.getY(), a.getZ()))
+						.append(a.isAlive() ? "" : " (dead)").append(", station ")
+						.append(io.github.jcondedata.aliveworkplace.guard.BattleStations.post(a).map(BlockPos::toShortString).orElse("none"))
+						.append(io.github.jcondedata.aliveworkplace.guard.BattleStations.onStation(a) ? " (on it)" : " (not on it)")
+						.append(", guard ").append(io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(a))
+						.append(", fighting ").append(io.github.jcondedata.aliveworkplace.guard.GuardCombat.isFighting(a))
+						.append(", target ").append(foe == null ? "none" : String.format(java.util.Locale.ROOT, "%s at %.1f %.1f %.1f, %.1f off, %s", foe.getType().toShortString(),
+							foe.getX(), foe.getY(), foe.getZ(), Math.sqrt(a.distanceToSqr(foe)), a.hasLineOfSight(foe) ? "in sight" : "out of sight"));
+				}
+				for (net.minecraft.world.entity.Mob r : raiders) {
+					why.append("; raider at ").append(String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f, health %.0f/%.0f%s, seen by %d", r.getX(), r.getY(), r.getZ(),
+						r.getHealth(), r.getMaxHealth(), r.isAlive() ? "" : " (dead)", archers.stream().filter(a -> a.hasLineOfSight(r)).count()));
+				}
+				timeoutWhy = why.toString();
 				boolean posted = archers.stream().allMatch(io.github.jcondedata.aliveworkplace.guard.BattleStations::onStation);
 				boolean both = archers.stream().anyMatch(a -> a.getX() < STATION.getX() + 6) && archers.stream().anyMatch(a -> a.getX() >= STATION.getX() + 6);
 				return posted && both && raiders.stream().anyMatch(r -> !r.isAlive() || r.getHealth() < r.getMaxHealth());
@@ -2409,6 +2437,71 @@ final class JobScenes {
 			chest(level, STATION.east(2));
 			return l -> !street.isEmpty() && !l.getBlockState(street.get(0)).is(ModBlocks.GRAVE)
 				&& io.github.jcondedata.aliveworkplace.grave.Graveyards.plot(l, hall).stream().anyMatch(p -> l.getBlockState(p).is(ModBlocks.GRAVE));
+		}, null));
+		// 36.16: Mira, the village's Farmer, dies; the village is told, Tom (her husband) and Pip (her son) mourn, and the
+		// undertaker leads her funeral at the grave (no golden apple in the chest: nobody brings her back here)
+		SCENES.put("village_mourns", new Job("the undertaker led Mira's funeral and the village mourned her", 2400,
+			new Vec3(4.5, -54, 12), new Vec3(-2, -59.5, 0), (level, player) -> {
+			BlockPos hall = new BlockPos(-3, -60, -8);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			Villager mira = EntityType.VILLAGER.spawn(level, new BlockPos(6, -60, 6), MobSpawnType.COMMAND);
+			mira.setVillagerData(mira.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(3));
+			mira.setCustomName(Component.literal("Mira"));
+			io.github.jcondedata.aliveworkplace.people.LifeStages.setAdultSince(mira, today - 22L * io.github.jcondedata.aliveworkplace.people.Mourning.yearDays());
+			Villager tom = EntityType.VILLAGER.spawn(level, new BlockPos(3, -60, 6), MobSpawnType.COMMAND);
+			tom.setVillagerData(tom.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(2));
+			tom.setCustomName(Component.literal("Tom"));
+			Villager pip = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 7), MobSpawnType.COMMAND);
+			pip.setCustomName(Component.literal("Pip"));
+			ModAttachments.PARTNER.set(mira, new io.github.jcondedata.aliveworkplace.people.Couples.Partner(tom.getUUID(), tom.getDisplayName().copy(), today - 40, true));
+			ModAttachments.PARTNER.set(tom, new io.github.jcondedata.aliveworkplace.people.Couples.Partner(mira.getUUID(), mira.getDisplayName().copy(), today - 40, true));
+			ModAttachments.PARENTS.set(pip, new io.github.jcondedata.aliveworkplace.people.Families.Parents(Component.literal("Mira"), Component.literal("Tom"), "", "", true));
+			Villager u = picked(level, player, STATION, Blocks.BREWING_STAND, Items.GOLDEN_APPLE);
+			u.setCustomName(Component.literal("Ulric"));
+			chest(level, STATION.east(2));
+			// B268: the hall's record now, not in vanilla's next task: Mira dies this tick, and without it her death finds no
+			// village (no one told, nobody grieving, no funeral waiting)
+			ScreenshotHarness.fileRecords(level, hall, 1);
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+			mira.kill();
+			// B236: the grave's record is filed in vanilla's next task, so file it now
+			ScreenshotHarness.fileRecords(level, new BlockPos(6, -60, 6), 4);
+			List<BlockPos> graves = io.github.jcondedata.aliveworkplace.grave.Graves.near(level, new BlockPos(6, -60, 6), 4);
+			Showcase.check(!graves.isEmpty() && io.github.jcondedata.aliveworkplace.people.Mourning.funeralDue(level, graves.get(0)), "Mira's grave waits for her funeral");
+			Showcase.check(io.github.jcondedata.aliveworkplace.people.Mourning.mourning(level, tom)
+				&& io.github.jcondedata.aliveworkplace.people.Mourning.mourning(level, pip), "Tom and Pip mourn her");
+			return l -> l.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity e
+				&& e.chronicle().stream().anyMatch(c -> c.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.FUNERAL);
+		}, null));
+		// 36.17: a block several jobs share gives one at random. Four composters, four jobless villagers who take them by
+		// themselves: each becomes one of the composter's jobs (Farmer, Orchard Keeper, Florist, Composter), likelier the
+		// fewer the village has, so not all farmers. Each is named by the job they took, for the picture.
+		SCENES.put("random_job", new Job("four jobless villagers took four composters by themselves, and not all became farmers", 1800,
+			new Vec3(0.5, -57.2, 6.5), new Vec3(0.5, -59.5, 0), (level, player) -> {
+			level.setDayTime(2000);
+			List<BlockPos> composters = List.of(STATION.offset(-3, 0, 0), STATION.offset(-1, 0, 0), STATION.offset(1, 0, 0), STATION.offset(3, 0, 0));
+			List<Villager> villagers = new ArrayList<>();
+			for (BlockPos at : composters) {
+				level.setBlockAndUpdate(at, Blocks.COMPOSTER.defaultBlockState());
+				villagers.add(EntityType.VILLAGER.spawn(level, at.south(2), MobSpawnType.COMMAND));
+			}
+			io.github.jcondedata.aliveworkplace.work.Stations.Station station = io.github.jcondedata.aliveworkplace.work.Stations.at(Blocks.COMPOSTER).orElseThrow();
+			return l -> {
+				for (Villager v : villagers) {
+					net.minecraft.world.entity.npc.VillagerProfession job = v.getVillagerData().getProfession();
+					if (job != net.minecraft.world.entity.npc.VillagerProfession.NONE && !v.hasCustomName()) {
+						v.setCustomName(io.github.jcondedata.aliveworkplace.work.Stations.name(job));
+					}
+				}
+				if (!villagers.stream().allMatch(v -> v.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NONE)) {
+					return false;
+				}
+				Showcase.check(villagers.stream().allMatch(v -> station.has(v.getVillagerData().getProfession())), "each took one of the composter's jobs");
+				Showcase.check(villagers.stream().map(v -> v.getVillagerData().getProfession()).distinct().count() >= 2,
+					"not every one became a farmer: " + villagers.stream().map(v -> v.getVillagerData().getProfession().name()).toList());
+				return true;
+			};
 		}, null));
 		SCENES.put("innkeeper", new Job("a traveller came to stay at the inn", 1200, CAMERA, TARGET, (level, player) -> {
 			for (int x = 3; x <= 5; x += 2) {
@@ -3602,6 +3695,27 @@ final class JobScenes {
 				new ItemStack(Items.BLUE_DYE, 2), new ItemStack(Items.HONEY_BOTTLE, 2), new ItemStack(Items.SUGAR, 2));
 			return l -> c.countItem(cobblemonItem("exp_candy_xs")) >= 1 && c.countItem(cobblemonItem("berry_sweet")) >= 1;
 		}));
+		SCENES.put("furnicrafter", job("the Furnicrafter made the Oak Chairs, Red Lamps and Poke Ball Desk the storehouse ordered from the planks, wool, redstone and concrete in its store", 2400, (level, player) -> {
+			// ROADMAP 38.12 (CobbleFurnies): a Furnicrafter at CobbleFurnies' Furni Crafter, and by it a Storehouse whose
+			// chest holds planks, red wool, redstone and red and white concrete, with stock orders for Oak Chairs, Red Lamps
+			// and Poke Ball Desks. She makes each from the store's materials (the chairs' sticks cut from the planks first)
+			// and puts them in the store.
+			java.util.function.Function<String, Item> cf = id -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblefurnies", id));
+			Block crafter = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(ModVillagers.FURNICRAFTER_BLOCK);
+			Showcase.check(ModVillagers.FURNICRAFTER != null && io.github.jcondedata.aliveworkplace.craft.FurnicrafterWork.ENABLED
+				&& io.github.jcondedata.aliveworkplace.craft.FurnitureRecipes.makes(level.getServer(), cf.apply("oak_chair")),
+				"the Furnicrafter's job and CobbleFurnies' recipes are there (CobbleFurnies, furnicrafters)");
+			BlockPos storehouse = chestPos().west();
+			level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState());
+			Container c = chest(level, chestPos(), new ItemStack(Items.OAK_PLANKS, 6), new ItemStack(Items.RED_WOOL, 2),
+				new ItemStack(Items.REDSTONE, 2), new ItemStack(Items.RED_CONCRETE, 1), new ItemStack(Items.WHITE_CONCRETE, 1));
+			for (String piece : java.util.List.of("oak_chair", "red_lamp", "poke_ball_desk")) {
+				io.github.jcondedata.aliveworkplace.store.StockOrders.cycle(level, storehouse, cf.apply(piece));
+			}
+			worker(level, STATION, crafter, ModVillagers.FURNICRAFTER_POI, ModVillagers.FURNICRAFTER);
+			return l -> c.countItem(cf.apply("oak_chair")) >= 1 && c.countItem(cf.apply("red_lamp")) >= 1 && c.countItem(cf.apply("poke_ball_desk")) >= 1;
+		}));
 		SCENES.put("bean_farm", job("the farmer cut the ripe Cobblecuisine beans into the chest, left the green ones and sowed the bare rows", 2400, (level, player) -> {
 			// ROADMAP 38.9 (Cobblemon and Cobblecuisine): a farmer's 5x3 field by her composter, watered down the middle,
 			// a row of ripe beans, a row still green and a row of bare farmland; bean seeds in the chest and no beans, so
@@ -3871,6 +3985,8 @@ final class JobScenes {
 			place(level, STATION, ModBlocks.STOREHOUSE);
 			Container store = chest(level, STATION.west(2));
 			Villager porter = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+			// B251: no gift by the UUID roll (one villager in 240 is a Night Owl, who rests through the scene's morning)
+			io.github.jcondedata.aliveworkplace.legend.Gifted.set(porter, null);
 			// The porter starts once the Drop Box's screen has been filmed (the runner calls this), while it's still full.
 			afterDuring = (l, p) -> io.github.jcondedata.aliveworkplace.store.Porters.employ(l, porter, STATION);
 			BlockPos box = new BlockPos(3, -60, -3);
@@ -3884,7 +4000,21 @@ final class JobScenes {
 				ScreenshotHarness.hoverLookingAt(p, new Vec3(3.5, -58.3, 0.5), new Vec3(3.5, -60, -3));
 				p.openMenu((net.minecraft.world.MenuProvider) drop);
 			};
-			return l -> drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
+			return l -> {
+				// B251: on a timeout, say what the porter was doing
+				var status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(porter, l.getGameTime());
+				timeoutWhy = "the porter: " + porter.getVillagerData().getProfession() + ", job site "
+					+ porter.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
+					+ ", potential " + porter.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
+					+ ", doing " + porter.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ ", schedule " + net.minecraft.core.registries.BuiltInRegistries.SCHEDULE.getKey(porter.getBrain().getSchedule())
+					+ ", time " + l.getDayTime() % 24000 + ", at " + porter.blockPosition().toShortString()
+					+ ", status " + (status == null ? "none" : status.title().getString() + " / " + status.line().getString())
+					+ ", bag " + ModAttachments.BUILDER_BAG.getOrCreate(porter).stacks().stream().filter(s -> !s.isEmpty()).map(s -> s.getCount() + " " + s.getItem()).toList()
+					+ ", carried " + n(ModAttachments.ITEMS_CARRIED, porter) + ", box empty " + drop.isEmpty() + ", store bread " + store.countItem(Items.BREAD)
+					+ ", free store tickets " + l.getPoiManager().getFreeTickets(STATION);
+				return drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
+			};
 		}, null));
 		// Caravans you can see (33.7): Thornholm's caravan leaves for Ashford, then Ashford's comes in, unloads and goes back.
 		SCENES.put("caravan", new Job("Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "

@@ -404,7 +404,7 @@ public final class Builders {
 		}
 		Optional<BlockPos> supplyBench = villager == null ? Optional.empty() : site.wonder() != null ? siteBench(level, villager, site) : benchPos(villager);
 		if (villager != null && supplyBench.isPresent() && !site.isDeconstruction()) {
-			List<BlockPos> supplies = SupplyContainers.find(level, supplyBench.get(), plan.bounds());
+			List<BlockPos> supplies = SupplyContainers.find(level, supplyBench.get(), plan.supplyExclude());
 			BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 			site.setMissing(computeMissing(level, site, plan, bag, supplies));
 		}
@@ -1016,6 +1016,12 @@ public final class Builders {
 	 * there). Normal play does this through vanilla job-site claiming; tests and admin commands use this.
 	 */
 	public static void employ(ServerLevel level, Villager villager, BlockPos bench) {
+		// A bench put down this tick has no record yet (the level files it after the tick's work): without one the take
+		// below holds nothing, the bench stays free to any jobless builder, and the two then fight over it (B132).
+		if (level.getPoiManager().getType(bench).isEmpty()) {
+			net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(level.getBlockState(bench))
+				.ifPresent(type -> level.getPoiManager().add(bench.immutable(), type));
+		}
 		level.getPoiManager().take(h -> true, (h, p) -> p.equals(bench), bench, 1); // a Blueprint Table, or an old Builder's Bench
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), bench));
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.order(villager, ModVillagers.BUILDER);

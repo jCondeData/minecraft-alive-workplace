@@ -51,6 +51,11 @@ Bench) with a Book and Quill: it becomes the whole list for the rest of the buil
 off and what the chests, the builder's bag and the village storehouse hold ticked off. Sneak-right-click the builder with
 an empty hand to see the same list in chat. A builder with nothing left to place, or no build at all, just tells you so.
 
+**Moving a builder to another table.** Stand next to the builder and sneak-right-click the other Blueprint Table with an
+empty hand: they work there from now on, with their build, and the old table stays where it is, free for someone else.
+The Village Hall's free job blocks page offers a free table to the village's builders too. Their status (sneak-right-click
+them) says which table they work at.
+
 ![The rest of the build, as a book](https://jcondedata.github.io/minecraft-alive-workplace/builder_list/still-3.jpg)
 
 **Changed your mind?** Place the blueprint over the finished building and **sneak** while you hand it to a builder: they
@@ -82,7 +87,9 @@ take it down and put the blocks back in the chests.
 The builder is the village's biggest customer. Almost every other worker ends up feeding a build:
 
 - **Materials.** Besides the chests by their own table, a builder takes from the village's stock: the
-  [Porter](porter.md)'s storehouse and the chests of workers within 48 blocks who answer to the same people. The
+  [Porter](porter.md)'s storehouse and the chests of workers within 48 blocks who answer to the same people, whichever
+  Blueprint Table they work at. A storehouse nobody placed counts as yours when you own the village's hall, and yours
+  feeds the village's own builder on the builds you hand them. The
   [Miner](miner.md)'s stone and the [Lumberjack](lumberjack.md)'s logs end up there. Short of something? It shows on
   the Storehouse's requests board, where a click hands over what you carry.
 - **Crafted parts.** A builder waiting for something that can be made gets it from a crafter nearby: the

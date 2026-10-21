@@ -66,7 +66,10 @@ public final class FreeJobsPage {
 
 	/** The village's free job blocks, nearest the hall first. */
 	public static List<FreeBlock> blocks(ServerLevel level, BlockPos hall) {
-		List<Villager> jobless = jobless(level, hall);
+		VillageHalls.Census census = VillageHalls.census(level, hall);
+		List<Villager> jobless = jobless(census);
+		// B290: a free Blueprint Table can also go to one of the village's builders, who moves over from their own table
+		List<Villager> builders = census.workers().stream().filter(FreeJobsPage::isBuilder).toList();
 		List<Building> buildings = buildings(level, hall);
 		List<FreeBlock> out = new ArrayList<>();
 		for (VillageHalls.FreeStation station : VillageHalls.freeStations(level, hall)) {
@@ -82,6 +85,10 @@ public final class FreeJobsPage {
 				if (canTake(v, station.profession())) {
 					takers.add(v);
 				}
+			}
+			if (station.profession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER
+				&& io.github.jcondedata.aliveworkplace.build.BenchMoves.isTable(level, station.pos())) {
+				takers.addAll(builders);
 			}
 			out.add(new FreeBlock(station, building, distance(hall, station.pos()), List.copyOf(takers)));
 		}
@@ -104,8 +111,12 @@ public final class FreeJobsPage {
 	 * carters), nearest the hall first.
 	 */
 	static List<Villager> jobless(ServerLevel level, BlockPos hall) {
+		return jobless(VillageHalls.census(level, hall));
+	}
+
+	private static List<Villager> jobless(VillageHalls.Census census) {
 		List<Villager> out = new ArrayList<>();
-		for (Villager v : VillageHalls.census(level, hall).jobless()) {
+		for (Villager v : census.jobless()) {
 			if (v.getVillagerData().getProfession() != VillagerProfession.NITWIT && io.github.jcondedata.aliveworkplace.legend.Legends.of(v).isEmpty()) {
 				out.add(v);
 			}
@@ -117,6 +128,12 @@ public final class FreeJobsPage {
 	 * Whether {@code villager}, without a job, may be given a block of {@code job}: one who never worked takes any; one who
 	 * still has a job's trades but lost the block takes only a block of that job (another job is paid retraining, 26.6).
 	 */
+	/** A builder at work at a table of their own (B290: one the free table's page may move over). */
+	static boolean isBuilder(Villager villager) {
+		return villager.isAlive() && !villager.isBaby() && villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER
+			&& villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isPresent();
+	}
+
 	static boolean canTake(Villager villager, VillagerProfession job) {
 		VillagerProfession had = villager.getVillagerData().getProfession();
 		return had == VillagerProfession.NONE || had == job;
@@ -212,10 +229,18 @@ public final class FreeJobsPage {
 		lore.add(VillageHallScreen.line(block.building() != null ? Component.translatable("screen.aliveworkplace.free_jobs.in", block.building())
 			: Component.translatable("screen.aliveworkplace.free_jobs.outside"), ChatFormatting.GRAY));
 		lore.add(VillageHallScreen.line(VillageHallScreen.where(hall, block.station().pos()), ChatFormatting.GRAY));
-		int takers = block.takers().size();
-		lore.add(VillageHallScreen.line(takers == 0 ? Component.translatable("screen.aliveworkplace.free_jobs.nobody")
-			: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.free_jobs.takers", takers, takers),
-			takers == 0 ? ChatFormatting.DARK_GRAY : ChatFormatting.GREEN));
+		int movers = (int) block.takers().stream().filter(FreeJobsPage::isBuilder).count(); // B290: builders who could move here
+		int takers = block.takers().size() - movers;
+		if (takers > 0 || movers == 0) {
+			lore.add(VillageHallScreen.line(takers == 0 ? Component.translatable("screen.aliveworkplace.free_jobs.nobody")
+				: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.free_jobs.takers", takers, takers),
+				takers == 0 ? ChatFormatting.DARK_GRAY : ChatFormatting.GREEN));
+		}
+		if (movers > 0) {
+			lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.free_jobs.builders", movers, movers),
+				ChatFormatting.GREEN));
+		}
+		takers += movers;
 		if (clickable) {
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.free_jobs.click", ChatFormatting.DARK_GRAY));
 		}
@@ -253,8 +278,11 @@ public final class FreeJobsPage {
 				});
 				continue;
 			}
-			menu.button(slot++, withLine(icon, VillageHallScreen.line(Component.translatable("screen.aliveworkplace.hall.give_job", villager.getDisplayName(), job),
-				ChatFormatting.GREEN)), p -> pick(menu, level, hall, block.station(), villager, p));
+			Component click = isBuilder(villager)
+				? Component.translatable("screen.aliveworkplace.free_jobs.move_builder", villager.getDisplayName(),
+					io.github.jcondedata.aliveworkplace.build.Builders.benchPos(villager).map(io.github.jcondedata.aliveworkplace.build.BenchMoves::at).orElse(Component.literal("?")))
+				: Component.translatable("screen.aliveworkplace.hall.give_job", villager.getDisplayName(), job);
+			menu.button(slot++, withLine(icon, VillageHallScreen.line(click, ChatFormatting.GREEN)), p -> pick(menu, level, hall, block.station(), villager, p));
 		}
 		if (block.takers().isEmpty()) {
 			menu.button(VillageHallScreen.FIRST_ROW + 4, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.free_jobs.none_jobless"),
@@ -265,6 +293,10 @@ public final class FreeJobsPage {
 	/** A villager picked for the block: they take it, or, if the block or the villager was taken meanwhile, nothing changes. */
 	static void pick(ChoiceMenu menu, ServerLevel level, BlockPos hall, VillageHalls.FreeStation station, Villager villager, ServerPlayer p) {
 		Component job = Stations.name(station.profession());
+		if (isBuilder(villager) && station.profession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER) {
+			moveBuilder(menu, level, hall, station, villager, p);
+			return;
+		}
 		boolean stillJobless = villager.isAlive() && jobless(level, hall).contains(villager) && canTake(villager, station.profession());
 		if (!stillJobless) {
 			Chat.actionBar(p, Component.translatable("message.aliveworkplace.free_jobs.found_work", villager.getDisplayName()).withStyle(ChatFormatting.YELLOW));
@@ -280,6 +312,27 @@ public final class FreeJobsPage {
 		} else {
 			taken(menu, level, hall, p);
 		}
+	}
+
+	/** B290: one of the village's builders picked for a free table: they move over to it, their builds with them. */
+	private static void moveBuilder(ChoiceMenu menu, ServerLevel level, BlockPos hall, VillageHalls.FreeStation station, Villager builder, ServerPlayer p) {
+		if (!io.github.jcondedata.aliveworkplace.build.Friends.mayCommand(p, builder)) {
+			io.github.jcondedata.aliveworkplace.work.Hiring.hire(p, builder, Component.empty()); // refuses, and says whose they are
+			return;
+		}
+		Component refusal = io.github.jcondedata.aliveworkplace.build.BenchMoves.refusal(level, builder, station.pos());
+		if (refusal != null) {
+			Chat.actionBar(p, refusal.copy().withStyle(ChatFormatting.YELLOW));
+			level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);
+			backToList(menu, level, hall, p);
+			return;
+		}
+		io.github.jcondedata.aliveworkplace.build.BenchMoves.move(level, builder, station.pos());
+		builder.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(station.pos(), WALK_SPEED, 1));
+		Chat.actionBar(p, Component.translatable("message.aliveworkplace.builder.moved", builder.getDisplayName(),
+			io.github.jcondedata.aliveworkplace.build.BenchMoves.at(station.pos())).withStyle(ChatFormatting.GREEN));
+		level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 0.8f, 1f);
+		backToList(menu, level, hall, p);
 	}
 
 	/** The block went to someone else first: said so, and the list again without it. */

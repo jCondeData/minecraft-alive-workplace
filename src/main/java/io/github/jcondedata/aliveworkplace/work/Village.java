@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.work;
 
+import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.build.Friends;
@@ -87,6 +88,44 @@ public final class Village {
 		return Friends.get(level.getServer()).mayDirect(giverBoss.id(), takerBoss.id());
 	}
 
+	/**
+	 * B290: whether {@code villager}, working at {@code station}, may take from the Storehouse at {@code storehouse} owned
+	 * by {@code owner} (null: nobody placed it). The Storehouse is the village's one store, so beyond {@link #sameSide}
+	 * a village's own side counts as its Village Hall owner's: an unowned Storehouse in a village whose hall a player
+	 * owns is that player's, and so is an unhired builder working on that player's build or in that player's village.
+	 * Before, a hired builder never counted a village's Storehouse and an unhired one never counted a player's, so the
+	 * Storehouse fed a builder only while his own table stood by it (its chests were then his own).
+	 */
+	public static boolean sharesStorehouse(ServerLevel level, Villager villager, BlockPos station, BlockPos storehouse, @Nullable Employer owner) {
+		Employer boss = ModAttachments.BUILDER_EMPLOYER.get(villager);
+		if (sameSide(level, boss, owner)) {
+			return true;
+		}
+		Employer store = owner != null ? owner : hallOwner(level, storehouse);
+		if (store == null) {
+			return false; // a village's own store, where no player owns the village: its own workers' only
+		}
+		if (boss != null) {
+			return sameSide(level, boss, store);
+		}
+		BuildSite site = villager.getVillagerData().getProfession() == ModVillagers.BUILDER ? Builders.activeSite(level, villager) : null;
+		if (site != null && site.owner() != null && !site.ownerName().isEmpty() && sameSide(level, new Employer(site.owner(), site.ownerName()), store)) {
+			return true;
+		}
+		Employer hall = hallOwner(level, station);
+		return hall != null && sameSide(level, hall, store);
+	}
+
+	/** The player who owns the Village Hall whose village {@code pos} is in, or null (no hall, or nobody's). */
+	@Nullable
+	static Employer hallOwner(ServerLevel level, BlockPos pos) {
+		return io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, pos)
+			.filter(level::isLoaded)
+			.map(hall -> level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity && entity.owner() != null
+				? new Employer(entity.owner(), entity.ownerName()) : null)
+			.orElse(null);
+	}
+
 	/** The workers taking part whose workstation is within {@link #RADIUS} of {@code pos} and who share with {@code boss}'s. */
 	public static List<Villager> workersNear(ServerLevel level, BlockPos pos, @Nullable Employer boss) {
 		List<Villager> out = new ArrayList<>();
@@ -135,7 +174,7 @@ public final class Village {
 				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
 				if (storehouse.equals(station) || !seen.add(storehouse.immutable()) || !level.isLoaded(storehouse)
 					|| !(level.getBlockEntity(storehouse) instanceof io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity store)
-					|| !sameSide(level, ModAttachments.BUILDER_EMPLOYER.get(villager), store.owner())) {
+					|| !sharesStorehouse(level, villager, station, storehouse, store.owner())) {
 					continue;
 				}
 				out.add(new Mate(storehouse.immutable(), ModVillagers.PORTER));

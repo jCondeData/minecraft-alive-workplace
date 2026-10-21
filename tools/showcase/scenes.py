@@ -304,6 +304,11 @@ SCENES = [
       "a Book and Quill used on the builder became the rest of his build's list with the chest's share checked off, and a sneak-click with an empty hand put the whole list in chat", 40,
       [("00_half_built", "Halfway up, a Book and Quill in hand"), ("01_list_book", "The list: how far along, what's counted"),
        ("02_list_page", "What's still to bring, checked off"), ("03_chat_list", "Sneak-click: the whole list in chat")]),
+    # B290: a builder at a workshop's table counts the village Storehouse, and a sneak-click moves him to another table
+    S("builder_table_move", "Builder", "Moving a builder to another Blueprint Table",
+      "the builder at the workshop's table counted the Storehouse's stone, and a sneak-click on the second table moved him there with both tables standing", 40,
+      [("00_counts_the_storehouse", "At the workshop's table, the Storehouse counted"), ("01_moved", "Sneak-click: he works at the new table"),
+       ("02_status_names_the_table", "His status names the table")]),
     # B280: the Terrace a block above the lawn round it, landscaped: the pit filled, no raised band of dirt on the grass
     S("terrace_grade", "Builder", "Levelling leaves the lawn level round a raised build",
       "round the finished Terrace the lawn stayed level: the pit was filled, nothing was raised above the grass and no sand or gravel was left", 120,
@@ -1178,12 +1183,11 @@ SCENES = [
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
     # Furnished homes (ROADMAP 37.4): Starter Cottage II as a server with the pack's furniture mods builds it, room by room
     # B260: and the owner's Stone House, its way in clear and its attic a bedroom
-    # four stills on the card (the selftest's 2-4, B272); the harness still films 05_sitting and 06_vanilla_dining
-    S("furnished_home", "Build families", "A furnished Starter Cottage, room by room, the Stone House's doorway and attic bedroom, and the Terrace's two lit kitchens (Handcrafted, Beautify, CobbleFurnies)",
+    # B281: and the Terrace's two kitchens. Four stills on the card (the selftest's 2-4, B272): the owner's B260 and B281
+    # rooms; the harness still films the cottage's 02_dining, 03_bedroom, 05_sitting and 06_vanilla_dining
+    S("furnished_home", "Build families", "Furnished homes: the Stone House's doorway and attic bedroom, and the Terrace's two lit kitchens (Handcrafted, Beautify, CobbleFurnies)",
       "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats; both Terrace kitchens hold modded pieces",
-      100, [("02_dining", "The dining corner: a Handcrafted table and chairs, a shelf of crockery, a picture on the wall"),
-           ("03_bedroom", "The bedroom corner: the fancy bed, a nightstand, a lamp and the couch"),
-           ("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
+      100, [("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
            ("08_stone_attic", "The Stone House attic: the bed's head to the gable, a nightstand, a chest at its foot, a lamp hung from the ridge"),
            ("09_terrace_west", "The Terrace's west kitchen: the mods' table and chair, a lantern hung from the bedroom floor"),
            ("10_terrace_east", "The Terrace's east kitchen: its own mods' table (against the party wall) and chair, and its own lantern")],

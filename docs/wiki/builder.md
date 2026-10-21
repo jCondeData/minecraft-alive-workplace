@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290
 
 ## 1. What a player sees
 
@@ -63,6 +63,19 @@ stops helping. Builders never copy what is inside containers. The blueprint's to
 is still missing. A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
 repair counts them (`BuildPlan.supplyExclude`, B261): the building stands, so a Storehouse Shed being repaired, or a
 shed the bench's chests stand in, hands the Builder what its chests hold.
+
+**Whichever table (B290).** Beyond its bench's chests a Builder counts and takes the village's stock
+(`BuilderWork.spareElsewhere`, `Village.stashes`): the overhead "Short of" line, the status's "Needs" and the Book and
+Quill list all count it, as the fetching always did. A Storehouse is shared by `Village.sharesStorehouse`: the same side
+as before (`Village.sameSide`), or, where one side is the village's own, the owner of the Village Hall whose village it
+is in stands for it: an unowned Storehouse (a Steward's build) is the hall owner's, and an unhired Builder is on the
+Storehouse owner's side when his build is theirs or the hall is. Before, a hired Builder never counted an unowned
+Storehouse and an unhired one never counted a player's, so the Storehouse fed a Builder only while his table stood by it
+(its chests were then his own), and a Builder's Workshop's table, once taken, split the village's stock. A sneak-click on
+a Blueprint Table with an empty hand moves the Builder nearest the player (within 6 blocks, `BenchMoves`) there: the
+old table's place is let go, the new one taken (`Stations.assign`), and the active and queued sites' bench follows. The
+Village Hall's free job blocks page lists the village's Builders as takers of a free table, and the status says
+`message.aliveworkplace.status.table`.
 
 **Speed.** `workplaceBuildDelay` ticks per block (default 8) times a share by Builder level 1 to 5:
 100%, 100%, 85%, 70%, 55%, 40% (index 0 is unused). Then the village's mood, traits, edicts and so on change it
@@ -284,8 +297,16 @@ chest, `aBookAndQuillOnTheBuilderWritesWhatIsLeft`; the bag and a storehouse com
 every stage and after a save and reload, `everyStageAndAfterAReload`; a finished and an idle builder say so,
 `aFinishedOrIdleBuilderSaysSo`; the empty-hand chat list, `anEmptyHandShowsTheWholeListInChat`; the bench,
 `aBookAndQuillOnTheBenchWritesTheList`; taking down and the book's words, `takingDownNeedsNothing`).
+`B290GameTests` (6, B290: a hired Builder at a workshop table 34 blocks from the village's unowned Storehouse, in a
+village whose hall his employer owns, counts its stone overhead, in the list and the status and builds from it,
+`aHiredBuilderAtAWorkshopTableBuildsFromTheVillageStorehouse`; a player's Storehouse feeds the village's own Builder on
+that player's build, `aPlayersStorehouseFeedsTheVillagesBuilderOnTheirBuild`; a stranger's stays theirs,
+`aStrangersStorehouseStaysTheirs`; a sneak-click moves the Builder and his build to another table, both standing, after
+a reload too, `aSneakClickMovesTheBuilderToAnotherTable`; nobody near moves nobody, `aSneakClickWithNoBuilderNearMovesNobody`;
+the hall offers a free table to a Builder, `theHallOffersAFreeTableToTheVillagesBuilder`).
 
 Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the
 missing-materials tooltip and list), `table`, `table_preview` (the library's 3D preview), `table_basement` (Starter Cottage IV and the Storehouse with their cellars), `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
-`pace` (speed cap), `partners_engine`, `builder_list` (B279: the list of a build under way, as a book and in chat).
+`pace` (speed cap), `partners_engine`, `builder_list` (B279: the list of a build under way, as a book and in chat),
+`builder_table_move` (B290: the Storehouse counted at a workshop table, and a sneak-click moving the builder).

@@ -610,7 +610,7 @@ def clinic_ward(b):
         window(b, 7, 2, z + (1 if z == 12 else 0), "east", sill=STONE_BRICK)
     window(b, 5, 2, 14, "south", sill=STONE_BRICK)
     for x in (4, 6):
-        b.bed(x, 1, 9, "white", facing="south")
+        b.bed(x, 1, 10, "white", facing="north")  # heads to the ward's front wall (B260)
         b.bed(x, 1, 12, "white", facing="south")
     for z in range(10, 13):  # clear of the doors at both ends (B173): on a carpet under a lintel a villager hits its head
         b.set(5, 1, z, "red_carpet")
@@ -726,7 +726,7 @@ def shop_hall(b):
     for x in (3, 7):
         hanging_pot(b, x, 4, 3, "potted_red_tulip" if x == 3 else "potted_oxeye_daisy", "spruce")
     for x in (4, 6):
-        trellis(b, x, 1, 1, "south", "spruce")
+        trellis(b, x, 1, 1, "north", "spruce")  # flat on the front wall, facing the street (B260)
 
 
 def shop_roof(b):
@@ -1475,13 +1475,10 @@ def inn():
     # Three guest rooms along the front (partitions at x 4 and 8), two beds each; a landing at the back
     for px in (4, 8):
         box(b, px, 6, 2, px, 8, 6, "spruce_planks")
-    b.bed(2, 6, 3, "red", facing="south")
-    b.bed(3, 6, 3, "red", facing="south")
-    b.bed(5, 6, 3, "green", facing="south")
-    b.bed(7, 6, 3, "green", facing="south")
-    b.set(6, 6, 3, "chest", facing="south", type="single", waterlogged=False)
-    b.bed(9, 6, 3, "blue", facing="south")
-    b.bed(10, 6, 3, "blue", facing="south")
+    # (B260: every bed's head to the front wall, the middle room's chest against it between its beds)
+    for x, colour in ((2, "red"), (3, "red"), (5, "green"), (7, "green"), (9, "blue"), (10, "blue")):
+        b.bed(x, 6, 3, colour, facing="north")
+    b.set(6, 6, 2, "chest", facing="south", type="single", waterlogged=False)
     for x in (3, 6, 9):
         b.set(x, 6, 6, "air")  # the rooms open onto the landing
     b.set(4, 6, 7, "cauldron")
@@ -1490,8 +1487,8 @@ def inn():
     # couch with a lamp on the landing under its back window
     for x in (2, 5, 10):
         nightstand(b, x, 6, 5, "north", "spruce")
-    for x in (3, 7, 9):
-        floor_lamp(b, x, 6, 2 if x != 7 else 5, "spruce")
+    for x, z in ((2, 4), (7, 5), (10, 4)):
+        floor_lamp(b, x, 6, z, "spruce")
     picture(b, 3, 8, 3, "west", "red", "spruce")
     picture(b, 6, 8, 2, "south", "green", "spruce")
     picture(b, 9, 8, 3, "east", "blue", "spruce")
@@ -1708,7 +1705,7 @@ def schoolhouse_room(b):
     for z in (4, 5, 6):
         for x in (3, 4, 6, 7):
             furnish(b, "bench", x, 1, z, "south", wood="spruce")
-    desk(b, 7, 1, 8, "south", "spruce")
+    desk(b, 6, 1, 9, "south", "spruce")  # against the back wall, clear of the yard door (II) at x 9 (B260)
     picture(b, 2, 3, 6, "east", "yellow", "spruce")
     picture(b, 8, 3, 6, "west", "light_blue", "spruce")
 
@@ -1823,7 +1820,8 @@ def library_hall(b):
         for tz in (5, 6):
             slab(b, tx, 1, tz, DARK_OAK, top=True)
         b.set(tx, 2, 5, "lantern", hanging=False, waterlogged=False)
-        chair(b, tx - 1 if tx == 4 else tx + 1, 1, 6, DARK_OAK, "east" if tx == 4 else "west")
+        # (the east chair sits at the desk's back half: the tower's door (II) opens in the east wall at z 6, B260)
+        chair(b, tx - 1 if tx == 4 else tx + 1, 1, 6 if tx == 4 else 5, DARK_OAK, "east" if tx == 4 else "west")
     beam_ring(b, 1, 2, 11, 10, 6, "dark_oak_log")
     for x in range(2, 11):
         log(b, x, 6, 6, "dark_oak_log", axis="x")
@@ -1834,7 +1832,7 @@ def library_hall(b):
         for tz in (5, 6):
             furnish(b, "desk", tx, 1, tz, side, wood="dark_oak")
         cx = tx - 1 if tx == 4 else tx + 1
-        furnish(b, "chair", cx, 1, 6, "east" if tx == 4 else "west", wood="dark_oak")
+        furnish(b, "chair", cx, 1, 6 if tx == 4 else 5, "east" if tx == 4 else "west", wood="dark_oak")
     for x, colour in ((5, "green"), (7, "brown")):
         picture(b, x, 3, 3, "south", colour, "dark_oak")
     for x in (4, 8):

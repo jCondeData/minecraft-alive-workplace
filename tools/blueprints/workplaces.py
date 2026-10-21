@@ -1028,6 +1028,77 @@ def school_build():
     return b
 
 
+# --- The Crafter's Workshop (ROADMAP 37.14): a timber workroom with an open store lean-to ------------------------------
+# Main mass x 1-9, z 3-8: birch boards in a spruce frame (posts at 1, 4, 6, 9 so the door sits in the middle bay) on a
+# stone plinth, under a dark oak gable roof (ridge along x) with a boarded west gable and a king post. Against the east
+# wall a lower open lean-to on two posts, under a slab roof: the store a Crafter works from, a stepped pile of logs and
+# stacks of planks and slabs on shelves. Inside the Crafter's Workbench faces the door, with a chest either side of it
+# (the Crafter's own: what they make for nobody in particular goes there), the bed and a lantern on the tie beam. No
+# crafting table or stonecutter (those would make a Carpenter or a Mason).
+CR_FRAME = "spruce_log"
+CR_BOARDS = "birch_planks"
+CR_ROOF = DARK_OAK
+
+
+def crafters_workshop():
+    """13 x 11 x 11: the Crafter's workroom and its store."""
+    b = Build(13, 11, 11)
+    plinth(b, 1, 3, 9, 8, STONE_MIX)
+    box(b, 2, 0, 4, 8, 0, 7, "spruce_planks")
+    walls(b, 1, 3, 9, 8, 1, 4, CR_BOARDS)
+    posts(b, [(1, 3), (4, 3), (6, 3), (9, 3), (1, 8), (4, 8), (6, 8), (9, 8), (1, 5), (1, 6), (9, 5), (9, 6)], 1, 4, CR_FRAME)
+    beam_ring(b, 1, 3, 9, 8, 5, CR_FRAME)
+    for z in range(4, 8):
+        log(b, 5, 5, z, CR_FRAME, axis="z")  # the tie beam the lantern hangs from
+    front_door(b, 5, 3, "spruce_door", SPRUCE, hood=SPRUCE)
+    for x in (2, 7):
+        window(b, x, 2, 3, "north", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 2, 2, 8, "south", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 7, 2, 8, "south", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 1, 2, 4, "west", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 1, 2, 7, "west", shutters="spruce_trapdoor", sill=SPRUCE)
+    door(b, 9, 1, 6, "spruce_door", "east")  # out to the store
+    gable_roof(b, 0, 10, 2, 9, 6, CR_ROOF, axis="x", gable=CR_BOARDS, gable_at=(1, 9), ridge=CR_ROOF, eave_trim=SPRUCE)
+    for y in range(6, 9):
+        log(b, 1, y, 5, CR_FRAME)
+        log(b, 1, y, 6, CR_FRAME)
+        log(b, 9, y, 5, CR_FRAME)
+        log(b, 9, y, 6, CR_FRAME)
+    pane(b, 1, 7, 4)
+    pane(b, 1, 7, 7)
+    # Inside: the workbench facing the door, a chest either side, the bed, a lantern on the tie beam
+    b.set(5, 1, 7, "aliveworkplace:crafters_workbench", facing="north")
+    b.set(4, 1, 7, "chest", facing="north", type="single", waterlogged=False)
+    b.set(6, 1, 7, "chest", facing="north", type="single", waterlogged=False)
+    b.bed(8, 1, 5, "cyan", facing="north")
+    b.set(2, 1, 7, "birch_slab", type="bottom", waterlogged=False)
+    b.set(2, 2, 7, "potted_oxeye_daisy")
+    b.set(2, 1, 4, "oak_slab", type="double", waterlogged=False)
+    b.set(2, 2, 4, "oak_slab", type="bottom", waterlogged=False)
+    lantern(b, 5, 4, 5, hanging=True)
+    # The store: a lean-to on posts against the east wall, a slab roof, logs piled and boards stacked on shelves
+    for z in (3, 8):
+        for y in (1, 2, 3):
+            log(b, 12, y, z, CR_FRAME)
+    plinth(b, 10, 3, 12, 8, STONE_MIX)
+    for x in range(10, 13):
+        for z in range(3, 9):
+            slab(b, x, 4, z, SPRUCE)
+    for z in range(4, 8):
+        slab(b, 10, 0, z, SPRUCE, double=True)
+    log_pile(b, 11, 12, 5, 1, 2)
+    for z in (4, 7):
+        slab(b, 11, 1, z, OAK, double=True)
+        slab(b, 11, 2, z, OAK)
+    lantern(b, 11, 3, 6, hanging=True)
+    # Outside: a lantern on a post at the corner, a path of coarse dirt to the step
+    lamp_post(b, 0, 0, 1, "spruce_fence", height=2)
+    for z in (0, 1):
+        b.set(5, 0, z, "coarse_dirt" if z else "dirt_path")
+    b.fill_air()
+    return b
+
+
 # Each workplace's drawing, by its blueprint id (the ids never change: saves name them).
 WORKPLACE_BUILDS = {
     "builders_workshop": builders_workshop_build, "carpenters_workshop": carpenters_workshop_build,

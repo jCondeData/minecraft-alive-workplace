@@ -24,12 +24,16 @@ import net.minecraft.world.phys.Vec3;
  * the dining corner (a table with two chairs, a shelf of cups, a picture, a clock), the bedroom corner (the fancy bed,
  * a nightstand, a lamp, a couch), the upstairs bedroom and sitting corner, and the same dining corner in the plain
  * vanilla cottage beside it. Checks every furniture spot holds the piece the server chose, and that pieces of at least
- * two furniture mods stand in it.
+ * two furniture mods stand in it. Then (B260) the owner's Stone House, furnished the same way: the way in from its door,
+ * clear to the ladder, and its attic bedroom (the bed's head to the gable, a nightstand, a chest at its foot, a lamp
+ * hung from the ridge); checks nothing stands in the door's way and every piece has what it stands on.
  */
 final class FurnishedHomeScene {
 	private static final ResourceLocation COTTAGE = StarterBlueprints.STARTER_COTTAGE_2.id();
 	private static final BlockPos FURNISHED = new BlockPos(0, -60, 0);
 	private static final BlockPos VANILLA = new BlockPos(24, -60, 0);
+	private static final ResourceLocation STONE_HOUSE = StarterBlueprints.STONE_HOUSE.id();
+	private static final BlockPos STONE = new BlockPos(48, -60, 0);
 
 	/** The stills: a name, where the camera is and what it looks at (relative to a cottage's origin), which cottage. */
 	private record View(String name, Vec3 eye, Vec3 at, BlockPos cottage) {
@@ -41,7 +45,9 @@ final class FurnishedHomeScene {
 		new View("03_bedroom", new Vec3(3.6, 3.1, 4.2), new Vec3(7, 1.4, 7.2), FURNISHED),
 		new View("04_upstairs", new Vec3(7.5, 8.1, 4.5), new Vec3(4, 6.6, 6), FURNISHED),
 		new View("05_sitting", new Vec3(4.5, 8.1, 6.8), new Vec3(6.5, 6.6, 2), FURNISHED),
-		new View("06_vanilla_dining", new Vec3(7.5, 3.1, 4.2), new Vec3(2.5, 1.6, 5), VANILLA));
+		new View("06_vanilla_dining", new Vec3(7.5, 3.1, 4.2), new Vec3(2.5, 1.6, 5), VANILLA),
+		new View("07_stone_doorway", new Vec3(6.5, 3.4, 5.5), new Vec3(5.5, 1.2, 1.5), STONE),
+		new View("08_stone_attic", new Vec3(7.5, 7.7, 4.5), new Vec3(2.5, 6.4, 4.5), STONE));
 	private static final int FIRST = 80;
 	private static final int EACH = 50;
 
@@ -80,6 +86,38 @@ final class FurnishedHomeScene {
 		}
 	}
 
+	/**
+	 * The Stone House furnished as a builder here would build it (B260): its door's way in (two blocks, feet and head)
+	 * is open, and every piece the server chose stands on, against or under a block as its kind needs.
+	 */
+	private void placeStoneHouse(ServerLevel level) {
+		Blueprint base = BlueprintLibrary.get(level, STONE_HOUSE).orElse(null);
+		if (base == null) {
+			wrong.add("no Stone House blueprint");
+			return;
+		}
+		FurnitureChoice choice = FurnitureChoice.forNewBuild(STONE_HOUSE);
+		for (Blueprint.Entry e : choice.apply(base, STONE_HOUSE).blocks()) {
+			level.setBlock(STONE.offset(e.pos()), e.state(), 2 | 16);
+		}
+		for (int z = 2; z <= 3; z++) {
+			for (int y = 1; y <= 2; y++) {
+				BlockState way = level.getBlockState(STONE.offset(5, y, z));
+				if (!way.isAir()) {
+					wrong.add("the Stone House's way in is blocked at 5," + y + "," + z + " by " + BuiltInRegistries.BLOCK.getKey(way.getBlock()));
+				}
+			}
+		}
+		for (FurnitureChoice.Placed placed : choice.spots().values()) {
+			BlockPos at = STONE.offset(placed.pos());
+			boolean held = !level.getBlockState(at.below()).isAir() || placed.cells().size() > 1
+				|| java.util.Arrays.stream(net.minecraft.core.Direction.values()).anyMatch(d -> !level.getBlockState(at.relative(d)).isAir());
+			if (!held) {
+				wrong.add("the Stone House's " + placed.kind() + " at " + placed.pos().toShortString() + " floats");
+			}
+		}
+	}
+
 	/** The furnished cottage as a builder on this server would build it, and the vanilla one beside it. */
 	private void place(ServerLevel level) {
 		Blueprint base = BlueprintLibrary.get(level, COTTAGE).orElse(null);
@@ -94,6 +132,7 @@ final class FurnishedHomeScene {
 		for (Blueprint.Entry e : base.blocks()) {
 			level.setBlock(VANILLA.offset(e.pos()), e.state(), 2 | 16);
 		}
+		placeStoneHouse(level);
 		java.util.Set<String> mods = new java.util.TreeSet<>();
 		int pieces = 0;
 		for (FurnitureChoice.Placed placed : choice.spots().values()) {
@@ -115,7 +154,7 @@ final class FurnishedHomeScene {
 			wrong.add("the furniture mods aren't loaded: film this scene with -Pfurniture=true");
 		}
 		summary = modsHere ? "Starter Cottage II furnished room by room: " + pieces + " pieces of " + String.join(", ", mods)
-			+ " in its dining corner, bedrooms and sitting corner, every one where its spot is"
+			+ " in its dining corner, bedrooms and sitting corner, every one where its spot is; the Stone House's way in clear and its attic a bedroom"
 			: "no furniture mods loaded: the cottage is the vanilla build (run with -Pfurniture=true)";
 	}
 }

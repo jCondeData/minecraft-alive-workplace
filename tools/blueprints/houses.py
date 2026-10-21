@@ -107,20 +107,22 @@ def stone_house_ground_floor(b):
     b.set(2, 1, 5, "crafting_table")
     b.set(3, 1, 6, "chest", facing="north", type="single", waterlogged=False)
     b.set(2, 1, 2, "barrel", facing="up", open=False)
-    fence(b, 4, 1, 3, "dark_oak_fence")
-    b.set(4, 2, 3, "dark_oak_pressure_plate", powered=False)
-    stairs(b, 3, 1, 3, SPRUCE, "west")
+    # The table stands by the west window, out of the door's way (B260: the door opens onto a clear walk to the ladder)
+    fence(b, 3, 1, 4, "dark_oak_fence")
+    b.set(3, 2, 4, "dark_oak_pressure_plate", powered=False)
+    stairs(b, 3, 1, 3, SPRUCE, "north")
     box(b, 4, 1, 5, 5, 1, 6, "brown_carpet")
     for y in range(1, 6):
         b.set(8, y, 3, "ladder", facing="west", waterlogged=False)
     # Furnished (37.4): a second seat at the table, a nightstand and a lamp by the bed, a shelf of cups over the rug, a
-    # clock by the door, a picture over the bed's foot, blinds at the front and back windows
-    stairs(b, 5, 1, 3, SPRUCE, "east")
+    # clock against the east wall beside the nightstand (B260: not by the door, where a tall clock blocks the way in), a
+    # picture on the front wall between the door and the window, blinds at the front and back windows
+    stairs(b, 3, 1, 5, SPRUCE, "south")
     nightstand(b, 8, 1, 6, "north", "dark_oak")
     floor_lamp(b, 6, 1, 6, "dark_oak")
     shelf(b, 4, 2, 6, "north", "dark_oak")
-    clock(b, 6, 1, 2, "south", "dark_oak")
-    picture(b, 8, 3, 5, "west", "red", "dark_oak")
+    clock(b, 8, 1, 5, "west", "dark_oak")
+    picture(b, 6, 3, 2, "south", "red", "dark_oak")
     for x in (2, 3, 7, 8):
         blinds(b, x, 3, 2, "south", "dark_oak")
     for x in (3, 7):
@@ -134,10 +136,13 @@ def stone_house():
     a bed downstairs and one in the attic."""
     b = Build(11, 11, 9)
     stone_house_ground_floor(b)
-    # The attic: a bed under the ridge, a chest and a lantern
-    b.bed(3, 6, 4, "light_blue", facing="east")
-    b.set(6, 6, 4, "chest", facing="west", type="single", waterlogged=False)
-    lantern(b, 7, 6, 4)  # standing: the ridge it could hang from comes off for the upper storey
+    # The attic bedroom (B260): the bed's head against the west gable under its window, a nightstand by it, a chest at
+    # its foot, a rug, and a lantern hung from the ridge
+    b.bed(3, 6, 4, "light_blue", facing="west")
+    nightstand(b, 2, 6, 5, "east", "dark_oak")
+    b.set(4, 6, 4, "chest", facing="east", type="single", waterlogged=False)
+    box(b, 5, 6, 4, 7, 6, 4, "light_gray_carpet")  # a runner under the ridge (the slopes leave no headroom over a rug)
+    lantern(b, 5, 8, 4, hanging=True)
     slate_roof(b, 5, STONE_HOUSE_WALL, STONE_HOUSE_WALL)  # the dormer lights the attic bedroom
     for x in (1, 9):
         crow_steps(b, "x", x, 1, 7, 5, STONE_HOUSE_WALL)
@@ -160,18 +165,20 @@ def stone_house_upper_floor(b):
         window(b, x, 6, 7, "south", height=2, sill=STONE_BRICK)
     for x in (1, 9):
         window(b, x, 6, 2, "west" if x == 1 else "east", height=2, sill=STONE_BRICK)
-    # Upstairs: the attic bed stays, a second one across the room, a bookshelf and a rug
-    b.bed(3, 6, 4, "light_blue", facing="east")
-    b.bed(6, 6, 6, "white", facing="west")
-    b.set(6, 6, 4, "chest", facing="west", type="single", waterlogged=False)
-    lantern(b, 7, 6, 4)
-    b.set(2, 6, 6, "bookshelf")
-    b.set(2, 7, 6, "potted_fern")
-    box(b, 4, 6, 2, 6, 6, 3, "light_gray_carpet")
-    # Furnished (37.4): a nightstand between the beds, a couch under the front window, a picture on the east wall
-    nightstand(b, 4, 6, 5, "south", "dark_oak")
+    # Upstairs (B260): two beds with their heads to the back wall between its windows, a nightstand by each, a chest
+    # at the foot of one, a bookshelf, a rug in the middle and a couch under the front window; the ladder comes up at
+    # (8, 6, 3) into the clear
+    b.bed(3, 6, 5, "light_blue", facing="south")
+    b.bed(7, 6, 5, "white", facing="south")
+    b.set(7, 6, 4, "chest", facing="north", type="single", waterlogged=False)
+    b.set(8, 6, 6, "bookshelf")
+    b.set(8, 7, 6, "potted_fern")
+    box(b, 4, 6, 3, 6, 6, 4, "light_gray_carpet")
+    # Furnished (37.4): a nightstand by each bed, a couch under the front window, a picture on the east wall
+    nightstand(b, 4, 6, 6, "north", "dark_oak")
+    nightstand(b, 6, 6, 6, "north", "dark_oak")
     couch(b, 3, 6, 2, "south", "dark_oak", "light_gray", length=2, arms=False)
-    picture(b, 8, 7, 5, "west", "light_gray", "dark_oak")
+    picture(b, 8, 7, 4, "west", "light_gray", "dark_oak")
     for x in range(2, 9):  # a tie beam under the ridge to hang the lamp from (and to stand on)
         log(b, x, 9, 4, STONE_HOUSE_FRAME, axis="x")
     lantern(b, 5, 8, 4, hanging=True)
@@ -233,8 +240,8 @@ def stone_house_3():
     crow_steps(b, "z", 12, 2, 8, 5, STONE_HOUSE_WALL)
     pane(b, 5, 7, 12)  # a little window in the wing's gable
     # Inside: two beds, a chest between them, a rug
-    b.bed(3, 1, 9, "green", facing="south")
-    b.bed(7, 1, 9, "lime", facing="south")
+    b.bed(3, 1, 10, "green", facing="south")  # heads to the wing's back wall (B260)
+    b.bed(7, 1, 10, "lime", facing="south")
     b.set(5, 1, 11, "chest", facing="north", type="single", waterlogged=False)
     box(b, 4, 1, 9, 6, 1, 10, "green_carpet")
     b.fill_air()
@@ -467,7 +474,7 @@ def artisans_house_2():
         stairs(b, 3, 1, z, SPRUCE, "east", top=True)
     b.set(5, 1, 11, "loom", facing="west")
     b.set(5, 1, 12, "barrel", facing="up", open=False)
-    b.bed(3, 1, 15, "brown", facing="north")
+    b.bed(3, 1, 14, "brown", facing="south")  # its head to the back wall (B260)
     b.set(5, 1, 15, "chest", facing="west", type="single", waterlogged=False)
     b.set(4, 1, 15, "brown_carpet")
     b.fill_air()
@@ -655,10 +662,12 @@ def townhouse_courtyard(b):
     b.set(4, 0, 16, "gravel")
     lamp_post(b, 6, 1, 11, "dark_oak_fence", height=2)
     # The loft: a third bedroom under the slates, lit by the gable windows
-    b.bed(5, 14, 4, "green", facing="south")
-    b.set(4, 14, 8, "chest", facing="north", type="single", waterlogged=False)
+    # (B260: the bed's head to the west wall with a nightstand by it, the chest at its foot, the lamp on a stand)
+    b.bed(3, 14, 3, "green", facing="west")
+    nightstand(b, 2, 14, 2, "east", "dark_oak")
+    b.set(4, 14, 3, "chest", facing="east", type="single", waterlogged=False)
     box(b, 4, 14, 6, 6, 14, 7, "green_carpet")
-    lantern(b, 6, 14, 8)
+    floor_lamp(b, 6, 14, 8, "dark_oak")
 
 
 def townhouse_2():
@@ -863,25 +872,26 @@ def manor_house(b):
     floor_lamp(b, 13, 1, 13, "dark_oak")
     shelf(b, 15, 3, 8, "west", "dark_oak")
     # Upstairs west: the main bedroom (two beds), a wardrobe chest, a rug
-    b.bed(3, 6, 10, "purple", facing="north")
-    b.bed(4, 6, 10, "purple", facing="north")
-    b.set(5, 6, 8, "chest", facing="west", type="single", waterlogged=False)
+    # (B260: the beds' heads to the front wall, the chest at their foot)
+    b.bed(3, 6, 9, "purple", facing="north")
+    b.bed(4, 6, 9, "purple", facing="north")
+    b.set(3, 6, 10, "chest", facing="south", type="single", waterlogged=False)
     box(b, 3, 6, 11, 5, 6, 12, "purple_carpet")
     b.set(3, 6, 14, "bookshelf")
     lantern(b, 3, 7, 14)
     # Furnished (37.4): a nightstand and a lamp, a picture over the beds, blinds over the front window
-    nightstand(b, 5, 6, 9, "south", "dark_oak")
+    nightstand(b, 5, 6, 8, "south", "dark_oak")
     floor_lamp(b, 5, 6, 14, "dark_oak")
     picture(b, 3, 8, 8, "south", "purple", "dark_oak")
     blinds(b, 4, 9, 8, "south", "dark_oak")
     # Upstairs east: the second bedroom
-    b.bed(15, 6, 10, "light_blue", facing="north")
+    b.bed(15, 6, 9, "light_blue", facing="north")
     b.set(13, 6, 8, "chest", facing="east", type="single", waterlogged=False)
     box(b, 13, 6, 11, 15, 6, 12, "light_blue_carpet")
     b.set(15, 6, 14, "barrel", facing="up", open=False)
     lantern(b, 15, 7, 14)
     # Furnished (37.4): a nightstand, a little couch on the back wall, a picture
-    nightstand(b, 14, 6, 9, "south", "dark_oak")
+    nightstand(b, 14, 6, 8, "south", "dark_oak")
     couch(b, 13, 6, 14, "north", "dark_oak", "light_blue", length=2, arms=False)
     picture(b, 15, 8, 13, "west", "light_blue", "dark_oak")
 
@@ -982,7 +992,7 @@ def manor_gatehouse(b):
     # The porter's room: a bench, a barrel, a lamp
     stairs(b, 10, 5, 2, SPRUCE, "east")
     b.set(11, 5, 3, "barrel", facing="up", open=False)
-    lantern(b, 11, 5, 2)
+    lantern(b, 11, 6, 3)  # on the barrel, not the floor (B260)
     # The forecourt walls: along the street, down the west side to the garden, on the east to the ballroom wing
     for x in list(range(0, 6)) + list(range(13, 19)):
         for y in (0, 1, 2):
@@ -1052,7 +1062,7 @@ def manor_ballroom(b):
         b.set(x, 1, z, "potted_azalea_bush")
     for z in (9, 10):
         stairs(b, 23, 1, z, DARK_OAK, "east")
-    lantern(b, 23, 1, 12)
+    floor_lamp(b, 23, 1, 12, "dark_oak")  # a standing lamp by the seats, not a lantern on the floor (B260)
 
 
 def manor_3():

@@ -18,7 +18,7 @@ import json
 import os
 import re
 
-from check import AIR, FACING, OPPOSITE, TABLE_LEGS, _open_top, _short, is_table
+from check import AIR, FACING, OPPOSITE, TABLE_LEGS, _open_top, _short, _thin, is_table
 
 KINDS = ("chair", "stool", "bench", "couch", "table", "side_table", "desk", "counter", "cupboard", "shelf", "nightstand",
          "drawer", "bed", "lamp", "clock", "picture", "blinds", "crockery", "trellis", "hanging_pot")
@@ -174,6 +174,7 @@ def to_json(b, spots):
     is below y = 0, as the game's Blueprint has it, not shifted up as in the .nbt file)."""
     shift = 0
     out = []
+    blocks = {p: (n, dict(props)) for p, (n, props) in b.blocks.items() if n not in AIR}
     for s in sorted(spots, key=lambda s: (s["pos"][1], s["pos"][2], s["pos"][0], s["kind"])):
         px, py, pz = s["pos"]
         entry = {"kind": s["kind"], "pos": [px, py + shift, pz], "facing": s["facing"]}
@@ -181,6 +182,7 @@ def to_json(b, spots):
             if s.get(key):
                 entry[key] = s[key]
         entry["blocks"] = [{"at": [cx - px, cy - py, cz - pz], "state": _state(b.blocks[(cx, cy, cz)])} for cx, cy, cz in s["cells"]]
+        entry["support"] = support(blocks, s)  # B260: a modded piece goes only where what it needs is there
         out.append(entry)
     return {"spots": out}
 
@@ -206,6 +208,107 @@ def problems(b, spots):
 WORKPLACES = re.compile(r"(supply_shop|library|healing_center|schoolhouse|village_hall|kitchen|print_shop)(_\d+)?$")
 
 
+# --- Rooms that read as rooms (B260, the owner 2026-10-20: "cluttered and unfinished") --------------------------------
+# What each kind stands on or against in the vanilla drawing. A modded piece is only used where its own need is met
+# (the furnishing tables' "needs", FurnishingTable.Piece): a Beautify picture frame stands on a table, never on a wall.
+NEEDS = {"lamp": ("floor", "ceiling"), "shelf": ("floor", "wall"), "picture": ("wall",), "blinds": ("wall",),
+         "trellis": ("wall",), "hanging_pot": ("ceiling",)}  # every other kind: the floor
+_NOT_SOLID = ("_door", "_trapdoor", "_bed", "_carpet", "_pressure_plate", "_banner", "_sign", "ladder", "torch", "button",
+              "lantern", "flower_pot", "potted_", "candle", "_pane", "glass", "_bars", "chain", "item_frame", "rail")
+_GLAZED = ("_pane", "glass", "_bars")
+
+
+def _name(blocks, p):
+    got = blocks.get(p)
+    return "minecraft:air" if got is None else got[0]
+
+
+def solid(blocks, p):
+    """A block that holds a piece up or stands behind it: not air, not a thin or small thing, not a door or a bed."""
+    n = _name(blocks, p)
+    return n not in AIR and not n.endswith(_NOT_SOLID) and not any(t in n for t in ("glass", "potted_", "lantern")) \
+        and not _thin(blocks.get(p))
+
+
+def _walled(blocks, p):
+    """Solid, or a window (blinds and pictures hang at windows and on walls alike)."""
+    return solid(blocks, p) or any(t in _name(blocks, p) for t in _GLAZED)
+
+
+def support(blocks, s):
+    """What a spot stands on or against in the drawing: "floor" (a solid block under its lowest cell at its position),
+    "wall" (behind it, against the way it faces, at any of its cells) and "ceiling" (over its top cell)."""
+    px, py, pz = s["pos"]
+    cells = [tuple(c) for c in s["cells"]]
+    out = []
+    low = min(c[1] for c in cells)
+    if any(solid(blocks, (c[0], c[1] - 1, c[2])) for c in cells if c[1] == low):
+        out.append("floor")
+    bx, _, bz = FACING[OPPOSITE[s["facing"]]]
+    if any(_walled(blocks, (c[0] + bx, c[1], c[2] + bz)) for c in cells):
+        out.append("wall")
+    top = max(c[1] for c in cells)
+    if any(solid(blocks, (c[0], c[1] + 1, c[2])) for c in cells if c[1] == top):
+        out.append("ceiling")
+    return out
+
+
+def indoors(blocks, p, reach=12):
+    """Inside a room: a wall (or window) every way out within {@code reach} and a roof over it (a lamp beside a door
+    step outside is a porch light, not a lantern left on the floor)."""
+    x, y, z = p
+    if not any(solid(blocks, (x, y + d, z)) for d in range(1, reach)):
+        return False
+    return all(any(_walled(blocks, (x + dx * d, y, z + dz * d)) or _name(blocks, (x + dx * d, y, z + dz * d)).endswith("_door")
+                   for d in range(1, reach)) for dx, _, dz in FACING.values())
+
+
+def room_problems(b, spots):
+    """B260's rules for a furnished build: every piece stands on (or hangs from, or against) what its kind needs; no
+    piece in a doorway's way (two cells in and out of every door); every bed's head against a solid block; no lantern
+    standing on the bare floor (hang it or put it on a table); every chest against a wall or by a bed."""
+    blocks = {p: (n, dict(props)) for p, (n, props) in b.blocks.items() if n not in AIR}
+    out = []
+    taken = {}
+    for s in spots:
+        need = NEEDS.get(s["kind"], ("floor",))
+        has = support(blocks, s)
+        if not any(n in has for n in need):
+            out.append(f"furniture {s['kind']}@{s['pos']} has no {' or '.join(need)} to stand on (it floats)")
+        for c in s["cells"]:
+            taken[tuple(c)] = s
+    for p, (n, props) in sorted(blocks.items()):
+        x, y, z = p
+        if n.endswith("_door") and props.get("half") == "lower":
+            fx, _, fz = FACING[props["facing"]]
+            for d in (1, 2, -1, -2):
+                for dy in (0, 1):
+                    q = (x + fx * d, y + dy, z + fz * d)
+                    if q in taken:
+                        out.append(f"furniture {taken[q]['kind']}@{taken[q]['pos']} stands in the way of the door at {p}")
+        elif n.endswith("_bed") and props.get("part") == "head":
+            fx, _, fz = FACING[props["facing"]]
+            if not _walled(blocks, (x + fx, y, z + fz)):  # a wall, or a window in it
+                out.append(f"bed@{p}: its head is not against a wall ({_name(blocks, (x + fx, y, z + fz))} behind it)")
+        elif n == "minecraft:lantern" and props.get("hanging") != "true":
+            # On the floor: standing where people stand (two of the cells beside it open over the same floor), not
+            # on a table, a counter, a barrel or a wall top
+            beside = [(x + dx, y, z + dz) for dx, _, dz in FACING.values()]
+            level = sum(1 for q in beside if _name(blocks, q) in AIR | {"minecraft:air"} and solid(blocks, (q[0], y - 1, q[2])))
+            under = _name(blocks, (x, y - 1, z))
+            table = under.endswith(("_slab", "_stairs", "_fence", "_wall", "barrel", "chest", "bookshelf", "_table", "_log",
+                                    "_wood", "lectern", "_stem", "_hyphae"))
+            if (solid(blocks, (x, y - 1, z)) and not table or under.endswith("_carpet")) and level >= 2 \
+                    and indoors(blocks, p):
+                out.append(f"lantern@{p} stands on the floor: hang it or put it on a table")
+        elif n in ("minecraft:chest", "minecraft:trapped_chest", "minecraft:barrel") and props.get("facing") in FACING:
+            fx, _, fz = FACING[props["facing"]]
+            near = [(x + dx, y, z + dz) for dx, _, dz in FACING.values()]
+            if indoors(blocks, p) and not _walled(blocks, (x - fx, y, z - fz)) and not any(_name(blocks, q).endswith("_bed") for q in near):
+                out.append(f"{_short(blocks[p])}@{p} stands in the room: put it against a wall or at the foot of a bed")
+    return out
+
+
 def write(b, rel):
     """Writes (or removes, when there are none) the spots file of the blueprint at structure path {@code rel}; returns
     the CHECK lines."""
@@ -213,6 +316,8 @@ def write(b, rel):
     if WORKPLACES.match(os.path.basename(rel)):
         spots = [s for s in spots if s["kind"] != "bed"]
     bad = problems(b, spots)
+    if getattr(b, "spots", None) and not bad:  # a furnished build (37.4, 37.5): its rooms must read as rooms (B260)
+        bad = room_problems(b, spots)
     path = os.path.normpath(os.path.join(FURNITURE_ROOT, rel + ".json"))
     if bad:
         return bad

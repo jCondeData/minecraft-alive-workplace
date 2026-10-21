@@ -602,6 +602,27 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation CRAFTERS_WORKBENCH_ID = AliveWorkplace.id("crafters_workbench");
+	public static final ResourceKey<PoiType> CRAFTERS_WORKBENCH_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, CRAFTERS_WORKBENCH_ID);
+	public static final PoiType CRAFTERS_WORKBENCH_POI_TYPE = Platform.get().registerPoi(CRAFTERS_WORKBENCH_ID, 1, 1, ModBlocks.CRAFTERS_WORKBENCH);
+
+	/**
+	 * Makes what the village's workers are short of, through whole recipe chains (ROADMAP 37.14), at a Crafter's Workbench.
+	 * A jobless villager takes a free workbench by themselves only with config {@code crafters} on; one already hired keeps it.
+	 */
+	public static final VillagerProfession CRAFTER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("crafter"),
+		new VillagerProfession(
+			"crafter",
+			holder -> holder.is(CRAFTERS_WORKBENCH_POI),
+			holder -> io.github.jcondedata.aliveworkplace.craft.Crafters.ENABLED && holder.is(CRAFTERS_WORKBENCH_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_TOOLSMITH
+		)
+	);
+
 	public static final ResourceLocation KITCHEN_STOVE_ID = AliveWorkplace.id("kitchen_stove");
 	public static final ResourceKey<PoiType> KITCHEN_STOVE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, KITCHEN_STOVE_ID);
 	public static final PoiType KITCHEN_STOVE_POI_TYPE = Platform.get().registerPoi(KITCHEN_STOVE_ID, 1, 1, ModBlocks.KITCHEN_STOVE);
@@ -1042,7 +1063,7 @@ public final class ModVillagers {
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER || profession == JEWELLER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
 			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR || profession == PRINTER || profession == WELL_KEEPER
-			|| profession == PHYSICIAN || isMechanic(profession) || isFurnicrafter(profession);
+			|| profession == PHYSICIAN || profession == CRAFTER || isMechanic(profession) || isFurnicrafter(profession);
 	}
 
 	/**

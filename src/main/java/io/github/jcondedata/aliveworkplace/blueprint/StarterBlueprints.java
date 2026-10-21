@@ -387,6 +387,11 @@ public final class StarterBlueprints {
 	/** A white ward with the Physician's brewing stand, four beds behind screens (the quarantine ward) and a herb garden. */
 	public static final Entry PHYSICIANS_HOUSE = new Entry(AliveWorkplace.id("physicians_house"), new Vec3i(13, 12, 13));
 	/**
+	 * The Crafter's Workshop (ROADMAP 37.14): birch boards in a spruce frame under a dark oak roof, the Crafter's Workbench
+	 * facing the door between two chests, and an open store lean-to of logs, planks and slabs against the east wall.
+	 */
+	public static final Entry CRAFTERS_WORKSHOP = new Entry(AliveWorkplace.id("crafters_workshop"), new Vec3i(13, 11, 11));
+	/**
 	 * A brick-and-plaster Butcher's Shop under a red-and-white awning, the smoker in its chimney breast, a pen behind, and
 	 * under it an ice-lined freezer down a ladder behind the counter (26.15): one tier, a cellar from the first.
 	 */
@@ -592,7 +597,7 @@ public final class StarterBlueprints {
 		MANOR, MANOR_2, MANOR_3, MANOR_4);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
-	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY);
+	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY, CRAFTERS_WORKSHOP);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = java.util.stream.Stream.concat(
@@ -632,6 +637,8 @@ public final class StarterBlueprints {
 		put.accept("tailors", List.of(TAILORS_SHOP, TAILORS_SHOP_2));
 		put.accept("printers", List.of(PRINT_SHOP, PRINT_SHOP_2));
 		put.accept("jewellers", List.of(JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2, JEWELLERS_WORKSHOP_3));
+		// M37, Furnished homes and modded storage
+		put.accept("crafters", List.of(CRAFTERS_WORKSHOP));
 		// M38, Cobblemon depth
 		put.accept("villageMegas", MEGA_ONLY);
 		// M39, Create integration

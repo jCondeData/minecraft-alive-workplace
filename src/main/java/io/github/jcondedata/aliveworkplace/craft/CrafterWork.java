@@ -626,6 +626,13 @@ public class CrafterWork extends Behavior<Villager> {
 		}
 	}
 
+	/** Lets {@code claim} go (the job is done or fell through): the asker is looked at again (the Crafter, 37.14). */
+	static void release(String claim) {
+		synchronized (CLAIMS) {
+			CLAIMS.remove(claim);
+		}
+	}
+
 	/** Takes {@code claim}, so other crafters leave that request alone for a while. */
 	static void claim(String claim, long now) {
 		synchronized (CLAIMS) {

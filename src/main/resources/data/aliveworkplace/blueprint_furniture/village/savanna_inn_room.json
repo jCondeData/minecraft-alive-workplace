@@ -1,6 +1,6 @@
 {"spots": [
-  {"kind": "bed", "pos": [6, 1, 6], "facing": "south", "wood": "acacia", "colour": "orange", "blocks": [{"at": [0, 0, 0], "state": "minecraft:orange_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:orange_bed[facing=south,occupied=false,part=head]"}]},
-  {"kind": "chair", "pos": [2, 6, 6], "facing": "east", "wood": "acacia", "blocks": [{"at": [0, 0, 0], "state": "minecraft:acacia_stairs[facing=west,half=bottom,shape=straight,waterlogged=false]"}]},
-  {"kind": "table", "pos": [3, 6, 6], "facing": "north", "wood": "acacia", "colour": "yellow", "blocks": [{"at": [0, 0, 0], "state": "minecraft:acacia_fence[east=false,north=false,south=false,waterlogged=false,west=false]"}, {"at": [0, 1, 0], "state": "minecraft:yellow_carpet"}]},
-  {"kind": "chair", "pos": [4, 6, 6], "facing": "west", "wood": "acacia", "blocks": [{"at": [0, 0, 0], "state": "minecraft:acacia_stairs[facing=east,half=bottom,shape=straight,waterlogged=false]"}]}
+  {"kind": "bed", "pos": [6, 1, 6], "facing": "south", "wood": "acacia", "colour": "orange", "blocks": [{"at": [0, 0, 0], "state": "minecraft:orange_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:orange_bed[facing=south,occupied=false,part=head]"}], "support": ["floor"]},
+  {"kind": "chair", "pos": [2, 6, 6], "facing": "east", "wood": "acacia", "blocks": [{"at": [0, 0, 0], "state": "minecraft:acacia_stairs[facing=west,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor", "wall"]},
+  {"kind": "table", "pos": [3, 6, 6], "facing": "north", "wood": "acacia", "colour": "yellow", "blocks": [{"at": [0, 0, 0], "state": "minecraft:acacia_fence[east=false,north=false,south=false,waterlogged=false,west=false]"}, {"at": [0, 1, 0], "state": "minecraft:yellow_carpet"}], "support": ["floor"]},
+  {"kind": "chair", "pos": [4, 6, 6], "facing": "west", "wood": "acacia", "blocks": [{"at": [0, 0, 0], "state": "minecraft:acacia_stairs[facing=east,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor"]}
 ]}

@@ -402,6 +402,49 @@ public class SophisticatedControllerCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * A storage link linked with the Storage Tool to a controller ten blocks away, with nothing between them (no cables,
+	 * no storage): the controller reaches the barrel behind it all the same, so the Storehouse counts what lies in that
+	 * barrel once, through the controller, and not again as a store of its own (B262).
+	 */
+	//$ gametest_ticks_batch AREA '400' '"sophisticated_controller_far_link"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "sophisticated_controller_far_link")
+	public void aFarToolLinkedLinkCountsItsBarrelOnce(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		networks(helper, true);
+		ServerLevel level = helper.getLevel();
+		BlockPos storehouse = helper.absolutePos(new BlockPos(8, 2, 8));
+		helper.setBlock(new BlockPos(8, 2, 8), ModBlocks.STOREHOUSE);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		PartnerShowsCompatTests.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		BlockPos first = helper.absolutePos(new BlockPos(1, 2, 9));
+		level.setBlockAndUpdate(first, block("barrel").defaultBlockState());
+		BlockPos controller = helper.absolutePos(new BlockPos(1, 2, 8));
+		placeAsPlayer(level, controller, block("controller"), player);
+		helper.assertTrue(SupplyContainers.insert(level, List.of(first), new ItemStack(Items.COBBLESTONE, 10)).isEmpty(), "the first barrel took nothing");
+		// The far end: a barrel, and the link before it (its back, which it links, east), ten blocks from the controller.
+		BlockPos behind = helper.absolutePos(new BlockPos(12, 2, 8));
+		level.setBlockAndUpdate(behind, block("barrel").defaultBlockState());
+		helper.assertTrue(SupplyContainers.insert(level, List.of(behind), new ItemStack(Items.OAK_PLANKS, 7)).isEmpty(), "the barrel behind took nothing");
+		BlockPos link = helper.absolutePos(new BlockPos(11, 2, 8));
+		level.setBlock(link, TomsStorageCompatTests.facing(block("storage_link").defaultBlockState(), net.minecraft.core.Direction.WEST), Block.UPDATE_ALL);
+		net.minecraft.world.level.block.entity.BlockEntity be = level.getBlockEntity(link);
+		helper.assertTrue(be != null, "the link has no block entity");
+		try {
+			be.getClass().getMethod("linkToController", BlockPos.class).invoke(be, controller);
+		} catch (ReflectiveOperationException e) {
+			throw new GameTestAssertException("the link can't be linked: " + e);
+		}
+		helper.succeedWhen(() -> {
+			List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+			long planks = SupplyContainers.count(level, store, Items.OAK_PLANKS);
+			long cobble = SupplyContainers.count(level, store, Items.COBBLESTONE);
+			helper.assertTrue(planks == 7 && cobble == 10 && !store.contains(behind) && store.contains(controller), "the Storehouse " + store
+				+ " counts " + planks + " of the 7 planks behind the far linked link and " + cobble + " of the 10 cobblestone; linked by our walk: "
+				+ StorageNetworks.linkedTo(level, controller));
+		});
+	}
+
+	/**
 	 * A storage link a player has linked with the Storage Tool to another controller, standing beside this controller's
 	 * barrel: this controller doesn't reach through it (the link isn't its), so the barrel behind it isn't this
 	 * controller's, and the Storehouse still counts what lies in it once.

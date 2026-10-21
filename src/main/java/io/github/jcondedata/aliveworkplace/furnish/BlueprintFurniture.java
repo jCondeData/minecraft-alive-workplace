@@ -142,7 +142,18 @@ public final class BlueprintFurniture implements ResourceManagerReloadListener {
 		if (cells.isEmpty()) {
 			throw new IllegalArgumentException("no blocks");
 		}
-		return new FurnitureSpot(kind, pos(o.getAsJsonArray("pos")), facing, string(o, "wood"), string(o, "colour"), List.copyOf(cells));
+		java.util.Set<FurnitureSpot.Support> support = o.has("support") ? java.util.EnumSet.noneOf(FurnitureSpot.Support.class) : null;
+		if (support != null) { // B260: what it stands on or against (absent: not known, any piece may go there)
+			for (JsonElement e : o.getAsJsonArray("support")) {
+				FurnitureSpot.Support s = FurnitureSpot.Support.of(e.getAsString());
+				if (s == null) {
+					throw new IllegalArgumentException("unknown support " + e.getAsString());
+				}
+				support.add(s);
+			}
+		}
+		return new FurnitureSpot(kind, pos(o.getAsJsonArray("pos")), facing, string(o, "wood"), string(o, "colour"), List.copyOf(cells),
+			support == null ? null : java.util.Collections.unmodifiableSet(support));
 	}
 
 	private static BlockPos pos(JsonArray a) {

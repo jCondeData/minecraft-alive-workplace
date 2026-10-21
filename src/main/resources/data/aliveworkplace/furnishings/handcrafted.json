@@ -8,7 +8,7 @@
     "desk": {"block": "handcrafted:{wood}_desk", "facing": "front"},
     "counter": {"block": "handcrafted:{wood}_counter", "facing": "front"},
     "cupboard": {"block": "handcrafted:{wood}_cupboard", "facing": "front"},
-    "shelf": {"block": "handcrafted:{wood}_shelf", "facing": "front"},
+    "shelf": {"needs": "floor", "block": "handcrafted:{wood}_shelf", "facing": "front"},
     "nightstand": {"block": "handcrafted:{wood}_nightstand", "facing": "front", "states": {"color": "{colour}"}, "colour": "white"},
     "drawer": {"block": "handcrafted:{wood}_drawer", "facing": "front"},
     "bed": {
@@ -21,6 +21,6 @@
         {"at": [0, 0, 1], "states": {"part": "head"}}
       ]
     },
-    "crockery": {"block": ["handcrafted:{colour}_crockery_combo", "handcrafted:white_crockery_combo"], "facing": "front"}
+    "crockery": {"needs": "floor", "block": ["handcrafted:{colour}_crockery_combo", "handcrafted:white_crockery_combo"], "facing": "front"}
   }
 }

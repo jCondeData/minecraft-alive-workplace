@@ -24,11 +24,17 @@ asks for the steps, `latest.log` and any crash report).
   are unchanged, and the Trainer Leader is never drawn. Random Station Jobs in the settings turns it off (the vanilla
   job every time, as before).
 
+- The Crafter (2.1, behind its switch `crafters`): a villager at the new Crafter's Workbench makes what the village's
+  workers are short of through whole recipe chains (logs into planks into slabs into a barrel), from the builders'
+  chests and the Storehouse, and puts it in the asker's chests; a raw material short is said, and nothing is wasted. A
+  chain half made carries on after a restart. With the Crafter's Workshop in the Blueprint Table (37.14).
 - The Furnicrafter (Cobblemon depth, 2.2, with CobbleFurnies): a villager without a job by CobbleFurnies' Furni
   Crafter takes it and makes CobbleFurnies furniture from the store's materials: the chairs, tables and lamps a builder
   nearby is waiting for (a furnished home's pieces) and the pieces the Storehouse orders, with sticks cut from planks
   first when they're short. A red bobble beanie, a walnut apron with a Poké Ball on it and a tape measure; trades in
   planks, wool and furniture. Without CobbleFurnies nothing changes. Switch: `furnicrafters`.
+- Fixed: a Sophisticated Storage link tied to a controller with the Storage Tool, standing away from the controller's network, no longer has the storage behind it counted twice at the Storehouse (B262).
+
 ## 0.146.1 — 2026-10-20
 
 ### Fixed
@@ -36,6 +42,11 @@ asks for the steps, `latest.log` and any crash report).
 - Builders take from the chests only what their work still needs. Each trip took one block too many, so two Builders
   building from the same Storehouse could each end up waiting for the one log or slab the other was carrying, and
   neither build finished (the city time-lapse's last palisade pieces, B132).
+- Furnished homes and workplaces read as rooms: no furniture in a doorway's way, every bed's head against a wall,
+  lanterns hung or on a table instead of the floor, chests against a wall or at a bed's foot. A modded piece goes only
+  where it can stand (no Beautify picture frame or Handcrafted shelf floating mid-wall) and a two-block-tall piece gets
+  its top half. The Stone House was refurnished: a clear way in from the door, and its attic and upper floor are
+  proper bedrooms (B260).
 - A Builder repairing a building now takes what it needs from the chests inside that building. Repairing a Storehouse
   Shed, it waited for a Hay Bale and an Oak Ladder that were in the shed's own chests by its bench, because chests
   inside the build were left out, as they are for a new build (B261).

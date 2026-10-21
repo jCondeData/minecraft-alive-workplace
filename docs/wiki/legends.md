@@ -141,7 +141,8 @@ Two Legends gain a power each with 1.7's colonies and trade:
   range, not only its partners; its caravans take goods for sale only to whichever partner pays most for
   them; and its board sells at 105% of what it pays instead of 110% (after Common Coin's points). His prices are 33.2's.
 
-Without the Legend settled (or on strike), nothing changes.
+Without the Legend settled (or on strike), nothing changes. A guest who settles has their powers from that moment
+(a Seer settled at dawn foretells that dawn).
 
 ## Proof
 

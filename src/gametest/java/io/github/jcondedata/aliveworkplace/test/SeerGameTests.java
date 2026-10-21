@@ -534,4 +534,39 @@ public class SeerGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			helper.succeed();
 		}));
 	}
+
+	/**
+	 * B269: a guest Seer made a Legend of the village foretells at the very next dawn round, even when the list of settled
+	 * Legends was made a moment before (while they were still a guest): making a Legend refreshes that list.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"seerSettlesAndForetells"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "seerSettlesAndForetells")
+	public void aGuestSeerMadeALegendForetellsAtOnce(GameTestHelper helper) {
+		List<BlueprintData.Placement> recorded = new ArrayList<>();
+		setUp(helper, recorded);
+		helper.runAfterDelay(2, () -> staged(helper, List.of(), seer -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			building(helper, StarterBlueprints.CHAPEL, new BlockPos(2, 1, 2), recorded);
+			RandomSource random = RandomSource.create(4242L);
+			Villager guest = null;
+			for (int moon = 0; moon < 24 && guest == null; moon++) {
+				at(level, 1 + 8L * (20 + moon), 18000);
+				LegendGuests.round(level, hall, random);
+				guest = LegendGuests.guest(level, hall);
+			}
+			helper.assertTrue(guest != null, "the Seer never came to the Chapel in 24 full moons");
+			guest.tickCount = 200;
+			Legends.tick(guest); // the guest's own tick, every 10 s of its life: it joins the dimension's Legends seen
+			helper.assertTrue(Seer.foreteller(level, hall).isEmpty(), "a guest Seer foretells for the village");
+			at(level, Chronicle.day(level) + 1, 300); // dawn; the same tick, so the list made just now still stands
+			Legends.make(level, guest, seer, "test");
+			helper.assertTrue(Seer.foreteller(level, hall).isPresent(),
+				"the Seer made a Legend of the village isn't its foreteller");
+			LegendGuests.round(level, hall, RandomSource.create(29L));
+			helper.assertTrue(entity(helper).seer().toldDay() == Chronicle.day(level), "the Seer didn't foretell at the dawn round: told day "
+				+ entity(helper).seer().toldDay() + ", today " + Chronicle.day(level));
+			helper.succeed();
+		}));
+	}
 }

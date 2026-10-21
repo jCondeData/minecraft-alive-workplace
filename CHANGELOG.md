@@ -46,6 +46,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A guest Legend who settles in a village has their powers at once: a Seer made the village's at dawn foretold at
+  that dawn, where before their powers could wait up to ten seconds and the dawn's foretelling was missed (B269).
 - Builders take from the chests only what their work still needs. Each trip took one block too many, so two Builders
   building from the same Storehouse could each end up waiting for the one log or slab the other was carrying, and
   neither build finished (the city time-lapse's last palisade pieces, B132).

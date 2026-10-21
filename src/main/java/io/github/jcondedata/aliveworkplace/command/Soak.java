@@ -451,10 +451,16 @@ public final class Soak {
 				}
 			}
 		}
+		// B132: the builds' village hall makes the builders its residents, who eat meals (an apple, potatoes) from the
+		// chests: eaten, not lost, as the city soak counts them.
+		Map<Item, Integer> usedOrEaten = new TreeMap<>(Soak::byId);
+		usedOrEaten.putAll(MaterialLedger.used());
+		MaterialLedger.eaten().forEach((item, n) -> usedOrEaten.merge(item, n, Integer::sum));
+		int eaten = MaterialLedger.eaten().values().stream().mapToInt(Integer::intValue).sum();
 		return RESULT + " " + finished + "/" + run.builds().size() + " builds finished in " + ticks + " ticks ("
 			+ String.format(java.util.Locale.ROOT, "%.1f", ticks / (double) DAY) + " days); "
-			+ (StallWatch.stalls() - run.stallsBefore()) + " stalls; items off: " + itemsOff(run.stocked(), MaterialLedger.gained(),
-				MaterialLedger.used(), MaterialLedger.dropped(), left)
+			+ (StallWatch.stalls() - run.stallsBefore()) + " stalls; " + eaten + " meals eaten from the chests; items off: "
+			+ itemsOff(run.stocked(), MaterialLedger.gained(), usedOrEaten, MaterialLedger.dropped(), left)
 			+ (unfinished.isEmpty() ? "" : "; unfinished: " + String.join(", ", unfinished))
 			// 23.6: what villages would keep loaded with someone online (the soak's server has nobody on).
 			+ "; village chunks: " + io.github.jcondedata.aliveworkplace.work.KeepLoaded.villageChunks(level,

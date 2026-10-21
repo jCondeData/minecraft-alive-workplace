@@ -240,4 +240,43 @@ public class B132GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			helper.assertTrue(left == row, "the chest holds " + left + " oak planks after the row, not the " + row + " the row left");
 		});
 	}
+	/**
+	 * B132 (the soak's "item_frame -1"): an item frame a finished build puts up is paid for from the chest, and the
+	 * soak's ledger counts it as built in, as it does a block; it was taken from the chest uncounted, so the soak called
+	 * it lost. Its own batch: the ledger counts the whole server.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"b132FrameLedger"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "b132FrameLedger")
+	public void b132AnItemFramePutUpIsCountedAsBuiltIn(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(4, 2, 5), Blocks.STONE); // the wall the frame hangs on (south of it)
+		helper.setBlock(BENCH, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(BENCH);
+		chest.setItem(0, new ItemStack(Items.ITEM_FRAME));
+		net.minecraft.nbt.CompoundTag frame = new net.minecraft.nbt.CompoundTag();
+		frame.putString("id", "minecraft:item_frame");
+		frame.putByte("Facing", (byte) Direction.NORTH.get3DDataValue());
+		io.github.jcondedata.aliveworkplace.blueprint.Blueprint blueprint = new io.github.jcondedata.aliveworkplace.blueprint.Blueprint(
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.id("test/b132_frame"), new Vec3i(1, 1, 1), java.util.List.of(),
+			java.util.List.of(new io.github.jcondedata.aliveworkplace.blueprint.Blueprint.EntityEntry(new Vec3(0.5, 0.5, 0.97), frame)));
+		BuildPlan plan = BuildPlan.create(blueprint, new BlueprintData.Placement(level.dimension().location(),
+			helper.absolutePos(new BlockPos(4, 2, 4)), Rotation.NONE, Mirror.NONE));
+		helper.assertTrue(plan.entities().size() == 1, "the plan has no item frame to put up: " + plan.entities());
+		io.github.jcondedata.aliveworkplace.build.MaterialLedger.start();
+		int left;
+		java.util.Map<net.minecraft.world.item.Item, Integer> used;
+		try {
+			left = io.github.jcondedata.aliveworkplace.build.BuildEntities.placeAll(level, plan, java.util.List.of(helper.absolutePos(BENCH)));
+		} finally {
+			io.github.jcondedata.aliveworkplace.build.MaterialLedger.stop();
+			used = new java.util.HashMap<>(io.github.jcondedata.aliveworkplace.build.MaterialLedger.used());
+		}
+		helper.assertTrue(left == 0, left + " entities left out");
+		helper.assertTrue(chest.getItem(0).isEmpty(), "the item frame is still in the chest: " + chest.getItem(0));
+		helper.assertTrue(!level.getEntitiesOfClass(net.minecraft.world.entity.decoration.ItemFrame.class,
+			new AABB(helper.absolutePos(new BlockPos(4, 2, 4))).inflate(1)).isEmpty(), "no item frame was put up");
+		helper.assertTrue(used.getOrDefault(Items.ITEM_FRAME, 0) == 1, "the ledger didn't count the item frame built in: " + used);
+		helper.succeed();
+	}
 }

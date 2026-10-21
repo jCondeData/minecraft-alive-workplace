@@ -44,7 +44,8 @@ public final class BuildEntities {
 				continue;
 			}
 			if (!free) {
-				SupplyContainers.extract(level, supplies, step.cost(), 1);
+				// B132: built in like a block, or the soak's count had an item frame missing
+				MaterialLedger.used(step.cost(), SupplyContainers.extract(level, supplies, step.cost(), 1));
 			}
 			level.addFreshEntity(entity);
 			level.playSound(null, entity.blockPosition(), entity instanceof HangingEntity ? SoundEvents.ITEM_FRAME_PLACE : SoundEvents.ARMOR_STAND_PLACE,

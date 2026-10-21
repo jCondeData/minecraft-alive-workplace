@@ -6,7 +6,7 @@ image: https://jcondedata.github.io/minecraft-alive-workplace/stations/still-1.j
 caption: One composter, four jobs
 Jobs: 43
 Picking a job: sneak-right-click the villager with the job's item, within about 4 blocks of the block
-Retraining: a working villager becomes a Builder for 5 to 50 emeralds, by their level
+Retraining: a working villager takes any free job (or becomes a Builder) for 5 to 50 emeralds, by their level
 Supply chests: chests and barrels within 8 blocks of the workstation
 Shared stock: workers within 48 blocks of each other
 Levels: Novice to Master, faster at every level
@@ -56,6 +56,12 @@ With CobbleDollars installed (the Cobbleverse pack) you pay in CobbleDollars ins
 Sneak-right-click them again within 5 seconds to pay. Their old job's trades and level are lost, and they start again
 as a Novice Builder. Short of money, you're told how much you're missing and nothing changes. Children and nitwits
 can't be retrained. A jobless villager by the table takes the job for free, as always.
+
+**Changing any villager's job from the Village Hall.** You don't have to break job blocks and carry them around: in
+the [Village Hall](village-hall.md), click a working villager and press **Change job**. Pick any free job block in the
+village (or the Builder, at a free Blueprint Table), check the price (the same as above), and click again to pay. The
+new job is theirs at once; they walk to the block, and one who can't get there within about a minute is moved beside
+it. Their old block is left free for someone else.
 
 A builder you give another job hands their build back first: what's built stays, and the blueprint comes back to you,
 still placed, so another builder can carry on where they stopped. Server owners can turn retraining off with the game

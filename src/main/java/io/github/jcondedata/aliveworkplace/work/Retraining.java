@@ -97,7 +97,7 @@ public final class Retraining {
 	}
 
 	/** "Novice", "Journeyman"... (vanilla's names for a villager's level). */
-	private static Component levelName(Villager villager) {
+	public static Component levelName(Villager villager) {
 		return Component.translatable("merchant.level." + Math.max(1, Math.min(5, villager.getVillagerData().getLevel())));
 	}
 
@@ -129,19 +129,28 @@ public final class Retraining {
 				.withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.CONSUME;
 		}
-		dropWork(level, player, villager);
 		VillagerProfession old = villager.getVillagerData().getProfession();
-		villager.setVillagerData(villager.getVillagerData().setLevel(1)); // the old job's level goes (its trades go with the job)
-		villager.setVillagerXp(0);
-		Stations.assign(level, villager, station, job);
+		retrain(level, player, villager, station, job);
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
 		Chat.chat(player, Component.translatable("message.aliveworkplace.retrain.done", who, Stations.name(old), Stations.name(job),
 			level.getBlockState(station).getBlock().getName(), price).withStyle(ChatFormatting.GREEN));
 		return InteractionResult.SUCCESS;
 	}
 
+	/**
+	 * Retrains {@code villager} as a {@code job} at {@code station} now (paid for already): a builder hands their builds
+	 * back, the old job's level and trades go, and the new job and its block are theirs at once. The Blueprint Table's
+	 * second click and the Village Hall's Change job (36.18) both end here.
+	 */
+	public static void retrain(ServerLevel level, ServerPlayer player, Villager villager, BlockPos station, VillagerProfession job) {
+		dropWork(level, player, villager);
+		villager.setVillagerData(villager.getVillagerData().setLevel(1)); // the old job's level goes (its trades go with the job)
+		villager.setVillagerXp(0);
+		Stations.assign(level, villager, station, job);
+	}
+
 	/** How much more the player needs: "7 emeralds" or "650 CobbleDollars". */
-	private static Component shortBy(ServerPlayer player, long dollars, int emeralds) {
+	public static Component shortBy(ServerPlayer player, long dollars, int emeralds) {
 		Long balance = Bank.EXTENSION.call(bank -> bank.balance(player), null);
 		if (balance != null) {
 			return Money.describe(Math.max(0, dollars - balance), 0);

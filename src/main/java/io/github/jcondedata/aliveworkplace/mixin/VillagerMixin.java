@@ -40,6 +40,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.guard.Mercenaries.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.work.Stations.retakeHive((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.work.Stations.takeHouseBlock((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.hall.HallRetraining.tick((Villager) (Object) this); // on their way to a new job (36.18)
 		io.github.jcondedata.aliveworkplace.work.JobSiteTickets.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.city.Stewards.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.craft.Crafters.tick((Villager) (Object) this); // the retired Crafter (37.14a)

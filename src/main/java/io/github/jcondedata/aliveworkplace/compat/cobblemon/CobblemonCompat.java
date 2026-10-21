@@ -111,6 +111,11 @@ public final class CobblemonCompat {
 			}
 
 			@Override
+			public BlockPos pastureOf(Entity entity) {
+				return CobblemonPartners.pastureOf(entity);
+			}
+
+			@Override
 			public boolean walkTo(Entity entity, BlockPos pos, double speed) {
 				return CobblemonPartners.walkTo(entity, pos, speed);
 			}

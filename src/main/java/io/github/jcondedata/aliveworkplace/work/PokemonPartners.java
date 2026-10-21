@@ -93,6 +93,12 @@ public interface PokemonPartners {
 		return Double.POSITIVE_INFINITY;
 	}
 
+	/** The Pasture Block {@code entity} is kept in (null when it isn't pastured). */
+	@org.jetbrains.annotations.Nullable
+	default BlockPos pastureOf(Entity entity) {
+		return null;
+	}
+
 	/** Starts {@code entity} walking to {@code pos}; false if it can't be told to. */
 	default boolean walkTo(Entity entity, BlockPos pos, double speed) {
 		return false;

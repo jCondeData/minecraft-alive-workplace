@@ -47,6 +47,11 @@ asks for the steps, `latest.log` and any crash report).
   sneak-right-click a Blueprint Table with an empty hand next to a Builder to move him there without breaking the old one
   (or pick him for a free table on the Village Hall's free job blocks page); his status says which table he works at (B290).
 
+### Fixed
+- **A worker's partner show goes to the Pokémon pastured by their workstation** (B277). With two pastures close
+  together, a neighbour's Pokémon that wandered a step nearer (a florist's Oddish by the compost bin) used to take the
+  show, and the worker's own partner just stood by.
+
 ## 0.146.1 — 2026-10-20
 
 ### Fixed

@@ -229,6 +229,11 @@ public final class CobblemonPartners {
 		return pokemon.getTethering().getBox().maxY;
 	}
 
+	// The Pasture Block the Pokémon is kept in (null when it isn't pastured).
+	public static BlockPos pastureOf(net.minecraft.world.entity.Entity entity) {
+		return entity instanceof PokemonEntity pokemon && pokemon.getTethering() != null ? pokemon.getTethering().getPasturePos() : null;
+	}
+
 	// Starts the Pokémon walking (its own navigation; Cobblemon's brain may still overrule it, and the show copes).
 	public static boolean walkTo(net.minecraft.world.entity.Entity entity, BlockPos pos, double speed) {
 		if (!(entity instanceof PokemonEntity pokemon)) {

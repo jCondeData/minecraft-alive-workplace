@@ -91,6 +91,8 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	static final double ARRIVED = 2.0;
 	/** Within this many blocks of where it started, the partner is back. */
 	static final double HOME = 3.0;
+	/** How many partners near the workstation a cue weighs (nearest first) before picking the worker's own (B277). */
+	static final int CANDIDATES = 12;
 
 	/** What a show does to the world at its spot, from a small toolbox. */
 	public enum Effect {
@@ -338,8 +340,12 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 		int partners = 0;
 		for (Show show : matching) {
 			Item carry = carried(show, handling);
+			// The worker's own partners first: those kept in the pasture nearest the workstation, then by where they stand (B277).
+			// By where they stand alone, a partner wandering over from a neighbour's pasture (an Oddish from the florist's,
+			// for the composter's Grimer) took the worker's show whenever it happened to be a step nearer.
 			List<PokemonPartners.Fighter> helpers = PokemonPartners.EXTENSION.call(
-				p -> p.fighters(level, station, Partners.RADIUS, show.types(), Partners.MAX), List.<PokemonPartners.Fighter>of());
+				p -> p.fighters(level, station, Partners.RADIUS, show.types(), CANDIDATES), List.<PokemonPartners.Fighter>of());
+			helpers = helpers.stream().sorted(java.util.Comparator.comparingDouble(h -> pastureDistance(h.entity(), station))).toList();
 			for (PokemonPartners.Fighter helper : helpers) {
 				Entity pokemon = helper.entity();
 				partners++;
@@ -370,6 +376,12 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 			}
 		}
 		return refuse(worker, partners == 0 ? "no pastured partner of the show's types near the workstation" : partners + " partners, all busy");
+	}
+
+	/** How far {@code pokemon}'s Pasture Block is from {@code station} (squared; unpastured last). */
+	static double pastureDistance(Entity pokemon, BlockPos station) {
+		BlockPos pasture = PokemonPartners.EXTENSION.call(p -> p.pastureOf(pokemon), null);
+		return pasture == null ? Double.MAX_VALUE : pasture.distSqr(station);
 	}
 
 	@Nullable

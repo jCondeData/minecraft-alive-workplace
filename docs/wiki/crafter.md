@@ -4,7 +4,7 @@ A villager at a Crafter's Workbench who makes what the village's workers are sho
 logs sawn into planks, planks cut into slabs, then the barrel, chair or fence asked for. Part of Furnished homes and
 modded storage (2.1), behind its expansion gate (`Expansions.M37`) and its own switch.
 
-Roadmap items: 37.14, 37.15
+Roadmap items: 37.14, 37.15, 37.16
 
 ## 1. What a player sees
 
@@ -22,6 +22,12 @@ CobbleFurnies' Furni Crafter standing in the workshop, CobbleFurnies' pieces as 
 
 The Crafter's Workshop is in the Blueprint Table: birch boards in a spruce frame under a dark oak roof, the workbench
 facing the door between two chests, and an open store lean-to of logs, planks and slabs against its east wall.
+
+Villages find their own Crafter (37.16). The Steward plans a Crafter's Workshop when the village's builders keep running
+short of crafted parts (three or more waited for at once: planks, slabs, stairs, doors), and villages grow one now and
+then in every style: a board workshop with its plastered gable to the street, a work hatch with a counter beside the
+door and a lean-to parts store of boards and logs, its Crafter already at the workbench. With the `crafters` switch off
+(or before 2.1) the workshop isn't in the Blueprint Table, the Steward doesn't plan one and villages don't grow it.
 
 ## 2. How it works
 
@@ -57,11 +63,18 @@ The job in hand is saved on the villager after every step, so a chain half made 
 restart (the planks already made are in the saved bag). If the makings vanish while fetching, what was fetched goes back
 where it came from. A step takes 6 ticks a craft (at least a second), faster with the Crafter's level.
 
+The Steward's rule (37.16) is `steward_rules/workplace_crafters_workshop.json`: `builders_short_of_parts` (at least 3)
+and no Crafter's Workshop built yet, to build one in the workshops quarter (priority 60, a 2-day cooldown). The new
+condition `builders_short_of_parts {at_least}` counts, over every build site near the hall waiting for materials (the
+Steward's and the players'), each crafted part a site misses once; a part is anything the crafting table or the
+stonecutter makes (logs, cobblestone and glass don't count). It never holds while Crafters are off. The village house
+is `village/<style>_crafters_workshop` in the five vanilla house pools (and Repurposed Structures'), weight 2.
+
 ## 3. Switches
 
 | Key | Default | What it does |
 |---|---|---|
-| `crafters` | on from 2.1 | A jobless villager takes a free Crafter's Workbench and becomes a Crafter. Off: no villager takes one, and Crafters already hired stand idle (they keep their job). |
+| `crafters` | on from 2.1 | A jobless villager takes a free Crafter's Workbench and becomes a Crafter. Off: no villager takes one, and Crafters already hired stand idle (they keep their job); the workshop leaves the Blueprint Table, the Steward's rule and the village houses (37.16; workshops already built stay). |
 
 ## 4. Saved data
 
@@ -74,7 +87,9 @@ where it came from. A step takes 6 ticks a craft (at least a second), faster wit
 - Block: `aliveworkplace:crafters_workbench` (crafted from two stonecutters, a crafting table, two planks and a chest;
   mined with an axe).
 - Job: `aliveworkplace:crafter`.
-- Blueprint: `aliveworkplace:crafters_workshop`.
+- Blueprint: `aliveworkplace:crafters_workshop`; village houses `aliveworkplace:village/<style>_crafters_workshop` (loot
+  `chests/village_crafters_workshop`: planks, logs, sticks, slabs, iron nuggets).
+- Steward rule: `aliveworkplace:workplace_crafters_workshop`; condition `builders_short_of_parts`.
 - Data: `data/<namespace>/crafter_benches/*.json`, each `{"recipe_type": "...", "blocks": ["..."]}`. Shipped:
   `aliveworkplace:cobblefurnies` (`cobblefurnies:furni_crafting` at `cobblefurnies:furnicrafter`).
 
@@ -92,10 +107,17 @@ where it came from. A step takes 6 ticks a craft (at least a second), faster wit
 - 37.15: a bench file is dropped when its recipe type isn't registered, rather than kept and never matched, so a
   server without the mod doesn't scan the workshop for its blocks.
 
+- 37.16: "keep running short" is counted as several crafted parts waited for at once (3 by default), not as days in a
+  row: a site's missing list isn't saved, and counting days would need a new saved field on the hall. The rule's cooldown
+  and the built-count condition keep it from asking twice.
+- 37.16: the workshop is hidden from the Blueprint Table while `crafters` is off (not only while M37 is closed, as B119
+  does for other expansion builds): a workshop whose job can't start is no use. Other jobs' builds are unchanged.
+- 37.16: the village house comes with its Crafter already in the job, like the luxury houses, rather than a jobless
+  villager who'd take the workbench by themselves: the same in every village, and the house test can check it.
+
 ## 7. Known limits
 
-- The Crafter is not in the village Steward's rules or the generated villages yet, and doesn't sell its workshop's
-  blueprint; the Blueprint Table has it.
+- The Crafter doesn't sell its workshop's blueprint; the Blueprint Table has it.
 - What's short is found along the first way down the recipes: with oak and spruce logs both short it names oak.
 - The showcase scene is filmed on GitHub, not in this session.
 
@@ -108,6 +130,12 @@ where it came from. A step takes 6 ticks a craft (at least a second), faster wit
 - `CrafterGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `CrafterGameTests.withTheSwitchOffTheCrafterMakesNothing`: the switch off.
 - `CrafterGameTests.aBenchsRecipesOnlyWhileTheBenchIsThere`: a bench's recipes.
+- `CrafterWorkshopGameTests.theWorkshopIsOfferedOnlyWhileCraftersAreOn`: in the Blueprint Table, not with the switch off
+  or M37 closed.
+- `CrafterWorkshopGameTests.theStewardPlansAWorkshopWhenBuildersKeepRunningShortOfParts`: the rule on three or more
+  crafted parts short, not on one, on raw materials, with the switch off or a workshop built.
+- `CrafterWorkshopGameTests.villagesGrowTheWorkshopOnlyWhileCraftersAreOn` and
+  `VillageGameTests.theCraftersWorkshopsCrafterTakesItsBench`: the village house in every style, with its Crafter.
 - `CrafterGameTests.theCobbleFurniesBenchIsIgnoredWithoutCobbleFurnies`: the shipped bench file left out without its mod.
 - `CrafterFurnitureCompatTests.theCrafterMakesHandcraftedChairsFromLogsForTheBuilder`: Handcrafted chairs from logs for
   a builder's shortfall, and the build finishing with them (compat suite).

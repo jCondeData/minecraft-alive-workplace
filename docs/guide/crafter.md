@@ -24,6 +24,12 @@ Craft a **Crafter's Workbench** (two stonecutters and a crafting table over two 
 the village. A villager with no job takes it by themselves. Or build the **Crafter's Workshop** from the Blueprint Table:
 the workbench is inside it.
 
+Villages find one by themselves too. When the builders keep running short of things that are crafted (planks, slabs,
+stairs, doors), the Steward plans a Crafter's Workshop. And some villages grow one already, a board workshop with a
+work hatch by the door and a lean-to of logs and boards beside it, with its Crafter inside.
+
+![A village's Crafter's Workshop](https://jcondedata.github.io/minecraft-alive-workplace/crafter_workshop/still-2.jpg)
+
 ## What they do
 
 They look at what the workers nearby are waiting for: first the builders' missing materials, then what you ordered on
@@ -57,6 +63,7 @@ or carrying.
 ## Switching it off
 
 The **Crafters** setting (on by default once Furnished Homes is out) turns the job off: no villager takes a workbench,
-and crafters already hired stand idle.
+and crafters already hired stand idle. Off, the workshop also leaves the Blueprint Table, the Steward stops planning
+one and villages stop growing it.
 
 See also [Crafters and smiths](jobs-crafts.md).

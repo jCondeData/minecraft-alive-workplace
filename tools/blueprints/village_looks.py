@@ -30,6 +30,7 @@ the owner: "make new completely different exteriors ... nothing should look iden
     tailors_shop         a shop with two display windows, a striped awning, banners and a mansard roof
     print_shop           a tall narrow house with crow-stepped gables and a lamp on an iron arm
     jewellers_workshop   a stone strongroom with barred windows, a dome and an amethyst finial, gem pedestals
+    crafters_workshop    a board workshop, its gable to the street, a hatch counter and a lean-to parts store of boards and logs
     pokemon_center       a white house under a red hipped roof, a glazed front under a canopy
     camp_kitchen         an A-frame cook hut down to the ground, a fire pit with a spit and log seats beside it
     berry_nursery        a cottage under a stepped thatch of hay, berry beds watered by a channel
@@ -1500,6 +1501,49 @@ def jewellers_workshop(b, P):
     lantern(b, 4, 4, 5, hanging=True)
 
 
+def crafters_workshop(b, P):
+    """The Crafter's (ROADMAP 37.16): a board workshop with its plastered gable to the street, a work hatch with a counter
+    beside the door, and a lean-to parts store along its east side (logs, stacked boards and slabs) under a slab roof,
+    reached by a side door. At most 10 wide, like the luxury houses (their test places two side by side 11 apart)."""
+    # the parts store first: the main roof's eave runs over its inner row
+    box(b, 8, 0, 3, 9, 0, 8, P.yard)
+    for z in (3, 8):
+        b.set(9, 0, z, resolve(P.base, 9, 0, z))
+        post(b, P, 9, z, 1, 2)
+    for x in (8, 9):
+        for z in range(3, 9):
+            slab(b, x, 3, z, P.wood)
+    for z in (6, 7):  # logs piled ends out, two high at the back
+        log(b, 9, 1, z, P.log, axis="x")
+    log(b, 9, 2, 7, P.log, axis="x")
+    for z in (4, 5):  # stacked boards and a slab on top
+        slab(b, 9, 1, z, P.wood, double=True)
+        slab(b, 9, 2, z, P.wood)
+    lantern(b, 8, 2, 6, hanging=True)
+    # the workshop
+    y = body(b, P, 1, 2, 7, 8, 3, wall=P.boards, posts_at=((3, 2), (5, 2), (1, 5), (7, 5), (3, 8), (5, 8)))
+    if P.flat:
+        flat_top(b, P, 1, 2, 7, 8, y)
+    else:
+        fam = P.roof2 if P.roof2 is not COBBLE else P.roof
+        gable_roof(b, 0, 8, 1, 9, y, fam, axis="z", gable=P.wall, gable_at=(2, 8), eave_trim=P.wood)
+        win(b, P, 4, 6, 2, "north", shut=False)  # the loft's window in the front gable
+        win(b, P, 4, 6, 8, "south", shut=False)
+    entry(b, P)
+    win(b, P, 2, 2, 2, "north")
+    # the work hatch: a wide opening over a counter, its shutter propped open above
+    for yy in (1, 2):
+        pane(b, 6, yy, 2)
+    b.set(6, 1, 1, P.wood.slab, type="top", waterlogged=False)
+    b.set(6, 3, 1, P.trap, facing="north", half="top", open=False, powered=False, waterlogged=False)
+    for z in (4, 6):
+        win(b, P, 1, 2, z, "west")
+    win(b, P, 4, 2, 8, "south")
+    win(b, P, 7, 2, 6, "east", shut=False, sill=False)
+    door(b, 7, 1, 4, P.door, "east")  # out to the store (not beside the bed at (6, 6), B178)
+    tie(b, P, 4)
+
+
 def pokemon_center(b, P):
     """A white house under a red hipped roof, a glazed front under a canopy."""
     white = "white_concrete" if P.flat else P.wall
@@ -1748,6 +1792,7 @@ DESIGNS = {
     "tailors_shop": (tailors_shop, (9, 12, 11)),
     "print_shop": (print_shop, (9, 17, 10)),
     "jewellers_workshop": (jewellers_workshop, (9, 12, 11)),
+    "crafters_workshop": (crafters_workshop, (10, 11, 11)),
     "pokemon_center": (pokemon_center, (11, 11, 11)),
     "camp_kitchen": (camp_kitchen, (12, 11, 11)),
     "berry_nursery": (berry_nursery, (12, 11, 11)),

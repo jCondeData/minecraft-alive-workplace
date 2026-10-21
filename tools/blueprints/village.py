@@ -358,6 +358,16 @@ def jewellers_room(b, style):
     b.set(1, 1, 2, "smooth_stone")
 
 
+def crafters_room(b, style):
+    """The Crafter's Workbench (with its Crafter already in the job, like the luxury houses' workers), a chest of boards, logs and sticks,
+    and a stack of cut boards and slabs: the Crafter makes what the village's builders are short of (ROADMAP 37.16)."""
+    b.set(1, 1, 6, "aliveworkplace:crafters_workbench", facing="east")
+    loot_chest(b, 1, 1, 5, "village_crafters_workshop")
+    b.set(1, 1, 3, "stripped_birch_log", axis="x")
+    b.set(1, 2, 3, "birch_slab", type="bottom", waterlogged=False)
+    b.set(1, 1, 2, "oak_slab", type="double", waterlogged=False)
+
+
 # --- The Pokémon jobs' village houses (ROADMAP 28.15): only with Cobblemon (and config pokemonVillageHouses) -----
 # Each keeps its one job block and comes with its villager already in the job: Cobblemon's blocks (the Healing Machine,
 # the Campfire Pot, the Pasture Block) are never taken by a jobless villager, and a composter or a stonecutter would
@@ -463,6 +473,7 @@ VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, 
                   "compost_yard": compost_yard_house,
                   "winery": winery_room, "tailors_shop": tailors_room,
                   "print_shop": print_shop_room, "jewellers_workshop": jewellers_room,
+                  "crafters_workshop": crafters_room,
                   "pokemon_center": pokemon_center_room, "camp_kitchen": camp_kitchen_room,
                   "berry_nursery": berry_nursery_room, "daycare": daycare_room, "gem_grotto": gem_grotto_room}
 
@@ -475,7 +486,7 @@ HOUSE_JOBS = {"guard_house": "guard", "clinic": "nurse", "post_office": "postman
               "schoolhouse": "teacher", "inn_room": "innkeeper", "mortuary": "undertaker", "tinkers_shop": "tinkerer",
               "sifting_shed": "sifter", "compost_yard": "composter",
               "winery": "vintner", "tailors_shop": "tailor",
-              "print_shop": "printer", "jewellers_workshop": "jeweller",
+              "print_shop": "printer", "jewellers_workshop": "jeweller", "crafters_workshop": "crafter",
               "pokemon_center": "nurse", "camp_kitchen": "camp_cook", "berry_nursery": "berry_breeder",
               "daycare": "daycare_keeper", "gem_grotto": "gem_grower"}
 

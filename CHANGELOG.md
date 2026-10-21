@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Crafter's Workshops in villages** (37.16). The Steward plans a Crafter's Workshop when the builders keep running
+  short of crafted parts (planks, slabs, stairs, doors), and villages grow one now and then in all five styles, its
+  Crafter already at the workbench. Both follow the Crafters setting.
 - **The Crafter makes the pack's furniture** (37.15). A builder short of Handcrafted chairs (or another piece Handcrafted,
   Beautify or Cozy Home crafts on the crafting table) gets them made from logs, the planks, slabs and sticks cut on
   the way. CobbleFurnies'

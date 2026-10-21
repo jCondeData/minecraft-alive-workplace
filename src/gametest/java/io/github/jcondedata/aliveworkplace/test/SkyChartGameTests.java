@@ -235,45 +235,61 @@ public class SkyChartGameTests implements FabricGameTest {
 		// The world's own finder over every region of every kind this world places (or the villages where it places none).
 		List<ResourceLocation> kinds = SkyChart.kinds(level).isEmpty() ? List.of(VILLAGES) : SkyChart.kinds(level);
 		load(level, area); // the first, cold, warms the samples up
-		double stepLoad = load(level, area);
-		long worst = 0;
-		long total = 0;
-		int steps = 0;
+		// Each limit scales with the machine's load, measured before and after what it times (the slower of the two), so
+		// a runner that turns busy mid-loop is seen. One pause (a GC, a busy CI runner: 165 ms once, B267) mustn't decide
+		// the verdict either: the steps are judged by their mean without the slowest tenth, and the two single timings
+		// below by the best of three, while a search that is slow every time still fails.
+		double loadBefore = load(level, area);
+		List<Long> took = new ArrayList<>();
 		for (ResourceLocation kind : kinds) {
 			for (int r = 0; r < area.regions(); r++) {
 				long start = System.nanoTime();
 				SkyChart.VANILLA.find(level, kind, area.regionMin(r), SkyChart.REGION_CHUNKS, (s, p) -> {
 				});
-				long took = System.nanoTime() - start;
-				worst = Math.max(worst, took);
-				total += took;
-				steps++;
+				took.add(System.nanoTime() - start);
 			}
 		}
-		long average = total / steps;
-		helper.assertTrue(average < 5_000_000L * stepLoad, "a search step takes " + average / 1_000 + " µs on average (worst " + worst / 1_000
-			+ " µs; the machine " + stepLoad + " times slower than idle)");
+		double stepLoad = Math.max(loadBefore, load(level, area));
+		took.sort(null);
+		int kept = took.size() - took.size() / 10;
+		long total = 0;
+		for (int i = 0; i < kept; i++) {
+			total += took.get(i);
+		}
+		long typical = total / kept;
+		helper.assertTrue(typical < 5_000_000L * stepLoad, "a search step takes " + typical / 1_000 + " µs on average without the slowest tenth (median "
+			+ took.get(took.size() / 2) / 1_000 + " µs, worst " + took.get(took.size() - 1) / 1_000 + " µs; the machine " + stepLoad
+			+ " times slower than idle)");
 		// A thousand structures already found: the per-step bookkeeping stays small.
 		List<SkyChart.Found> starts = new ArrayList<>();
 		for (int i = 0; i < 1_000; i++) {
 			starts.add(new SkyChart.Found(VILLAGES, PLAINS, new BlockPos(area.minX() + (i * 37) % 6_144, 64, area.minZ() + (i * 91) % 6_144)));
 		}
-		SkyChart.Search search = new SkyChart.Search();
-		double kindLoad = load(level, area);
-		long started = System.nanoTime();
-		run(helper, search, new Stub(starts), 0, 1_000);
-		long kindNanos = System.nanoTime() - started;
-		helper.assertTrue(search.found().size() == 1_000, search.found().size() + " of 1,000 found");
-		helper.assertTrue(kindNanos / 144 < 2_000_000L * kindLoad, "a step with 1,000 found takes " + kindNanos / 144 / 1_000 + " µs (the machine "
-			+ kindLoad + " times slower than idle)");
+		SkyChart.Search search = null;
+		long kindNanos = Long.MAX_VALUE;
+		loadBefore = load(level, area);
+		for (int attempt = 0; attempt < 3; attempt++) {
+			search = new SkyChart.Search();
+			long started = System.nanoTime();
+			run(helper, search, new Stub(starts), 0, 1_000);
+			kindNanos = Math.min(kindNanos, System.nanoTime() - started);
+			helper.assertTrue(search.found().size() == 1_000, search.found().size() + " of 1,000 found");
+		}
+		double kindLoad = Math.max(loadBefore, load(level, area));
+		helper.assertTrue(kindNanos / 144 < 2_000_000L * kindLoad, "a step with 1,000 found takes " + kindNanos / 144 / 1_000
+			+ " µs at best of three (the machine " + kindLoad + " times slower than idle)");
 		// The chart: 16,384 biome samples, like a vanilla explorer map, whatever its size (about 40 ms idle; sampled per
 		// block, 37 million, it would cost thousands of times that).
-		double chartLoad = load(level, area);
-		long drawStart = System.nanoTime();
-		SkyChart.chart(level, area, search.found());
-		long draw = System.nanoTime() - drawStart;
-		helper.assertTrue(draw < 250_000_000L * chartLoad, "drawing the chart takes " + draw / 1_000_000 + " ms (the machine " + chartLoad
-			+ " times slower than idle)");
+		long draw = Long.MAX_VALUE;
+		loadBefore = load(level, area);
+		for (int attempt = 0; attempt < 3; attempt++) {
+			long drawStart = System.nanoTime();
+			SkyChart.chart(level, area, search.found());
+			draw = Math.min(draw, System.nanoTime() - drawStart);
+		}
+		double chartLoad = Math.max(loadBefore, load(level, area));
+		helper.assertTrue(draw < 250_000_000L * chartLoad, "drawing the chart takes " + draw / 1_000_000 + " ms at best of three (the machine "
+			+ chartLoad + " times slower than idle)");
 		helper.succeed();
 	}
 }

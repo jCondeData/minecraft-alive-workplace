@@ -136,6 +136,10 @@ def parse(text):
         m = ITEM.match(line)
         if m and area:
             marks, _ = split_marks(m.group(6))
+            # "[lane: c]" filed with square brackets counts as "(lane: c)" (B272 was missed by next, 2026-10-21)
+            square = re.match(r"\s*\[lane:\s*([a-e])\]", m.group(6))
+            if square and not any(x.startswith("lane") for x in marks):
+                marks.append(f"lane: {square.group(1)}")
             items.append({"id": m.group(4), "done": m.group(2) == "x", "area": area, "line": n, "marks": marks})
     return items
 

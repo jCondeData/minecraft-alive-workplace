@@ -377,6 +377,10 @@ public final class VillageHallScreen {
 				} else if (jobless && villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NITWIT) {
 					renderJobs(menu, level, hall, villager, shown);
 					menu.broadcastChanges();
+				} else if (menu.rightClicked() && HallRetraining.canRetrain(level, villager)) {
+					// A worker's page, with its Change job button (36.18); a plain click still only makes them glow.
+					HallRetraining.renderWorker(menu, level, hall, villager, shown);
+					menu.broadcastChanges();
 				} else {
 					glow(level, villager, p);
 				}
@@ -411,7 +415,7 @@ public final class VillageHallScreen {
 		page.content().fill(menu, level, hall, viewer);
 	}
 
-	private static void glow(ServerLevel level, Villager villager, ServerPlayer p) {
+	static void glow(ServerLevel level, Villager villager, ServerPlayer p) {
 		villager.addEffect(new MobEffectInstance(MobEffects.GLOWING, GLOW_TICKS, 0, false, false));
 		Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.glowing", villager.getDisplayName())
 			.withStyle(ChatFormatting.GREEN));
@@ -888,6 +892,9 @@ public final class VillageHallScreen {
 			&& legendName == null;
 		lore.add(line(canBeGivenAJob ? "screen.aliveworkplace.hall.jobless_click" : "screen.aliveworkplace.hall.click_to_find",
 			canBeGivenAJob ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY));
+		if (working && legendName == null && HallRetraining.canRetrain(level, villager)) {
+			lore.add(line("screen.aliveworkplace.hall.worker_click", ChatFormatting.GREEN)); // right-click: Change job (36.18)
+		}
 		if (villager.hasCustomName()) {
 			lore.add(line("screen.aliveworkplace.hall.life_story_hint", ChatFormatting.DARK_GRAY)); // shift-click: their life story (31.7)
 		}

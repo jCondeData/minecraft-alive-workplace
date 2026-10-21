@@ -37,8 +37,8 @@ import org.jetbrains.annotations.Nullable;
  * hall first, each with its job, the building it stands in and how far away it is. A click on one lists the villagers
  * without a job who could take it; a click on one of them gives them that block: they claim it and walk over. It's the
  * block-first way round of a jobless villager's own page ({@link VillageHallScreen#renderJobs}), so a block left empty in
- * a finished home can be filled without walking a villager into the house. Retraining a villager who already works (26.6,
- * {@link io.github.jcondedata.aliveworkplace.work.Retraining}) stays at the block, for a price. Nothing is saved here: the
+ * a finished home can be filled without walking a villager into the house. Retraining a villager who already works, for a price, is their
+ * page's Change job ({@link HallRetraining}, 36.18) or a sneak-click at the block (26.6). Nothing is saved here: the
  * page reads the village when it's drawn, and the job is the villager's own (their job-site memory and the block's
  * point of interest).
  */

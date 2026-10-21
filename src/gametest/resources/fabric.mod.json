@@ -103,6 +103,7 @@
 			"io.github.jcondedata.aliveworkplace.test.RancherGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FreeJobsPageGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HallRetrainingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.UpgradesPageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RepairAskGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageHallBuildGameTests",

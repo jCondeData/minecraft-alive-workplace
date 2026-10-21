@@ -4854,7 +4854,7 @@ Depends on: nothing open.
   fewest of is fine: the lane decides and writes it in the Notes), not always the same one. Done when: a list of every
   block that offers several jobs in the wiki page; GameTests that over many hires (fixed `RandomSource`) each job of a
   multi-job block comes up, a single-job block is unchanged, save and reload keeps the job taken; scene `random_job`.
-- [ ] **36.18** **Retrain any villager to any job from the Village Hall** (owner, 2026-10-21: "do I have to break the block
+- [x] **36.18** (review: pending 2026-10-21) **Retrain any villager to any job from the Village Hall** (owner, 2026-10-21: "do I have to break the block
   and bring it to them, then put it back? it would be easier if you can just do it at the Village Hall"). Today only a
   Builder can be retrained (at a Blueprint Table, 36.x/27.x); any other job change means breaking job blocks. In the
   Village Hall's residents list, a villager with a job gets a **Change job** button: it lists the village's free job
@@ -5328,6 +5328,11 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-21 (lane-b-1021-2138, for the owner, 36.18): decided that **right-clicking** a worker in the Village Hall's
+  residents list opens their page with Change job; a plain click still only makes them glow, as before (the life-story
+  shift-click and its test kept their meaning). Workers who can be retrained show a "Right-click: change their job"
+  line. A villager who hasn't reached the new block after 1000 ticks (~50 s) is moved beside it. Milestone 36 now has
+  no open item for lane b.
 - 2026-10-21 (lane-c-1021-1555, for the owner, 37.14a/37.16a): the Crafter is retired and its chain way lives in the
   crafting jobs (Carpenter, Mason with the kiln, Librarian, Tinkerer, Toolsmith, dyer, Furnicrafter), behind M37's gate
   like the rest of 2.1; the Crafter's retirement itself isn't gated. Decided: the cook, luxury makers, Weaponsmith and

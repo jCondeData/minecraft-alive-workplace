@@ -47,13 +47,24 @@ Each worker is shown as their workstation, stacked as high as their level, with 
 wheel scrolls through everything about them (the × or Esc puts them away). Click a
 villager without a job to see the free workstations, and click one to give them that job.
 
+**Changing a villager's job.** Right-click a villager who already works and their page opens, with a **Change job** button
+(the emerald). It lists every free job block in the village, plus the Builder (who needs a free Blueprint Table: with
+none free, the Builder's entry tells you to place one). Click a job to see the price, then click it again to pay: 5
+emeralds for a Novice up to 50 for a Master, the same as [retraining at a Blueprint Table](jobs.md). The new job is
+theirs the moment you pay, and the hall's list shows it straight away. They walk to their new block, and if they
+can't get there within about a minute (walled in, too far, stuck) they're moved right beside it. Their old block stays
+where it is, free for someone else, and a builder hands back their build first. Their old job's trades and level are
+lost. Children and nitwits can't change jobs, and with the game rule `workplaceRetraining` off the button isn't there.
+
+![Changing a villager's job from the hall](https://jcondedata.github.io/minecraft-alive-workplace/hall_retrain/still-2.jpg)
+
 **Filling empty job blocks.** The **Free job blocks** tab (the crafting table) lists every job block in your village
 that nobody works at, nearest the hall first: the job it gives, the building it's in (say, "In the Storehouse") and how
 far away it is, with how many villagers without a job could take it. Click a block to see those villagers, then click
 one: they take the job and walk over to their new block. It's the easy way to fill a lectern or a Storehouse inside a
 finished house, with no need to lead anyone indoors. If someone else got the block first, you're told and nothing
-changes. Villagers who already have a job aren't on the list: to give one of them a new job, [retrain them at the
-block](jobs.md) for a few emeralds.
+changes. Villagers who already have a job aren't on the list: to give one of them a new job, use **Change job** on their
+page (above) for a few emeralds.
 
 ![The Free job blocks page](https://jcondedata.github.io/minecraft-alive-workplace/hall_jobs/still-1.jpg)
 

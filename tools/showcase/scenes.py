@@ -464,6 +464,11 @@ SCENES = [
       "the empty Storehouse was listed with its building and distance, and Dara, picked for it, became the Porter", 50,
       [("01_free_jobs", "The Free job blocks page: the Storehouse and a bench"), ("02_who_takes_it", "Who could take the Storehouse"),
        ("03_dara_porter", "Dara picked: now the Porter, walking over")]),
+    # Change job from the hall (ROADMAP 36.18): a working villager's page, the free jobs with the price, paid on a second click
+    S("hall_retrain", "Village Hall", "Changing a villager's job from the hall",
+      "Dara, a Journeyman Librarian, became the Porter from the hall's Change job for 20 emeralds, at once, her lectern left free", 55,
+      [("01_worker_page", "Dara's page in the residents list, with Change job"), ("02_price", "The free Storehouse and the Builder, with her price"),
+       ("03_dara_porter", "Paid: the list shows her as the Porter straight away"), ("04_walking", "Dara walks to her new Storehouse")]),
     # The Builder asks before repairing a house (ROADMAP 36.15): the question in chat and on the hall's Repairs page, then Yes
     S("repair_ask", "Village Hall", "The Builder asks before repairing a house",
       "Bram found 5 blocks missing from the Starter Cottage and asked in chat; the hall's Repairs page listed it waiting for an answer, "

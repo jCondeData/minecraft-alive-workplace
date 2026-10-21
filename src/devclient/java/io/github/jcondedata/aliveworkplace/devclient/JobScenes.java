@@ -4529,6 +4529,70 @@ final class JobScenes {
 			(level, player) -> !classPeople.isEmpty() && classPeople.get(0).getVillagerData().getProfession() == ModVillagers.PORTER
 				&& classPeople.get(0).getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(new BlockPos(-4, -60, -3))).orElse(false)));
+		// Change job from the hall (ROADMAP 36.18): Dara, a Journeyman Librarian, is right-clicked in the residents list; her page
+		// has Change job, which lists the empty Storehouse (and the Builder, with no Blueprint Table free) with her price;
+		// a click shows the price, a second pays, and she's the Porter at once and walks over.
+		SCREENS.put("hall_retrain", new Screen("Dara, a Journeyman Librarian, was right-clicked in the hall's list; Change job listed the free Storehouse "
+			+ "for 20 emeralds and the Builder; two clicks made her the Porter at once, her lectern left free",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos store = new BlockPos(-4, -60, -3);
+				place(level, store, ModBlocks.STOREHOUSE);
+				io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STOREHOUSE.id(),
+					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), new BlockPos(-12, -60, -7),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				BlockPos lectern = new BlockPos(4, -60, 2);
+				place(level, lectern, Blocks.LECTERN);
+				classPeople.clear();
+				Villager dara = EntityType.VILLAGER.create(level);
+				dara.moveTo(3.5, -60, 3.5, 180, 0);
+				dara.setNoAi(true); // stands by her lectern while the camera looks
+				dara.setCustomName(Component.literal("Dara"));
+				level.addFreshEntity(dara);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, dara, lectern, net.minecraft.world.entity.ai.village.poi.PoiTypes.LIBRARIAN,
+					VillagerProfession.LIBRARIAN);
+				dara.setVillagerData(dara.getVillagerData().setLevel(3));
+				dara.setVillagerXp(150);
+				classPeople.add(dara);
+				player.getInventory().add(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.EMERALD, 32));
+			},
+			List.of(new Step("01_worker_page", io.github.jcondedata.aliveworkplace.hall.HallRetraining.CHANGE, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						for (int s = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON; s < ChoiceMenu.SIZE; s++) {
+							if (m.icon(s).getHoverName().getString().startsWith("Dara")) {
+								m.clicked(s, 1, net.minecraft.world.inventory.ClickType.PICKUP, player); // a right-click, as the client sends it
+								break;
+							}
+						}
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.HallRetraining.CHANGE).is(net.minecraft.world.item.Items.EMERALD),
+							"Dara's page has Change job: " + m.icon(io.github.jcondedata.aliveworkplace.hall.HallRetraining.CHANGE));
+					}
+				}, 40),
+				new Step("02_price", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallRetraining.CHANGE, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(ModBlocks.STOREHOUSE.asItem()),
+							"the Storehouse first, with the price: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("03_dara_porter", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+					}
+					Villager dara = classPeople.get(0);
+					Showcase.check(dara.getVillagerData().getProfession() == ModVillagers.PORTER, "Dara is the Porter: " + dara.getVillagerData().getProfession());
+				}, 40),
+				new Step("04_walking", -1, 0, (level, player) -> {
+					player.closeContainer();
+					classPeople.get(0).setNoAi(false); // and walks to her Storehouse
+				}, 60)),
+			(level, player) -> !classPeople.isEmpty() && classPeople.get(0).getVillagerData().getProfession() == ModVillagers.PORTER
+				&& classPeople.get(0).getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.map(g -> g.pos().equals(new BlockPos(-4, -60, -3))).orElse(false)));
 		// The Builder asks before repairing a house (ROADMAP 36.15): a Starter Cottage the player's builder finished has five
 		// blocks knocked out of its front wall; the builder asks in chat ("Repair it? [Yes] [Not now]"), the hall's Repairs
 		// page lists it waiting for an answer, its view has Yes and Not now, and Yes sets the builder to it.

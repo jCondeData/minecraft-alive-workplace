@@ -5010,6 +5010,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Crafter's switch and `Expansions.M37`. Done when: GameTests for the blueprint being offered (and not with the switch
   off), the Steward's rule firing on repeated shortfalls and not otherwise, a generated village with the workshop when on;
   text in `en_us.json`; wiki and guide lines; scene `crafter_workshop`.
+  - [ ] **37.16a** Change from the owner (2026-10-21): retired with 37.14a: the Crafter's Workshop leaves the Steward's plans, the workshop offers and village generation (existing workshops stay as plain buildings); do it in the same change as 37.14a.
 
 ## Milestone 38: Cobblemon depth (2.2)
 

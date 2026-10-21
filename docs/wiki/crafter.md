@@ -126,6 +126,11 @@ is `village/<style>_crafters_workshop` in the five vanilla house pools (and Repu
 - `CrafterGameTests.theCrafterMakesTheSlabsTheBuilderNeeds`: one step.
 - `CrafterGameTests.theCrafterMakesBarrelsFromLogsForTheBuilder`: the three-step chain and the build finishing.
 - `CrafterGameTests.theCrafterSaysWhatItLacksAndWastesNothing`: a raw material short.
+- `CrafterGameTests.theLackLineNamesEveryShortThingWithACommaBetween`: the "short of ..." line with two things short.
+- `CrafterGameTests.beingShortOfJustOneThingIsStillNamed`: short of a single log, and it's named.
+- `CrafterGameTests.theCrafterFetchesTheOneLogItNeeds`: a job that needs exactly one of something.
+- `CrafterGameTests.theCrafterMakesAnotherWorkersLaddersFromTheStorehouse`: another worker's request, made from the
+  Storehouse's chest.
 - `CrafterGameTests.oneCrafterServesTwoBuilders`: two askers at once.
 - `CrafterGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `CrafterGameTests.withTheSwitchOffTheCrafterMakesNothing`: the switch off.
@@ -134,6 +139,8 @@ is `village/<style>_crafters_workshop` in the five vanilla house pools (and Repu
   or M37 closed.
 - `CrafterWorkshopGameTests.theStewardPlansAWorkshopWhenBuildersKeepRunningShortOfParts`: the rule on three or more
   crafted parts short, not on one, on raw materials, with the switch off or a workshop built.
+- `CrafterWorkshopGameTests.aSiteAtTheVillagesEdgeCountsOneBeyondItDoesnt`: a site at the village's edge counts, one a
+  block further doesn't.
 - `CrafterWorkshopGameTests.villagesGrowTheWorkshopOnlyWhileCraftersAreOn` and
   `VillageGameTests.theCraftersWorkshopsCrafterTakesItsBench`: the village house in every style, with its Crafter.
 - `CrafterGameTests.theCobbleFurniesBenchIsIgnoredWithoutCobbleFurnies`: the shipped bench file left out without its mod.

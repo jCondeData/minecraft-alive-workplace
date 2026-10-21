@@ -130,6 +130,31 @@ public class CrafterWorkshopGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * A build site counts toward the shortfalls out to the village's edge: one exactly {@link VillageHalls#RADIUS} blocks
+	 * from the hall counts (the hall's census takes the same edge), one a block further doesn't.
+	 */
+	//$ gametest_ticks_batch AREA '40' '"crafterWorkshopEdge"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "crafterWorkshopEdge")
+	public void aSiteAtTheVillagesEdgeCountsOneBeyondItDoesnt(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		BlockPos hall = helper.absolutePos(HALL);
+		BuildSiteManager sites = BuildSiteManager.get(helper.getLevel());
+		List<BuildSite> made = new java.util.ArrayList<>();
+		Leftovers.after(helper, () -> made.forEach(s -> sites.remove(s.id())));
+		helper.assertTrue(StewardConditions.BuildersShortOfParts.shortfalls(helper.getLevel(), hall) == 0, "shortfalls before any site");
+		waiting(helper, made, HALL.offset(0, 0, 16), Map.of(Items.OAK_STAIRS, 6));
+		long atEdge = StewardConditions.BuildersShortOfParts.shortfalls(helper.getLevel(), hall);
+		helper.assertTrue(atEdge == 1, "a site exactly 16 blocks from the hall (the village's edge) should count once, counted " + atEdge);
+		waiting(helper, made, HALL.offset(17, 0, 0), Map.of(Items.OAK_SLAB, 8));
+		long beyond = StewardConditions.BuildersShortOfParts.shortfalls(helper.getLevel(), hall);
+		helper.assertTrue(beyond == 1, "a site 17 blocks from the hall is outside the village and shouldn't count: " + beyond + " shortfalls");
+		helper.succeed();
+	}
+
 	/** Villages grow the Crafter's Workshop in every style while Crafters are on; off, it's left out of the houses. */
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)

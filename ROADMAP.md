@@ -5285,6 +5285,30 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-21 (lane-c-1021-0052): eighth M37 mutation pass, seed 49, the Crafter's code no pass had covered: CrafterShift
+  (the Crafter's work), CrafterBenches, Crafting's 37.14 lines (124-245) and 37.16's `builders_short_of_parts`
+  (StewardConditions 698-760), against CrafterGameTests, CrafterWorkshopGameTests, FurnicrafterGameTests and
+  StewardRulesGameTests (`only_tests.py`, `--no-daemon`, ~1 min a run; mutate.py `--lines N-N --max 1` per chosen line).
+  29 run: 17 killed, 12 survived; 5 of the 12 now killed by new tests, 5 equivalent, 2 open. Killed by the old tests:
+  StewardConditions :718 `||` to `&&` and `!=` to `==`, :736, :710, :706, :719 and :734; CrafterShift :254, :281, :298;
+  CrafterBenches :81, :86, :57 (the main suite's test bench, so no compat run was needed); Crafting :175, :231 `&&` to
+  `||`, :202, and :186 (`!=` to `==`: the tick's planning budget never resets, so planning stops for good) by
+  RecipeIndexGameTests.b101ATicksPlanningIsSharedOut, outside the four classes. New tests, each passing on the real code
+  (baseline all pass) and failing on its mutant: `CrafterWorkshopGameTests.aSiteAtTheVillagesEdgeCountsOneBeyondItDoesnt`
+  kills :720 `>` to `>=` (a site exactly RADIUS from the hall counts, as in the hall's census; one beyond doesn't);
+  `CrafterGameTests.theLackLineNamesEveryShortThingWithACommaBetween` kills CrafterShift :381 (the comma between the
+  things short); `.theCrafterFetchesTheOneLogItNeeds` kills :229 `<= 0` to `<= 1` (a job needing exactly one of
+  something fetched nothing and stayed FETCHING); `.theCrafterMakesAnotherWorkersLaddersFromTheStorehouse` kills :158
+  drop `!` (the Storehouse's chests left out of a request's sources; no test covered the "other workers' needs" path at
+  all); `.beingShortOfJustOneThingIsStillNamed` kills Crafting :209 `n > 0` to `n > 1` (short of exactly one log: not
+  named). Equivalent: StewardConditions :747 x2 (`family()`'s 100-step cap, outside 37.16; upgrade chains are a few
+  tiers); CrafterShift :104 (`--lookTimer > 1`: the first look a tick early) and :276 (`>= 0`: a step one tick longer),
+  timing only; :163 `||` to `&&` in the middle (a request's worker is never null off a block, and the Crafter isn't in
+  `Village.takesPart`, so it never sees its own posts). Open: CrafterShift :213 (`chosen == null ?`: the makings vanish
+  mid-fetch, after a reload it'd throw; needs a vanish-after-reload layout) and Crafting :153 (`same >= 1` in `merged`:
+  a step equal to the first one with its input made in between). No bug found. Not run (time): the other ~90
+  CrafterShift and ~550 Crafting mutants, and the compat suite (CrafterFurnitureCompatTests).
+
 - 2026-10-21 (lane-c-1021-0052): 37.16 decisions. No existing Steward condition read the builders' shortfalls, so one
   was added, `builders_short_of_parts {at_least}` (default 3): over every build site near the hall waiting for materials,
   each missing item that the crafting table or stonecutter makes counts once per site; never holds with `crafters` off.

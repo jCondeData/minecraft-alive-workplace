@@ -170,7 +170,7 @@ final class PartnersAllScene {
 		if (at > 10 && (playing && at % 2 == 1 || at >= SHOT_BY)) {
 			if (!playing) {
 				server.execute(() -> Showcase.check(false, "the " + stop.species() + " reached the " + stop.name() + "'s work in time: "
-					+ whereIs(server.overworld(), stop, base) + "; the cue sent out " + PartnerShows.lastPartner(workers.get(i))));
+					+ Probe.whereIs(server.overworld(), stop, base) + "; the cue sent out " + PartnerShows.lastPartner(workers.get(i))));
 			}
 			System.out.println("[partners_all] " + stop.name() + (playing ? " playing " : " not playing ") + at + " ticks after the stop began");
 			int wait = playing ? 12 : 0;
@@ -185,20 +185,30 @@ final class PartnersAllScene {
 		}
 	}
 
-	/** Where the stop's partner is when its still is due without it at work (B276): position, distance to the work, its show and tether. */
-	private static String whereIs(ServerLevel level, Stop stop, BlockPos base) {
-		Vec3 work = Vec3.atBottomCenterOf(base.offset(stop.work()));
-		List<String> seen = new ArrayList<>();
-		for (var e : level.getEntitiesOfClass(com.cobblemon.mod.common.entity.pokemon.PokemonEntity.class, new AABB(base).inflate(80),
-			e -> e.getPokemon().getSpecies().getName().equalsIgnoreCase(stop.species()))) {
-			var tether = e.getTethering();
-			seen.add(e.getUUID().toString().substring(0, 8) + String.format(java.util.Locale.ROOT, " at %.1f %.1f %.1f, %.1f across and %.1f up from the work, %s, %s, %s",
-				e.getX(), e.getY(), e.getZ(), Math.hypot(e.getX() - work.x, e.getZ() - work.z), e.getY() - work.y, PartnerShows.describe(e),
-				tether == null ? "not pastured" : "tether box " + tether.getMinRoamPos().toShortString() + " to " + tether.getMaxRoamPos().toShortString(),
-				(e.isRemoved() ? "removed" : e.getNavigation().isDone() ? "navigation idle" : "navigating") + (e.isBusy() ? ", busy" : "")
-					+ (e.isBattling() ? ", battling" : "")));
+	/**
+	 * Where the stop's partner is when its still is due without it at work (B276): position, distance to the work, its show and tether.
+	 * In its own class (B278): this method hands a {@code PokemonEntity} to {@code PartnerShows.describe(Entity)}, so the verifier loads
+	 * Cobblemon's class to check it is an {@code Entity}. Kept in {@code PartnersAllScene} itself, that happened when the harness built the
+	 * scene at start-up, and every scene crashed without Cobblemon. A nested class is only verified when the probe first runs.
+	 */
+	private static final class Probe {
+		private Probe() {
 		}
-		return seen.isEmpty() ? "no " + stop.species() + " within 60 blocks (recalled?)" : String.join("; ", seen);
+
+		static String whereIs(ServerLevel level, Stop stop, BlockPos base) {
+			Vec3 work = Vec3.atBottomCenterOf(base.offset(stop.work()));
+			List<String> seen = new ArrayList<>();
+			for (var e : level.getEntitiesOfClass(com.cobblemon.mod.common.entity.pokemon.PokemonEntity.class, new AABB(base).inflate(80),
+				e -> e.getPokemon().getSpecies().getName().equalsIgnoreCase(stop.species()))) {
+				var tether = e.getTethering();
+				seen.add(e.getUUID().toString().substring(0, 8) + String.format(java.util.Locale.ROOT, " at %.1f %.1f %.1f, %.1f across and %.1f up from the work, %s, %s, %s",
+					e.getX(), e.getY(), e.getZ(), Math.hypot(e.getX() - work.x, e.getZ() - work.z), e.getY() - work.y, PartnerShows.describe(e),
+					tether == null ? "not pastured" : "tether box " + tether.getMinRoamPos().toShortString() + " to " + tether.getMaxRoamPos().toShortString(),
+					(e.isRemoved() ? "removed" : e.getNavigation().isDone() ? "navigation idle" : "navigating") + (e.isBusy() ? ", busy" : "")
+						+ (e.isBattling() ? ", battling" : "")));
+			}
+			return seen.isEmpty() ? "no " + stop.species() + " within 60 blocks (recalled?)" : String.join("; ", seen);
+		}
 	}
 
 	private void setUp(MinecraftServer server) {

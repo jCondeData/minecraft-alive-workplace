@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.148.0 — 2026-10-22
+
 ### Added
 
 - Three storage builds at the Blueprint Table, each a Storehouse: the Storage Hall, the Terminal Nook and the Warehouse. With Tom's Simple Storage they are built of its blocks, every chest on one network with terminals to search it; without it, of plain chests and barrels (2.1, behind its expansion switch; 37.17).

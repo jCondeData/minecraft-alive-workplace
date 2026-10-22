@@ -4012,9 +4012,12 @@ final class JobScenes {
 			Container c = chest(level, chestPos(), new ItemStack(cobblemonItem("oran_berry"), 6), new ItemStack(cobblemonItem("cheri_berry"), 6),
 				new ItemStack(cobblemonItem("surprise_mulch"), 6));
 			place(level, new BlockPos(-4, -60, -3), ModBlocks.VILLAGE_HALL);
+			// B292: watered farmland, as on a real berry farm. Dry farmland with nothing on it turns to dirt at a random
+			// tick (about a minute), so a row she hadn't planted yet could dry up and the plot never filled.
+			level.setBlockAndUpdate(new BlockPos(4, -61, -1), Blocks.WATER.defaultBlockState());
 			for (int x = 2; x <= 3; x++) {
 				for (int z = -2; z <= 0; z++) {
-					level.setBlockAndUpdate(new BlockPos(x, -61, z), Blocks.FARMLAND.defaultBlockState());
+					level.setBlockAndUpdate(new BlockPos(x, -61, z), Blocks.FARMLAND.defaultBlockState().setValue(net.minecraft.world.level.block.FarmBlock.MOISTURE, 7));
 				}
 			}
 			io.github.jcondedata.aliveworkplace.berry.BerryBreeders.setGoal(breeder, net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "lum_berry"));
@@ -4025,11 +4028,19 @@ final class JobScenes {
 					return false;
 				}
 				int planted = 0;
+				StringBuilder beds = new StringBuilder();
 				for (int x = 2; x <= 3; x++) {
 					for (int z = -2; z <= 0; z++) {
-						planted += data.plantOf(l.getBlockState(new BlockPos(x, -60, z))) != null ? 1 : 0;
+						var plant = data.plantOf(l.getBlockState(new BlockPos(x, -60, z)));
+						planted += plant != null ? 1 : 0;
+						beds.append(' ').append(x).append(',').append(z).append('=')
+							.append(plant != null ? plant.getPath() : l.getBlockState(new BlockPos(x, -61, z)).getBlock().getDescriptionId());
 					}
 				}
+				// B292: on a timeout, say what the plot and the breeder were doing
+				var status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(breeder, l.getGameTime());
+				timeoutWhy = "planted " + planted + " of 6 (" + beds.toString().trim() + "), ripened " + ripened[0]
+					+ ", status " + (status == null ? "none" : status.line().getString()) + ", chest lum " + c.countItem(cobblemonItem("lum_berry"));
 				if (planted == 6 && !ripened[0]) {
 					// Cobblemon's growth takes in-game days: the plot is grown on the spot, with a mutation, so the scene ends.
 					ripened[0] = true;

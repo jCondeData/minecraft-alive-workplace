@@ -62,6 +62,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (!Boolean.getBoolean("aliveworkplace.shots")) {
 			return;
 		}
+		// B311 (and B274, B314, B315): no gifts by chance in the showcase, as in GameTests. The UUID roll makes one villager
+		// in 240 a Night Owl, who idles and sleeps through the scenes' held morning instead of working, so a scene failed
+		// now and then (the shepherd strolled past his sheep). Scenes about gifts set theirs (Gifted.set), which still works.
+		io.github.jcondedata.aliveworkplace.legend.Gifted.ROLL = false;
 		Showcase.install();
 		ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
 	}

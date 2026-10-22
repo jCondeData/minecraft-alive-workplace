@@ -3,7 +3,7 @@
 ROADMAP 31.7 and 31.8. Builds on friendship (31.5) and gifts (31.6). Part of the 1.5 expansion: switched on when
 Milestone 31 is complete.
 
-Roadmap items: 31.7, 31.8
+Roadmap items: 31.7, 31.8, B309
 
 ## What a player sees
 
@@ -109,8 +109,10 @@ once.
 ## How it works
 
 - **When it starts**: every 10 ticks the mod looks at each player. The nearest villager within 8 blocks who is
-  awake, off work (`Chatter.offWork`: no work line over their head, not working, hiding or fleeing) and has something
-  to tell that player starts. A player listens to one villager at a time.
+  awake, off work (`Chatter.free`: no work line over their head, not working, hiding or fleeing) and has something
+  to tell that player starts. A line of small talk over their head ("Oh, hello there, Jesse.") is no work: it doesn't
+  hold the story back (B309: before, a "hello" said just then kept them from starting for 5 seconds, long enough to
+  stroll out of range and never tell it). A player listens to one villager at a time.
 - **Walking up**: they walk to within about 2 blocks, looking at the player, and stay by them to the end. If they
   can't get within 3.5 blocks in 5 seconds (a fence, a river), they tell it from where they stand.
 - **Stopping**: the player more than 8 blocks away, dead or in spectator; the villager asleep, at work (a work line,

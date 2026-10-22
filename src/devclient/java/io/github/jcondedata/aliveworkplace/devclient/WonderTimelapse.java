@@ -421,6 +421,9 @@ final class WonderTimelapse {
 			builder.setCustomName(Component.literal(names[i % names.length]));
 			builder.setVillagerData(builder.getVillagerData().setProfession(ModVillagers.BUILDER).setLevel(i == 0 ? 4 : 2)); // the lead: an Expert
 			level.addFreshEntity(builder);
+			// B314/B315: no gift by the UUID roll: a Night Owl (one villager in 240) idles through the held morning, and as
+			// the Expert lead never starts the part
+			io.github.jcondedata.aliveworkplace.legend.Gifted.set(builder, null);
 			Builders.employ(level, builder, bench);
 			crew.add(builder);
 		}

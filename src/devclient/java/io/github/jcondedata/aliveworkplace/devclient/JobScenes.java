@@ -223,6 +223,38 @@ final class JobScenes {
 
 	/** The wonder_crew scene's ten builders (35.5). */
 	private static final List<Villager> crewBuilders = new java.util.ArrayList<>();
+
+	/**
+	 * B314: who of the wonder_crew scene's builders is not on {@code site}'s crew, and why: where they are, what their brain
+	 * is doing, whether their work is running, their job and their workplace.
+	 */
+	private static String crewMissing(ServerLevel level, io.github.jcondedata.aliveworkplace.wonder.WonderSite site, List<java.util.UUID> crew) {
+		StringBuilder out = new StringBuilder();
+		for (Villager v : crewBuilders) {
+			if (crew.contains(v.getUUID())) {
+				continue;
+			}
+			var job = io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.get(v);
+			var part = job == null ? null : io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).get(job.siteId());
+			out.append(out.isEmpty() ? "; missing: " : "; ").append(v.getName().getString())
+				.append(v.isAlive() ? "" : " dead (" + v.getRemovalReason() + ")")
+				.append(" at ").append(v.blockPosition().toShortString())
+				.append(" doing ").append(v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing"))
+				.append(v.isSleeping() ? " asleep" : "")
+				.append(java.util.Optional.ofNullable(io.github.jcondedata.aliveworkplace.legend.Gifted.of(v)).map(g -> " (gift " + g.id() + ")").orElse(""))
+				.append(v.getLastHurtByMob() != null || v.hurtTime > 0 ? " hurt" : "")
+				.append(", running ").append(v.getBrain().getRunningBehaviors().stream().map(b -> b.getClass().getSimpleName()).toList())
+				.append(", job ").append(job == null ? "none" : (site.parts().contains(job.siteId()) ? "this Wonder's part" : "another site")
+					+ (job.helper() ? " as a helper" : " as lead") + (part == null ? " (gone)" : part.isDone() ? " (done)" : part.isQueued() ? " (queued)" : ""))
+				.append(v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.map(g -> ", workplace " + g.pos().toShortString() + " (" + level.getBlockState(g.pos()).getBlock().getName().getString() + ", poi "
+						+ level.getPoiManager().getType(g.pos()).flatMap(h -> h.unwrapKey()).map(k -> k.location().toString()).orElse("none") + ")")
+					.orElse(", no workplace"))
+				.append(", ").append(v.getVillagerData().getProfession()).append(v.isBaby() ? " baby" : "")
+				.append(", schedule says ").append(v.getBrain().getSchedule().getActivityAt((int) (level.getDayTime() % 24000L)));
+		}
+		return out.toString();
+	}
 	/** The wonder_site scene's builder (35.4). */
 	private static final Villager[] wonderBuilder = new Villager[1];
 	/** The test folly (35.3), the wonder scenes' Wonder. */
@@ -7492,6 +7524,9 @@ final class JobScenes {
 					builder.setCustomName(Component.literal(names[i]));
 					builder.setVillagerData(builder.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER).setLevel(2));
 					level.addFreshEntity(builder);
+					// B314: no gift by the UUID roll: a Night Owl (one villager in 240) idles through the scene's held day
+					// and never comes to the crew
+					io.github.jcondedata.aliveworkplace.legend.Gifted.set(builder, null);
 					io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
 					crewBuilders.add(builder);
 				}
@@ -7547,8 +7582,9 @@ final class JobScenes {
 					ScreenshotHarness.hoverLookingAt(player, new Vec3(12.5, -52, 8.5), new Vec3(-1, -57, -8)), 200),
 				new Step("02_wonder_crew_columns", -1, 0, (level, player) -> {
 					var site = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION).get(0);
-					int crew = io.github.jcondedata.aliveworkplace.wonder.WonderCrews.crew(level, site).size();
-					Showcase.check(crew == 10, "all ten builders on the crew: " + crew);
+					var members = io.github.jcondedata.aliveworkplace.wonder.WonderCrews.crew(level, site);
+					int crew = members.size();
+					Showcase.check(crew == 10, "all ten builders on the crew: " + crew + (crew == 10 ? "" : crewMissing(level, site, members)));
 					ScreenshotHarness.hoverLookingAt(player, new Vec3(10.5, -50, 2.5), new Vec3(-1, -57, -8));
 				}, 400),
 				new Step("03_wonder_crew_status", -1, 0, (level, player) -> {

@@ -23,6 +23,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Pokémon Trader no longer walks off while you're trading with him: with his trade screen open he stops his rounds and stays facing you, like a vanilla villager at his trade screen. Before, he could stroll out of reach mid-trade and the screen shut before your second click (B312).
 - The Colossus's lantern is lit again: a builder or villager boxed in inside the ring of panes where its glowstone goes, with nowhere near to step to, is now moved to a free spot further off, so the glowstone is laid instead of given up with everything over it, which left the lantern hollow (B308).
 - A Storehouse with two Tom's Simple Storage inventory connectors on one cable network now counts each chest once: before, each connector was read as the whole network, so every item there was counted twice (and a second connector touching one of the network's chests counted that chest twice too). It now reads the network through one connector (B305).
 - Villagers now sleep in the Terrace's beds. Its two homes each have their bedroom up a ladder: a villager without a bed now takes a free one there (before, villagers only claimed beds they could walk to, so the Terrace's stood empty while villagers stood about its rooms all night, on a chest even), and a villager coming home by the other home's door climbs his own home's ladder instead of the nearest one, where he couldn't reach his bed and gave it up. This holds for any bed up a ladder, furniture mods' beds included (B304).

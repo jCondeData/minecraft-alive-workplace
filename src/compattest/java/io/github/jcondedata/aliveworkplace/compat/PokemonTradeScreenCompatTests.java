@@ -30,6 +30,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.level.GameType;
@@ -38,7 +39,8 @@ import net.minecraft.world.phys.Vec3;
 /**
  * The Pokémon Trader's own screen (ROADMAP 28.23): a right-click with an empty hand opens it (not a chest), its cards
  * show each offer's ball and cost, a trade goes through with two clicks on a Pokémon that fits, one the player can't pay
- * for is refused, and the day's trade is still remembered after the trader is saved and loaded.
+ * for is refused, the day's trade is still remembered after the trader is saved and loaded, and the trader stays with the
+ * player while the screen is open (B312).
  */
 public class PokemonTradeScreenCompatTests implements FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;
@@ -192,5 +194,36 @@ public class PokemonTradeScreenCompatTests implements FabricGameTest {
 		helper.assertTrue(contains(s.party(), another), "a second trade went through after a reload");
 		copy.discard();
 		helper.succeed();
+	}
+
+	/**
+	 * While the trade screen is open the trader stays with the player instead of walking off on his rounds, and lets go when
+	 * it closes (B312: he walked on mid-trade and the screen shut when he got out of reach).
+	 */
+	//$ gametest_ticks AREA '300'
+	@GameTest(template = AREA, timeoutTicks = 300)
+	public void tradeScreenHoldsTheTrader(GameTestHelper helper) {
+		Setup s = setup(helper);
+		s.trader().setNoAi(false);
+		UseEntityCallback.EVENT.invoker().interact(s.player(), helper.getLevel(), InteractionHand.MAIN_HAND, s.trader(), null);
+		helper.assertTrue(s.player().containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.POKEMON_TRADER_MENU,
+			"no trade screen: " + s.player().containerMenu);
+		helper.assertTrue(s.trader().getTradingPlayer() == s.player(), "the trader isn't trading with the player");
+		// The player across the area from the board, and the trader a few steps from him on the board's side (as if he'd
+		// strolled off on his rounds): a trading villager walks back to the player, not off to his board.
+		Vec3 at = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(13, 2, 13)));
+		s.player().moveTo(at.x, at.y, at.z);
+		Vec3 off = Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(13, 2, 9))).add(0, 0, 0.5);
+		s.trader().moveTo(off.x, off.y, off.z);
+		helper.runAfterDelay(80, () -> {
+			double away = s.trader().distanceTo(s.player());
+			helper.assertTrue(away < 2.8, "the trader didn't come back to the player: " + String.format("%.1f", away) + " blocks away, at "
+				+ s.trader().blockPosition().toShortString() + ", walking to " + s.trader().getBrain().getMemory(MemoryModuleType.WALK_TARGET)
+				.map(t -> t.getTarget().currentBlockPosition().toShortString()).orElse("nowhere"));
+			helper.assertTrue(s.player().containerMenu instanceof ChoiceMenu, "the trade screen closed: " + s.player().containerMenu);
+			s.player().closeContainer();
+			helper.assertTrue(s.trader().getTradingPlayer() == null, "the trader still trades after the screen closed");
+			helper.succeed();
+		});
 	}
 }

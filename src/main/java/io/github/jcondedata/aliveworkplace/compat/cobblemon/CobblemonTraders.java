@@ -169,9 +169,19 @@ public final class CobblemonTraders {
 			return;
 		}
 		State state = new State();
-		ChoiceMenu.openOn(ModBlocks.POKEMON_TRADER_MENU, player, PokemonTraders.title(trader),
+		ChoiceMenu menu = ChoiceMenu.openOn(ModBlocks.POKEMON_TRADER_MENU, player, PokemonTraders.title(trader),
 			p -> trader.isAlive() && !trader.isSleeping() && p.isAlive() && p.distanceTo(trader) <= PokemonTraders.REACH,
-			menu -> render(menu, player, trader, state));
+			m -> render(m, player, trader, state));
+		if (menu != null && !trader.isTrading()) {
+			// Trading, like at vanilla's trade screen: the trader stops his rounds and stays facing the player till the screen
+			// closes. Without it he walked on mid-trade and the screen shut when he got out of reach (B312).
+			trader.setTradingPlayer(player);
+			menu.onClose(() -> {
+				if (trader.getTradingPlayer() == player) {
+					trader.setTradingPlayer(null);
+				}
+			});
+		}
 	}
 
 	// The trade screen without showing it (tests).

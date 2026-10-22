@@ -1,6 +1,8 @@
 package io.github.jcondedata.aliveworkplace.work;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -32,6 +34,8 @@ public class ChoiceMenu extends ChestMenu {
 	@Nullable
 	private final ServerPlayer viewer;
 	private final Map<Integer, Consumer<ServerPlayer>> actions = new HashMap<>();
+	/** What to do when the screen closes, however it closes. */
+	private final List<Runnable> onClose = new ArrayList<>();
 	/** Whether the button being pressed was shift-clicked (buttons that count up or down take bigger steps). */
 	private boolean shift;
 	/** Whether the button being pressed was right-clicked (the price board buys on a right click, 33.5). */
@@ -88,6 +92,19 @@ public class ChoiceMenu extends ChestMenu {
 		ChoiceMenu menu = new ChoiceMenu(MenuType.GENERIC_9x6, 0, player.getInventory(), new SimpleContainer(SIZE), p -> true);
 		fill.accept(menu);
 		return menu;
+	}
+
+	/** Runs {@code then} when the screen closes: the player shut it, walked off, logged out or opened another. */
+	public void onClose(Runnable then) {
+		onClose.add(then);
+	}
+
+	@Override
+	public void removed(Player player) {
+		super.removed(player);
+		List<Runnable> then = new ArrayList<>(onClose);
+		onClose.clear();
+		then.forEach(Runnable::run);
 	}
 
 	/** Removes every button (before laying out the next page). */

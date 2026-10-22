@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B270
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B270, B308
 
 ## What a player sees
 
@@ -73,7 +73,9 @@ else the builder it was handed to; each next stage goes to the highest-level bui
   goes up before the block the drawing puts under it, not even over one the lead gave up (someone stood in it the whole
   time): the crew lays a given-up block once nothing stands in it, and the wall goes on from there. If nobody can lay
   it and the crew has stood still for 10 seconds, the lead gives up the block over it too (every block waiting so at once, B270), so a
-  part may end with a hole but never with a block in the air (B254); given-up blocks stay given up after a restart (B139). A block
+  part may end with a hole but never with a block in the air (B254); given-up blocks stay given up after a restart (B139). A
+  villager boxed in where a block goes, with nowhere in reach to step to (inside the Colossus's lantern, in the ring of panes
+  round its glowstone), is moved to the nearest free spot further off (up to 16 blocks), so the block isn't given up (B308). A block
   the crew laid that then changes by itself (farmland drying out to dirt before its water comes) is left as it is,
   not laid again, and a crop due on dried-out farmland is planted once the builder has tilled it again.
 - Crews add hands, not speed: each builder keeps their own pace. Eight builders raise the folly in about 2,500 to

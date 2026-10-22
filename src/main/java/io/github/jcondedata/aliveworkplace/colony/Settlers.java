@@ -636,6 +636,9 @@ public final class Settlers {
 	}
 
 	private static void walk(List<Villager> settlers, BlockPos to, boolean now) {
+		for (Villager v : settlers) {
+			forgoWorkstation(v);
+		}
 		if (!now) {
 			return;
 		}
@@ -648,7 +651,28 @@ public final class Settlers {
 	}
 
 	/**
-	 * Where the settlers walk out to: {@link #OUT} blocks and a few more from the hall toward the spot, on the ground there,
+	 * B318: a jobless settler lets go of the workstation he meant to take. Vanilla's walk to it ({@code GoToPotentialJobSite})
+	 * runs in the idle the muster keeps him in and sets his walk target to it every tick, over the hall's every ten: in
+	 * the showcase a volunteer eyeing a workstation he couldn't reach stood 29 blocks off the whole muster. The claim is
+	 * given back, as vanilla does when that walk ends, so the workstation is free for the village again.
+	 */
+	private static void forgoWorkstation(Villager villager) {
+		Optional<GlobalPos> site = villager.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+		if (site.isEmpty()) {
+			return;
+		}
+		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+		if (villager.level() instanceof ServerLevel level) {
+			ServerLevel there = level.getServer().getLevel(site.get().dimension());
+			BlockPos pos = site.get().pos();
+			if (there != null && there.getPoiManager().exists(pos, type -> true)) {
+				there.getPoiManager().release(pos);
+			}
+		}
+	}
+
+	/**
+	 * Where the settlers walk out to:{@link #OUT} blocks and a few more from the hall toward the spot, on the ground there,
 	 * or the farthest point on the way that is loaded (B182). A villager can't work out a path to a block in a chunk that
 	 * isn't loaded, so it only took short random steps toward it and never got far; the walk is given again every half
 	 * second, so the point moves out as the chunks ahead load.

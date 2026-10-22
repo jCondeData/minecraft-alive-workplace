@@ -471,6 +471,51 @@ public class ColonySettlersGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B318: a jobless settler who has his eye on a free workstation still answers the muster. Tomas has picked a lectern
+	 * he can't get to (on a pillar), as a jobless villager does in a live village: vanilla's walk to a workstation he
+	 * means to take runs in the idle the muster keeps him in and gave his walk target back to the lectern every tick, so
+	 * he stood still the whole muster and the bell rang on its timeout without him (the showcase: 29 blocks off). Called
+	 * to the hall he lets the workstation go, walks to the hall, and the bell rings because they have gathered.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"colonyEyeingAJob"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "colonyEyeingAJob")
+	public void aSettlerEyeingAWorkstationStillAnswersTheMuster(GameTestHelper helper) {
+		Village v = village(helper, 0);
+		Settlers.MUSTER_TICKS = 300;
+		ServerLevel level = v.level();
+		villager(helper, new BlockPos(10, 2, 11), "Dara", VillagerProfession.NONE, 1);
+		for (int y = 2; y <= 4; y++) {
+			helper.setBlock(new BlockPos(17, y, 17), Blocks.GLASS);
+		}
+		BlockPos lectern = new BlockPos(17, 5, 17);
+		helper.setBlock(lectern, Blocks.LECTERN);
+		BlockPos lecternAt = helper.absolutePos(lectern);
+		Villager tomas = villager(helper, new BlockPos(16, 2, 16), "Tomas", VillagerProfession.NONE, 1);
+		storehouse(helper, allSupplies());
+		helper.startSequence()
+			.thenWaitUntil(() -> helper.assertTrue(level.getPoiManager().getType(lecternAt).isPresent(), "the lectern isn't a workstation yet"))
+			.thenExecute(() -> {
+				// the lectern taken as the workstation he means to go to, as vanilla's AcquirePoi does
+				level.getPoiManager().take(t -> t.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.LIBRARIAN), (t, p) -> p.equals(lecternAt), lecternAt, 1);
+				tomas.getBrain().setMemory(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.of(level.dimension(), lecternAt));
+				tomas.setNoAi(false);
+				ItemStack held = click(v, v.player(), charter(v));
+				RealmData.Order order = v.order();
+				helper.assertTrue(order != null && order.state().equals(RealmData.MUSTER) && order.volunteers().contains(tomas.getUUID()),
+					"Dara and Tomas should be called to the hall: " + order + " (held " + held + ")");
+				long given = level.getGameTime();
+				helper.succeedWhen(() -> {
+					RealmData.Order now = v.order();
+					helper.assertTrue(now != null && !now.state().equals(RealmData.MUSTER) && !now.state().equals(RealmData.GATHERING),
+						"the bell hasn't rung: Tomas is " + String.format("%.1f", Math.sqrt(tomas.distanceToSqr(v.hall().getCenter())))
+							+ " blocks from the hall, eyeing " + tomas.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> g.pos().toShortString()).orElse("no workstation"));
+					helper.assertTrue(now.leaves() - given < 300, "the bell rang because its time was up, not because they had gathered");
+					helper.assertTrue(level.getPoiManager().getFreeTickets(lecternAt) > 0, "the lectern he let go should be free again for the village");
+				});
+			});
+	}
+
+	/**
 	 * Calling it off on the Colonies tab: only the owner can; the settlers stay, every supply is back in the Storehouse
 	 * and the charter, spot and name and all, back with the owner, who can send it again.
 	 */

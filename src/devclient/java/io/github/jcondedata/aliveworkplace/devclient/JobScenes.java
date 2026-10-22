@@ -6675,8 +6675,16 @@ final class JobScenes {
 		// the first line of theirs over their head and in the chat.
 		SCREENS.put("heart_events_work", new Screen("at four hearts a villager of each job family began the story of their work",
 			new Vec3(1.5, -60, 6.5), new Vec3(1.5, -58.8, 3.5),
-			(level, player) -> level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
-				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH)),
+			(level, player) -> {
+				// B319: every teller has four hearts and a friend near, so the morning's request roll (one in four) could
+				// pick the one just spawned, before their telling began, and a villager asking for help tells no story
+				// (HeartEvents: not while PersonalRequests.offer). Twice that was Wren, the last: "not telling". Requests
+				// are off for this scene, which is about the stories (the personal_request scenes show them).
+				io.github.jcondedata.aliveworkplace.story.PersonalRequests.ENABLED = false;
+				io.github.jcondedata.aliveworkplace.story.PersonalRequests.forget();
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			},
 			java.util.stream.Stream.of(
 					new String[] {"01_building", "Dara", "aliveworkplace:builder", "work_building"},
 					new String[] {"02_mining", "Bram", "aliveworkplace:miner", "work_mining"},
@@ -6715,8 +6723,12 @@ final class JobScenes {
 				}, 40)).toList(),
 			(level, player) -> {
 				var telling = subject == null ? null : io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(subject);
+				var asking = subject == null ? null : io.github.jcondedata.aliveworkplace.story.PersonalRequests.offer(subject);
 				Showcase.check(telling != null && telling.said >= 1 && telling.event.id().getPath().equals("work_none"),
-					"the last of them, without a trade, is telling theirs: " + (telling == null ? "not telling" : telling.event.id() + ", " + telling.said + " lines"));
+					"the last of them, without a trade, is telling theirs: " + (telling == null ? "not telling" : telling.event.id() + ", " + telling.said + " lines")
+						+ (telling == null && subject != null ? " (" + (asking != null ? "asking for help instead, " : "") + "doing "
+							+ subject.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing") + ", "
+							+ String.format("%.1f", Math.sqrt(subject.distanceToSqr(player))) + " from the player)" : ""));
 				return telling != null;
 			}));
 		// A story arc (ROADMAP 31.4): the chapter told in chat as it begins, the hall's Story tab (the first chapter ticked,

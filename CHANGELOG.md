@@ -23,6 +23,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Settlers leaving for a colony no longer miss the bell because of a free workstation: a jobless volunteer who had his eye on one could stand by it the whole gathering (the walk to it kept winning over the walk to the hall), and the bell rang without him. Called to the hall, a settler now lets that workstation go, and it is free again for the village.
 - A Pokémon Trader no longer walks off while you're trading with him: with his trade screen open he stops his rounds and stays facing you, like a vanilla villager at his trade screen. Before, he could stroll out of reach mid-trade and the screen shut before your second click (B312).
 - The Colossus's lantern is lit again: a builder or villager boxed in inside the ring of panes where its glowstone goes, with nowhere near to step to, is now moved to a free spot further off, so the glowstone is laid instead of given up with everything over it, which left the lantern hollow (B308).
 - A Storehouse with two Tom's Simple Storage inventory connectors on one cable network now counts each chest once: before, each connector was read as the whole network, so every item there was counted twice (and a second connector touching one of the network's chests counted that chest twice too). It now reads the network through one connector (B305).

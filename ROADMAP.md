@@ -4859,7 +4859,7 @@ Depends on: nothing open.
   fewest of is fine: the lane decides and writes it in the Notes), not always the same one. Done when: a list of every
   block that offers several jobs in the wiki page; GameTests that over many hires (fixed `RandomSource`) each job of a
   multi-job block comes up, a single-job block is unchanged, save and reload keeps the job taken; scene `random_job`.
-- [x] **36.18** (review: pending 2026-10-21) **Retrain any villager to any job from the Village Hall** (owner, 2026-10-21: "do I have to break the block
+- [x] **36.18** (approved 2026-10-22) **Retrain any villager to any job from the Village Hall** (owner, 2026-10-21: "do I have to break the block
   and bring it to them, then put it back? it would be easier if you can just do it at the Village Hall"). Today only a
   Builder can be retrained (at a Blueprint Table, 36.x/27.x); any other job change means breaking job blocks. In the
   Village Hall's residents list, a villager with a job gets a **Change job** button: it lists the village's free job

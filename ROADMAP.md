@@ -5331,6 +5331,7 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-22 (lane-b-1022-0038, **owner question still open: Milestone 36 is empty; what should the quick lane build next, or pause its scheduled task?**): no quick additions and no `(lane: b)` bug, so nothing was built. main 082e7c4 is green (build 39694236114); 36.18's hall_retrain scene passes on the showcase page (run 39694236092). That run's colony_departure and conscription scenes fail again: filed as B295 and B296 for lane a. wip/lane-b* still hold nothing to merge (see lane-b-1021-1238).
 - 2026-10-21 (lane-b-1021-2138, for the owner, 36.18): decided that **right-clicking** a worker in the Village Hall's
   residents list opens their page with Change job; a plain click still only makes them glow, as before (the life-story
   shift-click and its test kept their meaning). Workers who can be retrained show a "Right-click: change their job"

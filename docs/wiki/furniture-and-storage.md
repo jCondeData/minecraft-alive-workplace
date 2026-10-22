@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305
 
 ## 1. What a player sees
 
@@ -119,7 +119,8 @@ every inventory it joins: the chests, barrels and filing cabinets touching it (a
 cable connector on its cables faces. The board's first line counts the connector as one chest, and a second line says
 "Linked through an inventory connector: 3 blocks". Porters put goods in through the connector and builders take what
 they need through it, so a chest on the network counts once, however many lists it is near. Unplug a chest (break its
-cable connector) and it is a store of its own again at once. A storage or crafting terminal on the network is Tom's
+cable connector) and it is a store of its own again at once. Two connectors on one network are read as one: the
+Storehouse goes through just one of them, so nothing counts twice. A storage or crafting terminal on the network is Tom's
 own: a player opens it and sees, and takes, the village's goods (place the terminal against the connector or a cable,
 its screen facing you, and click it from within Tom's reach of 6 blocks). With `moddedStorageNetworks` off, every chest on the
 network is its own store and the connector is passed over, as before.
@@ -266,7 +267,9 @@ connector does (read from its 2.3.0 jar): from the connector through the invento
 inventory interface, within 16 blocks (Tom's connector scan range); and along its cable blocks (cables, framed
 cables, cable connectors, terminals, hoppers, level emitters, other connectors; at most 2048), the block each cable
 connector faces (`facing`). The connector exposes all of them through Fabric's transfer API, so `SupplyContainers.find`
-around the Storehouse block lists the connector and drops its inventories; nothing is saved, the walk is done again on
+around the Storehouse block lists the connector and drops its inventories. A connector that joins any inventory an
+earlier one already joined is left out (B305: two connectors on one cable network both expose all of it), the ones
+joining most going first, then the nearest; nothing is saved, the walk is done again on
 every lookup. `Village.stashes` treats a connector as all its inventories: a chest of it listed in an earlier stash (a
 builder's own chests) turns the connector into its remaining chests one by one, so nothing counts twice across stashes.
 Every other job's lists still pass over Tom's blocks (`ModdedBlocks.STORAGE_NETWORK`) and read the chests themselves.
@@ -521,7 +524,9 @@ cable connector, whose chest the network joins: the connector stays the only sto
 `TomsStorageCompatTests.theSixteenthBarrelIsOutOfTheConnectorsRange` (in a row of 16 barrels from the connector, it
 joins the 15 within its 16-block range, as Tom's own connector does, and not the 16th).
 `TomsStorageCompatTests.anotherConnectorIsntJoined` (a second inventory connector touching a network chest isn't one
-of its inventories). Both classes check the store list is nearest first.
+of its inventories, and the Storehouse reads the shared chest through the network's connector only, B305).
+B305: `TomsStorageCompatTests.twoConnectorsOnOneNetworkCountEachChestOnce` (a second connector on the same cables: the
+store is one connector, each item counted once, the board links 3 blocks, a withdrawal of 12 planks leaves 8). Both classes check the store list is nearest first.
 Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
 the board's line and Tom's terminal screen.
 37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and

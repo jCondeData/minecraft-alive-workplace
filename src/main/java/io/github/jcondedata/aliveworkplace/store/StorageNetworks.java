@@ -382,8 +382,8 @@ public final class StorageNetworks {
 
 	/**
 	 * The Storehouse's store list (ROADMAP 37.10): {@code found} (its chests, network blocks left out) with each network
-	 * head in {@code heads} put in, nearest first, and the inventories it joins taken out, so each item counts once.
-	 * Unchanged when the switch is off or no head stands there.
+	 * head in {@code heads} put in, nearest first, and the inventories it joins taken out, so each item counts once. A head
+	 * sharing an inventory with a head already put in (another connector on the same cables, B305) is left out. Unchanged when the switch is off or no head stands there.
 	 */
 	public static List<BlockPos> asStorehouse(ServerLevel level, BlockPos storehouse, List<BlockPos> found, List<BlockPos> heads) {
 		if (!ENABLED || heads.isEmpty()) {
@@ -391,9 +391,19 @@ public final class StorageNetworks {
 		}
 		Set<BlockPos> joined = new HashSet<>();
 		List<BlockPos> out = new ArrayList<>();
+		// B305: two connectors on one cable network each expose the whole network, and two networks can share a chest, so
+		// a head that joins any inventory an earlier head already joined is passed over: each container is read through one
+		// head only. The heads joining the most come first (then the nearest), so a connector touching one chest of a
+		// bigger network doesn't stand in for it; a passed-over head's other inventories stay stores of their own.
+		java.util.Map<BlockPos, Set<BlockPos>> joins = new java.util.HashMap<>();
 		for (BlockPos head : heads) {
-			Set<BlockPos> members = members(level, head);
-			if (!members.isEmpty() && !joined.contains(head)) {
+			joins.put(head, members(level, head));
+		}
+		List<BlockPos> ordered = new ArrayList<>(heads);
+		ordered.sort(Comparator.<BlockPos>comparingInt(p -> -joins.get(p).size()).thenComparingDouble(p -> p.distSqr(storehouse)));
+		for (BlockPos head : ordered) {
+			Set<BlockPos> members = joins.get(head);
+			if (!members.isEmpty() && !joined.contains(head) && java.util.Collections.disjoint(members, joined)) {
 				joined.addAll(members);
 				out.add(head);
 			}

@@ -7167,9 +7167,12 @@ final class JobScenes {
 			},
 			List.of(new Step("01_conscription_raid", -1, 0, (level, player) -> {
 					player.closeContainer();
-					// The raiders come over the field: zombies of the village's raid.
+					// The raiders come over the field: zombies of the village's raid, each a few steps in front of its
+					// conscript (B296: from 7 blocks out the guard beside the librarian reached and killed his raider and
+					// the builder's before the librarian landed a blow; every conscript fights at rest time, the
+					// ConscriptionGameTests rest-time test shows it).
 					for (int i = 0; i < 3; i++) {
-						var zombie = EntityType.ZOMBIE.spawn(level, new BlockPos(-4 + 4 * i, -60, -8), MobSpawnType.COMMAND);
+						var zombie = EntityType.ZOMBIE.spawn(level, new BlockPos(-4 + 4 * i, -60, -4), MobSpawnType.COMMAND);
 						zombie.addTag(io.github.jcondedata.aliveworkplace.guard.VillageRaids.TAG);
 						zombie.setPersistenceRequired();
 						zombie.setHealth(12f);

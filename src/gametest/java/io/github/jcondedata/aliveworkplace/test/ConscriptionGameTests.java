@@ -190,6 +190,49 @@ public class ConscriptionGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B296: at rest time (night, the schedule's REST) a librarian and a farmer, each penned with a raider, are called up
+	 * when the raid starts and both strike: rest never keeps a conscript out of the fight while the raid lasts.
+	 */
+	//$ gametest_ticks_batch AREA '600' '"conscriptionRest"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "conscriptionRest")
+	public void conscriptsFightTheRaidAtRestTime(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		village(helper);
+		Leftovers.halls(helper);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		pen(helper, 1, 9);
+		pen(helper, 15, 9);
+		helper.runAfterDelay(5, () -> {
+			ServerLevel level = helper.getLevel();
+			VillageHallBlockEntity entity = ready(helper);
+			entity.setEdicts(List.of(new Edicts.InForce(CONSCRIPTION.toString(), Chronicle.day(level))));
+			night(level);
+			Villager librarian = grown(helper, VillagerProfession.LIBRARIAN, new BlockPos(2, 2, 11));
+			Villager farmer = grown(helper, VillagerProfession.FARMER, new BlockPos(16, 2, 11));
+			Zombie west = raider(helper, new BlockPos(4, 2, 11));
+			Zombie east = raider(helper, new BlockPos(18, 2, 11));
+			forget();
+			helper.runAfterDelay(40, () -> {
+				// (Before the raid they panic at the zombies beside them; the schedule says rest.)
+				int time = (int) (level.getDayTime() % VillageNeeds.DAY);
+				helper.assertTrue(librarian.getBrain().getSchedule().getActivityAt(time) == Activity.REST
+					&& farmer.getBrain().getSchedule().getActivityAt(time) == Activity.REST, "not rest time: " + time);
+				VillageRaids.track(level, helper.absolutePos(HALL), 2);
+				forget();
+				AtomicBoolean librarianStruck = new AtomicBoolean();
+				AtomicBoolean farmerStruck = new AtomicBoolean();
+				helper.succeedWhen(() -> {
+					librarianStruck.compareAndSet(false, west.getLastHurtByMob() == librarian);
+					farmerStruck.compareAndSet(false, east.getLastHurtByMob() == farmer);
+					helper.assertTrue(librarianStruck.get() && farmerStruck.get(), "struck at rest time: the librarian " + librarianStruck.get()
+						+ " (" + librarian.getBrain().getActiveNonCoreActivity() + ", " + west.getHealth() + "), the farmer " + farmerStruck.get()
+						+ " (" + farmer.getBrain().getActiveNonCoreActivity() + ", " + east.getHealth() + ")");
+				});
+			});
+		});
+	}
+
 	/** In a raid a child and an ill villager, each penned with a zombie, don't take up a sword or fight. */
 	//$ gametest_ticks_batch AREA '300' '"conscriptionHide"'
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "conscriptionHide")

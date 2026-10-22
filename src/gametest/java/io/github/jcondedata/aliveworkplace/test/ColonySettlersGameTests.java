@@ -133,6 +133,9 @@ public class ColonySettlersGameTests implements FabricGameTest {
 		if (job != VillagerProfession.NONE) {
 			v.setVillagerData(v.getVillagerData().setProfession(job).setLevel(jobLevel));
 			v.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(pos)));
+			// the trade's own brain, as the game gives one with every job (B306): the brain made at spawn is a jobless one's,
+			// which forgets a workstation it doesn't count as one, and a novice who has none loses his trade
+			v.refreshBrain(helper.getLevel());
 		}
 		return v;
 	}
@@ -429,31 +432,40 @@ public class ColonySettlersGameTests implements FabricGameTest {
 		tomas.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), helper.absolutePos(lectern)));
 		Villager odo = villager(helper, new BlockPos(15, 2, 15), "Odo", VillagerProfession.LIBRARIAN, 3);
 		Villager wren = villager(helper, new BlockPos(7, 2, 15), "Wren", VillagerProfession.LIBRARIAN, 4);
-		tomas.setNoAi(false);
 		storehouse(helper, allSupplies());
-		helper.runAfterDelay(20, () -> {
-			helper.assertTrue(tomas.getBrain().isActive(net.minecraft.world.entity.schedule.Activity.WORK),
-				"Tomas should be at work before the order: " + tomas.getBrain().getActiveNonCoreActivity());
-			// (a librarian at a lectern may take up the mod's teaching once his brain runs: Odo and Wren share whatever trade Tomas has now)
-			odo.setVillagerData(odo.getVillagerData().setProfession(tomas.getVillagerData().getProfession()));
-			wren.setVillagerData(wren.getVillagerData().setProfession(tomas.getVillagerData().getProfession()));
-			v.entity().setRank(VillageRanks.Rank.CITY); // (the hall's round counted this test's four villagers a Hamlet again)
-			ItemStack held = click(v, v.player(), charter(v));
-			RealmData.Order order = v.order();
-			helper.assertTrue(order != null && order.state().equals(RealmData.MUSTER) && order.volunteers().contains(tomas.getUUID()),
-				"Dara and Tomas should be called to the hall: " + order + " (held " + held + ", "
-					+ (order == null ? Settlers.send(level, v.hall(), v.player(), charter(v)).message().getString() + "; workers "
-						+ names(VillageHalls.census(level, v.hall()).workers()) + ", jobless " + names(VillageHalls.census(level, v.hall()).jobless()) : "") + ")");
-			long given = level.getGameTime();
-			helper.runAfterDelay(10, () -> helper.assertTrue(!tomas.getBrain().isActive(net.minecraft.world.entity.schedule.Activity.WORK),
-				"called to the hall, Tomas should have left his work: " + tomas.getBrain().getActiveNonCoreActivity()));
-			helper.succeedWhen(() -> {
-				RealmData.Order now = v.order();
-				helper.assertTrue(now != null && !now.state().equals(RealmData.MUSTER) && !now.state().equals(RealmData.GATHERING),
-					"the bell hasn't rung: Tomas is " + String.format("%.1f", Math.sqrt(tomas.distanceToSqr(v.hall().getCenter()))) + " blocks from the hall");
-				helper.assertTrue(now.leaves() - given < 300, "the bell rang because its time was up, not because they had gathered");
+		// B306: the game registers a placed lectern as a workstation through the server's task queue, which a busy server
+		// can run a tick later; a brain running before that finds no workstation at his job site and forgets it. Tomas's
+		// brain starts once his lectern is one.
+		BlockPos lecternAt = helper.absolutePos(lectern);
+		helper.startSequence()
+			.thenWaitUntil(() -> helper.assertTrue(level.getPoiManager().getType(lecternAt).isPresent(), "the lectern isn't a workstation yet"))
+			.thenExecute(() -> {
+				tomas.setNoAi(false);
+				helper.runAfterDelay(20, () -> {
+					helper.assertTrue(tomas.getBrain().isActive(net.minecraft.world.entity.schedule.Activity.WORK),
+						"Tomas should be at work before the order: " + tomas.getBrain().getActiveNonCoreActivity()
+							+ " (" + tomas.getVillagerData().getProfession() + ", job site " + tomas.getBrain().getMemory(MemoryModuleType.JOB_SITE) + ")");
+					// (a librarian at a lectern may take up the mod's teaching once his brain runs: Odo and Wren share whatever trade Tomas has now)
+					odo.setVillagerData(odo.getVillagerData().setProfession(tomas.getVillagerData().getProfession()));
+					wren.setVillagerData(wren.getVillagerData().setProfession(tomas.getVillagerData().getProfession()));
+					v.entity().setRank(VillageRanks.Rank.CITY); // (the hall's round counted this test's four villagers a Hamlet again)
+					ItemStack held = click(v, v.player(), charter(v));
+					RealmData.Order order = v.order();
+					helper.assertTrue(order != null && order.state().equals(RealmData.MUSTER) && order.volunteers().contains(tomas.getUUID()),
+						"Dara and Tomas should be called to the hall: " + order + " (held " + held + ", "
+							+ (order == null ? Settlers.send(level, v.hall(), v.player(), charter(v)).message().getString() + "; workers "
+								+ names(VillageHalls.census(level, v.hall()).workers()) + ", jobless " + names(VillageHalls.census(level, v.hall()).jobless()) : "") + ")");
+					long given = level.getGameTime();
+					helper.runAfterDelay(10, () -> helper.assertTrue(!tomas.getBrain().isActive(net.minecraft.world.entity.schedule.Activity.WORK),
+						"called to the hall, Tomas should have left his work: " + tomas.getBrain().getActiveNonCoreActivity()));
+					helper.succeedWhen(() -> {
+						RealmData.Order now = v.order();
+						helper.assertTrue(now != null && !now.state().equals(RealmData.MUSTER) && !now.state().equals(RealmData.GATHERING),
+							"the bell hasn't rung: Tomas is " + String.format("%.1f", Math.sqrt(tomas.distanceToSqr(v.hall().getCenter()))) + " blocks from the hall");
+						helper.assertTrue(now.leaves() - given < 300, "the bell rang because its time was up, not because they had gathered");
+					});
+				});
 			});
-		});
 	}
 
 	/**

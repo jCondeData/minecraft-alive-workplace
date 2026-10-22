@@ -109,6 +109,13 @@ def split_marks(rest):
         j = i
         while j < len(rest) and rest[j] == " ":
             j += 1
+        # "[urgent: owner]" filed with square brackets is a mark too: before B302 (2026-10-22) it hid the
+        # "(lane: d)" after it from next.
+        square = re.match(r"\[((?:urgent|lane|blocked|claimed|review|approved|vetoed|needs)\b[^\]]*)\]", rest[j:])
+        if square:
+            marks.append(square.group(1))
+            i = j + square.end()
+            continue
         if j >= len(rest) or rest[j] != "(":
             return marks, rest[i:]
         depth, k = 0, j

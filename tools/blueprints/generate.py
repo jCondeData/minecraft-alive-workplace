@@ -140,7 +140,7 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in MORE_DECORATIONS:  # ROADMAP 26.14
         draw().save(MAIN_STRUCTURES, name)
-    for name, draw in CREATE_BUILDS:  # ROADMAP 39.4: listed only with Create
+    for name, draw in CREATE_BUILDS + MORE_CREATE_BUILDS:  # ROADMAP 39.4 and 39.8: listed only with Create
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
         draw().save(MAIN_STRUCTURES, name)

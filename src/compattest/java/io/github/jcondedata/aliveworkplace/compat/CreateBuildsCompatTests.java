@@ -36,7 +36,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * ROADMAP 39.4 with the owner's Create port: the Watermill, the Windmill and the Workshop are at the Blueprint Table, and
+ * ROADMAP 39.4 and 39.8 with the owner's Create port: the Watermill, the Windmill and the Workshop, the Brass Foundry,
+ * the Sawmill and the Crushing Mill are at the Blueprint Table, and
  * a builder finishes each from barrels holding exactly its materials, nothing skipped, with its machine turning once
  * it's done: the speed is read from the machine's block entity data by name ({@code Speed}), no Create class. Without
  * Create: {@code CreateBuildsGameTests}.
@@ -88,12 +89,69 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 			at(4, 1, 4, "create:belt")), new BlockPos(4, 3, 2));
 	}
 
+	/** The Brass Foundry (39.8): the gear train takes the wheel's 8 RPM up to 32, so the mixer over the basin works (from 30). */
+	//$ gametest_ticks_batch HUGE_AREA '30000' '"brass_foundry_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "brass_foundry_build")
+	public void aBuilderBuildsTheBrassFoundryAndItTurns(GameTestHelper helper) {
+		build(helper, StarterBlueprints.BRASS_FOUNDRY, List.of(at(9, 1, 2, "minecraft:smoker"), at(8, 4, 8, "create:mechanical_mixer"),
+			at(8, 2, 8, "create:basin"), at(8, 1, 8, "create:blaze_burner"), at(4, 1, 2, "create:depot"), at(4, 1, 4, "create:belt")),
+			new BlockPos(8, 4, 8), (level, origin) -> {
+				float speed = speed(level, origin.offset(8, 4, 8));
+				helper.assertTrue(Math.abs(speed) >= 30, "the mixer turns at " + speed + " RPM, too slow to mix (30)");
+			});
+	}
+
+	/** The Sawmill (39.8): the belt from the wheel runs through two saws to the depot, and both saws turn. */
+	//$ gametest_ticks_batch HUGE_AREA '30000' '"sawmill_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "sawmill_build")
+	public void aBuilderBuildsTheSawmillAndItTurns(GameTestHelper helper) {
+		build(helper, StarterBlueprints.SAWMILL, List.of(at(10, 1, 2, "minecraft:fletching_table"), at(4, 1, 4, "create:mechanical_saw"),
+			at(4, 1, 3, "create:mechanical_saw"), at(4, 1, 2, "create:depot"), at(4, 1, 6, "create:belt")),
+			new BlockPos(4, 1, 4), (level, origin) -> {
+				float second = speed(level, origin.offset(4, 1, 3));
+				helper.assertTrue(Math.abs(second) > 0, "the second saw doesn't turn (Speed " + second + ")");
+			});
+	}
+
+	/**
+	 * The Crushing Mill (39.8): both wheels turn, the opposite ways at the same speed, so Create's crusher stands valid in
+	 * the gap between them (the block the miner's work file names).
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '30000' '"crushing_mill_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "crushing_mill_build")
+	public void aBuilderBuildsTheCrushingMillAndItTurns(GameTestHelper helper) {
+		build(helper, StarterBlueprints.CRUSHING_MILL, List.of(at(9, 1, 2, "minecraft:blast_furnace"), at(5, 2, 5, "create:crushing_wheel"),
+			at(7, 2, 5, "create:crushing_wheel"), at(6, 2, 5, "create:crushing_wheel_controller"), at(6, 1, 3, "create:item_drain"),
+			at(6, 3, 7, "create:belt")),
+			new BlockPos(5, 2, 5), (level, origin) -> {
+				float a = speed(level, origin.offset(5, 2, 5));
+				float b = speed(level, origin.offset(7, 2, 5));
+				helper.assertTrue(a == -b, "the crushing wheels don't turn the opposite ways (" + a + ", " + b + ")");
+				BlockState crusher = level.getBlockState(origin.offset(6, 2, 5));
+				String valid = crusher.getProperties().stream().filter(p -> p.getName().equals("valid")).findFirst()
+					.map(p -> crusher.getValue(p).toString()).orElse("?");
+				helper.assertTrue("true".equals(valid), "the crusher between the wheels isn't working: " + crusher);
+			});
+	}
+
+	/** The saved {@code Speed} of the block entity at {@code pos}, read by name (0 if there's none). */
+	private static float speed(ServerLevel level, BlockPos pos) {
+		BlockEntity be = level.getBlockEntity(pos);
+		return be == null ? 0 : Nbt.getFloat(be.saveWithoutMetadata(level.registryAccess()), "Speed");
+	}
+
+	private static void build(GameTestHelper helper, StarterBlueprints.Entry entry, List<Expect> expect, BlockPos machine) {
+		build(helper, entry, expect, machine, (level, origin) -> {
+		});
+	}
+
 	/**
 	 * Builds {@code entry} by (9, 2, 3) from barrels holding exactly its materials; when it's done every block is right,
 	 * nothing was skipped, each {@code expect} block stands at its spot, the first is a job site, and the machine at
 	 * {@code machine} turns (its saved {@code Speed} isn't 0).
 	 */
-	private static void build(GameTestHelper helper, StarterBlueprints.Entry entry, List<Expect> expect, BlockPos machine) {
+	private static void build(GameTestHelper helper, StarterBlueprints.Entry entry, List<Expect> expect, BlockPos machine,
+		java.util.function.BiConsumer<ServerLevel, BlockPos> more) {
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(1, level.getServer());
@@ -147,6 +205,7 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 			CompoundTag tag = be.saveWithoutMetadata(level.registryAccess());
 			float speed = Nbt.getFloat(tag, "Speed");
 			helper.assertTrue(Math.abs(speed) > 0, "the machine at " + machine.toShortString() + " doesn't turn (Speed " + speed + ")");
+			more.accept(level, placement.origin());
 		});
 	}
 }

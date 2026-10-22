@@ -188,6 +188,203 @@ def workshop():
     return b
 
 
+FOUNDRY_BRICK = Mix((7, "bricks"), (2, "granite"), (1, "polished_granite"), seed=398)
+FOUNDRY_FRAME = "stripped_dark_oak_log"
+
+
+def brass_foundry():
+    """13 x 14 x 11 (ROADMAP 39.8): the Brass Foundry. A nine-square brick hall on a stone-brick plinth, framed in dark
+    oak under a deepslate gable, a brick chimney smoking at the back corner; the water wheel on its west wall (header
+    tank and mill race as the Watermill's). Inside, the wheel's shaft turns a belt running out to a depot by the door,
+    and from the belt's pulley a gearbox sends the drive up a shaft to two stacked steps of large and small cogwheels
+    (8 RPM to 16 to 32: a mixer only works from 30) and on to a mechanical mixer over a basin heated by a blaze
+    burner (the chef's mixer, 39.3: the basin keeps what it makes, facing down). The chef's smoker and the store chest
+    by the front wall."""
+    b = Build(13, 14, 11)
+    plinth(b, 3, 1, 11, 9, BRICK_WALL_MIX, floor="polished_andesite")
+    walls(b, 3, 1, 11, 9, 1, 5, FOUNDRY_BRICK)
+    posts(b, [(3, 1), (6, 1), (8, 1), (11, 1), (3, 9), (7, 9), (11, 9), (11, 5)], 1, 5, FOUNDRY_FRAME)
+    beam_ring(b, 3, 1, 11, 9, 3, FOUNDRY_FRAME)  # a floor-line beam halfway up the tall walls
+    beam_ring(b, 3, 1, 11, 9, 6, FOUNDRY_FRAME)
+    gable_roof(b, 2, 12, 0, 10, 7, DEEPSLATE_TILE, axis="x", gable="bricks", eave_trim=DARK_OAK)
+    door(b, 7, 1, 1, "dark_oak_door", "south")
+    stairs(b, 7, 0, 0, STONE_BRICK, "south")
+    for x in (6, 8):
+        b.set(x, 0, 0, "stone_bricks")
+    for x in (6, 8):
+        lantern(b, x, 1, 0)
+    for x in (4, 10):
+        window(b, x, 2, 1, "north", shutters="dark_oak_trapdoor", sill=BRICK)
+        window(b, x, 4, 1, "north", height=1)
+    window(b, 11, 2, 3, "east", shutters="dark_oak_trapdoor", sill=BRICK)
+    window(b, 11, 2, 7, "east", shutters="dark_oak_trapdoor", sill=BRICK)
+    window(b, 5, 2, 9, "south", shutters="dark_oak_trapdoor", sill=BRICK)
+    window(b, 9, 4, 9, "south")
+    chimney(b, 10, 10, 0, 12, "bricks")
+    # The drive: wheel, shaft, belt out to the depot; from the belt's pulley a gearbox, up to the gear train and the mixer
+    _header_tank(b, 1, 5, 3)
+    _wheel(b, 1, 1, 6)
+    b.set(3, 1, 6, CREATE + "shaft", axis="x")
+    belt = dict(facing="north", slope="horizontal", casing=False, waterlogged=False)
+    b.set(4, 1, 6, CREATE + "belt", part="start", **belt)
+    b.set(4, 1, 5, CREATE + "belt", part="middle", **belt)
+    b.set(4, 1, 4, CREATE + "belt", part="middle", **belt)
+    b.set(4, 1, 3, CREATE + "belt", part="end", **belt)
+    b.set(4, 1, 2, CREATE + "depot")
+    b.set(5, 1, 6, CREATE + "gearbox", axis="z")
+    b.set(5, 2, 6, CREATE + "shaft", axis="y")
+    b.set(5, 3, 6, CREATE + "large_cogwheel", axis="y")  # 8 RPM
+    b.set(6, 3, 7, CREATE + "cogwheel", axis="y")  # 16, and up its axle
+    b.set(6, 4, 7, CREATE + "large_cogwheel", axis="y")
+    b.set(7, 4, 8, CREATE + "cogwheel", axis="y")  # 32
+    b.set(8, 4, 8, CREATE + "mechanical_mixer")
+    b.set(8, 3, 8, "air")
+    b.set(8, 2, 8, CREATE + "basin", facing="down")
+    b.set(8, 1, 8, CREATE + "blaze_burner", blaze="smouldering", facing="north")
+    # The chef's corner and the store
+    b.set(9, 1, 2, "smoker", facing="north", lit=False)
+    b.set(10, 1, 2, "chest", facing="north", type="single", waterlogged=False)
+    b.set(10, 1, 4, "barrel", facing="up", open=False)
+    b.set(10, 1, 5, "barrel", facing="up", open=False)
+    b.set(10, 2, 4, "barrel", facing="west", open=False)
+    b.set(9, 1, 8, "anvil", facing="north")
+    lantern(b, 7, 5, 4, hanging=True)
+    lantern(b, 10, 2, 5)
+    for x in range(4, 11):  # a tie beam across the hall, the lantern under it
+        b.set(x, 6, 4, FOUNDRY_FRAME, axis="x")
+    b.fill_air()
+    return b
+
+
+SAW_FRAME = "spruce_log"
+
+
+def sawmill():
+    """15 x 11 x 12 (ROADMAP 39.8): the Sawmill. An eleven-by-ten timber mill, spruce posts and oak plank walls over a
+    cobblestone plinth under a dark oak gable, a log store under a lean-to on its east side; the water wheel on the
+    west wall (header tank and mill race as the Watermill's). Inside, the wheel's shaft turns a belt running to the
+    front, through two mechanical saws facing up (each driven from the belt's far pulley by a column of cogwheels; the
+    second is flipped, as the two turn opposite ways, so both cut the same way) to a depot by the door. The
+    lumberjack's fletching table, the store chest and stacked logs."""
+    b = Build(15, 11, 12)
+    plinth(b, 3, 1, 11, 10, STONE_MIX, floor="spruce_planks")
+    walls(b, 3, 1, 11, 10, 1, 3, "oak_planks")
+    posts(b, [(3, 1), (6, 1), (8, 1), (11, 1), (3, 10), (7, 10), (11, 10), (11, 4), (11, 7), (3, 4)], 1, 3, SAW_FRAME)
+    beam_ring(b, 3, 1, 11, 10, 4, SAW_FRAME)
+    gable_roof(b, 2, 12, 0, 11, 5, DARK_OAK, axis="z", gable="oak_planks", eave_trim=SPRUCE)
+    door(b, 7, 1, 1, "spruce_door", "south")
+    stairs(b, 7, 0, 0, STONE_BRICK, "south")
+    for x in (6, 8):
+        b.set(x, 0, 0, "cobblestone")
+        lantern(b, x, 1, 0)
+    window(b, 5, 2, 1, "north", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 10, 2, 1, "north", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 9, 2, 10, "south", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 5, 2, 10, "south", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 7, 6, 1, "north", sill=SPRUCE)  # a little window up in the front gable
+    # The log store: a lean-to on the east wall, logs stacked under it
+    for z in range(3, 9):
+        b.set(12, 0, z, "cobblestone")
+        for y in (1, 2):
+            b.set(12, y, z, "spruce_log" if (y + z) % 3 else "oak_log", axis="z")
+    for z in (2, 9):
+        fence(b, 12, 1, z, "spruce_fence")
+        fence(b, 12, 2, z, "spruce_fence")
+    for z in range(2, 10):
+        stairs(b, 12, 3, z, SPRUCE, "west")
+    # The drive: wheel, shaft, belt to the front through two saws to the depot
+    _header_tank(b, 1, 7, 3)
+    _wheel(b, 1, 1, 8)
+    b.set(3, 1, 8, CREATE + "shaft", axis="x")
+    belt = dict(facing="north", slope="horizontal", casing=False, waterlogged=False)
+    b.set(4, 1, 8, CREATE + "belt", part="start", **belt)
+    b.set(4, 1, 7, CREATE + "belt", part="middle", **belt)
+    b.set(4, 1, 6, CREATE + "belt", part="middle", **belt)
+    b.set(4, 1, 5, CREATE + "belt", part="end", **belt)
+    b.set(4, 1, 4, CREATE + "mechanical_saw", facing="up", axis_along_first=True, flipped=False)
+    b.set(4, 1, 3, CREATE + "mechanical_saw", facing="up", axis_along_first=True, flipped=True)
+    b.set(4, 1, 2, CREATE + "depot")
+    for z in (5, 4, 3):
+        b.set(5, 1, z, CREATE + "cogwheel", axis="x")
+    # The lumberjack's corner and the store
+    b.set(10, 1, 2, "fletching_table")
+    b.set(10, 1, 3, "chest", facing="west", type="single", waterlogged=False)
+    for x, z in ((9, 9), (10, 9), (10, 8)):
+        b.set(x, 1, z, "stripped_spruce_log", axis="x")
+    b.set(10, 2, 9, "stripped_spruce_log", axis="x")
+    b.set(7, 1, 9, "barrel", facing="up", open=False)
+    lantern(b, 7, 3, 5, hanging=True)
+    for z in range(2, 10):  # a tie beam along the mill, the lantern under it
+        b.set(7, 4, z, SAW_FRAME, axis="z")
+    b.fill_air()
+    return b
+
+
+CRUSH_STONE = Mix((5, "cobblestone"), (3, "andesite"), (2, "stone"), seed=399)
+
+
+def crushing_mill():
+    """14 x 12 x 11 (ROADMAP 39.8): the Crushing Mill. A nine-by-nine andesite-and-cobble mill house framed in spruce
+    under a spruce gable; the water wheel on its west wall (header tank and mill race as the Watermill's). Inside, a
+    pair of crushing wheels (their axles along z, a block apart: Create puts its crusher in the gap) turned the opposite
+    ways through a train of gearboxes, a short belt over them dropping into the gap, and under the gap a pit where the
+    crushed ore lands (the miner's crusher, 39.3: fed from the gap, collected from the pit) with an item drain in front
+    of it. The miner's blast furnace and the store chest by the front wall."""
+    b = Build(14, 12, 11)
+    plinth(b, 3, 1, 11, 9, BRICK_WALL_MIX, floor="polished_andesite")
+    walls(b, 3, 1, 11, 9, 1, 4, CRUSH_STONE)
+    posts(b, [(3, 1), (6, 1), (8, 1), (11, 1), (3, 9), (7, 9), (11, 9), (11, 5)], 1, 4, MILL_FRAME)
+    beam_ring(b, 3, 1, 11, 9, 5, MILL_FRAME)
+    gable_roof(b, 2, 12, 0, 10, 6, SPRUCE, axis="x", gable="spruce_planks", eave_trim=DARK_OAK)
+    door(b, 7, 1, 1, "spruce_door", "south")
+    stairs(b, 7, 0, 0, STONE_BRICK, "south")
+    for x in (6, 8):
+        b.set(x, 0, 0, "stone_bricks")
+        lantern(b, x, 1, 0)
+    window(b, 4, 2, 1, "north", shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 10, 2, 1, "north", shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 11, 2, 3, "east", shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 11, 2, 7, "east", shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 9, 2, 9, "south", shutters="spruce_trapdoor", sill=STONE_BRICK)
+    # The drive: wheel, shaft, gearboxes up and across to both wheels (the two sides of the second gearbox turn the
+    # opposite ways), and from the top gearbox a shaft to the feed belt over the gap
+    _header_tank(b, 1, 6, 3)
+    _wheel(b, 1, 1, 7)
+    b.set(3, 1, 7, CREATE + "shaft", axis="x")
+    b.set(4, 1, 7, CREATE + "gearbox", axis="z")
+    b.set(4, 2, 7, CREATE + "gearbox", axis="z")
+    b.set(4, 3, 7, CREATE + "gearbox", axis="z")
+    b.set(5, 2, 7, CREATE + "gearbox", axis="y")
+    b.set(6, 2, 7, CREATE + "shaft", axis="x")
+    b.set(7, 2, 7, CREATE + "gearbox", axis="y")
+    b.set(5, 2, 6, CREATE + "shaft", axis="z")
+    b.set(7, 2, 6, CREATE + "shaft", axis="z")
+    b.set(5, 2, 5, CREATE + "crushing_wheel", axis="z")
+    b.set(7, 2, 5, CREATE + "crushing_wheel", axis="z")
+    b.set(6, 2, 5, "structure_void")  # Create's crusher, between the wheels
+    b.set(6, 2, 6, CREATE + "andesite_casing")  # closing the crusher at the back
+    b.set(5, 3, 7, CREATE + "shaft", axis="x")
+    belt = dict(facing="north", slope="horizontal", casing=False, waterlogged=False)
+    b.set(6, 3, 7, CREATE + "belt", part="start", **belt)
+    b.set(6, 3, 6, CREATE + "belt", part="end", **belt)
+    # The pit under the gap: closed at the sides and back, open to the front where the drain stands
+    b.set(6, 1, 5, "air")
+    for x, z in ((5, 5), (7, 5), (6, 6), (5, 4), (7, 4)):
+        b.set(x, 1, z, CREATE + "andesite_casing")
+    b.set(6, 1, 3, CREATE + "item_drain")
+    # The miner's corner and the store
+    b.set(9, 1, 2, "blast_furnace", facing="north", lit=False)
+    b.set(10, 1, 2, "chest", facing="north", type="single", waterlogged=False)
+    b.set(10, 1, 8, "barrel", facing="up", open=False)
+    b.set(9, 1, 8, "barrel", facing="up", open=False)
+    b.set(10, 2, 8, "barrel", facing="west", open=False)
+    lantern(b, 9, 4, 5, hanging=True)
+    for x in range(8, 11):  # a tie beam over the store, the lantern under it
+        b.set(x, 5, 5, MILL_FRAME, axis="x")
+    b.fill_air()
+    return b
+
+
 BALLAST = Mix((5, "gravel"), (3, "andesite"), (2, "cobblestone"), seed=397)
 
 
@@ -263,4 +460,5 @@ def village_train():
 
 
 CREATE_BUILDS = (("watermill", watermill), ("windmill", windmill), ("workshop", workshop))
+MORE_CREATE_BUILDS = (("brass_foundry", brass_foundry), ("sawmill", sawmill), ("crushing_mill", crushing_mill))  # 39.8
 TRAIN_STATION = (("train_station", train_station),)  # ROADMAP 39.7: listed only with Create and villageTrains

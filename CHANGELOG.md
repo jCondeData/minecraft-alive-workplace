@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- A colony settler who has a job now leaves his workstation when the muster calls him to the hall, instead of working on until the bell rings without him (B295).
+
 ## 0.147.0 — 2026-10-21
 
 ### Added

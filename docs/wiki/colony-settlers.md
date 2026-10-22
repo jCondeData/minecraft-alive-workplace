@@ -4,7 +4,7 @@ ROADMAP 33.9 (part of 1.7, "From village to realm"; switched on in 1.0 with ever
 colony: the owner takes the [Colony Charter](colony-charter.md), its spot chosen, back to the hall, and the village
 sends two settlers with supplies. What happens when they arrive (33.10) gets its own page.
 
-Roadmap items: 33.9
+Roadmap items: 33.9, B295
 
 ## What a player sees
 
@@ -39,8 +39,8 @@ there in 2 minutes"; who goes; what is packed; what they wait for. Until they le
 button stands beside it (the owner and friends only): the settlers stay, every supply goes back into the
 Storehouses and the charter, spot and name and all, comes back to you.
 
-**Leaving.** The morning after the supplies are complete (or the 3 days are up), the settlers walk to the hall;
-when all are there (15 seconds at most) the bell rings and chat says "The bell rings: Dara and Tomas set out from
+**Leaving.** The morning after the supplies are complete (or the 3 days are up), the settlers walk to the hall,
+leaving their work if they had a job (they don't go back to it until they have set out); when all are there (15 seconds at most) the bell rings and chat says "The bell rings: Dara and Tomas set out from
 Thornholm for Newbrook." They walk out toward the spot. Once nobody can see them (no player within 48 blocks, or
 40 blocks from the hall), or after 30 seconds, they are on the road: gone from the world and kept in the order.
 The journey takes 3 minutes plus a tick for every block to the spot (612 blocks: about 3 and a half minutes).

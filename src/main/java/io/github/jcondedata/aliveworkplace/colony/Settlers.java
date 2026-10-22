@@ -560,6 +560,7 @@ public final class Settlers {
 					callOff(level, hall, null); // nobody is left to go
 					return;
 				}
+				call(here, now);
 				boolean gathered = here.stream().allMatch(v -> v.distanceToSqr(hall.getCenter()) <= 5 * 5);
 				if (gathered || now - order.leaves() >= MUSTER_TICKS) {
 					level.playSound(null, hall, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 2f, 1f);
@@ -578,6 +579,7 @@ public final class Settlers {
 			}
 			case RealmData.LEAVING -> {
 				List<Villager> here = here(level, order);
+				call(here, now);
 				boolean late = now - order.leaves() >= LEAVE_TICKS;
 				boolean unseen = !here.isEmpty() && here.stream().allMatch(v -> v.distanceToSqr(hall.getCenter()) >= OUT * OUT
 					|| level.getNearestPlayer(v.getX(), v.getY(), v.getZ(), SIGHT, false) == null);
@@ -601,6 +603,36 @@ public final class Settlers {
 			}
 		}
 		return out;
+	}
+
+	/**
+	 * B295: the settlers called to the hall or walking out, by id, with the tick their call lapses (kept up every step of
+	 * the muster and the leaving). While called they are off work ({@link #called}, the work gate in {@code mixin/BrainMixin}):
+	 * a volunteer who had (or took) a job stood at his workstation, whose work kept dropping the walk to the hall, until
+	 * the bell rang on the timeout without him.
+	 */
+	private static final Map<UUID, Long> CALLED = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/** Whether {@code villager} is a settler called to the hall or on the way out: no work for them now (B295). */
+	public static boolean called(Villager villager) {
+		if (CALLED.isEmpty()) {
+			return false;
+		}
+		Long until = CALLED.get(villager.getUUID());
+		if (until == null) {
+			return false;
+		}
+		if (villager.level().getGameTime() > until) {
+			CALLED.remove(villager.getUUID(), until);
+			return false;
+		}
+		return true;
+	}
+
+	private static void call(List<Villager> settlers, long now) {
+		for (Villager v : settlers) {
+			CALLED.put(v.getUUID(), now + 40);
+		}
 	}
 
 	private static void walk(List<Villager> settlers, BlockPos to, boolean now) {
@@ -657,6 +689,7 @@ public final class Settlers {
 					v.releasePoi(poi);
 				}
 			}
+			CALLED.remove(v.getUUID());
 			v.discard();
 		}
 		long now = level.getGameTime();

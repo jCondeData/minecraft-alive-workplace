@@ -23,6 +23,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A CobbleFurnies Furni Crafter placed before the update that added the Furnicrafter now shows on the Village Hall's Free job blocks page and can be given to a jobless villager: when its chunk loads it becomes a job block, as do Create's Toolboxes and Train Stations and Cobblemon's Campfire Pots and Pastures placed before they were ones (B302).
 - A builder at the Builder's Workshop's table now counts and takes the Storehouse's chests when the Storehouse has a Blueprint Table of its own beside them (with a builder at it, those chests counted as that builder's), and the village's own builder counts a Storehouse you placed. When his status says he needs something, it also says why a Storehouse nearby isn't counted: too far, not his village's, or no chest he can read (B297, B298, B299).
 - A colony settler who has a job now leaves his workstation when the muster calls him to the hall, instead of working on until the bell rings without him (B295).
 

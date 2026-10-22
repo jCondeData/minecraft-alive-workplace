@@ -125,6 +125,10 @@ class (34.8) is greyed with the class it needs. The pick is checked again on the
 meanwhile, or the villager found work, nothing changes, the action bar says why and the list comes back. The page
 shows up to 36 blocks; past that, the last slot says how many more there are further away.
 
+Another mod's block that is a job block of ours (CobbleFurnies' Furni Crafter, Create's Toolbox and Train Station,
+Cobblemon's Campfire Pot and Pasture) and was placed before the update that made it one has no point of interest in
+the save; it gets one when its chunk loads, so it shows on the page from then on (B302; `work/NewWorkstations`).
+
 **Upgrades (36.14).** The page reads the village's finished builds (the hall's circle) whose blueprint has a next level
 by name (`<name>_2` after `<name>`, `_3` after `_2`, see `BlueprintUpgrades`), the same list the hall's advice and the
 Steward's upgrade rules use. The order is the same as every other upgrade: a build site of the next level on the old

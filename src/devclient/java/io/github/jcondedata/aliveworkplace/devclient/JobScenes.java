@@ -2870,7 +2870,20 @@ final class JobScenes {
 				one.setColor(sheep.isEmpty() ? net.minecraft.world.item.DyeColor.WHITE : net.minecraft.world.item.DyeColor.BROWN);
 				sheep.add(one);
 			}
-			return l -> sheep.stream().allMatch(net.minecraft.world.entity.animal.Sheep::isSheared) && n(ModAttachments.ANIMALS_SHEARED, s) >= 2;
+			Container shears = (Container) level.getBlockEntity(chestPos());
+			return l -> {
+				// B311: on a timeout, say what the shepherd was doing
+				var status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(s, l.getGameTime());
+				timeoutWhy = "the shepherd: " + s.getVillagerData().getProfession() + (s.isAlive() ? "" : " (dead)") + ", sheared " + n(ModAttachments.ANIMALS_SHEARED, s)
+					+ ", sheep sheared " + sheep.stream().map(one -> String.valueOf(one.isSheared())).toList()
+					+ ", holding " + s.getMainHandItem().getItem() + ", shears in the chest " + shears.countItem(Items.SHEARS)
+					+ ", job site " + s.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
+					+ ", doing " + s.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ ", busy " + io.github.jcondedata.aliveworkplace.ranch.RanchWork.isBusy(s)
+					+ ", status " + (status == null ? "none" : status.title().getString() + " / " + status.line().getString())
+					+ ", at " + s.blockPosition().toShortString();
+				return sheep.stream().allMatch(net.minecraft.world.entity.animal.Sheep::isSheared) && n(ModAttachments.ANIMALS_SHEARED, s) >= 2;
+			};
 		}));
 		SCENES.put("herder", job("the herder milked the cow", 2000, (level, player) -> {
 			Villager h = worker(level, STATION, Blocks.SMOKER, PoiTypes.BUTCHER, VillagerProfession.BUTCHER);

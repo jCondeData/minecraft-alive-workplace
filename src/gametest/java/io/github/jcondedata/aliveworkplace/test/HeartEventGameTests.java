@@ -467,6 +467,7 @@ public class HeartEventGameTests implements FabricGameTest {
 			Villager dara = villager(helper, new BlockPos(5, 2, 5), "Dara");
 			// With a trade and a workplace, a plain click finds her (someone jobless is offered a job instead).
 			dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER));
+			dara.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 			dara.getBrain().setMemory(MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(4, 2, 4))));
 			ModAttachments.PARENTS.set(dara, new Families.Parents(Component.literal("Mira"), Component.literal("Tomas"), "", "", true));
 			Villager finn = villager(helper, new BlockPos(7, 2, 7), "Finn");

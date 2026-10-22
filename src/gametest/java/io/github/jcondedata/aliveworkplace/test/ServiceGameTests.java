@@ -78,6 +78,7 @@ public class ServiceGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		VillagerProfession profession = BuiltInRegistries.VILLAGER_PROFESSION.get(ResourceLocation.parse(job));
 		helper.assertTrue(profession != VillagerProfession.NONE, "the job " + job + " exists");
 		v.setVillagerData(v.getVillagerData().setProfession(profession));
+		v.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 		v.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(helper.getLevel().dimension(), site));
 		return v;
 	}

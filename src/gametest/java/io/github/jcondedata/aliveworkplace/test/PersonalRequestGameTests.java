@@ -582,6 +582,7 @@ public class PersonalRequestGameTests implements FabricGameTest {
 
 			// A fisherman with a workstation and a chest beside it, from the ask to the thanks.
 			finn.setVillagerData(finn.getVillagerData().setProfession(VillagerProfession.FISHERMAN));
+			finn.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 			BlockPos station = new BlockPos(3, 2, 3);
 			helper.setBlock(station, Blocks.FLETCHING_TABLE); // (stands for his workstation: a barrel would take the rod itself)
 			helper.setBlock(station.east(), Blocks.CHEST);

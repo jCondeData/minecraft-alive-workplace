@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, B238, B260, B262, B281
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305
 
 ## 1. What a player sees
 
@@ -85,6 +85,12 @@ Hall's list, free beds for a new baby). A home with a furniture mod's seat in it
 to the people who sleep there (the "beauty near home" a Burgher or a Noble needs, M34). Vanilla stair chairs are not
 seats.
 
+A bed up a ladder is a bed like any other (B304). The Terrace is two homes under one roof, each with its bedroom up a
+ladder: a villager without a bed takes a free one there, even next door to where he stands, and at bedtime he goes in
+by that home's door and climbs that home's ladder. Before, a villager could only claim a bed he could walk to, so the
+Terrace's beds stood free while villagers spent the night standing about its rooms (on a chest, say), and a villager
+coming in by the other home's door climbed the wrong ladder and gave his bed up.
+
 When it is finished, a server with Handcrafted gets Handcrafted chairs round a Handcrafted table, fancy beds with nightstands and
 shelves of crockery in its homes; Cozy Home adds sofas, clocks and lamps, CobbleFurnies Poké Ball chairs, Beautify
 blinds, picture frames and candelabras; villagers sit on the chairs and claim and sleep in the fancy beds (a bed spot only takes a mod's bed when villagers can
@@ -113,7 +119,8 @@ every inventory it joins: the chests, barrels and filing cabinets touching it (a
 cable connector on its cables faces. The board's first line counts the connector as one chest, and a second line says
 "Linked through an inventory connector: 3 blocks". Porters put goods in through the connector and builders take what
 they need through it, so a chest on the network counts once, however many lists it is near. Unplug a chest (break its
-cable connector) and it is a store of its own again at once. A storage or crafting terminal on the network is Tom's
+cable connector) and it is a store of its own again at once. Two connectors on one network are read as one: the
+Storehouse goes through just one of them, so nothing counts twice. A storage or crafting terminal on the network is Tom's
 own: a player opens it and sees, and takes, the village's goods (place the terminal against the connector or a cable,
 its screen facing you, and click it from within Tom's reach of 6 blocks). With `moddedStorageNetworks` off, every chest on the
 network is its own store and the connector is passed over, as before.
@@ -146,6 +153,27 @@ build is planned and saved with it, so a config change or a removed mod never ch
 (a copy whose blocks are gone later is built as the vanilla build). The Blueprint Table, the preview and the materials
 list show the library this server would build. Job blocks (lecterns, barrels, beehives, crafting tables) and doors are
 never swapped, and nothing a copy adds holds items, so every job finds exactly the storage of the vanilla build.
+
+**Storage builds** (37.17, behind the gate). Three new builds at the Blueprint Table, each a Storehouse (its
+Storehouse block takes a porter, and the village and the Village Map count it as one): the **Storage Hall** (13 x 14 x
+14: a long stone-and-birch hall with a porch, 27 chests and barrels in an island round an inventory connector, a
+counter by the door with a storage terminal and a crafting terminal either side of the Storehouse, two filing cabinets
+for the paper and maps on the back wall), the **Terminal Nook** (9 x 10 x 9: a small room that fits beside a house, six
+chests round a connector along its back wall, a storage terminal before it) and the **Warehouse** (19 x 16 x 16: two
+floors under a long roof, four racks of chests and barrels below and two in the loft, 60 in all, a crafting terminal at
+the packing counter by the loading doors, a lean-to loading bay with a handcart). With Tom's Simple Storage installed
+they are built of Tom's blocks and every chest, barrel and cabinet is on the connector's network: the Storehouse reads
+them through it (each item once) and the terminals show them in Tom's own screen. Without Tom's (or with
+`moddedLibrary` or `furnishedBuilds` off) they are the vanilla builds: a chest where the connector stands, a crafting
+table for the crafting terminal, a counter block (or nothing, in the Nook) for the storage terminal, boards and spruce
+logs for the cables and trims, chests for the filing cabinets; every chest and barrel is then the Storehouse's own store.
+
+Nothing a builder furnishes floats (B300). A pot, candle or lantern that stood on a piece the furniture mod's piece
+doesn't reach up to (a fence-and-carpet table become a one-block table) is set down on the new piece. A small thing
+on the build's ground layer gets a footing of dirt where the ground under it is lower (a potted flower before a
+headstone on a hillside), as walls get theirs. And when the build is done (after the landscaping) the builder looks
+over everything placed: a small thing left resting on nothing is set down on the first block under it, and anything
+the game says can't stay where it is (a wall torch with no wall) is broken and dropped as an item for the chests.
 
 ## 2. How it works
 
@@ -239,7 +267,9 @@ connector does (read from its 2.3.0 jar): from the connector through the invento
 inventory interface, within 16 blocks (Tom's connector scan range); and along its cable blocks (cables, framed
 cables, cable connectors, terminals, hoppers, level emitters, other connectors; at most 2048), the block each cable
 connector faces (`facing`). The connector exposes all of them through Fabric's transfer API, so `SupplyContainers.find`
-around the Storehouse block lists the connector and drops its inventories; nothing is saved, the walk is done again on
+around the Storehouse block lists the connector and drops its inventories. A connector that joins any inventory an
+earlier one already joined is left out (B305: two connectors on one cable network both expose all of it), the ones
+joining most going first, then the nearest; nothing is saved, the walk is done again on
 every lookup. `Village.stashes` treats a connector as all its inventories: a chest of it listed in an earlier stash (a
 builder's own chests) turns the connector into its remaining chests one by one, so nothing counts twice across stashes.
 Every other job's lists still pass over Tom's blocks (`ModdedBlocks.STORAGE_NETWORK`) and read the chests themselves.
@@ -251,6 +281,26 @@ point of interest, its barrels to the Fisherman's and its beehives to the beehiv
 `CWPoi`, which puts their block states into the vanilla point-of-interest table), so those are swapped; its crafting
 tables are no job site, as the vanilla one isn't. Its campfires are left out (a campfire cooks; nothing in our builds
 needs a wooden one).
+
+37.17: the storage builds are drawn by `tools/blueprints/storage_halls.py`, each function drawing both versions from
+one plan so they have the same shape: the vanilla build to `structure/<name>.nbt` and the Tom's copy to
+`structure/modded/<name>.nbt`, the modded library's folder, so `ModdedLibrary` builds the copy when every block of it
+(Tom's and vanilla only) is installed, through the same choice and saved `library` entry as every other copy.
+`modded_library.py` leaves these three alone (`OWN_COPIES`). How the network joins them is 37.10's walk: the Hall's
+island touches its connector, and a framed cable under the floor runs to the counter's terminals (set into it with
+`pos=down`, reading the cable under them) and to a framed cable connector under each filing cabinet; the Nook's chests
+touch the connector; the Warehouse's racks stand on Inventory Trim set in the floor, which the connector's scan passes
+through, up a trim post to the loft. Every store stands within the Storehouse's reach (8 across, 4 up or down), so the
+vanilla builds' chests are its stores too. They are in `StarterBlueprints.STORAGE_HALLS` (and `ONE_TIER`), offered
+while `moddedStorageNetworks`'s expansion (M37) is open.
+
+Beds up a ladder (B304): vanilla claims a bed (`AcquirePoi`) only when it finds a path to it, and its paths have no
+ladders. When that path falls short, `BedLadders.pathUpALadder` (from `AcquirePoiMixin`) looks at the same free beds
+for one with a ladder within 8 blocks whose top comes up in the bed's room (a walk on the bed's floor from the ladder's
+top to the bed: nothing taller than a step underfoot, nothing at head height, doors open) and whose foot the villager
+can walk to; that bed is claimed as vanilla claims any. At bedtime `BedLadders` takes the villager to the foot of a
+ladder that comes up in his bed's room, before any nearer one that doesn't (when none does, the nearest, as before).
+Nothing is saved.
 
 ## 3. Switches
 
@@ -344,6 +394,11 @@ rides, which can't be summoned.
   the plain boot checks the pack as players get it. The nightly workflow runs both. The order is set in the config
   file before the boot, as a server owner would, and the file is put back afterwards.
 
+- 37.17: the Tom's versions of the storage builds come through the modded library rather than a style, so they follow
+  `moddedLibrary` and `furnishedBuilds` like every other modded copy, and a player doesn't pick them: a server with Tom's
+  builds them, one without builds the vanilla ones. The Warehouse joins its racks with one connector and Inventory Trim
+  rather than a connector per rack, because two connectors on one cable network would each be read as the whole store.
+
 ## 7. Known limits
 
 - The M34 workshops other than the Print Shop (the Tailor's and Jeweler's) and the other workplaces keep their vanilla
@@ -373,6 +428,14 @@ rides, which can't be summoned.
 
 ## 8. Proof
 
+B304: `TerraceSleepGameTests.aVillagerOfTheWestHomeClimbsItsLadderNotTheEastOnesAndSleeps` (his bed in the west
+home, he stands by the east home's ladder at bedtime), `TerraceSleepGameTests.aVillagerWithoutABedTakesAFreeOneNextDoorAndSleeps`
+(the east home's beds someone else's: he claims a west one and sleeps in it), both failing before the fix; with
+Handcrafted (compat) `TerraceSleepCompatTests.aVillagerWithoutABedTakesAFreeFancyBedNextDoorAndSleeps`. Showcase scene
+`terrace_sleep`.
+B300: `FloatingFurnishingsGameTests.noFurnishedBlueprintHasAFloatingPiece` (every furnished blueprint, vanilla and
+with one-block tables), `FloatingFurnishingsGameTests.aPotOnALowerTableSitsOnIt`,
+`FloatingFurnishingsGameTests.aBuiltFurnishedHomeHasNothingFloating`, `FloatingFurnishingsGameTests.aPieceLeftOnNothingIsSetDown`.
 GameTests: `FurnishingConfigGameTests.furnitureModsKeepTheirOrderAndAreCleaned` (the default order, cleaning, an empty
 and a missing list, the list off the screen and in the saved file), `FurnishingConfigGameTests.theM37GateHoldsItsSwitches`
 (a player's file can't turn them on with the gate closed; with it open they obey the file), and
@@ -461,7 +524,9 @@ cable connector, whose chest the network joins: the connector stays the only sto
 `TomsStorageCompatTests.theSixteenthBarrelIsOutOfTheConnectorsRange` (in a row of 16 barrels from the connector, it
 joins the 15 within its 16-block range, as Tom's own connector does, and not the 16th).
 `TomsStorageCompatTests.anotherConnectorIsntJoined` (a second inventory connector touching a network chest isn't one
-of its inventories). Both classes check the store list is nearest first.
+of its inventories, and the Storehouse reads the shared chest through the network's connector only, B305).
+B305: `TomsStorageCompatTests.twoConnectorsOnOneNetworkCountEachChestOnce` (a second connector on the same cables: the
+store is one connector, each item counted once, the board links 3 blocks, a withdrawal of 12 planks leaves 8). Both classes check the store list is nearest first.
 Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
 the board's line and Tom's terminal screen.
 37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and
@@ -493,3 +558,12 @@ only the planned one, not furniture, the other order, a save and reload), `aBuil
 each too, and CobbleFurnies first), `neitherGivesTheStandInOrTheWait`, `theMaterialListNamesTheChairOnce` and
 `aBuilderBuildsTheChairInTheChest` (a builder planned with Handcrafted's chair builds CobbleFurnies' from the chest,
 facing south, and the finished building keeps it). Showcase scene `furniture_any_mod` (`-Pfurniture=true -Pcobblemon=true`).
+37.17 (no mods): `StorageHallGameTests.theStorageBuildsAreAtTheTableAsVanillaBuilds`,
+`StorageHallGameTests.withMilestone37ClosedTheyAreHidden`, `StorageHallGameTests.aBuilderBuildsTheTerminalNookAsAStorehouse`,
+`StorageHallGameTests.aBuilderBuildsTheStorageHallAsAStorehouse`, `StorageHallGameTests.aBuilderBuildsTheWarehouseAsAStorehouse`
+(each built from barrels of exactly its materials, nothing skipped, its Storehouse a job site and every chest and barrel
+of it in the store); with Tom's (compat): `StorageHallsCompatTests.withTomsTheStorageBuildsUseTheirTomsCopies`,
+`StorageHallsCompatTests.aBuilderBuildsTheTerminalNookOnTomsNetwork`, `StorageHallsCompatTests.aBuilderBuildsTheStorageHallOnTomsNetwork`,
+`StorageHallsCompatTests.aBuilderBuildsTheWarehouseOnTomsNetwork` (nothing skipped, the connector joins 6, 29 and 60
+inventories, the Storehouse reads the connector and counts each item once, the terminal opens Tom's menu listing them).
+Showcase scene `storage_hall` (`-Pfurniture=true -Pcobblemon=true`).

@@ -233,6 +233,7 @@ public class GolemSmithGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		helper.setBlock(chestPos, Blocks.CHEST);
 		Villager farmer = helper.spawn(EntityType.VILLAGER, new BlockPos(16, 2, 10));
 		farmer.setVillagerData(farmer.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER));
+		farmer.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 		farmer.setNoAi(true); // the golem's field: the farmer looks on
 		farmer.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), helper.absolutePos(composter)));
 		ModAttachments.FARM_FIELD.set(farmer, new io.github.jcondedata.aliveworkplace.farm.FieldJob(

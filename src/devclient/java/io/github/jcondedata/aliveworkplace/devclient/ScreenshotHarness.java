@@ -164,6 +164,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<BuilderListScene> builderList = new Lazy<>(() -> new BuilderListScene());
 	private final Lazy<BuilderTableMoveScene> builderTableMove = new Lazy<>(() -> new BuilderTableMoveScene());
 	private final Lazy<TerraceGradeScene> terraceGrade = new Lazy<>(() -> new TerraceGradeScene());
+	private final Lazy<TerraceSleepScene> terraceSleep = new Lazy<>(() -> new TerraceSleepScene());
 	private final Lazy<PokemonCenterScene> pokemonCenter = new Lazy<>(() -> new PokemonCenterScene());
 	private final Lazy<ArenaScene> arena = new Lazy<>(() -> new ArenaScene());
 	private final Lazy<PokemonBuildsScene> pokemonBuilds = new Lazy<>(() -> new PokemonBuildsScene());
@@ -176,6 +177,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<ModdedStorehouseScene> moddedStorehouse = new Lazy<>(() -> new ModdedStorehouseScene());
 	private final Lazy<CarvedStylesScene> carvedStyles = new Lazy<>(() -> new CarvedStylesScene());
 	private final Lazy<ModdedLibraryScene> moddedLibrary = new Lazy<>(() -> new ModdedLibraryScene());
+	private final Lazy<StorageHallScene> storageHall = new Lazy<>(() -> new StorageHallScene());
 	private final Lazy<VillageHallBuildScene> villageHallBuild = new Lazy<>(() -> new VillageHallBuildScene());
 	private final Lazy<BuildFixesScene> buildFixes = new Lazy<>(() -> new BuildFixesScene());
 	private final Lazy<RealmBuildsScene> realmBuilds = new Lazy<>(() -> new RealmBuildsScene());
@@ -411,6 +413,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			moddedLibrary.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("storage_hall".equals(System.getProperty("aliveworkplace.scene"))) {
+			storageHall.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("village_habitat".equals(System.getProperty("aliveworkplace.scene"))) {
 			villageHabitat.get().tick(mc, mc.getSingleplayerServer());
 			return;
@@ -425,6 +431,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("terrace_grade".equals(System.getProperty("aliveworkplace.scene"))) {
 			terraceGrade.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("terrace_sleep".equals(System.getProperty("aliveworkplace.scene"))) {
+			terraceSleep.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_land".equals(System.getProperty("aliveworkplace.scene"))) {

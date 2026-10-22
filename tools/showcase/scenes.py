@@ -1111,6 +1111,10 @@ SCENES = [
     job("create_builds", "Create", "The Watermill, the Windmill and the Workshop, their machines turning",
         "the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
         120, create=True),
+    # More Create builds (ROADMAP 39.8, with Create): the Brass Foundry, Sawmill, Crushing Mill, Greenhouse, Clock Tower and Pump House, every machine turning
+    job("create_builds_more", "Create", "Six more Create builds, their machines turning",
+        "the six builds' wheels turned, and with them the Brass Foundry's mixer, the Sawmill's saws, the Crushing Mill's wheels, the Greenhouse's belt, the Clock Tower's cuckoo clock and the Pump House's pump",
+        120, create=True),
     # Trains link villages (ROADMAP 39.7, 39.7a, 39.7b and 39.7d, with Create): two Train Stations, track between them, the train built by a builder, its Conductor in the seat calling the stop, and the caravan's goods in its chest
     job("village_train", "Create", "Trains link villages: the builder's train, its Conductor, the goods in its chest",
         "Thornholm's builder built the train, its Conductor took the seat, and the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
@@ -1181,6 +1185,12 @@ SCENES = [
            ("20_manor", "The Noble's Manor: a stone house round a hall with a grand stair, slate roof and dormers"),
            ("23_manor_2_back", "Manor II: the walled formal garden, its hedges, fountain and gravel walks"),
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
+    # B304: in the Terrace (two homes, each bedroom up a ladder) a villager without a bed takes a free one next door
+    S("terrace_sleep", "Build families", "A free bed up the Terrace's other ladder: claimed, climbed to and slept in",
+      "the villager without a bed claimed a free bed of the Terrace's west home, climbed its ladder and slept in it; the neighbours slept in the east home", 90,
+      [("01_dusk", "Dusk: the east home's beds are the neighbours', a villager without a bed by its door"),
+       ("02_ladder", "He has claimed a free bed next door and climbs the west home's ladder"),
+       ("03_asleep", "Asleep in the west home's bedroom")]),
     # Furnished homes (ROADMAP 37.4): Starter Cottage II as a server with the pack's furniture mods builds it, room by room
     # B260: and the owner's Stone House, its way in clear and its attic a bedroom
     # B281: and the Terrace's two kitchens. Four stills on the card (the selftest's 2-4, B272): the owner's B260 and B281
@@ -1226,6 +1236,15 @@ SCENES = [
            ("02_modded_cottage", "The modded cottage: Supplementaries daub for the plaster, braced beside the posts"),
            ("04_modded_cottage_inside", "Inside: Chipped herringbone floors, Handcrafted furniture and crockery, Carved Wood chests"),
            ("05_modded_inn", "The Inn II from the modded library")], cobblemon=True, furniture=True),
+    # The storage builds (ROADMAP 37.17, with Tom's Simple Storage): the Storage Hall, the Terminal Nook and the Warehouse
+    # built of Tom's blocks, and the vanilla Storage Hall beside them
+    S("storage_hall", "Porter", "Storage builds with Tom's Simple Storage: the Storage Hall, the Terminal Nook and the Warehouse",
+      "the three storage builds stand built of Tom's Simple Storage, their inventory connectors joining 29, 6 and 60 chests, barrels and cabinets, and the vanilla Storage Hall beside them has none of Tom's blocks",
+      50, [("01_halls", "The Storage Hall without Tom's (left) and with it (right)"),
+           ("02_hall_counter", "The counter by the door: a storage terminal and a crafting terminal either side of the Storehouse"),
+           ("04_nook_inside", "The Terminal Nook: six chests round the connector, the terminal before it"),
+           ("06_warehouse_inside", "The Warehouse: racks of chests and barrels on Inventory Trim, the crafting terminal at the counter")],
+      cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
     S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
       "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",

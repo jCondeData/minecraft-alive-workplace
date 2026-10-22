@@ -706,7 +706,7 @@ public final class VillageHallScreen {
 				lore.add(line(have > 0 ? Component.translatable("screen.aliveworkplace.hall.quest_hand_in", Math.min(have, quest.left()))
 					: Component.translatable("screen.aliveworkplace.hall.quest_none_on_you"), have > 0 ? ChatFormatting.YELLOW : ChatFormatting.DARK_GRAY));
 			}
-			case SLAY -> lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_slay_hint", VillageHalls.RADIUS), ChatFormatting.YELLOW));
+			case SLAY -> lore.add(line(Foes.hint(VillageHalls.RADIUS), ChatFormatting.YELLOW));
 			case BATTLE -> lore.add(line("screen.aliveworkplace.hall.quest_battle_hint", ChatFormatting.YELLOW));
 		}
 	}

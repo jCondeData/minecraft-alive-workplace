@@ -22,7 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  *   <li>under Curfew a villager kept in rests from dusk to dawn whatever their schedule says (30.9, {@code hall/Curfew});</li>
  *   <li>under Conscription (30.10, {@code hall/Conscription}) a conscript in a fight stays out of the schedule's hands,
  *   and the one work gate: a villager whose work a raid has stopped leaves the WORK activity, every behaviour of it
- *   stops (our jobs' and vanilla's alike), and the schedule can't send them back until the gate opens.</li>
+ *   stops (our jobs' and vanilla's alike), and the schedule can't send them back until the gate opens;</li>
+ *   <li>a settler called to the hall for a colony, or walking out to it, is kept off work the same way (B295,
+ *   {@code colony/Settlers.called}): a volunteer at his workstation went on working and never came to the muster.</li>
  * </ul>
  * The schedule check is of the villager whose brain runs now ({@code WorkerLimits.thinker}).
  */
@@ -45,7 +47,7 @@ abstract class BrainMixin {
 		}
 		Brain<?> self = (Brain<?>) (Object) this;
 		if (self.getSchedule().getActivityAt((int) (dayTime % 24000L)) == Activity.WORK
-			&& io.github.jcondedata.aliveworkplace.hall.Conscription.workStopped(villager)) {
+			&& offWork(villager)) {
 			if (!self.isActive(Activity.IDLE)) {
 				self.setActiveActivityIfPossible(Activity.IDLE);
 			}
@@ -53,10 +55,16 @@ abstract class BrainMixin {
 		}
 	}
 
+	/** The work gate: a raid has stopped this villager's work, or he is a settler answering the muster. */
+	private static boolean offWork(Villager villager) {
+		return io.github.jcondedata.aliveworkplace.colony.Settlers.called(villager)
+			|| io.github.jcondedata.aliveworkplace.hall.Conscription.workStopped(villager);
+	}
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Inject(method = "tick", at = @At("HEAD"))
 	private void aliveworkplace$raidWorkGate(ServerLevel level, LivingEntity entity, CallbackInfo ci) {
-		if (!(entity instanceof Villager villager) || !io.github.jcondedata.aliveworkplace.hall.Conscription.workStopped(villager)) {
+		if (!(entity instanceof Villager villager) || !offWork(villager)) {
 			return;
 		}
 		Brain<?> self = (Brain<?>) (Object) this;

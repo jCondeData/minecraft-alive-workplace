@@ -481,6 +481,62 @@ public class TomsStorageCompatTests implements FabricGameTest {
 				+ ", wanted the two chests and the cabinet, not the other connector");
 			// Tom's own connector agrees: the chest's cobblestone once.
 			assertCount(helper, List.of(helper.absolutePos(CONNECTOR)), Items.COBBLESTONE, 10);
+			// B305: the Storehouse reads the shared chest through one connector only, the one joining the whole network.
+			List<BlockPos> store = SupplyContainers.find(level, helper.absolutePos(STOREHOUSE), null);
+			helper.assertTrue(store.equals(List.of(helper.absolutePos(CONNECTOR))), "the store: " + rel(helper, store) + ", wanted the network's connector alone");
+			assertCount(helper, store, Items.COBBLESTONE, 10);
+			// Nothing left for later batches' porters and builders to find.
+			helper.setBlock(second, Blocks.AIR);
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B305: a second inventory connector on the same cables exposes the same network, so the Storehouse lists only one
+	 * of the two connectors: each chest's items count once, the board links three blocks, and a withdrawal takes them
+	 * once.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"toms_two_heads"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "toms_two_heads")
+	public void twoConnectorsOnOneNetworkCountEachChestOnce(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		network(helper, false);
+		// On the first cable, touching nothing else: nearer the Storehouse than the first connector.
+		BlockPos second = new BlockPos(14, 2, 14);
+		helper.setBlock(second, block("inventory_connector"));
+		BlockPos at = helper.absolutePos(second);
+		level.setBlock(at, Block.updateFromNeighbourShapes(level.getBlockState(at), level, at), Block.UPDATE_ALL);
+		put(helper, CHEST_1, new ItemStack(Items.COBBLESTONE, 10));
+		put(helper, CHEST_2, new ItemStack(Items.OAK_PLANKS, 20));
+		put(helper, CABINET, new ItemStack(Items.IRON_SWORD));
+		BlockPos storehouse = helper.absolutePos(STOREHOUSE);
+		helper.runAfterDelay(40, () -> {
+			// Both connectors stand for the whole network, as Tom's own storage shows.
+			helper.assertTrue(StorageNetworks.members(level, at).equals(StorageNetworks.members(level, helper.absolutePos(CONNECTOR))),
+				"the two connectors join " + rel(helper, List.copyOf(StorageNetworks.members(level, at))) + " and "
+					+ rel(helper, List.copyOf(StorageNetworks.members(level, helper.absolutePos(CONNECTOR)))));
+			assertCount(helper, List.of(at), Items.COBBLESTONE, 10);
+			assertCount(helper, List.of(helper.absolutePos(CONNECTOR)), Items.COBBLESTONE, 10);
+
+			List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+			helper.assertTrue(store.size() == 1 && (store.contains(at) || store.contains(helper.absolutePos(CONNECTOR))),
+				"the store: " + rel(helper, store) + ", wanted one of the two connectors");
+			assertCount(helper, store, Items.COBBLESTONE, 10);
+			assertCount(helper, store, Items.OAK_PLANKS, 20);
+			assertCount(helper, store, Items.IRON_SWORD, 1);
+
+			ServerPlayer player = helper.makeMockServerPlayerInLevel();
+			PartnerShowsCompatTests.after(helper, () -> level.getServer().getPlayerList().remove(player));
+			player.teleportTo(storehouse.getX() + 0.5, storehouse.getY(), storehouse.getZ() - 1.5);
+			Component line = connectorLine(info(player, helper));
+			helper.assertTrue(line != null && String.valueOf(((TranslatableContents) line.getContents()).getArgs()[0]).equals("3"),
+				"the board's connector line: " + line + ", wanted 3 blocks");
+
+			// A withdrawal takes 12 planks once: 8 are left in the chest.
+			helper.assertTrue(SupplyContainers.extract(level, store, Items.OAK_PLANKS, 12) == 12, "took no planks");
+			assertCount(helper, List.of(helper.absolutePos(CHEST_2)), Items.OAK_PLANKS, 8);
+			assertCount(helper, SupplyContainers.find(level, storehouse, null), Items.OAK_PLANKS, 8);
 			// Nothing left for later batches' porters and builders to find.
 			helper.setBlock(second, Blocks.AIR);
 			helper.succeed();

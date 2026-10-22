@@ -145,6 +145,7 @@ public class MegaStoneCompatTests implements FabricGameTest {
 		Villager v = helper.spawn(EntityType.VILLAGER, at);
 		v.setNoAi(true);
 		v.setVillagerData(v.getVillagerData().setProfession(job).setLevel(level));
+		v.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 		return v;
 	}
 

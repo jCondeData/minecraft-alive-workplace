@@ -27,6 +27,9 @@ when a new one goes up. Open the hall and click the **Quests** button (the map i
 - **Bring something**: what one of the workers is waiting for, food when the store runs low, or something the village
   can use. Click the quest to hand it in: it goes straight to the worker who asked, or to the store.
 - **Clear out monsters**: slay 8 monsters round the village.
+  Bandits and raiders count too. In a world with no monsters (Peaceful, or a pack that removes them, as Cobbleverse
+  does) it reads **Defeat 8 wild Pokémon** instead, and wild Pokémon you battle or catch near the hall count; without
+  Cobblemon either, the hall asks for bread instead.
 - **Beat a trainer** (with Cobblemon): win a battle against one of the village's trainers.
 
 Monsters and battles count anywhere in the village.

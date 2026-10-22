@@ -287,6 +287,7 @@ public class PriceBoardGameTests implements FabricGameTest {
 			Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(4 + 2 * i, 2, 4));
 			v.setNoAi(true);
 			v.setVillagerData(v.getVillagerData().setProfession(ModVillagers.LUMBERJACK));
+			v.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 			v.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(4 + 2 * i, 1, 4))));
 		}
 		ServerPlayer player = player(helper);

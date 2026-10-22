@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.work;
 
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.Set;
@@ -16,7 +17,10 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
  * Blocks that became workstations in ROADMAP 21.1a (a crafting table, a jukebox, a Mailbox, a Blueprint Table) or 21.1c
  * (Cobblemon's Fossil Analyzer) and were placed before it, in a world saved by an older version: the game files a
  * block's workstation when it's placed, and when a chunk loads it only looks at a section's blocks again if the section
- * had no workstation or bed records at all. So
+ * had no workstation or bed records at all. The same goes for every other mod's block that is a workstation of ours
+ * (CobbleFurnies' Furni Crafter, Create's Toolbox and Train Station, Cobblemon's Campfire Pot and Pasture): a player's
+ * blocks placed before the update that made them one, or while our mod was off, had no record (bug B302: the hall's
+ * Free job blocks never listed a Furni Crafter standing in a house). So
  * when a section is loaded, the blocks of these kinds it holds that have no record yet get one (called from the game's
  * own check, mixin/PoiManagerMixin).
  */
@@ -25,7 +29,17 @@ public final class NewWorkstations {
 
 	private static boolean added(BlockState state) {
 		return ADDED.contains(state.getBlock()) || state.getBlock().builtInRegistryHolder().is(ModVillagers.FOSSIL_ANALYZER_BLOCK)
-			|| state.getBlock().builtInRegistryHolder().is(ModVillagers.HEALING_MACHINE_BLOCK); // 28.7
+			|| state.getBlock().builtInRegistryHolder().is(ModVillagers.HEALING_MACHINE_BLOCK) // 28.7
+			|| othersBlockOurWorkstation(state); // B302
+	}
+
+	/** Whether {@code state} is another mod's block that is a workstation of ours (registered with whenBlockRegistered). */
+	private static boolean othersBlockOurWorkstation(BlockState state) {
+		if (state.getBlock().builtInRegistryHolder().key().location().getNamespace().equals(AliveWorkplace.MOD_ID)) {
+			return false;
+		}
+		return PoiTypes.forState(state).flatMap(net.minecraft.core.Holder::unwrapKey)
+			.map(key -> key.location().getNamespace().equals(AliveWorkplace.MOD_ID)).orElse(false);
 	}
 
 	public static void fillMissing(PoiManager poi, SectionPos section, LevelChunkSection blocks) {

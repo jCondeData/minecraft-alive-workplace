@@ -88,6 +88,7 @@ public class TailorGameTests implements FabricGameTest {
 		Villager v = helper.spawn(EntityType.VILLAGER, STANDING);
 		v.setNoAi(true);
 		v.setVillagerData(v.getVillagerData().setProfession(ModVillagers.TAILOR).setLevel(level));
+		v.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 		v.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(LOOM)));
 		return v;
 	}

@@ -418,6 +418,13 @@ public final class Builders {
 		if (!site.missing().isEmpty()) {
 			text.append(Component.literal("\n  "));
 			text.append(Component.translatable("message.aliveworkplace.status.needs", formatMissing(site, 6)).withStyle(ChatFormatting.YELLOW));
+			// B297: a Storehouse about that he doesn't count, and why (too far, not his village's, no chest it can read)
+			Village.UnusedStore unused = villager == null || supplyBench.isEmpty() ? null
+				: Village.unusedStorehouse(level, villager, supplyBench.get(), plan.supplyExclude());
+			if (unused != null) {
+				text.append(Component.literal("\n  "));
+				text.append(unusedStoreLine(unused).copy().withStyle(ChatFormatting.GOLD));
+			}
 		}
 		if (site.skipped() > 0) {
 			text.append(Component.literal("\n  "));
@@ -439,6 +446,18 @@ public final class Builders {
 		}
 		appendCancel(text, site);
 		return text;
+	}
+
+	/** B297: "Not counting the Storehouse at 10 64 -3: …", the reason in the player's words. */
+	static Component unusedStoreLine(Village.UnusedStore unused) {
+		BlockPos p = unused.storehouse();
+		Component at = Component.literal(p.getX() + " " + p.getY() + " " + p.getZ());
+		return switch (unused.why()) {
+			case TOO_FAR -> Component.translatable("message.aliveworkplace.status.storehouse_far", at, unused.distance(), Village.RADIUS);
+			case NOT_SHARED -> Component.translatable("message.aliveworkplace.status.storehouse_not_shared", at,
+				unused.owner() != null ? Component.literal(unused.owner().name()) : Component.translatable("message.aliveworkplace.status.storehouse_village"));
+			case NO_CHESTS -> Component.translatable("message.aliveworkplace.status.storehouse_no_chests", at, SupplyContainers.RADIUS);
+		};
 	}
 
 	private static void appendCancel(MutableComponent text, BuildSite site) {

@@ -69,10 +69,17 @@ final class RealmBuildsScene {
 				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(3000);
-				for (int i = 0; i < PIECES.size(); i++) {
-					place(level, PIECES.get(i), origin(i));
-				}
 			});
+		}
+		// Each piece is placed half a second before the camera turns to it, not all eighteen at tick 20 (B289, as B248 did
+		// for the gallery): in showcase run 39638706972 the scene passed in about 95 s and the server then spun in vanilla's stop
+		// loop (MinecraftServer.stopServer -> ChunkMap.processUnloads) until the time limit, as the gallery did when it
+		// generated its whole row of far chunks in one task. Placed one at a time, a piece's chunks are already loaded
+		// around the camera, 40 blocks on from the one before.
+		int place = tick - (FIRST - 30);
+		if (place >= 0 && place % EACH == 0 && place / EACH < PIECES.size()) {
+			int i = place / EACH;
+			server.execute(() -> place(server.overworld(), PIECES.get(i), origin(i)));
 		}
 		if (tick % 20 == 0) {
 			// Slimes from the superflat world's slime chunks hop into the shots.

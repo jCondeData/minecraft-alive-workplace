@@ -192,6 +192,52 @@ public class PartnerShowsCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B277: the cue goes to the partner kept in the pasture by the workstation, not to a neighbour's partner that has
+	 * wandered a step nearer. In the partners_all scene the florist's Oddish, roaming by the composter's bin, took the
+	 * composter's show and the Grimer beside it never did one.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"partnerShowsOwn"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "partnerShowsOwn")
+	public void theCueGoesToThePartnerPasturedByTheWorkstation(GameTestHelper helper) {
+		clearLeftovers(helper);
+		showsOn(helper);
+		Villager builder = builder(helper);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		BlockPos by = helper.absolutePos(new BlockPos(1, 2, 6));
+		player.teleportTo(by.getX() + 0.5, by.getY(), by.getZ() + 0.5);
+		BlockPos own = PastureCompatTests.pasture(helper, new BlockPos(2, 2, 6));
+		BlockPos neighbours = PastureCompatTests.pasture(helper, new BlockPos(12, 2, 12));
+		var mine = PastureCompatTests.pastured(helper, own, player, "machop", Direction.NORTH);
+		var theirs = PastureCompatTests.pastured(helper, neighbours, player, "machop", Direction.NORTH);
+		BlockPos work = helper.absolutePos(WORK);
+		helper.runAfterDelay(20, () -> {
+			PokemonEntity a = byUuid(helper, mine.getUuid());
+			PokemonEntity b = byUuid(helper, theirs.getUuid());
+			// the neighbour's Machop stands right by the bench, the builder's own a few steps off by its pasture
+			BlockPos bench = helper.absolutePos(BENCH);
+			for (PokemonEntity e : List.of(a, b)) {
+				e.getNavigation().stop();
+				e.setDeltaMovement(Vec3.ZERO);
+			}
+			b.teleportTo(bench.getX() + 1.5, bench.getY(), bench.getZ() + 0.5);
+			a.teleportTo(own.getX() + 1.5, own.getY(), own.getZ() + 0.5);
+			PartnerShows.forget(builder);
+			helper.assertTrue(PartnerShows.cue(builder, "fetch", work, new ItemStack(Items.OAK_PLANKS)), "the fetch cued no show: " + PartnerShows.lastRefusal());
+			helper.assertTrue(PartnerShows.busy(a) && !PartnerShows.busy(b), "the show went to the neighbour's Machop ("
+				+ String.format(java.util.Locale.ROOT, "%.1f", Math.sqrt(b.distanceToSqr(Vec3.atCenterOf(bench)))) + " from the bench), not the one pastured by the bench ("
+				+ String.format(java.util.Locale.ROOT, "%.1f", Math.sqrt(a.distanceToSqr(Vec3.atCenterOf(bench)))) + " from it)");
+			helper.succeed();
+		});
+	}
+
+	private static PokemonEntity byUuid(GameTestHelper helper, java.util.UUID uuid) {
+		List<PokemonEntity> found = helper.getLevel().getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(48),
+			e -> e.getPokemon().getUuid().equals(uuid));
+		helper.assertTrue(found.size() == 1, "pastured Machops with that id: " + found.size());
+		return found.get(0);
+	}
+
 	/** No show with nobody within 48 blocks of the work, nor with partnerShows off. */
 	//$ gametest_ticks_batch AREA '200' '"partnerShowsBudget"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "partnerShowsBudget")

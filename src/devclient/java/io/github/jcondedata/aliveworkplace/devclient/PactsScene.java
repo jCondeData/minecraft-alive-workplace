@@ -160,26 +160,16 @@ final class PactsScene {
 		ServerLevel level = server.overworld();
 		server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(),
 			"place structure minecraft:village_plains 0 -60 0");
-		BlockPos spot = null;
-		for (int r = 2; r <= 16 && spot == null; r++) {
-			for (int dx = -r; dx <= r && spot == null; dx++) {
-				for (int dz = -r; dz <= r && spot == null; dz++) {
-					int top = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, dx, dz);
-					BlockPos below = new BlockPos(dx, top - 1, dz);
-					if (top <= -59 && (level.getBlockState(below).is(net.minecraft.world.level.block.Blocks.GRASS_BLOCK)
-						|| level.getBlockState(below).is(net.minecraft.world.level.block.Blocks.DIRT_PATH))) {
-						spot = below.above();
-					}
-				}
-			}
-		}
+		BlockPos spot = VillageGround.hallSpot(level); // open ground in front, where the player stands (B293)
 		ashford = spot != null ? spot : new BlockPos(4, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, 4, 4), 4);
 		level.setBlockAndUpdate(ashford, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.SOUTH));
 		ServerPlayer player = player(server);
 		player.setGameMode(GameType.SURVIVAL);
 		player.getInventory().clearContent();
-		int z = ashford.getZ() + 3;
+		int z = ashford.getZ() + VillageGround.FRONT;
 		player.teleportTo(level, ashford.getX() + 0.5, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ashford.getX(), z), z + 0.5, 180, 10);
+		Showcase.check(player.position().distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(ashford)) <= 64,
+			"the player stands by Ashford's hall, within reach of its screen");
 		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(ashford);
 		entity.setCustomName(Component.literal("Ashford"));
 		entity.setOwner(player.getUUID(), player.getGameProfile().getName());

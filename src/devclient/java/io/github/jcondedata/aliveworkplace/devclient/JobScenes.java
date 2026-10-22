@@ -1229,7 +1229,7 @@ final class JobScenes {
 			Showcase.check(contraptionBufferTakesVertices(), "Create's contraption buffer takes a quad written vertex by vertex, as Sodium writes one with shaders on (B231)");
 			List<BlockPos> machines = new java.util.ArrayList<>();
 			int x = -20;
-			for (StarterBlueprints.Entry entry : StarterBlueprints.CREATE_ONLY) {
+			for (StarterBlueprints.Entry entry : StarterBlueprints.FIRST_CREATE_BUILDS) {
 				BlockPos at = STATION.offset(x, 0, 4);
 				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
 					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
@@ -1240,6 +1240,36 @@ final class JobScenes {
 				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(4, 2, 4)
 					: entry == StarterBlueprints.WINDMILL ? new BlockPos(4, 2, 5) : new BlockPos(4, 3, 2)));
 				x += entry.size().getX() + 3;
+			}
+			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
+		}, null));
+		// More Create builds (ROADMAP 39.8, filmed with Create): the Brass Foundry, the Sawmill and the Crushing Mill in
+		// front, the Greenhouse, the Clock Tower and the Pump House behind them, set down as a builder leaves them, facing
+		// the camera. Water falls from each header tank through its wheel, and every machine turns: the mixer, the saws,
+		// the crushing wheels, the greenhouse's belt, the cuckoo clock and the pump.
+		SCENES.put("create_builds_more", new Job("the six builds' wheels turned, and with them the Brass Foundry's mixer, the Sawmill's saws, the Crushing Mill's wheels, the Greenhouse's belt, the Clock Tower's cuckoo clock and the Pump House's pump",
+			900, new Vec3(0.5, -40.0, -22.5), new Vec3(0.5, -54.0, 14.0), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
+			java.util.Map<StarterBlueprints.Entry, BlockPos> machine = java.util.Map.of(StarterBlueprints.BRASS_FOUNDRY, new BlockPos(8, 4, 8),
+				StarterBlueprints.SAWMILL, new BlockPos(4, 1, 4), StarterBlueprints.CRUSHING_MILL, new BlockPos(5, 2, 5),
+				StarterBlueprints.GREENHOUSE, new BlockPos(6, 1, 9), StarterBlueprints.CLOCK_TOWER, new BlockPos(6, 10, 1),
+				StarterBlueprints.PUMP_HOUSE, new BlockPos(6, 1, 4));
+			List<BlockPos> machines = new java.util.ArrayList<>();
+			for (int row = 0; row < 2; row++) {
+				List<StarterBlueprints.Entry> builds = StarterBlueprints.MORE_CREATE_BUILDS.subList(row * 3, row * 3 + 3);
+				int x = -(builds.stream().mapToInt(e -> e.size().getX() + 3).sum() - 3) / 2;
+				for (StarterBlueprints.Entry entry : builds) {
+					BlockPos at = STATION.offset(x, 0, 4 + row * 16);
+					level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+						new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+					BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), at,
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+					BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
+					io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, entry.id(), placement, player);
+					machines.add(at.offset(machine.get(entry)));
+					x += entry.size().getX() + 3;
+				}
 			}
 			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
 		}, null));
@@ -4013,9 +4043,12 @@ final class JobScenes {
 			Container c = chest(level, chestPos(), new ItemStack(cobblemonItem("oran_berry"), 6), new ItemStack(cobblemonItem("cheri_berry"), 6),
 				new ItemStack(cobblemonItem("surprise_mulch"), 6));
 			place(level, new BlockPos(-4, -60, -3), ModBlocks.VILLAGE_HALL);
+			// B292: watered farmland, as on a real berry farm. Dry farmland with nothing on it turns to dirt at a random
+			// tick (about a minute), so a row she hadn't planted yet could dry up and the plot never filled.
+			level.setBlockAndUpdate(new BlockPos(4, -61, -1), Blocks.WATER.defaultBlockState());
 			for (int x = 2; x <= 3; x++) {
 				for (int z = -2; z <= 0; z++) {
-					level.setBlockAndUpdate(new BlockPos(x, -61, z), Blocks.FARMLAND.defaultBlockState());
+					level.setBlockAndUpdate(new BlockPos(x, -61, z), Blocks.FARMLAND.defaultBlockState().setValue(net.minecraft.world.level.block.FarmBlock.MOISTURE, 7));
 				}
 			}
 			io.github.jcondedata.aliveworkplace.berry.BerryBreeders.setGoal(breeder, net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", "lum_berry"));
@@ -4026,11 +4059,19 @@ final class JobScenes {
 					return false;
 				}
 				int planted = 0;
+				StringBuilder beds = new StringBuilder();
 				for (int x = 2; x <= 3; x++) {
 					for (int z = -2; z <= 0; z++) {
-						planted += data.plantOf(l.getBlockState(new BlockPos(x, -60, z))) != null ? 1 : 0;
+						var plant = data.plantOf(l.getBlockState(new BlockPos(x, -60, z)));
+						planted += plant != null ? 1 : 0;
+						beds.append(' ').append(x).append(',').append(z).append('=')
+							.append(plant != null ? plant.getPath() : l.getBlockState(new BlockPos(x, -61, z)).getBlock().getDescriptionId());
 					}
 				}
+				// B292: on a timeout, say what the plot and the breeder were doing
+				var status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(breeder, l.getGameTime());
+				timeoutWhy = "planted " + planted + " of 6 (" + beds.toString().trim() + "), ripened " + ripened[0]
+					+ ", status " + (status == null ? "none" : status.line().getString()) + ", chest lum " + c.countItem(cobblemonItem("lum_berry"));
 				if (planted == 6 && !ripened[0]) {
 					// Cobblemon's growth takes in-game days: the plot is grown on the spot, with a mutation, so the scene ends.
 					ripened[0] = true;
@@ -7168,9 +7209,12 @@ final class JobScenes {
 			},
 			List.of(new Step("01_conscription_raid", -1, 0, (level, player) -> {
 					player.closeContainer();
-					// The raiders come over the field: zombies of the village's raid.
+					// The raiders come over the field: zombies of the village's raid, each a few steps in front of its
+					// conscript (B296: from 7 blocks out the guard beside the librarian reached and killed his raider and
+					// the builder's before the librarian landed a blow; every conscript fights at rest time, the
+					// ConscriptionGameTests rest-time test shows it).
 					for (int i = 0; i < 3; i++) {
-						var zombie = EntityType.ZOMBIE.spawn(level, new BlockPos(-4 + 4 * i, -60, -8), MobSpawnType.COMMAND);
+						var zombie = EntityType.ZOMBIE.spawn(level, new BlockPos(-4 + 4 * i, -60, -4), MobSpawnType.COMMAND);
 						zombie.addTag(io.github.jcondedata.aliveworkplace.guard.VillageRaids.TAG);
 						zombie.setPersistenceRequired();
 						zombie.setHealth(12f);

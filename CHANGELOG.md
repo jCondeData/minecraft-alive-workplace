@@ -17,6 +17,24 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+
+- Three storage builds at the Blueprint Table, each a Storehouse: the Storage Hall, the Terminal Nook and the Warehouse. With Tom's Simple Storage they are built of its blocks, every chest on one network with terminals to search it; without it, of plain chests and barrels (2.1, behind its expansion switch; 37.17).
+- With Create, six more working builds at the Blueprint Table: the Brass Foundry (a mixer over a basin and a blaze burner), the Sawmill (two saws on a belt), the Crushing Mill (a pair of crushing wheels), the Greenhouse (a glass house with farmland beds, a belt and a harvester-and-plough cart), the Clock Tower (a cuckoo clock turned by shafts up the tower) and the Pump House (a pump filling a fluid tank), each turned by a water wheel as soon as it's built.
+
+### Fixed
+
+- A Storehouse with two Tom's Simple Storage inventory connectors on one cable network now counts each chest once: before, each connector was read as the whole network, so every item there was counted twice (and a second connector touching one of the network's chests counted that chest twice too). It now reads the network through one connector (B305).
+- Villagers now sleep in the Terrace's beds. Its two homes each have their bedroom up a ladder: a villager without a bed now takes a free one there (before, villagers only claimed beds they could walk to, so the Terrace's stood empty while villagers stood about its rooms all night, on a chest even), and a villager coming home by the other home's door climbs his own home's ladder instead of the nearest one, where he couldn't reach his bed and gave it up. This holds for any bed up a ladder, furniture mods' beds included (B304).
+- The Village Hall's Free job blocks page now lets you choose any job a shared block offers: a composter says "Composter: 4 jobs" and lists Farmer, Orchard Keeper, Florist and Composter; click it, pick the job, then who takes it, and they become that job (before, every composter or lectern was only ever offered as its first job). Blocks of one kind in one building are now one line with a count ("Fisherman ×4", "In the Storehouse Shed") instead of a pile of identical lines (B303).
+- The Village Hall no longer asks you to "Clear out 8 monsters" in a world where none can come (Peaceful, or a pack that removes them, as Cobbleverse's MobsBeGone does). With Cobblemon the quest becomes "Defeat 8 wild Pokémon" and the wild Pokémon you battle or catch near the hall count; bandits and raiders count everywhere. With neither, the hall asks for bread instead, reform steps too, and a stuck quest already up is swapped for one you can finish (B301).
+- Builders no longer leave furnishings floating: a flower pot, candle or lantern that stood on a vanilla table is set down on the furniture mod's lower table that replaces it, a potted flower on a hillside gets a footing of dirt under it, and when a builder finishes a build, anything left resting on nothing is set down on the block under it (or dropped as an item if it can't stay) (B300).
+- A CobbleFurnies Furni Crafter placed before the update that added the Furnicrafter now shows on the Village Hall's Free job blocks page and can be given to a jobless villager: when its chunk loads it becomes a job block, as do Create's Toolboxes and Train Stations and Cobblemon's Campfire Pots and Pastures placed before they were ones (B302).
+- A builder at the Builder's Workshop's table now counts and takes the Storehouse's chests when the Storehouse has a Blueprint Table of its own beside them (with a builder at it, those chests counted as that builder's), and the village's own builder counts a Storehouse you placed. When his status says he needs something, it also says why a Storehouse nearby isn't counted: too far, not his village's, or no chest he can read (B297, B298, B299).
+- A colony settler who has a job now leaves his workstation when the muster calls him to the hall, instead of working on until the bell rings without him (B295).
+
+## 0.147.0 — 2026-10-21
+
+### Added
 - **Change any villager's job from the Village Hall** (36.18). Right-click a working villager in the hall's residents
   list and press **Change job**: pick any free job block in the village (or the Builder, at a free Blueprint Table), see the
   price (5 to 50 emeralds by their level, as at the Blueprint Table) and click again to pay. The new job and its block
@@ -52,6 +70,11 @@ asks for the steps, `latest.log` and any crash report).
   feeds the village's own Builder on your builds; before, the Storehouse counted only while his table stood by it. New:
   sneak-right-click a Blueprint Table with an empty hand next to a Builder to move him there without breaking the old one
   (or pick him for a free table on the Village Hall's free job blocks page); his status says which table he works at (B290).
+
+### Fixed
+- **A worker's partner show goes to the Pokémon pastured by their workstation** (B277). With two pastures close
+  together, a neighbour's Pokémon that wandered a step nearer (a florist's Oddish by the compost bin) used to take the
+  show, and the worker's own partner just stood by.
 
 ## 0.146.1 — 2026-10-20
 

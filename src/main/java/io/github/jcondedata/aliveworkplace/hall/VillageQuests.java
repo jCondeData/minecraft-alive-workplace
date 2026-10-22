@@ -25,7 +25,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -146,7 +145,7 @@ public final class VillageQuests {
 	public static Component task(Quest quest) {
 		return switch (quest.kind()) {
 			case BRING -> Component.translatable("quest.aliveworkplace.bring", quest.count(), quest.itemType().getDescription());
-			case SLAY -> Component.translatable("quest.aliveworkplace.slay", quest.count());
+			case SLAY -> Foes.line(quest.count()); // B301: "Defeat 8 wild Pokémon" where no monster can come
 			case BATTLE -> Component.translatable("quest.aliveworkplace.battle");
 		};
 	}
@@ -220,14 +219,28 @@ public final class VillageQuests {
 		quest.reform().ifPresent(r -> Reforms.stepDone(level, hall, entity, r, player));
 	}
 
-	/** A player killed something: it counts towards the quests it matches (the engine's), and a monster towards reform steps. */
+	/** A player killed something: it counts towards the quests it matches (the engine's), and a foe ({@link Foes}) towards reform steps. */
 	public static void onKill(ServerLevel level, LivingEntity killed, DamageSource source) {
 		if (!(source.getEntity() instanceof ServerPlayer player)) {
 			return;
 		}
 		io.github.jcondedata.aliveworkplace.story.Stories.onKill(level, killed, player);
-		if (killed instanceof Enemy) {
+		if (Foes.isFoe(killed)) {
 			count(level, killed.blockPosition(), Kind.SLAY, player);
+		}
+	}
+
+	/**
+	 * {@code player} defeated or caught {@code pokemon} wild Pokémon at {@code where} (B301, from {@code compat/cobblemon}):
+	 * where no monster can come, each counts towards the clearing-out quests and reform steps there, as a kill would.
+	 */
+	public static void onWildDefeated(ServerLevel level, BlockPos where, ServerPlayer player, int pokemon) {
+		if (!Foes.countsWild(level)) {
+			return;
+		}
+		for (int i = 0; i < pokemon; i++) {
+			io.github.jcondedata.aliveworkplace.story.Stories.onWildDefeated(level, where, player);
+			count(level, where, Kind.SLAY, player);
 		}
 	}
 

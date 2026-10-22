@@ -489,8 +489,29 @@ public final class StarterBlueprints {
 	public static final Entry WATERMILL = new Entry(AliveWorkplace.id("watermill"), new Vec3i(11, 11, 9));
 	public static final Entry WINDMILL = new Entry(AliveWorkplace.id("windmill"), new Vec3i(9, 17, 9));
 	public static final Entry WORKSHOP = new Entry(AliveWorkplace.id("workshop"), new Vec3i(14, 10, 9));
+	/** The three Create-powered builds of 39.4. */
+	public static final List<Entry> FIRST_CREATE_BUILDS = List.of(WATERMILL, WINDMILL, WORKSHOP);
+	/**
+	 * More Create builds (ROADMAP 39.8; tools/blueprints/create_builds.py): the Brass Foundry (a water wheel geared up to
+	 * 32 RPM turning a mechanical mixer over a basin and a blaze burner, a belt out to a depot), the Sawmill (a water
+	 * wheel driving a belt through two mechanical saws to a depot) and the Crushing Mill (a water wheel turning a pair of
+	 * crushing wheels the opposite ways, a belt over the gap, a pit and an item drain under it).
+	 */
+	public static final Entry BRASS_FOUNDRY = new Entry(AliveWorkplace.id("brass_foundry"), new Vec3i(13, 14, 11));
+	public static final Entry SAWMILL = new Entry(AliveWorkplace.id("sawmill"), new Vec3i(15, 11, 12));
+	public static final Entry CRUSHING_MILL = new Entry(AliveWorkplace.id("crushing_mill"), new Vec3i(14, 12, 11));
+	/**
+	 * The Greenhouse (a glass house whose water wheel turns a belt down the aisle between farmland beds, a casing cart on
+	 * it with a harvester and a plough), the Clock Tower (a water wheel turning a cuckoo clock in the belfry through shafts up the tower)
+	 * and the Pump House (a water wheel's cogwheel turning a mechanical pump, pipes from a sump to a fluid tank).
+	 */
+	public static final Entry GREENHOUSE = new Entry(AliveWorkplace.id("greenhouse"), new Vec3i(15, 11, 13));
+	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(11, 19, 9));
+	public static final Entry PUMP_HOUSE = new Entry(AliveWorkplace.id("pump_house"), new Vec3i(14, 10, 9));
+	/** The builds of 39.8, in the order the Table shows them. */
+	public static final List<Entry> MORE_CREATE_BUILDS = List.of(BRASS_FOUNDRY, SAWMILL, CRUSHING_MILL, GREENHOUSE, CLOCK_TOWER, PUMP_HOUSE);
 	/** Built of Create's blocks: in the Blueprint Table (and the creative tab) only with Create and {@code createBuilds} on (mechanic/CreateBuilds). */
-	public static final List<Entry> CREATE_ONLY = List.of(WATERMILL, WINDMILL, WORKSHOP);
+	public static final List<Entry> CREATE_ONLY = java.util.stream.Stream.concat(FIRST_CREATE_BUILDS.stream(), MORE_CREATE_BUILDS.stream()).toList();
 	/**
 	 * The Train Station (ROADMAP 39.7; tools/blueprints/create_builds.py): a Create station beside a straight run of
 	 * track, a platform and a shelter. A village with one sends its caravans by train to another with one, once track is
@@ -568,6 +589,18 @@ public final class StarterBlueprints {
 		return new Entry(AliveWorkplace.id(name), new Vec3i(w, h, d), basement);
 	}
 
+	/**
+	 * The storage builds (ROADMAP 37.17; tools/blueprints/storage_halls.py), each a Storehouse: the Storage Hall (27 chests
+	 * and barrels round an inventory connector, terminals on a counter by the door, filing cabinets), the Terminal Nook
+	 * (a connector, six chests and a terminal; it fits beside a house) and the Warehouse (two floors of racks, a crafting
+	 * terminal, a loading bay with a handcart). Each has a Tom's Simple Storage copy in the modded library (37.12), built in
+	 * its place when Tom's is installed; without it, chests and barrels and no terminal.
+	 */
+	public static final Entry STORAGE_HALL = new Entry(AliveWorkplace.id("storage_hall"), new Vec3i(13, 14, 14));
+	public static final Entry TERMINAL_NOOK = new Entry(AliveWorkplace.id("terminal_nook"), new Vec3i(9, 10, 9));
+	public static final Entry WAREHOUSE = new Entry(AliveWorkplace.id("warehouse"), new Vec3i(19, 16, 16));
+	public static final List<Entry> STORAGE_HALLS = List.of(STORAGE_HALL, TERMINAL_NOOK, WAREHOUSE);
+
 	/** Drawn up by a village's scholars (Architecture research), not in the Blueprint Table: a stone hall with a bell tower. */
 	public static final Entry TOWN_HALL = new Entry(AliveWorkplace.id("research/town_hall"), new Vec3i(13, 16, 13));
 
@@ -597,7 +630,8 @@ public final class StarterBlueprints {
 		MANOR, MANOR_2, MANOR_3, MANOR_4);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
-	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY, CRAFTERS_WORKSHOP);
+	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY, CRAFTERS_WORKSHOP,
+		STORAGE_HALL, TERMINAL_NOOK, WAREHOUSE);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = java.util.stream.Stream.concat(
@@ -639,6 +673,7 @@ public final class StarterBlueprints {
 		put.accept("jewellers", List.of(JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2, JEWELLERS_WORKSHOP_3));
 		// M37, Furnished homes and modded storage
 		put.accept("crafters", List.of(CRAFTERS_WORKSHOP));
+		put.accept("moddedStorageNetworks", STORAGE_HALLS); // 37.17: the storage builds
 		// M38, Cobblemon depth
 		put.accept("villageMegas", MEGA_ONLY);
 		// M39, Create integration

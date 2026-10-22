@@ -40,6 +40,7 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	/** {@code villager} made a Builder of {@link Stewards#MIN_BUILDER_LEVEL}, as a Steward must be (27.1a). */
 	static Villager seasoned(Villager villager) {
 		villager.setVillagerData(villager.getVillagerData().setProfession(ModVillagers.BUILDER).setLevel(Stewards.MIN_BUILDER_LEVEL));
+		villager.refreshBrain((net.minecraft.server.level.ServerLevel) villager.level()); // the trade's brain, as the game gives one with every job (B307)
 		villager.setVillagerXp(70);
 		return villager;
 	}

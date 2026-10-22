@@ -19,6 +19,7 @@ asks for the steps, `latest.log` and any crash report).
 ### Added
 
 - Three storage builds at the Blueprint Table, each a Storehouse: the Storage Hall, the Terminal Nook and the Warehouse. With Tom's Simple Storage they are built of its blocks, every chest on one network with terminals to search it; without it, of plain chests and barrels (2.1, behind its expansion switch; 37.17).
+- With Create, six more working builds at the Blueprint Table: the Brass Foundry (a mixer over a basin and a blaze burner), the Sawmill (two saws on a belt), the Crushing Mill (a pair of crushing wheels), the Greenhouse (a glass house with farmland beds, a belt and a harvester-and-plough cart), the Clock Tower (a cuckoo clock turned by shafts up the tower) and the Pump House (a pump filling a fluid tank), each turned by a water wheel as soon as it's built.
 
 ### Fixed
 

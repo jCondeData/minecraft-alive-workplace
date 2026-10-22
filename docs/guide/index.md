@@ -221,6 +221,8 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
   [Stadium](stadium.md).
 - [Scaffolding](scaffolding.md): how builders climb to the tops of Wonders and other tall builds, and take it all
   down after.
+- [Create builds](create-builds.md): with Create, nine buildings with a working machine inside, from the Watermill
+  to the Clock Tower and the Pump House.
 - [Contraptions from a blueprint](create-contraptions.md): with Create, builders put a machine's moving parts in last,
   in order, and check it turns.
 - [Create schematics at the Blueprint Table](create-schematics.md): with Create, the schematics you upload at its

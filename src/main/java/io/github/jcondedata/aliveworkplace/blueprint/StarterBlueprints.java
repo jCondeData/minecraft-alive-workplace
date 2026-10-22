@@ -489,8 +489,29 @@ public final class StarterBlueprints {
 	public static final Entry WATERMILL = new Entry(AliveWorkplace.id("watermill"), new Vec3i(11, 11, 9));
 	public static final Entry WINDMILL = new Entry(AliveWorkplace.id("windmill"), new Vec3i(9, 17, 9));
 	public static final Entry WORKSHOP = new Entry(AliveWorkplace.id("workshop"), new Vec3i(14, 10, 9));
+	/** The three Create-powered builds of 39.4. */
+	public static final List<Entry> FIRST_CREATE_BUILDS = List.of(WATERMILL, WINDMILL, WORKSHOP);
+	/**
+	 * More Create builds (ROADMAP 39.8; tools/blueprints/create_builds.py): the Brass Foundry (a water wheel geared up to
+	 * 32 RPM turning a mechanical mixer over a basin and a blaze burner, a belt out to a depot), the Sawmill (a water
+	 * wheel driving a belt through two mechanical saws to a depot) and the Crushing Mill (a water wheel turning a pair of
+	 * crushing wheels the opposite ways, a belt over the gap, a pit and an item drain under it).
+	 */
+	public static final Entry BRASS_FOUNDRY = new Entry(AliveWorkplace.id("brass_foundry"), new Vec3i(13, 14, 11));
+	public static final Entry SAWMILL = new Entry(AliveWorkplace.id("sawmill"), new Vec3i(15, 11, 12));
+	public static final Entry CRUSHING_MILL = new Entry(AliveWorkplace.id("crushing_mill"), new Vec3i(14, 12, 11));
+	/**
+	 * The Greenhouse (a glass house whose water wheel turns a belt down the aisle between farmland beds, a casing cart on
+	 * it with a harvester and a plough), the Clock Tower (a water wheel turning a cuckoo clock in the belfry through shafts up the tower)
+	 * and the Pump House (a water wheel's cogwheel turning a mechanical pump, pipes from a sump to a fluid tank).
+	 */
+	public static final Entry GREENHOUSE = new Entry(AliveWorkplace.id("greenhouse"), new Vec3i(15, 11, 13));
+	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(11, 19, 9));
+	public static final Entry PUMP_HOUSE = new Entry(AliveWorkplace.id("pump_house"), new Vec3i(14, 10, 9));
+	/** The builds of 39.8, in the order the Table shows them. */
+	public static final List<Entry> MORE_CREATE_BUILDS = List.of(BRASS_FOUNDRY, SAWMILL, CRUSHING_MILL, GREENHOUSE, CLOCK_TOWER, PUMP_HOUSE);
 	/** Built of Create's blocks: in the Blueprint Table (and the creative tab) only with Create and {@code createBuilds} on (mechanic/CreateBuilds). */
-	public static final List<Entry> CREATE_ONLY = List.of(WATERMILL, WINDMILL, WORKSHOP);
+	public static final List<Entry> CREATE_ONLY = java.util.stream.Stream.concat(FIRST_CREATE_BUILDS.stream(), MORE_CREATE_BUILDS.stream()).toList();
 	/**
 	 * The Train Station (ROADMAP 39.7; tools/blueprints/create_builds.py): a Create station beside a straight run of
 	 * track, a platform and a shelter. A village with one sends its caravans by train to another with one, once track is

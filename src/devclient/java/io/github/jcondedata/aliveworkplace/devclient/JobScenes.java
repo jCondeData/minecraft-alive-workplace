@@ -1229,7 +1229,7 @@ final class JobScenes {
 			Showcase.check(contraptionBufferTakesVertices(), "Create's contraption buffer takes a quad written vertex by vertex, as Sodium writes one with shaders on (B231)");
 			List<BlockPos> machines = new java.util.ArrayList<>();
 			int x = -20;
-			for (StarterBlueprints.Entry entry : StarterBlueprints.CREATE_ONLY) {
+			for (StarterBlueprints.Entry entry : StarterBlueprints.FIRST_CREATE_BUILDS) {
 				BlockPos at = STATION.offset(x, 0, 4);
 				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
 					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
@@ -1240,6 +1240,36 @@ final class JobScenes {
 				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(4, 2, 4)
 					: entry == StarterBlueprints.WINDMILL ? new BlockPos(4, 2, 5) : new BlockPos(4, 3, 2)));
 				x += entry.size().getX() + 3;
+			}
+			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
+		}, null));
+		// More Create builds (ROADMAP 39.8, filmed with Create): the Brass Foundry, the Sawmill and the Crushing Mill in
+		// front, the Greenhouse, the Clock Tower and the Pump House behind them, set down as a builder leaves them, facing
+		// the camera. Water falls from each header tank through its wheel, and every machine turns: the mixer, the saws,
+		// the crushing wheels, the greenhouse's belt, the cuckoo clock and the pump.
+		SCENES.put("create_builds_more", new Job("the six builds' wheels turned, and with them the Brass Foundry's mixer, the Sawmill's saws, the Crushing Mill's wheels, the Greenhouse's belt, the Clock Tower's cuckoo clock and the Pump House's pump",
+			900, new Vec3(0.5, -40.0, -22.5), new Vec3(0.5, -54.0, 14.0), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
+			java.util.Map<StarterBlueprints.Entry, BlockPos> machine = java.util.Map.of(StarterBlueprints.BRASS_FOUNDRY, new BlockPos(8, 4, 8),
+				StarterBlueprints.SAWMILL, new BlockPos(4, 1, 4), StarterBlueprints.CRUSHING_MILL, new BlockPos(5, 2, 5),
+				StarterBlueprints.GREENHOUSE, new BlockPos(6, 1, 9), StarterBlueprints.CLOCK_TOWER, new BlockPos(6, 10, 1),
+				StarterBlueprints.PUMP_HOUSE, new BlockPos(6, 1, 4));
+			List<BlockPos> machines = new java.util.ArrayList<>();
+			for (int row = 0; row < 2; row++) {
+				List<StarterBlueprints.Entry> builds = StarterBlueprints.MORE_CREATE_BUILDS.subList(row * 3, row * 3 + 3);
+				int x = -(builds.stream().mapToInt(e -> e.size().getX() + 3).sum() - 3) / 2;
+				for (StarterBlueprints.Entry entry : builds) {
+					BlockPos at = STATION.offset(x, 0, 4 + row * 16);
+					level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+						new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+					BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), at,
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+					BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
+					io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, entry.id(), placement, player);
+					machines.add(at.offset(machine.get(entry)));
+					x += entry.size().getX() + 3;
+				}
 			}
 			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
 		}, null));

@@ -24,16 +24,19 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 
 /**
- * ROADMAP 39.4 without Create: the Watermill, the Windmill and the Workshop aren't at the Blueprint Table (their blocks
+ * ROADMAP 39.4 and 39.8 without Create: the Watermill, the Windmill, the Workshop, the Brass Foundry, the Sawmill, the
+ * Crushing Mill, the Greenhouse, the Clock Tower and the Pump House aren't at the Blueprint Table (their blocks
  * don't exist), they still load by id (a blueprint already handed out keeps working), they belong to {@code createBuilds},
  * and their text reads. With Create: {@code CreateBuildsCompatTests}.
  */
 public class CreateBuildsGameTests implements FabricGameTest {
-	/** Without Create the three builds are hidden at the Table (and so in the creative tab), and a build of no mod isn't. */
+	/** Without Create the nine builds are hidden at the Table (and so in the creative tab), and a build of no mod isn't. */
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void hiddenWithoutCreate(GameTestHelper helper) {
 		helper.assertTrue(!Platform.get().isModLoaded("create"), "this suite runs without Create");
+		helper.assertTrue(StarterBlueprints.CREATE_ONLY.containsAll(List.of(StarterBlueprints.BRASS_FOUNDRY, StarterBlueprints.SAWMILL,
+			StarterBlueprints.CRUSHING_MILL, StarterBlueprints.GREENHOUSE, StarterBlueprints.CLOCK_TOWER, StarterBlueprints.PUMP_HOUSE)), "39.8's builds aren't Create-only: " + StarterBlueprints.CREATE_ONLY);
 		List<ResourceLocation> listed = BlueprintLibrary.list(helper.getLevel().getServer(), false);
 		Language en = Language.getInstance();
 		for (StarterBlueprints.Entry entry : StarterBlueprints.CREATE_ONLY) {

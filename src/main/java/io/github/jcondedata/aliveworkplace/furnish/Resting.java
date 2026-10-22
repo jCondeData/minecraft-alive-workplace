@@ -33,7 +33,8 @@ import net.minecraft.world.level.block.state.BlockState;
  *
  * <p>Two nets: {@link #reseat} sets such a thing down on the furniture piece that took its spot's place, when that piece
  * is lower than the vanilla one (a fence-and-carpet table turned into a one-block modded table left the carpet's cell
- * air, and the pot on it one block up in the air); and {@link #settle}, once a builder's decoration stage is over, looks
+ * air, and the pot on it one block up in the air); and {@link #settle}, once a builder has levelled the ground (the end
+ * of LANDSCAPE, which fills the hollows a pot on a hillside grave stands over), looks
  * at what was placed and sets down (or drops, as an item) anything resting on nothing or that the game says can't stay.
  */
 public final class Resting {
@@ -138,7 +139,7 @@ public final class Resting {
 	}
 
 	/**
-	 * The builder's last look over a finished decoration stage: every block of {@code plan} that stands where it was
+	 * The builder's last look over a finished build (the end of LANDSCAPE): every block of {@code plan} that stands where it was
 	 * placed but rests on nothing is set down on the first block under it (within {@link #MAX_DROP}), or broken and
 	 * dropped as an item when there's none or it can't stay there. Returns how many were moved or dropped.
 	 */

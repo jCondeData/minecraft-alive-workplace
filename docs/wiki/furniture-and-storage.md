@@ -148,10 +148,11 @@ list show the library this server would build. Job blocks (lecterns, barrels, be
 never swapped, and nothing a copy adds holds items, so every job finds exactly the storage of the vanilla build.
 
 Nothing a builder furnishes floats (B300). A pot, candle or lantern that stood on a piece the furniture mod's piece
-doesn't reach up to (a fence-and-carpet table become a one-block table) is set down on the new piece, and when the
-decoration stage is over the builder looks over everything placed: a small thing left resting on nothing is set down
-on the first block under it, and anything the game says can't stay where it is (a wall torch with no wall) is broken
-and dropped as an item for the chests.
+doesn't reach up to (a fence-and-carpet table become a one-block table) is set down on the new piece. A small thing
+on the build's ground layer gets a footing of dirt where the ground under it is lower (a potted flower before a
+headstone on a hillside), as walls get theirs. And when the build is done (after the landscaping) the builder looks
+over everything placed: a small thing left resting on nothing is set down on the first block under it, and anything
+the game says can't stay where it is (a wall torch with no wall) is broken and dropped as an item for the chests.
 
 ## 2. How it works
 

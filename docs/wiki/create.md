@@ -6,9 +6,9 @@ contraptions built from a blueprint, Create schematics at the Blueprint Table an
 Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gate and the port in the test runtime
 (39.1), the Mechanic (39.2), villagers working the machines (39.3), the Create-powered builds (39.4), contraptions
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
-Conductor (39.7d); the full plan is the design note, docs/design/M39.md.
+Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, B189, B193, B231, B243, B244
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244
 
 ## What a player sees
 
@@ -46,6 +46,22 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   wheel drives a belt to a depot under a mechanical press (driven up a column of cogwheels from the belt's far
   pulley), with the armorer's blast furnace and the store chest. The water is placed last, so the wheels turn as
   soon as the builder is done; the builder starts the windmill's bearing the way a player does, with an empty hand.
+
+- **More Create builds** (39.8). Six more workplaces at the Blueprint Table, again only with Create, each driven by a
+  water wheel from a header tank like the Watermill's and turning as soon as it's built: the **Brass Foundry**, a brick
+  hall under a deepslate roof whose wheel turns a belt out to a depot and, geared up from 8 to 32 RPM through two
+  large-to-small cogwheel steps, a mechanical mixer over a basin and a blaze burner (the chef's mixer; a smoker as the
+  job block); the **Sawmill**, a timber mill with a log store whose belt runs through two mechanical saws to a depot
+  (fletching table); the **Crushing Mill**, an andesite-and-cobble mill whose two crushing wheels turn the opposite
+  ways through a gearbox train, Create's crusher working in the gap under a feed belt, a pit and an item drain below
+  (blast furnace); the **Greenhouse**, a glass house on a brick knee wall with a stepped glass roof on spruce
+  rafters, farmland beds watered by two channels, and a belt from the wheel down the aisle to a depot, a little cart
+  of andesite casing on it carrying a mechanical harvester and a mechanical plough (ready to be fixed to a
+  contraption: Create's harvester and plough only work moving) (composter); the **Clock Tower**, a stone tower with a
+  plastered belfry under a dark oak hip roof and a cuckoo clock in its front, turned by a shaft up the middle of the
+  tower from the wheel at its foot (cartography table; purely for show); and the **Pump House**, a small brick house
+  where the wheel's cogwheel turns a mechanical pump between an intake pipe over a four-source sump (it refills) and a
+  two-high fluid tank (cauldron). `createBuilds` lists and hides all nine.
 
 - **Contraptions from a blueprint** (39.5). Any blueprint with Create's moving parts in it (one of the three above, or
   a player's own machine saved with a Structure Block) is built in an order that keeps it whole:
@@ -274,7 +290,7 @@ showcase catalog).
 - `machineWork` (39.3): villagers (and the Mechanic) feed Create's machines. Off: nobody feeds a machine; a trip
   already under way waits, saved, until it's on again. Off for players until 2.3 ships, and does nothing without Create.
 
-- `createBuilds` (39.4, 39.5): the Watermill, the Windmill and the Workshop at the Blueprint Table and in the creative
+- `createBuilds` (39.4, 39.5, 39.8): the Watermill, the Windmill, the Workshop and 39.8's six builds at the Blueprint Table and in the creative
   tab, and the contraption order and turning check for builds started while it's on. Off: they aren't offered, and new
   builds go up layer by layer, unchecked; a blueprint already handed out and a site already started still build, in the
   order the site was made with. Off for players until 2.3 ships, and does nothing without Create.
@@ -424,7 +440,14 @@ tested (the GameTests use the table as the server does).
   `aBuilderBuildsTheWatermillAndItTurns`, `aBuilderBuildsTheWindmillAndStartsIt` and
   `aBuilderBuildsTheWorkshopAndItTurns`: built from barrels holding exactly their materials, nothing skipped, the job
   block a job site, and the millstone or press turning (its `Speed` read from its block entity data by name).
-- `CreateBuildsGameTests` (39.4, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
+- `CreateBuildsCompatTests` (39.8, with Create): `aBuilderBuildsTheBrassFoundryAndItTurns` (the mixer at 30 RPM or
+  more), `aBuilderBuildsTheSawmillAndItTurns` (both saws), `aBuilderBuildsTheCrushingMillAndItTurns` (the wheels the
+  opposite ways, the crusher valid), `aBuilderBuildsTheGreenhouseAndItTurns` (both belt pulleys; farmland, wheat, the
+  harvester and plough on their cart), `aBuilderBuildsTheClockTowerAndItTurns` (the cuckoo clock) and
+  `aBuilderBuildsThePumpHouseAndItTurns` (the pump; pipes and both tank blocks in place): each built from exact
+  materials, nothing skipped, the job block a job site, the machine's `Speed` read by name. Scene `create_builds_more`:
+  the six set down in two rows, every machine turning. Renders: `tools/blueprints/render/preview.sh greenhouse ...`.
+- `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,
   listed and built as drawn, not imported again), `aWrittenSchematicImportsItsFile` (the item used on the table; the

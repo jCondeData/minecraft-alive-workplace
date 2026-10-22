@@ -385,6 +385,219 @@ def crushing_mill():
     return b
 
 
+GLASS_FRAME = "stripped_spruce_log"
+
+
+def greenhouse():
+    """15 x 11 x 13 (ROADMAP 39.8): the Greenhouse. An eleven-square glass house on a stone-brick knee wall, framed in
+    stripped spruce, under a stepped glass roof on spruce rafters (one glass type: glass blocks); the water wheel on its
+    west wall (header tank and mill race as the Watermill's). Inside, beds of farmland watered by two channels, and down
+    the aisle between them a belt from the wheel's shaft, running to a depot by the front: the harvest line, with a
+    mechanical harvester and a mechanical plough set on it, ready to be fixed to a contraption (Create's harvester and
+    plough only work moving). The farmer's composter and the store chest in the back corner."""
+    b = Build(15, 11, 13)
+    x0, z0, x1, z1 = 3, 1, 13, 11
+    plinth(b, x0, z0, x1, z1, BRICK_WALL_MIX, floor="polished_andesite")
+    walls(b, x0, z0, x1, z1, 1, 1, MOSSY_BRICK_MIX)  # the knee wall
+    walls(b, x0, z0, x1, z1, 2, 3, "glass")
+    posts(b, [(3, 1), (6, 1), (10, 1), (13, 1), (3, 11), (6, 11), (10, 11), (13, 11),
+              (3, 4), (3, 8), (13, 4), (13, 8)], 1, 3, GLASS_FRAME)
+    beam_ring(b, x0, z0, x1, z1, 4, GLASS_FRAME)
+    for x in range(x0 + 1, x1):  # tie beams under the rafters
+        for z in (4, 8):
+            b.set(x, 4, z, GLASS_FRAME, axis="x")
+    # The roof: eaves of spruce stairs, then steps of glass up to a spruce ridge beam; rafters over the posts
+    rafters = (1, 4, 8, 11)
+    for z in range(0, 13):
+        stairs(b, 2, 4, z, SPRUCE, "east")
+        stairs(b, 14, 4, z, SPRUCE, "west")
+        for i in range(5):
+            y = 5 + i
+            for x in (3 + i, 13 - i):
+                if z in (0, 12):
+                    b.set(x, y, z, "spruce_planks")  # the verge boards
+                elif z in rafters:
+                    b.set(x, y, z, GLASS_FRAME, axis="z")
+                else:
+                    b.set(x, y, z, "glass")
+        b.set(8, 10, z, "spruce_log", axis="z")
+    for z in (1, 11):  # the gable ends: glass in the triangle, a king post up the middle
+        for i in range(1, 5):
+            for x in range(3 + i, 14 - i):
+                b.set(x, 4 + i, z, "glass")
+        for y in range(5, 10):
+            b.set(8, y, z, GLASS_FRAME, axis="y")
+    door(b, 8, 1, 1, "spruce_door", "south")
+    b.set(8, 4, 1, GLASS_FRAME, axis="x")
+    stairs(b, 8, 0, 0, STONE_BRICK, "south")
+    for x in (7, 9):
+        b.set(x, 0, 0, "stone_bricks")
+        lantern(b, x, 1, 0)
+        b.set(x, 1, 1, MOSSY_BRICK_MIX)
+    # The beds: farmland either side of the belt, a water channel through each
+    for z in range(3, 9):
+        b.set(4, 0, z, "water", level=0)
+        b.set(10, 0, z, "water", level=0)
+        for x in (5, 7, 8, 9, 11, 12):
+            b.set(x, 0, z, "farmland", moisture=7)
+            name, age = (("wheat", (x + z) % 4) if x in (5, 7, 8) else ("carrots" if x == 11 else "potatoes", (x * z) % 4))
+            b.set(x, 1, z, name, age=age)
+    b.set(4, 0, 9, "stone_bricks")
+    b.set(10, 0, 9, "stone_bricks")
+    # The drive: wheel, shaft through the wall, the belt down the aisle to the depot at the front
+    _header_tank(b, 1, 8, 3)
+    _wheel(b, 1, 1, 9)
+    for x in (3, 4, 5):
+        b.set(x, 1, 9, CREATE + "shaft", axis="x")
+    belt = dict(facing="north", slope="horizontal", casing=False, waterlogged=False)
+    b.set(6, 1, 9, CREATE + "belt", part="start", **belt)
+    for z in range(4, 9):
+        b.set(6, 1, z, CREATE + "belt", part="middle", **belt)
+    b.set(6, 1, 3, CREATE + "belt", part="end", **belt)
+    b.set(6, 1, 2, CREATE + "depot")
+    # A cart of andesite casing on the belt, a harvester on its front and a plough on its back (each held by its back)
+    b.set(6, 2, 8, CREATE + "andesite_casing")
+    b.set(6, 2, 7, CREATE + "mechanical_harvester", facing="north", waterlogged=False)
+    b.set(6, 2, 9, CREATE + "mechanical_plough", facing="south", waterlogged=False)
+    # The farmer's corner and the store
+    b.set(12, 1, 10, "composter", level=0)
+    b.set(11, 1, 10, "chest", facing="north", type="single", waterlogged=False)
+    b.set(12, 1, 9, "barrel", facing="up", open=False)
+    b.set(9, 1, 10, "hay_block", axis="y")
+    b.set(4, 1, 2, "potted_fern")
+    b.set(4, 0, 2, "polished_andesite")
+    lantern(b, 8, 3, 4, hanging=True)
+    lantern(b, 8, 3, 8, hanging=True)
+    b.fill_air()
+    return b
+
+
+CLOCK_STONE = Mix((6, "stone_bricks"), (2, "cracked_stone_bricks"), (2, "mossy_stone_bricks"), seed=401)
+CLOCK_PLASTER = Mix((9, "white_concrete"), (1, "polished_diorite"), seed=402)
+CLOCK_FRAME = "dark_oak_log"
+
+
+def clock_tower():
+    """11 x 19 x 9 (ROADMAP 39.8): the Clock Tower. A seven-square tower: a stone-brick shaft two storeys high, then a
+    plastered belfry storey framed in dark oak, under a dark oak hip roof; a cuckoo clock set in the front of the
+    belfry under a little stair hood. The water wheel at its foot on the west side (header tank and mill race as the
+    Watermill's) turns the clock: its shaft through the wall, gearboxes, a shaft straight up the middle of the tower and
+    one forward to the clock's back. Purely for show, with a cartographer's table and a chest by the door."""
+    b = Build(11, 19, 9)
+    x0, z0, x1, z1 = 3, 1, 9, 7
+    plinth(b, x0, z0, x1, z1, BRICK_WALL_MIX, floor="spruce_planks")
+    walls(b, x0, z0, x1, z1, 1, 8, CLOCK_STONE)
+    walls(b, x0, z0, x1, z1, 9, 12, CLOCK_PLASTER)
+    posts(b, [(3, 1), (9, 1), (3, 7), (9, 7)], 1, 12, CLOCK_FRAME)
+    posts(b, [(5, 1), (7, 1), (5, 7), (7, 7), (3, 4), (9, 4)], 9, 12, CLOCK_FRAME)
+    beam_ring(b, x0, z0, x1, z1, 8, CLOCK_FRAME)
+    beam_ring(b, x0, z0, x1, z1, 13, CLOCK_FRAME)
+    hip_roof(b, 2, 10, 0, 8, 14, DARK_OAK)
+    door(b, 6, 1, 1, "spruce_door", "south")
+    stairs(b, 6, 0, 0, STONE_BRICK, "south")
+    for x in (5, 7):
+        b.set(x, 0, 0, "stone_bricks")
+        lantern(b, x, 1, 0)
+    window(b, 6, 5, 1, "north", height=2, shutters="dark_oak_trapdoor", sill=STONE_BRICK)
+    window(b, 9, 2, 4, "east", shutters="dark_oak_trapdoor", sill=STONE_BRICK)
+    window(b, 9, 5, 4, "east", height=2, sill=STONE_BRICK)
+    window(b, 6, 5, 7, "south", height=2, sill=STONE_BRICK)
+    window(b, 3, 5, 4, "west", height=2, sill=STONE_BRICK)
+    for x, z, out in ((6, 7, "south"),):
+        window(b, x, 10, z, out, height=2, shutters="dark_oak_trapdoor", sill=DARK_OAK)
+    for x, z, out in ((9, 2, "east"), (9, 6, "east"), (3, 2, "west"), (3, 6, "west")):
+        window(b, x, 10, z, out, height=2, sill=DARK_OAK)
+    # The clock: in the belfry's front, framed by a sill and a hood of stairs, its shaft from behind
+    b.set(6, 10, 1, CREATE + "cuckoo_clock", facing="north")
+    for x in (5, 6, 7):
+        stairs(b, x, 9, 0, DARK_OAK, "south", top=True)
+        stairs(b, x, 11, 0, DARK_OAK, "south")
+    # The drive: wheel, shaft through the wall, a gearbox and on to the middle, up, and forward to the clock
+    _header_tank(b, 1, 4, 3)
+    _wheel(b, 1, 1, 5)
+    b.set(3, 1, 5, CREATE + "shaft", axis="x")
+    b.set(4, 1, 5, CREATE + "shaft", axis="x")
+    b.set(5, 1, 5, CREATE + "shaft", axis="x")
+    b.set(6, 1, 5, CREATE + "gearbox", axis="z")
+    for y in range(2, 10):
+        b.set(6, y, 5, CREATE + "shaft", axis="y")
+    b.set(6, 10, 5, CREATE + "gearbox", axis="x")
+    for z in (4, 3, 2):
+        b.set(6, 10, z, CREATE + "shaft", axis="z")
+    # The keeper's corner
+    b.set(8, 1, 2, "cartography_table")
+    b.set(8, 1, 6, "chest", facing="west", type="single", waterlogged=False)
+    b.set(4, 1, 2, "barrel", facing="up", open=False)
+    lantern(b, 4, 2, 2)
+    lantern(b, 6, 7, 3, hanging=True)
+    for x in range(4, 9):  # a tie beam across under the belfry, the lantern hung from it
+        b.set(x, 8, 3, CLOCK_FRAME, axis="x")
+    b.fill_air()
+    return b
+
+
+PUMP_BRICK = Mix((8, "bricks"), (2, "granite"), seed=403)
+
+
+def pump_house():
+    """14 x 10 x 9 (ROADMAP 39.8): the Pump House. A small nine-by-seven brick house framed in spruce under a dark oak
+    gable, a lean-to store on its east side; the water wheel on its west wall (header tank and mill race as the
+    Watermill's). Inside, the wheel's shaft ends in a cogwheel turning a mechanical pump beside it; the pump draws from
+    a sump of four water sources in the floor (so it refills) through an intake pipe and pushes up a pipe into a fluid
+    tank two blocks tall. The leatherworker's cauldron and the store chest by the front wall."""
+    b = Build(14, 10, 9)
+    x0, z0, x1, z1 = 3, 1, 11, 7
+    plinth(b, x0, z0, x1, z1, BRICK_WALL_MIX, floor="polished_andesite")
+    walls(b, x0, z0, x1, z1, 1, 3, PUMP_BRICK)
+    posts(b, [(3, 1), (6, 1), (8, 1), (11, 1), (3, 7), (7, 7), (11, 7), (11, 4)], 1, 3, MILL_FRAME)
+    beam_ring(b, x0, z0, x1, z1, 4, MILL_FRAME)
+    gable_roof(b, 2, 12, 0, 8, 5, DARK_OAK, axis="x", gable="spruce_planks", eave_trim=SPRUCE)
+    door(b, 7, 1, 1, "spruce_door", "south")
+    stairs(b, 7, 0, 0, STONE_BRICK, "south")
+    for x in (6, 8):
+        b.set(x, 0, 0, "stone_bricks")
+        lantern(b, x, 1, 0)
+    window(b, 4, 2, 1, "north", shutters="spruce_trapdoor", sill=BRICK)
+    window(b, 10, 2, 1, "north", shutters="spruce_trapdoor", sill=BRICK)
+    window(b, 9, 2, 7, "south", shutters="spruce_trapdoor", sill=BRICK)
+    window(b, 5, 2, 7, "south", shutters="spruce_trapdoor", sill=BRICK)
+    # The lean-to store on the east wall: barrels under a stair roof on fence posts
+    for z in range(2, 7):
+        b.set(12, 0, z, "cobblestone")
+    b.set(12, 1, 3, "barrel", facing="up", open=False)
+    b.set(12, 1, 4, "barrel", facing="west", open=False)
+    b.set(12, 1, 5, "barrel", facing="up", open=False)
+    for z in (2, 6):
+        fence(b, 12, 1, z, "spruce_fence")
+        fence(b, 12, 2, z, "spruce_fence")
+    for z in range(2, 7):
+        stairs(b, 12, 3, z, SPRUCE, "west")
+    # The drive: wheel, shaft through the wall to a cogwheel, the pump meshing with it
+    _header_tank(b, 1, 4, 3)
+    _wheel(b, 1, 1, 5)
+    for x in (3, 4, 5):
+        b.set(x, 1, 5, CREATE + "shaft", axis="x")
+    b.set(6, 1, 5, CREATE + "cogwheel", axis="x")
+    b.set(6, 1, 4, CREATE + "mechanical_pump", facing="east", waterlogged=False)
+    pipe = dict(north=False, south=False, east=False, west=False, up=False, down=False, waterlogged=False)
+    b.set(5, 1, 4, CREATE + "fluid_pipe", **{**pipe, "east": True, "down": True})  # the intake, open over the sump
+    b.set(7, 1, 4, CREATE + "fluid_pipe", **{**pipe, "west": True, "east": True})
+    b.set(8, 1, 4, CREATE + "fluid_tank", top=False, bottom=True, shape="window")
+    b.set(8, 2, 4, CREATE + "fluid_tank", top=True, bottom=False, shape="window")
+    for x, z in ((4, 3), (5, 3), (4, 4), (5, 4)):  # the sump: four sources, so what the pump draws refills
+        b.set(x, 0, z, "water", level=0)
+    # The leatherworker's corner and the store
+    b.set(10, 1, 2, "cauldron")
+    b.set(9, 1, 2, "chest", facing="north", type="single", waterlogged=False)
+    b.set(10, 1, 6, "barrel", facing="up", open=False)
+    lantern(b, 10, 2, 6)
+    lantern(b, 7, 3, 4, hanging=True)
+    for x in range(4, 11):  # a tie beam across the room, the lantern under it
+        b.set(x, 4, 4, MILL_FRAME, axis="x")
+    b.fill_air()
+    return b
+
+
 BALLAST = Mix((5, "gravel"), (3, "andesite"), (2, "cobblestone"), seed=397)
 
 
@@ -460,5 +673,6 @@ def village_train():
 
 
 CREATE_BUILDS = (("watermill", watermill), ("windmill", windmill), ("workshop", workshop))
-MORE_CREATE_BUILDS = (("brass_foundry", brass_foundry), ("sawmill", sawmill), ("crushing_mill", crushing_mill))  # 39.8
+MORE_CREATE_BUILDS = (("brass_foundry", brass_foundry), ("sawmill", sawmill), ("crushing_mill", crushing_mill),
+                      ("greenhouse", greenhouse), ("clock_tower", clock_tower), ("pump_house", pump_house))  # 39.8
 TRAIN_STATION = (("train_station", train_station),)  # ROADMAP 39.7: listed only with Create and villageTrains

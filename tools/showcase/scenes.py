@@ -1111,6 +1111,10 @@ SCENES = [
     job("create_builds", "Create", "The Watermill, the Windmill and the Workshop, their machines turning",
         "the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
         120, create=True),
+    # More Create builds (ROADMAP 39.8, with Create): the Brass Foundry, Sawmill, Crushing Mill, Greenhouse, Clock Tower and Pump House, every machine turning
+    job("create_builds_more", "Create", "Six more Create builds, their machines turning",
+        "the six builds' wheels turned, and with them the Brass Foundry's mixer, the Sawmill's saws, the Crushing Mill's wheels, the Greenhouse's belt, the Clock Tower's cuckoo clock and the Pump House's pump",
+        120, create=True),
     # Trains link villages (ROADMAP 39.7, 39.7a, 39.7b and 39.7d, with Create): two Train Stations, track between them, the train built by a builder, its Conductor in the seat calling the stop, and the caravan's goods in its chest
     job("village_train", "Create", "Trains link villages: the builder's train, its Conductor, the goods in its chest",
         "Thornholm's builder built the train, its Conductor took the seat, and the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",

@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+
+- With Create, six more working builds at the Blueprint Table: the Brass Foundry (a mixer over a basin and a blaze burner), the Sawmill (two saws on a belt), the Crushing Mill (a pair of crushing wheels), the Greenhouse (a glass house with farmland beds, a belt and a harvester-and-plough cart), the Clock Tower (a cuckoo clock turned by shafts up the tower) and the Pump House (a pump filling a fluid tank), each turned by a water wheel as soon as it's built.
+
 ### Fixed
 
 - A builder at the Builder's Workshop's table now counts and takes the Storehouse's chests when the Storehouse has a Blueprint Table of its own beside them (with a builder at it, those chests counted as that builder's), and the village's own builder counts a Storehouse you placed. When his status says he needs something, it also says why a Storehouse nearby isn't counted: too far, not his village's, or no chest he can read (B297, B298, B299).

@@ -232,7 +232,7 @@ public final class WorkplaceConfig {
 	public boolean machineWork = Expansions.on(Expansions.M39);
 	/**
 	 * With Create installed, the Blueprint Table offers the Watermill, the Windmill and the Workshop (ROADMAP 39.4) and the
-	 * Brass Foundry, the Sawmill and the Crushing Mill (39.8),
+	 * Brass Foundry, the Sawmill, the Crushing Mill, the Greenhouse, the Clock Tower and the Pump House (39.8),
 	 * workplaces whose machines turn as soon as they're built. Off: they aren't offered (sites already started still
 	 * finish). Without Create it does nothing.
 	 */

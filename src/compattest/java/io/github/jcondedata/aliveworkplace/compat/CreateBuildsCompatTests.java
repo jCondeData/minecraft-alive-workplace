@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * ROADMAP 39.4 and 39.8 with the owner's Create port: the Watermill, the Windmill and the Workshop, the Brass Foundry,
- * the Sawmill and the Crushing Mill are at the Blueprint Table, and
+ * the Sawmill, the Crushing Mill, the Greenhouse, the Clock Tower and the Pump House are at the Blueprint Table, and
  * a builder finishes each from barrels holding exactly its materials, nothing skipped, with its machine turning once
  * it's done: the speed is read from the machine's block entity data by name ({@code Speed}), no Create class. Without
  * Create: {@code CreateBuildsGameTests}.
@@ -132,6 +132,35 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 					.map(p -> crusher.getValue(p).toString()).orElse("?");
 				helper.assertTrue("true".equals(valid), "the crusher between the wheels isn't working: " + crusher);
 			});
+	}
+
+	/** The Greenhouse (39.8): the wheel's belt runs down the aisle between the beds to the depot, the crops on watered farmland. */
+	//$ gametest_ticks_batch HUGE_AREA '30000' '"greenhouse_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "greenhouse_build")
+	public void aBuilderBuildsTheGreenhouseAndItTurns(GameTestHelper helper) {
+		build(helper, StarterBlueprints.GREENHOUSE, List.of(at(12, 1, 10, "minecraft:composter"), at(6, 1, 6, "create:belt"),
+			at(6, 2, 7, "create:mechanical_harvester"), at(6, 2, 9, "create:mechanical_plough"), at(6, 1, 2, "create:depot"),
+			at(7, 0, 5, "minecraft:farmland"), at(7, 1, 5, "minecraft:wheat")), new BlockPos(6, 1, 9), (level, origin) -> {
+				float end = speed(level, origin.offset(6, 1, 3));
+				helper.assertTrue(Math.abs(end) > 0, "the belt's far pulley doesn't turn (Speed " + end + ")");
+			});
+	}
+
+	/** The Clock Tower (39.8): the wheel's drive goes up the tower's shaft and forward to the cuckoo clock, which turns. */
+	//$ gametest_ticks_batch HUGE_AREA '30000' '"clock_tower_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "clock_tower_build")
+	public void aBuilderBuildsTheClockTowerAndItTurns(GameTestHelper helper) {
+		build(helper, StarterBlueprints.CLOCK_TOWER, List.of(at(8, 1, 2, "minecraft:cartography_table"), at(6, 10, 1, "create:cuckoo_clock"),
+			at(6, 10, 5, "create:gearbox"), at(6, 5, 5, "create:shaft")), new BlockPos(6, 10, 1));
+	}
+
+	/** The Pump House (39.8): the wheel's cogwheel turns the pump beside it, between the sump's pipe and the fluid tank. */
+	//$ gametest_ticks_batch HUGE_AREA '30000' '"pump_house_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "pump_house_build")
+	public void aBuilderBuildsThePumpHouseAndItTurns(GameTestHelper helper) {
+		build(helper, StarterBlueprints.PUMP_HOUSE, List.of(at(10, 1, 2, "minecraft:cauldron"), at(6, 1, 4, "create:mechanical_pump"),
+			at(5, 1, 4, "create:fluid_pipe"), at(7, 1, 4, "create:fluid_pipe"), at(8, 1, 4, "create:fluid_tank"),
+			at(8, 2, 4, "create:fluid_tank"), at(6, 1, 5, "create:cogwheel")), new BlockPos(6, 1, 4));
 	}
 
 	/** The saved {@code Speed} of the block entity at {@code pos}, read by name (0 if there's none). */

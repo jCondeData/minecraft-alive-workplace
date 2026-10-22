@@ -50,6 +50,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.MechanicCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ConductorCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnicrafterCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.HallFurnicrafterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MachineWorkCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateBuildsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.VillageTrainCompatTests",

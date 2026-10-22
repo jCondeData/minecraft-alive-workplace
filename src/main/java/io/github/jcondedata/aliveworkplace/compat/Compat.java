@@ -39,6 +39,9 @@ public final class Compat {
 			io.github.jcondedata.aliveworkplace.compat.cobblefurnies.CobbleFurniesRecipes.init();
 			AliveWorkplace.LOG.info("Alive Workplace: cobblefurnies {} furniture recipes on", Platform.get().modVersion("cobblefurnies"));
 		}
+		// MobsBeGone's spawn blocklist, so the hall doesn't ask for monsters that can't come (B301): its data file only, read
+		// whether or not the mod reports itself by this id (a missing file refuses nothing).
+		io.github.jcondedata.aliveworkplace.compat.mobsbegone.MobsBeGoneBlocklist.init();
 		// The questbook: our chapters copied into FTB Quests' config folder (data only, never FTB Quests' classes).
 		if (Platform.get().isModLoaded("ftbquests")) {
 			io.github.jcondedata.aliveworkplace.compat.ftbquests.FtbQuestsBook.init();

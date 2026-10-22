@@ -878,7 +878,7 @@ public final class RealmEdicts {
 				if (quests.stream().anyMatch(q -> q.reform().map(r -> r.edict().equals(f.id())).orElse(false)) || today < progress.nextDay()) {
 					continue;
 				}
-				Reforms.Step s = reform.get().steps().get(step).resolve(Reforms.battles(level, hall));
+				Reforms.Step s = reform.get().steps().get(step).resolve(level, hall);
 				int reward = Math.round(s.reward() * VillageRanks.questRewardFactor(entity.rank()));
 				VillageQuests.Quest quest = new VillageQuests.Quest(UUID.randomUUID(), s.kind(), s.item(), s.count(), 0, reward, level.getGameTime(), "",
 					Optional.empty(), Optional.of(new VillageQuests.ReformStep(f.id(), step)));

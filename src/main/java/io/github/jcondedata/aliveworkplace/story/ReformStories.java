@@ -174,7 +174,7 @@ public final class ReformStories {
 		if (n >= reform.steps().size() || Reforms.progress(entity, edict).step() > n) {
 			return; // done before the story began: the chapter has nothing to ask
 		}
-		Reforms.Step step = reform.steps().get(n).resolve(Reforms.battles(level, hall));
+		Reforms.Step step = reform.steps().get(n).resolve(level, hall);
 		JsonObject objective = new JsonObject();
 		switch (step.kind()) {
 			case BRING -> {

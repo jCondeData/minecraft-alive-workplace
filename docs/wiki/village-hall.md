@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301
 
 ## What a player sees
 
@@ -78,6 +78,16 @@ name such as Thornholm.
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32
 up and down) belongs to it. Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
 feeds everything else.
+
+**Clearing-out quests follow the world's foes (B301).** "Clear out 8 monsters" (a `kill` of `monster`, a `slay` reform
+step) counts monsters and the mod's own bandits, raiders and lair mobs (by their tags). Monsters can come unless the
+world is on Peaceful or another mod's spawn blocklist refuses all of zombie, skeleton, creeper and spider: `hall/Foes`
+asks the `BLOCKLIST` extension point, which `compat/mobsbegone` fills from `config/mobsbegone-blacklist.json` (every
+quoted id in it, read again when the file changes). Where none can come, wild Pokémon a player battles or catches near
+the hall count instead (`compat/cobblemon/CobblemonWildFoes`, Cobblemon's `BATTLE_VICTORY` and `POKEMON_CAPTURED`) and
+the quest reads "Defeat 8 wild Pokémon". With neither, the board never posts one, a reform's or story's step asks for
+bread instead (as many as the foes, 64 at most, same pay), and the hall's round swaps one already up: a board quest
+comes down for another, a story's or reform's step becomes the bread, started afresh.
 
 **Needs set the pace.** Every grown villager eats once a day from the store (chests by the kitchens first, then by
 the Storehouses), wants a bed of their own, one guard for every ten villagers and light by the beds. How well that is
@@ -186,6 +196,10 @@ point of interest, saved by Minecraft).
 
 ## Decisions
 
+- B301 (bug lane, 2026-10-22): "can monsters come" is read from the world (Peaceful) and the blocklist's own file,
+  never from whether a monster was seen lately, so it's the same on every server start and testable. The game rule that
+  stops mob spawning isn't counted: spawners, raids and the mod's camps still bring foes.
+
 - 30.4a (owner, 2026-10-05): the hall's screen is a custom UI like vanilla's workstation screens, not a chest of
   icons. The server lays out the buttons and decides every click; the client only draws.
 - 26.12 (owner, 2026-10-16: "i like the look of the blueprint table"): the hall and the Storehouse board are drawn in
@@ -229,6 +243,8 @@ point of interest, saved by Minecraft).
 ## Proof
 
 GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
+`B301GameTests` (no clearing-out quest or step where nothing can be fought, bandits and wild Pokémon counting, the
+words, a stuck quest swapped after a save and reload, MobsBeGone's file read), compat `WildFoesCompatTests`,
 `WagonBedsGameTests` (B206, B207: settlers leave the wagon once the hall stands, an older camp's bedroll is mended,
 two free beds take in two newcomers and the hall says it's full, the inn takes a traveller only into a free house bed,
 the wagon-bed list and its save),

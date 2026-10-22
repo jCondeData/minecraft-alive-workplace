@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299
 
 ## 1. What a player sees
 
@@ -76,6 +76,14 @@ a Blueprint Table with an empty hand moves the Builder nearest the player (withi
 old table's place is let go, the new one taken (`Stations.assign`), and the active and queued sites' bench follows. The
 Village Hall's free job blocks page lists the village's Builders as takers of a free table, and the status says
 `message.aliveworkplace.status.table`.
+
+**A Storehouse with its own table (B297, B298, B299).** A Storehouse's chests are the Storehouse's, even when another
+worker's bench stands nearer by them: `Village.stashes` lets the Storehouses take their chests first. Before, a Builder
+at a Blueprint Table one block from the Storehouse's chests made them his, kept back for his own builds, and a Builder
+at the Builder's Workshop's table counted none of them. A player's Storehouse in a village whose hall no player owns is
+that village's store, so the village's own Builder on a village build (or none) counts it too. When the status says
+"Needs", it also names the nearest Storehouse he doesn't count and why (`Village.unusedStorehouse`): more than the
+village's 48 blocks from his table, someone else's, or no chest round it he can read.
 
 **Speed.** `workplaceBuildDelay` ticks per block (default 8) times a share by Builder level 1 to 5:
 100%, 100%, 85%, 70%, 55%, 40% (index 0 is unused). Then the village's mood, traits, edicts and so on change it
@@ -304,6 +312,11 @@ that player's build, `aPlayersStorehouseFeedsTheVillagesBuilderOnTheirBuild`; a 
 `aStrangersStorehouseStaysTheirs`; a sneak-click moves the Builder and his build to another table, both standing, after
 a reload too, `aSneakClickMovesTheBuilderToAnotherTable`; nobody near moves nobody, `aSneakClickWithNoBuilderNearMovesNobody`;
 the hall offers a free table to a Builder, `theHallOffersAFreeTableToTheVillagesBuilder`).
+`B297GameTests` (6, B297-B299: the owner's layout, a player's Storehouse with its own table one block from its chests
+and a workshop table 31 blocks off: a Builder at each counts and takes it, `bothBuildersCountAndTakeTheStorehouseWithItsOwnTable`;
+alone at the workshop table, the Storehouse saved and loaded, `aBuilderAtTheWorkshopTableTakesFromAStorehouseWithAFreeTable`;
+the village's own Builder and the player's Storehouse, `theVillagesOwnBuilderCountsThePlayersStorehouse`; the status's
+reasons, `theStatusSaysAStorehouseIsTooFar`, `theStatusSaysAStrangersStorehouseIsntHis`, `theStatusSaysAStorehouseHasNoChests`).
 
 Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the

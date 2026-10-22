@@ -113,7 +113,14 @@ public final class Village {
 			return true;
 		}
 		Employer hall = hallOwner(level, station);
-		return hall != null && sameSide(level, hall, store);
+		if (hall != null) {
+			return sameSide(level, hall, store);
+		}
+		// B297: a player's Storehouse in a village no player owns the hall of is that village's store, so the village's own
+		// builder working for the village (a Steward's build, a Builder's Workshop's, or nothing yet) counts it too. Before,
+		// he never did: his stock was only what stood round his own table, until that table broke and he took the one
+		// by the Storehouse. A builder on another player's build still doesn't (that player's Storehouse is theirs).
+		return villager.getVillagerData().getProfession() == ModVillagers.BUILDER && (site == null || site.owner() == null || site.ownerName().isEmpty());
 	}
 
 	/** The player who owns the Village Hall whose village {@code pos} is in, or null (no hall, or nobody's). */
@@ -205,31 +212,96 @@ public final class Village {
 			seen.add(own);
 			seen.addAll(io.github.jcondedata.aliveworkplace.store.StorageNetworks.members(level, own));
 		}
-		List<Stash> out = new ArrayList<>();
-		for (Mate mate : mates(level, villager, station)) {
-			List<BlockPos> chests = new ArrayList<>();
-			for (BlockPos chest : SupplyContainers.find(level, mate.station(), exclude)) {
-				// 37.10: a Storehouse's network head stands for the chests it joins; listed in another stash already, those
-				// chests are taken one by one instead, so nothing counts twice
-				Set<BlockPos> joined = io.github.jcondedata.aliveworkplace.store.StorageNetworks.members(level, chest);
-				if (joined.isEmpty() || joined.stream().noneMatch(seen::contains)) {
-					if (seen.add(chest)) {
-						chests.add(chest);
-						seen.addAll(joined);
-					}
-				} else {
-					for (BlockPos member : joined) {
-						if (seen.add(member)) {
-							chests.add(member);
-						}
-					}
+		List<Mate> mates = mates(level, villager, station);
+		// B297/B298: a Storehouse's chests are the Storehouse's, even when another worker's bench stands nearer by them (the
+		// Storehouse's own Blueprint Table, one block from its chests, with a builder at it): listed nearest-first they
+		// were that builder's, kept back for his builds and never the village's store, so a builder at the Builder's
+		// Workshop's table counted none of them. The Storehouses take their chests first; the list stays nearest first.
+		Map<Mate, List<BlockPos>> lists = new java.util.HashMap<>();
+		for (int pass = 0; pass < 2; pass++) {
+			for (Mate mate : mates) {
+				if ((mate.job() == ModVillagers.PORTER) == (pass == 0)) {
+					lists.put(mate, claim(level, mate, exclude, seen));
 				}
 			}
+		}
+		List<Stash> out = new ArrayList<>();
+		for (Mate mate : mates) {
+			List<BlockPos> chests = lists.getOrDefault(mate, List.of());
 			if (!chests.isEmpty()) {
 				out.add(new Stash(mate.station(), mate.job(), chests));
 			}
 		}
 		return out;
+	}
+
+	/** The chests round {@code mate}'s workstation not already in {@code seen}, which now holds them too. */
+	private static List<BlockPos> claim(ServerLevel level, Mate mate, @Nullable BoundingBox exclude, Set<BlockPos> seen) {
+		List<BlockPos> chests = new ArrayList<>();
+		for (BlockPos chest : SupplyContainers.find(level, mate.station(), exclude)) {
+			// 37.10: a Storehouse's network head stands for the chests it joins; listed in another stash already, those
+			// chests are taken one by one instead, so nothing counts twice
+			Set<BlockPos> joined = io.github.jcondedata.aliveworkplace.store.StorageNetworks.members(level, chest);
+			if (joined.isEmpty() || joined.stream().noneMatch(seen::contains)) {
+				if (seen.add(chest)) {
+					chests.add(chest);
+					seen.addAll(joined);
+				}
+			} else {
+				for (BlockPos member : joined) {
+					if (seen.add(member)) {
+						chests.add(member);
+					}
+				}
+			}
+		}
+		return chests;
+	}
+
+	/** B297: why a Storehouse isn't counted: beyond the village's reach, someone else's, or no chest round it to read. */
+	public enum StoreMiss {
+		TOO_FAR, NOT_SHARED, NO_CHESTS
+	}
+
+	/** The nearest Storehouse {@code villager} doesn't count, why, how far it is and its owner (null: the village's). */
+	public record UnusedStore(BlockPos storehouse, StoreMiss why, int distance, @Nullable Employer owner) {
+	}
+
+	/**
+	 * B297: the nearest Storehouse within twice the village's reach of {@code station} that {@code villager} doesn't count
+	 * (for the status, so a player can see why his builder says he needs what the Storehouse holds), or null when he
+	 * counts one (its chests are his own or a stash of his) or there is none about.
+	 */
+	@Nullable
+	public static UnusedStore unusedStorehouse(ServerLevel level, Villager villager, BlockPos station, @Nullable BoundingBox exclude) {
+		if (RADIUS <= 0) {
+			return null;
+		}
+		List<BlockPos> found = new ArrayList<>(level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, station, 2 * RADIUS,
+			net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList());
+		found.sort(Comparator.comparingDouble(p -> p.distSqr(station)));
+		UnusedStore nearest = null;
+		double radiusSqr = (double) RADIUS * RADIUS;
+		for (BlockPos storehouse : found) {
+			int distance = (int) Math.round(Math.sqrt(storehouse.distSqr(station)));
+			UnusedStore miss;
+			if (storehouse.distSqr(station) > radiusSqr) {
+				miss = new UnusedStore(storehouse.immutable(), StoreMiss.TOO_FAR, distance, null);
+			} else if (!level.isLoaded(storehouse) || !(level.getBlockEntity(storehouse) instanceof io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity store)) {
+				miss = new UnusedStore(storehouse.immutable(), StoreMiss.NO_CHESTS, distance, null);
+			} else if (!sharesStorehouse(level, villager, station, storehouse, store.owner())) {
+				Employer owner = store.owner() != null ? store.owner() : hallOwner(level, storehouse);
+				miss = new UnusedStore(storehouse.immutable(), StoreMiss.NOT_SHARED, distance, owner);
+			} else if (SupplyContainers.find(level, storehouse, exclude).isEmpty()) {
+				miss = new UnusedStore(storehouse.immutable(), StoreMiss.NO_CHESTS, distance, store.owner());
+			} else {
+				return null; // counted: as his own chests, or as the village's store
+			}
+			if (nearest == null) {
+				nearest = miss;
+			}
+		}
+		return nearest;
 	}
 
 	/** The nearest village-mate's stash holding something that passes {@code test}; null if nobody has any. */

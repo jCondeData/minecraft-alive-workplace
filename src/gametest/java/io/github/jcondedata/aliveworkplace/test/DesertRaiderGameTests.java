@@ -34,7 +34,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.monster.Husk;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
@@ -283,15 +285,36 @@ public class DesertRaiderGameTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '900' '"sandRamp"'
 	@GameTest(template = AREA, timeoutTicks = 900, batch = "sandRamp")
 	public void aSandRampReachesTheTopOfTheStoneWallAndIsGoneAfterTheSiege(GameTestHelper helper) {
+		sandRamp(helper, false);
+	}
+
+	/** The same ramp climbed by a chicken jockey: it is let go once down inside, as a husk on foot is (B316). */
+	//$ gametest_ticks_batch AREA '900' '"sandRampJockey"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "sandRampJockey")
+	public void aChickenJockeyGetsOverTheSandRampToo(GameTestHelper helper) {
+		sandRamp(helper, true);
+	}
+
+	private static void sandRamp(GameTestHelper helper, boolean jockey) {
 		Yard yard = yard(helper, pilers(helper));
 		ServerLevel level = yard.level();
 		Map<BlockPos, BlockState> before = blocks(helper);
 		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 23.5);
+		if (jockey) {
+			// A chicken jockey (a baby husk's 1 in 400 roll in finalizeSpawn): its rider is never on the ground itself (B316).
+			Chicken chicken = EntityType.CHICKEN.create(level);
+			chicken.moveTo(climber.getX(), climber.getY(), climber.getZ(), 180f, 0f);
+			level.addFreshEntity(chicken);
+			Leftovers.after(helper, chicken::discard);
+			((Zombie) climber).setBaby(true);
+			helper.assertTrue(climber.startRiding(chicken), "the husk didn't mount the chicken");
+		}
 		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
 		ThreatData.Siege first = yard.siege(helper);
 		helper.assertTrue(first.sand.isEmpty() && !first.ramped, "sand before anyone piled it");
 		long[] seen = {-1, -1, -1, 0}; // the restart, the ramp up, the husk inside, the tick the last block went on
 		int[] last = {0};
+		long[] in = {-1}; // the tick the husk was first inside
 		helper.onEachTick(() -> {
 			long tick = helper.getTick();
 			if (seen[2] >= 0) {
@@ -342,8 +365,17 @@ public class DesertRaiderGameTests implements FabricGameTest {
 			}
 			if (inside(helper, climber)) {
 				helper.assertTrue(seen[1] >= 0, "the husk is inside without a finished ramp");
+				if (in[0] < 0) {
+					in[0] = tick;
+				}
 				if (!SandRamps.over(level, yard.hall(), climber.getUUID())) {
-					helper.assertTrue(tick < 820, "inside, but not by the ramp");
+					if (tick >= 820) {
+						BlockPos base = helper.absolutePos(BlockPos.ZERO);
+						helper.fail("inside, but not by the ramp: the husk at " + climber.position().subtract(base.getX(), base.getY(), base.getZ())
+							+ (climber.onGround() ? " on the ground" : " in the air") + " at tick " + tick + ", inside since " + in[0] + ", ramp up at " + seen[1]
+							+ (climber.isBaby() ? ", a baby" : "") + (climber.getVehicle() != null ? ", riding " + climber.getVehicle() : "")
+							+ ", sand " + sand.size());
+					}
 					return; // (it lets go of the ramp once it is down on its feet)
 				}
 				seen[2] = tick;

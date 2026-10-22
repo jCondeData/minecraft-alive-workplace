@@ -90,7 +90,7 @@ def terminal_nook(toms=False):
     """9 x 10 x 9: the Terminal Nook, a small store room that fits beside a house. A stone-footed, birch-and-spruce room
     under a dark oak gable; inside along the back wall, six chests round an inventory connector (a chest without
     Tom's) with a potted fern on it (a lantern can't stand on a chest); a storage terminal in front of the connector,
-    its screen to the door (without Tom's the room is open there); the Storehouse by the side wall, a barrel and hay by the door."""
+    its screen to the door (without Tom's a counter block there); the Storehouse by the side wall, a barrel and hay by the door."""
     t = Tom(toms)
     b = Build(9, 10, 9)
     plinth(b, 1, 2, 7, 7, FOUNDATION_MIX, floor="spruce_planks")
@@ -115,8 +115,7 @@ def terminal_nook(toms=False):
     for x in (3, 5):
         store(b, x, 2, 6, "north", True)
     b.set(4, 2, 6, "potted_fern")  # not a lantern: it falls off the chest that stands for the connector without Tom's
-    if toms:
-        t.terminal(b, 4, 1, 5, "south")
+    t.terminal(b, 4, 1, 5, "south")  # without Tom's a counter block, so the copy only swaps it (no block in an empty cell)
     b.set(2, 1, 4, "aliveworkplace:storehouse", facing="east")
     b.set(6, 1, 3, "barrel", facing="up", open=False)
     b.set(6, 2, 3, "hay_block", axis="y")

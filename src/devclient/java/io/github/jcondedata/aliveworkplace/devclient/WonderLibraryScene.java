@@ -60,6 +60,9 @@ final class WonderLibraryScene {
 			v.setCustomName(Component.literal("Aldous"));
 			v.setVillagerData(v.getVillagerData().setProfession(ModVillagers.SCHOLAR).setLevel(3));
 			v.setVillagerXp(1); // (kept a scholar without a desk of their own: nothing in the rotunda is moved)
+			// B294: he stands for the picture. With his AI on he once set off for the festival at the bell after the
+			// fireworks, got more than 8 blocks from the player and the screen closed before the still.
+			v.setNoAi(true);
 			level.addFreshEntity(v);
 			scholar = v;
 			if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
@@ -81,7 +84,9 @@ final class WonderLibraryScene {
 		public void check(ServerLevel level, ServerPlayer player) {
 			Showcase.check(hall != null && LibraryPowers.stands(level, hall), "the finished Great Library opens the second research tier");
 			boolean open = player.containerMenu instanceof ChoiceMenu;
-			Showcase.check(open, "the scholar's research screen is open in the rotunda");
+			Villager v = scholar;
+			Showcase.check(open, "the scholar's research screen is open in the rotunda" + (open || v == null ? ""
+				: " (scholar " + (v.isAlive() ? "alive" : "dead") + ", " + String.format("%.1f", Math.sqrt(player.distanceToSqr(v))) + " blocks away)"));
 			if (!(player.containerMenu instanceof ChoiceMenu menu)) {
 				return;
 			}

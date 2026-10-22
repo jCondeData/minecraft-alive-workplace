@@ -382,6 +382,7 @@
 			"io.github.jcondedata.aliveworkplace.test.RenewalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DoorJamGameTests",
 			"io.github.jcondedata.aliveworkplace.test.AtticBedGameTests",
+			"io.github.jcondedata.aliveworkplace.test.TerraceSleepGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RoadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CaravanRoadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WallGameTests",

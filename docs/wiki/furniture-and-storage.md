@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304
 
 ## 1. What a player sees
 
@@ -84,6 +84,12 @@ real beds: villagers claim and sleep in them, and the house they stand in counts
 Hall's list, free beds for a new baby). A home with a furniture mod's seat in it is a furnished home, worth 1 beauty
 to the people who sleep there (the "beauty near home" a Burgher or a Noble needs, M34). Vanilla stair chairs are not
 seats.
+
+A bed up a ladder is a bed like any other (B304). The Terrace is two homes under one roof, each with its bedroom up a
+ladder: a villager without a bed takes a free one there, even next door to where he stands, and at bedtime he goes in
+by that home's door and climbs that home's ladder. Before, a villager could only claim a bed he could walk to, so the
+Terrace's beds stood free while villagers spent the night standing about its rooms (on a chest, say), and a villager
+coming in by the other home's door climbed the wrong ladder and gave his bed up.
 
 When it is finished, a server with Handcrafted gets Handcrafted chairs round a Handcrafted table, fancy beds with nightstands and
 shelves of crockery in its homes; Cozy Home adds sofas, clocks and lamps, CobbleFurnies Poké Ball chairs, Beautify
@@ -285,6 +291,14 @@ through, up a trim post to the loft. Every store stands within the Storehouse's 
 vanilla builds' chests are its stores too. They are in `StarterBlueprints.STORAGE_HALLS` (and `ONE_TIER`), offered
 while `moddedStorageNetworks`'s expansion (M37) is open.
 
+Beds up a ladder (B304): vanilla claims a bed (`AcquirePoi`) only when it finds a path to it, and its paths have no
+ladders. When that path falls short, `BedLadders.pathUpALadder` (from `AcquirePoiMixin`) looks at the same free beds
+for one with a ladder within 8 blocks whose top comes up in the bed's room (a walk on the bed's floor from the ladder's
+top to the bed: nothing taller than a step underfoot, nothing at head height, doors open) and whose foot the villager
+can walk to; that bed is claimed as vanilla claims any. At bedtime `BedLadders` takes the villager to the foot of a
+ladder that comes up in his bed's room, before any nearer one that doesn't (when none does, the nearest, as before).
+Nothing is saved.
+
 ## 3. Switches
 
 | Key | Default | What it does |
@@ -411,6 +425,11 @@ rides, which can't be summoned.
 
 ## 8. Proof
 
+B304: `TerraceSleepGameTests.aVillagerOfTheWestHomeClimbsItsLadderNotTheEastOnesAndSleeps` (his bed in the west
+home, he stands by the east home's ladder at bedtime), `TerraceSleepGameTests.aVillagerWithoutABedTakesAFreeOneNextDoorAndSleeps`
+(the east home's beds someone else's: he claims a west one and sleeps in it), both failing before the fix; with
+Handcrafted (compat) `TerraceSleepCompatTests.aVillagerWithoutABedTakesAFreeFancyBedNextDoorAndSleeps`. Showcase scene
+`terrace_sleep`.
 B300: `FloatingFurnishingsGameTests.noFurnishedBlueprintHasAFloatingPiece` (every furnished blueprint, vanilla and
 with one-block tables), `FloatingFurnishingsGameTests.aPotOnALowerTableSitsOnIt`,
 `FloatingFurnishingsGameTests.aBuiltFurnishedHomeHasNothingFloating`, `FloatingFurnishingsGameTests.aPieceLeftOnNothingIsSetDown`.

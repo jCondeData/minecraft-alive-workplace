@@ -1185,6 +1185,12 @@ SCENES = [
            ("20_manor", "The Noble's Manor: a stone house round a hall with a grand stair, slate roof and dormers"),
            ("23_manor_2_back", "Manor II: the walled formal garden, its hedges, fountain and gravel walks"),
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
+    # B304: in the Terrace (two homes, each bedroom up a ladder) a villager without a bed takes a free one next door
+    S("terrace_sleep", "Build families", "A free bed up the Terrace's other ladder: claimed, climbed to and slept in",
+      "the villager without a bed claimed a free bed of the Terrace's west home, climbed its ladder and slept in it; the neighbours slept in the east home", 90,
+      [("01_dusk", "Dusk: the east home's beds are the neighbours', a villager without a bed by its door"),
+       ("02_ladder", "He has claimed a free bed next door and climbs the west home's ladder"),
+       ("03_asleep", "Asleep in the west home's bedroom")]),
     # Furnished homes (ROADMAP 37.4): Starter Cottage II as a server with the pack's furniture mods builds it, room by room
     # B260: and the owner's Stone House, its way in clear and its attic a bedroom
     # B281: and the Terrace's two kitchens. Four stills on the card (the selftest's 2-4, B272): the owner's B260 and B281

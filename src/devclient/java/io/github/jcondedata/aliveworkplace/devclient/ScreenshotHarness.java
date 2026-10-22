@@ -164,6 +164,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<BuilderListScene> builderList = new Lazy<>(() -> new BuilderListScene());
 	private final Lazy<BuilderTableMoveScene> builderTableMove = new Lazy<>(() -> new BuilderTableMoveScene());
 	private final Lazy<TerraceGradeScene> terraceGrade = new Lazy<>(() -> new TerraceGradeScene());
+	private final Lazy<TerraceSleepScene> terraceSleep = new Lazy<>(() -> new TerraceSleepScene());
 	private final Lazy<PokemonCenterScene> pokemonCenter = new Lazy<>(() -> new PokemonCenterScene());
 	private final Lazy<ArenaScene> arena = new Lazy<>(() -> new ArenaScene());
 	private final Lazy<PokemonBuildsScene> pokemonBuilds = new Lazy<>(() -> new PokemonBuildsScene());
@@ -430,6 +431,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("terrace_grade".equals(System.getProperty("aliveworkplace.scene"))) {
 			terraceGrade.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("terrace_sleep".equals(System.getProperty("aliveworkplace.scene"))) {
+			terraceSleep.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("partners_land".equals(System.getProperty("aliveworkplace.scene"))) {

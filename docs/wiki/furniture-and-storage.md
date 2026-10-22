@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, B238, B260, B262, B281
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281
 
 ## 1. What a player sees
 
@@ -147,6 +147,20 @@ build is planned and saved with it, so a config change or a removed mod never ch
 list show the library this server would build. Job blocks (lecterns, barrels, beehives, crafting tables) and doors are
 never swapped, and nothing a copy adds holds items, so every job finds exactly the storage of the vanilla build.
 
+**Storage builds** (37.17, behind the gate). Three new builds at the Blueprint Table, each a Storehouse (its
+Storehouse block takes a porter, and the village and the Village Map count it as one): the **Storage Hall** (13 x 14 x
+14: a long stone-and-birch hall with a porch, 27 chests and barrels in an island round an inventory connector, a
+counter by the door with a storage terminal and a crafting terminal either side of the Storehouse, two filing cabinets
+for the paper and maps on the back wall), the **Terminal Nook** (9 x 10 x 9: a small room that fits beside a house, six
+chests round a connector along its back wall, a storage terminal before it) and the **Warehouse** (19 x 16 x 16: two
+floors under a long roof, four racks of chests and barrels below and two in the loft, 60 in all, a crafting terminal at
+the packing counter by the loading doors, a lean-to loading bay with a handcart). With Tom's Simple Storage installed
+they are built of Tom's blocks and every chest, barrel and cabinet is on the connector's network: the Storehouse reads
+them through it (each item once) and the terminals show them in Tom's own screen. Without Tom's (or with
+`moddedLibrary` or `furnishedBuilds` off) they are the vanilla builds: a chest where the connector stands, a crafting
+table for the crafting terminal, a counter block (or nothing, in the Nook) for the storage terminal, boards and spruce
+logs for the cables and trims, chests for the filing cabinets; every chest and barrel is then the Storehouse's own store.
+
 ## 2. How it works
 
 Each piece of furniture our builds draw in vanilla blocks becomes a furniture spot (its kind, facing, wood or colour
@@ -252,6 +266,18 @@ point of interest, its barrels to the Fisherman's and its beehives to the beehiv
 tables are no job site, as the vanilla one isn't. Its campfires are left out (a campfire cooks; nothing in our builds
 needs a wooden one).
 
+37.17: the storage builds are drawn by `tools/blueprints/storage_halls.py`, each function drawing both versions from
+one plan so they have the same shape: the vanilla build to `structure/<name>.nbt` and the Tom's copy to
+`structure/modded/<name>.nbt`, the modded library's folder, so `ModdedLibrary` builds the copy when every block of it
+(Tom's and vanilla only) is installed, through the same choice and saved `library` entry as every other copy.
+`modded_library.py` leaves these three alone (`OWN_COPIES`). How the network joins them is 37.10's walk: the Hall's
+island touches its connector, and a framed cable under the floor runs to the counter's terminals (set into it with
+`pos=down`, reading the cable under them) and to a framed cable connector under each filing cabinet; the Nook's chests
+touch the connector; the Warehouse's racks stand on Inventory Trim set in the floor, which the connector's scan passes
+through, up a trim post to the loft. Every store stands within the Storehouse's reach (8 across, 4 up or down), so the
+vanilla builds' chests are its stores too. They are in `StarterBlueprints.STORAGE_HALLS` (and `ONE_TIER`), offered
+while `moddedStorageNetworks`'s expansion (M37) is open.
+
 ## 3. Switches
 
 | Key | Default | What it does |
@@ -343,6 +369,11 @@ rides, which can't be summoned.
   they need M37's gate open (`-Daliveworkplace.shots=true`, which opens every gate) and take minutes of building, and
   the plain boot checks the pack as players get it. The nightly workflow runs both. The order is set in the config
   file before the boot, as a server owner would, and the file is put back afterwards.
+
+- 37.17: the Tom's versions of the storage builds come through the modded library rather than a style, so they follow
+  `moddedLibrary` and `furnishedBuilds` like every other modded copy, and a player doesn't pick them: a server with Tom's
+  builds them, one without builds the vanilla ones. The Warehouse joins its racks with one connector and Inventory Trim
+  rather than a connector per rack, because two connectors on one cable network would each be read as the whole store.
 
 ## 7. Known limits
 
@@ -493,3 +524,12 @@ only the planned one, not furniture, the other order, a save and reload), `aBuil
 each too, and CobbleFurnies first), `neitherGivesTheStandInOrTheWait`, `theMaterialListNamesTheChairOnce` and
 `aBuilderBuildsTheChairInTheChest` (a builder planned with Handcrafted's chair builds CobbleFurnies' from the chest,
 facing south, and the finished building keeps it). Showcase scene `furniture_any_mod` (`-Pfurniture=true -Pcobblemon=true`).
+37.17 (no mods): `StorageHallGameTests.theStorageBuildsAreAtTheTableAsVanillaBuilds`,
+`StorageHallGameTests.withMilestone37ClosedTheyAreHidden`, `StorageHallGameTests.aBuilderBuildsTheTerminalNookAsAStorehouse`,
+`StorageHallGameTests.aBuilderBuildsTheStorageHallAsAStorehouse`, `StorageHallGameTests.aBuilderBuildsTheWarehouseAsAStorehouse`
+(each built from barrels of exactly its materials, nothing skipped, its Storehouse a job site and every chest and barrel
+of it in the store); with Tom's (compat): `StorageHallsCompatTests.withTomsTheStorageBuildsUseTheirTomsCopies`,
+`StorageHallsCompatTests.aBuilderBuildsTheTerminalNookOnTomsNetwork`, `StorageHallsCompatTests.aBuilderBuildsTheStorageHallOnTomsNetwork`,
+`StorageHallsCompatTests.aBuilderBuildsTheWarehouseOnTomsNetwork` (nothing skipped, the connector joins 6, 29 and 60
+inventories, the Storehouse reads the connector and counts each item once, the terminal opens Tom's menu listing them).
+Showcase scene `storage_hall` (`-Pfurniture=true -Pcobblemon=true`).

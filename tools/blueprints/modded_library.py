@@ -43,6 +43,8 @@ OUT = os.path.join(STRUCTURES, "modded")
 NOT_BUILDINGS = ("DECORATIONS", "MORE_DECORATIONS", "DEFENCES", "CREATE_ONLY", "TRAINS_ONLY", "MEGA_ONLY", "ARENAS")
 # Decorations listed outside those lists (DECORATIONS is built from a stream in StarterBlueprints).
 EXTRA_DECORATIONS = {"well", "well_2", "street_lamp", "park_bench", "fountain", "gazebo", "market_square", "chapel"}
+# Builds that draw their own modded copy (storage_halls.py, 37.17: the Tom's Simple Storage versions): never dressed here.
+OWN_COPIES = {"storage_hall", "terminal_nook", "warehouse"}
 
 WOODS = ("dark_oak", "spruce", "birch", "oak")
 FULL_FLOOR = re.compile(r"minecraft:(oak|spruce|dark_oak|birch)_planks")
@@ -77,7 +79,7 @@ def buildings():
     """Every home and workshop: the top-level blueprints but decorations, walls and the builds of other mods."""
     with open(STARTER) as f:
         source = f.read()
-    skip = entries(NOT_BUILDINGS, source) | EXTRA_DECORATIONS
+    skip = entries(NOT_BUILDINGS, source) | EXTRA_DECORATIONS | OWN_COPIES
     found = []
     for path in sorted(glob.glob(os.path.join(STRUCTURES, "*.nbt"))):
         name = os.path.basename(path)[:-4]

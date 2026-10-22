@@ -1226,6 +1226,15 @@ SCENES = [
            ("02_modded_cottage", "The modded cottage: Supplementaries daub for the plaster, braced beside the posts"),
            ("04_modded_cottage_inside", "Inside: Chipped herringbone floors, Handcrafted furniture and crockery, Carved Wood chests"),
            ("05_modded_inn", "The Inn II from the modded library")], cobblemon=True, furniture=True),
+    # The storage builds (ROADMAP 37.17, with Tom's Simple Storage): the Storage Hall, the Terminal Nook and the Warehouse
+    # built of Tom's blocks, and the vanilla Storage Hall beside them
+    S("storage_hall", "Porter", "Storage builds with Tom's Simple Storage: the Storage Hall, the Terminal Nook and the Warehouse",
+      "the three storage builds stand built of Tom's Simple Storage, their inventory connectors joining 29, 6 and 60 chests, barrels and cabinets, and the vanilla Storage Hall beside them has none of Tom's blocks",
+      50, [("01_halls", "The Storage Hall without Tom's (left) and with it (right)"),
+           ("02_hall_counter", "The counter by the door: a storage terminal and a crafting terminal either side of the Storehouse"),
+           ("04_nook_inside", "The Terminal Nook: six chests round the connector, the terminal before it"),
+           ("06_warehouse_inside", "The Warehouse: racks of chests and barrels on Inventory Trim, the crafting terminal at the counter")],
+      cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
     S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
       "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",

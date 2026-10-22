@@ -5053,7 +5053,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   off), the Steward's rule firing on repeated shortfalls and not otherwise, a generated village with the workshop when on;
   text in `en_us.json`; wiki and guide lines; scene `crafter_workshop`.
   - [x] **37.16a** (approved 2026-10-22) Change from the owner (2026-10-21): retired with 37.14a: the Crafter's Workshop leaves the Steward's plans, the workshop offers and village generation (existing workshops stay as plain buildings); do it in the same change as 37.14a.
-- [ ] **37.17** **Storage Hall builds with Tom's Simple Storage** (owner, 2026-10-22: "put some terminal builds as blueprints"). New
+- [x] **37.17** (review: pending 2026-10-22) **Storage Hall builds with Tom's Simple Storage** (owner, 2026-10-22: "put some terminal builds as blueprints"). New
   blueprints, listed at the Blueprint Table, built with Tom's blocks when Tom's Simple Storage is installed and with
   vanilla chests and barrels (no terminal) when it isn't: a **Storage Hall** (a hall of 24+ chests and barrels round an
   Inventory Connector on Inventory Cables, a Storage Terminal and a Crafting Terminal on a counter by the door, filing

@@ -568,6 +568,18 @@ public final class StarterBlueprints {
 		return new Entry(AliveWorkplace.id(name), new Vec3i(w, h, d), basement);
 	}
 
+	/**
+	 * The storage builds (ROADMAP 37.17; tools/blueprints/storage_halls.py), each a Storehouse: the Storage Hall (27 chests
+	 * and barrels round an inventory connector, terminals on a counter by the door, filing cabinets), the Terminal Nook
+	 * (a connector, six chests and a terminal; it fits beside a house) and the Warehouse (two floors of racks, a crafting
+	 * terminal, a loading bay with a handcart). Each has a Tom's Simple Storage copy in the modded library (37.12), built in
+	 * its place when Tom's is installed; without it, chests and barrels and no terminal.
+	 */
+	public static final Entry STORAGE_HALL = new Entry(AliveWorkplace.id("storage_hall"), new Vec3i(13, 14, 14));
+	public static final Entry TERMINAL_NOOK = new Entry(AliveWorkplace.id("terminal_nook"), new Vec3i(9, 10, 9));
+	public static final Entry WAREHOUSE = new Entry(AliveWorkplace.id("warehouse"), new Vec3i(19, 16, 16));
+	public static final List<Entry> STORAGE_HALLS = List.of(STORAGE_HALL, TERMINAL_NOOK, WAREHOUSE);
+
 	/** Drawn up by a village's scholars (Architecture research), not in the Blueprint Table: a stone hall with a bell tower. */
 	public static final Entry TOWN_HALL = new Entry(AliveWorkplace.id("research/town_hall"), new Vec3i(13, 16, 13));
 
@@ -597,7 +609,8 @@ public final class StarterBlueprints {
 		MANOR, MANOR_2, MANOR_3, MANOR_4);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
-	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY, CRAFTERS_WORKSHOP);
+	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY, CRAFTERS_WORKSHOP,
+		STORAGE_HALL, TERMINAL_NOOK, WAREHOUSE);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = java.util.stream.Stream.concat(
@@ -639,6 +652,7 @@ public final class StarterBlueprints {
 		put.accept("jewellers", List.of(JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2, JEWELLERS_WORKSHOP_3));
 		// M37, Furnished homes and modded storage
 		put.accept("crafters", List.of(CRAFTERS_WORKSHOP));
+		put.accept("moddedStorageNetworks", STORAGE_HALLS); // 37.17: the storage builds
 		// M38, Cobblemon depth
 		put.accept("villageMegas", MEGA_ONLY);
 		// M39, Create integration

@@ -37,6 +37,7 @@ from basements import LEVEL_4, butchers_shop, cutaway
 from cellars import LEVEL_3
 from create_builds import *
 from quarry import quarry
+from storage_halls import storage_hall, terminal_nook, warehouse, save_all as save_storage_halls
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -193,6 +194,7 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
     quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
     crafters_workshop().save(MAIN_STRUCTURES, "crafters_workshop")  # ROADMAP 37.14: the Crafter's workroom and store
+    save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
     for name, draw in (("fire_station", fire_station), ("well_house", well_house), ("physicians_house", physicians_house)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement

@@ -328,6 +328,7 @@ public class CupThemesCompatTests implements FabricGameTest {
 		Villager v = helper.spawn(EntityType.VILLAGER, at);
 		v.setNoAi(true);
 		v.setVillagerData(v.getVillagerData().setProfession(ModVillagers.BUILDER).setLevel(2));
+		v.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 		v.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(bench)));
 		return v;
 	}

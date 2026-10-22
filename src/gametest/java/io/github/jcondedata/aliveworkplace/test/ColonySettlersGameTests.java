@@ -448,6 +448,8 @@ public class ColonySettlersGameTests implements FabricGameTest {
 					// (a librarian at a lectern may take up the mod's teaching once his brain runs: Odo and Wren share whatever trade Tomas has now)
 					odo.setVillagerData(odo.getVillagerData().setProfession(tomas.getVillagerData().getProfession()));
 					wren.setVillagerData(wren.getVillagerData().setProfession(tomas.getVillagerData().getProfession()));
+					odo.refreshBrain(level); // their new trade's brain, as the game gives one with every job (B307)
+					wren.refreshBrain(level);
 					v.entity().setRank(VillageRanks.Rank.CITY); // (the hall's round counted this test's four villagers a Hamlet again)
 					ItemStack held = click(v, v.player(), charter(v));
 					RealmData.Order order = v.order();

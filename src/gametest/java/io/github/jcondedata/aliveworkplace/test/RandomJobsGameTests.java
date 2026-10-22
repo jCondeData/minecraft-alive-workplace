@@ -70,6 +70,7 @@ public class RandomJobsGameTests implements FabricGameTest {
 		} finally {
 			WorkerLimits.thinking(before);
 		}
+		villager.refreshBrain(level); // the trade's brain, as the game gives one with every job (B307)
 		return villager;
 	}
 

@@ -121,6 +121,7 @@ public class StrangeMoodGameTests implements FabricGameTest {
 		Villager v = helper.spawn(EntityType.VILLAGER, station.south());
 		v.setNoAi(true);
 		v.setVillagerData(v.getVillagerData().setProfession(job).setLevel(lvl));
+		v.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 		v.setCustomName(Component.literal(name));
 		v.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(station)));
 		return v;

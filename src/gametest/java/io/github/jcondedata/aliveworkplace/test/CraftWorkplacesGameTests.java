@@ -102,6 +102,7 @@ public class CraftWorkplacesGameTests implements net.fabricmc.fabric.api.gametes
 		Villager mason = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 20));
 		mason.setNoAi(true);
 		mason.setVillagerData(mason.getVillagerData().setProfession(VillagerProfession.MASON));
+		mason.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 		mason.setVillagerXp(1);
 		mason.getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(6, 2, 20))));
 		StewardRules.Rule yard = ruleOf("workplace_masons_yard");
@@ -116,6 +117,7 @@ public class CraftWorkplacesGameTests implements net.fabricmc.fabric.api.gametes
 			Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(job == VillagerProfession.TOOLSMITH ? 8 : 10, 2, 20));
 			v.setNoAi(true);
 			v.setVillagerData(v.getVillagerData().setProfession(job));
+			v.refreshBrain(helper.getLevel()); // the trade's brain, as the game gives one with every job (B307)
 			v.setVillagerXp(1);
 		}
 		StewardWishes.Verdict smithy = StewardWishes.judge(ruleOf("workplace_smithy"), StewardConditions.Facts.of(level, hall), StewardWishes.State.EMPTY, day);

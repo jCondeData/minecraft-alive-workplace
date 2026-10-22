@@ -284,6 +284,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FurnishingTableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureAnyModGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedHomesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.FloatingFurnishingsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedWorkplacesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedPackTestGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ModdedLibraryGameTests",

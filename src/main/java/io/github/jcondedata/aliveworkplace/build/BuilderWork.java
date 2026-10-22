@@ -355,6 +355,9 @@ public class BuilderWork extends Behavior<Villager> {
 					setStatus(site, BuildSite.Status.WORKING);
 					return; // B254: a member is laying a block the lead gave up on: the stage waits for it, not for long
 				}
+				if (site.endsStage() && site.stage() == BuildPlan.Stage.DECORATION) {
+					io.github.jcondedata.aliveworkplace.furnish.Resting.settle(level, plan); // B300: nothing left floating
+				}
 				site.finishList();
 				continue;
 			}

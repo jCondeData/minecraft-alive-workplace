@@ -330,11 +330,16 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 			return base;
 		}
 		List<Blueprint.Entry> entries = new ArrayList<>(base.blocks().size());
+		java.util.Set<BlockPos> emptied = new java.util.HashSet<>();
 		for (Blueprint.Entry e : base.blocks()) {
 			BlockState to = swap.get(e.pos());
 			entries.add(to == null ? e : new Blueprint.Entry(e.pos(), to, null));
+			if (to != null && to.isAir() && !e.state().isAir()) {
+				emptied.add(e.pos());
+			}
 		}
-		return new Blueprint(base.id(), base.size(), List.copyOf(entries), base.entities());
+		// B300: a pot or lantern on a cell the piece left empty (a fence-and-carpet table become a one-block one) sits down on the piece
+		return Resting.reseat(new Blueprint(base.id(), base.size(), List.copyOf(entries), base.entities()), emptied);
 	}
 
 	/** {@code base} as this choice builds it, the spots read from {@code blueprint}'s file. */

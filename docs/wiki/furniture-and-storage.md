@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, B238, B260, B262, B281
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, B238, B260, B262, B281, B300
 
 ## 1. What a player sees
 
@@ -146,6 +146,12 @@ build is planned and saved with it, so a config change or a removed mod never ch
 (a copy whose blocks are gone later is built as the vanilla build). The Blueprint Table, the preview and the materials
 list show the library this server would build. Job blocks (lecterns, barrels, beehives, crafting tables) and doors are
 never swapped, and nothing a copy adds holds items, so every job finds exactly the storage of the vanilla build.
+
+Nothing a builder furnishes floats (B300). A pot, candle or lantern that stood on a piece the furniture mod's piece
+doesn't reach up to (a fence-and-carpet table become a one-block table) is set down on the new piece, and when the
+decoration stage is over the builder looks over everything placed: a small thing left resting on nothing is set down
+on the first block under it, and anything the game says can't stay where it is (a wall torch with no wall) is broken
+and dropped as an item for the chests.
 
 ## 2. How it works
 
@@ -373,6 +379,9 @@ rides, which can't be summoned.
 
 ## 8. Proof
 
+B300: `FloatingFurnishingsGameTests.noFurnishedBlueprintHasAFloatingPiece` (every furnished blueprint, vanilla and
+with one-block tables), `FloatingFurnishingsGameTests.aPotOnALowerTableSitsOnIt`,
+`FloatingFurnishingsGameTests.aBuiltFurnishedHomeHasNothingFloating`, `FloatingFurnishingsGameTests.aPieceLeftOnNothingIsSetDown`.
 GameTests: `FurnishingConfigGameTests.furnitureModsKeepTheirOrderAndAreCleaned` (the default order, cleaning, an empty
 and a missing list, the list off the screen and in the saved file), `FurnishingConfigGameTests.theM37GateHoldsItsSwitches`
 (a player's file can't turn them on with the gate closed; with it open they obey the file), and

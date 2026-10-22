@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.inn.Innkeepers;
 import io.github.jcondedata.aliveworkplace.inn.Traveller;
+import io.github.jcondedata.aliveworkplace.people.Chatter;
 import io.github.jcondedata.aliveworkplace.people.Couples;
 import io.github.jcondedata.aliveworkplace.people.Families;
 import io.github.jcondedata.aliveworkplace.people.Traits;
@@ -342,6 +343,42 @@ public class HeartEventGameTests implements FabricGameTest {
 			helper.assertTrue(HeartEvents.telling(dara) != null && HeartEvents.telling(dara).said == 0, "Dara didn't set out");
 			HeartEvents.tick(level, far + HeartEvents.WALK_UP);
 			helper.assertTrue(HeartEvents.telling(dara) != null && HeartEvents.telling(dara).said == 1, "Dara never spoke up");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B309: a line of small talk over her head ({@link Chatter}) is no work. A villager who has just said hello to the
+	 * player starts her heart event at once, in the level's own time, rather than waiting the line out (long enough to
+	 * stroll out of range and never tell it); a work line over someone's head still keeps them from it.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"heartChatter"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "heartChatter")
+	public void aHelloDoesNotHoldBackAHeartEvent(GameTestHelper helper) {
+		village(helper, () -> {
+			ServerLevel level = helper.getLevel();
+			ServerPlayer me = player(helper, new BlockPos(5, 2, 6));
+			// At work (a work line over his head): Bram doesn't start.
+			Villager bram = villager(helper, new BlockPos(4, 2, 4), "Bram");
+			Friendship.add(bram, me, 200);
+			WorkerStatus.set(bram, Component.literal("Bram"), -1f, Component.literal("Chopping logs"));
+			HeartEvents.tick(level, level.getGameTime());
+			helper.assertTrue(HeartEvents.telling(bram) == null, "Bram started telling with a work line over his head");
+			bram.discard();
+			// Cora says hello to the player, then has her story to tell: she starts it, the hello or not.
+			Villager cora = villager(helper, new BlockPos(5, 2, 4), "Cora");
+			Friendship.add(cora, me, 200);
+			Chatter.say(level, cora, me, "hello", 1, me.getDisplayName());
+			long now = level.getGameTime();
+			helper.assertTrue(said(cora, now).equals("Oh, hello there, " + ME + "."), "her hello: " + said(cora, now));
+			HeartEvents.tick(level, now);
+			HeartEvents.Telling telling = HeartEvents.telling(cora);
+			helper.assertTrue(telling != null && telling.said == 1, "after her hello Cora didn't start her story: "
+				+ (telling == null ? "not telling" : "said " + telling.said));
+			helper.assertTrue(said(cora, now).startsWith("You want to know where I come from"), "over her head: " + said(cora, now));
+			// And she goes on with it: the hello doesn't stop her between two lines.
+			HeartEvents.tick(level, now + 10);
+			helper.assertTrue(HeartEvents.telling(cora) != null && HeartEvents.telling(cora).said == 1, "her story stopped: " + HeartEvents.telling(cora));
 			helper.succeed();
 		});
 	}

@@ -49,6 +49,11 @@ final class PartnersForgeScene {
 	/** What the air mail show showed: the highest the Pidgeotto got above where it took off, and the bundle. */
 	private volatile double highest;
 	private volatile double takeOffY = Double.NaN;
+	/**
+	 * Its y the moment the show set it down (B313): afterwards Cobblemon's own AI flies it about (a Pidgeotto hovers a
+	 * block or two up), so its y at the end of the show says nothing about the landing.
+	 */
+	private volatile double landedY = Double.NaN;
 	private volatile boolean bundle;
 	private volatile boolean done;
 	/** How high the Pidgeotto is now, and the stills taken as it takes off and climbs. */
@@ -101,6 +106,9 @@ final class PartnersForgeScene {
 				if (up > 0 && Double.isNaN(takeOffY)) {
 					takeOffY = pidgeotto.getY() - up;
 				}
+				if (up == 0 && highest > 0 && Double.isNaN(landedY)) {
+					landedY = pidgeotto.getY(); // the flight just ended: where the show set it down
+				}
 				highest = Math.max(highest, up);
 				liftNow = up;
 				bundle |= PartnerShows.carrying(pidgeotto).map(d -> d.getSlot(0).get().is(Items.BUNDLE)).orElse(false);
@@ -129,8 +137,12 @@ final class PartnersForgeScene {
 				ServerLevel level = server.overworld();
 				Showcase.check(bundle, "the Pidgeotto took off with the air mail's bundle");
 				Showcase.check(highest >= 6, "the Pidgeotto climbed out of sight (" + Math.round(highest) + " blocks up)");
-				Showcase.check(PartnerShows.flying(pidgeotto) == 0 && Math.abs(pidgeotto.getY() - takeOffY) < 1.5,
-					"the Pidgeotto landed back where it took off (y " + Math.round(pidgeotto.getY()) + ", took off at " + Math.round(takeOffY) + ")");
+				BlockPos under = pidgeotto.blockPosition().below();
+				Showcase.check(PartnerShows.flying(pidgeotto) == 0 && Math.abs(landedY - takeOffY) < 1.5,
+					"the Pidgeotto landed back where it took off (landed at y " + String.format(java.util.Locale.ROOT, "%.2f", landedY)
+						+ ", took off at " + String.format(java.util.Locale.ROOT, "%.2f", takeOffY) + "; now at " + pidgeotto.blockPosition().toShortString()
+						+ " over " + net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(level.getBlockState(under).getBlock())
+						+ "; " + PartnerShows.lastFlight() + ")");
 				Container chest = (Container) level.getBlockEntity(FURNACE.south());
 				int ingots = chest == null ? 0 : chest.countItem(Items.IRON_INGOT);
 				Showcase.check(ingots == 8, "the Charmander smelted 8 raw iron on the spot (" + ingots + " ingots in the chest)");

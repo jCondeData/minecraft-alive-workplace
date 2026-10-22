@@ -485,7 +485,12 @@ public final class SandRamps {
 		}
 		// On the ramp's top by the wall; or past it, up on the wall (its top, a walkway) or dropping down inside.
 		return inward >= -0.6 && mob.getY() >= site.foot.getY() + site.height - 0.6
-			|| inward >= 0.6 && (mob.getY() > site.foot.getY() + 1.5 || !mob.onGround());
+			|| inward >= 0.6 && (mob.getY() > site.foot.getY() + 1.5 || !grounded(mob));
+	}
+
+	/** Whether {@code mob} stands on the ground: a rider (a chicken jockey) never does itself, its mount does (B316). */
+	private static boolean grounded(Mob mob) {
+		return mob.onGround() || mob.getVehicle() != null && mob.getRootVehicle().onGround();
 	}
 
 	/** Holds a raider to its ramp (it goes where the tick sends it, nowhere else): once it is on top, by the wall, it walks across the wall's top and drops inside; then it is let go. */
@@ -515,7 +520,7 @@ public final class SandRamps {
 			}
 			double inward = inward(mob, site);
 			// Let go once down inside: a raider still up on the wall is pushed on.
-			if (inward >= 1.5 && inward < site.inside + 3 && mob.onGround() && mob.getY() < site.foot.getY() + 1.5) {
+			if (inward >= 1.5 && inward < site.inside + 3 && grounded(mob) && mob.getY() < site.foot.getY() + 1.5) {
 				site.over.add(mob.getUUID());
 				CLIMBS.remove(mob.getUUID());
 				return;

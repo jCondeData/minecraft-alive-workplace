@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -66,6 +67,8 @@ public final class Chatter {
 		// A feud with another owner's village or realm (33.20)
 		Map.entry("feud", 3));
 	private static final Map<UUID, Long> LAST = new HashMap<>();
+	/** The line of small talk each villager last said (to tell it from a work line over their head, B309). */
+	private static final Map<Villager, Component> SAID = new WeakHashMap<>();
 
 	public static void init() {
 		Platform.get().onLevelTick(level -> {
@@ -114,6 +117,25 @@ public final class Chatter {
 	/** Off work: not showing a work line, and not working, hiding or fleeing. */
 	public static boolean offWork(Villager villager, long now) {
 		return WorkerStatus.get(villager, now) == null && !busy(villager);
+	}
+
+	/** Whether the line over {@code villager}'s head now is small talk of ours (a hello, their mood), not a work line. */
+	public static boolean chatting(Villager villager, long now) {
+		WorkerStatus.Entry entry = WorkerStatus.get(villager, now);
+		if (entry == null) {
+			return false;
+		}
+		synchronized (SAID) {
+			return entry.line() == SAID.get(villager);
+		}
+	}
+
+	/**
+	 * Free to talk: off work ({@link #offWork}), or with no more than a line of small talk over their head. A heart event
+	 * starts then (B309: a hello said just before isn't work, and waiting it out let them stroll out of range).
+	 */
+	public static boolean free(Villager villager, long now) {
+		return !busy(villager) && (WorkerStatus.get(villager, now) == null || chatting(villager, now));
 	}
 
 	/** Working, hiding or fleeing (whatever line is over their head). */
@@ -324,6 +346,9 @@ public final class Chatter {
 	public static void say(ServerLevel level, Villager villager, ServerPlayer player, Component line) {
 		Component name = villager.hasCustomName() ? villager.getCustomName() : villager.getType().getDescription();
 		WorkerStatus.set(villager, name.copy().withStyle(ChatFormatting.GRAY), -1f, line);
+		synchronized (SAID) {
+			SAID.put(villager, line);
+		}
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(player, true));
 		villager.playSound(villager.isBaby() ? SoundEvents.VILLAGER_CELEBRATE : SoundEvents.VILLAGER_AMBIENT, 0.6f, villager.isBaby() ? 1.5f : 1f);
 	}

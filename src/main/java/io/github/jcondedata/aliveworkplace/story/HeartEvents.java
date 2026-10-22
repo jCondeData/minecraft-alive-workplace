@@ -60,7 +60,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Heart events (ROADMAP 31.7): at 2, 4, 6, 8 and 10 hearts a villager has something to tell a player. The next time
- * the player is within {@link #RANGE} blocks while the villager is off work ({@link Chatter#offWork}), they walk up,
+ * the player is within {@link #RANGE} blocks while the villager is off work ({@link Chatter#free}: a line of small talk
+ * over their head is no work, B309), they walk up,
  * face the player and tell it: three to five lines over their head ({@link WorkerStatus}), one every
  * {@link #LINE_EVERY} ticks, each also in the player's chat in grey. If the player walks away, the villager goes to
  * work or anything else interrupts, nothing is kept and they start again next time. Told to the end, the event is
@@ -715,7 +716,7 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 				continue;
 			}
 			List<Villager> near = level.getEntitiesOfClass(Villager.class, player.getBoundingBox().inflate(RANGE, 4, RANGE),
-				v -> v.isAlive() && !v.isSleeping() && v.distanceToSqr(player) <= RANGE * RANGE && telling(v) == null && Chatter.offWork(v, now)
+				v -> v.isAlive() && !v.isSleeping() && v.distanceToSqr(player) <= RANGE * RANGE && telling(v) == null && Chatter.free(v, now)
 					&& PersonalRequests.offer(v) == null); // not while they're asking for help (31.9)
 			near.sort(Comparator.comparingDouble(v -> v.distanceToSqr(player)));
 			for (Villager villager : near) {
@@ -750,9 +751,9 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 			|| villager.distanceToSqr(player) > RANGE * RANGE || !Friendship.eligible(villager)) {
 			return false;
 		}
-		// Off work, but for the line of ours over their head.
+		// Off work, but for the line of ours over their head (or the hello they said before they began, B309).
 		WorkerStatus.Entry status = WorkerStatus.get(villager, now);
-		if (status != null && status.line() != telling.shown || Chatter.busy(villager)) {
+		if (status != null && status.line() != telling.shown && !Chatter.chatting(villager, now) || Chatter.busy(villager)) {
 			return false;
 		}
 		return !Friendship.of(villager).bond(player.getUUID()).told().contains(telling.event.id().toString());

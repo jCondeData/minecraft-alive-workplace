@@ -1976,6 +1976,11 @@ public class BuilderWork extends Behavior<Villager> {
 				stepAsideSpot = spot;
 				stepAsideFrom = at;
 				stepAsideTicks = STEP_ASIDE_TICKS;
+			} else if (spot == null && blockedAttempts++ == 0 && (spot = farSpot(level, plan, villager, keepOff)) != null) {
+				// B308: boxed in where its block goes (the Colossus's lantern: the cell inside the ring of panes, high on the
+				// hand) with nowhere in reach to step to. It hops out to the nearest free spot further off instead of giving
+				// the block up (and, since B254, everything over it); from there it comes back by its usual way (scaffolding).
+				hop(level, villager, spot);
 			} else {
 				blockedAttempts = 0;
 				defer(site, villager, pos);
@@ -2000,10 +2005,51 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
-	/** Nudges a mob off a build spot; if it keeps standing there, moves it next to the site. */
+	/** How far round (blocks, across) {@link #farSpot} looks for somewhere to put a villager boxed in on the build. */
+	static final int FAR_SPOT_RADIUS = 16;
+
+	/**
+	 * B308: the nearest place {@code entity} can stand that the build leaves free, up to {@link #FAR_SPOT_RADIUS} across
+	 * and from 2 over its feet down to 32 under them (the ground under a statue's raised hand), outside {@code keepOff};
+	 * columns are taken nearest first, each from the top down. Null when there's none.
+	 */
+	@Nullable
+	static BlockPos farSpot(ServerLevel level, @Nullable BuildPlan plan, Entity entity, @Nullable AABB keepOff) {
+		BlockPos from = entity.blockPosition();
+		BlockPos best = null;
+		double bestScore = Double.MAX_VALUE;
+		BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+		for (int dx = -FAR_SPOT_RADIUS; dx <= FAR_SPOT_RADIUS; dx++) {
+			for (int dz = -FAR_SPOT_RADIUS; dz <= FAR_SPOT_RADIUS; dz++) {
+				int across = dx * dx + dz * dz;
+				if (across > FAR_SPOT_RADIUS * FAR_SPOT_RADIUS || across >= bestScore) {
+					continue;
+				}
+				for (int dy = 2; dy >= -32; dy--) {
+					p.set(from.getX() + dx, from.getY() + dy, from.getZ() + dz);
+					double score = across + dy * dy;
+					if (score >= bestScore || !level.isLoaded(p) || !canStandAt(level, p)) {
+						continue;
+					}
+					AABB body = new AABB(p.getX() + 0.2, p.getY(), p.getZ() + 0.2, p.getX() + 0.8, p.getY() + 1.9, p.getZ() + 0.8);
+					if (keepOff != null && body.intersects(keepOff) || plan != null && (plan.needsSolidAt(level, p) || plan.needsSolidAt(level, p.above()))) {
+						continue;
+					}
+					bestScore = score;
+					best = p.immutable();
+				}
+			}
+		}
+		return best;
+	}
+
+	/** Nudges a mob off a build spot; if it keeps standing there, moves it next to the site (further off if it's boxed in, B308). */
 	private static void shoo(ServerLevel level, BuildPlan plan, Entity entity, BlockPos pos, AABB keepOff, int attempt) {
 		if (attempt >= 4) {
 			BlockPos spot = findStandingSpot(level, plan, entity.blockPosition(), entity.blockPosition(), keepOff, 4.0);
+			if (spot == null && attempt == 8) {
+				spot = farSpot(level, plan, entity, keepOff); // (once: the search is wide)
+			}
 			if (spot != null) {
 				level.sendParticles(ParticleTypes.POOF, entity.getX(), entity.getY() + 0.5, entity.getZ(), 4, 0.2, 0.2, 0.2, 0.01);
 				entity.teleportTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5);

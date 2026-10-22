@@ -62,6 +62,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (!Boolean.getBoolean("aliveworkplace.shots")) {
 			return;
 		}
+		// B311 (and B274, B314, B315): no gifts by chance in the showcase, as in GameTests. The UUID roll makes one villager
+		// in 240 a Night Owl, who idles and sleeps through the scenes' held morning instead of working, so a scene failed
+		// now and then (the shepherd strolled past his sheep). Scenes about gifts set theirs (Gifted.set), which still works.
+		io.github.jcondedata.aliveworkplace.legend.Gifted.ROLL = false;
 		Showcase.install();
 		ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
 	}
@@ -3387,6 +3391,25 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 	}
 
+	private volatile Villager sceneTrader;
+	private volatile String traderState = "not read";
+
+	// B312: what the trade was doing, for the scene's checks.
+	private static String traderState(ServerPlayer player, Villager trader) {
+		var party = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player);
+		List<String> names = new ArrayList<>();
+		for (var pokemon : party) {
+			names.add(pokemon.getSpecies().getName() + " " + pokemon.getLevel());
+		}
+		return "menu " + player.containerMenu.getClass().getSimpleName()
+			+ ", traded today " + io.github.jcondedata.aliveworkplace.trader.PokemonTraders.tradedToday(trader, player.getUUID())
+			+ ", trader " + (trader.isAlive() ? "alive" : "dead") + (trader.isSleeping() ? " asleep" : "")
+			+ " at " + trader.blockPosition().toShortString() + ", " + String.format("%.1f", player.distanceTo(trader)) + " blocks from the player"
+			+ ", trading with the player " + (trader.getTradingPlayer() == player)
+			+ ", doing " + trader.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+			+ ", party " + names;
+	}
+
 	private void traderScene(Minecraft mc, MinecraftServer server) {
 		tick++;
 		if (tick == 1) {
@@ -3425,6 +3448,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				player.setGameMode(GameType.SURVIVAL);
 				player.teleportTo(level, 2.5, -60, 5.5, 135, 20);
 				io.github.jcondedata.aliveworkplace.trader.PokemonTraders.open(player, trader);
+				sceneTrader = trader;
 			});
 		}
 		if (tick == 90) {
@@ -3462,9 +3486,17 @@ public class ScreenshotHarness implements ClientModInitializer {
 			});
 			pointAt(mc, 8); // the trader's book
 		}
+		if (tick == 175) {
+			server.execute(() -> traderState = traderState(server.getPlayerList().getPlayers().get(0), sceneTrader));
+		}
 		if (tick == 180) {
 			mc.getToasts().clear();
-			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.PokemonTradeScreen, "the trade went through on the trade screen");
+			// The screen stays open after the trade and the trader remembers it (B312: say what state it was in when not).
+			boolean open = mc.screen instanceof io.github.jcondedata.aliveworkplace.client.PokemonTradeScreen;
+			boolean traded = traderState.contains("traded today true");
+			System.out.println("[showcase] trader scene: screen " + (mc.screen == null ? "none" : mc.screen.getClass().getSimpleName()) + ", " + traderState);
+			Showcase.check(open && traded, "the trade went through on the trade screen" + (open && traded ? ""
+				: " (screen " + (mc.screen == null ? "none" : mc.screen.getClass().getSimpleName()) + ", " + traderState + ")"));
 			shot(mc, "05_trader_traded");
 		}
 		if (tick == 190) {

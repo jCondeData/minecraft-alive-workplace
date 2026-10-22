@@ -65,6 +65,11 @@ final class TerraceSleepScene {
 			server.execute(() -> ScreenshotHarness.hoverLookingAt(server.getPlayerList().getPlayers().get(0),
 				Vec3.atLowerCornerOf(ORIGIN).add(9.5, 5, -11), Vec3.atLowerCornerOf(ORIGIN).add(7.5, 3, 4)));
 		}
+		if (tick == 25) {
+			// a task of its own: the placed beds' POIs are registered by tasks the placing queued (B310: looked up in the
+			// same task, the Terrace had no beds yet and nobody moved in)
+			server.execute(() -> moveIn(server.overworld()));
+		}
 		if (tick % 20 == 0) {
 			server.execute(() -> server.overworld().getEntitiesOfClass(net.minecraft.world.entity.monster.Slime.class,
 				new net.minecraft.world.phys.AABB(BlockPos.ZERO).inflate(60)).forEach(net.minecraft.world.entity.Entity::discard));
@@ -115,12 +120,13 @@ final class TerraceSleepScene {
 		if (sleptAt < 0 && tick == LIMIT) {
 			ScreenshotHarness.shot(mc, "99_timeout");
 			Showcase.check(false, "the villager without a bed didn't sleep in the west home in time: claimed " + claimed + ", climbing " + climbing
-				+ (newcomer == null ? "" : ", at " + newcomer.blockPosition().subtract(ORIGIN).toShortString() + " from the Terrace's corner"));
+				+ (newcomer == null ? "" : ", at " + newcomer.blockPosition().subtract(ORIGIN).toShortString() + " from the Terrace's corner")
+				+ (wrong.isEmpty() ? "" : "; " + String.join("; ", wrong)));
 			finish(mc);
 		}
 	}
 
-	/** The lawn, the Terrace on it, the two neighbours by their beds and the newcomer outside the east door, at dusk. */
+	/** The lawn and the Terrace on it, at dusk. */
 	private void setUp(ServerLevel level) {
 		level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
 		level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, level.getServer());
@@ -139,6 +145,14 @@ final class TerraceSleepScene {
 			return;
 		}
 		house.placeInWorld(level, ORIGIN, ORIGIN, new StructurePlaceSettings(), RandomSource.create(304L), 2);
+	}
+
+	/** The two neighbours by the east home's beds and the newcomer outside the east door, once the beds count as beds. */
+	private void moveIn(ServerLevel level) {
+		StructureTemplate house = level.getStructureManager().get(AliveWorkplace.id("terrace")).orElse(null);
+		if (house == null) {
+			return;
+		}
 		BoundingBox box = BoundingBox.fromCorners(ORIGIN, ORIGIN.offset(house.getSize()).offset(-1, -1, -1));
 		List<BlockPos> beds = level.getPoiManager().findAll(h -> h.is(PoiTypes.HOME), box::isInside, box.getCenter(), 16, PoiManager.Occupancy.ANY)
 			.map(BlockPos::immutable).sorted(Comparator.comparingInt(BlockPos::getX)).toList();

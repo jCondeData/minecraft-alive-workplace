@@ -2,7 +2,7 @@
 
 Needs Cobblemon. ROADMAP 28.x (the trader), 28.23 (its own trade screen).
 
-Roadmap items: 28.23
+Roadmap items: 28.23, B312
 
 ## What a player sees
 
@@ -12,7 +12,8 @@ its button with its name, level and a gold ★ if it's shiny, the ball it comes 
 trader wants for it ("For: any Water, Lv. 20+", or for a special request "For: a Pikachu line, Lv. 25+"). On the right,
 your party. Click a card to pick that offer; your Pokémon that won't do are grayed out. Click one that fits and it
 presses in while the screen asks you to click again; the second click makes the trade. If a trader has nothing to offer,
-the panel says "No offers today. Come back tomorrow!".
+the panel says "No offers today. Come back tomorrow!". While the screen is open the trader stays by you and faces you,
+as a vanilla villager does at its trade screen, so he can't walk out of reach and close it mid-trade (B312).
 
 ## How it works
 
@@ -52,5 +53,5 @@ The Trade Board (workstation), the Pokémon Trader profession.
 ## Proof
 
 GameTests: `PokemonTradeScreenCompatTests` (opens from a right-click and trades, refuses what the player can't pay,
-remembers the day's trade after a save and load), `CobblemonCompatTests.traderSwapsPokemonOnceADay`,
+remembers the day's trade after a save and load, `tradeScreenHoldsTheTrader` keeps him by the player), `CobblemonCompatTests.traderSwapsPokemonOnceADay`,
 `traderOffersChangeDaily`, `expertTradersMakeASpecialRequest`. Showcase scene `trader`.

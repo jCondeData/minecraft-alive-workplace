@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310
 
 ## 1. What a player sees
 
@@ -432,7 +432,9 @@ B304: `TerraceSleepGameTests.aVillagerOfTheWestHomeClimbsItsLadderNotTheEastOnes
 home, he stands by the east home's ladder at bedtime), `TerraceSleepGameTests.aVillagerWithoutABedTakesAFreeOneNextDoorAndSleeps`
 (the east home's beds someone else's: he claims a west one and sleeps in it), both failing before the fix; with
 Handcrafted (compat) `TerraceSleepCompatTests.aVillagerWithoutABedTakesAFreeFancyBedNextDoorAndSleeps`. Showcase scene
-`terrace_sleep`.
+`terrace_sleep` (B310: it moves the villagers in a server task after the one placing the Terrace, since the placed beds
+count as beds only once the tasks the placing queued have run; looked up in the same task, it found no beds and nobody
+moved in).
 B300: `FloatingFurnishingsGameTests.noFurnishedBlueprintHasAFloatingPiece` (every furnished blueprint, vanilla and
 with one-block tables), `FloatingFurnishingsGameTests.aPotOnALowerTableSitsOnIt`,
 `FloatingFurnishingsGameTests.aBuiltFurnishedHomeHasNothingFloating`, `FloatingFurnishingsGameTests.aPieceLeftOnNothingIsSetDown`.

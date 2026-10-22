@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303
 
 ## What a player sees
 
@@ -30,7 +30,10 @@ village nobody works at, nearest the hall first. Each shows the block, the job i
 ("In the Storehouse", or "Not in a building"), how far and which way from the hall, and how many villagers without a
 job could take it. Click a block and its page lists those villagers; click one and they get the block: they claim it
 and walk over to it. So an empty Storehouse or a lectern left in a finished home can be filled from the hall, without
-leading anyone into the house. A villager who already works isn't listed; they change job from their own page (36.18, below) or
+leading anyone into the house. Blocks of one kind in one building share a line with a count ("Fisherman ×4", "In the
+Storehouse Shed"); a click takes the nearest. A block several jobs share (a composter, a lectern, a Shop Counter...)
+says how many jobs it offers ("Composter: 4 jobs") and lists them; its click opens a page with a line per job, and a
+job's click lists who could take the block as that job (B303). A villager who already works isn't listed; they change job from their own page (36.18, below) or
 at the block itself (26.6, see [Villager jobs](villager-jobs.md)), for a price.
 
 **Change job (36.18).** A plain click on a worker in the residents list only makes them glow, as before; a right-click opens their page (back,
@@ -133,7 +136,18 @@ nitwit or a Legend. One who has never worked takes any block; one who still has 
 is offered only a block of that same job, because changing job is paid retraining (26.6). A job above a villager's
 class (34.8) is greyed with the class it needs. The pick is checked again on the click: if someone took the block
 meanwhile, or the villager found work, nothing changes, the action bar says why and the list comes back. The page
-shows up to 36 blocks; past that, the last slot says how many more there are further away.
+shows up to 36 lines; past that, the last slot says how many more blocks there are further away.
+
+**Several jobs at one block, and lines by building (B303).** `VillageHalls.freeStations` still names each block by its
+first job (the one vanilla gives, and the one the Steward, families and stories use). The page asks
+`VillageHalls.jobs` for every job the block offers: that first job, then the block's other jobs in `Stations.ALL`'s
+order (those the job keeps as its block), then any other mod's job that takes and keeps that kind of block; only jobs
+this game has (`Stations.available`), never a nitwit or the Trainer Leader (a gold block makes one). `FreeJobsPage.groups`
+puts the blocks of one kind of point of interest in one building outline (or all out in the open) on one line, nearest
+first; one block with one job is drawn exactly as before. Picking a job gives the block as a `FreeStation` of that job,
+so `VillageHalls.assign` makes the villager that job by order (36.17's random draw never touches it), the class rule
+(34.8) is checked for that job, and who could take it is counted for that job: a villager with an old job's trades only
+for that same job. The job is the villager's profession, saved by the game.
 
 **Upgrades (36.14).** The page reads the village's finished builds (the hall's circle) whose blueprint has a next level
 by name (`<name>_2` after `<name>`, `_3` after `_2`, see `BlueprintUpgrades`), the same list the hall's advice and the

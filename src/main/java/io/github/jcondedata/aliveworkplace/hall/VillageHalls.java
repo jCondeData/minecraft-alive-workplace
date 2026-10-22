@@ -149,6 +149,38 @@ public final class VillageHalls {
 		return out;
 	}
 
+	/**
+	 * Every job {@code station}'s block offers, its own (first) job first (B303: the Free job blocks page lets the player
+	 * choose): then the block's other jobs in {@link io.github.jcondedata.aliveworkplace.work.Stations#ALL}'s order (those
+	 * whose job keeps that block, so the job stays), then any other job, another mod's, that takes and keeps that kind of
+	 * block. Only jobs this game has ({@code Stations.available}), never a nitwit or the Trainer Leader (a gold block makes one).
+	 */
+	public static List<VillagerProfession> jobs(FreeStation station) {
+		net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> poi = station.poi();
+		List<VillagerProfession> out = new ArrayList<>();
+		out.add(station.profession());
+		io.github.jcondedata.aliveworkplace.work.Stations.ALL.stream().filter(s -> s.poi().test(poi)).findFirst().ifPresent(s -> {
+			for (io.github.jcondedata.aliveworkplace.work.Stations.Job job : s.jobs()) {
+				VillagerProfession p = job.profession().get();
+				if (offered(p, out) && p.heldJobSite().test(poi)) {
+					out.add(p);
+				}
+			}
+		});
+		for (VillagerProfession p : net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION) {
+			if (offered(p, out) && p.acquirableJobSite().test(poi) && p.heldJobSite().test(poi)) {
+				out.add(p);
+			}
+		}
+		return out;
+	}
+
+	private static boolean offered(VillagerProfession p, List<VillagerProfession> already) {
+		return !already.contains(p) && p != VillagerProfession.NONE && p != VillagerProfession.NITWIT
+			&& p != io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER_LEADER
+			&& io.github.jcondedata.aliveworkplace.work.Stations.available(p);
+	}
+
 	/** Gives {@code villager} the job at {@code station}, if it's still free and they can work (not a nitwit or a child). */
 	public static boolean assign(ServerLevel level, Villager villager, FreeStation station) {
 		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {

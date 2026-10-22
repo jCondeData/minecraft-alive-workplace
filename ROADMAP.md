@@ -5051,6 +5051,17 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   off), the Steward's rule firing on repeated shortfalls and not otherwise, a generated village with the workshop when on;
   text in `en_us.json`; wiki and guide lines; scene `crafter_workshop`.
   - [x] **37.16a** (approved 2026-10-22) Change from the owner (2026-10-21): retired with 37.14a: the Crafter's Workshop leaves the Steward's plans, the workshop offers and village generation (existing workshops stay as plain buildings); do it in the same change as 37.14a.
+- [ ] **37.17** **Storage Hall builds with Tom's Simple Storage** (owner, 2026-10-22: "put some terminal builds as blueprints"). New
+  blueprints, listed at the Blueprint Table, built with Tom's blocks when Tom's Simple Storage is installed and with
+  vanilla chests and barrels (no terminal) when it isn't: a **Storage Hall** (a hall of 24+ chests and barrels round an
+  Inventory Connector on Inventory Cables, a Storage Terminal and a Crafting Terminal on a counter by the door, filing
+  cabinets for the paper and maps), a small **Terminal Nook** (a connector, 6 chests, one terminal; fits a house) and a
+  big **Warehouse** (two floors, rows of racks, a Crafting Terminal, a loading bay with a cart). Each is a Storehouse
+  (it counts as one for the village, porters and builders use it through 37.10's connector support). Style and
+  palette from `tools/blueprints/STYLE.md`; the architect skill reviews the renders. Done when: the three builds in
+  `tools/blueprints` with renders; compat GameTests: each builds with nothing skipped and the connector joins the chests
+  it should (the stock counted once), the vanilla fallback without Tom's, hidden or plain without the mod; text,
+  wiki and guide pages; scene `storage_hall`.
 
 ## Milestone 38: Cobblemon depth (2.2)
 
@@ -5238,6 +5249,16 @@ the owner's port jar; M33's caravans (39.7).
   - [x] **39.7b** (approved 2026-10-19) The rest of 39.7a (lane-e-1018-1612): (1) the track builders lay along a caravan road has gaps where the road steps up or down, so in a real world the two stations don't join one Create network and the real train never runs (caravans fall back to the timed trip); lay continuous track Create's graph accepts (slopes, curves) and test it on a stepped road; (2) the train's blocks are placed by the village, not built by a builder from a blueprint: a builder builds it (architect skill); (3) the caravan's goods ride as the caravan's record, not in the train's chest: load and unload the carriage's chest at the stations. Done when: a compat GameTest with two villages on a stepped road gets a real train running end to end with the goods in its chest; scene village_train shows the chest filling and emptying. Built (lane-e-1018-1912): see the 39.7a design note. Left: a Train Station build standing off the road isn't joined to the road's track (stations must stand beside it); one-block dips, steps on turns and zig-zag (diagonal) roads stay gaps; the train's blueprint is generated from Create's assembly spot (six blocks), not drawn and render-checked with the architect skill. (needs owner check: in a world with Create, two villages with Train Stations beside a stepped caravan road; watch the builder build the train and a caravan's goods appear in the train's chest at one station and in the other village's storehouse.)
   - [x] **39.7c** (approved 2026-10-19) The rest of 39.7b (lane-e-1018-1912): (1) a Train Station build standing off the road gets a track spur joining it to the road's track; (2) one-block dips, steps on a turn and zig-zag (diagonal) roads get continuous track Create's graph accepts, or the road planner smooths them, so no real road leaves a gap; (3) the train's blueprint is drawn with the architect skill (STYLE.md, render-checked), not generated from the assembly spot. Done when: compat GameTests with a station off the road, a one-block dip and a diagonal road each get a real train running end to end; the train build's render passes the architect checklist; scene village_train still passes. Built (lane-e-1018-1912): `CaravanTrains.join` (gaps joined by one Create curve each: quarter-circle turns, S-bends Create draws smooth, slopes; long gaps split), `CaravanTrains.spur` (an off-road station's track joined to the road's heading for the other village; a station on a spur faces the way out), the drawn train `train/village_train` (4 x 4 x 1, `create_builds.py`); `CreateTrackCompatTests` (spur, dip, zig-zag: each a real train there and back), `VillageTrainGameTests` plan test. Render: the vanilla parts only (the renderer has no Create textures); scene village_train not filmed here (GitHub films it).
   - [x] **39.7d** (approved 2026-10-19) Change from the owner (2026-10-19): a conductor villager would be good too
+- [ ] **39.8** **More Create builds as blueprints** (owner, 2026-10-22: "more create builds as blueprints"). At least six new
+  blueprints, listed at the table only when Create is installed, each a working machine and a workplace for 39.3's
+  jobs: a **Brass Foundry** (a mixer and a basin over a blaze burner, belts out), a **Sawmill** (saws on a belt line
+  feeding a depot, a water wheel), a **Crushing Mill** (crushing wheels fed by a belt, with a drain), a **Greenhouse**
+  (a mechanical harvester and plough on a belt, a water wheel), a **Clock Tower** (a cuckoo clock and shafts, a
+  purely decorative build with a working mechanism) and a **Pump House** (a mechanical pump, pipes and a fluid tank
+  in a small brick house). Each is original, in the mod's styles (`STYLE.md`), checked in renders with the architect
+  skill; its machine turns when built (the 39.4 test's way). Done when: the six builds with renders; compat
+  GameTests: each builds with nothing skipped and its machine turns (speed read from block entity data by name), hidden
+  without Create; text, wiki and guide pages; scene `create_builds_more`.
 
 ## Later (not in this plan)
 

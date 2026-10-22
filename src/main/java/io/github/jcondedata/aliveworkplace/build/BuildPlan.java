@@ -152,7 +152,7 @@ public final class BuildPlan {
 		BoundingBox bounds = basement == 0 ? above
 			: new BoundingBox(above.minX(), above.minY() - basement, above.minZ(), above.maxX(), above.maxY(), above.maxZ());
 		List<Step> foundation = level != null && maxFoundationDepth > 0
-			? foundation(level, structure, bounds, maxFoundationDepth, basement == 0 ? Integer.MIN_VALUE : above.minY(), byPos.keySet())
+			? foundation(level, standing(structure, decoration), bounds, maxFoundationDepth, basement == 0 ? Integer.MIN_VALUE : above.minY(), byPos.keySet())
 			: new ArrayList<>();
 		if (Boolean.getBoolean("aliveworkplace.debug") && !foundation.isEmpty()) {
 			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[plan] {} foundation steps for {}, first {} -> {} (ground there: {})", foundation.size(), blueprint.id(),
@@ -388,6 +388,22 @@ public final class BuildPlan {
 	 * isn't standing on what is under it, as a jetty's deck over the water isn't (ROADMAP 27.14: only its log
 	 * posts go down to the bed).
 	 */
+	/**
+	 * What stands on the ground: the structure, and the small things of the decoration that rest on the block under them
+	 * ({@link io.github.jcondedata.aliveworkplace.furnish.Resting#standsOnFloor}: a potted flower before a headstone).
+	 * B300: on a hillside such a pot stood over a hollow with nothing under it, so the builder's last look set it down
+	 * into the hollow and the build was never right; it gets a footing as a wall block does.
+	 */
+	private static List<Step> standing(List<Step> structure, List<Step> decoration) {
+		List<Step> out = new ArrayList<>(structure);
+		for (Step step : decoration) {
+			if (io.github.jcondedata.aliveworkplace.furnish.Resting.standsOnFloor(step.state())) {
+				out.add(step);
+			}
+		}
+		return out;
+	}
+
 	private static List<Step> foundation(Level level, List<Step> structure, BoundingBox bounds, int maxDepth, int ground,
 										 java.util.Set<BlockPos> planned) {
 		List<Step> out = new ArrayList<>();
@@ -430,6 +446,9 @@ public final class BuildPlan {
 
 	private static BlockState foundationBlock(Level level, BlockPos pos, BlockState above) {
 		net.minecraft.world.level.block.Block b = above.getBlock();
+		if (io.github.jcondedata.aliveworkplace.furnish.Resting.standsOnFloor(above)) {
+			return net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState(); // ground under a pot, not a cobblestone post
+		}
 		if (b == net.minecraft.world.level.block.Blocks.GRASS_BLOCK || b == net.minecraft.world.level.block.Blocks.PODZOL
 			|| b == net.minecraft.world.level.block.Blocks.MYCELIUM || b == net.minecraft.world.level.block.Blocks.DIRT_PATH
 			|| b == net.minecraft.world.level.block.Blocks.FARMLAND) {

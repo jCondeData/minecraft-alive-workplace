@@ -237,6 +237,7 @@ public final class CobblemonCompat {
 		CobblemonRogues.init();
 		io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.Party.EXTENSION.register("cobblemon", new CobblemonThesis()); // 31.21
 		CobblemonThesis.init();
+		CobblemonWildFoes.init(); // B301: wild Pokémon as the village's foes where no monster can come
 		if (CobblemonMegas.ENABLED) {
 			io.github.jcondedata.aliveworkplace.jeweller.MegaStones.TeamStones.EXTENSION.register("cobblemon", CobblemonMegas::teamStones); // 38.6
 		}

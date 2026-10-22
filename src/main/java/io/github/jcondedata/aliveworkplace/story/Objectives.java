@@ -20,7 +20,6 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -728,13 +727,20 @@ public final class Objectives {
 				return killed.getTags().contains(ArcEffects.roleTag(role()));
 			}
 			if (entity.equals("monster")) {
-				return killed instanceof Enemy;
+				return io.github.jcondedata.aliveworkplace.hall.Foes.isFoe(killed); // monsters, and the mod's bandits and raiders (B301)
 			}
 			if (entity.startsWith("#")) {
 				ResourceLocation tag = ResourceLocation.tryParse(entity.substring(1));
 				return tag != null && killed.getType().is(TagKey.create(Registries.ENTITY_TYPE, tag));
 			}
 			return BuiltInRegistries.ENTITY_TYPE.getKey(killed.getType()).toString().equals(entity);
+		}
+
+		/** B301: clearing out monsters isn't asked for where nothing can be fought (no monster can come, no wild Pokémon count). */
+		@Override
+		@Nullable
+		public Objective resolve(Context context) {
+			return entity.equals("monster") && !io.github.jcondedata.aliveworkplace.hall.Foes.slayable(context.level) ? null : this;
 		}
 
 		@Override
@@ -752,7 +758,10 @@ public final class Objectives {
 			if (role() != null) {
 				return Component.translatable("quest.aliveworkplace.defeat", who.orElse(Component.literal(role())));
 			}
-			if (entity.equals("monster") || entity.startsWith("#")) {
+			if (entity.equals("monster")) {
+				return io.github.jcondedata.aliveworkplace.hall.Foes.line(count); // "Defeat 8 wild Pokémon" where no monster can come (B301)
+			}
+			if (entity.startsWith("#")) {
 				return Component.translatable("quest.aliveworkplace.slay", count);
 			}
 			EntityType<?> type = Lookup.value(BuiltInRegistries.ENTITY_TYPE, ResourceLocation.parse(entity));

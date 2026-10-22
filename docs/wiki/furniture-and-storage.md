@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300
 
 ## 1. What a player sees
 
@@ -160,6 +160,13 @@ them through it (each item once) and the terminals show them in Tom's own screen
 `moddedLibrary` or `furnishedBuilds` off) they are the vanilla builds: a chest where the connector stands, a crafting
 table for the crafting terminal, a counter block (or nothing, in the Nook) for the storage terminal, boards and spruce
 logs for the cables and trims, chests for the filing cabinets; every chest and barrel is then the Storehouse's own store.
+
+Nothing a builder furnishes floats (B300). A pot, candle or lantern that stood on a piece the furniture mod's piece
+doesn't reach up to (a fence-and-carpet table become a one-block table) is set down on the new piece. A small thing
+on the build's ground layer gets a footing of dirt where the ground under it is lower (a potted flower before a
+headstone on a hillside), as walls get theirs. And when the build is done (after the landscaping) the builder looks
+over everything placed: a small thing left resting on nothing is set down on the first block under it, and anything
+the game says can't stay where it is (a wall torch with no wall) is broken and dropped as an item for the chests.
 
 ## 2. How it works
 
@@ -404,6 +411,9 @@ rides, which can't be summoned.
 
 ## 8. Proof
 
+B300: `FloatingFurnishingsGameTests.noFurnishedBlueprintHasAFloatingPiece` (every furnished blueprint, vanilla and
+with one-block tables), `FloatingFurnishingsGameTests.aPotOnALowerTableSitsOnIt`,
+`FloatingFurnishingsGameTests.aBuiltFurnishedHomeHasNothingFloating`, `FloatingFurnishingsGameTests.aPieceLeftOnNothingIsSetDown`.
 GameTests: `FurnishingConfigGameTests.furnitureModsKeepTheirOrderAndAreCleaned` (the default order, cleaning, an empty
 and a missing list, the list off the screen and in the saved file), `FurnishingConfigGameTests.theM37GateHoldsItsSwitches`
 (a player's file can't turn them on with the gate closed; with it open they obey the file), and

@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.story;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
+import io.github.jcondedata.aliveworkplace.hall.Foes;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
@@ -65,6 +66,7 @@ public final class Stories {
 		Entry e = data.entry(hall);
 		boolean changed = PersonalRequests.overdue(level, hall, now) > 0; // a missed personal request costs friendship (31.9)
 		changed |= e.quests.removeIf(q -> q.due >= 0 && now >= q.due);
+		changed |= swapUnfinishable(level, hall, entity, e);
 		long today = Chronicle.day(level);
 		changed |= e.moods.removeIf(m -> m.until < today);
 		for (Quest q : List.copyOf(e.quests)) {
@@ -315,6 +317,82 @@ public final class Stories {
 				}
 			}
 		}
+	}
+
+	/**
+	 * B301: {@code player} defeated or caught a wild Pokémon at {@code where} where no monster can come
+	 * ({@link VillageQuests#onWildDefeated}): it counts towards the first clearing-out quest of the nearest village, as a
+	 * kill of a monster would.
+	 */
+	public static void onWildDefeated(ServerLevel level, BlockPos where, ServerPlayer player) {
+		VillageHalls.nearest(level, where).ifPresent(hall -> {
+			if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
+				return;
+			}
+			migrate(level, hall, entity);
+			Entry e = Data.get(level).halls.get(hall);
+			for (Quest q : e == null ? List.<Quest>of() : List.copyOf(e.quests)) {
+				int i = q.current();
+				if (i >= 0 && q.objectives.get(i) instanceof Objectives.Kill kill && kill.entity().equals("monster") && mayHelp(level, hall, q, player)) {
+					progress(level, hall, entity, q, i, 1, player);
+					return;
+				}
+			}
+		});
+	}
+
+	/**
+	 * B301: quests whose objective now is clearing out monsters where nothing can be fought (a save from before, or the
+	 * pack's blocklist added since) can't be finished. A board quest comes down and another goes up in its place; a story's
+	 * or a villager's becomes bringing {@link Foes#SUBSTITUTE bread}, as many as the foes (its id, pay and days kept).
+	 * True if anything changed.
+	 */
+	static boolean swapUnfinishable(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, Entry e) {
+		if (e.quests.stream().noneMatch(Stories::clearsMonsters) || Foes.slayable(level)) {
+			return false;
+		}
+		int board = 0;
+		for (int n = 0; n < e.quests.size(); n++) {
+			Quest q = e.quests.get(n);
+			if (!clearsMonsters(q)) {
+				continue;
+			}
+			QuestTracker.changed(level.getServer(), q.id);
+			if (q.giver.equals("hall")) {
+				e.quests.remove(n--);
+				board++;
+				continue;
+			}
+			int i = q.current();
+			List<Objectives.Objective> objectives = new ArrayList<>(q.objectives);
+			objectives.set(i, new Objectives.Bring(Foes.SUBSTITUTE, Foes.substituteCount(objectives.get(i).need()), "hall", Optional.empty()));
+			int[] progress = q.progress.clone();
+			progress[i] = 0;
+			Quest swapped = new Quest(q.id, q.file, q.giver, q.name, q.poster, q.posted, q.due, objectives, progress, q.rewards);
+			swapped.helpers.putAll(q.helpers);
+			swapped.last = q.last;
+			swapped.arc = q.arc;
+			swapped.villager = q.villager;
+			swapped.text = q.text;
+			swapped.festival = q.festival;
+			swapped.mark = q.mark;
+			swapped.placed = q.placed;
+			e.quests.set(n, swapped);
+		}
+		for (int k = 0; k < board && ENABLED && daily(e).size() < VillageQuests.MAX_OPEN; k++) {
+			Quest instead = make(level, hall, VillageRanks.questRewardFactor(entity.rank()), level.random);
+			if (instead != null) {
+				e.quests.add(instead);
+			}
+		}
+		AliveWorkplace.LOG.info("Swapped the clearing-out quests of the village hall at {} for ones that can be done: no monster can spawn "
+			+ "(Peaceful, or a mob blocklist such as MobsBeGone's) and no wild Pokémon count", hall.toShortString());
+		return true;
+	}
+
+	/** Whether {@code q}'s objective now is clearing out monsters. */
+	private static boolean clearsMonsters(Quest q) {
+		return q.currentObjective() instanceof Objectives.Kill kill && kill.entity().equals("monster");
 	}
 
 	/** A player beat one of the village's trainers: it counts towards the village's first battle quest. */

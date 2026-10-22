@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303
 
 ## What a player sees
 
@@ -30,7 +30,10 @@ village nobody works at, nearest the hall first. Each shows the block, the job i
 ("In the Storehouse", or "Not in a building"), how far and which way from the hall, and how many villagers without a
 job could take it. Click a block and its page lists those villagers; click one and they get the block: they claim it
 and walk over to it. So an empty Storehouse or a lectern left in a finished home can be filled from the hall, without
-leading anyone into the house. A villager who already works isn't listed; they change job from their own page (36.18, below) or
+leading anyone into the house. Blocks of one kind in one building share a line with a count ("Fisherman ×4", "In the
+Storehouse Shed"); a click takes the nearest. A block several jobs share (a composter, a lectern, a Shop Counter...)
+says how many jobs it offers ("Composter: 4 jobs") and lists them; its click opens a page with a line per job, and a
+job's click lists who could take the block as that job (B303). A villager who already works isn't listed; they change job from their own page (36.18, below) or
 at the block itself (26.6, see [Villager jobs](villager-jobs.md)), for a price.
 
 **Change job (36.18).** A plain click on a worker in the residents list only makes them glow, as before; a right-click opens their page (back,
@@ -79,6 +82,16 @@ name such as Thornholm.
 up and down) belongs to it. Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
 feeds everything else.
 
+**Clearing-out quests follow the world's foes (B301).** "Clear out 8 monsters" (a `kill` of `monster`, a `slay` reform
+step) counts monsters and the mod's own bandits, raiders and lair mobs (by their tags). Monsters can come unless the
+world is on Peaceful or another mod's spawn blocklist refuses all of zombie, skeleton, creeper and spider: `hall/Foes`
+asks the `BLOCKLIST` extension point, which `compat/mobsbegone` fills from `config/mobsbegone-blacklist.json` (every
+quoted id in it, read again when the file changes). Where none can come, wild Pokémon a player battles or catches near
+the hall count instead (`compat/cobblemon/CobblemonWildFoes`, Cobblemon's `BATTLE_VICTORY` and `POKEMON_CAPTURED`) and
+the quest reads "Defeat 8 wild Pokémon". With neither, the board never posts one, a reform's or story's step asks for
+bread instead (as many as the foes, 64 at most, same pay), and the hall's round swaps one already up: a board quest
+comes down for another, a story's or reform's step becomes the bread, started afresh.
+
 **Needs set the pace.** Every grown villager eats once a day from the store (chests by the kitchens first, then by
 the Storehouses), wants a bed of their own, one guard for every ten villagers and light by the beds. How well that is
 met is the village's wellbeing, 0 to 100%. Work goes up to 25% faster in a well-kept village, at the usual pace at
@@ -123,7 +136,18 @@ nitwit or a Legend. One who has never worked takes any block; one who still has 
 is offered only a block of that same job, because changing job is paid retraining (26.6). A job above a villager's
 class (34.8) is greyed with the class it needs. The pick is checked again on the click: if someone took the block
 meanwhile, or the villager found work, nothing changes, the action bar says why and the list comes back. The page
-shows up to 36 blocks; past that, the last slot says how many more there are further away.
+shows up to 36 lines; past that, the last slot says how many more blocks there are further away.
+
+**Several jobs at one block, and lines by building (B303).** `VillageHalls.freeStations` still names each block by its
+first job (the one vanilla gives, and the one the Steward, families and stories use). The page asks
+`VillageHalls.jobs` for every job the block offers: that first job, then the block's other jobs in `Stations.ALL`'s
+order (those the job keeps as its block), then any other mod's job that takes and keeps that kind of block; only jobs
+this game has (`Stations.available`), never a nitwit or the Trainer Leader (a gold block makes one). `FreeJobsPage.groups`
+puts the blocks of one kind of point of interest in one building outline (or all out in the open) on one line, nearest
+first; one block with one job is drawn exactly as before. Picking a job gives the block as a `FreeStation` of that job,
+so `VillageHalls.assign` makes the villager that job by order (36.17's random draw never touches it), the class rule
+(34.8) is checked for that job, and who could take it is counted for that job: a villager with an old job's trades only
+for that same job. The job is the villager's profession, saved by the game.
 
 **Upgrades (36.14).** The page reads the village's finished builds (the hall's circle) whose blueprint has a next level
 by name (`<name>_2` after `<name>`, `_3` after `_2`, see `BlueprintUpgrades`), the same list the hall's advice and the
@@ -186,6 +210,10 @@ point of interest, saved by Minecraft).
 
 ## Decisions
 
+- B301 (bug lane, 2026-10-22): "can monsters come" is read from the world (Peaceful) and the blocklist's own file,
+  never from whether a monster was seen lately, so it's the same on every server start and testable. The game rule that
+  stops mob spawning isn't counted: spawners, raids and the mod's camps still bring foes.
+
 - 30.4a (owner, 2026-10-05): the hall's screen is a custom UI like vanilla's workstation screens, not a chest of
   icons. The server lays out the buttons and decides every click; the client only draws.
 - 26.12 (owner, 2026-10-16: "i like the look of the blueprint table"): the hall and the Storehouse board are drawn in
@@ -229,6 +257,8 @@ point of interest, saved by Minecraft).
 ## Proof
 
 GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
+`B301GameTests` (no clearing-out quest or step where nothing can be fought, bandits and wild Pokémon counting, the
+words, a stuck quest swapped after a save and reload, MobsBeGone's file read), compat `WildFoesCompatTests`,
 `WagonBedsGameTests` (B206, B207: settlers leave the wagon once the hall stands, an older camp's bedroll is mended,
 two free beds take in two newcomers and the hall says it's full, the inn takes a traveller only into a free house bed,
 the wagon-bed list and its save),

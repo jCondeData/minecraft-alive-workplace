@@ -65,6 +65,21 @@ public final class Reforms {
 			}
 			return fallback.orElse(new Step(VillageQuests.Kind.SLAY, "minecraft:air", VillageQuests.MONSTERS, reward, Optional.empty(), arc));
 		}
+
+		/**
+		 * The step as it can be done here (B301): a battle that can't be fought becomes its fallback, and clearing out
+		 * monsters where nothing can be fought ({@code slayable} false, {@link Foes}) becomes bringing bread, same pay.
+		 */
+		public Step resolve(boolean battles, boolean slayable) {
+			Step s = resolve(battles);
+			return s.kind() != VillageQuests.Kind.SLAY || slayable ? s
+				: new Step(VillageQuests.Kind.BRING, Foes.SUBSTITUTE, Foes.substituteCount(s.count()), s.reward(), Optional.empty(), s.arc());
+		}
+
+		/** The step as it can be done in the village round {@code hall}: its battles and its foes. */
+		public Step resolve(ServerLevel level, BlockPos hall) {
+			return resolve(battles(level, hall), Foes.slayable(level));
+		}
 	}
 
 	/** A fallback step: kind, item, count, reward and arc (a battle's stand-in has no fallback of its own, nor is it a battle). */
@@ -207,6 +222,7 @@ public final class Reforms {
 	 */
 	public static void round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
 		io.github.jcondedata.aliveworkplace.realm.RealmEdicts.round(level, hall, entity); // 33.22: the realm's steps at its capital
+		swapUnfinishable(level, entity);
 		if (!Edicts.ENABLED) {
 			return;
 		}
@@ -235,7 +251,7 @@ public final class Reforms {
 			if (battles == null) {
 				battles = battles(level, hall);
 			}
-			Step s = reform.get().steps().get(step).resolve(battles);
+			Step s = reform.get().steps().get(step).resolve(battles, Foes.slayable(level));
 			int reward = Math.round(s.reward() * VillageRanks.questRewardFactor(entity.rank()));
 			VillageQuests.Quest quest = new VillageQuests.Quest(UUID.randomUUID(), s.kind(), s.item(), s.count(), 0, reward, level.getGameTime(), "",
 				Optional.empty(), Optional.of(new VillageQuests.ReformStep(f.id(), step)));
@@ -247,6 +263,19 @@ public final class Reforms {
 		if (changed) {
 			entity.setQuests(quests);
 		}
+	}
+
+	/**
+	 * B301: a clearing-out reform step already up where nothing can be fought (a save from before, or the pack's
+	 * blocklist added since) becomes bringing bread, same step and pay, started afresh. Run with each hall round.
+	 */
+	static void swapUnfinishable(ServerLevel level, VillageHallBlockEntity entity) {
+		if (entity.quests().stream().noneMatch(q -> q.kind() == VillageQuests.Kind.SLAY) || Foes.slayable(level)) {
+			return;
+		}
+		entity.setQuests(entity.quests().stream().map(q -> q.kind() != VillageQuests.Kind.SLAY ? q
+			: new VillageQuests.Quest(q.id(), VillageQuests.Kind.BRING, Foes.SUBSTITUTE, Foes.substituteCount(q.count()), 0, q.reward(), q.posted(),
+				q.poster(), Optional.empty(), q.reform())).toList());
 	}
 
 	/** "The Shift Bell, step 1 of 3" for a reform step (its edict's id if the file is gone). */

@@ -62,8 +62,10 @@ lost. Children and nitwits can't change jobs, and with the game rule `workplaceR
 that nobody works at, nearest the hall first: the job it gives, the building it's in (say, "In the Storehouse") and how
 far away it is, with how many villagers without a job could take it. Click a block to see those villagers, then click
 one: they take the job and walk over to their new block. It's the easy way to fill a lectern or a Storehouse inside a
-finished house, with no need to lead anyone indoors. If someone else got the block first, you're told and nothing
-changes. Villagers who already have a job aren't on the list: to give one of them a new job, use **Change job** on their
+finished house, with no need to lead anyone indoors. Several blocks of one kind in one building share a line with a
+count ("Fisherman ×4"). A block that can give several jobs says how many ("Composter: 4 jobs") and lists them: click it,
+pick the job you want (Farmer, Orchard Keeper, Florist or Composter), then who takes it. If someone else got the block
+first, you're told and nothing changes. Villagers who already have a job aren't on the list: to give one of them a new job, use **Change job** on their
 page (above) for a few emeralds.
 
 ![The Free job blocks page](https://jcondedata.github.io/minecraft-alive-workplace/hall_jobs/still-1.jpg)

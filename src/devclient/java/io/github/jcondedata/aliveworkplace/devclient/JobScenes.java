@@ -2143,9 +2143,12 @@ final class JobScenes {
 			};
 		}, null));
 		// Sieges III (ROADMAP 32.6): raiders with axes lay siege to a Gatehouse with a Wall Tower beside it. The two archers
-		// of the Guard Posts inside leave them for their battle stations, one on each build, and shoot down at the raiders at
-		// the portcullis. (These guards think for themselves: the walk, the climb and the shooting are the feature.)
-		SCENES.put("battle_stations", new Job("the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 1500,
+		// of the Guard Posts inside leave them for their battle stations, one on each build, and shoot down at the raiders
+		// coming at the portcullis. (These guards think for themselves: the walk, the climb and the shooting are the feature.)
+		// B320: a raider at the portcullis stands under the Gatehouse's walkway, out of sight of every station (only murder
+		// holes would see him), so the archers shoot the raiders on their way in: the raiders start 30 blocks out and wait
+		// there (out of the archers' reach) until both archers are on their stations, or for 30 seconds at most.
+		SCENES.put("battle_stations", new Job("the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders coming at the portcullis", 1500,
 			new Vec3(14.5, -51.0, 12.5), new Vec3(1.5, -56.5, -3.0), (level, player) -> {
 			BlockPos hall = STATION.north(14);
 			BuildSiteManager sites = BuildSiteManager.get(level);
@@ -2178,11 +2181,12 @@ final class JobScenes {
 					"{\"roster\": [{\"entity\": \"minecraft:vindicator\", \"share\": 1, \"role\": \"melee\"}], \"tactics\": [\"ram_gates\"]}").getAsJsonObject());
 			io.github.jcondedata.aliveworkplace.threat.Culture.Member member = culture.roster().get(0);
 			List<net.minecraft.world.entity.Mob> raiders = new java.util.ArrayList<>();
-			for (double[] at : new double[][] {{0.5, 6.5}, {-2.5, 8.5}, {3.5, 8.5}, {6.5, 7.5}}) {
+			for (double[] at : new double[][] {{0.5, 26.5}, {-2.5, 28.5}, {3.5, 28.5}, {6.5, 27.5}}) {
 				net.minecraft.world.entity.Mob raider = io.github.jcondedata.aliveworkplace.threat.Threats.create(level, member);
 				raider.moveTo(at[0], STATION.getY(), at[1], 180f, 0f);
 				raider.finalizeSpawn(level, level.getCurrentDifficultyAt(raider.blockPosition()), MobSpawnType.EVENT, null);
 				io.github.jcondedata.aliveworkplace.threat.Threats.outfit(level, raider, culture, member);
+				raider.setNoAi(true); // waiting out of reach until the archers are up (B320)
 				level.addFreshEntityWithPassengers(raider);
 				raiders.add(raider);
 			}
@@ -2195,9 +2199,20 @@ final class JobScenes {
 			List<BlockPos> stations = io.github.jcondedata.aliveworkplace.guard.BattleStations.stations(level, hall);
 			Showcase.check(stations.stream().anyMatch(s -> s.getX() < STATION.getX() + 6) && stations.stream().anyMatch(s -> s.getX() >= STATION.getX() + 6),
 				"the Gatehouse and the Wall Tower both have battle stations");
+			int[] ticks = {0};
+			float[] healthAtStart = {-1f};
 			return l -> {
+				boolean posted = archers.stream().allMatch(io.github.jcondedata.aliveworkplace.guard.BattleStations::onStation);
+				if (healthAtStart[0] < 0 && (posted || ++ticks[0] >= 600)) {
+					// The archers are up (or have had 30 seconds): the raiders come on. Only hurt from now on counts.
+					healthAtStart[0] = 0f;
+					for (net.minecraft.world.entity.Mob r : raiders) {
+						r.setNoAi(false);
+						healthAtStart[0] += r.isAlive() ? r.getHealth() : 0f;
+					}
+				}
 				// B252: on a timeout, say where each archer stood, their station and what they were shooting at
-				StringBuilder why = new StringBuilder();
+				StringBuilder why = new StringBuilder(healthAtStart[0] < 0 ? "the raiders were still held back (the archers never both on station); " : "");
 				for (Villager a : archers) {
 					net.minecraft.world.entity.LivingEntity foe = io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(a);
 					why.append(why.length() == 0 ? "" : "; ").append("archer at ").append(String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f", a.getX(), a.getY(), a.getZ()))
@@ -2211,12 +2226,17 @@ final class JobScenes {
 				}
 				for (net.minecraft.world.entity.Mob r : raiders) {
 					why.append("; raider at ").append(String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f, health %.0f/%.0f%s, seen by %d", r.getX(), r.getY(), r.getZ(),
-						r.getHealth(), r.getMaxHealth(), r.isAlive() ? "" : " (dead)", archers.stream().filter(a -> a.hasLineOfSight(r)).count()));
+						r.getHealth(), r.getMaxHealth(), r.isAlive() ? "" : " (dead)", archers.stream().filter(a -> a.hasLineOfSight(r)).count()))
+						// under the walkway, at the portcullis, no station sees him: he had to be shot on his way in
+						.append(r.isAlive() && r.getZ() < STATION.getZ() - 1.5 && r.getZ() > STATION.getZ() - 4 ? " (at the portcullis, under the walkway: out of every station's sight)" : "");
 				}
 				timeoutWhy = why.toString();
-				boolean posted = archers.stream().allMatch(io.github.jcondedata.aliveworkplace.guard.BattleStations::onStation);
 				boolean both = archers.stream().anyMatch(a -> a.getX() < STATION.getX() + 6) && archers.stream().anyMatch(a -> a.getX() >= STATION.getX() + 6);
-				return posted && both && raiders.stream().anyMatch(r -> !r.isAlive() || r.getHealth() < r.getMaxHealth());
+				float health = 0f;
+				for (net.minecraft.world.entity.Mob r : raiders) {
+					health += r.isAlive() ? r.getHealth() : 0f;
+				}
+				return healthAtStart[0] >= 0 && posted && both && health < healthAtStart[0];
 			};
 		}, null));
 		// A day's warning (ROADMAP 32.14): a Gatehouse with a Wall Tower beside it and a Village Hall behind, an archer

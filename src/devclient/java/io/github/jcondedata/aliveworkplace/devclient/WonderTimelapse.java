@@ -311,7 +311,8 @@ final class WonderTimelapse {
 			}
 			if (tick >= GIVE_UP && !over) {
 				over = true;
-				Showcase.check(false, "the " + wonder + " went up and a wedding was held at it in time (stage " + stage + ", finished " + done + ", wed " + wed + ")");
+				Showcase.check(false, "the " + wonder + " went up and a wedding was held at it in time (stage " + stage + ", finished " + done + ", wed " + wed + ")"
+					+ (done || waiting.isEmpty() ? "" : "; it was waiting on: " + waiting));
 				mc.stop();
 			}
 			return;
@@ -386,7 +387,8 @@ final class WonderTimelapse {
 		}
 		if (tick >= GIVE_UP && !over) {
 			over = true;
-			Showcase.check(false, "the " + wonder + " went up and was celebrated in time (stage " + stage + ", finished " + done + ", rockets " + rockets + ")");
+			Showcase.check(false, "the " + wonder + " went up and was celebrated in time (stage " + stage + ", finished " + done + ", rockets " + rockets + ")"
+				+ (done || waiting.isEmpty() ? "" : "; it was waiting on: " + waiting));
 			mc.stop();
 		}
 	}
@@ -479,13 +481,44 @@ final class WonderTimelapse {
 		done = now.done();
 		if (++watched % 30 == 0) { // every half minute, the build's progress in the log (a scene that runs out of time shows where it stood)
 			StringBuilder parts = new StringBuilder();
+			StringBuilder on = new StringBuilder();
 			for (UUID part : now.parts()) {
 				io.github.jcondedata.aliveworkplace.build.BuildSite s = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).get(part);
 				parts.append(s == null ? " gone" : " " + s.stage() + " placed " + s.placed() + " skipped " + s.skipped());
+				if (s != null && !s.isDone()) {
+					on.append(on.isEmpty() ? "" : "; ").append(waitingOn(level, s));
+				}
 			}
-			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[{}] stage {} at game tick {} ({} ms a tick), crew {}:{}", scene, now.stage(), level.getGameTime(),
-				server.getAverageTickTimeNanos() / 1_000_000, WonderCrews.crew(level, now).size(), parts);
+			waiting = on.toString();
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[{}] stage {} at game tick {} ({} ms a tick), crew {}:{}; {}", scene, now.stage(), level.getGameTime(),
+				server.getAverageTickTimeNanos() / 1_000_000, WonderCrews.crew(level, now).size(), parts, waiting);
 		}
+	}
+
+	/** B315: what the build was waiting on at the last progress line, for the give-up message. */
+	private volatile String waiting = "";
+
+	/**
+	 * B315: a part's lead and what holds it: the part's status and detail, its cursor, whether queued or retrying, and
+	 * where its lead is, what it's doing (its brain's activity, its job, whether it has a workplace) and its crew.
+	 */
+	private static String waitingOn(ServerLevel level, io.github.jcondedata.aliveworkplace.build.BuildSite s) {
+		StringBuilder out = new StringBuilder(s.stage() + " " + s.status() + (s.detail() == null ? "" : " (" + s.detail().getString() + ")") + " cursor " + s.cursor()
+			+ (s.isRetrying() ? " retrying" : "") + (s.isQueued() ? " queued" : "") + ", helpers " + s.helpers(level.getGameTime()).size());
+		UUID lead = s.builder();
+		if (lead == null) {
+			return out.append(", no lead").toString();
+		}
+		if (!(level.getEntity(lead) instanceof Villager v)) {
+			return out.append(", lead not loaded").toString();
+		}
+		io.github.jcondedata.aliveworkplace.build.BuilderJob job = io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.get(v);
+		return out.append(", lead ").append(v.getName().getString()).append(" at ").append(v.blockPosition().toShortString())
+			.append(" doing ").append(v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing"))
+			.append(v.isSleeping() ? " asleep" : "")
+			.append(", job ").append(job == null ? "none" : (job.siteId().equals(s.id()) ? "this part" : "another site") + (job.helper() ? " as a helper" : ""))
+			.append(v.getBrain().hasMemoryValue(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE) ? "" : ", no workplace")
+			.toString();
 	}
 
 	/** Finished: the checks so far, and on to the evening's festival, the day moving again. */

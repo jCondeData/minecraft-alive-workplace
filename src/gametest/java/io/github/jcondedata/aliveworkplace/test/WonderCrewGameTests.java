@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.build.BlueprintSupplies;
 import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
+import io.github.jcondedata.aliveworkplace.build.StallWatch;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
@@ -44,6 +45,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
@@ -170,6 +172,9 @@ public class WonderCrewGameTests implements FabricGameTest {
 		long memberTicks;
 		long busyTicks;
 		final List<String> stages = new ArrayList<>();
+		/** B326: one note per 30-second stall of a part ({@link StallWatch}), and the stalls already noted. */
+		final List<String> stalls = new ArrayList<>();
+		final Set<String> stalled = new HashSet<>();
 
 		void tick(GameTestHelper helper, ServerLevel level, WonderSite now) {
 			BuildSiteManager sites = BuildSiteManager.get(level);
@@ -184,6 +189,9 @@ public class WonderCrewGameTests implements FabricGameTest {
 				}
 				if (counted.add(id)) {
 					placeable += plan.placeableCount();
+				}
+				if (StallWatch.isStalled(part.id()) && stalled.add(part.id() + "@" + part.progressMark())) {
+					stalls.add(stallNote(helper, level, part, plan)); // B326: what the crew was doing when the part stood still 30 s
 				}
 				Map<UUID, Long> columns = part.crewColumns();
 				helper.assertTrue(new HashSet<>(columns.values()).size() == columns.size(), "two members on one column: " + columns);
@@ -227,6 +235,34 @@ public class WonderCrewGameTests implements FabricGameTest {
 				}
 			}
 		}
+	}
+
+	/**
+	 * B326: a part standing still, for a failure message: what it has placed and given up, where its retries are, what the
+	 * lead is on and where it stands, the block at the cursor and the one under it, and each member's spot and block.
+	 */
+	private static String stallNote(GameTestHelper helper, ServerLevel level, BuildSite part, BuildPlan plan) {
+		Entity lead = level.getEntity(part.builder());
+		StringBuilder note = new StringBuilder("@" + level.getGameTime() + " " + part.structure().getPath() + " " + part.stage() + (part.isRetrying() ? " retrying" : "")
+			+ ": " + part.placed() + " placed, " + part.skipped() + " given up, cursor " + part.cursor() + ", " + part.retryLeft() + " retries left, "
+			+ part.status() + (part.detail() == null ? "" : " (" + part.detail().getString() + ")") + "; lead at " + where(helper, lead == null ? null : lead.blockPosition())
+			+ " on " + where(helper, part.leadClaim()));
+		BuildPlan.Step at = part.current(plan);
+		if (at != null) {
+			note.append("; cursor block ").append(where(helper, at.pos())).append(' ').append(level.getBlockState(at.pos()).getBlock().getName().getString())
+				.append(" for ").append(at.state().getBlock().getName().getString()).append(part.gaveUp(at.pos()) ? " (given up)" : "")
+				.append(", under it ").append(level.getBlockState(at.pos().below()).getBlock().getName().getString()).append(part.gaveUp(at.pos().below()) ? " (given up)" : "");
+		}
+		for (UUID m : part.helpers(level.getGameTime())) {
+			Entity e = level.getEntity(m);
+			note.append("; member at ").append(where(helper, e == null ? null : e.blockPosition())).append(" on ").append(where(helper, part.claim(m)));
+		}
+		io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("B326 crew stall {}", note);
+		return note.toString();
+	}
+
+	private static String where(GameTestHelper helper, BlockPos pos) {
+		return pos == null ? "-" : helper.relativePos(pos).toShortString();
 	}
 
 	/** {@code count} more builders for {@code v}'s village, at benches further along the row. */
@@ -306,13 +342,13 @@ public class WonderCrewGameTests implements FabricGameTest {
 			WonderSite now = WonderManager.get(level).site(id[0]).orElse(null);
 			helper.assertTrue(now != null, "the crew's folly wasn't begun");
 			helper.assertTrue(now.done() && crewTicks[0] >= 0, "the crew is still at stage " + now.stage() + ", "
-				+ Math.round(WonderStages.stageProgress(level, now) * 100) + "%, crew " + WonderCrews.crew(level, now).size());
+				+ Math.round(WonderStages.stageProgress(level, now) * 100) + "%, crew " + WonderCrews.crew(level, now).size() + "; stalls " + watch.stalls);
 			helper.assertTrue(watch.most == 8, "all eight builders on the crew at once: at most " + watch.most);
 			// B171: a quarter, with a tenth of it for the crew's jostling. Eight builders walking round each other don't
 			// take the same ticks twice: 2,500 to 2,900 most runs, but 3,060 once against a lone 12,100 (25.3%)
 			helper.assertTrue(crewTicks[0] * 40 <= soloTicks[0] * 11, "the crew of eight took " + crewTicks[0] + " ticks, the lone builder " + soloTicks[0]
 				+ " (a quarter and a tenth of it: " + soloTicks[0] * 11 / 40 + "; " + watch.placeable + " blocks, the least one builder could take " + watch.placeable * 20L
-				+ "); members busy " + watch.busyTicks + " of " + watch.memberTicks + " ticks; stages " + watch.stages);
+				+ "); members busy " + watch.busyTicks + " of " + watch.memberTicks + " ticks; stages " + watch.stages + "; stalls " + watch.stalls);
 			List<BlockPos> left = unlikeButTheFinial(level, at);
 			helper.assertTrue(left.isEmpty(), left.size() + " blocks unlike the drawing, e.g. " + left.stream().limit(4)
 				.map(p -> helper.relativePos(p).toShortString() + "=" + level.getBlockState(p).getBlock()).toList());

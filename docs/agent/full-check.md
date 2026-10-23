@@ -219,6 +219,52 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
   overhead lines run off the frame because the camera stands close; `create_builds_more`'s stills are too far away to
   show the machines turning.
 
+### QA stage 4: every entry point clicked like a player (qa-stage4, 2026-10-23)
+B333's lesson (a Delivery Note on a chest opened the chest; the tests had set the route directly) hunted everywhere.
+- **The entry points.** Items with their own click: Blueprint, Scan Tool, Settler's Wagon, Colony Charter, Field
+  Marker, Patrol Map, Village Banner, Delivery Note, Quarry Marker, Wonder Plan, Rally Banner, Remedy. Blocks with their
+  own click: Builder's Bench (and Postal Desk), Bounty Board, Grave, Village Hall, Mailbox, Shop Counter, Drop Box,
+  Storehouse, Blueprint Table, Travel Post, Foundation Stone. Fourteen use-entity handlers through `Platform`
+  (`BuilderEvents` holds most villager clicks: jobs, hires, markers, Legends), two use-block handlers (Cup matches,
+  village protection), nine client packets, and `/workplace`. No item uses `interactLivingEntity`, so every villager
+  click goes through the use-entity callbacks, which run before vanilla's trade screen. Before this stage only the
+  Gift, Stations, Caravan, site-list, protection and two payload tests sent the real packets; most items and hires
+  were tested by calling their handler (`Fields.assign`, `PatrolMapItem.giveTo`, `RemedyItem.give`, `makeCamp`...).
+- **`QaStageFourGameTests` (21) and `QaStageFourCompatTests` (2)**, all clicking the way the client does: a block click is
+  `ServerPlayerGameMode.useItemOn` for the main hand then the off hand, each followed by the item's own use; a villager
+  click is the real `ServerboundInteractPacket`; a screen's change is the real custom payload; commands go through the
+  dispatcher as a survival player who isn't an operator. Expectations from README, CHANGELOG and en_us.json. They cover:
+  every marker from the off hand, in survival and creative, and a sneak-click clearing it; a Field Marker corner on a
+  composter; the bench and a Travel Post clicked holding a stick or sword; a Field Marker taken by a Farmer with a
+  composter (start line, marker used); a Quarry Marker on a Miner with no furnace, sneaking and not; a blank Delivery
+  Note on a Postman; a Patrol Map sneak-given to a guard; an unplaced blueprint on a builder, sneaking and not; the
+  Remedy (one used, the bottle back, dropped with a full bag, nothing used in creative); nine sneak-click hires
+  (Armorer, Toolsmith, Weaponsmith, Fletcher, Shepherd, Butcher, Cleric, Librarian, Cartographer), each next to a
+  rival block the same item picks another job at; a stranger refused another's worker; the Nurse; the quarry depths
+  (4, 8, 16, 32, 64, strip mine) from sneak-clicks; eight patrol points at most; twelve rally guards, the thirteenth
+  refused, one let go, raise and lower; the shop log with an empty hand; the Settler's Wagon on the ground and a second
+  one refused; the Scan Tool's save with a full bag; the material list from a blueprint and on a bench; the README's
+  command table (sites, mail, quests, standing, friend list, strip in either hand; the four op commands refused); the
+  City Plan's edit packet from a stranger (refused, told) and from the owner; a Delivery Note on a Cobblemon pasture's
+  either half; a Habitat Keeper's lure spot from a marked Field Marker, and her lure picker from a sneak-click.
+- **Flakes**: the 19 GameTests then written ran 5 times (whole runs): all passed every time. **Mutants**: 7 planted in
+  `RallyBannerItem`, `RemedyItem` and `Hiring`, 6 killed at once; the survivor (`Hiring` 27, the refusal naming "?"
+  instead of the employer) is now killed by `aStrangerCannotHireAnothersWorker`. (Two players made in one tick share a
+  name in these tests; the stranger is made 3 ticks later.)
+- **Full build** green: 2632 GameTests and 494 compat tests passed; the log audit found no errors (18 expected warnings).
+- **Three bugs**, failing tests on branch `tests/qa-stage4-clicks` (`QaStageFourBugTests`):
+  - **B335**: the Scan Tool on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench opens, flips or
+    answers the block and marks no corner.
+  - **B336**: the shop owner's sneak-right-click on the counter shows no sales log while he holds anything.
+  - **B337**: a Book and Quill on a builder's Blueprint Table opens the table, no material list (B279 says "their
+    Builder's Bench"; maybe only the docs need changing).
+- B333's fix (pulled during this stage) covers the pasture too: that compat test failed before it and passes now.
+- **Not tested**: `/workplace friend add` and `remove` (the GameTest server has no profile cache, so a player name
+  can't be looked up: "An unexpected error"); the Bounty Board, Grave, Mailbox, Drop Box, Storehouse and Foundation
+  Stone clicks; the story, guild, sickness and Legend villager clicks beyond the existing tests; the Colony Charter,
+  Table and Preview packets beyond the existing tests; a real client (no screenshots this stage).
+
 ## Still to do
-- B333 and B334 (the bug lane), with the tests on `tests/qa-stage3-delivery-note`.
+- B335, B336 and B337 (the bug lane), with the tests on `tests/qa-stage4-clicks`.
+- The clicks stage 4 left untested (above).
 - A timing test for `BuilderWork` 1252 if the landscaping shortcut ever matters to a player.

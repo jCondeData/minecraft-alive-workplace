@@ -57,13 +57,7 @@ public class BuildersBenchBlock extends HorizontalDirectionalBlock {
 			return super.useItemOn(stack, state, level, pos, player, hand, hit);
 		}
 		if (level instanceof ServerLevel serverLevel) {
-			io.github.jcondedata.aliveworkplace.build.BuildSite site = io.github.jcondedata.aliveworkplace.build.SiteList.atBench(serverLevel, pos);
-			if (site == null) {
-				Chat.actionBar(player, Component.translatable("message.aliveworkplace.site_list.no_build_at_bench").withStyle(net.minecraft.ChatFormatting.YELLOW));
-			} else {
-				io.github.jcondedata.aliveworkplace.build.SiteList.write(serverLevel, player, site,
-					io.github.jcondedata.aliveworkplace.build.SiteList.builderAt(serverLevel, pos), hand);
-			}
+			io.github.jcondedata.aliveworkplace.build.SiteList.answerAtBench(serverLevel, player, pos, hand);
 		}
 		return ItemInteractionResult.sidedSuccess(level.isClientSide());
 	}

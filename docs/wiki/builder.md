@@ -19,8 +19,8 @@ better with each building: they level up like villagers you trade with, and each
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
-Once a build is under way, a Book and Quill used on its Builder (or the Builder's Bench) becomes the material list of
-the rest of it (B279): every block from the stage it is in to the end that isn't standing yet, furniture and item
+Once a build is under way, a Book and Quill used on its Builder (or the Blueprint Table they work at, or an old Builder's
+Bench) becomes the material list of the rest of it (B279): every block from the stage it is in to the end that isn't standing yet, furniture and item
 frames included, with what the bench's chests, the crew's bags and the village (a storehouse, other workers' spare
 stock) hold ticked off. A sneak-right-click with an empty hand shows the status and then the whole list in chat. With
 nothing left to place, no build, or a building being taken down, the Builder says so and the book stays as it was.

@@ -18,6 +18,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Book and Quill on the Blueprint Table a builder works at now writes the material list of their build, as it does on
+  the builder (B337), or says no build is under way from it; before, it only opened the table. A table no builder
+  works at still opens as usual.
+- A shop owner who sneak-right-clicks their Shop Counter with something in hand (emeralds, the goods to stock) now gets
+  the sales log as with empty hands (B336); before, nothing happened.
 - Right-clicking a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench with the Scan Tool marks it as
   a corner again instead of opening, flipping or answering it (B335), so a build whose corner is one of those can be
   scanned the way the tool says: one corner block, then the opposite corner.

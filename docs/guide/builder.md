@@ -46,8 +46,8 @@ they're short of and which chest they're taking from.
 
 ![What a build is still missing](https://jcondedata.github.io/minecraft-alive-workplace/missing/still-2.jpg)
 
-**What does the build still need?** Once the blueprint is handed over, right-click the builder (or their Builder's
-Bench) with a Book and Quill: it becomes the whole list for the rest of the build, with what's already in place left
+**What does the build still need?** Once the blueprint is handed over, right-click the builder (or the Blueprint Table
+they work at) with a Book and Quill: it becomes the whole list for the rest of the build, with what's already in place left
 off and what the chests, the builder's bag and the village storehouse hold ticked off. Sneak-right-click the builder with
 an empty hand to see the same list in chat. A builder with nothing left to place, or no build at all, just tells you so.
 

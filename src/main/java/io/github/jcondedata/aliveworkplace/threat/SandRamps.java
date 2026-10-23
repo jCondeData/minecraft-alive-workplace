@@ -400,12 +400,19 @@ public final class SandRamps {
 		return h;
 	}
 
+	/**
+	 * The first column in from the foot, past the wall, that a raider crossing the wall's top drops into: nothing in it
+	 * from a step above the foot (the foot + 2) up to over the wall's top, so whatever it lands on there is ground at most
+	 * two above the foot, a step or a terrace (B331: this used to ask for a column free right down to the foot, so behind a
+	 * wall with raised ground inside no column was found within reach, and the raider was pushed for good toward a spot
+	 * on that ground, or on the wall's top). 2 when there is none within 8.
+	 */
 	private static int inside(ServerLevel level, Site site) {
 		int top = site.foot.getY() + site.height;
 		for (int k = 2; k <= 8; k++) {
 			BlockPos column = site.foot.relative(site.into, k);
 			boolean free = true;
-			for (int y = site.foot.getY(); y <= top + 1 && free; y++) {
+			for (int y = site.foot.getY() + 2; y <= top + 1 && free; y++) {
 				free = !blocked(level, column.atY(y));
 			}
 			if (free) {
@@ -498,6 +505,11 @@ public final class SandRamps {
 		return mob.getY() > site.foot.getY() + 1.5;
 	}
 
+	/** Whether all of {@code mob} (or what it rides) is in or past the column it drops into from the wall's top, {@link Site#inside}. */
+	private static boolean landed(Mob mob, Site site, double inward) {
+		return inward - mob.getRootVehicle().getBbWidth() / 2 >= site.inside - 0.5;
+	}
+
 	/** Whether {@code mob} stands on the ground: a rider (a chicken jockey) never does itself, its mount does (B316). */
 	private static boolean grounded(Mob mob) {
 		return mob.onGround() || mob.getVehicle() != null && mob.getRootVehicle().onGround();
@@ -529,8 +541,10 @@ public final class SandRamps {
 				return;
 			}
 			double inward = inward(mob, site);
-			// Let go once down inside: a raider still up on the wall is pushed on.
-			if (inward >= 1.5 && inward < site.inside + 3 && grounded(mob) && !up(mob, site)) {
+			// Let go once down inside: a raider still up on the wall is pushed on. One standing wholly in or past the column
+			// it drops into is let go whatever its height: the ground there may be higher than a step (B331: on a terrace two
+			// above the foot it was "up", and pushed for good toward the spot it stood on).
+			if (inward >= 1.5 && inward < site.inside + 3 && grounded(mob) && (!up(mob, site) || landed(mob, site, inward))) {
 				site.over.add(mob.getUUID());
 				CLIMBS.remove(mob.getUUID());
 				return;

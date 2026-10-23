@@ -45,6 +45,8 @@ Roadmap items: 32.9
   the climber is near. At most 2 ramps a siege. Once the ramp stands, the raiders go up it and over.
   A raider is let go to fight once it is down inside on its feet, no higher than a step above the ramp's foot (a
   slab or a stair's lower step one up counts as down inside; B330).
+  It drops in at the first column past the wall with nothing from two above the foot up, and once wholly in or past
+  that column it is let go whatever the ground's height there, a terrace two up as well (B331).
 - With the game's mob griefing rule off no sand is piled.
 - **Taken away after the siege** like ladders: every block is recorded with the siege and becomes air when the raid
   is over, also after a restart.
@@ -96,6 +98,8 @@ Roadmap items: 32.9
   left or changed after the siege and its lifting.
 - `DesertRaiderGameTests.aHuskComingDownOntoAnInnerStepIsLetGo`: a husk landing on a bottom slab one above the
   ramp's foot, behind a wall four high, is let go there (B330).
+- `DesertRaiderGameTests.aHuskComingDownOntoARaisedTerraceIsLetGo`: a husk coming down onto a terrace two above the
+  ramp's foot behind the wall is let go there (B331).
 - `DesertRaiderGameTests.noSandWithMobGriefingOff`.
 - `DesertRaiderGameTests.theDesertSiegeIsStillOnAtMidMorningAndOverAtNoon`.
 - Showcase scene `desert_raiders`: the tomb camp, a sand ramp rising against a Stone Wall and a husk getting up again.

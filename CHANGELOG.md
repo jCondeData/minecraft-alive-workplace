@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Villagers walk round a lantern from Carved Wood (or another mod's small block that lets paths through it) instead of
+  trying to walk through it (B339). In a furnished spruce Library a villager without a job sometimes climbed onto a
+  desk on its way to the lectern and stood stuck on the desk's edge for the rest of the day, never becoming the
+  Librarian.
 - A Captain's Insignia held in the off hand now pays when right-clicked on the Bounty Board or the Village Hall
   (B338), as from the main hand; before, the click only opened the board or the hall.
 - A Book and Quill on the Blueprint Table a builder works at now writes the material list of their build, as it does on

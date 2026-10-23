@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339
 
 ## 1. What a player sees
 
@@ -134,6 +134,13 @@ barrel (the vanilla barrel is spruce already), so barrels stay. With Rechiseled 
 (spruce and oak planks) are `rechiseled:dark_oak_planks_flooring`, its wall panels (birch infill, white terracotta)
 `rechiseled:andesite_squares` and its polished andesite `rechiseled:andesite_tiles`. Without the mods, or with the
 switch off, the Spruce style is plain spruce (and isn't offered with the switch off) and Grand is exactly today's Grand.
+
+Villagers walk round a Carved Wood lantern (B339). The game asks each block whether a path may go through it; vanilla's
+lantern says no, Carved Wood's says yes, so a jobless villager's path to the spruce Library's lectern once ran up onto a
+desk and through the lantern standing on it, and the villager stood on the desk's edge for the rest of the day. Now any
+small block a villager's body can't pass above the height it steps up (such as a mod's lantern) is a wall
+to its path, as vanilla's lantern is; carpets, beds and other blocks it steps onto, ladders and open doors stay
+walkable (`work/PathObstacles`, from the path finder's `WalkNodeEvaluatorMixin`, beside B156's shut trapdoors).
 Carved Wood's chests and barrels of every wood are supply chests, porters' chests and Storehouse chests (they are
 vanilla chests and barrels underneath).
 
@@ -506,7 +513,10 @@ swap, the Carved Wood lectern the Librarian's job site and barrel the Fisherman'
 the switch off no Spruce style and Grand as before), `CarvedStylesCompatTests.aCarvedWoodChestIsASupplyChest` (a
 builder builds from a Carved Wood chest; a Carved Wood barrel is listed and filled),
 `CarvedStylesCompatTests.aSpruceLibraryHasCarvedShelvesAndALibrarian` (built with nothing skipped, every shelf Carved
-Wood's, and a villager without a job takes the Carved Wood lectern and becomes the Librarian),
+Wood's, and a villager without a job takes the Carved Wood lectern and becomes the Librarian; a failure prints the
+villager's path and what it stands on), B339: `CarvedStylesCompatTests.aVillagersPathGoesRoundACarvedWoodLanternOnADesk`
+(a wall's one gap a block with a Carved Wood lantern on it: the path goes round; it went over the desk without the fix)
+and `aVillagersPathStillCrossesACarpet` (a carpet in the gap is still walked),
 `CarvedStylesCompatTests.theGrandStyleWithRechiseledBuildsWithNothingSkipped` (the Grand Starter Cottage). No mods:
 `StyleGameTests.stylesLoadAndIdsRoundTrip` lists Spruce. Scene `carved_styles` (`-Pfurniture=true`, which now brings
 Carved Wood and Rechiseled).

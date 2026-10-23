@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Golem Smith's Hauler or Farmhand Golem no longer stands stuck among villagers who stand still, such as shop
+  villagers with no AI (B329). After a fight it could end up wedged between two of them, held back by their push for
+  good. Now a golem that gets no farther for 2 seconds squeezes past them and goes on with its job.
 - A Wonder crew no longer stands idle near the top of a big build (B326): when a member held a column and never laid
   its block (most likely the folly dome's centre tile), the lead waited on it with no end while going back over the blocks
   it had put off. Once the crew has stood still for 10 seconds, the lead now takes that column over and lays the block

@@ -149,7 +149,8 @@ Without the Legend settled (or on strike), nothing changes. A guest who settles 
 GameTests: `LegendEngineGameTests` (6), `LegendSlotsGameTests` (6), `LegendsHallGameTests` (3),
 `LegendNeedsGameTests` (9), `LegendGuestsGameTests` (8), `LegendSitesGameTests` (7), `StrangeMoodGameTests` (6),
 `GiftedGameTests` (6), `GiftedBornGameTests` (9), and one class per Legend: `MasterArchitectGameTests`,
-`PathfinderGameTests`, `OldSageGameTests`, `GolemSmithGameTests`, `SeerGameTests`, `MerchantPrinceGameTests`,
+`PathfinderGameTests`, `OldSageGameTests`, `GolemSmithGameTests` (with `GolemHaulerFightGameTests`, 4: a hauler back at work
+after a fight, B329), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
 `PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
 `RealmLegendsGameTests` (5, 33.23).

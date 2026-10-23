@@ -18,6 +18,12 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A desert raider who climbed a sand ramp no longer gets stuck on a low step just inside the wall (B330). Coming
+  down onto a slab or a stair's lower step, it was walked back toward the ramp's top again and again; now it is let
+  go there to fight like one that lands on the ground.
+- A desert raider who climbed a sand ramp no longer stands for good on raised ground inside the wall (B331). Behind
+  a wall with a terrace, a raised floor or a thick walkway inside, it was pushed again and again toward the spot it
+  already stood on; now it drops in where the ground is low enough and is let go there to fight.
 - A Golem Smith's Hauler or Farmhand Golem no longer stands stuck among villagers who stand still, such as shop
   villagers with no AI (B329). After a fight it could end up wedged between two of them, held back by their push for
   good. Now a golem that gets no farther for 2 seconds squeezes past them and goes on with its job.

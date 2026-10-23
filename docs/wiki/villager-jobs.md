@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334
 
 ## What a player sees
 
@@ -279,7 +279,9 @@ and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill
 - Older job blocks that still work where placed: Builder's Bench (`aliveworkplace:builders_bench`), Miner's Bench
   (`aliveworkplace:miners_bench`), Chopping Block (`aliveworkplace:chopping_block`).
 - Markers: Quarry Marker (`aliveworkplace:quarry_marker`), Field Marker (`aliveworkplace:field_marker`), Delivery
-  Note (`aliveworkplace:delivery_note`), Patrol Map (`aliveworkplace:patrol_map`).
+  Note (`aliveworkplace:delivery_note`), Patrol Map (`aliveworkplace:patrol_map`). A Delivery Note marks the chest,
+  barrel or Pasture Block it right-clicks without opening it (B333), and a note already carrying 9 kinds answers a
+  10th with `message.aliveworkplace.route.filter_full` and stays as it is (B334).
 - Texts: `message.aliveworkplace.job.chosen`, `message.aliveworkplace.job.needs_station`,
   `message.aliveworkplace.job.station_taken`, `message.aliveworkplace.job.class_needed`,
   `tooltip.aliveworkplace.station.hint`, `message.aliveworkplace.retrain.offer`, `.confirm`, `.short`, `.done`,
@@ -354,7 +356,9 @@ there, save and reload mid-way, the switch off, iron and diamond as the miner ri
 `QuarryBuildGameTests` (10, 36.12: listed with its Jobs line and nothing drawn in the pit, the Miner takes and mines the
 pit, regrowth bottom up at the set rate with a player's block kept and nothing outside touched, a day grows back only a
 day's worth, the weighted mix, save and reload of the site and mid-dig, the switch off, the Quarry Marker still works,
-the new sentences). The client mixins themselves are proved by the scene.
+the new sentences), `QaStageThreeBugTests` (B333: a survival player's right-click marks a chest, then a barrel, and
+neither opens; B334: a tenth kind on a full note), `QaStageThreeGameTests` (a sneak-click clears the note, a non-container
+is refused, up to 9 kinds). The client mixins themselves are proved by the scene.
 
 Showcase scenes: `job_plate` (a Journeyman fisherman, Dara the Expert builder and a jobless villager, each looked at), `miner_pickaxe` (a worn pickaxe breaks, a new one is made at the blast furnace), `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,

@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Right-clicking a chest or barrel with a Delivery Note marks it again instead of opening it (B333), so a courier
+  route can be set up the way the note says: the container to take from, then the one to bring to. A note that
+  already carries 9 kinds now says so when you hold a 10th, instead of "Stop carrying" a kind it never had (B334).
 - A desert raider who climbed a sand ramp no longer gets stuck on a low step just inside the wall (B330). Coming
   down onto a slab or a stair's lower step, it was walked back toward the ramp's top again and again; now it is let
   go there to fight like one that lands on the ground.

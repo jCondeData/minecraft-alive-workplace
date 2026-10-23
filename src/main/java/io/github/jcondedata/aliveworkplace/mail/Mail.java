@@ -37,6 +37,7 @@ public final class Mail {
 	public static void init() {
 		Platform.get().serverbound(Send.TYPE, Send.CODEC, (payload, player) -> send(player, payload.to(), payload.message()));
 		Platform.get().onServerTick(server -> PostOffice.get(server).tick(server));
+		Platform.get().onUseBlock(DeliveryNoteItem::beforeBlock); // B333: mark a chest before it opens
 	}
 
 	static void send(ServerPlayer player, String toName, String message) {

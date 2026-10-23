@@ -227,6 +227,8 @@
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageTwoGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStageThreeGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStageThreeBugTests",
 			"io.github.jcondedata.aliveworkplace.test.CradleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HarvestIdolGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TreasuryEdictGameTests",

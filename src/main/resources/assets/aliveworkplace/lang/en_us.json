@@ -598,6 +598,7 @@
   "message.aliveworkplace.route.to": "Bring to %s %s %s. Give the note to a Postman.",
   "message.aliveworkplace.route.filter_add": "Carry %s",
   "message.aliveworkplace.route.filter_remove": "Stop carrying %s",
+  "message.aliveworkplace.route.filter_full": "This Delivery Note already carries the most kinds (%s). Hold one it carries to take it off.",
   "message.aliveworkplace.route.incomplete": "Mark both containers on the Delivery Note first (or give a blank note to a postman with routes to end them).",
   "message.aliveworkplace.route.cleared": "%s ended their %s routes and gave the notes back.",
   "message.aliveworkplace.route.no_desk": "This postman has no mailbox to work at.",

@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 
 /**
  * Sets up a courier route: right-click the container to take from, then the one to bring to; hold an item
@@ -32,6 +33,26 @@ public class DeliveryNoteItem extends Item {
 
 	public static RouteData data(ItemStack stack) {
 		return stack.getOrDefault(ModComponents.ROUTE, RouteData.EMPTY);
+	}
+
+	/**
+	 * B333: a chest's or barrel's own right-click (opening it) runs before an item's {@link #useOn}, so a note held
+	 * on a container or Pasture Block marks it here first, from the use-block event, and the container stays shut.
+	 * Sneaking skips the block's own right-click anyway (the note's clearing click), and a private container still
+	 * opens as before.
+	 */
+	public static InteractionResult beforeBlock(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
+		ItemStack stack = player.getItemInHand(hand);
+		if (level.isClientSide() || player.isSpectator() || player.isShiftKeyDown() || !(stack.getItem() instanceof DeliveryNoteItem)) {
+			return InteractionResult.PASS;
+		}
+		BlockPos pos = hit.getBlockPos();
+		boolean container = Platform.get().items().isStore(level, pos)
+			&& !(level.getBlockEntity(pos) instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer);
+		if (!container && !io.github.jcondedata.aliveworkplace.work.Pastures.isPasture(level.getBlockState(pos))) {
+			return InteractionResult.PASS;
+		}
+		return stack.useOn(new UseOnContext(player, hand, hit));
 	}
 
 	@Override
@@ -75,7 +96,14 @@ public class DeliveryNoteItem extends Item {
 			return InteractionResultHolder.pass(stack);
 		}
 		if (level instanceof ServerLevel) {
-			RouteData next = data(stack).toggle(other.getItem());
+			RouteData before = data(stack);
+			if (!before.filter().contains(other.getItem()) && before.filter().size() >= RouteData.MAX_FILTER) {
+				// B334: the note is full, so the kind isn't added; say so rather than "Stop carrying" it
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.route.filter_full", RouteData.MAX_FILTER)
+					.withStyle(ChatFormatting.YELLOW));
+				return InteractionResultHolder.fail(stack);
+			}
+			RouteData next = before.toggle(other.getItem());
 			stack.set(ModComponents.ROUTE, next);
 			boolean added = next.filter().contains(other.getItem());
 			Chat.actionBar(player, Component.translatable(added ? "message.aliveworkplace.route.filter_add" : "message.aliveworkplace.route.filter_remove",

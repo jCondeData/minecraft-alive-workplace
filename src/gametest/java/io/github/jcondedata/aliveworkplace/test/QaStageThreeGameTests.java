@@ -75,6 +75,8 @@ import net.minecraft.world.phys.Vec3;
  */
 public class QaStageThreeGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:build_area";
+	private static final String AREA_BIG = "aliveworkplace_test:big_area";
+	private static final String AREA_HUGE = "aliveworkplace_test:huge_area";
 
 	/** A survival player who keeps every chat and action-bar line they're shown. */
 	static ServerPlayer listener(GameTestHelper helper, List<Component> seen) {
@@ -148,7 +150,7 @@ public class QaStageThreeGameTests implements FabricGameTest {
 	 * stays as it was; a sneak-right-click, even on a chest, clears the two marks but keeps the kinds, without opening
 	 * the chest; the route survives a save and the trip to a client.
 	 */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qa3DeliveryNote"'
 	@GameTest(template = AREA, batch = "qa3DeliveryNote")
 	public void deliveryNoteRefusesANonContainerAndASneakClickClearsIt(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -189,7 +191,7 @@ public class QaStageThreeGameTests implements FabricGameTest {
 	 * Holding an item in the other hand and right-clicking the air adds that kind, again removes it, up to 9 kinds; an
 	 * empty other hand changes nothing; the kinds survive a save.
 	 */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qa3DeliveryFilter"'
 	@GameTest(template = AREA, batch = "qa3DeliveryFilter")
 	public void deliveryNoteCarriesOnlyUpToNineKindsPickedInTheOtherHand(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -240,7 +242,7 @@ public class QaStageThreeGameTests implements FabricGameTest {
 	 * Blueprint becomes a blueprint of exactly that box. Sneaking on the air before both corners are marked saves
 	 * nothing and says so; a plain right-click on the air does nothing.
 	 */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qa3Scan"'
 	@GameTest(template = AREA, batch = "qa3Scan")
 	public void scanToolMarksTwoCornersAndSavesABlueprintFromABlank(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -284,7 +286,7 @@ public class QaStageThreeGameTests implements FabricGameTest {
 	}
 
 	/** A scan is at most 48 on a side: 48 is marked, 49 is refused with the sizes and keeps the first corner. */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qa3ScanSize"'
 	@GameTest(template = AREA, batch = "qa3ScanSize")
 	public void scanToolTakesFortyEightOnASideAndRefusesFortyNine(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -323,7 +325,7 @@ public class QaStageThreeGameTests implements FabricGameTest {
 	 * "Name it by renaming the tool in an anvil": a build named with a full stop in it ("St. Mary's Chapel") is saved
 	 * under its whole name, not cut off at the full stop.
 	 */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qa3ScanName"'
 	@GameTest(template = AREA, batch = "qa3ScanName")
 	public void scanToolKeepsTheWholeAnvilNameWithAFullStop(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -489,8 +491,8 @@ public class QaStageThreeGameTests implements FabricGameTest {
 	}
 
 	/** The bobber goes when its fisherman dies or walks more than 16 blocks away, and stays while they fish nearby. */
-	//$ gametest AREA
-	@GameTest(template = AREA, batch = "qa3Bobber", timeoutTicks = 100)
+	//$ gametest_ticks_batch AREA '100' '"qa3Bobber"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qa3Bobber")
 	public void theBobberGoesWhenItsFishermanDiesOrWalksOff(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
@@ -535,8 +537,8 @@ public class QaStageThreeGameTests implements FabricGameTest {
 	 * A child asleep in a cradle stays in its seat through the night and through a save (it's saved with the seat),
 	 * and is let go, with the seat gone, as soon as the cradle is broken.
 	 */
-	//$ gametest AREA
-	@GameTest(template = AREA, batch = "qa3Cradle", timeoutTicks = 200)
+	//$ gametest_ticks_batch AREA '200' '"qa3Cradle"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qa3Cradle")
 	public void aChildInACradleIsSavedWithItsSeatAndLetGoWhenTheCradleBreaks(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
@@ -575,8 +577,8 @@ public class QaStageThreeGameTests implements FabricGameTest {
 	 * With no Cup or Stadium Day, the stands are closed: a villager put on a stand seat is let go within a second,
 	 * the seat goes, and they stand up outside the stair, not inside it (B94).
 	 */
-	//$ gametest AREA
-	@GameTest(template = AREA, batch = "qa3Stand", timeoutTicks = 100)
+	//$ gametest_ticks_batch AREA '100' '"qa3Stand"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qa3Stand")
 	public void aStandSeatLetsItsVillagerGoOutsideTheStairWhenNoCupIsOn(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
@@ -599,8 +601,8 @@ public class QaStageThreeGameTests implements FabricGameTest {
 	 * A furniture seat loaded from a save lets its villager go on its first tick (a villager's seat isn't kept over a
 	 * save, M37), and the villager comes back with it rather than being lost; an empty seat goes at once.
 	 */
-	//$ gametest AREA
-	@GameTest(template = AREA, batch = "qa3FurnitureSeat", timeoutTicks = 100)
+	//$ gametest_ticks_batch AREA '100' '"qa3FurnitureSeat"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qa3FurnitureSeat")
 	public void aFurnitureSeatLoadedFromASaveStandsItsVillagerUp(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
@@ -624,5 +626,248 @@ public class QaStageThreeGameTests implements FabricGameTest {
 			sitter.discard();
 			helper.succeed();
 		});
+	}
+
+	// ---- Mutation survivors -------------------------------------------------------------------------------------
+
+	/**
+	 * B290 through the hall (mutation survivor FreeJobsPage:509): the village's builder, picked on the Free job blocks
+	 * page for a free Blueprint Table, moves over to it, sets off walking to it, and the player is told so.
+	 */
+	//$ gametest_ticks_batch AREA_BIG '100' '"qa3HallMovesBuilder"'
+	@GameTest(template = AREA_BIG, timeoutTicks = 100, batch = "qa3HallMovesBuilder")
+	public void aBuilderPickedForAFreeTableOnTheHallPageWalksOverToIt(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		int radius = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = new BlockPos(11, 2, 11);
+		BlockPos first = new BlockPos(3, 2, 3);
+		BlockPos second = new BlockPos(18, 2, 3);
+		helper.setBlock(hall, ModBlocks.VILLAGE_HALL);
+		helper.setBlock(first, ModBlocks.BLUEPRINT_TABLE);
+		helper.setBlock(second, ModBlocks.BLUEPRINT_TABLE);
+		BlockPos hallAbs = helper.absolutePos(hall);
+		BlockPos secondAbs = helper.absolutePos(second);
+		for (BlockPos p : List.of(hallAbs, helper.absolutePos(first), secondAbs)) {
+			if (level.getPoiManager().getType(p).isEmpty()) {
+				net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(level.getBlockState(p)).ifPresent(t -> level.getPoiManager().add(p.immutable(), t));
+			}
+		}
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+		Leftovers.after(helper, io.github.jcondedata.aliveworkplace.hall.VillageHalls::forgetNearest);
+		Villager builder = helper.spawn(EntityType.VILLAGER, first.east());
+		builder.setVillagerData(builder.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER));
+		io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, helper.absolutePos(first));
+		builder.setNoAi(true); // so the walk target set by the pick stays to be read
+		List<Component> seen = new ArrayList<>();
+		ServerPlayer player = listener(helper, seen);
+		helper.runAfterDelay(2, () -> {
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.FreeJobsPage.at(level, hallAbs, secondAbs) != null, "setup: the second table isn't free");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.FreeJobsPage.at(level, hallAbs, helper.absolutePos(first)) == null,
+				"setup: the builder's own table is listed as free");
+			io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.forTest(player, hallAbs);
+			menu.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.FreeJobsPage.PAGE), player);
+			int row = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW;
+			helper.assertTrue(menu.icon(row).is(ModBlocks.BLUEPRINT_TABLE.asItem()), "the free table isn't first on the page: " + menu.icon(row));
+			menu.press(row, player);
+			menu.press(row, player);
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.Builders.benchPos(builder).filter(secondAbs::equals).isPresent(),
+				"the builder didn't move to the free table: " + io.github.jcondedata.aliveworkplace.build.Builders.benchPos(builder) + "; said " + last(seen));
+			helper.assertTrue(builder.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET)
+					.map(w -> w.getTarget().currentBlockPosition().equals(secondAbs)).orElse(false),
+				"the builder isn't walking to the new table: " + builder.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET));
+			helper.assertTrue(last(seen).equals("message.aliveworkplace.builder.moved"), "the player was told " + last(seen));
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B304's ladder walk stays within 8 blocks (each way) of the bed (mutation survivor BedLadders:194): a bed whose
+	 * ladder comes up behind a wall that only ends 10 blocks to the side isn't claimable up that ladder; with a gap in
+	 * the wall within reach, it is.
+	 */
+	//$ gametest_ticks_batch AREA_HUGE '200' '"qa3LadderReach"'
+	@GameTest(template = AREA_HUGE, timeoutTicks = 200, batch = "qa3LadderReach")
+	public void aLadderWhoseWalkToTheBedLeavesItsReachDoesNotClaimTheBed(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		int x = 12;
+		for (int y = 2; y <= 4; y++) {
+			helper.setBlock(new BlockPos(x, y, 5), Blocks.STONE);
+			helper.setBlock(new BlockPos(x, y, 6), Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, Direction.SOUTH));
+		}
+		for (int wx = x - 9; wx <= x + 9; wx++) { // the wall between the ladder's top and the bed, as wide as the reach
+			helper.setBlock(new BlockPos(wx, 5, 8), Blocks.STONE);
+		}
+		helper.setBlock(new BlockPos(x, 5, 11), Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.NORTH)
+			.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+		helper.setBlock(new BlockPos(x, 5, 10), Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.NORTH)
+			.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+		BlockPos bed = helper.absolutePos(new BlockPos(x, 5, 10));
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(x + 3, 2, 3));
+		villager.setNoAi(true);
+		villager.setOnGround(true);
+		helper.startSequence()
+			.thenWaitUntil(() -> helper.assertTrue(level.getPoiManager().getType(bed).isPresent(), "setup: the bed isn't a home yet"))
+			.thenExecute(() -> {
+				var home = com.mojang.datafixers.util.Pair.of(level.getPoiManager().getType(bed).orElseThrow(), bed);
+				var walled = io.github.jcondedata.aliveworkplace.work.BedLadders.pathUpALadder(villager, java.util.Set.of(home));
+				helper.assertTrue(walled == null, "the bed was claimable up a ladder whose only walk to it goes 10 blocks to the side");
+				helper.setBlock(new BlockPos(x + 8, 5, 8), Blocks.AIR);
+				var gap = io.github.jcondedata.aliveworkplace.work.BedLadders.pathUpALadder(villager, java.util.Set.of(home));
+				helper.assertTrue(gap != null && gap.getTarget().equals(bed), "setup: with a gap 8 blocks along, the bed should be claimable: " + gap);
+			})
+			.thenSucceed();
+	}
+
+	/**
+	 * A step the builder gave up on (put off, then still impossible on the retry; 35.5: a crew's layers don't wait for
+	 * it) is still given up after the site is saved and loaded, and the scaffolding it put up is still known, so it is
+	 * taken down when the stage is done (35.6: "takes it all down when that stage is done"; mutation survivor
+	 * BuildSite:940, the scaffolds not loaded).
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aStepGivenUpOnAndTheScaffoldingStayKnownOverASave(GameTestHelper helper) {
+		ResourceLocation hut = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
+		var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(helper.getLevel().dimension().location(),
+			helper.absolutePos(new BlockPos(1, 2, 1)), net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+		var site = new io.github.jcondedata.aliveworkplace.build.BuildSite(UUID.fromString("0f1e2d3c-4b5a-6978-8796-a5b4c3d2e1f3"),
+			UUID.fromString("12345678-9abc-def0-1234-56789abcdef3"), "Jesse", hut, placement);
+		var plan = site.plan(helper.getLevel());
+		helper.assertTrue(plan != null, "setup: no plan for the test hut");
+		while (site.stage() != io.github.jcondedata.aliveworkplace.build.BuildPlan.Stage.STRUCTURE) {
+			while (site.current(plan) != null) {
+				site.advance();
+			}
+			site.finishList();
+			helper.assertTrue(site.stage() != io.github.jcondedata.aliveworkplace.build.BuildPlan.Stage.DONE, "setup: the site skipped the structure stage");
+		}
+		BlockPos first = site.current(plan).pos();
+		for (int i = 0; site.current(plan) != null; i++) {
+			if (i == 0) {
+				site.defer();
+			} else {
+				site.markPlaced();
+			}
+		}
+		site.finishList();
+		helper.assertTrue(site.current(plan) != null && site.current(plan).pos().equals(first), "setup: the retry isn't on the step put off");
+		site.defer();
+		helper.assertTrue(site.gaveUp(first) && site.skipped() == 1, "setup: the step wasn't given up on");
+		List<BlockPos> scaffolds = List.of(first.east().above(), first.east().above(2));
+		scaffolds.forEach(site::addScaffold);
+		var loaded = io.github.jcondedata.aliveworkplace.build.BuildSite.load(site.save());
+		helper.assertTrue(loaded != null, "the site didn't load");
+		helper.assertTrue(loaded.gaveUp(first), "the step given up on is waited for again after a save");
+		helper.assertTrue(loaded.skipped() == 1, "skipped steps after a save: " + loaded.skipped());
+		helper.assertTrue(loaded.scaffolds().equals(scaffolds), "the scaffolding put up was forgotten over a save: " + loaded.scaffolds());
+		helper.succeed();
+	}
+
+	/**
+	 * "Builders never break containers ... while clearing" (CLAUDE.md, MaterialRules.isProtected; mutation survivor
+	 * MaterialRules:358): a chest and a barrel, with things in them, standing where the test hut's inside should be
+	 * empty, are still there with their things when the hut is done.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"qa3ClearKeepsChests"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qa3ClearKeepsChests")
+	public void aBuilderClearingTheSiteLeavesChestsAndTheirThingsAlone(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		level.getGameRules().getRule(io.github.jcondedata.aliveworkplace.registry.ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(io.github.jcondedata.aliveworkplace.registry.ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		helper.setBlock(new BlockPos(2, 2, 2), ModBlocks.BUILDERS_BENCH);
+		helper.setBlock(new BlockPos(2, 2, 4), Blocks.CHEST);
+		net.minecraft.world.Container supplies = (net.minecraft.world.Container) helper.getBlockEntity(new BlockPos(2, 2, 4));
+		supplies.setItem(0, new ItemStack(Items.COBBLESTONE, 25));
+		supplies.setItem(1, new ItemStack(Items.OAK_PLANKS, 55));
+		supplies.setItem(2, new ItemStack(Items.OAK_DOOR));
+		supplies.setItem(3, new ItemStack(Items.TORCH));
+		BlockPos chest = new BlockPos(8, 3, 8);
+		BlockPos barrel = new BlockPos(7, 3, 8);
+		helper.setBlock(chest, Blocks.CHEST);
+		helper.setBlock(barrel, Blocks.BARREL);
+		((net.minecraft.world.Container) helper.getBlockEntity(chest)).setItem(0, new ItemStack(Items.DIAMOND, 7));
+		((net.minecraft.world.Container) helper.getBlockEntity(barrel)).setItem(4, new ItemStack(Items.EMERALD, 3));
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		io.github.jcondedata.aliveworkplace.build.Builders.employ(level, villager, helper.absolutePos(new BlockPos(2, 2, 2)));
+		var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(),
+			helper.absolutePos(new BlockPos(6, 2, 6)), net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+		var site = io.github.jcondedata.aliveworkplace.build.Builders.start(level, villager, null,
+			ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut"), placement);
+		var plan = site.plan(level);
+		helper.assertTrue(plan != null, "setup: no plan");
+		helper.assertTrue(plan.steps(io.github.jcondedata.aliveworkplace.build.BuildPlan.Stage.STRUCTURE).stream().noneMatch(st -> st.pos().equals(helper.absolutePos(chest))),
+			"setup: the chest stands where the hut has a block");
+		helper.succeedWhen(() -> {
+			helper.assertTrue(helper.getBlockState(chest).is(Blocks.CHEST), "the chest inside the site was broken: " + helper.getBlockState(chest));
+			helper.assertTrue(helper.getBlockState(barrel).is(Blocks.BARREL), "the barrel inside the site was broken: " + helper.getBlockState(barrel));
+			helper.assertTrue(((net.minecraft.world.Container) helper.getBlockEntity(chest)).countItem(Items.DIAMOND) == 7, "the chest's diamonds are gone");
+			helper.assertTrue(((net.minecraft.world.Container) helper.getBlockEntity(barrel)).countItem(Items.EMERALD) == 3, "the barrel's emeralds are gone");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).get(site.id()) == null,
+				"still building: " + site.stage() + " " + site.status());
+		});
+	}
+
+	/**
+	 * The hall's call home brings back those whose bed is in the village but who are out of it: a villager whose bed is
+	 * exactly on the village's edge (16 blocks with a radius of 16) is the village's and comes back beside the hall;
+	 * one whose bed is a block further out isn't, and stays where they are (mutation survivor VillageHalls:230).
+	 */
+	//$ gametest_batch AREA_HUGE '"qa3Recall"'
+	@GameTest(template = AREA_HUGE, batch = "qa3Recall")
+	public void theCallHomeBringsBackAVillagerWhoseBedIsOnTheVillagesEdge(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		int radius = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = new BlockPos(5, 2, 5);
+		helper.setBlock(hall, ModBlocks.VILLAGE_HALL);
+		BlockPos hallAbs = helper.absolutePos(hall);
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+		Leftovers.after(helper, io.github.jcondedata.aliveworkplace.hall.VillageHalls::forgetNearest);
+		BlockPos edgeBed = helper.absolutePos(new BlockPos(21, 2, 5));
+		BlockPos outerBed = helper.absolutePos(new BlockPos(22, 2, 5));
+		helper.assertTrue(edgeBed.distSqr(hallAbs) == 16 * 16, "setup: the first bed isn't on the edge");
+		Villager ours = villager(helper, 26, 5);
+		Villager theirs = villager(helper, 26, 8);
+		ours.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME, net.minecraft.core.GlobalPos.of(level.dimension(), edgeBed));
+		theirs.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME, net.minecraft.core.GlobalPos.of(level.dimension(), outerBed));
+		BlockPos theirsAt = theirs.blockPosition();
+		int came = io.github.jcondedata.aliveworkplace.hall.VillageHalls.recall(level, hallAbs);
+		helper.assertTrue(ours.blockPosition().distSqr(hallAbs) <= 5 * 5, "the villager whose bed is on the edge wasn't called home: at " + helper.relativePos(ours.blockPosition()));
+		helper.assertTrue(theirs.blockPosition().equals(theirsAt), "a villager whose bed is outside the village was moved to " + helper.relativePos(theirs.blockPosition()));
+		helper.assertTrue(came == 1, "the call home counted " + came + " villagers, not 1");
+		helper.succeed();
+	}
+
+	/**
+	 * Blocks a repair couldn't put back are left be by upkeep ("upkeep leaves them be"), and still are after the world
+	 * is saved and loaded (mutation survivor BuildSiteManager:325: the finished building's list not loaded).
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void blocksARepairGaveUpOnAreStillLeftBeAfterASave(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		var manager = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(),
+			helper.absolutePos(new BlockPos(1, 2, 1)), net.minecraft.world.level.block.Rotation.CLOCKWISE_90, net.minecraft.world.level.block.Mirror.NONE);
+		ResourceLocation hut = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
+		manager.recordFinished(hut, placement, UUID.fromString("12345678-9abc-def0-1234-56789abcdef4"));
+		Leftovers.after(helper, () -> manager.forgetFinished(placement));
+		List<BlockPos> left = List.of(helper.absolutePos(new BlockPos(2, 3, 2)), helper.absolutePos(new BlockPos(3, 4, 2)));
+		manager.gaveUp(placement, left);
+		helper.assertTrue(manager.gaveUp(placement).containsAll(left), "setup: the blocks weren't recorded");
+		var loaded = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.load(manager.save(new CompoundTag(), level.registryAccess()), level.registryAccess());
+		helper.assertTrue(loaded.gaveUp(placement).equals(new java.util.HashSet<>(left)),
+			"the blocks a repair gave up on, after a save: " + loaded.gaveUp(placement));
+		helper.succeed();
 	}
 }

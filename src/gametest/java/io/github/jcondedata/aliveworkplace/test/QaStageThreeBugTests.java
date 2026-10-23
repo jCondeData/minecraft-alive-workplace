@@ -32,7 +32,7 @@ public class QaStageThreeBugTests implements FabricGameTest {
 	 * {@code ServerPlayerGameMode.useItemOn}, as the server handles a real click): the chest is where to take from, the
 	 * barrel where to bring to, and neither opens.
 	 */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qa3BugDeliveryMark"'
 	@GameTest(template = AREA, batch = "qa3BugDeliveryMark")
 	public void deliveryNoteMarksTheChestAndBarrelARealPlayerRightClicks(GameTestHelper helper) {
 		Leftovers.clear(helper);
@@ -65,7 +65,7 @@ public class QaStageThreeBugTests implements FabricGameTest {
 	 * With nine kinds on the note, right-clicking the air with a tenth in the other hand leaves the note as it is (up to
 	 * 9 kinds), so the player must not be told "Stop carrying" a kind the note never carried.
 	 */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qa3BugDeliveryTenth"'
 	@GameTest(template = AREA, batch = "qa3BugDeliveryTenth")
 	public void deliveryNoteDoesNotSayStopCarryingATenthKindItNeverCarried(GameTestHelper helper) {
 		Leftovers.clear(helper);

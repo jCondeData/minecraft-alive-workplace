@@ -417,14 +417,31 @@ say "forceload add 320 320 480 480" 20
 say "forceload add 720 320 880 480" 20
 say "place structure repurposed_structures:village_birch 400 70 400" 40
 say "place structure minecraft:village_plains 800 70 400" 40
+# Our houses in them (B332): each staffed house comes with its villager already in our job, while most of them work at
+# vanilla blocks since ROADMAP 21.1a, so `locate poi` of our own blocks found nothing even where our houses stood. Each
+# villager in one of our jobs near a village says so ("house-check <x> <job>"); every villager there is counted too.
+JOBS=$(grep -o '"entity\.minecraft\.villager\.[a-z_]*"' ../../../src/main/resources/assets/aliveworkplace/lang/en_us.json | sed 's/.*villager\.\([a-z_]*\)"/\1/' | sort -u)
 for x in 400 800; do
-  # Our houses' own blocks (the others share vanilla blocks since ROADMAP 21.1a, so a hit wouldn't tell ours apart).
-  for poi in blueprint_table training_post mailbox shop_counter storehouse travel_post; do
-    say "execute positioned $x 70 400 run locate poi aliveworkplace:$poi" 2
+  say "execute positioned $x 70 400 if entity @e[type=villager,distance=..160]" 1
+  for job in $JOBS; do
+    echo "execute positioned $x 70 400 as @e[type=villager,distance=..160,nbt={VillagerData:{profession:\"aliveworkplace:$job\"}}] run say house-check $x $job" > console
+    sleep 0.2
   done
+  sleep 2
 done
 say "stop" 30
 kill $KEEP 2>/dev/null || true
 wait $PID 2>/dev/null || true
 echo "--- results (full log: $SERVER/server.log)"
-grep -E "Alive Workplace ready|blueprint\(s\) available|Generated structure|nearest aliveworkplace|Could not find a point of interest|Crash|Exception" server.log | grep -v "No data fixer" || true
+grep -E "Alive Workplace ready|blueprints? available|Generated structure|Crash|Exception" server.log | grep -v "No data fixer" || true
+python3 - server.log <<'EOF'
+import collections, re, sys
+lines = open(sys.argv[1], errors="replace").read().splitlines()
+start = max((i for i, l in enumerate(lines) if "Generated structure" in l), default=0)
+totals = [l for l in lines[start:] if re.search(r"Test (passed, count: \d+|failed)", l)]
+for i, x in enumerate(("400", "800")):
+    jobs = collections.Counter(m.group(1) for l in lines for m in [re.search(r"house-check " + x + r" ([a-z_]+)", l)] if m)
+    total = re.search(r"count: (\d+)", totals[i]) if i < len(totals) else None
+    listed = ", ".join(f"{j} {n}" for j, n in sorted(jobs.items())) or "none"
+    print(f"Our houses' villagers in the village at {x} 400: {sum(jobs.values())} of {total.group(1) if total else 0} villagers ({listed})")
+EOF

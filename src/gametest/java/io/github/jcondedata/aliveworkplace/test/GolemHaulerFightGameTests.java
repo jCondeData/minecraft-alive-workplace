@@ -142,4 +142,41 @@ public class GolemHaulerFightGameTests implements net.fabricmc.fabric.api.gamete
 		zombie.setTarget(crowd.get(3));
 		hauledAfterTheFight(helper, zombie, box, 9, golem);
 	}
+
+	/**
+	 * B329's squeeze is only for a held-up walk: a golem is pushable as vanilla's is until it has walked
+	 * {@link io.github.jcondedata.aliveworkplace.legend.GolemRoleGoal#STUCK_TICKS} without headway, then not, and
+	 * pushable again once its role goal stops (as it does when a fight starts) without the golem having arrived.
+	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:build_area"' '200' '"haulerSqueezeEnds"'
+	@GameTest(template = "aliveworkplace_test:build_area", timeoutTicks = 200, batch = "haulerSqueezeEnds")
+	public void aHeldUpGolemSqueezesOnlyUntilItsWalkEnds(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		IronGolem golem = helper.spawn(EntityType.IRON_GOLEM, new BlockPos(2, 2, 2));
+		golem.setNoAi(true); // it never gets anywhere: every walk below is held up
+		Leftovers.after(helper, golem::discard);
+		BlockPos far = helper.absolutePos(new BlockPos(6, 2, 6));
+		int walk = io.github.jcondedata.aliveworkplace.legend.GolemRoleGoal.STUCK_TICKS + 10;
+		boolean[] walking = {false};
+		helper.runAfterDelay(1, () -> {
+			helper.assertTrue(golem.isPushable(), "a golem not held up on a walk isn't pushable");
+			walking[0] = true;
+		});
+		helper.onEachTick(() -> {
+			if (walking[0]) {
+				io.github.jcondedata.aliveworkplace.legend.GolemRoleGoal.walkTo(golem, far, 1.0);
+			}
+		});
+		helper.runAfterDelay(2 + walk, () -> {
+			walking[0] = false;
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.legend.GolemRoleGoal.squeezing(golem), "a golem held up "
+				+ walk + " ticks isn't squeezing");
+			helper.assertFalse(golem.isPushable(), "a golem squeezing past is still pushable");
+			new io.github.jcondedata.aliveworkplace.legend.GolemRoleGoal(golem).stop();
+			helper.assertFalse(io.github.jcondedata.aliveworkplace.legend.GolemRoleGoal.squeezing(golem), "a golem whose role goal "
+				+ "stopped still squeezes");
+			helper.assertTrue(golem.isPushable(), "a golem whose walk ended isn't pushable");
+			helper.succeed();
+		});
+	}
 }

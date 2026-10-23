@@ -556,6 +556,40 @@ public class ColonySettlersGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B318's letting go, when the workstation he had his eye on is in a dimension the server doesn't have (a datapack or
+	 * mod dimension removed since): the muster takes him all the same and he forgets it, with nothing to give back there.
+	 * (The nightly mutation run: {@code there != null &&} read as {@code ||} looks there up anyway and crashes the tick.)
+	 */
+	//$ gametest_ticks_batch AREA '200' '"colonyEyeingAJobNowhere"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "colonyEyeingAJobNowhere")
+	public void aSettlerEyeingAWorkstationInAMissingDimensionStillSetsOut(GameTestHelper helper) {
+		Village v = village(helper, 0);
+		ServerLevel level = v.level();
+		villager(helper, new BlockPos(10, 2, 11), "Dara", VillagerProfession.NONE, 1);
+		Villager tomas = villager(helper, new BlockPos(12, 2, 12), "Tomas", VillagerProfession.NONE, 1);
+		storehouse(helper, allSupplies());
+		net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> nowhere = net.minecraft.resources.ResourceKey.create(
+			net.minecraft.core.registries.Registries.DIMENSION, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("test_nowhere"));
+		helper.assertTrue(level.getServer().getLevel(nowhere) == null, "setup: the missing dimension exists");
+		helper.startSequence()
+			.thenExecute(() -> {
+				tomas.getBrain().setMemory(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.of(nowhere, helper.absolutePos(new BlockPos(17, 2, 17))));
+				ItemStack held = click(v, v.player(), charter(v));
+				RealmData.Order order = v.order();
+				helper.assertTrue(order != null && order.state().equals(RealmData.MUSTER) && order.volunteers().contains(tomas.getUUID()),
+					"Dara and Tomas should be called to the hall: " + order + " (held " + held + ")");
+			})
+			.thenWaitUntil(() -> {
+				RealmData.Order now = v.order();
+				helper.assertTrue(now != null && !now.state().equals(RealmData.MUSTER) && !now.state().equals(RealmData.GATHERING),
+					"the bell hasn't rung though both stand at the hall: " + now);
+			})
+			.thenExecute(() -> helper.assertTrue(tomas.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).isEmpty(),
+				"Tomas still has his eye on the workstation in the missing dimension"))
+			.thenSucceed();
+	}
+
+	/**
 	 * Calling it off on the Colonies tab: only the owner can; the settlers stay, every supply is back in the Storehouse
 	 * and the charter, spot and name and all, back with the owner, who can send it again.
 	 */

@@ -455,7 +455,9 @@ final class JobScenes {
 	private static final List<net.minecraft.world.entity.monster.Zombie> conscriptionRaiders = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/**
 	 * The conscripts who landed a blow on a raider, recorded as each blow lands (B275): a raider's last attacker was the
-	 * old measure, but the guard's iron sword often dealt the killing blow and hid the conscripts' strikes.
+	 * old measure, but the guard's iron sword often dealt the killing blow and hid the conscripts' strikes. Fabric's
+	 * AFTER_DAMAGE skips a blow that kills (AFTER_DEATH fires instead), so a conscript whose only blows were killing
+	 * blows read "never struck" (B322: the librarian finished two raiders); both events are watched.
 	 */
 	private static final java.util.Set<Villager> conscriptsStruck = java.util.concurrent.ConcurrentHashMap.newKeySet();
 	private static boolean conscriptBlowsWatched;
@@ -466,6 +468,11 @@ final class JobScenes {
 		}
 		conscriptBlowsWatched = true;
 		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, base, taken, blocked) -> {
+			if (source.getEntity() instanceof Villager v && conscripts.contains(v) && conscriptionRaiders.contains(entity)) {
+				conscriptsStruck.add(v);
+			}
+		});
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
 			if (source.getEntity() instanceof Villager v && conscripts.contains(v) && conscriptionRaiders.contains(entity)) {
 				conscriptsStruck.add(v);
 			}

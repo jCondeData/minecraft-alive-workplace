@@ -170,11 +170,25 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		double[] takeOffY = {Double.NaN};
 		double[] landedY = {Double.NaN};
 		double[] lastUp = {0};
+		// B89: the Pidgey's last 20 ticks (where it was, its tether box), in the failure if it vanishes (recalled).
+		java.util.ArrayDeque<String> seen = new java.util.ArrayDeque<>();
+		double[] closest = {Double.POSITIVE_INFINITY};
+		PartnersAtWorkCompatTests.lastSeen(helper, () -> String.join(" | ", seen));
 		helper.onEachTick(() -> {
 			if (helper.getTick() > 5) {
 				PokemonEntity pidgey = PartnersAtWorkCompatTests.pokemon(helper, "pidgey");
 				helper.assertTrue(pidgey.getTethering() != null, "the Pidgey left its pasture at y " + pidgey.getY() + " (top " + top + ")");
 				double up = PartnerShows.flying(pidgey);
+				var box = pidgey.getTethering().getBox();
+				seen.addLast(String.format(java.util.Locale.ROOT, "t%d %.2f %.2f %.2f up %.2f dy %.2f box x %.0f..%.0f y %.0f..%.0f z %.0f..%.0f",
+					helper.getTick(), pidgey.getX(), pidgey.getY(), pidgey.getZ(), up, pidgey.getDeltaMovement().y,
+					box.minX, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ));
+				if (seen.size() > 20) {
+					seen.removeFirst();
+				}
+				if (up > 0) {
+					closest[0] = Math.min(closest[0], box.maxY - pidgey.getY());
+				}
 				if (up > 0 && Double.isNaN(takeOffY[0])) {
 					takeOffY[0] = pidgey.getY() - up;
 				}
@@ -194,6 +208,9 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 			helper.assertTrue(started.contains(show("postman_flying_takes_the_air_mail")), "no air mail show: " + why(started));
 			helper.assertTrue(highest[0] > 0, "the Pidgey never took off (" + PartnerShows.lastFlight() + ")");
 			helper.assertTrue(takeOffY[0] + highest[0] < top, "the Pidgey climbed to " + (takeOffY[0] + highest[0]) + ", its pasture's top is " + top);
+			// B89: room to spare at the top (the show keeps 2 blocks), or a tick of the Pidgey's own flying there can carry it
+			// out of the box and Cobblemon recalls it (the show sets its height only at the end of each tick).
+			helper.assertTrue(closest[0] >= 1.5, "the Pidgey flew to " + closest[0] + " below its pasture's top");
 			helper.assertTrue(p.bobs().countItem(Items.DIAMOND) == 2, "Bob's mailbox is still empty");
 			noDisplaysLeft(helper);
 			helper.assertTrue(!Double.isNaN(landedY[0]) && Math.abs(landedY[0] - takeOffY[0]) < 1.5,

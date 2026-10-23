@@ -387,13 +387,16 @@ public class HeartEventGameTests implements FabricGameTest {
 			WorkerStatus.set(bram, Component.literal("Bram"), -1f, Component.literal("Chopping logs"));
 			HeartEvents.tick(level, level.getGameTime());
 			helper.assertTrue(HeartEvents.telling(bram) == null, "Bram started telling with a work line over his head");
+			helper.assertFalse(Chatter.chatting(bram, level.getGameTime()), "a work line over Bram's head counts as small talk");
 			bram.discard();
 			// Cora says hello to the player, then has her story to tell: she starts it, the hello or not.
 			Villager cora = villager(helper, new BlockPos(5, 2, 4), "Cora");
 			Friendship.add(cora, me, 200);
+			helper.assertFalse(Chatter.chatting(cora, level.getGameTime()), "Cora counts as making small talk with no line over her head");
 			Chatter.say(level, cora, me, "hello", 1, me.getDisplayName());
 			long now = level.getGameTime();
 			helper.assertTrue(said(cora, now).equals("Oh, hello there, " + ME + "."), "her hello: " + said(cora, now));
+			helper.assertTrue(Chatter.chatting(cora, now), "her hello over her head isn't counted as small talk");
 			HeartEvents.tick(level, now);
 			HeartEvents.Telling telling = HeartEvents.telling(cora);
 			helper.assertTrue(telling != null && telling.said == 1, "after her hello Cora didn't start her story: "

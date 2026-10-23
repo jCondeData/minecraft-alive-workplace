@@ -829,38 +829,12 @@ public class WonderCrewGameTests implements FabricGameTest {
 	//$ gametest_ticks_batch BIG '2400' '"crewHeldColumn"'
 	@GameTest(template = BIG, timeoutTicks = 2400, batch = "crewHeldColumn")
 	public void aColumnAMemberHoldsAndNeverLaysIsTakenOverByTheLead(GameTestHelper helper) {
-		Leftovers.clear(helper);
-		ServerLevel level = helper.getLevel();
-		helper.setDayTime(2000);
-		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
-		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
-		level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(true, level.getServer());
-		Leftovers.after(helper, () -> level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(false, level.getServer()));
-		BlockPos bench = new BlockPos(2, 2, 2);
-		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
-		Villager lead = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
-		Builders.employ(level, lead, helper.absolutePos(bench));
-		BuildSite site = Builders.start(level, lead, null, ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut"),
-			new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(6, 2, 6)), Rotation.NONE, Mirror.NONE));
-		site.setWonder(UUID.randomUUID()); // a Wonder's part: with a member about, its builders work as a crew
-		BuildPlan plan = site.plan(level);
-		helper.assertTrue(plan != null, "the test hut's plan isn't there");
-		// the hut stands but for one wall block and the one over it
-		for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
-			for (BuildPlan.Step s : plan.steps(stage)) {
-				level.setBlock(s.pos(), s.state(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
-				if (s.secondaryPos() != null && s.secondaryState() != null) {
-					level.setBlock(s.secondaryPos(), s.secondaryState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
-				}
-			}
-		}
-		Set<BlockPos> walls = new HashSet<>();
-		plan.steps(BuildPlan.Stage.STRUCTURE).forEach(s -> walls.add(s.pos()));
-		BlockPos hole = plan.steps(BuildPlan.Stage.STRUCTURE).stream().map(BuildPlan.Step::pos)
-			.filter(p -> p.getY() == site.placement().origin().getY() + 1 && walls.contains(p.above()) && plan.solidPlannedAt(p.below())).findFirst().orElseThrow();
-		BlockPos over = hole.above();
-		level.setBlock(hole, Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
-		level.setBlock(over, Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+		HeldHut hut = heldHut(helper, null);
+		ServerLevel level = hut.level();
+		BuildSite site = hut.site();
+		BuildPlan plan = hut.plan();
+		BlockPos hole = hut.hole();
+		BlockPos over = hut.over();
 		UUID siteId = site.id();
 		UUID member = UUID.randomUUID(); // a member that is about, holds the hole's column and never lays it
 		long column = plan.column(hole);
@@ -901,6 +875,134 @@ public class WonderCrewGameTests implements FabricGameTest {
 				helper.assertTrue(level.getBlockState(p).is(wanted), "the wall at " + p.toShortString() + " is " + level.getBlockState(p) + ", not " + wanted);
 			}
 		});
+	}
+
+	/**
+	 * B326: as above, and the lead lays the block in the very tick it takes the column over. Here a wall block before the
+	 * hole in the lead's list waits for good on the foundation block under it (gone), so the lead's pass over its list
+	 * doesn't come back round to the hole that tick: if taking over didn't make the hole its step at once, the lead would
+	 * stand idle a tick with nothing in hand (and count it as waiting on a helper).
+	 */
+	//$ gametest_ticks_batch BIG '2400' '"crewHeldColumnAtOnce"'
+	@GameTest(template = BIG, timeoutTicks = 2400, batch = "crewHeldColumnAtOnce")
+	public void theLeadLaysAHeldColumnsBlockInTheTickItTakesItOver(GameTestHelper helper) {
+		HeldHut hut = heldHut(helper, DIP);
+		ServerLevel level = hut.level();
+		Villager lead = hut.lead();
+		BuildSite site = hut.site();
+		BuildPlan plan = hut.plan();
+		BlockPos hole = hut.hole();
+		long column = plan.column(hole);
+		// The floor's middle block, on the one foundation block (the dip): taken away, and held by a second member through
+		// the lead's first pass over the walls, so the lead puts it off; then that member leaves and the dip is dug out again.
+		BlockPos stuck = helper.absolutePos(DIP.above());
+		helper.assertTrue(plan.steps(BuildPlan.Stage.FOUNDATION).stream().anyMatch(s -> s.pos().equals(stuck.below())), "no foundation block in the dip");
+		helper.assertTrue(plan.steps(BuildPlan.Stage.STRUCTURE).stream().anyMatch(s -> s.pos().equals(stuck)) && plan.column(stuck) != column,
+			"the floor's middle isn't a structure block off the hole's column");
+		level.setBlock(stuck, Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+		net.minecraft.world.item.Item holeItem = plan.steps(BuildPlan.Stage.STRUCTURE).stream().filter(s -> s.pos().equals(hole)).findFirst().orElseThrow()
+			.state().getBlock().asItem();
+		BlockPos stand = null;
+		for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+			BlockPos p = hole.below().relative(d);
+			if (level.getBlockState(p).isAir() && level.getBlockState(p.above()).isAir() && !level.getBlockState(p.below()).canBeReplaced()) {
+				stand = p;
+				break;
+			}
+		}
+		helper.assertTrue(stand != null, "nowhere to stand by the hole");
+		BlockPos by = stand;
+		UUID siteId = site.id();
+		UUID member = UUID.randomUUID(); // a member that is about, holds the hole's column and never lays it
+		UUID other = UUID.randomUUID(); // one that holds the floor's middle until the lead goes back over the walls
+		long stuckColumn = plan.column(stuck);
+		boolean[] state = {false, false}; // the floor's middle left for good, the hole's column held
+		helper.onEachTick(() -> {
+			if (level.getGameTime() % 200 == 0) {
+				helper.setDayTime(2000);
+			}
+			BuildSite now = BuildSiteManager.get(level).get(siteId);
+			helper.assertTrue(now != null, "the hut was finished with its floor's middle over a dug-out dip");
+			long t = level.getGameTime();
+			helper.assertTrue(level.getBlockState(stuck).isAir(), "the floor's middle was laid");
+			if (state[1] && now.claim(member) == null) {
+				// The lead took the column over in the tick just gone: the hole is its step now, in its hand.
+				helper.assertTrue(state[0] && now.isRetrying() && now.crewColumn(lead.getUUID()) != null && now.crewColumn(lead.getUUID()) == column,
+					"the member's claim went, but the lead doesn't hold the hole's column (retrying " + now.isRetrying() + ")");
+				helper.assertTrue(lead.getMainHandItem().is(holeItem), "the lead took the hole's column over but isn't on the hole that tick: holding "
+					+ lead.getMainHandItem() + ", hole " + (level.getBlockState(hole).isAir() ? "empty" : "laid"));
+				helper.succeed();
+				return;
+			}
+			if (!state[0]) {
+				if (now.stage() == BuildPlan.Stage.STRUCTURE && now.isRetrying()) {
+					state[0] = true; // the walls' retries begin: the floor's middle now waits for good on the dip under it
+					now.release(other);
+					level.setBlock(stuck.below(), Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+				} else {
+					now.seen(other, t);
+					if (!now.columnTakenByOther(other, stuckColumn)) {
+						now.takeColumn(other, stuckColumn);
+						now.claim(other, stuck, t);
+					}
+				}
+			}
+			now.seen(member, t);
+			// Until then the lead stands by the hole, empty-handed.
+			lead.teleportTo(by.getX() + 0.5, by.getY(), by.getZ() + 0.5);
+			lead.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+			if (!now.columnTakenByOther(member, column)) {
+				now.takeColumn(member, column);
+				now.claim(member, hole, t);
+				state[1] = true;
+			}
+		});
+	}
+
+	/** Under the test hut's middle: a dip in the ground, so its plan has a foundation block. */
+	private static final BlockPos DIP = new BlockPos(8, 1, 8);
+
+	/** The hut of the B326 tests, standing but for one wall block (the hole) and the one over it, its lead a crew's. */
+	private record HeldHut(ServerLevel level, Villager lead, BuildSite site, BuildPlan plan, BlockPos hole, BlockPos over) {
+	}
+
+	private static HeldHut heldHut(GameTestHelper helper, @org.jetbrains.annotations.Nullable BlockPos dip) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		if (dip != null) {
+			helper.setBlock(dip, Blocks.AIR);
+		}
+		helper.setDayTime(2000);
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(true, level.getServer());
+		Leftovers.after(helper, () -> level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(false, level.getServer()));
+		BlockPos bench = new BlockPos(2, 2, 2);
+		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
+		Villager lead = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Builders.employ(level, lead, helper.absolutePos(bench));
+		BuildSite site = Builders.start(level, lead, null, ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut"),
+			new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(6, 2, 6)), Rotation.NONE, Mirror.NONE));
+		site.setWonder(UUID.randomUUID()); // a Wonder's part: with a member about, its builders work as a crew
+		BuildPlan plan = site.plan(level);
+		helper.assertTrue(plan != null, "the test hut's plan isn't there");
+		// the hut stands but for one wall block and the one over it
+		for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
+			for (BuildPlan.Step s : plan.steps(stage)) {
+				level.setBlock(s.pos(), s.state(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+				if (s.secondaryPos() != null && s.secondaryState() != null) {
+					level.setBlock(s.secondaryPos(), s.secondaryState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+				}
+			}
+		}
+		Set<BlockPos> walls = new HashSet<>();
+		plan.steps(BuildPlan.Stage.STRUCTURE).forEach(s -> walls.add(s.pos()));
+		BlockPos hole = plan.steps(BuildPlan.Stage.STRUCTURE).stream().map(BuildPlan.Step::pos)
+			.filter(p -> p.getY() == site.placement().origin().getY() + 1 && walls.contains(p.above()) && plan.solidPlannedAt(p.below())).findFirst().orElseThrow();
+		BlockPos over = hole.above();
+		level.setBlock(hole, Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+		level.setBlock(over, Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+		return new HeldHut(level, lead, site, plan, hole, over);
 	}
 
 	private static void gaveUpMidWall(GameTestHelper helper, boolean reload, boolean whole) {

@@ -485,6 +485,54 @@ public class ConscriptionGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B327 (B324's likeliest path, through the villager's own brain): a player stands by a fighting conscript with emeralds
+	 * in hand, so vanilla's trade display wants to show the farmer's wares in his main hand and empty it after. The
+	 * militia's sword stays in his hand every tick of the fight (a shown loaf of bread would have stayed there to the
+	 * fight's end: only an empty hand is re-armed). Without the sword's clause in ShowTradesToPlayerMixin this fails
+	 * 6 to 12 ticks into the fight with a pumpkin pie in his hand.
+	 */
+	//$ gametest_ticks_batch AREA '700' '"conscriptionTradeDisplay"'
+	@GameTest(template = AREA, timeoutTicks = 700, batch = "conscriptionTradeDisplay")
+	public void aPlayerStandingByAFightingConscriptLeavesHimTheSword(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		village(helper);
+		Leftovers.halls(helper);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		// Caged: the conscript fights it (it's right by them) but never lands a blow, so the fight lasts.
+		Zombie zombie = caged(helper, new BlockPos(11, 2, 4));
+		Leftovers.after(helper, zombie::discard);
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.EMERALD, 16));
+		Leftovers.after(helper, player::discard);
+		helper.runAfterDelay(5, () -> {
+			ServerLevel level = helper.getLevel();
+			VillageHallBlockEntity entity = ready(helper);
+			entity.setEdicts(List.of(new Edicts.InForce(CONSCRIPTION.toString(), Chronicle.day(level))));
+			night(level);
+			Villager farmer = grown(helper, VillagerProfession.FARMER, new BlockPos(11, 2, 7));
+			VillageRaids.track(level, helper.absolutePos(HALL), 1);
+			forget();
+			AtomicInteger fought = new AtomicInteger();
+			java.util.concurrent.atomic.AtomicReference<String> lost = new java.util.concurrent.atomic.AtomicReference<>();
+			// (succeedWhen's check runs every tick: it also keeps the player by the conscript and watches his hand)
+			helper.succeedWhen(() -> {
+				if (lost.get() == null) {
+					player.teleportTo(farmer.getX(), farmer.getY(), farmer.getZ() + 1.5);
+					if (MilitiaCombat.isFighting(farmer)) {
+						fought.incrementAndGet();
+						if (!Conscription.isMilitiaSword(farmer.getMainHandItem())) {
+							lost.set("the conscript's hand holds " + farmer.getMainHandItem() + " (off hand " + farmer.getOffhandItem() + ") after "
+								+ fought.get() + " ticks of the fight");
+						}
+					}
+				}
+				helper.assertTrue(lost.get() == null, String.valueOf(lost.get()));
+				helper.assertTrue(fought.get() >= 400, "fought " + fought.get() + " ticks (needs 400)");
+			});
+		});
+	}
+
 	// --- Helpers ---------------------------------------------------------------------------------------------------
 
 	/** A builder at their bench by a chest of the test hut's materials, the build begun. */

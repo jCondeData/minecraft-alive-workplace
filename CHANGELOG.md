@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Standing next to a conscript in a raid no longer swaps his militia sword for the wares he'd show you (B324, B327):
+  vanilla's trade display put one of his wares (a pumpkin pie, say) in his hand, and he fought on without the sword.
 - A conscript whose hand is emptied in the middle of a fight under Conscription takes the militia's stone sword up
   again at once (B324): the sword was handed out only as each fight began, so a villager whose hand was emptied mid-fight
   fought on bare-handed until that raider was dead.

@@ -3,7 +3,7 @@
 Laws a village's owner proclaims at the Village Hall. Each gives the village a boost at a cost, and each has a reform
 that takes the cost away for good. Part of 1.4 (Edicts and civic items): switched on in 1.0 with every other expansion.
 
-Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22
+Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327
 
 ## What a player sees
 
@@ -73,7 +73,9 @@ ask, the steps go up on the quest page as before, and progress made either way c
 **Curfew** overrules the villagers' schedule from dusk (tick 12000) to dawn for everyone but guards and
 mercenaries, and a monster can't hurt a villager asleep in bed. **Conscription** gives each conscript a stone sword
 made for the raid (never taken from a chest), which is gone when the raid ends and again whenever the villager
-loads, so a save in the middle of a raid can't leave a free sword.
+loads, so a save in the middle of a raid can't leave a free sword. The sword stays in the conscript's hand all fight:
+vanilla's trade display (wares shown to a player standing by) leaves a hand holding it alone, and a hand emptied any
+other way takes the sword up again at once (B324, B327).
 
 ## Switches
 
@@ -134,7 +136,7 @@ the hall loads.
 
 GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, rank drops, save and reload),
 `EdictBookGameTests` (6), `ReformGameTests` (7), `FamilyEdictGameTests` (5), `OpenGatesGameTests` (6),
-`TreasuryEdictGameTests` (8), `CurfewGameTests` (6), `ConscriptionGameTests` (6), `CivicTalkGameTests` (7),
+`TreasuryEdictGameTests` (8), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `CivicTalkGameTests` (7),
 `PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`, `ReformStoryGameTests` (10: each of the eight stories from
 the ask through M30's three steps to its ending and the edict reformed in that village only; `storyArcs` off; side
 arcs and `arcsAtOnce`). Showcase scene `reform_story`.

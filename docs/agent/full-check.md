@@ -264,7 +264,39 @@ B333's lesson (a Delivery Note on a chest opened the chest; the tests had set th
   Stone clicks; the story, guild, sickness and Legend villager clicks beyond the existing tests; the Colony Charter,
   Table and Preview packets beyond the existing tests; a real client (no screenshots this stage).
 
+### QA stage 5: the blocks and packets stage 4 left unclicked (qa-stage5, 2026-10-23)
+- **`QaStageFiveGameTests` (13)**, clicking with stage 4's `press` (main hand then off hand, block first) on a player
+  whose connection keeps what the server sends, so a screen that opens by packet (the Blueprint Table's `Open`, the
+  preview's `Data`, `Details`, `UploadResult`) is seen too. Each block is clicked six ways (empty hand, dirt or a sword in
+  the main hand, dirt in the off hand only, sneaking empty-handed, a full bag), in survival and creative, and the block
+  in the hand must not be placed: the Grave (a real one, dug by `Graves.onDeath` for a named farmer) shows its epitaph
+  with the name; the Foundation Stone its status; the Bounty Board with no hall near says so (a Captain's Insignia
+  isn't used up); a Mailbox placed by a player opens for him every way, and another player is refused, told whose it
+  is; the Drop Box opens; a Storehouse placed by a player opens its requests board; the Blueprint Table sends its
+  library, also with a blueprint in either hand. Packets, sent as the client sends them: the Stored tab (Store from 30
+  blocks or at a chest's position does nothing; TakeStored claiming 64 hands back the one stored; a diamond, far away,
+  a chest, a full bag and a second take give nothing, "not stored"); the library's Take ("take a copy for a Blank
+  Blueprint": none without a blank, "need_blank"; far, a chest or unknown, path-like or empty ids cost no blank; one
+  blank, one Market Stall; a full bag drops it at the feet, never lost; free in creative); details and preview requests
+  (the Market Stall's details and preview; the same preview not resent at once; bad ids get nothing; spoofed upload
+  sizes and offsets all refused, the player still connected); the mailbox's Send (no name, an unknown name with the
+  name in it, nothing to send; from a player with no mailbox open, nothing at all); a Captain's Insignia from a real
+  killed captain, right-clicked from the main hand on the board and on the hall, paid.
+- **Mutants**: 4 planted (`MailboxBlock.mayOpen` always true, `TableLibrary.takeOut` without the distance check,
+  `PreviewNetworking`'s repeat guard off, the epitaph only for an empty hand): all 4 killed.
+- **Flakes**: the 13 ran 5 more times on their own: one failure, a test's fault (the insignia tests' hall stood on
+  after them and a later "no hall near" board found it); fixed by removing the hall and board when the test ends and
+  looking only 4 blocks round the no-hall board. Then 5 runs green (4 after the first fix, 1 after the second).
+- **Full build** green: 2645 GameTests and 494 compat tests passed; the log audit found no errors (18 warnings, as in stage 4).
+- **One bug**, failing tests on branch `tests/qa-stage5-clicks` (`QaStageFiveBugTests`):
+  - **B338**: a Captain's Insignia in the off hand (main hand empty), right-clicked on the Bounty Board or the village
+    hall, opens the page and pays nothing; from the main hand it pays.
+- **Not tested**: the Colony Charter (switched off until 1.7); handing in Wonder goods at the Foundation Stone (Wonders
+  are switched off; only the status was clicked); the Storehouse board's own clicks (handing items to a worker); a
+  real upload from a player allowed to upload; a real client. Noted, not filed: `PreviewNetworking` remembers every id
+  a client asks for until it leaves, so a modified client sending endless made-up ids grows the server's memory.
+
 ## Still to do
-- B335, B336 and B337 (the bug lane), with the tests on `tests/qa-stage4-clicks`.
-- The clicks stage 4 left untested (above).
+- B335, B336 and B337 (the bug lane), with the tests on `tests/qa-stage4-clicks`; B338 with `tests/qa-stage5-clicks`.
+- The clicks stages 4 and 5 left untested (above).
 - A timing test for `BuilderWork` 1252 if the landscaping shortcut ever matters to a player.

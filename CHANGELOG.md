@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Wonder crew no longer stands idle near the top of a big build (B326): when a member held a column and never laid
+  its block (most likely the folly dome's centre tile), the lead waited on it with no end while going back over the blocks
+  it had put off. Once the crew has stood still for 10 seconds, the lead now takes that column over and lays the block
+  itself.
 - Standing next to a conscript in a raid no longer swaps his militia sword for the wares he'd show you (B324, B327):
   vanilla's trade display put one of his wares (a pumpkin pie, say) in his hand, and he fought on without the sword.
 - A conscript whose hand is emptied in the middle of a fight under Conscription takes the militia's stone sword up

@@ -51,6 +51,7 @@ public final class AliveWorkplace {
 		TableServer.init();
 		io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks.init(); // the Table as a collection (26.10)
 		PreviewNetworking.init();
+		Platform.get().onUseBlock(io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem::beforeBlock); // B335: mark a chest or trapdoor before it opens
 		BuilderStatusSync.init();
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.init();
 		io.github.jcondedata.aliveworkplace.farm.Fields.init();

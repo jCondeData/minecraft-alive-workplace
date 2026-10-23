@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Right-clicking a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench with the Scan Tool marks it as
+  a corner again instead of opening, flipping or answering it (B335), so a build whose corner is one of those can be
+  scanned the way the tool says: one corner block, then the opposite corner.
 - Right-clicking a chest or barrel with a Delivery Note marks it again instead of opening it (B333), so a courier
   route can be set up the way the note says: the container to take from, then the one to bring to. A note that
   already carries 9 kinds now says so when you hold a 10th, instead of "Stop carrying" a kind it never had (B334).

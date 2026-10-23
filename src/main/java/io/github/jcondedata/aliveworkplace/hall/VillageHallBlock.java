@@ -198,6 +198,12 @@ public class VillageHallBlock extends BaseEntityBlock {
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+		// B338: vanilla tries the main hand first and, when it holds nothing the hall takes, opens the hall, so the off
+		// hand's insignia was never asked; it is handed in here as from the main hand.
+		ItemStack offHand = player.getOffhandItem();
+		if (offHand.is(io.github.jcondedata.aliveworkplace.registry.ModItems.CAPTAINS_INSIGNIA)) {
+			return useItemOn(offHand, state, level, pos, player, InteractionHand.OFF_HAND, hit).result();
+		}
 		if (player instanceof ServerPlayer serverPlayer) {
 			VillageHallScreen.open(serverPlayer, pos);
 		}

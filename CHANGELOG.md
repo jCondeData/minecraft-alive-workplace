@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Captain's Insignia held in the off hand now pays when right-clicked on the Bounty Board or the Village Hall
+  (B338), as from the main hand; before, the click only opened the board or the hall.
 - A Book and Quill on the Blueprint Table a builder works at now writes the material list of their build, as it does on
   the builder (B337), or says no build is under way from it; before, it only opened the table. A table no builder
   works at still opens as usual.

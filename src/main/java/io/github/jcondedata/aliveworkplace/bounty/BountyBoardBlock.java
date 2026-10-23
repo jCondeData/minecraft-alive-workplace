@@ -95,6 +95,12 @@ public class BountyBoardBlock extends HorizontalDirectionalBlock {
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+		// B338: vanilla tries the main hand first and, when it holds nothing the board takes, opens the board, so the
+		// off hand's insignia was never asked; it is handed in here as from the main hand.
+		ItemStack offHand = player.getOffhandItem();
+		if (offHand.is(ModItems.CAPTAINS_INSIGNIA)) {
+			return useItemOn(offHand, state, level, pos, player, InteractionHand.OFF_HAND, hit).result();
+		}
 		if (level instanceof ServerLevel server && player instanceof ServerPlayer serverPlayer) {
 			Bounties.boardPlaced(server, pos);
 			BountyPage.openAtBoard(serverPlayer, server, pos);

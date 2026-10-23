@@ -23,7 +23,7 @@ Roadmap items: 31.13, 31.14, B134
   pillager with a Multishot, Quick Charge II crossbow), Beast Rider (on a ravager), Night Stalker (invisible at night
   until he's hit), Warlord (a band of 5), Hexer (an evoker).
 - **The claim**: he drops a **Captain's Insignia** when he dies. Hand it in at a Bounty Board or the Village Hall
-  (right-click with it), or with the tab's hand-in button: 12 emeralds times the rank factor, once, to whoever hands it
+  (right-click with it, in either hand), or with the tab's hand-in button: 12 emeralds times the rank factor, once, to whoever hands it
   in, plus a bounty's standing (+40). The chronicle says who. A second insignia of the same bounty pays nothing.
 - **Expiry**: an unclaimed bounty comes down after 7 days and its band leaves in a puff of smoke.
 - **Quiet villages post none**: a village set **At peace** on its Defense page, every village at threat level 0, and

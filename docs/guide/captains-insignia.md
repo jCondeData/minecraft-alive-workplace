@@ -21,9 +21,9 @@ Beat the captain a bounty was posted on (see [Bounty Board](bounty-board.md)). H
 
 ## Handing it in
 
-Right-click the [Bounty Board](bounty-board.md) or the [Village Hall](village-hall.md) of the village that posted him,
-or use the hand-in button on the journal's Bounties tab. The reward goes **to whoever hands it in**, once: a second
-insignia for the same bounty pays nothing. You also earn +40 [standing](reputation.md), and the chronicle says who
+Right-click the [Bounty Board](bounty-board.md) or the [Village Hall](village-hall.md) of the village that posted him
+with it in either hand, or use the hand-in button on the journal's Bounties tab. The reward goes **to whoever hands it
+in**, once: a second insignia for the same bounty pays nothing. You also earn +40 [standing](reputation.md), and the chronicle says who
 brought him in.
 
 ## How it fits with the rest

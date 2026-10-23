@@ -322,7 +322,7 @@ public class QaStageThreeGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * "Name it by renaming the tool in an anvil": a build named with a full stop in it ("St. Mary's Chapel") is saved
+	 * "Name it by renaming the tool in an anvil": a build named with a full stop in it ("St. Ives Mill") is saved
 	 * under its whole name, not cut off at the full stop.
 	 */
 	//$ gametest_batch AREA '"qa3ScanName"'
@@ -333,7 +333,7 @@ public class QaStageThreeGameTests implements FabricGameTest {
 		ServerPlayer player = listener(helper, seen);
 		helper.setBlock(new BlockPos(3, 2, 3), Blocks.OAK_PLANKS);
 		ItemStack tool = new ItemStack(ModItems.SCAN_TOOL);
-		tool.set(DataComponents.CUSTOM_NAME, Component.literal("St. Mary's Chapel"));
+		tool.set(DataComponents.CUSTOM_NAME, Component.literal("St. Ives Mill"));
 		player.setItemInHand(InteractionHand.MAIN_HAND, tool);
 		player.getInventory().add(new ItemStack(ModItems.BLANK_BLUEPRINT));
 		click(helper, player, new BlockPos(3, 2, 3));
@@ -344,8 +344,8 @@ public class QaStageThreeGameTests implements FabricGameTest {
 		ItemStack blueprint = findBlueprint(player);
 		helper.assertTrue(!blueprint.isEmpty(), "not saved: " + last(seen));
 		ResourceLocation id = BlueprintItem.data(blueprint).orElseThrow().structure();
-		helper.assertTrue(id.getPath().contains("mary") && id.getPath().contains("chapel"),
-			"the anvil name \"St. Mary's Chapel\" was saved as " + id + " (\"" + seen.get(seen.size() - 1).getString() + "\")");
+		helper.assertTrue(id.getPath().contains("ives") && id.getPath().contains("mill"),
+			"the anvil name \"St. Ives Mill\" was saved as " + id + " (\"" + seen.get(seen.size() - 1).getString() + "\")");
 		helper.succeed();
 	}
 

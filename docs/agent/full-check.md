@@ -170,5 +170,55 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
   switch inverted and a gate dropped. `villageHabitats` was the one switch whose flag no test had turned off; it now
   has a compat test.
 
+### QA stage 3: mutation sweep, untested items and entities, visual pass (qa-stage3, 2026-10-23)
+- **Mutation sweep** (`mutate.py --file ... --no-baseline`, each file against the test classes that use it; the compat
+  set's baseline, 74 tests, passed first): **20 mutants, 11 killed by the existing tests, 17 after the new ones.**
+  - Compat, 5 of 5 killed: Tom's/Sophisticated storage networks (`StorageNetworks` 406, 204), Raid Dens (`RaidDensRaids`
+    82), Megas (`CobblemonMegas` 87), Create builds (`CreateBuilds` 60).
+  - GameTests, 6 of 15 killed at first (`BuildSite` 317 and 876, `FreeJobsPage` 207, `BedLadders` 101, `MaterialRules`
+    312, `VillageHalls` 201). Six survivors now fail a test in `QaStageThreeGameTests` (each checked on its mutant):
+    `FreeJobsPage` 509, a builder moved to a free table from the hall page doesn't walk there (no test went through the
+    page for a builder); `BedLadders` 194, the ladder walk to a bed allowed to leave its 8-block reach; `MaterialRules`
+    358, chests and barrels no longer protected while clearing; `BuildSite` 940, the scaffolding forgotten over a save;
+    `VillageHalls` 230, a villager whose bed is on the village's edge not called home; `BuildSiteManager` 325, the
+    blocks a repair gave up on forgotten over a save.
+  - Three survivors stay: `BuilderWork` 1252 (the landscaping shortcut that skips every hole short of dirt at once:
+    only slower without it, so only a timing test would see it), `BuilderWork` 457 (stocking up before clearing for a
+    helper or with free materials: no visible difference found) and `BuildSiteManager` 316 (`<` to `<=` over the saved
+    list: reading one past the end gives an empty entry that is skipped, so it's equivalent).
+  - The run that didn't count: `BuildSite` 906 "killed" while the sweep was being stopped.
+- **Items, components and entities no test used** (stage 1's inventory), in `QaStageThreeGameTests`, through the
+  player's own entry points (right-clicks through `ServerPlayerGameMode`, crafting through the recipe manager, saves
+  through `ItemStack.save`/`parse`, the network through `ItemStack.STREAM_CODEC`):
+  - Delivery Note: up to 9 kinds from the other hand, a 10th not taken, a kind removed by a second click, a block that
+    isn't a container refused, a sneak-click clears the marks but keeps the kinds, the route over a save and the
+    network.
+  - Scan Tool: two corners then sneak-right-click the air makes a 3×2×2 blueprint from one Blank Blueprint; unmarked,
+    a plain click on the air and a 49-wide box are refused (48 is taken); an anvil name with a full stop is kept whole.
+  - Village Banner recipe: any banner plus one gold ingot anywhere in the grid keeps its colour and patterns; two gold,
+    two banners, a stray stick, a banner or gold alone make none.
+  - Data components (`patrol`, `city_plan_hall`, `colony_charter`, `city_plan` with every part set, `made_day`, `scan`,
+    `route`, `village_banner`) come back equal after a save and over the network; `supply_report` goes over the
+    network and is never saved.
+  - Entities: none of the four can be `/summon`ed; the bobber isn't saved and goes when its fisherman dies or walks
+    17 blocks off; a child in a cradle is saved with its seat and let go when the cradle breaks; a stand seat with no
+    Cup lets its villager go outside the stair; a furniture seat loaded from a save stands its villager up.
+  - 18 tests, each run 5 times in its own batch (`RepeatNewTests`): 90 of 90 passed.
+  - The first full build failed `BlueprintUnlocksGameTests.startingSetUnlockedRestLockedRareHidden` ("a ??? build's id
+    went to the client"): the scan test had named its build "St. Mary's Chapel", the scan is listed in the Blueprint
+    Table for everyone, and that test looks for the word "chapel" on the wire. The scan is now "St. Ives Mill". Scans
+    stay in the test world's `generated/` folder between local runs.
+- **Two bugs**, failing tests on branch `tests/qa-stage3-delivery-note` (`QaStageThreeBugTests`):
+  - **B333**: right-clicking a chest or barrel with a Delivery Note opens it (a `ChestMenu`) and the note stays blank,
+    so a route can't be marked the way the CHANGELOG says. No test had clicked through the server; the old tests set
+    the route directly.
+  - **B334**: with 9 kinds on the note, a 10th in the other hand is answered "Stop carrying Emerald" though it was
+    never on the note.
+- **Visual pass** from last night's showcase stills (the real client on GitHub, not run here): `storage_hall`,
+  `hall_jobs` and `create_builds_more` show no missing textures or untranslated text. In `hall_jobs` the porter's
+  overhead lines run off the frame because the camera stands close; `create_builds_more`'s stills are too far away to
+  show the machines turning.
+
 ## Still to do
-- Nothing: every part above is a passing test or a green run, and the one finding is B46.
+- B333 and B334 (the bug lane), with the tests on `tests/qa-stage3-delivery-note`.
+- A timing test for `BuilderWork` 1252 if the landscaping shortcut ever matters to a player.

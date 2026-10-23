@@ -445,6 +445,46 @@ public class ConscriptionGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B324: a conscript whose hand is emptied mid-fight (the scene saw one of three fighting without the sword) takes the
+	 * militia's sword up again at once: it was handed out only as a fight began, so the hand stayed empty to the fight's end.
+	 */
+	//$ gametest_ticks_batch AREA '300' '"conscriptionRearm"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "conscriptionRearm")
+	public void aConscriptWhoseHandIsEmptiedMidFightTakesTheSwordAgain(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		village(helper);
+		Leftovers.halls(helper);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		// Caged: the conscript fights it (it's right by them) but never lands a blow, so the fight lasts.
+		Zombie zombie = caged(helper, new BlockPos(11, 2, 4));
+		Leftovers.after(helper, zombie::discard);
+		helper.runAfterDelay(5, () -> {
+			ServerLevel level = helper.getLevel();
+			VillageHallBlockEntity entity = ready(helper);
+			entity.setEdicts(List.of(new Edicts.InForce(CONSCRIPTION.toString(), Chronicle.day(level))));
+			night(level);
+			Villager farmer = grown(helper, VillagerProfession.FARMER, new BlockPos(11, 2, 7));
+			VillageRaids.track(level, helper.absolutePos(HALL), 1);
+			forget();
+			java.util.concurrent.atomic.AtomicInteger armedTicks = new java.util.concurrent.atomic.AtomicInteger();
+			java.util.concurrent.atomic.AtomicLong emptied = new java.util.concurrent.atomic.AtomicLong(-1);
+			// (succeedWhen's check runs every tick: it also empties the hand once, 20 ticks into the fight)
+			helper.succeedWhen(() -> {
+				boolean fighting = MilitiaCombat.isFighting(farmer);
+				boolean armed = Conscription.isMilitiaSword(farmer.getMainHandItem());
+				if (fighting && armed && emptied.get() < 0 && armedTicks.incrementAndGet() >= 20) {
+					farmer.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+					emptied.set(level.getGameTime());
+				}
+				long since = emptied.get() < 0 ? -1 : level.getGameTime() - emptied.get();
+				helper.assertTrue(since >= 3 && fighting && armed, "armed again after the hand was emptied mid-fight: "
+					+ (since < 0 ? "not emptied yet (armed for " + armedTicks.get() + " ticks)" : since + " ticks since, holds " + farmer.getMainHandItem())
+					+ ", fighting " + fighting);
+			});
+		});
+	}
+
 	// --- Helpers ---------------------------------------------------------------------------------------------------
 
 	/** A builder at their bench by a chest of the test hut's materials, the build begun. */

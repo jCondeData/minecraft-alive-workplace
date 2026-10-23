@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A conscript whose hand is emptied in the middle of a fight under Conscription takes the militia's stone sword up
+  again at once (B324): the sword was handed out only as each fight began, so a villager whose hand was emptied mid-fight
+  fought on bare-handed until that raider was dead.
 - A Pidgey taking the air mail up no longer risks being sent back to your PC at the top of its climb (B89): the flight
   stopped as little as half a block under the top of what its pasture lets it roam, and a tick of the Pidgey's own flying
   there could carry it out, which Cobblemon answers by recalling it. It now stays 2 blocks under.

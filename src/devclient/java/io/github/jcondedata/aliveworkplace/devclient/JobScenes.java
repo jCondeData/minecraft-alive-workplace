@@ -450,6 +450,28 @@ final class JobScenes {
 		return out.toString();
 	}
 
+	/** B324: what each conscript holds in each hand, whether they fight and are called up, and their activity. */
+	private static String conscriptHands() {
+		StringBuilder out = new StringBuilder();
+		for (Villager v : conscripts) {
+			out.append(v.getVillagerData().getProfession()).append(" holds ").append(describeHeld(v.getMainHandItem()))
+				.append(", off hand ").append(describeHeld(v.getOffhandItem()))
+				.append(v.isAlive() ? "" : ", dead")
+				.append(io.github.jcondedata.aliveworkplace.hall.Conscription.militia(v) != null ? ", called up" : ", not called up")
+				.append(io.github.jcondedata.aliveworkplace.guard.MilitiaCombat.isFighting(v) ? ", fighting" : ", not fighting")
+				.append(", activity ").append(v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("none")).append("; ");
+		}
+		return out.toString();
+	}
+
+	private static String describeHeld(ItemStack stack) {
+		if (stack.isEmpty()) {
+			return "nothing";
+		}
+		return io.github.jcondedata.aliveworkplace.hall.Conscription.isMilitiaSword(stack) ? "the militia's sword"
+			: net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+	}
+
 	/** conscription: the villagers called up, and the raiders they beat back. */
 	private static final List<Villager> conscripts = new java.util.concurrent.CopyOnWriteArrayList<>();
 	private static final List<net.minecraft.world.entity.monster.Zombie> conscriptionRaiders = new java.util.concurrent.CopyOnWriteArrayList<>();
@@ -7311,7 +7333,7 @@ final class JobScenes {
 				}, 40),
 				new Step("02_conscription_fight", -1, 0, (level, player) -> {
 					long armed = conscripts.stream().filter(v -> io.github.jcondedata.aliveworkplace.hall.Conscription.isMilitiaSword(v.getMainHandItem())).count();
-					Showcase.check(armed == 3, "the three took up the militia's swords: " + armed + " of 3");
+					Showcase.check(armed == 3, "the three took up the militia's swords: " + armed + " of 3 (" + conscriptHands() + ")");
 					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[showcase] conscription fight starts: {}", conscriptionState());
 				}, 160),
 				new Step("03_conscription_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {

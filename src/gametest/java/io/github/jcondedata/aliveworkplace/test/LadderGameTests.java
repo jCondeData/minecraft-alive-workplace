@@ -380,7 +380,9 @@ public class LadderGameTests implements FabricGameTest {
 				}
 				helper.assertTrue(rungs.size() >= 3 || tick > seen[0] + 20, "the rungs set before the restart were lost: " + rungs);
 				if (inside(helper, climber)) {
-					helper.assertTrue(rungs.size() == RUNGS && raiderLadders(helper, before).size() == RUNGS, "over a ladder of " + rungs.size() + " rungs");
+					helper.assertTrue(rungs.size() == RUNGS && raiderLadders(helper, before).size() == RUNGS, "over a ladder of " + rungs.size() + " rungs: " + rungs + ", raider ladders " + raiderLadders(helper, before) + ", the climber at " + climber.position() + ", tick " + tick + " (restart at " + seen[0] + "), raiders near the hall "
+							+ level.getEntitiesOfClass(Mob.class, new AABB(yard.hall()).inflate(VillageHalls.RADIUS + 32, 48, VillageHalls.RADIUS + 32),
+								m -> m.getTags().contains(Threats.RAIDER_TAG)).stream().map(m -> m.getType().toShortString() + "@" + m.blockPosition().toShortString() + (m == climber ? " (the climber)" : "")).toList());
 					seen[1] = tick;
 					// A second restart, and the raid ends before anything ran again.
 					ThreatData.get(level).roundTrip(level.registryAccess());

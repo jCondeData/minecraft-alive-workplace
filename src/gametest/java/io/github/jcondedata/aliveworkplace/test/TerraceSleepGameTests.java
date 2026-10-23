@@ -1,8 +1,12 @@
 package io.github.jcondedata.aliveworkplace.test;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.work.BedLadders;
 import java.util.List;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -13,6 +17,11 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LadderBlock;
+import net.minecraft.world.level.block.state.properties.BedPart;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -108,5 +117,66 @@ public class TerraceSleepGameTests implements net.fabricmc.fabric.api.gametest.v
 			helper.assertTrue(villager.isSleeping() && villager.getSleepingPos().filter(free::contains).isPresent(),
 				"not asleep in the west home: " + where(helper, villager));
 		});
+	}
+
+	/**
+	 * A bed up a ladder on a 3-high stone tower (bed head at {@code x}, 5, 3; the ladder on the tower's south face, x, 2-4,
+	 * 5); {@code shut} boxes the ladder's foot in glass, so nobody can walk to it. Returns the bed's head.
+	 */
+	private static BlockPos towerBed(GameTestHelper helper, int x, boolean shut) {
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int z = 2; z <= 4; z++) {
+				for (int y = 2; y <= 4; y++) {
+					helper.setBlock(new BlockPos(x + dx, y, z), Blocks.STONE);
+				}
+			}
+		}
+		for (int y = 2; y <= 4; y++) {
+			helper.setBlock(new BlockPos(x, y, 5), Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, Direction.SOUTH));
+			if (shut) {
+				helper.setBlock(new BlockPos(x - 1, y, 5), Blocks.GLASS);
+				helper.setBlock(new BlockPos(x + 1, y, 5), Blocks.GLASS);
+				for (int dx = -1; dx <= 1; dx++) {
+					helper.setBlock(new BlockPos(x + dx, y, 6), Blocks.GLASS);
+				}
+			}
+		}
+		helper.setBlock(new BlockPos(x, 5, 4), Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.NORTH).setValue(BedBlock.PART, BedPart.FOOT));
+		helper.setBlock(new BlockPos(x, 5, 3), Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.NORTH).setValue(BedBlock.PART, BedPart.HEAD));
+		return helper.absolutePos(new BlockPos(x, 5, 3));
+	}
+
+	/**
+	 * The bed claim's ladder paths (B304, at most two per look) aren't all spent on the nearest bed: its one ladder
+	 * comes down in a glass box nobody can walk into, and the second path (to the next bed's ladder, which is open) still
+	 * finds that bed. (The nightly mutation run: stopping with one path left made the second bed unclaimable.)
+	 */
+	//$ gametest_ticks_batch AREA '200' '"terraceLadderPaths"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "terraceLadderPaths")
+	public void aLadderShutInDoesNotUseUpTheClaimOfTheNextBedUpALadder(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos shut = towerBed(helper, 3, true);
+		BlockPos open = towerBed(helper, 21, false);
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 12));
+		villager.setNoAi(true); // standing still, and not claiming a bed himself
+		villager.setOnGround(true); // on the floor (a villager without AI never moves, so the game never notes it; paths need it)
+		helper.startSequence()
+			.thenWaitUntil(() -> helper.assertTrue(level.getPoiManager().getType(shut).isPresent() && level.getPoiManager().getType(open).isPresent(),
+				"setup: the beds aren't homes yet"))
+			.thenExecute(() -> {
+				Pair<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>, BlockPos> near =
+					Pair.of(level.getPoiManager().getType(shut).orElseThrow(), shut);
+				Pair<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>, BlockPos> far =
+					Pair.of(level.getPoiManager().getType(open).orElseThrow(), open);
+				helper.assertTrue(villager.blockPosition().distSqr(shut) < villager.blockPosition().distSqr(open), "setup: the shut-in bed isn't the nearer");
+				helper.assertTrue(BedLadders.pathUpALadder(villager, Set.of(near)) == null, "a bed whose ladder is boxed in was claimable");
+				Path alone = BedLadders.pathUpALadder(villager, Set.of(far));
+				helper.assertTrue(alone != null && alone.getTarget().equals(open), "setup: the open bed alone isn't claimable: " + alone);
+				Path both = BedLadders.pathUpALadder(villager, Set.of(near, far));
+				helper.assertTrue(both != null && both.getTarget().equals(open) && both.canReach(),
+					"with the shut-in bed nearer, the open bed up its ladder should still be found: " + (both == null ? "none" : helper.relativePos(both.getTarget())));
+			})
+			.thenSucceed();
 	}
 }

@@ -516,6 +516,46 @@ public class ColonySettlersGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B318's letting go, when the workstation he had his eye on is gone: the lectern was broken while he was away (vanilla
+	 * forgets one only when he comes within 16 blocks of it; Tomas stands still here, as far off as that). The muster
+	 * takes him all the same, he forgets it, and there's no claim left to give back for a workstation that isn't there.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"colonyEyeingAGoneJob"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "colonyEyeingAGoneJob")
+	public void aSettlerEyeingABrokenWorkstationStillSetsOut(GameTestHelper helper) {
+		Village v = village(helper, 0);
+		ServerLevel level = v.level();
+		villager(helper, new BlockPos(10, 2, 11), "Dara", VillagerProfession.NONE, 1);
+		BlockPos lectern = new BlockPos(17, 2, 17);
+		helper.setBlock(lectern, Blocks.LECTERN);
+		BlockPos lecternAt = helper.absolutePos(lectern);
+		Villager tomas = villager(helper, new BlockPos(12, 2, 12), "Tomas", VillagerProfession.NONE, 1);
+		storehouse(helper, allSupplies());
+		helper.startSequence()
+			.thenWaitUntil(() -> helper.assertTrue(level.getPoiManager().getType(lecternAt).isPresent(), "the lectern isn't a workstation yet"))
+			.thenExecute(() -> {
+				level.getPoiManager().take(t -> t.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.LIBRARIAN), (t, p) -> p.equals(lecternAt), lecternAt, 1);
+				tomas.getBrain().setMemory(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.of(level.dimension(), lecternAt));
+				helper.setBlock(lectern, Blocks.AIR); // broken: its POI goes after this tick
+			})
+			.thenWaitUntil(() -> helper.assertTrue(level.getPoiManager().getType(lecternAt).isEmpty(), "the broken lectern is still a workstation"))
+			.thenExecute(() -> {
+				ItemStack held = click(v, v.player(), charter(v));
+				RealmData.Order order = v.order();
+				helper.assertTrue(order != null && order.state().equals(RealmData.MUSTER) && order.volunteers().contains(tomas.getUUID()),
+					"Dara and Tomas should be called to the hall: " + order + " (held " + held + ")");
+			})
+			.thenWaitUntil(() -> {
+				RealmData.Order now = v.order();
+				helper.assertTrue(now != null && !now.state().equals(RealmData.MUSTER) && !now.state().equals(RealmData.GATHERING),
+					"the bell hasn't rung though both stand at the hall: " + now);
+			})
+			.thenExecute(() -> helper.assertTrue(tomas.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).isEmpty(),
+				"Tomas still has his eye on the broken lectern"))
+			.thenSucceed();
+	}
+
+	/**
 	 * Calling it off on the Colonies tab: only the owner can; the settlers stay, every supply is back in the Storehouse
 	 * and the charter, spot and name and all, back with the owner, who can send it again.
 	 */

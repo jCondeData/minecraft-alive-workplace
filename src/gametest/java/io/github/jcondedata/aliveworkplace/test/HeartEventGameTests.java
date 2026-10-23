@@ -348,6 +348,29 @@ public class HeartEventGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * The range's edge: a friend exactly {@link HeartEvents#RANGE} (8) blocks off sets out to tell it; nine off, nobody
+	 * does. (The nightly mutation run: "within 8" read as "under 8" went unnoticed.)
+	 */
+	//$ gametest_ticks_batch AREA '80' '"heartRangeEdge"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "heartRangeEdge")
+	public void aFriendExactlyEightBlocksOffStartsTelling(GameTestHelper helper) {
+		village(helper, () -> {
+			ServerLevel level = helper.getLevel();
+			Villager cora = villager(helper, new BlockPos(5, 2, 4), "Cora");
+			ServerPlayer me = player(helper, new BlockPos(5, 2, 13));
+			Friendship.add(cora, me, 200);
+			HeartEvents.tick(level, later(level));
+			helper.assertTrue(HeartEvents.telling(cora) == null, "started from 9 blocks away");
+			moveTo(helper, me, new BlockPos(5, 2, 12));
+			helper.assertTrue(cora.distanceToSqr(me) == HeartEvents.RANGE * HeartEvents.RANGE, "setup: not exactly 8 blocks apart: " + Math.sqrt(cora.distanceToSqr(me)));
+			HeartEvents.tick(level, later(level));
+			HeartEvents.Telling telling = HeartEvents.telling(cora);
+			helper.assertTrue(telling != null && telling.player.equals(me.getUUID()), "a friend exactly 8 blocks off didn't start telling");
+			helper.succeed();
+		});
+	}
+
+	/**
 	 * B309: a line of small talk over her head ({@link Chatter}) is no work. A villager who has just said hello to the
 	 * player starts her heart event at once, in the level's own time, rather than waiting the line out (long enough to
 	 * stroll out of range and never tell it); a work line over someone's head still keeps them from it.

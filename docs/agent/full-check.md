@@ -143,5 +143,32 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
   33%, ...). Two sites laying their foundation showed less progress after the restart (Lookout Tower 12% → 1%,
   Healing Center 19% → 7%): filed as B46.
 
+### QA stage 2: pack, upgrade, benchmark and config matrix (qa-stage2, 2026-10-23)
+- **Benchmark** (`PERF=true PLOTS=40`, dev container, 7 GB, Cobbleverse 1.7.42, Java 21, no Gradle daemons running),
+  the released 0.147.0 jar against main 9ca9c84, back to back. Use these to compare next time:
+
+  | jar | idle | with workers (2 tick queries) | heap after GC | our share of the server thread | sites working |
+  |---|---|---|---|---|---|
+  | 0.147.0 | 4.0 ms | 32.6 / 11.9 ms | 1418 MB | 22.4% | 39 of 46 |
+  | main 9ca9c84 | 3.6 ms | 35.0 / 10.9 ms | 1379 MB | 23.7% | 39 of 46 |
+
+  The mean of the two queries is 22.3 ms (0.147.0) against 23.0 ms (main), 3% apart, which is within the run-to-run
+  noise. An earlier 0.147.0 run with Gradle daemons still in memory gave 44.1 / 15.5 ms. Kill the daemons first
+  (`./gradlew --stop` and the Kotlin daemons), or the server is OOM-killed or slowed.
+- **Upgrade**: the 0.147.0 benchmark world (45 sites) opened with main (`KEEP_WORLD=true SITES_ONLY=true`): 43 sites
+  listed, 37 working, and no site lost progress. Most went up (Fletcher's Lodge 57% → 87%, quarries 44% → 60%); the
+  rest were unchanged, most of them still clearing at 0%. The two that
+  were gone had finished in between (Nether Gate at 95%, a Market Stall at 100% levelling). `logaudit.py` against the
+  old jar's log: no new problems.
+- **Pack boot** (main): no error from our mod. Neither jar's villages had any of the six workstations the script looks
+  for, so this check can't tell whether our houses spawn. The script's `blueprint\(s\) available` grep no longer
+  matches the command's "131 blueprints available" line.
+- **Config matrix** (`QaStageTwoGameTests`, `QaStageTwoCompatTests`): each of the 107 switches, turned off in the
+  config (on, for those off by default), changes its own system's flag and no other switch drives the same flags.
+  With the gates closed as in a release, the 79 expansion switches change nothing. Every switch off at once still
+  lets a Builder build. 4 of 4 planted mutants were killed: a switch wired to the wrong flag, a switch ignored, a
+  switch inverted and a gate dropped. `villageHabitats` was the one switch whose flag no test had turned off; it now
+  has a compat test.
+
 ## Still to do
 - Nothing: every part above is a passing test or a green run, and the one finding is B46.

@@ -94,6 +94,18 @@ final class JobScenes {
 	static final java.util.concurrent.ConcurrentLinkedQueue<String> SHOTS = new java.util.concurrent.ConcurrentLinkedQueue<>();
 
 	/** One step of a screen scene: optionally act on the server, then point at {@code slot} (-1: nowhere) and shoot. */
+	/** B329: what a Golem Smith's golem is up to, for a scene's timeout message. */
+	private static String golemState(@org.jetbrains.annotations.Nullable net.minecraft.world.entity.animal.IronGolem g) {
+		if (g == null) {
+			return "no golem";
+		}
+		String goals = ((io.github.jcondedata.aliveworkplace.mixin.MobAccessor) g).aliveworkplace$goals().getAvailableGoals().stream().filter(net.minecraft.world.entity.ai.goal.WrappedGoal::isRunning)
+			.map(w -> w.getGoal().getClass().getSimpleName()).collect(java.util.stream.Collectors.joining("+"));
+		return io.github.jcondedata.aliveworkplace.legend.GolemSmith.role(g) + (g.isAlive() ? "" : " (dead)") + " at " + g.blockPosition().toShortString()
+			+ " running [" + goals + "] target " + (g.getTarget() == null ? "none" : g.getTarget().getType().getDescriptionId())
+			+ " load " + io.github.jcondedata.aliveworkplace.store.HaulerGolems.load(g);
+	}
+
 	/** gifted_born's family (29.7): a still villager facing the camera; a parent is a schooled Master farmer. */
 	private static Villager bornSceneVillager(ServerLevel level, BlockPos at, String name, boolean master) {
 		Villager v = EntityType.VILLAGER.spawn(level, at, MobSpawnType.COMMAND);
@@ -3803,9 +3815,21 @@ final class JobScenes {
 				zombie.setTarget(sentry);
 				zombies.add(zombie);
 			}
-			return l -> farmhand != null && sentry != null && store.countItem(Items.COBBLESTONE) + store.countItem(Items.OAK_LOG) + store.countItem(Items.COAL) >= 9 * 64
-				&& field.countItem(Items.WHEAT) >= 25 && zombies.stream().noneMatch(net.minecraft.world.entity.Entity::isAlive)
-				&& sentry.position().distanceTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(post)) < 3;
+			return l -> {
+				if (farmhand == null || sentry == null) {
+					timeoutWhy = "a golem wasn't built (farmhand " + farmhand + ", sentry " + sentry + ")";
+					return false;
+				}
+				int stored = store.countItem(Items.COBBLESTONE) + store.countItem(Items.OAK_LOG) + store.countItem(Items.COAL);
+				int wheat = field.countItem(Items.WHEAT);
+				long alive = zombies.stream().filter(net.minecraft.world.entity.Entity::isAlive).count();
+				double fromPost = sentry.position().distanceTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(post));
+				// B329: the timeout names every part's state, so a failure says which golem it waited on and what it was doing
+				timeoutWhy = "stored " + stored + "/" + 9 * 64 + ", drop box holds " + (9 * 64 - stored) + ", " + golemState(hauler)
+					+ "; wheat " + wheat + "/25, " + golemState(farmhand) + "; zombies alive " + alive + ", sentry " + String.format("%.1f", fromPost)
+					+ " from its post, " + golemState(sentry);
+				return stored >= 9 * 64 && wheat >= 25 && alive == 0 && fromPost < 3;
+			};
 		}, null));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);

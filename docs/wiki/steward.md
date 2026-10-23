@@ -3,7 +3,7 @@
 A seasoned Builder who runs a village from its City Plan: he decides what the village needs next, finds the plot and
 has the builders build it. Part of 1.1 (Villages that build themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22
+Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328
 
 ## What a player sees
 

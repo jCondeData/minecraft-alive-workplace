@@ -68,8 +68,13 @@ final class StewardRulesScene {
 				ServerLevel level = server.overworld();
 				StewardWishes.State state = StewardWishes.of(level, HALL);
 				List<String> rules = state.wishes().stream().map(w -> w.rule().getPath()).toList();
-				Showcase.check(state.day() == StewardWishes.day(level) && !rules.isEmpty() && rules.get(0).startsWith("homes_"),
-					"back at the hall, the Steward ranked today's wishes from his rules, more homes first (" + rules + ")");
+				boolean ok = state.day() == StewardWishes.day(level) && !rules.isEmpty() && rules.get(0).startsWith("homes_");
+				// B328: a failure names what the Steward was doing, so a cause other than B317's Night Owl roll shows itself
+				io.github.jcondedata.aliveworkplace.legend.Gifted.Gift gift = io.github.jcondedata.aliveworkplace.legend.Gifted.of(steward);
+				String why = ok ? "" : "; ranked day " + state.day() + " of " + StewardWishes.day(level) + " after " + waited + " waits, he is "
+					+ steward.getVillagerData().getProfession() + " doing " + steward.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ " at time " + level.getDayTime() % 24000 + ", gift " + (gift == null ? "none" : gift.id());
+				Showcase.check(ok, "back at the hall, the Steward ranked today's wishes from his rules, more homes first (" + rules + why + ")");
 				Vec3 at = steward.position();
 				ScreenshotHarness.hoverLookingAt(server.getPlayerList().getPlayers().get(0), at.add(2.5, 1.6, 3.5), at.add(0, 1.6, 0));
 			});

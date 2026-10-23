@@ -69,15 +69,20 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 
 	/** A Postal Desk with its postman, Alice's and Bob's mailboxes, and a parcel of diamonds from Alice to Bob. */
 	private static Post post(GameTestHelper helper, BlockPos to) {
+		return post(helper, BlockPos.ZERO, to);
+	}
+
+	/** The same, with the desk, the postman and Alice's mailbox moved by {@code shift} (Bob's mailbox is at {@code to}). */
+	private static Post post(GameTestHelper helper, BlockPos shift, BlockPos to) {
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
-		BlockPos desk = new BlockPos(2, 2, 2);
+		BlockPos desk = new BlockPos(2, 2, 2).offset(shift);
 		helper.setBlock(desk, ModBlocks.POSTAL_DESK);
-		Villager postman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Villager postman = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3).offset(shift));
 		Jobs.employ(level, postman, helper.absolutePos(desk), ModVillagers.POSTAL_DESK_POI, ModVillagers.POSTMAN);
 		UUID alice = UUID.randomUUID();
 		UUID bob = UUID.randomUUID();
-		BlockPos from = new BlockPos(4, 2, 6);
+		BlockPos from = new BlockPos(4, 2, 6).offset(shift);
 		PostOffice office = PostOffice.get(level.getServer());
 		for (Object[] box : new Object[][]{{from, alice, "Alice"}, {to, bob, "Bob"}}) {
 			helper.setBlock((BlockPos) box[0], ModBlocks.MAILBOX);
@@ -141,13 +146,17 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		});
 	}
 
+	/** The air-mail-low test's area and pasture range: the whole box (14 each way from 15,2,15) is on the area's floor (B323). */
+	private static final String HUGE_AREA = "aliveworkplace_compat:huge_area";
+	private static final int RANGE = 14;
+
 	/**
 	 * B52: air mail never carries a Pidgey out of what its pasture lets it roam (Cobblemon sends a pastured Pokémon that
-	 * leaves that box back to the PC). With the pasture's range cut to 16 blocks the Pidgey climbs only as high as that
-	 * allows, stays pastured, and lands back where it took off.
+	 * leaves that box back to the PC). With the pasture's range cut to 14 blocks the Pidgey climbs only as high as that
+	 * allows (12 of the show's 24, with its 2-block margin), stays pastured, and lands back where it took off.
 	 */
-	//$ gametest_ticks_batch AREA '1600' '"partners_air_mail_low"'
-	@GameTest(template = AREA, timeoutTicks = 1600, batch = "partners_air_mail_low")
+	//$ gametest_ticks_batch HUGE_AREA '1600' '"partners_air_mail_low"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 1600, batch = "partners_air_mail_low")
 	public void airMailKeepsThePidgeyWithinItsPasturesRange(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		PartnerShowsCompatTests.clearAirAbove(helper, 8, 30); // B177: nothing left over head from earlier batches
@@ -156,14 +165,19 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		PostOffice.ROUND = 8;
 		var config = com.cobblemon.mod.common.Cobblemon.INSTANCE.getConfig();
 		int wander = config.getPastureMaxWanderDistance();
-		config.setPastureMaxWanderDistance(16); // read when the Pasture Block is placed
+		// B323: the pasture in the middle of the 30-block area with a range of 14 keeps its whole box on the area's own floor.
+		// With 16 at 6,2,2 of the 17-block area the box reached 14 blocks past it: the Pidgey once wandered under a
+		// neighbouring area's barrier and had no headroom to take off. (A range of 8 in the small area kept the box in, but
+		// a box that small had the Pidgey's own wander fly it out of the box, recalled, in 1 of 40 repeats.)
+		config.setPastureMaxWanderDistance(RANGE); // read when the Pasture Block is placed
 		PartnerShowsCompatTests.after(helper, () -> {
 			PostOffice.ROUND = round;
 			config.setPastureMaxWanderDistance(wander);
 		});
-		Post p = post(helper, new BlockPos(14, 2, 14)); // outside the round: air mail
-		PartnersAtWorkCompatTests.partner(helper, new BlockPos(6, 2, 2), "pidgey");
-		double top = helper.absolutePos(new BlockPos(6, 2, 2)).getY() + 16; // the pasture's range, upward
+		Post p = post(helper, new BlockPos(8, 0, 8), new BlockPos(22, 2, 22)); // desk at 10,2,10; Bob's box outside the round
+		BlockPos pasture = new BlockPos(15, 2, 15);
+		PartnersAtWorkCompatTests.partner(helper, pasture, "pidgey");
+		double top = helper.absolutePos(pasture).getY() + RANGE; // the pasture's range, upward
 		Set<Item> carried = new HashSet<>();
 		Set<ResourceLocation> started = PartnersAtWorkCompatTests.watch(helper, p.postman(), "pidgey", carried);
 		double[] highest = {0};
@@ -180,6 +194,9 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 				helper.assertTrue(pidgey.getTethering() != null, "the Pidgey left its pasture at y " + pidgey.getY() + " (top " + top + ")");
 				double up = PartnerShows.flying(pidgey);
 				var box = pidgey.getTethering().getBox();
+				var area = helper.getBounds();
+				helper.assertTrue(box.minX >= area.minX && box.maxX <= area.maxX && box.minZ >= area.minZ && box.maxZ <= area.maxZ,
+					"the pasture's box " + box + " reaches past the test area " + area + " (B323)");
 				seen.addLast(String.format(java.util.Locale.ROOT, "t%d %.2f %.2f %.2f up %.2f dy %.2f box x %.0f..%.0f y %.0f..%.0f z %.0f..%.0f",
 					helper.getTick(), pidgey.getX(), pidgey.getY(), pidgey.getZ(), up, pidgey.getDeltaMovement().y,
 					box.minX, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ));

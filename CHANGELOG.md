@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.148.1 — 2026-10-23
+
 ### Fixed
 
 - A Captain's Insignia held in the off hand now pays when right-clicked on the Bounty Board or the Village Hall

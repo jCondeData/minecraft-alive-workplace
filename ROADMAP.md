@@ -5422,6 +5422,7 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-23 (lane-b-1023-1838, **owner question still open: Milestone 36 is empty; what should the quick lane build next, or pause its scheduled task?**): no quick additions and no `(lane: b)` bug, so nothing was built. main c684b97 is green (build 39994012003). wip/lane-b* still hold nothing to merge (see lane-b-1021-1238).
 - 2026-10-23 (lane-b-1023-1538, **owner question still open: Milestone 36 is empty; what should the quick lane build next, or pause its scheduled task?**): no quick additions and no `(lane: b)` bug, so nothing was built. main 9ca9c84 is green (build 39975716130). wip/lane-b* still hold nothing to merge (see lane-b-1021-1238).
 - 2026-10-23 (lane-b-1023-1239, **owner question still open: Milestone 36 is empty; what should the quick lane build next, or pause its scheduled task?**): no quick additions and no `(lane: b)` bug, so nothing was built. main b099101 is green (build 39939961408); newer pushes were still building. wip/lane-b* still hold nothing to merge (see lane-b-1021-1238).
 - 2026-10-23 (lane-b-1023-0638, **owner question still open: Milestone 36 is empty; what should the quick lane build next, or pause its scheduled task?**): no quick additions and no `(lane: b)` bug, so nothing was built. main ed9925f is green (build 39904989933); the bug-filing pushes 8b6f704 and 51433dd were still building. wip/lane-b* still hold nothing to merge (see lane-b-1021-1238).

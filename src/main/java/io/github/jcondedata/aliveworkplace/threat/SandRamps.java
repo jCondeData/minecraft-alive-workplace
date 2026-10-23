@@ -485,7 +485,17 @@ public final class SandRamps {
 		}
 		// On the ramp's top by the wall; or past it, up on the wall (its top, a walkway) or dropping down inside.
 		return inward >= -0.6 && mob.getY() >= site.foot.getY() + site.height - 0.6
-			|| inward >= 0.6 && (mob.getY() > site.foot.getY() + 1.5 || !grounded(mob));
+			|| inward >= 0.6 && (up(mob, site) || !grounded(mob));
+	}
+
+	/**
+	 * Whether {@code mob} is higher than a step above the ramp's foot: anything over the foot + 1.5 (the top of a bottom
+	 * slab or a stair's lower step one above the foot) is up on the wall, anything at or under it is down inside. The
+	 * let-go in {@link RampGoal#tick} and {@link #crossing} both ask this, so a raider is always one or the other (B330:
+	 * one stood exactly at the foot + 1.5 and was neither). A wall is at least two high, so its top is never down inside.
+	 */
+	private static boolean up(Mob mob, Site site) {
+		return mob.getY() > site.foot.getY() + 1.5;
 	}
 
 	/** Whether {@code mob} stands on the ground: a rider (a chicken jockey) never does itself, its mount does (B316). */
@@ -520,7 +530,7 @@ public final class SandRamps {
 			}
 			double inward = inward(mob, site);
 			// Let go once down inside: a raider still up on the wall is pushed on.
-			if (inward >= 1.5 && inward < site.inside + 3 && grounded(mob) && mob.getY() < site.foot.getY() + 1.5) {
+			if (inward >= 1.5 && inward < site.inside + 3 && grounded(mob) && !up(mob, site)) {
 				site.over.add(mob.getUUID());
 				CLIMBS.remove(mob.getUUID());
 				return;

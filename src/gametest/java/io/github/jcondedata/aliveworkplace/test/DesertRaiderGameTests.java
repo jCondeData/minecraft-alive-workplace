@@ -388,6 +388,65 @@ public class DesertRaiderGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A husk that comes down inside onto a step half a block up (a bottom slab one above the ramp's foot, its top at the
+	 * foot + 1.5) is let go there to fight inside, not walked back up the ramp (B330: that height was neither "down
+	 * inside" nor "up on the wall", so behind a wall four high it stuck on the step).
+	 */
+	//$ gametest_ticks_batch AREA '900' '"sandRampStep"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "sandRampStep")
+	public void aHuskComingDownOntoAnInnerStepIsLetGo(GameTestHelper helper) {
+		Yard yard = yard(helper, pilers(helper));
+		ServerLevel level = yard.level();
+		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 23.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
+		long[] stepped = {-1}; // the first tick the husk stood on the step
+		double[] foot = {Double.NaN};
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			ThreatData.Siege siege = yard.siege(helper);
+			if (Double.isNaN(foot[0]) && siege.ramped) {
+				// The ramp is up: lay bottom slabs one above its foot where the husk comes down, beyond the wall.
+				BlockPos at = siege.rampFeet.get(0);
+				net.minecraft.core.Direction into = net.minecraft.core.Direction.from3DDataValue(siege.rampDirs.get(0));
+				int height = 0;
+				while (!level.getBlockState(at.relative(into).above(height)).getCollisionShape(level, at.relative(into).above(height)).isEmpty()) {
+					height++;
+				}
+				helper.assertTrue(height >= 3, "the wall by the ramp is only " + height + " high");
+				int k = 2;
+				while (k < 8 && !level.getBlockState(at.relative(into, k).above(height - 1)).isAir()) {
+					k++;
+				}
+				for (int d = k; d <= k + 3; d++) {
+					for (int s = -1; s <= 1; s++) {
+						BlockPos slab = at.relative(into, d).relative(into.getClockWise(), s).above();
+						if (level.getBlockState(slab).isAir() && level.getBlockState(slab.above()).isAir()) {
+							level.setBlockAndUpdate(slab, Blocks.SMOOTH_SANDSTONE_SLAB.defaultBlockState());
+							Leftovers.after(helper, () -> level.setBlockAndUpdate(slab, Blocks.AIR.defaultBlockState()));
+						}
+					}
+				}
+				foot[0] = at.getY();
+			}
+			if (!Double.isNaN(foot[0]) && stepped[0] < 0 && climber.onGround() && Math.abs(climber.getY() - (foot[0] + 1.5)) < 1.0E-6) {
+				stepped[0] = tick;
+			}
+			if (SandRamps.over(level, yard.hall(), climber.getUUID())) {
+				helper.assertTrue(stepped[0] >= 0, "the husk was let go without standing on the step: at " + climber.position() + ", foot " + foot[0]);
+				climber.discard();
+				helper.succeed();
+				return;
+			}
+			if (stepped[0] >= 0 && tick - stepped[0] > 100 || tick > 820) {
+				BlockPos base = helper.absolutePos(BlockPos.ZERO);
+				helper.fail("not let go: the husk at " + climber.position().subtract(base.getX(), base.getY(), base.getZ())
+					+ (climber.onGround() ? " on the ground" : " in the air") + " at tick " + tick + ", on the step since " + stepped[0]
+					+ ", ramp foot y " + (foot[0] - base.getY()));
+			}
+		});
+	}
+
 	/** With {@code mobGriefing} off a husk climber piles no sand; the siege still stands. */
 	//$ gametest_ticks_batch AREA '300' '"sandOff"'
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "sandOff")

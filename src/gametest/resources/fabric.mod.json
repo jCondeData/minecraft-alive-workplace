@@ -227,6 +227,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ClassHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassPerkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassJobGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClassesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryWorkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ServiceGameTests",
@@ -239,6 +240,9 @@
 			"io.github.jcondedata.aliveworkplace.test.HallUiGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformStoryGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReformSavesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBoxSavesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaAttachmentSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FamilyEdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CivicTalkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OpenGatesGameTests",
@@ -485,13 +489,15 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinIncursionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisastersGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClassPerksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiratesThreatLevelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonProfessorGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonRangerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderBlueprintGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StadiumGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReputationPerksGameTests"
 		]
 	},
 	"depends": {

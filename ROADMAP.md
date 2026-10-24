@@ -5129,7 +5129,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Library in the new spruce style has Carved Wood shelves and its Librarian still takes the lectern; a Carved Wood
   chest is a supply chest; the Grand style with Rechiseled builds with nothing skipped; renders reviewed; scene
   `carved_styles`.
-- [x] **37.8** (approved 2026-10-18) **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
+- [x] **37.8** (approved 2026-10-18) (verified 2026-10-24: 5 compat QA tests [QaSophisticatedStorageCompatTests]: stack-upgrade free room at the 64/65 and full-slot edges, linked count following added/broken barrels incl. the .one line, builder clearing leaves controller+barrel with contents, save/reload counts once, barrel past reach is its own store; mutation not run) **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
   (`sophisticatedstorage:chest`, `iron_chest` ... `netherite_barrel`, `limited_barrel_1` ... `4`) works as a supply
   chest, a porter's chest and a Storehouse chest; builders treat them as containers (never broken while clearing, never
   copied; they're in `#c:chests` and `#c:barrels`); and the Storehouse measures free room in items where a stack
@@ -5137,7 +5137,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   tier takes and gives items through porters and builders; a chest with a stack upgrade (its upgrade item in its
   upgrade slot) shows its real free room on the Storehouse board; a builder clearing a site leaves a Sophisticated
   chest in place with its contents; the existing barrel test still passes.
-- [x] **37.9** (approved 2026-10-18) **A Sophisticated controller as the Storehouse's store.** A `sophisticatedstorage:controller` in the
+- [x] **37.9** (approved 2026-10-18) (verified 2026-10-24: 5 compat QA tests [QaSophisticatedStorageCompatTests]: stack-upgrade free room at the 64/65 and full-slot edges, linked count following added/broken barrels incl. the .one line, builder clearing leaves controller+barrel with contents, save/reload counts once, barrel past reach is its own store; mutation not run) **A Sophisticated controller as the Storehouse's store.** A `sophisticatedstorage:controller` in the
   Storehouse's area makes the storage blocks linked to it (touching storage blocks and `storage_link`s, found by walking
   block ids within the controller's reach) one store, read and filled through the controller's own item storage; the
   linked blocks drop out of the store list, so nothing counts twice. First check the controller exposes item storage
@@ -5210,7 +5210,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Crafter's switch and `Expansions.M37`. Done when: GameTests for the blueprint being offered (and not with the switch
   off), the Steward's rule firing on repeated shortfalls and not otherwise, a generated village with the workshop when on;
   text in `en_us.json`; wiki and guide lines; scene `crafter_workshop`.
-  - [x] **37.16a** (approved 2026-10-22) Change from the owner (2026-10-21): retired with 37.14a: the Crafter's Workshop leaves the Steward's plans, the workshop offers and village generation (existing workshops stay as plain buildings); do it in the same change as 37.14a.
+  - [x] **37.16a** (approved 2026-10-22) (verified 2026-10-24: Existing CrafterWorkshopGameTests/QaCrafterWorkbenchGameTests cover the workshop leaving offers, Steward plans and generation; full build green with them) Change from the owner (2026-10-21): retired with 37.14a: the Crafter's Workshop leaves the Steward's plans, the workshop offers and village generation (existing workshops stay as plain buildings); do it in the same change as 37.14a.
 - [x] **37.17** (approved 2026-10-23) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Storage Hall builds with Tom's Simple Storage** (owner, 2026-10-22: "put some terminal builds as blueprints"). New
   blueprints, listed at the Blueprint Table, built with Tom's blocks when Tom's Simple Storage is installed and with
   vanilla chests and barrels (no terminal) when it isn't: a **Storage Hall** (a hall of 24+ chests and barrels round an

@@ -313,7 +313,9 @@ showcase catalog).
 
 - `machine_job`, an attachment on a worker (39.3): a trip to a machine under way: the machine's position, its file,
   the stage (`fetch`, `feed`, `return`) and what's carried. Every field is optional; without it the worker has no trip.
-  A trip saved mid-way goes on after a load, so nothing carried is lost. (The design note's per-dimension `machines`
+  A trip saved mid-way goes on after a load, so nothing carried is lost. In a world opened again after Create was taken
+  out of the pack the trip can't go on: what was carried goes back into the store by the workstation, or drops at the
+  worker's feet when there's none, and the record is cleared. (The design note's per-dimension `machines`
   list wasn't needed: workers find machines near their workstation in loaded chunks.)
 
 - On a build site (39.5): `kinetic_order` (false when absent: a site saved before 39.5 builds in today's order) and
@@ -491,6 +493,12 @@ tested (the GameTests use the table as the server does).
   and the crushing wheels, with the job's own worker: turned by a creative motor, the chest's input goes to the machine
   and what it makes comes back to the chest; standing still, nothing is taken; a full chest, nothing is taken; a worker
   saved and loaded mid-trip with the input in hand finishes the job; `machineWork` off, nothing is fed.
+- `QaCreateGoneGameTests` (without Create, a world Create was taken out of): a farmer saved mid-trip with 12 wheat
+  gives all 12 back after a real save and load; a Watermill site started with Create is finished (or let go) by its builder, never
+  left standing. `QaCreateCompatTests` and `QaMechanicSaysCompatTests` (with Create): the lines over the worker and the
+  Mechanic, as a player reads them: "Machine work: the Millstone isn't turning", "Machine work: the store is full: the
+  Millstone waits", "Mechanic: every machine is in order", "Mechanic: seeing to the Millstone" and "Mechanic: the
+  Millstone has stopped turning".
 - `SavedDataGameTests`: `machine_job` survives a save and load; `ConfigGameTests` and `ExpansionGateGameTests`: the
   `machineWork` switch on the screen and behind the gate.
 

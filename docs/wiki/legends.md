@@ -4,7 +4,7 @@ Rare named villagers with powers, who come to a village that has earned them. Al
 thirty with a rare gift. Part of 1.3 (Legends): switched on in 1.0 with every other expansion.
 
 Roadmap items: 29.2, 29.3, 29.4, 29.5, 29.6, 29.7, 29.8, 29.9, 29.10, 29.12, 29.13, 29.14, 29.15, 29.16, 29.17, 29.18,
-29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136
+29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136, B345
 
 ## What a player sees
 
@@ -118,6 +118,9 @@ From the design note `docs/design/M29.md`, section 7 (the owner may change any):
 - An existing City gets the Founder's mood once after the update, rather than never.
 - 29.3: Rare is one of each per village, Legendary one of each per world.
 - 29.4: what a village must do for a Legend is never a secret (Terraria-style cards on the hall).
+- B345: at a found Legend's camp the castaway's cooked meal and the Old Sage's answer are taken from either hand: with
+  the main hand empty, the off hand's meal or answer is handed over. An off-hand item that isn't the answer (a torch, a
+  shield) leaves it an empty-handed click, so the Sage asks his riddle again and counts no miss.
 
 ## Known limits
 
@@ -153,7 +156,7 @@ GameTests: `LegendEngineGameTests` (6), `LegendSlotsGameTests` (6), `LegendsHall
 after a fight, B329), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
 `PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
-`RealmLegendsGameTests` (5, 33.23).
+`RealmLegendsGameTests` (5, 33.23); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
 
 Showcase scenes: `legend`, `legend_announce`, `legends_hall`, `legend_guest`, `legend_sites`, `legend_strike`,
 `strange_mood`, `gifted`, `gifted_born`, `research_trees`, `legend_architect`, `legend_pathfinder`, `legend_sage`,

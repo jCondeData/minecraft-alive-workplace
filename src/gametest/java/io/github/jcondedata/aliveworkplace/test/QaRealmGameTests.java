@@ -85,6 +85,22 @@ public class QaRealmGameTests implements FabricGameTest {
 	 * to the area, the colony records empty; the settlers gather {@code musterDelay} ticks after they're ready (-1: the
 	 * next morning). Everything is put back after.
 	 */
+	/**
+	 * Forgets the villages an earlier batch's tests left within the charter's clearance of a far spot ({@code x},
+	 * {@code z}), all but {@code own}: in a full build a 400-blocks-north click once landed by another test's hall and
+	 * was refused as "too near a village" (lane-c-1024-0353).
+	 */
+	static void forgetVillagesNear(ServerLevel level, BlockPos own, int x, int z) {
+		Caravans.Data data = Caravans.Data.get(level);
+		for (Caravans.Village other : List.copyOf(data.villages())) {
+			BlockPos h = other.hall();
+			double dx = h.getX() - x, dz = h.getZ() - z;
+			if (!h.equals(own) && Math.sqrt(dx * dx + dz * dz) <= io.github.jcondedata.aliveworkplace.colony.ColonyMap.CLEAR + 16) {
+				data.remove(h);
+			}
+		}
+	}
+
 	static Village village(GameTestHelper helper, int musterDelay) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
@@ -264,6 +280,7 @@ public class QaRealmGameTests implements FabricGameTest {
 		helper.assertTrue(p.getOffhandItem().get(ModComponents.COLONY_CHARTER).spot().isEmpty(), "a spot by the hall was kept");
 
 		p.setPos(v.hall().getX() - 300 + 0.5, v.hall().getY() + 3, v.hall().getZ() + 0.5);
+		forgetVillagesNear(v.level(), v.hall(), v.hall().getX() - 300, v.hall().getZ());
 		pressHere(helper, p, ground);
 		Component chosen = QaStageFourGameTests.find(v.seen(), "message.aliveworkplace.colony.chosen");
 		helper.assertTrue(chosen != null, "300 blocks west, from the off hand: saw " + QaStageFourGameTests.keys(v.seen()));
@@ -276,6 +293,7 @@ public class QaRealmGameTests implements FabricGameTest {
 		p.setItemInHand(InteractionHand.MAIN_HAND, charter.copy());
 		p.setShiftKeyDown(true);
 		p.setPos(v.hall().getX() + 0.5, v.hall().getY() + 1, v.hall().getZ() - 400 + 0.5);
+		forgetVillagesNear(v.level(), v.hall(), v.hall().getX(), v.hall().getZ() - 400);
 		v.seen().clear();
 		pressHere(helper, p, ground);
 		p.setShiftKeyDown(false);

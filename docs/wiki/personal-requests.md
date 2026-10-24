@@ -5,7 +5,7 @@ a taste of home, the tools of their trade, a letter to family, a lost love back 
 child off to school, a chapel wedding, a lost heirloom. ROADMAP 31.9 and 31.10; builds on friendship (31.5), the quest engine (31.2) and the
 quest journal (31.3). Part of the 1.5 expansion: switched on when Milestone 31 is complete.
 
-Roadmap items: 31.9, 31.10
+Roadmap items: 31.9, 31.10, B354
 
 ## What a player sees
 
@@ -229,6 +229,9 @@ the letter or the map; `revive`, `pet_near_home` (at dawn), `schooled` and `buil
 - **The heirloom's placement is the request's own** (31.10, lane c): the roadmap names the arc engine's `place`, which
   builds an arc's templates; the heirloom uses the same rule (once, when someone comes near) on the structure's own
   chests, as described above.
+- **A letter, reply or heirloom is never a job or hiring item** (B354): it is paper, a compass, a clock or a spyglass,
+  but a sneak-right-click with it hands it over like a plain one and never picks a Scholar's, Postman's or
+  Cartographer's job or hires anyone.
 
 ## Known limits
 
@@ -253,6 +256,9 @@ the letter or the map; `revive`, `pet_near_home` (at dawn), `schooled` and `buil
 
 ## Proof
 
+- `QaStageSevenGameTests`: the letter carried with real clicks from either hand, sneaking or not, and a lost one
+  written again (`aLetterCarriedWithRealClicksFromEitherHand`, `aSneakClickWithTheLetterStillDeliversIt`, B354,
+  `aLostLetterIsWrittenAgainOnAnEmptyHandedClick`).
 - `PersonalRequestGameTests`: `PersonalRequestGameTests.aThreeHeartVillagerAsksAndATwoHeartOneDoesnt`,
   `PersonalRequestGameTests.theyWalkUpAndAskWithBothButtons`, `PersonalRequestGameTests.acceptAndDecline`,
   `PersonalRequestGameTests.theNextLevelPaysEveryHelper`, `PersonalRequestGameTests.aHomeOfTheirOwn`,

@@ -5023,7 +5023,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   field with its default; how each part falls back without its mod. The flag: `Expansions.M37` with `flag()`,
   `MILESTONES` and `milestone()` for every switch, so `ExpansionGateGameTests` covers it. Done when: the note is on
   `main` with all of these, the flag gates the switches (a gate test), and the package is sent.
-- [x] **37.2** (approved auto 2026-10-17) **Furniture spots in our blueprints.** The generator (`tools/blueprints/`) records each piece of vanilla
+- [x] **37.2** (approved auto 2026-10-17) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Furniture spots in our blueprints.** The generator (`tools/blueprints/`) records each piece of vanilla
   furniture it draws as a furniture spot: its kind (chair, stool, bench, couch, table, side table, desk, counter,
   cupboard, shelf, nightstand, drawer, bed, lamp, clock, picture, blinds, crockery), facing, wood or colour, footprint,
   and the vanilla blocks it's made of. The spots go in a file beside the template,
@@ -5032,7 +5032,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   when: every shipped build with furniture has its spots file (a check in `generate.py`: each spot's blocks are the
   blocks in the template there); a GameTest loads a build's spots and finds them where its chairs and tables are; a
   file with a mistake is logged with its path and skipped.
-- [x] **37.3** (approved auto 2026-10-17) **The furnishing table.** `data/aliveworkplace/furnishings/<mod>.json`: for each kind (by wood or colour
+- [x] **37.3** (approved auto 2026-10-17) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **The furnishing table.** `data/aliveworkplace/furnishings/<mod>.json`: for each kind (by wood or colour
   where the mod has them), the modded block id, how its states map (facing, the second half of a two-block piece) and
   its footprint, read by a reload listener (through `Platform`). When a build is planned (`BuildPlan`), each spot
   becomes the piece of the first mod in `furnitureMods` whose block exists in the registry (a registry lookup by id,
@@ -5044,7 +5044,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Handcrafted present gets Handcrafted chairs, table and bed and costs their items; with `furnitureMods` set to
   CobbleFurnies first it gets CobbleFurnies pieces; with `furnishedBuilds` off it's the vanilla build; a GameTest
   (no mods) builds the vanilla build unchanged; a site saved mid-build keeps its choice after a reload.
-- [x] **37.4** (approved 2026-10-18) **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
+- [x] **37.4** (approved 2026-10-18) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
   in every style, the M34 grander homes when M34 is on) and the Inn get rooms that read as rooms with each mod: a
   dining set round a table, a bedroom with nightstands and a lamp, a sitting corner with a couch or sofa, shelves of
   crockery, clocks and pictures on the walls, blinds at the windows. Each room is drawn as vanilla furniture spots that
@@ -5053,7 +5053,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   compat GameTests build the Starter Cottage and the Inn with Handcrafted and with CobbleFurnies, nothing skipped;
   scene `furnished_home` (`-Pfurniture=true`, a new harness switch that adds the pack's furniture mods; the cottage
   furnished, room by room).
-- [x] **37.5** (approved 2026-10-18) **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
+- [x] **37.5** (approved 2026-10-18) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
   Kitchen and the M34 trades' workshops get furniture where it fits: desks for the Scribe and Printer, counters and
   shelves in the shops, crockery and benches in the Kitchen, Beautify trellises, hanging pots and picture frames as
   decoration. Never a job block, a bed a villager needs, or a container is swapped: those stay what the job reads.
@@ -5097,7 +5097,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   mod's there. Done when: compat GameTests: a controller with three linked barrels counts their contents once, takes
   a porter's delivery and gives the builder what's asked; breaking the controller turns them back into three stores;
   the Storehouse board says "linked through a storage controller: N blocks"; scene `modded_storehouse` part one.
-- [x] **37.10** (approved 2026-10-19) **Tom's Simple Storage as the Storehouse's source.** A `toms_storage:inventory_connector` in the
+- [x] **37.10** (approved 2026-10-19) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Tom's Simple Storage as the Storehouse's source.** A `toms_storage:inventory_connector` in the
   Storehouse's area is one store for everything it connects (the inventories touching it and those on its
   `inventory_cable`, `inventory_cable_connector` and framed cables, found by walking block ids), read and filled
   through the connector's item storage; the connected inventories drop out of the list. A `storage_terminal` or
@@ -5162,7 +5162,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   off), the Steward's rule firing on repeated shortfalls and not otherwise, a generated village with the workshop when on;
   text in `en_us.json`; wiki and guide lines; scene `crafter_workshop`.
   - [x] **37.16a** (approved 2026-10-22) Change from the owner (2026-10-21): retired with 37.14a: the Crafter's Workshop leaves the Steward's plans, the workshop offers and village generation (existing workshops stay as plain buildings); do it in the same change as 37.14a.
-- [x] **37.17** (approved 2026-10-23) **Storage Hall builds with Tom's Simple Storage** (owner, 2026-10-22: "put some terminal builds as blueprints"). New
+- [x] **37.17** (approved 2026-10-23) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Storage Hall builds with Tom's Simple Storage** (owner, 2026-10-22: "put some terminal builds as blueprints"). New
   blueprints, listed at the Blueprint Table, built with Tom's blocks when Tom's Simple Storage is installed and with
   vanilla chests and barrels (no terminal) when it isn't: a **Storage Hall** (a hall of 24+ chests and barrels round an
   Inventory Connector on Inventory Cables, a Storage Terminal and a Crafting Terminal on a counter by the door, filing

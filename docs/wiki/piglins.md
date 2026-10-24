@@ -145,3 +145,11 @@ Roadmap items: 32.10
   a raiding piglin and hoglin turned while refused are in the world as a zombified piglin and a zoglin, with their raid
   and role tags (saved with them); with `forceThreatSpawns` off neither the old nor the turned mob stays, and the log
   names the switch (B356).
+- `QaPiglinIncursionGameTests` (lane D QA, 2026-10-24): a raiding brute and hoglin stay themselves after 620 ticks
+  while plain ones beside them turn; a chest exactly 4 blocks off is plundered and 5 off is not; only the gold
+  materials and golden gear are taken (not golden food, gold ores or gilded blackstone), one stack at most; the
+  Warlord's gold gear and +50 health, and gold carried home at dawn lands in the outpost's chest; the report's gold
+  sentence for 0, 1 and 64; the hoard's contents over 400 seeded rolls; the roster's 35/25/25/15 shares; a City with a
+  portal is raided, a City without one and a Hamlet with one are not.
+- `QaSandRampEdgeGameTests.aRaiderThreePastTheLandingIsNotCountedOverTheWall` (desert raiders' ramp, 32.9): the edge
+  of the "came over the wall" zone, from both sides.

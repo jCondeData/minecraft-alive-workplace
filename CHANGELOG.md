@@ -22,6 +22,9 @@ asks for the steps, `latest.log` and any crash report).
   trying to walk through it (B339). In a furnished spruce Library a villager without a job sometimes climbed onto a
   desk on its way to the lectern and stood stuck on the desk's edge for the rest of the day, never becoming the
   Librarian.
+- A modified client asking for previews of endless made-up blueprints no longer makes the server remember each one
+  until the player leaves (B340). Only real blueprints are remembered, and only for the five seconds a repeated request
+  is ignored; previews work as before.
 
 ## 0.148.1 — 2026-10-23
 

@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340
 
 ## 1. What a player sees
 
@@ -129,6 +129,10 @@ dropped, and a cell whose six neighbours all occlude is left out). If more than 
 build is grouped into 2×2×2 cells (then 3, …), each showing its highest block, until it fits. The result is worked out
 once per blueprint and kept (48 at most); unknown, sold-only, world-generation and closed-expansion ids get nothing.
 The client (`TablePreview`) draws the cells with the block renderer into the screen with a scissor box.
+**Placement preview requests (B340).** A held blueprint's ghost preview asks with `preview_request`
+(`PreviewNetworking`); the same blueprint asked again within 100 ticks isn't sent again. Only real blueprints are
+remembered for that guard, and each player's entries older than 100 ticks are dropped when they ask again, so made-up
+ids from a modified client leave nothing behind.
 **Basements in the preview (36.1).** A build with a basement comes out of the library with its cellar under y = 0
 (`StarterBlueprints.withBasement`); the packet carries `below`, how many blocks lie under the ground (0 for most), and
 cells are keyed with floor division, so at scale 2 or more the first cellar layer (y = -1) never folds into the ground
@@ -276,7 +280,8 @@ GameTests (`src/gametest/java/.../test/`): `QaStageFourBugTests.scanToolMarksACo
 `BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbour's bench outlasts a build;
 a bench put down and employed at in one command is held),
-`TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `TablePreviewGameTests` (7, the table's
+`TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `QaStageFiveGameTests.madeUpPreviewIdsAreNotRemembered` (B340: 5000 made-up preview ids remembered as 0, a real one
+answered, its repeat at once ignored and answered after 100 ticks), `TablePreviewGameTests` (7, the table's
 3D preview data; 36.1: Starter Cottage IV's preview has cells below the ground and its fitted height counts them, and
 at scale 2 no cellar block shares a cell with a ground-floor block), `DoorwayHeadroomGameTests` (7, B173: a villager
 walks in by the Healing Center's front door onto its carpet, and by the Manor's front door onto the stair right inside:

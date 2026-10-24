@@ -293,8 +293,9 @@ B333's lesson (a Delivery Note on a chest opened the chest; the tests had set th
     hall, opens the page and pays nothing; from the main hand it pays.
 - **Not tested**: the Colony Charter (switched off until 1.7); handing in Wonder goods at the Foundation Stone (Wonders
   are switched off; only the status was clicked); the Storehouse board's own clicks (handing items to a worker); a
-  real upload from a player allowed to upload; a real client. Noted, not filed: `PreviewNetworking` remembers every id
-  a client asks for until it leaves, so a modified client sending endless made-up ids grows the server's memory.
+  real upload from a player allowed to upload; a real client. Noted and filed as B340, now fixed: `PreviewNetworking`
+  remembered every id a client asked for until it left, so a modified client sending endless made-up ids grew the
+  server's memory; it now remembers only real blueprints, for the 100-tick repeat window.
 
 ## Still to do
 - B335, B336 and B337 (the bug lane), with the tests on `tests/qa-stage4-clicks`; B338 with `tests/qa-stage5-clicks`.

@@ -652,4 +652,52 @@ public class QaStageFiveGameTests implements net.fabricmc.fabric.api.gametest.v1
 	public void insigniaFromTheMainHandIsPaidAtTheHall(GameTestHelper helper) {
 		insigniaHandedIn(helper, InteractionHand.MAIN_HAND, true);
 	}
+
+	/**
+	 * B340: a client sending thousands of made-up preview ids gets nothing back and leaves nothing remembered for it;
+	 * a real blueprint is still answered, asked again at once is still ignored, and asked again after the 100-tick
+	 * window is answered again, while an id asked for longer ago than the window is forgotten.
+	 */
+	//$ gametest_ticks_batch AREA '300' '"qa5PreviewIds"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "qa5PreviewIds")
+	public void madeUpPreviewIdsAreNotRemembered(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Client c = client(helper, GameType.SURVIVAL);
+		UUID uuid = c.player().getUUID();
+		for (int i = 0; i < 5000; i++) {
+			c.send(new PreviewNetworking.Request(ResourceLocation.fromNamespaceAndPath("aliveworkplace", "made_up_" + i)));
+		}
+		helper.assertTrue(c.sent(PreviewNetworking.Data.class).isEmpty(), "a made-up id was answered with a preview");
+		helper.assertTrue(PreviewNetworking.rememberedFor(uuid) == 0,
+			"5000 made-up ids left " + PreviewNetworking.rememberedFor(uuid) + " remembered");
+		ResourceLocation stall = StarterBlueprints.MARKET_STALL.id();
+		c.send(new PreviewNetworking.Request(stall));
+		List<PreviewNetworking.Data> first = c.sent(PreviewNetworking.Data.class);
+		helper.assertTrue(first.size() == 1 && first.get(0).id().equals(stall) && first.get(0).blocks().length > 0,
+			"the Market Stall's preview: " + first.size() + " sent");
+		c.send(new PreviewNetworking.Request(stall));
+		helper.assertTrue(c.sent(PreviewNetworking.Data.class).isEmpty(), "the same preview was sent again at once");
+		for (int i = 0; i < 2000; i++) {
+			c.send(new PreviewNetworking.Request(ResourceLocation.fromNamespaceAndPath("aliveworkplace", "more_made_up_" + i)));
+		}
+		helper.assertTrue(PreviewNetworking.rememberedFor(uuid) == 1,
+			"after one real id and 2000 made-up ones, " + PreviewNetworking.rememberedFor(uuid) + " remembered");
+		// Later sends happen mid-tick, while the server holds the player's packets until the tick ends: flush them first.
+		helper.runAfterDelay(105, () -> {
+			c.send(new PreviewNetworking.Request(stall));
+			c.channel().flush();
+			List<PreviewNetworking.Data> again = c.sent(PreviewNetworking.Data.class);
+			helper.assertTrue(again.size() == 1 && again.get(0).id().equals(stall),
+				"the Market Stall asked again after the window: " + again.size() + " sent");
+			helper.runAfterDelay(105, () -> {
+				ResourceLocation cottage = StarterBlueprints.STARTER_COTTAGE.id();
+				c.send(new PreviewNetworking.Request(cottage));
+				c.channel().flush();
+				helper.assertTrue(c.sent(PreviewNetworking.Data.class).size() == 1, "the cottage's preview wasn't sent");
+				helper.assertTrue(PreviewNetworking.rememberedFor(uuid) == 1,
+					"the stall asked for long ago is still remembered: " + PreviewNetworking.rememberedFor(uuid));
+				helper.succeed();
+			});
+		});
+	}
 }

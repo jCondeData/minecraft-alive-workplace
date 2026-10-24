@@ -234,6 +234,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStageFiveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageFiveBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageSixGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CradleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HarvestIdolGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TreasuryEdictGameTests",

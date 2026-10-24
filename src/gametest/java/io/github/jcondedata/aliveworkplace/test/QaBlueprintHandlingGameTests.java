@@ -42,6 +42,11 @@ public class QaBlueprintHandlingGameTests implements net.fabricmc.fabric.api.gam
 		return seen.stream().map(Component::getString).toList();
 	}
 
+	/** The test-relative position of absolute {@code abs}, as {@code helper.absolutePos} turns it back (unlike relativePos). */
+	private static BlockPos rel(GameTestHelper helper, BlockPos abs) {
+		return abs.subtract(helper.absolutePos(BlockPos.ZERO));
+	}
+
 	private static BlueprintData data(ServerPlayer p) {
 		return BlueprintItem.data(p.getMainHandItem()).orElseThrow();
 	}
@@ -218,5 +223,72 @@ public class QaBlueprintHandlingGameTests implements net.fabricmc.fabric.api.gam
 			helper.assertTrue(found.getOrDefault(io.github.jcondedata.aliveworkplace.registry.ModItems.BLUEPRINT, 0) == 1, "the blueprint went missing: " + found);
 			helper.assertTrue(chest.countItem(net.minecraft.world.item.Items.DIRT) == dirt, "the dirt in the chest changed");
 		});
+	}
+
+	/**
+	 * Guide: "Right-click a finished building with its upgrade and the blueprint lines up exactly over it" (en_us:
+	 * "Lined up over the %s: give the %s to a builder to upgrade it."). Two finished Starter Cottages, one turned a
+	 * quarter: the Starter Cottage II clicked onto each lines up exactly over that one, turn and all. Sneaking, the click
+	 * on a cottage doesn't line it up (it turns the placed blueprint, as on any ground). A Stone House II, which upgrades
+	 * something else, clicked onto a cottage is just placed there, not lined up over it.
+	 */
+	//$ gametest_ticks_batch AREA '60' '"qaBlueprintUpgradeLineUp"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "qaBlueprintUpgradeLineUp")
+	public void anUpgradeLinesUpOverItsOwnBuildingTurnedOrNotAndOnlyThere(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.finished(helper);
+		ServerLevel level = helper.getLevel();
+		var cottage = io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STARTER_COTTAGE;
+		var cottage2 = io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STARTER_COTTAGE_2;
+		var stone2 = io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STONE_HOUSE_2;
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		List<BlueprintData.Placement> bases = new java.util.ArrayList<>();
+		List<BlockPos> middles = new java.util.ArrayList<>();
+		for (Rotation turn : List.of(Rotation.NONE, Rotation.CLOCKWISE_90)) {
+			BlueprintData.Placement base = new BlueprintData.Placement(level.dimension().location(),
+				helper.absolutePos(new BlockPos(2, 1, 2)).offset(bases.size() * 24, 0, 0), turn, net.minecraft.world.level.block.Mirror.NONE);
+			sites.recordFinished(cottage.id(), base, java.util.UUID.randomUUID());
+			BlockPos middle = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(base, cottage.size()).getCenter();
+			level.setBlockAndUpdate(middle, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+			bases.add(base);
+			middles.add(middle);
+		}
+		Leftovers.after(helper, () -> {
+			for (int i = 0; i < bases.size(); i++) {
+				sites.forgetFinished(bases.get(i));
+				level.setBlockAndUpdate(middles.get(i), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			}
+		});
+		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qabU"));
+		ServerPlayer p = c.player();
+		p.setItemInHand(InteractionHand.MAIN_HAND, BlueprintItem.create(cottage2.id(), cottage2.size()));
+		String lined = "Lined up over the " + Blueprints.displayName(cottage.id()).getString() + ": give the "
+			+ Blueprints.displayName(cottage2.id()).getString() + " to a builder to upgrade it.";
+		for (int i = 0; i < 2; i++) {
+			c.seen().clear();
+			QaStageFourGameTests.press(helper, p, rel(helper, middles.get(i)), Direction.UP);
+			helper.assertTrue(data(p).placement().equals(Optional.of(bases.get(i))), "cottage " + (i + 1) + " (" + bases.get(i).rotation()
+				+ "): the upgrade went to " + data(p).placement() + "; saw " + texts(c.seen()));
+			helper.assertTrue(texts(c.seen()).contains(lined), "lining up over cottage " + (i + 1) + " said " + texts(c.seen()));
+		}
+		// lined up over the turned one; a sneak-click on the first turns it where it is instead
+		p.setShiftKeyDown(true);
+		c.seen().clear();
+		QaStageFourGameTests.press(helper, p, rel(helper, middles.get(0)), Direction.UP);
+		p.setShiftKeyDown(false);
+		BlueprintData.Placement turned = data(p).placement().orElseThrow();
+		helper.assertFalse(turned.equals(bases.get(0)), "a sneak-click lined the upgrade up over the first cottage");
+		helper.assertTrue(turned.rotation() == Rotation.CLOCKWISE_180, "a sneak-click should turn it a quarter from " + bases.get(1).rotation() + ": " + turned);
+		helper.assertFalse(texts(c.seen()).contains(lined), "a sneak-click said it lined up: " + texts(c.seen()));
+
+		p.setItemInHand(InteractionHand.MAIN_HAND, BlueprintItem.create(stone2.id(), stone2.size()));
+		c.seen().clear();
+		QaStageFourGameTests.press(helper, p, rel(helper, middles.get(0)), Direction.UP);
+		helper.assertTrue(data(p).placement().isPresent() && !data(p).placement().get().equals(bases.get(0)),
+			"a Stone House II lined up over a Starter Cottage: " + data(p).placement());
+		helper.assertTrue(texts(c.seen()).stream().anyMatch(t -> t.startsWith(Blueprints.displayName(stone2.id()).getString() + " placed, facing ")),
+			"the Stone House II on the cottage said " + texts(c.seen()));
+		LOGGER.info("qa upgrade line-up: {} and {} lined up, sneak turned to {}", bases.get(0), bases.get(1), turned);
+		helper.succeed();
 	}
 }

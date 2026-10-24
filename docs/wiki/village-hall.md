@@ -68,7 +68,10 @@ Builder is building it now". Grass, dirt, stone, sand, trees, snow and water whe
 the row says how many such blocks the Builder clears on the way. A wall, a fence, a path, a chest or another build in
 the way does: the row turns to a barrier and says what and where ("Blocked: Oak Fence in the way at 120 64 -38", or
 "Blocked by the Smithy: its Stone Bricks at ..."), and a click only says so. The villagers who live there keep their
-beds: the Builder never breaks a bed somebody sleeps in.
+beds: the Builder never breaks a bed somebody sleeps in. With no Builder free or with room in his queue, the click
+says so ("No Builder can take the ...: none has a bench near it and room in their queue") and orders nothing; a busy
+Builder gets it queued "after the current build", once however often it is clicked. In a village somebody owns, only
+the owner and their friends can order one. The tab says how many builds can go up a level ("1 build", "2 builds").
 
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
@@ -80,7 +83,8 @@ name such as Thornholm.
 ## How it works
 
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32
-up and down) belongs to it. Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
+up and down) belongs to it; its villagers and its beds are counted by that one circle, so a villager and the bed beside him are
+always both in or both out (B361, `VillageHalls.contains`). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
 feeds everything else.
 
 **Clearing-out quests follow the world's foes (B301).** "Clear out 8 monsters" (a `kill` of `monster`, a `slay` reform

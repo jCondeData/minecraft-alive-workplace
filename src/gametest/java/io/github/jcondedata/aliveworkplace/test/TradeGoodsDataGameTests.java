@@ -235,7 +235,7 @@ public class TradeGoodsDataGameTests implements net.fabricmc.fabric.api.gametest
 			chest.setItem(i, stock.get(i).copy());
 		}
 		for (int i = 0; i < jobs.size(); i++) {
-			worker(helper, job(jobs.get(i)), new BlockPos(3 + 2 * (i % 5), 2, 3 + 2 * (i / 5)));
+			worker(helper, job(jobs.get(i)), new BlockPos(5 + 2 * (i % 5), 2, 5 + 2 * (i / 5)));
 		}
 		VillageHalls.Census census = VillageHalls.census(level, hallAt);
 		helper.assertTrue(census.workers().size() == jobs.size(), "the census counted " + census.workers().size() + " workers, not " + jobs.size());

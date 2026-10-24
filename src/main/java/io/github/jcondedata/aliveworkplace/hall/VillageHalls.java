@@ -61,7 +61,7 @@ public final class VillageHalls {
 		List<Villager> jobless = new ArrayList<>();
 		int children = 0;
 		int guards = 0;
-		for (Villager v : level.getEntitiesOfClass(Villager.class, area(hall), Villager::isAlive)) {
+		for (Villager v : villagers(level, hall)) {
 			if (CaravanSights.isParty(v)) {
 				continue; // a caravan's carter (33.7) is passing through: nobody's villager
 			}
@@ -82,10 +82,9 @@ public final class VillageHalls {
 		workers.sort(Comparator.comparing((Villager v) -> v.getVillagerData().getProfession().name())
 			.thenComparing(v -> -v.getVillagerData().getLevel()).thenComparing(v -> v.distanceToSqr(hall.getCenter())));
 		jobless.sort(Comparator.comparingDouble(v -> v.distanceToSqr(hall.getCenter())));
-		PoiManager poi = level.getPoiManager();
 		// B206, B207: a settlers' wagon's bedrolls are for the road, not the village's beds
 		int wagonBeds = io.github.jcondedata.aliveworkplace.camp.CampBeds.inVillage(level, hall).size();
-		int beds = (int) poi.getCountInRange(h -> h.is(PoiTypes.HOME), hall, RADIUS, PoiManager.Occupancy.ANY) - wagonBeds;
+		int beds = (int) beds(level, hall).count() - wagonBeds;
 		int freeBeds = io.github.jcondedata.aliveworkplace.camp.CampBeds.freeHomes(level, hall, RADIUS).size();
 		List<Requests.Request> requests = new ArrayList<>();
 		for (Villager worker : workers) {
@@ -322,6 +321,29 @@ public final class VillageHalls {
 
 	public static AABB area(BlockPos hall) {
 		return new AABB(hall).inflate(RADIUS, HEIGHT, RADIUS);
+	}
+
+	/**
+	 * Whether {@code pos} is in the village round {@code hall}: within {@link #RADIUS} blocks across (a circle, as the
+	 * wiki tells the player) and {@link #HEIGHT} up or down. B361: the census counts its villagers and its beds by this
+	 * one shape, so a villager beside his bed is never in while the bed is out.
+	 */
+	public static boolean contains(BlockPos hall, BlockPos pos) {
+		long dx = pos.getX() - hall.getX();
+		long dz = pos.getZ() - hall.getZ();
+		return dx * dx + dz * dz <= (long) RADIUS * RADIUS && Math.abs(pos.getY() - hall.getY()) <= HEIGHT;
+	}
+
+	/** The living villagers in the village round {@code hall} ({@link #contains}). */
+	public static List<Villager> villagers(ServerLevel level, BlockPos hall) {
+		return level.getEntitiesOfClass(Villager.class, area(hall), v -> v.isAlive() && contains(hall, v.blockPosition()));
+	}
+
+	/** The beds (home points of interest, taken or not) in the village round {@code hall} ({@link #contains}). */
+	public static java.util.stream.Stream<BlockPos> beds(ServerLevel level, BlockPos hall) {
+		int reach = (int) Math.ceil(Math.sqrt((double) RADIUS * RADIUS + (double) HEIGHT * HEIGHT));
+		return level.getPoiManager().getInRange(h -> h.is(PoiTypes.HOME), hall, reach, PoiManager.Occupancy.ANY)
+			.map(net.minecraft.world.entity.ai.village.poi.PoiRecord::getPos).filter(p -> contains(hall, p));
 	}
 
 	private VillageHalls() {

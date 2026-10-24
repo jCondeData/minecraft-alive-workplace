@@ -236,14 +236,37 @@ public final class Shops {
 		return player.getAbilities().instabuild || countLike(player, price) >= price.getCount();
 	}
 
+	/** The stacks a buyer pays item prices from: the bag and hotbar, then the off hand (never the armor worn, B350). */
+	private static List<ItemStack> payStacks(net.minecraft.server.level.ServerPlayer player) {
+		List<ItemStack> stacks = new java.util.ArrayList<>(Players.mainItems(player));
+		stacks.add(player.getOffhandItem());
+		return stacks;
+	}
+
 	private static int countLike(net.minecraft.server.level.ServerPlayer player, ItemStack price) {
 		int n = 0;
-		for (ItemStack s : Players.mainItems(player)) {
+		for (ItemStack s : payStacks(player)) {
 			if (ItemStack.isSameItemSameComponents(s, price)) {
 				n += s.getCount();
 			}
 		}
 		return n;
+	}
+
+	/** Takes {@code price.getCount()} items like {@code price} from the stacks {@link #countLike} counts. */
+	private static void takeLike(net.minecraft.server.level.ServerPlayer player, ItemStack price) {
+		int left = price.getCount();
+		for (ItemStack s : payStacks(player)) {
+			if (left <= 0) {
+				break;
+			}
+			if (ItemStack.isSameItemSameComponents(s, price)) {
+				int n = Math.min(left, s.getCount());
+				s.shrink(n);
+				left -= n;
+			}
+		}
+		player.getInventory().setChanged();
 	}
 
 	/**
@@ -285,8 +308,7 @@ public final class Shops {
 					.withStyle(net.minecraft.ChatFormatting.RED));
 				return false;
 			}
-			player.getInventory().clearOrCountMatchingItems(s -> ItemStack.isSameItemSameComponents(s, price), price.getCount(),
-				player.inventoryMenu.getCraftSlots());
+			takeLike(player, price);
 		}
 		int taken = SupplyContainers.extractMatching(level, chests, goods, goods.getCount());
 		ItemStack bought = goods.copyWithCount(Math.max(1, taken));

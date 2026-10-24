@@ -101,6 +101,10 @@ Roadmap items: 32.10
 - A plunderer that leaves at dawn while the outpost isn't loaded takes its gold with it: it is counted as lost, and
   no hoard gets it.
 - Hoglins shun Nether portals, so a hoglin ram mills about the portal for a moment before it follows the rest.
+- A threat's mobs never go through a Nether portal (B373): the outpost's band and Warlord, a bandit camp's chief and
+  men, and every raider stay in the world when they walk into the outpost's portal or a player's, while a plain piglin
+  or pillager goes through. A raider riding a mount (a baby husk's chicken jockey) keeps its mount out too, and so do
+  the Bandit King's fort's men (B375).
 - On a server whose mob blocklist refuses zombified piglins and zoglins (Cobbleverse's MobsBeGone lists nearly every
   vanilla mob), the band vanishes when the Warlord falls instead of turning zombified: the turning goes through the
   game's own conversion, not `HostileSpawns` (bug B356, its failing test on the branch tests/refused-warlord).
@@ -118,6 +122,14 @@ Roadmap items: 32.10
 - `PiglinGameTests.theWarlordsDeathPutsOutThePortalAndZombifiesTheBand`: the outpost with its 12 portal blocks lit, the
   Warlord with 100 health in gold, a raid of 5 standing in the portal, then his death: the outpost broken, no portal
   block left, no piglin or hoglin left unturned, the 5 raiders zombified and still raiders.
+- `PiglinGameTests.theOutpostsBandAndRaidersStayOutOfItsPortal`: one of the band and a raider held in the outpost's
+  portal stay, while a plain piglin beside them leaves for the Nether (B373).
+- `QaPortalThreatsGameTests.aBanditCampsChiefAndManStayOutOfAPortal`,
+  `QaPortalThreatsGameTests.aDesertLairsCaptainAndBandStayOutOfAPortal`: a lair's captain and one of its band (a bandit
+  camp's, a desert lair's) put in a lit portal by the village stay, while a plain pillager beside them leaves.
+- `QaPortalThreatBugTests.aRaiderRidingAChickenStaysOutOfAPortal`, `QaPortalThreatBugTests.aBanditOfTheFortStaysOutOfAPortal`:
+  a raider riding a chicken and one of the Bandit King's fort's men stay out of a lit portal, while a plain chicken and
+  a plain pillager go through (B375).
 - Showcase scene `piglins`: the outpost, a raid stepping out of its portal, a piglin carrying off a stack of gold.
 - `QaPiglinRaidGameTests.aRaidingHoglinGoesForAVillager`, `QaPiglinRaidGameTests.aRaidingPiglinBruteGoesForAVillager`:
   a raiding hoglin and a raiding brute, penned with a villager, strike it themselves.

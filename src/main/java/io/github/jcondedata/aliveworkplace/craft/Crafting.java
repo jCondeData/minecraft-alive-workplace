@@ -146,7 +146,20 @@ public final class Crafting {
 
 	/** What a job of {@code kind} lacks to make {@code count} of {@code target} from {@code usable} (37.14a), as {@link #lacking}. */
 	public static Map<Item, Integer> lacking(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable) {
-		Plan plan = plan(level, kind, target, count, usable, r -> true, t -> true, CHAIN_DEPTH, true);
+		return lacks(shortfall(level, kind, target, count, usable));
+	}
+
+	/**
+	 * The plan {@link #lacking(ServerLevel, Kind, Item, int, Map)} reads: its steps as if every raw material were there
+	 * (a kiln counts its fuel from them, B352), and what's short as negative takes. Null if no recipe makes it.
+	 */
+	@Nullable
+	public static Plan shortfall(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable) {
+		return plan(level, kind, target, count, usable, r -> true, t -> true, CHAIN_DEPTH, true);
+	}
+
+	/** What a {@link #shortfall} plan lacks, by item. */
+	public static Map<Item, Integer> lacks(@Nullable Plan plan) {
 		return plan == null ? Map.of() : plan.takes().entrySet().stream()
 			.filter(e -> e.getValue() < 0)
 			.collect(java.util.stream.Collectors.toMap(Map.Entry::getKey, e -> -e.getValue(), (a, b) -> a, LinkedHashMap::new));

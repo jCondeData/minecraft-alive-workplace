@@ -220,6 +220,10 @@ dropper or pipe pointed at it pushes nothing in, so nobody can empty or change s
 the counter's own screen changes them, and only the owner, friends and operators open it. The chests next to the
 counter are ordinary chests: hoppers still fill and drain those.
 
+**Item prices count the off hand (B350).** With CobbleDollars, a shop's own screen pays a price that isn't in emeralds
+(say 3 diamonds) with the price items you carry: the bag, the hotbar and the off hand all count, and the payment comes
+from the bag and hotbar first, then the off hand. Armor you wear never pays.
+
 **Outfits (24.1).** Each of the mod's professions has a vanilla-style outfit and a zombie villager version.
 
 **A Quarry build that refills (36.12).** The Quarry blueprint (`tools/blueprints/quarry.py`, in the Blueprint Table

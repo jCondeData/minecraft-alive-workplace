@@ -5064,7 +5064,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Done when: a GameTest checks no spot in any build covers a job block, a bed or a container; compat GameTests build
   three workplaces with Handcrafted and Beautify and each job still finds its block and chests; renders reviewed with
   the architect skill; scene `furnished_workplaces`.
-- [x] **37.6** (approved 2026-10-18) **Villagers use the furniture.** The chairs, stools, benches, couches and sofas of these mods are seats
+- [x] **37.6** (approved 2026-10-18) (verified 2026-10-24: 13 compat tests [QaFurnitureUseCompatTests]: standing up when the chair breaks, at bedtime, at a zombie; occupied chair, two chairs, stair chairs; broken fancy bed; furnitureMods reversed or missing a mod, one chair for two spots, half-furnished build, switch off, material-list text; 3/3 mutants killed) **Villagers use the furniture.** The chairs, stools, benches, couches and sofas of these mods are seats
   (a block tag `aliveworkplace:villager_seats`, its modded entries written with `"required": false`, so the tag loads
   without the mods), where villagers sit for meals and in the evening, as they sit in the Stadium's stands
   (`cup/StandSeat`), and stand up for work, danger or bed. Handcrafted's fancy beds are beds (`FancyBedBlock` extends
@@ -5125,7 +5125,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   (default: modded when the mods are installed). Choosing what ships in which release is the owner's later. Done
   when: the modded copies exist for every home and workshop, renders checked against STYLE.md, the switch works,
   vanilla builds untouched; compat GameTests; scene `modded_library`.
-- [x] **37.13** (approved 2026-10-20) **Any mod's "spruce chair" will do** (owner, 2026-10-19). Furniture such as a spruce chair exists in several mods (Handcrafted,
+- [x] **37.13** (approved 2026-10-20) (verified 2026-10-24: 13 compat tests [QaFurnitureUseCompatTests]: standing up when the chair breaks, at bedtime, at a zombie; occupied chair, two chairs, stair chairs; broken fancy bed; furnitureMods reversed or missing a mod, one chair for two spots, half-furnished build, switch off, material-list text; 3/3 mutants killed) **Any mod's "spruce chair" will do** (owner, 2026-10-19). Furniture such as a spruce chair exists in several mods (Handcrafted,
   CobbleFurnies, Lucky's Cozy Home, Beautify) and a build asks for one mod's piece (the first in `furnitureMods`, now Handcrafted), so players
   bring the wrong one and the Builder stalls. Make equivalent pieces interchangeable the way `MaterialFamilies` does for vanilla
   blocks: an equivalence table for furniture (data file, by piece and wood or colour: chair, table, bed, lamp, shelf, cabinet,

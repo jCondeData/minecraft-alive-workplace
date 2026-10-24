@@ -261,6 +261,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStageFiveBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintTableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRepairCellarGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRepairCellarBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageSixGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneCaravanBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEconomyBugTests",
@@ -498,7 +499,8 @@
 			"io.github.jcondedata.aliveworkplace.test.WonderBlueprintGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StadiumGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaReputationPerksGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaReputationPerksGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaJobChainsGameTests"
 		]
 	},
 	"depends": {

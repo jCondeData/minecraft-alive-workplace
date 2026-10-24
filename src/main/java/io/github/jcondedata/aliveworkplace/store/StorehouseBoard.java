@@ -129,7 +129,7 @@ public final class StorehouseBoard {
 		}
 		io.github.jcondedata.aliveworkplace.platform.ItemStores.Room room = SupplyContainers.room(level, store);
 		return room.bigSlots()
-			? java.util.Optional.of(plain(Component.translatable("screen.aliveworkplace.storehouse.room", room.freeItems()), ChatFormatting.GRAY))
+			? java.util.Optional.of(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.room", room.freeItems(), room.freeItems()), ChatFormatting.GRAY))
 			: java.util.Optional.empty();
 	}
 
@@ -217,7 +217,7 @@ public final class StorehouseBoard {
 		icon.set(DataComponents.CUSTOM_NAME, plain(name, ChatFormatting.YELLOW));
 		List<Component> lore = new ArrayList<>();
 		int away = (int) Math.round(Math.sqrt(request.station().distSqr(viewer.blockPosition())));
-		lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.for", job(request), away), ChatFormatting.GRAY));
+		lore.add(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.for", away, job(request), away), ChatFormatting.GRAY));
 		if (request.forBlock()) {
 			lore.add(plain(Component.translatable(request.block().found() ? "screen.aliveworkplace.storehouse.found" : "screen.aliveworkplace.storehouse.made_by",
 				request.block().job()), ChatFormatting.GRAY));

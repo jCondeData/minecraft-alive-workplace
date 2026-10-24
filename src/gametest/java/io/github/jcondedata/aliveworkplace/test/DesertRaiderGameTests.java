@@ -161,6 +161,17 @@ public class DesertRaiderGameTests implements FabricGameTest {
 		BlockPos base = helper.absolutePos(BlockPos.ZERO);
 		mob.moveTo(base.getX() + x, base.getY() + 2, base.getZ() + z, 180f, 0f);
 		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.EVENT, null);
+		// The same raider every run (B372): finalizeSpawn rolls on the level's random (a baby, now and then a chicken
+		// jockey), and the mob's own random drives its wandering and pathing; a test that wants a baby or a jockey makes one.
+		if (mob instanceof Zombie zombie) {
+			zombie.setBaby(false);
+		}
+		if (mob.getVehicle() != null) {
+			net.minecraft.world.entity.Entity vehicle = mob.getVehicle();
+			mob.stopRiding();
+			vehicle.discard();
+		}
+		mob.getRandom().setSeed(1L);
 		Threats.outfit(level, mob, yard.culture(), member);
 		mob.setTarget(yard.villager());
 		level.addFreshEntityWithPassengers(mob);
@@ -442,9 +453,19 @@ public class DesertRaiderGameTests implements FabricGameTest {
 				BlockPos base = helper.absolutePos(BlockPos.ZERO);
 				helper.fail("not let go: the husk at " + climber.position().subtract(base.getX(), base.getY(), base.getZ())
 					+ (climber.onGround() ? " on the ground" : " in the air") + " at tick " + tick + ", on the step since " + stepped[0]
-					+ ", ramp foot y " + (foot[0] - base.getY()));
+					+ ", ramp foot y " + (foot[0] - base.getY()) + "; " + rampState(helper, yard, climber, siege));
 			}
 		});
+	}
+
+	/** What the ramp tests' failure messages tell besides the husk (B372): the siege, its sand, the raid, the clock, the husk. */
+	private static String rampState(GameTestHelper helper, Yard yard, Mob climber, ThreatData.Siege siege) {
+		ServerLevel level = yard.level();
+		return "siege over " + siege.over + ", ramped " + siege.ramped + ", sand " + siege.sand.size() + ", ramp feet " + siege.rampFeet
+			+ ", raid " + ThreatData.get(level).raid(yard.hall()).map(r -> r.culture() + " began " + r.began()).orElse("none")
+			+ ", game time " + level.getGameTime() + ", day time " + level.getDayTime() + ", mobGriefing " + level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
+			+ ", husk alive " + climber.isAlive() + (climber.isBaby() ? ", a baby" : "") + (climber.getVehicle() != null ? ", riding " + climber.getVehicle() : "")
+			+ ", target " + climber.getTarget() + ", navigation done " + climber.getNavigation().isDone();
 	}
 
 	/**
@@ -508,7 +529,7 @@ public class DesertRaiderGameTests implements FabricGameTest {
 				BlockPos base = helper.absolutePos(BlockPos.ZERO);
 				helper.fail("not let go: the husk at " + climber.position().subtract(base.getX(), base.getY(), base.getZ())
 					+ (climber.onGround() ? " on the ground" : " in the air") + " at tick " + tick + ", on the terrace since " + stood[0]
-					+ ", ramp foot y " + (foot[0] - base.getY()));
+					+ ", ramp foot y " + (foot[0] - base.getY()) + "; " + rampState(helper, yard, climber, siege));
 			}
 		});
 	}
@@ -530,6 +551,17 @@ public class DesertRaiderGameTests implements FabricGameTest {
 		});
 	}
 
+	/** The raid, the siege and the clock, for the noon test's failure messages (B370). */
+	private static String noonState(ServerLevel level, Yard yard, Mob husk, long day) {
+		ThreatData data = ThreatData.get(level);
+		return "raid " + data.raid(yard.hall()).map(r -> r.culture() + " began " + r.began()).orElse("none") + " (game time " + level.getGameTime() + ")"
+			+ ", raids recorded " + data.save(new CompoundTag(), level.registryAccess()).getList("raids", Tag.TAG_COMPOUND).size()
+			+ ", active " + VillageRaids.active(yard.hall()).isPresent() + ", raiders " + VillageRaids.raiders(level, yard.hall()).size()
+			+ ", siege " + Sieges.siege(level, yard.hall()).map(s -> "over " + s.over + ", dawn " + s.dawn).orElse("none")
+			+ ", clock " + level.getDayTime() + " (time " + level.getDayTime() % 24000 + ", test day " + day + ")"
+			+ ", husk alive " + husk.isAlive() + (husk.getVehicle() != null ? ", riding " + husk.getVehicle() : "");
+	}
+
 	/**
 	 * Until noon. A siege of desert raiders is still on at dawn and at mid-morning (the raid goes on, the siege isn't
 	 * over), and at noon the raid is over, the raiders gone and the siege over.
@@ -548,19 +580,29 @@ public class DesertRaiderGameTests implements FabricGameTest {
 		// The raid began a while ago (as a save of one would have it).
 		ThreatData data = ThreatData.get(level);
 		CompoundTag tag = data.save(new CompoundTag(), level.registryAccess());
-		tag.getList("raids", Tag.TAG_COMPOUND).getCompound(0).putLong("began", level.getGameTime() - 2000);
+		// This village's raid, by its hall (B370: the first of the list was taken, which is another village's when a raid of
+		// an earlier test is still recorded, and this one's then began just now and outlasted noon).
+		net.minecraft.nbt.ListTag raids = tag.getList("raids", Tag.TAG_COMPOUND);
+		boolean found = false;
+		for (int i = 0; i < raids.size(); i++) {
+			if (raids.getCompound(i).getLong("hall") == yard.hall().asLong()) {
+				raids.getCompound(i).putLong("began", level.getGameTime() - 2000);
+				found = true;
+			}
+		}
+		helper.assertTrue(found, "the desert raid isn't saved: " + raids);
 		data.read(tag);
 		helper.runAfterDelay(2, () -> {
 			for (long time : new long[] {23999, 24000 + 1000, 24000 + 3000}) {
 				level.setDayTime(day * 24000 + time);
 				VillageRaids.tick(level, yard.hall(), 8, 0, day, d -> { });
-				helper.assertTrue(VillageRaids.active(yard.hall()).isPresent(), "the desert raiders left at " + time % 24000);
-				helper.assertTrue(Sieges.siege(level, yard.hall()).map(s -> !s.over).orElse(false), "the siege is over at " + time % 24000);
+				helper.assertTrue(VillageRaids.active(yard.hall()).isPresent(), "the desert raiders left at " + time % 24000 + "; " + noonState(level, yard, husk, day));
+				helper.assertTrue(Sieges.siege(level, yard.hall()).map(s -> !s.over).orElse(false), "the siege is over at " + time % 24000 + "; " + noonState(level, yard, husk, day));
 			}
 			level.setDayTime(day * 24000 + 24000 + 6100);
 			VillageRaids.tick(level, yard.hall(), 8, 0, day, d -> { });
-			helper.assertTrue(VillageRaids.active(yard.hall()).isEmpty() && VillageRaids.raiders(level, yard.hall()).isEmpty(), "the desert raiders stayed past noon");
-			helper.assertTrue(Sieges.siege(level, yard.hall()).map(s -> s.over).orElse(true), "the siege isn't over at noon");
+			helper.assertTrue(VillageRaids.active(yard.hall()).isEmpty() && VillageRaids.raiders(level, yard.hall()).isEmpty(), "the desert raiders stayed past noon; " + noonState(level, yard, husk, day));
+			helper.assertTrue(Sieges.siege(level, yard.hall()).map(s -> s.over).orElse(true), "the siege isn't over at noon; " + noonState(level, yard, husk, day));
 			helper.succeed();
 		});
 	}

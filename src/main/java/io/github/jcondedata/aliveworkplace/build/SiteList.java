@@ -159,7 +159,9 @@ public final class SiteList {
 		List<BlueprintSupplies.Line> toBring = list.lines().stream().filter(l -> l.toBring() > 0).toList();
 		text.append(toBring.isEmpty()
 			? Component.translatable("message.aliveworkplace.site_list.chat_all_there", name).withStyle(ChatFormatting.GREEN)
-			: Component.translatable("message.aliveworkplace.site_list.chat_heading", name, list.toBring(), toBring.size()).withStyle(ChatFormatting.GOLD));
+			: Component.translatable("message.aliveworkplace.site_list.chat_heading", name, // B402: "1 item of 1 kind"
+				io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.site_list.items", list.toBring(), list.toBring()),
+				io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.site_list.kinds", toBring.size(), toBring.size())).withStyle(ChatFormatting.GOLD));
 		for (BlueprintSupplies.Line line : toBring) {
 			text.append(Component.literal("\n  "));
 			text.append(MaterialList.line(line).copy().withStyle(ChatFormatting.YELLOW));

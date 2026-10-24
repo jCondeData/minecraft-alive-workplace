@@ -463,6 +463,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScoutGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPortalThreatBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuietLairGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLairEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinRaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiratesThreatLevelGameTests",

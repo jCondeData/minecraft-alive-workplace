@@ -328,6 +328,54 @@ public class ThreatLevelGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * Level 3 for the lairs too (B383): a raid comes from the band at the lair, so on hard every lair culture's band is a
+	 * quarter bigger when it makes camp and grows to a quarter more; at levels 1 and 2 it is what its culture says. A
+	 * warband's lair at level 3 sends its whole bigger band.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"threatLevel3Lairs"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "threatLevel3Lairs")
+	public void atThreatLevelThreeEveryLairIsAQuarterBigger(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		helper.runAfterDelay(2, () -> {
+			at(level, 64, 13000);
+			for (ResourceLocation id : List.of(WARBAND, DESERT, COVEN, PIGLINS, Threats.BANDITS)) {
+				Culture.Lair spec = culture(helper, id).lair().orElse(null);
+				helper.assertTrue(spec != null, "no lair for " + id);
+				for (int threat = 1; threat <= 3; threat++) {
+					WorkplaceConfig.parse("{\"threatLevel\": " + threat + "}").apply();
+					Lairs.Lair lair = Lairs.found(level, hall, helper.absolutePos(CAMP), id);
+					int want = threat == 3 ? (int) Math.ceil(spec.strength() * 1.25) : spec.strength();
+					helper.assertTrue(lair != null && lair.strength() == want, id + " at threat level " + threat + ": " + lair + ", not " + want);
+					helper.assertTrue(Lairs.most(spec) == (threat == 3 ? (int) Math.ceil(spec.max() * 1.25) : spec.max()), id + "'s most at level " + threat + ": " + Lairs.most(spec));
+					level.getEntitiesOfClass(Mob.class, helper.getBounds().inflate(48), m -> m.getTags().contains(Lairs.TAG)).forEach(Mob::discard);
+				}
+			}
+			// It grows past its culture's max on hard: a warband at 18 (its max) grows by 2 at the next dawn, to 20 of 23.
+			Culture.Lair warband = culture(helper, WARBAND).lair().orElseThrow();
+			long today = Chronicle.day(level);
+			Lairs.putForTest(level, new Lairs.Lair(helper.absolutePos(CAMP), hall, new java.util.UUID(1, 1), today - 1, WARBAND, warband.max(), today - 1, 0, 0, 0));
+			Lairs.dawn(level, hall, today);
+			int grown = Lairs.near(level, hall).map(Lairs.Lair::strength).orElse(-1);
+			helper.assertTrue(grown == warband.max() + warband.growth(), "a warband at its max at level 3 grew to " + grown);
+			WorkplaceConfig.parse("{\"threatLevel\": 2}").apply();
+			Lairs.putForTest(level, new Lairs.Lair(helper.absolutePos(CAMP), hall, new java.util.UUID(1, 1), today - 1, WARBAND, warband.max(), today - 1, 0, 0, 0));
+			Lairs.dawn(level, hall, today);
+			grown = Lairs.near(level, hall).map(Lairs.Lair::strength).orElse(-1);
+			helper.assertTrue(grown == warband.max(), "a warband at its max at level 2 grew to " + grown);
+			// The raid from a warband's lair made on hard: the whole band, a quarter more than at level 2.
+			WorkplaceConfig.parse("{\"threatLevel\": 3}").apply();
+			Lairs.Lair lair = Lairs.found(level, hall, helper.absolutePos(CAMP), WARBAND);
+			helper.assertTrue(lair != null, "no warband lair");
+			at(level, 64, 15000);
+			VillageRaids.Raid raid = VillageRaids.start(level, hall, 52, 0, Double.NaN, culture(helper, WARBAND), RandomSource.create(6L));
+			int whole = (int) Math.ceil(warband.strength() * 1.25);
+			helper.assertTrue(raid != null && raid.raiders() == whole, "a warband's raid at level 3: " + raid + ", not " + whole);
+			helper.succeed();
+		});
+	}
+
 	/** On Peaceful nothing comes, whatever the threat level; At peace does the same for one village. */
 	//$ gametest_batch EMPTY_STRUCTURE '"threatPeaceful"'
 	@GameTest(template = EMPTY_STRUCTURE, batch = "threatPeaceful")

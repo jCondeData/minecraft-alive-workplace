@@ -262,7 +262,7 @@ gives no marker back (there was none), and the Miner takes the pit again within 
 | `maxWorkPace` | 200 (100 to 400) | The cap on every speed bonus together, in percent of the usual pace |
 | `workplaceKeepWorkLoaded` | true | Game rule: builds and quarries keep running while their player is online |
 | `workplaceVillageFarms` | true | Game rule: a village farmer with no field takes on the farm by their composter |
-| `workplaceRetraining` | true | Game rule: a villager who has a job can be retrained as a Builder for a price; false: the old rule |
+| `workplaceRetraining` | true | Game rule: a villager who has a job can be retrained for a price (any job at the Village Hall, Builder at a Blueprint Table); false: the old rule |
 | `retrainPrices` | 5, 10, 20, 35, 50 | Emeralds to retrain, Novice to Master (each 0 to 1000; in the file only) |
 | `vintners` | on from 1.0 | The Vintner job |
 | `tailors` | on from 1.0 | The Tailor job |

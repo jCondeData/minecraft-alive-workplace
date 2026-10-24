@@ -4,14 +4,14 @@ How much trouble comes to villages, server-wide and village by village: the `thr
 the Defense page's **At peace**, and the operators' `/workplace threat` command. Part of Milestone 32 (1.6); the
 threat level and the command work with today's raids and bandit camps too.
 
-Roadmap items: 32.21, B134
+Roadmap items: 32.21, B134, B383
 
 ## What a player sees
 
 - **The threat level** (Threat Level on the settings screen, 0 to 3, normally 2). At 0 nothing comes: no raids, no
   raiders' camps, no sieges, no disasters. At 1 everything comes half as often, raiders walk in (no rams, ladders or sand
   ramps, so no sieges), witches never hex, and there is no plague. At 3 everything comes half again as often and a
-  quarter more raiders come each time.
+  quarter more raiders come each time, from a raiders' camp too: on hard every camp's band is a quarter bigger.
 - **Peaceful difficulty**: nothing comes, whatever the threat level says.
 - **At peace** (the Defense page, top right, a white tulip when on): the hall's owner sets the village at peace and
   no raids, raiders' camps or disasters come there. A camp already standing leaves at the next dawn ("The raiders of the
@@ -43,7 +43,10 @@ Roadmap items: 32.21, B134
   A raid already under way when the village turns quiet runs its course.
 - **The threat level multiplies the chances** (`Threats.often`): 0, ×0.5, ×1, ×1.5, on top of each system's own
   factors (Curfew, research, a lair near). Hard multiplies the raid's size by 1.25, rounded up, after the usual cap of 16
-  (so up to 20), then a lair's band caps it as before.
+  (so up to 20), then a lair's band at home caps it as before. So that a lair's raid is a quarter bigger too, on hard
+  every lair culture's band is: a lair makes camp with its culture's `strength` times 1.25, rounded up, and grows to
+  its `max` times 1.25 (`Lairs.most`; the Defense page's "up to" says so). A lair keeps the strength it has when the
+  level changes and grows to the new most from the next dawn (B383).
 - **Gentle (1)** leaves the tactics `ram_gates`, `ladders`, `sand_ramps` and `hex` out of every culture
   (`Threats.GENTLE_SKIPS`), so no siege is laid (`Sieges.lays` is false and raiders gather where plain raiders do), and a
   plague never rolls (one under way ends). The piglins still plunder.
@@ -94,6 +97,8 @@ Roadmap items: 32.21, B134
 - `threatLevel` isn't behind the expansion gate: it changes today's raids and camps too. The At peace slot is on the
   Defense page, which opens with Milestone 32 (32.21, lane b).
 - A lair leaving in peace isn't "broken up": no rest days, no rewards, no bounty (32.21, lane b).
+- Hard grows the lair's band, not the raid's cap: a raid of the band at home stays the rule, and the extra raiders are
+  real ones at the lair, who can die and whose losses count (B383, lane a).
 
 ## Known limits
 
@@ -107,6 +112,8 @@ Roadmap items: 32.21, B134
 - `ThreatLevelGameTests`: `ThreatLevelGameTests.theThreatLevelIsTwoUnlessTheFileSays`,
   `ThreatLevelGameTests.atThreatLevelZeroNothingStarts`, `ThreatLevelGameTests.atThreatLevelOneThereIsNoSiegeHexOrPlague`,
   `ThreatLevelGameTests.atThreatLevelTwoEverythingIsAsBefore`, `ThreatLevelGameTests.atThreatLevelThreeMoreComeMoreOften`,
+  `ThreatLevelGameTests.atThreatLevelThreeEveryLairIsAQuarterBigger` (every lair culture at levels 1 to 3, the growth
+  cap, a warband's raid),
   `ThreatLevelGameTests.onPeacefulNothingComes`, `ThreatLevelGameTests.villageRaidsOffMeansNoMonsters`,
   `ThreatLevelGameTests.banditCampsOffMeansNoBandits`, `ThreatLevelGameTests.aCultureSwitchedOffNeverComes`,
   `ThreatLevelGameTests.siegesOffMeansNoSiege`, `ThreatLevelGameTests.siegeDamageOffMeansGatesHold`,

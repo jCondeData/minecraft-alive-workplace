@@ -11,7 +11,8 @@ Roadmap items: 32.15, 32.19
 ## What a player sees
 
 - **The news.** When a disaster comes, players in the village and the hall's owner (wherever they are) read
-  "Drought has come to Oakvale." If the village has someone who foretells it (a job the disaster names, or a guard or
+  "Drought has come to Oakvale." (the engine's own lines, for a datapack's disaster without its own; the drought,
+  the plague and the village fire have their own, on their pages). If the village has someone who foretells it (a job the disaster names, or a guard or
   scout by a lookout tower: the day's-warning sources of 32.14), they read it a day ahead instead: "Ana foretells it:
   Drought will come to Oakvale. Days until it strikes: 1." When it ends: "Drought is over in Oakvale."
 - **The hall.** The wellbeing icon has a red first line ("Drought (days left: 2)", "Drought, until it rains" or
@@ -46,7 +47,8 @@ Roadmap items: 32.15, 32.19
   `crowded` (more villagers than beds) and `lair_standing` (a culture's lair near the village).
 - **The roll.** The hall's round rolls once a day: each disaster switched on whose conditions hold, by its chance
   (after `factors`; a factor's `chance` replaces the base, `times` multiplies it). **One disaster at a time per
-  village, and 7 days' rest after one.**
+  village, and 7 days' rest after one.** A disaster that ended on day 10 lets the next start on day 17 at the
+  earliest; one only foretold counts as under way.
 - **Foretold.** If a villager of a `foretold_by` job lives in the village, or `seer` is listed and the village has a
   32.14 source of warning, it begins `foretell_days` later (default 1).
 - **The end.** After its days (`min_days` to `max_days`, picked when it starts) or, with `ends_with_rain`, as soon as
@@ -108,6 +110,15 @@ villagers are unhappy, a fire starts, farmers work at half pace, it ends after i
 starts in the days of rest), it survives a save and load of the hall (and an old hall loads with none), a librarian
 foretells it a day ahead, switched off it never starts, and every new sentence has its text. The engine has no scene of its own; the three
 disasters' pages list theirs.
+
+`QaDisastersGameTests` (QA, 2026-10-24): with a drought under way or only foretold no other disaster starts (the test
+blight's chance is 1), and after one ends none starts on the 6th day and one does on the 7th
+(`QaDisastersGameTests.oneAtATimeAndSevenDaysRestFromBothSides`); a drought in a hall saved and read back after a
+restart (memory forgotten) comes back with one hall round, its days unchanged, and a foretold one stays foretold
+(`QaDisastersGameTests.aDroughtComesBackAfterARestart`); config `disasters` with `drought` false, applied, ends one
+under way at the next round and leaves the plague on (`QaDisastersGameTests.theConfigSwitchEndsADroughtUnderWay`);
+threat level 0 gives no chance and ends one under way, threat level 1 halves the chance, starts no plague and ends one
+under way (`QaDisastersGameTests.theThreatLevelQuietsDisasters`).
 
 `AnsweringHousesGameTests` (32.19): the three houses are in the Blueprint Table, named and on the Village Map; each
 has its job's block once and no other job block, and what the item asks (the basin, the pails on racks, the loft and

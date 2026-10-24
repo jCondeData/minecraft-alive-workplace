@@ -3437,7 +3437,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   - the siege report names the hero; Ramparts doubles a gate's hit points;
   - after a siege with a broken gate, a builder with materials puts the gate back before mending a house nearby;
   - scene `battle_stations`: a GIF of archers on a Gatehouse and a Wall Tower shooting down at a siege.
-- [x] **32.7** (approved 2026-10-11) **Pillager warbands.** `pillager_warband.json`: plains, meadows, forests (birch, dark, flower, cherry),
+- [x] **32.7** (approved 2026-10-11) (verified 2026-10-24: lane D QA on main 82db26a: QaRaiderCulturesGameTests [warband lands listed vs 7 unlisted; bandits at Village, warband ~3 in 4 from Town and at City; strength 10 +2 a day to 18, once a dawn, kept through a save; roster shares and gear; every line in the lang file]; mutation and repeats on the nightly) **Pillager warbands.** `pillager_warband.json`: plains, meadows, forests (birch, dark, flower, cherry),
   taiga and the snowy lands, savanna; Town and up; tactics `ram_gates` and `ladders`. Its lair is the **War Camp**
   (`camp/war_camp`, about 23 x 9 x 19, drawn with the minecraft-architect skill in `tools/blueprints/bandits.py`: a
   ring of sharpened logs with a gate, three canvas tents, the Warlord's tent with the loot chest, a ravager pen, a

@@ -3509,7 +3509,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     least 10 blocks from a finished wall; the Coven Mother blinks after three hits;
   - the hut passes `check.py` and its render is in the package;
   - scene `coven`: the hut in the swamp at night, then witches throwing potions over a palisade (GIF).
-- [x] **32.12** (approved 2026-10-11) (verified 2026-10-24: lane D QA on main 76e8228: QaScoutGameTests [3: bandit goes for a scout 8 and 5 blocks off, a desert lair's husk leaves one 10 off alone; Scouts mutants 2/2 killed]; QaWarningGameTests [3: post 24 blocks from a Lookout Tower watches, 25 doesn't; upgraded tower counts; village player and far owner told once in gold, far stranger not; Warnings mutants 4/5]; QaPortalThreatsGameTests + QaPortalThreatBugTests [4: lair captain, bandit camp, mounted raider and fort men stay out of a lit portal, plain mobs go through; B375 found and fixed]; full build 2835/2835 + compat 504/504) **Scouts.** A new guard kind: sneak-right-click a guard with a **spyglass** and they become a
+- [x] **32.12** (approved 2026-10-11) **Scouts.** A new guard kind: sneak-right-click a guard with a **spyglass** and they become a
   **Scout** (held in the off hand like the other kinds' items; you get back what they held; "Scout" over their head).
   From the Defence page, "Scout the lair" sends one out by day: they walk (or ride, `Cavalry`) to within 24 blocks of
   the lair, raise the spyglass (its sound) and come home; the band ignores a scout more than 8 blocks off. Back home,

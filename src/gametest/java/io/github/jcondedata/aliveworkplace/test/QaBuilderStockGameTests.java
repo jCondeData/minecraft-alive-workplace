@@ -230,6 +230,94 @@ public class QaBuilderStockGameTests implements net.fabricmc.fabric.api.gametest
 		helper.succeed();
 	}
 
+	/**
+	 * 37.17: a Terminal Nook (here as built, its plain-vanilla blocks placed from its template) "is a Storehouse: porters and
+	 * builders use it". The village's builder at a table 30 blocks off, with only planks by him, counts the cobblestone and
+	 * door kept in the Nook's chests and builds the hut from them.
+	 */
+	//$ gametest_ticks_batch HUGE '3000' '"qaStockNook"'
+	@GameTest(template = HUGE, timeoutTicks = 3000, batch = "qaStockNook")
+	public void aBuiltTerminalNookFeedsTheVillagesBuilder(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.players(helper);
+		Leftovers.halls(helper);
+		Leftovers.storehouses(helper);
+		Leftovers.village(helper, 48);
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(false, level.getServer());
+		io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.Entry nook = io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.TERMINAL_NOOK;
+		net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate template = level.getStructureManager().get(nook.id()).orElseThrow();
+		BlockPos origin = helper.absolutePos(new BlockPos(18, 2, 18));
+		template.placeInWorld(level, origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1024L), 2);
+		BlockPos board = origin.offset(2, 1, 4);
+		helper.assertTrue(level.getBlockState(board).is(ModBlocks.STOREHOUSE), "no Storehouse in the placed Terminal Nook: " + level.getBlockState(board));
+		ensurePoi(level, board);
+		List<BlockPos> stores = io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(level, board, null);
+		helper.assertTrue(stores.size() >= 2, "the Terminal Nook's Storehouse has " + stores.size() + " chests");
+		for (BlockPos chest : stores) {
+			((Container) level.getBlockEntity(chest)).clearContent();
+		}
+		Container first = (Container) level.getBlockEntity(stores.get(0));
+		first.setItem(0, new ItemStack(Items.COBBLESTONE, 25));
+		first.setItem(1, new ItemStack(Items.OAK_DOOR, 1));
+		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
+		ensurePoi(level, helper.absolutePos(TABLE));
+		helper.setBlock(TABLE_CHEST, Blocks.CHEST);
+		fill(helper.getBlockEntity(TABLE_CHEST), new ItemStack(Items.OAK_PLANKS, 55), new ItemStack(Items.TORCH));
+		Villager villager = helper.spawn(EntityType.VILLAGER, TABLE.east());
+		Builders.employ(level, villager, helper.absolutePos(TABLE));
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(HUT), Rotation.NONE, Mirror.NONE);
+		BuildSite site = Builders.start(level, villager, null, TEST_HUT, placement);
+		BuildPlan plan = site.plan(level);
+		helper.assertTrue(plan != null, "blueprint not found: " + TEST_HUT);
+		Builder b = new Builder(villager, site, plan);
+		Village.forget(villager);
+		Component status = Builders.statusText(level, site, villager);
+		helper.assertTrue(site.missing().isEmpty(), "the Terminal Nook 30 blocks off wasn't counted: needs " + site.missing() + "; " + status.getString());
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, level, b);
+			helper.assertTrue(first.countItem(Items.COBBLESTONE) == 0, "the Nook's chest still holds " + first.countItem(Items.COBBLESTONE) + " cobblestone");
+		});
+	}
+
+	/**
+	 * Waiting on an emptied Storehouse, the builder is saved and loaded (his chunk unloaded, a restart). Once the
+	 * cobblestone is back he still finishes the hut from it, his build kept.
+	 */
+	//$ gametest_ticks_batch HUGE '4000' '"qaStockReload"'
+	@GameTest(template = HUGE, timeoutTicks = 4000, batch = "qaStockReload")
+	public void aBuilderWaitingOnTheStorehouseFinishesAfterAReload(GameTestHelper helper) {
+		ServerLevel level = setup(helper, STOREHOUSE, 0, 1);
+		fill(helper.getBlockEntity(TABLE_CHEST), new ItemStack(Items.OAK_PLANKS, 55), new ItemStack(Items.TORCH));
+		Builder first = builder(helper, HUT);
+		Builder[] b = {first};
+		helper.runAtTickTime(600, () -> {
+			helper.assertTrue(BuildSiteManager.get(level).get(first.site().id()) != null, "the hut was finished with no cobblestone anywhere");
+			net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+			first.villager().saveWithoutId(tag);
+			first.villager().discard();
+			Villager copy = EntityType.VILLAGER.create(level);
+			if (copy == null) {
+				throw new GameTestAssertException("no villager made");
+			}
+			copy.load(tag);
+			level.addFreshEntity(copy);
+			Village.forget(copy);
+			BuildSite site = BuildSiteManager.get(level).get(first.site().id());
+			helper.assertTrue(site != null, "the build was lost when its builder was saved and loaded");
+			b[0] = new Builder(copy, site, first.plan());
+			fill(helper.getBlockEntity(STORE_CHESTS[0]), new ItemStack(Items.COBBLESTONE, 25));
+		});
+		helper.runAtTickTime(601, () -> helper.succeedWhen(() -> {
+			assertBuilt(helper, level, b[0]);
+			helper.assertTrue(left(helper, Items.COBBLESTONE) == 0, "the Storehouse still holds " + left(helper, Items.COBBLESTONE) + " cobblestone");
+		}));
+	}
+
 	// --- helpers -----------------------------------------------------------------------------------------------------
 
 	static Object arg(Object a) {

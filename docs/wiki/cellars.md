@@ -90,8 +90,8 @@ Blueprints `aliveworkplace:inn_3`, `winery_3`, `farmstead_3`, `guildhall_3`, `ba
 - A builder sells one "Dig the cellar" per building; once bought out (2 uses) it comes back only when they restock.
 - A cellar dug by hand in another shape counts by its open spots only; the dig fills what the drawing wants solid.
 - A "Dig the cellar" trade a builder already sells stays on sale once the cellar is dug (by hand, or by them with
-  the trade's second use left): opening their trades adds no new one but doesn't take the old one off (QA 2026-10-24,
-  `QaRepairCellarBugTests`). Bought then, its blueprint is no longer a cellar dig.
+  the trade's second use left): opening their trades adds no new one but doesn't take the old one off (B386, QA 2026-10-24; its test is on
+  the `tests/qa-cellar-trade-1024` branch). Bought then, its blueprint is no longer a cellar dig.
 
 ## 8. Proof
 

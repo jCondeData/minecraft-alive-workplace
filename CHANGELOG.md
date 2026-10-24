@@ -25,6 +25,10 @@ asks for the steps, `latest.log` and any crash report).
 - A modified client asking for previews of endless made-up blueprints no longer makes the server remember each one
   until the player leaves (B340). Only real blueprints are remembered, and only for the five seconds a repeated request
   is ignored; previews work as before.
+- A Guild Charter or an Evergreen Charm held in the off hand, with the main hand empty, now works when
+  sneak-right-clicked on a Master (B341), as from the main hand; before, the click only showed the builder's status
+  line (or another villager's own page) and the charter was kept. The same goes for Builder's Tea and the other tonics,
+  the Physician's Remedy, a Gift and a request's letter or heirloom on a plain right-click, which only opened the trades.
 
 ## 0.148.1 — 2026-10-23
 

@@ -12,6 +12,22 @@ import net.minecraft.world.item.ItemStack;
 
 /** Player ↔ builder interactions and lifecycle hooks. */
 public final class BuilderEvents {
+	/**
+	 * Whether a villager takes what {@code player} holds in the off hand when the main hand is empty (B341): the charter
+	 * and the charm on a sneak-right-click, a tonic on a plain one, a Gift, a Remedy, a letter or an heirloom on either.
+	 */
+	private static boolean takenFromTheOffHand(net.minecraft.world.entity.player.Player player) {
+		ItemStack stack = player.getOffhandItem();
+		if (stack.is(ModItems.GUILD_CHARTER) || stack.is(ModItems.EVERGREEN_CHARM)) {
+			return player.isShiftKeyDown();
+		}
+		if (stack.getItem() instanceof io.github.jcondedata.aliveworkplace.people.TonicItem) {
+			return !player.isShiftKeyDown();
+		}
+		return stack.is(ModItems.GIFT) || io.github.jcondedata.aliveworkplace.people.RemedyItem.isRemedy(stack)
+			|| io.github.jcondedata.aliveworkplace.story.RequestErrands.isCarried(stack);
+	}
+
 	public static void init() {
 		// Right-click a builder with a blueprint: hand it over; with a Book and Quill: the material list (B279).
 		// Sneak-right-click with an empty hand: status and the whole list.
@@ -30,6 +46,12 @@ public final class BuilderEvents {
 					io.github.jcondedata.aliveworkplace.legend.LegendGuests.openTerms((ServerPlayer) player, villager);
 				}
 				return InteractionResult.SUCCESS;
+			}
+			// B341: with the main hand empty, a villager item in the off hand is given on the main hand's turn (Guilds,
+			// LifeStages, Tonics, Gifts, RemedyItem, RequestErrands), so an empty-hand page here (the builder's status line,
+			// a scholar's research, a nurse's treatment, ...) mustn't take the click.
+			if (player.getMainHandItem().isEmpty() && takenFromTheOffHand(player)) {
+				return InteractionResult.PASS;
 			}
 			// Sneak-right-click with a City Plan: the villager becomes the Steward of its hall, if he stands by it (ROADMAP 27.5).
 			if (player.isShiftKeyDown() && player.getItemInHand(hand).is(ModItems.CITY_PLAN)) {

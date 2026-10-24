@@ -302,7 +302,9 @@ public final class LifeStages {
 		if (hand != InteractionHand.MAIN_HAND || !player.isShiftKeyDown() || player.isSpectator() || !(entity instanceof Villager villager)) {
 			return InteractionResult.PASS;
 		}
-		ItemStack held = player.getItemInHand(hand);
+		// B341: vanilla asks the main hand first and, when it's empty, opens the villager's trades, so the off hand's
+		// charm was never asked; with the main hand empty, it is given here as from the main hand.
+		ItemStack held = player.getMainHandItem().isEmpty() ? player.getOffhandItem() : player.getItemInHand(hand);
 		if (!held.is(ModItems.EVERGREEN_CHARM)) {
 			return InteractionResult.PASS;
 		}

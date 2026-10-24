@@ -485,4 +485,41 @@ public class PersonalErrandGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * B341's twin: the heirloom in the off hand (main hand empty), right-clicked on its giver, is handed back on the main
+	 * hand's turn (where vanilla would open the trades) and the request is done.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"requestHeirloomOffHand"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "requestHeirloomOffHand")
+	public void theHeirloomFromTheOffHand(GameTestHelper helper) {
+		PersonalRequestGameTests.village(helper, () -> {
+			ServerLevel level = helper.getLevel();
+			Villager dara = PersonalRequestGameTests.worker(helper, new BlockPos(5, 2, 4), "Dara", "minecraft:farmer", 2);
+			ServerPlayer me = PersonalRequestGameTests.friend(helper, new BlockPos(5, 2, 6), dara, 300);
+			BlockPos chestRel = new BlockPos(14, 2, 14);
+			helper.setBlock(chestRel, Blocks.CHEST);
+			Quest quest = acceptedFile(helper, heirloomAt(helper, chestRel, ""), dara, me);
+			moveTo(me, helper.absolutePos(chestRel).offset(30, 0, 0));
+			helper.assertTrue(RequestErrands.placeHeirlooms(level) == 1, "not put in the chest: " + quest.placed);
+			ChestBlockEntity chest = (ChestBlockEntity) level.getBlockEntity(helper.absolutePos(chestRel));
+			ItemStack found = ItemStack.EMPTY;
+			for (int i = 0; i < chest.getContainerSize(); i++) {
+				if (!chest.getItem(i).isEmpty()) {
+					found = chest.getItem(i);
+					chest.setItem(i, ItemStack.EMPTY);
+				}
+			}
+			helper.assertTrue(RequestErrands.isCarried(found), "the heirloom: " + found);
+			moveTo(me, helper.absolutePos(new BlockPos(5, 2, 6)));
+			me.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+			me.setItemInHand(InteractionHand.OFF_HAND, found);
+			net.minecraft.world.InteractionResult result = net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.invoker()
+				.interact(me, level, InteractionHand.MAIN_HAND, dara, null);
+			helper.assertTrue(result.consumesAction(), "the main hand's turn passed: " + result);
+			helper.assertTrue(PersonalRequests.of(dara) == null && me.getOffhandItem().isEmpty() && me.getInventory().countItem(Items.EMERALD) == 8,
+				"the heirloom from the off hand: " + quest + ", off hand " + me.getOffhandItem());
+			helper.succeed();
+		});
+	}
 }

@@ -672,6 +672,117 @@ public class QaStageSixGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		});
 	}
 
+	/**
+	 * QA stage 6 (B341): the charter from the off hand (main hand empty), sneak-clicked on a Master in survival, charters her
+	 * and is used up, as from the main hand; the builder's status line doesn't take the click.
+	 */
+	//$ gametest_ticks_batch BIG '100' '"qa6GuildOffHand"'
+	@GameTest(template = BIG, timeoutTicks = 100, batch = "qa6GuildOffHand")
+	public void guildCharterFromTheOffHand(GameTestHelper helper) {
+		VillageHallBlockEntity hall = guildVillage(helper);
+		Villager dara = guildVillager(helper, new BlockPos(8, 2, 6), "Dara", ModVillagers.BUILDER, 5);
+		helper.runAfterDelay(5, () -> {
+			ready(hall, VillageRanks.Rank.VILLAGE);
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6go"));
+			ServerPlayer p = c.player();
+			p.setShiftKeyDown(true);
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(ModItems.GUILD_CHARTER, 2));
+			clickVillager(p, dara, c.seen());
+			helper.assertTrue(ModAttachments.GUILD_MASTER.get(dara) != null, "off hand: Dara isn't chartered, saw " + QaStageFourGameTests.keys(c.seen()));
+			helper.assertTrue(p.getOffhandItem().getCount() == 1, "off hand: charters left " + p.getOffhandItem());
+			helper.assertTrue(p.containerMenu == p.inventoryMenu, "off hand: a trade screen opened");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B341's twin: the Evergreen Charm from the off hand (main hand empty), sneak-clicked on an elder Master builder in
+	 * survival, makes him ageless and is used up, as from the main hand; the builder's status line doesn't take the click.
+	 */
+	//$ gametest_ticks_batch BIG '100' '"qa6CharmOffHand"'
+	@GameTest(template = BIG, timeoutTicks = 100, batch = "qa6CharmOffHand")
+	public void evergreenCharmFromTheOffHand(GameTestHelper helper) {
+		VillageHallBlockEntity hall = guildVillage(helper);
+		Villager bram = guildVillager(helper, new BlockPos(8, 2, 6), "Bram", ModVillagers.BUILDER, 5);
+		helper.runAfterDelay(5, () -> {
+			ready(hall, VillageRanks.Rank.VILLAGE);
+			io.github.jcondedata.aliveworkplace.people.LifeStages.setAdultSince(bram,
+				io.github.jcondedata.aliveworkplace.hall.Chronicle.day(helper.getLevel()) - 1300);
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6co"));
+			ServerPlayer p = c.player();
+			p.setShiftKeyDown(true);
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(ModItems.EVERGREEN_CHARM, 2));
+			clickVillager(p, bram, c.seen());
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.people.LifeStages.isAgeless(bram),
+				"off hand: Bram isn't ageless, saw " + QaStageFourGameTests.keys(c.seen()));
+			helper.assertTrue(p.getOffhandItem().getCount() == 1, "off hand: charms left " + p.getOffhandItem());
+			helper.assertTrue(p.containerMenu == p.inventoryMenu, "off hand: a trade screen opened");
+			helper.succeed();
+		});
+	}
+
+	/** B341's twin: Builder's Tea from the off hand (main hand empty), right-clicked on a builder, is drunk and used up; no trade screen. */
+	//$ gametest_ticks_batch BIG '100' '"qa6TonicOffHand"'
+	@GameTest(template = BIG, timeoutTicks = 100, batch = "qa6TonicOffHand")
+	public void tonicFromTheOffHand(GameTestHelper helper) {
+		VillageHallBlockEntity hall = guildVillage(helper);
+		Villager dara = guildVillager(helper, new BlockPos(8, 2, 6), "Dara", ModVillagers.BUILDER, 2);
+		helper.runAfterDelay(5, () -> {
+			ready(hall, VillageRanks.Rank.VILLAGE);
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6to"));
+			ServerPlayer p = c.player();
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(ModItems.BUILDERS_TEA, 2));
+			clickVillager(p, dara, c.seen());
+			helper.assertTrue(ModAttachments.TONIC.has(dara), "off hand: Dara didn't drink the tea, saw " + QaStageFourGameTests.keys(c.seen()));
+			helper.assertTrue(p.getOffhandItem().getCount() == 1, "off hand: tea left " + p.getOffhandItem());
+			helper.assertTrue(p.containerMenu == p.inventoryMenu, "off hand: a trade screen opened");
+			helper.succeed();
+		});
+	}
+
+	/** B341's twin: a Remedy from the off hand (main hand empty), right-clicked on a villager, keeps them well and is used up, the bottle back; no trade screen. */
+	//$ gametest_ticks_batch BIG '100' '"qa6RemedyOffHand"'
+	@GameTest(template = BIG, timeoutTicks = 100, batch = "qa6RemedyOffHand")
+	public void remedyFromTheOffHand(GameTestHelper helper) {
+		VillageHallBlockEntity hall = guildVillage(helper);
+		Villager dara = guildVillager(helper, new BlockPos(8, 2, 6), "Dara", ModVillagers.BUILDER, 2);
+		helper.runAfterDelay(5, () -> {
+			ready(hall, VillageRanks.Rank.VILLAGE);
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6ro"));
+			ServerPlayer p = c.player();
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(ModItems.REMEDY, 2));
+			clickVillager(p, dara, c.seen());
+			helper.assertTrue(QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.remedy.kept_well") != null,
+				"off hand: the Remedy wasn't given, saw " + QaStageFourGameTests.keys(c.seen()));
+			helper.assertTrue(p.getOffhandItem().getCount() == 1, "off hand: remedies left " + p.getOffhandItem());
+			helper.assertTrue(p.getInventory().countItem(net.minecraft.world.item.Items.GLASS_BOTTLE) == 1, "off hand: no bottle back");
+			helper.assertTrue(p.containerMenu == p.inventoryMenu, "off hand: a trade screen opened");
+			helper.succeed();
+		});
+	}
+
+	/** B341's twin: a Gift from the off hand (main hand empty), right-clicked on a named villager of the village, is given; no trade screen. */
+	//$ gametest_ticks_batch BIG '100' '"qa6GiftOffHand"'
+	@GameTest(template = BIG, timeoutTicks = 100, batch = "qa6GiftOffHand")
+	public void giftFromTheOffHand(GameTestHelper helper) {
+		VillageHallBlockEntity hall = guildVillage(helper);
+		Villager dara = guildVillager(helper, new BlockPos(8, 2, 6), "Dara", ModVillagers.BUILDER, 2);
+		helper.runAfterDelay(5, () -> {
+			ready(hall, VillageRanks.Rank.VILLAGE);
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6gf"));
+			ServerPlayer p = c.player();
+			p.setItemInHand(InteractionHand.OFF_HAND, io.github.jcondedata.aliveworkplace.story.Gifts.wrap(
+				new ItemStack(net.minecraft.world.item.Items.BREAD), p.getGameProfile().getName()));
+			clickVillager(p, dara, c.seen());
+			helper.assertTrue(p.getOffhandItem().isEmpty(), "off hand: the Gift wasn't given, still " + p.getOffhandItem()
+				+ ", saw " + QaStageFourGameTests.keys(c.seen()));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.story.Friendship.of(dara).bond(p.getUUID()).giftDay() >= 0,
+				"off hand: no gift on record");
+			helper.assertTrue(p.containerMenu == p.inventoryMenu, "off hand: a trade screen opened");
+			helper.succeed();
+		});
+	}
+
 	// --- The Gray Cough's healer -------------------------------------------------------------------------------------
 
 	private static final BlockPos SICK_HALL = new BlockPos(15, 2, 15);

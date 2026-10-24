@@ -152,6 +152,9 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - `B208GameTests`: with the world refusing hostile mobs as MobsBeGone does, a camp's chief and band of 6 and a night
   attack's raiders are in the world, persistent, and still there 100 ticks later; with `forceThreatSpawns` off no camp is
   made or broken up, no raid begins, and the log says why; on Peaceful nothing spawns and a player near is told once.
+- `QaRefusedThreatsGameTests`: with the world refusing every hostile mob, `/workplace threat start` brings each of the
+  seven cultures' raiders into the world, persistent, and ending the raid takes them away; a war camp, tomb camp, Blackstone
+  Outpost and Coven Hut each have their captain and band in the world, still there 100 ticks on and not broken up.
 - `B211GameTests`: with the world refusing iron golems, wolves, horses and llamas, the Golem Smith's golem, the Iron
   Pact's golem, a relief rider's horse (with its rider on it), a Beastmaster foal and wolf pup and a caravan llama are in
   the world and still there 100 ticks later; with `forceVillageSpawns` off they are left out and the log says why.

@@ -117,6 +117,11 @@ public final class BuilderEvents {
 	 */
 	private static InteractionResult answer(net.minecraft.world.entity.player.Player player, net.minecraft.world.level.Level level,
 			Villager villager, ItemStack held, InteractionHand hand) {
+		// B354: a personal request's letter, reply or heirloom is paper, a compass, a clock...: never a job pick or a hiring
+		// item. It's left to RequestErrands (the right villager takes it) and vanilla, sneaking or not.
+		if (io.github.jcondedata.aliveworkplace.story.RequestErrands.isCarried(held)) {
+			return InteractionResult.PASS;
+		}
 		// Sneak-right-click with a City Plan: the villager becomes the Steward of its hall, if he stands by it (ROADMAP 27.5).
 		if (player.isShiftKeyDown() && held.is(ModItems.CITY_PLAN)) {
 			return level.isClientSide() ? InteractionResult.SUCCESS

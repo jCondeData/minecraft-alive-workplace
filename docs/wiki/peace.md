@@ -110,4 +110,7 @@ Roadmap items: 32.21, B134
   `ThreatLevelGameTests.atPeaceNoRaidComes`, `ThreatLevelGameTests.atPeaceIsSavedWithTheHall`,
   `ThreatLevelGameTests.theCommandStartsAndEndsEachRaidAndDisaster`, `ThreatLevelGameTests.theCommandClearsTheVillage`,
   `ThreatLevelGameTests.everyNewSentenceHasWords`.
+- `QaQuietLairGameTests.aLairStandingWhenTheThreatLevelGoesToZeroLeavesByTheNextDawn`: a bandit camp standing when the
+  threat level goes to 0 has packed up and left in peace by the next dawn (not counted as broken up), and no lair comes
+  on the four days after.
 - Showcase scenes: `at_peace`.

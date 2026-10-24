@@ -202,6 +202,11 @@ public final class OldSage {
 			return InteractionResult.SUCCESS;
 		}
 		ItemStack held = player.getItemInHand(hand);
+		// With the main hand empty, the answer kept in the off hand is handed over (vanilla asks the main hand first); an
+		// off-hand item that isn't the answer (a torch, a shield) leaves it an empty-handed click: the riddle again.
+		if (held.isEmpty() && hand == InteractionHand.MAIN_HAND && riddle.answer().test(player.getOffhandItem())) {
+			held = player.getOffhandItem();
+		}
 		if (held.isEmpty()) {
 			ask(player, sage, riddles);
 			return InteractionResult.SUCCESS;

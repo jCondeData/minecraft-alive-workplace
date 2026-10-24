@@ -29,6 +29,8 @@
 		"IronPactMixin",
 		"IronWillMixin",
 		"LightningFireMixin",
+		"MerchantContainerMixin",
+		"MerchantResultSlotMixin",
 		"MobAccessor",
 		"PathNavigationMixin",
 		"PlayerListMixin",

@@ -297,7 +297,56 @@ B333's lesson (a Delivery Note on a chest opened the chest; the tests had set th
   remembered every id a client asked for until it left, so a modified client sending endless made-up ids grew the
   server's memory; it now remembers only real blueprints, for the 100-tick repeat window.
 
+### QA stage 6: the board, friends, uploads and villager clicks (lane-a-1024-0023, 2026-10-24)
+- **`QaStageSixGameTests` (11)**, on stage 5's client (a real connection whose packets are read back), each player
+  with a name of their own. Screens are clicked with the real `ServerboundContainerClickPacket`, villagers with the
+  real interact packets (at a point, then plain, main hand then off hand, as the client sends them), commands typed by
+  a survival player who isn't an operator. Expectations from README, docs/wiki and en_us.json:
+  - **The Storehouse requests board** (README: "clicking one hands over what you have straight into that worker's
+    chests"), with a builder waiting for 25 cobblestone. A left click hands 25 of the player's 40 into his chest
+    ("Gave 25 Cobblestone"; the lore said "Click to give 25 of yours") and the board stays open. The info book isn't a
+    button. With none: "You have none", and the click says "You have no Cobblestone to give". Right-click, shift-click,
+    number keys (and F), Q, Ctrl-Q, middle-click and double-click, in survival and creative, never put an icon on the
+    cursor, in the bag or on the ground. A right-click and a shift-click with some hand them over. With his chest full
+    nothing moves, and the player is told. Twenty blocks away the board is no longer usable. The Stock orders page:
+    the bread in hand is ordered, a click on the order keeps more, the back arrow shows "Stock orders (1)", and the
+    bread stays in the hand.
+  - **`/workplace friend add` and `remove`**. The GameTest server has no profile cache, so the test gives it one for
+    the test (the server's `services` swapped by reflection, put back after; a lookup of an unknown name fails, as on
+    an online server). Before: the other player is refused at the owner's Mailbox. `add` says "... can now give orders
+    to your builders and cancel your builds." with the name, and the friend opens the Mailbox; adding again says
+    "already"; adding yourself says "Your builders already work for you."; `list` names the friend. `remove` says
+    "... can no longer give orders", the friend is refused again ("not yours"), removing again says "is not on your
+    list", and `list` says nobody. A player who is offline but in the cache can be added by name, and the saved list
+    names them.
+  - **A real upload**, in the client's pieces, from a survival player who isn't an operator, with uploads allowed (the
+    default). The table's library offers the upload. The answer is a success with the new blueprint's id. The library
+    is sent back with it in, and a second player takes a copy for a Blank Blueprint. With `workplaceAllowUploads`
+    false, the table doesn't offer the upload, the upload is refused ("Uploading is turned off") and nothing is made,
+    and an operator (level 4) still uploads.
+  - **A Guild Charter**, sneak-clicked in survival. On a Journeyman builder: "isn't one yet", the charter is kept and no
+    trade screen opens. On the Master builder: "Dara is now the Guild Master of the Builders' Guild in ...!", one charter
+    used, no trade screen. In creative the charter isn't used up.
+  - **The Gray Cough's healer**, clicked holding a sword, with the herbs in the bag: the first click gives the three
+    maps. Two herbs' worth are handed in and the brew waits; the third herb (5 carried, 3 taken) starts the brew. A
+    later click says "The tonic is brewing: N% done." and changes nothing. No second set of maps, and no trade screen.
+    (One click's two packets in one tick count once, on purpose, so the test clicks a few ticks apart.)
+- **Mutants**: 5 planted, all 5 killed at once: the board handing over one more than asked (`StorehouseBoard.give`);
+  `Friends.remove` keeping the friend; uploads allowed to operators only (`TableServer.canUpload`); the board ignoring
+  shift-clicks (`ChoiceMenu.clicked`); the healer counting herbs only in the main hand (`SicknessStory.handIn`).
+- **Flakes**: the 11 ran 5 times on their own: all passed every time, with no errors in the logs. The full build wasn't
+  run this stage. Stonecutter's refresh leaves the diff unchanged.
+- **One bug**, a failing test on branch `tests/qa-stage6` (`QaStageSixBugTests`):
+  - **B341**: a Guild Charter in the off hand (main hand empty), sneak-clicked on a Master, charters nobody. The
+    builder's status line shows instead and the charter is kept. From the main hand it works.
+- Noticed, not filed: right after a hand-over, the board can still ask for the full amount until the worker looks
+  again, so a second click can hand over more than is still missing. The extra goes into his chest and isn't lost.
+- **Not tested**: the Colony Charter and the Wonder goods at the Foundation Stone (both switched off); a friend giving
+  a builder orders (the Mailbox stood in for "what a friend may do"); a real upload over a real network (packets were
+  handed to the server directly, with no 32 KiB size limit on the wire); the Legend villager clicks (the elder's charm,
+  a Legend's own clicks) and the personal-request letters; a real client (no screenshots this stage).
+
 ## Still to do
-- B335, B336 and B337 (the bug lane), with the tests on `tests/qa-stage4-clicks`; B338 with `tests/qa-stage5-clicks`.
-- The clicks stages 4 and 5 left untested (above).
+- B341 (the bug lane), with the test on `tests/qa-stage6`.
+- The clicks stages 4 to 6 left untested (above): the Legend clicks and the personal-request letters first.
 - A timing test for `BuilderWork` 1252 if the landscaping shortcut ever matters to a player.

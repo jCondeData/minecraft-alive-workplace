@@ -5,11 +5,13 @@ import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.work.PrivateContainer;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
@@ -22,8 +24,15 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A shop's price list: nine columns, the top slot is what one sale hands over (item and amount), the
  * slot under it is what that costs. The goods themselves come from the chests near the counter.
+ *
+ * <p>B349: the price list is a {@link WorldlyContainer} that offers no slot on any side, so hoppers, droppers and
+ * other automation (vanilla's, and Fabric's item transfer, which honours the same sides) can neither pull the samples
+ * and prices out nor push new prices in. Only the counter's own screen, which only the owner, friends and operators
+ * open, changes it.
  */
-public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements PrivateContainer {
+public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements PrivateContainer, WorldlyContainer {
+	private static final int[] NO_SLOTS = new int[0];
+
 	public static final int COLUMNS = 9;
 
 	/** How many sales the log keeps. */
@@ -117,6 +126,21 @@ public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements 
 	@Override
 	public int getContainerSize() {
 		return COLUMNS * 2;
+	}
+
+	@Override
+	public int[] getSlotsForFace(Direction side) {
+		return NO_SLOTS;
+	}
+
+	@Override
+	public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
+		return false;
+	}
+
+	@Override
+	public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+		return false;
 	}
 
 	@Override

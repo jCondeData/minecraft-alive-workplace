@@ -51,10 +51,10 @@ switch or a mod):
 | Cartography Table | Cartographer, Netherworker, (Printer: `printers`) |
 | Brewing Stand | Cleric, Nurse, Undertaker, (Physician: `physicians`, disasters on) |
 | Smoker | Butcher, Chef, Rancher |
-| Stonecutter | Mason, (Gem Grower: `gemGrowers`), (Jeweller: `jewellers`) |
+| Stonecutter | Mason, (Gem Grower: `gemGrowers`), (Jeweler: `jewellers`) |
 | Grindstone | Weaponsmith, Guard, (Firewarden: `firewardens`, village fires on) |
 | Shop Counter | Shopkeeper, Innkeeper, (Pokémon Trader: Cobblemon) |
-| Training Post (Cobblemon) | Trainer, Tutor (the Trainer Leader only with a gold block) |
+| Training Post (Cobblemon) | Trainer, Move Tutor (the Trainer Leader only with a gold block) |
 | Pasture Block (Cobblemon) | Habitat Keeper, Daycare Keeper: never taken by itself, so only by item |
 
 Blocks with one job (a barrel, a Storehouse, a Travel Post, a Blueprint Table, a Mailbox...) are unchanged.

@@ -836,4 +836,52 @@ public class QaVillagerLifeJobsGameTests implements FabricGameTest {
 		helper.assertTrue(shared >= 13, "only " + shared + " shared blocks checked");
 		helper.succeed();
 	}
+
+	/**
+	 * "A list of every block that offers several jobs in the wiki page": docs/wiki/random-jobs.md has a row for every
+	 * block in the game with two or more jobs, naming each of its jobs as the game names them.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void qaTheWikiNamesEachJobOfEverySharedBlock(GameTestHelper helper) {
+		Path dir = Path.of(System.getProperty("user.dir")).toAbsolutePath();
+		Path page = null;
+		for (Path p = dir; p != null && page == null; p = p.getParent()) {
+			if (Files.isRegularFile(p.resolve("docs/wiki/random-jobs.md"))) {
+				page = p.resolve("docs/wiki/random-jobs.md");
+			}
+		}
+		helper.assertTrue(page != null, "no docs/wiki/random-jobs.md above " + dir);
+		List<String> rows;
+		try {
+			rows = Files.readAllLines(page).stream().filter(l -> l.startsWith("| ") && !l.startsWith("| Block") && !l.startsWith("|---")).toList();
+		} catch (java.io.IOException e) {
+			throw new net.minecraft.gametest.framework.GameTestAssertException("can't read " + page + ": " + e);
+		}
+		List<String> missing = new ArrayList<>();
+		int shared = 0;
+		for (Stations.Station station : Stations.ALL) {
+			if (station.jobs().size() < 2 || station.block() == Blocks.AIR) {
+				continue;
+			}
+			String block = station.block().getName().getString();
+			Optional<String> row = rows.stream().filter(r -> r.split("\\|")[1].trim().startsWith(block)).findFirst();
+			if (row.isEmpty()) {
+				missing.add(block + " (no row)");
+				continue;
+			}
+			shared++;
+			String jobsCell = row.get().split("\\|")[2];
+			for (Stations.Job j : station.jobs()) {
+				VillagerProfession p = j.profession().get();
+				String name = Component.translatable("entity.minecraft.villager." + net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getKey(p).getPath()).getString();
+				if (!jobsCell.contains(name)) {
+					missing.add(block + ": " + name);
+				}
+			}
+		}
+		helper.assertTrue(missing.isEmpty(), "the wiki's list of shared blocks misses " + missing);
+		helper.assertTrue(shared >= 13, "only " + shared + " shared blocks checked");
+		helper.succeed();
+	}
 }

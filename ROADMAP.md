@@ -4824,7 +4824,7 @@ as they land: no version of their own and no expansion flag, so each is live the
 `main` after 26.x (the Blueprint Table, the questbook, the decorations, the hall and Storehouse screens, basements).
 Depends on: nothing open.
 
-- [x] **36.1** (approved 2026-10-18) **The Table's preview shows basements.** Today `TableServer.buildPreview` does send a basement's cells
+- [x] **36.1** (approved 2026-10-18) (verified 2026-10-24: QaBlueprintTableGameTests [13]: stored counts to the last one, 200 cap both sides, full bag, stack stored one taken, broken table drops exactly, two tables over a reload, another player; search case/whitespace, level-only match, shared job blocks; every basement build's depth, floored cells at scales 1-3, below-ground size line. Mutants 15/16 killed [survivor equivalent]. Full build green on 214464af/ed36b1c3 lineage: 2975/2975 GameTests, 534/534 compat. Wiki/guide pages read, correct. Scenes not re-filmed.) **The Table's preview shows basements.** Today `TableServer.buildPreview` does send a basement's cells
   (`StarterBlueprints.withBasement` moves them below y = 0), but `TablePreview` sizes and centres the build by
   `blueprint.size()`, which is only the part above the ground, so the cellar hangs out of the bottom of the box; and
   the cell key's `y / scale` rounds towards zero, so at scale 2 or more the first cellar layer folds into the ground
@@ -4927,7 +4927,7 @@ Depends on: nothing open.
   GameTests: listing, assigning (the villager takes the job), a block claimed meanwhile, save and reload; scene
   `hall_jobs`.
   - [x] **36.9a** (approved 2026-10-19) Change from the owner (2026-10-19): top of the work list (urgent: owner): the hall's Free job blocks page must be filmed and passing so I can see it
-- [x] **36.10** (approved 2026-10-20) **Search the Blueprint Table** (owner, 2026-10-19). The library list has 150+ builds and no way to find one. Add a search box above
+- [x] **36.10** (approved 2026-10-20) (verified 2026-10-24: QaBlueprintTableGameTests [13]: stored counts to the last one, 200 cap both sides, full bag, stack stored one taken, broken table drops exactly, two tables over a reload, another player; search case/whitespace, level-only match, shared job blocks; every basement build's depth, floored cells at scales 1-3, below-ground size line. Mutants 15/16 killed [survivor equivalent]. Full build green on 214464af/ed36b1c3 lineage: 2975/2975 GameTests, 534/534 compat. Wiki/guide pages read, correct. Scenes not re-filmed.) **Search the Blueprint Table** (owner, 2026-10-19). The library list has 150+ builds and no way to find one. Add a search box above
   the list in the Blueprint Table: typing filters the library live by name, id and the jobs a build brings ("smith", "inn",
   "fisherman"), case-insensitive, with the style/level rows kept under their build; an empty box shows everything and an
   empty result says so. Done when: GameTests for the filter (name, id, job, no match, cleared box, selected build hidden by
@@ -4946,7 +4946,7 @@ Depends on: nothing open.
   Jobs line; GameTests: the Miner mines from it, mined blocks come back over time (a fixed random, a config for how fast,
   the full pit refills only after days), nothing outside the pit is touched, a block a player placed in the pit isn't
   replaced, save and reload, the switch off; scene `quarry_build`; the existing Quarry Marker still works for free areas.
-- [x] **36.13** (approved 2026-10-20) **The Blueprint Table is a library** (owner, 2026-10-19). Once a build is unlocked and a blueprint for it bought, the Table keeps it:
+- [x] **36.13** (approved 2026-10-20) (verified 2026-10-24: QaBlueprintTableGameTests [13]: stored counts to the last one, 200 cap both sides, full bag, stack stored one taken, broken table drops exactly, two tables over a reload, another player; search case/whitespace, level-only match, shared job blocks; every basement build's depth, floored cells at scales 1-3, below-ground size line. Mutants 15/16 killed [survivor equivalent]. Full build green on 214464af/ed36b1c3 lineage: 2975/2975 GameTests, 534/534 compat. Wiki/guide pages read, correct. Scenes not re-filmed.) **The Blueprint Table is a library** (owner, 2026-10-19). Once a build is unlocked and a blueprint for it bought, the Table keeps it:
   the player stores bought blueprints in the table (a Stored tab or a "Store" button on a blueprint held in hand), sees them
   listed with a count, and takes one back out whenever they like, so a blueprint never has to sit in a chest or inventory.
   Stored blueprints are the table's own (a broken table drops them; the table saves them across restarts). Done when: GameTests for storing,

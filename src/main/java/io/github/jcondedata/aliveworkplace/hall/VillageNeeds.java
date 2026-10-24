@@ -145,7 +145,7 @@ public final class VillageNeeds {
 		List<BlockPos> store = null;
 		BuildReserve reserve = null;
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
-		List<Villager> everyone = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		List<Villager> everyone = VillageHalls.villagers(level, hall);
 		io.github.jcondedata.aliveworkplace.people.Names.nameEveryone(everyone);
 		for (Villager villager : everyone) {
 			if (villager.isBaby()) {
@@ -210,7 +210,7 @@ public final class VillageNeeds {
 		int lit = 0;
 		int guards = 0;
 		int cheerful = 0;
-		List<Villager> everyone = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		List<Villager> everyone = VillageHalls.villagers(level, hall);
 		// The village's households by class (34.7): its Nobles' wellbeing, and the Burghers' routes and traders.
 		io.github.jcondedata.aliveworkplace.people.ClassPerks.Sums classes = io.github.jcondedata.aliveworkplace.people.ClassPerks.tally(level, hall, everyone);
 		for (Villager villager : everyone) {

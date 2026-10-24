@@ -181,8 +181,7 @@ public final class CampBeds {
 	/** The wagon beds round the hall at {@code hall} (taken or not); the list forgets one that is no longer a bed. */
 	public static List<BlockPos> inVillage(ServerLevel level, BlockPos hall) {
 		List<BlockPos> out = new ArrayList<>();
-		level.getPoiManager().findAll(h -> h.is(PoiTypes.HOME), p -> isWagonBed(level, p), hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
-			.forEach(p -> out.add(p.immutable()));
+		VillageHalls.beds(level, hall).filter(p -> isWagonBed(level, p)).forEach(p -> out.add(p.immutable()));
 		return out;
 	}
 

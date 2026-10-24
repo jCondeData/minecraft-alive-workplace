@@ -3498,7 +3498,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     at mid-morning and over at noon;
   - the camp passes `check.py` and its render is in the package;
   - scene `desert_raiders`: the tomb camp, a sand ramp rising against a wall and a husk getting up again (GIF).
-- [x] **32.10** (approved 2026-10-11) **Piglin incursions.** `piglin_incursion.json`: any land, for villages with a `nether_link` (the
+- [x] **32.10** (approved 2026-10-11) (verified 2026-10-24: 9 tests [QaPiglinIncursionGameTests 8 + existing Piglin/QaPiglinRaid/QaRefusedThreats]: brute and hoglin stay themselves 620 ticks, 4/5-block plunder reach, only gold and a stack at most, Warlord gear +50 health, gold home at dawn into the outpost chest, report sentence 0/1/64, hoard loot, roster 35/25/25/15, City/Hamlet and portal gates; wiki proof lines added. Also killed nightly survivor SandRamps:547 [QaSandRampEdgeGameTests]) **Piglin incursions.** `piglin_incursion.json`: any land, for villages with a `nether_link` (the
   netherworkers' trips draw them); Town and up; arrival `portal`; tactics `ram_gates` and `plunder`. Their lair is the
   **Blackstone Outpost** (`camp/blackstone_outpost`, minecraft-architect skill: a lit portal of obsidian and crying
   obsidian on a blackstone and netherrack platform, gold blocks, a basalt pillar with a piglin banner, a hoglin pen),

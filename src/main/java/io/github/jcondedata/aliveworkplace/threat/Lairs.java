@@ -243,7 +243,14 @@ public final class Lairs {
 			if (!leading && level.isPositionEntityTicking(lair.pos())) {
 				Entity captain = level.getEntity(lair.captain());
 				if (!(captain instanceof LivingEntity living) || !living.isAlive()) {
-					breakUp(level, lair, null);
+					// A captain who fell was told at once by onDeath, which broke the lair up; one gone without dying while
+					// the village is quiet was taken by Peaceful (the game removes monsters), not brought down: the camp,
+					// leaderless, packs up and leaves in peace now rather than being counted as broken up (B364).
+					if (quiet) {
+						leave(level, lair);
+					} else {
+						breakUp(level, lair, null);
+					}
 					return;
 				}
 			}

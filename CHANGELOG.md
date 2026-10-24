@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A raiders' camp standing when the world is set to Peaceful now packs up and leaves the village in peace, instead of being "broken up" as if its captain had fallen (no camp-broken message, no chronicle line about a fall, no rest days); a captain a player killed just before still counts as fallen (B364).
 - When a Piglin Incursion's Warlord falls on a server with a mob blocklist (Cobbleverse's MobsBeGone), his band at the outpost and his raiders now turn into zombified piglins and zoglins and stay, still raiders, instead of vanishing; with `forceThreatSpawns` off they are left out and the log says so once (B356).
 - A villager beside his own bed near the edge of a village no longer makes it a bed short: the hall counted its villagers in a square and its beds in a circle, so with the default 64-block reach a villager and his bed about 45 blocks off diagonally were half in. Both are now counted in the same circle (64 across, 32 up and down), for the hall's numbers, the "beds" tip, the Steward's homes rules and the village's wellbeing (B361).
 - The builder's status no longer calls a Storehouse too far with numbers that say it isn't: one 20.4 blocks from his table in a 20-block village now reads "it is 21 blocks from his table, and a village reaches 20" instead of "20 blocks" (the distance is rounded up) (B355).

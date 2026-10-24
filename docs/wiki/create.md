@@ -514,11 +514,19 @@ tested (the GameTests use the table as the server does).
   `TRAIN_MIN` (400 ticks) nor longer than the walk, both sides of each boundary; halves of the road `HALVES_MEET` apart
   make a railway, one block more or a half stopped at a milestone don't; the railway over a save, and a save with one
   village's station and track gone loads as none.
+- `QaTrainsOffCompatTests` (QA, B359, with Create): `villageTrains` switched off while the real village train runs with
+  the caravan's 32 logs in its chest: they come out of the chest, the caravan takes the timed trip and comes in, and
+  Ashford's 64 logs always add up (none left in the train, none twice); a world saved with a caravan waiting to board and
+  one in the chest, opened with the switch off and no train on the line: the first comes in with its 16 logs, the other is
+  written off with one "broken up" line and its logs never arrive.
 
 - `MachineWorkCompatTests` (with Create): for each of the millstone, the press over a depot, the mixer over a basin
   and the crushing wheels, with the job's own worker: turned by a creative motor, the chest's input goes to the machine
   and what it makes comes back to the chest; standing still, nothing is taken; a full chest, nothing is taken; a worker
   saved and loaded mid-trip with the input in hand finishes the job; `machineWork` off, nothing is fed.
+- `QaMachineTripCompatTests` (QA, B244, with Create): a miner carrying 10 raw iron to the crushing wheels when
+  `machineWork` is switched off puts them back in the store, and after a save and load with the switch on again the iron
+  still comes to 10; a Novice armorer who loses the job mid-trip puts the 8 iron back, and killed afterwards drops none.
 - `QaCreateGoneGameTests` (without Create, a world Create was taken out of): a farmer saved mid-trip with 12 wheat
   gives all 12 back after a real save and load; a Watermill site started with Create is finished (or let go) by its builder, never
   left standing. `QaCreateCompatTests` and `QaMechanicSaysCompatTests` (with Create): the lines over the worker and the

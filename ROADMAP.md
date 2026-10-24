@@ -3585,7 +3585,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     the attack; one without isn't told until it starts; in the warned village the gates are shut and the portcullis is
     down at dusk, and the archers are on their stations before the raiders appear;
   - scene `warning`: the guard on the tower at dusk, the chat line, the gates shutting (GIF).
-- [x] **32.15** (approved auto 2026-10-11) **The disaster engine.** `threat/Disasters` loads `data/aliveworkplace/disasters/<id>.json`; one file
+- [x] **32.15** (approved auto 2026-10-11) (verified 2026-10-24: QaDisastersGameTests [14: chances by biome/rank/crowding, rest rule, reload, cauldrons, watering, wells, ill in bed, Medicine, switches, threat level, text; 6 mutants killed] and QaDenMegaCompatTests [10: 160-block den reach, recorded once, dropped, two halls, seven nearest, den text, gate shut, Mega ranks, bracelet lines, full inventory; 5 mutants killed]) **The disaster engine.** `threat/Disasters` loads `data/aliveworkplace/disasters/<id>.json`; one file
   is one disaster:
   - `when`: conditions from the same toolbox as the raider cultures, plus the weather (thunder; no rain for N days)
     and the share of wooden blocks in the village's finished builds (sampled once a day); `chance` a day; `duration`
@@ -3622,7 +3622,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   - a builder puts the burned blocks back;
   - scene `fire`: a roof catching and the firewarden putting it out (GIF).
   - [x] **32.16a** (approved 2026-10-13) Change from the owner (2026-10-12): only gate blocks of walls and gates may break (rams); anything threats damage must be repairable by builders; no progress is ever lost. Village fire must not destroy builds (builders repair anything it does). siegeDamage stays true.
-- [x] **32.17** (approved 2026-10-12) **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
+- [x] **32.17** (approved 2026-10-12) (verified 2026-10-24: QaDisastersGameTests [14: chances by biome/rank/crowding, rest rule, reload, cauldrons, watering, wells, ill in bed, Medicine, switches, threat level, text; 6 mutants killed] and QaDenMegaCompatTests [10: 160-block den reach, recorded once, dropped, two halls, seven nearest, den text, gate shut, Mega ranks, bracelet lines, full inventory; 5 mutants killed]) **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
   others 5% a day after 5 days without rain, twice as likely while a desert raiders' lair stands; it lasts 3–5 days
   and rain ends it. In the hall's area: crops, stems and berry bushes grow at a quarter pace, farmland dries, water
   cauldrons lose a level a day, and villagers are 10 less happy ("the wells are low") unless the village has a
@@ -3635,7 +3635,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     called), watered wheat at the usual rate; the Well Keeper wets dry farmland within 600 ticks; rain ends the
     drought; a finished Well takes the mood reason away;
   - scene `drought`: dry fields and the keeper carrying water to them (GIF).
-- [x] **32.18** (approved 2026-10-12) **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
+- [x] **32.18** (approved 2026-10-12) (verified 2026-10-24: QaDisastersGameTests [14: chances by biome/rank/crowding, rest rule, reload, cauldrons, watering, wells, ill in bed, Medicine, switches, threat level, text; 6 mutants killed] and QaDenMegaCompatTests [10: 160-block den reach, recorded once, dropped, two halls, seven nearest, den text, gate shut, Mega ranks, bracelet lines, full inventory; 5 mutants killed]) **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
   villagers than beds; a coven's hexed (32.11) or a traveller from far away (`inn/`) can start one too. While it lasts
   illness passes on: each hall round, a well villager who spent it within 3 blocks of an ill one catches it 1 in 5
   (less with Medicine research); the ill don't get well by themselves, the nurse's remedies don't cure them, and after
@@ -5231,7 +5231,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   when: the note is on `main`, the compat runtime loads both mods, the id test and a gate test pass, and the package
   is sent.
   - [x] **38.1a** (approved 2026-10-19) Change from the owner (2026-10-19): raid dens must not be done by villagers alone; the player can hire villagers to assist in the raid
-- [x] **38.2** (approved 2026-10-19) **The village knows its raid dens.** A raid den within 160 blocks of a hall is recorded once, by block
+- [x] **38.2** (approved 2026-10-19) (verified 2026-10-24: QaDisastersGameTests [14: chances by biome/rank/crowding, rest rule, reload, cauldrons, watering, wells, ill in bed, Medicine, switches, threat level, text; 6 mutants killed] and QaDenMegaCompatTests [10: 160-block den reach, recorded once, dropped, two halls, seven nearest, den text, gate shut, Mega ranks, bracelet lines, full inventory; 5 mutants killed]) **The village knows its raid dens.** A raid den within 160 blocks of a hall is recorded once, by block
   id, when its chunk first loads near the village (a chunk-load event through `Platform`, no area scans), with its
   tier, type and whether it's active (read from its block state by property name); a den broken or gone is dropped at
   the next check. The dens show on the village map (`VillageMaps`) and the hall's Defence page ("Raid den, tier 3,
@@ -5255,7 +5255,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   store and turns the den inactive; a loss leaves it active; a tier 4 or higher den is never challenged; a den in use by a
   player (a player within 8 blocks) isn't challenged; scene `den_challenge` (`-Pcobblemon=true`).
   - [x] **38.4a** (approved 2026-10-19) Change from the owner (2026-10-19): same as 38.1, the raid is done with villagers as assistance; if not possible to code, scratch it entirely
-- [x] **38.5** (approved 2026-10-19) **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
+- [x] **38.5** (approved 2026-10-19) (verified 2026-10-24: QaDisastersGameTests [14: chances by biome/rank/crowding, rest rule, reload, cauldrons, watering, wells, ill in bed, Medicine, switches, threat level, text; 6 mutants killed] and QaDenMegaCompatTests [10: 160-block den reach, recorded once, dropped, two halls, seven nearest, den text, gate shut, Mega ranks, bracelet lines, full inventory; 5 mutants killed]) **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
   (`CobblemonMegas.megaAce`). Add: Trainer Leaders of a City-rank village, the Festival Cup's final round and the
   Stadium Day's visiting champions (35.x) get a Mega Stone ace too, and every villager trainer whose team can Mega
   Evolve wears a Mega Bracelet on their outfit (an outfit layer drawn with the pixel-art skill, shown only when Mega
@@ -5263,7 +5263,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   a Town-rank Leader's none; the Cup final's trainers have one; the bracelet layer is on exactly the trainers who can
   Mega Evolve; without Mega Showdown nothing changes (a GameTest); scene `mega_trainers` (a Leader Mega Evolving in a
   battle against the player).
-- [x] **38.6** (approved 2026-10-19) **Mega Stones and Key Stones from the village.** The Jeweller (M34) cuts Mega Stones and Key Stones:
+- [x] **38.6** (approved 2026-10-19) (verified 2026-10-24: QaDisastersGameTests [14: chances by biome/rank/crowding, rest rule, reload, cauldrons, watering, wells, ill in bed, Medicine, switches, threat level, text; 6 mutants killed] and QaDenMegaCompatTests [10: 160-block den reach, recorded once, dropped, two halls, seven nearest, den text, gate shut, Mega ranks, bracelet lines, full inventory; 5 mutants killed]) **Mega Stones and Key Stones from the village.** The Jeweller (M34) cuts Mega Stones and Key Stones:
   `luxury_recipes` files that take `mega_showdown:mega_stone_crystal` or `keystone_ore` (and gold, emeralds) to make
   `mega_showdown:keystone` and the stones in `#mega_showdown:mega_stone` for the Pokémon the village's trainers use;
   the Miner keeps the Key Stone ore and Mega meteorite ores they dig for the Jeweller; a player who beats every Trainer

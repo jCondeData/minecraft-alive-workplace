@@ -442,6 +442,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLegendCampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefusedThreatsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPortalThreatsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPortalThreatBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuietLairGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinRaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovenGameTests",

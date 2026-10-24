@@ -33,6 +33,7 @@ public class GolemHaulerFightGameTests implements net.fabricmc.fabric.api.gamete
 
 	/** The Storehouse with its chest and a Drop Box at {@code boxPos} holding {@code stacks} stacks of cobblestone. */
 	private static Container round(GameTestHelper helper, BlockPos boxPos, int stacks) {
+		strayStorehouses(helper);
 		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
 		helper.setBlock(STORE_CHEST, Blocks.CHEST);
 		helper.setBlock(boxPos, ModBlocks.DROP_BOX);
@@ -41,6 +42,23 @@ public class GolemHaulerFightGameTests implements net.fabricmc.fabric.api.gamete
 			box.setItem(i, new ItemStack(Items.COBBLESTONE, 64));
 		}
 		return box;
+	}
+
+	/**
+	 * Removes every Storehouse outside the test area that a hauler anywhere in it could take for the nearest
+	 * ({@link HaulerGolems#STOREHOUSE_RANGE} from the golem). One an earlier batch built outside its own area is never
+	 * cleared: the nightly repeats once had this test's hauler fill up at the Drop Box, then head for such a Storehouse
+	 * 11 blocks off across the area's edge, which it can't reach, and stand there with its load (2026-10-24). The test's
+	 * own Storehouse is the only one its hauler should know. Only for tests alone in their batch.
+	 */
+	private static void strayStorehouses(GameTestHelper helper) {
+		net.minecraft.world.phys.AABB box = helper.getBounds();
+		int reach = HaulerGolems.STOREHOUSE_RANGE + (int) Math.ceil(Math.hypot(box.getXsize(), box.getZsize()) / 2) + 1;
+		for (BlockPos stray : helper.getLevel().getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI),
+			p -> !box.contains(net.minecraft.world.phys.Vec3.atCenterOf(p)), BlockPos.containing(box.getCenter()), reach,
+			net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+			helper.getLevel().removeBlock(stray, false);
+		}
 	}
 
 	private static IronGolem hauler(GameTestHelper helper, BlockPos near) {

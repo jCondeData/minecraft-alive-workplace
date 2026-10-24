@@ -227,6 +227,47 @@ public class QaStageSixGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	}
 
 	/**
+	 * B344: what a click hands over comes off the request at once. With 40 cobblestone, a click hands the 25 asked for and
+	 * the cobblestone leaves the board; a second click two ticks later (before the builder looks again) hands nothing more.
+	 * With only 10, the board still asks for the other 15, and a click with 20 more hands exactly those 15.
+	 */
+	//$ gametest_ticks_batch AREA '600' '"qa6BoardTwice"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa6BoardTwice")
+	public void boardSecondQuickClickHandsNothingExtra(GameTestHelper helper) {
+		Waiting w = waitingBuilder(helper);
+		helper.runAfterDelay(300, () -> {
+			helper.assertTrue(w.site().status() == BuildSite.Status.WAITING_FOR_MATERIALS, "the builder isn't waiting: " + w.site().status());
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6t"));
+			ServerPlayer p = c.player();
+			Container chest = helper.getBlockEntity(w.chest());
+			// partial: 10 of the 25
+			p.getInventory().setItem(5, new ItemStack(Items.COBBLESTONE, 10));
+			QaStageFourGameTests.press(helper, p, w.storehouse());
+			helper.assertTrue(p.containerMenu instanceof ChoiceMenu, "the board didn't open: " + p.containerMenu);
+			ChoiceMenu board = (ChoiceMenu) p.containerMenu;
+			int slot = slotOf(board, Items.COBBLESTONE);
+			helper.assertTrue(slot >= 0 && board.icon(slot).getCount() == 25, "asks for " + (slot < 0 ? "none" : board.icon(slot).getCount()));
+			click(p, slot, 0, ClickType.PICKUP);
+			helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 10, "the partial click gave " + chest.countItem(Items.COBBLESTONE));
+			int s2 = slotOf(board, Items.COBBLESTONE);
+			helper.assertTrue(s2 >= 0 && board.icon(s2).getCount() == 15, "after 10 the board asks for " + (s2 < 0 ? "none" : board.icon(s2).getCount()));
+			// the rest, with more than enough
+			p.getInventory().setItem(5, new ItemStack(Items.COBBLESTONE, 40));
+			click(p, s2, 0, ClickType.PICKUP);
+			helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 25 && p.getInventory().countItem(Items.COBBLESTONE) == 25,
+				"the second click: chest " + chest.countItem(Items.COBBLESTONE) + ", kept " + p.getInventory().countItem(Items.COBBLESTONE));
+			helper.assertTrue(slotOf(board, Items.COBBLESTONE) < 0, "the board still asks for cobblestone after all 25 were given");
+			helper.runAfterDelay(2, () -> {
+				click(p, s2, 0, ClickType.PICKUP);
+				// (the builder may already have taken his 25 out of the chest; what matters is that the player kept his)
+				helper.assertTrue(p.getInventory().countItem(Items.COBBLESTONE) == 25 && chest.countItem(Items.COBBLESTONE) <= 25,
+					"a quick third click: chest " + chest.countItem(Items.COBBLESTONE) + ", kept " + p.getInventory().countItem(Items.COBBLESTONE));
+				helper.succeed();
+			});
+		});
+	}
+
+	/**
 	 * The board's buttons are pictures, not items: right-click, shift-click, a number key, Q and a creative middle-click on
 	 * a request never put the icon in the player's hands, inventory or on the ground. With none of the item the click is
 	 * "You have no Cobblestone to give" and nothing moves; a right- or shift-click with some hands it over like a click.
@@ -273,7 +314,7 @@ public class QaStageSixGameTests implements net.fabricmc.fabric.api.gametest.v1.
 			int s2 = slotOf(board, Items.COBBLESTONE);
 			helper.assertTrue(s2 >= 0, "the cobblestone left the board with 15 still missing");
 			click(p, s2, 0, ClickType.QUICK_MOVE);
-			// (the builder hasn't looked again yet, so the board may still ask for all 25: what's handed over is up to that)
+			// (since B344 the board lowers its request at once, so this hands over at most what is still asked for)
 			int handed = 20 - p.getInventory().countItem(Items.COBBLESTONE);
 			helper.assertTrue(handed > 0 && handed <= 25 && chest.countItem(Items.COBBLESTONE) == 10 + handed,
 				"a shift-click: chest " + chest.countItem(Items.COBBLESTONE) + ", kept " + p.getInventory().countItem(Items.COBBLESTONE));

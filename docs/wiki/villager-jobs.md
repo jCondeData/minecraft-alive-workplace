@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344
 
 ## What a player sees
 
@@ -169,7 +169,8 @@ mood). The Builder's page has the level table.
 players can hand things over; the Village Hall lists it too. The board is drawn like the Blueprint Table (26.12): the
 requests as a list on the left (what, how many, for whom and how far), the store's numbers, the Steward's shopping
 list and the stock orders "at a glance" on the right, and a request under the mouse read out in full. A click hands
-over what you have, as before.
+over what you have, as before, and the request drops by that much at once, so a quick second click hands
+nothing more than is still needed (B344).
 
 **Miners make their own pickaxe (36.11).** A Miner whose pickaxe wore out, or who has none, first looks in their own
 chests for one; with none there, they make one at their Blast Furnace from what they mined themselves: three

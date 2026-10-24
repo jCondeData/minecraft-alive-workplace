@@ -73,7 +73,11 @@ public final class StorehouseBoard {
 		ItemStack info = new ItemStack(Items.WRITABLE_BOOK);
 		info.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.info"), ChatFormatting.GOLD));
 		List<Component> lore = new ArrayList<>();
-		lore.add(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.stock", store.size(), store.size(), items, SupplyContainers.freeSlots(level, store)), ChatFormatting.GRAY));
+		long free = SupplyContainers.freeSlots(level, store);
+		lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.stock", // B377, B395: each count has its singular
+			io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.chests", store.size(), store.size()),
+			io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.items", items, items),
+			io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.slots", free, free)), ChatFormatting.GRAY));
 		roomLine(level, store).ifPresent(lore::add);
 		if (networks.linked() > 0) { // 37.9: a Sophisticated Storage controller's blocks are one store
 			lore.add(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.linked", networks.linked(), networks.linked()), ChatFormatting.GRAY));

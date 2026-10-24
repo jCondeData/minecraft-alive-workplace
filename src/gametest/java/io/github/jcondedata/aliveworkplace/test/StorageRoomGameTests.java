@@ -56,7 +56,7 @@ public class StorageRoomGameTests implements FabricGameTest {
 		var lore = StorehouseBoard.boardForTest(player, helper.absolutePos(STOREHOUSE)).icon(StorehouseBoard.INFO_SLOT).get(DataComponents.LORE);
 		helper.assertTrue(lore != null, "the board's info has no text");
 		Component stock = lore.lines().stream().filter(l -> key(l, "screen.aliveworkplace.storehouse.stock")).findFirst().orElse(null);
-		helper.assertTrue(stock != null && String.valueOf(((TranslatableContents) stock.getContents()).getArgs()[2]).equals(String.valueOf(free)),
+		helper.assertTrue(stock != null && ((TranslatableContents) stock.getContents()).getArgs()[2] instanceof Component slots && slots.getString().equals(free + " empty slots"),
 			"the stock line: " + stock);
 		helper.assertFalse(lore.lines().stream().anyMatch(l -> key(l, "screen.aliveworkplace.storehouse.room")), "a room line for vanilla chests: " + lore.lines());
 		helper.succeed();

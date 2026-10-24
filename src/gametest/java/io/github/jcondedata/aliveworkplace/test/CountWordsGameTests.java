@@ -14,11 +14,14 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 /**
  * B377: count lines read "1 chest" and "1 job", not "1 chests" and "1 jobs": the Storehouse board's stock line and the
- * Steward's reason for a workplace nobody's trade has.
+ * Steward's reason for a workplace nobody's trade has. B395: the stock line's items and empty slots too.
  */
 public class CountWordsGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:build_area";
@@ -43,6 +46,46 @@ public class CountWordsGameTests implements FabricGameTest {
 		helper.setBlock(new BlockPos(5, 2, 5), Blocks.CHEST);
 		String two = stockLine(helper, player);
 		helper.assertTrue(two.startsWith("Storehouse: 2 chests, "), "two chests: " + two);
+		helper.succeed();
+	}
+
+	/** One item in the Storehouse's chest reads "1 item"; a second makes it "2 items". */
+	//$ gametest_ticks_batch AREA '40' '"countWordsItems"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "countWordsItems")
+	public void theStorehouseStockLineCountsOneItemAndTwoItems(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
+		BlockPos chestPos = new BlockPos(5, 2, 3);
+		helper.setBlock(chestPos, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new ItemStack(Items.COBBLESTONE, 1));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		String one = stockLine(helper, player);
+		helper.assertTrue(one.equals("Storehouse: 1 chest, 1 item, 26 empty slots"), "one item: " + one);
+		chest.setItem(0, new ItemStack(Items.COBBLESTONE, 2));
+		String two = stockLine(helper, player);
+		helper.assertTrue(two.equals("Storehouse: 1 chest, 2 items, 26 empty slots"), "two items: " + two);
+		helper.succeed();
+	}
+
+	/** A chest with one slot left reads "1 empty slot"; with two left, "2 empty slots". */
+	//$ gametest_ticks_batch AREA '40' '"countWordsSlots"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "countWordsSlots")
+	public void theStorehouseStockLineCountsOneEmptySlotAndTwo(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
+		BlockPos chestPos = new BlockPos(5, 2, 3);
+		helper.setBlock(chestPos, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(chestPos);
+		for (int i = 0; i < chest.getContainerSize() - 1; i++) {
+			chest.setItem(i, new ItemStack(Items.COBBLESTONE, 64));
+		}
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		String one = stockLine(helper, player);
+		helper.assertTrue(one.equals("Storehouse: 1 chest, " + 26 * 64 + " items, 1 empty slot"), "one empty slot: " + one);
+		chest.setItem(0, ItemStack.EMPTY);
+		String two = stockLine(helper, player);
+		helper.assertTrue(two.equals("Storehouse: 1 chest, " + 25 * 64 + " items, 2 empty slots"), "two empty slots: " + two);
 		helper.succeed();
 	}
 

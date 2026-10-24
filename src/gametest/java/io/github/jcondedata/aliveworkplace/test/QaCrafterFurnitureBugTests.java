@@ -1,8 +1,10 @@
 package io.github.jcondedata.aliveworkplace.test;
 
+import io.github.jcondedata.aliveworkplace.craft.CrafterJob;
 import io.github.jcondedata.aliveworkplace.craft.JobShortages;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -26,6 +28,42 @@ public class QaCrafterFurnitureBugTests {
 	private static final BlockPos BENCH = QaCrafterFurnitureGameTests.BENCH;
 	private static final BlockPos CHEST = QaCrafterFurnitureGameTests.CHEST;
 	private static final BlockPos STATION = QaCrafterFurnitureGameTests.STATION;
+
+	/**
+	 * B353: the Carpenter's bench is broken while the chain is half made (planks in the bag): the logs and planks aren't lost
+	 * with it. Within a while nothing is left in the bag of a carpenter with no bench, no job stays saved on them, and the
+	 * wood (logs, planks, slabs) is in a chest or on the ground for the player.
+	 */
+	//$ gametest_ticks_batch AREA '3600' '"qaChainBenchBroken"'
+	@GameTest(template = AREA, timeoutTicks = 3600, batch = "qaChainBenchBroken")
+	public void b353TheCarpentersBenchBrokenMidChainLosesNothing(GameTestHelper helper) {
+		QaCrafterFurnitureGameTests.prepare(helper);
+		QaCrafterFurnitureGameTests.Asker a = QaCrafterFurnitureGameTests.asker(helper, BENCH, CHEST, new BlockPos(6, 2, 9), Blocks.BARREL, new ItemStack(Items.OAK_LOG, 6));
+		Villager carpenter = QaCrafterFurnitureGameTests.carpenter(helper, STATION);
+		AtomicInteger since = new AtomicInteger(-1);
+		helper.onEachTick(() -> {
+			CrafterJob job = ModAttachments.CRAFTER_JOB.get(carpenter);
+			if (since.get() < 0 && job != null && job.phase() == CrafterJob.Phase.CRAFTING && job.step() >= 1) {
+				helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(carpenter).count(Items.OAK_PLANKS) > 0, "no planks made at step 2");
+				helper.setBlock(STATION, Blocks.AIR); // the player breaks the bench
+				since.set(0);
+			} else if (since.get() >= 0) {
+				since.incrementAndGet();
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(since.get() >= 0, "the carpenter never got to the chain's second step");
+			helper.assertTrue(since.get() > 1200, "giving the carpenter a minute without a bench");
+			var bag = ModAttachments.BUILDER_BAG.getOrCreate(carpenter);
+			helper.assertTrue(bag.isEmpty(), "the wood is stuck in the bag of a carpenter with no bench: " + bag.stacks() + " (profession "
+				+ carpenter.getVillagerData().getProfession() + ", job " + ModAttachments.CRAFTER_JOB.get(carpenter) + ")");
+			Container chest = helper.getBlockEntity(a.chest());
+			int wood = 4 * (chest.countItem(Items.OAK_LOG) + QaCrafterFurnitureGameTests.loose(helper, Items.OAK_LOG)) + chest.countItem(Items.OAK_PLANKS) + QaCrafterFurnitureGameTests.loose(helper, Items.OAK_PLANKS)
+				+ chest.countItem(Items.OAK_SLAB) + QaCrafterFurnitureGameTests.loose(helper, Items.OAK_SLAB);
+			helper.assertTrue(wood > 0, "the six logs are gone: nothing in the chest or on the ground");
+			helper.assertTrue(ModAttachments.CRAFTER_JOB.get(carpenter) == null, "a job is still saved on the carpenter with no bench");
+		});
+	}
 
 	/**
 	 * B352: the kiln's fuel counts as a raw material (a coal for every eight fired): twelve clay and one coal for brick

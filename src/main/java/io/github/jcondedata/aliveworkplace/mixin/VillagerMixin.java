@@ -44,6 +44,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.work.JobSiteTickets.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.city.Stewards.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.craft.Crafters.tick((Villager) (Object) this); // the retired Crafter (37.14a)
+		io.github.jcondedata.aliveworkplace.craft.CrafterWork.benchlessTick((Villager) (Object) this); // a job outliving its bench (B353)
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Legends.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Gifted.tick((Villager) (Object) this);

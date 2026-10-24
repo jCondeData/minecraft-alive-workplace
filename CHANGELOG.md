@@ -18,6 +18,12 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A piglin outpost's band no longer wanders into the outpost's own Nether portal and vanishes to the Nether, and
+  piglin raiders stepping out of it no longer walk straight back in (B373). No lair band, bandit camp or raider goes
+  through a portal any more, so a lair keeps its whole band until the village beats it.
+- A hopper under a Shop Counter no longer pulls its price list out, and a hopper or dropper above or beside it no
+  longer pushes items in as new prices (B349), so nobody can empty or change someone's shop with automation. The
+  owner, friends and operators still set prices on the counter's screen; existing shops keep their prices.
 - A Shopkeeper's trade screen sells only what the shop's chests hold at the moment of the trade (B348). Before, a
   buyer who had the trades open when the owner emptied the chest still got the goods for his emeralds, made from
   nothing; now the goods don't appear, the emeralds stay yours and the offer shows as sold out.

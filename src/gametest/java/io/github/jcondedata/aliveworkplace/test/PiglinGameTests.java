@@ -362,4 +362,69 @@ public class PiglinGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * B373: the outpost's band and its raiders never go through its lit portal. One of the band and one raider are put
+	 * in the portal and are still here 40 ticks later, while a plain piglin put in beside them leaves for the Nether
+	 * (the portal works).
+	 */
+	//$ gametest_ticks_batch AREA '80' '"outpostPortalKeepsBand"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "outpostPortalKeepsBand")
+	public void theOutpostsBandAndRaidersStayOutOfItsPortal(GameTestHelper helper) {
+		BlockPos hall = village(helper, new BlockPos(1, 2, 1));
+		ServerLevel level = helper.getLevel();
+		Culture culture = piglins(helper);
+		boolean lairs = Lairs.ENABLED;
+		Lairs.ENABLED = true;
+		java.util.List<java.util.UUID> strays = new java.util.ArrayList<>();
+		Leftovers.after(helper, () -> {
+			Lairs.forget(level);
+			Lairs.ENABLED = lairs;
+			ServerLevel nether = level.getServer().getLevel(net.minecraft.world.level.Level.NETHER);
+			if (nether != null) {
+				strays.forEach(id -> {
+					net.minecraft.world.entity.Entity e = nether.getEntity(id);
+					if (e != null) {
+						e.discard();
+					}
+				});
+			}
+		});
+		helper.setBlock(new BlockPos(1, 2, 1), ModBlocks.VILLAGE_HALL);
+		((VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(VillageRanks.Rank.TOWN);
+		helper.runAfterDelay(2, () -> {
+			Lairs.Lair lair = Lairs.found(level, hall, helper.absolutePos(new BlockPos(15, 1, 15)), PIGLINS);
+			helper.assertTrue(lair != null && lair.culture().equals(PIGLINS), "no outpost: " + lair);
+			List<BlockPos> portal = Piglins.portalBlocks(level, lair);
+			helper.assertTrue(!portal.isEmpty(), "the outpost's portal isn't lit");
+			BlockPos in = portal.get(0);
+			Mob member = Lairs.band(level, lair).stream().filter(m -> !m.getUUID().equals(lair.captain())).findFirst().orElseThrow();
+			VillageRaids.Raid raid = VillageRaids.start(level, hall, 8, 0, Double.NaN, culture, RandomSource.create(7L));
+			helper.assertTrue(raid != null, "no raid");
+			Mob raider = level.getEntitiesOfClass(Mob.class, helper.getBounds().inflate(32), m -> m.getTags().contains(VillageRaids.TAG)).get(0);
+			Piglin plain = EntityType.PIGLIN.create(level);
+			plain.setImmuneToZombification(true);
+			plain.moveTo(in.getX() + 0.5, in.getY(), in.getZ() + 0.5, 0f, 0f);
+			level.addFreshEntity(plain);
+			strays.add(plain.getUUID());
+			// Each of them is put back in the portal every tick for 20 ticks: no wandering out of it.
+			for (int t = 0; t < 20; t++) {
+				helper.runAfterDelay(t, () -> {
+					for (Mob m : List.of(member, raider, plain)) {
+						if (!m.isRemoved()) {
+							m.teleportTo(in.getX() + 0.5, in.getY(), in.getZ() + 0.5);
+						}
+					}
+				});
+			}
+			helper.runAfterDelay(40, () -> {
+				helper.assertTrue(plain.isRemoved() && plain.getRemovalReason() == net.minecraft.world.entity.Entity.RemovalReason.CHANGED_DIMENSION,
+					"a plain piglin in the portal didn't leave, so it proves nothing: " + plain.getRemovalReason());
+				for (Mob m : List.of(member, raider)) {
+					helper.assertTrue(!m.isRemoved() && m.level() == level, "went through the outpost's portal: " + m + " " + m.getRemovalReason());
+				}
+				helper.succeed();
+			});
+		});
+	}
 }

@@ -406,6 +406,15 @@ public class QaPactsBoardStewardGameTests implements FabricGameTest {
 		Land land = two.land();
 		TradeGoodsDataGameTests.goodsFrom(helper, "aliveworkplace_test");
 		BlockPos hall = land.hall(1);
+		// The hall's reach is wider than the test area: a Storehouse left by an earlier test at this spot would be
+		// counted too (this test runs alone in its batch, so clearing them disturbs nobody).
+		net.minecraft.world.entity.ai.village.poi.PoiManager pois = land.level().getPoiManager();
+		pois.findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI), p -> true, hall,
+				VillageHalls.RADIUS, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.map(BlockPos::immutable).toList().forEach(p -> {
+				land.level().setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
+				if (pois.getType(p).isPresent()) pois.remove(p);
+			});
 		helper.setBlock(helper.relativePos(hall).offset(4, 0, 0), ModBlocks.STOREHOUSE);
 		helper.setBlock(helper.relativePos(hall).offset(4, 0, 2), Blocks.CHEST);
 		ServerPlayer rival = land.owner();

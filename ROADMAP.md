@@ -4960,7 +4960,7 @@ Depends on: nothing open.
   in the way and where. Done when: GameTests for the list, a free-space upgrade, one blocked by another build, one over natural
   terrain only (it goes ahead), a build with no next level, the upgrade of a house with residents (they keep their beds), save and
   reload; the page's text in `en_us.json`; scene `hall_upgrade`.
-- [x] **36.15** (approved 2026-10-20) **The Builder asks before repairing a house** (owner, 2026-10-19). Today a Builder starts repairs by themselves and the player
+- [x] **36.15** (approved 2026-10-20) (verified 2026-10-24: QaRepairCellarGameTests [7 for 36.15]: two builds answered differently, hand repair clears the answer, stranger refused/friend allowed, agreed repair outlives its builder, switch off with questions waiting and toggled mid-repair, every sentence with real args. Mutants 4/4 killed on RepairAsks. Full build green. builder.md Not now line extended. 36.7 left unverified: B386.) **The Builder asks before repairing a house** (owner, 2026-10-19). Today a Builder starts repairs by themselves and the player
   can't stop them or send them to another job. Change it: a damaged build is listed and the Builder asks first
   (a prompt on the Village Hall's page or a "Repair? Yes / Not now" choice shown with the repair request), and only repairs the
   builds the player agreed to; a repair in progress can be cancelled or paused from the same page, and a Builder who is paused

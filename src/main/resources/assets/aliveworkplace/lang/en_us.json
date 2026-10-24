@@ -238,7 +238,7 @@
   "command.aliveworkplace.friend.list": "Players who can give orders to your builders: %s",
   "command.aliveworkplace.friend.none": "Nobody else can give orders to your builders. Add a friend with /workplace friend add <player>.",
   "command.aliveworkplace.friend.self": "Your builders already work for you.",
-  "gamerule.workplaceRetraining": "Alive Workplace: villagers who already have a job can be retrained as Builders for emeralds at a Blueprint Table",
+  "gamerule.workplaceRetraining": "Alive Workplace: villagers who already have a job can be retrained for emeralds (any job at the Village Hall, Builder at a Blueprint Table)",
   "gamerule.workplaceBuilderOwnership": "Alive Workplace: builders only take orders from the player who hired them and their friends",
   "gamerule.workplaceBuildersHelp": "Alive Workplace: idle builders help with builds near their Blueprint Table",
   "message.aliveworkplace.assign.no_bench": "This builder has no Blueprint Table. Place one near them first.",

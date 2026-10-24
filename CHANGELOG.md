@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- The game rule `workplaceRetraining`'s description names both things it switches: retraining to any job at the Village Hall and as a Builder at a Blueprint Table (B384).
 - At threat level 3 (hard) a raiders' camp, ship or portal sends a quarter more raiders too: every lair's band is a quarter bigger on hard when it makes camp and grows to a quarter more, so a Town's pirates send 10, not 8 (B383).
 - Desert raiders still ramp over a wall when sand already sits at its outside foot, a player's or the desert's own: that sand counts as the ramp's first blocks and is built on, and it stays when the siege's own sand is taken away (B382).
 - The morning siege report counts one raider in the singular: "The siege: 1 raider came and ...", not "1 raiders came" (B381).

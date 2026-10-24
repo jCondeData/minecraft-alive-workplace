@@ -133,7 +133,7 @@ public class GuildGameTests implements FabricGameTest {
 
 			say(helper, Guilds.offer(player, dara, charters), Guilds.Outcome.ALREADY, "Dara already leads a guild.");
 			say(helper, Guilds.offer(player, bram, charters), Guilds.Outcome.TAKEN, village + " already has the Builders' Guild, led by Dara.");
-			say(helper, Guilds.offer(player, fenn, charters), Guilds.Outcome.FULL, village + " is a Village and may have 1 guilds; it has them all.");
+			say(helper, Guilds.offer(player, fenn, charters), Guilds.Outcome.FULL, village + " is a Village and may have 1 guild; it has them all.");
 			hall.setRank(VillageRanks.Rank.TOWN);
 			try {
 				Guilds.ENABLED = false;

@@ -99,6 +99,7 @@ public class CityPlanScreenGameTests implements net.fabricmc.fabric.api.gametest
 		}
 		helper.assertTrue(entity.planUndoSteps() == CityPlans.UNDO_STEPS, "undo steps kept: " + entity.planUndoSteps());
 		entity.setProtected(true);
+		Leftovers.after(helper, () -> entity.setProtected(false)); // a protected hall left behind refuses later tests' strangers
 		ServerPlayer stranger = helper.makeMockServerPlayerInLevel();
 		CityPlan before = entity.plan();
 		helper.assertFalse(CityPlans.apply(stranger, sent(level, CityPlans.Edit.undo(hall))), "a stranger undid the owner's stroke");
@@ -124,6 +125,7 @@ public class CityPlanScreenGameTests implements net.fabricmc.fabric.api.gametest
 		CityPlans.apply(owner, CityPlans.Edit.addZone(hall, "keep_clear", "The old oak", ""));
 		CityPlans.apply(owner, CityPlans.Edit.paint(hall, 0, cells(cell(hall, 0, 4))));
 		entity.setProtected(true);
+		Leftovers.after(helper, () -> entity.setProtected(false)); // a protected hall left behind refuses later tests' strangers
 		RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), level.registryAccess());
 		CityPlans.Open.CODEC.encode(buf, CityPlans.screen(level, entity, owner));
 		CityPlans.Open open = CityPlans.Open.CODEC.decode(buf);

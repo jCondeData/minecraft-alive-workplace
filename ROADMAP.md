@@ -3024,7 +3024,7 @@ write their own stories; nothing waits forever on a player.
   - a GameTest per request: the letter there and back between two halls; the revive with a grave; the cat at dawn; the
     schooled child; the chapel wedding and its feast; the heirloom placed once when a player comes near, with the map;
   - showcase scene `letter` (the letter carried between two villages, and the reply).
-- [x] **31.11** (approved 2026-10-11) **Reputation and titles.** Each player has a standing in each village: points kept by hall in
+- [x] **31.11** (approved 2026-10-11) (verified 2026-10-24: QaReputationPerksGameTests [14 tests, 416fbec]: every title threshold both sides [49/50, 299/300, 999/1000], Lord needs a Town, announced once per title, losses told only to that player, gift +2 cap 10/day/village, festival +5 once a day, harm -10/-150/-200/-100, chat titles and titlesInChat/reputation off, prices at every heart/title step with the 40% cap and never under 1, festival gifts by job family once per festival, named baby once per player per village across reload, weekly parcel at 10 hearts, title_at_least/hearts_at_least edges, maySetEdicts; wiki reputation.md read against it; 4/4 runs green, full build green) **Reputation and titles.** Each player has a standing in each village: points kept by hall in
   `aliveworkplace_stories` (player → points). Earned: a daily quest +10; a personal request +25; a story chapter +50
   to everyone who helped; an arc's ending what its file says (150 in ours); a bounty +40; breaking up a bandit camp
   or, once 32.3 lands, a lair (the killer of its chief) +40; fighting in a raid (3 raiders killed) +20; coming to a
@@ -3043,7 +3043,7 @@ write their own stories; nothing waits forever on a player.
   - GameTests: each source and loss; the thresholds and Lord's Town rule; the announcement once per title; the
     decorated chat text; honours listed; two players kept apart; a save/reload round trip;
   - screenshots of a titled chat line and the hall tooltip; a README section; showcase scene `titles`.
-- [x] **31.12** (approved 2026-10-11) **What friendship and titles are worth.**
+- [x] **31.12** (approved 2026-10-11) (verified 2026-10-24: QaReputationPerksGameTests [14 tests, 416fbec]: every title threshold both sides [49/50, 299/300, 999/1000], Lord needs a Town, announced once per title, losses told only to that player, gift +2 cap 10/day/village, festival +5 once a day, harm -10/-150/-200/-100, chat titles and titlesInChat/reputation off, prices at every heart/title step with the 40% cap and never under 1, festival gifts by job family once per festival, named baby once per player per village across reload, weekly parcel at 10 hearts, title_at_least/hearts_at_least edges, maySetEdicts; wiki reputation.md read against it; 4/4 runs green, full build green) **What friendship and titles are worth.**
   - **Cheaper trades**: 5% off at 4 hearts and 5% more a heart, 30% at most; a title adds 5% (Friend), 10% (Hero) or
     15% (Lord); 40% at most together. A mixin at the end of `Villager.updateSpecialPrices`, on top of vanilla's gossip
     and Hero of the Village; no price under 1. Players' shops aren't touched.

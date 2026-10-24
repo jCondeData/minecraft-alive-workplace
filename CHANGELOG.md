@@ -18,6 +18,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A retired elder sneak-right-clicked with a job's item (lapis by a free lectern) no longer says he took the job
+  while staying jobless, and no longer leaves that workstation taken by nobody: he says he has retired, and the block
+  stays free for another villager (B346).
+- A renamed elder (a Name Tag) is still known as his children's parent at retirement, so his own grown child takes over
+  rather than a stranger: children are matched by their parents' ids, by name only in records older than the ids (B347).
 - A piglin outpost's band no longer wanders into the outpost's own Nether portal and vanishes to the Nether, and
   piglin raiders stepping out of it no longer walk straight back in (B373). No lair band, bandit camp or raider goes
   through a portal any more, so a lair keeps its whole band until the village beats it.

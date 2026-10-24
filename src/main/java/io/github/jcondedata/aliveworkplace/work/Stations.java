@@ -426,6 +426,12 @@ public final class Stations {
 		if (!Friends.mayCommand(player, villager)) {
 			return Hiring.hire(player, villager, Component.empty()); // refuses, and says whose they are
 		}
+		// A retired elder never takes a job again (34.20, B346): before, the item gave the job (undone at once) and kept the block's ticket.
+		if (io.github.jcondedata.aliveworkplace.people.Retirement.refuses(villager, villager.getVillagerData().setProfession(profession))) {
+			villager.level().playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_NO, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.job.retired", villager.getDisplayName()).withStyle(ChatFormatting.YELLOW));
+			return InteractionResult.CONSUME;
+		}
 		// Higher jobs need higher classes (34.8): "Dara is a Peasant; a Scholar must be a Burgher".
 		Component refusal = io.github.jcondedata.aliveworkplace.people.ClassJobs.refusal((ServerLevel) villager.level(), villager, profession);
 		if (refusal != null) {

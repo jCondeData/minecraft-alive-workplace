@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Counted lines read right for one: "1 settler" and "in 1 day" on the hall's Colonies tab, "1 villager has no bed" (and "no work") in the What next? tips and the Steward's reasons, "Still to bring: 1 item of 1 kind" in material lists, "fetching what 1 Amethyst Ring takes" above the luxury makers, crafters, chefs and smiths, and "1 block" on the Storehouse board's linked lines.
 - Items held in the off hand with the main hand empty now work where they didn't: the Storehouse board's stock orders
   page offers to order the off hand's item (B351); a Colony Charter sends the settlers from the off hand, and a
   sneak-click on the hall with it sends them too instead of opening the colonies map (B357); a City Plan, a Village

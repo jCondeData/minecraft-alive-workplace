@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.test;
 
+import io.github.jcondedata.aliveworkplace.hall.VillageAdvice;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
@@ -72,6 +73,37 @@ public class QaHallHomesBugTests implements net.fabricmc.fabric.api.gametest.v1.
 		});
 	}
 
-
-
+	/**
+	 * One bed short, the "beds" tip on What next? and the Steward's reason (homes_starter_cottage holds only at exactly 1
+	 * short) read "1 villagers have no bed"; the mod's other counted lines have a {@code .one} form. Expected: "1 villager
+	 * has no bed".
+	 */
+	//$ gametest_ticks_batch AREA '60' '"qaOneBedShort"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "qaOneBedShort")
+	public void oneBedShortReadsInTheSingular(GameTestHelper helper) {
+		BlockPos hallRel = new BlockPos(3, 2, 3);
+		QaHallHomesGameTests.hall(helper, hallRel);
+		QaHallHomesGameTests.adult(helper, new BlockPos(5, 2, 5));
+		helper.runAfterDelay(3, () -> {
+			helper.assertTrue(QaHallHomesGameTests.bedsShort(helper, hallRel) == 1, "setup: short of " + QaHallHomesGameTests.bedsShort(helper, hallRel));
+			List<String> wrong = new ArrayList<>();
+			List<String> titles = VillageAdvice.tips(helper.getLevel(), helper.absolutePos(hallRel)).stream().filter(t -> t.key().equals("beds"))
+				.map(t -> t.title().getString()).toList();
+			helper.assertTrue(titles.equals(List.of("1 villager has no bed")), "the beds tip: " + titles);
+			VillageAdvice.tips(helper.getLevel(), helper.absolutePos(hallRel)).stream().filter(t -> t.key().equals("beds"))
+				.map(t -> t.title().getString()).filter(s -> s.contains("1 villagers")).forEach(s -> wrong.add("What next? tip: '" + s + "'"));
+			QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qa1b"));
+			ServerPlayer p = c.player();
+			p.moveTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(helper.absolutePos(hallRel.east(2))));
+			c.seen().clear();
+			p.getServer().getCommands().performPrefixedCommand(p.createCommandSourceStack(), "workplace steward explain");
+			for (Component line : c.seen()) {
+				if (line.getString().contains("1 villagers")) {
+					wrong.add("explain: '" + line.getString() + "'");
+				}
+			}
+			helper.assertTrue(wrong.isEmpty(), "one bed short reads: " + String.join("; ", wrong));
+			helper.succeed();
+		});
+	}
 }

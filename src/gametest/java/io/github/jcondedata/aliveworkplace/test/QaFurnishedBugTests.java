@@ -68,4 +68,18 @@ public class QaFurnishedBugTests implements FabricGameTest {
 		});
 	}
 
+	/** One thing still to bring (the table's chair): the list's first page reads "1 item of 1 kind", not "1 items of 1 kinds". */
+	//$ gametest_ticks_batch AREA '60' '"qaFurnishedBugOne"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "qaFurnishedBugOne")
+	public void oneThingToBringReadsInTheSingular(GameTestHelper helper) {
+		QaFurnishedGameTests.resetAfter(helper);
+		ServerPlayer player = placedNook(helper, InteractionHand.MAIN_HAND);
+		helper.runAfterDelay(2, () -> {
+			QaFurnishedGameTests.rightClickAir(player);
+			String first = QaFurnishedGameTests.page(player.getOffhandItem(), 0);
+			helper.assertTrue(first != null && first.contains("Still to bring"), "no list: " + first);
+			helper.assertTrue(!first.contains("1 items") && !first.contains("1 kinds") && first.contains("Still to bring: 1 item of 1 kind."), "the list's first page reads: " + first.replace("\n", " "));
+			helper.succeed();
+		});
+	}
 }

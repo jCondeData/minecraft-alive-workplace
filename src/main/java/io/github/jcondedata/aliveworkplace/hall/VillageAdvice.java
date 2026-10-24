@@ -36,7 +36,7 @@ public final class VillageAdvice {
 	/** One piece of advice: {@code advice.aliveworkplace.<key>} (the title) and {@code <key>.how}, with {@code args}. */
 	public record Tip(String key, Item icon, Object... args) {
 		public Component title() {
-			return Component.translatable("advice.aliveworkplace." + key, args);
+			return io.github.jcondedata.aliveworkplace.work.Words.countedFirst("advice.aliveworkplace." + key, args); // "1 villager has no bed"
 		}
 
 		public Component how() {

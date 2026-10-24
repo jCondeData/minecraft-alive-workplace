@@ -5129,7 +5129,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Library in the new spruce style has Carved Wood shelves and its Librarian still takes the lectern; a Carved Wood
   chest is a supply chest; the Grand style with Rechiseled builds with nothing skipped; renders reviewed; scene
   `carved_styles`.
-- [x] **37.8** (approved 2026-10-18) **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
+- [x] **37.8** (approved 2026-10-18) (verified 2026-10-24: 5 compat QA tests [QaSophisticatedStorageCompatTests]: stack-upgrade free room at the 64/65 and full-slot edges, linked count following added/broken barrels incl. the .one line, builder clearing leaves controller+barrel with contents, save/reload counts once, barrel past reach is its own store; mutation not run) **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
   (`sophisticatedstorage:chest`, `iron_chest` ... `netherite_barrel`, `limited_barrel_1` ... `4`) works as a supply
   chest, a porter's chest and a Storehouse chest; builders treat them as containers (never broken while clearing, never
   copied; they're in `#c:chests` and `#c:barrels`); and the Storehouse measures free room in items where a stack
@@ -5137,7 +5137,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   tier takes and gives items through porters and builders; a chest with a stack upgrade (its upgrade item in its
   upgrade slot) shows its real free room on the Storehouse board; a builder clearing a site leaves a Sophisticated
   chest in place with its contents; the existing barrel test still passes.
-- [x] **37.9** (approved 2026-10-18) **A Sophisticated controller as the Storehouse's store.** A `sophisticatedstorage:controller` in the
+- [x] **37.9** (approved 2026-10-18) (verified 2026-10-24: 5 compat QA tests [QaSophisticatedStorageCompatTests]: stack-upgrade free room at the 64/65 and full-slot edges, linked count following added/broken barrels incl. the .one line, builder clearing leaves controller+barrel with contents, save/reload counts once, barrel past reach is its own store; mutation not run) **A Sophisticated controller as the Storehouse's store.** A `sophisticatedstorage:controller` in the
   Storehouse's area makes the storage blocks linked to it (touching storage blocks and `storage_link`s, found by walking
   block ids within the controller's reach) one store, read and filled through the controller's own item storage; the
   linked blocks drop out of the store list, so nothing counts twice. First check the controller exposes item storage

@@ -153,6 +153,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B297GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderStockGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderStockBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderLimitsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.CountWordsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderClicksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildsGameTests",

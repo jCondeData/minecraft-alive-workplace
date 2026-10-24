@@ -110,7 +110,7 @@ public final class Fields {
 		BoundingBox box = area.get();
 		double distance = Math.sqrt(box.getCenter().distSqr(composter.get()));
 		if (distance > MAX_DISTANCE) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) distance, MAX_DISTANCE), ChatFormatting.RED);
+			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		FieldJob old = ModAttachments.FARM_FIELD.get(villager);

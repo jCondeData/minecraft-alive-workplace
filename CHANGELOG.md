@@ -20,6 +20,7 @@ asks for the steps, `latest.log` and any crash report).
 
 - A full Village refusing a guild charter counts its one guild in the singular: "Elderford is a Village and may have 1 guild; it has them all.", not "1 guilds" (B376).
 - The Storehouse board and the Steward count one in the singular: "Storehouse: 1 chest, ..." and "1 job here has no workplace of its trade", not "1 chests" and "1 jobs here have" (B377).
+- A spot just past a worker's reach is refused with its distance rounded up, so the numbers agree: 48.5 blocks from a Builder's Blueprint Table says "That spot is 49 blocks ... keep it within 48.", not "48 blocks" (B378; Farmers', Miners' and other area jobs' spots too).
 - The Storehouse board shows the real room behind a Sophisticated Storage controller once something is stored: with a stack-upgraded barrel and a plain one linked, 100 cobblestone made it say "Room for 22164 more items" where 8540 fit; it now says 8540. Goods a porter puts in through a controller no longer vanish when they fill the barrel holding the same item: the rest goes into the next barrel (B371).
 - A Scouting Report map always shows both the village and the lair, with the red X on the lair: near a line where the game's map squares meet, one of them could fall off the map's edge (B368).
 - A villager whose bed is broken during the day stops counting as housed at once, instead of keeping his home until bedtime: the village's housed count, wellbeing and lit beds drop and the hall's villager page reads "No bed of their own" as soon as the bed is gone (B362).

@@ -71,7 +71,7 @@ public final class AreaJobs {
 		BoundingBox box = area.get();
 		double distance = Math.sqrt(box.getCenter().distSqr(station.get()));
 		if (distance > MAX_DISTANCE) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) distance, MAX_DISTANCE), ChatFormatting.RED);
+			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		FieldJob old = type.get(villager);

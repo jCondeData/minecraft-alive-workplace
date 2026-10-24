@@ -57,19 +57,37 @@ public class QaLairEngineGameTests implements FabricGameTest {
 		level.setDayTime((day - 1) * DAY + time);
 	}
 
-	/** A random whose every float is 0: any chance above 0 comes. */
-	private static RandomSource always() {
-		return new LegacyRandomSource(7L) {
+	/**
+	 * A random whose every float is 0 (any chance above 0 comes) but whose doubles and ints are seeded, so each seed
+	 * looks for a site in another direction (in a crowded suite one direction may be all other tests' ground).
+	 */
+	private static RandomSource comes(long seed) {
+		return new LegacyRandomSource(seed) {
 			@Override
 			public float nextFloat() {
 				return 0f;
 			}
-
-			@Override
-			public double nextDouble() {
-				return 0d;
-			}
 		};
+	}
+
+	/** The hall's round with every seed up to {@code seeds}, till a lair stands; whether one does. */
+	private static boolean roundsTillALair(ServerLevel level, BlockPos hall, int seeds) {
+		for (long seed = 0; seed < seeds && Lairs.near(level, hall).isEmpty(); seed++) {
+			Lairs.round(level, hall, true, comes(seed));
+		}
+		return Lairs.near(level, hall).isPresent();
+	}
+
+	/** Why no lair came: the round's conditions and the sites the seeds would find. */
+	private static String why(ServerLevel level, BlockPos hall) {
+		int sites = 0;
+		for (long seed = 0; seed < 40; seed++) {
+			if (Lairs.site(level, hall, Lairs.NEAR, Lairs.FAR, RandomSource.create(seed)) != null) {
+				sites++;
+			}
+		}
+		return "comer=" + Lairs.comer(level, hall, true, comes(1)) + " chance=" + Lairs.dailyChance(level, hall) + " quiet=" + Threats.quiet(level, hall)
+			+ " rest=" + Lairs.resting(level, hall) + " rank=" + VillageRanks.of(level, hall) + " sites=" + sites + "/40";
 	}
 
 	/** A hall (village radius 16, a Town) with four villagers; config, clock and threats put back at the end. */
@@ -200,22 +218,20 @@ public class QaLairEngineGameTests implements FabricGameTest {
 			helper.assertTrue(Lairs.near(level, hall).isEmpty() && Lairs.resting(level, hall) == Lairs.REST_DAYS, "the rest: " + Lairs.resting(level, hall));
 			loadRing(level, hall);
 			for (long day = 100; day < 105; day++) {
-				for (int round = 0; round < 3; round++) {
-					at(level, day, 2000 + round * 6000);
-					Lairs.round(level, hall, true, always());
-				}
+				at(level, day, 2000);
+				roundsTillALair(level, hall, 12);
 				helper.assertTrue(Lairs.near(level, hall).isEmpty(), "a lair came on day " + day + " with " + Lairs.resting(level, hall) + " days of rest left");
 			}
 			at(level, 105, 2000);
 			helper.assertTrue(Lairs.resting(level, hall) == 0, "the rest didn't end after 5 days: " + Lairs.resting(level, hall));
-			Lairs.round(level, hall, true, always());
-			Lairs.Lair next = Lairs.near(level, hall).orElse(null);
-			helper.assertTrue(next != null && next.culture().equals(Threats.BANDITS), "no lair came the day the rest ended: " + next);
+			helper.assertTrue(roundsTillALair(level, hall, 40), "no lair came the day the rest ended: " + why(level, hall));
+			Lairs.Lair next = Lairs.near(level, hall).orElseThrow();
+			helper.assertTrue(next.culture().equals(Threats.BANDITS), "the lair that came: " + next);
 			double d = flat(next.pos(), hall);
 			helper.assertTrue(d >= Lairs.NEAR - 1.5 && d <= Lairs.FAR + 0.5, "the new camp is " + d + " blocks from the hall");
 			for (int round = 0; round < 6; round++) {
 				at(level, 105, 3000 + round * 3000);
-				Lairs.round(level, hall, true, always());
+				Lairs.round(level, hall, true, comes(round));
 			}
 			Lairs.Lair still = Lairs.near(level, hall).orElse(null);
 			helper.assertTrue(still != null && still.captain().equals(next.captain()) && still.pos().equals(next.pos()) && lairsOf(level, hall) == 1,
@@ -235,16 +251,21 @@ public class QaLairEngineGameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		helper.runAfterDelay(2, () -> {
 			loadRing(level, hall);
-			WorkplaceConfig.parse("{\"raiderCultures\": {\"bandits\": false}}").apply();
-			helper.assertTrue(!Threats.enabled(Threats.BANDITS), "the config didn't switch the bandits off");
-			for (long day = 110; day < 115; day++) {
-				at(level, day, 6000);
-				Lairs.round(level, hall, true, always());
-				helper.assertTrue(Lairs.near(level, hall).isEmpty(), "bandits made camp on day " + day + " with their culture off: " + Lairs.near(level, hall));
+			try {
+				WorkplaceConfig.parse("{\"raiderCultures\": {\"bandits\": false}}").apply();
+				helper.assertTrue(!Threats.enabled(Threats.BANDITS), "the config didn't switch the bandits off");
+				for (long day = 110; day < 115; day++) {
+					at(level, day, 6000);
+					roundsTillALair(level, hall, 12);
+					helper.assertTrue(Lairs.near(level, hall).isEmpty(), "bandits made camp on day " + day + " with their culture off: " + Lairs.near(level, hall));
+				}
+				WorkplaceConfig.parse("{\"raiderCultures\": {\"bandits\": true}}").apply();
+				helper.assertTrue(Threats.enabled(Threats.BANDITS), "the config didn't switch the bandits back on");
+				helper.assertTrue(roundsTillALair(level, hall, 40), "switched back on, no camp came: " + why(level, hall));
+				helper.assertTrue(Lairs.near(level, hall).orElseThrow().culture().equals(Threats.BANDITS), "the camp that came: " + Lairs.near(level, hall));
+			} finally {
+				new WorkplaceConfig().apply(); // (the defaults every test starts from, as the other config tests leave them)
 			}
-			WorkplaceConfig.parse("{\"raiderCultures\": {\"bandits\": true}}").apply();
-			Lairs.round(level, hall, true, always());
-			helper.assertTrue(Lairs.near(level, hall).map(l -> l.culture().equals(Threats.BANDITS)).orElse(false), "switched back on, no camp came");
 			helper.succeed();
 		});
 	}

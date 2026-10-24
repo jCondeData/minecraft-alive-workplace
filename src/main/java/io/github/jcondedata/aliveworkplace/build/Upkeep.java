@@ -143,7 +143,7 @@ public final class Upkeep {
 			site.setBench(bench);
 			ModAttachments.BUILDER_JOB.set(builder, new BuilderJob(site.id()));
 			if (owner != null) {
-				Builders.tell(owner, Component.translatable("message.aliveworkplace.repairing", builder.getDisplayName(), Blueprints.displayName(f.structure()),
+				Builders.tell(owner, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.repairing", missing, builder.getDisplayName(), Blueprints.displayName(f.structure()),
 					missing), ChatFormatting.AQUA);
 			}
 			return site;

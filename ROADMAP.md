@@ -494,6 +494,10 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B378** Player-visible text (as B355 for the Storehouse): a placed blueprint whose middle is just past the builder's reach (48.5 blocks from his Blueprint Table, reach 48) is refused, rightly, but the player reads 'That spot is 48 blocks from the builder's Blueprint Table — keep it within 48.': the numbers say it is within reach (Builders.assign shows (int) distance, truncated). Expected: whenever the spot is refused, the distance shown is past the reach (round up, or one decimal). Test: QaBuilderLimitsBugTests.aSpotJustPastTheReachIsRefusedWithANumberPastTheReach on tests/qa-builder-reach-1024 (found by lane-b-1024-0938, 2026-10-24) (found by lane-b-1024-0938, 2026-10-24)
 - [ ] **B379** Player-visible text: drawing with the Shape Planner without a Blank Blueprint (survival) says 'Saving a scan takes a Blank Blueprint (paper and blue dye)': the player is drawing a shape, not saving a scan (Shapes.draw reuses the Scan Tool's message.aliveworkplace.scan.no_blank; its save failure reuses scan.failed the same way). Expected: a line about drawing the shape, e.g. 'Drawing a shape takes a Blank Blueprint (paper and blue dye)'. Test: QaShapePlannerBugTests.drawingWithoutABlankSpeaksOfTheShapeNotAScan on tests/qa-shape-blank-1024 (found by lane-b-1024-0938, 2026-10-24) (found by lane-b-1024-0938, 2026-10-24)
 - [ ] **B380** Strangers mourn each other when their parents share a name (36.16): Couples.related matches mothers, fathers and siblings by display name only and ignores motherId/fatherId, so with villagerNames off (parents recorded as 'Farmer') or any two parents of the same name, a stranger grieves and works slower when an unrelated villager dies. Expected: only partner and real family (by id) mourn. Test: QaVillagerLifeJobsBugTests#qaBugStrangersWhoseMothersShareANameDoNotGrieve on tests/mourning-names (found by lane-c-1024-0953, 2026-10-24)
+- [ ] **B381** The morning siege report says '1 raiders came' for a siege of one raider (32.6): chronicle.aliveworkplace.siege isn't counted with Words.counted like the Defence page; expected '1 raider came'. Test: QaSiegeBugTests.aSiegeOfOneRaiderSaysOneRaider on tests/siege-report-1024 (register it with the fix) (found by lane-d-1024-1008, 2026-10-24)
+- [ ] **B382** Desert raiders' sand ramp stalls when sand (a player's, or likely the desert's own) already sits at the wall's outside foot (32.9): the husk piles one block elsewhere, then stands behind the wall and never ramps; expected the ramp still rises to the top and the existing sand stays after the siege. SandRamps' height check refuses a ramp spot holding anything but air or the siege's own sand. Test: QaRaiderCulturesBugTests (row of sand: fails 3/3; one block: 1/3) on tests/sand-ramp-1024 (found by lane-d-1024-1008, 2026-10-24)
+- [ ] **B383** Threat level 3 (hard) brings no extra raiders for any lair culture (32.21 says a quarter more): VillageRaids.start adds the quarter, then Lairs.raidSize caps the raid at the band at home, which isn't bigger on hard; a Town's pirates send 8 at level 3, expected 10. Fix e.g. by growing the band (or the cap) by a quarter on hard; note the choice. Test: QaPiratesThreatLevelBugTests.atThreatLevelThreeALairsRaidBringsAQuarterMore on tests/threat-level-1024 (found by lane-d-1024-1008, 2026-10-24)
+- [ ] **B384** Player-visible text (36.18): the workplaceRetraining game rule's description (en_us.json gamerule.workplaceRetraining) still says villagers can be 'retrained as Builders for emeralds at a Blueprint Table', but since 36.18 the same rule also gates the Village Hall's Change Job page, which retrains to any job (QaHallJobsShopsGameTests#theRuleTurnedOffMidwayStopsThePayingClick). Expected: the description names both, e.g. 'villagers who already have a job can be retrained for emeralds (any job at the Village Hall, Builder at a Blueprint Table)'. The guide's game-rules page was corrected by lane-c-1024-0953. (found by lane-c-1024-0953, 2026-10-24)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4911,7 +4915,7 @@ Depends on: nothing open.
   mean and lowest; our houses per village) is in the Notes with the commands that made it; any tuning lands with
   `VillageGameTests` passing and the `village` scene still showing our houses.
 
-- [x] **36.9** (approved 2026-10-19) **Fill empty job blocks from the Village Hall** (owner, 2026-10-18, change to 26.6: retraining at a
+- [x] **36.9** (approved 2026-10-19) (verified 2026-10-24: QaHallJobsShopsGameTests [36.9 free-job clicks via client packets, broken block, nobody jobless, made-up clicks] and QaVillagerLifeJobsGameTests [36.11 miner pickaxe: chest first, own cobblestone, store sticks, one short asks 1, mid-craft theft; 36.14 upgrades: no/busy builder, stranger, fence after open, singular, tab count; 36.17 weights 1/[1+n], counts, wiki names every job]. Mutants killed: RandomJobs weight, PickaxeCrafting missing count. Wiki/guide read and fixed [random-jobs names, village-hall upgrades, miner sticks].) **Fill empty job blocks from the Village Hall** (owner, 2026-10-18, change to 26.6: retraining at a
   job block is awkward because the villager must walk into a finished home to stand near the block). Done when: the
   Village Hall has a "Free job blocks" page listing every job block in the village with no villager on it (its job,
   the build it's in, the distance; e.g. a Storehouse block), and for each, the villagers without a job; picking one
@@ -4924,7 +4928,7 @@ Depends on: nothing open.
   "fisherman"), case-insensitive, with the style/level rows kept under their build; an empty box shows everything and an
   empty result says so. Done when: GameTests for the filter (name, id, job, no match, cleared box, selected build hidden by
   a filter); `langcheck.py` passes; the `table` scene's stills show a search typed and the list narrowed.
-- [x] **36.11** (approved 2026-10-20) **Miners craft their own pickaxe** (owner, 2026-10-19). A Miner whose pickaxe wears out or who has none, and who has mined
+- [x] **36.11** (approved 2026-10-20) (verified 2026-10-24: QaHallJobsShopsGameTests [36.9 free-job clicks via client packets, broken block, nobody jobless, made-up clicks] and QaVillagerLifeJobsGameTests [36.11 miner pickaxe: chest first, own cobblestone, store sticks, one short asks 1, mid-craft theft; 36.14 upgrades: no/busy builder, stranger, fence after open, singular, tab count; 36.17 weights 1/[1+n], counts, wiki names every job]. Mutants killed: RandomJobs weight, PickaxeCrafting missing count. Wiki/guide read and fixed [random-jobs names, village-hall upgrades, miner sticks].) **Miners craft their own pickaxe** (owner, 2026-10-19). A Miner whose pickaxe wears out or who has none, and who has mined
   the materials (cobblestone or deepslate for the head, sticks from the village store or crafted from planks; stone, then iron
   and diamond as the level rises), crafts a new one at their work block from what they mined themselves, instead of waiting
   for the player or the Toolsmith. Done when: GameTests for the happy path (mined cobblestone and sticks become a stone
@@ -4944,7 +4948,7 @@ Depends on: nothing open.
   Stored blueprints are the table's own (a broken table drops them; the table saves them across restarts). Done when: GameTests for storing,
   taking one out, the count, a broken table dropping its blueprints, save and reload, a full inventory, and the stored tab
   in `en_us.json`; scene `table_library` (the Table's stills show a stored blueprint taken out).
-- [x] **36.14** (approved 2026-10-20) **Upgrade a built home from the Village Hall** (owner, 2026-10-19). A page in the Village Hall lists the village's finished
+- [x] **36.14** (approved 2026-10-20) (verified 2026-10-24: QaHallJobsShopsGameTests [36.9 free-job clicks via client packets, broken block, nobody jobless, made-up clicks] and QaVillagerLifeJobsGameTests [36.11 miner pickaxe: chest first, own cobblestone, store sticks, one short asks 1, mid-craft theft; 36.14 upgrades: no/busy builder, stranger, fence after open, singular, tab count; 36.17 weights 1/[1+n], counts, wiki names every job]. Mutants killed: RandomJobs weight, PickaxeCrafting missing count. Wiki/guide read and fixed [random-jobs names, village-hall upgrades, miner sticks].) **Upgrade a built home from the Village Hall** (owner, 2026-10-19). A page in the Village Hall lists the village's finished
   builds that have a next level (I to II, II to III, ...). Each row shows the build, its level, the cost in materials, and
   whether the space is free. Picking one sends a Builder to build the next level over it. The space check counts what the
   next level adds: built blocks (walls, fences, other builds, paths) block an upgrade, natural terrain (grass, dirt, stone, trees,
@@ -4968,7 +4972,7 @@ Depends on: nothing open.
   mood/work for their partner and family, a funeral the Undertaker leads at the grave or graveyard). Done when:
   GameTests for the new lengths (a villager reaches elder only after the new span), an old save's villager keeps its
   age, the death message and chronicle entry, the mourning ends; text in `en_us.json`; scene `village_mourns`.
-- [x] **36.17** (approved 2026-10-22) **A job block with several jobs gives one at random** (owner, 2026-10-20). Where one block can hire more
+- [x] **36.17** (approved 2026-10-22) (verified 2026-10-24: QaHallJobsShopsGameTests [36.9 free-job clicks via client packets, broken block, nobody jobless, made-up clicks] and QaVillagerLifeJobsGameTests [36.11 miner pickaxe: chest first, own cobblestone, store sticks, one short asks 1, mid-craft theft; 36.14 upgrades: no/busy builder, stranger, fence after open, singular, tab count; 36.17 weights 1/[1+n], counts, wiki names every job]. Mutants killed: RandomJobs weight, PickaxeCrafting missing count. Wiki/guide read and fixed [random-jobs names, village-hall upgrades, miner sticks].) **A job block with several jobs gives one at random** (owner, 2026-10-20). Where one block can hire more
   than one job, which job a villager takes from it is chosen at random (weighted toward the jobs the village has
   fewest of is fine: the lane decides and writes it in the Notes), not always the same one. Done when: a list of every
   block that offers several jobs in the wiki page; GameTests that over many hires (fixed `RandomSource`) each job of a
@@ -5019,7 +5023,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   field with its default; how each part falls back without its mod. The flag: `Expansions.M37` with `flag()`,
   `MILESTONES` and `milestone()` for every switch, so `ExpansionGateGameTests` covers it. Done when: the note is on
   `main` with all of these, the flag gates the switches (a gate test), and the package is sent.
-- [x] **37.2** (approved auto 2026-10-17) **Furniture spots in our blueprints.** The generator (`tools/blueprints/`) records each piece of vanilla
+- [x] **37.2** (approved auto 2026-10-17) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Furniture spots in our blueprints.** The generator (`tools/blueprints/`) records each piece of vanilla
   furniture it draws as a furniture spot: its kind (chair, stool, bench, couch, table, side table, desk, counter,
   cupboard, shelf, nightstand, drawer, bed, lamp, clock, picture, blinds, crockery), facing, wood or colour, footprint,
   and the vanilla blocks it's made of. The spots go in a file beside the template,
@@ -5028,7 +5032,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   when: every shipped build with furniture has its spots file (a check in `generate.py`: each spot's blocks are the
   blocks in the template there); a GameTest loads a build's spots and finds them where its chairs and tables are; a
   file with a mistake is logged with its path and skipped.
-- [x] **37.3** (approved auto 2026-10-17) **The furnishing table.** `data/aliveworkplace/furnishings/<mod>.json`: for each kind (by wood or colour
+- [x] **37.3** (approved auto 2026-10-17) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **The furnishing table.** `data/aliveworkplace/furnishings/<mod>.json`: for each kind (by wood or colour
   where the mod has them), the modded block id, how its states map (facing, the second half of a two-block piece) and
   its footprint, read by a reload listener (through `Platform`). When a build is planned (`BuildPlan`), each spot
   becomes the piece of the first mod in `furnitureMods` whose block exists in the registry (a registry lookup by id,
@@ -5040,7 +5044,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Handcrafted present gets Handcrafted chairs, table and bed and costs their items; with `furnitureMods` set to
   CobbleFurnies first it gets CobbleFurnies pieces; with `furnishedBuilds` off it's the vanilla build; a GameTest
   (no mods) builds the vanilla build unchanged; a site saved mid-build keeps its choice after a reload.
-- [x] **37.4** (approved 2026-10-18) **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
+- [x] **37.4** (approved 2026-10-18) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
   in every style, the M34 grander homes when M34 is on) and the Inn get rooms that read as rooms with each mod: a
   dining set round a table, a bedroom with nightstands and a lamp, a sitting corner with a couch or sofa, shelves of
   crockery, clocks and pictures on the walls, blinds at the windows. Each room is drawn as vanilla furniture spots that
@@ -5049,7 +5053,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   compat GameTests build the Starter Cottage and the Inn with Handcrafted and with CobbleFurnies, nothing skipped;
   scene `furnished_home` (`-Pfurniture=true`, a new harness switch that adds the pack's furniture mods; the cottage
   furnished, room by room).
-- [x] **37.5** (approved 2026-10-18) **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
+- [x] **37.5** (approved 2026-10-18) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
   Kitchen and the M34 trades' workshops get furniture where it fits: desks for the Scribe and Printer, counters and
   shelves in the shops, crockery and benches in the Kitchen, Beautify trellises, hanging pots and picture frames as
   decoration. Never a job block, a bed a villager needs, or a container is swapped: those stay what the job reads.
@@ -5093,7 +5097,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   mod's there. Done when: compat GameTests: a controller with three linked barrels counts their contents once, takes
   a porter's delivery and gives the builder what's asked; breaking the controller turns them back into three stores;
   the Storehouse board says "linked through a storage controller: N blocks"; scene `modded_storehouse` part one.
-- [x] **37.10** (approved 2026-10-19) **Tom's Simple Storage as the Storehouse's source.** A `toms_storage:inventory_connector` in the
+- [x] **37.10** (approved 2026-10-19) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Tom's Simple Storage as the Storehouse's source.** A `toms_storage:inventory_connector` in the
   Storehouse's area is one store for everything it connects (the inventories touching it and those on its
   `inventory_cable`, `inventory_cable_connector` and framed cables, found by walking block ids), read and filled
   through the connector's item storage; the connected inventories drop out of the list. A `storage_terminal` or
@@ -5158,7 +5162,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   off), the Steward's rule firing on repeated shortfalls and not otherwise, a generated village with the workshop when on;
   text in `en_us.json`; wiki and guide lines; scene `crafter_workshop`.
   - [x] **37.16a** (approved 2026-10-22) Change from the owner (2026-10-21): retired with 37.14a: the Crafter's Workshop leaves the Steward's plans, the workshop offers and village generation (existing workshops stay as plain buildings); do it in the same change as 37.14a.
-- [x] **37.17** (approved 2026-10-23) **Storage Hall builds with Tom's Simple Storage** (owner, 2026-10-22: "put some terminal builds as blueprints"). New
+- [x] **37.17** (approved 2026-10-23) (verified 2026-10-24: Every Done-when clause mapped to existing GameTests/compat tests [FurnitureSpot, FurnishingTable, FurnishedBuildCompat, FurnishedHomes[+Compat], FurnishedWorkplaces[+Compat], TomsStorageCompat, StorageHall[+sCompat]], all green in a full local build [2901 + 526 required tests]; furniture-and-storage wiki page and guide pages read against the specs; scenes furnished_home, furnished_workplaces, modded_storehouse, storage_hall listed.) **Storage Hall builds with Tom's Simple Storage** (owner, 2026-10-22: "put some terminal builds as blueprints"). New
   blueprints, listed at the Blueprint Table, built with Tom's blocks when Tom's Simple Storage is installed and with
   vanilla chests and barrels (no terminal) when it isn't: a **Storage Hall** (a hall of 24+ chests and barrels round an
   Inventory Connector on Inventory Cables, a Storage Terminal and a Crafting Terminal on a counter by the door, filing
@@ -5468,6 +5472,7 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-24 (lane-c-1024-0953, QA, **owner question**): (1) the Village Hall's Free Jobs page (36.9) and Change Job page (36.18) let any player at the hall use them, a stranger at someone else's hall too: they can hand out free job blocks and retrain the owner's librarian (only Builders with an employer are protected). Neither spec says who may use them; intended? (2) A Hauler Golem (29.x) heads for the nearest Storehouse only; if that one can't be walked to, it stands holding its load and never tries the next one. Per spec ("nearest"), so not filed as a bug. (3) A block broken between the Change Job clicks says "Someone took that workstation first", slightly misleading.
 - 2026-10-23 (lane-b-1023-2138, **owner question still open: Milestone 36 is empty; what should the quick lane build next, or pause its scheduled task?**): no quick additions and no `(lane: b)` bug, so nothing was built. main 52d7514 is green (build 40021971331); the newer QA-stage-5 push 6f6d818 was still building. wip/lane-b* still hold nothing to merge (see lane-b-1021-1238).
 - 2026-10-23 (lane-b-1023-1838, **owner question still open: Milestone 36 is empty; what should the quick lane build next, or pause its scheduled task?**): no quick additions and no `(lane: b)` bug, so nothing was built. main c684b97 is green (build 39994012003). wip/lane-b* still hold nothing to merge (see lane-b-1021-1238).
 - 2026-10-23 (lane-b-1023-1538, **owner question still open: Milestone 36 is empty; what should the quick lane build next, or pause its scheduled task?**): no quick additions and no `(lane: b)` bug, so nothing was built. main 9ca9c84 is green (build 39975716130). wip/lane-b* still hold nothing to merge (see lane-b-1021-1238).

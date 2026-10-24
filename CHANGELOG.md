@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Shopkeeper's trade screen sells only what the shop's chests hold at the moment of the trade (B348). Before, a
+  buyer who had the trades open when the owner emptied the chest still got the goods for his emeralds, made from
+  nothing; now the goods don't appear, the emeralds stay yours and the offer shows as sold out.
 - A sneak-right-click with a personal request's letter, reply or heirloom hands it over (B354). Before, the letter
   (paper) was taken as a job pick ("needs a lectern nearby") and stayed in your hand.
 - A found Legend at their camp takes what you hold in the off hand when your main hand is empty (B345): the shipwreck

@@ -399,10 +399,18 @@ public final class Lairs {
 		}
 		Culture.Lair spec = Threats.get(lair.culture()).flatMap(Culture::lair).orElse(null);
 		int strength = lair.strength();
-		if (spec != null && spec.growth() > 0 && strength < spec.max()) {
-			strength = (int) Math.min(spec.max(), strength + spec.growth() * (day - lair.grown()));
+		if (spec != null && spec.growth() > 0 && strength < most(spec)) {
+			strength = (int) Math.min(most(spec), strength + spec.growth() * (day - lair.grown()));
 		}
 		data.put(lair.with(strength, day, lair.out(), lair.lost()));
+	}
+
+	/**
+	 * The most a lair of {@code spec} grows to: its culture's {@code max}, a quarter more when the threat level is hard
+	 * (32.21, B383: the band is bigger, so its raids are too).
+	 */
+	public static int most(Culture.Lair spec) {
+		return Threats.more(spec.max());
 	}
 
 	// Raids.
@@ -625,7 +633,8 @@ public final class Lairs {
 		// floor he stands on, a ship's deck).
 		BlockPos middle = origin.offset(StructureTemplate.calculateRelativePosition(settings,
 			camp ? FIRE : new BlockPos(template.getSize().getX() / 2, captainSpot.map(BlockPos::getY).orElse(1), template.getSize().getZ() / 2)));
-		int strength = spec.map(Culture.Lair::strength).orElse(DEFAULT_STRENGTH);
+		// A quarter more when the threat level is hard (32.21): a raid comes from the band, so the band is bigger (B383).
+		int strength = Threats.more(spec.map(Culture.Lair::strength).orElse(DEFAULT_STRENGTH));
 		Lair lair = new Lair(middle, hall.immutable(), new UUID(0, 0), Chronicle.day(level), culture, strength, Chronicle.day(level), 0, 0,
 			level.random.nextInt(NAMES));
 		BlockPos captainAt = camp ? standOn(level, origin.offset(StructureTemplate.calculateRelativePosition(settings, CHIEF_SPOT)))

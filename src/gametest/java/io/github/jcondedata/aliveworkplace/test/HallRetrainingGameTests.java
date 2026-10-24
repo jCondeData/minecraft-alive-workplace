@@ -26,6 +26,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.locale.Language;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -405,6 +406,16 @@ public class HallRetrainingGameTests implements FabricGameTest {
 			}
 			helper.succeed();
 		});
+	}
+
+	/** The game rule's description (B384) names both ways the rule gates: the Village Hall's Change Job page and the Blueprint Table. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void theRulesDescriptionNamesTheHallAndTheTable(GameTestHelper helper) {
+		String text = Language.getInstance().getOrDefault("gamerule.workplaceRetraining");
+		helper.assertTrue(text.contains("Village Hall") && text.contains("any job"), "the rule's description doesn't name the Village Hall: " + text);
+		helper.assertTrue(text.contains("Blueprint Table") && text.contains("Builder"), "the rule's description doesn't name the Blueprint Table: " + text);
+		helper.succeed();
 	}
 
 	/** Retrained, saved and loaded: still the Novice Porter at the Storehouse, still on her way; an old save has no walk. */

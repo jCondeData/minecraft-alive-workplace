@@ -233,7 +233,7 @@ Game rules (per world, `/gamerule`):
 | `workplaceKeepWorkLoaded` | true | Builds and quarries keep running while the player who ordered them is online but far away |
 | `workplaceLevelGround` | 2 (0 to 8) | Blocks around a finished build that get leveled; 0: leave the ground alone |
 | `workplaceVillageFarms` | true | A village farmer with no field takes on the farm by their composter, once a chest is near it |
-| `workplaceRetraining` | true | A villager who has a job can be retrained as a Builder for a price at a free Blueprint Table (26.6); false: the old rule, only jobless villagers |
+| `workplaceRetraining` | true | A villager who has a job can be retrained for a price: to any job from the Village Hall's Change Job page (36.18), or as a Builder at a free Blueprint Table (26.6); false: the old rule, only jobless villagers |
 
 ## Saved data
 

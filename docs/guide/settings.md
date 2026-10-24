@@ -91,7 +91,7 @@ Change these in game with `/gamerule <name> <value>` (more in [Game rules](game-
 | `workplaceAllowUploads` | false: only operators can upload blueprint files |
 | `workplaceVillageFarms` | false: village farmers don't take on the farm by their composter by themselves |
 | `workplaceKeepWorkLoaded` | false: builds and quarries stop when nobody is near them |
-| `workplaceRetraining` | false: villagers who already have a job can't be retrained as Builders |
+| `workplaceRetraining` | false: villagers who already have a job can't be retrained (no Change Job page at the Village Hall, no Builder at a Blueprint Table) |
 
 ## Commands for everyone
 

@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.149.0 — 2026-10-24
+
 ### Fixed
 
 - The game rule `workplaceRetraining`'s description names both things it switches: retraining to any job at the Village Hall and as a Builder at a Blueprint Table (B384).

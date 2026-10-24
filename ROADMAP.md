@@ -524,6 +524,8 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B408** A Tinkerer with raw iron but no coal: the builder's shortage line says 'Nobody here makes: Iron Bars' though a Tinkerer is there; expected it to name the missing coal (as the Mason's line does since B352) and take nothing (37.14a); Test: QaJobChainBugGameTests.aTinkererWithOreButNoCoalNamesTheCoalAndTakesNothing on tests/job-chains (found by lane-c-1024-2152, 2026-10-24)
 - [ ] **B409** A Librarian one Leather short of the last Bookshelf: the shortage line says 'short of 4 Rabbit Hide to make 1 Bookshelf'; expected 'short of 1 Leather' (it walks down to the leather recipe instead of naming the leather the chest lacks, so players go hunting rabbits) (37.14a); Test: QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt on tests/job-chains (found by lane-c-1024-2152, 2026-10-24)
 - [ ] **B410** Player-visible text (kin of B402): the Shape Planner says '1 blocks'. A box whose sides are clicked down to 1x1x1 reads '1 blocks of Stone Bricks' on the info book (screen.aliveworkplace.shapes.count, Shapes.fill ~line 301), and drawing it says 'Drew Box 1x1x1 Hollow Stone Bricks: 1 blocks of Stone Bricks. Give it to a builder.' (message.aliveworkplace.shapes.drawn, Shapes.draw ~line 393); neither key has a .one. Expected: '1 block of Stone Bricks' (Words.counted with .one keys). By code reading only (client screens, no GameTest reach): the Blueprint Table's screen.aliveworkplace.table.all_materials_title ('%s materials · %s items') and table.size ('... · %s blocks') may read '1 materials · 1 items' / '1 blocks' for a one-block blueprint. Test: QaBuilderCountsBugTests.aOneBlockShapeSaysOneBlock on tests/qa-builder-counts-1024 (found by lane-b-1024-2138, 2026-10-24)
+- [ ] **B411** Server config (config/aliveworkplace.json): one hand-edited value of the wrong kind resets every setting and the file is overwritten with the defaults at once, so the owner's choices are lost for good. A file with maxSiteDistance 100, seasonDays 12 and 'festivals': 0 (or 'supplyRadius': 12.5, or 'threatLevel': 'high') starts with maxSiteDistance 48 and seasonDays 16 and the written-back file no longer holds them (Gson throws for the whole object; WorkplaceConfig.load catches it, loadAndApply saves the defaults). The wiki promises 'a value out of range is clamped, a missing value takes its default': a value that can't be read should take its default alone and the rest be kept (or the unreadable file be kept aside, not overwritten). Also: 'configVersion': null or a null in 'expansionsOpen' throws UnsupportedOperationException out of WorkplaceConfig.parse (only IOException/JsonParseException are caught), so the game can't start. Test: QaConfigFileBugTests on tests/config-file (found by lane-e-1024-2213, 2026-10-24)
+- [ ] **B412** Release-candidate benchmark misses 25.3's tick target: PERF=true PLOTS=40 tools/packtest/run.sh (the pack, Java 21, main 48a374e12, jar 0.148.1, this 7 GB dev container, lane-a-1024-2123, 2026-10-24 22:44Z; 80 workers, 39 of 46 sites working) measured 28 of 2,400 ticks with over 50 ms of our code, 17 of them on the CPU without GC pauses (worst 462.9 ms on the CPU, in a 1,129 ms tick at setup). Single BuilderWork calls of 533.2, 358.1, 267.8, 201.5 and 170.3 ms, and in steady state (22:45:59 to 22:47:00) BuilderWork calls of 110 to 131 ms with under 55 ms off the CPU, although BuildBudget caps builders at 12 block changes a level a tick; profile share 23.4% of the server thread (target under 15%; 2,994 samples; innermost frames BlueprintLibrary.list 2.1%, BuilderWork.breakBlock 2.0%). Expected: 0 ticks over 50 ms of ours on the CPU (25.3) and under 15% share, as GitHub's runner measured on 2026-10-11 (12.9%, 0 of 2,400). Lead: BlueprintLibrary.list showing in a builder's tick; a loaded local container inflates times, so compare with nightly-tests part: benchmark on GitHub before changing code. Test: PERF=true PLOTS=40 tools/packtest/run.sh, the 'Benchmark: a tick with' lines and perf.py --ticks (found by lane-a-1024-2123, 2026-10-24)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -962,9 +964,26 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   - `mod-publish-plugin` set up with a dry run.
 
   Done when: each of these is in place, and the dry run succeeds.
-- [ ] **26.4** **Release candidate.** A Full tester run, a pack boot, the performance benchmark, and the last 3 nightly
+- [ ] **26.4** (needs owner check: play a session in the pack's client with the release-candidate jar) **Release candidate.** A Full tester run, a pack boot, the performance benchmark, and the last 3 nightly
   runs green (blocked until they have run). Then the owner's own play session in the pack's client (carried over from
   Milestone 5). Done when: all of these have passed, and the owner has played.
+  - Status (lane-a-1024-2123, 2026-10-24, main 48a374e12, jar 0.148.1): **nightly**: the last 3 nightly-tests runs
+    on main green (39749395959 10-22, 39925710783 10-23, 40076984883 10-24; 5 suite runs, log audit, pack boot, soak).
+    **Build**: a full local `./gradlew --max-workers=1 build` passed (3,075 GameTests + 575 compat, all required);
+    `logaudit.py` over both runs: no error, 19 warnings, all from tests' deliberately broken files or other mods.
+    **Pack boot** (`tools/packtest/run.sh`, Java 21) passed: our mod loaded, 131 blueprints, both villages generated,
+    the birch village has 1 of its 6 villagers in our jobs (ball_smith); the plains village counted 0 villagers at all
+    (not checked whether that's usual); `logaudit.py`: 9 errors, none ours (empty registries, a Cobblemon dex file).
+    **Benchmark** (`PERF=true PLOTS=40`, this loaded 7 GB container, 80 workers, 39 of 46 sites working) **misses 25.3's
+    target**: our code a tick p50 4.9 / 4.5 ms, p99 62.1 / 36.2 ms, 28 of 2,400 ticks over 50 ms of ours (17 on the
+    CPU, worst 462.9 ms), single `BuilderWork` calls up to 533.2 ms, our share 23.4% of the server thread (target 15%),
+    heap after GC 1,442 MB, server ticks p50 52.0 / 26.9 ms: filed **B412** (compare with GitHub's runner first).
+    **Full tester run: only partly**: `langcheck.py` over the whole mod (7,098 keys, 0 missing, 0 argument mix-ups,
+    8 title/detail pairs with different counts, all positional `%n$s` or separate lines), `inventory.py` over the whole
+    mod (3,592 GameTests; gaps: 53 mixins, 6 data components, 3 payloads, 3 POIs, the benchmark/rehearsal/soak
+    commands); the nightly's 5 suite runs stand for the flake sweep. Not run: the gap tests, the ~20-mutant sweep, the
+    upgrade check, the client pass, the config matrix, the plain-Fabric boot; `baseline.json` not updated (no Full
+    run). Left: B412, the rest of the Full run, then the owner's play session.
 - [ ] **26.5** (approved: owner 2026-10-13, publish once 26.4 has passed and we feel ready; waits on 26.4) **Publish.** Done when: the pages are live and linked from the README.
 - [x] **26.6** (approved 2026-10-19) **Retrain a villager who already has a job** (owner's playtest, 2026-10-14: in Cobblemon villages almost
   every villager already works, so there's nobody to hire). Sneak-right-click any grown villager who has a job (vanilla,

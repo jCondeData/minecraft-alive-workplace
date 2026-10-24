@@ -3452,7 +3452,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     camp;
   - the camp passes `check.py` and its render is in the package;
   - scene `warband`: the war camp, then a GIF of the warband's siege on a walled village.
-- [x] **32.8** (approved 2026-10-11) **Drowned pirates.** `drowned_pirates.json`: coastal villages (`coast`, checked once a day); Town and
+- [x] **32.8** (approved 2026-10-11) (verified 2026-10-24: lane D QA on main 82db26a: QaPiratesThreatLevelGameTests [ship fits water 5 deep, refused at 4; a coastal City gets pirates, a Hamlet doesn't; captain base+40; crew ashore near the ship's beach at level 3; a block the player swapped into the ship stays when it sinks; At peace ship sails at dawn and none comes]; 40-70 out and the crew shares not testable in the areas) **Drowned pirates.** `drowned_pirates.json`: coastal villages (`coast`, checked once a day); Town and
   up; arrival `shore`. Their lair is the **Pirate Ship** (`camp/pirate_ship`, about 27 x 20 x 9, minecraft-architect
   skill: a two-masted dark oak sloop with black sails, a crow's nest, the captain's cabin with the loot chest, the
   Jolly Roger (a black banner with the skull) at the stern), anchored on water at least 5 deep, 40–70 blocks out, its

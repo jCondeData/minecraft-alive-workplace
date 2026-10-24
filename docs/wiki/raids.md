@@ -184,6 +184,9 @@ None.
   lookout; on the warned day the gates shut and the portcullis down at noon, the archer on the tower within 400 ticks
   of dusk and the villagers in, the siege taking the bars over; the bars up when no attack came, raids and sieges
   switched off, every new sentence). Scene `warning`.
+- 32.14 (QA, lane D): `QaWarningGameTests` (an archer posted exactly 24 blocks from a Lookout Tower's middle keeps
+  watch, 25 blocks off doesn't and nobody is warned; an upgraded Lookout Tower still counts; a player in the village and
+  the hall's owner 300 blocks off are each told once, in gold, and a stranger 300 blocks off isn't).
 - B133: `SeerWarningGameTests` (a village with a settled Seer and a player by the hall: a dawn that sets an attack
   two days off tells the player, the chronicle and the Defense page at once, more than 48000 ticks ahead, once; the
   warning and the clock saved and loaded; on the day the Seer foretells it for tonight from the side told, the gates shut

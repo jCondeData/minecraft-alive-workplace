@@ -86,4 +86,6 @@ No new item: the Scouting Report is a vanilla filled map with a name, lore, a ma
 blocks off, the scout gets within 24 blocks and is home within 2400 ticks with the report (its red X on the lair) and
 the page's exact place; a bandit goes for a plain guard 10 blocks off but not a scout; a mission and what is known
 survive a save and load, and nobody goes with no lair, by night or with no scout; fleeing raiders are trailed home.
+`QaScoutGameTests` (3, QA lane D): a lair's bandit does go for a scout exactly 8 blocks off and one 5 blocks off; a
+desert lair's husk (the lair's tag, not the bandits') goes for a plain guard 10 blocks off but not a scout as far.
 Scene `scouts`.

@@ -29,7 +29,8 @@ a raid. They then stand round the crystal and, when the raid itself can be reach
 boss's health every 5 seconds (0.6% times their rank divided by the den's tier, more with a stronger team), never below a
 quarter: the last blows are the player's. A helper more than one rank under the den's tier only cheers. A won raid
 goes in the chronicle ("<player> and <trainer>'s band beat the tier 3 Fire raid den") and earns the helpers battle
-experience; won, lost or a day after the hiring, they walk home.
+experience; won, lost, the raid gone, a day after the hiring or the switch turned off, they walk home, and nobody can
+hire them until they're back. Without CobbleDollars the price is taken in emeralds from the player's inventory.
 
 **More Mega trainers (38.5).** With Mega Showdown installed, Masters still carry a Mega Stone, and now so do: a Trainer
 Leader whose village (the nearest Village Hall) is a City, the two trainers of a Festival Cup's final (on the Cup's
@@ -358,6 +359,15 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   blocks off, one each, never twice), `aWonRaidIsWrittenAndTheHelpersGoHome`, `aDayLaterTheHelpersGoHome`,
   `theHelpersWearTheBossDown` (the reflection found the raids; blows by rank, never under a quarter),
   `theButtonAndTheSwitch` (the Defence page's lines; off: no button, no hiring, no cheer), `hiringsSaveAndOldDataLoads`.
+- `QaDenHelperCompatTests` (QA, from the spec): `theDefencePageButtonHiresAtExactlyThePrice` (the button clicked as
+  a client clicks: exactly the price hires the best trainer, one CobbleDollar short is refused and takes nothing, the
+  button counts "1 of 3", they keep up), `emeraldsAtACustomPriceExactlyAndOneShort` (no CobbleDollars, `denHelperPrice`
+  7: 6 emeralds refused and kept, 7 taken), `noTrainersInTheVillageMeansNoHelper`,
+  `aStaleButtonForADenThatWentToRestIsRefused`, `aHiringSavedAndReadBackStillFollows` (and the walk home survives a
+  save), `theRankRuleAndTheQuarterFloor` (every rank on both sides of its tier limit; exactly a quarter from just above
+  it, no healing below it; a Novice at tier 3 only cheers), `threeHelpersCheerOnceEachAndAgainNextRaid` (one Attack,
+  Defense and Heal, the chat lines word for word, not on the way home, again next raid) and
+  `switchedOffMidHireTheHelperWalksHome`.
 - `ConfigGameTests.anOldDenConfigLoads`: a config with 38.3's and 38.4's keys loads (38.1a).
 
 - `MegaTrainerCompatTests` (with Mega Showdown): `aCityLeaderMegaEvolvesATownLeaderDoesNot`,

@@ -457,9 +457,9 @@ public class PersonalRequestGameTests implements FabricGameTest {
 			// Someone already in a tier II home has nothing to ask.
 			Villager odo = worker(helper, new BlockPos(7, 2, 4), "Odo", "minecraft:farmer", 5);
 			Friendship.add(odo, me, 300);
-			odo.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), beds[2]));
+			Beds.home(odo, beds[2]);
 			helper.assertTrue(resolve(helper, "home", odo, me) == null, "asked for a home from a tier II home");
-			odo.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), beds[1]));
+			Beds.home(odo, beds[1]);
 			helper.assertTrue(resolve(helper, "home", odo, me) != null, "a tier I home has nothing to ask for");
 
 			Quest quest = accepted(helper, "home", dara, me);
@@ -467,13 +467,13 @@ public class PersonalRequestGameTests implements FabricGameTest {
 			helper.assertTrue(PersonalRequests.wants(level, quest).getString()
 				.equals("Dara wants a home of their own (a bed in a finished house of tier II or better) within 12 days"), PersonalRequests.wants(level, quest).getString());
 			// A bed in a tier I home, asleep: not what she asked for.
-			dara.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), beds[1]));
+			Beds.home(dara, beds[1]);
 			dara.startSleeping(beds[1]);
 			PersonalRequests.look(level, hall, entity, false);
 			helper.assertTrue(dara.isSleeping() && PersonalRequests.of(dara) == quest, "done in a tier I home");
 			// A bed in the tier II home, but awake: not yet.
 			dara.stopSleeping();
-			dara.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), beds[2]));
+			Beds.home(dara, beds[2]);
 			PersonalRequests.look(level, hall, entity, false);
 			helper.assertTrue(PersonalRequests.of(dara) == quest, "done before she slept there");
 			// Asleep in it: done.
@@ -793,7 +793,7 @@ public class PersonalRequestGameTests implements FabricGameTest {
 				helper.assertTrue(!c.progress(level, hall).line().getString().contains("rule.aliveworkplace"), "no text for " + e.getKey() + ": " + c.progress(level, hall).line().getString());
 			}
 			// With a bed, no_bed stops holding; a nitwit's level isn't "below".
-			dara.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(3, 2, 3))));
+			Beds.home(dara, helper.absolutePos(new BlockPos(3, 2, 3)));
 			helper.assertTrue(!condition("{\"type\": \"no_bed\"}").met(level, hall, dara, me), "no_bed with a bed");
 			Villager nit = worker(helper, new BlockPos(7, 2, 4), "Nit", "minecraft:nitwit", 1);
 			helper.assertTrue(!condition("{\"type\": \"level_below\", \"level\": 5}").met(level, hall, nit, me), "a nitwit's level is below Master");

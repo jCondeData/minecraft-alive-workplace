@@ -166,7 +166,7 @@ public class HeartEventSetGameTests implements FabricGameTest {
 	}
 
 	private static void sleepsAt(ServerLevel level, Villager villager, BlockPos bed) {
-		villager.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), bed));
+		Beds.home(villager, bed);
 	}
 
 	// --- 4 hearts: My work ----------------------------------------------------------------------------------------

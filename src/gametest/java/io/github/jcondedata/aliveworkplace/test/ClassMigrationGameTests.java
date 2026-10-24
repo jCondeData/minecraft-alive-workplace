@@ -101,7 +101,7 @@ public class ClassMigrationGameTests implements net.fabricmc.fabric.api.gametest
 	}
 
 	private static void sleepsAt(ServerLevel level, Villager villager, BlockPos bed) {
-		villager.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), bed));
+		Beds.home(villager, bed);
 	}
 
 	/** Fed just now on a varied diet. */

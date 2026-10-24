@@ -34,6 +34,10 @@ Roadmap items: 32.21, B134
   - no lair makes camp; one standing leaves at the first dawn after the village became quiet (`Lairs.leave`: its band and
     captain go in a puff, a portal goes out, a ship sails off, a coven's hex lifts; unlike a lair broken up it leaves no
     rest days and nobody is credited);
+  - on Peaceful the game takes a lair's captain away at once; the hall's round, finding him gone without dying in a
+    quiet village, sends the lair away in peace then and there rather than breaking it up (a captain who fell was
+    told by `Lairs.onDeath` at once, so a player's kill just before still breaks the camp up; off a quiet village a
+    captain gone still breaks it up, B364);
   - a disaster under way ends at once, as when it is switched off; covens hex nobody;
   - no bounty is posted (`Bounties.mayPost` and the hall's bounty round ask `Threats.quiet`); open ones stay (B134).
   A raid already under way when the village turns quiet runs its course.
@@ -113,4 +117,9 @@ Roadmap items: 32.21, B134
 - `QaQuietLairGameTests.aLairStandingWhenTheThreatLevelGoesToZeroLeavesByTheNextDawn`: a bandit camp standing when the
   threat level goes to 0 has packed up and left in peace by the next dawn (not counted as broken up), and no lair comes
   on the four days after.
+- `QaPeacefulLairGameTests.aLairStandingWhenTheWorldGoesPeacefulLeavesInPeaceByTheNextDawn`,
+  `QaPeacefulLairGameTests.aChiefAPlayerKillsJustBeforePeacefulStillFell`,
+  `QaPeacefulLairGameTests.aChiefGoneOutsidePeacefulStillBreaksTheCampUp` (B364): on Peaceful a standing camp leaves in
+  peace (also after a save and load), a player's kill just before still counts as the chief falling, and a chief gone
+  off Peaceful still breaks the camp up.
 - Showcase scenes: `at_peace`.

@@ -246,7 +246,7 @@ public class AgelessElderGameTests implements FabricGameTest {
 			LifeStages.setAdultSince(wren, today - 1250);
 			// Fed, a bed of her own, a job, company.
 			ModAttachments.LAST_MEAL.set(wren, level.getGameTime());
-			wren.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(5, 2, 4))));
+			Beds.home(wren, helper.absolutePos(new BlockPos(5, 2, 4)));
 			Moods.Mood mood = Moods.work(level, wren);
 			helper.assertTrue(mood.score() >= LifeStages.HAPPY_MOOD, "the staged mood should be 80 or more: " + mood.score() + " "
 				+ mood.good().stream().map(Component::getString).toList() + " " + mood.bad().stream().map(Component::getString).toList());

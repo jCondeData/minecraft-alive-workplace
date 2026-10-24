@@ -129,6 +129,11 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   what a derailed train still holds comes back out and the caravan takes the timed trip; a train broken up keeps them
   in its chest (a player breaking it up at a station gets the chest back with them), the caravan is taken off the road
   and the chronicle says "The train to Ashford was broken up on the way: the caravan's goods stayed in its chest".
+  Trains stopped altogether (`villageTrains` switched off, or Create taken out of the pack) while a caravan waited at the
+  station, rode the train or had its goods in its chest (B359): at its hall's next round it takes the timed trip and
+  arrives with its goods. With the switch off, goods in the chest come back out of it (a train no longer there keeps
+  them, as above); with Create gone the train and its chest went with Create, so the caravan's own record of its goods
+  is delivered.
 - **The Conductor** (39.7d). A jobless villager next to a Create Train Station becomes the village's Conductor, in a
   maroon railwayman's cap with a gold braid band and badge, a maroon tunic with two rows of brass buttons, a gold watch
   chain, a ticket punch at the belt and black gloves. When the village puts its train together, the Conductor by its

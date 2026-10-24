@@ -30,10 +30,12 @@ import net.minecraft.world.level.block.Rotation;
  * Storehouse board's stock line its own. The board's "For the Builder, N blocks away" reads "1 blocks away" to a player
  * standing on the builder's bench; the builder's list in chat (sneak-click with an empty hand) reads "Still to bring
  * for the Test Hut: 1 items of 1 kinds" when only the torch is missing. Expected: "1 block away", "1 item of 1 kind"
- * (as the written list's first page already says).
+ * (as the written list's first page already says). And the owner of a finished build with one block knocked out
+ * reads "<builder> is repairing the <build> (1 blocks missing)" (the repair question's own line has its singular).
  */
 public class QaBuilderWordsBugTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:build_area";
+	private static final String BIG = "aliveworkplace_test:big_area";
 	private static final ResourceLocation TEST_HUT = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
 
 	/**
@@ -106,6 +108,91 @@ public class QaBuilderWordsBugTests implements net.fabricmc.fabric.api.gametest.
 		helper.assertTrue(heading.startsWith("Still to bring for the " + hut + ": 1 item of 1 kind"),
 			"with only the torch to bring the chat reads '" + heading.lines().findFirst().orElse("") + "' (want 'Still to bring for the " + hut + ": 1 item of 1 kind')");
 		helper.succeed();
+	}
+
+	/**
+	 * Upkeep: a finished four-plank wall owned by a player who employs the builder, one plank knocked out, planks in
+	 * the chest, repairs without asking. The owner is told the builder is repairing it, "(1 block missing)".
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaBuilderWordsRepair"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaBuilderWordsRepair")
+	public void aRepairOfOneBlockSaysOneBlockMissing(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		boolean was = io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED;
+		boolean asks = io.github.jcondedata.aliveworkplace.build.Upkeep.ASK;
+		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = true;
+		io.github.jcondedata.aliveworkplace.build.Upkeep.ASK = false;
+		Leftovers.after(helper, () -> {
+			io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = was;
+			io.github.jcondedata.aliveworkplace.build.Upkeep.ASK = asks;
+		});
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qabwR"));
+		ServerPlayer owner = c.player();
+		BlockPos src = new BlockPos(6, 2, 6);
+		for (int x = 0; x < 4; x++) {
+			helper.setBlock(src.offset(x, 0, 0), Blocks.OAK_PLANKS);
+		}
+		ResourceLocation wall = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "qa_words_wall_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(wall).fillFromWorld(level, helper.absolutePos(src), new net.minecraft.core.Vec3i(4, 1, 1), false, Blocks.STRUCTURE_VOID);
+		helper.setBlock(src.offset(1, 0, 0), Blocks.AIR);
+		BlockPos chestPos = new BlockPos(2, 2, 4);
+		helper.setBlock(chestPos, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new ItemStack(Items.OAK_PLANKS, 4));
+		BlockPos bench = new BlockPos(2, 2, 2);
+		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Builders.employ(level, builder, helper.absolutePos(bench));
+		io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_EMPLOYER.set(builder,
+			new io.github.jcondedata.aliveworkplace.build.Employer(owner.getUUID(), owner.getGameProfile().getName()));
+		var placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(src), Rotation.NONE, Mirror.NONE);
+		io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(wall, placement, owner.getUUID());
+		helper.runAfterDelay(2, () -> {
+			// (the builder may have looked already; otherwise his look for repairs, as BuilderGameTests' upkeep test does)
+			if (!io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(builder)) {
+				BuildSite site = io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder);
+				helper.assertTrue(site != null && site.isRepair(), "no repair started");
+			}
+		});
+		helper.succeedWhen(() -> {
+			List<String> seen = c.seen().stream().map(Component::getString).toList();
+			String line = seen.stream().filter(t -> t.contains(" is repairing the ")).findFirst().orElse(null);
+			helper.assertTrue(line != null, "the owner wasn't told of the repair: " + seen);
+			helper.assertTrue(line.endsWith("(1 block missing)"), "a repair of one block reads '" + line + "' (want '... (1 block missing)')");
+		});
+	}
+
+	/**
+	 * A porter's status title after his first trip: one iron sword put in a Drop Box by the Storehouse, which he takes to
+	 * the store. His title then counts what he has carried: "Porter · 1 item carried".
+	 */
+	//$ gametest_ticks_batch BIG '1200' '"qaBuilderWordsPorter"'
+	@GameTest(template = BIG, timeoutTicks = 1200, batch = "qaBuilderWordsPorter")
+	public void aPorterWhoCarriedOneItemSaysOneItemCarried(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000);
+		BlockPos boxPos = new BlockPos(8, 2, 8);
+		helper.setBlock(boxPos, ModBlocks.DROP_BOX);
+		Container box = helper.getBlockEntity(boxPos);
+		box.setItem(0, new ItemStack(Items.IRON_SWORD));
+		BlockPos storehouse = new BlockPos(19, 2, 19);
+		BlockPos storeChest = new BlockPos(19, 2, 17);
+		helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
+		helper.setBlock(storeChest, Blocks.CHEST);
+		Villager porter = helper.spawn(EntityType.VILLAGER, new BlockPos(18, 2, 18));
+		io.github.jcondedata.aliveworkplace.store.Porters.employ(helper.getLevel(), porter, helper.absolutePos(storehouse));
+		helper.succeedWhen(() -> {
+			Container store = helper.getBlockEntity(storeChest);
+			helper.assertTrue(store.countItem(Items.IRON_SWORD) == 1, "the sword isn't in the store yet");
+			int carried = io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CARRIED.getOrElse(porter, 0);
+			helper.assertTrue(carried == 1, "carried " + carried);
+			var entry = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(porter, helper.getLevel().getGameTime());
+			helper.assertTrue(entry != null, "no status for the porter");
+			String title = entry.title().getString();
+			helper.assertTrue(title.contains("1 item carried"), "a porter who carried one item reads '" + title + "' (want 'Porter · 1 item carried')");
+		});
 	}
 
 	/** The "For the ..." line of the board's cobblestone request, the board opened by a click on {@code storehouse}. */

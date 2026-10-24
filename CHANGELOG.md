@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- With CobbleDollars, a shop's own screen counts the price items in your off hand: 2 diamonds in the bag and 1 in the off hand now buy a 3-diamond lot instead of "That costs 3x Diamond", and the payment takes the off hand's diamond too (B350).
 - Threats stay out of Nether portals in every case: a raider riding a mount (a desert raid's baby husk on its chicken) no longer rides through with it, and the Bandit King and his fort's men, bounty bands, rogues and story-arc mobs keep out too, while plain mobs still use portals (B375).
 - Counted lines read right for one: "1 settler" and "in 1 day" on the hall's Colonies tab, "1 villager has no bed" (and "no work") in the What next? tips and the Steward's reasons, "Still to bring: 1 item of 1 kind" in material lists, "fetching what 1 Amethyst Ring takes" above the luxury makers, crafters, chefs and smiths, and "1 block" on the Storehouse board's linked lines.
 - Items held in the off hand with the main hand empty now work where they didn't: the Storehouse board's stock orders

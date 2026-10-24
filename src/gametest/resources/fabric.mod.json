@@ -259,6 +259,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallHomesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderClicksBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugFixesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallHomesGameTests",

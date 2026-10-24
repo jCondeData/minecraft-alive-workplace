@@ -7,7 +7,7 @@ with every other expansion. It covers: ages, the slower walk, the "quiet old age
 Families, the Family page and the Printer's family tree (34.21), and the seeding of everyone's age when classes switch
 on (34.22, [Classes](classes.md)).
 
-Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187
+Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187, B380
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -96,7 +96,8 @@ When a grown villager of a village with a hall dies, of anything:
   one: "The village's Mason has died ..."; one whose days nobody counted: "at an age nobody had counted");
 - the chronicle's line of the death gives the cause, then the same: "Mira was slain by Zombie: the village's Farmer,
   aged 31";
-- their **family** (parents, children, brothers and sisters) grieve for 3 days: "grieving for family" (-10) in their
+- their **family** (parents, children, brothers and sisters, known by who they really are, not by a shared name: two
+  mothers both called "Farmer" or "Mira" don't make strangers kin, B380) grieve for 3 days: "grieving for family" (-10) in their
   mood, and they work 10% slower ("mourning" in the work-pace line); their **partner** mourns 5 days as before (-15),
   and works 10% slower too. Then it's over: the hall's round takes the grief off;
 - their grave waits for a **funeral**: the village's Undertaker goes to it before anything else ("going to a funeral",

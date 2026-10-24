@@ -328,4 +328,34 @@ public class BuilderSiteListGameTests implements net.fabricmc.fabric.api.gametes
 			+ helper.absolutePos(BENCH).getZ() + " hold is taken off.\n\nStill to bring: 58 items of 4 kinds."), "the first page: " + first);
 		helper.succeed();
 	}
+
+	/**
+	 * B404: five planks short and nothing else, the book reads "Still to bring: 5 items of 1 kind." (it read "1 kinds"),
+	 * and one plank short, "1 item of 1 kind.".
+	 */
+	//$ gametest_ticks_batch AREA '40' '"builderSiteListOneKind"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "builderSiteListOneKind")
+	public void oneKindShortReadsInTheSingular(GameTestHelper helper) {
+		Setup s = setup(helper);
+		s.chest().setItem(1, ItemStack.EMPTY);
+		int planks = expectedToBring(s, s.site()).getOrDefault(Items.OAK_PLANKS, 0);
+		helper.assertTrue(planks > 5 && planks <= 64, "the hut needs " + planks + " planks");
+		s.chest().setItem(0, new ItemStack(Items.COBBLESTONE, 64));
+		s.chest().setItem(2, new ItemStack(Items.OAK_DOOR, 4));
+		s.chest().setItem(3, new ItemStack(Items.TORCH, 16));
+		List<String> seen = new ArrayList<>();
+		ServerPlayer player = listeningPlayer(helper, seen);
+		for (int shortBy : new int[] {5, 1}) {
+			s.chest().setItem(1, new ItemStack(Items.OAK_PLANKS, planks - shortBy));
+			helper.assertTrue(expectedToBring(s, s.site()).entrySet().stream().filter(e -> e.getValue() > 0).toList()
+				.equals(List.of(Map.entry(Items.OAK_PLANKS, shortBy))), "not just " + shortBy + " planks short: " + expectedToBring(s, s.site()));
+			rightClick(player, s.builder(), new ItemStack(Items.WRITABLE_BOOK), false);
+			ItemStack book = player.getMainHandItem();
+			helper.assertTrue(book.is(Items.WRITTEN_BOOK), "the Book and Quill wasn't written: " + book + ", the player saw " + seen);
+			String first = pages(book).get(0);
+			String want = shortBy == 1 ? "Still to bring: 1 item of 1 kind." : "Still to bring: 5 items of 1 kind.";
+			helper.assertTrue(first.contains(want) && !first.contains("kinds"), "short by " + shortBy + ", the first page: " + first.replace("\n", " "));
+		}
+		helper.succeed();
+	}
 }

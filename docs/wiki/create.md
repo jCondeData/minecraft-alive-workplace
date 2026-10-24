@@ -61,7 +61,10 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   plastered belfry under a dark oak hip roof and a cuckoo clock in its front, turned by a shaft up the middle of the
   tower from the wheel at its foot (cartography table; purely for show); and the **Pump House**, a small brick house
   where the wheel's cogwheel turns a mechanical pump between an intake pipe over a four-source sump (it refills) and a
-  two-high fluid tank (cauldron). `createBuilds` lists and hides all nine.
+  two-high fluid tank (cauldron). `createBuilds` lists and hides all nine. Turned or flipped at the table before it's
+  handed over, a Create build is built whole and works the same: its belts run the other way, the crushing wheels
+  still turn into the gap. Switching `createBuilds` off while one is going up only takes them off the table: the build
+  under way is finished and turns.
 
 - **Contraptions from a blueprint** (39.5). Any blueprint with Create's moving parts in it (one of the three above, or
   a player's own machine saved with a Structure Block) is built in an order that keeps it whole:
@@ -449,6 +452,15 @@ tested (the GameTests use the table as the server does).
   `aBuilderBuildsThePumpHouseAndItTurns` (the pump; pipes and both tank blocks in place): each built from exact
   materials, nothing skipped, the job block a job site, the machine's `Speed` read by name. Scene `create_builds_more`:
   the six set down in two rows, every machine turning. Renders: `tools/blueprints/render/preview.sh greenhouse ...`.
+- `QaCreateBuildsTurnedCompatTests` (39.4, 39.5, 39.8, with Create; lane E's QA): the Workshop flipped and turned round,
+  the Watermill, the Sawmill and the Crushing Mill flipped, the Brass Foundry and the Pump House turned a quarter
+  (either way): each built from exact materials, nothing skipped, the job block a job site, its machines turning, and
+  every belt segment naming a controller segment of its own belt, numbered 0 to its length once each; the flipped
+  Crushing Mill's crusher valid, the turned Foundry's mixer at 30 RPM or more; and a Watermill finished and turning
+  after `createBuilds` went off half way up its walls. `QaCreateSchematicFilesCompatTests` (39.6): a schematic seen cut
+  short mid-upload is imported, and said, once the upload is complete; a written Schematic of a file cut short says so,
+  naming it, and makes no blueprint. `QaMechanicMendSaysCompatTests` (39.2): "Mechanic: fetching Shaft for the ..."
+  and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,

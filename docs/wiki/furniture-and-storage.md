@@ -101,7 +101,7 @@ tier, and a Sophisticated controller or a Tom's inventory connector as one store
 Sophisticated Storage's chests, barrels and limited barrels already work as supply chests, porters' chests and
 Storehouse chests with the gate closed (they always did, through the same item storage every chest uses). Behind the
 gate (37.8): where a slot holds more than a stack, a stack upgrade or a limited barrel, the Storehouse board's info adds
-"Room for 6912 more items (some slots hold more than a stack)" under the usual "chests, items, empty slots" line, and
+"Room for 6912 more items (some slots hold more than a stack)" under the usual "chests, items, empty slots" line ("1 chest", "1 item" and "1 empty slot" with one, B377 and B395), and
 porters keep filling such a store while any of its slots has room for another stack, even when no slot is empty. With
 only vanilla chests the board and the porters are exactly as before.
 

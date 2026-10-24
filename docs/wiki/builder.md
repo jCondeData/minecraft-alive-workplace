@@ -266,7 +266,9 @@ claims and trip counts.
 
 ## 7. Known limits
 
-- Only builds that fit within `maxSiteDistance` (48) of the bench are taken.
+- Only builds whose middle is within `maxSiteDistance` (48) of the bench are taken. A spot past it is refused with its
+  distance rounded up, so one just past the reach reads past it: 48.5 blocks says "That spot is 49 blocks from the
+  builder's Blueprint Table — keep it within 48." (B378; Farmers', Miners' and other area jobs' spots say it the same way).
 - Blocks on the never-placed list (spawners, portals, bedrock, command blocks...) are skipped, not substituted.
 - Steps that cannot be done after being put off once are skipped, so a build can finish with a few blocks missing
   (the `skipped` count).
@@ -338,6 +340,8 @@ a Storehouse with its Porter counts once, `aStorehouseWithItsPorterIsCountedOnce
 the village's Builder, `aBuiltTerminalNookFeedsTheVillagesBuilder`).
 `QaBuilderStockBugTests` (1, B355: a Storehouse just past the reach, 20.4 blocks off in a 20-block village, is too far and
 the status says so with numbers that agree, the distance rounded up to 21, `aStorehouseJustPastTheReachIsTooFarAndTheNumbersSaySo`).
+`QaBuilderLimitsBugTests` (1, B378: a spot 48.5 blocks from the table is refused with a number past the 48-block reach,
+`aSpotJustPastTheReachIsRefusedWithANumberPastTheReach`).
 `QaBlueprintLootGameTests` (1, QA: a scanned build of a lectern with a book, a jukebox with a disc, a chiseled bookshelf
 with a book, a decorated pot of diamonds, a campfire cooking beef, a sign and a named chest of gold, built by a Builder:
 every block comes out empty, the sign keeps its words and the chest its name,

@@ -154,6 +154,8 @@
 			"io.github.jcondedata.aliveworkplace.test.B297GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderStockGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderStockBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderLimitsBugTests",
+			"io.github.jcondedata.aliveworkplace.test.CountWordsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderClicksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchesGameTests",
@@ -258,6 +260,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallHomesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderClicksBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugFixesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallHomesGameTests",
@@ -480,7 +483,8 @@
 			"io.github.jcondedata.aliveworkplace.test.PokemonProfessorGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonRangerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderBlueprintGameTests",
-			"io.github.jcondedata.aliveworkplace.test.StadiumGameTests"
+			"io.github.jcondedata.aliveworkplace.test.StadiumGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesGameTests"
 		]
 	},
 	"depends": {

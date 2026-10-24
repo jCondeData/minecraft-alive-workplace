@@ -49,7 +49,10 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   last change is its own step too (the Mason's glass fired from sand, the dyer's concrete hardened from the powder it
   mixed); a plan whose steps still don't add up to what it makes is made all at once as before;
 - on its next shift after a restart or reload picks the saved job up where it was (the makings already made are in the
-  saved bag; the claim on the request is taken again).
+  saved bag; the claim on the request is taken again);
+- lets the saved job go when its workstation has been gone for 600 ticks (`CrafterWork.benchlessTick`, every villager's
+  AI step, B353): the claim released, `crafter_job` dropped and the bag emptied into the asker's chests (at the
+  villager's feet when those are gone or full). A bench put back or moved within that time carries the job on.
 
 The builder's status (`BuilderStatusSync.supplyLines`) adds `JobShortages.line` under "Short of" while it waits:
 first up to two chains short of a raw material, else the crafted parts (something a crafting table, stonecutter,
@@ -117,6 +120,8 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   builder's line, nothing taken.
 - `QaCrafterFurnitureBugTests.b352AMasonShortOfCoalSaysSoAndTakesNothing`: the kiln a coal short names the coal, not
   the bricks, and takes nothing (B352).
+- `QaCrafterFurnitureBugTests.b353TheCarpentersBenchBrokenMidChainLosesNothing`: the bench broken at step 2 and not
+  put back: the job let go, the wood back in the builder's chest (B353).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.

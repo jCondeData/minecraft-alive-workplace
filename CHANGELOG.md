@@ -19,6 +19,7 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 
 - The builder's status no longer calls a Storehouse too far with numbers that say it isn't: one 20.4 blocks from his table in a 20-block village now reads "it is 21 blocks from his table, and a village reaches 20" instead of "20 blocks" (the distance is rounded up) (B355).
+- A Carpenter (or any job making a chain for a builder) whose bench is broken mid-chain and not put back within 30 seconds now lets the job go and puts what it carried (the planks sawn from the builder's logs) in the builder's chest, instead of keeping it in the bag forever while the build waits; a bench put back or moved in time still carries on (B353).
 - A Mason with a furnace who is a coal short of firing the clay for brick stairs (12 clay, 1 coal for 3 stairs) now says "short of 1 Coal to make 3 Brick Stairs" on the builder's line instead of asking for bricks, and still takes nothing (B352).
 - With CobbleDollars, a shop's own screen counts the price items in your off hand: 2 diamonds in the bag and 1 in the off hand now buy a 3-diamond lot instead of "That costs 3x Diamond", and the payment takes the off hand's diamond too (B350).
 - Threats stay out of Nether portals in every case: a raider riding a mount (a desert raid's baby husk on its chicken) no longer rides through with it, and the Bandit King and his fort's men, bounty bands, rogues and story-arc mobs keep out too, while plain mobs still use portals (B375).

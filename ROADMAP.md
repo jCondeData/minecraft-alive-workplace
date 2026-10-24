@@ -3337,7 +3337,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   wooden builds; never a player's own blocks, and the builders always put them back); meanwhile the default is yes.
   Sent as a review package with a mock-up of the hall's Defence page; lanes don't wait for his reply. Done when: the
   note is on `main` and the package is sent.
-- [x] **32.2** (approved auto 2026-10-09) **The threat engine: raider cultures as data.** A new package `threat/` (add it to
+- [x] **32.2** (approved auto 2026-10-09) (verified 2026-10-24: lane D QA on main d4f0aea: QaLairEngineGameTests [7: camp site 80-104 out on dry ground over 40 seeds, pond refused; no lair during 5 days' rest then exactly one; raiderCultures bandits off = no camp, on = camp; band at home capped at 8, raid 5 of 10; warband lair save/reload one band and its strength 7 default; warband captain's fall told in its own words; every lair culture's lines written]; planted bugs [rest check removed, home cap +2] both caught; wiki lairs.md checked) **The threat engine: raider cultures as data.** A new package `threat/` (add it to
   `docs/agent/layout.md`); `guard/VillageRaids` and `BanditCamps` keep their public methods and call into it, so their
   callers and tests don't change. `threat/Threats` loads `data/aliveworkplace/raider_cultures/<id>.json` (through
   `Platform.onDataReload`); one file is one culture:
@@ -3369,7 +3369,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   - a raid saved and loaded half-way (a saved-data round trip) is still on and ends at dawn as before;
   - the clock's attack starts at the next dusk, a day after the roll (a GameTest setting the day time);
   - a culture switched off in the config is never picked. Nothing new to see: lands with `--no-review`.
-- [x] **32.3** (approved 2026-10-11) **Lairs for every culture.** `threat/Lairs` takes over `BanditCamps`: any culture with a `lair` makes
+- [x] **32.3** (approved 2026-10-11) (verified 2026-10-24: lane D QA on main d4f0aea: QaLairEngineGameTests [7: camp site 80-104 out on dry ground over 40 seeds, pond refused; no lair during 5 days' rest then exactly one; raiderCultures bandits off = no camp, on = camp; band at home capped at 8, raid 5 of 10; warband lair save/reload one band and its strength 7 default; warband captain's fall told in its own words; every lair culture's lines written]; planted bugs [rest check removed, home cap +2] both caught; wiki lairs.md checked) **Lairs for every culture.** `threat/Lairs` takes over `BanditCamps`: any culture with a `lair` makes
   camp 80–104 blocks from the hall (today's site rules; cultures that need water or a portal add theirs in their own
   item), at most one per village, with 5 days' rest after one is broken. The saved data keeps its old name and reads
   old camps as `bandits` lairs (each new field with a default from the culture's file). New for every lair, bandit

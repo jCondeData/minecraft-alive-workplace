@@ -3393,7 +3393,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     test places beside the build as a player's is never hit;
   - the portcullis is down while the siege lasts and up after it;
   - scene `siege_gate`: a GIF of a ravager breaking a Palisade Gate, the cracks showing.
-- [x] **32.5** (approved 2026-10-11) **Sieges II: ladders over the walls.** Raiders with role `climber`, in a culture with `ladders`, whose
+- [x] **32.5** (approved 2026-10-11) (verified 2026-10-24: lane D QA on main 9b4c66d: LadderGameTests.aLadderGoesUpInAirBesideAPlayersBlockNotOverIt [only into air, 10/10 repeats]; QaCovenGameTests.aPlayerMiningHerCauldronBreaksTheCovenAndIsNamed [10/10, kills the Covens.java:128 mutant] and QaRefusedThreatsGameTests.aCovenHutStandsWhenAnotherModRefusesItsMobs; mutation sweep Ladders 2/6 and Covens 2/6 killed, survivors equivalent or cosmetic [Ladders 257/540/677, Covens 379/456/507]; wiki sieges.md and covens.md read against the tests; full build 2700/2700 + compat 496/496) **Sieges II: ladders over the walls.** Raiders with role `climber`, in a culture with `ladders`, whose
   path ends at a wall set ladders up its outer face at the spot nearest them (a rung every 10 ticks, up to 10 high),
   climb over and drop inside; the rest follow up the same ladder. A guard on a walkway within 2 blocks of a ladder's
   top throws it down (the column goes, the climbers on it fall). Ladders go on any wall, a player's too, but only into
@@ -3487,7 +3487,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     removes the portal blocks and turns the rest of the band zombified;
   - the outpost passes `check.py` and its render is in the package;
   - scene `piglins`: the outpost, piglins coming through and one carrying off gold (GIF).
-- [x] **32.11** (approved 2026-10-11) **Witch covens.** `witch_coven.json`: swamps and mangrove swamps; Village and up; tactics `hex`; no
+- [x] **32.11** (approved 2026-10-11) (verified 2026-10-24: lane D QA on main 9b4c66d: LadderGameTests.aLadderGoesUpInAirBesideAPlayersBlockNotOverIt [only into air, 10/10 repeats]; QaCovenGameTests.aPlayerMiningHerCauldronBreaksTheCovenAndIsNamed [10/10, kills the Covens.java:128 mutant] and QaRefusedThreatsGameTests.aCovenHutStandsWhenAnotherModRefusesItsMobs; mutation sweep Ladders 2/6 and Covens 2/6 killed, survivors equivalent or cosmetic [Ladders 257/540/677, Covens 379/456/507]; wiki sieges.md and covens.md read against the tests; full build 2700/2700 + compat 496/496) **Witch covens.** `witch_coven.json`: swamps and mangrove swamps; Village and up; tactics `hex`; no
   rams or ladders: witches stand 12–20 blocks outside the walls and throw splash potions over them (slowness, weakness
   and poison at villagers, harming at guards) and heal each other, so archers on stations matter most. Their lair is
   the **Coven Hut** (`camp/coven_hut`, minecraft-architect skill: a hut on mangrove stilts over water, the coven's

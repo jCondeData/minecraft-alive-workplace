@@ -959,9 +959,26 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   - `mod-publish-plugin` set up with a dry run.
 
   Done when: each of these is in place, and the dry run succeeds.
-- [ ] **26.4** **Release candidate.** A Full tester run, a pack boot, the performance benchmark, and the last 3 nightly
+- [ ] **26.4** (needs owner check: play a session in the pack's client with the release-candidate jar) **Release candidate.** A Full tester run, a pack boot, the performance benchmark, and the last 3 nightly
   runs green (blocked until they have run). Then the owner's own play session in the pack's client (carried over from
   Milestone 5). Done when: all of these have passed, and the owner has played.
+  - Status (lane-a-1024-2123, 2026-10-24, main 48a374e12, jar 0.148.1): **nightly**: the last 3 nightly-tests runs
+    on main green (39749395959 10-22, 39925710783 10-23, 40076984883 10-24; 5 suite runs, log audit, pack boot, soak).
+    **Build**: a full local `./gradlew --max-workers=1 build` passed (3,075 GameTests + 575 compat, all required);
+    `logaudit.py` over both runs: no error, 19 warnings, all from tests' deliberately broken files or other mods.
+    **Pack boot** (`tools/packtest/run.sh`, Java 21) passed: our mod loaded, 131 blueprints, both villages generated,
+    the birch village has 1 of its 6 villagers in our jobs (ball_smith); the plains village counted 0 villagers at all
+    (not checked whether that's usual); `logaudit.py`: 9 errors, none ours (empty registries, a Cobblemon dex file).
+    **Benchmark** (`PERF=true PLOTS=40`, this loaded 7 GB container, 80 workers, 39 of 46 sites working) **misses 25.3's
+    target**: our code a tick p50 4.9 / 4.5 ms, p99 62.1 / 36.2 ms, 28 of 2,400 ticks over 50 ms of ours (17 on the
+    CPU, worst 462.9 ms), single `BuilderWork` calls up to 533.2 ms, our share 23.4% of the server thread (target 15%),
+    heap after GC 1,442 MB, server ticks p50 52.0 / 26.9 ms: filed **B412** (compare with GitHub's runner first).
+    **Full tester run: only partly**: `langcheck.py` over the whole mod (7,098 keys, 0 missing, 0 argument mix-ups,
+    8 title/detail pairs with different counts, all positional `%n$s` or separate lines), `inventory.py` over the whole
+    mod (3,592 GameTests; gaps: 53 mixins, 6 data components, 3 payloads, 3 POIs, the benchmark/rehearsal/soak
+    commands); the nightly's 5 suite runs stand for the flake sweep. Not run: the gap tests, the ~20-mutant sweep, the
+    upgrade check, the client pass, the config matrix, the plain-Fabric boot; `baseline.json` not updated (no Full
+    run). Left: B412, the rest of the Full run, then the owner's play session.
 - [ ] **26.5** (approved: owner 2026-10-13, publish once 26.4 has passed and we feel ready; waits on 26.4) **Publish.** Done when: the pages are live and linked from the README.
 - [x] **26.6** (approved 2026-10-19) **Retrain a villager who already has a job** (owner's playtest, 2026-10-14: in Cobblemon villages almost
   every villager already works, so there's nobody to hire). Sneak-right-click any grown villager who has a job (vanilla,

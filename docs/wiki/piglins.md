@@ -101,6 +101,9 @@ Roadmap items: 32.10
 - A plunderer that leaves at dawn while the outpost isn't loaded takes its gold with it: it is counted as lost, and
   no hoard gets it.
 - Hoglins shun Nether portals, so a hoglin ram mills about the portal for a moment before it follows the rest.
+- On a server whose mob blocklist refuses zombified piglins and zoglins (Cobbleverse's MobsBeGone lists nearly every
+  vanilla mob), the band vanishes when the Warlord falls instead of turning zombified: the turning goes through the
+  game's own conversion, not `HostileSpawns` (bug B356, its failing test on the branch tests/refused-warlord).
 
 ## Proof
 
@@ -116,3 +119,9 @@ Roadmap items: 32.10
   Warlord with 100 health in gold, a raid of 5 standing in the portal, then his death: the outpost broken, no portal
   block left, no piglin or hoglin left unturned, the 5 raiders zombified and still raiders.
 - Showcase scene `piglins`: the outpost, a raid stepping out of its portal, a piglin carrying off a stack of gold.
+- `QaPiglinRaidGameTests.aRaidingHoglinGoesForAVillager`, `QaPiglinRaidGameTests.aRaidingPiglinBruteGoesForAVillager`:
+  a raiding hoglin and a raiding brute, penned with a villager, strike it themselves.
+- `QaRefusedThreatsGameTests.aPiglinOutpostStandsWhenAnotherModRefusesItsMobs`: with the world refusing every hostile
+  mob (as Cobbleverse's MobsBeGone does), the outpost's Warlord and band are in the world and still there 100 ticks on.
+- `QaRefusedThreatsGameTests.aWarlordsWholeBandAndRaidTurnZombifiedWhenHeFalls`: every piglin and hoglin of the band and
+  the raid is zombified and still there when he falls.

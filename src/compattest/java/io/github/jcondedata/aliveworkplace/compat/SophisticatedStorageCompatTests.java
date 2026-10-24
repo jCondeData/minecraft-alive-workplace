@@ -268,13 +268,13 @@ public class SophisticatedStorageCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	private static ItemLore info(ServerPlayer player, BlockPos storehouse, GameTestHelper helper) {
+	static ItemLore info(ServerPlayer player, BlockPos storehouse, GameTestHelper helper) {
 		ItemLore lore = StorehouseBoard.boardForTest(player, helper.absolutePos(storehouse)).icon(StorehouseBoard.INFO_SLOT).get(DataComponents.LORE);
 		helper.assertTrue(lore != null, "the board's info has no text");
 		return lore;
 	}
 
-	private static Component roomLine(ItemLore lore) {
+	static Component roomLine(ItemLore lore) {
 		return lore.lines().stream().filter(l -> l.getContents() instanceof TranslatableContents t
 			&& t.getKey().equals("screen.aliveworkplace.storehouse.room")).findFirst().orElse(null);
 	}
@@ -284,7 +284,7 @@ public class SophisticatedStorageCompatTests implements FabricGameTest {
 	}
 
 	/** The side a storage block faces (its {@code facing} or {@code horizontal_facing} state), read by name. */
-	private static Direction front(BlockState state) {
+	static Direction front(BlockState state) {
 		for (Property<?> property : state.getProperties()) {
 			if (property.getName().equals("facing") && state.getValue(property) instanceof Direction d) {
 				return d;
@@ -298,7 +298,7 @@ public class SophisticatedStorageCompatTests implements FabricGameTest {
 			.orElseThrow(() -> new GameTestAssertException("no block " + MOD + ":" + id));
 	}
 
-	private static Item item(String id) {
+	static Item item(String id) {
 		return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath(MOD, id))
 			.orElseThrow(() -> new GameTestAssertException("no item " + MOD + ":" + id));
 	}

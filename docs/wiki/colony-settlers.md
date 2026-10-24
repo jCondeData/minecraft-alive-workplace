@@ -8,7 +8,7 @@ Roadmap items: 33.9, B295
 
 ## What a player sees
 
-**Sending them.** Right-click the village's hall with its charter. The charter is used up and chat says who goes:
+**Sending them.** Right-click the village's hall with its charter, in either hand, sneaking or not (B357). The charter is used up and chat says who goes:
 "Dara and Tomas will set out for Newbrook. Their supplies are packed: they leave in the morning." If the Storehouses
 are short it lists what is missing: "The Storehouses still miss 24 planks, 1 bed: bring it, or they leave in 3 days
 with what there is."

@@ -25,7 +25,7 @@ frames included, with what the bench's chests, the crew's bags and the village (
 stock) hold ticked off. A sneak-right-click with an empty hand shows the status and then the whole list in chat. With
 nothing left to place, no build, or a building being taken down, the Builder says so and the book stays as it was.
 The Scan Tool marks whatever block it right-clicks as a corner, a chest, furnace, trapdoor or bench included: the click
-marks it and the block stays shut and unflipped (B335).
+marks it and the block stays shut and unflipped (B335), from the off hand too when the main hand is empty (B374).
 
 ## 2. How it works
 
@@ -62,7 +62,7 @@ down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing 
 needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
 other carried), and empties the bag at the chests when it finishes or
 stops helping. Builders never copy what is inside containers. The blueprint's tooltip and a Book and Quill list what
-is still missing. A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
+is still missing (the blueprint and the book in either hand, B365). A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
 repair counts them (`BuildPlan.supplyExclude`, B261): the building stands, so a Storehouse Shed being repaired, or a
 shed the bench's chests stand in, hands the Builder what its chests hold.
 
@@ -338,6 +338,27 @@ the village's Builder, `aBuiltTerminalNookFeedsTheVillagesBuilder`).
 with a book, a decorated pot of diamonds, a campfire cooking beef, a sign and a named chest of gold, built by a Builder:
 every block comes out empty, the sign keeps its words and the chest its name,
 `aBuildOfBlocksHoldingItemsComesOutEmptyWithItsWordsAndNames`).
+`QaBuilderClicksGameTests` (8, QA from B279/B335/B337/B342/B344's specs: a Book and Quill on the Builder's Blueprint
+Table writes the exact list less the table's chest, `aBookAndQuillOnTheBuildersTableWritesTheListLessItsChest`; a table
+with no build or no Builder keeps the book, `aTableWithNoBuildOrNoBuilderKeepsTheBook`; the book from the off hand,
+`aBookAndQuillFromTheOffHandOnTheBuilder`; the list after a save and reload mid-structure, book and chat,
+`theListAfterAReloadMidStructure`; two books with a full inventory, `aStackOfBooksWithAFullInventoryKeepsTheList`; a
+placed blueprint from the off hand, `aPlacedBlueprintFromTheOffHand`; Scan Tool corners on a chest then a barrel, neither
+opened, `scanToolCornersOnAChestThenABarrel`; the Storehouse board asks for nothing more after a hand-over,
+`theBoardOpenedAgainAfterAHandOverAsksForNothingMore`).
+`QaBuildsGameTests` (8, QA from B280/B300's specs and the builder's invariants: a cottage clicked onto a flower on a bump
+leaves the lawn level, `aCottageClickedOntoAFlowerOnABumpLeavesTheLawnLevel`; a stall on tall grass leaves the lower
+terrace beside it low, `aStallClickedOntoTallGrassLeavesTheLowerTerraceBesideItLow`; pots whose support breaks mid-build
+are set down, `potsWhoseSupportIsBrokenMidBuildAreSetDown`, also across a reload, `aPotUnderminedThenAReloadMidDecorationIsStillSetDown`;
+a reload mid-foundation or mid-landscape loses and makes nothing, `aReloadMidFoundationLosesAndMakesNothing`,
+`aReloadMidLandscapeLosesAndMakesNothing`; the lead takes over a block two crew members hold,
+`theLeadTakesABlockOverFromTwoMembersHoldingItAtOnce`; `workplaceLevelGround` 0 leaves the ground alone,
+`levelGroundZeroLeavesTheGroundAlone`).
+`QaBuilderSwitchesGameTests` (4, QA of the builder's switches: `workplaceBuilderOwnership` off lets a stranger give a
+hired Builder a blueprint, `ownershipOffLetsAStrangerGiveTheBuilderABlueprint`; `workplaceLevelGround` 8 levels 8 blocks
+out and no further, `levelGroundEightLevelsEightBlocksOutAndNoFurther`; `workplaceFoundationDepth` 0 puts nothing in a
+dip and uses no extra cobblestone, `foundationDepthZeroPutsNothingIntoTheDip`; the Blueprint Table hides the Mega Shrine
+and Train Station while their expansions are closed, `theTableHidesTheM38AndM39BuildsWhileTheirExpansionsAreClosed`).
 
 Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the

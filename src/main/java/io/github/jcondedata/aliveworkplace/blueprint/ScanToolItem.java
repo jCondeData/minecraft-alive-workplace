@@ -59,6 +59,11 @@ public class ScanToolItem extends Item {
 	 * own right-click anyway (the tool's start-over click), so it's left to {@link #useOn}.
 	 */
 	public static InteractionResult beforeBlock(Player player, Level level, InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
+		// B374: vanilla asks the main hand first; empty, it opens the chest before the off hand is asked. As BuilderEvents'
+		// items (B342), the off hand's tool is used on the main hand's turn then; the off hand's own turn never comes.
+		if (hand == InteractionHand.MAIN_HAND && player.getMainHandItem().isEmpty() && player.getOffhandItem().getItem() instanceof ScanToolItem) {
+			hand = InteractionHand.OFF_HAND;
+		}
 		ItemStack stack = player.getItemInHand(hand);
 		if (player.isSpectator() || player.isShiftKeyDown() || !(stack.getItem() instanceof ScanToolItem)) {
 			return InteractionResult.PASS;

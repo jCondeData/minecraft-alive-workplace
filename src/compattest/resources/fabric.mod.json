@@ -23,6 +23,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.SophisticatedStorageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.SophisticatedControllerCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TomsStorageCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaModdedStorageBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.StorageHallsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaModdedStorageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedBuildCompatTests",

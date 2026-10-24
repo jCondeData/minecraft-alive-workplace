@@ -768,7 +768,7 @@ public final class Settlers {
 			who.add(v.getDisplayName());
 		}
 		int settlers = order.settlers().size() + who.size();
-		out.add(VillageHallScreen.line(who.isEmpty() ? Component.translatable("screen.aliveworkplace.colonies.settlers", settlers)
+		out.add(VillageHallScreen.line(who.isEmpty() ? io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.colonies.settlers", settlers, settlers)
 			: Component.translatable("screen.aliveworkplace.colonies.settlers_named", names(who)), ChatFormatting.WHITE));
 		Map<Supply, Integer> held = new LinkedHashMap<>();
 		for (Supply s : Supply.values()) {
@@ -789,7 +789,7 @@ public final class Settlers {
 				out.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.colonies.leave_morning"), ChatFormatting.GRAY));
 			} else {
 				long days = Math.max(1, (WAIT_TICKS - (level.getGameTime() - order.ordered()) + 23999) / 24000);
-				out.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.colonies.leave_anyway", days), ChatFormatting.GRAY));
+				out.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.colonies.leave_anyway", days, days), ChatFormatting.GRAY));
 			}
 		}
 		return out;

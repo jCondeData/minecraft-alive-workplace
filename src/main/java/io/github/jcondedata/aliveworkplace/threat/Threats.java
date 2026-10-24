@@ -251,13 +251,45 @@ public final class Threats implements ResourceManagerReloadListener {
 	}
 
 	/**
-	 * Whether {@code entity} keeps out of Nether portals (B373): a lair's captain and band, a bandit camp's, and every
-	 * raider. A piglin outpost has a lit portal its raiders step out of; without this its band wandered into it and
-	 * left for the Nether, and the raiders stepping out of it went straight back.
+	 * Every tag a threat's mob carries: a raider (raids, covens, risen), a lair's band and captain, a bandit camp's, the
+	 * Bandit King and his fort's men, a bounty's captain, band and mounts, a rogue, and a story arc's mob. Kept in one
+	 * place so a new threat's tag is added here once (B375).
+	 */
+	public static final java.util.List<String> THREAT_TAGS = java.util.List.of(RAIDER_TAG, Lairs.TAG, Lairs.BANDIT_TAG,
+			io.github.jcondedata.aliveworkplace.guard.BanditFort.TAG, io.github.jcondedata.aliveworkplace.guard.BanditKing.TAG,
+			io.github.jcondedata.aliveworkplace.bounty.Bounties.TAG, io.github.jcondedata.aliveworkplace.bounty.Rogues.TAG,
+			io.github.jcondedata.aliveworkplace.story.Arcs.MOB_TAG);
+
+	/** Whether {@code entity} carries any of {@link #THREAT_TAGS}. */
+	public static boolean isThreatMob(net.minecraft.world.entity.Entity entity) {
+		java.util.Set<String> tags = entity.getTags();
+		if (tags.isEmpty()) {
+			return false;
+		}
+		for (String tag : THREAT_TAGS) {
+			if (tags.contains(tag)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Whether {@code entity} keeps out of Nether portals (B373, B375): every threat's mob ({@link #isThreatMob}), and
+	 * anything carrying one (a raider's chicken-jockey chicken, a bandit's horse), since vanilla sends a mount through
+	 * with its riders. A piglin outpost has a lit portal its raiders step out of; without this its band wandered into it
+	 * and left for the Nether, and the raiders stepping out of it went straight back.
 	 */
 	public static boolean staysOffPortals(net.minecraft.world.entity.Entity entity) {
-		java.util.Set<String> tags = entity.getTags();
-		return !tags.isEmpty() && (tags.contains(RAIDER_TAG) || tags.contains(Lairs.TAG) || tags.contains(Lairs.BANDIT_TAG));
+		if (isThreatMob(entity)) {
+			return true;
+		}
+		for (net.minecraft.world.entity.Entity rider : entity.getIndirectPassengers()) {
+			if (isThreatMob(rider)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** How many raiders come of {@code raiders} at {@link #LEVEL}: a quarter more (rounded up) when it is hard (3). */

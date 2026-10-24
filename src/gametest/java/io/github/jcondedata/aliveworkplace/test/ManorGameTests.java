@@ -109,7 +109,7 @@ public class ManorGameTests implements FabricGameTest {
 		BlueprintData.Placement placement = placement(helper, ORIGIN, Rotation.NONE);
 		Leftovers.after(helper, () -> sites.forgetFinished(placement));
 		Villager lord = villager(helper, new BlockPos(5, 2, 5), "Aldous");
-		lord.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(BED)));
+		Beds.home(lord, helper.absolutePos(BED));
 		helper.assertTrue(HomeGrades.given(StarterBlueprints.MANOR.id()) == 3, "the shipped homes/manor.json gives the Manor grade III");
 		Map<ResourceLocation, Integer> beauty = new java.util.LinkedHashMap<>();
 		beauty.put(StarterBlueprints.MANOR.id(), 0);
@@ -130,7 +130,7 @@ public class ManorGameTests implements FabricGameTest {
 		}
 		// Someone sleeping outside it gets nothing from its garden
 		Villager neighbour = villager(helper, new BlockPos(7, 2, 5), "Wat");
-		neighbour.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(30, 2, 30))));
+		Beds.home(neighbour, helper.absolutePos(new BlockPos(30, 2, 30)));
 		helper.assertTrue(ClassNeeds.beauty(level, neighbour) == 0, "a neighbour outside the Manor counts none of its garden");
 		helper.succeed();
 	}

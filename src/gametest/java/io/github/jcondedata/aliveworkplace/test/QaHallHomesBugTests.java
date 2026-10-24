@@ -19,7 +19,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 
 /**
- * QA (lane-c-1024-0353, 2026-10-24): bugs found in the Village Hall and its beds, each committed with its fix (B360, B361)
+ * QA (lane-c-1024-0353, 2026-10-24): bugs found in the Village Hall and its beds, each committed with its fix (B360, B361, B362)
  * (the passing ones are in {@link QaHallHomesGameTests}).
  */
 public class QaHallHomesBugTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
@@ -92,6 +92,40 @@ public class QaHallHomesBugTests implements net.fabricmc.fabric.api.gametest.v1.
 			helper.assertTrue(VillageAdvice.bedsShort(census) == 0, "a villager and his bed 13 east and 13 south: " + census.villagers() + " villager(s) counted, "
 				+ census.beds() + " bed(s), so " + VillageAdvice.bedsShort(census) + " short");
 			helper.succeed();
+		});
+	}
+
+	/**
+	 * A villager claims his bed; at noon the player breaks it. The census says the village is a bed short, but the
+	 * village's needs still count him housed (and lit by his bed) and the hall's list still shows his home, until vanilla
+	 * checks his bed at night: {@code VillageNeeds.bed} reads the HOME memory without asking whether the bed is still
+	 * there. Expected: a villager whose bed is gone has "No bed of their own" and isn't housed, at once.
+	 */
+	//$ gametest_ticks_batch HUGE '1400' '"qaBrokenBed"'
+	@GameTest(template = HUGE, timeoutTicks = 1400, batch = "qaBrokenBed")
+	public void aBrokenBedHousesNobody(GameTestHelper helper) {
+		BlockPos hallRel = new BlockPos(15, 2, 15);
+		QaHallHomesGameTests.hall(helper, hallRel);
+		ServerLevel level = helper.getLevel();
+		level.setDayTime((level.getDayTime() / 24000L + 1) * 24000L + 5000L); // late morning: hours before bedtime
+		BlockPos head = new BlockPos(10, 2, 10);
+		QaHallHomesGameTests.bed(helper, head);
+		net.minecraft.world.entity.npc.Villager v = helper.spawn(net.minecraft.world.entity.EntityType.VILLAGER, new BlockPos(10, 2, 13));
+		BlockPos bedAbs = helper.absolutePos(head);
+		long[] brokenAt = {-1};
+		helper.onEachTick(() -> {
+			if (brokenAt[0] < 0) {
+				if (v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME).filter(g -> g.pos().equals(bedAbs)).isPresent()) {
+					brokenAt[0] = helper.getTick();
+					helper.destroyBlock(head);
+				}
+			} else if (helper.getTick() >= brokenAt[0] + 100) {
+				int housed = io.github.jcondedata.aliveworkplace.hall.VillageNeeds.count(level, helper.absolutePos(hallRel)).housed();
+				BlockPos bed = io.github.jcondedata.aliveworkplace.hall.VillageNeeds.bed(level, v);
+				helper.assertTrue(housed == 0 && bed == null, "100 ticks after his bed was broken (day time " + level.getDayTime() % 24000L
+					+ "): housed " + housed + ", his bed for the hall's list " + (bed == null ? "none" : bed.subtract(bedAbs) + " from the broken one"));
+				helper.succeed();
+			}
 		});
 	}
 

@@ -157,7 +157,7 @@ public class LegendNeedsGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	private static void sleepsAt(ServerLevel level, Villager villager, BlockPos bed) {
-		villager.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), bed));
+		Beds.home(villager, bed);
 	}
 
 	private static void marry(Villager a, Villager b, boolean married) {

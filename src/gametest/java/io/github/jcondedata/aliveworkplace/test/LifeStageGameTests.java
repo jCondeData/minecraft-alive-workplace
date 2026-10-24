@@ -514,8 +514,8 @@ public class LifeStageGameTests implements FabricGameTest {
 			for (Villager v : List.of(bram, tom)) {
 				ModAttachments.LAST_MEAL.set(v, level.getGameTime());
 			}
-			bram.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(bramBed)));
-			tom.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(tomBed)));
+			Beds.home(bram, helper.absolutePos(bramBed));
+			Beds.home(tom, helper.absolutePos(tomBed));
 
 			// The same day in every way but their age: the elder's mood is 5 higher, for "a quiet old age".
 			Moods.Mood young = Moods.work(level, tom);
@@ -543,7 +543,7 @@ public class LifeStageGameTests implements FabricGameTest {
 			Moods.Mood homeless = Moods.work(level, bram);
 			helper.assertTrue(!texts(homeless.good()).contains("a quiet old age") && texts(homeless.good()).contains("fed"), "an elder with no bed: " + texts(homeless.good()));
 			// Housed again: back. An ageless elder has it too; one whose age nobody knows does not.
-			bram.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(bramBed)));
+			Beds.home(bram, helper.absolutePos(bramBed));
 			helper.assertTrue(Moods.work(level, bram).score() == old.score(), "fed and housed again: " + Moods.work(level, bram).score());
 			ModAttachments.AGELESS.set(bram, true);
 			helper.assertTrue(texts(Moods.work(level, bram).good()).contains("a quiet old age"), "an ageless elder's quiet old age");
@@ -671,7 +671,7 @@ public class LifeStageGameTests implements FabricGameTest {
 			long today = Chronicle.day(level);
 			LifeStages.setAdultSince(bram, today - 1280);
 			ModAttachments.LAST_MEAL.set(bram, level.getGameTime());
-			bram.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(bed)));
+			Beds.home(bram, helper.absolutePos(bed));
 			BlockPos goal = helper.absolutePos(new BlockPos(4, 2, 16));
 
 			LifeStages.AGES = false;

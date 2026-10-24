@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362
 
 ## What a player sees
 
@@ -84,7 +84,7 @@ name such as Thornholm.
 
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32
 up and down) belongs to it; its villagers and its beds are counted by that one circle, so a villager and the bed beside him are
-always both in or both out (B361, `VillageHalls.contains`). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
+always both in or both out (B361, `VillageHalls.contains`). A villager is housed only while his bed is still there: a bed broken at noon houses nobody from that moment, though vanilla forgets it only at bedtime (B362, `VillageNeeds.bed` checks the bed's point of interest). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
 feeds everything else.
 
 **Clearing-out quests follow the world's foes (B301).** "Clear out 8 monsters" (a `kill` of `monster`, a `slay` reform

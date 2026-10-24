@@ -217,6 +217,7 @@ public final class CaravanTrains {
 	 */
 	public static void serve(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
 		if (!live() || !RAILWAY.present()) {
+			offline(level, hall, Caravans.Data.get(level)); // B359
 			return;
 		}
 		Caravans.Data data = Caravans.Data.get(level);
@@ -262,6 +263,26 @@ public final class CaravanTrains {
 				whistle(level, hall, data); // the train brought them in
 				Caravans.trainIn(level, hall);
 			}
+		}
+	}
+
+	/**
+	 * B359: with trains no longer running (Create taken out of the pack, or the switch off) a caravan saved waiting at the
+	 * station for the village train, or riding it, takes the timed trip and arrives (from the hall's round and its look at
+	 * its trains). Goods that rode in the train's chest come back out of it while Create is there (the train still stands
+	 * on its track with the switch off); with Create gone the train and its chest are gone with it, so the caravan's own
+	 * record of its goods goes on. Nothing left in the chest: the chronicle says the goods stayed there.
+	 */
+	public static void offline(ServerLevel level, BlockPos hall, Caravans.Data data) {
+		if (live() && RAILWAY.present()) {
+			return;
+		}
+		long now = level.getGameTime();
+		List<BlockPos> lost = data.offTheTrains(hall, s -> now + trainTrip(Caravans.trip(level, s.from(), s.to(), data)),
+			s -> RAILWAY.present() ? RAILWAY.call(r -> r.unload(level, railwayId(s.from(), s.to()), s.goods()), List.<ItemStack>of()) : s.goods());
+		for (BlockPos other : lost) {
+			Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.train_goods_left",
+				CaravanRoads.nameOf(level, other)));
 		}
 	}
 

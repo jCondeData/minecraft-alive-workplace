@@ -220,7 +220,8 @@ public final class Piglins {
 	/**
 	 * Turns {@code mob} zombified now, as the Overworld does in the end: a piglin or brute into a zombified piglin, a
 	 * hoglin into a zoglin, dazed for 10 s. A raider stays one of its raid (its raid and role tags go with it); it is no
-	 * more one of a lair's band. Null for anything else.
+	 * more one of a lair's band. Another mod refusing the turned mob is answered as for every foe ({@link HostileSpawns#keep},
+	 * B356). Null for anything else, or when the turned mob couldn't stay in the world.
 	 */
 	@Nullable
 	public static Mob zombify(ServerLevel level, Mob mob) {
@@ -235,7 +236,9 @@ public final class Piglins {
 			}
 		}
 		Mob turned = mob.convertTo(into, true);
-		if (turned == null) {
+		// convertTo's addFreshEntity can be refused by another mod's mob blocklist (MobsBeGone), which left the band
+		// gone instead of zombified (B356); the turned mob is kept the way every other foe is (B208).
+		if (turned == null || !HostileSpawns.keep(level, turned, "band of a fallen Piglin Warlord")) {
 			return null;
 		}
 		tags.forEach(turned::addTag);

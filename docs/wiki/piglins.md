@@ -106,8 +106,10 @@ Roadmap items: 32.10
   or pillager goes through. A raider riding a mount (a baby husk's chicken jockey) keeps its mount out too, and so do
   the Bandit King's fort's men (B375).
 - On a server whose mob blocklist refuses zombified piglins and zoglins (Cobbleverse's MobsBeGone lists nearly every
-  vanilla mob), the band vanishes when the Warlord falls instead of turning zombified: the turning goes through the
-  game's own conversion, not `HostileSpawns` (bug B356, its failing test on the branch tests/refused-warlord).
+  vanilla mob), the band turned zombified when the Warlord fell used to vanish: the game's own conversion adds the new
+  mob the ordinary way, which the blocklist refuses. Now a refused turned mob goes the way of every other foe (B208):
+  with `forceThreatSpawns` on it is placed directly, zombified and with its raid tags; off, it is left out and the
+  log says so once (B356).
 
 ## Proof
 
@@ -137,3 +139,9 @@ Roadmap items: 32.10
   mob (as Cobbleverse's MobsBeGone does), the outpost's Warlord and band are in the world and still there 100 ticks on.
 - `QaRefusedThreatsGameTests.aWarlordsWholeBandAndRaidTurnZombifiedWhenHeFalls`: every piglin and hoglin of the band and
   the raid is zombified and still there when he falls.
+- `QaRefusedWarlordGameTests.aWarlordsBandTurnsZombifiedWhenAnotherModRefusesZombifiedPiglins`: the same while the world
+  refuses every hostile mob, zombified piglins and zoglins too (B356).
+- `PiglinGameTests.aRefusedBandStillTurnsZombifiedWhileForced`, `PiglinGameTests.aRefusedBandIsLeftOutWhenForcingIsOff`:
+  a raiding piglin and hoglin turned while refused are in the world as a zombified piglin and a zoglin, with their raid
+  and role tags (saved with them); with `forceThreatSpawns` off neither the old nor the turned mob stays, and the log
+  names the switch (B356).

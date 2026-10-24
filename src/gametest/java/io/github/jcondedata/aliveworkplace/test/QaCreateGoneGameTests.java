@@ -112,6 +112,13 @@ public class QaCreateGoneGameTests implements FabricGameTest {
 		Builders.employ(level, builder, helper.absolutePos(bench));
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(5, 2, 5)),
 			Rotation.NONE, Mirror.NONE);
+		// Nothing of this build is left for later batches at this spot: the builder, its finished record, dropped items
+		Leftovers.after(helper, () -> {
+			builder.discard();
+			BuildSiteManager.get(level).forgetFinished(placement);
+			level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, helper.getBounds().inflate(8),
+				e -> e instanceof ItemEntity || e instanceof Villager).forEach(net.minecraft.world.entity.Entity::discard);
+		});
 		BuildSite site = Builders.start(level, builder, null, StarterBlueprints.WATERMILL.id(), placement);
 		BuildPlan plan = site.plan(level);
 		if (plan == null) {

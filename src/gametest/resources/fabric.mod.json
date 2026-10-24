@@ -486,7 +486,8 @@
 			"io.github.jcondedata.aliveworkplace.test.PokemonRangerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderBlueprintGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StadiumGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReputationPerksGameTests"
 		]
 	},
 	"depends": {

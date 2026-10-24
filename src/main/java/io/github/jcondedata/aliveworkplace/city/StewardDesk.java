@@ -153,7 +153,7 @@ public final class StewardDesk {
 
 		/** "3 villagers have no bed". */
 		public Component reason() {
-			return why.isEmpty() ? Component.empty() : Component.translatable(why, numbers.toArray());
+			return why.isEmpty() ? Component.empty() : io.github.jcondedata.aliveworkplace.work.Words.countedFirst(why, numbers.toArray()); // "1 villager has no bed"
 		}
 
 		/** "Stone House (Cherry)", "Give 3 villagers jobs", "Research Fortification", "A Palisade wall". */

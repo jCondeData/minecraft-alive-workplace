@@ -170,7 +170,8 @@ players can hand things over; the Village Hall lists it too. The board is drawn 
 requests as a list on the left (what, how many, for whom and how far), the store's numbers, the Steward's shopping
 list and the stock orders "at a glance" on the right, and a request under the mouse read out in full. A click hands
 over what you have, as before, and the request drops by that much at once, so a quick second click hands
-nothing more than is still needed (B344).
+nothing more than is still needed (B344). On the stock orders page, the item in your hand (the off hand's when the
+main hand is empty, B351) gets the "Order" button.
 
 **Miners make their own pickaxe (36.11).** A Miner whose pickaxe wore out, or who has none, first looks in their own
 chests for one; with none there, they make one at their Blast Furnace from what they mined themselves: three

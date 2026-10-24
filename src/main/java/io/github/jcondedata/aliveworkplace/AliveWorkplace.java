@@ -52,6 +52,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks.init(); // the Table as a collection (26.10)
 		PreviewNetworking.init();
 		Platform.get().onUseBlock(io.github.jcondedata.aliveworkplace.blueprint.ScanToolItem::beforeBlock); // B335: mark a chest or trapdoor before it opens
+		Platform.get().allowUseItem(io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem::allowBookUse); // B365: the off hand's blueprint writes into the main hand's book
 		Platform.get().onUseBlock(io.github.jcondedata.aliveworkplace.shop.ShopCounterBlock::beforeBlock); // B336: the sales log with anything in hand
 		BuilderStatusSync.init();
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.init();

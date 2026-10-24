@@ -207,11 +207,22 @@ public final class Retirement {
 		free.sort(Comparator.comparing(Entity::getUUID));
 		for (Villager v : free) {
 			Families.Parents parents = Families.parents(v);
-			if (parents != null && (parents.mother().getString().equals(name) || parents.father().getString().equals(name))) {
+			if (parents != null && childOf(parents, elder, name)) {
 				return v;
 			}
 		}
 		return free.isEmpty() ? null : free.get(0);
+	}
+
+	/**
+	 * Whether {@code parents} name {@code elder} as a parent: by the parent ids when the record has them (34.21), so a
+	 * Name Tag can't hide a parent or make a namesake one; by the name only for records older than the ids (B347).
+	 */
+	private static boolean childOf(Families.Parents parents, Villager elder, String name) {
+		if (parents.motherId() != null || parents.fatherId() != null) {
+			return elder.getUUID().equals(parents.motherId()) || elder.getUUID().equals(parents.fatherId());
+		}
+		return parents.mother().getString().equals(name) || parents.father().getString().equals(name);
 	}
 
 	/** The hand-over: the workstation, the job one level below the elder's (at least Apprentice) and its assignments. */

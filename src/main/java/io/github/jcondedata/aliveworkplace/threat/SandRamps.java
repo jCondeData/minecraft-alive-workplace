@@ -43,8 +43,9 @@ import org.jetbrains.annotations.Nullable;
  * than before, until its top is level with the wall's. Then the raiders walk up it, over the top and drop inside.
  * <ul>
  * <li><b>Only into air, on firm ground.</b> A wall is whatever stands at least two blocks high in the way (up to
- * {@link #MAX_HEIGHT}); every block of the ramp must be air (or sand of this siege) with something solid under its
- * column, and never against a gate. At most {@link #MAX_RAMPS} ramps a siege; a climber whose spot is within
+ * {@link #MAX_HEIGHT}); every block of the ramp must be air or sand with something solid under its column, and never
+ * against a gate. Sand already there (a player's, or the desert's) counts as part of the ramp and is built on, never
+ * recorded (B382: the ramp was refused where any sand stood but the siege's own, so the husk never ramped). At most {@link #MAX_RAMPS} ramps a siege; a climber whose spot is within
  * {@link #SHARE} blocks of one piles onto it.</li>
  * <li><b>Every block is recorded with the siege</b> ({@link ThreatData.Siege#sand}, saved, with each ramp's foot) and
  * taken away when the raid is over ({@link #takeAway}): each one that is still sand goes, nothing drops.</li>
@@ -297,7 +298,7 @@ public final class SandRamps {
 			}
 			BlockPos next = null;
 			for (BlockPos pos : site.blocks()) {
-				if (!level.getBlockState(pos).is(Blocks.SAND) || !siege.sand.contains(pos)) {
+				if (!level.getBlockState(pos).is(Blocks.SAND)) {
 					next = pos;
 					break;
 				}
@@ -339,13 +340,13 @@ public final class SandRamps {
 		return storm;
 	}
 
-	/** Whether every block of {@code site}'s ramp is this siege's sand, up to the wall's top. */
+	/** Whether every block of {@code site}'s ramp is sand (this siege's, or sand that stood there before, B382), up to the wall's top. */
 	private static boolean standing(ServerLevel level, ThreatData.Siege siege, Site site) {
 		if (site.height < 2) {
 			return false;
 		}
 		for (BlockPos pos : site.blocks()) {
-			if (!level.getBlockState(pos).is(Blocks.SAND) || !siege.sand.contains(pos)) {
+			if (!level.getBlockState(pos).is(Blocks.SAND)) {
 				return false;
 			}
 		}
@@ -358,14 +359,19 @@ public final class SandRamps {
 		return !level.getBlockState(pos).getCollisionShape(level, pos).isEmpty();
 	}
 
+	/** Whether a block of a ramp may stand at {@code pos}: air, or sand, the siege's or any already there (B382), counted as piled. */
 	private static boolean ours(ServerLevel level, ThreatData.Siege siege, BlockPos pos) {
-		return level.getBlockState(pos).isAir() || level.getBlockState(pos).is(Blocks.SAND) && siege.sand.contains(pos);
+		return level.getBlockState(pos).isAir() || level.getBlockState(pos).is(Blocks.SAND);
+	}
+
+	private static boolean sandy(ServerLevel level, BlockPos pos) {
+		return level.getBlockState(pos).is(Blocks.SAND);
 	}
 
 	/**
 	 * How high a ramp at {@code foot} must be to reach the top of the wall beside it, or -1 when it can't be piled here:
 	 * the wall is higher than {@link #MAX_HEIGHT} or a gate, a block of the ramp would go where something stands that
-	 * isn't air (or this siege's sand), a column has nothing solid under it, or there is no room on top.
+	 * isn't air or sand, a column has nothing solid under it, or there is no room on top.
 	 */
 	private static int height(ServerLevel level, ThreatData.Siege siege, BlockPos foot, Direction into) {
 		BlockPos wall = foot.relative(into);
@@ -385,7 +391,7 @@ public final class SandRamps {
 		}
 		for (int d = 1; d <= h; d++) {
 			BlockPos column = foot.relative(into, -(d - 1));
-			if (!blocked(level, column.below()) && !(level.getBlockState(column.below()).is(Blocks.SAND) && siege.sand.contains(column.below()))) {
+			if (!blocked(level, column.below()) && !sandy(level, column.below())) {
 				return -1;
 			}
 			for (int y = 0; y <= h - d; y++) {
@@ -440,12 +446,22 @@ public final class SandRamps {
 					next = next.below();
 				}
 				at = next;
+			} else if (sandy(level, next) && !blocked(level, next.above()) && blocked(level, next.relative(dir).above())) {
+				// Sand already at the wall's foot (B382): the ramp starts in it, the sand its first block.
+				at = next;
+				into = dir;
 			} else {
 				into = dir;
 			}
 		}
 		if (into == null) {
 			return null;
+		}
+		// Standing on sand heaped against the wall with nothing under the step out from it (B382: a player's block at the
+		// wall's foot): the ramp starts down in that sand. Ground sand (a desert's) has ground under the step, and stays.
+		for (int down = 0; down < MAX_HEIGHT && !blocked(level, at) && sandy(level, at.below()) && blocked(level, at.below().relative(into))
+			&& !blocked(level, at.relative(into, -1).below()); down++) {
+			at = at.below();
 		}
 		for (Site site : storm.sites) {
 			if (site.foot.distSqr(at) <= SHARE * SHARE) {
@@ -458,7 +474,7 @@ public final class SandRamps {
 		Direction side = into.getClockWise();
 		for (int k : new int[] {0, 1, -1, 2, -2, 3, -3}) {
 			BlockPos foot = at.relative(side, k);
-			if (blocked(level, foot) || !blocked(level, foot.below())) {
+			if (blocked(level, foot) && !sandy(level, foot) || !blocked(level, foot.below())) {
 				continue;
 			}
 			int height = height(level, siege, foot, into);

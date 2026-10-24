@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Desert raiders still ramp over a wall when sand already sits at its outside foot, a player's or the desert's own: that sand counts as the ramp's first blocks and is built on, and it stays when the siege's own sand is taken away (B382).
 - The morning siege report counts one raider in the singular: "The siege: 1 raider came and ...", not "1 raiders came" (B381).
 - Builder and Storehouse lines count one in the singular: the board's "For the Builder, 1 block away", the chat list's "Still to bring for the Test Hut: 1 item of 1 kind" (and "5 items of 1 kind"), the blueprint tooltip's "short of 1 item", the board's "Room for 1 more item", a repair's "(1 block missing)" and the porter's "1 item carried" (B402, B403).
 - The builder's written book reads "Still to bring: 5 items of 1 kind." when one kind of item is short, now held by a test through the Book and Quill on the builder (B404).

@@ -472,6 +472,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaQuietLairGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLairEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinRaidGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClassPerksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiratesThreatLevelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonProfessorGameTests",

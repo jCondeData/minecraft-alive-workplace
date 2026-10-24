@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.WorkplaceConfig;
 import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.threat.Culture;
+import io.github.jcondedata.aliveworkplace.threat.Plunder;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import io.github.jcondedata.aliveworkplace.threat.Threats;
 import java.util.List;
@@ -14,11 +15,14 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 /**
@@ -104,5 +108,44 @@ public class QaPiglinRaidGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "qaBruteStrikes")
 	public void aRaidingPiglinBruteGoesForAVillager(GameTestHelper helper) {
 		strikes(helper, EntityType.PIGLIN_BRUTE);
+	}
+
+	/**
+	 * 32.10: a plunderer "drops it if killed". Forty piglins each carrying 10 gold ingots (shown on their heads), killed by
+	 * a player as a player kills them: exactly the 400 ingots they carried fall, never one more (the ingot shown on the
+	 * head mustn't drop as a piece of armour too).
+	 */
+	//$ gametest_ticks_batch AREA '60' '"qaPlunderNoMore"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "qaPlunderNoMore")
+	public void plunderersKilledByAPlayerDropExactlyTheGoldTheyCarried(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		Culture culture = Threats.get(PIGLINS).orElse(null);
+		helper.assertTrue(culture != null, "piglin_incursion.json didn't load");
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		List<Mob> piglins = new java.util.ArrayList<>();
+		for (int i = 0; i < 40; i++) {
+			Mob piglin = raider(helper, culture, EntityType.PIGLIN, new BlockPos(3 + (i % 8) * 3, 2, 3 + (i / 8) * 3));
+			piglin.setNoAi(true);
+			piglin.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, ItemStack.EMPTY); // (a bare head, where the gold is shown)
+			Plunder.carry(level, piglin, new ItemStack(Items.GOLD_INGOT, 10));
+			piglins.add(piglin);
+		}
+		VillageRaids.track(level, hall, culture, piglins);
+		helper.runAfterDelay(2, () -> {
+			helper.assertTrue(piglins.stream().allMatch(m -> m.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).is(Items.GOLD_INGOT)),
+				"the gold isn't shown on their heads");
+			for (Mob piglin : piglins) {
+				piglin.hurt(level.damageSources().playerAttack(player), 1000f);
+			}
+			helper.runAfterDelay(3, () -> {
+				helper.assertTrue(piglins.stream().noneMatch(Mob::isAlive), "a piglin lived");
+				int ingots = level.getEntitiesOfClass(ItemEntity.class, helper.getBounds().inflate(4), e -> e.getItem().is(Items.GOLD_INGOT))
+					.stream().mapToInt(e -> e.getItem().getCount()).sum();
+				helper.assertTrue(ingots == 400, "40 plunderers carrying 10 ingots each dropped " + ingots + " ingots");
+				helper.succeed();
+			});
+		});
 	}
 }

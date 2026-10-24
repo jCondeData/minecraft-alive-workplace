@@ -70,7 +70,7 @@ public class HomesSpecGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 	}
 
 	private static void sleepsAt(ServerLevel level, Villager villager, BlockPos bed) {
-		villager.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), bed));
+		Beds.home(villager, bed);
 	}
 
 	/** A blueprint of {@code size} with nothing in it, under {@code id} (only its size matters to a home). */

@@ -288,11 +288,11 @@ public class StewardRulesGameTests implements net.fabricmc.fabric.api.gametest.v
 		List<Villager> villagers = new ArrayList<>();
 		for (int i = 0; i < 2; i++) {
 			villagers.add(villager(helper, 4 + 2 * i, 12));
-			villagers.get(i).getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(4 + 2 * i, 3, 5))));
+			Beds.home(villagers.get(i), helper.absolutePos(new BlockPos(4 + 2 * i, 3, 5)));
 		}
 		helper.assertTrue(!check.get().held() && check.get().value() == 2, "two grown-ups are too few to ask: " + check.get());
 		villagers.add(villager(helper, 8, 12));
-		villagers.get(2).getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(8, 3, 5))));
+		Beds.home(villagers.get(2), helper.absolutePos(new BlockPos(8, 3, 5)));
 		helper.assertTrue(check.get().held() && check.get().value() == 3, "three in no built home: " + check.get());
 		sites.recordFinished(StarterBlueprints.STONE_HOUSE.id(), placement, UUID.randomUUID());
 		helper.assertTrue(check.get().held() && check.get().value() == 3, "three in a tier I house: " + check.get());

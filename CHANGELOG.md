@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A sneak-right-click with a personal request's letter, reply or heirloom hands it over (B354). Before, the letter
+  (paper) was taken as a job pick ("needs a lectern nearby") and stayed in your hand.
 - A found Legend at their camp takes what you hold in the off hand when your main hand is empty (B345): the shipwreck
   castaway eats a cooked meal from it and the Old Sage takes his riddle's answer. Before, only the main hand counted.
 - The Storehouse board lowers a request as soon as you hand something over (B344). Before, it kept asking for the

@@ -322,6 +322,127 @@ public class QaStageSevenGameTests implements net.fabricmc.fabric.api.gametest.v
 		helper.succeed();
 	}
 
+	// --- A settled Legend's own clicks ----------------------------------------------------------------------------
+
+	/**
+	 * The Golem Smith, "sneak-right-click with an empty hand chooses which golem comes next": "X will build a Y next (4 iron
+	 * blocks, a carved pumpkin and 1 Z ...)". Sneaking empty-handed, hauler goes to farmhand; with a torch in the off hand
+	 * (main hand empty) the click is still empty-handed: sentry; once more, back to hauler. A stick in the main hand,
+	 * sneaking, changes nothing, and nor does a plain click.
+	 */
+	//$ gametest_ticks_batch HUGE '100' '"qa7GolemSmith"'
+	@GameTest(template = HUGE, timeoutTicks = 100, batch = "qa7GolemSmith")
+	public void theGolemSmithsNextGolemIsChosenByASneakClick(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		QaStageFiveGameTests.Client c = survivor(helper, "qa7smith");
+		ServerPlayer p = c.player();
+		ServerLevel level = helper.getLevel();
+		boolean moods = io.github.jcondedata.aliveworkplace.people.Moods.ENABLED;
+		boolean needs = io.github.jcondedata.aliveworkplace.legend.LegendNeeds.ENABLED;
+		Leftovers.after(helper, () -> {
+			io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = moods;
+			io.github.jcondedata.aliveworkplace.legend.LegendNeeds.ENABLED = needs;
+			LegendRecord record = LegendRecord.get(level);
+			for (Villager v : level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(16), v -> true)) {
+				record.forget(v.getUUID());
+				v.discard();
+			}
+		});
+		io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = false;
+		io.github.jcondedata.aliveworkplace.legend.LegendNeeds.ENABLED = false;
+		Legend smithLegend = Legends.get(io.github.jcondedata.aliveworkplace.legend.GolemSmith.ID).orElse(null);
+		helper.assertTrue(smithLegend != null, "golem_smith.json didn't load");
+		staged(helper, List.of(smithLegend), () -> {
+			BlockPos table = new BlockPos(10, 2, 10);
+			helper.setBlock(table, Blocks.SMITHING_TABLE);
+			Villager smith = helper.spawn(EntityType.VILLAGER, table.north(2));
+			smith.setNoAi(true);
+			Legends.make(level, smith, smithLegend, "test");
+			smith.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE,
+				net.minecraft.core.GlobalPos.of(level.dimension(), helper.absolutePos(table)));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.legend.GolemSmith.isSmith(smith), "not a settled Golem Smith");
+			java.util.function.Supplier<String> next = () -> io.github.jcondedata.aliveworkplace.legend.GolemSmith.forge(smith).role().id;
+			helper.assertTrue(next.get().equals("hauler"), "the forge starts on " + next.get());
+			p.setShiftKeyDown(true);
+			QaStageSixGameTests.clickVillager(p, smith, c.seen());
+			Component told = QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.golem_smith.next");
+			helper.assertTrue(next.get().equals("farmhand") && told != null, "sneak, empty hands: " + next.get() + ", saw " + keys(c));
+			QaStageFourGameTests.assertRendered(helper, told, smith.getDisplayName().getString(), "4 iron blocks");
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.TORCH, 3));
+			c.seen().clear();
+			QaStageSixGameTests.clickVillager(p, smith, c.seen());
+			helper.assertTrue(next.get().equals("sentry"), "a torch in the off hand stopped the choice: " + next.get() + ", saw " + keys(c));
+			c.seen().clear();
+			QaStageSixGameTests.clickVillager(p, smith, c.seen());
+			helper.assertTrue(next.get().equals("hauler"), "the choice doesn't go round: " + next.get());
+			p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.STICK));
+			c.seen().clear();
+			QaStageSixGameTests.clickVillager(p, smith, c.seen());
+			QaStageFiveGameTests.closeScreen(p);
+			helper.assertTrue(next.get().equals("hauler"), "a stick in the main hand chose a golem: " + next.get());
+			p.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+			p.setShiftKeyDown(false);
+			c.seen().clear();
+			QaStageSixGameTests.clickVillager(p, smith, c.seen());
+			QaStageFiveGameTests.closeScreen(p);
+			helper.assertTrue(next.get().equals("hauler"), "a plain click chose a golem: " + next.get());
+			helper.assertTrue(p.getMainHandItem().isEmpty() && p.getOffhandItem().getCount() == 3, "an item was taken");
+		});
+		helper.succeed();
+	}
+
+	/**
+	 * A Legend guest, "right-clicked, they show their terms": the terms screen opens empty-handed, and from a sneak-click
+	 * with a torch in the off hand; holding a stick it opens and the stick is kept. A Gift is never lost (given or kept).
+	 * Twelve blocks away the open screen is no longer usable.
+	 */
+	//$ gametest_ticks_batch HUGE '100' '"qa7Guest"'
+	@GameTest(template = HUGE, timeoutTicks = 100, batch = "qa7Guest")
+	public void aLegendGuestShowsTheirTermsFromEitherHand(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		QaStageFiveGameTests.Client c = survivor(helper, "qa7guest");
+		ServerPlayer p = c.player();
+		legendHall(helper, p);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		Legend legend = Legends.read(ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "qa7_guest"), JsonParser.parseString(
+			"{\"rarity\": \"rare\", \"job\": \"minecraft:mason\", \"title\": \"qa7_guest\", \"lore\": \"the lore\","
+				+ " \"names\": [\"Ada the Guest\"], \"arrive\": [{\"way\": \"visit\", \"place\": \"hall\", \"chance\": 1.0}]}").getAsJsonObject());
+		staged(helper, List.of(legend), () -> {
+			level.setDayTime(level.getDayTime() - level.getDayTime() % io.github.jcondedata.aliveworkplace.hall.VillageNeeds.DAY + 1000);
+			Villager guest = io.github.jcondedata.aliveworkplace.legend.LegendGuests.visit(level, hall, "hall", hall, RandomSource.create(1L));
+			helper.assertTrue(guest != null, "no guest came");
+			guest.setNoAi(true);
+			Leftovers.after(helper, () -> ((VillageHallBlockEntity) helper.getBlockEntity(HALL))
+				.setLegendGuests(io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.EMPTY));
+			QaStageSixGameTests.clickVillager(p, guest, c.seen());
+			helper.assertTrue(p.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu, "empty-handed: no terms, " + p.containerMenu);
+			QaStageFiveGameTests.closeScreen(p);
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.TORCH, 2));
+			p.setShiftKeyDown(true);
+			QaStageSixGameTests.clickVillager(p, guest, c.seen());
+			helper.assertTrue(p.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu, "sneak, torch in the off hand: no terms");
+			QaStageFiveGameTests.closeScreen(p);
+			p.setShiftKeyDown(false);
+			p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.STICK));
+			QaStageSixGameTests.clickVillager(p, guest, c.seen());
+			helper.assertTrue(p.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu && p.getMainHandItem().is(Items.STICK),
+				"holding a stick: " + p.containerMenu + ", " + p.getMainHandItem());
+			p.moveTo(guest.getX() + 12, guest.getY(), guest.getZ());
+			helper.assertFalse(p.containerMenu.stillValid(p), "the terms are still usable 12 blocks away");
+			QaStageFiveGameTests.closeScreen(p);
+			p.setItemInHand(InteractionHand.MAIN_HAND, io.github.jcondedata.aliveworkplace.story.Gifts.wrap(new ItemStack(Items.CAKE), p.getGameProfile().getName()));
+			int before = Friendship.points(guest, p.getUUID());
+			QaStageSixGameTests.clickVillager(p, guest, c.seen());
+			QaStageFiveGameTests.closeScreen(p);
+			boolean kept = p.getMainHandItem().is(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT);
+			boolean given = Friendship.points(guest, p.getUUID()) != before;
+			helper.assertTrue(kept || given, "the Gift went nowhere: neither kept nor given");
+			helper.assertTrue(guest.isAlive() && io.github.jcondedata.aliveworkplace.legend.LegendGuests.isGuest(guest), "the guest is gone");
+		});
+		helper.succeed();
+	}
+
 	// --- The personal-request letter ------------------------------------------------------------------------------
 
 	private static ItemStack takeMarked(ServerPlayer p, boolean reply) {
@@ -370,6 +491,28 @@ public class QaStageSevenGameTests implements net.fabricmc.fabric.api.gametest.v
 	}
 
 	/**
+	 * "Right-click Mira with it": a sneak-right-click is a right-click too. The Sealed Letter (paper) in the main hand,
+	 * sneaking, on Mira: she reads it and writes back, as without sneaking; she doesn't take up a paper job instead.
+	 */
+	//$ gametest_ticks_batch HUGE '120' '"qa7LetterSneak"'
+	@GameTest(template = HUGE, timeoutTicks = 120, batch = "qa7LetterSneak")
+	public void aSneakClickWithTheLetterStillDeliversIt(GameTestHelper helper) {
+		letterVillage(helper, (c, dara, mira) -> {
+			ServerPlayer p = c.player();
+			p.setItemInHand(InteractionHand.MAIN_HAND, takeMarked(p, false));
+			p.setShiftKeyDown(true);
+			var job = mira.getVillagerData().getProfession();
+			QaStageSixGameTests.clickVillager(p, mira, c.seen());
+			QaStageFiveGameTests.closeScreen(p);
+			helper.assertTrue(PersonalErrandGameTests.marked(p, "aliveworkplace_letter", false).isEmpty()
+				&& !PersonalErrandGameTests.marked(p, "aliveworkplace_letter", true).isEmpty(),
+				"a sneak-click with the letter didn't deliver it: hand " + p.getMainHandItem() + ", saw " + keys(c));
+			helper.assertTrue(mira.getVillagerData().getProfession() == job, "Mira took a job: " + mira.getVillagerData().getProfession());
+			helper.succeed();
+		});
+	}
+
+	/**
 	 * "Lost the letter? Right-click Dara empty-handed and she writes another": the bag emptied, a torch in the off hand,
 	 * the main hand empty, a click on Dara gives a new Sealed Letter; a second click while it's carried gives no third.
 	 * A stranger who never accepted gets none.
@@ -383,7 +526,13 @@ public class QaStageSevenGameTests implements net.fabricmc.fabric.api.gametest.v
 			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.TORCH, 4));
 			QaStageSixGameTests.clickVillager(p, dara, c.seen());
 			QaStageFiveGameTests.closeScreen(p);
-			helper.assertTrue(PersonalErrandGameTests.marked(p, "aliveworkplace_letter", false).getCount() == 1, "no new letter: saw " + keys(c));
+			ItemStack rewritten = PersonalErrandGameTests.marked(p, "aliveworkplace_letter", false);
+			helper.assertTrue(rewritten.getCount() == 1, "no new letter: saw " + keys(c));
+			// Put away in the bag, out of the hand: the next click is empty-handed again.
+			ItemStack kept = rewritten.copy();
+			rewritten.setCount(0);
+			p.getInventory().setItem(20, kept);
+			helper.assertTrue(p.getMainHandItem().isEmpty(), "the main hand isn't empty: " + p.getMainHandItem());
 			QaStageSixGameTests.clickVillager(p, dara, c.seen());
 			QaStageFiveGameTests.closeScreen(p);
 			int letters = 0;

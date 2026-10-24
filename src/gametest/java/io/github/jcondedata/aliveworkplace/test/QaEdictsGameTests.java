@@ -416,6 +416,40 @@ public class QaEdictsGameTests implements FabricGameTest {
 		});
 	}
 
+	/** 30.17 (B376): a full Village's refusal counts its one guild in the singular ("may have 1 guild", not "1 guilds"). */
+	//$ gametest_ticks_batch AREA '100' '"qaGuildOne"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaGuildOne")
+	public void qaAFullVillageSaysOneGuild(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos pos = helper.absolutePos(HALL);
+		Leftovers.after(helper, () -> {
+			helper.getLevel().removeBlock(pos, false);
+			VillageHalls.RADIUS = radius;
+			Guilds.forget();
+			CivicEffects.forget();
+			VillageNeeds.forget();
+		});
+		Villager builder = master(helper, new BlockPos(4, 2, 4), "Dara", ModVillagers.BUILDER);
+		Villager miner = master(helper, new BlockPos(6, 2, 4), "Bram", ModVillagers.MINER);
+		helper.runAfterDelay(5, () -> {
+			ServerLevel level = helper.getLevel();
+			VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(pos);
+			hall.setGuilds(List.of());
+			hall.setRank(VillageRanks.Rank.VILLAGE);
+			Guilds.forget();
+			String village = VillageHalls.name(level, pos).getString();
+			helper.assertTrue(Guilds.grant(level, builder).outcome() == Guilds.Outcome.GRANTED, "a Village's first");
+			Guilds.Offer full = Guilds.grant(level, miner);
+			helper.assertTrue(full.outcome() == Guilds.Outcome.FULL && full.message().getString().equals(village + " is a Village and may have 1 guild; it has them all."),
+				"said: " + full.message().getString());
+			helper.succeed();
+		});
+	}
+
 	/**
 	 * 30.3/30.5/30.9/30.10: every edict's name and description and every reform's name, line and step titles read as
 	 * English (no raw lang key), and every sentence these features send is in the lang file.

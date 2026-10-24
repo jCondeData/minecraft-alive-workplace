@@ -464,7 +464,7 @@ public final class Guilds implements ResourceManagerReloadListener {
 			}
 		}
 		if (hall.guilds().size() >= cap(rank)) {
-			return refused(Outcome.FULL, Component.translatable("message.aliveworkplace.guild.full", village, rank.title(), cap(rank)));
+			return refused(Outcome.FULL, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.guild.full", cap(rank), village, rank.title(), cap(rank)));
 		}
 		List<Charter> list = new ArrayList<>(hall.guilds());
 		list.add(new Charter(guild.id(), villager.getUUID(), who.getString(), Chronicle.day(level), Optional.empty()));

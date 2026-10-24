@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348
 
 ## What a player sees
 
@@ -207,6 +207,13 @@ Village Hall to a spot is searched for once a tick (a worker's pace asks for it 
 finished buildings a bed is looked up in (for a villager's home) is worked out once a tick, and the hall's
 list of free workstations finds each kind of workstation's job once.
 
+**A shop sells only what its chests hold (B348).** A Shopkeeper's offers are built from the stock when you talk to
+them, but the sale itself is checked at the moment of the trade: if the chests by the Shop Counter no longer hold a
+whole lot (the owner took it back while you had the trades open, a hopper drained it, another buyer got there first),
+the goods don't appear for your payment, a click on them takes nothing, your emeralds stay in the slot and the offer
+shows as sold out. Talk to the shopkeeper again once the shop is restocked. Every sale still takes its goods out of
+the chests and puts the payment in.
+
 **Outfits (24.1).** Each of the mod's professions has a vanilla-style outfit and a zombie villager version.
 
 **A Quarry build that refills (36.12).** The Quarry blueprint (`tools/blueprints/quarry.py`, in the Blueprint Table
@@ -359,7 +366,9 @@ pit, regrowth bottom up at the set rate with a player's block kept and nothing o
 day's worth, the weighted mix, save and reload of the site and mid-dig, the switch off, the Quarry Marker still works,
 the new sentences), `QaStageThreeBugTests` (B333: a survival player's right-click marks a chest, then a barrel, and
 neither opens; B334: a tenth kind on a full note), `QaStageThreeGameTests` (a sneak-click clears the note, a non-container
-is refused, up to 9 kinds). The client mixins themselves are proved by the scene.
+is refused, up to 9 kinds). `ShopStockGameTests` (5, B348: the chest emptied while the trades are open sells
+nothing and shows sold out, emptied after the payment is in hands over nothing and keeps the emerald, less than a lot
+left isn't sold, a restocked shop sells again, a normal sale takes the goods from the chest). The client mixins themselves are proved by the scene.
 
 Showcase scenes: `job_plate` (a Journeyman fisherman, Dara the Expert builder and a jobless villager, each looked at), `miner_pickaxe` (a worn pickaxe breaks, a new one is made at the blast furnace), `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,

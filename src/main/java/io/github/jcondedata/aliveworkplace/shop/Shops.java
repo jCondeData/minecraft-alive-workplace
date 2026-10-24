@@ -62,6 +62,38 @@ public final class Shops {
 		}
 	}
 
+	/**
+	 * Whether the shop's chests hold one more lot of {@code goods} right now (B348). The vanilla trade screen fills its
+	 * result slot from the offer, which was built when the screen opened; the stock can be gone since (the owner took it
+	 * back, a hopper, another buyer), so the screen asks this before it hands anything over.
+	 */
+	public static boolean inStock(ServerLevel level, Villager villager, ItemStack goods) {
+		if (goods.isEmpty()) {
+			return true;
+		}
+		ShopCounterBlockEntity counter = counter(level, villager).orElse(null);
+		if (counter == null) {
+			return false;
+		}
+		return SupplyContainers.countMatching(level, SupplyContainers.find(level, counter.getBlockPos(), null), goods) >= goods.getCount();
+	}
+
+	/**
+	 * The chests no longer hold a lot of this offer: it shows as sold out (the trade screen's red cross) and the
+	 * trading player's screen is told so. Talking to the shopkeeper again rebuilds the offers from the stock.
+	 */
+	public static void soldOut(Villager villager, MerchantOffer offer) {
+		if (offer == null || offer.isOutOfStock()) {
+			return;
+		}
+		offer.setToOutOfStock();
+		if (villager.getTradingPlayer() instanceof net.minecraft.server.level.ServerPlayer player
+				&& player.containerMenu instanceof net.minecraft.world.inventory.MerchantMenu menu) {
+			player.sendMerchantOffers(menu.containerId, villager.getOffers(), villager.getVillagerData().getLevel(), villager.getVillagerXp(),
+				villager.showProgressBar(), villager.canRestock());
+		}
+	}
+
 	/** A sale went through: take the goods out of stock and put the payment in the chests. */
 	public static void onSale(ServerLevel level, Villager villager, MerchantOffer offer) {
 		ShopCounterBlockEntity counter = counter(level, villager).orElse(null);

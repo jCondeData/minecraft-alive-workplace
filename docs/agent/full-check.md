@@ -4,6 +4,24 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 
 ## Pieces
 
+### Mutant survivors (lane-a-1024-0323, 2026-10-24)
+The six survivors of the nightly mutation run (issue #1, body of 2026-10-23 09:59 UTC) were each answered the same
+day by lane-a-1023-1225 (bb4a74625, 379d77868, c891119f1). Re-checked here: each mutant applied to today's `main`
+and the class run alone (baseline: the five classes, 48 tests, all pass). No new test, no mod code changed.
+- `BedLadders:236` `walks <= 0` → `<= 1`: killed by
+  `TerraceSleepGameTests.aLadderShutInDoesNotUseUpTheClaimOfTheNextBedUpALadder`.
+- `Settlers:668` `&&` → `||`: killed by `ColonySettlersGameTests` (the broken eyed lectern test): the mutant crashes
+  the server tick ("POI never registered").
+- `HeartEvents:719` `<= RANGE * RANGE` → `<`: killed by `HeartEventGameTests.aFriendExactlyEightBlocksOffStartsTelling`.
+- `Chatter:126` `return false` → `true`: killed by `HeartEventGameTests.aHelloDoesNotHoldBackAHeartEvent`.
+- `BuilderWork:720` (`takeOver`) `return true` → `false`: killed by
+  `WonderCrewGameTests.theLeadLaysAHeldColumnsBlockInTheTickItTakesItOver`.
+- `SandRamps:523` `< foot + 1.5` → `<=`: a real bug (B330, a husk on an inner step at exactly foot + 1.5 stuck), fixed
+  in c891119f1 with `DesertRaiderGameTests.aHuskComingDownOntoAnInnerStepIsLetGo`; the line is gone. Its successor,
+  `up()` (SandRamps:505) `>` → `>=`, survives the class (8 of 8 pass) and is near-equivalent: a raider at exactly
+  foot + 1.5 is pushed on toward the drop column instead of let go at once, and is let go as soon as it is in it
+  (`landed`), which it reached from the wall's top; no test written.
+
 ### Network packets (lane-a-1003-2232, 2026-10-03)
 - **Every payload over the wire** (`NetworkPayloadsGameTests.everyPayloadSurvivesTheWire`): all nine (the table's
   Open, RequestDetails, Details, Take, UploadChunk and UploadResult, mail's Send, the preview's Request and Data) come
@@ -297,6 +315,59 @@ B333's lesson (a Delivery Note on a chest opened the chest; the tests had set th
   remembered every id a client asked for until it left, so a modified client sending endless made-up ids grew the
   server's memory; it now remembers only real blueprints, for the 100-tick repeat window.
 
+### QA stage 7: Legend clicks, the letter, a friend's orders (lane-a-1024-0323, 2026-10-24)
+- **`QaStageSevenGameTests` (13)**, on stage 5's client and stage 6's clicks (the real interact packet, at a point then
+  plain, main hand then off hand), survival players who aren't operators unless said. Expectations from docs/wiki,
+  README and en_us.json:
+  - **A found Legend at their camp** (legends.md, "the castaway for a cooked meal"; the Sage's "(hand them the
+    answer)"). The castaway: empty hands get "too weak to walk ... something cooked, please"; raw beef in the off hand
+    is no meal and is kept; a cooked meal in the off hand (main empty) frees them, one eaten (B345); a cooked cod in the
+    main hand, sneaking, frees them, one eaten, and a second click eats nothing; in creative the meal isn't used up;
+    the packet from 12 blocks away feeds nobody. The Old Sage: empty-handed, the riddle; the answer in the off hand is
+    taken ("Just so.", B345); a torch in the off hand that answers nothing is an empty-handed click (the riddle again,
+    no miss, the torch kept); a stick is refused with the shake of the head and kept; three answers from the main hand,
+    sneaking, free him; a click after takes nothing.
+  - **A settled Legend's own clicks**: the Golem Smith, sneak-clicked empty-handed, goes hauler, farmhand ("X will build a
+    Farmhand next (4 iron blocks, ...)"), sentry (a torch in the off hand still counts as empty-handed) and round to
+    hauler; a stick in the main hand or a plain click chooses nothing and takes nothing. A Legend guest shows their terms
+    empty-handed, sneaking with a torch in the off hand and holding a stick (kept); 12 blocks away the screen is no
+    longer usable; a Gift is never lost.
+  - **The personal-request letter** (personal-requests.md), two halls in the area, accepted by a real client: the Sealed
+    Letter in the off hand is not taken back by Dara and is read by Mira, who gives the Reply; the reply in the main
+    hand, sneaking, isn't taken back by Mira; the reply from the off hand finishes it with 4 emeralds. A sneak-click on
+    Mira with the letter in the main hand delivers it and gives her no job (B354). Lost (bag emptied, a torch in the off
+    hand): an empty-handed click on Dara writes another, a second click while it's carried writes no third, and a
+    player who never accepted gets none.
+  - **A friend's orders** (builder.md, "only from the player who hired it, their friends and operators"; "X can now give
+    orders to your builders and cancel your builds."): a stranger's placed blueprint is refused from the main hand and
+    from the off hand ("works for X. Ask them to run /workplace friend add Y"), kept, no build started; added with
+    /workplace friend add, the same player's blueprint from the off hand starts the build. A stranger's
+    /workplace cancel is refused ("Only the player who started this build ...") and the build goes on; the friend's
+    cancels it; removed again, refused once more on a second build.
+- **Mutants**: 7 planted, 6 killed: the castaway eating none (`LegendSites.use`); the Sage taking any off-hand item as
+  the answer (`OldSage.use`); the giver taking the reply from anyone (`RequestErrands.use`); a lost letter written again
+  while one is carried (`RequestErrands.use`); a friend not counted for a builder's orders (`Friends.mayCommand`); the
+  Golem Smith's choice not going round (`GolemSmith.choose`). The survivor is equivalent here: dropping the friends
+  clause from `Builders.isOwnerOrOp` changes nothing while the build's builder is loaded and hired by the owner (the
+  next clause, `Friends.mayCommand`, lets the friend in); it matters only for a site whose builder is gone, not tested.
+- **Flakes**: the 13 ran 4 times on their own after the fixes: all passed every time; the only errors in the logs are
+  the startup "No data fixer registered for ..._seat" lines. The full build wasn't run this stage. Stonecutter's
+  refresh leaves the diff unchanged.
+- **Two bugs, both fixed** (each test failed before its fix):
+  - **B345**: with the main hand empty, a cooked meal in the off hand only got the castaway's "something cooked,
+    please", and the Old Sage's answer in the off hand got the riddle again (the B338/B341/B342 family). Fixed in
+    `LegendSites.use` and `OldSage.use`.
+  - **B354**: a sneak-click on the relative with the Sealed Letter in the main hand said "needs a lectern nearby" (the
+    letter is paper, taken as a Scholar's or Postman's job pick) and kept the letter. Fixed in `BuilderEvents.answer`:
+    a request's letter, reply or heirloom is never a job or hiring item.
+- Noticed, not filed: a Gift to a Legend guest opens their terms and is kept (BuilderEvents answers guests before
+  Gifts); the docs don't say whether guests take gifts. A stranger's /workplace cancel reads "Only the player who
+  started this build (or an operator) can cancel it.", which leaves out the friends who can. The Golem Smith's
+  choice in a protected village refuses an outsider without a word (`VillageProtection.mayChange`); not clicked.
+- **Not tested**: the Pathfinder's and the Master Architect's sneak-clicks; a Patrol Map on a forged Wall Sentry (its
+  listener asks the main hand only; the docs don't tell players about it); the heirloom carried home with real clicks;
+  the Colony Charter and the Wonder goods (switched off); a real upload over a real network; a real client.
+
 ### QA stage 6: the board, friends, uploads and villager clicks (lane-a-1024-0023, 2026-10-24)
 - **`QaStageSixGameTests` (11)**, on stage 5's client (a real connection whose packets are read back), each player
   with a name of their own. Screens are clicked with the real `ServerboundContainerClickPacket`, villagers with the
@@ -347,6 +418,6 @@ B333's lesson (a Delivery Note on a chest opened the chest; the tests had set th
   a Legend's own clicks) and the personal-request letters; a real client (no screenshots this stage).
 
 ## Still to do
-- B341 (the bug lane), with the test on `tests/qa-stage6`.
-- The clicks stages 4 to 6 left untested (above): the Legend clicks and the personal-request letters first.
+- The clicks stages 4 to 7 left untested (above): the Pathfinder's and the Master Architect's sneak-clicks, the Patrol
+  Map on a Wall Sentry from the off hand, and the heirloom carried home first.
 - A timing test for `BuilderWork` 1252 if the landscaping shortcut ever matters to a player.

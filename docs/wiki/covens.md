@@ -123,3 +123,8 @@ Roadmap items: 32.11
 - `CovenGameTests.switchedOffACovenHexesNoOne`: a hex long past an illness's time stays while the coven stands; with the
   culture switched off it lifts on the round, and no night is hexed.
 - Showcase scene `coven`: the hut at night, villagers hexed, witches off a palisade throwing potions over it.
+- `QaCovenGameTests.aPlayerMiningHerCauldronBreaksTheCovenAndIsNamed`: a survival player mines her cauldron: the coven
+  is broken at once, the three hexed are cured, and the chronicle names the player ("... broke the witch coven and
+  lifted its hexes").
+- `QaRefusedThreatsGameTests.aCovenHutStandsWhenAnotherModRefusesItsMobs`: with the world refusing every hostile mob,
+  the Coven Mother and her band are in the world and stay.

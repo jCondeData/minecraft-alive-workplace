@@ -334,6 +334,10 @@ nothing, `withNoVillageSharingTheStorehouseIsNotTaken`; a Storehouse broken mid-
 `aStorehouseBrokenMidJobStopsFeedingTheBuilderUntilPlacedBack`; barrels do as chests, `aStorehouseOfBarrelsFeedsTheBuilder`;
 a Storehouse with its Porter counts once, `aStorehouseWithItsPorterIsCountedOnce`; a built Terminal Nook (37.17) feeds
 the village's Builder, `aBuiltTerminalNookFeedsTheVillagesBuilder`).
+`QaBlueprintLootGameTests` (1, QA: a scanned build of a lectern with a book, a jukebox with a disc, a chiseled bookshelf
+with a book, a decorated pot of diamonds, a campfire cooking beef, a sign and a named chest of gold, built by a Builder:
+every block comes out empty, the sign keeps its words and the chest its name,
+`aBuildOfBlocksHoldingItemsComesOutEmptyWithItsWordsAndNames`).
 
 Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the

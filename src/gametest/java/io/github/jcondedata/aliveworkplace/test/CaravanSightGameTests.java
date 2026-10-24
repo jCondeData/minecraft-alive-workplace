@@ -521,6 +521,12 @@ public class CaravanSightGameTests implements FabricGameTest {
 			helper.assertTrue(carter.getOffers().isEmpty(), "the carter has trades: " + carter.getOffers().size());
 			rightClick(player, carter, new ItemStack(Items.EMERALD, 8));
 			helper.assertTrue(!carter.isTrading() && player.containerMenu == player.inventoryMenu, "a click on the carter opened a trade");
+			// B343: by design (visible-caravans.md, "only a sight") a Gift or a tonic in hand is kept, not given
+			ItemStack gift = io.github.jcondedata.aliveworkplace.story.Gifts.wrap(new ItemStack(Items.BREAD), "");
+			rightClick(player, carter, gift);
+			helper.assertTrue(player.getMainHandItem().is(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT), "the carter took a Gift: " + player.getMainHandItem());
+			rightClick(player, carter, new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.BUILDERS_TEA));
+			helper.assertTrue(player.getMainHandItem().is(io.github.jcondedata.aliveworkplace.registry.ModItems.BUILDERS_TEA) && player.getMainHandItem().getCount() == 1, "the carter took a tonic: " + player.getMainHandItem());
 			helper.assertTrue(carter.getCustomName().getString().equals("Thornholm's caravan"), "the carter's name changed");
 			// the llamas: no ride, no look in the chest, no hay, no love
 			Llama llama = party.llamas().get(0);

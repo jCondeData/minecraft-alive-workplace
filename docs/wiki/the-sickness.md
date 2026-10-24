@@ -3,7 +3,7 @@
 A story arc in which a new illness, the Gray Cough, goes round a village, and the village's healer needs three far
 herbs to brew the cure. Part of the 1.5 expansion; the herbs and the Three-Herb Tonic are on [their own page](far-herbs.md).
 
-Roadmap items: 31.18, B135
+Roadmap items: 31.18, B135, B343
 
 ## What a player sees
 
@@ -57,7 +57,9 @@ Roadmap items: 31.18, B135
   map to each (anyone who talks to the healer later gets them too, once). If no herb is found at all, the healer makes
   do and the brew begins at once.
 - **The hand-in**: a right-click on the healer takes 3 of each wanted herb the player carries; they say what they
-  still need. Everyone who hands herbs in is a gatherer.
+  still need. Everyone who hands herbs in is a gatherer. A Gift, a tonic, a Physician's Remedy or a Guild Charter in
+  hand (or in the off hand, the main one empty) is given as usual instead of talking to the healer (B343); anything
+  else in hand, a sword or a map, still talks to them.
 - **The brew** takes half a day (12,000 ticks of the day's time, so sleeping through the night counts) from the hand-in.
   The healer stays by their workstation (Doctor Wren by the hall) and their nurse's or Physician's work waits; a right-click tells how
   far along it is.

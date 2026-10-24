@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- The Gray Cough's healer takes a Gift, a tonic, a Physician's Remedy or a Guild Charter while the story runs (B343).
+  Before, any right-click on them talked about the cough and the item in hand was never used.
 - Villagers walk round a lantern from Carved Wood (or another mod's small block that lets paths through it) instead of
   trying to walk through it (B339). In a furnished spruce Library a villager without a job sometimes climbed onto a
   desk on its way to the lectern and stood stuck on the desk's edge for the rest of the day, never becoming the

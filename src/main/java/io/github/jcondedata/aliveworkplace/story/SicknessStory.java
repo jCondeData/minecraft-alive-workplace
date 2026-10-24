@@ -569,11 +569,11 @@ public final class SicknessStory {
 
 	/**
 	 * A right-click on a Sickness arc's healer: the first tells them of the cough (the herbs are named), then the herbs
-	 * are handed in, 3 of each at a time; while brewing they say how far along it is. Sneak to trade or be treated.
+	 * are handed in, 3 of each at a time; while brewing they say how far along it is. Sneak to trade or be treated; a Gift, tonic, Remedy or Guild Charter in hand is given instead (B343).
 	 */
 	public static InteractionResult onUse(Player player, Level world, InteractionHand hand, Entity entity) {
 		if (!(world instanceof ServerLevel level) || !(player instanceof ServerPlayer sp) || hand != InteractionHand.MAIN_HAND
-			|| player.isShiftKeyDown() || !(entity instanceof Villager villager)) {
+			|| player.isShiftKeyDown() || !(entity instanceof Villager villager) || givenToVillagers(held(player))) {
 			return InteractionResult.PASS;
 		}
 		for (Running r : running(level)) {
@@ -607,6 +607,21 @@ public final class SicknessStory {
 			return InteractionResult.SUCCESS;
 		}
 		return InteractionResult.PASS;
+	}
+
+	/** What a click on a villager uses: the main hand's item, or with the main hand empty the off hand's (B341). */
+	static ItemStack held(Player player) {
+		return player.getMainHandItem().isEmpty() ? player.getOffhandItem() : player.getMainHandItem();
+	}
+
+	/**
+	 * B343: an item a player gives a villager with a right-click (a Gift, a tonic, a Physician's Remedy, a Guild Charter)
+	 * is for that use, not for the story: its own listener, registered after this one, takes the click. Anything else
+	 * (a sword, a map, an empty hand) still talks to the healer, the herbs coming from the bag.
+	 */
+	static boolean givenToVillagers(ItemStack held) {
+		return held.is(ModItems.GIFT) || held.is(ModItems.GUILD_CHARTER) || held.getItem() instanceof io.github.jcondedata.aliveworkplace.people.TonicItem
+			|| io.github.jcondedata.aliveworkplace.people.Tonics.of(held) != null || io.github.jcondedata.aliveworkplace.people.RemedyItem.isRemedy(held);
 	}
 
 	/** {@code player} hands the healer what they carry of the herbs still wanted, 3 of each at a time. */

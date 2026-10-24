@@ -1076,4 +1076,103 @@ public class QaStageSixGameTests implements net.fabricmc.fabric.api.gametest.v1.
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * B343: the story's clicks don't swallow another use of the healer. the-sickness.md: a Physician's Remedy eases the
+	 * cough "from a player's hand"; gifts.md: a Gift is given with a right-click. Through the real interact packet, mid-
+	 * story: a Gift in the main hand is taken (the story isn't told); a tonic is offered (the healer says she has no use
+	 * for it, and it's kept); then an empty hand talks to her (three maps); then a Gift in the off hand, the main one
+	 * empty, is offered too (the day's one gift is given, so it's handed back), and the herbs in the bag wait for the
+	 * next click.
+	 */
+	//$ gametest_batch TALL '"qa6HealerGifts"'
+	@GameTest(template = TALL, batch = "qa6HealerGifts")
+	public void theHealerTakesGiftsAndTonicsMidStory(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.players(helper);
+		ServerLevel level = helper.getLevel();
+		int radius = VillageHalls.RADIUS;
+		int near = Arcs.NEAR;
+		boolean sick = Sickness.ENABLED;
+		SicknessStory.Locator locator = SicknessStory.LOCATOR;
+		BlockPos hall = helper.absolutePos(SICK_HALL);
+		VillageHalls.RADIUS = 12;
+		Arcs.NEAR = 0;
+		Sickness.ENABLED = true;
+		SicknessStory.LOCATOR = (l, from, herb) -> {
+			String path = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(herb).getPath();
+			return switch (path) {
+				case "sea_lavender" -> from.offset(200, 0, 0);
+				case "mirewort" -> from.offset(400, 0, 0);
+				case "glowcap" -> from.offset(600, 0, 0);
+				default -> null;
+			};
+		};
+		Leftovers.after(helper, () -> {
+			Arcs.stopAll(level, hall);
+			VillageHalls.RADIUS = radius;
+			Arcs.NEAR = near;
+			Sickness.ENABLED = sick;
+			SicknessStory.LOCATOR = locator;
+		});
+		helper.setBlock(SICK_HALL, ModBlocks.VILLAGE_HALL);
+		((VillageHallBlockEntity) level.getBlockEntity(hall)).setLastQuestDay(Long.MAX_VALUE / 2);
+		Arcs.stopAll(level, hall);
+		for (int i = 0; i < 8; i++) {
+			Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(11 + (i % 4) * 3, 2, 12 + (i / 4) * 3));
+			v.setNoAi(true);
+			v.setCustomName(Component.literal("Villager " + (i + 1)));
+		}
+		BlockPos station = new BlockPos(20, 2, 20);
+		helper.setBlock(station, Blocks.BREWING_STAND);
+		Villager nurse = helper.spawn(EntityType.VILLAGER, new BlockPos(21, 2, 20));
+		nurse.setNoAi(true);
+		nurse.setCustomName(Component.literal("Nurse Bea"));
+		Jobs.employ(level, nurse, helper.absolutePos(station), ModVillagers.NURSE_STATION_POI, ModVillagers.NURSE);
+		nurse.setVillagerXp(70);
+		level.setDayTime(Math.floorDiv(level.getDayTime(), VillageNeeds.DAY) * VillageNeeds.DAY + VillageNeeds.DAY + 1000);
+
+		ArcState s = Arcs.start(level, hall, Arcs.find("the_sickness").orElseThrow());
+		helper.assertTrue(s != null, "the arc didn't start");
+		QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6g"));
+		ServerPlayer p = c.player();
+		p.setItemInHand(InteractionHand.MAIN_HAND, io.github.jcondedata.aliveworkplace.story.Gifts.wrap(new ItemStack(Items.BREAD), ""));
+		clickVillager(p, nurse, c.seen());
+		helper.assertTrue(p.getMainHandItem().isEmpty(), "the healer didn't take the Gift: " + p.getMainHandItem() + ", saw " + QaStageFourGameTests.keys(c.seen()));
+		helper.assertTrue(p.getInventory().countItem(Items.FILLED_MAP) == 0 && s.chapter == 0, "the Gift's click told the story");
+		helper.runAfterDelay(3, () -> {
+			c.seen().clear();
+			p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.BUILDERS_TEA));
+			clickVillager(p, nurse, c.seen());
+			helper.assertTrue(QaStageFourGameTests.keys(c.seen()).contains("message.aliveworkplace.tonic.no_use"), "the tonic wasn't offered: saw "
+				+ QaStageFourGameTests.keys(c.seen()));
+			helper.assertTrue(p.getMainHandItem().is(ModItems.BUILDERS_TEA) && p.getInventory().countItem(Items.FILLED_MAP) == 0 && s.chapter == 0,
+				"the tonic's click told the story, or the tonic went");
+		});
+		helper.runAfterDelay(6, () -> {
+			p.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+			clickVillager(p, nurse, c.seen());
+			helper.assertTrue(p.getInventory().countItem(Items.FILLED_MAP) == 3 && s.chapter == 1, "an empty hand didn't talk to the healer: chapter " + s.chapter);
+			helper.assertTrue(p.containerMenu == p.inventoryMenu, "a trade screen opened on the healer");
+		});
+		helper.runAfterDelay(9, () -> {
+			List<HerbBlock> herbs = SicknessStory.herbs(s);
+			p.getInventory().add(new ItemStack(herbs.get(0), 3));
+			p.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY); // (the maps went into the empty hand)
+			p.setItemInHand(InteractionHand.OFF_HAND, io.github.jcondedata.aliveworkplace.story.Gifts.wrap(new ItemStack(Items.BREAD), ""));
+			c.seen().clear();
+			clickVillager(p, nurse, c.seen());
+			// (a second Gift the same day: offered and handed back, "one gift a day")
+			helper.assertTrue(QaStageFourGameTests.keys(c.seen()).contains("message.aliveworkplace.gift.said") && p.getOffhandItem().is(ModItems.GIFT),
+				"the off hand's Gift wasn't offered: " + p.getOffhandItem() + ", saw " + QaStageFourGameTests.keys(c.seen()));
+			helper.assertTrue(p.getInventory().countItem(herbs.get(0).asItem()) == 3, "the Gift's click handed in the herbs too");
+		});
+		helper.runAfterDelay(12, () -> {
+			List<HerbBlock> herbs = SicknessStory.herbs(s);
+			p.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+			clickVillager(p, nurse, c.seen());
+			helper.assertTrue(p.getInventory().countItem(herbs.get(0).asItem()) == 0, "the next empty-handed click didn't hand in the herbs");
+			helper.succeed();
+		});
+	}
 }

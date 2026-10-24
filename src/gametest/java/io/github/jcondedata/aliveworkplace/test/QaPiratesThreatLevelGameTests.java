@@ -307,6 +307,31 @@ public class QaPiratesThreatLevelGameTests {
 	}
 
 	/**
+	 * Threat level 3 is "a quarter more raiders": a raid from a lair too (B383). With threat level 3 set before the Pirate
+	 * Ship anchors, the ship's raid on a coastal Town of 52 is a quarter more than the 8 it sends at level 2 (10): the
+	 * band at home is a quarter bigger on hard.
+	 */
+	//$ gametest_ticks_batch TALL '100' '"qaBugLevel3Lair"'
+	@GameTest(template = TALL, timeoutTicks = 100, batch = "qaBugLevel3Lair")
+	public void atThreatLevelThreeALairsRaidBringsAQuarterMore(GameTestHelper helper) {
+		BlockPos hall = coast(helper, 2);
+		ServerLevel level = helper.getLevel();
+		helper.runAfterDelay(2, () -> {
+			WorkplaceConfig.parse("{\"threatLevel\": 3}").apply();
+			rank(level, hall, VillageRanks.Rank.TOWN);
+			at(level, 90, 13000);
+			Lairs.Lair lair = Lairs.found(level, hall, helper.absolutePos(SHIP), PIRATES);
+			helper.assertTrue(lair != null, "no pirate ship");
+			at(level, 90, 15000);
+			VillageRaids.Raid raid = VillageRaids.start(level, hall, 52, 0, Double.NaN, pirates(helper), RandomSource.create(5L));
+			helper.assertTrue(raid != null, "no pirate raid at level 3");
+			List<Mob> raiders = VillageRaids.raiders(level, hall);
+			helper.assertTrue(raiders.size() == 10, "a lair's raid of 8 at threat level 3 sent " + raiders.size() + " (the band at home: " + lair.strength() + ")");
+			helper.succeed();
+		});
+	}
+
+	/**
 	 * A block that isn't the ship's any more stays when it sinks: a player swapped one of the deck's own blocks for a
 	 * diamond block, and when the captain falls that diamond block is still there after the sinking.
 	 */

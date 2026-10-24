@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- At threat level 3 (hard) a raiders' camp, ship or portal sends a quarter more raiders too: every lair's band is a quarter bigger on hard when it makes camp and grows to a quarter more, so a Town's pirates send 10, not 8 (B383).
 - Desert raiders still ramp over a wall when sand already sits at its outside foot, a player's or the desert's own: that sand counts as the ramp's first blocks and is built on, and it stays when the siege's own sand is taken away (B382).
 - The morning siege report counts one raider in the singular: "The siege: 1 raider came and ...", not "1 raiders came" (B381).
 - Builder and Storehouse lines count one in the singular: the board's "For the Builder, 1 block away", the chat list's "Still to bring for the Test Hut: 1 item of 1 kind" (and "5 items of 1 kind"), the blueprint tooltip's "short of 1 item", the board's "Room for 1 more item", a repair's "(1 block missing)" and the porter's "1 item carried" (B402, B403).

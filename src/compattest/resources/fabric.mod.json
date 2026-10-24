@@ -100,7 +100,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.TradeGoodsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.BoardTradeCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StadiumCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.StadiumPowerCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.StadiumPowerCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCarvedLibraryCompatTests"
 		]
 	},
 	"depends": {

@@ -535,7 +535,13 @@ villager's path and what it stands on), B339: `CarvedStylesCompatTests.aVillager
 (a wall's one gap a block with a Carved Wood lantern on it: the path goes round; it went over the desk without the fix)
 and `aVillagersPathStillCrossesACarpet` (a carpet in the gap is still walked),
 `CarvedStylesCompatTests.theGrandStyleWithRechiseledBuildsWithNothingSkipped` (the Grand Starter Cottage). No mods:
-`StyleGameTests.stylesLoadAndIdsRoundTrip` lists Spruce. Scene `carved_styles` (`-Pfurniture=true`, which now brings
+`StyleGameTests.stylesLoadAndIdsRoundTrip` lists Spruce. QA (compat): `QaCarvedStylesCompatTests.aRuleToAMissingBlockFallsThroughAndDropsNothing`
+(a rule to an unregistered block falls through to the next rule or leaves the vanilla block; a Library in such a style keeps
+every block), `QaCarvedStylesCompatTests.aRuleUnderASwitchThatIsOffIsPassedOver`,
+`QaCarvedStylesCompatTests.everySwapKeepsTheBlocksFacingAndChestHalves` (chest facing and halves, ladder and lectern
+facing, every shared property across every Spruce and Grand blueprint),
+`QaCarvedStylesCompatTests.aBuilderClearingLeavesACarvedWoodChestAndBarrelFull`,
+`QaCarvedStylesCompatTests.aSavedSpruceSiteLoadsWithItsCarvedWoodBlocks`. Scene `carved_styles` (`-Pfurniture=true`, which now brings
 Carved Wood and Rechiseled).
 37.10: with Tom's Simple Storage (compat): `TomsStorageCompatTests.aConnectorIsOneStoreForItsChestsAndCabinet` (two
 chests and a filing cabinet on the connector and its cable count once, the board line, in and out through the

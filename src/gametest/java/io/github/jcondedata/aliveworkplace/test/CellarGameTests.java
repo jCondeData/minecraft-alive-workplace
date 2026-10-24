@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.build.Cellars;
 import io.github.jcondedata.aliveworkplace.build.UpgradeOffers;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
+import io.github.jcondedata.aliveworkplace.registry.ModTrades;
 import io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +35,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -210,7 +213,79 @@ public class CellarGameTests implements FabricGameTest {
 			helper.assertBlockPresent(Blocks.GOLD_BLOCK, marker);
 			helper.assertTrue(s.site().placed() <= cellarSteps, "placed " + s.site().placed() + ", more than the cellar's " + cellarSteps);
 			helper.assertTrue(!Cellars.needsDigging(s.level(), id, placement), "the dug cellar still needs digging");
+			ModTrades.builderHomes(s.villager()); // B386: the player opens their trades again
+			helper.assertTrue(s.villager().getOffers().stream().noneMatch(o -> Cellars.isJob(o.getResult())),
+				"the builder still sells \"Dig the cellar\" for the cellar they dug");
 		});
+	}
+
+	/**
+	 * B386: two old Smithies; one's cellar dug by hand. The trade for it goes once the builder's trades are opened again,
+	 * also from a builder saved with it (as saves from before the fix are), and the other's stays. That job, bought before,
+	 * given to the builder, starts nothing (it would be a whole Smithy over the standing one); the other's starts its dig,
+	 * and its trade goes while the dig is under way.
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '200' '"cellar_stale"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 200, batch = "cellar_stale")
+	public void staleDigTradeGoesAndCannotStartABuild(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		ground(helper, 30);
+		ResourceLocation id = StarterBlueprints.SMITHY.id();
+		BlueprintData.Placement a = oldBuild(helper, StarterBlueprints.SMITHY, new BlockPos(9, GROUND + 1, 9));
+		BlueprintData.Placement b = oldBuild(helper, StarterBlueprints.SMITHY, new BlockPos(1, GROUND + 1, 19));
+		Leftovers.after(helper, () -> {
+			BuildSiteManager.get(level).forgetFinished(a);
+			BuildSiteManager.get(level).forgetFinished(b);
+		});
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager villager = helper.spawn(EntityType.VILLAGER, VILLAGER);
+		Builders.employ(level, villager, helper.absolutePos(BENCH));
+		ModTrades.builderHomes(villager);
+		ItemStack jobA = digTrade(villager, id, a).orElseThrow(() -> new GameTestAssertException("no \"Dig the cellar\" for the first Smithy")).getResult().copy();
+		ItemStack jobB = digTrade(villager, id, b).orElseThrow(() -> new GameTestAssertException("no \"Dig the cellar\" for the second Smithy")).getResult().copy();
+		helper.assertTrue(Cellars.isJob(jobA), "the trade's blueprint isn't known as a cellar job");
+		for (Blueprint.Entry e : BlueprintLibrary.get(level, id).orElseThrow().blocks()) {
+			if (e.pos().getY() < 0 && e.state().isAir()) {
+				level.setBlock(a.origin().offset(e.pos()), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			}
+		}
+		helper.assertFalse(Cellars.needsDigging(level, id, a), "precondition: the dug cellar still needs digging");
+		// saved with the stale trade, and loaded again
+		CompoundTag tag = new CompoundTag();
+		helper.assertTrue(villager.save(tag), "the builder wasn't saved");
+		villager.discard();
+		Entity loaded = EntityType.loadEntityRecursive(tag, level, e -> e);
+		helper.assertTrue(loaded instanceof Villager, "the builder didn't load as a villager: " + loaded);
+		level.addFreshEntity(loaded);
+		Villager back = (Villager) loaded;
+		helper.assertTrue(digTrade(back, id, a).map(o -> Cellars.isJob(o.getResult())).orElse(false), "precondition: the saved trade didn't load as a cellar job");
+		ModTrades.builderHomes(back); // the player opens the builder's trades
+		helper.assertTrue(digTrade(back, id, a).isEmpty(), "the builder still sells \"Dig the cellar\" for the Smithy whose cellar is dug");
+		helper.assertTrue(digTrade(back, id, b).isPresent(), "the other Smithy's \"Dig the cellar\" went too");
+		ModTrades.builderHomes(back);
+		helper.assertTrue(back.getOffers().stream().filter(o -> Cellars.isJob(o.getResult())).count() == 1, "not one \"Dig the cellar\" left: " + back.getOffers().size() + " trade(s)");
+		// the stale job, bought before, given to the builder through the player's hand-over
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		InteractionResult refused = Builders.assign(player, back, jobA);
+		helper.assertTrue(refused == InteractionResult.CONSUME, "the stale job wasn't refused: " + refused);
+		helper.assertTrue(BuildSiteManager.get(level).all().stream().noneMatch(s -> s.placement().equals(a)), "the stale job started a whole Smithy over the standing one");
+		helper.assertTrue(!jobA.isEmpty(), "the refused job was taken");
+		// the other's job still starts its dig, and its trade goes while it's dug
+		InteractionResult taken = Builders.assign(player, back, jobB);
+		BuildSite site = BuildSiteManager.get(level).all().stream().filter(s -> s.placement().equals(b)).findFirst()
+			.orElseThrow(() -> new GameTestAssertException("the second Smithy's job started nothing: " + taken));
+		Leftovers.after(helper, () -> BuildSiteManager.get(level).remove(site.id()));
+		helper.assertTrue(site.isCellarOnly(), "the second Smithy's job didn't start a cellar dig");
+		ModTrades.builderHomes(back);
+		helper.assertTrue(digTrade(back, id, b).isEmpty(), "\"Dig the cellar\" still sold while its dig is under way");
+		BuildSiteManager.get(level).remove(site.id());
+		helper.succeed();
+	}
+
+	private static Optional<MerchantOffer> digTrade(Villager villager, ResourceLocation id, BlueprintData.Placement placement) {
+		return villager.getOffers().stream().filter(o -> !o.isOutOfStock() && BlueprintItem.data(o.getResult())
+			.map(d -> d.structure().equals(id) && d.placement().equals(Optional.of(placement))).orElse(false)).findFirst();
 	}
 
 	/** A Smithy with its coal store dug: no "Dig the cellar" from its builder, and its own blueprint over it is no dig. */

@@ -251,6 +251,8 @@
 			"io.github.jcondedata.aliveworkplace.test.WorkHornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigFileGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWorldSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageTwoGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageThreeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageThreeBugTests",

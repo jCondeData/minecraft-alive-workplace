@@ -324,6 +324,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ModdedLibraryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobChainGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterFurnitureGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCrafterFurnitureBugTests",
 			"io.github.jcondedata.aliveworkplace.test.CrafterWorkshopGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StorageHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureSeatsGameTests",

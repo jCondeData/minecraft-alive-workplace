@@ -85,7 +85,8 @@ at a Blueprint Table one block from the Storehouse's chests made them his, kept 
 at the Builder's Workshop's table counted none of them. A player's Storehouse in a village whose hall no player owns is
 that village's store, so the village's own Builder on a village build (or none) counts it too. When the status says
 "Needs", it also names the nearest Storehouse he doesn't count and why (`Village.unusedStorehouse`): more than the
-village's 48 blocks from his table, someone else's, or no chest round it he can read.
+village's 48 blocks from his table (the distance it gives is rounded up, so one just past the reach reads past it:
+48.3 blocks says 49, B355), someone else's, or no chest round it he can read.
 
 **Speed.** `workplaceBuildDelay` ticks per block (default 8) times a share by Builder level 1 to 5:
 100%, 100%, 85%, 70%, 55%, 40% (index 0 is unused). Then the village's mood, traits, edicts and so on change it
@@ -334,6 +335,8 @@ nothing, `withNoVillageSharingTheStorehouseIsNotTaken`; a Storehouse broken mid-
 `aStorehouseBrokenMidJobStopsFeedingTheBuilderUntilPlacedBack`; barrels do as chests, `aStorehouseOfBarrelsFeedsTheBuilder`;
 a Storehouse with its Porter counts once, `aStorehouseWithItsPorterIsCountedOnce`; a built Terminal Nook (37.17) feeds
 the village's Builder, `aBuiltTerminalNookFeedsTheVillagesBuilder`).
+`QaBuilderStockBugTests` (1, B355: a Storehouse just past the reach, 20.4 blocks off in a 20-block village, is too far and
+the status says so with numbers that agree, the distance rounded up to 21, `aStorehouseJustPastTheReachIsTooFarAndTheNumbersSaySo`).
 `QaBlueprintLootGameTests` (1, QA: a scanned build of a lectern with a book, a jukebox with a disc, a chiseled bookshelf
 with a book, a decorated pot of diamonds, a campfire cooking beef, a sign and a named chest of gold, built by a Builder:
 every block comes out empty, the sign keeps its words and the chest its name,

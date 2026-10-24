@@ -950,8 +950,11 @@ public class CrafterWork extends Behavior<Villager> {
 		Component title = Component.translatable("message.aliveworkplace." + who + ".title", ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0));
 		Component idle = phase == Phase.IDLE && job == null ? idleLine(villager) : null;
 		Component line = idle != null ? idle : job != null && phase != Phase.TIDYING
-			? Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase(), job.plan().count(),
-				job.plan().target().getDescription())
+			? (phase == Phase.FETCHING // "fetching what 1 Amethyst Ring takes"
+				? io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace." + lines + ".state.fetching", job.plan().count(), job.plan().count(),
+					job.plan().target().getDescription())
+				: Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase(), job.plan().count(),
+					job.plan().target().getDescription()))
 			: Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase());
 		if (phase == Phase.CRAFTING && stepwise && job != null && job.plan().steps().size() > 1) {
 			// 37.14a: "making 3 Barrel (step 2 of 3)"

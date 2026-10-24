@@ -25,7 +25,7 @@ frames included, with what the bench's chests, the crew's bags and the village (
 stock) hold ticked off. A sneak-right-click with an empty hand shows the status and then the whole list in chat. With
 nothing left to place, no build, or a building being taken down, the Builder says so and the book stays as it was.
 The Scan Tool marks whatever block it right-clicks as a corner, a chest, furnace, trapdoor or bench included: the click
-marks it and the block stays shut and unflipped (B335).
+marks it and the block stays shut and unflipped (B335), from the off hand too when the main hand is empty (B374).
 
 ## 2. How it works
 
@@ -62,7 +62,7 @@ down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing 
 needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
 other carried), and empties the bag at the chests when it finishes or
 stops helping. Builders never copy what is inside containers. The blueprint's tooltip and a Book and Quill list what
-is still missing. A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
+is still missing (the blueprint and the book in either hand, B365). A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
 repair counts them (`BuildPlan.supplyExclude`, B261): the building stands, so a Storehouse Shed being repaired, or a
 shed the bench's chests stand in, hands the Builder what its chests hold.
 

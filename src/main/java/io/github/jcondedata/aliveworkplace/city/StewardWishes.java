@@ -41,7 +41,7 @@ public final class StewardWishes {
 
 		/** "3 villagers have no bed". */
 		public Component reason() {
-			return Component.translatable(why, numbers.toArray());
+			return io.github.jcondedata.aliveworkplace.work.Words.countedFirst(why, numbers.toArray()); // "1 villager has no bed"
 		}
 	}
 
@@ -345,7 +345,7 @@ public final class StewardWishes {
 			}
 			if (ok) {
 				out.add(Component.literal("    ").append(Component.translatable("command.aliveworkplace.steward.explain.why",
-					Component.translatable(rule.why(), v.numbers().toArray()))).withStyle(ChatFormatting.AQUA));
+					io.github.jcondedata.aliveworkplace.work.Words.countedFirst(rule.why(), v.numbers().toArray()))).withStyle(ChatFormatting.AQUA));
 			}
 		}
 		if (state.day() == day && !state.wishes().isEmpty()) {

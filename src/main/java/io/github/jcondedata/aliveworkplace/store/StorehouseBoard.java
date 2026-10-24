@@ -76,11 +76,11 @@ public final class StorehouseBoard {
 		lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.stock", store.size(), items, SupplyContainers.freeSlots(level, store)), ChatFormatting.GRAY));
 		roomLine(level, store).ifPresent(lore::add);
 		if (networks.linked() > 0) { // 37.9: a Sophisticated Storage controller's blocks are one store
-			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.linked", networks.linked()), ChatFormatting.GRAY));
+			lore.add(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.linked", networks.linked(), networks.linked()), ChatFormatting.GRAY));
 		}
 		int joined = StorageNetworks.joinedCount(level, store);
 		if (joined > 0) { // 37.10: a Tom's Simple Storage inventory connector in the Storehouse
-			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.connector", joined), ChatFormatting.GRAY));
+			lore.add(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.connector", joined, joined), ChatFormatting.GRAY));
 		}
 		lore.add(plain(Component.translatable(requests.isEmpty() ? "screen.aliveworkplace.storehouse.nothing" : "screen.aliveworkplace.storehouse.click"),
 			ChatFormatting.GRAY));
@@ -166,7 +166,8 @@ public final class StorehouseBoard {
 		info.set(DataComponents.LORE, new ItemLore(List.of(plain(Component.translatable("screen.aliveworkplace.storehouse.orders_how"), ChatFormatting.GRAY),
 			plain(Component.translatable("screen.aliveworkplace.storehouse.orders_who"), ChatFormatting.GRAY))));
 		menu.button(INFO_SLOT, info, null);
-		ItemStack held = viewer.getMainHandItem();
+		// B351: with the main hand empty, the off hand's item is the one held (as B341/B342's clicks on villagers).
+		ItemStack held = viewer.getMainHandItem().isEmpty() ? viewer.getOffhandItem() : viewer.getMainHandItem();
 		if (!held.isEmpty() && !StockOrders.of(level, storehouse).containsKey(held.getItem())) {
 			ItemStack add = held.copyWithCount(1);
 			add.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.order_add", held.getHoverName(),

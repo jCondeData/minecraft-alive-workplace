@@ -73,7 +73,8 @@ beds: the Builder never breaks a bed somebody sleeps in.
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
 Book of Edicts, the calendar, Legends, the Festival Cup and Classes. The bell calls everyone home. A cake calls a
-festival. A named Name Tag used on the hall names the village (the tag isn't used up); otherwise it gets a made-up
+festival. A named Name Tag used on the hall names the village (the tag isn't used up; like the City Plan, the Village Ledger and
+the charter, it works from the off hand when the main hand is empty, B360); otherwise it gets a made-up
 name such as Thornholm.
 
 ## How it works

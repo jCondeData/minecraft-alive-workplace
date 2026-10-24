@@ -4,6 +4,24 @@ Done in pieces by night runs; each piece lands with `land --keep-open`. Newest f
 
 ## Pieces
 
+### Mutant survivors (lane-a-1024-0323, 2026-10-24)
+The six survivors of the nightly mutation run (issue #1, body of 2026-10-23 09:59 UTC) were each answered the same
+day by lane-a-1023-1225 (bb4a74625, 379d77868, c891119f1). Re-checked here: each mutant applied to today's `main`
+and the class run alone (baseline: the five classes, 48 tests, all pass). No new test, no mod code changed.
+- `BedLadders:236` `walks <= 0` → `<= 1`: killed by
+  `TerraceSleepGameTests.aLadderShutInDoesNotUseUpTheClaimOfTheNextBedUpALadder`.
+- `Settlers:668` `&&` → `||`: killed by `ColonySettlersGameTests` (the broken eyed lectern test): the mutant crashes
+  the server tick ("POI never registered").
+- `HeartEvents:719` `<= RANGE * RANGE` → `<`: killed by `HeartEventGameTests.aFriendExactlyEightBlocksOffStartsTelling`.
+- `Chatter:126` `return false` → `true`: killed by `HeartEventGameTests.aHelloDoesNotHoldBackAHeartEvent`.
+- `BuilderWork:720` (`takeOver`) `return true` → `false`: killed by
+  `WonderCrewGameTests.theLeadLaysAHeldColumnsBlockInTheTickItTakesItOver`.
+- `SandRamps:523` `< foot + 1.5` → `<=`: a real bug (B330, a husk on an inner step at exactly foot + 1.5 stuck), fixed
+  in c891119f1 with `DesertRaiderGameTests.aHuskComingDownOntoAnInnerStepIsLetGo`; the line is gone. Its successor,
+  `up()` (SandRamps:505) `>` → `>=`, survives the class (8 of 8 pass) and is near-equivalent: a raider at exactly
+  foot + 1.5 is pushed on toward the drop column instead of let go at once, and is let go as soon as it is in it
+  (`landed`), which it reached from the wall's top; no test written.
+
 ### Network packets (lane-a-1003-2232, 2026-10-03)
 - **Every payload over the wire** (`NetworkPayloadsGameTests.everyPayloadSurvivesTheWire`): all nine (the table's
   Open, RequestDetails, Details, Take, UploadChunk and UploadResult, mail's Send, the preview's Request and Data) come

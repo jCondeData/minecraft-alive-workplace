@@ -215,6 +215,7 @@
 			"io.github.jcondedata.aliveworkplace.test.LuxuryWorkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ServiceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuildPerkGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaEdictsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuildHarvestGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuildServiceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageBannerGameTests",

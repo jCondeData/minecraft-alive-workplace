@@ -298,6 +298,8 @@ public class QaStageFourGameTests implements net.fabricmc.fabric.api.gametest.v1
 	@GameTest(template = AREA, batch = "qa4Wagon")
 	public void settlersWagonRightClickedOnTheGround(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// an owned hall an earlier batch left near this spot protects the ground: "protection.denied", no camp (full build, 2026-10-24)
+		Leftovers.halls(helper);
 		List<Component> seen = new ArrayList<>();
 		ServerPlayer player = player(helper, seen, GameType.SURVIVAL);
 		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.SETTLERS_WAGON, 2));

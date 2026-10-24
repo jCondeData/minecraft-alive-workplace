@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371
 
 ## 1. What a player sees
 
@@ -101,7 +101,7 @@ tier, and a Sophisticated controller or a Tom's inventory connector as one store
 Sophisticated Storage's chests, barrels and limited barrels already work as supply chests, porters' chests and
 Storehouse chests with the gate closed (they always did, through the same item storage every chest uses). Behind the
 gate (37.8): where a slot holds more than a stack, a stack upgrade or a limited barrel, the Storehouse board's info adds
-"Room for 6912 more items (some slots hold more than a stack)" under the usual "chests, items, empty slots" line, and
+"Room for 6912 more items (some slots hold more than a stack)" under the usual "chests, items, empty slots" line ("1 chest", "1 item" and "1 empty slot" with one, B377 and B395), and
 porters keep filling such a store while any of its slots has room for another stack, even when no slot is empty. With
 only vanilla chests the board and the porters are exactly as before.
 
@@ -249,7 +249,13 @@ blueprint's Sophisticated chest is built empty (`BlockEntityData`, as any store)
 still fit (an empty slot holding four stacks counts four; for vanilla chests this is the empty slot count, since a slot
 with something in it has less than a stack of room), the items that still fit, and whether any slot holds more than a
 stack. An empty slot's room is tried with cobblestone and undone where the slot says it holds more than a stack, because
-Sophisticated Storage reports a stack-upgraded empty slot at four times what it really takes. With M37's gate open the board shows the items line when a slot holds more than a stack, and `PorterWork` reads
+Sophisticated Storage reports a stack-upgraded empty slot at four times what it really takes. The item tried is the
+first of cobblestone, dirt, gravel, sand and other plain blocks that the store holds none of (B371): a controller puts an
+item it already holds into the barrel holding it once for each way it looks (that stack, that item, any empty slot),
+and inside one transaction the barrel takes the same room each time, so 100 cobblestone behind a controller made the
+board say "Room for 22164 more items" where 8540 fit. For the same reason a put counts only what really landed in the
+store's slots (unless that is nothing, as with a void upgrade): one put that overflowed the barrel holding the item was
+reported whole while the overflow went nowhere; asked again, the controller files the rest into the next barrel. With M37's gate open the board shows the items line when a slot holds more than a stack, and `PorterWork` reads
 the free stacks instead of the empty slots, so a limited barrel whose one slot holds some iron still takes the porter's
 iron.
 
@@ -496,6 +502,9 @@ isn't this one's way on: the barrel behind it isn't linked, its planks counted o
 and up: the controller links each 15th, not a 16th, as the mod's own controller does) and
 `SophisticatedControllerCompatTests.aBarrelBuiltBehindAToolLinkedLinkIsLinked` (a barrel a builder adds behind a
 tool-linked link is counted through the controller, once);
+B371: `SophisticatedControllerCompatTests.theRoomBehindAControllerHoldingGoodsIsTheRealRoom` (a controller over a
+stack-upgraded barrel and a plain one: the board says 8640 empty and 8540 after 100 cobblestone, exactly 8540 more go in
+through the controller and land in the barrels, then not one more);
 no mods: `StyleGameTests.aNearRuleForAMissingBlockIsPassedOver` (a near rule swaps only the block beside its block, and one
 whose block isn't installed falls through to the next rule, not to air).
 Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, which now brings Sophisticated Storage).

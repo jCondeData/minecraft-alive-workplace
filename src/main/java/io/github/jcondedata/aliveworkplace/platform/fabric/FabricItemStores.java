@@ -3,8 +3,10 @@ package io.github.jcondedata.aliveworkplace.platform.fabric;
 import io.github.jcondedata.aliveworkplace.platform.ItemStores;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
@@ -63,13 +65,21 @@ final class FabricItemStores implements ItemStores {
 		return free;
 	}
 
+	/**
+	 * Plain stackable items the empty slots' room is tried with, the first one the store holds none of: a Sophisticated
+	 * controller puts an item it already holds into the barrel holding it once for each way it looks (that stack, that
+	 * item, any empty slot), and inside one transaction the barrel takes the same room each time, so a held item's tried
+	 * room counts that barrel two or three times over (B371: 22164 for 8540).
+	 */
+	private static final List<Item> PROBES = List.of(Items.COBBLESTONE, Items.DIRT, Items.GRAVEL, Items.SAND, Items.ANDESITE,
+		Items.DIORITE, Items.GRANITE, Items.COBBLED_DEEPSLATE, Items.NETHERRACK, Items.END_STONE);
+
 	@Override
 	public Room room(Level level, List<BlockPos> stores) {
 		int freeSlots = 0;
 		int freeStacks = 0;
 		long freeItems = 0;
 		boolean bigSlots = false;
-		ItemVariant probe = ItemVariant.of(Items.COBBLESTONE);
 		for (BlockPos p : stores) {
 			Storage<ItemVariant> s = storage(level, p);
 			if (s == null) {
@@ -78,7 +88,8 @@ final class FabricItemStores implements ItemStores {
 			int blanks = 0;
 			long blankCapacity = 0;
 			boolean bigBlank = false;
-			long probeRoom = 0; // the room for more cobblestone in slots already holding some
+			Set<Item> kinds = new HashSet<>(); // every item it holds, with or without components
+			long cobblestoneRoom = 0; // the room for more cobblestone in slots already holding some
 			for (var view : s) {
 				long capacity = view.getCapacity();
 				if (view.isResourceBlank()) {
@@ -91,8 +102,9 @@ final class FabricItemStores implements ItemStores {
 					freeStacks += (int) Math.min(Integer.MAX_VALUE / 2, left / stack);
 					freeItems += left;
 					bigSlots |= capacity > stack;
-					if (view.getResource().equals(probe)) {
-						probeRoom += left;
+					kinds.add(view.getResource().getItem());
+					if (view.getResource().equals(ItemVariant.of(Items.COBBLESTONE))) {
+						cobblestoneRoom += left;
 					}
 				}
 			}
@@ -107,11 +119,13 @@ final class FabricItemStores implements ItemStores {
 			}
 			// An empty slot's capacity isn't its room everywhere: Sophisticated Storage reports a stack-upgraded empty
 			// slot at four times what it takes of cobblestone, and putting into one slot fills others too. So the empty
-			// slots' room is what the store would take of a plain stackable item (tried and undone), less the room for
-			// it in the slots already holding some. A store that refuses it (a filter) counts a stack an empty slot.
+			// slots' room is what the store would take of a plain stackable item it holds none of (tried and undone).
+			// Only when it holds some of every probe is it tried with cobblestone, less the room for it in the slots
+			// already holding some. A store that refuses it (a filter) counts a stack an empty slot.
+			Item probe = PROBES.stream().filter(i -> !kinds.contains(i)).findFirst().orElse(Items.COBBLESTONE);
 			long room;
 			try (Transaction tx = Transaction.openOuter()) {
-				room = s.insert(probe, Integer.MAX_VALUE, tx) - probeRoom;
+				room = s.insert(ItemVariant.of(probe), Integer.MAX_VALUE, tx) - (kinds.contains(probe) ? cobblestoneRoom : 0);
 			}
 			if (room <= 0) {
 				room = 64L * blanks;
@@ -144,10 +158,18 @@ final class FabricItemStores implements ItemStores {
 		return taken;
 	}
 
-	/** Puts up to {@code amount} into {@code s}, asking again while it takes (as {@link #drain}). */
+	/**
+	 * Puts up to {@code amount} into {@code s}, asking again while it takes (as {@link #drain}). Each ask counts what
+	 * really landed when that is less than the store says it took: a Sophisticated controller puts an item it holds into
+	 * the barrel holding it once for each way it looks, and inside one transaction the barrel takes the same room each
+	 * time, so a put that overflows that barrel was reported whole while the overflow went nowhere (B371: 8540 reported,
+	 * 6812 stored). Asked again, the controller puts the rest into the next barrel. A store that takes items without
+	 * holding more (a void upgrade) still counts what it says it took.
+	 */
 	private static long fill(Storage<ItemVariant> s, ItemVariant variant, long amount) {
 		long put = 0;
 		for (int asks = 0; asks < MAX_ASKS && put < amount; asks++) {
+			long before = held(s, variant);
 			long got;
 			try (Transaction tx = Transaction.openOuter()) {
 				got = s.insert(variant, Math.min(amount - put, Integer.MAX_VALUE), tx);
@@ -156,9 +178,21 @@ final class FabricItemStores implements ItemStores {
 			if (got <= 0) {
 				break;
 			}
-			put += got;
+			long landed = held(s, variant) - before;
+			put += landed > 0 ? Math.min(got, landed) : got;
 		}
 		return put;
+	}
+
+	/** How many of {@code variant} the slots of {@code s} hold. */
+	private static long held(Storage<ItemVariant> s, ItemVariant variant) {
+		long total = 0;
+		for (var view : s.nonEmptyViews()) {
+			if (view.getResource().equals(variant)) {
+				total += view.getAmount();
+			}
+		}
+		return total;
 	}
 
 	@Override

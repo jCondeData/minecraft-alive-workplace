@@ -35,6 +35,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.ModdedLibraryCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CarvedStylesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnitureSeatsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaFurnitureUseCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TrainersRoomCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PastureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaGuardPartnersCompatTests",
@@ -54,6 +55,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.MechanicCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ConductorCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaConductorCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaVillageTrainCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaVillageTrainRulesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnicrafterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.HallFurnicrafterCompatTests",
@@ -99,7 +101,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.TradeGoodsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.BoardTradeCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StadiumCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.StadiumPowerCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.StadiumPowerCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCarvedLibraryCompatTests"
 		]
 	},
 	"depends": {

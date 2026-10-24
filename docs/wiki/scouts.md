@@ -4,7 +4,7 @@ ROADMAP 32.12. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 (`Expansions.M32`); GameTests and the showcase run with it on. A new kind of guard (see [Raids and threats](raids.md)) who finds
 where a lair (see [Lairs and the Defense page](lairs.md)) really is, and brings home a map to it.
 
-Roadmap items: 32.12
+Roadmap items: 32.12, B368
 
 ## What a player sees
 
@@ -27,7 +27,8 @@ Roadmap items: 32.12
 - **Home.** The chronicle and chat say the scout is back. The **Defense page** now gives the lair's **exact place**
   ("At 120, 64, -340", on the where slot and the scouting slot) with who found it and when, and on the scouting slot
   the **captain** and the **strength**. In the **chest by their grindstone** is a **Scouting Report**: a filled map
-  like an explorer map, drawn between the village and the lair at the smallest scale that shows both, with the
+  like an explorer map, drawn between the village and the lair at the smallest scale that shows both (lined up with
+  the game's own map squares when one holds both, else centred halfway between them, so both are always on it), with the
   village's mark and a **red X** on the lair, a dark red border color, called "Scouting Report: Bandit camp", its
   tooltip listing the **raiders**, the **captain**, the **strength** and who scouted it on which day. No room in the
   chest: it drops at the scout's feet.

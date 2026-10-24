@@ -27,6 +27,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -39,10 +40,12 @@ import net.minecraft.world.entity.monster.Vindicator;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.MapDecorations;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 
 /**
  * Scouts (ROADMAP 32.12): a guard handed a spyglass is a Scout and the player gets back what they held (not before
@@ -390,5 +393,43 @@ public class ScoutGameTests implements FabricGameTest {
 			helper.assertFalse(trailed, "trailed with Milestone 32 closed");
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * B368: a Scouting Report shows both the village and the lair even when they lie across a line where the game's
+	 * 2048-block map squares meet (x or z = 2048k - 64), which no grid-snapped map holds: the map is centred between
+	 * them, the red X sits on the lair, and the map's saved data keeps that centre. Lairs far apart get scale 4.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void aScoutingReportAcrossAMapGridLineShowsBothTheVillageAndTheLair(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		int line = 2048 - 64;
+		BlockPos[][] pairs = {
+			{new BlockPos(line - 10, 70, 300), new BlockPos(line + 20, 70, 300)},
+			{new BlockPos(500, 70, -line + 12), new BlockPos(530, 70, -line - 25)},
+			{new BlockPos(line - 70, 70, line - 3), new BlockPos(line + 40, 70, line + 90)},
+			{new BlockPos(-line - 60, 70, 40), new BlockPos(-line + 40, 70, 40)},
+			{new BlockPos(line - 700, 70, 0), new BlockPos(line + 700, 70, 0)}};
+		for (int i = 0; i < pairs.length; i++) {
+			BlockPos hall = pairs[i][0];
+			BlockPos at = pairs[i][1];
+			Lairs.Lair lair = new Lairs.Lair(at, hall, new UUID(368, i), 1, Threats.BANDITS, 6, 1, 0, 0, 0);
+			ItemStack report = Scouts.report(level, hall, lair, Component.literal("Tester"), 1);
+			MapItemSavedData data = MapItem.getSavedData(report, level);
+			helper.assertTrue(data != null, "report " + i + " has no map data");
+			int half = 64 << data.scale;
+			String where = "report " + i + " centred " + data.centerX + ", " + data.centerZ + " at scale " + data.scale;
+			helper.assertTrue(Math.abs(hall.getX() - data.centerX) < half && Math.abs(hall.getZ() - data.centerZ) < half,
+				where + " leaves the village " + hall.toShortString() + " off");
+			helper.assertTrue(Math.abs(at.getX() - data.centerX) < half && Math.abs(at.getZ() - data.centerZ) < half,
+				where + " leaves the lair " + at.toShortString() + " off");
+			MapDecorations.Entry x = report.getOrDefault(DataComponents.MAP_DECORATIONS, MapDecorations.EMPTY).decorations().get("+");
+			helper.assertTrue(x != null && (int) x.x() == at.getX() && (int) x.z() == at.getZ(), where + ": the X is not on the lair");
+		}
+		helper.assertTrue(MapItem.getSavedData(Scouts.report(level, pairs[4][0], new Lairs.Lair(pairs[4][1], pairs[4][0],
+			new UUID(368, 9), 1, Threats.BANDITS, 6, 1, 0, 0, 0), Component.literal("Tester"), 1), level).scale == 4,
+			"lairs 1400 blocks off should get the largest map");
+		helper.succeed();
 	}
 }

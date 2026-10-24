@@ -359,6 +359,17 @@ hired Builder a blueprint, `ownershipOffLetsAStrangerGiveTheBuilderABlueprint`; 
 out and no further, `levelGroundEightLevelsEightBlocksOutAndNoFurther`; `workplaceFoundationDepth` 0 puts nothing in a
 dip and uses no extra cobblestone, `foundationDepthZeroPutsNothingIntoTheDip`; the Blueprint Table hides the Mega Shrine
 and Train Station while their expansions are closed, `theTableHidesTheM38AndM39BuildsWhileTheirExpansionsAreClosed`).
+`QaBuilderLimitsGameTests` (7, QA of the builder's limits from the player guide, each from both sides through the
+player's clicks: a Book and Quill on a Blueprint Table nobody works at opens the table, from either hand; five blueprints
+line up as numbers 1 to 5 and the sixth is refused with "already has 5 blueprints lined up" and kept; the line keeps its
+order over a save and each `/workplace cancel` takes up the next and hands the blueprint back still placed; a spot 48
+blocks from the table is taken and 49 refused; chests 8 blocks off (and 4 up) count and 9 off don't; four idle builders
+make a crew of three helpers, never four). `QaBlueprintHandlingGameTests` (2: place, four quarter turns back to the
+start, pick up, the levelling switch off/on/off kept through placing, turning and the hand-over; a building taken down
+with the chest full loses nothing). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
+does: each side 1 to 32, no Blank Blueprint or no block draws nothing and takes nothing, two draws give the same build
+for two blanks, a hollow and a solid box of one size are two builds, a blank in the first slot is used and a full bag
+gets the blueprint at the player's feet, a builder builds a drawn box from the chest).
 
 Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the

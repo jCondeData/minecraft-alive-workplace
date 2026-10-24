@@ -783,6 +783,202 @@ public class QaStageSixGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		});
 	}
 
+	// --- B342: BuilderEvents' own items from the off hand -----------------------------------------------------------
+
+	/** A villager of {@code job} at its block {@code block} by {@code pos}, standing still. */
+	static Villager atWork(GameTestHelper helper, BlockPos pos, net.minecraft.world.level.block.Block block,
+			net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType> poi, VillagerProfession job) {
+		helper.setBlock(pos, block);
+		Villager v = helper.spawn(EntityType.VILLAGER, pos.east());
+		v.setNoAi(true);
+		Jobs.employ(helper.getLevel(), v, helper.absolutePos(pos), poi, job);
+		return v;
+	}
+
+	/**
+	 * B342: a City Plan from the off hand (main hand empty), sneak-clicked on a seasoned builder by its hall, makes him the
+	 * Steward, as from the main hand (city-plan.md); the builder's status line doesn't take the click.
+	 */
+	//$ gametest_ticks_batch BIG '100' '"qa6PlanOffHand"'
+	@GameTest(template = BIG, timeoutTicks = 100, batch = "qa6PlanOffHand")
+	public void cityPlanFromTheOffHand(GameTestHelper helper) {
+		guildVillage(helper);
+		Villager bram = StewardGameTests.seasoned(guildVillager(helper, HALL.east(2), "Bram", ModVillagers.BUILDER, 1));
+		helper.runAfterDelay(5, () -> {
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6po"));
+			ServerPlayer p = c.player();
+			ItemStack plan = new ItemStack(ModItems.CITY_PLAN);
+			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(helper.getLevel(), p, plan, helper.absolutePos(HALL));
+			c.seen().clear();
+			p.setShiftKeyDown(true);
+			p.setItemInHand(InteractionHand.OFF_HAND, plan);
+			clickVillager(p, bram, c.seen());
+			helper.assertTrue(bram.getVillagerData().getProfession() == ModVillagers.STEWARD,
+				"off hand: Bram isn't the Steward (" + bram.getVillagerData().getProfession() + "), saw " + QaStageFourGameTests.keys(c.seen()));
+			helper.assertTrue(QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.status.no_bench") == null, "off hand: the status line answered");
+			helper.assertTrue(p.containerMenu == p.inventoryMenu, "off hand: a trade screen opened");
+			helper.succeed();
+		});
+	}
+
+	/** B342: a job's item from the off hand (main hand empty), sneak-clicked on a jobless villager by its block, gives that job there. */
+	//$ gametest_ticks_batch AREA '100' '"qa6StationOffHand"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qa6StationOffHand")
+	public void jobItemFromTheOffHand(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setBlock(new BlockPos(3, 2, 3), Blocks.COMPOSTER);
+		Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 3));
+		v.setNoAi(true);
+		helper.runAfterDelay(5, () -> {
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6so"));
+			ServerPlayer p = c.player();
+			p.setShiftKeyDown(true);
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.SWEET_BERRIES, 3));
+			clickVillager(p, v, c.seen());
+			helper.assertTrue(v.getVillagerData().getProfession() == ModVillagers.ORCHARD_KEEPER,
+				"off hand: berries gave " + v.getVillagerData().getProfession() + ", saw " + QaStageFourGameTests.keys(c.seen()));
+			helper.assertTrue(QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.job.chosen") != null, "off hand: not told of the job");
+			helper.succeed();
+		});
+	}
+
+	/** B342: lapis from the off hand (main hand empty), sneak-clicked on a Librarian, hires her as a scribe; no trade screen. */
+	//$ gametest_ticks_batch AREA '100' '"qa6LapisOffHand"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qa6LapisOffHand")
+	public void lapisFromTheOffHand(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Villager v = atWork(helper, new BlockPos(3, 2, 3), Blocks.LECTERN, net.minecraft.world.entity.ai.village.poi.PoiTypes.LIBRARIAN,
+			VillagerProfession.LIBRARIAN);
+		helper.runAfterDelay(5, () -> {
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6lo"));
+			ServerPlayer p = c.player();
+			p.setShiftKeyDown(true);
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.LAPIS_LAZULI, 2));
+			clickVillager(p, v, c.seen());
+			helper.assertTrue(QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.scribe.hired") != null,
+				"off hand: lapis didn't hire, saw " + QaStageFourGameTests.keys(c.seen()));
+			var employer = ModAttachments.BUILDER_EMPLOYER.get(v);
+			helper.assertTrue(employer != null && employer.id().equals(p.getUUID()), "off hand: the player isn't her employer");
+			helper.assertTrue(p.containerMenu == p.inventoryMenu, "off hand: a trade screen opened");
+			helper.succeed();
+		});
+	}
+
+	/** B342: a compass from the off hand (main hand empty), sneak-clicked on a Cartographer, hires him as an explorer; no trade screen. */
+	//$ gametest_ticks_batch AREA '100' '"qa6CompassOffHand"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qa6CompassOffHand")
+	public void compassFromTheOffHand(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Villager v = atWork(helper, new BlockPos(3, 2, 3), Blocks.CARTOGRAPHY_TABLE, net.minecraft.world.entity.ai.village.poi.PoiTypes.CARTOGRAPHER,
+			VillagerProfession.CARTOGRAPHER);
+		helper.runAfterDelay(5, () -> {
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6xo"));
+			ServerPlayer p = c.player();
+			p.setShiftKeyDown(true);
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.COMPASS));
+			clickVillager(p, v, c.seen());
+			helper.assertTrue(QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.explorer.hired") != null,
+				"off hand: the compass didn't hire, saw " + QaStageFourGameTests.keys(c.seen()));
+			var employer = ModAttachments.BUILDER_EMPLOYER.get(v);
+			helper.assertTrue(employer != null && employer.id().equals(p.getUUID()), "off hand: the player isn't his employer");
+			helper.assertTrue(p.containerMenu == p.inventoryMenu, "off hand: a trade screen opened");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B342's limits: a sneak-click with both hands empty still shows the builder's status line, and so does one with an
+	 * off-hand item no page here uses (a torch).
+	 */
+	//$ gametest_ticks_batch BIG '100' '"qa6EmptyHands"'
+	@GameTest(template = BIG, timeoutTicks = 100, batch = "qa6EmptyHands")
+	public void emptyHandsStillShowTheStatusLine(GameTestHelper helper) {
+		guildVillage(helper);
+		Villager dara = guildVillager(helper, new BlockPos(8, 2, 6), "Dara", ModVillagers.BUILDER, 2);
+		helper.runAfterDelay(5, () -> {
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6eh"));
+			ServerPlayer p = c.player();
+			p.setShiftKeyDown(true);
+			clickVillager(p, dara, c.seen());
+			helper.assertTrue(QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.status.no_bench") != null,
+				"empty hands: no status line, saw " + QaStageFourGameTests.keys(c.seen()));
+			c.seen().clear();
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.TORCH, 4));
+			clickVillager(p, dara, c.seen());
+			helper.assertTrue(QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.status.no_bench") != null,
+				"a torch in the off hand: no status line, saw " + QaStageFourGameTests.keys(c.seen()));
+			helper.assertTrue(p.getOffhandItem().is(Items.TORCH) && p.getOffhandItem().getCount() == 4, "the torch was used: " + p.getOffhandItem());
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B342's limits: a shield is kept in the off hand, so a sneak-click on a guard with only a shield there (main hand
+	 * empty) doesn't hand it over: it does what an empty-handed sneak-click does, and the player keeps the shield.
+	 */
+	//$ gametest_ticks_batch BIG '100' '"qa6ShieldKept"'
+	@GameTest(template = BIG, timeoutTicks = 100, batch = "qa6ShieldKept")
+	public void anOffHandShieldIsntHandedToAGuard(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Villager guard = atWork(helper, new BlockPos(3, 2, 3), ModBlocks.GUARD_POST, ModVillagers.GUARD_POST_POI, ModVillagers.GUARD);
+		helper.runAfterDelay(5, () -> {
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6sk"));
+			ServerPlayer p = c.player();
+			p.setShiftKeyDown(true);
+			clickVillager(p, guard, c.seen());
+			List<String> emptyKeys = QaStageFourGameTests.keys(c.seen());
+			Class<?> emptyScreen = p.containerMenu.getClass();
+			p.closeContainer();
+			c.seen().clear();
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.SHIELD));
+			clickVillager(p, guard, c.seen());
+			helper.assertTrue(p.getOffhandItem().is(Items.SHIELD), "the off hand's shield went: " + p.getOffhandItem());
+			helper.assertTrue(guard.getOffhandItem().isEmpty(), "the guard took the shield: " + guard.getOffhandItem());
+			helper.assertTrue(QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.guard.kind") == null, "told the guard's kind changed");
+			helper.assertTrue(QaStageFourGameTests.keys(c.seen()).equals(emptyKeys) && p.containerMenu.getClass() == emptyScreen,
+				"not as an empty-handed click: saw " + QaStageFourGameTests.keys(c.seen()) + " and " + p.containerMenu.getClass().getSimpleName()
+					+ ", empty-handed " + emptyKeys + " and " + emptyScreen.getSimpleName());
+			p.setItemInHand(InteractionHand.MAIN_HAND, p.getOffhandItem().copy());
+			p.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+			p.closeContainer();
+			clickVillager(p, guard, c.seen());
+			helper.assertTrue(guard.getOffhandItem().is(Items.SHIELD), "from the main hand the shield wasn't handed over");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B342's limits: the main hand's item wins over the off hand's. Lapis in the main hand and a compass in the off hand:
+	 * a Librarian is hired as a scribe (the compass kept), and a Cartographer isn't hired as an explorer.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qa6MainWins"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qa6MainWins")
+	public void theMainHandsItemWinsOverTheOffHands(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Villager librarian = atWork(helper, new BlockPos(2, 2, 2), Blocks.LECTERN, net.minecraft.world.entity.ai.village.poi.PoiTypes.LIBRARIAN,
+			VillagerProfession.LIBRARIAN);
+		Villager cartographer = atWork(helper, new BlockPos(2, 2, 5), Blocks.CARTOGRAPHY_TABLE,
+			net.minecraft.world.entity.ai.village.poi.PoiTypes.CARTOGRAPHER, VillagerProfession.CARTOGRAPHER);
+		helper.runAfterDelay(5, () -> {
+			QaStageFiveGameTests.Client c = client(helper, GameType.SURVIVAL, name("qa6mw"));
+			ServerPlayer p = c.player();
+			p.setShiftKeyDown(true);
+			p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.LAPIS_LAZULI, 2));
+			p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.COMPASS));
+			clickVillager(p, librarian, c.seen());
+			helper.assertTrue(QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.scribe.hired") != null,
+				"main hand's lapis didn't hire the Librarian, saw " + QaStageFourGameTests.keys(c.seen()));
+			c.seen().clear();
+			p.closeContainer();
+			clickVillager(p, cartographer, c.seen());
+			helper.assertTrue(QaStageFourGameTests.find(c.seen(), "message.aliveworkplace.explorer.hired") == null,
+				"the off hand's compass hired the Cartographer past the main hand's lapis");
+			helper.assertTrue(ModAttachments.BUILDER_EMPLOYER.get(cartographer) == null, "the Cartographer has an employer");
+			helper.assertTrue(p.getOffhandItem().is(Items.COMPASS), "the compass went: " + p.getOffhandItem());
+			helper.succeed();
+		});
+	}
+
 	// --- The Gray Cough's healer -------------------------------------------------------------------------------------
 
 	private static final BlockPos SICK_HALL = new BlockPos(15, 2, 15);

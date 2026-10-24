@@ -29,6 +29,11 @@ asks for the steps, `latest.log` and any crash report).
   sneak-right-clicked on a Master (B341), as from the main hand; before, the click only showed the builder's status
   line (or another villager's own page) and the charter was kept. The same goes for Builder's Tea and the other tonics,
   the Physician's Remedy, a Gift and a request's letter or heirloom on a plain right-click, which only opened the trades.
+- The other items a villager takes on a click work from the off hand too, with the main hand empty (B342): a City Plan
+  (the Steward), a job's item (a new job at the block they stand by), the hiring items (lapis, a compass, flint, shears
+  and the rest), a Blueprint, a Book and Quill, a Wonder Plan, a marker, a Delivery Note, a fishing rod and a guard's
+  gear (but not a shield, which stays in the off hand). Before, the click showed the builder's status line or opened the
+  trades. Both hands empty still shows the status.
 
 ## 0.148.1 — 2026-10-23
 

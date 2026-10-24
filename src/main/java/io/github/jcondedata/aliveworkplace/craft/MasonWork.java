@@ -91,14 +91,37 @@ public class MasonWork extends CrafterWork {
 		return null;
 	}
 
-	/** What's short of the stonecutter's chain, or with a furnace by it, the kiln's (37.14a). */
+	/**
+	 * What's short of the stonecutter's chain, or with a furnace by it, the kiln's (37.14a), its fuel counted as a raw
+	 * material (a coal for every {@link #GLASS_PER_FUEL} fired). When the kiln has every making but the fuel, the fuel is
+	 * what's short, whatever the stonecutter alone would want (B352: clay for brick stairs, a coal short, isn't "bricks").
+	 */
 	@Override
 	protected Map<Item, Integer> lackFor(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
 		Map<Item, Integer> cut = super.lackFor(level, item, count, usable);
-		if (!cut.isEmpty() || !hasFurnace(level) || Crafting.recipesFor(level, Crafting.Kind.KILN, item).isEmpty()) {
+		if (!hasFurnace(level) || Crafting.recipesFor(level, Crafting.Kind.KILN, item).isEmpty()) {
 			return cut;
 		}
-		return Crafting.lacking(level, Crafting.Kind.KILN, item, Math.min(Math.max(1, count), Crafting.MAX_CRAFTS), usable);
+		Crafting.Plan kiln = Crafting.shortfall(level, Crafting.Kind.KILN, item, Math.min(Math.max(1, count), Crafting.MAX_CRAFTS), usable);
+		Map<Item, Integer> makings = Crafting.lacks(kiln);
+		if (!cut.isEmpty() && !makings.isEmpty()) {
+			return cut; // short of makings either way: the stonecutter's, the way a player would try first
+		}
+		Map<Item, Integer> lack = new LinkedHashMap<>(makings);
+		if (kiln != null) {
+			int fired = 0;
+			for (Crafting.Step step : kiln.steps()) {
+				if (Crafting.isFired(level, Crafting.Kind.KILN, step)) {
+					fired += step.times();
+				}
+			}
+			int fuel = (fired + GLASS_PER_FUEL - 1) / GLASS_PER_FUEL;
+			long have = Math.max(usable.getOrDefault(Items.COAL, 0L), usable.getOrDefault(Items.CHARCOAL, 0L));
+			if (fuel > have) {
+				lack.merge(Items.COAL, (int) (fuel - have), Integer::sum);
+			}
+		}
+		return lack.isEmpty() ? cut : lack;
 	}
 
 	/** The same plan, with {@code n} of {@code made} turned into {@code into} at the end (the firing its last step). */

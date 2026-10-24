@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379
 
 ## 1. What a player sees
 
@@ -375,7 +375,7 @@ blocks from the table is taken and 49 refused; chests 8 blocks off (and 4 up) co
 make a crew of three helpers, never four). `QaBlueprintHandlingGameTests` (3: place, four quarter turns back to the
 start, pick up, the levelling switch off/on/off kept through placing, turning and the hand-over; a building taken down
 with the chest full loses nothing; an upgrade lines up over its own finished building, turned or not, never when
-sneaking and never over another kind of building). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
+sneaking and never over another kind of building). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
 does: each side 1 to 32, no Blank Blueprint or no block draws nothing and takes nothing, two draws give the same build
 for two blanks, a hollow and a solid box of one size are two builds, a blank in the first slot is used and a full bag
 gets the blueprint at the player's feet, a builder builds a drawn box from the chest).

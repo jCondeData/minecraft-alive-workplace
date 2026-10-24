@@ -77,19 +77,51 @@ public final class Couples {
 			&& !io.github.jcondedata.aliveworkplace.inn.Innkeepers.isTraveller(villager);
 	}
 
-	/** Parent and child, or brother and sister (by the names the families remember). */
+	/**
+	 * Parent and child, or brother and sister (B380: by id, not by a shared name).
+	 *
+	 * <p>Since 34.21 {@link Families#born} records each parent's id with the name, and an id decides: a parent recorded by
+	 * id is that villager and nobody else, and two children are brother and sister only when a parent's id is the same
+	 * on both records. Names alone used to decide, so with {@code villagerNames} off (every parent recorded as "Farmer")
+	 * or two mothers both called Mira, strangers grieved for each other. Records saved before 34.21 have names only;
+	 * for a parent without an id on record, and only then, the name still counts, and only when it is a given name
+	 * (a name tag or one of {@code Names}'s), never a job title ("Farmer", "Villager"), which half the village shares.
+	 */
 	static boolean related(Villager a, Villager b) {
 		Families.Parents pa = Families.parents(a);
 		Families.Parents pb = Families.parents(b);
-		String na = a.getDisplayName().getString();
-		String nb = b.getDisplayName().getString();
-		if (pa != null && (pa.mother().getString().equals(nb) || pa.father().getString().equals(nb))) {
+		if (pa != null && (isParent(pa.motherId(), pa.mother(), b) || isParent(pa.fatherId(), pa.father(), b))) {
 			return true;
 		}
-		if (pb != null && (pb.mother().getString().equals(na) || pb.father().getString().equals(na))) {
+		if (pb != null && (isParent(pb.motherId(), pb.mother(), a) || isParent(pb.fatherId(), pb.father(), a))) {
 			return true;
 		}
-		return pa != null && pb != null && (pa.mother().getString().equals(pb.mother().getString()) || pa.father().getString().equals(pb.father().getString()));
+		return pa != null && pb != null && (sameParent(pa.motherId(), pa.mother(), pb.motherId(), pb.mother())
+			|| sameParent(pa.fatherId(), pa.father(), pb.fatherId(), pb.father()));
+	}
+
+	/** Whether the parent recorded as {@code id}/{@code name} is {@code who}: by id when there is one, else by a given name. */
+	private static boolean isParent(@Nullable UUID id, Component name, Villager who) {
+		if (id != null) {
+			return id.equals(who.getUUID());
+		}
+		return givenName(name) && givenName(who.getDisplayName()) && name.getString().equals(who.getDisplayName().getString());
+	}
+
+	/** Whether two records name the same parent: by id when both have one, else by a given name when either lacks it. */
+	private static boolean sameParent(@Nullable UUID idA, Component nameA, @Nullable UUID idB, Component nameB) {
+		if (idA != null && idB != null) {
+			return idA.equals(idB);
+		}
+		return givenName(nameA) && givenName(nameB) && nameA.getString().equals(nameB.getString());
+	}
+
+	/** A person's own name, not the job title or "Villager" an unnamed villager is shown by (entity.*.villager.*). */
+	private static boolean givenName(Component name) {
+		if (name.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t && t.getKey().startsWith("entity.")) {
+			return false;
+		}
+		return !name.getString().isBlank();
 	}
 
 	/** The hall's round: weddings that are due; now and then two singles start courting. */

@@ -83,7 +83,12 @@ public class ColonyCharterItem extends Item {
 	public InteractionResult useOn(UseOnContext context) {
 		Level level = context.getLevel();
 		if (level.getBlockState(context.getClickedPos()).is(ModBlocks.VILLAGE_HALL)) {
-			return InteractionResult.PASS; // the hall is where the settlers are sent from (Settlers.send, through the hall block), never a spot
+			// The hall is where the settlers are sent from, never a spot. A plain click is the hall block's (its useItemOn);
+			// this is reached only when vanilla skipped the hall's own use, on a sneak-click with something in hand (B357).
+			if (level instanceof ServerLevel server && context.getPlayer() instanceof ServerPlayer player) {
+				io.github.jcondedata.aliveworkplace.mc.Chat.chat(player, Settlers.send(server, context.getClickedPos(), player, context.getItemInHand()).message());
+			}
+			return InteractionResult.sidedSuccess(level.isClientSide());
 		}
 		if (level instanceof ServerLevel && context.getPlayer() instanceof ServerPlayer player) {
 			Colonies.Chosen chosen = Colonies.choose(player, context.getItemInHand(), player.blockPosition());

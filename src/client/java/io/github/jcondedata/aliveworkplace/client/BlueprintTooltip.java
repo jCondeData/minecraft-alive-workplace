@@ -111,7 +111,7 @@ public final class BlueprintTooltip {
 			return List.of(Component.translatable("tooltip.aliveworkplace.blueprint.all_there").withStyle(ChatFormatting.GREEN));
 		}
 		if (!detailed) {
-			return List.of(Component.translatable("tooltip.aliveworkplace.blueprint.missing_summary", report.totalMissing())
+			return List.of(io.github.jcondedata.aliveworkplace.work.Words.counted("tooltip.aliveworkplace.blueprint.missing_summary", report.totalMissing(), report.totalMissing())
 				.withStyle(ChatFormatting.YELLOW));
 		}
 		List<Component> lines = new ArrayList<>();

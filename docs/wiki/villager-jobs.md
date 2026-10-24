@@ -176,7 +176,7 @@ main hand is empty, B351) gets the "Order" button.
 **Miners make their own pickaxe (36.11).** A Miner whose pickaxe wore out, or who has none, first looks in their own
 chests for one; with none there, they make one at their Blast Furnace from what they mined themselves: three
 Cobblestone (or Cobbled Deepslate or Blackstone) from their bag and their chests, and two Sticks from there or from the
-village store, or two Planks cut into sticks (the spare two go in the bag). A Journeyman makes iron when there are three
+village store, or two Planks cut into sticks (the spare sticks are kept). A Journeyman makes iron when there are three
 Iron Ingots in their chests (the blast furnace's own, often), an Expert or Master diamond with three Diamonds: always
 the best they can. It takes three seconds at the furnace, the line over their head says "making a pickaxe", and the
 owner reads "Dara made a new Stone Pickaxe at their workstation from what they mined." Nothing is taken unless all of

@@ -3386,7 +3386,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     day adds one;
   - the captain's name is on him, on the Defence page and in the chronicle;
   - scene `defence_page`: the Defence page with a bandit camp standing (screenshot).
-- [x] **32.4** (approved 2026-10-11) **Sieges I: rams and gates.** A raid by a culture with `ram_gates` on a village with at least one
+- [x] **32.4** (approved 2026-10-11) (verified 2026-10-24: lane D QA on main 82db26a: QaSiegeGameTests [9: ram 12 every 40 ticks, fence gate on the 5th blow, nothing drops, listed for repair; axe 4 every 20; raiders with no ram or axe never hit a gate; a tower door breaks whole at 80; portcullis lifts at the first dawn after, through a save and reload, both sides of 23500]; mutation and repeats on the nightly) **Sieges I: rams and gates.** A raid by a culture with `ram_gates` on a village with at least one
   finished wall or gate build (`StarterBlueprints.DEFENCES` and their upgrades) is a siege, run by `threat/Sieges`:
   one director a siege, every 20 ticks, at most 4 path requests a tick. It picks the breach (the gate nearest the
   raiders' side: the fence gates, doors and iron bars of finished defence builds) and sends the rams (role `ram`;
@@ -3437,7 +3437,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   - the siege report names the hero; Ramparts doubles a gate's hit points;
   - after a siege with a broken gate, a builder with materials puts the gate back before mending a house nearby;
   - scene `battle_stations`: a GIF of archers on a Gatehouse and a Wall Tower shooting down at a siege.
-- [x] **32.7** (approved 2026-10-11) **Pillager warbands.** `pillager_warband.json`: plains, meadows, forests (birch, dark, flower, cherry),
+- [x] **32.7** (approved 2026-10-11) (verified 2026-10-24: lane D QA on main 82db26a: QaRaiderCulturesGameTests [warband lands listed vs 7 unlisted; bandits at Village, warband ~3 in 4 from Town and at City; strength 10 +2 a day to 18, once a dawn, kept through a save; roster shares and gear; every line in the lang file]; mutation and repeats on the nightly) **Pillager warbands.** `pillager_warband.json`: plains, meadows, forests (birch, dark, flower, cherry),
   taiga and the snowy lands, savanna; Town and up; tactics `ram_gates` and `ladders`. Its lair is the **War Camp**
   (`camp/war_camp`, about 23 x 9 x 19, drawn with the minecraft-architect skill in `tools/blueprints/bandits.py`: a
   ring of sharpened logs with a gate, three canvas tents, the Warlord's tent with the loot chest, a ravager pen, a
@@ -3452,7 +3452,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     camp;
   - the camp passes `check.py` and its render is in the package;
   - scene `warband`: the war camp, then a GIF of the warband's siege on a walled village.
-- [x] **32.8** (approved 2026-10-11) **Drowned pirates.** `drowned_pirates.json`: coastal villages (`coast`, checked once a day); Town and
+- [x] **32.8** (approved 2026-10-11) (verified 2026-10-24: lane D QA on main 82db26a: QaPiratesThreatLevelGameTests [ship fits water 5 deep, refused at 4; a coastal City gets pirates, a Hamlet doesn't; captain base+40; crew ashore near the ship's beach at level 3; a block the player swapped into the ship stays when it sinks; At peace ship sails at dawn and none comes]; 40-70 out and the crew shares not testable in the areas) **Drowned pirates.** `drowned_pirates.json`: coastal villages (`coast`, checked once a day); Town and
   up; arrival `shore`. Their lair is the **Pirate Ship** (`camp/pirate_ship`, about 27 x 20 x 9, minecraft-architect
   skill: a two-masted dark oak sloop with black sails, a crow's nest, the captain's cabin with the loot chest, the
   Jolly Roger (a black banner with the skull) at the stern), anchored on water at least 5 deep, 40–70 blocks out, its

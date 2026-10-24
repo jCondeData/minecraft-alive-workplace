@@ -18,6 +18,12 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Items held in the off hand with the main hand empty now work where they didn't: the Storehouse board's stock orders
+  page offers to order the off hand's item (B351); a Colony Charter sends the settlers from the off hand, and a
+  sneak-click on the hall with it sends them too instead of opening the colonies map (B357); a City Plan, a Village
+  Ledger and a named Name Tag bind to or name the Village Hall from the off hand instead of opening its page (B360); a
+  placed Blueprint in the off hand writes its material list into the Book and Quill in the main hand instead of the
+  book's editor opening (B365); and the Scan Tool marks a chest from the off hand instead of opening it (B374).
 - A retired elder sneak-right-clicked with a job's item (lapis by a free lectern) no longer says he took the job
   while staying jobless, and no longer leaves that workstation taken by nobody: he says he has retired, and the block
   stays free for another villager (B346).

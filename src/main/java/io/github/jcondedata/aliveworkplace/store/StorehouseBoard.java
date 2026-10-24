@@ -166,7 +166,8 @@ public final class StorehouseBoard {
 		info.set(DataComponents.LORE, new ItemLore(List.of(plain(Component.translatable("screen.aliveworkplace.storehouse.orders_how"), ChatFormatting.GRAY),
 			plain(Component.translatable("screen.aliveworkplace.storehouse.orders_who"), ChatFormatting.GRAY))));
 		menu.button(INFO_SLOT, info, null);
-		ItemStack held = viewer.getMainHandItem();
+		// B351: with the main hand empty, the off hand's item is the one held (as B341/B342's clicks on villagers).
+		ItemStack held = viewer.getMainHandItem().isEmpty() ? viewer.getOffhandItem() : viewer.getMainHandItem();
 		if (!held.isEmpty() && !StockOrders.of(level, storehouse).containsKey(held.getItem())) {
 			ItemStack add = held.copyWithCount(1);
 			add.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.order_add", held.getHoverName(),

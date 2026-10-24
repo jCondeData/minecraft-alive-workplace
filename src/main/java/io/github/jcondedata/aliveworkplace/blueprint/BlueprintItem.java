@@ -186,6 +186,17 @@ public class BlueprintItem extends Item {
 		return InteractionResult.CONSUME;
 	}
 
+	/**
+	 * B365: with the Book and Quill in the main hand and a blueprint in the off hand, the main hand is asked first and the
+	 * book opens its editor, so the blueprint's {@link #use} (which writes its material list into a book in the other
+	 * hand, 23.4) never ran. The book's use is turned down then (on both sides), so the click goes on to the off hand's
+	 * blueprint, as with the hands the other way round.
+	 */
+	public static boolean allowBookUse(Player player, Level level, InteractionHand hand) {
+		return !(hand == InteractionHand.MAIN_HAND && !player.isShiftKeyDown() && player.getMainHandItem().is(net.minecraft.world.item.Items.WRITABLE_BOOK)
+			&& player.getOffhandItem().getItem() instanceof BlueprintItem && data(player.getOffhandItem()).isPresent());
+	}
+
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);

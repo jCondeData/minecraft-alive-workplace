@@ -349,6 +349,11 @@ public final class LegendSites {
 			}
 			case "shipwreck" -> {
 				ItemStack held = player.getItemInHand(hand);
+				// Vanilla asks the main hand first; with it empty, a meal kept in the off hand is handed over (as B341 does
+				// for a villager's items), or the castaway would only ever ask for food.
+				if (held.isEmpty() && hand == InteractionHand.MAIN_HAND && player.getOffhandItem().is(MEALS)) {
+					held = player.getOffhandItem();
+				}
 				if (held.is(MEALS)) {
 					held.consume(1, player);
 					free((ServerLevel) villager.level(), villager, captive, player);

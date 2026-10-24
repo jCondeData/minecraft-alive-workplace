@@ -19,11 +19,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 
 /**
- * QA (lane-c-1024-0353, 2026-10-24): bugs found in the Village Hall and its beds, each committed with its fix (B360)
+ * QA (lane-c-1024-0353, 2026-10-24): bugs found in the Village Hall and its beds, each committed with its fix (B360, B361)
  * (the passing ones are in {@link QaHallHomesGameTests}).
  */
 public class QaHallHomesBugTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:build_area";
+	private static final String HUGE = "aliveworkplace_test:huge_area";
 
 	/**
 	 * city-plan.md ("Bind it: right-click a Village Hall"), village-ledger and village-hall.md (the Name Tag): from the OFF
@@ -69,6 +70,27 @@ public class QaHallHomesBugTests implements net.fabricmc.fabric.api.gametest.v1.
 			}
 			p.closeContainer();
 			helper.assertTrue(wrong.isEmpty(), "from the off hand at the hall: " + String.join("; ", wrong));
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * village-hall.md "Everyone within 64 blocks belongs to it" (16 here): a villager and his bed, side by side, 13 blocks
+	 * east and 13 south of the hall. The census counts him (the villagers are counted in a square) but not his bed (the
+	 * beds in a circle, 18.4 away), so the hall, the "beds" tip and the Steward say a villager has no bed when he has.
+	 * Expected: he and his bed are both in the village or both out, never one short.
+	 */
+	//$ gametest_ticks_batch HUGE '60' '"qaBedsCorner"'
+	@GameTest(template = HUGE, timeoutTicks = 60, batch = "qaBedsCorner")
+	public void aVillagerAndHisBedInTheCornerAreNotABedShort(GameTestHelper helper) {
+		BlockPos hallRel = new BlockPos(2, 2, 2);
+		QaHallHomesGameTests.hall(helper, hallRel);
+		QaHallHomesGameTests.bed(helper, hallRel.offset(13, 0, 13));
+		QaHallHomesGameTests.adult(helper, hallRel.offset(14, 0, 13));
+		helper.runAfterDelay(5, () -> {
+			VillageHalls.Census census = VillageHalls.census(helper.getLevel(), helper.absolutePos(hallRel));
+			helper.assertTrue(VillageAdvice.bedsShort(census) == 0, "a villager and his bed 13 east and 13 south: " + census.villagers() + " villager(s) counted, "
+				+ census.beds() + " bed(s), so " + VillageAdvice.bedsShort(census) + " short");
 			helper.succeed();
 		});
 	}

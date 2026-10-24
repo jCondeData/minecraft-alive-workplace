@@ -205,8 +205,8 @@ public class QaHallHomesGameTests implements net.fabricmc.fabric.api.gametest.v1
 	}
 
 	/**
-	 * "Everyone within 64 blocks belongs to it" (16 here): along a straight line, a villager and his bed exactly at the
-	 * reach both count (none short); one block beyond, neither does (still none short); the villager stepping back in
+	 * "Everyone within 64 blocks belongs to it" (16 here, a circle): a bed exactly at the reach and a villager beside it
+	 * both count (none short); one block beyond, neither does (still none short); the villager stepping back in
 	 * while his bed stays beyond is one short.
 	 */
 	//$ gametest_ticks_batch HUGE '60' '"qaBedsReach"'
@@ -216,14 +216,14 @@ public class QaHallHomesGameTests implements net.fabricmc.fabric.api.gametest.v1
 		hall(helper, hallRel);
 		bed(helper, hallRel.offset(16, 0, 0)); // its head exactly at the reach, straight east
 		bed(helper, hallRel.offset(17, 0, 4)); // one beyond
-		adult(helper, hallRel.offset(16, 0, -2));
+		adult(helper, hallRel.offset(15, 0, -2)); // beside it, just inside the circle (B361: the village is a circle)
 		Villager beyond = adult(helper, hallRel.offset(17, 0, 8));
 		helper.runAfterDelay(5, () -> {
 			VillageHalls.Census census = VillageHalls.census(helper.getLevel(), helper.absolutePos(hallRel));
 			helper.assertTrue(census.villagers() == 1, "villagers at and beyond the reach: " + census.villagers() + " counted, wanted 1");
 			helper.assertTrue(census.beds() == 1, "beds at and beyond the reach: " + census.beds() + " counted, wanted 1");
 			helper.assertTrue(bedsShort(helper, hallRel) == 0, "short of " + bedsShort(helper, hallRel));
-			beyond.moveTo(helper.absoluteVec(net.minecraft.world.phys.Vec3.atBottomCenterOf(hallRel.offset(15, 0, 8))));
+			beyond.moveTo(helper.absoluteVec(net.minecraft.world.phys.Vec3.atBottomCenterOf(hallRel.offset(13, 0, 8))));
 			helper.assertTrue(bedsShort(helper, hallRel) == 1, "he stepped in, his bed beyond: short of " + bedsShort(helper, hallRel));
 			helper.succeed();
 		});

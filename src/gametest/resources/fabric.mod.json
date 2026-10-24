@@ -157,6 +157,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderLimitsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.CountWordsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderClicksGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBoardAndTableGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderWordsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderLimitsGameTests",

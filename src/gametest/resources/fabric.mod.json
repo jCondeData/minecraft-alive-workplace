@@ -418,6 +418,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaB30JobSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStuckJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendCampGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRefusedThreatsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRefusedWarlordGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonProfessorGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonRangerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderBlueprintGameTests",

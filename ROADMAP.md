@@ -5117,7 +5117,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   test passes with those checks in its log summary; the wiki page and guide section are on `main` and `wikicheck.py`
   passes.
 
-- [x] **37.12** (approved 2026-10-19) **Two build libraries: vanilla and modded** (owner, 2026-10-18). Keep every current blueprint as the
+- [x] **37.12** (approved 2026-10-19) (verified 2026-10-24: 7 compat tests [QaCarvedLibraryCompatTests]: every copy keeps its job sites, homes and workshops have copies, switches flipped mid-build, missing mod's block falls back [also a saved site], Carved Wood chests/barrels as supply chests, switch text; 3/3 mutants killed. 37.7 left unverified: B388) **Two build libraries: vanilla and modded** (owner, 2026-10-18). Keep every current blueprint as the
   vanilla library, unchanged (for players who use the mod in plain vanilla later). Make a second, modded library: a
   copy of each home and workshop beautified with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted
   blocks (used freely: detail blocks, furniture, decor), under its own ids, with the vanilla build as its fallback

@@ -4915,7 +4915,7 @@ Depends on: nothing open.
   mean and lowest; our houses per village) is in the Notes with the commands that made it; any tuning lands with
   `VillageGameTests` passing and the `village` scene still showing our houses.
 
-- [x] **36.9** (approved 2026-10-19) **Fill empty job blocks from the Village Hall** (owner, 2026-10-18, change to 26.6: retraining at a
+- [x] **36.9** (approved 2026-10-19) (verified 2026-10-24: QaHallJobsShopsGameTests [36.9 free-job clicks via client packets, broken block, nobody jobless, made-up clicks] and QaVillagerLifeJobsGameTests [36.11 miner pickaxe: chest first, own cobblestone, store sticks, one short asks 1, mid-craft theft; 36.14 upgrades: no/busy builder, stranger, fence after open, singular, tab count; 36.17 weights 1/[1+n], counts, wiki names every job]. Mutants killed: RandomJobs weight, PickaxeCrafting missing count. Wiki/guide read and fixed [random-jobs names, village-hall upgrades, miner sticks].) **Fill empty job blocks from the Village Hall** (owner, 2026-10-18, change to 26.6: retraining at a
   job block is awkward because the villager must walk into a finished home to stand near the block). Done when: the
   Village Hall has a "Free job blocks" page listing every job block in the village with no villager on it (its job,
   the build it's in, the distance; e.g. a Storehouse block), and for each, the villagers without a job; picking one
@@ -4928,7 +4928,7 @@ Depends on: nothing open.
   "fisherman"), case-insensitive, with the style/level rows kept under their build; an empty box shows everything and an
   empty result says so. Done when: GameTests for the filter (name, id, job, no match, cleared box, selected build hidden by
   a filter); `langcheck.py` passes; the `table` scene's stills show a search typed and the list narrowed.
-- [x] **36.11** (approved 2026-10-20) **Miners craft their own pickaxe** (owner, 2026-10-19). A Miner whose pickaxe wears out or who has none, and who has mined
+- [x] **36.11** (approved 2026-10-20) (verified 2026-10-24: QaHallJobsShopsGameTests [36.9 free-job clicks via client packets, broken block, nobody jobless, made-up clicks] and QaVillagerLifeJobsGameTests [36.11 miner pickaxe: chest first, own cobblestone, store sticks, one short asks 1, mid-craft theft; 36.14 upgrades: no/busy builder, stranger, fence after open, singular, tab count; 36.17 weights 1/[1+n], counts, wiki names every job]. Mutants killed: RandomJobs weight, PickaxeCrafting missing count. Wiki/guide read and fixed [random-jobs names, village-hall upgrades, miner sticks].) **Miners craft their own pickaxe** (owner, 2026-10-19). A Miner whose pickaxe wears out or who has none, and who has mined
   the materials (cobblestone or deepslate for the head, sticks from the village store or crafted from planks; stone, then iron
   and diamond as the level rises), crafts a new one at their work block from what they mined themselves, instead of waiting
   for the player or the Toolsmith. Done when: GameTests for the happy path (mined cobblestone and sticks become a stone
@@ -4948,7 +4948,7 @@ Depends on: nothing open.
   Stored blueprints are the table's own (a broken table drops them; the table saves them across restarts). Done when: GameTests for storing,
   taking one out, the count, a broken table dropping its blueprints, save and reload, a full inventory, and the stored tab
   in `en_us.json`; scene `table_library` (the Table's stills show a stored blueprint taken out).
-- [x] **36.14** (approved 2026-10-20) **Upgrade a built home from the Village Hall** (owner, 2026-10-19). A page in the Village Hall lists the village's finished
+- [x] **36.14** (approved 2026-10-20) (verified 2026-10-24: QaHallJobsShopsGameTests [36.9 free-job clicks via client packets, broken block, nobody jobless, made-up clicks] and QaVillagerLifeJobsGameTests [36.11 miner pickaxe: chest first, own cobblestone, store sticks, one short asks 1, mid-craft theft; 36.14 upgrades: no/busy builder, stranger, fence after open, singular, tab count; 36.17 weights 1/[1+n], counts, wiki names every job]. Mutants killed: RandomJobs weight, PickaxeCrafting missing count. Wiki/guide read and fixed [random-jobs names, village-hall upgrades, miner sticks].) **Upgrade a built home from the Village Hall** (owner, 2026-10-19). A page in the Village Hall lists the village's finished
   builds that have a next level (I to II, II to III, ...). Each row shows the build, its level, the cost in materials, and
   whether the space is free. Picking one sends a Builder to build the next level over it. The space check counts what the
   next level adds: built blocks (walls, fences, other builds, paths) block an upgrade, natural terrain (grass, dirt, stone, trees,
@@ -4972,7 +4972,7 @@ Depends on: nothing open.
   mood/work for their partner and family, a funeral the Undertaker leads at the grave or graveyard). Done when:
   GameTests for the new lengths (a villager reaches elder only after the new span), an old save's villager keeps its
   age, the death message and chronicle entry, the mourning ends; text in `en_us.json`; scene `village_mourns`.
-- [x] **36.17** (approved 2026-10-22) **A job block with several jobs gives one at random** (owner, 2026-10-20). Where one block can hire more
+- [x] **36.17** (approved 2026-10-22) (verified 2026-10-24: QaHallJobsShopsGameTests [36.9 free-job clicks via client packets, broken block, nobody jobless, made-up clicks] and QaVillagerLifeJobsGameTests [36.11 miner pickaxe: chest first, own cobblestone, store sticks, one short asks 1, mid-craft theft; 36.14 upgrades: no/busy builder, stranger, fence after open, singular, tab count; 36.17 weights 1/[1+n], counts, wiki names every job]. Mutants killed: RandomJobs weight, PickaxeCrafting missing count. Wiki/guide read and fixed [random-jobs names, village-hall upgrades, miner sticks].) **A job block with several jobs gives one at random** (owner, 2026-10-20). Where one block can hire more
   than one job, which job a villager takes from it is chosen at random (weighted toward the jobs the village has
   fewest of is fine: the lane decides and writes it in the Notes), not always the same one. Done when: a list of every
   block that offers several jobs in the wiki page; GameTests that over many hires (fixed `RandomSource`) each job of a

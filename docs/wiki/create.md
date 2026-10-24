@@ -500,6 +500,15 @@ tested (the GameTests use the table as the server does).
   naming it; without a Conductor the jobless villager rides it and nobody calls. `ConductorGameTests` (without Create):
   no profession, no POI; a saved Conductor loads jobless; the seat goes to the nearest jobless grown-up, never to a
   villager with a job or a baby. Scene `village_train` (the Conductor rides and calls the stop).
+  `QaConductorCompatTests` (QA, from the guide): two jobless villagers by one station, one Conductor, still one 600
+  ticks later; a hired Conductor keeps the job for 1200 ticks with `villageTrains` off; a Conductor saved and loaded
+  keeps the job and the same trades; the trades by rank (Novices buy coal and sell rails, no schedule, signal, casing or
+  controls at Novice, controls only at Master, powered rails and casing sold); the stop called once while the train
+  stands there, and the chronicle naming the Conductor who took the seat.
+- `QaVillageTrainRulesCompatTests` (QA, from the guide, with Create): the train trip is a third of the walk, never under
+  `TRAIN_MIN` (400 ticks) nor longer than the walk, both sides of each boundary; halves of the road `HALVES_MEET` apart
+  make a railway, one block more or a half stopped at a milestone don't; the railway over a save, and a save with one
+  village's station and track gone loads as none.
 
 - `MachineWorkCompatTests` (with Create): for each of the millstone, the press over a depot, the mixer over a basin
   and the crushing wheels, with the job's own worker: turned by a creative motor, the chest's input goes to the machine

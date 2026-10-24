@@ -167,9 +167,9 @@ public class GiftedBornGameTests implements FabricGameTest {
 		Villager near = worker(helper, new BlockPos(5, 2, 3), VillagerProfession.FARMER);
 		Villager far = worker(helper, new BlockPos(7, 2, 3), VillagerProfession.FARMER);
 		// Beds (their HOME memories) apart from where they stand: hers at x 3, the neighbour's 12 away, the other's 20.
-		beloved.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(3, 2, 26))));
-		near.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(15, 2, 26))));
-		far.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(23, 2, 26))));
+		Beds.home(beloved, helper.absolutePos(new BlockPos(3, 2, 26)));
+		Beds.home(near, helper.absolutePos(new BlockPos(15, 2, 26)));
+		Beds.home(far, helper.absolutePos(new BlockPos(23, 2, 26)));
 		Gifted.set(near, null);
 		Gifted.set(far, null);
 		Moods.Mood before = Moods.work(level, near);

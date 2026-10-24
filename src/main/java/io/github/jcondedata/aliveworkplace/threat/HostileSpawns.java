@@ -77,6 +77,24 @@ public final class HostileSpawns {
 	}
 
 	/**
+	 * Keeps a foe the game itself just made and tried to add, such as the mob {@code Mob.convertTo} returns (a fallen
+	 * Warlord's band turning zombified, B356): in the world already, nothing is done; refused by another mod's blocklist,
+	 * it goes the way of {@link #add(ServerLevel, Mob, String)} (placed directly while {@link #FORCE}, else left out and
+	 * logged once). True if it's in the world now.
+	 */
+	public static boolean keep(ServerLevel level, Mob mob, String what) {
+		if (in(level, mob)) {
+			return true;
+		}
+		for (Entity e : mob.getSelfAndPassengers().toList()) {
+			if (e.isRemoved()) {
+				((EntityAccessor) e).aliveworkplace$unsetRemoved();
+			}
+		}
+		return add(level, mob, what);
+	}
+
+	/**
 	 * Puts the village's own {@code mob} (an iron golem, a relief horse, a foal, a pack llama: made and set up, not yet in
 	 * the world) and its passengers in {@code level}, forced past another mod's blocklist while {@link #FORCE_VILLAGE}
 	 * (B211). True if it's in the world now.

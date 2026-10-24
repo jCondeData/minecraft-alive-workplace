@@ -260,11 +260,17 @@ public final class VillageNeeds {
 		return !villager.isBaby() && meal != null && now - meal >= io.github.jcondedata.aliveworkplace.people.Traits.mealEvery(villager, DAY);
 	}
 
-	/** The bed a villager sleeps in (in this dimension), or null. */
+	/**
+	 * The bed a villager sleeps in (in this dimension), or null. Vanilla forgets a broken bed only at bedtime, so the
+	 * bed's point of interest must still be there (B362): a bed broken at noon houses nobody from that moment.
+	 */
 	@Nullable
 	public static BlockPos bed(ServerLevel level, Villager villager) {
 		GlobalPos home = villager.getBrain().getMemory(MemoryModuleType.HOME).orElse(null);
-		return home != null && home.dimension().equals(level.dimension()) ? home.pos() : null;
+		if (home == null || !home.dimension().equals(level.dimension())) {
+			return null;
+		}
+		return level.getPoiManager().existsAtPosition(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME, home.pos()) ? home.pos() : null;
 	}
 
 	/** Food a villager eats: something to eat with no effects (not golden, not rotten), and not in {@link #NOT_A_MEAL}. */

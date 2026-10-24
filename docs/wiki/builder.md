@@ -110,7 +110,8 @@ Repair it? [Yes] [Not now]". The Village Hall's **Repairs** tab (an anvil, one o
 village's damaged builds, the questions waiting first, then repairs going on, agreed ones waiting for a free Builder,
 paused ones and those left for now. A click on one opens it: **Yes, repair it** and **Not now** while it waits, **Pause**
 and **Stop the repair** while a Builder repairs it, **Carry on** when paused. Yes sets the nearest free Builder who looks
-after it to it at once. Not now leaves it as it is, and it is asked about again only once more goes missing; Pause
+after it to it at once. Not now leaves it as it is, and it is asked about again only once more goes missing (put right by hand meanwhile,
+it comes off the list, and the next damage is asked about afresh); Pause
 leaves it until Carry on. Pausing or stopping ends the repair there and then (what is put back stays, no blueprint is
 handed out) and the Builder goes straight on to the next job in its queue. Handing a Builder a blueprint mid-repair
 starts the new job at once instead of queueing it behind the repair; the repair is put aside, still agreed, and taken

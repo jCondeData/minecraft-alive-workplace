@@ -40,6 +40,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.PastureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaGuardPartnersCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaFirePartnersCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaDenMegaCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PaceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaTrainerCompatTests",

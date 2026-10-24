@@ -227,6 +227,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ClassHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassPerkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassJobGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClassesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryWorkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ServiceGameTests",
@@ -487,13 +488,16 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinRaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinIncursionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampEdgeGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDisastersGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClassPerksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiratesThreatLevelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonProfessorGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonRangerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderBlueprintGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StadiumGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReputationPerksGameTests"
 		]
 	},
 	"depends": {

@@ -379,6 +379,16 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   (`villageMegas` off, Jewelers off), `aMinersKeyStonesGoToTheStore` (dug Key Stone ore: the stones in the store,
   the cobblestone in the Miner's chest), `beatingEveryLeaderOfARealmGivesOneBracelet` (one Leader of two: nothing; a
   loss: nothing; both: one; again: still one; save and load), `braceletEdges` (switch off, a Leader who left, no realm).
+- `QaDenMegaCompatTests` (QA, from the spec): `theDenReachIs160BlocksEachWay` (160 blocks off listed, 161 not even
+  recorded; on the diagonal 159.8 listed and 161.2 not, so it's a distance, not a square), `aDenFoundAgainIsRecordedOnce`
+  (loaded again three days later: one entry, still "Found on day" of the first; a change of tier, type and state read
+  in), `aDenTurnedToStoneIsDropped` (and the empty row's two lines), `twoHallsNearOneDenBothListIt` (a third hall 161
+  blocks off doesn't), `theDefencePageShowsTheSevenNearest` (eight known, the seven nearest in order, no raw text, nothing
+  of wardens or challenges), `everyTierAndTypeReadsAsASentence` (every type and tier the den block has),
+  `withTheGateShutNoDenIsFound`, `onlyACitysLeaderMegaEvolves` (Hamlet, Village and Town Leaders and a Leader with no hall
+  don't; a Stadium visitor from a Town and a Hamlet's Master do; a City's Expert doesn't), `theBraceletsLinesReadRight`
+  (both chat lines word for word, the progress line once for a Leader beaten twice) and
+  `aFullInventoryStillGetsTheBracelet` (dropped at the player's feet, one).
 - `MegaStoneGameTests` (without Mega Showdown): `withoutMegaShowdownNothingChanges`, `withoutMegaShowdownNoBracelet`,
   `aTagOutputWithAChooser` (the recipe format's new parts and their errors), `theText`.
 - `CuisineCompatTests` (38.8 and 38.8a, the real Cobblecuisine): `withoutAChefTheDishesAreLockedOnTheBoard`,

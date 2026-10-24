@@ -107,4 +107,13 @@ game). All new fields are optional, so old saves load unchanged.
 - `PlagueGameTests.thePhysicianBrewsARemedy`, `thePlagueEndsADayAfterTheLastCure`, `aPhysicianForetellsItAtItsFirstCase`,
   `theRecipeCrafts`, `drinkingItCuresAPlayer`, `itSurvivesASave`, `theSwitchTakesTheJobAway`,
   `everyNewSentenceHasItsText`; `StationsGameTests`' row; the config and expansion-gate counts.
+- `QaDisastersGameTests.thePlaguesChanceIsTownAndUpAndDoubledWhenCrowded` (QA): no chance in a Hamlet or a Village,
+  3% in a Town or a City with a bed for everyone, 6% with one villager more than beds (and still none in a crowded
+  Village).
+- `QaDisastersGameTests.thePlaguesIllStayIllAndKeepToTheirBed`: five days ill in a plague, still ill; a day and a half
+  ill, up; two days and more, asleep in their own bed and held there when woken, until a Remedy cures them by day.
+- `QaDisastersGameTests.medicineMakesThePlagueLessCatching`: over 400 rounds beside the ill (fixed seed), about 1 in 5
+  catch it without Medicine and clearly fewer with two levels.
+- `QaDisastersGameTests.theDroughtAndPlagueReadRight`: the chronicle's "A plague broke out in the village.", the
+  wellbeing line "Plague, until no one is ill" and the end message with the village's name.
 - Showcase scene: `plague`.

@@ -57,6 +57,11 @@ public class RoadGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	/** The test area cleared to flat grass (floor y 1), the old sites and buildings round it forgotten, and a hall. */
 	private static BlockPos ground(GameTestHelper helper, BlockPos hallAt) {
 		Leftovers.clear(helper);
+		// B400: a hall, Storehouse, Steward build or mock player an earlier batch left near this spot held the segment
+		// back (roadReload opened 0 segments once the class tests changed the batch order)
+		Leftovers.players(helper);
+		Leftovers.halls(helper);
+		Leftovers.stewardSites(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos a = helper.absolutePos(BlockPos.ZERO);
 		BoundingBox near = new BoundingBox(a.getX() - 40, level.getMinBuildHeight(), a.getZ() - 40, a.getX() + 70, level.getMaxBuildHeight(), a.getZ() + 70);

@@ -68,6 +68,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateBuildsTurnedCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicFilesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicSaysCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMechanicRoundSaveCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicMendSaysCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateBuildsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.VillageTrainCompatTests",

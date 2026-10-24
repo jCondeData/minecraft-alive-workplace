@@ -120,8 +120,44 @@ public final class Requests {
 		if (request.forBlock()) {
 			return; // the listeners are about the worker who asked
 		}
+		lower(io.github.jcondedata.aliveworkplace.mc.Players.level(player), request, count);
 		for (Given listener : GIVEN) {
 			listener.given(player, request, count);
+		}
+	}
+
+	/**
+	 * B344: what was just handed over for {@code request} comes off what the worker asks for at once, so the board doesn't
+	 * ask for it again before the worker looks at his chests again (a builder's missing list, a posted request). The worker's
+	 * next look replaces it with the real count.
+	 */
+	static void lower(ServerLevel level, Request request, int count) {
+		Villager worker = request.worker();
+		if (worker == null || count <= 0) {
+			return;
+		}
+		Item item = request.item();
+		BuildSite site = item == null ? null : Builders.activeSite(level, worker);
+		if (site != null && site.missing().containsKey(item)) {
+			Map<Item, Integer> missing = new java.util.LinkedHashMap<>(site.missing());
+			int left = missing.get(item) - count;
+			if (left > 0) {
+				missing.put(item, left);
+			} else {
+				missing.remove(item);
+			}
+			site.setMissing(missing);
+			return;
+		}
+		synchronized (POSTS) {
+			Post post = POSTS.get(worker);
+			if (post != null && post.accepts() == request.accepts()) {
+				if (post.count() > count) {
+					POSTS.put(worker, new Post(post.icon(), post.count() - count, post.what(), post.accepts(), post.time()));
+				} else {
+					POSTS.remove(worker);
+				}
+			}
 		}
 	}
 

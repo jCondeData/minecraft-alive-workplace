@@ -60,6 +60,13 @@ public class PartnersAtWorkCompatTests implements FabricGameTest {
 	/** Each test's partner, once found: a pastured Pokémon wanders its pasture's radius, past the area's edge (B51). */
 	private static final Map<GameTestHelper, Map<String, java.util.UUID>> PARTNERS = new java.util.WeakHashMap<>();
 
+	/** A test's own account of its partner's last moments, added to the failure when the partner vanishes (B89). */
+	private static final Map<GameTestHelper, java.util.function.Supplier<String>> LAST_SEEN = new java.util.WeakHashMap<>();
+
+	static void lastSeen(GameTestHelper helper, java.util.function.Supplier<String> account) {
+		LAST_SEEN.put(helper, account);
+	}
+
 	static PokemonEntity pokemon(GameTestHelper helper, String species) {
 		Map<String, java.util.UUID> mine = PARTNERS.computeIfAbsent(helper, h -> new java.util.HashMap<>());
 		java.util.UUID known = mine.get(species);
@@ -73,7 +80,7 @@ public class PartnersAtWorkCompatTests implements FabricGameTest {
 			List<BlockPos> wider = helper.getLevel().getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(48),
 				e -> e.getPokemon().getSpecies().getName().equalsIgnoreCase(species)).stream().map(e -> helper.relativePos(e.blockPosition())).toList();
 			helper.fail("pastured " + species + ": " + found.size() + (known != null ? " (the one found earlier is gone)" : "")
-				+ "; within 48 blocks: " + wider);
+				+ "; within 48 blocks: " + wider + (LAST_SEEN.containsKey(helper) ? "; last seen: " + LAST_SEEN.get(helper).get() : ""));
 		}
 		mine.put(species, found.get(0).getUUID());
 		return found.get(0);

@@ -137,7 +137,9 @@ public final class Gifts {
 		if (player.isSpectator() || !(entity instanceof Villager villager)) {
 			return InteractionResult.PASS;
 		}
-		ItemStack held = player.getItemInHand(hand);
+		// B341: vanilla asks the main hand first and, when it's empty, opens the villager's trades, so the off hand's Gift
+		// was never asked; with the main hand empty, it is given on the main hand's turn.
+		ItemStack held = hand == InteractionHand.MAIN_HAND && player.getMainHandItem().isEmpty() ? player.getOffhandItem() : player.getItemInHand(hand);
 		if (!held.is(ModItems.GIFT)) {
 			return InteractionResult.PASS;
 		}

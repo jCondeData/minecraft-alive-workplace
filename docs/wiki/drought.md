@@ -109,4 +109,17 @@ memory: after a restart the keeper waters it again.
   `DroughtGameTests.theKeeperForetellsItADayAhead`, `DroughtGameTests.theChanceFollowsTheDryDays`,
   `DroughtGameTests.theJobStartsFromACauldronAndAShovel` (and config off: no job, a hired keeper idle),
   `DroughtGameTests.theBucketSurvivesASave`, `DroughtGameTests.everyNewSentenceHasItsText`; `StationsGameTests`' row.
+- `QaDisastersGameTests.theDroughtsChanceByBiomeAndDryDays` (QA): in the plains no chance on the 4th day without
+  rain, 5% from the 5th; 15% in the desert, savanna and badlands from the first dry day; none in the rain.
+- `QaDisastersGameTests.aDesertLairDoublesTheDrought`: a standing desert raiders' lair makes it 30% in the desert and
+  10% in the plains.
+- `QaDisastersGameTests.cauldronsRunDryOneLevelADayOnlyInTheVillage`: a full water cauldron in the village holds 2, 1,
+  then 0 over three days of the drought (two rounds a day take one level), and one outside the village keeps its water.
+- `QaDisastersGameTests.pumpkinStemsAreHeldBack`: pumpkin stems grow at about a quarter pace.
+- `QaDisastersGameTests.wateredFarmlandIsGoodForThatDayOnly`: wheat on farmland watered today passes every crop check;
+  the next day it is back to a quarter and the farmland dries again.
+- `QaDisastersGameTests.aFountainOrWellIITakesTheMoodAwayAFarWellDoesNot`: a finished Fountain or Well II takes "The
+  wells are low" away; a Well finished 60 blocks off, outside the village, doesn't.
+- `QaDisastersGameTests.theDroughtAndPlagueReadRight`: the start, end and foretold messages with the village's name,
+  the chronicle's lines, the wellbeing line ("Drought (days left: N)") and the mood reason read as above.
 - Showcase scenes: `drought`.

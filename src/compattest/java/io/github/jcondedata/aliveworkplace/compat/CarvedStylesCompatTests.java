@@ -45,6 +45,7 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.pathfinder.Path;
 
 /**
  * ROADMAP 37.7: the Spruce style builds Carved Wood's spruce chests, bookshelves, lecterns, ladders and lanterns (each
@@ -214,6 +215,77 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * B339: Carved Wood's lantern calls itself passable to a land path (vanilla's doesn't), so a villager's path ran
+	 * through one standing on a desk in the spruce Library: up onto the desk, where the villager stood at the edge, walking
+	 * on the spot. Here a wall across the villager's way has one gap, a block (the desk) with a Carved Wood lantern on it:
+	 * the path goes round the wall's end, not up over the desk through the lantern.
+	 */
+	//$ gametest_batch AREA '"b339PathLantern"'
+	@GameTest(template = AREA, batch = "b339PathLantern")
+	public void aVillagersPathGoesRoundACarvedWoodLanternOnADesk(GameTestHelper helper) {
+		BlockState lantern = block("carved_wood:spruce_lantern").defaultBlockState();
+		helper.assertTrue(lantern.isPathfindable(net.minecraft.world.level.pathfinder.PathComputationType.LAND),
+			"Carved Wood's lantern no longer calls itself passable: this test checks nothing");
+		Path path = pathThroughGap(helper, Blocks.SPRUCE_PLANKS.defaultBlockState(), lantern);
+		helper.assertTrue(!passes(helper, path, new BlockPos(6, 3, 6)) && !passes(helper, path, new BlockPos(6, 2, 6)),
+			"the path runs over the desk through the Carved Wood lantern: " + nodes(helper, path));
+		helper.succeed();
+	}
+
+	/** What a villager steps onto stays walkable: the same gap with a carpet in it is walked through. */
+	//$ gametest_batch AREA '"b339PathCarpet"'
+	@GameTest(template = AREA, batch = "b339PathCarpet")
+	public void aVillagersPathStillCrossesACarpet(GameTestHelper helper) {
+		Path path = pathThroughGap(helper, Blocks.RED_CARPET.defaultBlockState(), Blocks.AIR.defaultBlockState());
+		helper.assertTrue(passes(helper, path, new BlockPos(6, 2, 6)), "the path doesn't cross the carpet in the gap: " + nodes(helper, path));
+		helper.succeed();
+	}
+
+	/**
+	 * A wall three high across the area (x 1 to 11 at z 6), its gap at x = 6 holding {@code feet} and {@code above} it,
+	 * and a nitwit's path (nothing to walk to of its own) from (6, 2, 3) to (6, 2, 9): through the gap is the short way.
+	 */
+	private static Path pathThroughGap(GameTestHelper helper, BlockState feet, BlockState above) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		for (int x = 1; x <= 11; x++) {
+			for (int y = 2; y <= 4; y++) {
+				helper.setBlock(new BlockPos(x, y, 6), Blocks.STONE_BRICKS);
+			}
+		}
+		helper.setBlock(new BlockPos(6, 2, 6), feet);
+		helper.setBlock(new BlockPos(6, 3, 6), above);
+		helper.setBlock(new BlockPos(6, 4, 6), Blocks.AIR);
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 3));
+		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NITWIT));
+		villager.refreshBrain(helper.getLevel());
+		villager.setOnGround(true);
+		Path path = villager.getNavigation().createPath(helper.absolutePos(new BlockPos(6, 2, 9)), 0);
+		helper.assertTrue(path != null && path.canReach(), "no path to the far side of the wall: " + path);
+		return path;
+	}
+
+	private static boolean passes(GameTestHelper helper, Path path, BlockPos cell) {
+		BlockPos abs = helper.absolutePos(cell);
+		for (int i = 0; i < path.getNodeCount(); i++) {
+			if (path.getNodePos(i).equals(abs)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static String nodes(GameTestHelper helper, @org.jetbrains.annotations.Nullable Path path) {
+		if (path == null) {
+			return "none";
+		}
+		List<String> out = new ArrayList<>();
+		for (int i = 0; i < path.getNodeCount(); i++) {
+			out.add(helper.relativePos(path.getNodePos(i)).toShortString());
+		}
+		return "next " + path.getNextNodeIndex() + " of " + out;
+	}
+
+	/**
 	 * A builder builds the Starter Cottage in the Grand style with Rechiseled: its floors and wall panels are Rechiseled's
 	 * patterned dark oak planks and andesite, every block is right and nothing is skipped.
 	 */
@@ -321,7 +393,10 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 			.append(", picked ").append(v.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> helper.relativePos(g.pos()).toShortString()).orElse("-"))
 			.append(", walk ").append(v.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(w -> helper.relativePos(w.getTarget().currentBlockPosition()).toShortString()).orElse("-"))
 			.append(", activity ").append(v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("-"))
-			.append(", baby ").append(v.isBaby()).append(", day time ").append(level.getDayTime() % 24000);
+			.append(", baby ").append(v.isBaby()).append(", day time ").append(level.getDayTime() % 24000)
+			.append(", pos ").append(String.format("%.3f %.3f %.3f", v.getX(), v.getY(), v.getZ())).append(" on ground ").append(v.onGround())
+			.append(" on ").append(id(level.getBlockState(v.getBlockPosBelowThatAffectsMyMovement())))
+			.append(", path ").append(nodes(helper, v.getNavigation().getPath())); // B339: where the walk runs, if it is stuck
 		for (Villager other : level.getEntitiesOfClass(Villager.class, v.getBoundingBox().inflate(64), o -> o != v)) {
 			s.append("; other villager ").append(other.getVillagerData().getProfession()).append(" at ").append(helper.relativePos(other.blockPosition()).toShortString())
 				.append(" job ").append(other.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(g -> helper.relativePos(g.pos()).toShortString()).orElse("-"))

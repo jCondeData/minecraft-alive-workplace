@@ -71,7 +71,18 @@ public class PaceCompatTests implements net.fabricmc.fabric.api.gametest.v1.Fabr
 		builder.setNoAi(true);
 		level.addFreshEntity(builder);
 		Jobs.employ(level, builder, helper.absolutePos(bench), ModVillagers.BUILDERS_BENCH_POI, ModVillagers.BUILDER);
-		builder.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(5, 2, 2))));
+		// A real bed behind the home: since B362 a HOME memory with no bed houses nobody.
+		BlockPos home = helper.absolutePos(new BlockPos(5, 2, 2));
+		net.minecraft.world.level.block.state.BlockState bed = net.minecraft.world.level.block.Blocks.RED_BED.defaultBlockState()
+				.setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.NORTH);
+		level.setBlock(home.south(), bed.setValue(net.minecraft.world.level.block.BedBlock.PART,
+				net.minecraft.world.level.block.state.properties.BedPart.FOOT), 2);
+		level.setBlock(home, bed.setValue(net.minecraft.world.level.block.BedBlock.PART,
+				net.minecraft.world.level.block.state.properties.BedPart.HEAD), 2);
+		net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(level.getBlockState(home))
+				.ifPresent(type -> level.getPoiManager().add(home, type));
+		level.getPoiManager().take(h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), (h, p) -> p.equals(home), home, 1);
+		builder.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), home));
 
 		BlockPos pasture = PastureCompatTests.pasture(helper, new BlockPos(10, 2, 10));
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();

@@ -288,12 +288,14 @@ public final class Tonics implements ResourceManagerReloadListener {
 	public record Offer(Outcome outcome, @Nullable Component message) {
 	}
 
-	/** The player's plain right-click on a villager with a tonic in the main hand. */
+	/** The player's plain right-click on a villager with a tonic in the main hand (or the off hand, the main one empty). */
 	private static InteractionResult use(Player player, Level level, InteractionHand hand, Entity entity) {
 		if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || player.isShiftKeyDown() || !(entity instanceof Villager villager)) {
 			return InteractionResult.PASS;
 		}
-		ItemStack held = player.getItemInHand(hand);
+		// B341: vanilla asks the main hand first and, when it's empty, opens the villager's trades, so the off hand's
+		// tonic was never asked; with the main hand empty, it is given here as from the main hand.
+		ItemStack held = player.getMainHandItem().isEmpty() ? player.getOffhandItem() : player.getItemInHand(hand);
 		if (level.isClientSide()) {
 			return held.getItem() instanceof TonicItem ? InteractionResult.SUCCESS : InteractionResult.PASS;
 		}

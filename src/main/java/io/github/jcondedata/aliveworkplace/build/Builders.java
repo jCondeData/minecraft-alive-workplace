@@ -258,7 +258,8 @@ public final class Builders {
 		BoundingBox box = BlueprintOutline.bounds(placement.get(), blueprint.get().size());
 		double distance = Math.sqrt(box.getCenter().distSqr(bench.get()));
 		if (distance > MAX_SITE_DISTANCE) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) distance, MAX_SITE_DISTANCE), ChatFormatting.RED);
+			// B378: rounded up, so a refused spot never reads as within the reach (48.5 blocks: 49)
+			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_SITE_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		BuildSiteManager manager = BuildSiteManager.get(level);

@@ -65,7 +65,7 @@ public class HomeGradeGameTests implements FabricGameTest {
 	}
 
 	private static void sleepsAt(GameTestHelper helper, Villager v, BlockPos bed) {
-		v.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(bed)));
+		Beds.home(v, helper.absolutePos(bed));
 	}
 
 	private static Villager villager(GameTestHelper helper, BlockPos pos, String name) {

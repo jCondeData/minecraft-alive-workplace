@@ -7,7 +7,7 @@ with every other expansion. It covers: ages, the slower walk, the "quiet old age
 Families, the Family page and the Printer's family tree (34.21), and the seeding of everyone's age when classes switch
 on (34.22, [Classes](classes.md)).
 
-Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187
+Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187, B380
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -30,8 +30,9 @@ An elder:
 [Classes](classes.md)).
 
 **Retirement.** An elder with a job retires once someone can take over, at most one villager a village every 3 days.
-The successor is their own grown child without a job, else any jobless grown villager whose class the job allows
-([Classes](classes.md)). The chronicle says "Tom is learning the Farmer trade from Bram, who would like to retire", and
+The successor is their own grown child without a job (known by the parents' ids, so renaming the elder with a Name
+Tag changes nothing; by name only for children born before the ids were noted, 34.21), else any jobless grown villager whose class the job
+allows ([Classes](classes.md)). The chronicle says "Tom is learning the Farmer trade from Bram, who would like to retire", and
 for 2 days Tom follows Bram about with "learning from Bram" over his head. Then Tom takes Bram's workstation and the job
 one level below Bram's (at least Apprentice: an Expert's successor is a Journeyman, a Novice's an Apprentice), with the
 job's assignments: field, tree farm, orchard, courier routes, patrol route, ball orders and who hired them. The
@@ -41,7 +42,9 @@ like to retire: the village needs a jobless villager to take over". An elder nev
 a player or a build: a site or a queue (builder), a quarry (miner), Pokémon in their daycare, fossils being revived,
 parcels on their round.
 
-A **retired** elder never takes a job again, but players can still trade with them (they keep their trades). Their
+A **retired** elder never takes a job again, but players can still trade with them (they keep their trades).
+Sneak-right-clicking one with a job's item says "Bram has retired and takes no job now: they mentor the young
+instead.", and the workstation stays free for someone else. Their
 card says "Retired Farmer · mentors the young". By day they stand by a Novice or Apprentice of their old trade in the
 village, who learns 50% faster ("taught by Bram" over their head and on their card), or else sit by the hall.
 
@@ -93,7 +96,8 @@ When a grown villager of a village with a hall dies, of anything:
   one: "The village's Mason has died ..."; one whose days nobody counted: "at an age nobody had counted");
 - the chronicle's line of the death gives the cause, then the same: "Mira was slain by Zombie: the village's Farmer,
   aged 31";
-- their **family** (parents, children, brothers and sisters) grieve for 3 days: "grieving for family" (-10) in their
+- their **family** (parents, children, brothers and sisters, known by who they really are, not by a shared name: two
+  mothers both called "Farmer" or "Mira" don't make strangers kin, B380) grieve for 3 days: "grieving for family" (-10) in their
   mood, and they work 10% slower ("mourning" in the work-pace line); their **partner** mourns 5 days as before (-15),
   and works 10% slower too. Then it's over: the hall's round takes the grief off;
 - their grave waits for a **funeral**: the village's Undertaker goes to it before anything else ("going to a funeral",
@@ -150,7 +154,8 @@ village with a hall a death is as before.
   back; the successor gets it through `VillageHalls.assign` (or the job by order when the elder had no workstation),
   then the level and its least xp. The assignments are moved as they are (`Retirement.ASSIGNMENTS`).
 - **Never re-employed.** `WorkerLimits.refuse` turns down any job for a retired villager (by themselves at a
-  workstation, or by order), and their search for a workstation sees none (`WorkerLimits.hideFull`).
+  workstation, or by order), their search for a workstation sees none (`WorkerLimits.hideFull`), and a player's
+  job item is refused in `Stations.take` before the block's ticket is taken (B346).
 - **Mentoring.** Each round a retired elder picks a Novice or Apprentice of their old trade (the same pupil as before,
   else the nearest) and teaches them for 90 seconds (`taught_by`), renewed every round. Taught, every xp they earn is
   half again: through `Traits.xp` (builders' levels) and from trades (`Villager.rewardTradeXp`, a mixin). The retired

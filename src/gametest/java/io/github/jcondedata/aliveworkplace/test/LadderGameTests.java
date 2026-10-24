@@ -288,6 +288,41 @@ public class LadderGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * QA (lane D, 2026-10-24): "Ladders go on any wall, a player's too, but only into air." A player's hay bale stands
+	 * against the wall's outer face right where the climber would set his ladder: the bale is never replaced, the ladder
+	 * goes up in air beside it, and the climber is still over the wall within 600 ticks with nothing else changed.
+	 */
+	//$ gametest_ticks_batch AREA '700' '"qaLadderBesideABlock"'
+	@GameTest(template = AREA, timeoutTicks = 700, batch = "qaLadderBesideABlock")
+	public void aLadderGoesUpInAirBesideAPlayersBlockNotOverIt(GameTestHelper helper) {
+		Yard yard = yard(helper);
+		ServerLevel level = yard.level();
+		helper.setBlock(FOOT, Blocks.HAY_BLOCK);
+		Map<BlockPos, BlockState> before = blocks(helper);
+		BlockPos bale = helper.absolutePos(FOOT);
+		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 21.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
+		yard.siege(helper);
+		int[] most = {0};
+		helper.onEachTick(() -> {
+			helper.assertTrue(level.getBlockState(bale).is(Blocks.HAY_BLOCK), "the player's hay bale was replaced: " + level.getBlockState(bale));
+			List<BlockPos> rungs = Ladders.rungs(level, yard.hall());
+			most[0] = Math.max(most[0], rungs.size());
+			for (BlockPos rung : rungs) {
+				helper.assertTrue(before.get(rung) == null || before.get(rung).isAir(), "a rung where there was " + before.get(rung) + " at " + rung);
+			}
+			if (inside(helper, climber)) {
+				List<String> changed = changes(helper, before);
+				changed.removeIf(c -> c.contains("-> Block{minecraft:ladder}"));
+				helper.assertTrue(changed.isEmpty(), "something other than ladders changed: " + changed);
+				helper.succeed();
+			} else if (helper.getTick() > 600) {
+				helper.fail("not over the wall within 600 ticks beside the bale: the climber is at " + climber.position() + ", most rungs " + most[0]);
+			}
+		});
+	}
+
+	/**
 	 * A guard on the walkway. He comes while the climber is half-way up the finished ladder: the whole column goes, no
 	 * raider ladder is left within 3 blocks of him, the climber falls back to the ground outside, and with him standing
 	 * there the ladder isn't raised again before {@link Ladders#RAISE_AGAIN} ticks are over.
@@ -380,7 +415,9 @@ public class LadderGameTests implements FabricGameTest {
 				}
 				helper.assertTrue(rungs.size() >= 3 || tick > seen[0] + 20, "the rungs set before the restart were lost: " + rungs);
 				if (inside(helper, climber)) {
-					helper.assertTrue(rungs.size() == RUNGS && raiderLadders(helper, before).size() == RUNGS, "over a ladder of " + rungs.size() + " rungs");
+					helper.assertTrue(rungs.size() == RUNGS && raiderLadders(helper, before).size() == RUNGS, "over a ladder of " + rungs.size() + " rungs: " + rungs + ", raider ladders " + raiderLadders(helper, before) + ", the climber at " + climber.position() + ", tick " + tick + " (restart at " + seen[0] + "), raiders near the hall "
+							+ level.getEntitiesOfClass(Mob.class, new AABB(yard.hall()).inflate(VillageHalls.RADIUS + 32, 48, VillageHalls.RADIUS + 32),
+								m -> m.getTags().contains(Threats.RAIDER_TAG)).stream().map(m -> m.getType().toShortString() + "@" + m.blockPosition().toShortString() + (m == climber ? " (the climber)" : "")).toList());
 					seen[1] = tick;
 					// A second restart, and the raid ends before anything ran again.
 					ThreatData.get(level).roundTrip(level.registryAccess());

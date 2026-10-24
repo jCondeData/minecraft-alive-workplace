@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -77,6 +78,26 @@ public class ShopCounterBlock extends BaseEntityBlock {
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+		return click(level, pos, player);
+	}
+
+	/**
+	 * B336: vanilla skips a block's own use when a sneaking player holds anything, so the owner's sneak-click for the
+	 * sales log only worked with both hands empty. This use-block hook (registered in AliveWorkplace.init) answers a
+	 * sneak-click on a counter with something in either hand as the counter does with empty hands: the sales log for
+	 * the owner, the "not yours" line for anyone else. Empty hands and plain clicks are left to the counter itself.
+	 */
+	public static InteractionResult beforeBlock(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
+		if (hand != InteractionHand.MAIN_HAND || player.isSpectator() || !player.isSecondaryUseActive()
+			|| (player.getMainHandItem().isEmpty() && player.getOffhandItem().isEmpty())
+			|| !(level.getBlockState(hit.getBlockPos()).getBlock() instanceof ShopCounterBlock)) {
+			return InteractionResult.PASS;
+		}
+		InteractionResult result = click(level, hit.getBlockPos(), player);
+		return level.isClientSide() ? InteractionResult.SUCCESS : result;
+	}
+
+	private static InteractionResult click(Level level, BlockPos pos, Player player) {
 		if (!(player instanceof ServerPlayer serverPlayer) || !(level.getBlockEntity(pos) instanceof ShopCounterBlockEntity counter)) {
 			return Interact.success(level.isClientSide());
 		}

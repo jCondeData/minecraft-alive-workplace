@@ -368,9 +368,10 @@ public class BuilderWork extends Behavior<Villager> {
 				site.advance(); // (B139: a crew member placed it, and it has changed by itself since: it stays)
 			} else if (action == Action.PLACE && outForLandscape(level, site, candidate, bag)) {
 				site.defer(); // nothing to fill it with: comes round once more at the end, then is left
-			} else if (crew && action == Action.SKIP && site.isRetrying() && crewHasWork(level, site, plan, bench)) {
+			} else if (crew && action == Action.SKIP && site.isRetrying() && !standingStill && crewHasWork(level, site, plan, bench)) {
 				// 35.5: the lead of a crew reaches its retries while the crew is still building below: a block with nothing
-				// to hang on yet may get it from them. Not given up while they have work; tried again after it.
+				// to hang on yet may get it from them. Not given up while they have work; tried again after it. B326: not
+				// once the crew has stood still a while (the work it "has" may be the very blocks waiting on this one).
 				if (postponed++ < site.retryLeft()) {
 					site.postpone();
 				} else {
@@ -397,6 +398,13 @@ public class BuilderWork extends Behavior<Villager> {
 				// if every step left is a helper's, the lead waits for them, but not for long).
 				if (!site.isRetrying()) {
 					site.defer();
+				} else if (crew && standingStill && takeOver(level, villager, site, plan, candidate, bench)) {
+					// B326: the crew has stood still while retrying, the lead waiting on a member who holds this block's
+					// column and never lays it (the folly's dome stood idle 30 s and more near its top): the lead takes the
+					// column over and lays the block itself (it can put up scaffolding; a member can't). Only a block with
+					// what goes under it there: one waiting on a block under it waits for that one, which the lead takes so.
+					step = candidate;
+					break;
 				} else if (postponed++ < site.retryLeft()) {
 					site.postpone();
 				} else {
@@ -682,6 +690,34 @@ public class BuilderWork extends Behavior<Villager> {
 			return true;
 		}
 		return actionFor(level, site, step, bench) == Action.PLACE && !supported(level, site, plan, step);
+	}
+
+	/**
+	 * B326: the lead of a crew that has stood still while retrying takes {@code step} at its cursor itself: the member on
+	 * its column (or its block) lets it go, as a member does any column another has taken. Never a foundation or
+	 * structure block with the block the drawing puts under it not there yet (B254: never one in the air).
+	 */
+	private boolean takeOver(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuildPlan.Step step, BlockPos bench) {
+		if (actionFor(level, site, step, bench) == Action.PLACE && !supported(level, site, plan, step)) {
+			return false;
+		}
+		java.util.UUID me = villager.getUUID();
+		long column = plan.column(step.pos());
+		List<java.util.UUID> holders = new java.util.ArrayList<>();
+		site.crewColumns().forEach((who, c) -> {
+			if (c == column && !who.equals(me)) {
+				holders.add(who);
+			}
+		});
+		for (java.util.UUID m : site.helpers(level.getGameTime())) {
+			BlockPos claim = site.claim(m);
+			if (!m.equals(me) && claim != null && (claim.equals(step.pos()) || plan.column(claim) == column)) {
+				holders.add(m);
+			}
+		}
+		holders.forEach(site::release);
+		site.takeColumn(me, column);
+		return true;
 	}
 
 	/** Whether the crew keeps to layers in this stage: not while levelling the ground round the finished building. */

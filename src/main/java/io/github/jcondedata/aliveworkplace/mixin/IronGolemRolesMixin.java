@@ -16,7 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * The Golem Smith's golems (29.15): every iron golem gets the role goals (idle on a plain golem): a Wall Sentry holds
  * its post above everything, a Hauler's or Farmhand's work ranks below the golem's attack. A Wall Sentry's blow also
- * throws the attacker back off the wall.
+ * throws the attacker back off the wall. A Hauler or Farmhand held up on its way by mobs that stand still isn't pushed
+ * until it arrives (B329).
  */
 @Mixin(IronGolem.class)
 abstract class IronGolemRolesMixin extends AbstractGolem {
@@ -30,6 +31,12 @@ abstract class IronGolemRolesMixin extends AbstractGolem {
 		this.goalSelector.addGoal(0, new WallSentries.HoldGoal(self));
 		this.goalSelector.addGoal(0, new io.github.jcondedata.aliveworkplace.wonder.GreatWallSentries.WatchGoal(self)); // the Great Wall's sentries (35.16)
 		this.goalSelector.addGoal(2, new GolemRoleGoal(self));
+	}
+
+	/** A Hauler or Farmhand held up by mobs that stand in its way squeezes past them (B329). */
+	@Override
+	public boolean isPushable() {
+		return super.isPushable() && !GolemRoleGoal.squeezing((IronGolem) (Object) this);
 	}
 
 	@Inject(method = "doHurtTarget", at = @At("RETURN"))

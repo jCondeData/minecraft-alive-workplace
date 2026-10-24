@@ -222,7 +222,7 @@ public final class DefencePage {
 		strength.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.out", lair.out()), lair.out() > 0 ? ChatFormatting.RED : ChatFormatting.GRAY));
 		strength.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.lost", lair.lost()), lair.lost() > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 		spec.filter(s -> s.growth() > 0).ifPresent(s -> strength.add(VillageHallScreen.line(
-			Component.translatable("screen.aliveworkplace.defence.grows", s.growth(), s.max()), ChatFormatting.YELLOW)));
+			Component.translatable("screen.aliveworkplace.defence.grows", s.growth(), Lairs.most(s)), ChatFormatting.YELLOW)));
 		strength.add(VillageHallScreen.line("screen.aliveworkplace.defence.strength_hint", ChatFormatting.DARK_GRAY));
 		menu.button(STRENGTH, VillageHallScreen.icon(counted(Items.CROSSBOW, lair.strength()),
 			Component.translatable("screen.aliveworkplace.defence.strength", lair.strength()), ChatFormatting.WHITE, strength.toArray(Component[]::new)), null);

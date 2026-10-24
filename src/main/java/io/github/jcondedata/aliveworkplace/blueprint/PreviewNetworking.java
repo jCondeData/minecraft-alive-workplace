@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -23,6 +24,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public final class PreviewNetworking {
 	public static final int MAX_BLOCKS = 60_000;
+	/** A blueprint asked for again within this many ticks isn't sent again. */
+	static final int REPEAT_TICKS = 100;
 	private static final Map<java.util.UUID, Map<ResourceLocation, Integer>> LAST_REQUEST = new HashMap<>();
 
 	/** C2S: please send me the preview for this blueprint. */
@@ -63,16 +66,28 @@ public final class PreviewNetworking {
 	}
 
 	private static void send(ServerPlayer player, ResourceLocation id) {
-		// Clients ask once per blueprint; ignore repeats so a bad client can't spam big packets.
-		int now = player.level().getServer().getTickCount();
-		Integer last = LAST_REQUEST.computeIfAbsent(player.getUUID(), u -> new HashMap<>()).put(id, now);
-		if (last != null && now - last < 100) {
+		// Clients ask once per blueprint; ignore repeats so a bad client can't spam big packets. Only real blueprints
+		// are remembered, and only for the repeat window, so made-up ids can't grow the map (B340).
+		var server = player.level().getServer();
+		Optional<Blueprint> found = BlueprintLibrary.get(server, id);
+		if (found.isEmpty()) {
 			return;
 		}
-		BlueprintLibrary.get(player.level().getServer(), id)
-			// 37.3: the furniture this server would build (the preview and its materials show those pieces)
-			.map(bp -> io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(id).apply(bp, id))
-			.ifPresent(bp -> Platform.get().send(player, build(bp)));
+		int now = server.getTickCount();
+		Map<ResourceLocation, Integer> mine = LAST_REQUEST.computeIfAbsent(player.getUUID(), u -> new HashMap<>());
+		mine.values().removeIf(t -> now - t >= REPEAT_TICKS);
+		if (mine.put(id, now) != null) {
+			return;
+		}
+		// 37.3: the furniture this server would build (the preview and its materials show those pieces)
+		Blueprint bp = io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(id).apply(found.get(), id);
+		Platform.get().send(player, build(bp));
+	}
+
+	/** How many blueprint ids the server remembers for this player's repeat guard (for tests). */
+	public static int rememberedFor(java.util.UUID player) {
+		Map<ResourceLocation, Integer> mine = LAST_REQUEST.get(player);
+		return mine == null ? 0 : mine.size();
 	}
 
 	public static Data build(Blueprint blueprint) {

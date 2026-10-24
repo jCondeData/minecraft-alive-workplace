@@ -3,7 +3,7 @@
 With Cobblemon, Pokémon kept in a Pasture Block near a villager's workstation help with the job when their type
 suits it: the work goes faster, and (from 1.2) you see them doing it.
 
-Roadmap items: 28.3, 28.4, 28.5, 28.6, B177
+Roadmap items: 28.3, 28.4, 28.5, 28.6, B177, B89
 
 ## What a player sees
 
@@ -33,7 +33,8 @@ cuts the time the work takes by 15%, up to three helpers. The line over the vill
 **Partner shows (1.2).** At moments of the work, one of the worker's pastured Pokémon walks to the spot, does
 something you can see, and walks back: a Machop carries planks to the build and punches blocks home, a Geodude
 carries stone, a Squirtle waters the farmer's field (the farmland really gets wet), a Charmander breathes fire into
-the blast furnace, a Pidgey takes the air mail up and lands back empty-handed, a Ralts sends a pink pulse over the
+the blast furnace, a Pidgey takes the air mail up (staying 2 blocks under the top of what its pasture lets it roam, so it is never sent
+back to your PC) and lands back empty-handed, a Ralts sends a pink pulse over the
 nurse's patient, a Combee circles the hive.
 
 ## How it works

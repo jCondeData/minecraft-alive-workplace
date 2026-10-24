@@ -471,6 +471,125 @@ public class ColonySettlersGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B318: a jobless settler who has his eye on a free workstation still answers the muster. Tomas has picked a lectern
+	 * he can't get to (on a pillar), as a jobless villager does in a live village: vanilla's walk to a workstation he
+	 * means to take runs in the idle the muster keeps him in and gave his walk target back to the lectern every tick, so
+	 * he stood still the whole muster and the bell rang on its timeout without him (the showcase: 29 blocks off). Called
+	 * to the hall he lets the workstation go, walks to the hall, and the bell rings because they have gathered.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"colonyEyeingAJob"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "colonyEyeingAJob")
+	public void aSettlerEyeingAWorkstationStillAnswersTheMuster(GameTestHelper helper) {
+		Village v = village(helper, 0);
+		Settlers.MUSTER_TICKS = 300;
+		ServerLevel level = v.level();
+		villager(helper, new BlockPos(10, 2, 11), "Dara", VillagerProfession.NONE, 1);
+		for (int y = 2; y <= 4; y++) {
+			helper.setBlock(new BlockPos(17, y, 17), Blocks.GLASS);
+		}
+		BlockPos lectern = new BlockPos(17, 5, 17);
+		helper.setBlock(lectern, Blocks.LECTERN);
+		BlockPos lecternAt = helper.absolutePos(lectern);
+		Villager tomas = villager(helper, new BlockPos(16, 2, 16), "Tomas", VillagerProfession.NONE, 1);
+		storehouse(helper, allSupplies());
+		helper.startSequence()
+			.thenWaitUntil(() -> helper.assertTrue(level.getPoiManager().getType(lecternAt).isPresent(), "the lectern isn't a workstation yet"))
+			.thenExecute(() -> {
+				// the lectern taken as the workstation he means to go to, as vanilla's AcquirePoi does
+				level.getPoiManager().take(t -> t.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.LIBRARIAN), (t, p) -> p.equals(lecternAt), lecternAt, 1);
+				tomas.getBrain().setMemory(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.of(level.dimension(), lecternAt));
+				tomas.setNoAi(false);
+				ItemStack held = click(v, v.player(), charter(v));
+				RealmData.Order order = v.order();
+				helper.assertTrue(order != null && order.state().equals(RealmData.MUSTER) && order.volunteers().contains(tomas.getUUID()),
+					"Dara and Tomas should be called to the hall: " + order + " (held " + held + ")");
+				long given = level.getGameTime();
+				helper.succeedWhen(() -> {
+					RealmData.Order now = v.order();
+					helper.assertTrue(now != null && !now.state().equals(RealmData.MUSTER) && !now.state().equals(RealmData.GATHERING),
+						"the bell hasn't rung: Tomas is " + String.format("%.1f", Math.sqrt(tomas.distanceToSqr(v.hall().getCenter())))
+							+ " blocks from the hall, eyeing " + tomas.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> g.pos().toShortString()).orElse("no workstation"));
+					helper.assertTrue(now.leaves() - given < 300, "the bell rang because its time was up, not because they had gathered");
+					helper.assertTrue(level.getPoiManager().getFreeTickets(lecternAt) > 0, "the lectern he let go should be free again for the village");
+				});
+			});
+	}
+
+	/**
+	 * B318's letting go, when the workstation he had his eye on is gone: the lectern was broken while he was away (vanilla
+	 * forgets one only when he comes within 16 blocks of it; Tomas stands still here, as far off as that). The muster
+	 * takes him all the same, he forgets it, and there's no claim left to give back for a workstation that isn't there.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"colonyEyeingAGoneJob"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "colonyEyeingAGoneJob")
+	public void aSettlerEyeingABrokenWorkstationStillSetsOut(GameTestHelper helper) {
+		Village v = village(helper, 0);
+		ServerLevel level = v.level();
+		villager(helper, new BlockPos(10, 2, 11), "Dara", VillagerProfession.NONE, 1);
+		BlockPos lectern = new BlockPos(17, 2, 17);
+		helper.setBlock(lectern, Blocks.LECTERN);
+		BlockPos lecternAt = helper.absolutePos(lectern);
+		Villager tomas = villager(helper, new BlockPos(12, 2, 12), "Tomas", VillagerProfession.NONE, 1);
+		storehouse(helper, allSupplies());
+		helper.startSequence()
+			.thenWaitUntil(() -> helper.assertTrue(level.getPoiManager().getType(lecternAt).isPresent(), "the lectern isn't a workstation yet"))
+			.thenExecute(() -> {
+				level.getPoiManager().take(t -> t.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.LIBRARIAN), (t, p) -> p.equals(lecternAt), lecternAt, 1);
+				tomas.getBrain().setMemory(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.of(level.dimension(), lecternAt));
+				helper.setBlock(lectern, Blocks.AIR); // broken: its POI goes after this tick
+			})
+			.thenWaitUntil(() -> helper.assertTrue(level.getPoiManager().getType(lecternAt).isEmpty(), "the broken lectern is still a workstation"))
+			.thenExecute(() -> {
+				ItemStack held = click(v, v.player(), charter(v));
+				RealmData.Order order = v.order();
+				helper.assertTrue(order != null && order.state().equals(RealmData.MUSTER) && order.volunteers().contains(tomas.getUUID()),
+					"Dara and Tomas should be called to the hall: " + order + " (held " + held + ")");
+			})
+			.thenWaitUntil(() -> {
+				RealmData.Order now = v.order();
+				helper.assertTrue(now != null && !now.state().equals(RealmData.MUSTER) && !now.state().equals(RealmData.GATHERING),
+					"the bell hasn't rung though both stand at the hall: " + now);
+			})
+			.thenExecute(() -> helper.assertTrue(tomas.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).isEmpty(),
+				"Tomas still has his eye on the broken lectern"))
+			.thenSucceed();
+	}
+
+	/**
+	 * B318's letting go, when the workstation he had his eye on is in a dimension the server doesn't have (a datapack or
+	 * mod dimension removed since): the muster takes him all the same and he forgets it, with nothing to give back there.
+	 * (The nightly mutation run: {@code there != null &&} read as {@code ||} looks there up anyway and crashes the tick.)
+	 */
+	//$ gametest_ticks_batch AREA '200' '"colonyEyeingAJobNowhere"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "colonyEyeingAJobNowhere")
+	public void aSettlerEyeingAWorkstationInAMissingDimensionStillSetsOut(GameTestHelper helper) {
+		Village v = village(helper, 0);
+		ServerLevel level = v.level();
+		villager(helper, new BlockPos(10, 2, 11), "Dara", VillagerProfession.NONE, 1);
+		Villager tomas = villager(helper, new BlockPos(12, 2, 12), "Tomas", VillagerProfession.NONE, 1);
+		storehouse(helper, allSupplies());
+		net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> nowhere = net.minecraft.resources.ResourceKey.create(
+			net.minecraft.core.registries.Registries.DIMENSION, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("test_nowhere"));
+		helper.assertTrue(level.getServer().getLevel(nowhere) == null, "setup: the missing dimension exists");
+		helper.startSequence()
+			.thenExecute(() -> {
+				tomas.getBrain().setMemory(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.of(nowhere, helper.absolutePos(new BlockPos(17, 2, 17))));
+				ItemStack held = click(v, v.player(), charter(v));
+				RealmData.Order order = v.order();
+				helper.assertTrue(order != null && order.state().equals(RealmData.MUSTER) && order.volunteers().contains(tomas.getUUID()),
+					"Dara and Tomas should be called to the hall: " + order + " (held " + held + ")");
+			})
+			.thenWaitUntil(() -> {
+				RealmData.Order now = v.order();
+				helper.assertTrue(now != null && !now.state().equals(RealmData.MUSTER) && !now.state().equals(RealmData.GATHERING),
+					"the bell hasn't rung though both stand at the hall: " + now);
+			})
+			.thenExecute(() -> helper.assertTrue(tomas.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).isEmpty(),
+				"Tomas still has his eye on the workstation in the missing dimension"))
+			.thenSucceed();
+	}
+
+	/**
 	 * Calling it off on the Colonies tab: only the owner can; the settlers stay, every supply is back in the Storehouse
 	 * and the charter, spot and name and all, back with the owner, who can send it again.
 	 */

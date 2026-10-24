@@ -60,10 +60,9 @@ public final class MaterialList {
 			}
 			first.append(list.toBring() == 0
 				? Component.translatable("book.aliveworkplace.material_list.all_there").withStyle(ChatFormatting.DARK_GREEN)
-				: Component.translatable("book.aliveworkplace.material_list.to_bring", list.toBring(),
-					list.lines().stream().filter(l -> l.toBring() > 0).count()));
+				: itemsOfKinds("book.aliveworkplace.material_list.to_bring", list.toBring(), list.lines().stream().filter(l -> l.toBring() > 0).count()));
 		} else {
-			first.append(Component.translatable("book.aliveworkplace.material_list.everything", list.lines().stream().mapToInt(BlueprintSupplies.Line::need).sum(),
+			first.append(itemsOfKinds("book.aliveworkplace.material_list.everything", list.lines().stream().mapToInt(BlueprintSupplies.Line::need).sum(),
 				list.lines().size()));
 			first.append("\n\n");
 			first.append(Component.translatable("book.aliveworkplace.material_list.place_hint").withStyle(ChatFormatting.DARK_GRAY));
@@ -115,5 +114,10 @@ public final class MaterialList {
 	}
 
 	private MaterialList() {
+	}
+
+	/** "3 items of 2 kinds", "1 item of 1 kind" ({@code .one}) or "3 items of 1 kind" ({@code .one_kind}). */
+	private static Component itemsOfKinds(String key, long items, long kinds) {
+		return Component.translatable(items == 1 ? key + ".one" : kinds == 1 ? key + ".one_kind" : key, items, kinds);
 	}
 }

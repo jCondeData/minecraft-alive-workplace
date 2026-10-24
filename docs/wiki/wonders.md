@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B143, B270, B308
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B270, B308, B326
 
 ## What a player sees
 
@@ -81,6 +81,10 @@ else the builder it was handed to; each next stage goes to the highest-level bui
   round its glowstone), is moved to the nearest free spot further off (up to 16 blocks), so the block isn't given up (B308). A block
   the crew laid that then changes by itself (farmland drying out to dirt before its water comes) is left as it is,
   not laid again, and a crop due on dried-out farmland is planted once the builder has tilled it again.
+- A member that holds a column and never lays its block (it keeps walking for a block it can't reach) doesn't keep
+  the lead waiting: once the crew has stood still for 10 seconds while the lead goes back over the blocks it put off,
+  the lead takes that column over and lays the block itself (it can put up scaffolding to reach it), then the ones over
+  it. Before, a Wonder crew could stand idle 30 seconds and more near the top of a build (B326).
 - Crews add hands, not speed: each builder keeps their own pace. Eight builders raise the folly in about 2,500 to
   3,100 ticks against about 12,150 for one alone (at one block a second): about a quarter of the time.
 - The crew fetches from the chests round the stone and the village's stores, and passes materials to each other. In

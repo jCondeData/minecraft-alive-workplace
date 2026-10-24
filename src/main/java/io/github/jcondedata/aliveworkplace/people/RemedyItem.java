@@ -55,7 +55,9 @@ public class RemedyItem extends DrinkItem {
 
 	/** A player gives a villager the Remedy in their hand: cured and kept well, one used up, the bottle back. */
 	public static InteractionResult give(Player player, Level level, InteractionHand hand, Entity entity) {
-		ItemStack stack = player.getItemInHand(hand);
+		// B341: vanilla asks the main hand first and, when it's empty, opens the villager's trades, so the off hand's
+		// Remedy was never asked; with the main hand empty, it is given on the main hand's turn.
+		ItemStack stack = hand == InteractionHand.MAIN_HAND && player.getMainHandItem().isEmpty() ? player.getOffhandItem() : player.getItemInHand(hand);
 		if (!isRemedy(stack) || !(entity instanceof Villager villager) || !villager.isAlive()) {
 			return InteractionResult.PASS;
 		}

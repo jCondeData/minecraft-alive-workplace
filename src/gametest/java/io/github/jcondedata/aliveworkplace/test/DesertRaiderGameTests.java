@@ -161,6 +161,17 @@ public class DesertRaiderGameTests implements FabricGameTest {
 		BlockPos base = helper.absolutePos(BlockPos.ZERO);
 		mob.moveTo(base.getX() + x, base.getY() + 2, base.getZ() + z, 180f, 0f);
 		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.EVENT, null);
+		// The same raider every run (B372): finalizeSpawn rolls on the level's random (a baby, now and then a chicken
+		// jockey), and the mob's own random drives its wandering and pathing; a test that wants a baby or a jockey makes one.
+		if (mob instanceof Zombie zombie) {
+			zombie.setBaby(false);
+		}
+		if (mob.getVehicle() != null) {
+			net.minecraft.world.entity.Entity vehicle = mob.getVehicle();
+			mob.stopRiding();
+			vehicle.discard();
+		}
+		mob.getRandom().setSeed(1L);
 		Threats.outfit(level, mob, yard.culture(), member);
 		mob.setTarget(yard.villager());
 		level.addFreshEntityWithPassengers(mob);
@@ -388,6 +399,141 @@ public class DesertRaiderGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A husk that comes down inside onto a step half a block up (a bottom slab one above the ramp's foot, its top at the
+	 * foot + 1.5) is let go there to fight inside, not walked back up the ramp (B330: that height was neither "down
+	 * inside" nor "up on the wall", so behind a wall four high it stuck on the step).
+	 */
+	//$ gametest_ticks_batch AREA '900' '"sandRampStep"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "sandRampStep")
+	public void aHuskComingDownOntoAnInnerStepIsLetGo(GameTestHelper helper) {
+		Yard yard = yard(helper, pilers(helper));
+		ServerLevel level = yard.level();
+		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 23.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
+		long[] stepped = {-1}; // the first tick the husk stood on the step
+		double[] foot = {Double.NaN};
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			ThreatData.Siege siege = yard.siege(helper);
+			if (Double.isNaN(foot[0]) && siege.ramped) {
+				// The ramp is up: lay bottom slabs one above its foot where the husk comes down, beyond the wall.
+				BlockPos at = siege.rampFeet.get(0);
+				net.minecraft.core.Direction into = net.minecraft.core.Direction.from3DDataValue(siege.rampDirs.get(0));
+				int height = 0;
+				while (!level.getBlockState(at.relative(into).above(height)).getCollisionShape(level, at.relative(into).above(height)).isEmpty()) {
+					height++;
+				}
+				helper.assertTrue(height >= 3, "the wall by the ramp is only " + height + " high");
+				int k = 2;
+				while (k < 8 && !level.getBlockState(at.relative(into, k).above(height - 1)).isAir()) {
+					k++;
+				}
+				for (int d = k; d <= k + 3; d++) {
+					for (int s = -1; s <= 1; s++) {
+						BlockPos slab = at.relative(into, d).relative(into.getClockWise(), s).above();
+						if (level.getBlockState(slab).isAir() && level.getBlockState(slab.above()).isAir()) {
+							level.setBlockAndUpdate(slab, Blocks.SMOOTH_SANDSTONE_SLAB.defaultBlockState());
+							Leftovers.after(helper, () -> level.setBlockAndUpdate(slab, Blocks.AIR.defaultBlockState()));
+						}
+					}
+				}
+				foot[0] = at.getY();
+			}
+			if (!Double.isNaN(foot[0]) && stepped[0] < 0 && climber.onGround() && Math.abs(climber.getY() - (foot[0] + 1.5)) < 1.0E-6) {
+				stepped[0] = tick;
+			}
+			if (SandRamps.over(level, yard.hall(), climber.getUUID())) {
+				helper.assertTrue(stepped[0] >= 0, "the husk was let go without standing on the step: at " + climber.position() + ", foot " + foot[0]);
+				climber.discard();
+				helper.succeed();
+				return;
+			}
+			if (stepped[0] >= 0 && tick - stepped[0] > 100 || tick > 820) {
+				BlockPos base = helper.absolutePos(BlockPos.ZERO);
+				helper.fail("not let go: the husk at " + climber.position().subtract(base.getX(), base.getY(), base.getZ())
+					+ (climber.onGround() ? " on the ground" : " in the air") + " at tick " + tick + ", on the step since " + stepped[0]
+					+ ", ramp foot y " + (foot[0] - base.getY()) + "; " + rampState(helper, yard, climber, siege));
+			}
+		});
+	}
+
+	/** What the ramp tests' failure messages tell besides the husk (B372): the siege, its sand, the raid, the clock, the husk. */
+	private static String rampState(GameTestHelper helper, Yard yard, Mob climber, ThreatData.Siege siege) {
+		ServerLevel level = yard.level();
+		return "siege over " + siege.over + ", ramped " + siege.ramped + ", sand " + siege.sand.size() + ", ramp feet " + siege.rampFeet
+			+ ", raid " + ThreatData.get(level).raid(yard.hall()).map(r -> r.culture() + " began " + r.began()).orElse("none")
+			+ ", game time " + level.getGameTime() + ", day time " + level.getDayTime() + ", mobGriefing " + level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
+			+ ", husk alive " + climber.isAlive() + (climber.isBaby() ? ", a baby" : "") + (climber.getVehicle() != null ? ", riding " + climber.getVehicle() : "")
+			+ ", target " + climber.getTarget() + ", navigation done " + climber.getNavigation().isDone();
+	}
+
+	/**
+	 * A husk that comes down inside onto ground two higher than the ramp's foot (a terrace behind the wall, full blocks at
+	 * the foot and one above it, with no column free down to the foot within reach) is let go there to fight inside
+	 * (B331: it stood higher than a step, so it counted as up on the wall, and it was pushed on to a spot one past the wall
+	 * on the same terrace, where it stood for good).
+	 */
+	//$ gametest_ticks_batch AREA '900' '"sandRampTerrace"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "sandRampTerrace")
+	public void aHuskComingDownOntoARaisedTerraceIsLetGo(GameTestHelper helper) {
+		Yard yard = yard(helper, pilers(helper));
+		ServerLevel level = yard.level();
+		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 23.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
+		long[] stood = {-1}; // the first tick the husk stood on the terrace
+		double[] foot = {Double.NaN};
+		BlockPos[] ramp = {null};
+		net.minecraft.core.Direction[] dir = {null};
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			ThreatData.Siege siege = yard.siege(helper);
+			if (Double.isNaN(foot[0]) && siege.ramped) {
+				// The ramp is up: a terrace two high behind the wall, where the husk comes down.
+				BlockPos at = siege.rampFeet.get(0);
+				net.minecraft.core.Direction into = net.minecraft.core.Direction.from3DDataValue(siege.rampDirs.get(0));
+				int height = 0;
+				while (!level.getBlockState(at.relative(into).above(height)).getCollisionShape(level, at.relative(into).above(height)).isEmpty()) {
+					height++;
+				}
+				helper.assertTrue(height >= 4, "the wall by the ramp is only " + height + " high");
+				for (int d = 2; d <= 10; d++) {
+					for (int s = -2; s <= 2; s++) {
+						for (int y = 0; y <= 1; y++) {
+							BlockPos block = at.relative(into, d).relative(into.getClockWise(), s).above(y);
+							if (level.getBlockState(block).isAir()) {
+								level.setBlockAndUpdate(block, Blocks.SANDSTONE.defaultBlockState());
+								Leftovers.after(helper, () -> level.setBlockAndUpdate(block, Blocks.AIR.defaultBlockState()));
+							}
+						}
+					}
+				}
+				foot[0] = at.getY();
+				ramp[0] = at;
+				dir[0] = into;
+			}
+			if (ramp[0] != null && stood[0] < 0 && climber.onGround() && Math.abs(climber.getY() - (foot[0] + 2)) < 1.0E-6) {
+				// On the terrace, past the wall (not on the ramp's step at the same height).
+				double inward = (climber.getX() - (ramp[0].getX() + 0.5)) * dir[0].getStepX() + (climber.getZ() - (ramp[0].getZ() + 0.5)) * dir[0].getStepZ();
+				if (inward >= 1.5) {
+					stood[0] = tick;
+				}
+			}
+			if (SandRamps.over(level, yard.hall(), climber.getUUID())) {
+				helper.assertTrue(stood[0] >= 0, "the husk was let go without standing on the terrace: at " + climber.position() + ", foot " + foot[0]);
+				climber.discard();
+				helper.succeed();
+				return;
+			}
+			if (stood[0] >= 0 && tick - stood[0] > 100 || tick > 820) {
+				BlockPos base = helper.absolutePos(BlockPos.ZERO);
+				helper.fail("not let go: the husk at " + climber.position().subtract(base.getX(), base.getY(), base.getZ())
+					+ (climber.onGround() ? " on the ground" : " in the air") + " at tick " + tick + ", on the terrace since " + stood[0]
+					+ ", ramp foot y " + (foot[0] - base.getY()) + "; " + rampState(helper, yard, climber, siege));
+			}
+		});
+	}
+
 	/** With {@code mobGriefing} off a husk climber piles no sand; the siege still stands. */
 	//$ gametest_ticks_batch AREA '300' '"sandOff"'
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "sandOff")
@@ -403,6 +549,17 @@ public class DesertRaiderGameTests implements FabricGameTest {
 			helper.assertTrue(SandRamps.sand(level, yard.hall()).isEmpty() && changes(helper, before).isEmpty(), "sand with mobGriefing off: " + changes(helper, before));
 			helper.succeed();
 		});
+	}
+
+	/** The raid, the siege and the clock, for the noon test's failure messages (B370). */
+	private static String noonState(ServerLevel level, Yard yard, Mob husk, long day) {
+		ThreatData data = ThreatData.get(level);
+		return "raid " + data.raid(yard.hall()).map(r -> r.culture() + " began " + r.began()).orElse("none") + " (game time " + level.getGameTime() + ")"
+			+ ", raids recorded " + data.save(new CompoundTag(), level.registryAccess()).getList("raids", Tag.TAG_COMPOUND).size()
+			+ ", active " + VillageRaids.active(yard.hall()).isPresent() + ", raiders " + VillageRaids.raiders(level, yard.hall()).size()
+			+ ", siege " + Sieges.siege(level, yard.hall()).map(s -> "over " + s.over + ", dawn " + s.dawn).orElse("none")
+			+ ", clock " + level.getDayTime() + " (time " + level.getDayTime() % 24000 + ", test day " + day + ")"
+			+ ", husk alive " + husk.isAlive() + (husk.getVehicle() != null ? ", riding " + husk.getVehicle() : "");
 	}
 
 	/**
@@ -423,19 +580,29 @@ public class DesertRaiderGameTests implements FabricGameTest {
 		// The raid began a while ago (as a save of one would have it).
 		ThreatData data = ThreatData.get(level);
 		CompoundTag tag = data.save(new CompoundTag(), level.registryAccess());
-		tag.getList("raids", Tag.TAG_COMPOUND).getCompound(0).putLong("began", level.getGameTime() - 2000);
+		// This village's raid, by its hall (B370: the first of the list was taken, which is another village's when a raid of
+		// an earlier test is still recorded, and this one's then began just now and outlasted noon).
+		net.minecraft.nbt.ListTag raids = tag.getList("raids", Tag.TAG_COMPOUND);
+		boolean found = false;
+		for (int i = 0; i < raids.size(); i++) {
+			if (raids.getCompound(i).getLong("hall") == yard.hall().asLong()) {
+				raids.getCompound(i).putLong("began", level.getGameTime() - 2000);
+				found = true;
+			}
+		}
+		helper.assertTrue(found, "the desert raid isn't saved: " + raids);
 		data.read(tag);
 		helper.runAfterDelay(2, () -> {
 			for (long time : new long[] {23999, 24000 + 1000, 24000 + 3000}) {
 				level.setDayTime(day * 24000 + time);
 				VillageRaids.tick(level, yard.hall(), 8, 0, day, d -> { });
-				helper.assertTrue(VillageRaids.active(yard.hall()).isPresent(), "the desert raiders left at " + time % 24000);
-				helper.assertTrue(Sieges.siege(level, yard.hall()).map(s -> !s.over).orElse(false), "the siege is over at " + time % 24000);
+				helper.assertTrue(VillageRaids.active(yard.hall()).isPresent(), "the desert raiders left at " + time % 24000 + "; " + noonState(level, yard, husk, day));
+				helper.assertTrue(Sieges.siege(level, yard.hall()).map(s -> !s.over).orElse(false), "the siege is over at " + time % 24000 + "; " + noonState(level, yard, husk, day));
 			}
 			level.setDayTime(day * 24000 + 24000 + 6100);
 			VillageRaids.tick(level, yard.hall(), 8, 0, day, d -> { });
-			helper.assertTrue(VillageRaids.active(yard.hall()).isEmpty() && VillageRaids.raiders(level, yard.hall()).isEmpty(), "the desert raiders stayed past noon");
-			helper.assertTrue(Sieges.siege(level, yard.hall()).map(s -> s.over).orElse(true), "the siege isn't over at noon");
+			helper.assertTrue(VillageRaids.active(yard.hall()).isEmpty() && VillageRaids.raiders(level, yard.hall()).isEmpty(), "the desert raiders stayed past noon; " + noonState(level, yard, husk, day));
+			helper.assertTrue(Sieges.siege(level, yard.hall()).map(s -> s.over).orElse(true), "the siege isn't over at noon; " + noonState(level, yard, husk, day));
 			helper.succeed();
 		});
 	}

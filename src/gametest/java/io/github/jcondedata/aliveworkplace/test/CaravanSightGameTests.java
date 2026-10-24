@@ -78,7 +78,10 @@ public class CaravanSightGameTests implements FabricGameTest {
 		boolean enabled = CaravanSights.ENABLED;
 		VillageHalls.RADIUS = 8;
 		Caravans.MIN_TRAVEL = 0;
-		VillageNeeds.CHECK_EVERY = 1_000_000;
+		// No hall round of their own: a hall rounds when (game time + its position's hash) is a multiple of this, so with a
+		// million a 2400-tick test had a 1-in-400 chance that Ashford's hall unloaded the caravans on the road itself and
+		// sent a second (arriving) party walking (B321, CI 39860943801). With the largest int it is about one in a million.
+		VillageNeeds.CHECK_EVERY = Integer.MAX_VALUE;
 		CaravanSights.ENABLED = sights;
 		ServerLevel level = helper.getLevel();
 		BlockPos a = helper.absolutePos(HALL_A);
@@ -130,6 +133,14 @@ public class CaravanSightGameTests implements FabricGameTest {
 	/** Every caravan party member anywhere near the test area. */
 	private static List<Entity> tagged(GameTestHelper helper) {
 		return helper.getLevel().getEntitiesOfClass(Entity.class, helper.getBounds().inflate(48), CaravanSights::isParty);
+	}
+
+	/** Every party out in the level, by village and phase, with its carter's spot: what a failure message shows. */
+	private static String parties(Two two) {
+		return CaravanSights.parties(two.level()).stream()
+			.map(p -> (p.hall().equals(two.a()) ? "Thornholm" : p.hall().equals(two.b()) ? "Ashford" : p.hall().toShortString()) + " " + p.phase()
+				+ " carter at " + p.carter().blockPosition().toShortString() + (p.carter().isRemoved() ? " (removed)" : ""))
+			.toList().toString();
 	}
 
 	/** Items lying anywhere near the test area (a lead, a chest, a carpet: nothing may be left behind). */
@@ -442,7 +453,7 @@ public class CaravanSightGameTests implements FabricGameTest {
 			open(helper, two);
 			Caravans.round(two.level(), two.a(), null);
 			seen[0] = CaravanSights.party(two.level(), two.a());
-			helper.assertTrue(seen[0] != null && tagged(helper).size() == 3, "no party: " + tagged(helper));
+			helper.assertTrue(seen[0] != null && tagged(helper).size() == 3, "no party: " + tagged(helper) + ", parties " + parties(two));
 		});
 		helper.runAfterDelay(100, () -> {
 			two.data().sent(two.a(), -1);
@@ -450,17 +461,17 @@ public class CaravanSightGameTests implements FabricGameTest {
 			Caravans.round(two.level(), two.a(), null);
 			helper.assertTrue(two.ours().countItem(Items.BREAD) == 16 && two.data().onTheRoad().stream().filter(s -> s.to().equals(two.b())).count() == 2,
 				"the second caravan should carry its goods: " + two.ours().countItem(Items.BREAD) + " bread left, " + two.data().onTheRoad());
-			helper.assertTrue(CaravanSights.party(two.level(), two.a()) == seen[0] && tagged(helper).size() == 3, "a second party in the same village: " + tagged(helper));
-			helper.assertTrue(CaravanSights.parties(two.level()).stream().filter(p -> p.hall().equals(two.a())).count() == 1, "parties here: " + CaravanSights.parties(two.level()).size());
+			helper.assertTrue(CaravanSights.party(two.level(), two.a()) == seen[0] && tagged(helper).size() == 3, "a second party in the same village: " + tagged(helper) + ", parties " + parties(two));
+			helper.assertTrue(CaravanSights.parties(two.level()).stream().filter(p -> p.hall().equals(two.a())).count() == 1, "parties here: " + parties(two));
 		});
 		helper.runAfterDelay(2 + CaravanSights.LIFE_TICKS - 20, () -> {
 			helper.assertTrue(CaravanSights.party(two.level(), two.a()) == seen[0] && !seen[0].carter().isRemoved() && tagged(helper).size() == 3,
-				"penned in, the party should still be out just before two minutes: " + tagged(helper));
+				"penned in, the party should still be out just before two minutes, and alone: " + tagged(helper) + ", parties " + parties(two));
 			helper.assertTrue(flat(seen[0].carter().position(), seen[0].edge()) > 2.5, "the pen didn't hold the carter: " + seen[0].carter().position());
 		});
 		helper.runAfterDelay(2 + CaravanSights.LIFE_TICKS + 5, () -> {
 			helper.assertTrue(CaravanSights.party(two.level(), two.a()) == null && seen[0].carter().isRemoved() && tagged(helper).isEmpty(),
-				"still out after two minutes: " + tagged(helper));
+				"still out after two minutes: " + tagged(helper) + ", parties " + parties(two));
 			helper.assertTrue(dropped(helper).isEmpty(), "left on the ground: " + dropped(helper));
 			helper.succeed();
 		});
@@ -510,6 +521,12 @@ public class CaravanSightGameTests implements FabricGameTest {
 			helper.assertTrue(carter.getOffers().isEmpty(), "the carter has trades: " + carter.getOffers().size());
 			rightClick(player, carter, new ItemStack(Items.EMERALD, 8));
 			helper.assertTrue(!carter.isTrading() && player.containerMenu == player.inventoryMenu, "a click on the carter opened a trade");
+			// B343: by design (visible-caravans.md, "only a sight") a Gift or a tonic in hand is kept, not given
+			ItemStack gift = io.github.jcondedata.aliveworkplace.story.Gifts.wrap(new ItemStack(Items.BREAD), "");
+			rightClick(player, carter, gift);
+			helper.assertTrue(player.getMainHandItem().is(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT), "the carter took a Gift: " + player.getMainHandItem());
+			rightClick(player, carter, new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.BUILDERS_TEA));
+			helper.assertTrue(player.getMainHandItem().is(io.github.jcondedata.aliveworkplace.registry.ModItems.BUILDERS_TEA) && player.getMainHandItem().getCount() == 1, "the carter took a tonic: " + player.getMainHandItem());
 			helper.assertTrue(carter.getCustomName().getString().equals("Thornholm's caravan"), "the carter's name changed");
 			// the llamas: no ride, no look in the chest, no hay, no love
 			Llama llama = party.llamas().get(0);

@@ -389,8 +389,7 @@ public class PeopleGameTests implements FabricGameTest {
 			float slow = io.github.jcondedata.aliveworkplace.people.Moods.pace(villager);
 			helper.assertTrue(slow > 1f, "unhappy pace: " + slow);
 			ModAttachments.LAST_MEAL.set(villager, level.getGameTime());
-			villager.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME,
-				net.minecraft.core.GlobalPos.of(level.dimension(), helper.absolutePos(new BlockPos(6, 2, 6))));
+			Beds.home(villager, helper.absolutePos(new BlockPos(6, 2, 6)));
 			villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER));
 			var glad = io.github.jcondedata.aliveworkplace.people.Moods.work(level, villager);
 			helper.assertTrue(glad.score() >= io.github.jcondedata.aliveworkplace.people.Moods.HAPPY, "fed, a bed and a job: " + glad);

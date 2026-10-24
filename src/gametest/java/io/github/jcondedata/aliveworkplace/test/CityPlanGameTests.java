@@ -166,6 +166,7 @@ public class CityPlanGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 		helper.assertTrue(CityPlans.apply(first, CityPlans.Edit.addZone(hall, "homes", "Homes", "")), "the first painter was refused");
 		helper.assertTrue(first.getUUID().equals(entity.owner()), "a hall nobody owned didn't become the first painter's");
 		entity.setProtected(true);
+		Leftovers.after(helper, () -> entity.setProtected(false)); // a protected hall left behind refuses later tests' strangers
 		ServerPlayer stranger = helper.makeMockServerPlayerInLevel();
 		helper.assertTrue(!stranger.getUUID().equals(first.getUUID()), "setup: the same mock player twice");
 		int near = CityPlan.cellAt(hall, hall.east(2)); // nearer this hall than any other test's

@@ -124,6 +124,11 @@ public class MilitiaCombat extends Behavior<Villager> {
 			villager.stopSleeping();
 		}
 		turnOut(villager);
+		if (villager.getMainHandItem().isEmpty()) {
+			// B324: the sword was handed out only as a fight began, so a hand emptied mid-fight (vanilla's trade display
+			// empties a villager's hand, and conscripts fight in IDLE, where it runs) stayed empty to the fight's end.
+			Conscription.arm(villager);
+		}
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(foe, true));
 		villager.getLookControl().setLookAt(foe, 30f, 30f);
 		if (cooldown > 0) {

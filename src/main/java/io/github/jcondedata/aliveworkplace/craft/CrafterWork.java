@@ -172,6 +172,10 @@ public class CrafterWork extends Behavior<Villager> {
 			return;
 		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
+		if (job != null && chains() && ModAttachments.CRAFTER_JOB.get(villager) == null) {
+			job = null; // let go while the workstation was gone (B353): what was in the bag went back already
+			phase = Phase.IDLE;
+		}
 		if (job == null && chains()) {
 			restore(level, villager, bag);
 		}
@@ -868,6 +872,54 @@ public class CrafterWork extends Behavior<Villager> {
 		}
 	}
 
+	/**
+	 * Every villager's AI step (mixin/VillagerMixin, B353): a crafter whose workstation has been gone for {@link #BENCHLESS_TICKS}
+	 * with a chain job saved lets the job go (its claim too) and the bag goes to the asker's chests, or at their feet when
+	 * those are gone or full. A bench put back (or moved) within that time, or a chunk reload, carries on with the job.
+	 */
+	public static void benchlessTick(Villager villager) {
+		if (!(villager.level() instanceof ServerLevel level)) {
+			return;
+		}
+		CrafterJob saved = ModAttachments.CRAFTER_JOB.get(villager);
+		if (saved == null || Builders.benchPos(villager).isPresent()) {
+			synchronized (BENCHLESS) {
+				BENCHLESS.remove(villager);
+			}
+			return;
+		}
+		long now = level.getGameTime();
+		long since;
+		synchronized (BENCHLESS) {
+			since = BENCHLESS.computeIfAbsent(villager, v -> now);
+		}
+		if (now - since < BENCHLESS_TICKS) {
+			return;
+		}
+		synchronized (BENCHLESS) {
+			BENCHLESS.remove(villager);
+		}
+		if (!saved.claim().isEmpty()) {
+			release(saved.claim());
+		}
+		ModAttachments.CRAFTER_JOB.remove(villager);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.get(villager);
+		if (bag == null || bag.isEmpty()) {
+			return;
+		}
+		List<BlockPos> chests = level.isLoaded(saved.deliverTo()) ? SupplyContainers.find(level, saved.deliverTo(), saved.areaOrNull()) : List.of();
+		for (ItemStack stack : bag.takeAll()) {
+			ItemStack rest = chests.isEmpty() ? stack : SupplyContainers.insert(level, chests, stack);
+			if (!rest.isEmpty()) {
+				Block.popResource(level, villager.blockPosition(), rest);
+			}
+		}
+	}
+
+	/** How long a crafter's saved job outlasts its workstation (B353): time to put a bench back or move it. */
+	static final long BENCHLESS_TICKS = 600;
+	private static final Map<Villager, Long> BENCHLESS = new WeakHashMap<>();
+
 	/** Lets {@code claim} go (the job is done or fell through): the asker is looked at again (the Crafter, 37.14). */
 	static void release(String claim) {
 		synchronized (CLAIMS) {
@@ -950,8 +1002,11 @@ public class CrafterWork extends Behavior<Villager> {
 		Component title = Component.translatable("message.aliveworkplace." + who + ".title", ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0));
 		Component idle = phase == Phase.IDLE && job == null ? idleLine(villager) : null;
 		Component line = idle != null ? idle : job != null && phase != Phase.TIDYING
-			? Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase(), job.plan().count(),
-				job.plan().target().getDescription())
+			? (phase == Phase.FETCHING // "fetching what 1 Amethyst Ring takes"
+				? io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace." + lines + ".state.fetching", job.plan().count(), job.plan().count(),
+					job.plan().target().getDescription())
+				: Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase(), job.plan().count(),
+					job.plan().target().getDescription()))
 			: Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase());
 		if (phase == Phase.CRAFTING && stepwise && job != null && job.plan().steps().size() > 1) {
 			// 37.14a: "making 3 Barrel (step 2 of 3)"

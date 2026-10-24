@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Maps;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
@@ -437,9 +438,8 @@ public final class Scouts {
 	 * its tooltip.
 	 */
 	public static ItemStack report(ServerLevel level, BlockPos hall, Lairs.Lair lair, Component by, long day) {
-		int mx = (hall.getX() + lair.pos().getX()) / 2;
-		int mz = (hall.getZ() + lair.pos().getZ()) / 2;
-		ItemStack map = MapItem.create(level, mx, mz, scale(hall, lair.pos()), true, true);
+		Frame frame = frame(hall, lair.pos());
+		ItemStack map = Maps.filledAt(level, frame.x(), frame.z(), frame.scale());
 		MapItem.renderBiomePreviewMap(level, map);
 		MapItemSavedData.addTargetDecoration(map, hall, "village", MapDecorationTypes.PLAINS_VILLAGE);
 		MapItemSavedData.addTargetDecoration(map, lair.pos(), "+", MapDecorationTypes.RED_X);
@@ -457,21 +457,37 @@ public final class Scouts {
 		return text.copy().withStyle(style -> style.withItalic(false).withColor(color));
 	}
 
-	/** The smallest map scale (1 to 4) whose square, where the game puts it, holds both the village and the lair. */
-	static byte scale(BlockPos hall, BlockPos lair) {
+	/** Where a Scouting Report's map is centred and at what scale. */
+	record Frame(int x, int z, byte scale) {
+		/** Whether {@code pos} lies inside this map, at least 8 blocks in from its edges. */
+		boolean holds(BlockPos pos) {
+			int half = (64 << scale) - 8;
+			return Math.abs(pos.getX() - x) <= half && Math.abs(pos.getZ() - z) <= half;
+		}
+	}
+
+	/**
+	 * The map for a report: the smallest scale (1 to 4) whose square holds both the village and the lair, preferring the
+	 * square where the game itself would put a map there (so it lines up with the player's own maps), else the square
+	 * centred on the midpoint. The game snaps a map's centre to its scale's grid, so two places a few blocks apart but
+	 * across a grid line share no grid square at any scale (B368); the midpoint square always holds both while they are
+	 * less than about 2000 blocks apart.
+	 */
+	static Frame frame(BlockPos hall, BlockPos lair) {
 		double mx = (hall.getX() + lair.getX()) / 2.0;
 		double mz = (hall.getZ() + lair.getZ()) / 2.0;
-		for (byte scale = 1; scale < 4; scale++) {
-			int size = 128 * (1 << scale);
-			int cx = (int) Math.floor((mx + 64.0) / size) * size + size / 2 - 64;
-			int cz = (int) Math.floor((mz + 64.0) / size) * size + size / 2 - 64;
-			int half = size / 2 - 8;
-			if (Math.abs(hall.getX() - cx) <= half && Math.abs(lair.getX() - cx) <= half && Math.abs(hall.getZ() - cz) <= half
-				&& Math.abs(lair.getZ() - cz) <= half) {
-				return scale;
+		Frame midpoint = null;
+		for (byte scale = 1; scale <= 4; scale++) {
+			Frame grid = new Frame(Maps.gridCentre(mx, scale), Maps.gridCentre(mz, scale), scale);
+			if (grid.holds(hall) && grid.holds(lair)) {
+				return grid;
+			}
+			midpoint = new Frame((int) Math.floor(mx), (int) Math.floor(mz), scale);
+			if (midpoint.holds(hall) && midpoint.holds(lair)) {
+				return midpoint;
 			}
 		}
-		return 4;
+		return midpoint;
 	}
 
 	/** The village round {@code hall} forgets where its lair stood: the lair is gone (B209). */

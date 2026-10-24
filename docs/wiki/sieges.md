@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381
 
 ## What a player sees
 
@@ -314,6 +314,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   `sieges` off; a ring of Stone Walls, with the gathering point beyond it from 16 sides and a started raid's raiders
   all outside, every one counted and on ground where mobs move (B176; the test keeps the ground east of its area live
   with a ticket of its own that lapses by itself, never the forced chunks the batches share).
+- `LadderGameTests.aLadderGoesUpInAirBesideAPlayersBlockNotOverIt`: a player's hay bale where the ladder would go is
+  never replaced; the ladder goes up in air beside it and the climber is still over the wall within 600 ticks.
 - Showcase scene `siege_gate`: a ravager breaking a Palisade Gate, the cracks showing.
 - Showcase scene `siege_ladders`: pillagers laddering a Stone Wall, one climbing over, and a guard throwing the ladder
   down.

@@ -235,7 +235,7 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		String explained = StewardWishes.explain(level, hall, List.of(ruleOf(helper, "workplace_guard_house"))).stream()
 			.map(c -> c.getString()).collect(Collectors.joining("\n"));
 		helper.assertTrue(explained.contains("Workers without a workstation (aliveworkplace:guard, minecraft:weaponsmith): 0; jobs wanted with no free block: 1")
-			&& explained.contains("1 jobs here have no workplace of their trade"),
+			&& explained.contains("1 job here has no workplace of its trade"),
 			"explain: " + explained);
 		helper.succeed();
 	}

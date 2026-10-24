@@ -16,6 +16,121 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.149.0 — 2026-10-24
+
+### Fixed
+
+- The game rule `workplaceRetraining`'s description names both things it switches: retraining to any job at the Village Hall and as a Builder at a Blueprint Table (B384).
+- At threat level 3 (hard) a raiders' camp, ship or portal sends a quarter more raiders too: every lair's band is a quarter bigger on hard when it makes camp and grows to a quarter more, so a Town's pirates send 10, not 8 (B383).
+- Desert raiders still ramp over a wall when sand already sits at its outside foot, a player's or the desert's own: that sand counts as the ramp's first blocks and is built on, and it stays when the siege's own sand is taken away (B382).
+- The morning siege report counts one raider in the singular: "The siege: 1 raider came and ...", not "1 raiders came" (B381).
+- Builder and Storehouse lines count one in the singular: the board's "For the Builder, 1 block away", the chat list's "Still to bring for the Test Hut: 1 item of 1 kind" (and "5 items of 1 kind"), the blueprint tooltip's "short of 1 item", the board's "Room for 1 more item", a repair's "(1 block missing)" and the porter's "1 item carried" (B402, B403).
+- The builder's written book reads "Still to bring: 5 items of 1 kind." when one kind of item is short, now held by a test through the Book and Quill on the builder (B404).
+- When a villager dies only their partner and real family grieve: strangers whose mothers or fathers share a name (every unnamed parent is a "Farmer" with villager names off) no longer mourn each other and work slower (B380).
+- Drawing with the Shape Planner without a Blank Blueprint says "Drawing a shape takes a Blank Blueprint (paper and blue dye)", not the Scan Tool's "Saving a scan takes...", and a shape that can't be saved says so for the shape (B379).
+- A full Village refusing a guild charter counts its one guild in the singular: "Elderford is a Village and may have 1 guild; it has them all.", not "1 guilds" (B376).
+- The Storehouse board and the Steward count one in the singular: "Storehouse: 1 chest, ..." and "1 job here has no workplace of its trade", not "1 chests" and "1 jobs here have" (B377).
+- The Storehouse board's stock line counts one item and one empty slot in the singular too: "1 item", "1 empty slot", not "1 items" and "1 empty slots" (B395).
+- A spot just past a worker's reach is refused with its distance rounded up, so the numbers agree: 48.5 blocks from a Builder's Blueprint Table says "That spot is 49 blocks ... keep it within 48.", not "48 blocks" (B378; Farmers', Miners' and other area jobs' spots too).
+- The Storehouse board shows the real room behind a Sophisticated Storage controller once something is stored: with a stack-upgraded barrel and a plain one linked, 100 cobblestone made it say "Room for 22164 more items" where 8540 fit; it now says 8540. Goods a porter puts in through a controller no longer vanish when they fill the barrel holding the same item: the rest goes into the next barrel (B371).
+- A Scouting Report map always shows both the village and the lair, with the red X on the lair: near a line where the game's map squares meet, one of them could fall off the map's edge (B368).
+- A villager whose bed is broken during the day stops counting as housed at once, instead of keeping his home until bedtime: the village's housed count, wellbeing and lit beds drop and the hall's villager page reads "No bed of their own" as soon as the bed is gone (B362).
+- A caravan saved while it waited at its station for the village's Create train, or rode it, now takes the timed trip and arrives when trains stop running (Create taken out of the pack, or `villageTrains` switched off), instead of staying on the road for good; goods that rode in the train's chest arrive too: out of the chest while Create is there, from the caravan's own record when Create is gone (B359).
+- A raiders' camp standing when the world is set to Peaceful now packs up and leaves the village in peace, instead of being "broken up" as if its captain had fallen (no camp-broken message, no chronicle line about a fall, no rest days); a captain a player killed just before still counts as fallen (B364).
+- When a Piglin Incursion's Warlord falls on a server with a mob blocklist (Cobbleverse's MobsBeGone), his band at the outpost and his raiders now turn into zombified piglins and zoglins and stay, still raiders, instead of vanishing; with `forceThreatSpawns` off they are left out and the log says so once (B356).
+- A villager beside his own bed near the edge of a village no longer makes it a bed short: the hall counted its villagers in a square and its beds in a circle, so with the default 64-block reach a villager and his bed about 45 blocks off diagonally were half in. Both are now counted in the same circle (64 across, 32 up and down), for the hall's numbers, the "beds" tip, the Steward's homes rules and the village's wellbeing (B361).
+- The builder's status no longer calls a Storehouse too far with numbers that say it isn't: one 20.4 blocks from his table in a 20-block village now reads "it is 21 blocks from his table, and a village reaches 20" instead of "20 blocks" (the distance is rounded up) (B355).
+- A Carpenter (or any job making a chain for a builder) whose bench is broken mid-chain and not put back within 30 seconds now lets the job go and puts what it carried (the planks sawn from the builder's logs) in the builder's chest, instead of keeping it in the bag forever while the build waits; a bench put back or moved in time still carries on (B353).
+- A Mason with a furnace who is a coal short of firing the clay for brick stairs (12 clay, 1 coal for 3 stairs) now says "short of 1 Coal to make 3 Brick Stairs" on the builder's line instead of asking for bricks, and still takes nothing (B352).
+- With CobbleDollars, a shop's own screen counts the price items in your off hand: 2 diamonds in the bag and 1 in the off hand now buy a 3-diamond lot instead of "That costs 3x Diamond", and the payment takes the off hand's diamond too (B350).
+- Threats stay out of Nether portals in every case: a raider riding a mount (a desert raid's baby husk on its chicken) no longer rides through with it, and the Bandit King and his fort's men, bounty bands, rogues and story-arc mobs keep out too, while plain mobs still use portals (B375).
+- Counted lines read right for one: "1 settler" and "in 1 day" on the hall's Colonies tab, "1 villager has no bed" (and "no work") in the What next? tips and the Steward's reasons, "Still to bring: 1 item of 1 kind" in material lists, "fetching what 1 Amethyst Ring takes" above the luxury makers, crafters, chefs and smiths, and "1 block" on the Storehouse board's linked lines.
+- Items held in the off hand with the main hand empty now work where they didn't: the Storehouse board's stock orders
+  page offers to order the off hand's item (B351); a Colony Charter sends the settlers from the off hand, and a
+  sneak-click on the hall with it sends them too instead of opening the colonies map (B357); a City Plan, a Village
+  Ledger and a named Name Tag bind to or name the Village Hall from the off hand instead of opening its page (B360); a
+  placed Blueprint in the off hand writes its material list into the Book and Quill in the main hand instead of the
+  book's editor opening (B365); and the Scan Tool marks a chest from the off hand instead of opening it (B374).
+- A retired elder sneak-right-clicked with a job's item (lapis by a free lectern) no longer says he took the job
+  while staying jobless, and no longer leaves that workstation taken by nobody: he says he has retired, and the block
+  stays free for another villager (B346).
+- A renamed elder (a Name Tag) is still known as his children's parent at retirement, so his own grown child takes over
+  rather than a stranger: children are matched by their parents' ids, by name only in records older than the ids (B347).
+- A piglin outpost's band no longer wanders into the outpost's own Nether portal and vanishes to the Nether, and
+  piglin raiders stepping out of it no longer walk straight back in (B373). No lair band, bandit camp or raider goes
+  through a portal any more, so a lair keeps its whole band until the village beats it.
+- A hopper under a Shop Counter no longer pulls its price list out, and a hopper or dropper above or beside it no
+  longer pushes items in as new prices (B349), so nobody can empty or change someone's shop with automation. The
+  owner, friends and operators still set prices on the counter's screen; existing shops keep their prices.
+- A Shopkeeper's trade screen sells only what the shop's chests hold at the moment of the trade (B348). Before, a
+  buyer who had the trades open when the owner emptied the chest still got the goods for his emeralds, made from
+  nothing; now the goods don't appear, the emeralds stay yours and the offer shows as sold out.
+- A sneak-right-click with a personal request's letter, reply or heirloom hands it over (B354). Before, the letter
+  (paper) was taken as a job pick ("needs a lectern nearby") and stayed in your hand.
+- A found Legend at their camp takes what you hold in the off hand when your main hand is empty (B345): the shipwreck
+  castaway eats a cooked meal from it and the Old Sage takes his riddle's answer. Before, only the main hand counted.
+- The Storehouse board lowers a request as soon as you hand something over (B344). Before, it kept asking for the
+  full amount until the worker looked again, so a quick second click handed over extra (into his chest).
+- The Gray Cough's healer takes a Gift, a tonic, a Physician's Remedy or a Guild Charter while the story runs (B343).
+  Before, any right-click on them talked about the cough and the item in hand was never used.
+- Villagers walk round a lantern from Carved Wood (or another mod's small block that lets paths through it) instead of
+  trying to walk through it (B339). In a furnished spruce Library a villager without a job sometimes climbed onto a
+  desk on its way to the lectern and stood stuck on the desk's edge for the rest of the day, never becoming the
+  Librarian.
+- A modified client asking for previews of endless made-up blueprints no longer makes the server remember each one
+  until the player leaves (B340). Only real blueprints are remembered, and only for the five seconds a repeated request
+  is ignored; previews work as before.
+- A Guild Charter or an Evergreen Charm held in the off hand, with the main hand empty, now works when
+  sneak-right-clicked on a Master (B341), as from the main hand; before, the click only showed the builder's status
+  line (or another villager's own page) and the charter was kept. The same goes for Builder's Tea and the other tonics,
+  the Physician's Remedy, a Gift and a request's letter or heirloom on a plain right-click, which only opened the trades.
+- The other items a villager takes on a click work from the off hand too, with the main hand empty (B342): a City Plan
+  (the Steward), a job's item (a new job at the block they stand by), the hiring items (lapis, a compass, flint, shears
+  and the rest), a Blueprint, a Book and Quill, a Wonder Plan, a marker, a Delivery Note, a fishing rod and a guard's
+  gear (but not a shield, which stays in the off hand). Before, the click showed the builder's status line or opened the
+  trades. Both hands empty still shows the status.
+
+## 0.148.1 — 2026-10-23
+
+### Fixed
+
+- A Captain's Insignia held in the off hand now pays when right-clicked on the Bounty Board or the Village Hall
+  (B338), as from the main hand; before, the click only opened the board or the hall.
+- A Book and Quill on the Blueprint Table a builder works at now writes the material list of their build, as it does on
+  the builder (B337), or says no build is under way from it; before, it only opened the table. A table no builder
+  works at still opens as usual.
+- A shop owner who sneak-right-clicks their Shop Counter with something in hand (emeralds, the goods to stock) now gets
+  the sales log as with empty hands (B336); before, nothing happened.
+- Right-clicking a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench with the Scan Tool marks it as
+  a corner again instead of opening, flipping or answering it (B335), so a build whose corner is one of those can be
+  scanned the way the tool says: one corner block, then the opposite corner.
+- Right-clicking a chest or barrel with a Delivery Note marks it again instead of opening it (B333), so a courier
+  route can be set up the way the note says: the container to take from, then the one to bring to. A note that
+  already carries 9 kinds now says so when you hold a 10th, instead of "Stop carrying" a kind it never had (B334).
+- A desert raider who climbed a sand ramp no longer gets stuck on a low step just inside the wall (B330). Coming
+  down onto a slab or a stair's lower step, it was walked back toward the ramp's top again and again; now it is let
+  go there to fight like one that lands on the ground.
+- A desert raider who climbed a sand ramp no longer stands for good on raised ground inside the wall (B331). Behind
+  a wall with a terrace, a raised floor or a thick walkway inside, it was pushed again and again toward the spot it
+  already stood on; now it drops in where the ground is low enough and is let go there to fight.
+- A Golem Smith's Hauler or Farmhand Golem no longer stands stuck among villagers who stand still, such as shop
+  villagers with no AI (B329). After a fight it could end up wedged between two of them, held back by their push for
+  good. Now a golem that gets no farther for 2 seconds squeezes past them and goes on with its job.
+- A Wonder crew no longer stands idle near the top of a big build (B326): when a member held a column and never laid
+  its block (most likely the folly dome's centre tile), the lead waited on it with no end while going back over the blocks
+  it had put off. Once the crew has stood still for 10 seconds, the lead now takes that column over and lays the block
+  itself.
+- Standing next to a conscript in a raid no longer swaps his militia sword for the wares he'd show you (B324, B327):
+  vanilla's trade display put one of his wares (a pumpkin pie, say) in his hand, and he fought on without the sword.
+- A conscript whose hand is emptied in the middle of a fight under Conscription takes the militia's stone sword up
+  again at once (B324): the sword was handed out only as each fight began, so a villager whose hand was emptied mid-fight
+  fought on bare-handed until that raider was dead.
+- A Pidgey taking the air mail up no longer risks being sent back to your PC at the top of its climb (B89): the flight
+  stopped as little as half a block under the top of what its pasture lets it roam, and a tick of the Pidgey's own flying
+  there could carry it out, which Cobblemon answers by recalling it. It now stays 2 blocks under.
+
+## 0.148.0 — 2026-10-22
+
 ### Added
 
 - Three storage builds at the Blueprint Table, each a Storehouse: the Storage Hall, the Terminal Nook and the Warehouse. With Tom's Simple Storage they are built of its blocks, every chest on one network with terminals to search it; without it, of plain chests and barrels (2.1, behind its expansion switch; 37.17).
@@ -23,6 +138,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Settlers leaving for a colony no longer miss the bell because of a free workstation: a jobless volunteer who had his eye on one could stand by it the whole gathering (the walk to it kept winning over the walk to the hall), and the bell rang without him. Called to the hall, a settler now lets that workstation go, and it is free again for the village.
 - A Pokémon Trader no longer walks off while you're trading with him: with his trade screen open he stops his rounds and stays facing you, like a vanilla villager at his trade screen. Before, he could stroll out of reach mid-trade and the screen shut before your second click (B312).
 - The Colossus's lantern is lit again: a builder or villager boxed in inside the ring of panes where its glowstone goes, with nowhere near to step to, is now moved to a free spot further off, so the glowstone is laid instead of given up with everything over it, which left the lantern hollow (B308).
 - A Storehouse with two Tom's Simple Storage inventory connectors on one cable network now counts each chest once: before, each connector was read as the whole network, so every item there was counted twice (and a second connector touching one of the network's chests counted that chest twice too). It now reads the network through one connector (B305).

@@ -3,7 +3,7 @@
 A seasoned Builder who runs a village from its City Plan: he decides what the village needs next, finds the plot and
 has the builders build it. Part of 1.1 (Villages that build themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22
+Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328
 
 ## What a player sees
 
@@ -26,7 +26,8 @@ roads and wall line on the ground around you as colored dust that only you see.
 **The Steward.** Sneak-right-click a Builder of Journeyman level or higher, standing by the hall, with that hall's
 City Plan. He becomes the Steward, one per hall, in a clerk's long coat. Each morning he walks his rounds with the
 plan in his hands (his open builds, the zones, the storehouse), then plans at the hall until evening. The line over
-his head says what and why: "Planning a Stone House: 3 villagers have no bed".
+his head says what and why: "Planning a Stone House: 3 villagers have no bed". A count of one reads in the singular:
+"1 villager has no bed", "1 job here has no workplace of its trade" (B377).
 
 **His desk.** The hall's "What next?" page becomes his desk. Three modes: Ask me first, Run the village, Rest. Up to
 9 proposals, each saying what, why, where and what it needs, with Approve, Decline, Show me, Another spot and Another
@@ -127,7 +128,8 @@ Roads and walls have their own switches: see [Roads and walls](roads-and-walls.m
 GameTests: `StewardGameTests` (12), `StewardRulesGameTests` (19), `StewardHomesRulesGameTests` (12),
 `StewardCivicRulesGameTests` (20), `StewardDeskGameTests` (7), `StewardJobsGameTests` (10),
 `StewardSafetyGameTests` (7), `StewardRoundsQaGameTests` (2), `CityPlanGameTests` (7), `CityPlanScreenGameTests` (3),
-`OldHousesGameTests` (7), `RenewalGameTests` (9), `DoorJamGameTests` (1), `AtticBedGameTests` (1).
+`OldHousesGameTests` (7), `RenewalGameTests` (9), `DoorJamGameTests` (1), `AtticBedGameTests` (1), `CountWordsGameTests`
+(2, B377: the workplace reason and the Storehouse stock line with one and with two).
 
 Showcase scenes: `steward` (the morning rounds), `steward_rules`, `steward_desk`, `steward_safety`, `steward_jobs`,
 `steward_homes`, `steward_civic`, `old_houses`, `renewal`, `city_plan`, `city_plan_ground`, `city_timelapse` (a

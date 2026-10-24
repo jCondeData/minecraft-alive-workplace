@@ -4,7 +4,7 @@ ROADMAP 32.12. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 (`Expansions.M32`); GameTests and the showcase run with it on. A new kind of guard (see [Raids and threats](raids.md)) who finds
 where a lair (see [Lairs and the Defense page](lairs.md)) really is, and brings home a map to it.
 
-Roadmap items: 32.12
+Roadmap items: 32.12, B368
 
 ## What a player sees
 
@@ -27,7 +27,8 @@ Roadmap items: 32.12
 - **Home.** The chronicle and chat say the scout is back. The **Defense page** now gives the lair's **exact place**
   ("At 120, 64, -340", on the where slot and the scouting slot) with who found it and when, and on the scouting slot
   the **captain** and the **strength**. In the **chest by their grindstone** is a **Scouting Report**: a filled map
-  like an explorer map, drawn between the village and the lair at the smallest scale that shows both, with the
+  like an explorer map, drawn between the village and the lair at the smallest scale that shows both (lined up with
+  the game's own map squares when one holds both, else centred halfway between them, so both are always on it), with the
   village's mark and a **red X** on the lair, a dark red border color, called "Scouting Report: Bandit camp", its
   tooltip listing the **raiders**, the **captain**, the **strength** and who scouted it on which day. No room in the
   chest: it drops at the scout's feet.
@@ -86,4 +87,6 @@ No new item: the Scouting Report is a vanilla filled map with a name, lore, a ma
 blocks off, the scout gets within 24 blocks and is home within 2400 ticks with the report (its red X on the lair) and
 the page's exact place; a bandit goes for a plain guard 10 blocks off but not a scout; a mission and what is known
 survive a save and load, and nobody goes with no lair, by night or with no scout; fleeing raiders are trailed home.
+`QaScoutGameTests` (3, QA lane D): a lair's bandit does go for a scout exactly 8 blocks off and one 5 blocks off; a
+desert lair's husk (the lair's tag, not the bandits') goes for a plain guard 10 blocks off but not a scout as far.
 Scene `scouts`.

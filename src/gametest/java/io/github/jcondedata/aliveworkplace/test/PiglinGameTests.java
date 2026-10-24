@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.threat.Culture;
+import io.github.jcondedata.aliveworkplace.threat.HostileSpawns;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.Piglins;
 import io.github.jcondedata.aliveworkplace.threat.Plunder;
@@ -33,6 +34,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
@@ -361,5 +363,137 @@ public class PiglinGameTests implements FabricGameTest {
 			helper.assertTrue(raiding == 5 && turned.size() >= 9, "zombified: " + turned.size() + ", of them raiding " + raiding);
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * B373: the outpost's band and its raiders never go through its lit portal. One of the band and one raider are put
+	 * in the portal and are still here 40 ticks later, while a plain piglin put in beside them leaves for the Nether
+	 * (the portal works).
+	 */
+	//$ gametest_ticks_batch AREA '80' '"outpostPortalKeepsBand"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "outpostPortalKeepsBand")
+	public void theOutpostsBandAndRaidersStayOutOfItsPortal(GameTestHelper helper) {
+		BlockPos hall = village(helper, new BlockPos(1, 2, 1));
+		ServerLevel level = helper.getLevel();
+		Culture culture = piglins(helper);
+		boolean lairs = Lairs.ENABLED;
+		Lairs.ENABLED = true;
+		java.util.List<java.util.UUID> strays = new java.util.ArrayList<>();
+		Leftovers.after(helper, () -> {
+			Lairs.forget(level);
+			Lairs.ENABLED = lairs;
+			ServerLevel nether = level.getServer().getLevel(net.minecraft.world.level.Level.NETHER);
+			if (nether != null) {
+				strays.forEach(id -> {
+					net.minecraft.world.entity.Entity e = nether.getEntity(id);
+					if (e != null) {
+						e.discard();
+					}
+				});
+			}
+		});
+		helper.setBlock(new BlockPos(1, 2, 1), ModBlocks.VILLAGE_HALL);
+		((VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(VillageRanks.Rank.TOWN);
+		helper.runAfterDelay(2, () -> {
+			Lairs.Lair lair = Lairs.found(level, hall, helper.absolutePos(new BlockPos(15, 1, 15)), PIGLINS);
+			helper.assertTrue(lair != null && lair.culture().equals(PIGLINS), "no outpost: " + lair);
+			List<BlockPos> portal = Piglins.portalBlocks(level, lair);
+			helper.assertTrue(!portal.isEmpty(), "the outpost's portal isn't lit");
+			BlockPos in = portal.get(0);
+			Mob member = Lairs.band(level, lair).stream().filter(m -> !m.getUUID().equals(lair.captain())).findFirst().orElseThrow();
+			VillageRaids.Raid raid = VillageRaids.start(level, hall, 8, 0, Double.NaN, culture, RandomSource.create(7L));
+			helper.assertTrue(raid != null, "no raid");
+			Mob raider = level.getEntitiesOfClass(Mob.class, helper.getBounds().inflate(32), m -> m.getTags().contains(VillageRaids.TAG)).get(0);
+			Piglin plain = EntityType.PIGLIN.create(level);
+			plain.setImmuneToZombification(true);
+			plain.moveTo(in.getX() + 0.5, in.getY(), in.getZ() + 0.5, 0f, 0f);
+			level.addFreshEntity(plain);
+			strays.add(plain.getUUID());
+			// Each of them is put back in the portal every tick for 20 ticks: no wandering out of it.
+			for (int t = 0; t < 20; t++) {
+				helper.runAfterDelay(t, () -> {
+					for (Mob m : List.of(member, raider, plain)) {
+						if (!m.isRemoved()) {
+							m.teleportTo(in.getX() + 0.5, in.getY(), in.getZ() + 0.5);
+						}
+					}
+				});
+			}
+			helper.runAfterDelay(40, () -> {
+				helper.assertTrue(plain.isRemoved() && plain.getRemovalReason() == net.minecraft.world.entity.Entity.RemovalReason.CHANGED_DIMENSION,
+					"a plain piglin in the portal didn't leave, so it proves nothing: " + plain.getRemovalReason());
+				for (Mob m : List.of(member, raider)) {
+					helper.assertTrue(!m.isRemoved() && m.level() == level, "went through the outpost's portal: " + m + " " + m.getRemovalReason());
+				}
+				helper.succeed();
+			});
+		});
+	}
+
+	/**
+	 * B356: a raiding piglin and hoglin turn zombified (the Warlord's fall) while another mod's blocklist refuses every
+	 * hostile mob, as Cobbleverse's MobsBeGone does. With forceThreatSpawns on, each turned mob is in the world, zombified,
+	 * with its raid and role tags (saved with it), and the old one is gone; the log says it was placed anyway.
+	 */
+	//$ gametest_ticks_batch AREA '20' '"zombifyRefused"'
+	@GameTest(template = AREA, timeoutTicks = 20, batch = "zombifyRefused")
+	public void aRefusedBandStillTurnsZombifiedWhileForced(GameTestHelper helper) {
+		zombifyRefused(helper, true);
+	}
+
+	/**
+	 * B356, the switch off: with forceThreatSpawns off, a refused turned mob is left out (neither the piglin nor the
+	 * zombified one stays), zombify says so, and the log names forceThreatSpawns.
+	 */
+	//$ gametest_ticks_batch AREA '20' '"zombifyRefusedOff"'
+	@GameTest(template = AREA, timeoutTicks = 20, batch = "zombifyRefusedOff")
+	public void aRefusedBandIsLeftOutWhenForcingIsOff(GameTestHelper helper) {
+		zombifyRefused(helper, false);
+	}
+
+	private static void zombifyRefused(GameTestHelper helper, boolean force) {
+		village(helper, HALL);
+		ServerLevel level = helper.getLevel();
+		Culture culture = piglins(helper);
+		Leftovers.after(helper, () -> {
+			HostileSpawns.REFUSED_FOR_TESTS = null;
+			HostileSpawns.FORCE = true;
+			HostileSpawns.forget();
+		});
+		Mob piglin = raider(helper, culture, EntityType.PIGLIN, new BlockPos(4, 2, 4));
+		Mob hoglin = raider(helper, culture, EntityType.HOGLIN, new BlockPos(8, 2, 4));
+		helper.assertTrue(piglin.isAlive() && hoglin.isAlive() && level.getEntity(piglin.getUUID()) == piglin, "the raiders weren't spawned");
+		for (Mob m : List.of(piglin, hoglin)) {
+			m.addTag(Threats.RAIDER_TAG);
+			m.addTag("aliveworkplace_role_test");
+		}
+		HostileSpawns.forget();
+		HostileSpawns.FORCE = force;
+		HostileSpawns.REFUSED_FOR_TESTS = e -> e instanceof Enemy;
+		Mob turnedPiglin = Piglins.zombify(level, piglin);
+		Mob turnedHoglin = Piglins.zombify(level, hoglin);
+		HostileSpawns.REFUSED_FOR_TESTS = null;
+		helper.assertTrue(level.getEntity(piglin.getUUID()) == null && level.getEntity(hoglin.getUUID()) == null,
+			"the piglin or hoglin is still there after turning");
+		if (force) {
+			for (Mob turned : new Mob[] {turnedPiglin, turnedHoglin}) {
+				helper.assertTrue(turned != null && !turned.isRemoved() && level.getEntity(turned.getUUID()) == turned,
+					"a turned mob isn't in the world: " + turned + "; last warning: " + HostileSpawns.lastWarning());
+				helper.assertTrue(turned.getTags().contains(Threats.RAIDER_TAG) && turned.getTags().contains("aliveworkplace_role_test"),
+					"the turned mob lost its raid tags: " + turned.getTags());
+				CompoundTag saved = turned.saveWithoutId(new CompoundTag());
+				helper.assertTrue(saved.getList("Tags", 8).toString().contains(Threats.RAIDER_TAG), "its raid tag isn't saved: " + saved.get("Tags"));
+			}
+			helper.assertTrue(turnedPiglin instanceof ZombifiedPiglin && turnedHoglin instanceof Zoglin,
+				"turned into " + turnedPiglin.getType() + " and " + turnedHoglin.getType());
+			helper.assertTrue(HostileSpawns.lastWarning().contains("placed it directly"), "the log: " + HostileSpawns.lastWarning());
+		} else {
+			helper.assertTrue(turnedPiglin == null && turnedHoglin == null, "zombify said a refused mob turned: " + turnedPiglin + ", " + turnedHoglin);
+			AABB around = helper.getBounds().inflate(8);
+			List<Mob> stayed = level.getEntitiesOfClass(Mob.class, around, m -> m instanceof ZombifiedPiglin || m instanceof Zoglin || Piglins.piglinKind(m));
+			helper.assertTrue(stayed.isEmpty(), "left in the world with forceThreatSpawns off: " + stayed);
+			helper.assertTrue(HostileSpawns.lastWarning().contains("forceThreatSpawns is off"), "the log: " + HostileSpawns.lastWarning());
+		}
+		helper.succeed();
 	}
 }

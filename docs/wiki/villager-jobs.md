@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349
 
 ## What a player sees
 
@@ -169,12 +169,14 @@ mood). The Builder's page has the level table.
 players can hand things over; the Village Hall lists it too. The board is drawn like the Blueprint Table (26.12): the
 requests as a list on the left (what, how many, for whom and how far), the store's numbers, the Steward's shopping
 list and the stock orders "at a glance" on the right, and a request under the mouse read out in full. A click hands
-over what you have, as before.
+over what you have, as before, and the request drops by that much at once, so a quick second click hands
+nothing more than is still needed (B344). On the stock orders page, the item in your hand (the off hand's when the
+main hand is empty, B351) gets the "Order" button.
 
 **Miners make their own pickaxe (36.11).** A Miner whose pickaxe wore out, or who has none, first looks in their own
 chests for one; with none there, they make one at their Blast Furnace from what they mined themselves: three
 Cobblestone (or Cobbled Deepslate or Blackstone) from their bag and their chests, and two Sticks from there or from the
-village store, or two Planks cut into sticks (the spare two go in the bag). A Journeyman makes iron when there are three
+village store, or two Planks cut into sticks (the spare sticks are kept). A Journeyman makes iron when there are three
 Iron Ingots in their chests (the blast furnace's own, often), an Expert or Master diamond with three Diamonds: always
 the best they can. It takes three seconds at the furnace, the line over their head says "making a pickaxe", and the
 owner reads "Dara made a new Stone Pickaxe at their workstation from what they mined." Nothing is taken unless all of
@@ -205,6 +207,22 @@ mid-tick. Supply chests are looked for only in loaded chunks, and the search nev
 Village Hall to a spot is searched for once a tick (a worker's pace asks for it for each of its sources), the list of
 finished buildings a bed is looked up in (for a villager's home) is worked out once a tick, and the hall's
 list of free workstations finds each kind of workstation's job once.
+
+**A shop sells only what its chests hold (B348).** A Shopkeeper's offers are built from the stock when you talk to
+them, but the sale itself is checked at the moment of the trade: if the chests by the Shop Counter no longer hold a
+whole lot (the owner took it back while you had the trades open, a hopper drained it, another buyer got there first),
+the goods don't appear for your payment, a click on them takes nothing, your emeralds stay in the slot and the offer
+shows as sold out. Talk to the shopkeeper again once the shop is restocked. Every sale still takes its goods out of
+the chests and puts the payment in.
+
+**Hoppers stay out of the price list (B349).** A hopper under a Shop Counter pulls nothing out of it, and a hopper,
+dropper or pipe pointed at it pushes nothing in, so nobody can empty or change someone's prices with automation. Only
+the counter's own screen changes them, and only the owner, friends and operators open it. The chests next to the
+counter are ordinary chests: hoppers still fill and drain those.
+
+**Item prices count the off hand (B350).** With CobbleDollars, a shop's own screen pays a price that isn't in emeralds
+(say 3 diamonds) with the price items you carry: the bag, the hotbar and the off hand all count, and the payment comes
+from the bag and hotbar first, then the off hand. Armor you wear never pays.
 
 **Outfits (24.1).** Each of the mod's professions has a vanilla-style outfit and a zombie villager version.
 
@@ -244,7 +262,7 @@ gives no marker back (there was none), and the Miner takes the pit again within 
 | `maxWorkPace` | 200 (100 to 400) | The cap on every speed bonus together, in percent of the usual pace |
 | `workplaceKeepWorkLoaded` | true | Game rule: builds and quarries keep running while their player is online |
 | `workplaceVillageFarms` | true | Game rule: a village farmer with no field takes on the farm by their composter |
-| `workplaceRetraining` | true | Game rule: a villager who has a job can be retrained as a Builder for a price; false: the old rule |
+| `workplaceRetraining` | true | Game rule: a villager who has a job can be retrained for a price (any job at the Village Hall, Builder at a Blueprint Table); false: the old rule |
 | `retrainPrices` | 5, 10, 20, 35, 50 | Emeralds to retrain, Novice to Master (each 0 to 1000; in the file only) |
 | `vintners` | on from 1.0 | The Vintner job |
 | `tailors` | on from 1.0 | The Tailor job |
@@ -279,7 +297,9 @@ and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill
 - Older job blocks that still work where placed: Builder's Bench (`aliveworkplace:builders_bench`), Miner's Bench
   (`aliveworkplace:miners_bench`), Chopping Block (`aliveworkplace:chopping_block`).
 - Markers: Quarry Marker (`aliveworkplace:quarry_marker`), Field Marker (`aliveworkplace:field_marker`), Delivery
-  Note (`aliveworkplace:delivery_note`), Patrol Map (`aliveworkplace:patrol_map`).
+  Note (`aliveworkplace:delivery_note`), Patrol Map (`aliveworkplace:patrol_map`). A Delivery Note marks the chest,
+  barrel or Pasture Block it right-clicks without opening it (B333), and a note already carrying 9 kinds answers a
+  10th with `message.aliveworkplace.route.filter_full` and stays as it is (B334).
 - Texts: `message.aliveworkplace.job.chosen`, `message.aliveworkplace.job.needs_station`,
   `message.aliveworkplace.job.station_taken`, `message.aliveworkplace.job.class_needed`,
   `tooltip.aliveworkplace.station.hint`, `message.aliveworkplace.retrain.offer`, `.confirm`, `.short`, `.done`,
@@ -354,7 +374,13 @@ there, save and reload mid-way, the switch off, iron and diamond as the miner ri
 `QuarryBuildGameTests` (10, 36.12: listed with its Jobs line and nothing drawn in the pit, the Miner takes and mines the
 pit, regrowth bottom up at the set rate with a player's block kept and nothing outside touched, a day grows back only a
 day's worth, the weighted mix, save and reload of the site and mid-dig, the switch off, the Quarry Marker still works,
-the new sentences). The client mixins themselves are proved by the scene.
+the new sentences), `QaStageThreeBugTests` (B333: a survival player's right-click marks a chest, then a barrel, and
+neither opens; B334: a tenth kind on a full note), `QaStageThreeGameTests` (a sneak-click clears the note, a non-container
+is refused, up to 9 kinds). `ShopStockGameTests` (5, B348: the chest emptied while the trades are open sells
+nothing and shows sold out, emptied after the payment is in hands over nothing and keeps the emerald, less than a lot
+left isn't sold, a restocked shop sells again, a normal sale takes the goods from the chest), `ShopCounterHopperGameTests` (3,
+B349: a hopper under the counter pulls nothing out while one under a chest beside it does, a hopper on top pushes
+nothing in, the owner still sets and takes back a price on the counter's screen). The client mixins themselves are proved by the scene.
 
 Showcase scenes: `job_plate` (a Journeyman fisherman, Dara the Expert builder and a jobless villager, each looked at), `miner_pickaxe` (a worn pickaxe breaks, a new one is made at the blast furnace), `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,

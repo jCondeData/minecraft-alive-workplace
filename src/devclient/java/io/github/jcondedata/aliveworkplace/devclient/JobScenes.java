@@ -94,6 +94,18 @@ final class JobScenes {
 	static final java.util.concurrent.ConcurrentLinkedQueue<String> SHOTS = new java.util.concurrent.ConcurrentLinkedQueue<>();
 
 	/** One step of a screen scene: optionally act on the server, then point at {@code slot} (-1: nowhere) and shoot. */
+	/** B329: what a Golem Smith's golem is up to, for a scene's timeout message. */
+	private static String golemState(@org.jetbrains.annotations.Nullable net.minecraft.world.entity.animal.IronGolem g) {
+		if (g == null) {
+			return "no golem";
+		}
+		String goals = ((io.github.jcondedata.aliveworkplace.mixin.MobAccessor) g).aliveworkplace$goals().getAvailableGoals().stream().filter(net.minecraft.world.entity.ai.goal.WrappedGoal::isRunning)
+			.map(w -> w.getGoal().getClass().getSimpleName()).collect(java.util.stream.Collectors.joining("+"));
+		return io.github.jcondedata.aliveworkplace.legend.GolemSmith.role(g) + (g.isAlive() ? "" : " (dead)") + " at " + g.blockPosition().toShortString()
+			+ " running [" + goals + "] target " + (g.getTarget() == null ? "none" : g.getTarget().getType().getDescriptionId())
+			+ " load " + io.github.jcondedata.aliveworkplace.store.HaulerGolems.load(g);
+	}
+
 	/** gifted_born's family (29.7): a still villager facing the camera; a parent is a schooled Master farmer. */
 	private static Villager bornSceneVillager(ServerLevel level, BlockPos at, String name, boolean master) {
 		Villager v = EntityType.VILLAGER.spawn(level, at, MobSpawnType.COMMAND);
@@ -450,12 +462,36 @@ final class JobScenes {
 		return out.toString();
 	}
 
+	/** B324: what each conscript holds in each hand, whether they fight and are called up, and their activity. */
+	private static String conscriptHands() {
+		StringBuilder out = new StringBuilder();
+		for (Villager v : conscripts) {
+			out.append(v.getVillagerData().getProfession()).append(" holds ").append(describeHeld(v.getMainHandItem()))
+				.append(", off hand ").append(describeHeld(v.getOffhandItem()))
+				.append(v.isAlive() ? "" : ", dead")
+				.append(io.github.jcondedata.aliveworkplace.hall.Conscription.militia(v) != null ? ", called up" : ", not called up")
+				.append(io.github.jcondedata.aliveworkplace.guard.MilitiaCombat.isFighting(v) ? ", fighting" : ", not fighting")
+				.append(", activity ").append(v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("none")).append("; ");
+		}
+		return out.toString();
+	}
+
+	private static String describeHeld(ItemStack stack) {
+		if (stack.isEmpty()) {
+			return "nothing";
+		}
+		return io.github.jcondedata.aliveworkplace.hall.Conscription.isMilitiaSword(stack) ? "the militia's sword"
+			: net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+	}
+
 	/** conscription: the villagers called up, and the raiders they beat back. */
 	private static final List<Villager> conscripts = new java.util.concurrent.CopyOnWriteArrayList<>();
 	private static final List<net.minecraft.world.entity.monster.Zombie> conscriptionRaiders = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/**
 	 * The conscripts who landed a blow on a raider, recorded as each blow lands (B275): a raider's last attacker was the
-	 * old measure, but the guard's iron sword often dealt the killing blow and hid the conscripts' strikes.
+	 * old measure, but the guard's iron sword often dealt the killing blow and hid the conscripts' strikes. Fabric's
+	 * AFTER_DAMAGE skips a blow that kills (AFTER_DEATH fires instead), so a conscript whose only blows were killing
+	 * blows read "never struck" (B322: the librarian finished two raiders); both events are watched.
 	 */
 	private static final java.util.Set<Villager> conscriptsStruck = java.util.concurrent.ConcurrentHashMap.newKeySet();
 	private static boolean conscriptBlowsWatched;
@@ -466,6 +502,11 @@ final class JobScenes {
 		}
 		conscriptBlowsWatched = true;
 		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, base, taken, blocked) -> {
+			if (source.getEntity() instanceof Villager v && conscripts.contains(v) && conscriptionRaiders.contains(entity)) {
+				conscriptsStruck.add(v);
+			}
+		});
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
 			if (source.getEntity() instanceof Villager v && conscripts.contains(v) && conscriptionRaiders.contains(entity)) {
 				conscriptsStruck.add(v);
 			}
@@ -2143,9 +2184,12 @@ final class JobScenes {
 			};
 		}, null));
 		// Sieges III (ROADMAP 32.6): raiders with axes lay siege to a Gatehouse with a Wall Tower beside it. The two archers
-		// of the Guard Posts inside leave them for their battle stations, one on each build, and shoot down at the raiders at
-		// the portcullis. (These guards think for themselves: the walk, the climb and the shooting are the feature.)
-		SCENES.put("battle_stations", new Job("the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 1500,
+		// of the Guard Posts inside leave them for their battle stations, one on each build, and shoot down at the raiders
+		// coming at the portcullis. (These guards think for themselves: the walk, the climb and the shooting are the feature.)
+		// B320: a raider at the portcullis stands under the Gatehouse's walkway, out of sight of every station (only murder
+		// holes would see him), so the archers shoot the raiders on their way in: the raiders start 30 blocks out and wait
+		// there (out of the archers' reach) until both archers are on their stations, or for 30 seconds at most.
+		SCENES.put("battle_stations", new Job("the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders coming at the portcullis", 1500,
 			new Vec3(14.5, -51.0, 12.5), new Vec3(1.5, -56.5, -3.0), (level, player) -> {
 			BlockPos hall = STATION.north(14);
 			BuildSiteManager sites = BuildSiteManager.get(level);
@@ -2178,11 +2222,12 @@ final class JobScenes {
 					"{\"roster\": [{\"entity\": \"minecraft:vindicator\", \"share\": 1, \"role\": \"melee\"}], \"tactics\": [\"ram_gates\"]}").getAsJsonObject());
 			io.github.jcondedata.aliveworkplace.threat.Culture.Member member = culture.roster().get(0);
 			List<net.minecraft.world.entity.Mob> raiders = new java.util.ArrayList<>();
-			for (double[] at : new double[][] {{0.5, 6.5}, {-2.5, 8.5}, {3.5, 8.5}, {6.5, 7.5}}) {
+			for (double[] at : new double[][] {{0.5, 26.5}, {-2.5, 28.5}, {3.5, 28.5}, {6.5, 27.5}}) {
 				net.minecraft.world.entity.Mob raider = io.github.jcondedata.aliveworkplace.threat.Threats.create(level, member);
 				raider.moveTo(at[0], STATION.getY(), at[1], 180f, 0f);
 				raider.finalizeSpawn(level, level.getCurrentDifficultyAt(raider.blockPosition()), MobSpawnType.EVENT, null);
 				io.github.jcondedata.aliveworkplace.threat.Threats.outfit(level, raider, culture, member);
+				raider.setNoAi(true); // waiting out of reach until the archers are up (B320)
 				level.addFreshEntityWithPassengers(raider);
 				raiders.add(raider);
 			}
@@ -2195,9 +2240,20 @@ final class JobScenes {
 			List<BlockPos> stations = io.github.jcondedata.aliveworkplace.guard.BattleStations.stations(level, hall);
 			Showcase.check(stations.stream().anyMatch(s -> s.getX() < STATION.getX() + 6) && stations.stream().anyMatch(s -> s.getX() >= STATION.getX() + 6),
 				"the Gatehouse and the Wall Tower both have battle stations");
+			int[] ticks = {0};
+			float[] healthAtStart = {-1f};
 			return l -> {
+				boolean posted = archers.stream().allMatch(io.github.jcondedata.aliveworkplace.guard.BattleStations::onStation);
+				if (healthAtStart[0] < 0 && (posted || ++ticks[0] >= 600)) {
+					// The archers are up (or have had 30 seconds): the raiders come on. Only hurt from now on counts.
+					healthAtStart[0] = 0f;
+					for (net.minecraft.world.entity.Mob r : raiders) {
+						r.setNoAi(false);
+						healthAtStart[0] += r.isAlive() ? r.getHealth() : 0f;
+					}
+				}
 				// B252: on a timeout, say where each archer stood, their station and what they were shooting at
-				StringBuilder why = new StringBuilder();
+				StringBuilder why = new StringBuilder(healthAtStart[0] < 0 ? "the raiders were still held back (the archers never both on station); " : "");
 				for (Villager a : archers) {
 					net.minecraft.world.entity.LivingEntity foe = io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(a);
 					why.append(why.length() == 0 ? "" : "; ").append("archer at ").append(String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f", a.getX(), a.getY(), a.getZ()))
@@ -2211,12 +2267,17 @@ final class JobScenes {
 				}
 				for (net.minecraft.world.entity.Mob r : raiders) {
 					why.append("; raider at ").append(String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f, health %.0f/%.0f%s, seen by %d", r.getX(), r.getY(), r.getZ(),
-						r.getHealth(), r.getMaxHealth(), r.isAlive() ? "" : " (dead)", archers.stream().filter(a -> a.hasLineOfSight(r)).count()));
+						r.getHealth(), r.getMaxHealth(), r.isAlive() ? "" : " (dead)", archers.stream().filter(a -> a.hasLineOfSight(r)).count()))
+						// under the walkway, at the portcullis, no station sees him: he had to be shot on his way in
+						.append(r.isAlive() && r.getZ() < STATION.getZ() - 1.5 && r.getZ() > STATION.getZ() - 4 ? " (at the portcullis, under the walkway: out of every station's sight)" : "");
 				}
 				timeoutWhy = why.toString();
-				boolean posted = archers.stream().allMatch(io.github.jcondedata.aliveworkplace.guard.BattleStations::onStation);
 				boolean both = archers.stream().anyMatch(a -> a.getX() < STATION.getX() + 6) && archers.stream().anyMatch(a -> a.getX() >= STATION.getX() + 6);
-				return posted && both && raiders.stream().anyMatch(r -> !r.isAlive() || r.getHealth() < r.getMaxHealth());
+				float health = 0f;
+				for (net.minecraft.world.entity.Mob r : raiders) {
+					health += r.isAlive() ? r.getHealth() : 0f;
+				}
+				return healthAtStart[0] >= 0 && posted && both && health < healthAtStart[0];
 			};
 		}, null));
 		// A day's warning (ROADMAP 32.14): a Gatehouse with a Wall Tower beside it and a Village Hall behind, an archer
@@ -3755,9 +3816,21 @@ final class JobScenes {
 				zombie.setTarget(sentry);
 				zombies.add(zombie);
 			}
-			return l -> farmhand != null && sentry != null && store.countItem(Items.COBBLESTONE) + store.countItem(Items.OAK_LOG) + store.countItem(Items.COAL) >= 9 * 64
-				&& field.countItem(Items.WHEAT) >= 25 && zombies.stream().noneMatch(net.minecraft.world.entity.Entity::isAlive)
-				&& sentry.position().distanceTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(post)) < 3;
+			return l -> {
+				if (farmhand == null || sentry == null) {
+					timeoutWhy = "a golem wasn't built (farmhand " + farmhand + ", sentry " + sentry + ")";
+					return false;
+				}
+				int stored = store.countItem(Items.COBBLESTONE) + store.countItem(Items.OAK_LOG) + store.countItem(Items.COAL);
+				int wheat = field.countItem(Items.WHEAT);
+				long alive = zombies.stream().filter(net.minecraft.world.entity.Entity::isAlive).count();
+				double fromPost = sentry.position().distanceTo(net.minecraft.world.phys.Vec3.atBottomCenterOf(post));
+				// B329: the timeout names every part's state, so a failure says which golem it waited on and what it was doing
+				timeoutWhy = "stored " + stored + "/" + 9 * 64 + ", drop box holds " + (9 * 64 - stored) + ", " + golemState(hauler)
+					+ "; wheat " + wheat + "/25, " + golemState(farmhand) + "; zombies alive " + alive + ", sentry " + String.format("%.1f", fromPost)
+					+ " from its post, " + golemState(sentry);
+				return stored >= 9 * 64 && wheat >= 25 && alive == 0 && fromPost < 3;
+			};
 		}, null));
 		SCENES.put("bard", job("the bard played a record at the Music Stand", 1200, (level, player) -> {
 			Villager b = picked(level, player, STATION, Blocks.JUKEBOX, Items.MUSIC_DISC_CAT);
@@ -6656,8 +6729,16 @@ final class JobScenes {
 		// the first line of theirs over their head and in the chat.
 		SCREENS.put("heart_events_work", new Screen("at four hearts a villager of each job family began the story of their work",
 			new Vec3(1.5, -60, 6.5), new Vec3(1.5, -58.8, 3.5),
-			(level, player) -> level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
-				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH)),
+			(level, player) -> {
+				// B319: every teller has four hearts and a friend near, so the morning's request roll (one in four) could
+				// pick the one just spawned, before their telling began, and a villager asking for help tells no story
+				// (HeartEvents: not while PersonalRequests.offer). Twice that was Wren, the last: "not telling". Requests
+				// are off for this scene, which is about the stories (the personal_request scenes show them).
+				io.github.jcondedata.aliveworkplace.story.PersonalRequests.ENABLED = false;
+				io.github.jcondedata.aliveworkplace.story.PersonalRequests.forget();
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			},
 			java.util.stream.Stream.of(
 					new String[] {"01_building", "Dara", "aliveworkplace:builder", "work_building"},
 					new String[] {"02_mining", "Bram", "aliveworkplace:miner", "work_mining"},
@@ -6696,8 +6777,12 @@ final class JobScenes {
 				}, 40)).toList(),
 			(level, player) -> {
 				var telling = subject == null ? null : io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(subject);
+				var asking = subject == null ? null : io.github.jcondedata.aliveworkplace.story.PersonalRequests.offer(subject);
 				Showcase.check(telling != null && telling.said >= 1 && telling.event.id().getPath().equals("work_none"),
-					"the last of them, without a trade, is telling theirs: " + (telling == null ? "not telling" : telling.event.id() + ", " + telling.said + " lines"));
+					"the last of them, without a trade, is telling theirs: " + (telling == null ? "not telling" : telling.event.id() + ", " + telling.said + " lines")
+						+ (telling == null && subject != null ? " (" + (asking != null ? "asking for help instead, " : "") + "doing "
+							+ subject.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing") + ", "
+							+ String.format("%.1f", Math.sqrt(subject.distanceToSqr(player))) + " from the player)" : ""));
 				return telling != null;
 			}));
 		// A story arc (ROADMAP 31.4): the chapter told in chat as it begins, the hall's Story tab (the first chapter ticked,
@@ -7273,7 +7358,7 @@ final class JobScenes {
 				}, 40),
 				new Step("02_conscription_fight", -1, 0, (level, player) -> {
 					long armed = conscripts.stream().filter(v -> io.github.jcondedata.aliveworkplace.hall.Conscription.isMilitiaSword(v.getMainHandItem())).count();
-					Showcase.check(armed == 3, "the three took up the militia's swords: " + armed + " of 3");
+					Showcase.check(armed == 3, "the three took up the militia's swords: " + armed + " of 3 (" + conscriptHands() + ")");
 					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[showcase] conscription fight starts: {}", conscriptionState());
 				}, 160),
 				new Step("03_conscription_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {

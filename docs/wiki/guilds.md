@@ -3,12 +3,12 @@
 A Master of a trade, given a Guild Charter, leads that trade's guild. Once the village has built a Guildhall, the
 guild's perks reach every member. Part of 1.4 (Edicts and civic items): switched on in 1.0 with every other expansion.
 
-Roadmap items: 30.17, 30.18, 30.19, 30.20, B78
+Roadmap items: 30.17, 30.18, 30.19, 30.20, B78, B341
 
 ## What a player sees
 
 Craft a Guild Charter (3 paper, an emerald, a gold ingot and red dye) and sneak-right-click a Master villager with
-it. They become the Guild Master of their trade's guild, and everyone is told ("Ada is now the Guild Master of the
+it (in either hand). They become the Guild Master of their trade's guild, and everyone is told ("Ada is now the Guild Master of the
 Builders' Guild in Thornholm!"). The guild's perks wait until a builder finishes a Guildhall in the village; then
 "The Builders' Guild is founded in its Guildhall" and the perks are in force. The Book of Edicts shows the village's
 guilds on its last row, with pages when there are more than the row holds.
@@ -38,7 +38,8 @@ Cobblemon installed.
 
 **How many.** One guild per trade, and `guildsPerRank` guilds per rank above Hamlet: with the default of 1, a
 Village has 1, a Town 2 and a City 3. With the setting at its highest (4) a City holds 12, which is why the book's
-guild row has pages (B78).
+guild row has pages (B78). A full village refuses the next charter with its count, in the singular when it is one:
+"Elderford is a Village and may have 1 guild; it has them all." (B376)
 
 **Chartered, then founded.** A charter makes the guild; a finished Guildhall (any build whose id starts with
 "guildhall") founds it. Each guild needs a Guildhall of its own: the oldest chartered guild without one claims the
@@ -99,6 +100,7 @@ member left the guild is dissolved.
 GameTests: `GuildGameTests` (6: loading, every refusal and the grant, the master kept over a reload, perks waiting
 for the Guildhall, five helpers at one build), `GuildPerkGameTests` (5), `GuildHarvestGameTests` (6),
 `GuildServiceGameTests` (5), `GuildTrainersCompatTests`, `EdictBookGameTests.everyGuildShowsOnTheGuildRow`,
-`EdictBookGameTests.qaSixGuildsHaveNoPageButtonAndSevenPage`.
+`EdictBookGameTests.qaSixGuildsHaveNoPageButtonAndSevenPage`, `QaEdictsGameTests.qaATownHasTwoGuildsAndACityThree` and
+`QaEdictsGameTests.qaAFullVillageSaysOneGuild`.
 
 Showcase scenes: `guildhall` (charters and the Guildhall), `guilds` (the other guilds at work).

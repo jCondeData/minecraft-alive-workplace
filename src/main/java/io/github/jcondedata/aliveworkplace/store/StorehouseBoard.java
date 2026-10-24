@@ -73,14 +73,18 @@ public final class StorehouseBoard {
 		ItemStack info = new ItemStack(Items.WRITABLE_BOOK);
 		info.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.info"), ChatFormatting.GOLD));
 		List<Component> lore = new ArrayList<>();
-		lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.stock", store.size(), items, SupplyContainers.freeSlots(level, store)), ChatFormatting.GRAY));
+		long free = SupplyContainers.freeSlots(level, store);
+		lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.stock", // B377, B395: each count has its singular
+			io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.chests", store.size(), store.size()),
+			io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.items", items, items),
+			io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.slots", free, free)), ChatFormatting.GRAY));
 		roomLine(level, store).ifPresent(lore::add);
 		if (networks.linked() > 0) { // 37.9: a Sophisticated Storage controller's blocks are one store
-			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.linked", networks.linked()), ChatFormatting.GRAY));
+			lore.add(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.linked", networks.linked(), networks.linked()), ChatFormatting.GRAY));
 		}
 		int joined = StorageNetworks.joinedCount(level, store);
 		if (joined > 0) { // 37.10: a Tom's Simple Storage inventory connector in the Storehouse
-			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.connector", joined), ChatFormatting.GRAY));
+			lore.add(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.connector", joined, joined), ChatFormatting.GRAY));
 		}
 		lore.add(plain(Component.translatable(requests.isEmpty() ? "screen.aliveworkplace.storehouse.nothing" : "screen.aliveworkplace.storehouse.click"),
 			ChatFormatting.GRAY));
@@ -125,7 +129,7 @@ public final class StorehouseBoard {
 		}
 		io.github.jcondedata.aliveworkplace.platform.ItemStores.Room room = SupplyContainers.room(level, store);
 		return room.bigSlots()
-			? java.util.Optional.of(plain(Component.translatable("screen.aliveworkplace.storehouse.room", room.freeItems()), ChatFormatting.GRAY))
+			? java.util.Optional.of(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.room", room.freeItems(), room.freeItems()), ChatFormatting.GRAY))
 			: java.util.Optional.empty();
 	}
 
@@ -166,7 +170,8 @@ public final class StorehouseBoard {
 		info.set(DataComponents.LORE, new ItemLore(List.of(plain(Component.translatable("screen.aliveworkplace.storehouse.orders_how"), ChatFormatting.GRAY),
 			plain(Component.translatable("screen.aliveworkplace.storehouse.orders_who"), ChatFormatting.GRAY))));
 		menu.button(INFO_SLOT, info, null);
-		ItemStack held = viewer.getMainHandItem();
+		// B351: with the main hand empty, the off hand's item is the one held (as B341/B342's clicks on villagers).
+		ItemStack held = viewer.getMainHandItem().isEmpty() ? viewer.getOffhandItem() : viewer.getMainHandItem();
 		if (!held.isEmpty() && !StockOrders.of(level, storehouse).containsKey(held.getItem())) {
 			ItemStack add = held.copyWithCount(1);
 			add.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.order_add", held.getHoverName(),
@@ -212,7 +217,7 @@ public final class StorehouseBoard {
 		icon.set(DataComponents.CUSTOM_NAME, plain(name, ChatFormatting.YELLOW));
 		List<Component> lore = new ArrayList<>();
 		int away = (int) Math.round(Math.sqrt(request.station().distSqr(viewer.blockPosition())));
-		lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.for", job(request), away), ChatFormatting.GRAY));
+		lore.add(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.for", away, job(request), away), ChatFormatting.GRAY));
 		if (request.forBlock()) {
 			lore.add(plain(Component.translatable(request.block().found() ? "screen.aliveworkplace.storehouse.found" : "screen.aliveworkplace.storehouse.made_by",
 				request.block().job()), ChatFormatting.GRAY));

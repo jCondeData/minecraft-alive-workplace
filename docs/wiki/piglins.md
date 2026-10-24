@@ -101,6 +101,15 @@ Roadmap items: 32.10
 - A plunderer that leaves at dawn while the outpost isn't loaded takes its gold with it: it is counted as lost, and
   no hoard gets it.
 - Hoglins shun Nether portals, so a hoglin ram mills about the portal for a moment before it follows the rest.
+- A threat's mobs never go through a Nether portal (B373): the outpost's band and Warlord, a bandit camp's chief and
+  men, and every raider stay in the world when they walk into the outpost's portal or a player's, while a plain piglin
+  or pillager goes through. A raider riding a mount (a baby husk's chicken jockey) keeps its mount out too, and so do
+  the Bandit King's fort's men (B375).
+- On a server whose mob blocklist refuses zombified piglins and zoglins (Cobbleverse's MobsBeGone lists nearly every
+  vanilla mob), the band turned zombified when the Warlord fell used to vanish: the game's own conversion adds the new
+  mob the ordinary way, which the blocklist refuses. Now a refused turned mob goes the way of every other foe (B208):
+  with `forceThreatSpawns` on it is placed directly, zombified and with its raid tags; off, it is left out and the
+  log says so once (B356).
 
 ## Proof
 
@@ -115,4 +124,32 @@ Roadmap items: 32.10
 - `PiglinGameTests.theWarlordsDeathPutsOutThePortalAndZombifiesTheBand`: the outpost with its 12 portal blocks lit, the
   Warlord with 100 health in gold, a raid of 5 standing in the portal, then his death: the outpost broken, no portal
   block left, no piglin or hoglin left unturned, the 5 raiders zombified and still raiders.
+- `PiglinGameTests.theOutpostsBandAndRaidersStayOutOfItsPortal`: one of the band and a raider held in the outpost's
+  portal stay, while a plain piglin beside them leaves for the Nether (B373).
+- `QaPortalThreatsGameTests.aBanditCampsChiefAndManStayOutOfAPortal`,
+  `QaPortalThreatsGameTests.aDesertLairsCaptainAndBandStayOutOfAPortal`: a lair's captain and one of its band (a bandit
+  camp's, a desert lair's) put in a lit portal by the village stay, while a plain pillager beside them leaves.
+- `QaPortalThreatBugTests.aRaiderRidingAChickenStaysOutOfAPortal`, `QaPortalThreatBugTests.aBanditOfTheFortStaysOutOfAPortal`:
+  a raider riding a chicken and one of the Bandit King's fort's men stay out of a lit portal, while a plain chicken and
+  a plain pillager go through (B375).
 - Showcase scene `piglins`: the outpost, a raid stepping out of its portal, a piglin carrying off a stack of gold.
+- `QaPiglinRaidGameTests.aRaidingHoglinGoesForAVillager`, `QaPiglinRaidGameTests.aRaidingPiglinBruteGoesForAVillager`:
+  a raiding hoglin and a raiding brute, penned with a villager, strike it themselves.
+- `QaRefusedThreatsGameTests.aPiglinOutpostStandsWhenAnotherModRefusesItsMobs`: with the world refusing every hostile
+  mob (as Cobbleverse's MobsBeGone does), the outpost's Warlord and band are in the world and still there 100 ticks on.
+- `QaRefusedThreatsGameTests.aWarlordsWholeBandAndRaidTurnZombifiedWhenHeFalls`: every piglin and hoglin of the band and
+  the raid is zombified and still there when he falls.
+- `QaRefusedWarlordGameTests.aWarlordsBandTurnsZombifiedWhenAnotherModRefusesZombifiedPiglins`: the same while the world
+  refuses every hostile mob, zombified piglins and zoglins too (B356).
+- `PiglinGameTests.aRefusedBandStillTurnsZombifiedWhileForced`, `PiglinGameTests.aRefusedBandIsLeftOutWhenForcingIsOff`:
+  a raiding piglin and hoglin turned while refused are in the world as a zombified piglin and a zoglin, with their raid
+  and role tags (saved with them); with `forceThreatSpawns` off neither the old nor the turned mob stays, and the log
+  names the switch (B356).
+- `QaPiglinIncursionGameTests` (lane D QA, 2026-10-24): a raiding brute and hoglin stay themselves after 620 ticks
+  while plain ones beside them turn; a chest exactly 4 blocks off is plundered and 5 off is not; only the gold
+  materials and golden gear are taken (not golden food, gold ores or gilded blackstone), one stack at most; the
+  Warlord's gold gear and +50 health, and gold carried home at dawn lands in the outpost's chest; the report's gold
+  sentence for 0, 1 and 64; the hoard's contents over 400 seeded rolls; the roster's 35/25/25/15 shares; a City with a
+  portal is raided, a City without one and a Hamlet with one are not.
+- `QaSandRampEdgeGameTests.aRaiderThreePastTheLandingIsNotCountedOverTheWall` (desert raiders' ramp, 32.9): the edge
+  of the "came over the wall" zone, from both sides.

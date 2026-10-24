@@ -263,7 +263,7 @@ public final class Village {
 		TOO_FAR, NOT_SHARED, NO_CHESTS
 	}
 
-	/** The nearest Storehouse {@code villager} doesn't count, why, how far it is and its owner (null: the village's). */
+	/** The nearest Storehouse {@code villager} doesn't count, why, how far it is (whole blocks, rounded up) and its owner (null: the village's). */
 	public record UnusedStore(BlockPos storehouse, StoreMiss why, int distance, @Nullable Employer owner) {
 	}
 
@@ -283,7 +283,8 @@ public final class Village {
 		UnusedStore nearest = null;
 		double radiusSqr = (double) RADIUS * RADIUS;
 		for (BlockPos storehouse : found) {
-			int distance = (int) Math.round(Math.sqrt(storehouse.distSqr(station)));
+			// B355: rounded up, so a Storehouse past the reach never reads as at it (20.4 blocks: 21, in a 20-block village)
+			int distance = (int) Math.ceil(Math.sqrt(storehouse.distSqr(station)));
 			UnusedStore miss;
 			if (storehouse.distSqr(station) > radiusSqr) {
 				miss = new UnusedStore(storehouse.immutable(), StoreMiss.TOO_FAR, distance, null);

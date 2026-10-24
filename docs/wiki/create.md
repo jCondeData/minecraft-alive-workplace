@@ -61,7 +61,10 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   plastered belfry under a dark oak hip roof and a cuckoo clock in its front, turned by a shaft up the middle of the
   tower from the wheel at its foot (cartography table; purely for show); and the **Pump House**, a small brick house
   where the wheel's cogwheel turns a mechanical pump between an intake pipe over a four-source sump (it refills) and a
-  two-high fluid tank (cauldron). `createBuilds` lists and hides all nine.
+  two-high fluid tank (cauldron). `createBuilds` lists and hides all nine. Turned or flipped at the table before it's
+  handed over, a Create build is built whole and works the same: its belts run the other way, the crushing wheels
+  still turn into the gap. Switching `createBuilds` off while one is going up only takes them off the table: the build
+  under way is finished and turns.
 
 - **Contraptions from a blueprint** (39.5). Any blueprint with Create's moving parts in it (one of the three above, or
   a player's own machine saved with a Structure Block) is built in an order that keeps it whole:
@@ -126,6 +129,11 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   what a derailed train still holds comes back out and the caravan takes the timed trip; a train broken up keeps them
   in its chest (a player breaking it up at a station gets the chest back with them), the caravan is taken off the road
   and the chronicle says "The train to Ashford was broken up on the way: the caravan's goods stayed in its chest".
+  Trains stopped altogether (`villageTrains` switched off, or Create taken out of the pack) while a caravan waited at the
+  station, rode the train or had its goods in its chest (B359): at its hall's next round it takes the timed trip and
+  arrives with its goods. With the switch off, goods in the chest come back out of it (a train no longer there keeps
+  them, as above); with Create gone the train and its chest went with Create, so the caravan's own record of its goods
+  is delivered.
 - **The Conductor** (39.7d). A jobless villager next to a Create Train Station becomes the village's Conductor, in a
   maroon railwayman's cap with a gold braid band and badge, a maroon tunic with two rows of brass buttons, a gold watch
   chain, a ticket punch at the belt and black gloves. When the village puts its train together, the Conductor by its
@@ -313,7 +321,9 @@ showcase catalog).
 
 - `machine_job`, an attachment on a worker (39.3): a trip to a machine under way: the machine's position, its file,
   the stage (`fetch`, `feed`, `return`) and what's carried. Every field is optional; without it the worker has no trip.
-  A trip saved mid-way goes on after a load, so nothing carried is lost. (The design note's per-dimension `machines`
+  A trip saved mid-way goes on after a load, so nothing carried is lost. In a world opened again after Create was taken
+  out of the pack the trip can't go on: what was carried goes back into the store by the workstation, or drops at the
+  worker's feet when there's none, and the record is cleared. (The design note's per-dimension `machines`
   list wasn't needed: workers find machines near their workstation in loaded chunks.)
 
 - On a build site (39.5): `kinetic_order` (false when absent: a site saved before 39.5 builds in today's order) and
@@ -447,6 +457,15 @@ tested (the GameTests use the table as the server does).
   `aBuilderBuildsThePumpHouseAndItTurns` (the pump; pipes and both tank blocks in place): each built from exact
   materials, nothing skipped, the job block a job site, the machine's `Speed` read by name. Scene `create_builds_more`:
   the six set down in two rows, every machine turning. Renders: `tools/blueprints/render/preview.sh greenhouse ...`.
+- `QaCreateBuildsTurnedCompatTests` (39.4, 39.5, 39.8, with Create; lane E's QA): the Workshop flipped and turned round,
+  the Watermill, the Sawmill and the Crushing Mill flipped, the Brass Foundry and the Pump House turned a quarter
+  (either way): each built from exact materials, nothing skipped, the job block a job site, its machines turning, and
+  every belt segment naming a controller segment of its own belt, numbered 0 to its length once each; the flipped
+  Crushing Mill's crusher valid, the turned Foundry's mixer at 30 RPM or more; and a Watermill finished and turning
+  after `createBuilds` went off half way up its walls. `QaCreateSchematicFilesCompatTests` (39.6): a schematic seen cut
+  short mid-upload is imported, and said, once the upload is complete; a written Schematic of a file cut short says so,
+  naming it, and makes no blueprint. `QaMechanicMendSaysCompatTests` (39.2): "Mechanic: fetching Shaft for the ..."
+  and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,
@@ -486,11 +505,34 @@ tested (the GameTests use the table as the server does).
   naming it; without a Conductor the jobless villager rides it and nobody calls. `ConductorGameTests` (without Create):
   no profession, no POI; a saved Conductor loads jobless; the seat goes to the nearest jobless grown-up, never to a
   villager with a job or a baby. Scene `village_train` (the Conductor rides and calls the stop).
+  `QaConductorCompatTests` (QA, from the guide): two jobless villagers by one station, one Conductor, still one 600
+  ticks later; a hired Conductor keeps the job for 1200 ticks with `villageTrains` off; a Conductor saved and loaded
+  keeps the job and the same trades; the trades by rank (Novices buy coal and sell rails, no schedule, signal, casing or
+  controls at Novice, controls only at Master, powered rails and casing sold); the stop called once while the train
+  stands there, and the chronicle naming the Conductor who took the seat.
+- `QaVillageTrainRulesCompatTests` (QA, from the guide, with Create): the train trip is a third of the walk, never under
+  `TRAIN_MIN` (400 ticks) nor longer than the walk, both sides of each boundary; halves of the road `HALVES_MEET` apart
+  make a railway, one block more or a half stopped at a milestone don't; the railway over a save, and a save with one
+  village's station and track gone loads as none.
+- `QaTrainsOffCompatTests` (QA, B359, with Create): `villageTrains` switched off while the real village train runs with
+  the caravan's 32 logs in its chest: they come out of the chest, the caravan takes the timed trip and comes in, and
+  Ashford's 64 logs always add up (none left in the train, none twice); a world saved with a caravan waiting to board and
+  one in the chest, opened with the switch off and no train on the line: the first comes in with its 16 logs, the other is
+  written off with one "broken up" line and its logs never arrive.
 
 - `MachineWorkCompatTests` (with Create): for each of the millstone, the press over a depot, the mixer over a basin
   and the crushing wheels, with the job's own worker: turned by a creative motor, the chest's input goes to the machine
   and what it makes comes back to the chest; standing still, nothing is taken; a full chest, nothing is taken; a worker
   saved and loaded mid-trip with the input in hand finishes the job; `machineWork` off, nothing is fed.
+- `QaMachineTripCompatTests` (QA, B244, with Create): a miner carrying 10 raw iron to the crushing wheels when
+  `machineWork` is switched off puts them back in the store, and after a save and load with the switch on again the iron
+  still comes to 10; a Novice armorer who loses the job mid-trip puts the 8 iron back, and killed afterwards drops none.
+- `QaCreateGoneGameTests` (without Create, a world Create was taken out of): a farmer saved mid-trip with 12 wheat
+  gives all 12 back after a real save and load; a Watermill site started with Create is finished (or let go) by its builder, never
+  left standing. `QaCreateCompatTests` and `QaMechanicSaysCompatTests` (with Create): the lines over the worker and the
+  Mechanic, as a player reads them: "Machine work: the Millstone isn't turning", "Machine work: the store is full: the
+  Millstone waits", "Mechanic: every machine is in order", "Mechanic: seeing to the Millstone" and "Mechanic: the
+  Millstone has stopped turning".
 - `SavedDataGameTests`: `machine_job` survives a save and load; `ConfigGameTests` and `ExpansionGateGameTests`: the
   `machineWork` switch on the screen and behind the gate.
 

@@ -20,7 +20,9 @@ Craft a [Blank Blueprint](blank-blueprint.md) and a **spyglass** together, anywh
 
 ## Using it
 
-1. Right-click a corner block of the build, then the opposite corner. The tooltip shows the size you've marked.
+1. Right-click a corner block of the build, then the opposite corner. The tooltip shows the size you've marked. A
+   chest, furnace, trapdoor or other block you'd normally open counts as a corner too: the click marks it and leaves
+   it shut.
 2. Sneak-right-click the air to save it: you get a [Blueprint](blueprint.md) of it, and it takes a Blank Blueprint
    from your inventory.
 3. Want a name? Rename the Scan Tool in an anvil first, and the build is called that.

@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404
 
 ## 1. What a player sees
 
@@ -19,11 +19,13 @@ better with each building: they level up like villagers you trade with, and each
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
-Once a build is under way, a Book and Quill used on its Builder (or the Builder's Bench) becomes the material list of
-the rest of it (B279): every block from the stage it is in to the end that isn't standing yet, furniture and item
+Once a build is under way, a Book and Quill used on its Builder (or the Blueprint Table they work at, or an old Builder's
+Bench) becomes the material list of the rest of it (B279): every block from the stage it is in to the end that isn't standing yet, furniture and item
 frames included, with what the bench's chests, the crew's bags and the village (a storehouse, other workers' spare
 stock) hold ticked off. A sneak-right-click with an empty hand shows the status and then the whole list in chat. With
 nothing left to place, no build, or a building being taken down, the Builder says so and the book stays as it was.
+The Scan Tool marks whatever block it right-clicks as a corner, a chest, furnace, trapdoor or bench included: the click
+marks it and the block stays shut and unflipped (B335), from the off hand too when the main hand is empty (B374).
 
 ## 2. How it works
 
@@ -60,7 +62,7 @@ down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing 
 needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
 other carried), and empties the bag at the chests when it finishes or
 stops helping. Builders never copy what is inside containers. The blueprint's tooltip and a Book and Quill list what
-is still missing. A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
+is still missing (the blueprint and the book in either hand, B365). A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
 repair counts them (`BuildPlan.supplyExclude`, B261): the building stands, so a Storehouse Shed being repaired, or a
 shed the bench's chests stand in, hands the Builder what its chests hold.
 
@@ -83,7 +85,8 @@ at a Blueprint Table one block from the Storehouse's chests made them his, kept 
 at the Builder's Workshop's table counted none of them. A player's Storehouse in a village whose hall no player owns is
 that village's store, so the village's own Builder on a village build (or none) counts it too. When the status says
 "Needs", it also names the nearest Storehouse he doesn't count and why (`Village.unusedStorehouse`): more than the
-village's 48 blocks from his table, someone else's, or no chest round it he can read.
+village's 48 blocks from his table (the distance it gives is rounded up, so one just past the reach reads past it:
+48.3 blocks says 49, B355), someone else's, or no chest round it he can read.
 
 **Speed.** `workplaceBuildDelay` ticks per block (default 8) times a share by Builder level 1 to 5:
 100%, 100%, 85%, 70%, 55%, 40% (index 0 is unused). Then the village's mood, traits, edicts and so on change it
@@ -107,7 +110,8 @@ Repair it? [Yes] [Not now]". The Village Hall's **Repairs** tab (an anvil, one o
 village's damaged builds, the questions waiting first, then repairs going on, agreed ones waiting for a free Builder,
 paused ones and those left for now. A click on one opens it: **Yes, repair it** and **Not now** while it waits, **Pause**
 and **Stop the repair** while a Builder repairs it, **Carry on** when paused. Yes sets the nearest free Builder who looks
-after it to it at once. Not now leaves it as it is, and it is asked about again only once more goes missing; Pause
+after it to it at once. Not now leaves it as it is, and it is asked about again only once more goes missing (put right by hand meanwhile,
+it comes off the list, and the next damage is asked about afresh); Pause
 leaves it until Carry on. Pausing or stopping ends the repair there and then (what is put back stays, no blueprint is
 handed out) and the Builder goes straight on to the next job in its queue. Handing a Builder a blueprint mid-repair
 starts the new job at once instead of queueing it behind the repair; the repair is put aside, still agreed, and taken
@@ -127,6 +131,10 @@ dropped, and a cell whose six neighbours all occlude is left out). If more than 
 build is grouped into 2×2×2 cells (then 3, …), each showing its highest block, until it fits. The result is worked out
 once per blueprint and kept (48 at most); unknown, sold-only, world-generation and closed-expansion ids get nothing.
 The client (`TablePreview`) draws the cells with the block renderer into the screen with a scissor box.
+**Placement preview requests (B340).** A held blueprint's ghost preview asks with `preview_request`
+(`PreviewNetworking`); the same blueprint asked again within 100 ticks isn't sent again. Only real blueprints are
+remembered for that guard, and each player's entries older than 100 ticks are dropped when they ask again, so made-up
+ids from a modified client leave nothing behind.
 **Basements in the preview (36.1).** A build with a basement comes out of the library with its cellar under y = 0
 (`StarterBlueprints.withBasement`); the packet carries `below`, how many blocks lie under the ground (0 for most), and
 cells are keyed with floor division, so at scale 2 or more the first cellar layer (y = -1) never folds into the ground
@@ -203,7 +211,8 @@ claims and trip counts.
 - Block: Builder's Bench (`aliveworkplace:builders_bench`), the job block. Profession: Builder (`entity.minecraft.villager.builder`).
 - Items: Blueprint (`aliveworkplace:blueprint`; "Blueprint: %s" when named), Blank Blueprint (`aliveworkplace:blank_blueprint`, bought from
   villagers for emeralds), Builder's Tea (`aliveworkplace:builders_tea`). The Blueprint Table makes and uploads blueprints.
-- Hand over: right-click the Builder with a Blueprint. Sneak-right-click with an empty hand: status.
+- Hand over: right-click the Builder with a Blueprint. Sneak-right-click with an empty hand: status. A Blueprint, a Book and Quill or a
+  Wonder Plan in the off hand works too when the main hand is empty.
 - Commands: `/workplace blueprints`, `/workplace blueprint`, `/workplace import`, `/workplace sites`,
   `/workplace cancel <site>` (the blueprint stays placed; hand it back to carry on), `/workplace friend add|remove|list`,
   `/workplace strip`, `/workplace repair yes|notnow <x> <y> <z>` (what the chat's [Yes] and [Not now] run, 36.15).
@@ -257,7 +266,9 @@ claims and trip counts.
 
 ## 7. Known limits
 
-- Only builds that fit within `maxSiteDistance` (48) of the bench are taken.
+- Only builds whose middle is within `maxSiteDistance` (48) of the bench are taken. A spot past it is refused with its
+  distance rounded up, so one just past the reach reads past it: 48.5 blocks says "That spot is 49 blocks from the
+  builder's Blueprint Table — keep it within 48." (B378; Farmers', Miners' and other area jobs' spots say it the same way).
 - Blocks on the never-placed list (spawners, portals, bedrock, command blocks...) are skipped, not substituted.
 - Steps that cannot be done after being put off once are skipped, so a build can finish with a few blocks missing
   (the `skipped` count).
@@ -270,11 +281,12 @@ claims and trip counts.
 
 ## 8. Proof
 
-GameTests (`src/gametest/java/.../test/`): `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
+GameTests (`src/gametest/java/.../test/`): `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
 `BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbour's bench outlasts a build;
 a bench put down and employed at in one command is held),
-`TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `TablePreviewGameTests` (7, the table's
+`TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `QaStageFiveGameTests.madeUpPreviewIdsAreNotRemembered` (B340: 5000 made-up preview ids remembered as 0, a real one
+answered, its repeat at once ignored and answered after 100 ticks), `TablePreviewGameTests` (7, the table's
 3D preview data; 36.1: Starter Cottage IV's preview has cells below the ground and its fitted height counts them, and
 at scale 2 no cellar block shares a cell with a ground-floor block), `DoorwayHeadroomGameTests` (7, B173: a villager
 walks in by the Healing Center's front door onto its carpet, and by the Manor's front door onto the stair right inside:
@@ -317,6 +329,56 @@ and a workshop table 31 blocks off: a Builder at each counts and takes it, `both
 alone at the workshop table, the Storehouse saved and loaded, `aBuilderAtTheWorkshopTableTakesFromAStorehouseWithAFreeTable`;
 the village's own Builder and the player's Storehouse, `theVillagesOwnBuilderCountsThePlayersStorehouse`; the status's
 reasons, `theStatusSaysAStorehouseIsTooFar`, `theStatusSaysAStrangersStorehouseIsntHis`, `theStatusSaysAStorehouseHasNoChests`).
+`QaBuilderStockGameTests` (9, QA from B226/B290/B297's specs: stock split between the table's chest and the Storehouse
+builds the hut, `theStockSplitBetweenTheTableAndTheStorehouseBuildsTheHut`; a Storehouse emptied after it was counted
+holds the Builder until filled again, `aStorehouseEmptiedAfterItWasCountedHoldsTheBuilderUntilItIsFilledAgain`; the same
+with the Builder saved and loaded while waiting, `aBuilderWaitingOnTheStorehouseFinishesAfterAReload`; a Storehouse
+right at the village's reach is counted, `aStorehouseRightAtTheVillagesReachIsCounted`; `villageRadius` 0 shares
+nothing, `withNoVillageSharingTheStorehouseIsNotTaken`; a Storehouse broken mid-job stops feeding him until placed back,
+`aStorehouseBrokenMidJobStopsFeedingTheBuilderUntilPlacedBack`; barrels do as chests, `aStorehouseOfBarrelsFeedsTheBuilder`;
+a Storehouse with its Porter counts once, `aStorehouseWithItsPorterIsCountedOnce`; a built Terminal Nook (37.17) feeds
+the village's Builder, `aBuiltTerminalNookFeedsTheVillagesBuilder`).
+`QaBuilderStockBugTests` (1, B355: a Storehouse just past the reach, 20.4 blocks off in a 20-block village, is too far and
+the status says so with numbers that agree, the distance rounded up to 21, `aStorehouseJustPastTheReachIsTooFarAndTheNumbersSaySo`).
+`QaBuilderLimitsBugTests` (1, B378: a spot 48.5 blocks from the table is refused with a number past the 48-block reach,
+`aSpotJustPastTheReachIsRefusedWithANumberPastTheReach`).
+`QaBlueprintLootGameTests` (1, QA: a scanned build of a lectern with a book, a jukebox with a disc, a chiseled bookshelf
+with a book, a decorated pot of diamonds, a campfire cooking beef, a sign and a named chest of gold, built by a Builder:
+every block comes out empty, the sign keeps its words and the chest its name,
+`aBuildOfBlocksHoldingItemsComesOutEmptyWithItsWordsAndNames`).
+`QaBuilderClicksGameTests` (8, QA from B279/B335/B337/B342/B344's specs: a Book and Quill on the Builder's Blueprint
+Table writes the exact list less the table's chest, `aBookAndQuillOnTheBuildersTableWritesTheListLessItsChest`; a table
+with no build or no Builder keeps the book, `aTableWithNoBuildOrNoBuilderKeepsTheBook`; the book from the off hand,
+`aBookAndQuillFromTheOffHandOnTheBuilder`; the list after a save and reload mid-structure, book and chat,
+`theListAfterAReloadMidStructure`; two books with a full inventory, `aStackOfBooksWithAFullInventoryKeepsTheList`; a
+placed blueprint from the off hand, `aPlacedBlueprintFromTheOffHand`; Scan Tool corners on a chest then a barrel, neither
+opened, `scanToolCornersOnAChestThenABarrel`; the Storehouse board asks for nothing more after a hand-over,
+`theBoardOpenedAgainAfterAHandOverAsksForNothingMore`).
+`QaBuildsGameTests` (8, QA from B280/B300's specs and the builder's invariants: a cottage clicked onto a flower on a bump
+leaves the lawn level, `aCottageClickedOntoAFlowerOnABumpLeavesTheLawnLevel`; a stall on tall grass leaves the lower
+terrace beside it low, `aStallClickedOntoTallGrassLeavesTheLowerTerraceBesideItLow`; pots whose support breaks mid-build
+are set down, `potsWhoseSupportIsBrokenMidBuildAreSetDown`, also across a reload, `aPotUnderminedThenAReloadMidDecorationIsStillSetDown`;
+a reload mid-foundation or mid-landscape loses and makes nothing, `aReloadMidFoundationLosesAndMakesNothing`,
+`aReloadMidLandscapeLosesAndMakesNothing`; the lead takes over a block two crew members hold,
+`theLeadTakesABlockOverFromTwoMembersHoldingItAtOnce`; `workplaceLevelGround` 0 leaves the ground alone,
+`levelGroundZeroLeavesTheGroundAlone`).
+`QaBuilderSwitchesGameTests` (4, QA of the builder's switches: `workplaceBuilderOwnership` off lets a stranger give a
+hired Builder a blueprint, `ownershipOffLetsAStrangerGiveTheBuilderABlueprint`; `workplaceLevelGround` 8 levels 8 blocks
+out and no further, `levelGroundEightLevelsEightBlocksOutAndNoFurther`; `workplaceFoundationDepth` 0 puts nothing in a
+dip and uses no extra cobblestone, `foundationDepthZeroPutsNothingIntoTheDip`; the Blueprint Table hides the Mega Shrine
+and Train Station while their expansions are closed, `theTableHidesTheM38AndM39BuildsWhileTheirExpansionsAreClosed`).
+`QaBuilderLimitsGameTests` (7, QA of the builder's limits from the player guide, each from both sides through the
+player's clicks: a Book and Quill on a Blueprint Table nobody works at opens the table, from either hand; five blueprints
+line up as numbers 1 to 5 and the sixth is refused with "already has 5 blueprints lined up" and kept; the line keeps its
+order over a save and each `/workplace cancel` takes up the next and hands the blueprint back still placed; a spot 48
+blocks from the table is taken and 49 refused; chests 8 blocks off (and 4 up) count and 9 off don't; four idle builders
+make a crew of three helpers, never four). `QaBlueprintHandlingGameTests` (3: place, four quarter turns back to the
+start, pick up, the levelling switch off/on/off kept through placing, turning and the hand-over; a building taken down
+with the chest full loses nothing; an upgrade lines up over its own finished building, turned or not, never when
+sneaking and never over another kind of building). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
+does: each side 1 to 32, no Blank Blueprint or no block draws nothing and takes nothing, two draws give the same build
+for two blanks, a hollow and a solid box of one size are two builds, a blank in the first slot is used and a full bag
+gets the blueprint at the player's feet, a builder builds a drawn box from the chest).
 
 Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the

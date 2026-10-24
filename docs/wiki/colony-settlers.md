@@ -8,7 +8,7 @@ Roadmap items: 33.9, B295
 
 ## What a player sees
 
-**Sending them.** Right-click the village's hall with its charter. The charter is used up and chat says who goes:
+**Sending them.** Right-click the village's hall with its charter, in either hand, sneaking or not (B357). The charter is used up and chat says who goes:
 "Dara and Tomas will set out for Newbrook. Their supplies are packed: they leave in the morning." If the Storehouses
 are short it lists what is missing: "The Storehouses still miss 24 planks, 1 bed: bring it, or they leave in 3 days
 with what there is."
@@ -40,7 +40,8 @@ button stands beside it (the owner and friends only): the settlers stay, every s
 Storehouses and the charter, spot and name and all, comes back to you.
 
 **Leaving.** The morning after the supplies are complete (or the 3 days are up), the settlers walk to the hall,
-leaving their work if they had a job (they don't go back to it until they have set out); when all are there (15 seconds at most) the bell rings and chat says "The bell rings: Dara and Tomas set out from
+leaving their work if they had a job (they don't go back to it until they have set out), and a jobless one lets go of a
+free workstation he meant to take, so it stays free for the village; when all are there (15 seconds at most) the bell rings and chat says "The bell rings: Dara and Tomas set out from
 Thornholm for Newbrook." They walk out toward the spot. Once nobody can see them (no player within 48 blocks, or
 40 blocks from the hall), or after 30 seconds, they are on the road: gone from the world and kept in the order.
 The journey takes 3 minutes plus a tick for every block to the spot (612 blocks: about 3 and a half minutes).

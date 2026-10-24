@@ -144,9 +144,9 @@ public class PlagueGameTests implements FabricGameTest {
 		Sickness.catchPlague(v.level(), seen);
 		Sickness.catchPlague(v.level(), unseen);
 		ModAttachments.PLAGUE_SEEN.set(seen, true);
-		seen.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(v.level().dimension(), helper.absolutePos(new BlockPos(2, 2, 2))));
-		housemate.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(v.level().dimension(), helper.absolutePos(new BlockPos(1, 2, 2))));
-		neighbour.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(v.level().dimension(), helper.absolutePos(new BlockPos(14, 2, 14))));
+		Beds.home(seen, helper.absolutePos(new BlockPos(2, 2, 2)));
+		Beds.home(housemate, helper.absolutePos(new BlockPos(1, 2, 2)));
+		Beds.home(neighbour, helper.absolutePos(new BlockPos(14, 2, 14)));
 		start(v);
 		RandomSource random = RandomSource.create(11L);
 		List<Villager> all = List.of(seen, neighbour, housemate, unseen, beside);

@@ -159,7 +159,9 @@ public final class SiteList {
 		List<BlueprintSupplies.Line> toBring = list.lines().stream().filter(l -> l.toBring() > 0).toList();
 		text.append(toBring.isEmpty()
 			? Component.translatable("message.aliveworkplace.site_list.chat_all_there", name).withStyle(ChatFormatting.GREEN)
-			: Component.translatable("message.aliveworkplace.site_list.chat_heading", name, list.toBring(), toBring.size()).withStyle(ChatFormatting.GOLD));
+			: Component.translatable("message.aliveworkplace.site_list.chat_heading", name, // B402: "1 item of 1 kind"
+				io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.site_list.items", list.toBring(), list.toBring()),
+				io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.site_list.kinds", toBring.size(), toBring.size())).withStyle(ChatFormatting.GOLD));
 		for (BlueprintSupplies.Line line : toBring) {
 			text.append(Component.literal("\n  "));
 			text.append(MaterialList.line(line).copy().withStyle(ChatFormatting.YELLOW));
@@ -177,6 +179,24 @@ public final class SiteList {
 			text.append(Component.translatable("message.aliveworkplace.site_list.in_chests", names).withStyle(ChatFormatting.DARK_GREEN));
 		}
 		return text;
+	}
+
+	/**
+	 * A Book and Quill used on a builder's job block at {@code bench} (the Builder's Bench, or the Blueprint Table a
+	 * builder works at, B337): the list of the build under way from it, or the "no build at this bench" line.
+	 */
+	public static void answerAtBench(ServerLevel level, Player player, BlockPos bench, InteractionHand hand) {
+		BuildSite site = atBench(level, bench);
+		if (site == null) {
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.site_list.no_build_at_bench").withStyle(ChatFormatting.YELLOW));
+		} else {
+			write(level, player, site, builderAt(level, bench), hand);
+		}
+	}
+
+	/** Whether {@code pos} is a builder's job block: a build under way is run from it, or a builder about works there. */
+	public static boolean isBuildersBench(ServerLevel level, BlockPos pos) {
+		return builderAt(level, pos) != null || atBench(level, pos) != null;
 	}
 
 	/** The build under way from the Builder's Bench at {@code bench}, and its builder when he's about; null when none. */

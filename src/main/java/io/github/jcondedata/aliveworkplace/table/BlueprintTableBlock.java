@@ -68,8 +68,8 @@ public class BlueprintTableBlock extends HorizontalDirectionalBlock implements E
 
 	/**
 	 * A Blueprint (or a Wonder Plan) used on the Table unlocks its build in the village's library (26.10), then the Table
-	 * opens as usual. With Create, a written Schematic imports its uploaded file (39.6), then the Table opens. Anything else
-	 * opens it as without an item.
+	 * opens as usual. With Create, a written Schematic imports its uploaded file (39.6), then the Table opens. A Book and
+	 * Quill on a builder's Table is the list of his build (B337). Anything else opens it as without an item.
 	 */
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
@@ -80,6 +80,13 @@ public class BlueprintTableBlock extends HorizontalDirectionalBlock implements E
 				TableServer.open(serverPlayer, pos);
 			}
 			return ItemInteractionResult.sidedSuccess(level.isClientSide());
+		}
+		// B337: a builder's workstation is this Table, so a Book and Quill on it gets the list of his build as on the
+		// Builder's Bench (B279). A Table no builder works at opens as usual.
+		if (stack.is(net.minecraft.world.item.Items.WRITABLE_BOOK) && level instanceof ServerLevel server
+			&& io.github.jcondedata.aliveworkplace.build.SiteList.isBuildersBench(server, pos)) {
+			io.github.jcondedata.aliveworkplace.build.SiteList.answerAtBench(server, player, pos, hand);
+			return ItemInteractionResult.SUCCESS;
 		}
 		if (!stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.BLUEPRINT) && !stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.WONDER_PLAN)) {
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;

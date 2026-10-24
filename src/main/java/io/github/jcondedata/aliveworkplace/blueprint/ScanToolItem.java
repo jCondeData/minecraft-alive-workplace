@@ -52,6 +52,28 @@ public class ScanToolItem extends Item {
 		return stack.getOrDefault(ModComponents.SCAN, FieldData.EMPTY);
 	}
 
+	/**
+	 * B335: a block's own right-click (a chest or furnace opening, a trapdoor flipping, a job block answering) runs
+	 * before an item's {@link #useOn}, so a Scan Tool click on such a corner never marked it. The tool marks the corner
+	 * here first, from the use-block event, for every block, and the block stays as it is. Sneaking skips the block's
+	 * own right-click anyway (the tool's start-over click), so it's left to {@link #useOn}.
+	 */
+	public static InteractionResult beforeBlock(Player player, Level level, InteractionHand hand, net.minecraft.world.phys.BlockHitResult hit) {
+		// B374: vanilla asks the main hand first; empty, it opens the chest before the off hand is asked. As BuilderEvents'
+		// items (B342), the off hand's tool is used on the main hand's turn then; the off hand's own turn never comes.
+		if (hand == InteractionHand.MAIN_HAND && player.getMainHandItem().isEmpty() && player.getOffhandItem().getItem() instanceof ScanToolItem) {
+			hand = InteractionHand.OFF_HAND;
+		}
+		ItemStack stack = player.getItemInHand(hand);
+		if (player.isSpectator() || player.isShiftKeyDown() || !(stack.getItem() instanceof ScanToolItem)) {
+			return InteractionResult.PASS;
+		}
+		if (level.isClientSide()) {
+			return InteractionResult.SUCCESS; // the server marks it; the client mustn't open or flip the block meanwhile
+		}
+		return stack.useOn(new UseOnContext(player, hand, hit));
+	}
+
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
 		Player player = context.getPlayer();

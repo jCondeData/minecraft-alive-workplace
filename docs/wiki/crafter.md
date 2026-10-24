@@ -22,6 +22,8 @@ piece). A big order is made a bagful at a time until there's enough.
 When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
 under "Short of": "Can't be made yet: short of 4 Oak Log to make 3 Barrel". When no job in the village makes a crafted
 part at all (oak stairs in a village with a Mason but no Carpenter), the line says "Nobody here makes: Oak Stairs".
+A Mason's kiln counts its fuel as a raw material too: twelve clay balls and one coal for three brick stairs (a coal
+for every eight fired) is "short of 1 Coal to make 3 Brick Stairs", and nothing is taken (B352).
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -39,14 +41,18 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   kiln's with a furnace by it, for the Mason; the blast furnace's for the Tinkerer; CobbleFurnies' Furni Crafter's files
   for the Furnicrafter), `Crafting.CHAIN_DEPTH` (3) steps down, a repeated recipe merged into one step;
 - tries the whole count, then half, down to one, so a big order is made a bagful at a time (12 stacks of makings);
-- when nothing fits, notes the chain's raw materials short (`Crafting.lacking`, or the Furnicrafter's own) for that
+- when nothing fits, notes the chain's raw materials short (`Crafting.lacking`, or the Furnicrafter's own; the Mason's
+  kiln adds its coal, from `Crafting.shortfall`'s fired steps, and names it when the clay is all there) for that
   build site and item in `JobShortages`; when it can make it, or another job has claimed it, notes it as covered;
 - makes the plan's steps one after another at the workstation (each in its own time), saving the job on the villager
   after every phase change and step (`crafter_job`); fuel a plan takes that no step uses is burnt at the end; a plan's
   last change is its own step too (the Mason's glass fired from sand, the dyer's concrete hardened from the powder it
   mixed); a plan whose steps still don't add up to what it makes is made all at once as before;
 - on its next shift after a restart or reload picks the saved job up where it was (the makings already made are in the
-  saved bag; the claim on the request is taken again).
+  saved bag; the claim on the request is taken again);
+- lets the saved job go when its workstation has been gone for 600 ticks (`CrafterWork.benchlessTick`, every villager's
+  AI step, B353): the claim released, `crafter_job` dropped and the bag emptied into the asker's chests (at the
+  villager's feet when those are gone or full). A bench put back or moved within that time carries the job on.
 
 The builder's status (`BuilderStatusSync.supplyLines`) adds `JobShortages.line` under "Short of" while it waits:
 first up to two chains short of a raw material, else the crafted parts (something a crafting table, stonecutter,
@@ -112,6 +118,10 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `JobChainGameTests.theMasonFiresLaysAndCutsBrickStairsFromClay`: a Mason's kiln chain, the fuel burnt.
 - `JobChainGameTests.aShortRawMaterialIsNamedOnTheBuildersLineAndNothingIsTaken`: a raw material short, said on the
   builder's line, nothing taken.
+- `QaCrafterFurnitureBugTests.b352AMasonShortOfCoalSaysSoAndTakesNothing`: the kiln a coal short names the coal, not
+  the bricks, and takes nothing (B352).
+- `QaCrafterFurnitureBugTests.b353TheCarpentersBenchBrokenMidChainLosesNothing`: the bench broken at step 2 and not
+  put back: the job let go, the wood back in the builder's chest (B353).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.

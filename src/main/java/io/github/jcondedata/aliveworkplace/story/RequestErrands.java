@@ -699,12 +699,20 @@ public final class RequestErrands {
 		if (player.isSpectator() || !(entity instanceof Villager villager)) {
 			return InteractionResult.PASS;
 		}
-		ItemStack held = player.getItemInHand(hand);
-		boolean ours = marked(held, LETTER) != null || marked(held, HEIRLOOM) != null;
+		// B341: vanilla asks the main hand first and, when it's empty, opens the villager's trades, so a letter or heirloom
+		// in the off hand was never asked; with the main hand empty, it is handed over on the main hand's turn.
+		InteractionHand from = hand == InteractionHand.MAIN_HAND && player.getMainHandItem().isEmpty() && isCarried(player.getOffhandItem())
+			? InteractionHand.OFF_HAND : hand;
+		boolean ours = isCarried(player.getItemInHand(from));
 		if (level.isClientSide()) {
 			return ours ? InteractionResult.SUCCESS : InteractionResult.PASS;
 		}
-		return use((ServerPlayer) player, (ServerLevel) level, hand, villager) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+		return use((ServerPlayer) player, (ServerLevel) level, from, villager) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+	}
+
+	/** Whether {@code stack} is a request's letter (or reply) or heirloom, carried to a villager by hand. */
+	public static boolean isCarried(ItemStack stack) {
+		return marked(stack, LETTER) != null || marked(stack, HEIRLOOM) != null;
 	}
 
 	/**

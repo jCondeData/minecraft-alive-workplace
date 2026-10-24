@@ -265,8 +265,14 @@ public class PorterWork extends Behavior<Villager> {
 		walker.reset();
 	}
 
+	/** "Porter · 12 items carried", or "1 item carried" (B403). */
+	private static Component title(Villager villager) {
+		int carried = ModAttachments.ITEMS_CARRIED.getOrElse(villager, 0);
+		return io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.porter.title", carried, carried);
+	}
+
 	private void statusGoods(Villager villager) {
-		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.porter.title", ModAttachments.ITEMS_CARRIED.getOrElse(villager, 0)), -1f,
+		WorkerStatus.set(villager, title(villager), -1f,
 			Component.translatable("message.aliveworkplace.porter.state.wonder", io.github.jcondedata.aliveworkplace.wonder.WonderManager.get((ServerLevel) villager.level())
 				.site(goods.need().wonder()).map(s -> io.github.jcondedata.aliveworkplace.wonder.Wonders.name(s.wonder())).orElse(Component.literal("?")))
 				.withStyle(ChatFormatting.GOLD));
@@ -431,7 +437,7 @@ public class PorterWork extends Behavior<Villager> {
 	}
 
 	private void status(Villager villager, Phase phase, @Nullable VillagerProfession from) {
-		Component title = Component.translatable("message.aliveworkplace.porter.title", ModAttachments.ITEMS_CARRIED.getOrElse(villager, 0));
+		Component title = title(villager);
 		Component line = from != null
 			? Component.translatable("message.aliveworkplace.porter.state.collecting", Component.translatable("entity.minecraft.villager." + from.name()))
 				.withStyle(ChatFormatting.GRAY)

@@ -125,6 +125,13 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	/** How high a {@code flies_off} partner climbs: out of sight from the ground. */
 	static final int FLIGHT_HEIGHT = 24;
 
+	/**
+	 * Blocks a {@code flies_off} partner's feet stay below the top of its pasture's box (B89). The show sets its height at
+	 * the end of each tick, but the partner first moves on its own in its tick (a Pidgey's own flying), and Cobblemon
+	 * sends it back to the PC the moment its position leaves the box: half a block to spare wasn't always enough.
+	 */
+	static final double ROAM_MARGIN = 2.0;
+
 	/** The marker for "carry what the worker is handling". */
 	static final String FROM_WORK = "from_work";
 
@@ -650,7 +657,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	 */
 	private static int headroom(ServerLevel level, Entity pokemon) {
 		double top = PokemonPartners.EXTENSION.call(p -> p.roamTop(pokemon), Double.POSITIVE_INFINITY);
-		int most = (int) Math.max(0, Math.min(FLIGHT_HEIGHT, Math.floor(top - pokemon.getY() - 0.5)));
+		int most = (int) Math.max(0, Math.min(FLIGHT_HEIGHT, Math.floor(top - pokemon.getY() - ROAM_MARGIN)));
 		for (int up = 1; up <= most; up++) {
 			if (!level.noCollision(pokemon, pokemon.getBoundingBox().move(0, up, 0))) {
 				return up - 1;

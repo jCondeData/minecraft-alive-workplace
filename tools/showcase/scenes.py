@@ -1155,7 +1155,7 @@ SCENES = [
     job("warning", "Threats", "A day's warning",
         "the archer posted by the Wall Tower saw the raid coming and the chat said so; at noon the gates shut and the portcullis dropped, and at dusk the archer was on the tower before any raider came", 150),
     job("battle_stations", "Threats", "A siege: battle stations",
-        "the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 150),
+        "the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders coming at the portcullis", 150),
     # With the answering jobs' houses since 32.19 (the Fire Station, the Well House and the Physician's House) and the
     # defense upgrades since 32.20 (Palisade II, Stone Wall II, Wall Tower II, Gatehouse II, each beside its base)
     S("defences", "Build families", "Walls and gates with their upgrades, and the answering jobs' houses",

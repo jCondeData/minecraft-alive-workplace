@@ -250,6 +250,16 @@ public final class Threats implements ResourceManagerReloadListener {
 		return LEVEL == 1;
 	}
 
+	/**
+	 * Whether {@code entity} keeps out of Nether portals (B373): a lair's captain and band, a bandit camp's, and every
+	 * raider. A piglin outpost has a lit portal its raiders step out of; without this its band wandered into it and
+	 * left for the Nether, and the raiders stepping out of it went straight back.
+	 */
+	public static boolean staysOffPortals(net.minecraft.world.entity.Entity entity) {
+		java.util.Set<String> tags = entity.getTags();
+		return !tags.isEmpty() && (tags.contains(RAIDER_TAG) || tags.contains(Lairs.TAG) || tags.contains(Lairs.BANDIT_TAG));
+	}
+
 	/** How many raiders come of {@code raiders} at {@link #LEVEL}: a quarter more (rounded up) when it is hard (3). */
 	public static int more(int raiders) {
 		return LEVEL >= 3 ? (int) Math.ceil(raiders * 1.25) : raiders;

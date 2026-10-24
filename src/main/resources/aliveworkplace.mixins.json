@@ -43,6 +43,7 @@
 		"StructureTemplatePoolAccessor",
 		"ThreatDoorMixin",
 		"ThreatGriefMixin",
+		"ThreatPortalMixin",
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",
 		"VillagerMixin",

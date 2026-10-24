@@ -24,6 +24,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.SophisticatedControllerCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TomsStorageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StorageHallsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaModdedStorageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedBuildCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnitureAnyModCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedHomesCompatTests",

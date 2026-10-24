@@ -2269,6 +2269,8 @@
   "shape.aliveworkplace.arch": "Arch",
   "message.aliveworkplace.shapes.no_block": "Pick a block to build it in first (carry some).",
   "message.aliveworkplace.shapes.drawn": "Drew %s: %s blocks of %s. Give it to a builder.",
+  "message.aliveworkplace.shapes.no_blank": "Drawing a shape takes a Blank Blueprint (paper and blue dye)",
+  "message.aliveworkplace.shapes.failed": "The shape's blueprint couldn't be saved (see the server log)",
   "entity.aliveworkplace.bandit": "Bandit",
   "entity.aliveworkplace.bandit_chief": "Bandit Chief",
   "entity.aliveworkplace.bandit_king": "%s, the Bandit King",

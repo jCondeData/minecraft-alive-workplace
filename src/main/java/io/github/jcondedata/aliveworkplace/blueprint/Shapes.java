@@ -364,7 +364,7 @@ public final class Shapes {
 			}
 		}
 		if (blank < 0 && !player.getAbilities().instabuild) {
-			return Component.translatable("message.aliveworkplace.scan.no_blank").withStyle(ChatFormatting.YELLOW);
+			return Component.translatable("message.aliveworkplace.shapes.no_blank").withStyle(ChatFormatting.YELLOW);
 		}
 		ResourceLocation material = settings.material().get();
 		String name = settings.shape().id() + "_" + settings.width() + "x" + settings.height() + "x" + settings.depth()
@@ -378,7 +378,7 @@ public final class Shapes {
 			template.setAuthor(player.getGameProfile().getName());
 			if (!manager.save(id)) {
 				manager.remove(id);
-				return Component.translatable("message.aliveworkplace.scan.failed").withStyle(ChatFormatting.RED);
+				return Component.translatable("message.aliveworkplace.shapes.failed").withStyle(ChatFormatting.RED);
 			}
 		}
 		if (blank >= 0 && !player.getAbilities().instabuild) {

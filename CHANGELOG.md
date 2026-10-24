@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- When a villager dies only their partner and real family grieve: strangers whose mothers or fathers share a name (every unnamed parent is a "Farmer" with villager names off) no longer mourn each other and work slower (B380).
+- Drawing with the Shape Planner without a Blank Blueprint says "Drawing a shape takes a Blank Blueprint (paper and blue dye)", not the Scan Tool's "Saving a scan takes...", and a shape that can't be saved says so for the shape (B379).
 - A full Village refusing a guild charter counts its one guild in the singular: "Elderford is a Village and may have 1 guild; it has them all.", not "1 guilds" (B376).
 - The Storehouse board and the Steward count one in the singular: "Storehouse: 1 chest, ..." and "1 job here has no workplace of its trade", not "1 chests" and "1 jobs here have" (B377).
 - The Storehouse board's stock line counts one item and one empty slot in the singular too: "1 item", "1 empty slot", not "1 items" and "1 empty slots" (B395).

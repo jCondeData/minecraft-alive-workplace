@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.148.1 — 2026-10-23
+
 ### Fixed
 
 - Villagers walk round a lantern from Carved Wood (or another mod's small block that lets paths through it) instead of

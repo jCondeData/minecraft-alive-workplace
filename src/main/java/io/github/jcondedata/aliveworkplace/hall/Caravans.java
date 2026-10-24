@@ -574,6 +574,42 @@ public final class Caravans {
 			return gone[0];
 		}
 
+		/**
+		 * B359: trains no longer run (Create taken out of the pack, or config {@code villageTrains} off). Every caravan to
+		 * or from {@code hall} at a stage of the trip by the village's Create train (waiting at the station, aboard as its
+		 * record, or with its goods in the train's chest) takes the timed trip instead, arriving {@code arrives}. Goods in
+		 * the chest come back out of it by {@code offTrain} (with Create gone, the caravan's own record of them, the train
+		 * being gone with Create); a caravan with nothing left there is taken off the road. Returns the other village of
+		 * each one taken off (the chronicle's line).
+		 */
+		public List<BlockPos> offTheTrains(BlockPos hall, java.util.function.ToLongFunction<Shipment> arrives,
+			java.util.function.Function<Shipment, List<ItemStack>> offTrain) {
+			List<BlockPos> gone = new ArrayList<>();
+			boolean changed = false;
+			List<Shipment> next = new ArrayList<>();
+			for (Shipment s : onTheRoad) {
+				if (!(s.from().equals(hall) || s.to().equals(hall)) || !io.github.jcondedata.aliveworkplace.city.CaravanTrains.waiting(s.arrives())) {
+					next.add(s);
+					continue;
+				}
+				changed = true;
+				List<ItemStack> goods = s.arrives() == io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST
+					? new ArrayList<>(offTrain.apply(s)) : new ArrayList<>(s.goods());
+				goods.removeIf(ItemStack::isEmpty);
+				if (goods.isEmpty() && s.sale().isEmpty()) {
+					gone.add(s.from().equals(hall) ? s.to() : s.from());
+					continue;
+				}
+				next.add(new Shipment(s.from(), s.to(), List.copyOf(goods), arrives.applyAsLong(s), s.sale(), s.back(), s.byTrain()));
+			}
+			if (changed) {
+				onTheRoad.clear();
+				onTheRoad.addAll(next);
+				setDirty();
+			}
+			return gone;
+		}
+
 		/** Takes every caravan to or from {@code hall} off the road (tests clean up after themselves). */
 		public void clearRoad(BlockPos hall) {
 			if (onTheRoad.removeIf(s -> s.to().equals(hall) || s.from().equals(hall))) {
@@ -944,6 +980,7 @@ public final class Caravans {
 			data.setColour(hall, colours == null ? null : colours.base());
 		}
 		io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, hall, data); // 39.7
+		io.github.jcondedata.aliveworkplace.city.CaravanTrains.offline(level, hall, data); // B359: no trains, the timed trip
 		if (data.stations(hall).isEmpty()) {
 			// 39.7: trains coming in to a village whose station is gone: the caravans get off and walk the rest
 			for (BlockPos from : data.walkTheRest(hall, level.getGameTime(), s -> trip(level, s.from(), s.to(), data) / 4)) {

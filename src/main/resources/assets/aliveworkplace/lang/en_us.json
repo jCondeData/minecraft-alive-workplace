@@ -4884,6 +4884,7 @@
   "message.aliveworkplace.guild.hamlet": "%s is only a Hamlet: a village needs Village rank for a guild.",
   "message.aliveworkplace.guild.taken": "%s already has the %s, led by %s.",
   "message.aliveworkplace.guild.full": "%s is a %s and may have %s guilds; it has them all.",
+  "message.aliveworkplace.guild.full.one": "%s is a %s and may have %s guild; it has them all.",
   "message.aliveworkplace.guild.chartered": "%s is now the Guild Master of the %s in %s!",
   "message.aliveworkplace.guild.founded": "The %s is founded in its Guildhall in %s: its perks are in force.",
   "message.aliveworkplace.guild.succession": "%s takes over as Guild Master of the %s.",

@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.platform.ItemStores;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.store.Porters;
 import io.github.jcondedata.aliveworkplace.store.StorageNetworks;
@@ -285,6 +286,64 @@ public class SophisticatedControllerCompatTests implements FabricGameTest {
 			long planks = SupplyContainers.count(level, List.of(controller), Items.OAK_PLANKS);
 			helper.assertTrue(planks == 7, "the controller counts " + planks + " planks of the built barrel's 7: it wasn't linked");
 		});
+	}
+
+	/**
+	 * B371: a controller links a barrel with a stack upgrade (tier 2) and a plain barrel. Empty, the board shows their room
+	 * (27 slots of four stacks and 27 of one: 8640). 100 cobblestone go in through the controller: the board shows 100
+	 * less, not the upgraded barrel's room counted again for each way the controller tries it, and exactly that much more
+	 * goes in, then not one more.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"sophisticated_controller_room"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "sophisticated_controller_room")
+	public void theRoomBehindAControllerHoldingGoodsIsTheRealRoom(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		networks(helper, true);
+		ServerLevel level = helper.getLevel();
+		BlockPos storehouse = new BlockPos(2, 2, 2);
+		helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		PartnerShowsCompatTests.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		BlockPos upgraded = helper.absolutePos(new BlockPos(4, 2, 4));
+		BlockPos plain = helper.absolutePos(new BlockPos(5, 2, 4));
+		level.setBlockAndUpdate(upgraded, block("barrel").defaultBlockState());
+		level.setBlockAndUpdate(plain, block("barrel").defaultBlockState());
+		// The stack upgrade goes in the mod's own way: sneak-clicking the barrel's front with it.
+		player.teleportTo(upgraded.getX() + 0.5, upgraded.getY(), upgraded.getZ() + 2.5);
+		ItemStack upgrade = new ItemStack(SophisticatedStorageCompatTests.item("stack_upgrade_tier_2"));
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, upgrade);
+		player.setShiftKeyDown(true);
+		net.minecraft.core.Direction front = SophisticatedStorageCompatTests.front(level.getBlockState(upgraded));
+		var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(upgraded).relative(front, 0.5), front, upgraded, false);
+		player.gameMode.useItemOn(player, level, upgrade, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+		player.setShiftKeyDown(false);
+		helper.assertTrue(SupplyContainers.room(level, List.of(upgraded)).freeItems() == 27L * 256,
+			"the stack upgrade isn't in the barrel: " + SupplyContainers.room(level, List.of(upgraded)));
+		BlockPos controller = helper.absolutePos(new BlockPos(3, 2, 4));
+		placeAsPlayer(level, controller, block("controller"), player);
+		List<BlockPos> store = SupplyContainers.find(level, storehouse(helper, storehouse), null);
+		helper.assertTrue(store.equals(List.of(controller)), "the Storehouse's stores with a controller: " + store);
+
+		long empty = 27L * 256 + 27L * 64;
+		helper.assertTrue(SupplyContainers.room(level, store).freeItems() == empty, "empty, the room is " + SupplyContainers.room(level, store));
+		Component line = SophisticatedStorageCompatTests.roomLine(SophisticatedStorageCompatTests.info(player, storehouse, helper));
+		helper.assertTrue(line != null && arg(line).equals(String.valueOf(empty)), "empty, the board's room line: " + line);
+
+		helper.assertTrue(SupplyContainers.insert(level, store, new ItemStack(Items.COBBLESTONE, 100)).isEmpty(), "the controller took no cobblestone");
+		ItemStores.Room after = SupplyContainers.room(level, store);
+		helper.assertTrue(after.freeItems() == empty - 100, "after 100 cobblestone the room is " + after + ", wanted " + (empty - 100));
+		Component again = SophisticatedStorageCompatTests.roomLine(SophisticatedStorageCompatTests.info(player, storehouse, helper));
+		helper.assertTrue(again != null && arg(again).equals(String.valueOf(empty - 100)), "after 100 cobblestone, the board's room line: " + again);
+		helper.assertTrue(after.freeStacks() == (int) ((empty - 100) / 64), "free stacks " + after.freeStacks() + " for " + (empty - 100) + " items");
+
+		// The room is real: that much more goes in through the controller, and then not one more.
+		ItemStack rest = SupplyContainers.insert(level, store, new ItemStack(Items.COBBLESTONE, (int) (empty - 100)));
+		ItemStores.Room full = SupplyContainers.room(level, store);
+		helper.assertTrue(rest.isEmpty() && full.freeItems() == 0, "filled to the room shown: " + rest.getCount() + " left over, " + full);
+		helper.assertTrue(SupplyContainers.count(level, List.of(upgraded, plain), Items.COBBLESTONE) == empty,
+			"the barrels hold " + SupplyContainers.count(level, List.of(upgraded, plain), Items.COBBLESTONE) + " of " + empty);
+		helper.assertTrue(SupplyContainers.insert(level, store, new ItemStack(Items.COBBLESTONE, 1)).getCount() == 1, "full, the controller took one more");
+		helper.succeed();
 	}
 
 	/** Sets {@code moddedStorageNetworks} for this test and puts it back afterwards. */

@@ -38,7 +38,8 @@ Cobblemon installed.
 
 **How many.** One guild per trade, and `guildsPerRank` guilds per rank above Hamlet: with the default of 1, a
 Village has 1, a Town 2 and a City 3. With the setting at its highest (4) a City holds 12, which is why the book's
-guild row has pages (B78).
+guild row has pages (B78). A full village refuses the next charter with its count, in the singular when it is one:
+"Elderford is a Village and may have 1 guild; it has them all." (B376)
 
 **Chartered, then founded.** A charter makes the guild; a finished Guildhall (any build whose id starts with
 "guildhall") founds it. Each guild needs a Guildhall of its own: the oldest chartered guild without one claims the
@@ -99,6 +100,7 @@ member left the guild is dissolved.
 GameTests: `GuildGameTests` (6: loading, every refusal and the grant, the master kept over a reload, perks waiting
 for the Guildhall, five helpers at one build), `GuildPerkGameTests` (5), `GuildHarvestGameTests` (6),
 `GuildServiceGameTests` (5), `GuildTrainersCompatTests`, `EdictBookGameTests.everyGuildShowsOnTheGuildRow`,
-`EdictBookGameTests.qaSixGuildsHaveNoPageButtonAndSevenPage`.
+`EdictBookGameTests.qaSixGuildsHaveNoPageButtonAndSevenPage`, `QaEdictsGameTests.qaATownHasTwoGuildsAndACityThree` and
+`QaEdictsGameTests.qaAFullVillageSaysOneGuild`.
 
 Showcase scenes: `guildhall` (charters and the Guildhall), `guilds` (the other guilds at work).

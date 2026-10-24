@@ -5303,14 +5303,14 @@ the owner's port jar; M33's caravans (39.7).
   `villageTrains`) and saved fields with defaults, the fallbacks. The flag: `Expansions.M39` with `flag()`,
   `MILESTONES` and `milestone()`. Done when: `runCompatGameTest` loads the port, the id test passes, the note is on
   `main` and the package is sent.
-- [x] **39.2** (approved 2026-10-18) **The Mechanic.** A new job whose job
+- [x] **39.2** (approved 2026-10-18) (verified 2026-10-24: lane E QA 2026-10-24: 5 new tests on top of MechanicCompatTests/MachineWorkCompatTests. QaCreateGoneGameTests [no Create: a trip saved with Create gives back all 12 wheat after a real save/load; a Watermill site isn't left standing], QaCreateCompatTests and QaMechanicSaysCompatTests [the lines players read: 'the Millstone isn't turning', 'the store is full: the Millstone waits', 'every machine is in order', 'seeing to the Millstone', 'the Millstone has stopped turning']. Mutants: MechanicWork:539 and MachineWork:530 killed, MachineWork:528 equivalent. Wiki create.md checked and extended. 39.7 not verified: B359.) **The Mechanic.** A new job whose job
   block is a Create block chosen by id in the design note (its POI registered through `Platform` only when the block
   exists, so without Create there's no Mechanic): they walk the village's machines, refill and empty them (through
   `ItemStores`), put back a broken shaft, cogwheel or belt from the build's blueprint (as `Upkeep` does), and lead the
   crew when builders build a contraption (39.5). Outfit and job icon with the pixel-art skill. Done when: compat
   GameTests: a jobless villager takes the job block; a broken shaft in a finished build is replaced; without Create the
   job isn't registered (a GameTest); scene `mechanic`.
-- [x] **39.3** (approved 2026-10-18) **Villagers work Create machines.**
+- [x] **39.3** (approved 2026-10-18) (verified 2026-10-24: lane E QA 2026-10-24: 5 new tests on top of MechanicCompatTests/MachineWorkCompatTests. QaCreateGoneGameTests [no Create: a trip saved with Create gives back all 12 wheat after a real save/load; a Watermill site isn't left standing], QaCreateCompatTests and QaMechanicSaysCompatTests [the lines players read: 'the Millstone isn't turning', 'the store is full: the Millstone waits', 'every machine is in order', 'seeing to the Millstone', 'the Millstone has stopped turning']. Mutants: MechanicWork:539 and MachineWork:530 killed, MachineWork:528 equivalent. Wiki create.md checked and extended. 39.7 not verified: B359.) **Villagers work Create machines.**
   `data/aliveworkplace/machine_work/<id>.json`: the machine's block id, where its input goes and its output comes out
   (the machine, its basin or a depot), which job works it, and what the village wants made, e.g. the Miller's
   millstone (wheat to flour), the Smith's mechanical press (ingots to sheets), the Chef's mixer and basin (dough), the

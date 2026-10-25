@@ -168,7 +168,7 @@ public final class MegaShrines {
 
 	/**
 	 * The show: {@code trainer} Mega Evolves their ace by the pedestal (the light, the sound, a line to the players near),
-	 * and every villager watching within {@link #WATCH_RANGE} is the happier for it. Held once a day per village. Returns
+	 * and every villager off work watching within {@link #WATCH_RANGE} is the happier for it (one at work isn't, B420). Held once a day per village. Returns
 	 * how many watched.
 	 */
 	public static int show(ServerLevel level, BlockPos hall, BlockPos pedestal, Villager trainer) {
@@ -193,7 +193,7 @@ public final class MegaShrines {
 		int watchers = 0;
 		AABB near = new AABB(pedestal).inflate(WATCH_RANGE);
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, near.minmax(VillageHalls.area(hall)),
-			v -> v.isAlive() && v != trainer && (v.getBoundingBox().intersects(near) || came.contains(v.getUUID())))) {
+			v -> v.isAlive() && v != trainer && (came.contains(v.getUUID()) || v.getBoundingBox().intersects(near) && watching(v)))) {
 			ModAttachments.MEGA_SHOW_DAY.set(villager, today);
 			watchers++;
 		}
@@ -202,6 +202,14 @@ public final class MegaShrines {
 			Chat.chat(player, line);
 		}
 		return watchers;
+	}
+
+	/**
+	 * Whether {@code villager}, near the pedestal, is one of the crowd: off work or seated, as {@code Festivals.gatherAt}
+	 * gathers them (B420: a farmer at his job by the shrine got the show's mood though he never came to watch).
+	 */
+	private static boolean watching(Villager villager) {
+		return villager.isPassenger() || Festivals.offWork(villager);
 	}
 
 	/** {@link #MOOD} while the last show {@code villager} watched is as fresh as a festival's good mood, else 0. */

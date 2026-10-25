@@ -87,7 +87,8 @@ Evolve first, else the nearest) climbs to the pedestal and Mega Evolves their ac
 chord, and "<trainer> Mega Evolves their ace at the Mega Shrine, and the village cheers!" in chat for the players near.
 The trainer waits at the pedestal until every villager off work has come to the shrine (at most 600 ticks from the
 gathering's start, and never past the show's last 100 ticks), so the crowd sees it (B215). Everyone who came, and every
-villager within 12 blocks, is the happier for it: +3 mood ("watched a Mega Evolution at the shrine") as long as a
+villager off work within 12 blocks, is the happier for it (a villager at work by the shrine, such as a farmer at his
+fields, isn't one of the crowd and gets nothing, B420): +3 mood ("watched a Mega Evolution at the shrine") as long as a
 festival's good mood lasts (2 days). Once a festival; then the crowd goes back to the square for the dancing and
 fireworks. The show is part of the festival itself: it needs the village's festival (six villagers or more, on its
 festival day or one called), and it begins at the festival's first tick after the hall's round has seen it start.
@@ -214,7 +215,8 @@ asks it first each festival tick; in the show's hours it takes the crowd (to 4 b
 the trainer to the step before the pedestal; there, the trainer waits for the crowd (`WAIT_TICKS`: every villager off
 work in the village has been at the crowd's spot once today, or 600 ticks since the gathering began, or the show's last
 100 ticks) and the show is held once a day per village, for everyone who came (kept in memory by villager id: the
-crowd's spot reaches up to 14 blocks from the pedestal, past the 12 of its watchers) and everyone within 12 blocks (kept in memory: a restart
+crowd's spot reaches up to 14 blocks from the pedestal, past the 12 of its watchers) and everyone off work (idle, meeting or playing, or seated, as `Festivals.gatherAt` gathers
+them) within 12 blocks; a villager at work there is left out (B420) (kept in memory: a restart
 mid-show may hold it again, and the mood is the same). The Mega Evolution is shown as light and sound at the pedestal,
 not by a Pokémon sent out.
 
@@ -391,6 +393,9 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   `theShowComesWithTheVillagesFestivalDay` (B191: the hall's round plans the festival and its own tick holds the show),
   `theShowWaitsForTheCrowdAndCountsEveryoneWhoCame` (B215: the trainer waits for a villager still on the way; one at the
   crowd's far edge, past 12 blocks, cheers too; one who never comes doesn't hold it past its last call).
+- `QaMegaShrineGapsCompatTests` (with Mega Showdown, B420): `aVillagerAtWorkGetsNoShowMood` (a farmer at work within
+  12 blocks gets no show day and no mood), `theCrowdKeepsTheShowMoodAndTheWorkerNoneAfterReload` (the crowd's watcher
+  reads +3 and "watched a Mega Evolution at the shrine", the farmer neither, both still so after a save and reload).
 - `MegaShrineGameTests` (without Mega Showdown): `hiddenWithoutMegaShowdown`, `theShowsMoodAndText`.
 - `MegaStoneCompatTests` (with Mega Showdown, 38.6): `theRecipesAndFindsLoad`,
   `aJewellerCutsAMegaStoneForTheVillagesTrainers` (a crystal, gold and emeralds become one stone of the Master's team),

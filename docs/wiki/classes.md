@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): switched on in 1.0 with
 every other expansion (`Expansions.M34`).
 
-Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22
+Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22, B398
 
 ## What a player sees
 
@@ -83,7 +83,8 @@ want the household has; a Peasant pays exactly what every worker paid before, so
 bonuses go through the one pace rule and its cap. A Legend lives among the top class.
 
 **The job gate** applies only when a job is taken: picking it with its item, the hall's free-workstation list, a
-grown child taking a parent's trade, the Steward's morning jobs. A hired traveler arrives with the class of their
+grown child taking a parent's trade (any job a free block offers, so a Scholar's child may take a free lectern as a
+Scholar), the Steward's morning jobs. A hired traveler arrives with the class of their
 level (Apprentice: Peasant, Journeyman: Artisan, Expert: Burgher).
 
 ## Switching it on (34.22)
@@ -223,6 +224,9 @@ GameTests: `ClassGameTests` (16: the four files are the ladder, each kind of nee
 a player built or earned changed, the week of settling in, a hall loaded later, `villageClasses` off, the command, every
 new sentence), `ClassOutfitGameTests` (2: every class but the Peasant names a 64x64 layer that ships, and
 what a villager wears by class and age), `JewellerGameTests` (10), `VintnerGameTests` (10), `TailorGameTests` (10), `PrinterGameTests` (11).
+QA: `QaLuxuryTradesGameTests` (13: hiring refused with no job block in reach, at a taken loom and with each switch off;
+each recipe's boundary from both sides; a reload mid-recorking; the made-day tooltip's edges; every needed luxury made
+by a job the class below may take; the Vintner's trades at every level).
 
 Showcase scenes: `classes` (a household rises, and the Classes page), `class_switch_on` (the hall before and after the
 switch), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`,

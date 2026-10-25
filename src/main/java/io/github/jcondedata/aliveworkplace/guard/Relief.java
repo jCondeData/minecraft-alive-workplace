@@ -225,11 +225,11 @@ public final class Relief {
 			ON_THE_ROAD.add(new Band(at, home, homeName, riders, now, now + ride, false));
 			AWAY.put(home, at);
 			total += riders;
-			Chronicle.atHall(level, home.pos(), Chronicle.Kind.RAID, Component.translatable("chronicle.aliveworkplace.relief_sent_ally", riders, targetName));
+			Chronicle.atHall(level, home.pos(), Chronicle.Kind.RAID, Component.translatable(one("chronicle.aliveworkplace.relief_sent_ally", riders), riders, targetName));
 			io.github.jcondedata.aliveworkplace.realm.Pacts.tell(server, home, null,
-				Component.translatable("message.aliveworkplace.pact.ally_riders_sent", homeName, riders, targetName).withStyle(net.minecraft.ChatFormatting.GOLD));
+				Component.translatable(one("message.aliveworkplace.pact.ally_riders_sent", riders), homeName, riders, targetName).withStyle(net.minecraft.ChatFormatting.GOLD));
 			io.github.jcondedata.aliveworkplace.realm.Pacts.tell(server, at, null,
-				Component.translatable("message.aliveworkplace.pact.ally_riders_coming", riders, homeName, targetName).withStyle(net.minecraft.ChatFormatting.GREEN));
+				Component.translatable(one("message.aliveworkplace.pact.ally_riders_coming", riders), riders, homeName, targetName).withStyle(net.minecraft.ChatFormatting.GREEN));
 		}
 		return total;
 	}
@@ -284,7 +284,7 @@ public final class Relief {
 			int riders = Math.min(band(guards, levies) * factor, most - total);
 			Component homeName = Realms.name(server, home);
 			boolean paid = RealmTreasury.spend(server, realm, riders * COST_CENTS,
-				Component.translatable("message.aliveworkplace.realm.relief_ledger", riders, homeName, targetName));
+				Component.translatable(one("message.aliveworkplace.realm.relief_ledger", riders), riders, homeName, targetName));
 			if (!paid && !capital) {
 				continue; // the treasury is empty: only the capital's band comes
 			}
@@ -294,7 +294,7 @@ public final class Relief {
 			total += riders;
 			ServerLevel homeLevel = server.getLevel(home.dimension());
 			if (homeLevel != null) {
-				Chronicle.atHall(homeLevel, home.pos(), Chronicle.Kind.RAID, Component.translatable("chronicle.aliveworkplace.relief_sent", riders, targetName));
+				Chronicle.atHall(homeLevel, home.pos(), Chronicle.Kind.RAID, Component.translatable(one("chronicle.aliveworkplace.relief_sent", riders), riders, targetName));
 			}
 		}
 		return total;
@@ -379,9 +379,9 @@ public final class Relief {
 		}
 		level.playSound(null, muster, SoundEvents.RAID_HORN.value(), SoundSource.NEUTRAL, 0.8f, 1.6f);
 		Component name = VillageHalls.name(level, hall);
-		Chronicle.atHall(level, hall, Chronicle.Kind.RAID, Component.translatable("chronicle.aliveworkplace.relief_came", band.riders(), band.homeName()));
+		Chronicle.atHall(level, hall, Chronicle.Kind.RAID, Component.translatable(one("chronicle.aliveworkplace.relief_came", band.riders()), band.riders(), band.homeName()));
 		for (ServerPlayer player : level.getPlayers(p -> p.blockPosition().distSqr(hall) <= (double) (VillageHalls.RADIUS + 32) * (VillageHalls.RADIUS + 32))) {
-			Chat.chat(player, Component.translatable("message.aliveworkplace.relief.arrived", band.riders(), band.homeName(), name).withStyle(ChatFormatting.GREEN));
+			Chat.chat(player, Component.translatable(one("message.aliveworkplace.relief.arrived", band.riders()), band.riders(), band.homeName(), name).withStyle(ChatFormatting.GREEN));
 		}
 	}
 
@@ -479,6 +479,11 @@ public final class Relief {
 		return n;
 	}
 
+	/** {@code key}, or its {@code .one} form for a band of one rider ("1 guard", not "1 guards"). */
+	private static String one(String key, int riders) {
+		return riders == 1 ? key + ".one" : key;
+	}
+
 	/** The hall's guards line: "2 guards away helping Ashford", or null. */
 	@Nullable
 	public static Component hallLine(ServerLevel level, BlockPos hall) {
@@ -488,7 +493,7 @@ public final class Relief {
 		if (target == null || n <= 0) {
 			return null;
 		}
-		return Component.translatable("screen.aliveworkplace.hall.relief_away", n, Realms.name(level.getServer(), target));
+		return Component.translatable(one("screen.aliveworkplace.hall.relief_away", n), n, Realms.name(level.getServer(), target));
 	}
 
 	/** The bands on the road to the village round {@code hall} (tests, the showcase). */

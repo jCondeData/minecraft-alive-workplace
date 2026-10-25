@@ -26,8 +26,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381
   a gallery out over the wall's foot with murder holes); **Wall Tower II** a roofed top with an archers' gallery, two
   stations a side; **Gatehouse II** a barbican in front with a second gate and portcullis and murder holes over the
   gateway. In a siege **both portcullises drop** and the rams meet the **barbican's gate first**: they break all of
-  it, gate and portcullis, to walk in to the inner one, so a Gatehouse II holds several times as long as a Gatehouse;
-  at night the guards shut both gates.
+  it, gate and portcullis, to walk in to the inner one, so a Gatehouse II holds longer than a Gatehouse; the rams
+  break only gate blocks and bars, never the barbican's walls. At night the guards shut both gates, and at the first
+  dawn after a siege both portcullises are drawn up again and both gates open.
 - **Only gates the builders made break**: the fence gates, doors and iron bars of finished wall and gate builds. A
   gate you placed yourself is never hit, even right beside one.
 - **Nothing else of the builders' work breaks under a threat** (32.16a, the owner's rule): a raider's creeper or a
@@ -306,6 +307,16 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   Wall II's roofed walkway seven) and `BuilderGameTests.builderUpgradesAFinishedGatehouse` (clicked onto a finished
   Gatehouse, stocked with only what it lacks, a builder builds the barbican). The `defences` scene places each beside
   its base.
+- GameTests (QA, 32.20): `QaDefenceUpgradeGameTests.anUpgradeLinesUpOnlyOverItsOwnFinishedBase` (each of the four
+  lines up exactly over its finished base, and not over the same blocks no builder finished, on a shift-click, or over
+  another finished build), `theUpgradesAddWhatTheItemPromises` (Palisade II's dripstone stakes point up out in front
+  and its step runs along the inside; Stone Wall II's gallery floor has murder holes and its walkway a roof; a roof over
+  every station of Wall Tower II's gallery; murder holes in Gatehouse II's passage roof, the passage clear),
+  `bothPortcullisesOfGatehouseIIAreDrawnUpAtDawn` (a raid's own start drops all twelve bars and shuts both gates; after
+  the raid they stay down until the first dawn after, then both portcullises go up, all six gates open and the Defense
+  page reads as before) and `theBarbicansGateIsTheFirstBreach` (the first block the rams break is the barbican's gate,
+  with the inner gate and both portcullises standing and no other block of the build touched). Known open: Palisade II's
+  fighting step is not a battle station (a failing test on the branch tests/defence-upgrades-1025).
 - GameTests: `LadderGameTests` (32.5): a pillager climber is over a Stone Wall within 600 ticks by a ladder of 5
   rungs set one at a time on its outer face, and a vindicator follows up the same ladder; a guard on the walkway
   throws the ladder down with the climber on it, no raider ladder is left within 3 blocks of him and the climber is

@@ -29,7 +29,8 @@ a raid. They then stand round the crystal and, when the raid itself can be reach
 boss's health every 5 seconds (0.6% times their rank divided by the den's tier, more with a stronger team), never below a
 quarter: the last blows are the player's. A helper more than one rank under the den's tier only cheers. A won raid
 goes in the chronicle ("<player> and <trainer>'s band beat the tier 3 Fire raid den") and earns the helpers battle
-experience; won, lost or a day after the hiring, they walk home.
+experience; won, lost, the raid gone, a day after the hiring or the switch turned off, they walk home, and nobody can
+hire them until they're back. Without CobbleDollars the price is taken in emeralds from the player's inventory.
 
 **More Mega trainers (38.5).** With Mega Showdown installed, Masters still carry a Mega Stone, and now so do: a Trainer
 Leader whose village (the nearest Village Hall) is a City, the two trainers of a Festival Cup's final (on the Cup's
@@ -89,9 +90,9 @@ festival's good mood lasts (2 days). Once a festival; then the crowd goes back t
 fireworks. The show is part of the festival itself: it needs the village's festival (six villagers or more, on its
 festival day or one called), and it begins at the festival's first tick after the hall's round has seen it start.
 
-**Cobblecuisine on the menus (38.8).** With Cobblecuisine, the Chef cooks its dishes after the plain menu, each from
-its own crafting recipe with the makings from the chests by the stove, the porters' and the butcher's spare (as he
-cooks everything), keeping 16 of each: a Novice the salads (Mixed Vegetable, Spore Mushroom, Pumpkin Pie) and
+**Cobblecuisine on the menus (38.8).** With Cobblecuisine, the Chef cooks its dishes, each from its own crafting recipe
+with the makings from the chests by the stove, the porters' and the butcher's spare (as he cooks everything); since
+38.8a only the ones players ask for at the hall's board (below), so he no longer keeps 16 of each. By level: a Novice the salads (Mixed Vegetable, Spore Mushroom, Pumpkin Pie) and
 sandwiches (Sweet Jam, Salty Egg, Salty Veggie), an Apprentice also three more salads, two sandwiches and the drinks
 (Bouncy Brionne Soda, Teddiursa Iced Coffee, Fruit Punch), a Journeyman six curries, an Expert five cakes, and a Master
 the Jigglypuff Fruity Flan and Miltank Mix au Lait (27 dishes). The sandwiches' roasted berries he roasts himself
@@ -358,6 +359,15 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   blocks off, one each, never twice), `aWonRaidIsWrittenAndTheHelpersGoHome`, `aDayLaterTheHelpersGoHome`,
   `theHelpersWearTheBossDown` (the reflection found the raids; blows by rank, never under a quarter),
   `theButtonAndTheSwitch` (the Defence page's lines; off: no button, no hiring, no cheer), `hiringsSaveAndOldDataLoads`.
+- `QaDenHelperCompatTests` (QA, from the spec): `theDefencePageButtonHiresAtExactlyThePrice` (the button clicked as
+  a client clicks: exactly the price hires the best trainer, one CobbleDollar short is refused and takes nothing, the
+  button counts "1 of 3", they keep up), `emeraldsAtACustomPriceExactlyAndOneShort` (no CobbleDollars, `denHelperPrice`
+  7: 6 emeralds refused and kept, 7 taken), `noTrainersInTheVillageMeansNoHelper`,
+  `aStaleButtonForADenThatWentToRestIsRefused`, `aHiringSavedAndReadBackStillFollows` (and the walk home survives a
+  save), `theRankRuleAndTheQuarterFloor` (every rank on both sides of its tier limit; exactly a quarter from just above
+  it, no healing below it; a Novice at tier 3 only cheers), `threeHelpersCheerOnceEachAndAgainNextRaid` (one Attack,
+  Defense and Heal, the chat lines word for word, not on the way home, again next raid) and
+  `switchedOffMidHireTheHelperWalksHome`.
 - `ConfigGameTests.anOldDenConfigLoads`: a config with 38.3's and 38.4's keys loads (38.1a).
 
 - `MegaTrainerCompatTests` (with Mega Showdown): `aCityLeaderMegaEvolvesATownLeaderDoesNot`,
@@ -413,6 +423,15 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   of the Pokémon), `theSwitchOffFeedsNothing` (no treat, the luxuries not loaded or wanted), `aBurgherTakesADeluxeShakeWhenDue`
   (both files load, all six shakes count, one taken on day 10, none on day 12, one on day 14);
   `CobblemonDepthCompatTests.cuisineIdsExist` checks every puff, shake, deluxe shake and the éclair.
+- `QaCuisineCompatTests` (QA, from the spec): `theBoardsShiftClickCapAndRightClick` (clicked as a client clicks:
+  shift-click asks 16, four make 64 and a fifth click is refused; right-click takes it down; the soda locked for a
+  Novice opens exactly at Apprentice; every line and answer word for word, and the three drinks' names),
+  `theCampCookShortOfOneMakingCooksNoCurry` (no chicken: no curry, nothing taken), `fifteenOfOneColourSowsBeans` (16
+  of every colour but 15 green beans: the field is sown), `aBeanOneStageShortIsLeftStanding` (random ticks off: the
+  plants one stage short stay, the one ripe plant is cut into the chest), `theDeluxeShakeIsDueOnTheFourthDayNotTheThird`
+  (none on day 13, one on day 14; a Burgher takes the class above's éclair), `theEclairIsDueOnTheEighthDayNotTheSeventh`
+  (none on day 27, one on day 28) and `aPartnerIsFedOnlyFromTheStoreOnceADay` (puffs in a chest that isn't the store
+  are never fed; a store of luxuries and bread feeds nothing the next day).
 - `CuisineGameTests.withoutCobblecuisineTheDishLuxuriesAreSkipped` (38.10, without the mod): the files ship, are read
   as nothing, aren't loaded, no class takes them, the Classes page doesn't list them and the treat tag is empty;
   `theText` checks the switch tooltip and the luxuries' names. `ClassGameTests` now expects the two new wants.

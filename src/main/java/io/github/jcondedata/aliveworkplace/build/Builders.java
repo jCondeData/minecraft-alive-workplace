@@ -239,6 +239,12 @@ public final class Builders {
 			tell(player, Component.translatable("message.aliveworkplace.assign.wrong_dimension"), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
+		if (Cellars.isJob(stack) && !Cellars.isCellarDig(level, data.get().structure(), placement.get())) {
+			// B386: a "Dig the cellar" bought before the cellar was there is no job any more (it would be a whole build over
+			// the standing one); the player keeps it
+			tell(player, Component.translatable("message.aliveworkplace.cellar_no_dig", Blueprints.displayName(data.get().structure())), ChatFormatting.YELLOW);
+			return InteractionResult.CONSUME;
+		}
 		BuildSite existing = activeSite(level, villager);
 		int queued = existing != null ? queue(level, villager).size() : 0;
 		if (queued >= MAX_QUEUE) {

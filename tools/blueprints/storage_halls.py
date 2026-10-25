@@ -8,7 +8,7 @@ below change, one for one.
 |---|---|
 | `inventory_connector` | a chest (one more store) |
 | `storage_terminal` | a stripped spruce counter block |
-| `crafting_terminal` | a crafting table |
+| `crafting_terminal` | a spruce counter stair (never the crafting table: B388) |
 | `inventory_cable_framed`, `inventory_cable_connector_framed` (floor runs) | spruce planks (the floor) |
 | `trim` (floor inlays and a deck post) | stripped spruce logs |
 | `filing_cabinet` | a chest |
@@ -16,6 +16,9 @@ below change, one for one.
 What a Tom's network joins (StorageNetworks.members, 37.10): the inventories touching the connector or each other
 (through trims), within 16 blocks, and the one inventory each cable connector faces. Every store is within the
 Storehouse's reach (8 across, 4 up or down from the Storehouse block), so the vanilla build's chests are all its own.
+
+Job blocks stay (B388): the crafting table is the Carpenter's job site and Tom's crafting terminal is none, so the
+copies keep the vanilla build's crafting table and set the crafting terminal into the counter beside it instead.
 """
 from kit import *
 
@@ -51,12 +54,14 @@ class Tom:
     def trim(self, b, x, y, z, axis="x"):
         self.set(b, x, y, z, "trim", "stripped_spruce_log", vanilla_props={"axis": axis})
 
-    def terminal(self, b, x, y, z, facing, pos="center", crafting=False):
+    def terminal(self, b, x, y, z, facing, pos="center", crafting=False, counter="south"):
         """A terminal reading the block on its {@code facing} side (pos center) or under it (pos down: a terminal set
-        into a counter, its screen up). Vanilla: a crafting table for the crafting terminal, a counter block for the other."""
+        into a counter, its screen up). Vanilla: a counter stair (rising to {@code counter}) for the crafting terminal,
+        a counter block for the other. Never a crafting table: that's the Carpenter's job site, which the copy keeps (B388)."""
         props = {"facing": facing, "pos": pos, "waterlogged": False}
         if crafting:
-            self.set(b, x, y, z, "crafting_terminal", "crafting_table", toms_props=props)
+            self.set(b, x, y, z, "crafting_terminal", SPRUCE.stairs, toms_props=props,
+                     vanilla_props={"facing": counter, "half": "top", "shape": "straight", "waterlogged": False})
         else:
             self.set(b, x, y, z, "storage_terminal", "stripped_spruce_wood", toms_props=props, vanilla_props={"axis": "y"})
 
@@ -132,9 +137,10 @@ def storage_hall(toms=False):
     """13 x 14 x 14: the Storage Hall. A long stone-and-birch hall under a dark oak gable, its gable end to the street
     with a porch over the door. Inside, 27 chests and barrels stand in an island round an inventory connector; a framed
     cable in the floor runs from the connector to a counter by the door (a storage terminal and a crafting terminal set
-    into it either side of the Storehouse) and back to two filing cabinets for the paper and maps against the back
+    into it either side of the Storehouse, the crafting table beside it) and back to two filing cabinets for the paper and maps against the back
     wall, each read through a cable connector under it. Without Tom's: chests for the connector and the cabinets, a
-    counter and a crafting table for the terminals, plain boards for the cable."""
+    counter block and a counter stair for the terminals, plain boards for the cable. The crafting table (the Carpenter's
+    job site) is in both (B388)."""
     t = Tom(toms)
     b = Build(13, 14, 14)
     x0, z0, x1, z1 = 1, 3, 11, 12
@@ -189,11 +195,11 @@ def storage_hall(toms=False):
     b.set(8, 1, 2, "hay_block", axis="y")
     # The counter by the door: the two terminals set into it either side of the Storehouse, on the floor cable
     stairs(b, 4, 1, 5, SPRUCE, "south", top=True)
-    stairs(b, 8, 1, 5, SPRUCE, "south", top=True)
+    t.terminal(b, 8, 1, 5, "south", pos="down", crafting=True)  # the crafting terminal at the counter's end
     t.terminal(b, 5, 1, 5, "south", pos="down")
     b.set(6, 1, 5, "aliveworkplace:storehouse", facing="north")
-    t.terminal(b, 7, 1, 5, "south", pos="down", crafting=True)
-    for x in (5, 6, 7):
+    b.set(7, 1, 5, "crafting_table")  # in both builds: the Carpenter's job site (B388)
+    for x in (5, 6, 7, 8):
         t.cable(b, x, 0, 5)
     for z in range(6, 12):
         t.cable(b, 6, 0, z)
@@ -231,8 +237,8 @@ def warehouse(toms=False):
     doors in the middle of the long front under a lean-to, a handcart in the loading bay. Inside, four racks of chests
     and barrels on the ground floor and two along the back of the loft, all one store: one inventory connector at the
     packing counter by the doors, Inventory Trim set in the floor under the racks and up a post to the loft's racks; a
-    crafting terminal beside it, the Storehouse on the counter. Without Tom's: a chest, a crafting table,
-    stripped spruce inlays and post."""
+    crafting terminal on its other side under the Storehouse, the crafting table (the Carpenter's job site, in both
+    builds: B388) beside it. Without Tom's: a chest, a counter stair, stripped spruce inlays and post."""
     t = Tom(toms)
     b = Build(19, 16, 16)
     x0, z0, x1, z1 = 1, 4, 17, 14
@@ -306,11 +312,12 @@ def warehouse(toms=False):
     b.set(8, 2, 2, "hay_block", axis="x")
     b.set(9, 2, 2, "hay_block", axis="y")
     b.set(10, 2, 2, "pumpkin")
-    # The packing counter inside the doors: the connector, the Storehouse on it, the crafting terminal beside it
+    # The packing counter inside the doors: the connector, the crafting table on one side, the crafting terminal
+    # reading the connector on the other with the Storehouse on it
     t.connector(b, 9, 1, 6)
     b.set(9, 2, 6, "potted_azalea_bush")  # not a lantern: it falls off the vanilla build's chest
-    t.terminal(b, 10, 1, 6, "west", crafting=True)
-    stairs(b, 8, 1, 6, SPRUCE, "north", top=True)
+    b.set(10, 1, 6, "crafting_table")  # in both builds: the Carpenter's job site (B388)
+    t.terminal(b, 8, 1, 6, "east", crafting=True, counter="north")
     b.set(8, 2, 6, "aliveworkplace:storehouse", facing="north")  # on the counter, in reach of both floors' racks
     # Inventory Trim in the floor: down from the connector, along under the racks, and up a post to the loft
     t.trim(b, 9, 0, 6, axis="z")

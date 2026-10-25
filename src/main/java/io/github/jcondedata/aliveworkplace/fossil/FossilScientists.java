@@ -99,8 +99,9 @@ public final class FossilScientists {
 		setQueue(scientist, queue);
 		scientist.level().playSound(null, scientist, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
 		int ahead = queue.size() - 1;
-		tell(player, Component.translatable(ahead == 0 ? "message.aliveworkplace.fossil.taken" : "message.aliveworkplace.fossil.queued",
-			scientist.getDisplayName(), what(names), Math.max(1, Math.round(ticks * (ahead + 1) / 1200f)), ahead), ChatFormatting.GREEN);
+		int minutes = Math.max(1, Math.round(ticks * (ahead + 1) / 1200f));
+		tell(player, io.github.jcondedata.aliveworkplace.work.Words.counted(ahead == 0 ? "message.aliveworkplace.fossil.taken" : "message.aliveworkplace.fossil.queued", minutes,
+			scientist.getDisplayName(), what(names), minutes, ahead), ChatFormatting.GREEN);
 	}
 
 	/** What {@code scientist} charges for a revival: {@link #PRICE}, a fifth less (rounded up) with the Trainers' Guild founded (30.20). */

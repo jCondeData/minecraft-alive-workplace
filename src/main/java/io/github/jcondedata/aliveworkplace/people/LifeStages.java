@@ -408,8 +408,8 @@ public final class LifeStages {
 		} else if (elder) {
 			long left = daysLeft(villager, day);
 			if (left >= 0 && left <= WARN_DAYS) {
-				lines.add(new HallLine(Component.translatable(left == 0 ? "screen.aliveworkplace.hall.elder_tonight"
-					: AGELESS ? "screen.aliveworkplace.hall.elder_days_left_charm" : "screen.aliveworkplace.hall.elder_days_left", left), false));
+				lines.add(new HallLine(left == 0 ? Component.translatable("screen.aliveworkplace.hall.elder_tonight")
+					: io.github.jcondedata.aliveworkplace.work.Words.counted(AGELESS ? "screen.aliveworkplace.hall.elder_days_left_charm" : "screen.aliveworkplace.hall.elder_days_left", left, left), false));
 			}
 		}
 		for (Component line : Retirement.hallLines(level, villager)) { // 34.20

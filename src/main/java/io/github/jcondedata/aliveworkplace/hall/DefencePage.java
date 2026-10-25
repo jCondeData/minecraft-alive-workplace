@@ -280,9 +280,10 @@ public final class DefencePage {
 	private static ItemStack muster(ServerLevel level, BlockPos hall) {
 		int marching = WarParties.marchers(level, hall).size();
 		int guards = VillageHalls.census(level, hall).guards();
+		int staying = Math.max(0, guards - marching);
 		return VillageHallScreen.icon(Items.WHITE_BANNER, Component.translatable("screen.aliveworkplace.defence.muster"), ChatFormatting.GOLD,
 			VillageHallScreen.line("screen.aliveworkplace.defence.muster_hint", ChatFormatting.GRAY),
-			VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.muster_count", marching, marching, Math.max(0, guards - marching)),
+			VillageHallScreen.line(Words.countedTwo("screen.aliveworkplace.defence.muster_count", marching, staying, marching, staying),
 				marching > 0 ? ChatFormatting.AQUA : ChatFormatting.YELLOW),
 			VillageHallScreen.line("screen.aliveworkplace.defence.muster_banner", ChatFormatting.DARK_GRAY),
 			VillageHallScreen.line("screen.aliveworkplace.defence.muster_click", ChatFormatting.YELLOW));

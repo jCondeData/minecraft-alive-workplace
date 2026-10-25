@@ -47,15 +47,15 @@ public class MasonWork extends CrafterWork {
 				return null;
 			}
 			int fuel = (n + GLASS_PER_FUEL - 1) / GLASS_PER_FUEL;
-			Item coal = usable.getOrDefault(Items.COAL, 0L) >= fuel ? Items.COAL : usable.getOrDefault(Items.CHARCOAL, 0L) >= fuel ? Items.CHARCOAL : null;
-			if (coal == null) {
-				return null;
+			Map<Item, Integer> coal = new LinkedHashMap<>();
+			if (!addFuel(coal, usable, fuel)) {
+				return null; // coal and charcoal together too few (B396: mixed, they count as one)
 			}
-			Crafting.Plan sand = convert(level, Items.SAND, n, usable, coal, fuel);
+			Crafting.Plan sand = convert(level, Items.SAND, n, usable, coal);
 			return sand == null ? null : swap(sand, Items.SAND, Items.GLASS, n);
 		}
 		if (CRUSHED.containsKey(item)) {
-			return convert(level, item, n, usable, null, 0);
+			return convert(level, item, n, usable, Map.of());
 		}
 		Crafting.Plan cut = super.planFor(level, item, count, usable);
 		if (fits(cut) || !hasFurnace(level)) {
@@ -72,14 +72,11 @@ public class MasonWork extends CrafterWork {
 
 	/**
 	 * {@code n} of {@code item}: taken as it is if there's enough, else crushed from what it's crushed from (two steps down
-	 * at most: sand from gravel from cobblestone); {@code fuel} of {@code fuelItem} taken besides.
+	 * at most: sand from gravel from cobblestone); {@code fuel} (coal and charcoal) taken besides.
 	 */
 	@Nullable
-	private Crafting.Plan convert(ServerLevel level, Item item, int n, Map<Item, Long> usable, @Nullable Item fuelItem, int fuel) {
-		Map<Item, Integer> takes = new LinkedHashMap<>();
-		if (fuelItem != null) {
-			takes.put(fuelItem, fuel);
-		}
+	private Crafting.Plan convert(ServerLevel level, Item item, int n, Map<Item, Long> usable, Map<Item, Integer> fuel) {
+		Map<Item, Integer> takes = new LinkedHashMap<>(fuel);
 		Item from = item;
 		for (int depth = 0; depth <= 2 && from != null; depth++) {
 			if (usable.getOrDefault(from, 0L) >= n) {
@@ -108,18 +105,9 @@ public class MasonWork extends CrafterWork {
 			return cut; // short of makings either way: the stonecutter's, the way a player would try first
 		}
 		Map<Item, Integer> lack = new LinkedHashMap<>(makings);
-		if (kiln != null) {
-			int fired = 0;
-			for (Crafting.Step step : kiln.steps()) {
-				if (Crafting.isFired(level, Crafting.Kind.KILN, step)) {
-					fired += step.times();
-				}
-			}
-			int fuel = (fired + GLASS_PER_FUEL - 1) / GLASS_PER_FUEL;
-			long have = Math.max(usable.getOrDefault(Items.COAL, 0L), usable.getOrDefault(Items.CHARCOAL, 0L));
-			if (fuel > have) {
-				lack.merge(Items.COAL, (int) (fuel - have), Integer::sum);
-			}
+		int coal = fuelShort(level, kiln, Crafting.Kind.KILN, usable, GLASS_PER_FUEL);
+		if (coal > 0) {
+			lack.merge(Items.COAL, coal, Integer::sum);
 		}
 		return lack.isEmpty() ? cut : lack;
 	}

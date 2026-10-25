@@ -16,6 +16,25 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- A server whose `config/aliveworkplace.json` holds an empty format number (`"configVersion": null`) or an empty entry in `"expansionsOpen"` (`[null]`) now starts: the empty value is read as a missing one and the rest of the file is kept, instead of the game crashing at start-up. Any other file the mod can't make sense of gives the defaults rather than stopping the server (B457).
+- A Tinkerer with the raw iron for a build's iron bars but no coal now tells the builder it's short of coal ("Can't be made yet: short of 1 Coal...") instead of "Nobody here makes: Iron Bars", and leaves the ore in the chest (B408).
+- A Hauler Golem whose nearest Storehouse it can't get to (walled in, across water) no longer stands at the end of its path with its load forever: after about 10 seconds without getting closer it takes the load to the next nearest Storehouse, and tries the first one again a couple of minutes later (B450); an empty one that can't get to a Drop Box or a worker's chest likewise fetches from the next one instead (B456).
+- A grown child now takes up a parent's trade for every job, not only the Shopkeeper: a Scholar's child takes a free lectern as a Scholar (likewise Teachers, Tinkerers, Chefs, Nurses, Innkeepers and the other jobs that share a vanilla block), and a child whose class is too low for the trade waits (B397).
+- Village fires: a fire on a build's roof (lightning, a chimney spark) is named after the build in chat and the chronicle ("Fire in the Starter Cottage"), not "Fire in the village" (B390); a Firewarden with no name yet reads "the Firewarden put it out", not "Firewarden the Firewarden put it out" (B391); and a fire burning when the server restarts is still put out, as the village's fires are now saved (B392).
+- Counts of one now read in the singular across the mod: "1 emerald" in every price, purse, treasury and reward (and "+1 emerald" for beating a Novice trainer), "Posted 1 item", "Burgher: 1 pays" on the tax split, "1 block of Stone Bricks" for a one-block Shape Planner box and on the Blueprint Table ("1 material · 64 items"), and every countdown and counter that reaches 1: "Wait 1 day", "Back to work in 1 day", "About 1 hour left", "1 day and 1 hour left" on realm invites, pacts and feuds, the colony wait, an elder's last days, a quest's days left, the fossil revival's minutes, the Nurse's seconds, "1 battle", "1 trade", "1 sale" and "at 1 heart" (B398, B406, B410, B413; the builder's "1 item of 1 kind" status, B393, was already fixed by B402).
+- A Book and Quill held in the off hand (main hand empty) and used on a builder's Blueprint Table or Builder's Bench now writes the list of his build, as from the main hand, instead of opening the Table (B394).
+- A Mason's kiln (and a Tinkerer's forge) now burns coal and charcoal together: twelve clay with one coal and one charcoal in the chest makes the three brick stairs, instead of "short of 1 Coal" forever, and a real shortage counts both kinds (B396).
+- A request or quest to bring many of a thing names them in the plural: "4 Baked Potatoes", "8 Cookies", "32 Torches", "Bring 24 Clocks" (B407).
+- A guard on watch by a raiders' camp (not on a raised Rally Banner) who kills one of its band no longer turns the camp's fall into a war party's win: break it without a war party and the village gets the usual 5 days' peace, not 10 and the "warband is broken" cheer; a war party that lost its guards there still earns them (B418).
+- The war party's muster line on the Defense page and in chat reads "1 keeps the walls" when one guard stays behind, not "1 keep the walls" (B387).
+- A Carpenter can take the crafting table again in Spruce-style buildings and in the Tom's Simple Storage Storage Hall and Warehouse: the Spruce style no longer swaps it for Carved Wood's spruce crafting table (no job site), and the Tom's copies keep the crafting table and put their crafting terminal in the counter beside it (B388).
+- A builder's "Dig the cellar" trade goes once the cellar is there, dug by them or by hand (also from builders saved with it), and one bought before starts nothing: given to a builder, it no longer starts a whole new build over the finished one (B386).
+- A relief band of one rider is told in the singular: "1 guard away helping Ashford" on the sender's hall, "1 guard rode to help Ashford in a raid" and "1 guard from Ashford rode in to help" in the chronicles, "1 guard from Ashford rides in to help!" in chat, "1 rider" in the realm treasury's ledger and in an ally's riders news (B425).
+- The weekly leaderboard's Biggest realm reads "1 village, 1 villager" for a realm of one villager, not "1 villagers" (B422).
+- "A cat by the door": a cat or tamed wolf exactly 10 blocks from the giver's bed now counts, as the request says ("within 10 blocks"); the distance is measured along the floor from the bed, not from half a block above it (B423).
+
 ## 0.149.0 — 2026-10-24
 
 ### Fixed

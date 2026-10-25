@@ -78,7 +78,7 @@ public final class Mail {
 		office.post(player.getUUID(), player.getGameProfile().getName(), profile.getId(), profile.getName(), origin, now, items);
 		int count = items.stream().mapToInt(ItemStack::getCount).sum();
 		player.level().playSound(null, menu.pos(), SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1f, 1f);
-		player.sendSystemMessage(Component.translatable("message.aliveworkplace.mail.posted", count, profile.getName()).withStyle(ChatFormatting.GREEN)
+		player.sendSystemMessage(io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.mail.posted", count, count, profile.getName()).withStyle(ChatFormatting.GREEN)
 			.append(Component.literal(" "))
 			.append(Component.translatable("message.aliveworkplace.mail.track").withStyle(style -> style.withColor(ChatFormatting.AQUA).withUnderlined(true)
 				.withClickEvent(new net.minecraft.network.chat.ClickEvent(net.minecraft.network.chat.ClickEvent.Action.RUN_COMMAND, "/workplace mail")))));

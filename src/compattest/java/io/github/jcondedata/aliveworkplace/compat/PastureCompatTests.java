@@ -228,7 +228,7 @@ public class PastureCompatTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		int radius = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
 		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 20;
-		io.github.jcondedata.aliveworkplace.threat.VillageFire.forget();
+		io.github.jcondedata.aliveworkplace.threat.VillageFire.reset();
 		io.github.jcondedata.aliveworkplace.threat.VillageFire.resetPartners();
 		helper.setBlock(new BlockPos(13, 2, 2), ModBlocks.VILLAGE_HALL);
 		BlockPos grindstone = new BlockPos(2, 2, 2);

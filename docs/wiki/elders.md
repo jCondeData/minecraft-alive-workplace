@@ -364,5 +364,8 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
   record with no ids, the family by the parent's name, the parents by name only (`anOldParentsRecordWithoutIds`);
   `familyNames` off through the config (`familyNamesOffGoesByFirstNames`); every new sentence and the 60 names
   (`everyNewSentenceReads`).
+- QA: `QaElderLifeGameTests` (6: the charm by sneak-click at the elder boundary, kept when refused, one charm one
+  villager; an ageless Master still retires and mentors an Apprentice; only an elder retires and never to a baby; passing
+  only asleep with the village told; the Book of Families at exactly 400; the 60 family names and the config numbers).
 - Showcase scene: `family_tree` (the hall's list, Dara's Family page, Mira's grandparents with Bram marked, the printed
   tree as a book).

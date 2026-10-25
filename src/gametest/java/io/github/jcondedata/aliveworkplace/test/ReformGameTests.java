@@ -133,7 +133,7 @@ public class ReformGameTests implements FabricGameTest {
 			ItemStack step = menu.icon(STEP_SLOT);
 			helper.assertTrue(step.is(Items.WRITABLE_BOOK) && step.getHoverName().getString().equals("The Shift Bell, step 1 of 3"), "the step: " + step);
 			List<String> lines = lore(step);
-			helper.assertTrue(lines.contains("Bring 24 Clock") && lines.contains("A reform step: it never expires")
+			helper.assertTrue(lines.contains("Bring 24 Clocks") && lines.contains("A reform step: it never expires")
 				&& lines.contains("A bell in the yard calls the shifts, so nobody works past their hour.") && lines.contains("Reform of the edict Long Shifts")
 				&& lines.contains("Done so far: 0 of 24") && lines.contains("You have none on you"), "lore: " + lines);
 			if (!Money.cobbleDollars()) {
@@ -213,13 +213,13 @@ public class ReformGameTests implements FabricGameTest {
 			Reforms.round(level, hall, entity);
 			helper.assertTrue(Reforms.shown(entity).isEmpty(), "the next step went up the same day");
 			helper.assertTrue(entity.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.QUEST
-				&& e.text().getString().endsWith("The Shift Bell, step 1 of 3: Bring 24 Clock")), "the chronicle: " + chronicle(entity));
+				&& e.text().getString().endsWith("The Shift Bell, step 1 of 3: Bring 24 Clocks")), "the chronicle: " + chronicle(entity));
 
 			// The next morning: step two.
 			nextMorning(helper);
 			Reforms.round(level, hall, entity);
 			ItemStack two = questPage(player, hall).icon(STEP_SLOT);
-			helper.assertTrue(two.getHoverName().getString().equals("The Shift Bell, step 2 of 3") && lore(two).contains("Bring 128 Gold Ingot"),
+			helper.assertTrue(two.getHoverName().getString().equals("The Shift Bell, step 2 of 3") && lore(two).contains("Bring 128 Gold Ingots"),
 				"step two: " + two.getHoverName().getString() + " " + lore(two));
 			helper.assertTrue(Reforms.shown(entity).get(0).reward() == 6, "step two pays 5 and a quarter: " + Reforms.shown(entity).get(0));
 			helper.assertTrue(lore(EdictBook.forTest(player, hall).icon(find(EdictBook.forTest(player, hall), "Long Shifts")))

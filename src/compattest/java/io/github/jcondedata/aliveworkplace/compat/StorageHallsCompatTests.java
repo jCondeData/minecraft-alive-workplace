@@ -87,7 +87,7 @@ public class StorageHallsCompatTests implements FabricGameTest {
 	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "toms_warehouse_build")
 	public void aBuilderBuildsTheWarehouseOnTomsNetwork(GameTestHelper helper) {
 		build(helper, StarterBlueprints.WAREHOUSE, new BlockPos(8, 2, 6), new BlockPos(9, 1, 6), 60,
-			new BlockPos(10, 1, 6), Direction.EAST, "crafting_terminal");
+			new BlockPos(8, 1, 6), Direction.WEST, "crafting_terminal");
 	}
 
 	/**

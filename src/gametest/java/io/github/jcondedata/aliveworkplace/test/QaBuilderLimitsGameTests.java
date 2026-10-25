@@ -314,6 +314,153 @@ public class QaBuilderLimitsGameTests implements net.fabricmc.fabric.api.gametes
 		helper.succeed();
 	}
 
+	/**
+	 * The wiki (builder.md): the chests "within supplyRadius of the bench (and 4 blocks up or down)", from both sides and
+	 * below too (lane-b-1025-0937): 10 planks 4 blocks under the table count, 5 cobblestone 5 under and the torch 5 up
+	 * don't. The Book and Quill used on the builder: "45 × Oak Planks (of 55)", the torch and the cobblestone unticked.
+	 */
+	//$ gametest_ticks_batch HUGE '80' '"qaLimitsChestHeight"'
+	@GameTest(template = HUGE, timeoutTicks = 80, batch = "qaLimitsChestHeight")
+	public void chestsFourBlocksUpOrDownAreCountedAndFiveAreNot(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		noVillageProtection(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos table = new BlockPos(12, 8, 12);
+		helper.setBlock(table.below(), Blocks.STONE);
+		helper.setBlock(table, ModBlocks.BLUEPRINT_TABLE);
+		record Stock(BlockPos at, ItemStack items) {
+		}
+		List<Stock> stocks = List.of(
+			new Stock(table.below(4).east(2), new ItemStack(Items.OAK_PLANKS, 10)),
+			new Stock(table.below(5).west(2), new ItemStack(Items.COBBLESTONE, 5)),
+			new Stock(table.above(5).north(2), new ItemStack(Items.TORCH)));
+		for (Stock s : stocks) {
+			helper.setBlock(s.at(), Blocks.CHEST);
+			((Container) helper.getBlockEntity(s.at())).setItem(0, s.items().copy());
+		}
+		Villager builder = helper.spawn(EntityType.VILLAGER, table.south().east());
+		builder.setNoAi(true);
+		BlockPos bench = helper.absolutePos(table);
+		Builders.employ(level, builder, bench);
+		forgetSitesOf(helper, builder);
+		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qalH"));
+		ServerPlayer p = c.player();
+		ItemStack blueprint = placedHut(level, bench, new Vec3i(4, 2, 4));
+		p.setItemInHand(InteractionHand.MAIN_HAND, blueprint);
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		helper.assertTrue(Builders.activeSite(level, builder) != null, "the builder took no build: " + texts(c.seen()));
+		p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.WRITABLE_BOOK));
+		c.seen().clear();
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		ItemStack book = p.getMainHandItem();
+		var content = book.get(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT);
+		helper.assertTrue(content != null, "no list was written: " + book + ", saw " + texts(c.seen()));
+		String pages = String.join("\n", content.pages().stream().map(page -> page.raw().getString()).toList());
+		for (String line : List.of("☐ 45 × Oak Planks (of 55)", "☐ 1 × Torch")) {
+			helper.assertTrue(pages.contains(line), "the list lacks \"" + line + "\": " + pages);
+		}
+		// the hut stands two above the table, so its foundation adds cobblestone: the line counts it all, none ticked off
+		List<String> cobble = pages.lines().filter(l -> l.contains("× Cobblestone")).toList();
+		helper.assertTrue(cobble.size() == 1 && cobble.get(0).startsWith("☐ ") && !cobble.get(0).contains("(of"),
+			"the 5 cobblestone five blocks under the table were counted: " + cobble);
+		LOGGER.info("qa chest height: {}", pages.replace('\n', '|'));
+		helper.succeed();
+	}
+
+	/**
+	 * en_us builder_died ("Your builder died while building %s. Their tools and the blueprint dropped at %s %s %s."), with
+	 * a line behind him (lane-b-1025-0937): a hired builder with one build under way and two lined up is killed. His
+	 * owner reads the sentence with the build's name and where he fell; the three blueprints (the one he was on and both
+	 * in line) lie on the ground there for the player to pick up, and no site of his is left.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"qaLimitsBuilderDies"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaLimitsBuilderDies")
+	public void aBuilderWhoDiesDropsEveryBlueprintAndHisOwnerIsTold(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		noVillageProtection(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
+		Villager builder = helper.spawn(EntityType.VILLAGER, VILLAGER);
+		builder.setNoAi(true);
+		BlockPos bench = helper.absolutePos(TABLE);
+		Builders.employ(level, builder, bench);
+		forgetSitesOf(helper, builder);
+		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qalD"));
+		ServerPlayer p = c.player();
+		for (int i = 0; i < 3; i++) {
+			p.setItemInHand(InteractionHand.MAIN_HAND, placedHut(level, bench, new Vec3i(6 + 6 * i, 0, 6)));
+			QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		}
+		helper.assertTrue(Builders.activeSite(level, builder) != null && Builders.queue(level, builder).size() == 2,
+			"not one build and two in line: " + texts(c.seen()));
+		BlockPos at = builder.blockPosition();
+		java.util.UUID id = builder.getUUID();
+		c.seen().clear();
+		builder.kill();
+		String expected = "Your builder died while building " + Blueprints.displayName(TEST_HUT).getString() + ". Their tools and the blueprint dropped at "
+			+ at.getX() + " " + at.getY() + " " + at.getZ() + ".";
+		helper.assertTrue(texts(c.seen()).contains(expected), "the owner was told " + texts(c.seen()) + ", expected \"" + expected + "\"");
+		int blueprints = 0;
+		for (net.minecraft.world.entity.item.ItemEntity item : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+			new net.minecraft.world.phys.AABB(at).inflate(4))) {
+			blueprints += item.getItem().is(ModItems.BLUEPRINT) ? item.getItem().getCount() : 0;
+		}
+		helper.assertTrue(blueprints == 3, blueprints + " blueprint(s) dropped where he fell, not the 3 he held");
+		for (BuildSite site : BuildSiteManager.get(level).all()) {
+			helper.assertFalse(id.equals(site.builder()), "a site of the dead builder is left: " + site.structure() + " queued=" + site.isQueued());
+		}
+		helper.succeed();
+	}
+
+	/**
+	 * en_us assign.overlaps and assign.wrong_dimension (lane-b-1025-0937), through the player's clicks: a builder busy on a
+	 * placed hut is handed a second hut placed one block over (overlapping it): "That spot overlaps another build in
+	 * progress (Test Hut).", the blueprint kept and nothing lined up; a hut placed in the Nether: "That blueprint is placed
+	 * in another dimension.", kept; then a hut clear of the first is lined up as usual.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"qaLimitsOverlap"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaLimitsOverlap")
+	public void anOverlappingOrOtherDimensionSpotIsRefusedAndKept(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		noVillageProtection(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
+		Villager builder = helper.spawn(EntityType.VILLAGER, VILLAGER);
+		builder.setNoAi(true);
+		BlockPos bench = helper.absolutePos(TABLE);
+		Builders.employ(level, builder, bench);
+		forgetSitesOf(helper, builder);
+		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qalV"));
+		ServerPlayer p = c.player();
+		p.setItemInHand(InteractionHand.MAIN_HAND, placedHut(level, bench, new Vec3i(6, 0, 6)));
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		helper.assertTrue(Builders.activeSite(level, builder) != null, "the first hut started nothing: " + texts(c.seen()));
+		String hut = Blueprints.displayName(TEST_HUT).getString();
+		// one block over: overlaps the hut under way
+		p.setItemInHand(InteractionHand.MAIN_HAND, placedHut(level, bench, new Vec3i(7, 0, 6)));
+		c.seen().clear();
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		helper.assertTrue(texts(c.seen()).contains("That spot overlaps another build in progress (" + hut + ")."), "the overlapping hut said " + texts(c.seen()));
+		helper.assertTrue(p.getMainHandItem().is(ModItems.BLUEPRINT), "the refused overlapping blueprint wasn't kept: " + p.getMainHandItem());
+		helper.assertTrue(Builders.queue(level, builder).isEmpty(), "the overlapping hut was lined up");
+		// placed in the Nether
+		ItemStack nether = placedHut(level, bench, new Vec3i(20, 0, 6));
+		BlueprintData.Placement there = BlueprintItem.data(nether).orElseThrow().placement().orElseThrow();
+		nether.set(ModComponents.BLUEPRINT, BlueprintItem.data(nether).orElseThrow().withPlacement(Optional.of(new BlueprintData.Placement(
+			net.minecraft.world.level.Level.NETHER.location(), there.origin(), there.rotation(), there.mirror()))));
+		p.setItemInHand(InteractionHand.MAIN_HAND, nether);
+		c.seen().clear();
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		helper.assertTrue(texts(c.seen()).contains("That blueprint is placed in another dimension."), "the Nether hut said " + texts(c.seen()));
+		helper.assertTrue(p.getMainHandItem().is(ModItems.BLUEPRINT), "the refused Nether blueprint wasn't kept: " + p.getMainHandItem());
+		helper.assertTrue(Builders.queue(level, builder).isEmpty(), "the Nether hut was lined up");
+		// clear of the first: lined up
+		p.setItemInHand(InteractionHand.MAIN_HAND, placedHut(level, bench, new Vec3i(20, 0, 6)));
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		helper.assertTrue(Builders.queue(level, builder).size() == 1, "a hut clear of the first wasn't lined up: " + texts(c.seen()));
+		helper.succeed();
+	}
+
 	// --- How far from the table ------------------------------------------------------------------------------------
 
 	/**

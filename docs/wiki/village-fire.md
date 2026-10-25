@@ -24,8 +24,9 @@ Roadmap items: 32.16, B218
 - **With Cobblemon**, Water-type Pokémon pastured near the grindstone help: every two seconds each uses a move on a
   fire in reach, with its own animation and Cobblemon's water splash, and the fire there goes out.
 - **When it's out**, players read "The fire in the Starter Cottage at Oakvale is out." and the hall's chronicle says
-  "Fire in the Starter Cottage: 18 blocks burned; Rowan the Firewarden put it out." (or "the bucket brigade put it
-  out", or "before it burned out").
+  "Fire in the Starter Cottage: 18 blocks burned; Rowan the Firewarden put it out." (a Firewarden with no name yet:
+  "the Firewarden put it out"; or "the bucket brigade put it out", or "before it burned out"). A fire on a build's
+  roof or against its wall is named after that build; only one in no build is "Fire in the village".
 - **The builders put back what burned** on their next look round the village's buildings, once the fire is out,
   even with `builderRepairs` off (32.16a, see [Sieges](sieges.md)): a fire never destroys a build for good.
 
@@ -47,7 +48,8 @@ Roadmap items: 32.16, B218
   its spread to the air beside a block (a mixin on `FireBlock`) only take builders' blocks; with `siegeDamage` off it
   takes none. Outside villages fire is vanilla's.
 - **Noticed, never scanned.** A mixin on where fire blocks are placed tells the village it's in; each village with
-  fire keeps the list of its fire blocks in memory. Firewardens, the brigade and the Pokémon look only at that list.
+  fire keeps the list of its fire blocks (saved, so it survives a restart). Firewardens, the brigade and the Pokémon
+  look only at that list.
   A fire lit on netherrack (a hearth) is left alone.
 - **The Firewarden** works in their CORE activity, so at any hour. They answer fires within 48 blocks of their
   grindstone; they throw from 3.5 blocks away, or, for a fire with nowhere near it to stand (a pitched roof's ridge),
@@ -74,8 +76,10 @@ anywhere, as in vanilla.
 ## Saved data
 
 On a Firewarden: `firewarden_water` (how many of their two buckets are full; absent: both full). The village's fires
-(their blocks, what burned, who doused them, the brigade) are kept in memory: after a restart the fires still
-burning are noticed again as they spread, and the chronicle counts from then.
+(their blocks, the build they're named after, what burned and who doused them) are saved on `fires` in
+`aliveworkplace_threats` (B392), so after a restart the Firewardens still answer a fire already burning and the
+chronicle counts the whole fire; a save from before has none. The brigade goes home with a restart, and a Journeyman
+Firewarden rings the bell again for it.
 Every builder's block the fire burned is also saved, on `damaged` in `aliveworkplace_threats` (32.16a), so the
 builders put it back after a restart too.
 
@@ -102,7 +106,9 @@ builders put it back after a restart too.
 
 ## Known limits
 
-- Fires are held in memory: one burning across a restart is picked up again only where it spreads.
+- A fire saved while burning comes back with the load (B392); if its blocks went out while the server was down, it
+  closes by itself once the area is loaded, with its "burned out" chronicle line (`QaFireSavedGameTests`). A fire in
+  chunks nobody loads stays open until they are.
 - The builders wait for the fire to be out within 16 blocks of a build before they repair it.
 - The water source search looks within 16 blocks of the grindstone and 6 up or down.
 - The Water-type partners' path is tested only in the compat tests (it needs Cobblemon).

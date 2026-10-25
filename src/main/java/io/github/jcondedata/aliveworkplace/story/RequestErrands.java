@@ -63,6 +63,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -338,12 +339,16 @@ public final class RequestErrands {
 		return villager.getBrain().getMemory(MemoryModuleType.HOME).filter(p -> p.dimension() == level.dimension()).map(GlobalPos::pos).orElse(null);
 	}
 
-	/** The cats and tamed wolves within {@code radius} blocks of {@code bed}. */
+	/**
+	 * The cats and tamed wolves within {@code radius} blocks of {@code bed}, measured from the bed's floor to their feet
+	 * (B423: from the bed's centre, half a block up, a cat sitting 10 blocks along the floor was 10.01 away).
+	 */
 	public static int pets(ServerLevel level, BlockPos bed, int radius) {
 		AABB box = new AABB(bed).inflate(radius);
 		double r2 = (double) radius * radius;
-		return level.getEntitiesOfClass(Cat.class, box, c -> c.isAlive() && c.distanceToSqr(bed.getCenter()) <= r2).size()
-			+ level.getEntitiesOfClass(Wolf.class, box, w -> w.isAlive() && w.isTame() && w.distanceToSqr(bed.getCenter()) <= r2).size();
+		Vec3 floor = Vec3.atBottomCenterOf(bed);
+		return level.getEntitiesOfClass(Cat.class, box, c -> c.isAlive() && c.distanceToSqr(floor) <= r2).size()
+			+ level.getEntitiesOfClass(Wolf.class, box, w -> w.isAlive() && w.isTame() && w.distanceToSqr(floor) <= r2).size();
 	}
 
 	/** {@code schooled}: the giver's child, who hasn't been to school, is schooled ({@link Schools#isSchooled}; it needs a Teacher). */

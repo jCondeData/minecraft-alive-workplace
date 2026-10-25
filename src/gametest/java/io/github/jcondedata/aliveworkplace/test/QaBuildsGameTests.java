@@ -503,6 +503,130 @@ public class QaBuildsGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 		});
 	}
 
+	/**
+	 * B326 again, with a third member working a column of its own elsewhere: the spec lets go only "the member on its
+	 * column or block", so when the lead takes the hole over, that third member keeps its block and its column (kills the
+	 * nightly survivor BuilderWork.takeOver's `!m.equals(me) && claim != null` to `||`, which let every member go). As
+	 * below, with two members on the one block: one holds its column, the other claims the block itself. Neither ever
+	 * lays it. The floor's middle, earlier in the lead's list, waits for good on the dug-out block under it, so the lead's
+	 * pass doesn't come back round to the hole in the tick it takes it over: in the tick both let go, the hole is in the
+	 * lead's hand, and the column is the lead's, not left to a member to take back.
+	 */
+	//$ gametest_ticks_batch BIG '2400' '"qaBuildsBystander"'
+	@GameTest(template = BIG, timeoutTicks = 2400, batch = "qaBuildsBystander")
+	public void aMemberOnAnotherColumnKeepsItWhenTheLeadTakesAHoleOver(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos dip = new BlockPos(8, 1, 8);
+		helper.setBlock(dip, Blocks.AIR);
+		helper.setDayTime(2000);
+		rules(helper, level, true);
+		BlockPos bench = new BlockPos(2, 2, 2);
+		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
+		Villager lead = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Builders.employ(level, lead, helper.absolutePos(bench));
+		BuildSite site = Builders.start(level, lead, null, TEST_HUT,
+			new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(6, 2, 6)), Rotation.NONE, Mirror.NONE));
+		site.setWonder(UUID.randomUUID()); // a Wonder's part: with members about, its builders work as a crew
+		BuildPlan plan = site.plan(level);
+		helper.assertTrue(plan != null, "the test hut's plan isn't there");
+		for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
+			for (BuildPlan.Step s : plan.steps(stage)) {
+				level.setBlock(s.pos(), s.state(), Block.UPDATE_CLIENTS);
+				if (s.secondaryPos() != null && s.secondaryState() != null) {
+					level.setBlock(s.secondaryPos(), s.secondaryState(), Block.UPDATE_CLIENTS);
+				}
+			}
+		}
+		Set<BlockPos> walls = new HashSet<>();
+		plan.steps(BuildPlan.Stage.STRUCTURE).forEach(s -> walls.add(s.pos()));
+		// the hole: a wall block on the first course with a wall block over it; the floor's middle, over the dip, waits
+		BlockPos stuck = helper.absolutePos(dip.above());
+		helper.assertTrue(plan.steps(BuildPlan.Stage.FOUNDATION).stream().anyMatch(s -> s.pos().equals(stuck.below())), "no foundation block in the dip");
+		BlockPos hole = plan.steps(BuildPlan.Stage.STRUCTURE).stream().map(BuildPlan.Step::pos)
+			.filter(p -> p.getY() == site.placement().origin().getY() + 1 && walls.contains(p.above()) && plan.solidPlannedAt(p.below())
+				&& plan.column(p) != plan.column(stuck)).findFirst().orElseThrow();
+		BlockPos over = hole.above();
+		level.setBlock(hole, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+		level.setBlock(over, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+		level.setBlock(stuck, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+		Item holeItem = plan.steps(BuildPlan.Stage.STRUCTURE).stream().filter(s -> s.pos().equals(hole)).findFirst().orElseThrow().state().getBlock().asItem();
+		BlockPos by = null;
+		for (Direction d : Direction.Plane.HORIZONTAL) {
+			BlockPos p = hole.below().relative(d);
+			if (level.getBlockState(p).isAir() && level.getBlockState(p.above()).isAir() && !level.getBlockState(p.below()).canBeReplaced()) {
+				by = p;
+				break;
+			}
+		}
+		helper.assertTrue(by != null, "nowhere to stand by the hole");
+		BlockPos stand = by;
+		UUID siteId = site.id();
+		UUID columnHolder = UUID.randomUUID(); // holds the hole's column, never lays it
+		UUID claimer = UUID.randomUUID(); // claims the hole itself, never lays it
+		UUID floorHolder = UUID.randomUUID(); // holds the floor's middle through the first pass, then leaves
+		UUID bystander = UUID.randomUUID(); // works a column of its own, away from the hole and the floor's middle
+		long column = plan.column(hole);
+		long stuckColumn = plan.column(stuck);
+		BlockPos elsewhere = plan.steps(BuildPlan.Stage.STRUCTURE).stream().map(BuildPlan.Step::pos)
+			.filter(p -> plan.column(p) != plan.column(hole) && plan.column(p) != plan.column(stuck)).reduce((x, y) -> y).orElseThrow();
+		long elsewhereColumn = plan.column(elsewhere);
+		boolean[] state = {false, false}; // the retries began (floor's middle left for good), both holds in place
+		helper.onEachTick(() -> {
+			if (level.getGameTime() % 200 == 0) {
+				helper.setDayTime(2000);
+			}
+			BuildSite now = BuildSiteManager.get(level).get(siteId);
+			helper.assertTrue(now != null, "the hut was finished with its floor's middle over a dug-out dip");
+			long t = level.getGameTime();
+			helper.assertTrue(level.getBlockState(over).isAir(), "the block over the hole went up, over air");
+			if (state[1] && now.claim(claimer) == null && now.crewColumn(columnHolder) == null) {
+				// both let go in the tick just gone: the lead took the hole over
+				helper.assertTrue(state[0] && now.isRetrying(), "the members' holds went before the lead's retries");
+				helper.assertTrue(now.crewColumn(lead.getUUID()) != null && now.crewColumn(lead.getUUID()) == column,
+					"the members let go, but the hole's column isn't the lead's: " + now.crewColumn(lead.getUUID()));
+				helper.assertTrue(elsewhere.equals(now.claim(bystander)) && now.crewColumn(bystander) != null && now.crewColumn(bystander) == elsewhereColumn,
+					"taking the hole over, the lead let go the member on another column too: claim " + now.claim(bystander) + ", column " + now.crewColumn(bystander));
+				org.slf4j.LoggerFactory.getLogger("aliveworkplace-qa").info("qa crew bystander: the lead took the hole over and the member at {} kept its block and column", elsewhere.toShortString());
+				helper.succeed();
+				return;
+			}
+			helper.assertTrue(!state[1] || now.claim(claimer) != null && now.crewColumn(columnHolder) != null,
+				"only one of the two members let go: claim " + now.claim(claimer) + ", column " + now.crewColumn(columnHolder));
+			if (!state[0]) {
+				if (now.stage() == BuildPlan.Stage.STRUCTURE && now.isRetrying()) {
+					state[0] = true;
+					now.release(floorHolder);
+					level.setBlock(stuck.below(), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+				} else {
+					now.seen(floorHolder, t);
+					if (!now.columnTakenByOther(floorHolder, stuckColumn)) {
+						now.takeColumn(floorHolder, stuckColumn);
+						now.claim(floorHolder, stuck, t);
+					}
+				}
+			}
+			now.seen(columnHolder, t);
+			now.seen(claimer, t);
+			if (now.claim(bystander) == null) {
+				now.takeColumn(bystander, elsewhereColumn);
+				now.claim(bystander, elsewhere, t);
+			}
+			now.seen(bystander, t);
+			lead.teleportTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5);
+			lead.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+			if (!now.columnTakenByOther(columnHolder, column) && now.crewColumn(columnHolder) == null && !state[1]) {
+				now.takeColumn(columnHolder, column);
+			}
+			if (now.claim(claimer) == null && !state[1]) {
+				now.claim(claimer, hole, t);
+			}
+			if (!state[1] && now.claim(claimer) != null && now.crewColumn(columnHolder) != null) {
+				state[1] = true;
+			}
+		});
+	}
+
 	// --- a config switch off --------------------------------------------------------------------------------------
 
 	/**

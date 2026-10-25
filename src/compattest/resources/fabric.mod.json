@@ -26,6 +26,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaModdedStorageBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.StorageHallsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaModdedStorageCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaSophisticatedStorageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedBuildCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnitureAnyModCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedHomesCompatTests",
@@ -41,6 +42,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaGuardPartnersCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaFirePartnersCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDenMegaCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaPokemonJobsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PaceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaTrainerCompatTests",
@@ -68,6 +70,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateBuildsTurnedCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicFilesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicSaysCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMechanicRoundSaveCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicMendSaysCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateBuildsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.VillageTrainCompatTests",
@@ -75,6 +78,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.CreateSchematicCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RaidDenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RaidHelperCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaDenHelperCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RaidDenFoundCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StationsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonCenterCompatTests",
@@ -106,7 +110,13 @@
 			"io.github.jcondedata.aliveworkplace.compat.BoardTradeCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StadiumCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StadiumPowerCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaCarvedLibraryCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaCarvedLibraryCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCarvedLibraryBugTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaSpruceCarpenterCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCarvedStylesCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaStoreSupplyCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCobblemonThreatsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCuisineCompatTests"
 		]
 	},
 	"depends": {

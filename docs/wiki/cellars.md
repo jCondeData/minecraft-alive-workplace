@@ -31,6 +31,9 @@ upgrade is offered:
 - the village's builders sell it (4 emeralds) as a blueprint called "Dig the cellar: Smithy", already lined up over
   the building; the trade appears when a player opens their trades or they level up, one per building;
 - the Village Hall's advice lists it ("Dig the cellar under the Smithy");
+- the trade goes again once there is no cellar to dig (dug by the builder or by hand, the building gone, or its dig
+  under way), the next time a player opens the builder's trades; one bought before and given to a builder then starts
+  nothing ("There's no cellar to dig under the Smithy any more"), and the player keeps it (B386);
 - the building's own blueprint clicked onto it lines up over it the same way ("Lined up over the Smithy: give it to a
   builder to dig its cellar").
 
@@ -89,9 +92,6 @@ Blueprints `aliveworkplace:inn_3`, `winery_3`, `farmstead_3`, `guildhall_3`, `ba
 
 - A builder sells one "Dig the cellar" per building; once bought out (2 uses) it comes back only when they restock.
 - A cellar dug by hand in another shape counts by its open spots only; the dig fills what the drawing wants solid.
-- A "Dig the cellar" trade a builder already sells stays on sale once the cellar is dug (by hand, or by them with
-  the trade's second use left): opening their trades adds no new one but doesn't take the old one off (B386, QA 2026-10-24; its test is on
-  the `tests/qa-cellar-trade-1024` branch). Bought then, its blueprint is no longer a cellar dig.
 
 ## 8. Proof
 
@@ -99,7 +99,8 @@ GameTests: `CellarGameTests` (`levelThreesLineUpOverTheirLevelTwos`: all eight k
 but the hatch, are listed with their basement and sold by the Level II's builder; `barracksThreeDigsItsArmoury`,
 `researchLabThreeDigsItsLowerLab`, `jewellersThreeDigsItsVault`: built over a finished Level II on real ground in
 `huge_area`; `oldSmithyDigsOnlyItsCellar`: the offer, the dig of only the cellar, a player's block left alone, and the
-Smithy II's plan digging the cellar too; `noOfferWhenTheCellarIsThere`; `reloadMidDigFinishesTheCellar`), and
-`BasementGameTests.basementsLoadUnderTheGround` (all eight load with a way down and a light).
+Smithy II's plan digging the cellar too, and the trade gone after; `noOfferWhenTheCellarIsThere`; `reloadMidDigFinishesTheCellar`;
+`staleDigTradeGoesAndCannotStartABuild`: two Smithies, one dug by hand, a builder saved with its trade), `QaRepairCellarBugTests`, and
+`BasementGameTests.basementsLoadUnderTheGround` (all eight load with a way down and a light), and QA's `QaBasementGameTests` (each cellar walked to and back out, its chests within reach, its floor lit everywhere).
 
 Showcase scenes: cellars

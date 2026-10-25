@@ -4,12 +4,13 @@ ROADMAP 32.13. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 (`Expansions.M32`); GameTests and the showcase run with it on. How a player takes the fight to a lair (see
 [Lairs and the Defense page](lairs.md)) with the village's guards (see [Raids and threats](raids.md)) and hired swords.
 
-Roadmap items: 32.13, B117, 36.3
+Roadmap items: 32.13, B117, 36.3, B418
 
 ## What a player sees
 
 - **"Muster a war party"** on the hall's **Defense page** (the white banner in the third row). It says how many guards
-  would march and how many keep the walls. A click takes **three in four** of the village's guards, nearest the hall
+  would march and how many keep the walls, each number in its own form ("3 guards would march, 1 keeps the walls"; the
+  chat after the muster reads the same way). A click takes **three in four** of the village's guards, nearest the hall
   first, **at most 12** (a scout out and hired swords don't count), enlists them on the **Rally Banner** in your
   inventory and **raises it**; they gather by the hall and follow you, as a raised Rally Banner always makes them. With
   no Rally Banner the chat says "Craft a Rally Banner first: the war party gathers under it"; with one guard there is
@@ -22,9 +23,12 @@ Roadmap items: 32.13, B117, 36.3
 - **At the lair** the band **turns out** to meet the war party: six at a time from the tents, more as they fall,
   until all its strength is spent. At a **City**, the captain leaves his fire and fights **at the front**.
 - **Kills at a lair** earn a guard **double experience** (Masters are made here).
-- **When the lair breaks** with a war party at it (or guards who killed there): its loot chest is yours as always; the
+- **When the lair breaks** with a war party at it (or after guards of the war party killed there): its loot chest is yours as always; the
   chronicle says who led the war party and names **every guard who killed there**; the village has **10 days' peace**
   instead of 5; and every villager is **+10 happier for two days**: "the warband is broken". Chat says so too.
+- A guard who is **not on a raised banner** (on watch near the lair) earns the double experience too, and is named in
+  a war party's chronicle line, but his kill alone is no war party: break the lair without one and the village has the
+  usual 5 days, no cheer, and the quest doesn't complete (B418).
 - **The questbook's "Take the fight to them"** completes by itself then, for the player who struck the last blow and
   every player leading guards in the war party (36.3; it used to ask for 10 pillagers killed anywhere).
 
@@ -37,7 +41,8 @@ tags: `aliveworkplace_siege_breaker` and `aliveworkplace_hired_by.<uuid>`; `Esco
 them. Every second, for each loaded lair, the guards marching (on a raised banner, or siege-breakers) within 48 blocks
 and their leaders are the war party; `Lairs.turnOut` tops the band up to six (never past its strength at home) and sets
 those without a target on the nearest of them, and at a City frees the captain. A lair mob killed by a guard within 48
-blocks of its lair pays the kill's XP again and puts the guard's name on the list for that village. `Lairs.onBroken`
+blocks of its lair pays the kill's XP again and puts the guard's name on the list for that village; when the guard
+was marching, the village is also marked as having had a war party there. `Lairs.onBroken`
 gives the rewards: `Lairs.rest(hall, 10)`, the mood until two days on, the chronicle line, the siege-breakers'
 stay cut to the next dawn, and the village moment `camp_broken` (`VillageMoments.grant`: only the striker, when a
 player, and the players in the war party; not the hall's owner or players at home).
@@ -54,8 +59,10 @@ nothing, kills at a lair pay once, and a broken lair gives the usual 5 days.
 
 Enlistment lives on the Rally Banner (its `rally` component, as before). A siege-breaker's stay and hirer are on the
 villager (the `MERCENARY_UNTIL` attachment and entity tags). `aliveworkplace_war_parties` per dimension: the names of
-the guards who killed at each village's lair, and until when each village is glad. Missing keys read as empty; a
-world without the file has neither.
+the guards who killed at each village's lair, the villages whose war party killed there (`marched`), and until when each
+village is glad. Missing keys read as empty, except `marched`: a file saved before B418 counts every village with kills
+as marked, as it was then (the player's break then earns the 10 days and the cheer), while a file saved after it
+with only a lone guard's kill stays no war party (`QaWarPartySavesGameTests`); a world without the file has none of it.
 
 ## Items, blocks, jobs, commands
 
@@ -67,8 +74,12 @@ Nothing new: the Rally Banner, guards and mercenaries are the existing ones.
 - The muster replaces whoever was on the banner with the chosen guards, keeping siege-breakers while there is room.
 - Siege-breakers join the banner only while it has room (12): a full war party leaves them following the player
   through their own tag, which works the same.
-- "The war party there" is the guards marching within 48 blocks of the lair, or any guard who killed there: a party
-  that lost every guard still earns its rewards.
+- "The war party there" is the guards marching within 48 blocks of the lair, or a guard who killed there while
+  marching (on a raised banner, or a siege-breaker): a party that lost every guard still earns its rewards.
+- B418 (32.13 vs 36.3): 36.3's "guards who killed there" means the war party's guards. A lone guard's kill at the lair
+  is no war party, so a lair the player breaks alone after it gives 5 days, no cheer and no `camp_broken`, as 32.13's
+  "when a lair breaks with a war party there" and 36.3's "you and your war party break a raiders' camp" both say. The
+  double XP and his name in the chronicle stay for every guard ("guards earn double experience for kills at a lair").
 
 ## Known limits
 
@@ -83,4 +94,6 @@ a medic for 30 emeralds, stay to the second dawn (kept through a save and load o
 the lair falls; a lair broken with guards on a raised banner gives 10 days' rest, extra XP for kills there (none with
 M32 closed), a chronicle line naming the player and both guards, and the mood (through a save and load); the band
 turns out six at a time and goes for the war party; a lair broken with two players' guards on raised banners grants
-`aliveworkplace:village/camp_broken` to both (36.3), and one broken by a lone player grants nothing. Scene `war_party`.
+`aliveworkplace:village/camp_broken` to both (36.3), and one broken by a lone player grants nothing. `QaWarPartyBugTests`
+(B418): a lone guard's kill at the lair, then the player alone breaks it: 5 days and no cheer; a guard on a raised banner
+kills there and is lost (kills saved and loaded), then the player breaks it: 10 days and the cheer. Scene `war_party`.

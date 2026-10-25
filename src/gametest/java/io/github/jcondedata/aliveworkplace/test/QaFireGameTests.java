@@ -85,7 +85,7 @@ public class QaFireGameTests {
 		boolean griefing = level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
 		VillageHalls.RADIUS = radius;
 		level.getGameRules().getRule(GameRules.RULE_DOFIRETICK).set(true, level.getServer());
-		VillageFire.forget();
+		VillageFire.reset();
 		level.setWeatherParameters(6000, 0, false, false);
 		level.setRainLevel(0f);
 		level.setThunderLevel(0f);
@@ -109,7 +109,7 @@ public class QaFireGameTests {
 				}
 				ThreatData.get(level).repaired(p.immutable());
 			}
-			VillageFire.forget();
+			VillageFire.reset();
 		});
 		helper.setBlock(hall, ModBlocks.VILLAGE_HALL);
 		return level;

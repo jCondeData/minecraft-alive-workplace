@@ -538,6 +538,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B422** Weekly leaderboard (33.19): a realm whose villages hold 1 villager reads '1 village, 1 villagers'; expected '1 village, 1 villager' (lang leaderboard.aliveworkplace.value.realm.one pluralises villagers whatever the count). Test: QaRequestsLeaderboardBugTests.aRealmOfOneVillagerReadsInTheSingular on tests/requests-leaderboard (found by lane-c-1025-0053, 2026-10-25)
 - [ ] **B423** Personal request 'A cat by the door' (31.10): a cat sitting exactly 10 blocks from the bed at dawn doesn't count, though the spec says within 10 blocks (RequestErrands.pets measures from the bed's centre half a block up to the cat's feet: 10.01). Expected: it counts. Test: QaRequestsLeaderboardBugTests.aCatExactlyTenBlocksFromTheBedCounts on tests/requests-leaderboard (found by lane-c-1025-0053, 2026-10-25)
 - [ ] **B424** Player-visible: the Settler's Wagon camp's chest of supplies (Village Hall, two blueprints, materials, food) can't be opened where it stands: it sits inside the covered wagon in a 1-high space under the wool cover, a hay bale and a pumpkin either side, so no standing spot round the camp puts it under the crosshair within reach; the player has to break the wagon to unpack. The Colony camp's tents (camp/colony_camp) hide their barrels the same way. Expected: the chest opens from beside the wagon (e.g. at its open end or tailboard). Test: QaCampReachGameTests.theCampsChestOfSuppliesCanBeOpened on tests/qa-camp-chest-1025 (the game's own ray pick from every spot within 5 blocks) (found by lane-b-1025-0038, 2026-10-25)
+- [ ] **B425** Relief (33.17): a band of one rider is told in the plural: the sender's hall says "1 guards away helping X" and its chronicle "1 guards rode to help X in a raid" (also relief_came / relief.arrived); expected "1 guard ..." (the capital with fewer than 6 guards always sends one, so this is the common case). Test: QaReliefGrammarBugTests#aBandOfOneIsOneGuard on tests/relief-grammar (found by lane-d-1025-0108, 2026-10-25)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -3001,7 +3002,7 @@ write their own stories; nothing waits forever on a player.
   - one GameTest per variant (a loop over set-up facts) picks it, and each keepsake comes once per player;
   - `langcheck.py` clean; a review package with a still of each family's 4-heart event; the `heart_event` scene gains
     a still of a 10-heart keepsake.
-- [x] **31.9** (approved 2026-10-11) **Personal requests: the asking, and six requests.** A villager with 3 hearts or more with a player
+- [x] **31.9** (approved 2026-10-11) (verified 2026-10-25: QaRequestsLeaderboardGameTests [15 tests, 1de5ab1]: 3-heart join both sides, offline helper, full pack, dead giver, save/reload mid-request, missed deadline, top-3, empty week, realm tie, missed weeks, ribbons for a week, config day/hour, unknown wellbeing; 3/3 mutants killed; 31.10 waits on B423, 33.19 singular realm line filed as B422) **Personal requests: the asking, and six requests.** A villager with 3 hearts or more with a player
   nearby, and no request open, may ask that player for help: each morning one such villager in the village is picked,
   a 25% chance. They walk up and ask over their head, and your chat gets the request with [I'll help] and [Not now]
   (clickable, through `/workplace quest accept|decline <id>`). It shows in the journal's Personal tab, on their
@@ -3140,7 +3141,7 @@ write their own stories; nothing waits forever on a player.
     bounties;
   - the three textures pass `lint.py`; a README section; showcase scene `bounty` (GIF: the board, the poster, the
     hideout, the claim).
-- [x] **31.14** (approved 2026-10-11) **Rogue Pokémon bounties** (Cobblemon). The board's second kind of poster, through a new extension
+- [x] **31.14** (approved 2026-10-11) (verified 2026-10-25: QaThreatsM32GameTests [4 tests]: Pharaoh rise at 24 blocks both sides, only husks rise once, siege on at 5900 and over at 6000, no sand ramp at threat level 1 [kills 2 boundary mutants; SandRamps survivor already killed by QaSandRampEdgeGameTests]; QaCobblemonThreatsCompatTests [5 rogue bounty tests]: first winner only, sword kill pays nothing, save/reload, switch off, poster text. 38.7 left unverified: B420, B421) **Rogue Pokémon bounties** (Cobblemon). The board's second kind of poster, through a new extension
   point `story/RoguePokemon` filled by `compat/cobblemon/CobblemonRogues`; without Cobblemon this kind is never
   posted. Config `rogueBounties` (true). A rogue is a wild Pokémon grown huge and mean that roams within 24 blocks of
   a spot 150 to 250 blocks from the hall, spawned with Cobblemon's own spawning from
@@ -3524,7 +3525,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     captain's death removes every ship block but a block the test placed on deck, and leaves the chest;
   - the ship passes `check.py` and its render is in the package;
   - scene `pirates`: the ship at anchor at dusk, the crew wading ashore, the ship sinking (GIF).
-- [x] **32.9** (approved 2026-10-11) **Desert raiders.** `desert_raiders.json`: desert and badlands; Town and up; tactics `sand_ramps`;
+- [x] **32.9** (approved 2026-10-11) (verified 2026-10-25: QaThreatsM32GameTests [4 tests]: Pharaoh rise at 24 blocks both sides, only husks rise once, siege on at 5900 and over at 6000, no sand ramp at threat level 1 [kills 2 boundary mutants; SandRamps survivor already killed by QaSandRampEdgeGameTests]; QaCobblemonThreatsCompatTests [5 rogue bounty tests]: first winner only, sword kill pays nothing, save/reload, switch off, poster text. 38.7 left unverified: B420, B421) **Desert raiders.** `desert_raiders.json`: desert and badlands; Town and up; tactics `sand_ramps`;
   hours `until_noon` (husks don't burn, so a siege goes on until noon). Their lair is the **Tomb Camp**
   (`camp/tomb_camp`, minecraft-architect skill: a half-buried sandstone tomb with an obelisk, sun-bleached awnings,
   bone blocks and dead bushes, the Pharaoh's sarcophagus as the loot chest). The roster: husks 55%, husks in gold
@@ -3636,7 +3637,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   disaster id, each on by default. Done when: a test datapack disaster applies each effect (a GameTest each), ends
   after its time or with rain, and survives a save and load of the hall; switched off, it never starts. No disaster
   ships yet: lands with `--no-review`.
-- [x] **32.16** (approved 2026-10-12) **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
+- [x] **32.16** (approved 2026-10-12) (verified 2026-10-25: QaThreatsM32GameTests [4 tests]: Pharaoh rise at 24 blocks both sides, only husks rise once, siege on at 5900 and over at 6000, no sand ramp at threat level 1 [kills 2 boundary mutants; SandRamps survivor already killed by QaSandRampEdgeGameTests]; QaCobblemonThreatsCompatTests [5 rogue bounty tests]: first winner only, sword kill pays nothing, save/reload, switch off, poster text. 38.7 left unverified: B420, B421) **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
   a lightning strike in the hall's area in a thunderstorm sets a finished wooden build's roof alight (1 in 3), a
   chimney spark 2% a day in a drought, and the pirate gunners' burning arrows (32.8) light the wooden block they hit
   (1 in 4, with `mobGriefing`). A village fire spreads by the game's own fire (`doFireTick`), but never to a block the
@@ -3700,7 +3701,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   drop; the barbican's gate is the first breach) and battle stations know them. Done when: the four are in the
   Blueprint Table and pass `check.py`; a render package shows each front and back; a builder upgrades a finished
   Gatehouse to II in a test; 32.4's gate test takes longer on Gatehouse II than on I; the `defences` scene shows them.
-- [x] **32.21** (approved 2026-10-12) **Peaceful settings and the threat level.** Config `threatLevel`, 0–3, beside each system's own switch
+- [x] **32.21** (approved 2026-10-12) (verified 2026-10-25: QaThreatsM32GameTests [4 tests]: Pharaoh rise at 24 blocks both sides, only husks rise once, siege on at 5900 and over at 6000, no sand ramp at threat level 1 [kills 2 boundary mutants; SandRamps survivor already killed by QaSandRampEdgeGameTests]; QaCobblemonThreatsCompatTests [5 rogue bounty tests]: first winner only, sword kill pays nothing, save/reload, switch off, poster text. 38.7 left unverified: B420, B421) **Peaceful settings and the threat level.** Config `threatLevel`, 0–3, beside each system's own switch
   (`raiderCultures`, `sieges`, `siegeDamage`, `disasters`, `villageRaids`, `banditCamps`):
   - 0: no raids, lairs, sieges or disasters at all;
   - 1, gentle: half as often, no sieges (raiders walk in only), no hexes, no plague;
@@ -3746,7 +3747,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   realm" README section that each item adds to; and the owner's open calls with the defaults used meanwhile (the
   leaderboard on a real week, Sunday 19:00 server time; no tribute in wars; collecting the treasury owner-only, see
   33.5). Done when: the note is on `main` and its review package is sent.
-- [x] **33.2** (approved auto 2026-10-06) **Trade goods: what a village is known for and short of.** The engine (new package `trade/`). Trade
+- [x] **33.2** (approved auto 2026-10-06) (verified 2026-10-25: QaTradeBoardGameTests [13 tests, d7ab46c]: known-for/short-of thresholds at 3 and 4 points both sides, top-3 cap, never both, supply/waiting caps, food under 16 meals, villageEconomy off keeps prices, treasury and pack limits exactly at the edge, 10% markup rounding, price clamps through clicks, hall before its first round; 4/4 mutants killed) **Trade goods: what a village is known for and short of.** The engine (new package `trade/`). Trade
   goods are data: `data/aliveworkplace/trade_goods/<good>.json`, loaded through `Platform.onDataReload` so datapacks
   and `/reload` work. One file is one good: its name key and icon, its items (an item or an item tag), a bundle size,
   a base price in hundredths of an emerald a bundle, `made_by` (professions and biome tags), `wanted_in` (biome tags,
@@ -3767,7 +3768,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     and twice its base; a raid event raises demand for its days only;
   - the new keys survive save and reload, and a village entry saved before this item loads with empty lists;
   - with `villageEconomy` off nothing is worked out and `caravansCarryWhatAnotherVillageNeeds` passes unchanged.
-- [x] **33.3** (approved auto 2026-10-06) **The trade goods.** 28 data files (prices follow vanilla's villager trades where there is one; biomes
+- [x] **33.3** (approved auto 2026-10-06) (verified 2026-10-25: QaTradeBoardGameTests [13 tests, d7ab46c]: known-for/short-of thresholds at 3 and 4 points both sides, top-3 cap, never both, supply/waiting caps, food under 16 meals, villageEconomy off keeps prices, treasury and pack limits exactly at the edge, 10% markup rounding, price clamps through clicks, hall before its first round; 4/4 mutants killed) **The trade goods.** 28 data files (prices follow vanilla's villager trades where there is one; biomes
   as vanilla and `c:` biome tags; a tag of ours where a good is several items): food and farm goods first, then
   building materials (Timber to Gold), crafts (Wool to Nether Goods) and three goods that load only with Cobblemon,
   each behind a `fabric:load_conditions` like the explorer's Cobblemon loot:
@@ -3834,7 +3835,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     and a desert village short of timber and fish;
   - the three Cobblemon goods load only with Cobblemon (a compat GameTest) and the other 25 without it;
   - every good has its name in `en_us.json` and an icon (`langcheck.py` clean).
-- [x] **33.4** (approved 2026-10-11) **The price board.** The minecart in the hall's divider now opens a **Trade** page with a row of tabs:
+- [x] **33.4** (approved 2026-10-11) (verified 2026-10-25: QaTradeBoardGameTests [13 tests, d7ab46c]: known-for/short-of thresholds at 3 and 4 points both sides, top-3 cap, never both, supply/waiting caps, food under 16 meals, villageEconomy off keeps prices, treasury and pack limits exactly at the edge, 10% markup rounding, price clamps through clicks, hall before its first round; 4/4 mutants killed) **The price board.** The minecart in the hall's divider now opens a **Trade** page with a row of tabs:
   **Routes** (today's trade-routes page, unchanged), **Prices** (this item), and **Pacts**, **Realm** and
   **Colonies**, which later items fill and which stay hidden until then; the Village Ledger reaches it from afar as it
   does the rest of the hall. **Prices** lists every good with its icon, this village's price for a bundle (to sell to
@@ -3851,7 +3852,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     from afar;
   - showcase scene `price_board` (the page, a tooltip, the name icon), and the README section starts with "Specialties
     and prices".
-- [x] **33.5** (approved 2026-10-11) **Trading at the board.** On the Prices tab a player can **sell** the village what it's short of (click
+- [x] **33.5** (approved 2026-10-11) (verified 2026-10-25: QaTradeBoardGameTests [13 tests, d7ab46c]: known-for/short-of thresholds at 3 and 4 points both sides, top-3 cap, never both, supply/waiting caps, food under 16 meals, villageEconomy off keeps prices, treasury and pack limits exactly at the edge, 10% markup rounding, price clamps through clicks, hall before its first round; 4/4 mutants killed) **Trading at the board.** On the Prices tab a player can **sell** the village what it's short of (click
   with the goods in your inventory: one bundle; shift-click: as many as it will take) and **buy** what it's known for
   (click with an empty hand), at the board's prices: the village pays from its treasury and keeps what it earns there
   (`Money`, so CobbleDollars with the pack), and the goods go into and come out of its Storehouses' chests, which keep

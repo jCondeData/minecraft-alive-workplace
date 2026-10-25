@@ -35,6 +35,8 @@ show there:
 
 The show is held once a festival. Afterwards the crowd goes back to the square for the dancing and the fireworks.
 
+The pedestal has to be standing: if it is broken, the shrine holds no show until it is put back.
+
 ## Switch
 
 `villageMegas` (on). Off: the shrine isn't listed and holds no show; a shrine already built stays as it is.

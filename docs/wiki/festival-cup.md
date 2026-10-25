@@ -25,7 +25,7 @@ passes. While they hold the Cup, every villager there has the mood reason "our v
 Three tiers, each an upgrade of the one before, in the Blueprint Table only when Cobblemon is installed; an Expert
 Trainer Leader sells the first one's blueprint (no Leader below Expert does).
 
-- **Arena** (25 × 19): a 15 × 9 battle ring of packed mud inside a white line, with a half-way line and a centre
+- **Arena** (25 × 19): a 15 × 9 battle ring of packed mud inside a white line, with a half-way line and a center
   circle; a trainer's box on a dais at each end with a lamp post; benches for 12 along the back; two banner poles and
   a notice board at the front.
 - **Arena II** (25 × 29): stands on both long sides (30 seats), a gate arch, lanterns round the ring, and a fair lane

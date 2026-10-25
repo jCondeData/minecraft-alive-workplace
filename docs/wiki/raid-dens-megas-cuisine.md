@@ -87,8 +87,11 @@ Evolve first, else the nearest) climbs to the pedestal and Mega Evolves their ac
 chord, and "<trainer> Mega Evolves their ace at the Mega Shrine, and the village cheers!" in chat for the players near.
 The trainer waits at the pedestal until every villager off work has come to the shrine (at most 600 ticks from the
 gathering's start, and never past the show's last 100 ticks), so the crowd sees it (B215). Everyone who came, and every
-villager within 12 blocks, is the happier for it: +3 mood ("watched a Mega Evolution at the shrine") as long as a
-festival's good mood lasts (2 days). Once a festival; then the crowd goes back to the square for the dancing and
+villager off work within 12 blocks, is the happier for it (a villager at work by the shrine, such as a farmer at his
+fields, isn't one of the crowd and gets nothing, B420): +3 mood ("watched a Mega Evolution at the shrine") as long as a
+festival's good mood lasts (2 days). The shrine counts only while its pedestal stands: with the pedestal broken (or
+never placed) there is no show, no chat line and no mood, and once a pedestal is put back the next festival's show is
+held again (B421). Once a festival; then the crowd goes back to the square for the dancing and
 fireworks. The show is part of the festival itself: it needs the village's festival (six villagers or more, on its
 festival day or one called), and it begins at the festival's first tick after the hall's round has seen it start.
 
@@ -121,15 +124,15 @@ store (the Chef now makes them only on request too, since they're on the same di
 Cobblemon's Poké snacks and the vanilla menu. Dishes the Chef stocked before the update stay where they are.
 
 A farmer with Cobblecuisine grows beans for those dishes (38.9): while the store (her chests and the village's stashes)
-holds fewer than 16 of a bean colour a dish on the menu needs, she takes bean seeds from the chests and sows her
+holds fewer than 16 of a bean color a dish on the menu needs, she takes bean seeds from the chests and sows her
 field's empty farmland with them, cuts a bean plant only once it's fully grown, and takes the beans to the store with
-the rest of the harvest. Which colour comes up is Cobblecuisine's own loot (one of the seven at random), so a short
-colour brings a field of mixed beans. With 16 of every wanted colour, or no bean dish on the menu, she sows none and
+the rest of the harvest. Which color comes up is Cobblecuisine's own loot (one of the seven at random), so a short
+color brings a field of mixed beans. With 16 of every wanted color, or no bean dish on the menu, she sows none and
 the seeds stay in the chest; the ripe beans already growing are still cut, but not sown again.
 
 **Treats for partners and dish luxuries (38.10).** A partner Pokémon (one in a Pasture Block helping a villager at
 work) gets one treat a day from the village store: when its worker's day is counted at work, it eats a Poké Puff (any
-of the five) or a shake (Low, Medium or High, any colour) out of the store (the nearest hall's kitchens and
+of the five) or a shake (Low, Medium or High, any color) out of the store (the nearest hall's kitchens and
 storehouses, or without a hall the storehouses near the workstation), with hearts and 6 more friendship, the same as
 the Rancher's berry treat. Once a day however many workers it helps; with nothing in the store, no treat. Two dishes
 become luxuries, wanted only with Cobblecuisine: a **Deluxe Shake** (any of the six) for Burghers every 4 days, and
@@ -208,13 +211,15 @@ village (the nearest hall) for that player, then checks the realm the village is
 ## How the shrine's show runs (38.7)
 
 `trainer/MegaShrines` (core) reads the shrine by its blueprint id from the finished builds near the hall
-(`BuildSiteManager.finishedNear`), and Mega Showdown's pedestal only by its id (`mega_showdown:pedestal`):
+(`BuildSiteManager.finishedNear`), keeping only those whose pedestal spot holds `mega_showdown:pedestal` now (read by
+id, and only while that chunk is loaded; B421), and Mega Showdown's pedestal only by its id (`mega_showdown:pedestal`):
 `BlueprintLibrary.megaOk` lists the shrine only while that block exists and `villageMegas` is on. `Festivals.tick`
 asks it first each festival tick; in the show's hours it takes the crowd (to 4 blocks in front of the dais) and walks
 the trainer to the step before the pedestal; there, the trainer waits for the crowd (`WAIT_TICKS`: every villager off
 work in the village has been at the crowd's spot once today, or 600 ticks since the gathering began, or the show's last
 100 ticks) and the show is held once a day per village, for everyone who came (kept in memory by villager id: the
-crowd's spot reaches up to 14 blocks from the pedestal, past the 12 of its watchers) and everyone within 12 blocks (kept in memory: a restart
+crowd's spot reaches up to 14 blocks from the pedestal, past the 12 of its watchers) and everyone off work (idle, meeting or playing, or seated, as `Festivals.gatherAt` gathers
+them) within 12 blocks; a villager at work there is left out (B420) (kept in memory: a restart
 mid-show may hold it again, and the mood is the same). The Mega Evolution is shown as light and sound at the pedestal,
 not by a Pokémon sent out.
 
@@ -235,7 +240,7 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 | `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweller's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6), and the Mega Shrine at the Table with its festival show (38.7). Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
 
 | `cuisineDishes` | on (once 2.2 ships) | Cobblecuisine's dishes asked of the Chef at the hall board's Dishes tab by his level (38.8a), counted by food group for the diet, the Camp Cook's curries and the Innkeeper's drinks (38.8), the partners' daily treat and the Deluxe Shake and Clodsire Eclair luxuries (38.10). Off: the menus and the diet are as before, no treats, and the two luxuries are neither wanted nor taken. |
-| `beanFarms` | on (once 2.2 ships) | Farmers sow Cobblecuisine's beans when the store is short of a colour a menu dish needs, and cut them when ripe (38.9). Off: farmers never sow beans (ripe ones on a field are still cut, as any crop). |
+| `beanFarms` | on (once 2.2 ships) | Farmers sow Cobblecuisine's beans when the store is short of a color a menu dish needs, and cut them when ripe (38.9). Off: farmers never sow beans (ripe ones on a field are still cut, as any crop). |
 
 ## Saved data
 
@@ -268,15 +273,15 @@ the design note and checked by `CobblemonDepthCompatTests`.
 
 ## Decisions
 
-- Cobblecuisine has seven bean colours, not six as the roadmap said; the plan uses all seven (38.1).
+- Cobblecuisine has seven bean colors, not six as the roadmap said; the plan uses all seven (38.1).
 - Bean farms have their own switch, `beanFarms`, as the design note's switch table planned, rather than sharing
   `cuisineDishes`: a server can keep the dishes and grow its beans by hand. Beans are only wanted while dishes are on
   the menu, so `cuisineDishes` off means no bean farms either (38.9).
 - "A dish on the menu" is any dish on the loaded lists (every level), not only those the village's Chef can cook
   today: a Chef rises, and the beans take days to grow. The beans a dish needs are the `#cobblecuisine:beans` items its
   own recipes ask for, found by result as the Chef finds them (38.9).
-- The store counted is the farmer's chests and her village-mates' stashes. A colour can't be chosen: the crop's loot
-  picks it, so any short colour sows the field with seeds (38.9).
+- The store counted is the farmer's chests and her village-mates' stashes. A color can't be chosen: the crop's loot
+  picks it, so any short color sows the field with seeds (38.9).
 - The partners' treats and the dish luxuries share `cuisineDishes`, as the design note's switch table assigns them
   (no new switch); a luxury file can now name a switch (`"switch"`), and while it is off the luxury is not loaded
   for anyone (38.10).
@@ -360,7 +365,7 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   `noMoneyIsRefused`, `theCapIsRespected` (three, and none for a resting den), `eachHelperCheersOnceARaid` (none 40
   blocks off, one each, never twice), `aWonRaidIsWrittenAndTheHelpersGoHome`, `aDayLaterTheHelpersGoHome`,
   `theHelpersWearTheBossDown` (the reflection found the raids; blows by rank, never under a quarter),
-  `theButtonAndTheSwitch` (the Defence page's lines; off: no button, no hiring, no cheer), `hiringsSaveAndOldDataLoads`.
+  `theButtonAndTheSwitch` (the Defense page's lines; off: no button, no hiring, no cheer), `hiringsSaveAndOldDataLoads`.
 - `QaDenHelperCompatTests` (QA, from the spec): `theDefencePageButtonHiresAtExactlyThePrice` (the button clicked as
   a client clicks: exactly the price hires the best trainer, one CobbleDollar short is refused and takes nothing, the
   button counts "1 of 3", they keep up), `emeraldsAtACustomPriceExactlyAndOneShort` (no CobbleDollars, `denHelperPrice`
@@ -391,6 +396,10 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   `theShowComesWithTheVillagesFestivalDay` (B191: the hall's round plans the festival and its own tick holds the show),
   `theShowWaitsForTheCrowdAndCountsEveryoneWhoCame` (B215: the trainer waits for a villager still on the way; one at the
   crowd's far edge, past 12 blocks, cheers too; one who never comes doesn't hold it past its last call).
+- `QaMegaShrineGapsCompatTests` (with Mega Showdown, B420): `aVillagerAtWorkGetsNoShowMood` (a farmer at work within
+  12 blocks gets no show day and no mood), `theCrowdKeepsTheShowMoodAndTheWorkerNoneAfterReload` (the crowd's watcher
+  reads +3 and "watched a Mega Evolution at the shrine", the farmer neither, both still so after a save and reload),
+  `aBrokenPedestalHoldsNoShow` (B421: the pedestal broken, no show, no chat line, no mood; put back, the show again).
 - `MegaShrineGameTests` (without Mega Showdown): `hiddenWithoutMegaShowdown`, `theShowsMoodAndText`.
 - `MegaStoneCompatTests` (with Mega Showdown, 38.6): `theRecipesAndFindsLoad`,
   `aJewellerCutsAMegaStoneForTheVillagesTrainers` (a crystal, gold and emeralds become one stone of the Master's team),
@@ -436,7 +445,7 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   shift-click asks 16, four make 64 and a fifth click is refused; right-click takes it down; the soda locked for a
   Novice opens exactly at Apprentice; every line and answer word for word, and the three drinks' names),
   `theCampCookShortOfOneMakingCooksNoCurry` (no chicken: no curry, nothing taken), `fifteenOfOneColourSowsBeans` (16
-  of every colour but 15 green beans: the field is sown), `aBeanOneStageShortIsLeftStanding` (random ticks off: the
+  of every color but 15 green beans: the field is sown), `aBeanOneStageShortIsLeftStanding` (random ticks off: the
   plants one stage short stay, the one ripe plant is cut into the chest), `theDeluxeShakeIsDueOnTheFourthDayNotTheThird`
   (none on day 13, one on day 14; a Burgher takes the class above's éclair), `theEclairIsDueOnTheEighthDayNotTheSeventh`
   (none on day 27, one on day 28) and `aPartnerIsFedOnlyFromTheStoreOnceADay` (puffs in a chest that isn't the store

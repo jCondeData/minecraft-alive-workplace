@@ -40,6 +40,9 @@ public class MegaShrineCompatTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(ORIGIN), Rotation.NONE, Mirror.NONE);
 		BuildSiteManager.get(level).recordFinished(StarterBlueprints.MEGA_SHRINE.id(), placement, UUID.randomUUID());
+		// The shrine's pedestal stands, as a builder leaves it (B421: without it there is no show).
+		level.setBlockAndUpdate(io.github.jcondedata.aliveworkplace.hall.Arenas.world(placement, MegaShrines.PEDESTAL_SPOT),
+			net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(MegaShrines.PEDESTAL).defaultBlockState());
 		int radius = VillageHalls.RADIUS;
 		VillageHalls.RADIUS = 16;
 		long time = level.getDayTime();
@@ -118,6 +121,9 @@ public class MegaShrineCompatTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(ORIGIN), Rotation.NONE, Mirror.NONE);
 		BuildSiteManager.get(level).recordFinished(StarterBlueprints.MEGA_SHRINE.id(), placement, UUID.randomUUID());
+		// The shrine's pedestal stands, as a builder leaves it (B421: without it there is no show).
+		level.setBlockAndUpdate(io.github.jcondedata.aliveworkplace.hall.Arenas.world(placement, MegaShrines.PEDESTAL_SPOT),
+			net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(MegaShrines.PEDESTAL).defaultBlockState());
 		int radius = VillageHalls.RADIUS;
 		int every = io.github.jcondedata.aliveworkplace.hall.VillageNeeds.CHECK_EVERY;
 		long time = level.getDayTime();

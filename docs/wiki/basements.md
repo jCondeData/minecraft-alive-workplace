@@ -24,7 +24,7 @@ floor above, and has a ladder or a stone stair down from inside.
 | Supply Shop IV | a stockroom: chests two high, bolts of cloth, crates, a packing table | ladder behind the counter |
 | Library IV | an archive: bookshelves round the walls, chests of old ledgers, a reading table | stair along the back of the reading room |
 | Healing Center IV | a cool store: shelves of potted herbs and fungi, kelp and moss, chests of remedies | ladder in the back room |
-| Lookout Tower IV | an armoury and lock-up: a cell behind iron bars, an anvil, chests of kit, hay targets | ladder by the guardroom door |
+| Lookout Tower IV | an armory and lock-up: a cell behind iron bars, an anvil, chests of kit, hay targets | ladder by the guardroom door |
 
 Cellars from Level 1:
 
@@ -103,7 +103,7 @@ as `blueprint.aliveworkplace.butchers_shop`).
 - Basements are only under the ground floor's own walls; none reaches under a wing or a yard.
 - On a slope the basement is dug from the ground floor down like the rest; where the ground falls away its walls show.
 - The outline drawn in the world while placing shows only the part above the ground. The Blueprint Table's 3D preview
-  draws the basement under the house, centred on the house alone; that view isn't tested.
+  draws the basement under the house, centered on the house alone; that view isn't tested.
 - A Smithy, Kitchen or Storehouse finished before the update keeps no cellar until a builder is asked to dig it ("Dig
   the cellar", [Cellars](cellars.md), 36.7).
 

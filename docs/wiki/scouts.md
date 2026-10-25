@@ -28,7 +28,7 @@ Roadmap items: 32.12, B368
   ("At 120, 64, -340", on the where slot and the scouting slot) with who found it and when, and on the scouting slot
   the **captain** and the **strength**. In the **chest by their grindstone** is a **Scouting Report**: a filled map
   like an explorer map, drawn between the village and the lair at the smallest scale that shows both (lined up with
-  the game's own map squares when one holds both, else centred halfway between them, so both are always on it), with the
+  the game's own map squares when one holds both, else centered halfway between them, so both are always on it), with the
   village's mark and a **red X** on the lair, a dark red border color, called "Scouting Report: Bandit camp", its
   tooltip listing the **raiders**, the **captain**, the **strength** and who scouted it on which day. No room in the
   chest: it drops at the scout's feet.

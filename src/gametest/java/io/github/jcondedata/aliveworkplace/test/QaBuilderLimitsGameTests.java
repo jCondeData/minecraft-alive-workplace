@@ -367,6 +367,51 @@ public class QaBuilderLimitsGameTests implements net.fabricmc.fabric.api.gametes
 		helper.succeed();
 	}
 
+	/**
+	 * en_us builder_died ("Your builder died while building %s. Their tools and the blueprint dropped at %s %s %s."), with
+	 * a line behind him (lane-b-1025-0937): a hired builder with one build under way and two lined up is killed. His
+	 * owner reads the sentence with the build's name and where he fell; the three blueprints (the one he was on and both
+	 * in line) lie on the ground there for the player to pick up, and no site of his is left.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"qaLimitsBuilderDies"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaLimitsBuilderDies")
+	public void aBuilderWhoDiesDropsEveryBlueprintAndHisOwnerIsTold(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		noVillageProtection(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
+		Villager builder = helper.spawn(EntityType.VILLAGER, VILLAGER);
+		builder.setNoAi(true);
+		BlockPos bench = helper.absolutePos(TABLE);
+		Builders.employ(level, builder, bench);
+		forgetSitesOf(helper, builder);
+		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qalD"));
+		ServerPlayer p = c.player();
+		for (int i = 0; i < 3; i++) {
+			p.setItemInHand(InteractionHand.MAIN_HAND, placedHut(level, bench, new Vec3i(6 + 6 * i, 0, 6)));
+			QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		}
+		helper.assertTrue(Builders.activeSite(level, builder) != null && Builders.queue(level, builder).size() == 2,
+			"not one build and two in line: " + texts(c.seen()));
+		BlockPos at = builder.blockPosition();
+		java.util.UUID id = builder.getUUID();
+		c.seen().clear();
+		builder.kill();
+		String expected = "Your builder died while building " + Blueprints.displayName(TEST_HUT).getString() + ". Their tools and the blueprint dropped at "
+			+ at.getX() + " " + at.getY() + " " + at.getZ() + ".";
+		helper.assertTrue(texts(c.seen()).contains(expected), "the owner was told " + texts(c.seen()) + ", expected \"" + expected + "\"");
+		int blueprints = 0;
+		for (net.minecraft.world.entity.item.ItemEntity item : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+			new net.minecraft.world.phys.AABB(at).inflate(4))) {
+			blueprints += item.getItem().is(ModItems.BLUEPRINT) ? item.getItem().getCount() : 0;
+		}
+		helper.assertTrue(blueprints == 3, blueprints + " blueprint(s) dropped where he fell, not the 3 he held");
+		for (BuildSite site : BuildSiteManager.get(level).all()) {
+			helper.assertFalse(id.equals(site.builder()), "a site of the dead builder is left: " + site.structure() + " queued=" + site.isQueued());
+		}
+		helper.succeed();
+	}
+
 	// --- How far from the table ------------------------------------------------------------------------------------
 
 	/**

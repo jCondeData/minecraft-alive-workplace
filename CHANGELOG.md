@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.149.1 — 2026-10-25
+
 ### Fixed
 
 - Mega Shrine (with Mega Showdown): a villager busy at his job near the shrine, such as a farmer at his fields, no longer gets the show's +3 mood and "watched a Mega Evolution at the shrine" though he never came to watch; only villagers off work who gather for the show get it (B420).

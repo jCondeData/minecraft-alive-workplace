@@ -124,15 +124,15 @@ store (the Chef now makes them only on request too, since they're on the same di
 Cobblemon's Poké snacks and the vanilla menu. Dishes the Chef stocked before the update stay where they are.
 
 A farmer with Cobblecuisine grows beans for those dishes (38.9): while the store (her chests and the village's stashes)
-holds fewer than 16 of a bean colour a dish on the menu needs, she takes bean seeds from the chests and sows her
+holds fewer than 16 of a bean color a dish on the menu needs, she takes bean seeds from the chests and sows her
 field's empty farmland with them, cuts a bean plant only once it's fully grown, and takes the beans to the store with
-the rest of the harvest. Which colour comes up is Cobblecuisine's own loot (one of the seven at random), so a short
-colour brings a field of mixed beans. With 16 of every wanted colour, or no bean dish on the menu, she sows none and
+the rest of the harvest. Which color comes up is Cobblecuisine's own loot (one of the seven at random), so a short
+color brings a field of mixed beans. With 16 of every wanted color, or no bean dish on the menu, she sows none and
 the seeds stay in the chest; the ripe beans already growing are still cut, but not sown again.
 
 **Treats for partners and dish luxuries (38.10).** A partner Pokémon (one in a Pasture Block helping a villager at
 work) gets one treat a day from the village store: when its worker's day is counted at work, it eats a Poké Puff (any
-of the five) or a shake (Low, Medium or High, any colour) out of the store (the nearest hall's kitchens and
+of the five) or a shake (Low, Medium or High, any color) out of the store (the nearest hall's kitchens and
 storehouses, or without a hall the storehouses near the workstation), with hearts and 6 more friendship, the same as
 the Rancher's berry treat. Once a day however many workers it helps; with nothing in the store, no treat. Two dishes
 become luxuries, wanted only with Cobblecuisine: a **Deluxe Shake** (any of the six) for Burghers every 4 days, and
@@ -240,7 +240,7 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 | `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweller's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6), and the Mega Shrine at the Table with its festival show (38.7). Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
 
 | `cuisineDishes` | on (once 2.2 ships) | Cobblecuisine's dishes asked of the Chef at the hall board's Dishes tab by his level (38.8a), counted by food group for the diet, the Camp Cook's curries and the Innkeeper's drinks (38.8), the partners' daily treat and the Deluxe Shake and Clodsire Eclair luxuries (38.10). Off: the menus and the diet are as before, no treats, and the two luxuries are neither wanted nor taken. |
-| `beanFarms` | on (once 2.2 ships) | Farmers sow Cobblecuisine's beans when the store is short of a colour a menu dish needs, and cut them when ripe (38.9). Off: farmers never sow beans (ripe ones on a field are still cut, as any crop). |
+| `beanFarms` | on (once 2.2 ships) | Farmers sow Cobblecuisine's beans when the store is short of a color a menu dish needs, and cut them when ripe (38.9). Off: farmers never sow beans (ripe ones on a field are still cut, as any crop). |
 
 ## Saved data
 
@@ -273,15 +273,15 @@ the design note and checked by `CobblemonDepthCompatTests`.
 
 ## Decisions
 
-- Cobblecuisine has seven bean colours, not six as the roadmap said; the plan uses all seven (38.1).
+- Cobblecuisine has seven bean colors, not six as the roadmap said; the plan uses all seven (38.1).
 - Bean farms have their own switch, `beanFarms`, as the design note's switch table planned, rather than sharing
   `cuisineDishes`: a server can keep the dishes and grow its beans by hand. Beans are only wanted while dishes are on
   the menu, so `cuisineDishes` off means no bean farms either (38.9).
 - "A dish on the menu" is any dish on the loaded lists (every level), not only those the village's Chef can cook
   today: a Chef rises, and the beans take days to grow. The beans a dish needs are the `#cobblecuisine:beans` items its
   own recipes ask for, found by result as the Chef finds them (38.9).
-- The store counted is the farmer's chests and her village-mates' stashes. A colour can't be chosen: the crop's loot
-  picks it, so any short colour sows the field with seeds (38.9).
+- The store counted is the farmer's chests and her village-mates' stashes. A color can't be chosen: the crop's loot
+  picks it, so any short color sows the field with seeds (38.9).
 - The partners' treats and the dish luxuries share `cuisineDishes`, as the design note's switch table assigns them
   (no new switch); a luxury file can now name a switch (`"switch"`), and while it is off the luxury is not loaded
   for anyone (38.10).
@@ -365,7 +365,7 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   `noMoneyIsRefused`, `theCapIsRespected` (three, and none for a resting den), `eachHelperCheersOnceARaid` (none 40
   blocks off, one each, never twice), `aWonRaidIsWrittenAndTheHelpersGoHome`, `aDayLaterTheHelpersGoHome`,
   `theHelpersWearTheBossDown` (the reflection found the raids; blows by rank, never under a quarter),
-  `theButtonAndTheSwitch` (the Defence page's lines; off: no button, no hiring, no cheer), `hiringsSaveAndOldDataLoads`.
+  `theButtonAndTheSwitch` (the Defense page's lines; off: no button, no hiring, no cheer), `hiringsSaveAndOldDataLoads`.
 - `QaDenHelperCompatTests` (QA, from the spec): `theDefencePageButtonHiresAtExactlyThePrice` (the button clicked as
   a client clicks: exactly the price hires the best trainer, one CobbleDollar short is refused and takes nothing, the
   button counts "1 of 3", they keep up), `emeraldsAtACustomPriceExactlyAndOneShort` (no CobbleDollars, `denHelperPrice`
@@ -445,7 +445,7 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   shift-click asks 16, four make 64 and a fifth click is refused; right-click takes it down; the soda locked for a
   Novice opens exactly at Apprentice; every line and answer word for word, and the three drinks' names),
   `theCampCookShortOfOneMakingCooksNoCurry` (no chicken: no curry, nothing taken), `fifteenOfOneColourSowsBeans` (16
-  of every colour but 15 green beans: the field is sown), `aBeanOneStageShortIsLeftStanding` (random ticks off: the
+  of every color but 15 green beans: the field is sown), `aBeanOneStageShortIsLeftStanding` (random ticks off: the
   plants one stage short stay, the one ripe plant is cut into the chest), `theDeluxeShakeIsDueOnTheFourthDayNotTheThird`
   (none on day 13, one on day 14; a Burgher takes the class above's éclair), `theEclairIsDueOnTheEighthDayNotTheSeventh`
   (none on day 27, one on day 28) and `aPartnerIsFedOnlyFromTheStoreOnceADay` (puffs in a chest that isn't the store

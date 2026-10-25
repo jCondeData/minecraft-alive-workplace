@@ -186,14 +186,14 @@ the game says can't stay where it is (a wall torch with no wall) is broken and d
 
 ## 2. How it works
 
-Each piece of furniture our builds draw in vanilla blocks becomes a furniture spot (its kind, facing, wood or colour
+Each piece of furniture our builds draw in vanilla blocks becomes a furniture spot (its kind, facing, wood or color
 and blocks). When a build is planned, each spot becomes the piece of the first mod in `furnitureMods` that the server
 has, found by block id in the registry; no class of any of those mods is used, so they stay optional. A spot whose
 modded piece doesn't fit, or whose kind no installed mod makes, keeps its vanilla blocks. The full formats, the list
 of kinds and each mod's block ids are in the design note.
 
 **Any mod's piece will do (37.13).** `data/<namespace>/furniture_equivalents/*.json` lists, per kind (chair, couch,
-table, desk, counter, cupboard, nightstand, drawer, lamp), whether its pieces match by wood or by colour and each mod's
+table, desk, counter, cupboard, nightstand, drawer, lamp), whether its pieces match by wood or by color and each mod's
 block id (`{wood}` or `{colour}` filled in); every file adds to the table (a datapack can add a mod), and a file with a
 mistake is logged with its path and skipped. `furnish/FurnitureEquivalents` reads it the way `MaterialFamilies` reads
 Chipped's tags: a block of a group stands for the group's other installed pieces of the mods in `furnitureMods`, in
@@ -212,7 +212,7 @@ taking-down or a cellar keeps what its building has.
 
 **Furniture spots (37.2).** Each of our blueprints with furniture has a file beside it,
 `data/aliveworkplace/blueprint_furniture/<blueprint>.json` (223 of them), listing its spots: kind, position, facing,
-wood or colour, and the vanilla blocks of the piece. The blueprint generator (`tools/blueprints/furniture.py`) finds
+wood or color, and the vanilla blocks of the piece. The blueprint generator (`tools/blueprints/furniture.py`) finds
 the chairs (a stair seat facing a table), tables (a lone post, or a row of posts, with a cloth or plate on it, or a top
 slab on a lone post) and beds in every finished drawing, and a drawing records other kinds itself
 (`Build.furniture`); before writing, it checks each spot's blocks are the template's blocks there. A spot with no wood
@@ -361,7 +361,7 @@ rides, which can't be summoned.
   otherwise a server with the mods would build stairs whenever the chests ran short. Pieces switch only when the
   builder goes for one it lacks, so a piece already in the bag or the chests is never traded for another; a spot
   switched once can switch again while it isn't built. The equivalents are their own data file rather than read from
-  the furnishing tables, since a table's fallback ids (CobbleFurnies' coloured chair) aren't the same piece.
+  the furnishing tables, since a table's fallback ids (CobbleFurnies' colored chair) aren't the same piece.
 
 - 37.12: the modded copies are drawn by `tools/blueprints/modded_library.py` from the shipped vanilla templates (one
   pass over every home and workshop, by position, no randomness), written to `data/aliveworkplace/structure/modded/`,

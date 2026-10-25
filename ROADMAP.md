@@ -2508,7 +2508,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     friends and operators (anyone, while the hall has no owner).
 
   Done when: the note is on `main` and its review package is sent.
-  - [x] **30.1a** (approved 2026-10-05) Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
+  - [x] **30.1a** (approved 2026-10-05) (verified 2026-10-25: QaPaceAndBookGameTests [11]: every M30 reform asks hundreds [Shift Bell 24 clocks/128 gold/300 bread], 299 vs 300 bread; Book of Edicts by friend/operator clicks, full Hamlet, edicts off, 'lifted tomorrow' day boundary, save/reload; rush talk and festival-fund tip at 2.99 vs 3; 2 mutants killed; paging at 25 not 34 noted in Notes) Change from the owner (2026-10-05): Reforming an edict must cost far more, hundreds of items, so the grind is worth it: e.g. instead of 4 clocks, 8 gold ingots, 32 bread, something like 24 clocks, 2 stacks of gold ingots and 300 bread. Most players get the small amounts quickly, so scale the reform costs up a lot in the design note and the edict data files.
 - [x] **30.2** (approved 2026-10-05) **One pace, one cap.** A core `work/Pace` that every job's work speed goes through (if another
   milestone built it first, check it covers this list and add what's missing):
   - bonuses: Pokémon partners, a well-kept village, Swift Hands, Diligent, a happy mood, Craftsmanship (crafters),
@@ -2554,7 +2554,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     and their mood 10 lower, with the reason listed;
   - an edict from a test data pack loads and works, and `"enabled": false` hides Long Shifts;
   - showcase scene `long_shifts`: the hall's list with the "long shifts" mood, and the chronicle line.
-- [x] **30.4** (approved 2026-10-05) **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
+- [x] **30.4** (approved 2026-10-05) (verified 2026-10-25: QaPaceAndBookGameTests [11]: every M30 reform asks hundreds [Shift Bell 24 clocks/128 gold/300 bread], 299 vs 300 bread; Book of Edicts by friend/operator clicks, full Hamlet, edicts off, 'lifted tomorrow' day boundary, save/reload; rush talk and festival-fund tip at 2.99 vs 3; 2 mutants killed; paging at 25 not 34 noted in Notes) **The Book of Edicts page.** The page players use, in the hall's screen and the Village Ledger:
   - the hall's screen: the people list's page arrows move to the list's bottom corners (slots 45 and 53, 34 people a
     page), which frees slot 9 for the Book of Edicts (a lectern icon) and leaves slot 17 for another milestone's page;
   - the Village Ledger: sneak-right-click the air opens the Book straight away (its tooltip says so);
@@ -2806,7 +2806,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   `work_radius`, `hire_price`, `carry`, `train_up_to`, `strength`, `lesson_price`, `trainer_xp`. Done when: GameTests
   for each number, founded and not; the Trainers' Guild absent without Cobblemon and working in the compat suite; the
   `guilds` scene gains their rows.
-- [x] **30.21** (approved 2026-10-06) **Edicts and civic items in the village's life.**
+- [x] **30.21** (approved 2026-10-06) (verified 2026-10-25: QaPaceAndBookGameTests [11]: every M30 reform asks hundreds [Shift Bell 24 clocks/128 gold/300 bread], 299 vs 300 bread; Book of Edicts by friend/operator clicks, full Hamlet, edicts off, 'lifted tomorrow' day boundary, save/reload; rush talk and festival-fund tip at 2.99 vs 3; 2 mutants killed; paging at 25 not 34 noted in Notes) **Edicts and civic items in the village's life.**
   - Chatter (`people/Chatter`): two lines for each edict in force and two for each reformed one ("Long shifts again...
     my back.", "The shift bell's rung. Home we go."), and lines for a rush, a tonic, a guild and the village's colours;
   - "What next?" (`VillageAdvice`): a free edict slot; a reform step waiting on the quest page; Festival Season with a

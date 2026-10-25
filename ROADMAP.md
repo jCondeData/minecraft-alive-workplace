@@ -4062,7 +4062,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     cargo is paid for; a declined or lapsed offer changes nothing; a route saved before this item loads as a pact; an
     ally's raid brings relief; ending an alliance takes a day;
   - showcase scene `pacts` (the letter, the tab with an offer).
-- [x] **33.19** (approved 2026-10-12) (verified 2026-10-25: QaRequestsLeaderboardGameTests [15 tests, 1de5ab1]: 3-heart join both sides, offline helper, full pack, dead giver, save/reload mid-request, missed deadline, top-3, empty week, realm tie, missed weeks, ribbons for a week, config day/hour, unknown wellbeing; 3/3 mutants killed; 31.10 waits on B423, 33.19 singular realm line filed as B422) **The weekly leaderboard.** Once a week (owner's call: a real week, or every 7 in-game days; meanwhile
+- [x] **33.19** (approved 2026-10-12) **The weekly leaderboard.** Once a week (owner's call: a real week, or every 7 in-game days; meanwhile
   Sunday 19:00 server time, `leaderboardDay`, `leaderboardHour`) everyone online is told in chat how the villages did:
   **Biggest** (villagers), **Richest** (emeralds earned that week: takings, board trades and caravan sales),
   **Happiest** (average wellbeing over the week, from the hall's rounds), **Most Legends** (M29's Legends; Masters

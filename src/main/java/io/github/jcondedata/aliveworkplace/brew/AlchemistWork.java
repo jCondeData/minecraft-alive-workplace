@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.guard.Guards;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import io.github.jcondedata.aliveworkplace.people.Tonics;
 import java.util.ArrayList;
@@ -616,7 +617,7 @@ public class AlchemistWork extends Behavior<Villager> {
 	}
 
 	private void status(Villager villager, Phase phase) {
-		Component title = Component.translatable("message.aliveworkplace.alchemist.title", ModAttachments.POTIONS_BREWED.getOrElse(villager, 0));
+		Component title = Words.countedFirst("message.aliveworkplace.alchemist.title", ModAttachments.POTIONS_BREWED.getOrElse(villager, 0));
 		Component line = (phase == Phase.TONIC_FETCH || phase == Phase.TONIC_BREW) && tonic != null
 			? Component.translatable("message.aliveworkplace.alchemist.state." + phase.name().toLowerCase(), tonic.tonic().name())
 			: Component.translatable("message.aliveworkplace.alchemist.state." + (phase == Phase.TONIC_FETCH || phase == Phase.TONIC_BREW ? "brewing" : phase.name().toLowerCase()));

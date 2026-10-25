@@ -6,6 +6,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
@@ -62,7 +63,7 @@ public class CityPlanItem extends Item {
 		Optional<CityPlan.Zone> zone = entity.plan().zoneAt(hall, player.blockPosition());
 		Component message = zone.map(z -> Component.translatable("message.aliveworkplace.city_plan.in_zone", z.name(),
 				CityZones.get(z.kind()).map(CityZones.Kind::title).orElse(Component.literal(z.kind())), village))
-			.orElseGet(() -> Component.translatable("message.aliveworkplace.city_plan.no_zone", village, entity.plan().zones().size()));
+			.orElseGet(() -> Words.counted("message.aliveworkplace.city_plan.no_zone", entity.plan().zones().size(), village, entity.plan().zones().size()));
 		Chat.actionBar(serverPlayer, message.copy().withStyle(ChatFormatting.AQUA));
 		CityPlans.open(serverPlayer, entity); // the plan screen (27.3)
 		return InteractionResultHolder.success(stack);

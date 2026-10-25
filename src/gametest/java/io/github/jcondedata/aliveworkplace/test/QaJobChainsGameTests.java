@@ -58,7 +58,7 @@ public class QaJobChainsGameTests {
 	/**
 	 * Five oak logs for three barrels (three barrels take six, one barrel three): the Carpenter makes the two it can (the
 	 * order is tried whole, then smaller), and for the last one it takes nothing and the builder's line names the logs
-	 * still short ("short of N Oak Log to make 1 Barrel"); the leftover log stays in the chest.
+	 * still short ("short of N Oak Logs to make 1 Barrel"); the leftover log stays in the chest.
 	 */
 	//$ gametest_ticks_batch AREA '3600' '"qaChainOneLogShort"'
 	@GameTest(template = AREA, timeoutTicks = 3600, batch = "qaChainOneLogShort")
@@ -71,7 +71,7 @@ public class QaJobChainsGameTests {
 			helper.assertTrue(a.site().missing().getOrDefault(Items.BARREL, 0) == 1, "two barrels should be built, still missing " + a.site().missing());
 			Component line = JobShortages.line(level, a.site().id(), a.site().missing());
 			String text = line == null ? null : line.getString();
-			helper.assertTrue(text != null && text.matches("Can't be made yet: short of [12] Oak Log to make 1 Barrel"), "the builder's shortage line: " + text);
+			helper.assertTrue(text != null && text.matches("Can't be made yet: short of (1 Oak Log|2 Oak Logs) to make 1 Barrel"), "the builder's shortage line: " + text);
 			Container chest = helper.getBlockEntity(a.chest());
 			helper.assertTrue(chest.countItem(Items.OAK_LOG) == 1, "the leftover log should stay in the chest, " + chest.countItem(Items.OAK_LOG) + " there");
 			helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(carpenter).isEmpty(), "the carpenter is carrying " + ModAttachments.BUILDER_BAG.getOrCreate(carpenter).stacks());

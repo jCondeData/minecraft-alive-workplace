@@ -12,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1062,7 +1063,7 @@ public class CrafterWork extends Behavior<Villager> {
 		if (phase == Phase.IDLE && !alwaysShowStatus) {
 			return;
 		}
-		Component title = Component.translatable("message.aliveworkplace." + who + ".title", ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0));
+		Component title = Words.countedFirst("message.aliveworkplace." + who + ".title", ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0));
 		Component idle = phase == Phase.IDLE && job == null ? idleLine(villager) : null;
 		Component line = idle != null ? idle : job != null && phase != Phase.TIDYING
 			? (phase == Phase.FETCHING // "fetching what 1 Amethyst Ring takes"

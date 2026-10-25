@@ -48,11 +48,6 @@ public class QaBuildReachGameTests implements FabricGameTest {
 			if (blueprint == null || !id.getNamespace().equals("aliveworkplace") || id.getPath().startsWith("modded/") || id.getPath().startsWith("wonder/")) {
 				continue;
 			}
-			// B424 (open): the camps' tents hide their chest and barrels (QaCampReachGameTests on tests/qa-camp-chest-1025).
-			// Take these two out of this list with B424's fix.
-			if (id.getPath().equals("camp/settlers_camp") || id.getPath().equals("camp/colony_camp")) {
-				continue;
-			}
 			builds++;
 			Map<BlockPos, BlockState> blocks = QaBasementGameTests.blocks(blueprint);
 			int sx = blueprint.size().getX();

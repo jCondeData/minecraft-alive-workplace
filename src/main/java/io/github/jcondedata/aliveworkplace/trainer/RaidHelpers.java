@@ -72,6 +72,19 @@ public final class RaidHelpers {
 	public static boolean ENABLED = false;
 	/** Emeralds a helper costs ({@code denHelperPrice}). */
 	public static int PRICE = 5;
+
+	/** What a helper costs in CobbleDollars, when those are the money in use ({@link #PRICE} emeralds' worth). */
+	public static long dollars() {
+		return (long) PRICE * Money.DOLLARS_PER_EMERALD;
+	}
+
+	/**
+	 * A helper's price as the hire charges it: "500 CobbleDollars" or "5 emeralds" (B414: the Defence page's button and the
+	 * hire both read this, so the button never names a currency the click doesn't take).
+	 */
+	public static Component price() {
+		return Money.describe(dollars(), PRICE);
+	}
 	/** Helpers a player may have at once. */
 	public static final int CAP = 3;
 	/** A raid joined this close to the den is that den's. */
@@ -159,9 +172,8 @@ public final class RaidHelpers {
 		if (free.isEmpty()) {
 			return Component.translatable("message.aliveworkplace.raid_helpers.none").withStyle(ChatFormatting.YELLOW);
 		}
-		long dollars = (long) PRICE * Money.DOLLARS_PER_EMERALD;
-		if (!Money.charge(player, dollars, PRICE)) {
-			return Component.translatable("message.aliveworkplace.raid_helpers.cant_afford", Money.describe(dollars, PRICE)).withStyle(ChatFormatting.RED);
+		if (!Money.charge(player, dollars(), PRICE)) {
+			return Component.translatable("message.aliveworkplace.raid_helpers.cant_afford", price()).withStyle(ChatFormatting.RED);
 		}
 		if (hire == null) {
 			hire = new Hire(player.getUUID(), hall.immutable(), denPos.immutable(), den.get().tier(), den.get().type(), level.getGameTime() + STAY);
@@ -354,12 +366,17 @@ public final class RaidHelpers {
 
 	/** One look at a hiring (public for tests that drive it). */
 	public static void tick(ServerLevel level, Hire hire) {
-		List<Villager> helpers = helpers(level, hire);
-		if (helpers.isEmpty()) {
+		// B415: a helper that isn't loaded (its chunk unloaded, or the server just started) stays hired; only one that is
+		// here and no longer a trainer (or dying) leaves the hiring. The hiring itself ends on the raid, the day or the switch.
+		if (hire.helpers.removeIf(id -> level.getEntity(id) instanceof Villager v && (!v.isAlive() || !Trainers.isTrainer(v)))) {
+			Data.get(level).setDirty();
+		}
+		if (hire.helpers.isEmpty()) {
 			Data.get(level).hires.remove(hire.player);
 			Data.get(level).setDirty();
 			return;
 		}
+		List<Villager> helpers = helpers(level, hire);
 		long now = level.getGameTime();
 		if (now >= hire.until) {
 			over(level, hire, "message.aliveworkplace.raid_helpers.day_over");

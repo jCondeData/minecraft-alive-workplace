@@ -4,7 +4,8 @@ The realm's two builds (ROADMAP 33.14): the Colony Camp a colony starts from, an
 Colony Camp (camp/colony_camp, 15 x 6 x 13, placed at once like the settlers' camp; front z = 0):
 - A timber platform in the middle (x 5-9, z 6-10) under a striped canvas awning on four posts: the colony's Village Hall
   stands on it (the mod places the hall at (7, 1, 7) when the colony is founded; ColonyArrival.HALL_IN_CAMP).
-- Two covered wagons either side (x 0-2 and 12-14, z 3-9), their tongues to the front; hay, pumpkins and a barrel aboard.
+- Two covered wagons either side (x 0-2 and 12-14, z 3-9), their tongues to the front; hay, pumpkins and a barrel aboard
+  (the barrel at the tail, with steps up to it).
 - The Blueprint Table at the front left with a lamp on a post (the builder's workstation); the Travel Post at the front
   right (placed by the mod at (10, 0, 3); ColonyArrival.POST_IN_CAMP) with a lantern on a post beside it.
 - A campfire at the front with two log seats and a cooking pot (a cauldron on the fire's side); the supply chest at the
@@ -48,8 +49,9 @@ def royal_banner(b, x, y, z, facing):
 
 
 # --- the Colony Camp --------------------------------------------------------------------------------------------------
-def covered_wagon(b, x0, z0):
-    """A covered wagon three wide (x0..x0+2) and seven long (z0..z0+6), its tongue out to the front (z0 - 1, z0 - 2)."""
+def covered_wagon(b, x0, z0, outer):
+    """A covered wagon three wide (x0..x0+2) and seven long (z0..z0+6), its tongue out to the front (z0 - 1, z0 - 2),
+    steps up to its tail coming in from the {@code outer} side."""
     for x in range(x0, x0 + 3):
         for z in range(z0, z0 + 7):
             b.set(x, 1, z, "spruce_planks")
@@ -69,10 +71,17 @@ def covered_wagon(b, x0, z0):
         stairs(b, x0 + 2, 3, z, SMOOTH_QUARTZ, "west")
     fence(b, x0 + 1, 1, z0 - 1, "dark_oak_fence")
     fence(b, x0 + 1, 1, z0 - 2, "dark_oak_fence")
-    # the load
+    # the load: hay and a pumpkin, the barrel at the open tail end where a player can reach it (B424: between the hay
+    # and the pumpkin it couldn't be opened)
     b.set(x0 + 1, 2, z0 + 2, "hay_block", axis="z")
+    b.set(x0 + 1, 2, z0 + 3, "hay_block", axis="z")
     b.set(x0 + 1, 2, z0 + 4, "pumpkin")
-    b.set(x0 + 1, 2, z0 + 3, "barrel", facing="up", open=False)
+    b.set(x0 + 1, 2, z0 + 5, "barrel", facing="south", open=False)
+    # steps up to the tail, turning in from the outer side: a stair onto a crate's stair, level with the wagon's bed
+    out = -1 if outer == "west" else 1
+    b.set(x0 + 1, 0, z0 + 7, "stripped_spruce_wood", axis="y")
+    stairs(b, x0 + 1, 1, z0 + 7, SPRUCE, "north")
+    stairs(b, x0 + 1 + out, 0, z0 + 7, SPRUCE, OPP[outer])
 
 
 def colony_camp():
@@ -106,8 +115,8 @@ def colony_camp():
     b.set(6, 1, 9, "potted_fern")
     b.set(8, 1, 9, "potted_dandelion")
     # Two covered wagons either side
-    covered_wagon(b, 1, 4)
-    covered_wagon(b, 11, 4)
+    covered_wagon(b, 1, 4, "west")
+    covered_wagon(b, 11, 4, "east")
     # The Blueprint Table at the front left, a lamp on a post
     b.set(3, 0, 1, "aliveworkplace:blueprint_table", facing="north")
     lamp_post(b, 4, 0, 0, "spruce_fence", height=2)

@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.mc.Damage;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Comparator;
 import java.util.List;
@@ -169,7 +170,7 @@ public class HerderWork extends RanchWork {
 
 	@Override
 	protected void status(Villager villager, Task task, boolean noChest) {
-		Component title = Component.translatable("message.aliveworkplace.herder.title", ModAttachments.MILK_COLLECTED.getOrElse(villager, 0));
+		Component title = Words.countedFirst("message.aliveworkplace.herder.title", ModAttachments.MILK_COLLECTED.getOrElse(villager, 0));
 		String state = noChest ? "no_chest" : task == Task.TEND ? (culling ? "culling" : chore != null ? "pokemon" : "milking") : task.name().toLowerCase();
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.herder.state." + state)
 			.withStyle(noChest ? ChatFormatting.YELLOW : ChatFormatting.GRAY));

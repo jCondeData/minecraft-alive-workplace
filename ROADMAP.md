@@ -1065,7 +1065,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   decorations similar to fountain or lamp"). Done when: at least 12 new small decorations (well, statue, gazebo,
   market stall, flower planters, signpost, bench nook, lamp variants, pond, archway, hay cart, notice board...), each
   original, checked in a render against STYLE.md, in the Blueprint Table library and the unlocks list.
-- [x] **26.15** (approved 2026-10-17) **Basements: a Level 4 for buildings, and cellars where they fit** (owner, 2026-10-16: "buildings should
+- [x] **26.15** (approved 2026-10-17) (verified 2026-10-25: QaBasementGameTests [3, 5fbb5e3]: every basement's way down comes up through the ground floor, no floor spot at block light 0, walked to from outside and back out with every chest within reach [ladder-climb mutant in the walker kills it]; wiki basements/cellars checked) **Basements: a Level 4 for buildings, and cellars where they fit** (owner, 2026-10-16: "buildings should
   also get basements in a new Level 4 version, but some buildings should get basements in general at any level, like a
   butcher maybe has a freezer"). Done when: every upgradable home and workshop gets a Level 4 upgrade that adds a
   basement under it (stairs or ladder down, lit, furnished for the job), and the jobs that suit one (butcher's
@@ -4945,7 +4945,7 @@ Depends on: nothing open.
   `langcheck.py` passes; the `table` scene's stills show a description.
   - [x] **36.6a** (approved 2026-10-19) Change from the owner (2026-10-18): delete the description lines. The Table shows only what jobs a build brings and its beds, in this format: 'Jobs: Fisherman (1), Butcher/Chef (3)' (a slash means a shared job block, the number is how many of that job block are in the build), plus 'Beds: N' when the build has beds.
   - [x] **36.6b** (approved 2026-10-19) Change from the owner (2026-10-19): finish this asap, top priority (urgent: owner): the Blueprint Table must show Jobs and beds, and its scene must be filmed and passing so I can see it Status (lane-b-1019-0038): already met by 36.6a; the `table` scene filmed on GitHub from main 81216a3f (showcase page, 2026-10-18 23:08Z) PASSes, and its first still shows the Starter Cottage with "Jobs: Fisherman (1), Carpenter (1)" and "Beds: 1" under its size. Nothing to change.
-- [x] **36.7** (approved 2026-10-18) **Cellars for the builds that stop at Level II, and for old cellarless builds.** 37 builds top out at
+- [x] **36.7** (approved 2026-10-18) (verified 2026-10-25: QaBasementGameTests [3, 5fbb5e3]: every basement's way down comes up through the ground floor, no floor spot at block light 0, walked to from outside and back out with every chest within reach [ladder-climb mutant in the walker kills it]; wiki basements/cellars checked) **Cellars for the builds that stop at Level II, and for old cellarless builds.** 37 builds top out at
   Level II. Eight of them, where a cellar suits the trade, get a Level III that is their Level II with a basement
   under it, named `<name>_3` because upgrades go by name (`BlueprintUpgrades`), drawn in `tools/blueprints/` and
   listed with its depth like the Level 4s (26.15, `StarterBlueprints.WITH_BASEMENTS`): the **Inn** (an ale and wine

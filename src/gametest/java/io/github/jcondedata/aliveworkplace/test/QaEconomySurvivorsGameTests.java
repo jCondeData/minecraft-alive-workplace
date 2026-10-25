@@ -133,7 +133,9 @@ public class QaEconomySurvivorsGameTests implements FabricGameTest {
 		shop.chest().setItem(0, new ItemStack(Items.COBBLESTONE, 10));
 		// What the slot answers whoever asks first (vanilla's clicks, other mods' auto-trading or inventory tweaks): no.
 		// For vanilla's own clicks the refusal's refresh already empties the slot, so the click alone can't see the answer.
-		helper.assertFalse(menu.getSlot(2).mayPickup(p), "the slot lets the buyer take a 16 lot from a shop holding 10");
+		helper.assertFalse(menu.getSlot(2).mayPickup(p), "the slot lets the buyer take a 16 lot from a shop holding 10 (the shop's stores: "
+			+ io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(helper.getLevel(), shop.counter().getBlockPos(), null) + ", its chest at "
+			+ helper.absolutePos(new net.minecraft.core.BlockPos(2, 2, 4)) + "; a shopkeeper: " + io.github.jcondedata.aliveworkplace.shop.Shops.isShopkeeper(shop.keeper()) + ")");
 		QaStageSixGameTests.click(p, 2, 0, ClickType.PICKUP);
 		helper.assertTrue(QaEconomyGameTests.carried(p, Items.COBBLESTONE) == 0,
 			"the buyer got " + QaEconomyGameTests.carried(p, Items.COBBLESTONE) + " cobblestone from a shop holding 10 of a 16 lot");

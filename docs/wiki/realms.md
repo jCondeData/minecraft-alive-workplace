@@ -441,6 +441,8 @@ with it. Effect types (`caravan_carry` (named apart from the guilds' `carry`), `
   the crown passing with the treasury, or given up by leaving; two realms inviting one village; the time left in
   singular and plural; a candidate's hall broken mid-vote; the 5% and 20% levies; who may give and take; the cap
   following the rank; the treasury with realms off.
+- QA: `QaHoursLeftGameTests.theVotesHoursLeftCountAPartHourAsAWholeOne`: a capital vote 1500, 1001, 1000 and 24000 ticks
+  from its end reads "About 2 hours", "2 hours", "1 hour" and "24 hours left" on the Realm tab (a part hour is a whole one).
 - `RealmTopicsGameTests` (9, 33.16): `theRealmRowShowsTheEight` (the eight, their prices at levels 1 and 2, icons,
   tooltips and needs on the capital's Realm row, an old save's interim topic dropped), `royalRoadsSpeedCaravans` (I and
   II, realms off), `commonCoinNarrowsTheSpread` (I and II), `royalPostDeliversAtNoon` (not without it, the apples in

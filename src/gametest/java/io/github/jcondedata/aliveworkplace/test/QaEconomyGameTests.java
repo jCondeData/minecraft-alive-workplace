@@ -69,6 +69,7 @@ public class QaEconomyGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 	/** A counter owned by "Frank" selling column 0 ({@code goods} for {@code price}), a chest by it with {@code stock}, and its shopkeeper. */
 	static Shop shop(GameTestHelper helper, ItemStack goods, ItemStack price, ItemStack... stock) {
 		Leftovers.clear(helper);
+		Leftovers.stores(helper, helper.absolutePos(COUNTER));
 		helper.setBlock(COUNTER, ModBlocks.SHOP_COUNTER);
 		ShopCounterBlockEntity counter = helper.getBlockEntity(COUNTER);
 		counter.setOwner(UUID.randomUUID(), "Frank");

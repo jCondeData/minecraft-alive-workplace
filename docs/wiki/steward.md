@@ -129,7 +129,9 @@ GameTests: `StewardGameTests` (12), `StewardRulesGameTests` (19), `StewardHomesR
 `StewardCivicRulesGameTests` (20), `StewardDeskGameTests` (7), `StewardJobsGameTests` (10),
 `StewardSafetyGameTests` (7), `StewardRoundsQaGameTests` (2), `CityPlanGameTests` (7), `CityPlanScreenGameTests` (3),
 `OldHousesGameTests` (7), `RenewalGameTests` (9), `DoorJamGameTests` (1), `AtticBedGameTests` (1), `CountWordsGameTests`
-(2, B377: the workplace reason and the Storehouse stock line with one and with two).
+(2, B377: the workplace reason and the Storehouse stock line with one and with two), `QaStewardCivicBoundariesGameTests` (3, 27.12: a death 29 days back counts for the Graveyard and 30 days back not, 7
+villagers are too few; a raid 6 days ago is within 7 and 7 days ago not; 2 children get no Schoolhouse), `QaStewardHomesBoundariesGameTests` (2, 27.10: no Inn for a Town 3 beds short or a Village 4 short;
+the Storehouse grows at 22 of 27 slots, not 21, on to III and no further).
 
 Showcase scenes: `steward` (the morning rounds), `steward_rules`, `steward_desk`, `steward_safety`, `steward_jobs`,
 `steward_homes`, `steward_civic`, `old_houses`, `renewal`, `city_plan`, `city_plan_ground`, `city_timelapse` (a

@@ -1,8 +1,11 @@
 package io.github.jcondedata.aliveworkplace.work;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 
 /**
  * Sentences with a number in them (ROADMAP 24.5: "1 parcel", "2 parcels", never "parcel(s)"). A counted message has
@@ -30,6 +33,20 @@ public final class Words {
 	public static MutableComponent countedFirst(String key, Object... args) {
 		boolean one = args.length > 0 && args[0] instanceof Number n && n.longValue() == 1 && Language.getInstance().has(key + ".one");
 		return Component.translatable(one ? key + ".one" : key, args);
+	}
+
+	/**
+	 * An item's name after a count (B407: "4 Baked Potatoes", "1 Pumpkin Pie"): for any count but one, its plural
+	 * {@code plural.aliveworkplace.<namespace>.<path>} when the lang has it, else the item's own name.
+	 */
+	public static Component itemName(Item item, long count) {
+		Component name = item.getDescription();
+		if (count == 1) {
+			return name;
+		}
+		ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+		String key = "plural.aliveworkplace." + id.getNamespace() + "." + id.getPath();
+		return Language.getInstance().has(key) ? Component.translatable(key) : name;
 	}
 
 	private Words() {

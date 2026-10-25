@@ -268,7 +268,7 @@ public final class QuestJournal {
 		}
 		if (quest.due >= 0) {
 			long days = Math.max(1, (quest.due - level.getGameTime() + 23999) / 24000);
-			lore.add(line(Component.translatable(quest.festival ? "screen.aliveworkplace.request.before_festival" : "screen.aliveworkplace.hall.quest_days", days),
+			lore.add(line(io.github.jcondedata.aliveworkplace.work.Words.counted(quest.festival ? "screen.aliveworkplace.request.before_festival" : "screen.aliveworkplace.hall.quest_days", days, days),
 				ChatFormatting.DARK_GRAY));
 		}
 		boolean tracked = QuestTracker.isTracked(viewer, quest.id);

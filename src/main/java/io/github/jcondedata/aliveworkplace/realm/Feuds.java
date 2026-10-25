@@ -462,7 +462,9 @@ public final class Feuds {
 			: now - feud.since() < WAR_AFTER ? "too_soon" : null;
 		if (key != null) {
 			long left = feud == null ? 0 : Math.max(0, WAR_AFTER - (now - feud.since()));
-			return new Pacts.Result(false, Component.translatable("message.aliveworkplace.feud.refused_" + key, them, (left + 999) / 1000).withStyle(ChatFormatting.RED));
+			long hours = (left + 999) / 1000;
+			return new Pacts.Result(false, (key.equals("too_soon") ? io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.feud.refused_" + key, hours, them, hours)
+				: Component.translatable("message.aliveworkplace.feud.refused_" + key, them, hours)).withStyle(ChatFormatting.RED));
 		}
 		long starts = now + Math.floorMod(-server.overworld().getDayTime(), 24000L);
 		Data.get(server).put(feud.withWar(starts, starts + WAR_DAYS * 24000L));
@@ -558,13 +560,13 @@ public final class Feuds {
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.board"), ChatFormatting.GRAY));
 			if (fighting(server, f)) {
 				long left = f.warEnds() - now;
-				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.at_war", left / 24000, left % 24000 / 1000), ChatFormatting.DARK_RED));
+				lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.feud.at_war", left / 24000, left % 24000 / 1000, left / 24000, left % 24000 / 1000), ChatFormatting.DARK_RED));
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.lost", ours ? f.lostBy() : f.lostOn(), ours ? f.lostOn() : f.lostBy()), ChatFormatting.GRAY));
 			} else if (f.warRaised() && !f.warDone() && now < f.warStarts()) {
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.war_at_dawn"), ChatFormatting.RED));
 			} else if (!f.warRaised() || f.warDone()) {
 				long left = Math.max(0, FADE - (now - (f.warDone() ? f.warEnds() : f.since())));
-				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.fades", left / 24000, left % 24000 / 1000), ChatFormatting.DARK_GRAY));
+				lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.feud.fades", left / 24000, left % 24000 / 1000, left / 24000, left % 24000 / 1000), ChatFormatting.DARK_GRAY));
 			}
 			menu.button(slot++, VillageHallScreen.icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.feud.feud", them), ChatFormatting.RED,
 				lore.toArray(Component[]::new)), null);
@@ -599,7 +601,7 @@ public final class Feuds {
 		String blocked = warBlocked(server);
 		long left = Math.max(0, WAR_AFTER - (now(server) - f.since()));
 		Component why = blocked != null ? Component.translatable("screen.aliveworkplace.feud.war_" + blocked)
-			: left > 0 ? Component.translatable("screen.aliveworkplace.feud.war_too_soon", (left + 999) / 1000)
+			: left > 0 ? io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.feud.war_too_soon", (left + 999) / 1000, (left + 999) / 1000)
 			: Component.translatable("screen.aliveworkplace.feud.war_hint", WAR_DAYS);
 		return VillageHallScreen.icon(Items.TNT, Component.translatable("screen.aliveworkplace.feud.raise_war", them),
 			blocked != null || left > 0 ? ChatFormatting.DARK_GRAY : ChatFormatting.DARK_RED,

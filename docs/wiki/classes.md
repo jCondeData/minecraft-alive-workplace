@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): switched on in 1.0 with
 every other expansion (`Expansions.M34`).
 
-Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22
+Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22, B398
 
 ## What a player sees
 

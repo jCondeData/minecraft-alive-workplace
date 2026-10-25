@@ -133,7 +133,7 @@ public final class Treasury {
 				out.add(VillageHallScreen.line("screen.aliveworkplace.hall.tax_by_class", ChatFormatting.GOLD));
 			}
 			int cents = takings(e.getValue(), wellbeing, entity.rank());
-			out.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.hall.tax_class", c.name(), payers,
+			out.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.tax_class", payers, c.name(), payers,
 				String.format(java.util.Locale.ROOT, "%.2f", cents / 100.0)), ChatFormatting.GRAY));
 		}
 		return out;

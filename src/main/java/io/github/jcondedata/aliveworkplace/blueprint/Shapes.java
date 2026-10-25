@@ -298,7 +298,7 @@ public final class Shapes {
 		}
 		ItemStack info = label(new ItemStack(Items.BOOK), Component.translatable("screen.aliveworkplace.shapes.info",
 			s.width(), s.height(), s.depth()), false);
-		info.set(DataComponents.LORE, new ItemLore(List.of(Component.translatable("screen.aliveworkplace.shapes.count", count(s),
+		info.set(DataComponents.LORE, new ItemLore(List.of(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.shapes.count", count(s), count(s),
 			s.block().getBlock().getName()).withStyle(ChatFormatting.GRAY))));
 		menu.button(INFO, info, null);
 		menu.button(DRAW, label(new ItemStack(ModItems.BLANK_BLUEPRINT), Component.translatable("screen.aliveworkplace.shapes.draw"), true), p -> {
@@ -390,7 +390,7 @@ public final class Shapes {
 			player.drop(blueprint, false);
 		}
 		level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1f);
-		return Component.translatable("message.aliveworkplace.shapes.drawn", Blueprints.displayName(id), count(settings),
+		return io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.shapes.drawn", count(settings), Blueprints.displayName(id), count(settings),
 			settings.block().getBlock().getName()).withStyle(ChatFormatting.GREEN);
 	}
 

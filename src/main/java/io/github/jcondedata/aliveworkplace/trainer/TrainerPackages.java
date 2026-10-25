@@ -21,7 +21,7 @@ public final class TrainerPackages {
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> work(float speed) {
 		return ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>of(
 			Pair.of(0, BehaviorBuilder.<Villager>triggerIf(v -> {
-				WorkerStatus.set(v, Trainers.title(v), -1f, Component.translatable("message.aliveworkplace.trainer.state",
+				WorkerStatus.set(v, Trainers.title(v), -1f, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.trainer.state", ModAttachments.TRAINER_BATTLES.getOrElse(v, 0),
 					ModAttachments.TRAINER_BATTLES.getOrElse(v, 0)).withStyle(ChatFormatting.GRAY));
 				return false;
 			})),

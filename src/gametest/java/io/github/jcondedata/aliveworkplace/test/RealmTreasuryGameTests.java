@@ -156,7 +156,7 @@ public class RealmTreasuryGameTests implements FabricGameTest {
 		menu.setCarried(new ItemStack(Items.EMERALD, 5));
 		menu.press(RealmTreasury.TREASURY, stranger);
 		helper.assertTrue(menu.getCarried().getCount() == 4 && theRealm(land).treasury() == 100, "a click gives one: " + theRealm(land).treasury());
-		helper.assertTrue(theirs.stream().anyMatch(c -> c.getString().equals("You gave 1 emeralds to the treasury of " + title + "; it holds 1.00 emeralds.")), "no given line: " + theirs);
+		helper.assertTrue(theirs.stream().anyMatch(c -> c.getString().equals("You gave 1 emerald to the treasury of " + title + "; it holds 1.00 emeralds.")), "no given line: " + theirs);
 		menu.clicked(RealmTreasury.TREASURY, 0, ClickType.QUICK_MOVE, stranger);
 		helper.assertTrue(menu.getCarried().isEmpty() && theRealm(land).treasury() == 500, "a shift-click gives the stack: " + theRealm(land).treasury());
 		// something else carried: nothing given, and told what to give

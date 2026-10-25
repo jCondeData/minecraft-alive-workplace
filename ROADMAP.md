@@ -611,6 +611,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B495** Player-visible: a furnace scanned while burning is built lit with no fuel and stays lit, giving light (lit kept as a property that changes by itself, but an empty furnace's tick never turns it off). Expected: built unlit. Test: QaScanFreeGoodsBugGameTests.aScannedLitFurnaceIsNotBuiltBurning on tests/qa-scan-free-goods-1025 (found by lane-b-1025-1838, 2026-10-25)
 - [ ] **B496** Player-visible: a bee nest scanned with bees is built still holding 2 bee entries with their data stripped (BlockEntityData strips the key 'Bees', but 1.21.1 saves it as 'bees'), so they likely never come out and the nest counts them as full after one real bee (that part by code reading). Expected: a built nest or hive holds no bees. Test: QaScanFreeGoodsBugGameTests.aScannedBeeNestIsBuiltWithoutBees on tests/qa-scan-free-goods-1025 (found by lane-b-1025-1838, 2026-10-25)
 - [ ] **B497** A worker held back by a disaster reads 'held back by A disaster in the village' in their status line and the hall's list (capital A mid-sentence, lang key pace.aliveworkplace.source.disaster); expected 'a disaster in the village' like every other pace source; Test: QaPaceAndBookBugTests#qaADisasterReadsLowerCaseInTheStatusLine on tests/pace-book-1025 (found by lane-c-1025-1853) (found by lane-c-1025-1853, 2026-10-25)
+- [ ] **B498** Red main: QaCampHabitatCompatTests.rareIsToldCommonAndTooFarAreNot failed on main's CI (build run 40233367931, main df2dc58b, 2026-10-25 21:19Z, compat GameTests): 'the shiny 47 blocks out: []', the Habitat Keeper sighted nothing when a shiny Eevee was put 47 blocks from the pasture (inside sight range); it passed in earlier builds since 164cda85. Expected: passes every run. Test: QaCampHabitatCompatTests with runCompatGameTest, repeated (found by lane-a-1025-2123, 2026-10-25) (found by lane-a-1025-2123, 2026-10-25)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -1861,7 +1862,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: `generate.py` writes the 25 templates (no `structure_void`, B5), renders checked; a `VillageGameTests`
   test per house places it with its villager, who has the job and stands in open space (B6); `SCENE=village` shows one
   in a Cobblemon village.
-- [x] **28.16** (approved 2026-10-06) **The Arena.** Three tiers (architect skill, an original design, renders), in the Blueprint Table with
+- [x] **28.16** (approved 2026-10-06) (verified 2026-10-25: QaArenaGameTests [every Arena tier has the 15x9 ring within 25x19, two banner poles, a lamp by each box] with QaCupGameTests [7, the Cup that uses it]; full build green 3593 + 680 compat. Not verified: 28.17 [B491, B492], 28.11 [B490]) **The Arena.** Three tiers (architect skill, an original design, renders), in the Blueprint Table with
   Cobblemon only and sold by an Expert Trainer Leader:
   - **Arena**: a 15×9 battle ring (a packed-mud floor, white lines and a centre circle), a trainer's box on a dais at
     each end with a lamp post, benches along one long side for 12 villagers, two banner poles, a notice board; at most

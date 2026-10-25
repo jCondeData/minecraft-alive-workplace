@@ -130,6 +130,10 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   the bricks, and takes nothing (B352).
 - `QaJobChainBugGameTests.aTinkererWithOreButNoCoalNamesTheCoalAndTakesNothing`: the forge with the raw iron but no
   coal names the coal and takes nothing (B408).
+- `QaTinkererShortGameTests` (5, QA from B408): the line reads exactly "Can't be made yet: short of 1 Coal to make 3
+  Iron Bars" the whole minute and never "Nobody here makes"; coal and no ore names the iron; neither names both; six raw
+  iron on one charcoal make the bars; with no Tinkerer it is "Nobody here makes: Iron Bars" and the ore stays. The ore it
+  names is Deepslate Iron Ore, not Raw Iron (B489).
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the

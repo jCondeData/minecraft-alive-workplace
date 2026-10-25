@@ -35,7 +35,9 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   ("the store is full: the Millstone waits"). A trip is short, and the job's own work picks up again after it. The
   Mechanic's round now covers the press, the mixer and the crushing wheels too. Only the village's own machines and
   chests are used (B243): a machine or a chest counts when it stands inside a building the village's builders
-  finished. A player's own millstone, press, mixer or crushing wheels, and a player's chests by a toolbox or a
+  finished (in a turned or flipped building, exactly the blocks its builders placed: one block past its walls, floor or
+  roof is a player's; a building finished or taken down counts at once; one in another dimension doesn't count here,
+  `QaVillageMachinesGameTests`). A player's own millstone, press, mixer or crushing wheels, and a player's chests by a toolbox or a
   workstation, are left alone: nothing of theirs is fed in, taken out or carried off.
 
 - **Create-powered builds** (39.4). The Blueprint Table offers three new workplaces, only with Create installed: the

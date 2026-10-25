@@ -251,6 +251,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBoxSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaAttachmentSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWorkerTitlesBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCountedLinesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.FamilyEdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CivicTalkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OpenGatesGameTests",

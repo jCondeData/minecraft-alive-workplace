@@ -85,6 +85,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaDenHelperRaidCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPartnerShowBudgetCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaVillageHabitatCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaPokemonVillageHousesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RaidDenFoundCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StationsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonCenterCompatTests",

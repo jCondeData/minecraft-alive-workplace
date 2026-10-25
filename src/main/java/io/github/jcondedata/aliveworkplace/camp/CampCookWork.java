@@ -12,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.store.StockOrders;
 import io.github.jcondedata.aliveworkplace.work.PartnerShows;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -445,7 +446,7 @@ public class CampCookWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, String state, Component... args) {
-		Component title = Component.translatable("message.aliveworkplace.camp_cook.title", ModAttachments.DISHES_COOKED.getOrElse(villager, 0));
+		Component title = Words.countedFirst("message.aliveworkplace.camp_cook.title", ModAttachments.DISHES_COOKED.getOrElse(villager, 0));
 		boolean warn = state.equals("no_chest") || state.equals("needs") || state.equals("no_pot") || state.equals("off");
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.camp_cook.state." + state, (Object[]) args)
 			.withStyle(warn ? ChatFormatting.YELLOW : ChatFormatting.GRAY));

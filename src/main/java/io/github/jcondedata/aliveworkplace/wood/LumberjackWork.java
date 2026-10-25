@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.mine.QuarrySite;
 import io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.List;
 import java.util.Optional;
@@ -767,7 +768,7 @@ public class LumberjackWork extends Behavior<Villager> {
 			io.github.jcondedata.aliveworkplace.work.Requests.clear(villager);
 		}
 		int trees = ModAttachments.TREES_FELLED.getOrElse(villager, 0);
-		Component title = Component.translatable("message.aliveworkplace.lumberjack.title", trees);
+		Component title = Words.countedFirst("message.aliveworkplace.lumberjack.title", trees);
 		Component line = Component.translatable("message.aliveworkplace.lumberjack.state." + phase.name().toLowerCase())
 			.withStyle(phase == Phase.NEEDS_AXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY);
 		WorkerStatus.set(villager, title, -1f, line);

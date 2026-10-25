@@ -143,6 +143,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLifeStagesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLifeStagesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaElderLifeGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaElderLifeBugTests",
 			"io.github.jcondedata.aliveworkplace.test.FamilyTreeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassMigrationGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DaycareKeeperGameTests",
@@ -166,6 +167,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCountsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCountsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBoardAndTableGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCampReachGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintUnlocksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintUnlocksBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGameTests",
@@ -271,6 +273,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigHandEditsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageMachinesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigOddFilesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWorldSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageTwoGameTests",
@@ -543,6 +547,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaOneEmeraldBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPersonalRequestsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PluralSweepGameTests",
+			"io.github.jcondedata.aliveworkplace.test.PluralClusterGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWorkerTitlesBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCountedLinesBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStewardReasonWordsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiratesThreatLevelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonProfessorGameTests",
@@ -568,7 +576,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatsLateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDefenceUpgradeGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaAnsweringHousesGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaAnsweringHousesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSignpostGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTableJobsGameTests"
 		]
 	},
 	"depends": {

@@ -107,6 +107,12 @@ public class WonderDataGameTests implements FabricGameTest {
 		return c.getContents() instanceof TranslatableContents t ? t.getKey() : "";
 	}
 
+	/** The server-limit refusal, in either number (B461: a limit of 1 reads "in 1 village ... and it's taken."). */
+	private static boolean isServerLimit(Component c) {
+		String k = key(c);
+		return k.equals("wonder.aliveworkplace.refused.server_limit") || k.equals("wonder.aliveworkplace.refused.server_limit.one");
+	}
+
 	// ---------------------------------------------------------------- the files
 
 	/** The test folly's file (gametest resources only) loads with its stages, goods, powers, crew and the Master Architect's line. */
@@ -460,7 +466,7 @@ public class WonderDataGameTests implements FabricGameTest {
 			otherEntity.setRank(VillageRanks.Rank.CITY);
 			helper.assertTrue(Wonders.capRefusal(level, other, FOLLY).isEmpty(), "no limit by default: " + Wonders.capRefusal(level, other, FOLLY));
 			Wonders.SERVER_LIMIT = 1;
-			helper.assertTrue(key(Wonders.capRefusal(level, other, FOLLY).orElse(Component.empty())).equals("wonder.aliveworkplace.refused.server_limit"),
+			helper.assertTrue(isServerLimit(Wonders.capRefusal(level, other, FOLLY).orElse(Component.empty())),
 				"wonderServerLimit 1 let a second village build it");
 			helper.assertTrue(Wonders.capRefusal(level, other, FOLLY_TWO).isEmpty(), "the limit is per kind");
 			// Wonder tests running alongside (crews, the stone) hold follies of their own in this world since 35.4,
@@ -472,7 +478,7 @@ public class WonderDataGameTests implements FabricGameTest {
 			Wonders.SERVER_LIMIT = (int) holding + 1;
 			helper.assertTrue(Wonders.capRefusal(level, other, FOLLY).isEmpty(), "a limit of " + (holding + 1) + " refused village " + (holding + 1));
 			Wonders.SERVER_LIMIT = (int) holding;
-			helper.assertTrue(key(Wonders.capRefusal(level, other, FOLLY).orElse(Component.empty())).equals("wonder.aliveworkplace.refused.server_limit"),
+			helper.assertTrue(isServerLimit(Wonders.capRefusal(level, other, FOLLY).orElse(Component.empty())),
 				"a limit of " + holding + " let village " + (holding + 1) + " build it");
 
 			// disabledWonders, and the switch

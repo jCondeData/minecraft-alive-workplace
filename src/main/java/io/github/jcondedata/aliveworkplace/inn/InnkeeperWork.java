@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -65,10 +66,10 @@ public class InnkeeperWork extends Behavior<Villager> {
 		// A guest's drink (38.8, Cobblecuisine): served at the counter, once a stay.
 		net.minecraft.world.item.ItemStack served = InnDrinks.serve(level, villager, counter);
 		Component line = served.isEmpty()
-			? Component.translatable("message.aliveworkplace.innkeeper.state." + state, Innkeepers.guests(level, counter).size())
+			? Words.countedFirst("message.aliveworkplace.innkeeper.state." + state, Innkeepers.guests(level, counter).size())
 				.withStyle(state.equals("no_bed") ? ChatFormatting.YELLOW : ChatFormatting.GRAY)
 			: Component.translatable("message.aliveworkplace.innkeeper.state.serving", served.getHoverName()).withStyle(ChatFormatting.GRAY);
-		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.innkeeper.title",
+		WorkerStatus.set(villager, Words.countedFirst("message.aliveworkplace.innkeeper.title",
 				ModAttachments.GUESTS_HOSTED.getOrElse(villager, 0)), -1f, line);
 	}
 

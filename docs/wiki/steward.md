@@ -3,7 +3,7 @@
 A seasoned Builder who runs a village from its City Plan: he decides what the village needs next, finds the plot and
 has the builders build it. Part of 1.1 (Villages that build themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328
+Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B469, B471, B472
 
 ## What a player sees
 
@@ -27,7 +27,8 @@ roads and wall line on the ground around you as colored dust that only you see.
 City Plan. He becomes the Steward, one per hall, in a clerk's long coat. Each morning he walks his rounds with the
 plan in his hands (his open builds, the zones, the storehouse), then plans at the hall until evening. The line over
 his head says what and why: "Planning a Stone House: 3 villagers have no bed". A count of one reads in the singular:
-"1 villager has no bed", "1 job here has no workplace of its trade" (B377).
+"1 villager has no bed", "1 job here has no workplace of its trade" (B377), "The store is 1 meal short", "1 household
+wants a grander home", "1 topic is open", and on the City Plan "1 cell is nearer another village" (B469, B471, B472).
 
 **His desk.** The hall's "What next?" page becomes his desk. Three modes: Ask me first, Run the village, Rest. Up to
 9 proposals, each saying what, why, where and what it needs, with Approve, Decline, Show me, Another spot and Another

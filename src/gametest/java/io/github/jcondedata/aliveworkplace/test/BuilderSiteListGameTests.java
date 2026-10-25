@@ -310,6 +310,31 @@ public class BuilderSiteListGameTests implements net.fabricmc.fabric.api.gametes
 		helper.succeed();
 	}
 
+	/**
+	 * B394: the Book and Quill in the OFF hand with the main hand empty: the main hand's empty turn used to answer with the
+	 * bench's chests line; now the off hand's book gets the list, as from the main hand.
+	 */
+	//$ gametest_ticks_batch AREA '40' '"builderSiteListBenchOff"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "builderSiteListBenchOff")
+	public void aBookAndQuillInTheOffHandOnTheBenchWritesTheList(GameTestHelper helper) {
+		Setup s = setup(helper);
+		List<String> seen = new ArrayList<>();
+		ServerPlayer player = listeningPlayer(helper, seen);
+		BlockPos bench = helper.absolutePos(BENCH);
+		player.moveTo(bench.getX() + 0.5, bench.getY() + 1, bench.getZ() - 1.5, 0f, 30f);
+		player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+		player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.WRITABLE_BOOK, 2));
+		player.gameMode.useItemOn(player, s.level(), player.getMainHandItem(), InteractionHand.MAIN_HAND,
+			new BlockHitResult(Vec3.atCenterOf(bench), Direction.NORTH, bench, false));
+		helper.assertTrue(player.getOffhandItem().is(Items.WRITABLE_BOOK) && player.getOffhandItem().getCount() == 1,
+			"one off-hand Book and Quill should be used up: " + player.getOffhandItem() + ", the player saw " + seen);
+		ItemStack book = player.getInventory().items.stream().filter(st -> st.is(Items.WRITTEN_BOOK)).findFirst().orElse(ItemStack.EMPTY);
+		List<String> pages = pages(book);
+		helper.assertTrue(pages.size() > 1 && pages.get(1).startsWith("☐ 35 × Oak Planks (of 55)"), "the bench's list from the off hand: " + pages
+			+ ", the player saw " + seen);
+		helper.succeed();
+	}
+
 	/** Taking a building down needs nothing, and the list says so; the book's own words read right. */
 	//$ gametest_ticks_batch AREA '40' '"builderSiteListWords"'
 	@GameTest(template = AREA, timeoutTicks = 40, batch = "builderSiteListWords")

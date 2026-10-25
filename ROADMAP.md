@@ -1261,7 +1261,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     by the hall stays jobless; breaking the hall ends the job; `steward: false` stops appointments;
   - both outfits pass `lint.py` and are in a `preview.py villager` sheet;
   - showcase scene `steward`: a GIF of his morning rounds and his walk back to the hall.
-- [x] **27.6** (approved 2026-10-05) **The Steward's rules.** The engine for what he wants, as data:
+- [x] **27.6** (approved 2026-10-05) (verified 2026-10-25: lane-c-1025-2153 on 3906d685: full build green [3644 GameTests]: QaStewardRulesDataGameTests [all conditions must hold, each keeps its number; only the hall's own village counts], QaStewardPlotFitGameTests [front faces the nearer of two roads; steward_clearable plants cleared, a carved pumpkin blocks], QaStewardDeskModesGameTests [10: mode buttons and stewardSelfRun off, operator/friend approve for the owner, approving twice starts one build, Steward or hall gone starts nothing, Run's one morning line, save/reload, the desk's sentences, the Ledger desk, Show me 30 s], QaWorkplaceCopiesGameTests [the 12 copies by name, Cobblemon ones only with Cobblemon, the rule's sentences, builder/kitchen rules]; wiki steward.md checked and updated. 27.2 and 27.3 stay open on B503 [QaCityPlanPaintGameTests 7 pass]) **The Steward's rules.** The engine for what he wants, as data:
   `data/aliveworkplace/steward_rules/<name>.json` holds one rule: `when` (conditions, all must hold), `do` (one
   effect), `priority` (0–100), `why` (a lang key filled from the conditions' numbers: "3 villagers have no bed"),
   `cooldown_days`, `max` per village, `min_rank` and `requires` (mod ids). Conditions are small classes reading the
@@ -1280,7 +1280,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - a rule file with an unknown condition or a bad field is skipped with a warning that names it (in
     `tools/modtest/allow.txt`, with the reason);
   - `explain` shows one rule that held and one that didn't in a test village.
-- [x] **27.7** (approved auto 2026-10-04) **Finding a plot.** `steward/Plots`: where a blueprint (in its zone's style) fits in a zone, checked
+- [x] **27.7** (approved auto 2026-10-04) (verified 2026-10-25: lane-c-1025-2153 on 3906d685: full build green [3644 GameTests]: QaStewardRulesDataGameTests [all conditions must hold, each keeps its number; only the hall's own village counts], QaStewardPlotFitGameTests [front faces the nearer of two roads; steward_clearable plants cleared, a carved pumpkin blocks], QaStewardDeskModesGameTests [10: mode buttons and stewardSelfRun off, operator/friend approve for the owner, approving twice starts one build, Steward or hall gone starts nothing, Run's one morning line, save/reload, the desk's sentences, the Ledger desk, Show me 30 s], QaWorkplaceCopiesGameTests [the 12 copies by name, Cobblemon ones only with Cobblemon, the rule's sentences, builder/kitchen rules]; wiki steward.md checked and updated. 27.2 and 27.3 stay open on B503 [QaCityPlanPaintGameTests 7 pass]) **Finding a plot.** `steward/Plots`: where a blueprint (in its zone's style) fits in a zone, checked
   for each of the four turns:
   - its front (z = 0) faces the nearest road on the plan, else the hall;
   - the footprint plus 2 blocks lies in cells of that zone, and the ground under it is within 4 blocks of level (the
@@ -1297,7 +1297,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - no plot across a zone's edge, over a player's cobblestone wall or a chest, overlapping another village's build
     site, or on a slope of 6;
   - the counter never passes 64 columns in a tick, and a search over a fully painted plan ends within 200 ticks.
-- [x] **27.8** (approved 2026-10-05) **The Steward's desk: ask first, or run itself.** When a village has a Steward, the hall's "What
+- [x] **27.8** (approved 2026-10-05) (verified 2026-10-25: lane-c-1025-2153 on 3906d685: full build green [3644 GameTests]: QaStewardRulesDataGameTests [all conditions must hold, each keeps its number; only the hall's own village counts], QaStewardPlotFitGameTests [front faces the nearer of two roads; steward_clearable plants cleared, a carved pumpkin blocks], QaStewardDeskModesGameTests [10: mode buttons and stewardSelfRun off, operator/friend approve for the owner, approving twice starts one build, Steward or hall gone starts nothing, Run's one morning line, save/reload, the desk's sentences, the Ledger desk, Show me 30 s], QaWorkplaceCopiesGameTests [the 12 copies by name, Cobblemon ones only with Cobblemon, the rule's sentences, builder/kitchen rules]; wiki steward.md checked and updated. 27.2 and 27.3 stay open on B503 [QaCityPlanPaintGameTests 7 pass]) **The Steward's desk: ask first, or run itself.** When a village has a Steward, the hall's "What
   next?" page (the compass) becomes his desk: his icon and level, the mode (**Ask me first**, **Run the village**,
   **Rest**), his open builds with **Cancel** (`Builders.cancel`), the "What next?" tips as now, and up to 9
   proposals. Each proposal shows its blueprint, name and style; why ("3 villagers have no bed"); where ("22 blocks
@@ -1350,7 +1350,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - a GameTest per rule, in a village staged to need it: the Steward proposes that build in the right zone; with beds
     short and an upgradable Stone House, the upgrade comes before a new house;
   - showcase scene `steward_homes`: a GIF of a Homes zone filling up over three days in Run the village.
-- [x] **27.11** (approved 2026-10-05) **A workplace for every worker.** `tools/blueprints/generate.py` writes buildable copies of 12 of our
+- [x] **27.11** (approved 2026-10-05) (verified 2026-10-25: lane-c-1025-2153 on 3906d685: full build green [3644 GameTests]: QaStewardRulesDataGameTests [all conditions must hold, each keeps its number; only the hall's own village counts], QaStewardPlotFitGameTests [front faces the nearer of two roads; steward_clearable plants cleared, a carved pumpkin blocks], QaStewardDeskModesGameTests [10: mode buttons and stewardSelfRun off, operator/friend approve for the owner, approving twice starts one build, Steward or hall gone starts nothing, Run's one morning line, save/reload, the desk's sentences, the Ledger desk, Show me 30 s], QaWorkplaceCopiesGameTests [the 12 copies by name, Cobblemon ones only with Cobblemon, the rule's sentences, builder/kitchen rules]; wiki steward.md checked and updated. 27.2 and 27.3 stay open on B503 [QaCityPlanPaintGameTests 7 pass]) **A workplace for every worker.** `tools/blueprints/generate.py` writes buildable copies of 12 of our
   village houses (`village.py`: the plains look, with the jigsaw, structure voids and villager taken out and calcite
   swapped for white concrete, as STYLE.md asks of builds for builders), in the Blueprint Table too: Builder's
   Workshop, Carpenter's Workshop, Kitchen, Post Office, Guard House, Clinic, Ferry House and, with Cobblemon, Trainer's

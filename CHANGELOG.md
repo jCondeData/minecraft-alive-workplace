@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- A builder's "Dig the cellar" trade goes once the cellar is there, dug by them or by hand (also from builders saved with it), and one bought before starts nothing: given to a builder, it no longer starts a whole new build over the finished one (B386).
+
 ## 0.149.0 — 2026-10-24
 
 ### Fixed

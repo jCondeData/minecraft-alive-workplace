@@ -15,6 +15,7 @@ import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
@@ -42,6 +43,8 @@ public final class Cellars {
 	public static final int PRICE = 4;
 	/** Most times the job can be bought before the builder restocks. */
 	static final int MAX_USES = 2;
+	/** The job's name, "Dig the cellar: <build>", by which a trade or a bought job is known as one ({@link #isJob}). */
+	private static final String JOB_NAME = "item.aliveworkplace.blueprint.cellar";
 
 	/**
 	 * Whether the finished {@code structure} at {@code placement} has a cellar still to dig: its blueprint reaches under the
@@ -139,8 +142,15 @@ public final class Cellars {
 	 * Called when they level up and when a player opens their trades, with the grander homes ({@code ModTrades}).
 	 */
 	public static List<BuildSiteManager.Finished> offer(ServerLevel level, Villager builder) {
+		List<BuildSiteManager.Finished> toDig = toDig(level, builder.blockPosition(), io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+		// B386: a "Dig the cellar" sold before goes once its cellar is there (dug by a builder or by hand), its build is gone
+		// or being worked on, or it's out of reach (saved trades from older versions included): bought then, its blueprint
+		// would be no dig but a whole build over the standing one
+		builder.getOffers().removeIf(o -> isJob(o.getResult()) && BlueprintItem.data(o.getResult())
+			.map(d -> toDig.stream().noneMatch(f -> f.structure().equals(d.structure()) && d.placement().equals(Optional.of(f.placement()))))
+			.orElse(true));
 		List<BuildSiteManager.Finished> added = new ArrayList<>();
-		for (BuildSiteManager.Finished f : toDig(level, builder.blockPosition(), io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : toDig) {
 			if (!sells(builder, f)) {
 				builder.getOffers().add(new MerchantOffer(new ItemCost(Items.EMERALD, PRICE), job(level, f), MAX_USES, 5, 0.05f));
 				added.add(f);
@@ -156,12 +166,18 @@ public final class Cellars {
 			.orElse(false));
 	}
 
+	/** Whether {@code stack} is a "Dig the cellar" job ({@link #job}), by its name: a builder's trade or one bought. */
+	public static boolean isJob(ItemStack stack) {
+		Component name = stack.get(DataComponents.CUSTOM_NAME);
+		return name != null && name.getContents() instanceof TranslatableContents t && t.getKey().equals(JOB_NAME);
+	}
+
 	/** The job as a blueprint: the build itself, lined up over it, named "Dig the cellar: <build>". */
 	public static ItemStack job(ServerLevel level, BuildSiteManager.Finished building) {
 		ItemStack stack = BlueprintItem.create(building.structure(),
 			BlueprintLibrary.get(level, building.structure()).map(Blueprint::size).orElse(null));
 		BlueprintItem.data(stack).ifPresent(d -> stack.set(ModComponents.BLUEPRINT, d.withPlacement(Optional.of(building.placement()))));
-		stack.set(DataComponents.CUSTOM_NAME, Component.translatable("item.aliveworkplace.blueprint.cellar",
+		stack.set(DataComponents.CUSTOM_NAME, Component.translatable(JOB_NAME,
 			Blueprints.displayName(building.structure())).withStyle(s -> s.withItalic(false)));
 		return stack;
 	}

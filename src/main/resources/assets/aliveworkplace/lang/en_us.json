@@ -255,6 +255,7 @@
   "message.aliveworkplace.contraption_gone": "a missing part",
   "message.aliveworkplace.contraption_more": "and %s more",
   "message.aliveworkplace.cellar_dug": "%s dug the cellar under the %s and fitted it out.",
+  "message.aliveworkplace.cellar_no_dig": "There's no cellar to dig under the %s any more: it's dug, or the build is gone.",
   "message.aliveworkplace.finished_deconstruct": "%s took down %s. The blocks and the blueprint are in the supply chests.",
   "message.aliveworkplace.assign.deconstruct": "%s will take down %s and put the blocks in the chests within %s blocks of their Blueprint Table. Chests, furnaces and other blocks that hold things are left standing.",
   "message.aliveworkplace.status.stage.deconstruct": "Taking it down",

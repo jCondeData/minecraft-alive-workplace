@@ -100,6 +100,9 @@ All 33.7, lane a, 2026-10-10 (the full list is in ROADMAP's Notes):
   `aSavedAndReloadedCarterIsTakenAway`; `theGoodsAreTheSameWithTheSwitchOnOrOff`;
   `onePartyPerVillageAndGoneAfterTwoMinutes`; `thePartyNeverTradesTakesAJobOrBreeds` (also: not counted by the hall,
   no ride, no hay, no harm, no bread picked up).
+- `QaCaravansGameTests` (QA): seen with a player at 96 blocks, not at 97; a whole trading run (sale, partial
+  payment, unpaid goods home in the sender's own caravan) the same seen or not; a player's lead or name tag doesn't
+  take the party.
 - `CaravanTradeGameTests` and `VillageHallGameTests.caravansCarryWhatAnotherVillageNeeds` pass unchanged.
 
 Showcase scenes: `caravan`

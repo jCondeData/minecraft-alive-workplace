@@ -3975,7 +3975,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     sites; the sister route exists outside the cap; both chronicles have their lines;
   - a GameTest where there's no room: everyone and everything is back home;
   - showcase scene `colony` with a GIF of the arrival and the first walls going up.
-- [x] **33.11** (approved 2026-10-11) **Founding a realm.** The Realm tab: at a Town or better, the hall's owner (or a friend) can **found a
+- [x] **33.11** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaRealmFoundingGameTests]: the 2048 reach, 12-village cap, ranks both sides, crown passing with the treasury, two realms inviting one village, time-left wording, a candidate's hall broken mid-vote, levies, give/take, cap by rank, realms off; no bugs) **Founding a realm.** The Realm tab: at a Town or better, the hall's owner (or a friend) can **found a
   realm** with this village as its capital, named after it ("the Barony of Thornholm"; a named Name Tag clicked on the
   realm's icon renames it). The capital's owner adds, with one click, any village within 2,048 blocks that they or a
   friend own; colonies join their mother's realm by themselves; a member's owner can leave at any time and the capital
@@ -3992,7 +3992,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     rank up, the capital's hall broken (the crown passes, or the realm ends);
   - the realm survives save and reload;
   - showcase scene `realm` (the tab, the rank-up fireworks).
-- [x] **33.12** (approved 2026-10-11) **Other players' villages, and choosing the capital.** The capital's owner can invite a village
+- [x] **33.12** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaRealmFoundingGameTests]: the 2048 reach, 12-village cap, ranks both sides, crown passing with the treasury, two realms inviting one village, time-left wording, a candidate's hall broken mid-vote, levies, give/take, cap by rank, realms off; no bugs) **Other players' villages, and choosing the capital.** The capital's owner can invite a village
   another player owns: a letter goes to that owner's mailbox (or waits at the post office), with a line on their Realm
   tab to accept or decline within 3 days. Any member that's a Town or better can be put forward as capital by its
   owner: if one player owns every member it moves at once; otherwise each member's owner gets a vote on the Realm tab
@@ -4002,7 +4002,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - GameTests with two owners: an accepted invitation joins; a declined or lapsed one doesn't; a vote with a majority
     moves the capital and its treasury; a tie keeps it;
   - showcase scene `realm_invite` (the letter, the tab with the vote).
-- [x] **33.13** (approved 2026-10-11) **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
+- [x] **33.13** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaRealmFoundingGameTests]: the 2048 reach, 12-village cap, ranks both sides, crown passing with the treasury, two realms inviting one village, time-left wording, a candidate's hall broken mid-vote, levies, give/take, cap by rank, realms off; no bugs) **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
   realm treasury before the rest goes into its own: the **levy**, 0, 5, 10 (the default) or 20%, set by the capital's
   owner on the Realm tab. It's kept in the realm's saved data, so it never needs the capital loaded, and holds up to
   256 emeralds for a Barony, 512 for a County, 1,024 for a Duchy and 2,048 for a Kingdom. It pays for realm research,

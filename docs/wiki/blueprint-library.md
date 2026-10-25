@@ -159,7 +159,7 @@ stand-in ids and no size, and no rare id in the encoded packet), `BlueprintUnloc
 `BlueprintUnlocksGameTests.levelUpsCommandsAndFoundBlueprintsUnlock` (a level-up, `/workplace unlock`, a found Chapel
 used on the Table through the player's own click, and blueprints in a storehouse chest's loot),
 `BlueprintUnlocksGameTests.anOldSaveUnlocksWhatStands`, `BlueprintUnlocksGameTests.unlocksSurviveSaveAndReload`,
-`BlueprintUnlocksGameTests.theSwitchOffUnlocksEverything`. `TableGameTests` and `TablePreviewGameTests` pass unchanged
+`BlueprintUnlocksGameTests.theSwitchOffUnlocksEverything`. QA's `QaBlueprintUnlocksGameTests` (7): a found blueprint used twice says so once and the screen that opens lists it unlocked; one village's unlock leaves the other's build locked; a styled id of a locked or ??? build asked for over the network is refused, and handed out once unlocked; `/workplace unlock` again and with an unknown id; an unlocked build of a closed expansion stays off the Table; a level-up tells the players out to the village's edge (not a block beyond) and, with nothing locked, says nothing. `TableGameTests` and `TablePreviewGameTests` pass unchanged
 with the switch off. `TableJobsGameTests` (5, 36.6a): `TableJobsGameTests.sharedJobBlocksAreCountedAndJoined` (the owner's example:
 "Jobs: Fisherman (1), Butcher/Chef/Rancher (3)", "Beds: 2"), `TableJobsGameTests.bedsOnlyAndNeither`,
 `TableJobsGameTests.aSwitchedOffJobIsLeftOut` (config tailors off), `TableJobsGameTests.theTableSendsAShippedBuildsJobsAndBeds`

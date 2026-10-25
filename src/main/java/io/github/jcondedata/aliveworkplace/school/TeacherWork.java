@@ -6,6 +6,7 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Pace;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -113,7 +114,7 @@ public class TeacherWork extends Behavior<Villager> {
 	}
 
 	private void status(Villager villager) {
-		Component title = Component.translatable("message.aliveworkplace.teacher.title", ModAttachments.PUPILS_TAUGHT.getOrElse(villager, 0));
+		Component title = Words.countedFirst("message.aliveworkplace.teacher.title", ModAttachments.PUPILS_TAUGHT.getOrElse(villager, 0));
 		Component line = inClass > 0 ? Component.translatable("message.aliveworkplace.teacher.state.teaching", inClass)
 			: called > 0 ? Component.translatable("message.aliveworkplace.teacher.state.calling", called)
 			: Component.translatable("message.aliveworkplace.teacher.state.none");

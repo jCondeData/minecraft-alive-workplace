@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.PartnerShows;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Comparator;
 import java.util.List;
@@ -496,7 +497,7 @@ public class BerryBreederWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, String state, Component... args) {
-		Component title = Component.translatable("message.aliveworkplace.berry_breeder.title", ModAttachments.BERRIES_PICKED.getOrElse(villager, 0));
+		Component title = Words.countedFirst("message.aliveworkplace.berry_breeder.title", ModAttachments.BERRIES_PICKED.getOrElse(villager, 0));
 		boolean warn = state.equals("no_chest") || state.equals("needs") || state.equals("out_of_reach") || state.equals("no_farmland")
 			|| state.equals("off");
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.berry_breeder.state." + state, (Object[]) args)

@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.mojang.authlib.GameProfile;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.GlobalPos;
@@ -136,7 +137,7 @@ public final class Mail {
 				case IN_TRANSIT -> Component.translatable(PostOffice.get(server).mailboxOf(parcel.to()) == null
 					? "message.aliveworkplace.mail.status.at_desk" : "message.aliveworkplace.mail.status.in_transit");
 			};
-			out.add(Component.translatable(sent ? "message.aliveworkplace.mail.track_to" : "message.aliveworkplace.mail.track_from",
+			out.add(Words.counted(sent ? "message.aliveworkplace.mail.track_to" : "message.aliveworkplace.mail.track_from", parcel.count(),
 				sent ? parcel.toName() : parcel.fromName(), parcel.count(), where).withStyle(sent ? ChatFormatting.GRAY : ChatFormatting.GOLD));
 		}
 		return out;

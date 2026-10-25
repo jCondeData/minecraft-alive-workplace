@@ -74,7 +74,7 @@ public class QaCrafterFurnitureGameTests {
 	/**
 	 * A player takes four of the six logs while the Carpenter is on the way to fetch them: nothing is half made (no planks
 	 * sawn for barrels that can't be finished), the two logs it got come back, the job is let go, and the builder's line
-	 * then says what's short ("short of 4 Oak Log to make 3 Barrel").
+	 * then says what's short ("short of 4 Oak Logs to make 3 Barrels").
 	 */
 	//$ gametest_ticks_batch AREA '2400' '"qaChainLogsTaken"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qaChainLogsTaken")
@@ -107,7 +107,7 @@ public class QaCrafterFurnitureGameTests {
 			helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(carpenter).isEmpty(), "the carpenter still carries " + ModAttachments.BUILDER_BAG.getOrCreate(carpenter).stacks());
 			helper.assertTrue(ModAttachments.CRAFTER_JOB.get(carpenter) == null, "the job it can't finish is still saved on the carpenter");
 			Component line = JobShortages.line(level, a.site().id(), a.site().missing());
-			helper.assertTrue(line != null && line.getString().equals("Can't be made yet: short of 4 Oak Log to make 3 Barrel"),
+			helper.assertTrue(line != null && line.getString().equals("Can't be made yet: short of 4 Oak Logs to make 3 Barrels"),
 				"the builder's line after the logs were taken: " + (line == null ? null : line.getString()));
 		});
 	}
@@ -228,7 +228,7 @@ public class QaCrafterFurnitureGameTests {
 		JobShortages.lacks(lacking, Items.BARREL, JobShortages.lackLine(Map.of(Items.OAK_LOG, 2), 5, Items.BARREL), now);
 		JobShortages.lacks(lacking, Items.OAK_STAIRS, JobShortages.lackLine(Map.of(Items.OAK_LOG, 1), 4, Items.OAK_STAIRS), now);
 		Component three = JobShortages.line(level, lacking, missing);
-		helper.assertTrue(three != null && three.getString().equals("Can't be made yet: short of 2 Oak Log to make 5 Barrel; short of 1 Oak Log to make 4 Oak Stairs"),
+		helper.assertTrue(three != null && three.getString().equals("Can't be made yet: short of 2 Oak Logs to make 5 Barrels; short of 1 Oak Log to make 4 Oak Stairs"),
 			"three lacks on the line: " + (three == null ? null : three.getString()));
 		UUID nobody = UUID.randomUUID();
 		helper.assertTrue(JobShortages.line(level, nobody, missing) == null, "\"nobody makes\" before the jobs had a look");

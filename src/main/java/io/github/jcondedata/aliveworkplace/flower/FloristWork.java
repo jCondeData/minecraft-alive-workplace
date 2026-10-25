@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -434,7 +435,7 @@ public class FloristWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, String state) {
-		Component title = Component.translatable("message.aliveworkplace.florist.title", ModAttachments.FLOWERS_GROWN.getOrElse(villager, 0));
+		Component title = Words.countedFirst("message.aliveworkplace.florist.title", ModAttachments.FLOWERS_GROWN.getOrElse(villager, 0));
 		boolean warn = state.equals("no_chest") || state.equals("no_bone_meal");
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.florist.state." + state)
 			.withStyle(warn ? ChatFormatting.YELLOW : ChatFormatting.GRAY));

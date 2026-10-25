@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Pace;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -475,9 +476,9 @@ public class ExplorerWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, String state, Object... args) {
-		Component title = Component.translatable("message.aliveworkplace.explorer.title", ModAttachments.EXPEDITIONS.getOrElse(villager, 0));
+		Component title = Words.countedFirst("message.aliveworkplace.explorer.title", ModAttachments.EXPEDITIONS.getOrElse(villager, 0));
 		boolean warn = state.equals("needs_food") || state.equals("no_chest");
-		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.explorer.state." + state, args)
+		WorkerStatus.set(villager, title, -1f, Words.countedFirst("message.aliveworkplace.explorer.state." + state, args)
 			.withStyle(warn ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}
 }

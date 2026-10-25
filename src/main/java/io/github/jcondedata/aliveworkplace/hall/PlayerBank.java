@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.legend.BankPower;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -156,7 +157,7 @@ public final class PlayerBank {
 		state.set(player.getUUID(), state.cents(player.getUUID()) + amount * 100L);
 		entity.setChanged();
 		level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8f, 0.9f);
-		return Component.translatable("message.aliveworkplace.bank.deposited", Money.describe((long) amount * Money.DOLLARS_PER_EMERALD, amount),
+		return Words.counted("message.aliveworkplace.bank.deposited", state.emeralds(player.getUUID()), Money.describe((long) amount * Money.DOLLARS_PER_EMERALD, amount),
 			state.emeralds(player.getUUID())).withStyle(ChatFormatting.GREEN);
 	}
 
@@ -174,7 +175,7 @@ public final class PlayerBank {
 		entity.setChanged();
 		Money.pay(player, (long) amount * Money.DOLLARS_PER_EMERALD, amount);
 		level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8f, 1.2f);
-		return Component.translatable("message.aliveworkplace.bank.withdrawn", Money.describe((long) amount * Money.DOLLARS_PER_EMERALD, amount),
+		return Words.counted("message.aliveworkplace.bank.withdrawn", state.emeralds(player.getUUID()), Money.describe((long) amount * Money.DOLLARS_PER_EMERALD, amount),
 			state.emeralds(player.getUUID())).withStyle(ChatFormatting.GREEN);
 	}
 

@@ -36,6 +36,15 @@ public final class Words {
 	}
 
 	/**
+	 * {@code key.one} when {@code count} is 1 and that key exists, else {@code key}, with {@code args}: for a count that
+	 * isn't the first argument of a key whose singular is optional, such as a raider culture's own line.
+	 */
+	public static MutableComponent countedIfAny(String key, long count, Object... args) {
+		boolean one = count == 1 && Language.getInstance().has(key + ".one");
+		return Component.translatable(one ? key + ".one" : key, args);
+	}
+
+	/**
 	 * An item's name after a count (B407: "4 Baked Potatoes", "1 Pumpkin Pie"): for any count but one, its plural
 	 * {@code plural.aliveworkplace.<namespace>.<path>} when the lang has it, else the item's own name.
 	 */

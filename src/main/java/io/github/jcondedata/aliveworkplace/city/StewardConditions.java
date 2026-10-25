@@ -13,6 +13,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.research.Research;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -504,7 +505,7 @@ public final class StewardConditions {
 			long open = java.util.Arrays.stream(Research.Topic.values()).filter(state::available).count();
 			Research.Topic current = state.currentTopic();
 			Component now = current != null ? current.title() : Component.translatable("steward.aliveworkplace.condition.research_idle.nothing");
-			return new Check(current == null && open > 0, open, key(type(), now, open));
+			return new Check(current == null && open > 0, open, Words.countedIfAny("steward.aliveworkplace.condition." + type(), open, now, open));
 		}
 	}
 
@@ -582,7 +583,9 @@ public final class StewardConditions {
 			long last = facts.level.getBlockEntity(facts.hall) instanceof VillageHallBlockEntity entity ? entity.lastRaidDay() : -100;
 			long since = last <= NEVER_RAIDED ? -1 : Chronicle.day(facts.level) - last; // the hall's -100: never raided
 			boolean held = since >= 0 && since < days;
-			return new Check(held, Math.max(0, since), since < 0 ? key(type() + "_never", days) : key(type(), since, days));
+			return new Check(held, Math.max(0, since), since < 0
+				? Words.countedIfAny("steward.aliveworkplace.condition." + type() + "_never", days, days)
+				: Words.countedIfAny("steward.aliveworkplace.condition." + type(), since, since, days));
 		}
 	}
 

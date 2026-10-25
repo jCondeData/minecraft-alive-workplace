@@ -15,6 +15,7 @@ import io.github.jcondedata.aliveworkplace.rules.Condition;
 import io.github.jcondedata.aliveworkplace.rules.Conditions;
 import io.github.jcondedata.aliveworkplace.rules.JobLevel;
 import io.github.jcondedata.aliveworkplace.rules.LegendSettled;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -399,7 +400,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 				}
 			}
 			if (villages.size() >= limit) {
-				return Optional.of(Component.translatable("wonder.aliveworkplace.refused.server_limit", wonder.nameText(), limit));
+				return Optional.of(Words.counted("wonder.aliveworkplace.refused.server_limit", limit, wonder.nameText(), limit));
 			}
 		}
 		return Optional.empty();

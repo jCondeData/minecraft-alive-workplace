@@ -191,6 +191,25 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every grave outside the test area that a village here would reach: an Undertaker's own search (twice a
+	 * village's radius round its hall) plus half the area's diagonal. A grave is a block, so one an earlier batch's test
+	 * left outside its own area is never cleared: B222's tests counted "2 graves" round their area in a mixed run (B482).
+	 * Only for tests alone in their batch.
+	 */
+	static void graves(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB box = helper.getBounds();
+		double halfDiagonal = Math.sqrt(box.getXsize() * box.getXsize() + box.getYsize() * box.getYsize() + box.getZsize() * box.getZsize()) / 2;
+		int reach = 2 * io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS + (int) Math.ceil(halfDiagonal);
+		for (net.minecraft.core.BlockPos grave : io.github.jcondedata.aliveworkplace.grave.Graves.near(level, net.minecraft.core.BlockPos.containing(box.getCenter()), reach)) {
+			if (!box.contains(net.minecraft.world.phys.Vec3.atCenterOf(grave))) {
+				level.removeBlockEntity(grave);
+				level.setBlock(grave, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_ALL);
+			}
+		}
+	}
+
+	/**
 	 * Turns village sharing on for this test ({@code Village.RADIUS}, normally off in tests) and off again when the test
 	 * ends, passed or failed — a failed test that left it on made the next batches' builders share chests and fail too.
 	 */

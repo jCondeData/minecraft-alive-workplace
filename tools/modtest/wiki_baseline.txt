@@ -31,7 +31,7 @@ B5 B6 B19
 29.11
 
 # Milestone 30: the civic items (Work Horn, Cradle, Village Banner, Harvest Idol, tonics)
-30.11 30.12 30.13 30.14 30.15 30.16
+30.11
 
 # Milestone 31: the quest journal, story arcs, friendship
 31.3 31.4 31.5

@@ -40,9 +40,9 @@ makings for.
 
 ## Trading
 
-Amethyst shards (4 for an emerald) and glass bought (Novice), tumblestones and tinted glass (Apprentice), a spyglass or
-shards bought, and the **Gem Grotto** blueprint for 12 emeralds (Journeyman), Type Gems (Expert, Cobblemon 1.8.0 or newer), amethyst
-blocks (Master).
+Amethyst shards (4 for an emerald) and glass bought (Novice), tumblestones (with Cobblemon) and tinted glass
+(Apprentice), a spyglass or shards bought, and the **Gem Grotto** blueprint for 12 emeralds (Journeyman), Type Gems
+(Expert, with Cobblemon), amethyst blocks (Master).
 
 ## How it fits with the rest
 

@@ -20,6 +20,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Furniture and storage mods](furniture-and-storage.md): builds furnished with Handcrafted, Lucky's Cozy Home, CobbleFurnies and Beautify, and Sophisticated Storage and Tom's Simple Storage in the Storehouse (2.1, being built: 37.1 to 37.11).
 - [Pokémon partners](pokemon-partners.md): pastured Pokémon that help at work, and are seen doing it (Cobblemon).
 - [The village's own habitat](village-habitat.md): an Expert Habitat Keeper founds a Habitat Block for the village (Cobblemon 1.8).
+- [The Gem Grower](gem-grower.md): a villager at a stonecutter, picked with an amethyst shard, who tends amethyst, tumblestone and Type Gem beds and makes Blank TMs (28.11).
 - [Pokémon jobs' village houses](pokemon-village-houses.md): villages grow a house for each Pokémon job, its villager already in it (Cobblemon).
 - [The Pokémon Trader](pokemon-trader.md): the day's Pokémon offers and the trader's own trade screen (Cobblemon).
 - [Gifts](gifts.md): Gift Wrap, the Gift, what villagers think of it, name days and taste files (31.6).

@@ -4427,7 +4427,7 @@ on a real world.
   from 34.17 replace v1 as they come. Done when: a GameTest checks the packet goes out on tracking and on a change;
   scene `class_outfits` (the four classes side by side in three jobs each, plus an elder, in daylight) passes with
   every job still readable; the shots are in the review package.
-- [x] **34.19** (approved 2026-10-11) **Life stages: elders.** Grown villagers count their days: `adult_since` (saved: the day they grew
+- [x] **34.19** (approved 2026-10-11) (verified 2026-10-25: 6 QA tests [QaElderLifeGameTests]: the charm by sneak-click at the elder boundary, kept when refused, one charm one villager; an ageless Master retires and mentors; passing only asleep with both wordings and graves; the Book of Families at exactly 400; the 60 family names. 34.20 waits on B442) **Life stages: elders.** Grown villagers count their days: `adult_since` (saved: the day they grew
   up; set in `Families.round` when a child grows up, seeded for everyone else by 34.22). After `villagerElderDays`
   (120) grown days a villager is an **elder**: the hall says so ("Elder · grown 131 days"), they wear the elder look
   (34.18), walk 15% slower (`Walker`), and their mood gets "a quiet old age" (+5) when they're fed and housed. The
@@ -4436,7 +4436,7 @@ on a real world.
   (`elderPassing` on), unless made ageless by 34.19a. Done when:
   `LifeStageGameTests` (an elder after the configured days with the clock moved on, the slower walk, the mood reason,
   a reload keeping the day, a child growing up getting today) pass; scene `elders` passes.
-- [x] **34.19a** (approved 2026-10-11) **The Evergreen Charm: ageless elders** (owner, 2026-10-06: "make an elder eternal if they have good
+- [x] **34.19a** (approved 2026-10-11) (verified 2026-10-25: 6 QA tests [QaElderLifeGameTests]: the charm by sneak-click at the elder boundary, kept when refused, one charm one villager; an ageless Master retires and mentors; passing only asleep with both wordings and graves; the Book of Families at exactly 400; the 60 family names. 34.20 waits on B442) **The Evergreen Charm: ageless elders** (owner, 2026-10-06: "make an elder eternal if they have good
   traits by building a specific item and giving it to them, so you don't lose good villagers"). A new item, the
   **Evergreen Charm** (pixel-art: a small gold-and-green leaf pendant; a rare craft: a totem of undying, a golden
   apple, 2 emeralds and a heart of the sea, our decision, tune in play). Sneak-right-click an elder with it: they
@@ -4464,7 +4464,7 @@ on a real world.
 
   Done when: `RetirementGameTests` (a full hand-over in order, each "never while" case, the level and assignments
   carried over, a retired elder never re-employed, the mentor's 50%) pass; scene `retirement` passes.
-- [x] **34.21** (approved 2026-10-12) **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
+- [x] **34.21** (approved 2026-10-12) (verified 2026-10-25: 6 QA tests [QaElderLifeGameTests]: the charm by sneak-click at the elder boundary, kept when refused, one charm one villager; an ageless Master retires and mentors; passing only asleep with both wordings and graves; the Book of Families at exactly 400; the 60 family names. 34.20 waits on B442) **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
   fields in `Families.Parents`; old records keep their names only). The hall keeps the village's **Book of
   Families**: everyone who has lived there (id, name, family name, the day they were born or grew up, the day they
   died, parents, partner, trade), up to 400, the longest dead forgotten first. **Family names**: a villager whose

@@ -345,6 +345,14 @@ the village's Builder, `aBuiltTerminalNookFeedsTheVillagesBuilder`).
 the status says so with numbers that agree, the distance rounded up to 21, `aStorehouseJustPastTheReachIsTooFarAndTheNumbersSaySo`).
 `QaBuilderLimitsBugTests` (1, B378: a spot 48.5 blocks from the table is refused with a number past the 48-block reach,
 `aSpotJustPastTheReachIsRefusedWithANumberPastTheReach`).
+`QaChairFacingGameTests` (4, QA from B148: in every listed build each stair chair beside a table opens toward it, 251
+chairs, and still does turned four ways and mirrored, 2008; a Manor chair turned round is caught).
+`QaDoorwayClearanceGameTests` (5, QA from B173: a villager slid through a doorway with a carpet under the lintel is
+caught, and so are the Village Hall's and Supply Shop's with one moved there; villagers walk in by the shut front doors of
+the Supply Shop, turned too, and the Village Hall; the sweep over every build's doors is B487's test on tests/qa-doorways-1025).
+`QaWallTowerGameTests` (7, QA from B283: hall rounds open nothing on a Palisade Tower half way up, two towers decorating
+or a finished one; a tower saved and loaded mid-decoration stays one tower and is finished where it stands; its ladders
+balance when its builder is killed holding three and every second of a real build).
 `QaBlueprintLootGameTests` (1, QA: a scanned build of a lectern with a book, a jukebox with a disc, a chiseled bookshelf
 with a book, a decorated pot of diamonds, a campfire cooking beef, a sign and a named chest of gold, built by a Builder:
 every block comes out empty, the sign keeps its words and the chest its name,

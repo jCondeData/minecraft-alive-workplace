@@ -90,6 +90,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.VillageHabitatCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaStageTwoCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaStageFourCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCampHabitatCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.GemGrowerCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DaycareKeeperCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonFeaturesCompatTests",

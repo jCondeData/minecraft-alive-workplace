@@ -1624,7 +1624,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - Rancher + Normal or Ground: walks beside the wild horse being broken in (cue `tame`).
 
   Done when: a GameTest per cue, and showcase scene `partners_all`: one still per job with its partner at work.
-- [x] **28.7** (approved 2026-10-05) **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
+- [x] **28.7** (approved 2026-10-05) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
   a render), in the Blueprint Table with Cobblemon only and sold by Journeyman Nurses:
   - **Pokémon Center**: a bright hall under a red roof, a glass front, a counter with Cobblemon's Healing Machine (the
     nurse's place), a PC by the counter, shelves of potions behind it, benches along the walls;
@@ -1671,7 +1671,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     harvests and replants Hearty Grains;
   - the README section and job table say how to start her;
   - showcase scene `camp_cook` with its GIF.
-- [x] **28.9** (approved 2026-10-05) **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
+- [x] **28.9** (approved 2026-10-05) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
   berry. Config `berryBreeders` (true).
   - The berry book: every berry and its `mutations` read from Cobblemon's own berry data (70 in 1.7.3), so a data pack's
     berries come too. Sneak-right-click the breeder: one page lists every berry, found ones lit, the rest with the pair
@@ -1736,7 +1736,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     and a forced full cluster picked (compat, 1.7.3); a Fire Gem Block set on a core and a forced stage-3 Fire Gem
     cluster picked (compat, 1.8.1); a malformed bed file is logged and skipped;
   - showcase scene `gem_grower`.
-- [x] **28.12** (approved 2026-10-05) **The Daycare Keeper.** Cobblemon has no breeding; the Cobbleverse pack adds it with Cobbreeding
+- [x] **28.12** (approved 2026-10-05) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Daycare Keeper.** Cobblemon has no breeding; the Cobbleverse pack adds it with Cobbreeding
   (eggs in the Pasture Block). Stand a villager by a Pasture Block and sneak-right-click them with an egg. Config
   `daycareKeepers` (true).
   - Right-click her (sneak for trades): the daycare screen (as the Rancher's, `compat/cobblemon/CobblemonDaycare`):
@@ -2312,7 +2312,7 @@ MarketDays) and research/.
   Seer comes only at midnight, at a full moon, to a Chapel; a raid foretold at dawn comes that night and none comes
   when none is foretold (fixed `RandomSource`); the festival and market days told are right; a blessed wedding's mood
   and baby; showcase scene `legend_seer` (GIF: the arrival under the full moon, the dawn foretelling in chat).
-- [x] **29.17** (approved 2026-10-06) **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
+- [x] **29.17** (approved 2026-10-06) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
   village's treasury has taken in 500 emeralds all told (`treasury_total`) and it sends caravans on 3 routes. Trade:
   `aliveworkplace:legend`; they keep to the Village Hall and the Market Square. Likes: wine. Powers:
   - **the bank** (`bank`): the treasury earns 2% a day on what it holds and holds twice as much; players deposit
@@ -2329,7 +2329,7 @@ MarketDays) and research/.
   cap; deposits and withdrawals with interest, kept through a reload, never more than 10 stacks; a fair with 6 traders
   plus one per linked village; the caravan pay; showcase scene `legend_merchant_prince` (the bank page, a GIF of the
   fair).
-- [x] **29.18** (approved 2026-10-06) **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
+- [x] **29.18** (approved 2026-10-06) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
   kinds of meal (`VillageHalls.mealKinds`); the materials come from a pool of a golden apple, a glistering melon
   slice, a golden carrot, a honeycomb, glow berries, chorus fruit and a pufferfish, and the Masterwork is a cake named
   for the village ("The Thornholm Midsummer Cake"). Also a guest at the inn on the same condition, and born to a Chef
@@ -2343,7 +2343,7 @@ MarketDays) and research/.
   Outfit: a tall white toque and a gold ladle at the apron. Done when: GameTests: a banquet takes two meals each; the
   mood; two births a day for 3 days with free beds, and one a day after; chefs faster; showcase scene
   `legend_grand_chef` (GIF: the banquet).
-- [x] **29.19** (approved 2026-10-06) **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
+- [x] **29.19** (approved 2026-10-06) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
   to a Bard (29.7). Trade: Bard. Likes: books. Powers:
   - **the anthem** (`anthem`): when they settle they compose the village's anthem, 16 notes on one instrument (harp,
     flute, bell, chime, guitar or xylophone) made from the village's name, so it never changes, kept in the hall. It
@@ -2357,7 +2357,7 @@ MarketDays) and research/.
   Outfit: a green doublet, a lute on the back and a laurel wreath. Done when: GameTests: the same name always gives
   the same anthem and another name a different one; it is saved and played at each event (the sounds counted); the
   work-song pace only while they sing; showcase scene `legend_bard` (GIF with the notes).
-- [x] **29.20** (approved 2026-10-06) **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
+- [x] **29.20** (approved 2026-10-06) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
   has a ranch: 10 animals within 16 blocks of a Rancher's, Butcher's or Shepherd's workstation; born to a Rancher
   (29.7). Trade: Rancher. Likes: clothes. Powers:
   - **war dogs** (`war_dogs`): with bones in their chest they tame a wolf for each guard without one (the village's
@@ -2404,7 +2404,7 @@ MarketDays) and research/.
   an Alpha (or the level-50 stand-in) near; a calmed Alpha doesn't attack a villager; a befriended Pokémon belongs to
   the owner and is in the pasture, and a banned species never is; nothing loads without Cobblemon; showcase scene
   `legend_ranger`.
-- [x] **29.23** (approved 2026-10-06) **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
+- [x] **29.23** (approved 2026-10-06) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
   most experienced Master (the most XP) is seized by the Founder's mood and asks for a block of gold, a block of
   emeralds and a diamond. The Masterwork is **The Charter of <village>**, a written book of the village's story drawn
   from its chronicle (its founding, each rank, its Legends, its first wedding, the raids it beat), signed by the

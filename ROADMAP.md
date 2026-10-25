@@ -2730,7 +2730,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   refuses it; an alchemist with the makings brews it into the chests and stops at 4; a chef cooks Builder's Tea; a
   tonic from a test data pack works; with every bonus the cap holds; both icons pass `lint.py`; showcase scene
   `tonics`: a miner drinking, then their status line ("25% faster: Miner's Brew, 19 min left").
-- [x] **30.16** (approved 2026-10-05) **Four more tonics**, each its own item, data file and pixel-art icon:
+- [x] **30.16** (approved 2026-10-05) (verified 2026-10-25: QaTonicsGuildsGameTests [13]: each tonic's jobs and left-out jobs, last tick, save/reload, player drink lines; all 34 trades find their guild, charter by sneak-click, perks only for members inside the village and after reload, Herders/Harvest/Scholars/Merchants/Wardens/Healers numbers and rounding, sentences; Trainers' Guild with Cobblemon left to GuildTrainersCompatTests; 3 mutants killed; wrote tonics.md, fixed guilds.md) **Four more tonics**, each its own item, data file and pixel-art icon:
   - **Smith's Draught** (alchemist: a glass bottle, blaze powder, two iron nuggets): Armorers, Toolsmiths,
     Weaponsmiths, Tinkerers, Ball Smiths;
   - **Scholar's Infusion** (alchemist: a glass bottle, an amethyst shard, glow berries): Scholars, Teachers,
@@ -2768,7 +2768,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   faster, 5 helpers at one build); succession when the master dies; a builder builds the Guildhall I and II in a test;
   the renders checked against `STYLE.md` in the review package; showcase scene `guildhall`: the Guildhall II with its
   Guild Master inside, and the Builders' Guild on the Book's last row.
-- [x] **30.18** (approved 2026-10-06) **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
+- [x] **30.18** (approved 2026-10-06) (verified 2026-10-25: QaTonicsGuildsGameTests [13]: each tonic's jobs and left-out jobs, last tick, save/reload, player drink lines; all 34 trades find their guild, charter by sneak-click, perks only for members inside the village and after reload, Herders/Harvest/Scholars/Merchants/Wardens/Healers numbers and rounding, sentences; Trainers' Guild with Cobblemon left to GuildTrainersCompatTests; 3 mutants killed; wrote tonics.md, fixed guilds.md) **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
   - **Miners' Guild** (Miners, Sifters, Netherworkers): pickaxes, and the netherworker's gear, wear half as fast;
   - **Smiths' Guild** (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths): every material a weaponsmith
     mends with puts back a third of the durability instead of a quarter (`MendingWork.PER_UNIT`);
@@ -2777,7 +2777,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   New effects: `tool_wear` and `mend_per_unit`. Done when: a GameTest per guild with its numbers, founded and not
   (durability lost over 20 blocks dug, 20 logs cut and 10 fish caught; what one ingot puts back); showcase scene
   `guilds`: each Guild Master's status and the guilds' row of the Book.
-- [x] **30.19** (approved 2026-10-06) **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
+- [x] **30.19** (approved 2026-10-06) (verified 2026-10-25: QaTonicsGuildsGameTests [13]: each tonic's jobs and left-out jobs, last tick, save/reload, player drink lines; all 34 trades find their guild, charter by sneak-click, perks only for members inside the village and after reload, Herders/Harvest/Scholars/Merchants/Wardens/Healers numbers and rounding, sentences; Trainers' Guild with Cobblemon left to GuildTrainersCompatTests; 3 mutants killed; wrote tonics.md, fixed guilds.md) **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
   - **Harvest Guild** (Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Chefs): the village's own farms and
     the orchard keepers' rounds reach 24 blocks instead of 16;
   - **Herders' Guild** (Shepherds, Butchers, Ranchers): every herd may be 4 bigger (shepherds and ranchers breed up to
@@ -2787,7 +2787,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
 
   New effects: `work_reach`, `herd_size`, `research_cost`. Done when: GameTests for each number, founded and not; the
   `guilds` scene gains their rows.
-- [x] **30.20** (approved 2026-10-06) **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
+- [x] **30.20** (approved 2026-10-06) (verified 2026-10-25: QaTonicsGuildsGameTests [13]: each tonic's jobs and left-out jobs, last tick, save/reload, player drink lines; all 34 trades find their guild, charter by sneak-click, perks only for members inside the village and after reload, Herders/Harvest/Scholars/Merchants/Wardens/Healers numbers and rounding, sentences; Trainers' Guild with Cobblemon left to GuildTrainersCompatTests; 3 mutants killed; wrote tonics.md, fixed guilds.md) **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
   - **Healers' Guild** (Nurses, Clerics, Undertakers): members work 15% faster; the village's ill get well in two days
     instead of three, and nurses and undertakers look 48 blocks out instead of 32;
   - **Merchants' Guild** (Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters): members work 15% faster; travellers

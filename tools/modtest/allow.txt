@@ -37,6 +37,8 @@ Raider culture testpack:odd_keys: the (key|condition) '.*' isn't known and is ig
 # HeartEventGameTests' pack has an event with one line, and the tests feed the reader more broken files, to prove each is skipped and named.
 Skipping heart event aliveworkplace_test:broken
 Skipping heart event mypack:
+# WonderDataGameTests and QaWonderRulesGameTests feed the Wonder loader broken files (owner_pack, qa_pack) to prove each is skipped with its path and reason (35.2).
+Skipping Wonder (qa_pack|owner_pack):wonders/
 
 # --- other mods in the compat test server (dev environment, not our code) ---
 # Modded entities have no DataFixerUpper schema; every mod's entity logs this once.

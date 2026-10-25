@@ -90,7 +90,7 @@ public final class Families {
 
 	/**
 	 * The hall's round for one villager: a child just grown up goes in the chronicle; a grown child without a job takes up
-	 * a parent's trade if there's a free workstation for it in the village.
+	 * a parent's trade if a free workstation in the village offers it (any of its jobs, B397).
 	 */
 	public static void round(ServerLevel level, BlockPos hall, Villager villager) {
 		round(level, hall, villager, level.random);
@@ -122,17 +122,29 @@ public final class Families {
 			return;
 		}
 		List<VillageHalls.FreeStation> free = VillageHalls.freeStations(level, hall);
+		java.util.Map<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>, List<VillagerProfession>> jobs = new java.util.HashMap<>();
 		for (String job : List.of(parents.motherJob(), parents.fatherJob())) {
 			if (job.isEmpty()) {
 				continue;
 			}
-			for (VillageHalls.FreeStation station : free) {
-				if (BuiltInRegistries.VILLAGER_PROFESSION.getKey(station.profession()).toString().equals(job)
-					&& ClassJobs.may(hall, villager, station.profession()) // a parent's trade above the child's class waits (34.8)
+			for (VillageHalls.FreeStation block : free) {
+				// Any job the block offers, not only its first (B397: a lectern is a Librarian's first, and a Scholar's too).
+				VillagerProfession trade = null;
+				for (VillagerProfession p : jobs.computeIfAbsent(block.poi(), poi -> VillageHalls.jobs(block))) {
+					if (BuiltInRegistries.VILLAGER_PROFESSION.getKey(p).toString().equals(job)) {
+						trade = p;
+						break;
+					}
+				}
+				if (trade == null) {
+					continue;
+				}
+				VillageHalls.FreeStation station = new VillageHalls.FreeStation(block.pos(), trade, block.poi());
+				if (ClassJobs.may(hall, villager, trade) // a parent's trade above the child's class waits (34.8)
 					&& VillageHalls.assign(level, villager, station)) {
-					Component trade = Component.translatable("entity.minecraft.villager." + station.profession().name());
+					Component name = Component.translatable("entity.minecraft.villager." + trade.name());
 					Chronicle.record(level, hall, Chronicle.Kind.JOINED, Component.translatable("chronicle.aliveworkplace.family_trade",
-						villager.getDisplayName(), trade));
+						villager.getDisplayName(), name));
 					return;
 				}
 			}

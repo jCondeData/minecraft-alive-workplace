@@ -10,6 +10,8 @@ Skipping furniture spots aliveworkplace_test:blueprint_furniture/broken\.json
 Skipping furniture equivalents aliveworkplace_test:furniture_equivalents/broken\.json
 # OptionalModsGameTests feeds an integration a missing method to prove it switches itself off.
 a test integration from test turned off
+# QaSignpostGameTests has a mock player try to edit a waxed signpost board, to prove it can't (36.4).
+Player test-mock-player just tried to change non-editable sign
 # MinerGameTests loads a quarry saved by a pre-0.45.0 bug to prove the repair stops it.
 Stopped quarry .* stretched over its Miner's Bench .* by a bug before 0\.45\.0
 # GemGrowerGameTests feeds the bed reader malformed files (from a test pack) to prove each is logged and skipped.

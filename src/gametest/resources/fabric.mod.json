@@ -54,6 +54,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaB37HallHintGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaB38B39GameTests",
 			"io.github.jcondedata.aliveworkplace.test.PartnerShowsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPartnerShowTableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPartnerShowsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OverheadSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGlanceSupplyGameTests",
@@ -276,6 +277,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigHandEditsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageMachinesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigOddFilesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWorldSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageTwoGameTests",
@@ -512,6 +515,7 @@
 			"io.github.jcondedata.aliveworkplace.test.PlotGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardPlotsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardRulesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStewardDeskJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CityPlanScreenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CityPlanRoadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCityPlanGameTests",
@@ -577,7 +581,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatsLateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDefenceUpgradeGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaAnsweringHousesGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaAnsweringHousesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSignpostGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTableJobsGameTests"
 		]
 	},
 	"depends": {

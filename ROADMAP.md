@@ -1287,7 +1287,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     composter; a nitwit and a child get nothing; the topic after a raid is Fortification, after a sickness Medicine,
     and a topic that isn't available is never picked;
   - showcase scene `steward_jobs`: jobless villagers walking to their new workstations.
-- [x] **27.10** (approved 2026-10-05) **Rules: homes and storage.** Shipped rule files, each its own JSON:
+- [x] **27.10** (approved 2026-10-05) (verified 2026-10-25: lane-c-1025-0953 on 170fa906: QaStewardHomesBoundariesGameTests [no Inn for a Town 3 short or a Village 4 short; Storehouse grows at 22/27 slots not 21, on to III and no further] and QaStewardCivicBoundariesGameTests [graveyard: death 29 days back yes, 30 no, 7 villagers no; raided_within 6 vs 7 days; schoolhouse 2 vs 3 children]; planted died_within/raided_within < to <= both killed; StewardHomes/CivicRules suites green; steward.md and guide steward-rules.md checked) **Rules: homes and storage.** Shipped rule files, each its own JSON:
   - `homes_upgrade`: beds short → upgrade a finished home whose next tier adds beds (Starter Cottage to II to III,
     Stone House to II to III, Terrace to II), before any new house; the beds a tier adds are counted from the
     blueprints, never written down;
@@ -1324,7 +1324,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   Done when:
   - a GameTest per rule, and each of the 12 copies built by a builder in a test, its job block taken by its worker;
   - a gallery package of the 12 copies (front and back, as drawn and in Stonework) and showcase scene `workplaces`.
-- [x] **27.12** (approved 2026-10-05) **Rules: care, learning, safety, beauty and the market.** The other conditions: `guards_short`,
+- [x] **27.12** (approved 2026-10-05) (verified 2026-10-25: lane-c-1025-0953 on 170fa906: QaStewardHomesBoundariesGameTests [no Inn for a Town 3 short or a Village 4 short; Storehouse grows at 22/27 slots not 21, on to III and no further] and QaStewardCivicBoundariesGameTests [graveyard: death 29 days back yes, 30 no, 7 villagers no; raided_within 6 vs 7 days; schoolhouse 2 vs 3 children]; planted died_within/raided_within < to <= both killed; StewardHomes/CivicRules suites green; steward.md and guide steward-rules.md checked) **Rules: care, learning, safety, beauty and the market.** The other conditions: `guards_short`,
   `raided_within {days}` (from the hall's last raid day), `bandit_camp_near`, `ill {at_least}`, `dark_beds
   {at_least}`, `beauty_below {points}`, `children_at_least {n}`, `courting_couples {at_least}` (`Couples`) and
   `died_within {days}` (the chronicle). Shipped rules:

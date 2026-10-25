@@ -222,7 +222,7 @@ final class RealmTab {
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.vote_from", Realms.name(server, realm.capital()), candidate), ChatFormatting.GRAY),
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.vote_count", tally.yes(), tally.no()), ChatFormatting.AQUA),
 			VillageHallScreen.line("screen.aliveworkplace.realm.vote_rule", ChatFormatting.GRAY),
-			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.vote_left", Math.max(1, (left + 999) / 1000)), ChatFormatting.YELLOW),
+			VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.realm.vote_left", Math.max(1, (left + 999) / 1000), Math.max(1, (left + 999) / 1000)), ChatFormatting.YELLOW),
 			VillageHallScreen.line(mine.isEmpty() ? Component.translatable("screen.aliveworkplace.realm.vote_none")
 				: cast == null ? Component.translatable("screen.aliveworkplace.realm.vote_yours_none", mine.size())
 				: Component.translatable(cast ? "screen.aliveworkplace.realm.vote_yours_for" : "screen.aliveworkplace.realm.vote_yours_against", mine.size()),
@@ -256,7 +256,7 @@ final class RealmTab {
 			RealmData.Realm realm = RealmData.get(server).realm(invite.realm());
 			Component title = Realms.title(server, realm);
 			long left = Math.max(0, RealmInvites.LAPSE - (now - invite.sent()));
-			Component lapses = Component.translatable("screen.aliveworkplace.realm.invite_left", left / 24000, (left % 24000) / 1000);
+			Component lapses = io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.realm.invite_left", left / 24000, (left % 24000) / 1000, left / 24000, (left % 24000) / 1000);
 			ItemStack shown = realm.arms().map(VillageBanners.Colours::banner).orElseGet(() -> new ItemStack(Items.WHITE_BANNER));
 			menu.button(slot, VillageHallScreen.icon(shown, Component.translatable("screen.aliveworkplace.realm.accept", title), ChatFormatting.GREEN,
 				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.invite_from", Realms.ownerName(server, realm.capital()),
@@ -302,7 +302,7 @@ final class RealmTab {
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.member_where", VillageHallScreen.where(hall, other.pos())), ChatFormatting.GRAY),
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.member_owner", Realms.ownerName(server, other)), ChatFormatting.GRAY),
 			VillageHallScreen.line(sent == null ? Component.translatable("screen.aliveworkplace.realm.invite_how")
-				: Component.translatable("screen.aliveworkplace.realm.invite_left", left / 24000, (left % 24000) / 1000), sent == null ? ChatFormatting.DARK_GRAY : ChatFormatting.YELLOW));
+				: io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.realm.invite_left", left / 24000, (left % 24000) / 1000, left / 24000, (left % 24000) / 1000), sent == null ? ChatFormatting.DARK_GRAY : ChatFormatting.YELLOW));
 	}
 
 	/** Not in a realm: the button that founds one, with what it takes and why not. */

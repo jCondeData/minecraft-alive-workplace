@@ -59,7 +59,8 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 
 	/**
 	 * The styles as data: the Spruce style's chest, shelf, lectern, ladder and lantern are Carved Wood's, its lectern the
-	 * Librarian's job site and Carved Wood's barrels the Fisherman's, as the vanilla ones are; Grand's planks, infill and
+	 * Librarian's job site and Carved Wood's barrels the Fisherman's, as the vanilla ones are, and its crafting table stays
+ * vanilla (the Carpenter's job site; Carved Wood's is none: B388); Grand's planks, infill and
 	 * polished andesite are Rechiseled's. With {@code furnishedBuilds} off the Spruce style isn't offered and Grand is
 	 * today's Grand, block for block.
 	 */
@@ -74,7 +75,7 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 			helper.assertTrue(BlueprintStyles.all().contains(spruce), "the Spruce style isn't offered with the switch on");
 			Map<Block, String> spruceWants = Map.of(Blocks.CHEST, "carved_wood:spruce_chest", Blocks.BOOKSHELF, "carved_wood:spruce_bookshelf",
 				Blocks.LECTERN, "carved_wood:spruce_lectern", Blocks.LADDER, "carved_wood:spruce_ladder", Blocks.LANTERN, "carved_wood:spruce_lantern",
-				Blocks.CRAFTING_TABLE, "carved_wood:spruce_crafting_table", Blocks.OAK_PLANKS, "minecraft:spruce_planks",
+				Blocks.CRAFTING_TABLE, "minecraft:crafting_table", Blocks.OAK_PLANKS, "minecraft:spruce_planks",
 				Blocks.DARK_OAK_LOG, "minecraft:spruce_log", Blocks.BARREL, "minecraft:barrel");
 			for (Map.Entry<Block, String> e : spruceWants.entrySet()) {
 				String got = id(BlueprintStyles.apply(spruce, e.getKey().defaultBlockState()));

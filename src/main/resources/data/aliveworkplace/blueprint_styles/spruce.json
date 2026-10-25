@@ -9,7 +9,6 @@
     {"from": "minecraft:chiseled_bookshelf", "to": "carved_wood:chiseled_spruce_bookshelf"},
     {"from": "minecraft:lectern", "to": "carved_wood:spruce_lectern"},
     {"from": "minecraft:beehive", "to": "carved_wood:spruce_beehive"},
-    {"from": "minecraft:crafting_table", "to": "carved_wood:spruce_crafting_table"},
     {"from": "minecraft:ladder", "to": "carved_wood:spruce_ladder"},
     {"from": "minecraft:lantern", "to": "carved_wood:spruce_lantern"},
     {"from": "minecraft:birch_planks", "to": "minecraft:stripped_spruce_wood"},

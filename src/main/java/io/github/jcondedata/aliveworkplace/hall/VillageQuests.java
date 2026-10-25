@@ -144,7 +144,8 @@ public final class VillageQuests {
 	/** What a quest asks: "Bring 16 Bread". */
 	public static Component task(Quest quest) {
 		return switch (quest.kind()) {
-			case BRING -> Component.translatable("quest.aliveworkplace.bring", quest.count(), quest.itemType().getDescription());
+			case BRING -> Component.translatable("quest.aliveworkplace.bring", quest.count(), // "Bring 24 Clocks" (B407)
+				io.github.jcondedata.aliveworkplace.work.Words.itemName(quest.itemType(), quest.count()));
 			case SLAY -> Foes.line(quest.count()); // B301: "Defeat 8 wild Pokémon" where no monster can come
 			case BATTLE -> Component.translatable("quest.aliveworkplace.battle");
 		};

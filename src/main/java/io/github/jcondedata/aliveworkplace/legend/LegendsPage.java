@@ -166,7 +166,7 @@ public final class LegendsPage {
 				lore.add(Component.translatable("screen.aliveworkplace.legends.grave").withStyle(ChatFormatting.YELLOW));
 			} else if (e.gone() >= 0) {
 				long left = Math.max(0, LegendRecord.FALL_DAYS - (io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level) - e.gone()));
-				lore.add(Component.translatable("screen.aliveworkplace.legends.dead", left).withStyle(ChatFormatting.RED));
+				lore.add(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.legends.dead", left, left).withStyle(ChatFormatting.RED));
 			}
 		} else if (data != null && data.guest()) {
 			lore.add((data.lastDay() >= 0 ? Component.translatable("legend.aliveworkplace.guest_until", data.lastDay())

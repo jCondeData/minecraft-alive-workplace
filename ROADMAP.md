@@ -1862,7 +1862,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: `generate.py` writes the 25 templates (no `structure_void`, B5), renders checked; a `VillageGameTests`
   test per house places it with its villager, who has the job and stands in open space (B6); `SCENE=village` shows one
   in a Cobblemon village.
-- [x] **28.16** (approved 2026-10-06) **The Arena.** Three tiers (architect skill, an original design, renders), in the Blueprint Table with
+- [x] **28.16** (approved 2026-10-06) (verified 2026-10-25: QaArenaGameTests [every Arena tier has the 15x9 ring within 25x19, two banner poles, a lamp by each box] with QaCupGameTests [7, the Cup that uses it]; full build green 3593 + 680 compat. Not verified: 28.17 [B491, B492], 28.11 [B490]) **The Arena.** Three tiers (architect skill, an original design, renders), in the Blueprint Table with
   Cobblemon only and sold by an Expert Trainer Leader:
   - **Arena**: a 15×9 battle ring (a packed-mud floor, white lines and a centre circle), a trainer's box on a dais at
     each end with a lamp post, benches along one long side for 12 villagers, two banner poles, a notice board; at most

@@ -412,6 +412,55 @@ public class QaBuilderLimitsGameTests implements net.fabricmc.fabric.api.gametes
 		helper.succeed();
 	}
 
+	/**
+	 * en_us assign.overlaps and assign.wrong_dimension (lane-b-1025-0937), through the player's clicks: a builder busy on a
+	 * placed hut is handed a second hut placed one block over (overlapping it): "That spot overlaps another build in
+	 * progress (Test Hut).", the blueprint kept and nothing lined up; a hut placed in the Nether: "That blueprint is placed
+	 * in another dimension.", kept; then a hut clear of the first is lined up as usual.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"qaLimitsOverlap"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaLimitsOverlap")
+	public void anOverlappingOrOtherDimensionSpotIsRefusedAndKept(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		noVillageProtection(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
+		Villager builder = helper.spawn(EntityType.VILLAGER, VILLAGER);
+		builder.setNoAi(true);
+		BlockPos bench = helper.absolutePos(TABLE);
+		Builders.employ(level, builder, bench);
+		forgetSitesOf(helper, builder);
+		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qalV"));
+		ServerPlayer p = c.player();
+		p.setItemInHand(InteractionHand.MAIN_HAND, placedHut(level, bench, new Vec3i(6, 0, 6)));
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		helper.assertTrue(Builders.activeSite(level, builder) != null, "the first hut started nothing: " + texts(c.seen()));
+		String hut = Blueprints.displayName(TEST_HUT).getString();
+		// one block over: overlaps the hut under way
+		p.setItemInHand(InteractionHand.MAIN_HAND, placedHut(level, bench, new Vec3i(7, 0, 6)));
+		c.seen().clear();
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		helper.assertTrue(texts(c.seen()).contains("That spot overlaps another build in progress (" + hut + ")."), "the overlapping hut said " + texts(c.seen()));
+		helper.assertTrue(p.getMainHandItem().is(ModItems.BLUEPRINT), "the refused overlapping blueprint wasn't kept: " + p.getMainHandItem());
+		helper.assertTrue(Builders.queue(level, builder).isEmpty(), "the overlapping hut was lined up");
+		// placed in the Nether
+		ItemStack nether = placedHut(level, bench, new Vec3i(20, 0, 6));
+		BlueprintData.Placement there = BlueprintItem.data(nether).orElseThrow().placement().orElseThrow();
+		nether.set(ModComponents.BLUEPRINT, BlueprintItem.data(nether).orElseThrow().withPlacement(Optional.of(new BlueprintData.Placement(
+			net.minecraft.world.level.Level.NETHER.location(), there.origin(), there.rotation(), there.mirror()))));
+		p.setItemInHand(InteractionHand.MAIN_HAND, nether);
+		c.seen().clear();
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		helper.assertTrue(texts(c.seen()).contains("That blueprint is placed in another dimension."), "the Nether hut said " + texts(c.seen()));
+		helper.assertTrue(p.getMainHandItem().is(ModItems.BLUEPRINT), "the refused Nether blueprint wasn't kept: " + p.getMainHandItem());
+		helper.assertTrue(Builders.queue(level, builder).isEmpty(), "the Nether hut was lined up");
+		// clear of the first: lined up
+		p.setItemInHand(InteractionHand.MAIN_HAND, placedHut(level, bench, new Vec3i(20, 0, 6)));
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		helper.assertTrue(Builders.queue(level, builder).size() == 1, "a hut clear of the first wasn't lined up: " + texts(c.seen()));
+		helper.succeed();
+	}
+
 	// --- How far from the table ------------------------------------------------------------------------------------
 
 	/**

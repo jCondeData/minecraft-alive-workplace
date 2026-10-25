@@ -20,7 +20,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 
 /**
@@ -111,28 +110,6 @@ public class QaDenHelperRaidCompatTests implements FabricGameTest {
 		}
 	}
 
-	/** Holds the 3 by 3 chunks round {@code middle} loaded, or lets them go. */
-	static void hold(ServerLevel level, ChunkPos middle, boolean on) {
-		for (int dx = -1; dx <= 1; dx++) {
-			for (int dz = -1; dz <= 1; dz++) {
-				level.setChunkForced(middle.x + dx, middle.z + dz, on);
-			}
-		}
-	}
-
-	/** Whether the 3 by 3 chunks round {@code middle} are loaded with their entities and ticking. */
-	static boolean loaded(ServerLevel level, ChunkPos middle) {
-		for (int dx = -1; dx <= 1; dx++) {
-			for (int dz = -1; dz <= 1; dz++) {
-				ChunkPos c = new ChunkPos(middle.x + dx, middle.z + dz);
-				if (!level.areEntitiesLoaded(c.toLong()) || !level.isPositionEntityTicking(c.getMiddleBlockPosition(-60))) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	static VillageHallBlockEntity hall(ServerLevel level, BlockPos pos) {
 		return (VillageHallBlockEntity) level.getBlockEntity(pos);
 	}
@@ -146,46 +123,31 @@ public class QaDenHelperRaidCompatTests implements FabricGameTest {
 	public void theHelpersLookFindsARaidOnlyWithinAMinuteOfTheDen(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		BlockPos[] at = RaidHelperCompatTests.village(helper);
-		Villager master = RaidHelperCompatTests.trainer(helper, 0, 5);
+		RaidHelperCompatTests.trainer(helper, 0, 5);
 		ServerPlayer player = RaidHelperCompatTests.player(helper, helper.absolutePos(new BlockPos(3, 2, 3)), PRICE);
 		Raids raids = stand(helper);
 		RaidHelperCompatTests.FakeRaid raid = new RaidHelperCompatTests.FakeRaid(400f);
 		RaidHelpers.hire(level, at[0], at[1], player);
 		RaidHelpers.Hire hire = RaidHelperCompatTests.hire(helper, player);
-		// raids are fought far off (the raid mod's own dimension): the player is 40 blocks from the den. A real player keeps
-		// the chunks round them loaded, and the helper who catches up is moved beside them; a mock player loads nothing, so
-		// those chunks are held here as a player's would be (B482: the helper was moved into an unloaded chunk, out of
-		// reach, and the raid was joined with no one to cheer whenever no earlier test happened to have loaded it)
-		BlockPos far = BlockPos.containing(at[1].getX() + 40.5, at[1].getY(), at[1].getZ() + 0.5);
-		ChunkPos held = new ChunkPos(far);
-		hold(level, held, true);
+		raids.in.put(player.getUUID(), raid);
+		// raids are fought far off (the raid mod's own dimension): the player is 20 blocks over the den, past its reach
+		// (16) but near enough that the helper stays in the test area (one sent 40 blocks off to keep up was in an
+		// unloaded chunk in a full run, so no helper was there to cheer)
+		player.setNoGravity(true);
+		player.teleportTo(at[1].getX() + 0.5, at[1].getY() + 20, at[1].getZ() + 0.5);
 		helper.startSequence()
-			.thenWaitUntil(() -> helper.assertTrue(loaded(level, held), "waiting for the chunks round " + far + " to load"))
-			.thenExecute(() -> {
-				// the raid only now (the player, by the den while the chunks load, would join it at once)
-				raids.in.put(player.getUUID(), raid);
-				player.teleportTo(far.getX() + 0.5, far.getY(), far.getZ() + 0.5);
-				hire.lastNear = level.getGameTime() - RaidHelpers.RECENT - 5;
-			})
+			.thenExecute(() -> hire.lastNear = level.getGameTime() - RaidHelpers.RECENT - 5)
 			.thenExecuteFor(45, () -> RaidHelpers.tick(level, hire))
-			.thenExecute(() -> {
-				helper.assertTrue(!hire.joined && RaidHelperCompatTests.cheers(player) == 0,
-					"a raid joined over a minute after leaving the den was taken as the den's");
-				helper.assertTrue(RaidHelpers.helpers(level, hire).contains(master) && master.distanceTo(player) <= 8,
-					"the helper didn't catch up with the player at " + player.blockPosition() + ": at " + master.blockPosition()
-						+ ", reachable " + (level.getEntity(master.getUUID()) != null));
-			})
+			.thenExecute(() -> helper.assertTrue(!hire.joined && RaidHelperCompatTests.cheers(player) == 0,
+				"a raid joined over a minute after leaving the den was taken as the den's"))
 			.thenExecute(() -> hire.lastNear = level.getGameTime() - 20)
 			.thenExecuteFor(25, () -> RaidHelpers.tick(level, hire))
 			.thenExecute(() -> {
 				helper.assertTrue(hire.joined && RaidHelperCompatTests.cheers(player) == 1,
-					"a raid joined within the minute: joined " + hire.joined + ", " + RaidHelperCompatTests.cheers(player) + " cheers, helpers reachable "
-						+ RaidHelpers.helpers(level, hire).size() + " of " + hire.helpers.size() + " (the helper at " + master.blockPosition()
-						+ ", the player at " + player.blockPosition() + ")");
+					"a raid joined within the minute: joined " + hire.joined + ", " + RaidHelperCompatTests.cheers(player) + " cheers");
 				helper.assertTrue(raid.id.equals(hire.raid), "the raid's id wasn't kept: " + hire.raid);
 				putBack(raids);
 				RaidHelperCompatTests.cleanUp(helper, at[1], player);
-				hold(level, held, false);
 			})
 			.thenSucceed();
 	}

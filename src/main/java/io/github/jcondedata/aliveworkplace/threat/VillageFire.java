@@ -12,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.build.MaterialRules;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.mixin.FireBlockAccessor;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -34,6 +35,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -74,7 +79,9 @@ import org.jetbrains.annotations.Nullable;
  * builders put back what burned ({@code build/Upkeep}), even with {@code builderRepairs} off: every burned block is
  * saved on {@link ThreatData#damaged} (32.16a), so a fire never destroys a build for good.
  *
- * <p>All in memory: after a restart the fires still burning are noticed again as they spread.
+ * <p>Each village's fire is also kept in {@link ThreatData} ({@code fires}, B392), so after a restart a fire already
+ * burning is still known (no scanning) and the Firewardens still answer it; the bell rings again for it, as the brigade
+ * it called went home with the restart.
  */
 public final class VillageFire {
 	public static final ResourceLocation ID = AliveWorkplace.id("village_fire");
@@ -111,6 +118,64 @@ public final class VillageFire {
 			this.hall = hall;
 			this.place = place;
 			this.started = started;
+		}
+
+		/** As {@link ThreatData} keeps it (B392); the bell is left to ring again after a restart. */
+		CompoundTag save(HolderLookup.Provider registries) {
+			CompoundTag tag = new CompoundTag();
+			tag.putString("place", Component.Serializer.toJson(place, registries));
+			tag.putLong("started", started);
+			tag.putInt("burned", burned);
+			tag.putLongArray("fires", fires.toLongArray());
+			ListTag who = new ListTag();
+			for (Map.Entry<UUID, Integer> e : doused.entrySet()) {
+				CompoundTag d = new CompoundTag();
+				Nbt.putUuid(d, "id", e.getKey());
+				d.putInt("count", e.getValue());
+				Component name = names.get(e.getKey());
+				if (name != null) {
+					d.putString("name", Component.Serializer.toJson(name, registries));
+				}
+				who.add(d);
+			}
+			tag.put("doused", who);
+			return tag;
+		}
+
+		/** Reads back what {@link #save} wrote; every field has a default, and a name that can't be read is left out. */
+		static Incident load(BlockPos hall, CompoundTag tag, HolderLookup.Provider registries) {
+			Component place = text(Nbt.getString(tag, "place"), registries);
+			Incident incident = new Incident(hall, place != null ? place : Component.translatable("chronicle.aliveworkplace.village_fire.village"),
+				Nbt.getLong(tag, "started"));
+			incident.burned = Math.max(0, Nbt.getInt(tag, "burned"));
+			for (long p : Nbt.getLongArray(tag, "fires")) {
+				incident.fires.add(p);
+			}
+			ListTag who = Nbt.getList(tag, "doused", Tag.TAG_COMPOUND);
+			for (int i = 0; i < who.size(); i++) {
+				CompoundTag d = Nbt.compoundAt(who, i);
+				if (!Nbt.hasUuid(d, "id") || Nbt.getInt(d, "count") <= 0) {
+					continue;
+				}
+				UUID id = Nbt.getUuid(d, "id");
+				incident.doused.put(id, Nbt.getInt(d, "count"));
+				Component name = text(Nbt.getString(d, "name"), registries);
+				if (name != null) {
+					incident.names.put(id, name);
+				}
+			}
+			return incident;
+		}
+
+		private static @Nullable Component text(String json, HolderLookup.Provider registries) {
+			if (json.isEmpty()) {
+				return null;
+			}
+			try {
+				return Component.Serializer.fromJson(json, registries);
+			} catch (RuntimeException e) {
+				return null;
+			}
 		}
 
 		public BlockPos hall() {
@@ -174,6 +239,15 @@ public final class VillageFire {
 	public static void init() {
 		Platform.get().onServerStarting(server -> forget());
 		Platform.get().onLevelTick(VillageFire::tick);
+	}
+
+	/**
+	 * Forgets every village fire, the ones saved too (tests that start afresh; {@link #forget} alone is a restart: the
+	 * fires saved in {@link ThreatData} are read back).
+	 */
+	public static synchronized void reset() {
+		forget();
+		ThreatData.forgetFires();
 	}
 
 	/** Forgets everything kept in memory (a new server; tests). */
@@ -283,6 +357,27 @@ public final class VillageFire {
 		return blocks;
 	}
 
+	/**
+	 * The finished build a fire at {@code pos} burns: the one whose outline holds it, or else holds the block it burns on
+	 * or beside (a fire on a roof sits just above the build's outline, B390).
+	 */
+	public static Optional<BuildSiteManager.Finished> buildBurning(ServerLevel level, BlockPos pos) {
+		Optional<BuildSiteManager.Finished> inside = buildAt(level, pos);
+		if (inside.isPresent()) {
+			return inside;
+		}
+		for (Direction d : BESIDE) {
+			Optional<BuildSiteManager.Finished> next = buildAt(level, pos.relative(d));
+			if (next.isPresent()) {
+				return next;
+			}
+		}
+		return Optional.empty();
+	}
+
+	/** The blocks a fire may burn on, the one under it first. */
+	private static final Direction[] BESIDE = {Direction.DOWN, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP};
+
 	/** The finished build whose outline holds {@code pos}, if any. */
 	public static Optional<BuildSiteManager.Finished> buildAt(ServerLevel level, BlockPos pos) {
 		for (Built b : builds(level)) {
@@ -346,6 +441,7 @@ public final class VillageFire {
 			Incident incident = incidents(level).get(hall);
 			if (incident != null) {
 				incident.burned++;
+				keep(level, incident);
 			}
 		});
 	}
@@ -353,7 +449,21 @@ public final class VillageFire {
 	// Noticing a fire.
 
 	private static Map<BlockPos, Incident> incidents(ServerLevel level) {
-		return INCIDENTS.computeIfAbsent(dim(level), k -> new ConcurrentHashMap<>());
+		return INCIDENTS.computeIfAbsent(dim(level), k -> restore(level));
+	}
+
+	/** The fires saved in the dimension's {@link ThreatData} (after a restart, B392). */
+	private static Map<BlockPos, Incident> restore(ServerLevel level) {
+		Map<BlockPos, Incident> out = new ConcurrentHashMap<>();
+		for (Map.Entry<BlockPos, CompoundTag> e : ThreatData.get(level).fires().entrySet()) {
+			out.put(e.getKey(), Incident.load(e.getKey(), e.getValue(), level.registryAccess()));
+		}
+		return out;
+	}
+
+	/** Saves {@code incident} as it stands now in the dimension's {@link ThreatData} (B392). */
+	private static void keep(ServerLevel level, Incident incident) {
+		ThreatData.get(level).fire(incident.hall, incident.save(level.registryAccess()));
 	}
 
 	/** The fire burning in the village round {@code hall} now, if any. */
@@ -375,15 +485,18 @@ public final class VillageFire {
 		}
 		Incident incident = incidents(level).get(hall.get());
 		if (incident == null) {
-			Component place = buildAt(level, pos).map(f -> Blueprints.displayName(f.structure()))
+			Component place = buildBurning(level, pos).map(f -> Blueprints.displayName(f.structure()))
 				.orElse(Component.translatable("chronicle.aliveworkplace.village_fire.village"));
 			incident = new Incident(hall.get(), place, level.getGameTime());
 			incidents(level).put(hall.get(), incident);
 			tell(level, hall.get(), Component.translatable("disaster.aliveworkplace.village_fire.burning", place, VillageHalls.name(level, hall.get()))
 				.withStyle(ChatFormatting.RED));
 		}
-		incident.fires.add(pos.asLong());
+		boolean added = incident.fires.add(pos.asLong());
 		incident.emptySince = -1;
+		if (added) {
+			keep(level, incident);
+		}
 	}
 
 	private static void tell(ServerLevel level, BlockPos hall, Component text) {
@@ -429,7 +542,7 @@ public final class VillageFire {
 	 * {@code by} (a firewarden; null: the bucket brigade). Returns how many fire blocks went out.
 	 */
 	public static int douse(ServerLevel level, BlockPos at, int radius, @Nullable Villager by) {
-		int out = 0;
+		List<BlockPos> gone = new ArrayList<>();
 		for (BlockPos p : BlockPos.betweenClosed(at.offset(-radius, -radius, -radius), at.offset(radius, radius, radius))) {
 			if (p.distSqr(at) > (radius + 0.5) * (radius + 0.5) || !level.getBlockState(p).is(BlockTags.FIRE)) {
 				continue;
@@ -437,17 +550,19 @@ public final class VillageFire {
 			level.removeBlock(p, false);
 			level.sendParticles(ParticleTypes.CLOUD, p.getX() + 0.5, p.getY() + 0.4, p.getZ() + 0.5, 4, 0.25, 0.2, 0.25, 0.02);
 			level.sendParticles(ParticleTypes.LARGE_SMOKE, p.getX() + 0.5, p.getY() + 0.3, p.getZ() + 0.5, 2, 0.2, 0.1, 0.2, 0.01);
-			out++;
+			gone.add(p.immutable());
 		}
+		int out = gone.size();
 		level.sendParticles(ParticleTypes.SPLASH, at.getX() + 0.5, at.getY() + 0.6, at.getZ() + 0.5, 30, radius * 0.5 + 0.3, 0.3, radius * 0.5 + 0.3, 0.1);
 		if (out > 0) {
 			level.playSound(null, at, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 0.8f, 1.6f + level.random.nextFloat() * 0.4f);
-			credit(level, at, by, out);
+			credit(level, at, by, gone);
 		}
 		return out;
 	}
 
-	private static void credit(ServerLevel level, BlockPos at, @Nullable Villager by, int out) {
+	private static void credit(ServerLevel level, BlockPos at, @Nullable Villager by, List<BlockPos> gone) {
+		int out = gone.size();
 		Optional<BlockPos> hall = hall(level, at);
 		if (hall.isEmpty()) {
 			return;
@@ -457,10 +572,17 @@ public final class VillageFire {
 			return;
 		}
 		UUID id = by == null ? BRIGADE : by.getUUID();
+		gone.forEach(p -> incident.fires.remove(p.asLong()));
 		incident.doused.merge(id, out, Integer::sum);
 		if (by != null) {
-			incident.names.put(id, by.getDisplayName());
+			// Only a name of their own (B391): without one the chronicle says "the Firewarden", not "Firewarden the Firewarden".
+			if (by.hasCustomName()) {
+				incident.names.put(id, by.getCustomName());
+			} else {
+				incident.names.remove(id);
+			}
 		}
+		keep(level, incident);
 	}
 
 	/**
@@ -691,8 +813,8 @@ public final class VillageFire {
 	// Every tick: partners' moves, and fires that are over.
 
 	private static void tick(ServerLevel level) {
-		Map<BlockPos, Incident> open = INCIDENTS.get(dim(level));
-		if (open == null || open.isEmpty()) {
+		Map<BlockPos, Incident> open = incidents(level);
+		if (open.isEmpty()) {
 			return;
 		}
 		long now = level.getGameTime();
@@ -703,11 +825,15 @@ public final class VillageFire {
 			return;
 		}
 		for (Incident incident : List.copyOf(open.values())) {
+			int known = incident.fires.size();
 			for (LongIterator it = incident.fires.iterator(); it.hasNext(); ) {
 				BlockPos p = BlockPos.of(it.nextLong());
 				if (level.isLoaded(p) && !level.getBlockState(p).is(BlockTags.FIRE)) {
 					it.remove();
 				}
+			}
+			if (incident.fires.size() != known) {
+				keep(level, incident);
 			}
 			if (!incident.fires.isEmpty()) {
 				incident.emptySince = -1;
@@ -717,6 +843,7 @@ public final class VillageFire {
 				incident.emptySince = now;
 			} else if (now - incident.emptySince >= QUIET) {
 				open.remove(incident.hall);
+				ThreatData.get(level).fire(incident.hall, null);
 				over(level, incident);
 			}
 		}
@@ -734,8 +861,10 @@ public final class VillageFire {
 		}
 		String one = incident.burned == 1 ? "_one" : "";
 		Component text;
-		if (top != null) {
+		if (top != null && incident.names.containsKey(top)) {
 			text = Component.translatable("chronicle.aliveworkplace.village_fire.out" + one, incident.place, incident.burned, incident.names.get(top));
+		} else if (top != null) {
+			text = Component.translatable("chronicle.aliveworkplace.village_fire.out_unnamed" + one, incident.place, incident.burned);
 		} else if (incident.doused.containsKey(BRIGADE)) {
 			text = Component.translatable("chronicle.aliveworkplace.village_fire.brigade" + one, incident.place, incident.burned);
 		} else {

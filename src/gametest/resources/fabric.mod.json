@@ -121,6 +121,7 @@
 			"io.github.jcondedata.aliveworkplace.test.JewellerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FireGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFireGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFireBugTests",
 			"io.github.jcondedata.aliveworkplace.test.DroughtGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MechanicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ConductorGameTests",

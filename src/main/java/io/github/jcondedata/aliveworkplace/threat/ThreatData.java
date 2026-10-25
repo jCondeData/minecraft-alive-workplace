@@ -53,6 +53,9 @@ import net.minecraft.world.level.saveddata.SavedData;
  * ({@code held}) and its builders mend defence builds first ({@code mending}); default none.</li>
  * <li>{@code plunder} (32.10): per {@code hall}, how many items of gold raiders carried off from its chests (counted at
  * dawn, told by the next siege report or the chronicle, then forgotten); default none.</li>
+ * <li>{@code fires} (32.16, B392): per {@code hall}, the village fire burning there, so a restart mid-fire carries on
+ * ({@link VillageFire} writes and reads each entry: {@code place}, {@code started}, {@code burned}, {@code fires} as
+ * packed positions, {@code doused}: {@code id}, {@code count} and {@code name}); default none.</li>
  * </ul>
  */
 public final class ThreatData extends SavedData {
@@ -185,6 +188,8 @@ public final class ThreatData extends SavedData {
 	private final Map<BlockPos, Long> mending = new LinkedHashMap<>();
 	/** Per hall, the gold raiders carried off and nobody has been told of yet (32.10). */
 	private final Map<BlockPos, Integer> plundered = new LinkedHashMap<>();
+	/** Per hall, the village fire burning there (32.16, B392), as {@link VillageFire} saves it. */
+	private final Map<BlockPos, CompoundTag> fires = new LinkedHashMap<>();
 
 	public static ThreatData get(ServerLevel level) {
 		ThreatData data = level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(ThreatData::new, ThreatData::load, null), NAME);
@@ -442,6 +447,32 @@ public final class ThreatData extends SavedData {
 		}
 	}
 
+	// Village fires (32.16, B392).
+
+	/** Keeps the village fire round {@code hall} as {@code fire} (null: it is over). */
+	public void fire(BlockPos hall, @org.jetbrains.annotations.Nullable CompoundTag fire) {
+		if (fire == null ? fires.remove(hall) != null : !fire.equals(fires.put(hall.immutable(), fire))) {
+			setDirty();
+		}
+	}
+
+	/** The village fires kept, by hall. */
+	public Map<BlockPos, CompoundTag> fires() {
+		return fires.isEmpty() ? Map.of() : Map.copyOf(fires);
+	}
+
+	/** Forgets every village fire kept in every loaded dimension (tests that start afresh, not a restart). */
+	static void forgetFires() {
+		synchronized (LOADED) {
+			for (ThreatData data : LOADED) {
+				if (!data.fires.isEmpty()) {
+					data.fires.clear();
+					data.setDirty();
+				}
+			}
+		}
+	}
+
 	// The morning after (32.6).
 
 	/** The game time until which the villagers round {@code hall} are glad they held (0: never). */
@@ -622,6 +653,13 @@ public final class ThreatData extends SavedData {
 			lost.add(h);
 		}
 		tag.put("plunder", lost);
+		ListTag burning = new ListTag();
+		for (Map.Entry<BlockPos, CompoundTag> e : fires.entrySet()) {
+			CompoundTag f = e.getValue().copy();
+			f.putLong("hall", e.getKey().asLong());
+			burning.add(f);
+		}
+		tag.put("fires", burning);
 		return tag;
 	}
 
@@ -645,6 +683,14 @@ public final class ThreatData extends SavedData {
 		held.clear();
 		mending.clear();
 		plundered.clear();
+		fires.clear();
+		ListTag burning = Nbt.getList(tag, "fires", Tag.TAG_COMPOUND);
+		for (int i = 0; i < burning.size(); i++) {
+			CompoundTag f = Nbt.compoundAt(burning, i);
+			if (Nbt.has(f, "hall", Tag.TAG_LONG)) {
+				fires.put(BlockPos.of(Nbt.getLong(f, "hall")), f.copy());
+			}
+		}
 		ListTag lost = Nbt.getList(tag, "plunder", Tag.TAG_COMPOUND);
 		for (int i = 0; i < lost.size(); i++) {
 			CompoundTag h = Nbt.compoundAt(lost, i);

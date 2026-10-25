@@ -6471,6 +6471,8 @@
   "chronicle.aliveworkplace.village_fire.village": "village",
   "chronicle.aliveworkplace.village_fire.out": "Fire in the %1$s: %2$s blocks burned; %3$s the Firewarden put it out.",
   "chronicle.aliveworkplace.village_fire.out_one": "Fire in the %1$s: 1 block burned; %3$s the Firewarden put it out.",
+  "chronicle.aliveworkplace.village_fire.out_unnamed": "Fire in the %1$s: %2$s blocks burned; the Firewarden put it out.",
+  "chronicle.aliveworkplace.village_fire.out_unnamed_one": "Fire in the %1$s: 1 block burned; the Firewarden put it out.",
   "chronicle.aliveworkplace.village_fire.brigade": "Fire in the %1$s: %2$s blocks burned; the bucket brigade put it out.",
   "chronicle.aliveworkplace.village_fire.brigade_one": "Fire in the %1$s: 1 block burned; the bucket brigade put it out.",
   "chronicle.aliveworkplace.village_fire.burned_out": "Fire in the %1$s: %2$s blocks burned before it burned out.",

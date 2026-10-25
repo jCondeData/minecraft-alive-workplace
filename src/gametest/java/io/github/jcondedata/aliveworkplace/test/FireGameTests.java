@@ -90,7 +90,7 @@ public class FireGameTests implements FabricGameTest {
 		boolean griefing = level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
 		VillageHalls.RADIUS = 20;
 		level.getGameRules().getRule(GameRules.RULE_DOFIRETICK).set(true, level.getServer());
-		VillageFire.forget();
+		VillageFire.reset();
 		// B217: nothing but this test's own Firewarden may put the fire out. Rain does (the game's fire goes out under an
 		// open sky, and the sky's rain fades out over a hundred ticks after an earlier test's storm), and so would any other
 		// test's Firewarden still about whose grindstone is within answering reach, wherever they stand (Leftovers.clear
@@ -117,7 +117,7 @@ public class FireGameTests implements FabricGameTest {
 					level.removeBlock(p, false);
 				}
 			}
-			VillageFire.forget();
+			VillageFire.reset();
 		});
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		for (int x = 0; x < 5; x++) {
@@ -543,7 +543,7 @@ public class FireGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "fireBrigadeSaved")
 	public void aBrigadeSavedMidCallGetsTheToolBack(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		VillageFire.forget();
+		VillageFire.reset();
 		Villager before = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 4));
 		before.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.WATER_BUCKET));
 		ModAttachments.BRIGADE_HELD.set(before, new ItemStack(Items.IRON_AXE));

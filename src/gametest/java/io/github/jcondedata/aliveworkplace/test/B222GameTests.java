@@ -89,6 +89,7 @@ public class B222GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "b222GraveToGraveyard")
 	public void strayGraveGoesToTheGraveyardAndIsRevivedThere(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.graves(helper);
 		Graveyards.ENABLED = true; // (off in GameTests by default: WorkplaceConfig.apply)
 		helper.setDayTime(2000);
 		ServerLevel level = helper.getLevel();
@@ -106,7 +107,7 @@ public class B222GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 				helper.assertTrue(!level.getBlockState(street).is(ModBlocks.GRAVE), "the grave is still in the street");
 				helper.assertTrue(level.getBlockEntity(slot) instanceof GraveBlockEntity g && g.villager().equals(was)
 					&& g.name().getString().equals("Mira") && g.villagerLevel() == 3, "Mira isn't in the first row slot, as she was");
-				helper.assertTrue(gravesIn(helper) == 1, gravesIn(helper) + " graves");
+				helper.assertTrue(gravesIn(helper) == 1, gravesIn(helper) + " graves: " + Graves.near(helper.getLevel(), helper.absolutePos(new BlockPos(15, 2, 15)), 30));
 				laid[0] = true;
 				chest.setItem(0, new ItemStack(Items.GOLDEN_APPLE));
 			}
@@ -130,6 +131,7 @@ public class B222GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "b222ReloadMidMove")
 	public void reloadMidMoveKeepsTheGrave(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.graves(helper);
 		Graveyards.ENABLED = true; // (off in GameTests by default: WorkplaceConfig.apply)
 		helper.setDayTime(2000);
 		ServerLevel level = helper.getLevel();
@@ -153,7 +155,7 @@ public class B222GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		helper.succeedWhen(() -> {
 			helper.assertTrue(!level.getBlockState(street).is(ModBlocks.GRAVE), "the grave is still in the street");
 			helper.assertTrue(level.getBlockState(slot).is(ModBlocks.GRAVE), "no grave in the first row slot");
-			helper.assertTrue(gravesIn(helper) == 1, gravesIn(helper) + " graves");
+			helper.assertTrue(gravesIn(helper) == 1, gravesIn(helper) + " graves: " + Graves.near(helper.getLevel(), helper.absolutePos(new BlockPos(15, 2, 15)), 30));
 			BlockEntity laid = level.getBlockEntity(slot);
 			CompoundTag disk = laid.saveWithFullMetadata(level.registryAccess());
 			BlockEntity loaded = BlockEntity.loadStatic(slot, level.getBlockState(slot), disk, level.registryAccess());
@@ -169,6 +171,7 @@ public class B222GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	@GameTest(template = AREA, timeoutTicks = 700, batch = "b222SwitchOff")
 	public void switchOffLeavesGravesWhereTheyFall(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.graves(helper);
 		helper.setDayTime(2000);
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
@@ -191,6 +194,7 @@ public class B222GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "b222HallPlot")
 	public void noGraveyardMeansAPlotNearTheHall(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.graves(helper);
 		Graveyards.ENABLED = true; // (off in GameTests by default: WorkplaceConfig.apply)
 		helper.setDayTime(2000);
 		ServerLevel level = helper.getLevel();
@@ -209,7 +213,7 @@ public class B222GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			helper.assertTrue(!level.getBlockState(street).is(ModBlocks.GRAVE), "the grave is still in the street");
 			helper.assertTrue(level.getBlockEntity(plot.get(0)) instanceof GraveBlockEntity g && g.name().getString().equals("Mira"),
 				"Mira isn't in the plot's first slot");
-			helper.assertTrue(gravesIn(helper) == 1, gravesIn(helper) + " graves");
+			helper.assertTrue(gravesIn(helper) == 1, gravesIn(helper) + " graves: " + Graves.near(helper.getLevel(), helper.absolutePos(new BlockPos(15, 2, 15)), 30));
 			Graveyards.ENABLED = false;
 		});
 	}

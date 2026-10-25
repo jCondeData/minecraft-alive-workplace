@@ -329,6 +329,13 @@ public final class CaravanTrains {
 			openTrain(level, hall, other, entity, station, far);
 			return;
 		}
+		// B483: the blocks all stand once the builder's last one is placed, but its site isn't done yet (its builder
+		// finishes the stage and the site on a later tick, and the chronicle says who built it then). Put together now,
+		// the blocks would go into the train under the site: it never finished and the chronicle never said so.
+		ResourceLocation site = trainId(hall, other);
+		if (Roads.openSegments(level, hall).stream().anyMatch(s -> s.structure().equals(site))) {
+			return;
+		}
 		Villager conductor = conductorFor(level, station);
 		if (conductor == null) {
 			return; // nobody free to drive it yet: the caravans take the timed trip

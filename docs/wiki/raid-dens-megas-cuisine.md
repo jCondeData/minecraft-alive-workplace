@@ -401,6 +401,10 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   reads +3 and "watched a Mega Evolution at the shrine", the farmer neither, both still so after a save and reload),
   `aBrokenPedestalHoldsNoShow` (B421: the pedestal broken, no show, no chat line, no mood; put back, the show again).
 - `MegaShrineGameTests` (without Mega Showdown): `hiddenWithoutMegaShowdown`, `theShowsMoodAndText`.
+- QA (lane d, 38.7): `QaMegaShrineCompatTests` (5: no show without a finished shrine, none at a shrine outside the
+  village or for another hall, a villager at work far off isn't gathered or waited for, +3 once a show, no show on a day
+  without a festival) and `QaMegaShrineGameTests` (3: the lines, exactly +3 for a festival's length, no show without
+  Mega Showdown).
 - `MegaStoneCompatTests` (with Mega Showdown, 38.6): `theRecipesAndFindsLoad`,
   `aJewellerCutsAMegaStoneForTheVillagesTrainers` (a crystal, gold and emeralds become one stone of the Master's team),
   `aJewellerCutsAKeyStone`, `onlyTheStonesTheStoreLacks` (and none with no trainer), `switchedOffTheRecipesDontRun`

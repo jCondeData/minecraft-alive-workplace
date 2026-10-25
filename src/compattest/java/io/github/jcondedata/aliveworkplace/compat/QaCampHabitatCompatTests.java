@@ -42,6 +42,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -260,13 +261,25 @@ public class QaCampHabitatCompatTests implements FabricGameTest {
 		BlockPos pasture = helper.absolutePos(STATION);
 		wild(helper, "pidgey shiny=no level=5", new Vec3(STATION.getX() + 6.5, 2, STATION.getZ() + 0.5));
 		wild(helper, "bulbasaur shiny=no level=5", new Vec3(STATION.getX() + 0.5, 2, STATION.getZ() + 6.5));
-		wild(helper, "eevee shiny=yes level=5", new Vec3(STATION.getX() + 49.5, 2, STATION.getZ() + 0.5));
 		List<HabitatKeepers.Sighting> found = HabitatKeepers.sight(level, keeper, pasture);
 		helper.assertTrue(found.size() == 1 && found.get(0).kind().equals("rare") && found.get(0).what().getString().equals("a rare Bulbasaur"),
 			"sighted " + found.stream().map(s -> s.kind() + ": " + s.what().getString()).toList() + ", not just a rare Bulbasaur");
-		wild(helper, "eevee shiny=yes level=5", new Vec3(STATION.getX() + 47.5, 2, STATION.getZ() + 0.5));
-		List<HabitatKeepers.Sighting> near = HabitatKeepers.sight(level, keeper, pasture);
-		helper.assertTrue(near.size() == 1 && near.get(0).kind().equals("shiny"), "the shiny 47 blocks out: " + near.stream().map(s -> s.what().getString()).toList());
+		// The distance edge (B474): Pokémon spawned 47-49 blocks outside the test area can land in a chunk that isn't
+		// entity-loaded, so no entity query sees them (the 47 one went unseen once; the 49 check was vacuous). So the
+		// shinies stand inside the loaded test area and she looks round a pasture 49 and 47 blocks west of them
+		// (sight() measures from the pasture it is given).
+		BlockPos far = helper.absolutePos(new BlockPos(14 - HabitatKeepers.SIGHT_RANGE - 1, 2, 2));
+		PokemonEntity at49 = wild(helper, "eevee shiny=yes level=5", new Vec3(14.5, 2, 2.5));
+		helper.assertTrue(at49.blockPosition().distSqr(far) == 49 * 49, "the far shiny isn't 49 blocks out: " + Math.sqrt(at49.blockPosition().distSqr(far)));
+		helper.assertTrue(level.getEntitiesOfClass(PokemonEntity.class, new AABB(far).inflate(HabitatKeepers.SIGHT_RANGE + 2)).contains(at49),
+			"the shiny 49 blocks out isn't in the level's entity lists, so not seeing it would prove nothing");
+		List<HabitatKeepers.Sighting> beyond = HabitatKeepers.sight(level, keeper, far);
+		helper.assertTrue(beyond.isEmpty(), "the shiny 49 blocks out was sighted: " + beyond.stream().map(s -> s.kind() + ": " + s.what().getString()).toList());
+		PokemonEntity at47 = wild(helper, "eevee shiny=yes level=5", new Vec3(12.5, 2, 2.5));
+		helper.assertTrue(at47.blockPosition().distSqr(far) == 47 * 47, "the near shiny isn't 47 blocks out: " + Math.sqrt(at47.blockPosition().distSqr(far)));
+		List<HabitatKeepers.Sighting> near = HabitatKeepers.sight(level, keeper, far);
+		helper.assertTrue(near.size() == 1 && near.get(0).kind().equals("shiny") && near.get(0).pos().equals(at47.blockPosition()),
+			"the shiny 47 blocks out: " + near.stream().map(s -> s.kind() + ": " + s.what().getString() + " at " + s.pos()).toList());
 		helper.succeed();
 	}
 

@@ -171,6 +171,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaShapePlannerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShapePlannerBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintLootGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuildFreeGoodsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.B261GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B251GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B224GameTests",

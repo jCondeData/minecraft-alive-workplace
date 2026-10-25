@@ -130,8 +130,11 @@ public class QaDenHelperRaidCompatTests implements FabricGameTest {
 		RaidHelpers.hire(level, at[0], at[1], player);
 		RaidHelpers.Hire hire = RaidHelperCompatTests.hire(helper, player);
 		raids.in.put(player.getUUID(), raid);
-		// raids are fought far off (the raid mod's own dimension): the player is 40 blocks from the den
-		player.teleportTo(at[1].getX() + 40.5, at[1].getY(), at[1].getZ() + 0.5);
+		// raids are fought far off (the raid mod's own dimension): the player is 20 blocks over the den, past its reach
+		// (16) but near enough that the helper stays in the test area (one sent 40 blocks off to keep up was in an
+		// unloaded chunk in a full run, so no helper was there to cheer)
+		player.setNoGravity(true);
+		player.teleportTo(at[1].getX() + 0.5, at[1].getY() + 20, at[1].getZ() + 0.5);
 		helper.startSequence()
 			.thenExecute(() -> hire.lastNear = level.getGameTime() - RaidHelpers.RECENT - 5)
 			.thenExecuteFor(45, () -> RaidHelpers.tick(level, hire))

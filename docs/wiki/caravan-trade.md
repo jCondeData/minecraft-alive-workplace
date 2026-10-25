@@ -108,4 +108,7 @@ None new. It uses the Village Hall, the Storehouse and its chests.
   while its logs ride in the train's chest (home once, none left in the chest), and the sender's hall taken away while
   it waits (it walks on).
 - `VillageHallGameTests.caravansCarryWhatAnotherVillageNeeds` passes unchanged.
+- `QaCaravansGameTests` (QA): the two-stack cap on top of the waited-for load, the 10% boundary at uneven prices
+  (9.8% stays, 10.5% goes), short-of goods paid at the buyer's lower price with both boards moving, a partial payment
+  that loses and makes nothing, the waited-for load free and first, and the sentences at one emerald (singular).
 - Showcase scene `caravan_trade`: the Routes tab with its earnings, then the chronicle line.

@@ -93,8 +93,8 @@ public class QaRequestsLeaderboardGameTests implements FabricGameTest {
 	 * The one asked takes it, nobody else can take the offer; a friend at exactly 3 hearts (300) joins, one at 299 can't;
 	 * joining twice adds nobody. Every answer is read in the player's chat in words.
 	 */
-	//$ gametest_ticks_batch AREA '80' '"qaRequestJoin"'
-	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaRequestJoin")
+	//$ gametest_ticks_batch AREA '80' '"qaRequestJoinAt3"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaRequestJoinAt3")
 	public void joiningAtExactlyThreeHeartsAndJustUnder(GameTestHelper helper) {
 		PersonalRequestGameTests.village(helper, () -> {
 			ServerLevel level = helper.getLevel();
@@ -200,8 +200,8 @@ public class QaRequestsLeaderboardGameTests implements FabricGameTest {
 	}
 
 	/** The giver dies with a request open: nobody is paid for it, it comes down by its deadline, and an offer from the dead can't be taken. */
-	//$ gametest_ticks_batch AREA '80' '"qaRequestDead"'
-	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaRequestDead")
+	//$ gametest_ticks_batch AREA '80' '"qaRequestGiverDead"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaRequestGiverDead")
 	public void theGiverDiesMidRequest(GameTestHelper helper) {
 		PersonalRequestGameTests.village(helper, () -> {
 			ServerLevel level = helper.getLevel();

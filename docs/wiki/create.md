@@ -467,7 +467,9 @@ tested (the GameTests use the table as the server does).
   after `createBuilds` went off half way up its walls. `QaCreateSchematicFilesCompatTests` (39.6): a schematic seen cut
   short mid-upload is imported, and said, once the upload is complete; a written Schematic of a file cut short says so,
   naming it, and makes no blueprint. `QaMechanicMendSaysCompatTests` (39.2): "Mechanic: fetching Shaft for the ..."
-  and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back.
+  and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back. `QaCreateItemsHeldCompatTests` (lane E's QA): a depot, a
+  deployer and a basin, each holding a diamond, scanned into a blueprint and built from exactly its material list, are
+  built holding nothing (a fluid in a tank or spout is still copied: B486).
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,
@@ -516,6 +518,9 @@ tested (the GameTests use the table as the server does).
   `TRAIN_MIN` (400 ticks) nor longer than the walk, both sides of each boundary; halves of the road `HALVES_MEET` apart
   make a railway, one block more or a half stopped at a milestone don't; the railway over a save, and a save with one
   village's station and track gone loads as none.
+- `QaTrainSiteRaceCompatTests` (QA, 39.7b, with Create): with both halls looking at their trains every tick, the
+  builder's train site is finished before the station assembles the train, the chronicle says a builder built it, and
+  no second set of its blocks is put up.
 - `QaTrainsOffCompatTests` (QA, B359, with Create): `villageTrains` switched off while the real village train runs with
   the caravan's 32 logs in its chest: they come out of the chest, the caravan takes the timed trip and comes in, and
   Ashford's 64 logs always add up (none left in the train, none twice); a world saved with a caravan waiting to board and

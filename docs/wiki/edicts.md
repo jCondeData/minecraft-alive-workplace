@@ -129,14 +129,19 @@ the hall loads.
   villager; the arc system casts roles by trade only.
 - 31.22: the Shift Bell needs a level 3 by 3 of natural ground 3 to 12 blocks from the hall; with none, the story
   still ends and the edict is reformed, without the bell.
-- The Tithe's price rise is rounded to whole emeralds, so trades under 5 emeralds don't change.
+- The Tithe's price rise is rounded to whole emeralds, half an emerald up: trades under 5 emeralds don't change,
+  5 emeralds become 6 and 15 become 17. The tithe is a tenth of what was paid, so the 6 put 0.60 in the treasury.
+- Free Bread's "fed in the last day" means not hungry yet: a Glutton counts for half a day after a meal, a Frugal
+  villager for two days. A villager who has never eaten from the store gets no free bread.
+- An edict reaches only the villagers, inns and traders within the hall's radius: an inn or librarian just outside
+  keeps the usual guests and prices. A lifted edict stops at once; Free Bread's part-meal stays saved for next time.
 - With `villageEdicts` off the book can't be used; edicts already in force come back when it is switched on again.
 
 ## Proof
 
 GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, rank drops, save and reload),
 `EdictBookGameTests` (6), `ReformGameTests` (7), `FamilyEdictGameTests` (5), `OpenGatesGameTests` (6),
-`TreasuryEdictGameTests` (8), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `CivicTalkGameTests` (7),
+`TreasuryEdictGameTests` (8), `QaEdictEffectsGameTests` (10: the QA lane's boundaries for 30.6 to 30.8), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `CivicTalkGameTests` (7),
 `PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`, `ReformStoryGameTests` (10: each of the eight stories from
 the ask through M30's three steps to its ending and the edict reformed in that village only; `storyArcs` off; side
 arcs and `arcsAtOnce`). Showcase scene `reform_story`.

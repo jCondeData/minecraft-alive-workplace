@@ -64,8 +64,6 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 public class QaCarvedLibraryCompatTests implements FabricGameTest {
 	private static final ResourceLocation COTTAGE = AliveWorkplace.id("starter_cottage");
 	private static final String AREA = CompatGameTests.AREA;
-	private static final ResourceLocation CRAFTING_TABLE = AliveWorkplace.id("crafting_table");
-	private static final Set<String> TOMS_COPIES = Set.of("storage_hall", "warehouse");
 
 	private static BuildSite site(GameTestHelper helper) {
 		BlueprintData.Placement placement = new BlueprintData.Placement(helper.getLevel().dimension().location(), helper.absolutePos(new BlockPos(1, 2, 1)),
@@ -117,9 +115,6 @@ public class QaCarvedLibraryCompatTests implements FabricGameTest {
 						checked++;
 						Optional<ResourceLocation> before = poi(state);
 						Optional<ResourceLocation> after = poi(styled);
-						if (before.equals(Optional.of(CRAFTING_TABLE))) {
-							continue; // the Carpenter's crafting table: QaCarvedLibraryBugTests
-						}
 						if (!before.equals(after)) {
 							wrong.add(style.name() + ": " + state + " (" + before.map(Object::toString).orElse("no job site") + ") -> " + styled + " ("
 								+ after.map(Object::toString).orElse("no job site") + ")");
@@ -165,9 +160,6 @@ public class QaCarvedLibraryCompatTests implements FabricGameTest {
 				Optional<ResourceLocation> before = poi(was);
 				Optional<ResourceLocation> after = poi(e.getValue());
 				jobs += before.isPresent() ? 1 : 0;
-				if (before.equals(Optional.of(CRAFTING_TABLE)) && TOMS_COPIES.contains(id.getPath())) {
-					continue; // 37.17's Tom's copies put a crafting terminal there (reported separately)
-				}
 				if (!before.equals(after)) {
 					wrong.add(id + " at " + e.getKey().toShortString() + ": " + id(was) + " " + before.orElse(null) + " -> " + id(e.getValue()) + " " + after.orElse(null));
 					break;

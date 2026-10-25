@@ -109,6 +109,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.StadiumCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StadiumPowerCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCarvedLibraryCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCarvedLibraryBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCarvedStylesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaStoreSupplyCompatTests"
 		]

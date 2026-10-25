@@ -1,26 +1,13 @@
 package io.github.jcondedata.aliveworkplace.compat;
 
-import io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank;
-import io.github.jcondedata.aliveworkplace.guard.RaidDens;
-import io.github.jcondedata.aliveworkplace.hall.Chronicle;
-import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.trainer.RaidAssist;
 import io.github.jcondedata.aliveworkplace.trainer.RaidHelpers;
-import io.github.jcondedata.aliveworkplace.work.Extension;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.level.block.Blocks;
 
 /**
  * QA (lane d, 2026-10-25), ROADMAP 38.1a: the raid as Raid Dens starts it. Raid Dens awards {@code raids_joined} as the

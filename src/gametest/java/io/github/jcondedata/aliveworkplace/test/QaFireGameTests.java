@@ -146,18 +146,6 @@ public class QaFireGameTests {
 		helper.getLevel().setBlockAndUpdate(at, BaseFireBlock.getState(helper.getLevel(), at));
 	}
 
-	/** Lights a flame on top of the first of {@code hut}'s wooden blocks that still stands with air above it. */
-	static void relight(GameTestHelper helper, Hut hut) {
-		ServerLevel level = helper.getLevel();
-		for (BlockPos local : hut.blocks()) {
-			BlockPos at = helper.absolutePos(local);
-			if ((level.getBlockState(at).is(Blocks.OAK_PLANKS) || level.getBlockState(at).is(Blocks.OAK_LOG)) && level.getBlockState(at.above()).isAir()) {
-				level.setBlockAndUpdate(at.above(), BaseFireBlock.getState(level, at.above()));
-				return;
-			}
-		}
-	}
-
 	static long fires(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		return BlockPos.betweenClosedStream(helper.getBounds()).filter(p -> level.getBlockState(p).is(BlockTags.FIRE)).count();
@@ -322,11 +310,6 @@ public class QaFireGameTests {
 			}
 			long gone = hut.blocks().stream().filter(p -> !level.getBlockState(helper.absolutePos(p)).is(Blocks.OAK_PLANKS)
 				&& !level.getBlockState(helper.absolutePos(p)).is(Blocks.OAK_LOG)).count();
-			// B405: fire dies by chance; a fire that went out on its own would end the incident as "burned out" before the
-			// Firewarden comes, so the fire is kept alive on the hut until it is put out (a fresh flame joins the same incident).
-			if (fires(helper) == 0) {
-				relight(helper, hut);
-			}
 			if (gone >= 3 || helper.getTick() >= 600) {
 				level.getGameRules().getRule(GameRules.RULE_DOFIRETICK).set(false, level.getServer());
 				putOut(helper);
@@ -601,11 +584,6 @@ public class QaFireGameTests {
 			}
 			long gone = hut.blocks().stream().filter(p -> !level.getBlockState(helper.absolutePos(p)).is(Blocks.OAK_PLANKS)
 				&& !level.getBlockState(helper.absolutePos(p)).is(Blocks.OAK_LOG)).count();
-			// B405: fire dies by chance; a fire that went out on its own would end the incident as "burned out" before the
-			// Firewarden comes, so the fire is kept alive on the hut until it is put out (a fresh flame joins the same incident).
-			if (fires(helper) == 0) {
-				relight(helper, hut);
-			}
 			if (gone >= 3 || helper.getTick() >= 600) {
 				level.getGameRules().getRule(GameRules.RULE_DOFIRETICK).set(false, level.getServer());
 				for (BlockPos p : BlockPos.betweenClosed(BlockPos.containing(helper.getBounds().getMinPosition()), BlockPos.containing(helper.getBounds().getMaxPosition()))) {

@@ -19,7 +19,7 @@ import net.minecraft.world.InteractionHand;
 public class QaBlueprintUnlocksBugTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	/**
 	 * A found Market Stall Blueprint in the off hand, the main hand empty, right-clicked on the Table: the build unlocks
-	 * in the village and the chat says so, as from the main hand (the B338/B341 rule: either hand). Bug B???; the Table keeps
+	 * in the village and the chat says so, as from the main hand (the B338/B341 rule: either hand). Bug B419; the Table keeps
 	 * nothing.
 	 */
 	//$ gametest_ticks_batch AREA '40' '"qaUnlockOffHand"'

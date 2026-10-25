@@ -317,6 +317,9 @@ chest, `aBookAndQuillOnTheBuilderWritesWhatIsLeft`; the bag and a storehouse com
 every stage and after a save and reload, `everyStageAndAfterAReload`; a finished and an idle builder say so,
 `aFinishedOrIdleBuilderSaysSo`; the empty-hand chat list, `anEmptyHandShowsTheWholeListInChat`; the bench,
 `aBookAndQuillOnTheBenchWritesTheList`; taking down and the book's words, `takingDownNeedsNothing`).
+`QaOffHandBookGameTests` (2, QA on B394: an off-hand Book and Quill doesn't stop the Postal Desk handing out waiting
+parcels, `anOffHandBookDoesNotStopThePostalDeskHandingOutParcels`; on a bench with no build it says so and is kept,
+`anOffHandBookOnABenchWithNoBuildSaysSoAndIsKept`).
 `B290GameTests` (6, B290: a hired Builder at a workshop table 34 blocks from the village's unowned Storehouse, in a
 village whose hall his employer owns, counts its stone overhead, in the list and the status and builds from it,
 `aHiredBuilderAtAWorkshopTableBuildsFromTheVillageStorehouse`; a player's Storehouse feeds the village's own Builder on

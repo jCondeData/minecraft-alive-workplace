@@ -165,6 +165,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintUnlocksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildReachGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMirroredBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderLimitsGameTests",

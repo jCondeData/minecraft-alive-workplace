@@ -285,6 +285,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryJobsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRealmGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageSevenGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRequestsLeaderboardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CradleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HarvestIdolGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TreasuryEdictGameTests",

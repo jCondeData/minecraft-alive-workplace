@@ -6,7 +6,7 @@ expansion: M38
 image: https://jcondedata.github.io/minecraft-alive-workplace/den_helpers/still-2.jpg
 caption: Two hired trainers stand by the glowing den as the raid starts
 Needs: Cobblemon Raid Dens on the server
-Where: the Defence page of the Village Hall, a row of the dens near the village
+Where: the Defense page of the Village Hall, a row of the dens near the village
 Raid helpers: up to 3 of the village's trainers, hired by a den, help you in its raid
 Cheer: each helper gives you an Attack, Defense or Heal Cheer once a raid
 Price: 5 emeralds a helper (or CobbleDollars), set by the server
@@ -32,7 +32,7 @@ Novice), for **5 emeralds** each (CobbleDollars when the server has them). You c
 for one den. The button's tooltip says how many you've hired and how many trainers are still free. With too little
 money you're told the price and nothing is taken.
 
-![The Defence page: hire a raid helper by the den](https://jcondedata.github.io/minecraft-alive-workplace/den_helpers/still-1.jpg)
+![The Defense page: hire a raid helper by the den](https://jcondedata.github.io/minecraft-alive-workplace/den_helpers/still-1.jpg)
 
 Your helpers follow you. Lead them to the den and start or join its raid.
 

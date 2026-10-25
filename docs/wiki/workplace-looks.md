@@ -26,7 +26,7 @@ Roadmap items: 26.11, 36.8, B170
 - **Leader's Hall** (Cobblemon): a stone hall with a portico of four columns under a pediment, steps the whole width,
   a red carpet inside up to the Training Post (it starts a step in from the door: a carpet right under the door's low
   lintel stopped villagers, who are taller than players, in the doorway).
-- **Ball Workshop** (Cobblemon): a round tower with an open drying loft of slatted fences (apricorns, as coloured carpets,
+- **Ball Workshop** (Cobblemon): a round tower with an open drying loft of slatted fences (apricorns, as colored carpets,
   laid out to dry) under a copper cone that greens with the years, and a low workshop beside it.
 - **Trade Hall** (Cobblemon): a market hall, its brick-and-timber upper storey on stone arches over an open trading
   floor, an open cupola on the ridge.

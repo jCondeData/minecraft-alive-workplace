@@ -88,10 +88,10 @@ top of the table's screen: it lists every blueprint stored in this table with it
 
 Each village's table is a collection. A new village starts with the basics, about eighteen builds: the Starter
 Cottage, the first Stone House and Terrace, and a first workplace for each everyday job (the Farmstead, the
-Storehouse, the Smithy, the Mason's Yard, the Kitchen and the like). Those show in colour, and Get Blueprint works as
+Storehouse, the Smithy, the Mason's Yard, the Kitchen and the like). Those show in color, and Get Blueprint works as
 always.
 
-Everything else starts **locked**. A locked build shows greyed out, with a line saying how to get it, such as "Sold by
+Everything else starts **locked**. A locked build shows grayed out, with a line saying how to get it, such as "Sold by
 a Journeyman Builder", "A market-day trader", "A questbook reward" or "Found in chests". You can still look round
 its picture, dimmed, and see what it needs, but Get Blueprint stays off. A few rare builds (the grander homes only a
 builder sells, the Wonders and some special builds) show as a dark **???** with no name, picture or materials, like a

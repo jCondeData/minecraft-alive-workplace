@@ -268,6 +268,9 @@ public class QaCobblemonThreatsCompatTests implements FabricGameTest {
 		BlueprintData.Placement placement = placement(helper);
 		if (finished) {
 			BuildSiteManager.get(level).recordFinished(StarterBlueprints.MEGA_SHRINE.id(), placement, UUID.randomUUID());
+			// The shrine's pedestal stands, as a builder leaves it (B421: without it there is no show).
+			level.setBlockAndUpdate(io.github.jcondedata.aliveworkplace.hall.Arenas.world(placement, MegaShrines.PEDESTAL_SPOT),
+				net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(MegaShrines.PEDESTAL).defaultBlockState());
 		}
 		int radius = VillageHalls.RADIUS;
 		VillageHalls.RADIUS = 16;

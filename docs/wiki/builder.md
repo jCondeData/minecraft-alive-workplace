@@ -371,12 +371,17 @@ hired Builder a blueprint, `ownershipOffLetsAStrangerGiveTheBuilderABlueprint`; 
 out and no further, `levelGroundEightLevelsEightBlocksOutAndNoFurther`; `workplaceFoundationDepth` 0 puts nothing in a
 dip and uses no extra cobblestone, `foundationDepthZeroPutsNothingIntoTheDip`; the Blueprint Table hides the Mega Shrine
 and Train Station while their expansions are closed, `theTableHidesTheM38AndM39BuildsWhileTheirExpansionsAreClosed`).
-`QaBuilderLimitsGameTests` (8, QA of the builder's limits from the player guide, each from both sides through the
+`QaBuilderLimitsGameTests` (11, QA of the builder's limits from the player guide, each from both sides through the
 player's clicks: a Book and Quill on a Blueprint Table nobody works at opens the table, from either hand; five blueprints
 line up as numbers 1 to 5 and the sixth is refused with "already has 5 blueprints lined up" and kept; the line keeps its
 order over a save and each `/workplace cancel` takes up the next and hands the blueprint back still placed; a spot 48
 blocks from the table is taken and 49 refused; chests 8 blocks off (and 4 up) count and 9 off don't; 4 under the table count and 5 under or 5 up don't; four idle builders
-make a crew of three helpers, never four). `QaNeverPlacedGameTests` (1: a blueprint with a spawner, bedrock and budding
+make a crew of three helpers, never four; a hired builder killed with a build and two in line drops all three blueprints
+where he fell and his owner reads builder_died with the build's name and the spot; a hut placed overlapping the one under
+way, or in the Nether, is refused with its sentence and kept). `QaScanEdgesGameTests` (4, QA: a Scan Tool box with nothing
+built in it saves nothing and keeps the Blank; with no Blank in survival nothing is saved and the player is told; in
+creative no Blank is needed nor used; in survival the save takes the Blank from any slot, the first included). `QaLevelUpWordsGameTests` (1, QA: each level-up from
+Apprentice to Master tells the owner the level_up sentence with the new level's speed, 18%, 43%, 82% and 150%). `QaNeverPlacedGameTests` (1: a blueprint with a spawner, bedrock and budding
 amethyst between cobblestone asks only for the cobblestone and is finished with none of the three placed). `QaBlueprintHandlingGameTests` (3: place, four quarter turns back to the
 start, pick up, the levelling switch off/on/off kept through placing, turning and the hand-over; a building taken down
 with the chest full loses nothing; an upgrade lines up over its own finished building, turned or not, never when

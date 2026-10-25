@@ -109,7 +109,7 @@ public class QaRequestsLeaderboardGameTests implements FabricGameTest {
 			Friendship.add(dara, other, 300);
 			Friendship.add(dara, low, 299);
 			Quest quest = PersonalRequestGameTests.resolve(helper, "level_up", dara, me);
-			helper.assertTrue(quest != null, "Dara has nothing to ask");
+			helper.assertTrue(quest != null, "Dara has nothing to ask " + (quest == null ? PersonalRequestGameTests.why(helper, dara, me) : ""));
 			PersonalRequests.propose(level, helper.absolutePos(HALL), dara, me, quest, Chronicle.day(level));
 
 			// The offer is mine: someone else's [I'll help] is refused, in words.

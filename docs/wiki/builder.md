@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394
 
 ## 1. What a player sees
 
@@ -20,7 +20,7 @@ At the Blueprint Table's library, the selected build is shown in 3D beside its m
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
 Once a build is under way, a Book and Quill used on its Builder (or the Blueprint Table they work at, or an old Builder's
-Bench) becomes the material list of the rest of it (B279): every block from the stage it is in to the end that isn't standing yet, furniture and item
+Bench) becomes the material list of the rest of it (B279; held in either hand, B394): every block from the stage it is in to the end that isn't standing yet, furniture and item
 frames included, with what the bench's chests, the crew's bags and the village (a storehouse, other workers' spare
 stock) hold ticked off. A sneak-right-click with an empty hand shows the status and then the whole list in chat. With
 nothing left to place, no build, or a building being taken down, the Builder says so and the book stays as it was.
@@ -312,7 +312,7 @@ Pause mid-repair with the builder going straight to its queued job, `aRepairGoin
 blueprint puts the repair aside, `aNewJobPutsTheRepairAside`; the switch off, `withTheSwitchOffTheyRepairByThemselves`;
 a threat's damage not asked about, `whatAThreatTookIsRepairedWithoutAsking`; save and reload,
 `answersSurviveASaveAndReload`; the text, `repairAskWordsAreWritten`).
-`BuilderSiteListGameTests` (7, B279: a Book and Quill on the builder mid-build is the site's remaining steps less the
+`BuilderSiteListGameTests` (8, B279 and B394's off-hand book on the bench: a Book and Quill on the builder mid-build is the site's remaining steps less the
 chest, `aBookAndQuillOnTheBuilderWritesWhatIsLeft`; the bag and a storehouse come off, `theBagAndTheVillageStoreComeOff`;
 every stage and after a save and reload, `everyStageAndAfterAReload`; a finished and an idle builder say so,
 `aFinishedOrIdleBuilderSaysSo`; the empty-hand chat list, `anEmptyHandShowsTheWholeListInChat`; the bench,

@@ -136,11 +136,22 @@ public class PersonalRequestGameTests implements FabricGameTest {
 		return PersonalRequests.resolve(level, hall, hallEntity(helper), VillageHalls.census(level, hall), file, villager, player, RandomSource.create(7));
 	}
 
+	/** What a request's giver conditions see, for a failure message: why {@code villager} may have nothing to ask {@code player}. */
+	static String why(GameTestHelper helper, Villager villager, ServerPlayer player) {
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		return "(friendship " + Friendship.ENABLED + ", requests " + PersonalRequests.ENABLED + ", points " + Friendship.points(villager, player.getUUID())
+			+ ", alive " + villager.isAlive() + ", hall of the villager " + io.github.jcondedata.aliveworkplace.hall.CivicEffects.hallOf(villager)
+			+ ", nearest " + VillageHalls.nearest(level, villager.blockPosition()) + ", hall at " + hall + ": " + level.getBlockState(hall)
+			+ ", its point of interest " + level.getPoiManager().getType(hall) + ", radius " + VillageHalls.RADIUS + ", job " + villager.getVillagerData()
+			+ ", at " + villager.blockPosition() + ", time " + level.getGameTime() + ")";
+	}
+
 	/** {@code villager} asks {@code player} for the request {@code name}, and the player takes it through the command. */
 	static Quest accepted(GameTestHelper helper, String name, Villager villager, ServerPlayer player) {
 		ServerLevel level = helper.getLevel();
 		Quest quest = resolve(helper, name, villager, player);
-		helper.assertTrue(quest != null, villager.getDisplayName().getString() + " has no " + name + " to ask");
+		helper.assertTrue(quest != null, villager.getDisplayName().getString() + " has no " + name + " to ask " + (quest == null ? why(helper, villager, player) : ""));
 		PersonalRequests.propose(level, helper.absolutePos(HALL), villager, player, quest, Chronicle.day(level));
 		command(player, "workplace quest accept " + quest.id);
 		helper.assertTrue(PersonalRequests.of(villager) == quest && quest.helpers.containsKey(player.getUUID()), name + " wasn't accepted");

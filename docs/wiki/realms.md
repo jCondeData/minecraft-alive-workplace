@@ -436,6 +436,11 @@ with it. Effect types (`caravan_carry` (named apart from the guilds' `carry`), `
   common board's price moves the village's own price when traded.
 
 ## Proof
+- QA: `QaRealmFoundingGameTests` (13, 33.11-33.13): a friend founding from the tab; the 2,048-block reach on a line and a
+  diagonal, one dimension; 12 villages even by invitation; each rank from both sides and the rise told to every owner;
+  the crown passing with the treasury, or given up by leaving; two realms inviting one village; the time left in
+  singular and plural; a candidate's hall broken mid-vote; the 5% and 20% levies; who may give and take; the cap
+  following the rank; the treasury with realms off.
 - `RealmTopicsGameTests` (9, 33.16): `theRealmRowShowsTheEight` (the eight, their prices at levels 1 and 2, icons,
   tooltips and needs on the capital's Realm row, an old save's interim topic dropped), `royalRoadsSpeedCaravans` (I and
   II, realms off), `commonCoinNarrowsTheSpread` (I and II), `royalPostDeliversAtNoon` (not without it, the apples in

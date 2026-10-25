@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageProtection;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.store.HaulerGolems;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -356,9 +357,9 @@ public final class GolemSmith {
 		}
 		int carried = HaulerGolems.load(golem).values().stream().mapToInt(Integer::intValue).sum();
 		return switch (role(golem)) {
-			case HAULER -> carried > 0 ? Component.translatable("screen.aliveworkplace.hall.golem.hauling", carried)
+			case HAULER -> carried > 0 ? Words.counted("screen.aliveworkplace.hall.golem.hauling", carried, carried)
 				: Component.translatable("screen.aliveworkplace.hall.golem.waiting");
-			case FARMHAND -> carried > 0 ? Component.translatable("screen.aliveworkplace.hall.golem.harvesting", carried)
+			case FARMHAND -> carried > 0 ? Words.counted("screen.aliveworkplace.hall.golem.harvesting", carried, carried)
 				: Component.translatable("screen.aliveworkplace.hall.golem.tending");
 			case SENTRY -> {
 				BlockPos post = ModAttachments.GOLEM_POST.get(golem);

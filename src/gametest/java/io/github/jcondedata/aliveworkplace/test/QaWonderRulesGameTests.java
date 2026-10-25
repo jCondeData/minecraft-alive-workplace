@@ -223,7 +223,7 @@ public class QaWonderRulesGameTests implements FabricGameTest {
 		try {
 			WonderSite rising = manager.begin(ONE, a, null, "", 1);
 			Wonders.SERVER_LIMIT = 1;
-			reads(helper, Wonders.capRefusal(level, b, ONE), "The Test Folly may only be built in 1 villages on this server, and they're taken.",
+			reads(helper, Wonders.capRefusal(level, b, ONE), "The Test Folly may only be built in 1 village on this server, and it's taken.",
 				"limit 1, another village's still going up");
 			allowed(helper, Wonders.capRefusal(level, b, TWO), "limit 1 is per kind");
 			Wonders.SERVER_LIMIT = 2;

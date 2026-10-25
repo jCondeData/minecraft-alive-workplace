@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466
 
 ## What a player sees
 
@@ -45,7 +45,8 @@ its brick oven, is still taken: a villager who picks it walks to the open floor 
 onto a chest or worktop nearby, and takes it from there.
 
 Chests and barrels within 8 blocks of the workstation are that worker's supply chests: tools and materials come out
-of them and the work goes into them. A line over a worker's head says what they are doing or waiting for, and
+of them and the work goes into them. A line over a worker's head says what they are doing or waiting for (its count reads "Netherworker · 1 expedition", "2
+expeditions", in the singular at one, B444), and
 sneak-right-clicking a worker with an empty hand shows their status, ending with their level in their own job
 ("Apprentice Miner · 10/70 XP to the next level") and how fast that makes them.
 

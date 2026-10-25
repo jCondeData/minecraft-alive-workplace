@@ -19,7 +19,8 @@ Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419
   wrapped, "Jobs: Fisherman (1), Butcher/Chef/Rancher (3)" (one entry per kind of job block in the build, the jobs that
   share it joined by a slash with the one a jobless villager takes by itself first, and how many of that block the build
   holds), then "Beds: 2" when it has beds. A build with neither shows nothing there. Uploaded, scanned and imported
-  builds get the lines too, from their own blocks; a build in a style shows its styled blocks'.
+  builds get the lines too, from their own blocks; a build in a style shows its styled blocks'. A job that needs a mod
+  that isn't installed (Cobblemon's Ball Smith or Trainer) isn't named, so a Training Post alone shows no Jobs line.
 - **Search** (36.10): a box over the list ("Search: name, id or job" until something is typed, focused when the Table
   opens) narrows the list live, ignoring case, by a build's name, id or the jobs it brings ("inn", "fishers_hut",
   "fisherman", "smith"); every word typed must be found. A build's levels and styles are kept under it: when any of
@@ -165,6 +166,12 @@ with the switch off. `TableJobsGameTests` (5, 36.6a): `TableJobsGameTests.shared
 "Jobs: Fisherman (1), Butcher/Chef/Rancher (3)", "Beds: 2"), `TableJobsGameTests.bedsOnlyAndNeither`,
 `TableJobsGameTests.aSwitchedOffJobIsLeftOut` (config tailors off), `TableJobsGameTests.theTableSendsAShippedBuildsJobsAndBeds`
 (the Fishers' Hut and the Starter Cottage through `TableServer.details` and over the wire), `TableJobsGameTests.theLinesAreInEnglish`.
+QA's `QaTableJobsGameTests` (5): `QaTableJobsGameTests.everyListedBuildShowsItsOwnJobsAndBeds` (all 141 listed builds and
+their 777 styles: each count matches the job blocks and beds counted in its own template, in the exact format, every job's
+name in English), `QaTableJobsGameTests.theStarterCottageShowsTheOwnersExample` ("Jobs: Fisherman (1), Carpenter (1)",
+"Beds: 1"), `QaTableJobsGameTests.aScannedBuildShowsTheJobsAndBedsOfItsBlocks` (two Scan Tool scans, one with neither line),
+`QaTableJobsGameTests.aJobWhoseModIsMissingIsLeftOut` (no Cobblemon), `QaTableJobsGameTests.theLinesReadInThePlayersLanguage`
+(another language's words and names, three beds).
 `TableSearchGameTests` (6, 36.10): `TableSearchGameTests.searchFindsABuildByNameWithItsLevelsUnderIt` ("inn" with Inn
 II and III right under the Inn, "INN" the same, "iii" bringing each build with its third level),
 `TableSearchGameTests.searchFindsABuildById`, `TableSearchGameTests.searchFindsBuildsByTheJobsTheyBring` ("Fisherman"

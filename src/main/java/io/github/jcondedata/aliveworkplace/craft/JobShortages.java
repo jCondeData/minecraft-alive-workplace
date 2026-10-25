@@ -139,7 +139,7 @@ public final class JobShortages {
 			|| !Crafting.recipesFor(level, Crafting.Kind.KILN, item).isEmpty() || FurnitureRecipes.makes(level.getServer(), item);
 	}
 
-	/** "short of 2 Oak Log, 1 Stick to make 4 Barrel": a whole chain's raw materials short, each with its count. */
+	/** "short of 2 Oak Logs, 1 Stick to make 4 Barrels": a whole chain's raw materials short, each with its count. */
 	public static Component lackLine(Map<Item, Integer> lack, int count, Item target) {
 		MutableComponent list = Component.empty();
 		boolean first = true;
@@ -148,9 +148,9 @@ public final class JobShortages {
 				list.append(", ");
 			}
 			first = false;
-			list.append(Component.translatable("message.aliveworkplace.job_chain.lack_item", e.getValue(), e.getKey().getDescription()));
+			list.append(Component.translatable("message.aliveworkplace.job_chain.lack_item", e.getValue(), io.github.jcondedata.aliveworkplace.work.Words.itemName(e.getKey(), e.getValue())));
 		}
-		return Component.translatable("message.aliveworkplace.job_chain.lacks", list, count, target.getDescription());
+		return Component.translatable("message.aliveworkplace.job_chain.lacks", list, count, io.github.jcondedata.aliveworkplace.work.Words.itemName(target, count));
 	}
 
 	/** {@code lack} without anything zero or less, in order. */

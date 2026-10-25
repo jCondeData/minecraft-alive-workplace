@@ -17,6 +17,7 @@ import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.threat.Disasters;
 import io.github.jcondedata.aliveworkplace.work.PhysicianWork;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -222,12 +223,12 @@ public final class SicknessStory {
 
 	private static void tell(ServerLevel level, BlockPos hall, String key, ChatFormatting colour, Object... args) {
 		for (ServerPlayer player : ArcEffects.audience(level, hall)) {
-			Chat.chat(player, Component.translatable("message.aliveworkplace.sickness." + key, args).withStyle(colour));
+			Chat.chat(player, Words.countedFirst("message.aliveworkplace.sickness." + key, args).withStyle(colour));
 		}
 	}
 
 	private static void chronicle(ServerLevel level, BlockPos hall, String key, Object... args) {
-		Chronicle.atHall(level, hall, Chronicle.Kind.STORY, Component.translatable("chronicle.aliveworkplace.sickness." + key, args));
+		Chronicle.atHall(level, hall, Chronicle.Kind.STORY, Words.countedFirst("chronicle.aliveworkplace.sickness." + key, args));
 	}
 
 	private static void says(ServerPlayer player, Entity healer, String key, Object... args) {

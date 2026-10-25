@@ -92,7 +92,10 @@ block in any; each a decoration with beauty and a name; the Flower Planters star
 day), `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `SignpostGameTests` (36.4: four
 waxed boards naming the village east, a village west and a Well south, kept through a save and load; a renamed
 village renamed at the next dawn; a Dark Oak signpost gets words too; B186: the own hall on an exact diagonal with
-its record unfiled is never named, and a village on the diagonal is named on one board only).
+its record unfiled is never named, and a village on the diagonal is named on one board only), `QaSignpostGameTests` (QA: a village 999 or 1,000 blocks away is named, 1,001 is
+not; nothing either way says the village's name and "Welcome" on all four boards; a player can't dye or edit a
+written board; a build pulled down and a new nearer neighbour are both picked up at the next dawn; reloaded boards
+keep their words).
 
 Showcase scenes: `decor` (every decoration placed side by side), `signpost` (a signpost at a crossroads between two
 villages, each board up close).

@@ -13,6 +13,7 @@ import io.github.jcondedata.aliveworkplace.work.Furnaces;
 import io.github.jcondedata.aliveworkplace.work.Partners;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Collections;
 import java.util.List;
@@ -452,7 +453,7 @@ public class SmelterWork extends Behavior<Villager> {
 	}
 
 	private void status(Villager villager, Phase phase) {
-		Component title = Component.translatable("message.aliveworkplace.smelter.title", ModAttachments.INGOTS_SMELTED.getOrElse(villager, 0));
+		Component title = Words.countedFirst("message.aliveworkplace.smelter.title", ModAttachments.INGOTS_SMELTED.getOrElse(villager, 0));
 		if (phase == Phase.MAKING_ARMOR || phase == Phase.DELIVERING_ARMOR) {
 			ArmorJob job = armor;
 			WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.smelter.state." + phase.name().toLowerCase(),

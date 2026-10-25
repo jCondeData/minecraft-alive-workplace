@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.mine.QuarrySite;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Requests;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.List;
@@ -299,7 +300,7 @@ public final class VillageHallScreen {
 		menu.button(RECALL, icon(Items.BELL, Component.translatable("screen.aliveworkplace.hall.recall"), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.recall_hint"), ChatFormatting.GRAY)), p -> {
 			int came = VillageHalls.recall(level, hall);
-			Chat.actionBar(p, Component.translatable(came == 0 ? "message.aliveworkplace.hall.recall_none" : "message.aliveworkplace.hall.recalled", came)
+			Chat.actionBar(p, (came == 0 ? Component.translatable("message.aliveworkplace.hall.recall_none") : Words.counted("message.aliveworkplace.hall.recalled", came, came))
 				.withStyle(came == 0 ? ChatFormatting.GRAY : ChatFormatting.GREEN));
 			if (came > 0) {
 				level.playSound(null, hall, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 1f, 1f);

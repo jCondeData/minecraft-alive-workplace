@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.PartnerShows;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -167,8 +168,7 @@ public class HabitatKeeperWork extends Behavior<Villager> {
 		} else if (spots.isEmpty()) {
 			status(villager, "no_spot");
 		} else {
-			status(villager, "watching", Component.literal(String.valueOf(spots.size())),
-				Component.literal(String.valueOf(ModAttachments.HONEY_LOGS.getOrElse(villager, List.of()).size())));
+			status(villager, "watching", spots.size(), ModAttachments.HONEY_LOGS.getOrElse(villager, List.of()).size());
 		}
 	}
 
@@ -372,10 +372,12 @@ public class HabitatKeeperWork extends Behavior<Villager> {
 		}
 	}
 
-	private static void status(Villager villager, String state, Component... args) {
+	private static void status(Villager villager, String state, Object... args) {
 		Component title = Component.translatable("message.aliveworkplace.habitat_keeper.title", HabitatKeepers.lureName(HabitatKeepers.lure(villager)));
 		boolean warn = state.startsWith("needs") || state.equals("no_chest") || state.equals("no_pasture") || state.equals("off") || state.equals("no_spot");
-		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.habitat_keeper.state." + state, (Object[]) args)
+		WorkerStatus.set(villager, title, -1f, (state.equals("watching") // two counts, each in its own form ("1 lure spot kept, 1 Saccharine log known")
+			? Words.countedTwo("message.aliveworkplace.habitat_keeper.state.watching", ((Number) args[0]).longValue(), ((Number) args[1]).longValue(), args)
+			: Component.translatable("message.aliveworkplace.habitat_keeper.state." + state, args))
 			.withStyle(warn ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}
 }

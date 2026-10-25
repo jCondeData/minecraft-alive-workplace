@@ -2558,7 +2558,7 @@
   "screen.aliveworkplace.defence.no_raid_den": "No raid den known",
   "screen.aliveworkplace.defence.no_raid_den_hint": "Raid dens within 160 blocks show here once someone has been near them",
   "screen.aliveworkplace.defence.raid_helpers": "Hire a raid helper",
-  "screen.aliveworkplace.defence.raid_helpers_price": "%s emeralds a helper",
+  "screen.aliveworkplace.defence.raid_helpers_price": "%s a helper",
   "screen.aliveworkplace.defence.raid_helpers_follow": "One of the village's trainers follows you to the den",
   "screen.aliveworkplace.defence.raid_helpers_help": "In the raid each one cheers you on once, and their Pokémon wear the boss down",
   "screen.aliveworkplace.defence.raid_helpers_hired": "Hired: %s of %s (%s free in the village)",

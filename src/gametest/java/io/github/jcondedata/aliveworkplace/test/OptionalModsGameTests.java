@@ -28,6 +28,33 @@ public class OptionalModsGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * B414: without CobbleDollars a raid helper's price (the one the Defence page's button shows and the hire charges)
+	 * is in emeralds, "1 emerald" for one, and the hire takes exactly that many emeralds.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void raidHelpersCostEmeraldsWithoutCobbleDollars(GameTestHelper helper) {
+		int was = io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.PRICE;
+		try {
+			String label = net.minecraft.network.chat.Component.translatable("screen.aliveworkplace.defence.raid_helpers_price",
+				io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.price()).getString();
+			helper.assertTrue(label.equals(was + " emeralds a helper"), "the button's price: " + label);
+			io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.PRICE = 1;
+			String one = io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.price().getString();
+			helper.assertTrue(one.equals("1 emerald"), "one emerald: " + one);
+			io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.PRICE = was;
+			ServerPlayer player = helper.makeMockServerPlayerInLevel();
+			player.setGameMode(GameType.SURVIVAL);
+			player.getInventory().add(new ItemStack(Items.EMERALD, was + 2));
+			helper.assertTrue(Money.charge(player, io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.dollars(), was)
+				&& player.getInventory().countItem(Items.EMERALD) == 2, "the hire's charge took " + (was + 2 - player.getInventory().countItem(Items.EMERALD)) + " emeralds");
+		} finally {
+			io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.PRICE = was;
+		}
+		helper.succeed();
+	}
+
 	/** No Radical Cobblemon Trainers: no level cap to match. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)

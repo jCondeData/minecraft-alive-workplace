@@ -22,7 +22,8 @@ down in a loaded chunk, and when a hall is set down by dens that were there firs
 **Raid helpers (38.1a).** The village never raids a den on its own (owner, 2026-10-19: 38.3's Den Wardens and 38.4's
 solo challenges are gone). Under each active den on the Defense page, **Hire a raid helper** hires one of the village's
 free trainers for that den, the best first, for `denHelperPrice` emeralds (5; CobbleDollars when installed), up to 3
-at once; the tooltip says how many the player has and how many are free. No money: "A raid helper costs 500
+at once; the tooltip shows the price in the money the click takes ("500 CobbleDollars a helper" with CobbleDollars, "5
+emeralds a helper" without) and how many helpers the player has and how many are free. No money: "A raid helper costs 500
 CobbleDollars", nothing taken. The helpers follow the player. When the player joins (or hosts) a raid within 16 blocks
 of the den, or within a minute of being there, each helper cheers once: one Attack, Defense or Heal Cheer, never twice
 a raid. They then stand round the crystal and, when the raid itself can be reached, their Pokémon take a share of the
@@ -368,6 +369,10 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   it, no healing below it; a Novice at tier 3 only cheers), `threeHelpersCheerOnceEachAndAgainNextRaid` (one Attack,
   Defense and Heal, the chat lines word for word, not on the way home, again next raid) and
   `switchedOffMidHireTheHelperWalksHome`.
+- `QaDenHelperBugTests.theButtonsPriceMatchesWhatTheClickCharges` (B414): with CobbleDollars the button says "500
+  CobbleDollars", the price the click asks for, and emeralds in the inventory are left alone.
+  `OptionalModsGameTests.raidHelpersCostEmeraldsWithoutCobbleDollars`: without it the price reads "5 emeralds a helper"
+  ("1 emerald" at 1) and the hire's charge takes exactly that many emeralds.
 - `ConfigGameTests.anOldDenConfigLoads`: a config with 38.3's and 38.4's keys loads (38.1a).
 
 - `MegaTrainerCompatTests` (with Mega Showdown): `aCityLeaderMegaEvolvesATownLeaderDoesNot`,

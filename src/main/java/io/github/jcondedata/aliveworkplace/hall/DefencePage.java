@@ -186,7 +186,7 @@ public final class DefencePage {
 			net.minecraft.server.level.ServerPlayer viewer) {
 		List<Component> lore = new ArrayList<>();
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.raid_helpers_price",
-			io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.PRICE), ChatFormatting.GREEN));
+			io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.price()), ChatFormatting.GREEN));
 		lore.add(VillageHallScreen.line("screen.aliveworkplace.defence.raid_helpers_follow", ChatFormatting.GRAY));
 		lore.add(VillageHallScreen.line("screen.aliveworkplace.defence.raid_helpers_help", ChatFormatting.LIGHT_PURPLE));
 		int hired = 0;

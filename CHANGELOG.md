@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- The Defence page's **Hire a raid helper** button now shows the price in the money the click takes: "500 CobbleDollars a helper" on a server with CobbleDollars (it said "5 emeralds a helper", then asked for 500 CobbleDollars), "5 emeralds a helper" without (B414).
 - A hand-edited server config with one value of the wrong kind (`"festivals": 0`, `"threatLevel": "high"`) no longer resets every setting: that value takes its default and the rest are kept; a file that isn't JSON at all is kept as `aliveworkplace.json.bad` before the defaults are written (B411).
 - A Librarian one leather short of a builder's last bookshelf now says "Can't be made yet: short of 1 Leather to make 1 Bookshelf" instead of "short of 4 Rabbit Hide": the shortage line names what the chest holds too few of, and only names what it's made from when that's at hand (logs for planks) (B409).
 - A server whose `config/aliveworkplace.json` holds an empty format number (`"configVersion": null`) or an empty entry in `"expansionsOpen"` (`[null]`) now starts: the empty value is read as a missing one and the rest of the file is kept, instead of the game crashing at start-up. Any other file the mod can't make sense of gives the defaults rather than stopping the server (B457).

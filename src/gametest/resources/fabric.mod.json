@@ -284,6 +284,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillageMachinesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigOddFilesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWorldSavesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaShopAwayBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageTwoGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageThreeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageThreeBugTests",

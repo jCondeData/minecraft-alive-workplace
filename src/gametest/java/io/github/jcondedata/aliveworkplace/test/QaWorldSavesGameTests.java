@@ -142,8 +142,12 @@ public class QaWorldSavesGameTests implements FabricGameTest {
 		ShopLedger back = ShopLedger.get(server);
 		helper.assertTrue(back != before, "the shops' ledger wasn't read back from the disk");
 		helper.assertTrue(back.pending(owner.getUUID()) == 1234, "owed after a restart: " + back.pending(owner.getUUID()) + ", not 1234");
-		ShopLedger.collect(owner);
-		helper.assertTrue(ShopLedger.get(server).pending(owner.getUUID()) == 0, "still owed after joining: " + ShopLedger.get(server).pending(owner.getUUID()));
+		ShopLedger.collect(owner); // this world has no CobbleDollars: paid in emeralds, the part under one kept owed (B416)
+		int emeralds = owner.getInventory().countItem(net.minecraft.world.item.Items.EMERALD);
+		helper.assertTrue(emeralds == 12, "1234 CobbleDollars owed paid " + emeralds + " emeralds after a restart, not 12");
+		helper.assertTrue(ShopLedger.get(server).pending(owner.getUUID()) == 34, "owed after joining: " + ShopLedger.get(server).pending(owner.getUUID()) + ", not 34");
+		restart(server, "aliveworkplace_shops");
+		helper.assertTrue(ShopLedger.get(server).pending(owner.getUUID()) == 34, "the 34 left owed after a second restart: " + ShopLedger.get(server).pending(owner.getUUID()));
 		helper.succeed();
 	}
 }

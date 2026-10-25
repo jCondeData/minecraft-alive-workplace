@@ -71,9 +71,15 @@ public final class Money {
 		if (paid) {
 			return;
 		}
-		ItemStack prize = new ItemStack(Items.EMERALD, emeralds);
-		if (!player.getInventory().add(prize)) {
-			player.drop(prize, false);
+		// in stacks: a big sum (shop takings while away, B416) is more than one stack, and what doesn't fit is dropped
+		int left = emeralds;
+		while (left > 0) {
+			ItemStack prize = new ItemStack(Items.EMERALD, Math.min(left, Items.EMERALD.getDefaultMaxStackSize()));
+			left -= prize.getCount();
+			player.getInventory().add(prize);
+			if (!prize.isEmpty()) {
+				player.drop(prize, false);
+			}
 		}
 	}
 

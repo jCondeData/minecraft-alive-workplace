@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394
 
 ## 1. What a player sees
 
@@ -20,7 +20,7 @@ At the Blueprint Table's library, the selected build is shown in 3D beside its m
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
 Once a build is under way, a Book and Quill used on its Builder (or the Blueprint Table they work at, or an old Builder's
-Bench) becomes the material list of the rest of it (B279): every block from the stage it is in to the end that isn't standing yet, furniture and item
+Bench) becomes the material list of the rest of it (B279; held in either hand, B394): every block from the stage it is in to the end that isn't standing yet, furniture and item
 frames included, with what the bench's chests, the crew's bags and the village (a storehouse, other workers' spare
 stock) hold ticked off. A sneak-right-click with an empty hand shows the status and then the whole list in chat. With
 nothing left to place, no build, or a building being taken down, the Builder says so and the book stays as it was.
@@ -312,7 +312,7 @@ Pause mid-repair with the builder going straight to its queued job, `aRepairGoin
 blueprint puts the repair aside, `aNewJobPutsTheRepairAside`; the switch off, `withTheSwitchOffTheyRepairByThemselves`;
 a threat's damage not asked about, `whatAThreatTookIsRepairedWithoutAsking`; save and reload,
 `answersSurviveASaveAndReload`; the text, `repairAskWordsAreWritten`).
-`BuilderSiteListGameTests` (7, B279: a Book and Quill on the builder mid-build is the site's remaining steps less the
+`BuilderSiteListGameTests` (8, B279 and B394's off-hand book on the bench: a Book and Quill on the builder mid-build is the site's remaining steps less the
 chest, `aBookAndQuillOnTheBuilderWritesWhatIsLeft`; the bag and a storehouse come off, `theBagAndTheVillageStoreComeOff`;
 every stage and after a save and reload, `everyStageAndAfterAReload`; a finished and an idle builder say so,
 `aFinishedOrIdleBuilderSaysSo`; the empty-hand chat list, `anEmptyHandShowsTheWholeListInChat`; the bench,
@@ -354,13 +354,14 @@ with no build or no Builder keeps the book, `aTableWithNoBuildOrNoBuilderKeepsTh
 placed blueprint from the off hand, `aPlacedBlueprintFromTheOffHand`; Scan Tool corners on a chest then a barrel, neither
 opened, `scanToolCornersOnAChestThenABarrel`; the Storehouse board asks for nothing more after a hand-over,
 `theBoardOpenedAgainAfterAHandOverAsksForNothingMore`).
-`QaBuildsGameTests` (8, QA from B280/B300's specs and the builder's invariants: a cottage clicked onto a flower on a bump
+`QaBuildsGameTests` (9, QA from B280/B300's specs and the builder's invariants: a cottage clicked onto a flower on a bump
 leaves the lawn level, `aCottageClickedOntoAFlowerOnABumpLeavesTheLawnLevel`; a stall on tall grass leaves the lower
 terrace beside it low, `aStallClickedOntoTallGrassLeavesTheLowerTerraceBesideItLow`; pots whose support breaks mid-build
 are set down, `potsWhoseSupportIsBrokenMidBuildAreSetDown`, also across a reload, `aPotUnderminedThenAReloadMidDecorationIsStillSetDown`;
 a reload mid-foundation or mid-landscape loses and makes nothing, `aReloadMidFoundationLosesAndMakesNothing`,
 `aReloadMidLandscapeLosesAndMakesNothing`; the lead takes over a block two crew members hold,
-`theLeadTakesABlockOverFromTwoMembersHoldingItAtOnce`; `workplaceLevelGround` 0 leaves the ground alone,
+`theLeadTakesABlockOverFromTwoMembersHoldingItAtOnce`, while a member on another column keeps its block and column,
+`aMemberOnAnotherColumnKeepsItWhenTheLeadTakesAHoleOver`; `workplaceLevelGround` 0 leaves the ground alone,
 `levelGroundZeroLeavesTheGroundAlone`).
 `QaBuilderSwitchesGameTests` (4, QA of the builder's switches: `workplaceBuilderOwnership` off lets a stranger give a
 hired Builder a blueprint, `ownershipOffLetsAStrangerGiveTheBuilderABlueprint`; `workplaceLevelGround` 8 levels 8 blocks
@@ -378,7 +379,10 @@ with the chest full loses nothing; an upgrade lines up over its own finished bui
 sneaking and never over another kind of building). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
 does: each side 1 to 32, no Blank Blueprint or no block draws nothing and takes nothing, two draws give the same build
 for two blanks, a hollow and a solid box of one size are two builds, a blank in the first slot is used and a full bag
-gets the blueprint at the player's feet, a builder builds a drawn box from the chest).
+gets the blueprint at the player's feet, a builder builds a drawn box from the chest). `QaScanRoundTripGameTests` (1, from
+the Scan Tool's guide page: a hand-built room with two double chests lying either way, a door, a bed, a wall torch, a
+hanging lantern, an upside-down stair and a ladder, scanned with real clicks and built again a quarter turned, comes out
+block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`).
 
 Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the

@@ -64,6 +64,12 @@ public class BuildersBenchBlock extends HorizontalDirectionalBlock {
 
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+		// B394: the main hand's empty turn comes first and answered with the chests line, so an off-hand Book and Quill
+		// never got the list (B279); it is used here as from the main hand.
+		if (player.getMainHandItem().isEmpty() && player.getOffhandItem().is(Items.WRITABLE_BOOK)
+			&& state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH)) {
+			return useItemOn(player.getOffhandItem(), state, level, pos, player, InteractionHand.OFF_HAND, hit).result();
+		}
 		if (level instanceof ServerLevel && state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.POSTAL_DESK)
 			&& player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
 			&& io.github.jcondedata.aliveworkplace.mail.Mail.collectAtDesk(serverPlayer) > 0) {

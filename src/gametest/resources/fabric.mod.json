@@ -517,7 +517,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaReputationPerksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoreSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainsGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaThreatsLateGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaThreatsLateGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDefenceUpgradeBugTests"
 		]
 	},
 	"depends": {

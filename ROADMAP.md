@@ -3140,7 +3140,7 @@ write their own stories; nothing waits forever on a player.
     bounties;
   - the three textures pass `lint.py`; a README section; showcase scene `bounty` (GIF: the board, the poster, the
     hideout, the claim).
-- [x] **31.14** (approved 2026-10-11) **Rogue Pokémon bounties** (Cobblemon). The board's second kind of poster, through a new extension
+- [x] **31.14** (approved 2026-10-11) (verified 2026-10-25: QaThreatsM32GameTests [4 tests]: Pharaoh rise at 24 blocks both sides, only husks rise once, siege on at 5900 and over at 6000, no sand ramp at threat level 1 [kills 2 boundary mutants; SandRamps survivor already killed by QaSandRampEdgeGameTests]; QaCobblemonThreatsCompatTests [5 rogue bounty tests]: first winner only, sword kill pays nothing, save/reload, switch off, poster text. 38.7 left unverified: B420, B421) **Rogue Pokémon bounties** (Cobblemon). The board's second kind of poster, through a new extension
   point `story/RoguePokemon` filled by `compat/cobblemon/CobblemonRogues`; without Cobblemon this kind is never
   posted. Config `rogueBounties` (true). A rogue is a wild Pokémon grown huge and mean that roams within 24 blocks of
   a spot 150 to 250 blocks from the hall, spawned with Cobblemon's own spawning from
@@ -3524,7 +3524,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     captain's death removes every ship block but a block the test placed on deck, and leaves the chest;
   - the ship passes `check.py` and its render is in the package;
   - scene `pirates`: the ship at anchor at dusk, the crew wading ashore, the ship sinking (GIF).
-- [x] **32.9** (approved 2026-10-11) **Desert raiders.** `desert_raiders.json`: desert and badlands; Town and up; tactics `sand_ramps`;
+- [x] **32.9** (approved 2026-10-11) (verified 2026-10-25: QaThreatsM32GameTests [4 tests]: Pharaoh rise at 24 blocks both sides, only husks rise once, siege on at 5900 and over at 6000, no sand ramp at threat level 1 [kills 2 boundary mutants; SandRamps survivor already killed by QaSandRampEdgeGameTests]; QaCobblemonThreatsCompatTests [5 rogue bounty tests]: first winner only, sword kill pays nothing, save/reload, switch off, poster text. 38.7 left unverified: B420, B421) **Desert raiders.** `desert_raiders.json`: desert and badlands; Town and up; tactics `sand_ramps`;
   hours `until_noon` (husks don't burn, so a siege goes on until noon). Their lair is the **Tomb Camp**
   (`camp/tomb_camp`, minecraft-architect skill: a half-buried sandstone tomb with an obelisk, sun-bleached awnings,
   bone blocks and dead bushes, the Pharaoh's sarcophagus as the loot chest). The roster: husks 55%, husks in gold
@@ -3636,7 +3636,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   disaster id, each on by default. Done when: a test datapack disaster applies each effect (a GameTest each), ends
   after its time or with rain, and survives a save and load of the hall; switched off, it never starts. No disaster
   ships yet: lands with `--no-review`.
-- [x] **32.16** (approved 2026-10-12) **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
+- [x] **32.16** (approved 2026-10-12) (verified 2026-10-25: QaThreatsM32GameTests [4 tests]: Pharaoh rise at 24 blocks both sides, only husks rise once, siege on at 5900 and over at 6000, no sand ramp at threat level 1 [kills 2 boundary mutants; SandRamps survivor already killed by QaSandRampEdgeGameTests]; QaCobblemonThreatsCompatTests [5 rogue bounty tests]: first winner only, sword kill pays nothing, save/reload, switch off, poster text. 38.7 left unverified: B420, B421) **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
   a lightning strike in the hall's area in a thunderstorm sets a finished wooden build's roof alight (1 in 3), a
   chimney spark 2% a day in a drought, and the pirate gunners' burning arrows (32.8) light the wooden block they hit
   (1 in 4, with `mobGriefing`). A village fire spreads by the game's own fire (`doFireTick`), but never to a block the
@@ -3700,7 +3700,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   drop; the barbican's gate is the first breach) and battle stations know them. Done when: the four are in the
   Blueprint Table and pass `check.py`; a render package shows each front and back; a builder upgrades a finished
   Gatehouse to II in a test; 32.4's gate test takes longer on Gatehouse II than on I; the `defences` scene shows them.
-- [x] **32.21** (approved 2026-10-12) **Peaceful settings and the threat level.** Config `threatLevel`, 0–3, beside each system's own switch
+- [x] **32.21** (approved 2026-10-12) (verified 2026-10-25: QaThreatsM32GameTests [4 tests]: Pharaoh rise at 24 blocks both sides, only husks rise once, siege on at 5900 and over at 6000, no sand ramp at threat level 1 [kills 2 boundary mutants; SandRamps survivor already killed by QaSandRampEdgeGameTests]; QaCobblemonThreatsCompatTests [5 rogue bounty tests]: first winner only, sword kill pays nothing, save/reload, switch off, poster text. 38.7 left unverified: B420, B421) **Peaceful settings and the threat level.** Config `threatLevel`, 0–3, beside each system's own switch
   (`raiderCultures`, `sieges`, `siegeDamage`, `disasters`, `villageRaids`, `banditCamps`):
   - 0: no raids, lairs, sieges or disasters at all;
   - 1, gentle: half as often, no sieges (raiders walk in only), no hexes, no plague;

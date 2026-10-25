@@ -96,7 +96,8 @@ public class GolemHaulerFightGameTests implements net.fabricmc.fabric.api.gamete
 			helper.assertTrue(store.countItem(Items.COBBLESTONE) == stacks * 64, "the store has " + store.countItem(Items.COBBLESTONE) + " of "
 				+ stacks * 64 + " cobblestone, the box " + box.countItem(Items.COBBLESTONE) + ", the golem carries " + carried(golem)
 				+ " and targets " + golem.getTarget() + " at " + golem.position() + " running " + running(golem) + " path " + golem.getNavigation().getPath()
-				+ " nav done " + golem.getNavigation().isDone() + " storehouse " + HaulerGolems.storehouse(helper.getLevel(), golem.blockPosition()));
+				+ " nav done " + golem.getNavigation().isDone() + " storehouse " + HaulerGolems.storehouse(helper.getLevel(), golem.blockPosition())
+				+ " (the test's own is at " + helper.absolutePos(STOREHOUSE) + ")");
 			helper.assertTrue(carried(golem) == 0, "the golem still carries " + carried(golem));
 		});
 	}

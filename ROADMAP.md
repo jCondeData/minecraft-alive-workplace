@@ -1289,7 +1289,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     stays away for 3 days; a proposal lapses; a stranger can't approve in a protected village; Run the village starts
     a build with no click and Rest does nothing; proposals survive save and reload;
   - showcase scene `steward_desk`: the desk with three proposals, Show me, the approval and the builder setting off.
-- [x] **27.9** (approved 2026-10-05) **Jobs and research.** Two more effects:
+- [x] **27.9** (approved 2026-10-05) (verified 2026-10-25: 16 QA tests [QaStewardDeskJobsGameTests]: guard order, baby/grown, research edges [raid 6/8 days, ill 1/2, store 80/79%], 600 seeded topic cases, world-counted store/raid/ill, approvals; 5/6 mutants killed [survivor: raid exactly 7 days, covered by StewardJobsGameTests]. 27.8 waits on B475.) **Jobs and research.** Two more effects:
   - `assign_jobs`: each morning every grown jobless villager (not a nitwit) gets a free workstation
     (`VillageHalls.freeStations`), the village's biggest gap first: a builder while there's none, a farmer while food
     is short, guards while guards are short, a porter at a free Storehouse, a scholar while research is idle, then the
@@ -1580,7 +1580,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     orchard, nurse; Mega Evolution too if Mega Showdown has a build for 1.8);
   - a GameTest shows the four features off under 1.7.3 and on under 1.8.1;
   - the README says which Cobblemon versions work. Nothing visible changed: land with `--no-review`.
-- [x] **28.3** (approved 2026-10-04) **Partners at work: the engine.** Partners speed jobs up today but are never seen doing it. Add
+- [x] **28.3** (approved 2026-10-04) (verified 2026-10-25: QaPartnerShowBudgetCompatTests [3: the 10 s wait at 199/200 ticks, 6 shows a level then the 7th, work 47.5/48.5 blocks from the only player], QaPartnerShowTableGameTests [every job and cue's types exactly the roadmap's 28.4-28.6 table]; 5 planted mutants killed [wait <=, cap >, range 49, plus 2 in 28.14]; scenes partners_engine/land/forge/all pass in showcase 40177635160; wiki pokemon-partners.md checked) **Partners at work: the engine.** Partners speed jobs up today but are never seen doing it. Add
   `work/PartnerShows`: a job calls `PartnerShows.cue(villager, "<cue>", pos)` at a moment of its work, and one of the
   worker's pastured helpers (the entities `PokemonPartners.fighters` already finds) of a type the show names walks to
   `pos`, does the show and walks back. New `PokemonPartners` methods, filled in `CobblemonPartners`: `walkTo`,
@@ -1605,7 +1605,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - a display left by a cut-off show is removed when its chunk loads (GameTest); no show runs with no player near, or
     with `partnerShows` off;
   - showcase scene `partners_engine`.
-- [x] **28.4** (approved 2026-10-04) **Partners at work: building and the land.** Shows (one data file each, cued from the job's own code):
+- [x] **28.4** (approved 2026-10-04) (verified 2026-10-25: QaPartnerShowBudgetCompatTests [3: the 10 s wait at 199/200 ticks, 6 shows a level then the 7th, work 47.5/48.5 blocks from the only player], QaPartnerShowTableGameTests [every job and cue's types exactly the roadmap's 28.4-28.6 table]; 5 planted mutants killed [wait <=, cap >, range 49, plus 2 in 28.14]; scenes partners_engine/land/forge/all pass in showcase 40177635160; wiki pokemon-partners.md checked) **Partners at work: building and the land.** Shows (one data file each, cued from the job's own code):
   - Builder + Fighting: shoulders the logs or planks the builder fetches from the supply chest (cue `fetch`) and punches
     each block home with a physical move as it's placed (cue `place`); + Rock: carries the stone; + Steel: carries the
     iron parts (bars, doors, chains, lanterns).
@@ -1623,7 +1623,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: a GameTest per cue (the show starts when the worker reaches that moment in real work; the watered
   farmland is at moisture 7), and showcase scene `partners_land` (the builder with a Machamp carrying beams, the farmer
   with a Wartortle watering) with its GIF in the review package.
-- [x] **28.5** (approved 2026-10-05) **Partners at work: post, forge and kitchen.** Shows:
+- [x] **28.5** (approved 2026-10-05) (verified 2026-10-25: QaPartnerShowBudgetCompatTests [3: the 10 s wait at 199/200 ticks, 6 shows a level then the 7th, work 47.5/48.5 blocks from the only player], QaPartnerShowTableGameTests [every job and cue's types exactly the roadmap's 28.4-28.6 table]; 5 planted mutants killed [wait <=, cap >, range 49, plus 2 in 28.14]; scenes partners_engine/land/forge/all pass in showcase 40177635160; wiki pokemon-partners.md checked) **Partners at work: post, forge and kitchen.** Shows:
   - Postman + Flying: when a parcel goes by air mail it takes off from the Mailbox with a bundle, climbs out of sight
     and lands back empty-handed (cue `air_mail`); on the round it flies ahead to the next mailbox (cue `deliver`).
   - Armorer, Miner or Fisherman + Fire: breathes fire into the furnace or smoker each time it smelts the 8 on the spot
@@ -1638,7 +1638,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: a GameTest per cue, and showcase scene `partners_forge` with its GIF (the air mail take-off, a Charmander
   breathing into the blast furnace).
-- [x] **28.6** (approved 2026-10-05) **Partners at work: everyone else.** Shows:
+- [x] **28.6** (approved 2026-10-05) (verified 2026-10-25: QaPartnerShowBudgetCompatTests [3: the 10 s wait at 199/200 ticks, 6 shows a level then the 7th, work 47.5/48.5 blocks from the only player], QaPartnerShowTableGameTests [every job and cue's types exactly the roadmap's 28.4-28.6 table]; 5 planted mutants killed [wait <=, cap >, range 49, plus 2 in 28.14]; scenes partners_engine/land/forge/all pass in showcase 40177635160; wiki pokemon-partners.md checked) **Partners at work: everyone else.** Shows:
   - Miner + Ground, Rock or Steel: digs at the next block along with the miner (cue `dig`), with that block's crack
     particles.
   - Fisherman + Water or Ice: swims out round the bobber, with bubbles (cue `cast`).
@@ -1810,7 +1810,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: the ten blueprints are in the table, lint-clean, with renders front and back in the package; a builder
   finishes each in a GameTest with its job block in place; showcase scene `pokemon_builds`.
-- [x] **28.14** (approved 2026-10-05) **A habitat of the village's own (Cobblemon 1.8).** The Habitat Block has no recipe and drops nothing:
+- [x] **28.14** (approved 2026-10-05) (verified 2026-10-25: QaVillageHabitatCompatTests on Cobblemon 1.8.1 [2: only an Expert by a finished garden founds it [Journeyman and unfinished refused]; tending reaches 64 blocks, not 65, never an activated block]; mutants Expert-1 and < reach both killed; wiki page village-habitat.md written [was in the baseline]) **A habitat of the village's own (Cobblemon 1.8).** The Habitat Block has no recipe and drops nothing:
   in survival it only comes in Cobblemon's 49 habitat structures. With `PokemonFeatures.HABITATS`:
   - Tending: natural Habitat Blocks within 64 blocks of the keeper's pasture (found through the loaded chunks' block
     entities, never a block scan) are visited each morning, and the hall's list posts today's phase ("Lush Cenote,

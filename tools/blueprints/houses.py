@@ -250,7 +250,8 @@ def stone_house_3():
 
 # --- The settlers' camp: what a Settler's Wagon sets up ------------------------------------------------------------
 def settlers_camp():
-    """11 x 5 x 9: a settlers' camp in the wild — a covered wagon on four wheels with the supply chest in it, a
+    """11 x 5 x 9: a settlers' camp in the wild — a covered wagon on four wheels with the supply chest at its tail (steps
+    up to it), a
     Blueprint Table beside it with a lamp (the first settler becomes its builder), a campfire with log seats in front
     and two bedrolls. Placed at once by the Settler's Wagon (not built): {@code camp/} blueprints aren't in the
     Blueprint Table."""
@@ -278,11 +279,17 @@ def settlers_camp():
     # The tongue out of the front
     fence(b, 1, 1, 4, "dark_oak_fence")
     fence(b, 0, 1, 4, "dark_oak_fence")
-    # The load: the supply chest (a loot table fills it), a hay bale, a pumpkin
-    b.set_nbt(5, 2, 4, Compound({"LootTable": String("aliveworkplace:chests/settlers_wagon"), "id": String("minecraft:chest")}))
-    b.set(5, 2, 4, "chest", facing="west", type="single", waterlogged=False)
+    # The load: two hay bales and a pumpkin, the supply chest (a loot table fills it) at the open tail end, its lid to
+    # the tail (B424: in the middle, between the hay and the pumpkin, no player could open it where it stood)
     b.set(4, 2, 4, "hay_block", axis="x")
+    b.set(5, 2, 4, "hay_block", axis="x")
     b.set(6, 2, 4, "pumpkin")
+    b.set_nbt(7, 2, 4, Compound({"LootTable": String("aliveworkplace:chests/settlers_wagon"), "id": String("minecraft:chest")}))
+    b.set(7, 2, 4, "chest", facing="east", type="single", waterlogged=False)
+    # Steps up to the tail: a crate with a stair on it and a stair before it, ending level with the wagon's bed
+    b.set(9, 0, 4, "stripped_spruce_wood", axis="y")
+    stairs(b, 9, 1, 4, SPRUCE, "west")
+    stairs(b, 10, 0, 4, SPRUCE, "west")
     # The Blueprint Table beside the wagon (the builder's workstation), a lamp on a post
     b.set(9, 0, 3, "aliveworkplace:blueprint_table", facing="west")
     lamp_post(b, 10, 0, 2, "spruce_fence", height=2)

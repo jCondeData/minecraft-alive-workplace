@@ -106,7 +106,9 @@ builders put it back after a restart too.
 
 ## Known limits
 
-- Fires are held in memory: one burning across a restart is picked up again only where it spreads.
+- A fire saved while burning comes back with the load (B392); if its blocks went out while the server was down, it
+  closes by itself once the area is loaded, with its "burned out" chronicle line (`QaFireSavedGameTests`). A fire in
+  chunks nobody loads stays open until they are.
 - The builders wait for the fire to be out within 16 blocks of a build before they repair it.
 - The water source search looks within 16 blocks of the grindstone and 6 up or down.
 - The Water-type partners' path is tested only in the compat tests (it needs Cobblemon).

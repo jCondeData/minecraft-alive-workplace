@@ -380,7 +380,8 @@ make a crew of three helpers, never four; a hired builder killed with a build an
 where he fell and his owner reads builder_died with the build's name and the spot; a hut placed overlapping the one under
 way, or in the Nether, is refused with its sentence and kept). `QaScanEdgesGameTests` (4, QA: a Scan Tool box with nothing
 built in it saves nothing and keeps the Blank; with no Blank in survival nothing is saved and the player is told; in
-creative no Blank is needed nor used; in survival the save takes the Blank from any slot, the first included). `QaNeverPlacedGameTests` (1: a blueprint with a spawner, bedrock and budding
+creative no Blank is needed nor used; in survival the save takes the Blank from any slot, the first included). `QaLevelUpWordsGameTests` (1, QA: each level-up from
+Apprentice to Master tells the owner the level_up sentence with the new level's speed, 18%, 43%, 82% and 150%). `QaNeverPlacedGameTests` (1: a blueprint with a spawner, bedrock and budding
 amethyst between cobblestone asks only for the cobblestone and is finished with none of the three placed). `QaBlueprintHandlingGameTests` (3: place, four quarter turns back to the
 start, pick up, the levelling switch off/on/off kept through placing, turning and the hand-over; a building taken down
 with the chest full loses nothing; an upgrade lines up over its own finished building, turned or not, never when

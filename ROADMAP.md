@@ -4318,7 +4318,7 @@ on a real world.
   band. Luxury files `cider`, `berry_wine`, `vintage_wine`. Done when: `VintnerGameTests` (picked by each item at a
   cauldron, each wine made from stocked chests, vintage waiting its 3 days) pass; both outfits pass `lint.py` and the
   `OutfitGameTests`; scene `vintner` passes; a README section and job-table row.
-- [x] **34.10** (approved 2026-10-11) **Tailor.** A new job: stand a villager by a **loom** and sneak-right-click them with **string** (the
+- [x] **34.10** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaLuxuryTradesGameTests]: hiring refused without a job block, at a taken loom, each switch off; recipe boundaries both sides; Journeyman's Illuminated Book; luxuries made by a job the class below may take. 34.9 waits on B443) **Tailor.** A new job: stand a villager by a **loom** and sneak-right-click them with **string** (the
   loom's Shepherd stays, back with shears). They take the shepherds' wool and the dyers' coloured wool from the
   village and make:
   - **Work Clothes**: 3 wool of any colour, 2 leather and a string (Novice);
@@ -4332,7 +4332,7 @@ on a real world.
   `work_clothes`, `fine_clothes`, `noble_robes`. Done when: `TailorGameTests` (picked with string at a loom, each
   garment made, the dyed-wool rules kept) pass; both outfits pass `lint.py`; scene `tailor` passes; a README section
   and job-table row.
-- [x] **34.11** (approved 2026-10-11) **Printer.** A new job: stand a villager by a **cartography table** and sneak-right-click them with
+- [x] **34.11** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaLuxuryTradesGameTests]: hiring refused without a job block, at a taken loom, each switch off; recipe boundaries both sides; Journeyman's Illuminated Book; luxuries made by a job the class below may take. 34.9 waits on B443) **Printer.** A new job: stand a villager by a **cartography table** and sneak-right-click them with
   an **ink sac** (the table's Cartographer and Netherworker stay). Through 34.5 they make:
   - **Books**: 3 paper and a leather make 2 books (Novice). Scholars' research and builders take the store's books
     first, and with a scholar in the village the printer keeps 8 in the store;
@@ -4350,7 +4350,7 @@ on a real world.
   pages built from a staged hall's chronicle and quests, a scholar using printed books, the quest paid on delivery)
   pass; both outfits pass `lint.py`; scene `printer` (the Gazette opened and read) passes; a README section and
   job-table row.
-- [x] **34.12** (approved 2026-10-11) **Jeweller.** A new job: stand a villager by a **stonecutter** and sneak-right-click them with an
+- [x] **34.12** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaLuxuryTradesGameTests]: hiring refused without a job block, at a taken loom, each switch off; recipe boundaries both sides; Journeyman's Illuminated Book; luxuries made by a job the class below may take. 34.9 waits on B443) **Jeweller.** A new job: stand a villager by a **stonecutter** and sneak-right-click them with an
   **amethyst shard** (the stonecutter's Mason stays, back with cobblestone). Through 34.5 they make:
   - **Amethyst Ring**: 2 amethyst shards and 2 copper ingots (Novice);
   - **Emerald Brooch**: an emerald and 3 gold nuggets (Apprentice);

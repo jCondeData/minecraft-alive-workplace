@@ -213,6 +213,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BoardTradeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CaravanTradeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CaravanSightGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCaravansGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ColonyCharterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmMapGameTests",

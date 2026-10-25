@@ -101,6 +101,6 @@ but the hatch, are listed with their basement and sold by the Level II's builder
 `huge_area`; `oldSmithyDigsOnlyItsCellar`: the offer, the dig of only the cellar, a player's block left alone, and the
 Smithy II's plan digging the cellar too, and the trade gone after; `noOfferWhenTheCellarIsThere`; `reloadMidDigFinishesTheCellar`;
 `staleDigTradeGoesAndCannotStartABuild`: two Smithies, one dug by hand, a builder saved with its trade), `QaRepairCellarBugTests`, and
-`BasementGameTests.basementsLoadUnderTheGround` (all eight load with a way down and a light).
+`BasementGameTests.basementsLoadUnderTheGround` (all eight load with a way down and a light), and QA's `QaBasementGameTests` (each cellar walked to and back out, its chests within reach, its floor lit everywhere).
 
 Showcase scenes: cellars

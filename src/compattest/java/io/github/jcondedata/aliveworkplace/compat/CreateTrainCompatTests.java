@@ -49,7 +49,7 @@ public class CreateTrainCompatTests implements FabricGameTest {
 	private static final BlockPos HALL_B = new BlockPos(23, 2, 22);
 
 	/** A flat stone floor, the track and the two stations. */
-	private static void line(GameTestHelper helper) {
+	static void line(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		for (int x = 0; x < 30; x++) {
 			for (int z = 0; z < 30; z++) {
@@ -82,11 +82,11 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		return (Comparable) prop(state, name).getValue(value).orElseThrow();
 	}
 
-	private static CaravanTrains.Railway railway() {
+	static CaravanTrains.Railway railway() {
 		return CaravanTrains.RAILWAY.call(r -> r, null);
 	}
 
-	private static Villager conductor(GameTestHelper helper, BlockPos at) {
+	static Villager conductor(GameTestHelper helper, BlockPos at) {
 		Villager villager = EntityType.VILLAGER.spawn(helper.getLevel(), helper.absolutePos(at), MobSpawnType.COMMAND);
 		villager.setNoAi(true);
 		return villager;
@@ -335,7 +335,7 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		Builders.employ(level, builder, helper.absolutePos(bench));
 	}
 
-	private static int logs(List<ItemStack> stacks) {
+	static int logs(List<ItemStack> stacks) {
 		return stacks.stream().filter(st -> st.is(Items.OAK_LOG)).mapToInt(ItemStack::getCount).sum();
 	}
 
@@ -536,13 +536,13 @@ public class CreateTrainCompatTests implements FabricGameTest {
 	}
 
 	/** The logs in both villages' chests. */
-	private static int chestLogs(ServerLevel level, Villages v) {
+	static int chestLogs(ServerLevel level, Villages v) {
 		return ((Container) level.getBlockEntity(v.a().east(3).north(2))).countItem(Items.OAK_LOG)
 			+ ((Container) level.getBlockEntity(v.b().east(3).north(2))).countItem(Items.OAK_LOG);
 	}
 
 	/** The caravans on the road to or from either village. */
-	private static List<Caravans.Shipment> road(Villages v) {
+	static List<Caravans.Shipment> road(Villages v) {
 		return v.data().onTheRoad().stream().filter(s -> s.to().equals(v.a()) || s.to().equals(v.b()) || s.from().equals(v.a()) || s.from().equals(v.b())).toList();
 	}
 
@@ -619,11 +619,11 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		});
 	}
 
-	private record Villages(BlockPos a, BlockPos b, Caravans.Data data) {
+	record Villages(BlockPos a, BlockPos b, Caravans.Data data) {
 	}
 
 	/** Two halls with a storehouse chest each, a caravan route, the road between them built and tracked, and the stations noted. */
-	private static Villages villages(GameTestHelper helper) {
+	static Villages villages(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		BlockPos a = helper.absolutePos(HALL_A);
 		BlockPos b = helper.absolutePos(HALL_B);
@@ -664,7 +664,7 @@ public class CreateTrainCompatTests implements FabricGameTest {
 	 * Today's caravan sent now that the train runs: the hall's own first round (its first tick) may have sent one already,
 	 * before there was a train; that one is taken off the road, its logs put back, and the day's caravan sent again.
 	 */
-	private static void sendAgain(ServerLevel level, Villages v) {
+	static void sendAgain(ServerLevel level, Villages v) {
 		v.data().clearRoad(v.a());
 		((Container) level.getBlockEntity(v.a().east(3).north(2))).setItem(0, new ItemStack(Items.OAK_LOG, 64));
 		((Container) level.getBlockEntity(v.b().east(3).north(2))).clearContent();
@@ -678,7 +678,7 @@ public class CreateTrainCompatTests implements FabricGameTest {
 	 * The train's blocks put up at the first village's station as its builder would (39.7b; the builder itself:
 	 * {@link #aTrainOnASteppedRoadRunsWithTheGoodsInItsChest}), once Create knows both stations on one network.
 	 */
-	private static void buildTrain(ServerLevel level, Villages v) {
+	static void buildTrain(ServerLevel level, Villages v) {
 		BlockPos hall = CaravanTrains.first(v.a(), v.b()) ? v.a() : v.b();
 		BlockPos other = hall.equals(v.a()) ? v.b() : v.a();
 		List<BlockPos> ours = v.data().stations(hall);
@@ -697,7 +697,7 @@ public class CreateTrainCompatTests implements FabricGameTest {
 	 * Takes the two villages away again (halls, storehouses and their emptied chests, and their entries on the list): the
 	 * next batch's test areas stand within a hall's reach of this one, and a storehouse left here would take their goods.
 	 */
-	private static void tidy(ServerLevel level, Villages v) {
+	static void tidy(ServerLevel level, Villages v) {
 		for (BlockPos hall : List.of(v.a(), v.b())) {
 			if (level.getBlockEntity(hall.east(3).north(2)) instanceof Container c) {
 				c.clearContent();
@@ -710,11 +710,11 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		}
 	}
 
-	private static VillageHallBlockEntity hall(ServerLevel level, BlockPos pos) {
+	static VillageHallBlockEntity hall(ServerLevel level, BlockPos pos) {
 		return (VillageHallBlockEntity) level.getBlockEntity(pos);
 	}
 
-	private static boolean said(ServerLevel level, BlockPos hall, String key) {
+	static boolean said(ServerLevel level, BlockPos hall, String key) {
 		return hall(level, hall).chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.CARAVAN
 			&& e.text().getContents() instanceof TranslatableContents t && t.getKey().equals(key));
 	}

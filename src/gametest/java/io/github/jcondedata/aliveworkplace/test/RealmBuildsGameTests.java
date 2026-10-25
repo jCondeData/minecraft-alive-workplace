@@ -69,7 +69,9 @@ public class RealmBuildsGameTests implements FabricGameTest {
 		helper.assertTrue(SettlersWagonItem.table(level, box) != null, "no Blueprint Table in the camp");
 		helper.assertTrue(count(helper, box, Blocks.CHEST) == 1 && count(helper, box, Blocks.CAMPFIRE) == 1 && count(helper, box, Blocks.CAULDRON) == 1,
 			"the chest, campfire and pot");
-		helper.assertTrue(count(helper, box, Blocks.HAY_BLOCK) == 3 && count(helper, box, Blocks.PUMPKIN) == 2, "two loaded wagons and a hay bale by the chest");
+		// two hay bales, a pumpkin and a barrel aboard each wagon (the barrel at the tail since B424), one bale by the chest, two barrels among the crates
+		helper.assertTrue(count(helper, box, Blocks.HAY_BLOCK) == 5 && count(helper, box, Blocks.PUMPKIN) == 2 && count(helper, box, Blocks.BARREL) == 4,
+			"two loaded wagons and a hay bale by the chest");
 		helper.assertTrue(count(helper, box, Blocks.RED_WOOL) > 10 && count(helper, box, Blocks.WHITE_BANNER) == 1, "the awning and the flag");
 		helper.assertTrue(count(helper, box, Blocks.BROWN_BED) + count(helper, box, Blocks.GREEN_BED) == 6, "three bedrolls");
 		helper.assertTrue(count(helper, box, ModBlocks.VILLAGE_HALL) == 0 && count(helper, box, ModBlocks.TRAVEL_POST) == 0, "the camp itself has no hall or post");

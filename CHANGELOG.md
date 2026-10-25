@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.149.1 — 2026-10-25
+
 ### Fixed
 
 - A shop's takings while its owner was offline are no longer lost when CobbleDollars is gone from the server by the time they join (taken out of the pack, or broken by an update): they're paid in emeralds at the server's rate (1,234 CobbleDollars: 12 emeralds, "your shops took 12 emeralds"; it said "took 0 emeralds" and paid nothing), and what doesn't make a whole emerald stays owed for a later join, in CobbleDollars once they're back. A fortune is paid an inventory of emeralds at a time (B416).

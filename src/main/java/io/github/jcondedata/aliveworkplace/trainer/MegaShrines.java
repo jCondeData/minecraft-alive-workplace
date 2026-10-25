@@ -42,7 +42,7 @@ public final class MegaShrines {
 	/** Mega Showdown's pedestal: while it isn't a block, the shrine isn't listed. */
 	public static final ResourceLocation PEDESTAL = ResourceLocation.fromNamespaceAndPath("mega_showdown", "pedestal");
 	/** The pedestal in the blueprint (tools/blueprints/decor.py, mega_shrine), and where its watchers stand (in front). */
-	static final BlockPos PEDESTAL_SPOT = new BlockPos(3, 3, 3);
+	public static final BlockPos PEDESTAL_SPOT = new BlockPos(3, 3, 3);
 	static final BlockPos TRAINER_SPOT = new BlockPos(3, 3, 2);
 	static final BlockPos CROWD_SPOT = new BlockPos(3, 1, -4);
 	/** The show runs from the festival's start for this many ticks (an in-game hour and a half), then the square has them. */
@@ -79,15 +79,29 @@ public final class MegaShrines {
 		return MegaBracelets.extraMegas() && blocksExist();
 	}
 
-	/** The pedestal of the village round {@code hall}'s finished shrine, the nearest first; empty without one. */
+	/**
+	 * The pedestal of the village round {@code hall}'s finished shrine whose pedestal still stands, the nearest first; empty
+	 * without one.
+	 */
 	public static Optional<BlockPos> pedestal(ServerLevel level, BlockPos hall) {
 		return finished(level, hall).map(f -> Arenas.world(f.placement(), PEDESTAL_SPOT));
 	}
 
+	/**
+	 * The nearest finished shrine round {@code hall} whose pedestal stands (B421: a shrine whose pedestal was broken, or
+	 * never placed, still held the show at the empty spot; the finished-build record alone was checked). A shrine whose
+	 * pedestal is put back counts again.
+	 */
 	private static Optional<BuildSiteManager.Finished> finished(ServerLevel level, BlockPos hall) {
 		return BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
 			.filter(f -> BlueprintStyles.base(f.structure()).equals(SHRINE))
+			.filter(f -> standing(level, Arenas.world(f.placement(), PEDESTAL_SPOT)))
 			.min(Comparator.comparingDouble(f -> f.placement().origin().distSqr(hall)));
+	}
+
+	/** Whether Mega Showdown's pedestal stands at {@code pos} (by id); a spot whose chunk isn't loaded isn't read (and isn't). */
+	static boolean standing(ServerLevel level, BlockPos pos) {
+		return level.isLoaded(pos) && PEDESTAL.equals(BuiltInRegistries.BLOCK.getKey(level.getBlockState(pos).getBlock()));
 	}
 
 	/** Whether the festival round {@code hall} is in its show's hours now (it started less than {@link #SHOW_TICKS} ago). */

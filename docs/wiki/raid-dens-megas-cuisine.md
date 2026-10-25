@@ -89,7 +89,9 @@ The trainer waits at the pedestal until every villager off work has come to the 
 gathering's start, and never past the show's last 100 ticks), so the crowd sees it (B215). Everyone who came, and every
 villager off work within 12 blocks, is the happier for it (a villager at work by the shrine, such as a farmer at his
 fields, isn't one of the crowd and gets nothing, B420): +3 mood ("watched a Mega Evolution at the shrine") as long as a
-festival's good mood lasts (2 days). Once a festival; then the crowd goes back to the square for the dancing and
+festival's good mood lasts (2 days). The shrine counts only while its pedestal stands: with the pedestal broken (or
+never placed) there is no show, no chat line and no mood, and once a pedestal is put back the next festival's show is
+held again (B421). Once a festival; then the crowd goes back to the square for the dancing and
 fireworks. The show is part of the festival itself: it needs the village's festival (six villagers or more, on its
 festival day or one called), and it begins at the festival's first tick after the hall's round has seen it start.
 
@@ -209,7 +211,8 @@ village (the nearest hall) for that player, then checks the realm the village is
 ## How the shrine's show runs (38.7)
 
 `trainer/MegaShrines` (core) reads the shrine by its blueprint id from the finished builds near the hall
-(`BuildSiteManager.finishedNear`), and Mega Showdown's pedestal only by its id (`mega_showdown:pedestal`):
+(`BuildSiteManager.finishedNear`), keeping only those whose pedestal spot holds `mega_showdown:pedestal` now (read by
+id, and only while that chunk is loaded; B421), and Mega Showdown's pedestal only by its id (`mega_showdown:pedestal`):
 `BlueprintLibrary.megaOk` lists the shrine only while that block exists and `villageMegas` is on. `Festivals.tick`
 asks it first each festival tick; in the show's hours it takes the crowd (to 4 blocks in front of the dais) and walks
 the trainer to the step before the pedestal; there, the trainer waits for the crowd (`WAIT_TICKS`: every villager off
@@ -395,7 +398,8 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   crowd's far edge, past 12 blocks, cheers too; one who never comes doesn't hold it past its last call).
 - `QaMegaShrineGapsCompatTests` (with Mega Showdown, B420): `aVillagerAtWorkGetsNoShowMood` (a farmer at work within
   12 blocks gets no show day and no mood), `theCrowdKeepsTheShowMoodAndTheWorkerNoneAfterReload` (the crowd's watcher
-  reads +3 and "watched a Mega Evolution at the shrine", the farmer neither, both still so after a save and reload).
+  reads +3 and "watched a Mega Evolution at the shrine", the farmer neither, both still so after a save and reload),
+  `aBrokenPedestalHoldsNoShow` (B421: the pedestal broken, no show, no chat line, no mood; put back, the show again).
 - `MegaShrineGameTests` (without Mega Showdown): `hiddenWithoutMegaShowdown`, `theShowsMoodAndText`.
 - `MegaStoneCompatTests` (with Mega Showdown, 38.6): `theRecipesAndFindsLoad`,
   `aJewellerCutsAMegaStoneForTheVillagesTrainers` (a crystal, gold and emeralds become one stone of the Master's team),

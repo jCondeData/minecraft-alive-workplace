@@ -317,6 +317,9 @@ chest, `aBookAndQuillOnTheBuilderWritesWhatIsLeft`; the bag and a storehouse com
 every stage and after a save and reload, `everyStageAndAfterAReload`; a finished and an idle builder say so,
 `aFinishedOrIdleBuilderSaysSo`; the empty-hand chat list, `anEmptyHandShowsTheWholeListInChat`; the bench,
 `aBookAndQuillOnTheBenchWritesTheList`; taking down and the book's words, `takingDownNeedsNothing`).
+`QaOffHandBookGameTests` (2, QA on B394: an off-hand Book and Quill doesn't stop the Postal Desk handing out waiting
+parcels, `anOffHandBookDoesNotStopThePostalDeskHandingOutParcels`; on a bench with no build it says so and is kept,
+`anOffHandBookOnABenchWithNoBuildSaysSoAndIsKept`).
 `B290GameTests` (6, B290: a hired Builder at a workshop table 34 blocks from the village's unowned Storehouse, in a
 village whose hall his employer owns, counts its stone overhead, in the list and the status and builds from it,
 `aHiredBuilderAtAWorkshopTableBuildsFromTheVillageStorehouse`; a player's Storehouse feeds the village's own Builder on
@@ -368,12 +371,13 @@ hired Builder a blueprint, `ownershipOffLetsAStrangerGiveTheBuilderABlueprint`; 
 out and no further, `levelGroundEightLevelsEightBlocksOutAndNoFurther`; `workplaceFoundationDepth` 0 puts nothing in a
 dip and uses no extra cobblestone, `foundationDepthZeroPutsNothingIntoTheDip`; the Blueprint Table hides the Mega Shrine
 and Train Station while their expansions are closed, `theTableHidesTheM38AndM39BuildsWhileTheirExpansionsAreClosed`).
-`QaBuilderLimitsGameTests` (7, QA of the builder's limits from the player guide, each from both sides through the
+`QaBuilderLimitsGameTests` (8, QA of the builder's limits from the player guide, each from both sides through the
 player's clicks: a Book and Quill on a Blueprint Table nobody works at opens the table, from either hand; five blueprints
 line up as numbers 1 to 5 and the sixth is refused with "already has 5 blueprints lined up" and kept; the line keeps its
 order over a save and each `/workplace cancel` takes up the next and hands the blueprint back still placed; a spot 48
-blocks from the table is taken and 49 refused; chests 8 blocks off (and 4 up) count and 9 off don't; four idle builders
-make a crew of three helpers, never four). `QaBlueprintHandlingGameTests` (3: place, four quarter turns back to the
+blocks from the table is taken and 49 refused; chests 8 blocks off (and 4 up) count and 9 off don't; 4 under the table count and 5 under or 5 up don't; four idle builders
+make a crew of three helpers, never four). `QaNeverPlacedGameTests` (1: a blueprint with a spawner, bedrock and budding
+amethyst between cobblestone asks only for the cobblestone and is finished with none of the three placed). `QaBlueprintHandlingGameTests` (3: place, four quarter turns back to the
 start, pick up, the levelling switch off/on/off kept through placing, turning and the hand-over; a building taken down
 with the chest full loses nothing; an upgrade lines up over its own finished building, turned or not, never when
 sneaking and never over another kind of building). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client

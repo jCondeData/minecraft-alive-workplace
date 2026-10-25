@@ -47,7 +47,7 @@ unlocks locked builds too.
   of villages, by the live name when its hall is loaded), else the nearest finished build that way (its display name
   and distance; not another signpost), else the village's own name and "Welcome". The hall's round, once a day,
   writes the boards of its village's finished signposts again where the words changed (a village renamed, a new
-  neighbour, a build pulled down); unchanged boards aren't touched.
+  neighbor, a build pulled down); unchanged boards aren't touched.
   The post's own village is the nearest hall by its point-of-interest record or, where that record isn't filed yet,
   by the caravans' list (where the hall really stands), and is never named as somewhere to go. A place exactly on a
   diagonal goes to the north or south board only, so no place is named on two boards (B186).
@@ -94,7 +94,7 @@ waxed boards naming the village east, a village west and a Well south, kept thro
 village renamed at the next dawn; a Dark Oak signpost gets words too; B186: the own hall on an exact diagonal with
 its record unfiled is never named, and a village on the diagonal is named on one board only), `QaSignpostGameTests` (QA: a village 999 or 1,000 blocks away is named, 1,001 is
 not; nothing either way says the village's name and "Welcome" on all four boards; a player can't dye or edit a
-written board; a build pulled down and a new nearer neighbour are both picked up at the next dawn; reloaded boards
+written board; a build pulled down and a new nearer neighbor are both picked up at the next dawn; reloaded boards
 keep their words).
 
 Showcase scenes: `decor` (every decoration placed side by side), `signpost` (a signpost at a crossroads between two

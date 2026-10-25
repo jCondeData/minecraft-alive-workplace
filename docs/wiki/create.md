@@ -14,8 +14,8 @@ Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39
 
 Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create installed:
 
-- **The Mechanic** (39.2). A jobless villager next to a Create Toolbox (any of its sixteen colours) becomes the
-  village's Mechanic, in a grey canvas work apron with a cogwheel stitched on it, brass goggles pushed up on the brow
+- **The Mechanic** (39.2). A jobless villager next to a Create Toolbox (any of its sixteen colors) becomes the
+  village's Mechanic, in a gray canvas work apron with a cogwheel stitched on it, brass goggles pushed up on the brow
   and a brass-headed wrench at the belt. When a shaft, gearbox, cogwheel or belt goes missing from a finished build
   within 32 blocks of the toolbox, the Mechanic fetches the part from the chest by the toolbox, carries it over and
   puts it back as the blueprint has it (the same axis and facing): shafts first, then the cogwheels on them, then
@@ -175,7 +175,7 @@ list. The road tick (`Roads.tick`) opens, every 100 ticks, one track site at a t
 (both villages have a station, the half is built, it isn't tracked yet), with any idle builder of the village (as for
 a far road segment). Its blueprint is `aliveworkplace:roads/<hall>/track_<other>_<road key>`, so it is a road segment
 to everything that treats them specially (not a building, not at the table, no blueprint handed back); a track piece
-goes on each node of the half's way at feet height, straight or diagonal by its neighbours, but not where the road
+goes on each node of the half's way at feet height, straight or diagonal by its neighbors, but not where the road
 steps a block (its stairs) or where something already stands (the hall it starts from). The finished site
 (`Roads.segmentBuilt`) marks the half tracked. `Caravans.send` asks `CaravanTrains.rides` (switch, Create, roads on,
 a station at both ends, the road finished, both halves tracked) and saves the answer on the shipment.
@@ -345,7 +345,7 @@ The planned fields of later items, each with its default, are listed in the desi
 
 ## Items, blocks, jobs, commands
 
-- Job: the **Mechanic** (`aliveworkplace:mechanic`, only with Create), at a Create Toolbox of any colour (POI
+- Job: the **Mechanic** (`aliveworkplace:mechanic`, only with Create), at a Create Toolbox of any color (POI
   `aliveworkplace:toolbox`). In the Village Hall's list a Mechanic shows with the toolbox's own item, as every job shows
   with its workstation.
 
@@ -371,7 +371,7 @@ The planned fields of later items, each with its default, are listed in the desi
 
 No items or blocks of our own. The ids the milestone reads from Create (the machines, the drive-train parts, the sails, the
 toolboxes, the schematic items and components, the recipe types) are listed in the design note and checked by
-`CreateCompatTests`. The Mechanic's job block will be Create's Toolbox, in any of its sixteen colours.
+`CreateCompatTests`. The Mechanic's job block will be Create's Toolbox, in any of its sixteen colors.
 
 ## Decisions
 
@@ -383,7 +383,7 @@ toolboxes, the schematic items and components, the recipe types) are listed in t
 - What a machine makes is read from Create's own recipes, never our own list (39.1).
 - The windmill is started the way a player starts it, an empty-hand use of its bearing, by a fake player; a sign
   tells the player how if that fails (39.1, for 39.4).
-- The Mechanic waits for all sixteen toolbox colours before registering its workstation, and its profession exists
+- The Mechanic waits for all sixteen toolbox colors before registering its workstation, and its profession exists
   only with Create; a hired Mechanic stays one when the switch is off, standing idle (39.2).
 - The Mechanic mends only the village's own finished builds near the toolbox, as written in the design note; the
   owner's question about players' own factories is still open (39.2).
@@ -496,7 +496,7 @@ tested (the GameTests use the table as the server does).
   naming any that's missing.
 - `ExpansionGateGameTests.createIntegrationIsGated`: the gate is shut for players and open in GameTests, for each of
   the five switches.
-- `MechanicCompatTests` (with Create): a jobless villager takes a red toolbox by themselves, and every colour is the
+- `MechanicCompatTests` (with Create): a jobless villager takes a red toolbox by themselves, and every color is the
   job's block; a shaft and a cogwheel gone from a finished build go back from its blueprint, shaft first, with the
   chest's parts (and the toolbox isn't a supply chest); without the part the hole waits and the Mechanic says what's
   needed; a millstone turned by a creative motor gets the chest's wheat and its flour comes back, one that doesn't

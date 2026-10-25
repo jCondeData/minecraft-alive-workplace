@@ -111,7 +111,7 @@ The builder is the village's biggest customer. Almost every other worker ends up
 
 The **Blueprint Table** lists the server's blueprints with its size and exactly what it needs. **Get Blueprint**
 gives you a copy for a Blank Blueprint. Each village's table is a collection: it starts with the basics (the Starter
-Cottage, the first Stone House and Terrace, and a first workplace for each everyday job), and the rest show greyed out
+Cottage, the first Stone House and Terrace, and a first workplace for each everyday job), and the rest show grayed out
 with how to get them until the village unlocks them by buying blueprints, builders' level-ups, questbook rewards or a
 blueprint used on the table. See [Blueprint Table](blueprint-table.md#a-collection-that-grows).
 

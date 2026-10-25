@@ -88,7 +88,7 @@ sneak-right-clicking a worker with an empty hand shows their status, ending with
 | Firewarden | Grindstone + a water bucket | any |
 | Well Keeper | Cauldron + a shovel | any |
 | Physician | Brewing stand + a glistering melon slice | any |
-| Mechanic (with Create) | Create Toolbox, any colour (2.3) | any |
+| Mechanic (with Create) | Create Toolbox, any color (2.3) | any |
 | Furnicrafter (with CobbleFurnies) | CobbleFurnies' Furni Crafter (2.2) | any |
 | Fletcher | Fletching Table (vanilla) | any |
 | Shepherd | Loom (vanilla) | any |

@@ -3746,7 +3746,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   realm" README section that each item adds to; and the owner's open calls with the defaults used meanwhile (the
   leaderboard on a real week, Sunday 19:00 server time; no tribute in wars; collecting the treasury owner-only, see
   33.5). Done when: the note is on `main` and its review package is sent.
-- [x] **33.2** (approved auto 2026-10-06) **Trade goods: what a village is known for and short of.** The engine (new package `trade/`). Trade
+- [x] **33.2** (approved auto 2026-10-06) (verified 2026-10-25: QaTradeBoardGameTests [13 tests, d7ab46c]: known-for/short-of thresholds at 3 and 4 points both sides, top-3 cap, never both, supply/waiting caps, food under 16 meals, villageEconomy off keeps prices, treasury and pack limits exactly at the edge, 10% markup rounding, price clamps through clicks, hall before its first round; 4/4 mutants killed) **Trade goods: what a village is known for and short of.** The engine (new package `trade/`). Trade
   goods are data: `data/aliveworkplace/trade_goods/<good>.json`, loaded through `Platform.onDataReload` so datapacks
   and `/reload` work. One file is one good: its name key and icon, its items (an item or an item tag), a bundle size,
   a base price in hundredths of an emerald a bundle, `made_by` (professions and biome tags), `wanted_in` (biome tags,
@@ -3767,7 +3767,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     and twice its base; a raid event raises demand for its days only;
   - the new keys survive save and reload, and a village entry saved before this item loads with empty lists;
   - with `villageEconomy` off nothing is worked out and `caravansCarryWhatAnotherVillageNeeds` passes unchanged.
-- [x] **33.3** (approved auto 2026-10-06) **The trade goods.** 28 data files (prices follow vanilla's villager trades where there is one; biomes
+- [x] **33.3** (approved auto 2026-10-06) (verified 2026-10-25: QaTradeBoardGameTests [13 tests, d7ab46c]: known-for/short-of thresholds at 3 and 4 points both sides, top-3 cap, never both, supply/waiting caps, food under 16 meals, villageEconomy off keeps prices, treasury and pack limits exactly at the edge, 10% markup rounding, price clamps through clicks, hall before its first round; 4/4 mutants killed) **The trade goods.** 28 data files (prices follow vanilla's villager trades where there is one; biomes
   as vanilla and `c:` biome tags; a tag of ours where a good is several items): food and farm goods first, then
   building materials (Timber to Gold), crafts (Wool to Nether Goods) and three goods that load only with Cobblemon,
   each behind a `fabric:load_conditions` like the explorer's Cobblemon loot:
@@ -3834,7 +3834,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     and a desert village short of timber and fish;
   - the three Cobblemon goods load only with Cobblemon (a compat GameTest) and the other 25 without it;
   - every good has its name in `en_us.json` and an icon (`langcheck.py` clean).
-- [x] **33.4** (approved 2026-10-11) **The price board.** The minecart in the hall's divider now opens a **Trade** page with a row of tabs:
+- [x] **33.4** (approved 2026-10-11) (verified 2026-10-25: QaTradeBoardGameTests [13 tests, d7ab46c]: known-for/short-of thresholds at 3 and 4 points both sides, top-3 cap, never both, supply/waiting caps, food under 16 meals, villageEconomy off keeps prices, treasury and pack limits exactly at the edge, 10% markup rounding, price clamps through clicks, hall before its first round; 4/4 mutants killed) **The price board.** The minecart in the hall's divider now opens a **Trade** page with a row of tabs:
   **Routes** (today's trade-routes page, unchanged), **Prices** (this item), and **Pacts**, **Realm** and
   **Colonies**, which later items fill and which stay hidden until then; the Village Ledger reaches it from afar as it
   does the rest of the hall. **Prices** lists every good with its icon, this village's price for a bundle (to sell to
@@ -3851,7 +3851,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     from afar;
   - showcase scene `price_board` (the page, a tooltip, the name icon), and the README section starts with "Specialties
     and prices".
-- [x] **33.5** (approved 2026-10-11) **Trading at the board.** On the Prices tab a player can **sell** the village what it's short of (click
+- [x] **33.5** (approved 2026-10-11) (verified 2026-10-25: QaTradeBoardGameTests [13 tests, d7ab46c]: known-for/short-of thresholds at 3 and 4 points both sides, top-3 cap, never both, supply/waiting caps, food under 16 meals, villageEconomy off keeps prices, treasury and pack limits exactly at the edge, 10% markup rounding, price clamps through clicks, hall before its first round; 4/4 mutants killed) **Trading at the board.** On the Prices tab a player can **sell** the village what it's short of (click
   with the goods in your inventory: one bundle; shift-click: as many as it will take) and **buy** what it's known for
   (click with an empty hand), at the board's prices: the village pays from its treasury and keeps what it earns there
   (`Money`, so CobbleDollars with the pack), and the goods go into and come out of its Storehouses' chests, which keep

@@ -38,6 +38,11 @@ public final class BlockEntityData {
 			// or chronicle
 			return null;
 		}
+		if (blockEntity instanceof io.github.jcondedata.aliveworkplace.grave.GraveBlockEntity) {
+			// B449: a grave from a scanned build is a fresh, empty one: never the dead villager the scanned grave held
+			// (the Undertaker could revive a copy for every build), nor their name on it
+			return null;
+		}
 		// A belt carries items but is no store: its place on the belt is copied (39.5; the items on it never are)
 		if (!io.github.jcondedata.aliveworkplace.mechanic.KineticParts.isBelt(state) && isStorage(level, pos, state, blockEntity)) {
 			// Containers (chests, barrels, jars, shelves, safes...): only the name, never the contents.
@@ -67,7 +72,10 @@ public final class BlockEntityData {
 		}
 	}
 
-	/** Removes every nested compound that is an item stack or an entity (anything with an item/entity "id"). */
+	/**
+	 * Removes every nested compound that is an item stack or an entity (anything with an item/entity "id", or an entity
+	 * saved without one).
+	 */
 	static void stripStacksAndEntities(CompoundTag tag) {
 		for (String key : Nbt.keys(tag).toArray(String[]::new)) {
 			Tag child = tag.get(key);
@@ -99,6 +107,11 @@ public final class BlockEntityData {
 	}
 
 	private static boolean isStackOrEntity(CompoundTag compound) {
+		if (Nbt.hasUuid(compound, "UUID") && Nbt.has(compound, "Pos", Tag.TAG_LIST)) {
+			// B449: an entity saved without its id (Entity.saveWithoutId, as a mod's block keeps a mob it holds) is still
+			// an entity: its UUID and position give it away
+			return true;
+		}
 		if (!Nbt.has(compound, "id", Tag.TAG_STRING)) {
 			return false;
 		}

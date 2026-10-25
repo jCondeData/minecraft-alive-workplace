@@ -301,6 +301,45 @@ public final class MaterialRules {
 		if (state.getBlock() instanceof LeavesBlock && state.hasProperty(BlockStateProperties.PERSISTENT)) {
 			state = state.setValue(BlockStateProperties.PERSISTENT, true);
 		}
+		return emptied(state);
+	}
+
+	/**
+	 * What a block holds as part of its state (B429, B434), never copied: a builder places it empty, as it places a chest
+	 * without its contents (BlockEntityData). A lava or powder snow cauldron is built as an empty cauldron (it costs only a
+	 * cauldron), a composter at level 0 (no ready bone meal), a beehive or bee nest with no honey, a respawn anchor
+	 * uncharged, and a chiseled bookshelf or brewing stand shows no books or bottles (it holds none). A water cauldron is
+	 * still built full, as shipped blueprints have it: water is free in vanilla (an endless spring), so it gives nothing
+	 * away. By vanilla's properties, so a modded block that uses them is emptied too.
+	 */
+	public static BlockState emptied(BlockState state) {
+		if (state.is(Blocks.LAVA_CAULDRON) || state.is(Blocks.POWDER_SNOW_CAULDRON)) {
+			return Blocks.CAULDRON.defaultBlockState();
+		}
+		for (Property<?> property : state.getProperties()) {
+			if (CONTENT_PROPERTIES.contains(property)) {
+				state = emptyValue(state, property);
+			}
+		}
+		return state;
+	}
+
+	/** Properties that show what a block holds: emptied when placed, and no part of whether the block is built. */
+	private static final Set<Property<?>> CONTENT_PROPERTIES = Set.of(
+		BlockStateProperties.LEVEL_COMPOSTER, BlockStateProperties.LEVEL_HONEY, BlockStateProperties.RESPAWN_ANCHOR_CHARGES,
+		BlockStateProperties.CHISELED_BOOKSHELF_SLOT_0_OCCUPIED, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_1_OCCUPIED,
+		BlockStateProperties.CHISELED_BOOKSHELF_SLOT_2_OCCUPIED, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_3_OCCUPIED,
+		BlockStateProperties.CHISELED_BOOKSHELF_SLOT_4_OCCUPIED, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_5_OCCUPIED,
+		BlockStateProperties.HAS_BOTTLE_0, BlockStateProperties.HAS_BOTTLE_1, BlockStateProperties.HAS_BOTTLE_2
+	);
+
+	private static BlockState emptyValue(BlockState state, Property<?> property) {
+		if (property instanceof net.minecraft.world.level.block.state.properties.BooleanProperty b) {
+			return state.setValue(b, false);
+		}
+		if (property instanceof net.minecraft.world.level.block.state.properties.IntegerProperty i) {
+			return state.setValue(i, i.getPossibleValues().stream().min(Integer::compare).orElse(0));
+		}
 		return state;
 	}
 
@@ -309,11 +348,16 @@ public final class MaterialRules {
 		if (actual == wanted) {
 			return true;
 		}
+		if (wanted.is(Blocks.CAULDRON) && actual.getBlock() instanceof net.minecraft.world.level.block.AbstractCauldronBlock) {
+			// A cauldron is built empty (emptied); one filled since is still the cauldron that was built
+			return true;
+		}
 		if (actual.getBlock() != wanted.getBlock() && unweathered(actual.getBlock()) != unweathered(wanted.getBlock())) {
 			return false;
 		}
 		for (Property<?> property : wanted.getProperties()) {
-			if (VOLATILE_PROPERTY_NAMES.contains(property.getName()) || property == BlockStateProperties.CHEST_TYPE || connected(wanted, property)) {
+			if (VOLATILE_PROPERTY_NAMES.contains(property.getName()) || property == BlockStateProperties.CHEST_TYPE || CONTENT_PROPERTIES.contains(property)
+				|| connected(wanted, property)) {
 				continue;
 			}
 			if (!actual.hasProperty(property)) {

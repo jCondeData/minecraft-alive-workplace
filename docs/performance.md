@@ -30,6 +30,18 @@ One row per run, newest first. Ticks are milliseconds.
 | 2026-10-11 | 09fe0f7 | 150 (68 of 78 sites working when measured) | 2.4 / 3.5 (p99 15.8) | 11.1 / 19.7 (p99 27.7), then 8.3 / 14.1 (p99 19.2) | 1638 MB | 12.9% (153 of 1184 samples). Our code a tick (the mod's timer, 25.3): p50 1.0 to 1.1 ms, p99 4.2 to 12.2 ms, **0 of 2,400 measured ticks over 50 ms** (worst 44.5 ms, `PorterWork` 22.7 ms); one of 155.6 ms during the setup (`BuilderWork`'s biggest call 26.4 ms) | [nightly-tests 38166303120](https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/38166303120) (`part: benchmark`, GitHub's runner, started by the owner) |
 | 2026-10-05 | 5b489b7 | 150 (65 of 76 sites working when measured) | 2.3 / 3.5 (p99 7.3) | 18.3 / 32.8 (p99 66.1) at the start, then 8.8 / 16.5 (p99 21.1) once the builds settled | 1613 MB | 13.1% (204 of 1556 samples; 49.8% villager brains, 26.5% pathfinding, both ours included) | [nightly-tests 37297003813](https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/37297003813) (the nightly's performance step, same load as the Sunday job) |
 
+**With Create (lane E QA, 2026-10-25):** the same load run twice back to back on this 7 GB dev container (main
+6e82b3d, Fabric Loader 0.19.3, not GitHub's runner, so not a row above), once with the owner's Create port
+(`libs/create-fabric-6.0.10.0+mc1.21.1.jar`) added to the pack and once without. Create adds nothing measurable:
+
+| | Idle p50 / p95 | Busy p50 / p95 (p99), first then second window | Heap after GC | Our share | Ticks with over 50 ms of ours |
+|---|---|---|---|---|---|
+| With Create | 4.3 / 10.0 | 55.5 / 103.1 (1342), then 16.8 / 40.9 (115.5) | 1829 MB | 21.8% of 2731 samples | 45 (23 on the CPU) |
+| Without | 5.1 / 8.3 | 50.1 / 95.9 (1392), then 33.2 / 69.2 (126.7) | 1893 MB | 21.2% of 3163 samples | 49 (28 on the CPU) |
+
+None of our Create code (Mechanic, machine work, kinetics) shows in either profile; the share over 15% and the long
+BuilderWork ticks are this container's B412, with or without Create.
+
 ## A season under the edicts (30.22)
 
 `SEASON=true tools/packtest/run.sh`: a City of 35 villagers (16 with jobs) on the pack server, 8 in-game days at full

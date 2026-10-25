@@ -252,6 +252,8 @@
 			"io.github.jcondedata.aliveworkplace.test.WorkHornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigFileGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWorldSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageTwoGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageThreeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageThreeBugTests",
@@ -500,6 +502,7 @@
 			"io.github.jcondedata.aliveworkplace.test.StadiumGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReputationPerksGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoreSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainsGameTests"
 		]
 	},

@@ -42,7 +42,7 @@ public final class MegaShrines {
 	/** Mega Showdown's pedestal: while it isn't a block, the shrine isn't listed. */
 	public static final ResourceLocation PEDESTAL = ResourceLocation.fromNamespaceAndPath("mega_showdown", "pedestal");
 	/** The pedestal in the blueprint (tools/blueprints/decor.py, mega_shrine), and where its watchers stand (in front). */
-	static final BlockPos PEDESTAL_SPOT = new BlockPos(3, 3, 3);
+	public static final BlockPos PEDESTAL_SPOT = new BlockPos(3, 3, 3);
 	static final BlockPos TRAINER_SPOT = new BlockPos(3, 3, 2);
 	static final BlockPos CROWD_SPOT = new BlockPos(3, 1, -4);
 	/** The show runs from the festival's start for this many ticks (an in-game hour and a half), then the square has them. */
@@ -79,15 +79,29 @@ public final class MegaShrines {
 		return MegaBracelets.extraMegas() && blocksExist();
 	}
 
-	/** The pedestal of the village round {@code hall}'s finished shrine, the nearest first; empty without one. */
+	/**
+	 * The pedestal of the village round {@code hall}'s finished shrine whose pedestal still stands, the nearest first; empty
+	 * without one.
+	 */
 	public static Optional<BlockPos> pedestal(ServerLevel level, BlockPos hall) {
 		return finished(level, hall).map(f -> Arenas.world(f.placement(), PEDESTAL_SPOT));
 	}
 
+	/**
+	 * The nearest finished shrine round {@code hall} whose pedestal stands (B421: a shrine whose pedestal was broken, or
+	 * never placed, still held the show at the empty spot; the finished-build record alone was checked). A shrine whose
+	 * pedestal is put back counts again.
+	 */
 	private static Optional<BuildSiteManager.Finished> finished(ServerLevel level, BlockPos hall) {
 		return BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
 			.filter(f -> BlueprintStyles.base(f.structure()).equals(SHRINE))
+			.filter(f -> standing(level, Arenas.world(f.placement(), PEDESTAL_SPOT)))
 			.min(Comparator.comparingDouble(f -> f.placement().origin().distSqr(hall)));
+	}
+
+	/** Whether Mega Showdown's pedestal stands at {@code pos} (by id); a spot whose chunk isn't loaded isn't read (and isn't). */
+	static boolean standing(ServerLevel level, BlockPos pos) {
+		return level.isLoaded(pos) && PEDESTAL.equals(BuiltInRegistries.BLOCK.getKey(level.getBlockState(pos).getBlock()));
 	}
 
 	/** Whether the festival round {@code hall} is in its show's hours now (it started less than {@link #SHOW_TICKS} ago). */
@@ -168,7 +182,7 @@ public final class MegaShrines {
 
 	/**
 	 * The show: {@code trainer} Mega Evolves their ace by the pedestal (the light, the sound, a line to the players near),
-	 * and every villager watching within {@link #WATCH_RANGE} is the happier for it. Held once a day per village. Returns
+	 * and every villager off work watching within {@link #WATCH_RANGE} is the happier for it (one at work isn't, B420). Held once a day per village. Returns
 	 * how many watched.
 	 */
 	public static int show(ServerLevel level, BlockPos hall, BlockPos pedestal, Villager trainer) {
@@ -193,7 +207,7 @@ public final class MegaShrines {
 		int watchers = 0;
 		AABB near = new AABB(pedestal).inflate(WATCH_RANGE);
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, near.minmax(VillageHalls.area(hall)),
-			v -> v.isAlive() && v != trainer && (v.getBoundingBox().intersects(near) || came.contains(v.getUUID())))) {
+			v -> v.isAlive() && v != trainer && (came.contains(v.getUUID()) || v.getBoundingBox().intersects(near) && watching(v)))) {
 			ModAttachments.MEGA_SHOW_DAY.set(villager, today);
 			watchers++;
 		}
@@ -202,6 +216,14 @@ public final class MegaShrines {
 			Chat.chat(player, line);
 		}
 		return watchers;
+	}
+
+	/**
+	 * Whether {@code villager}, near the pedestal, is one of the crowd: off work or seated, as {@code Festivals.gatherAt}
+	 * gathers them (B420: a farmer at his job by the shrine got the show's mood though he never came to watch).
+	 */
+	private static boolean watching(Villager villager) {
+		return villager.isPassenger() || Festivals.offWork(villager);
 	}
 
 	/** {@link #MOOD} while the last show {@code villager} watched is as fresh as a festival's good mood, else 0. */

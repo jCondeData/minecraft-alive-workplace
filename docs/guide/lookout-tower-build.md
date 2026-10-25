@@ -29,7 +29,7 @@ Once a builder finishes the tower, they sell its upgrade's blueprint as well (th
 
 - **Lookout Tower II** raises the tower to 23 blocks under a pointed dark oak roof, with a **bell** at the top and a **grindstone** and chest at the foot of the ladder: a guard's post.
 - **Lookout Tower III** adds a guardhouse beside the tower: a second grindstone, an anvil and two bunks.
-- **Lookout Tower IV** digs an **armoury** under the tower and the guardroom, down a ladder by the guardroom door: a lock-up behind iron bars, an anvil, chests of kit and hay targets. The builder digs the room out of the ground himself and leaves the building above as it was.
+- **Lookout Tower IV** digs an **armory** under the tower and the guardroom, down a ladder by the guardroom door: a lock-up behind iron bars, an anvil, chests of kit and hay targets. The builder digs the room out of the ground himself and leaves the building above as it was.
 
 ## What it does for the village
 

@@ -1,6 +1,6 @@
 # The village's own habitat
 
-With Cobblemon 1.8, a village's Expert Habitat Keeper founds one Habitat Block of the village's own under the centre
+With Cobblemon 1.8, a village's Expert Habitat Keeper founds one Habitat Block of the village's own under the center
 stone of a finished Habitat Garden, with Pokémon that suit the biome, and every morning visits the natural Habitat
 Blocks round her pasture to post who comes today.
 
@@ -9,7 +9,7 @@ Roadmap items: 28.14
 ## What a player sees
 
 - **Founding.** Build a Habitat Garden from the Blueprint Table and let a Habitat Keeper reach Expert. Once the garden
-  is finished she puts a Habitat Block in Cobblemon's natural mode under its mossy centre stone, looking like the stone
+  is finished she puts a Habitat Block in Cobblemon's natural mode under its mossy center stone, looking like the stone
   it replaces. The chronicle says so ("<keeper> founded the village's own habitat: <the pool's name>"). One per village;
   it belongs to the village (protection covers it).
 - **The biome's Pokémon.** The pool comes from the biome: plains a flowerbed clearing, a forest a berry patch, a desert
@@ -24,10 +24,10 @@ Roadmap items: 28.14
 
 ## How it works
 
-- She founds it only as an Expert (level 4 and up), only on a garden the builders finished, only while its centre is
+- She founds it only as an Expert (level 4 and up), only on a garden the builders finished, only while its center is
   still the template's mossy cobblestone (or a moss block), and only when the village has none yet.
 - The block is set as Cobblemon's habitat structures set theirs: natural spawning style, the biome's pool id, the
-  centre stone as its mimic, a 12-block range of influence.
+  center stone as its mimic, a 12-block range of influence.
 - Tending finds the blocks through the loaded chunks' block entities, never by scanning blocks; a block in its
   activated (player-set) style isn't hers to tend.
 
@@ -53,7 +53,7 @@ block's own settings are Cobblemon's.
 
 - 28.14: one village habitat per village, on by default (the owner's call whether survival villages may have a Habitat
   Block at all, since Cobblemon gives none).
-- B88: the garden's centre stone is mossy cobblestone in the template; founding takes that or a moss block.
+- B88: the garden's center stone is mossy cobblestone in the template; founding takes that or a moss block.
 
 ## Known limits
 

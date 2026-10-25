@@ -3,7 +3,7 @@
 ```infobox
 type: Build
 Size: 13 wide, 11 deep, 10 high (II: 19 wide)
-Tiers: I, II (a wing with two more posts), III (an armoury)
+Tiers: I, II (a wing with two more posts), III (an armory)
 Houses: two Guards at the grindstones, with two bunks; four of each at tier II
 Where to get it: Blueprint Table
 Main materials: deepslate tile stairs, stone bricks, spruce planks, dark oak logs
@@ -26,7 +26,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 Once a builder finishes the Barracks, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
 - **Barracks II** adds a wing with two more grindstones and two more bunks.
-- **Barracks III** digs an **armoury and lock-up** under the barracks, down a ladder under a hatch by the east wall: a cell behind iron bars, an anvil, chests of kit and hay targets. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
+- **Barracks III** digs an **armory and lock-up** under the barracks, down a ladder under a hatch by the east wall: a cell behind iron bars, an anvil, chests of kit and hay targets. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
 
 ## What it does for the village
 

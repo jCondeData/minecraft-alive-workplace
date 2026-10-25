@@ -40,7 +40,7 @@ at the block itself (26.6, see [Villager jobs](villager-jobs.md)), for a price.
 the worker, Find, and a **Change job** emerald at slot 22). It's offered when `HallRetraining.canRetrain` holds: rule
 `workplaceRetraining` on, a grown villager with a job and a job site, not a nitwit, Legend or caravan carter. Change job
 lists `VillageHalls.freeStations` of a job other than theirs, each with the price (`Retraining.price`, 5/10/20/35/50 by
-level, config `retrainPrices`), and the Builder: a free Blueprint Table is listed like any block; with none, a grey
+level, config `retrainPrices`), and the Builder: a free Blueprint Table is listed like any block; with none, a gray
 Builder entry says to place one. The first click marks the block (glint, "Click again to pay") and posts the 26.6 offer
 text; the second runs `HallRetraining.retrain`: the hired-worker check (`Friends.mayCommand`), the class check (34.8),
 the block still free, the money (`Money`, CobbleDollars when present), then `Retraining.retrain` (a builder's
@@ -139,7 +139,7 @@ have room (the same list a jobless villager's own page shows), each matched to t
 (finished builds, and builds going up). Who could take a block: a grown villager in the village without a job, not a
 nitwit or a Legend. One who has never worked takes any block; one who still has an old job's trades but lost the block
 is offered only a block of that same job, because changing job is paid retraining (26.6). A job above a villager's
-class (34.8) is greyed with the class it needs. The pick is checked again on the click: if someone took the block
+class (34.8) is grayed with the class it needs. The pick is checked again on the click: if someone took the block
 meanwhile, or the villager found work, nothing changes, the action bar says why and the list comes back. The page
 shows up to 36 lines; past that, the last slot says how many more blocks there are further away.
 

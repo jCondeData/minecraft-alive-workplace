@@ -36,7 +36,7 @@ restartable at any tick for this reason.
 
 **Stages, in order:** CLEAR (top-down), FOUNDATION, STRUCTURE (bottom-up), DECORATION, LANDSCAPE, DONE.
 - CLEAR takes away what is in the way, but never breaks containers, its own bench or any other Builder's Bench (a
-  neighbour's bench inside the build's box stays, and the build finishes round it, B132).
+  neighbor's bench inside the build's box stays, and the build finishes round it, B132).
 - FOUNDATION fills under a build standing on uneven ground. How deep is the `workplaceFoundationDepth` rule.
 - STRUCTURE goes bottom-up so every block has something to stand on.
 - DECORATION is what needs something to hang on or stand on (torches, doors, ladders, carpets...), placed after
@@ -51,8 +51,8 @@ restartable at any tick for this reason.
 - "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors
   (a fence's connections, a stair's corner shape). Without that a finished wall could look unfinished forever.
 - Nobody is built into a block: before a block goes down the builder checks there is room for it as it will
-  really stand, shaped by its neighbours (a corner stair whose neighbour isn't up yet goes down straight, a quarter
-  bigger), and a villager or animal that a new block's neighbour left inside a wall is moved to the nearest place to
+  really stand, shaped by its neighbors (a corner stair whose neighbor isn't up yet goes down straight, a quarter
+  bigger), and a villager or animal that a new block's neighbor left inside a wall is moved to the nearest place to
   stand (B132, `B132GameTests`).
 
 **Materials.** Each block costs an item (`MaterialRules`; some blocks you cannot hold in survival use their base
@@ -127,7 +127,7 @@ Any other harm still hurts him, and a Builder with no build falls like any villa
 **Table preview (26.9).** Selecting a library entry sends `table_request_details`; the server answers with the
 materials and a `table_preview` packet (`TableServer.preview`): a palette of block-state ids and x, y, z, palette
 index per cell. Only blocks a player could see are sent (air, invisible blocks, jigsaw and structure blocks are
-dropped, and a cell whose six neighbours all occlude is left out). If more than `PREVIEW_CAP` (4096) cells remain, the
+dropped, and a cell whose six neighbors all occlude is left out). If more than `PREVIEW_CAP` (4096) cells remain, the
 build is grouped into 2×2×2 cells (then 3, …), each showing its highest block, until it fits. The result is worked out
 once per blueprint and kept (48 at most); unknown, sold-only, world-generation and closed-expansion ids get nothing.
 The client (`TablePreview`) draws the cells with the block renderer into the screen with a scissor box.
@@ -138,7 +138,7 @@ ids from a modified client leave nothing behind.
 **Basements in the preview (36.1).** A build with a basement comes out of the library with its cellar under y = 0
 (`StarterBlueprints.withBasement`); the packet carries `below`, how many blocks lie under the ground (0 for most), and
 cells are keyed with floor division, so at scale 2 or more the first cellar layer (y = -1) never folds into the ground
-floor's cell. The client fits and centres the build by its whole height (`sizeY + below`), and for a build with a
+floor's cell. The client fits and centers the build by its whole height (`sizeY + below`), and for a build with a
 basement draws a faint green ground plane at y = 0 after the blocks: the footprint and a little past it, with a
 brighter rim, so the part under it reads as underground. The detail pane's size line then reads "17 × 12 × 11 · N
 blocks, and 4 below ground" (`screen.aliveworkplace.table.size_below`, wrapped). A build without a basement sends the
@@ -250,7 +250,7 @@ claims and trip counts.
   to and can't get onto. `tools/blueprints/check.py` flags every such step a player can get to (B197).
 - No villager is left standing inside a block in a growing village. A baby fits in nooks a grown villager doesn't
   (under a roof's stair being laid, beside a lantern on a fence post), and when it grows up vanilla finds no room for
-  the bigger body there; a villager standing still in a doorway can have the door shut on it by a neighbour walking
+  the bigger body there; a villager standing still in a doorway can have the door shut on it by a neighbor walking
   through. Twice a second every villager looks whether its body is inside a block; found there twice in a row, it opens
   the wooden door it is shut in or else steps (with a puff) to the nearest spot within four blocks with a floor and
   room to stand. A villager only pressed against walls is never moved (B185).
@@ -261,7 +261,7 @@ claims and trip counts.
   worked out again now goes where the villager is walking (B203).
 
 - Builders ask before repairing a house, and a repair can be stopped, paused or put aside for another job (owner,
-  2026-10-19, 36.15). Defence repairs after a threat (32.16a) stay automatic, as the owner hadn't objected to them: a
+  2026-10-19, 36.15). Defense repairs after a threat (32.16a) stay automatic, as the owner hadn't objected to them: a
   wall or gate a siege broke goes back without a question.
 
 ## 7. Known limits
@@ -289,7 +289,7 @@ Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon
 
 GameTests (`src/gametest/java/.../test/`): `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
 `BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
-`BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbour's bench outlasts a build;
+`BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbor's bench outlasts a build;
 a bench put down and employed at in one command is held),
 `TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `QaStageFiveGameTests.madeUpPreviewIdsAreNotRemembered` (B340: 5000 made-up preview ids remembered as 0, a real one
 answered, its repeat at once ignored and answered after 100 ticks), `TablePreviewGameTests` (7, the table's

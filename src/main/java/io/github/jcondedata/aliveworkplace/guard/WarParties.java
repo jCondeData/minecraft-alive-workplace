@@ -315,7 +315,11 @@ public final class WarParties {
 		}
 	}
 
-	/** Every death: a guard who kills one of a lair's band at the lair earns the kill's experience again, and is remembered. */
+	/**
+	 * Every death: a guard who kills one of a lair's band at the lair earns the kill's experience again, and is remembered
+	 * for the chronicle. A kill by a guard who marches (on a raised banner, or a siege-breaker) also marks a war party as
+	 * having been there, so a party that lost every guard still earns its rewards; a lone guard on watch doesn't (B418).
+	 */
 	public static void onDeath(ServerLevel level, LivingEntity dead, DamageSource source) {
 		if (!Lairs.live() || !dead.getTags().contains(Lairs.TAG) || dead.getTags().contains(Threats.RAIDER_TAG)
 				|| !(source.getEntity() instanceof Villager guard) || !Guards.isGuard(guard)) {
@@ -324,22 +328,26 @@ public final class WarParties {
 		for (Lairs.Lair lair : Lairs.all(level)) {
 			if (lair.pos().closerToCenterThan(dead.position(), AT_LAIR)) {
 				BuilderLevels.addXp(level, guard, GuardCombat.XP_PER_KILL, null); // double: the kill already paid once
-				Data.get(level).killed(lair.hall(), guard.getDisplayName().getString());
+				Data.get(level).killed(lair.hall(), guard.getDisplayName().getString(), marching(guard));
 				return;
 			}
 		}
 	}
 
-	/** A lair broken: with a war party there (or guards who killed there), the war party's rewards. */
+	/**
+	 * A lair broken: with a war party there (or war-party guards who killed there), the war party's rewards. A kill by a
+	 * guard who wasn't marching names him in the chronicle of a war party's break but makes no war party (B418).
+	 */
 	static void broken(ServerLevel level, Lairs.Lair lair, @Nullable Entity by) {
 		if (!Lairs.live()) {
 			return;
 		}
 		Data data = Data.get(level);
 		List<String> killers = data.killers.getOrDefault(lair.hall(), List.of());
+		boolean marched = data.marched.contains(lair.hall());
 		List<LivingEntity> party = at(level, lair);
 		data.forget(lair.hall());
-		if (party.isEmpty() && killers.isEmpty()) {
+		if (party.isEmpty() && !marched) {
 			return;
 		}
 		Lairs.rest(level, lair.hall(), REST_DAYS);
@@ -422,30 +430,39 @@ public final class WarParties {
 	public static void forget(ServerLevel level) {
 		Data data = Data.get(level);
 		data.killers.clear();
+		data.marched.clear();
 		data.cheer.clear();
 		data.setDirty();
 	}
 
-	/** The guards who killed at each village's lair (by name, once each) and how long each village is glad. */
+	/**
+	 * The guards who killed at each village's lair (by name, once each), the villages whose war party killed there, and
+	 * how long each village is glad.
+	 */
 	public static final class Data extends SavedData {
 		public static final String NAME = "aliveworkplace_war_parties";
 		final Map<BlockPos, List<String>> killers = new LinkedHashMap<>();
 		final Map<BlockPos, Long> cheer = new LinkedHashMap<>();
+		/** The halls whose lair saw a kill by a marching guard (B418). */
+		final java.util.Set<BlockPos> marched = new java.util.LinkedHashSet<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
 		}
 
-		void killed(BlockPos hall, String name) {
+		void killed(BlockPos hall, String name, boolean marching) {
 			List<String> names = killers.computeIfAbsent(hall.immutable(), h -> new ArrayList<>());
 			if (!names.contains(name)) {
 				names.add(name);
 				setDirty();
 			}
+			if (marching && marched.add(hall.immutable())) {
+				setDirty();
+			}
 		}
 
 		void forget(BlockPos hall) {
-			if (killers.remove(hall) != null) {
+			if (killers.remove(hall) != null | marched.remove(hall)) {
 				setDirty();
 			}
 		}
@@ -475,6 +492,7 @@ public final class WarParties {
 				glad.add(c);
 			}
 			tag.put("cheer", glad);
+			tag.putLongArray("marched", marched.stream().mapToLong(BlockPos::asLong).toArray());
 			return tag;
 		}
 
@@ -487,6 +505,7 @@ public final class WarParties {
 		/** Replaces what this holds with what {@code tag} holds; anything missing is empty. */
 		public void read(CompoundTag tag) {
 			killers.clear();
+			marched.clear();
 			cheer.clear();
 			ListTag list = Nbt.getList(tag, "killers", Tag.TAG_COMPOUND);
 			for (int i = 0; i < list.size(); i++) {
@@ -502,6 +521,14 @@ public final class WarParties {
 			for (int i = 0; i < glad.size(); i++) {
 				CompoundTag c = Nbt.compoundAt(glad, i);
 				cheer.put(BlockPos.of(Nbt.getLong(c, "hall")), Nbt.getLong(c, "until"));
+			}
+			// Saved before B418, a kill there meant a war party there: keep every village with kills marked.
+			if (tag.contains("marched")) {
+				for (long hall : Nbt.getLongArray(tag, "marched")) {
+					marched.add(BlockPos.of(hall));
+				}
+			} else {
+				marched.addAll(killers.keySet());
 			}
 			setDirty();
 		}

@@ -61,7 +61,8 @@ Enlistment lives on the Rally Banner (its `rally` component, as before). A siege
 villager (the `MERCENARY_UNTIL` attachment and entity tags). `aliveworkplace_war_parties` per dimension: the names of
 the guards who killed at each village's lair, the villages whose war party killed there (`marched`), and until when each
 village is glad. Missing keys read as empty, except `marched`: a file saved before B418 counts every village with kills
-as marked, as it was then; a world without the file has none of it.
+as marked, as it was then (the player's break then earns the 10 days and the cheer), while a file saved after it
+with only a lone guard's kill stays no war party (`QaWarPartySavesGameTests`); a world without the file has none of it.
 
 ## Items, blocks, jobs, commands
 

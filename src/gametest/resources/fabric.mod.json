@@ -291,6 +291,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWorldSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopAwayBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopAwayEdgesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaArticleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageTwoGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageThreeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageThreeBugTests",

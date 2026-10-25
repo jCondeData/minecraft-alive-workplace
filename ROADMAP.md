@@ -1837,7 +1837,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     biome's pool, and a forced spawn round brings a Pokémon from that pool within its range; breaking the garden
     removes the block with no drop; on 1.7.3 nothing is placed and the keeper's page says it needs Cobblemon 1.8;
   - showcase scene `village_habitat`, filmed with `-Pcobblemon18=true`.
-- [x] **28.15** (approved 2026-10-06) **Villages grow them.** With Cobblemon, villages (the pools that grow trainer's houses) sometimes grow
+- [x] **28.15** (approved 2026-10-06) (verified 2026-10-25: QaPokemonVillageHousesCompatTests [all 25 templates: one job block of the house's job, one villager in it, no structure void, no lava] with VillageCompatTests' placements; wiki page pokemon-village-houses.md written [was in the baseline]) **Villages grow them.** With Cobblemon, villages (the pools that grow trainer's houses) sometimes grow
   five new houses, each in the five village styles through `tools/blueprints/village.py`'s `village_house` fit-outs,
   each with exactly one job block and its villager already in the job (an entity in the template): a **Pokémon Center**
   (a counter with a Healing Machine and a PC; a nurse), a **Camp Kitchen** (a cook), a **Berry Nursery** (a breeder), a

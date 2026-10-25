@@ -23,7 +23,7 @@ public final class Money {
 	public static Component describe(long dollars, int emeralds) {
 		return cobbleDollars()
 			? Component.translatable("message.aliveworkplace.money.dollars", dollars)
-			: Component.translatable("message.aliveworkplace.money.emeralds", emeralds);
+			: Words.counted("message.aliveworkplace.money.emeralds", emeralds, emeralds);
 	}
 
 	/** What the player has: "1,250 CobbleDollars" or "12 emeralds". */

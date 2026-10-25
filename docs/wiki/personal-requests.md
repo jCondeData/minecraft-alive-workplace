@@ -5,7 +5,7 @@ a taste of home, the tools of their trade, a letter to family, a lost love back 
 child off to school, a chapel wedding, a lost heirloom. ROADMAP 31.9 and 31.10; builds on friendship (31.5), the quest engine (31.2) and the
 quest journal (31.3). Part of the 1.5 expansion: switched on when Milestone 31 is complete.
 
-Roadmap items: 31.9, 31.10, B354
+Roadmap items: 31.9, 31.10, B354, B407
 
 ## What a player sees
 

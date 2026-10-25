@@ -228,10 +228,15 @@ public final class Objectives {
 
 	/** What {@code item} is called: its name, "Fishing Rod with Luck of the Sea" or "Potion of Fire Resistance". */
 	public static Component name(String item) {
+		return name(item, 1);
+	}
+
+	/** {@link #name(String)} after {@code count}: "Baked Potatoes" for 4 (B407), when the lang has the item's plural. */
+	public static Component name(String item, long count) {
 		Component base = icon(item).getDescription();
 		String[] carries = carries(item);
 		if (carries == null) {
-			return base;
+			return io.github.jcondedata.aliveworkplace.work.Words.itemName(icon(item), count);
 		}
 		ResourceLocation what = ResourceLocation.parse(carries[1]);
 		return carries[0].equals("enchantment")
@@ -274,12 +279,12 @@ public final class Objectives {
 
 		@Override
 		public Component line() {
-			return Component.translatable("quest.aliveworkplace.bring", count, name(item));
+			return Component.translatable("quest.aliveworkplace.bring", count, name(item, count));
 		}
 
 		@Override
 		public Component what() {
-			return Component.translatable("quest.aliveworkplace.count_of", count, name(item));
+			return Component.translatable("quest.aliveworkplace.count_of", count, name(item, count));
 		}
 
 		/** {@code to: giver} with someone asking (31.9): into the chests by their workstation (the hall's store when they have none). */
@@ -867,7 +872,7 @@ public final class Objectives {
 
 		@Override
 		public Component line() {
-			return Component.translatable("quest.aliveworkplace.wait", days);
+			return io.github.jcondedata.aliveworkplace.work.Words.counted("quest.aliveworkplace.wait", days, days);
 		}
 
 		@Override

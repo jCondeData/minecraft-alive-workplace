@@ -346,9 +346,9 @@ public final class Shops {
 	/** The sales log in chat (the owner sneak-right-clicks the counter). */
 	public static void sendLog(net.minecraft.server.level.ServerPlayer player, ShopCounterBlockEntity counter) {
 		player.sendSystemMessage((io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars()
-			? net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.log.header", counter.totalSales(),
+			? io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.shop.log.header", counter.totalSales(), counter.totalSales(),
 				io.github.jcondedata.aliveworkplace.work.Money.describe(counter.totalDollars(), 0))
-			: net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.log.header_items", counter.totalSales()))
+			: io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.shop.log.header_items", counter.totalSales(), counter.totalSales()))
 			.withStyle(net.minecraft.ChatFormatting.GOLD));
 		List<ShopCounterBlockEntity.Sale> sales = counter.sales();
 		if (sales.isEmpty()) {

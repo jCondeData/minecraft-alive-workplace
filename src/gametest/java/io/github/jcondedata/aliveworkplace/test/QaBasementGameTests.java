@@ -35,7 +35,7 @@ public class QaBasementGameTests implements FabricGameTest {
 	}
 
 	/** What stands at {@code pos}: the blueprint's block, air above the ground where it has none, earth below. */
-	private static BlockState at(Map<BlockPos, BlockState> blocks, BlockPos pos) {
+	static BlockState at(Map<BlockPos, BlockState> blocks, BlockPos pos) {
 		BlockState state = blocks.get(pos);
 		if (state != null) {
 			return state;
@@ -43,7 +43,7 @@ public class QaBasementGameTests implements FabricGameTest {
 		return pos.getY() >= 0 ? Blocks.AIR.defaultBlockState() : Blocks.DIRT.defaultBlockState();
 	}
 
-	private static Map<BlockPos, BlockState> blocks(Blueprint blueprint) {
+	static Map<BlockPos, BlockState> blocks(Blueprint blueprint) {
 		Map<BlockPos, BlockState> out = new HashMap<>();
 		for (Blueprint.Entry e : blueprint.blocks()) {
 			out.put(e.pos(), e.state());
@@ -150,7 +150,8 @@ public class QaBasementGameTests implements FabricGameTest {
 			if (checked == 0) {
 				problems.add(entry.id() + ": no spot on its basement floor was checked (no air in the blueprint there)");
 			} else if (!dark.isEmpty()) {
-				problems.add(entry.id() + ": " + dark.size() + " dark spots, e.g. " + dark.subList(0, Math.min(3, dark.size())).stream().map(BlockPos::toShortString).toList());
+				problems.add(entry.id() + ": " + dark.size() + " dark spots, e.g. "
+					+ dark.subList(0, Math.min(3, dark.size())).stream().map(BlockPos::toShortString).toList());
 			}
 		}
 		helper.assertTrue(problems.isEmpty(), "dark basement floors: " + problems);
@@ -159,13 +160,14 @@ public class QaBasementGameTests implements FabricGameTest {
 
 	// --- walking -------------------------------------------------------------------------------------------------------
 
-	/** A body's feet or head can be in {@code state}: no collision, or one under a fifth of a block (a carpet), or a door, trapdoor, ladder or open gate. */
+	/**
+	 * A body's feet or head can be in {@code state}: no collision, or one under a fifth of a block (a carpet), or a door,
+	 * trapdoor, ladder or gate (a player opens it); a village piece's jigsaw or structure void is never placed.
+	 */
 	private static boolean open(BlockState state) {
-		if (state.getBlock() instanceof DoorBlock || state.getBlock() instanceof TrapDoorBlock || state.is(Blocks.LADDER)) {
+		if (state.getBlock() instanceof DoorBlock || state.getBlock() instanceof TrapDoorBlock || state.is(Blocks.LADDER)
+			|| state.getBlock() instanceof net.minecraft.world.level.block.FenceGateBlock || state.is(Blocks.JIGSAW) || state.is(Blocks.STRUCTURE_VOID)) {
 			return true;
-		}
-		if (state.getBlock() instanceof net.minecraft.world.level.block.FenceGateBlock) {
-			return state.getValue(net.minecraft.world.level.block.FenceGateBlock.OPEN);
 		}
 		var shape = state.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
 		return shape.isEmpty() || shape.max(Direction.Axis.Y) <= 0.2;
@@ -185,7 +187,7 @@ public class QaBasementGameTests implements FabricGameTest {
 	}
 
 	/** Every spot reachable on foot from {@code starts} (see the test below), inside the build's box and two blocks round it. */
-	private static java.util.Set<BlockPos> walk(Map<BlockPos, BlockState> blocks, List<BlockPos> starts, int sx, int sz, int top, int bottom) {
+	static java.util.Set<BlockPos> walk(Map<BlockPos, BlockState> blocks, List<BlockPos> starts, int sx, int sz, int top, int bottom) {
 		java.util.Set<BlockPos> reached = new java.util.HashSet<>(starts);
 		ArrayDeque<BlockPos> queue = new ArrayDeque<>(starts);
 		while (!queue.isEmpty()) {

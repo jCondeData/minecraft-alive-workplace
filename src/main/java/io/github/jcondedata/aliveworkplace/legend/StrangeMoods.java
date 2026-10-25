@@ -594,9 +594,9 @@ public final class StrangeMoods {
 	/** The second line: what the mood still wants and how many days are left, or the days of sulking left. */
 	public static Component line(ServerLevel level, StrangeMood mood, long today) {
 		if (!mood.inMood()) {
-			return Component.translatable("legend.aliveworkplace.overhead.sulk_days", Math.max(1, mood.sulkUntil() - today)).withStyle(ChatFormatting.DARK_GRAY);
+			return io.github.jcondedata.aliveworkplace.work.Words.counted("legend.aliveworkplace.overhead.sulk_days", Math.max(1, mood.sulkUntil() - today), Math.max(1, mood.sulkUntil() - today)).withStyle(ChatFormatting.DARK_GRAY);
 		}
-		return Component.translatable("legend.aliveworkplace.overhead.mood_wants", materials(mood), Math.max(1, mood.lastDay() - today + 1))
+		return io.github.jcondedata.aliveworkplace.work.Words.counted("legend.aliveworkplace.overhead.mood_wants", Math.max(1, mood.lastDay() - today + 1), materials(mood), Math.max(1, mood.lastDay() - today + 1))
 			.withStyle(ChatFormatting.GRAY);
 	}
 

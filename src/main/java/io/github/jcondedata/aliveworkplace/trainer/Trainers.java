@@ -174,7 +174,7 @@ public final class Trainers {
 		io.github.jcondedata.aliveworkplace.work.Money.pay(player, dollars, emeralds);
 		player.sendSystemMessage(io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars()
 			? Component.translatable("message.aliveworkplace.trainer.won_dollars", trainer.getDisplayName(), dollars).withStyle(ChatFormatting.GREEN)
-			: Component.translatable("message.aliveworkplace.trainer.won_emeralds", trainer.getDisplayName(), emeralds).withStyle(ChatFormatting.GREEN));
+			: io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.trainer.won_emeralds", emeralds, trainer.getDisplayName(), emeralds).withStyle(ChatFormatting.GREEN));
 	}
 
 	private static Villager find(MinecraftServer server, UUID id) {

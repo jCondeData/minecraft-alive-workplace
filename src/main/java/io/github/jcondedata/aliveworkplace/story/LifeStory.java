@@ -96,7 +96,7 @@ public final class LifeStory {
 				break;
 			}
 			List<Component> lore = new ArrayList<>();
-			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.life_story.at_hearts", e.getKey().hearts()), ChatFormatting.LIGHT_PURPLE));
+			lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.life_story.at_hearts", e.getKey().hearts(), e.getKey().hearts()), ChatFormatting.LIGHT_PURPLE));
 			if (!e.getValue().isEmpty()) {
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.life_story.told_to", String.join(", ", e.getValue())), ChatFormatting.GRAY));
 			}
@@ -117,7 +117,7 @@ public final class LifeStory {
 		} else if (HeartEvents.ENABLED) {
 			int next = HeartEvents.nextHearts(level, villager, viewer.getUUID());
 			if (next > 0) {
-				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.life_story.next_hearts", next), ChatFormatting.GRAY));
+				lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.life_story.next_hearts", next, next), ChatFormatting.GRAY));
 			}
 		}
 		return VillageHallScreen.icon(Items.POPPY, Component.translatable("screen.aliveworkplace.hall.your_hearts",

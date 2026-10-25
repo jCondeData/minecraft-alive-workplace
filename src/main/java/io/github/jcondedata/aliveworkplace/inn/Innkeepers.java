@@ -300,7 +300,7 @@ public final class Innkeepers {
 			ChatFormatting.GOLD));
 		info.set(DataComponents.LORE, new ItemLore(List.of(
 			plain(Component.translatable("screen.aliveworkplace.inn.starts_as", BuilderLevels.levelName(t.level())), ChatFormatting.GRAY),
-			plain(Component.translatable("screen.aliveworkplace.inn.staying", daysLeft), ChatFormatting.GRAY))));
+			plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.inn.staying", daysLeft, daysLeft), ChatFormatting.GRAY))));
 		menu.button(INFO_SLOT, info, null);
 		Component gifted = io.github.jcondedata.aliveworkplace.legend.Gifted.hallLine(guest);
 		if (gifted != null) {

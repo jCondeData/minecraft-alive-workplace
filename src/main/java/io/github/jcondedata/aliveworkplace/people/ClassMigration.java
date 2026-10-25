@@ -327,7 +327,7 @@ public final class ClassMigration {
 		if (seeding(level, hall)) {
 			out.add(Component.translatable("command.aliveworkplace.classes.seeding", name, village.size() - unseeded, village.size()));
 		} else if (settling(level, hall, today)) {
-			out.add(Component.translatable("command.aliveworkplace.classes.settling", name, daysLeft(level, hall, today)));
+			out.add(io.github.jcondedata.aliveworkplace.work.Words.counted("command.aliveworkplace.classes.settling", daysLeft(level, hall, today), name, daysLeft(level, hall, today)));
 		} else {
 			out.add(Component.translatable("command.aliveworkplace.classes.settled", name));
 		}

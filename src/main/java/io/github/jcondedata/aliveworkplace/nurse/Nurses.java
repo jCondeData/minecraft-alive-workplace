@@ -52,7 +52,7 @@ public final class Nurses {
 		int cooldown = BuilderLevels.delay(COOLDOWN, nurse);
 		Long last = LAST_TREATED.get(player.getUUID());
 		if (last != null && now - last < cooldown) {
-			tell(player, Component.translatable("message.aliveworkplace.nurse.wait", nurse.getDisplayName(), (cooldown - (now - last)) / 20 + 1),
+			tell(player, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.nurse.wait", (cooldown - (now - last)) / 20 + 1, nurse.getDisplayName(), (cooldown - (now - last)) / 20 + 1),
 				ChatFormatting.YELLOW);
 			return;
 		}

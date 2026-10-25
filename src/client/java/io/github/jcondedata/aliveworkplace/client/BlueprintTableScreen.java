@@ -670,11 +670,11 @@ public class BlueprintTableScreen extends Screen {
 		TablePreview shownPreview = previews.get(shownId());
 		int below = shownPreview == null ? 0 : shownPreview.below();
 		if (below > 0) { // a basement (36.1): wrapped, as "and N below ground" can run past the pane
-			Component size = Component.translatable("screen.aliveworkplace.table.size_below", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks(), below);
+			Component size = io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.table.size_below", entry.blocks(), entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks(), below);
 			g.drawWordWrap(font, size, x, y, w, 0xFF9AA8BA);
 			y += 10 * font.split(size, w).size();
 		} else {
-			g.drawString(font, Component.translatable("screen.aliveworkplace.table.size", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks()),
+			g.drawString(font, io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.table.size", entry.blocks(), entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks()),
 				x, y, 0xFF9AA8BA, false);
 			y += 10;
 		}
@@ -828,7 +828,7 @@ public class BlueprintTableScreen extends Screen {
 		for (TablePayloads.Material m : materials) {
 			total += m.count();
 		}
-		g.drawString(font, Component.translatable("screen.aliveworkplace.table.all_materials_title", materials.size(), total), x, y + 5, TableStyle.TITLE, false);
+		g.drawString(font, io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.table.all_materials_title", materials.size(), total, materials.size(), total), x, y + 5, TableStyle.TITLE, false);
 		allBackButton.setPosition(x + w - allBackButton.getWidth(), y + 2);
 		int listY = y + 18;
 		int listH = h - 20;

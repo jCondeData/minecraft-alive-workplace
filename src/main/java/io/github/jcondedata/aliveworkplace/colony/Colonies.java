@@ -299,7 +299,7 @@ public final class Colonies {
 			case RANK -> Component.translatable("message.aliveworkplace.colony.rank", village, rankNeeded(level, hall).title(),
 				entity == null ? VillageRanks.Rank.HAMLET.title() : entity.rank().title());
 			case ON_ROAD -> Component.translatable("message.aliveworkplace.colony.on_road", village);
-			case COOLDOWN -> Component.translatable("message.aliveworkplace.colony.cooldown", village, cooldownLeft(level, hall));
+			case COOLDOWN -> io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.colony.cooldown", cooldownLeft(level, hall), village, cooldownLeft(level, hall));
 			case CAP -> Component.translatable("message.aliveworkplace.colony.cap", village, PER_VILLAGE);
 			case REALM_MONEY -> Component.translatable("message.aliveworkplace.colony.realm_money", money(io.github.jcondedata.aliveworkplace.realm.RealmEdicts.colonyCost(level, hall)));
 			case MONEY -> {
@@ -494,7 +494,7 @@ public final class Colonies {
 		long wait = cooldownLeft(level, hall);
 		menu.button(COUNT, VillageHallScreen.icon(Items.CLOCK, Component.translatable("screen.aliveworkplace.colonies.count", count.founded(), PER_VILLAGE),
 			ChatFormatting.WHITE,
-			VillageHallScreen.line(wait > 0 ? Component.translatable("screen.aliveworkplace.colonies.wait", wait)
+			VillageHallScreen.line(wait > 0 ? io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.colonies.wait", wait, wait)
 				: Component.translatable("screen.aliveworkplace.colonies.no_wait"), wait > 0 ? ChatFormatting.YELLOW : ChatFormatting.GRAY),
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.colonies.wait_about", cooldownDays(level, hall)), ChatFormatting.DARK_GRAY)), null);
 

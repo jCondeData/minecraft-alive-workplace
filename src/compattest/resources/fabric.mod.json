@@ -55,6 +55,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.CampfirePotCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateTrainCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainHallGoneCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateTrackCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MechanicCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ConductorCompatTests",

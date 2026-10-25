@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Tinkerer with the raw iron for a build's iron bars but no coal now tells the builder it's short of coal ("Can't be made yet: short of 1 Coal...") instead of "Nobody here makes: Iron Bars", and leaves the ore in the chest (B408).
 - A Hauler Golem whose nearest Storehouse it can't get to (walled in, across water) no longer stands at the end of its path with its load forever: after about 10 seconds without getting closer it takes the load to the next nearest Storehouse, and tries the first one again a couple of minutes later (B450).
 - A grown child now takes up a parent's trade for every job, not only the Shopkeeper: a Scholar's child takes a free lectern as a Scholar (likewise Teachers, Tinkerers, Chefs, Nurses, Innkeepers and the other jobs that share a vanilla block), and a child whose class is too low for the trade waits (B397).
 - Village fires: a fire on a build's roof (lightning, a chimney spark) is named after the build in chat and the chronicle ("Fire in the Starter Cottage"), not "Fire in the village" (B390); a Firewarden with no name yet reads "the Firewarden put it out", not "Firewarden the Firewarden put it out" (B391); and a fire burning when the server restarts is still put out, as the village's fires are now saved (B392).

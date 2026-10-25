@@ -990,6 +990,39 @@ public class CrafterWork extends Behavior<Villager> {
 		return spare;
 	}
 
+	/**
+	 * The coal short of firing what {@code plan} (of {@code kind}, a {@link Crafting#shortfall} plan) fires, a coal or
+	 * charcoal for every {@code perFuel}, the two mixed (B396); 0 if it fires nothing or there's enough. A forge's or a
+	 * kiln's fuel is a raw material of its chain, so the builder's shortage line can name it (B352, B408).
+	 */
+	protected static int fuelShort(ServerLevel level, @Nullable Crafting.Plan plan, Crafting.Kind kind, Map<Item, Long> usable, int perFuel) {
+		if (plan == null) {
+			return 0;
+		}
+		int fired = 0;
+		for (Crafting.Step step : plan.steps()) {
+			if (Crafting.isFired(level, kind, step)) {
+				fired += step.times();
+			}
+		}
+		int fuel = (fired + perFuel - 1) / perFuel;
+		return (int) Math.max(0, fuel - fuelSpare(Map.of(), usable));
+	}
+
+	/**
+	 * What's short of making {@code count} of {@code item} with {@code kind}'s recipes, as {@link Crafting#lacking}, with
+	 * the coal its firing needs counted too ({@link #fuelShort}): ore that's all there but can't be fired names the coal.
+	 */
+	protected static Map<Item, Integer> lackingWithFuel(ServerLevel level, Crafting.Kind kind, Item item, int count, Map<Item, Long> usable, int perFuel) {
+		Crafting.Plan plan = Crafting.shortfall(level, kind, item, count, usable);
+		Map<Item, Integer> lack = new LinkedHashMap<>(Crafting.lacks(plan));
+		int coal = fuelShort(level, plan, kind, usable, perFuel);
+		if (coal > 0) {
+			lack.merge(net.minecraft.world.item.Items.COAL, coal, Integer::sum);
+		}
+		return lack;
+	}
+
 	/** Whether {@code plan} (of {@code kind}) fires anything. */
 	protected static boolean fires(ServerLevel level, Crafting.Plan plan, Crafting.Kind kind) {
 		return plan.steps().stream().anyMatch(step -> Crafting.isFired(level, kind, step));

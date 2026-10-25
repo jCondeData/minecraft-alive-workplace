@@ -1289,7 +1289,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     stays away for 3 days; a proposal lapses; a stranger can't approve in a protected village; Run the village starts
     a build with no click and Rest does nothing; proposals survive save and reload;
   - showcase scene `steward_desk`: the desk with three proposals, Show me, the approval and the builder setting off.
-- [x] **27.9** (approved 2026-10-05) **Jobs and research.** Two more effects:
+- [x] **27.9** (approved 2026-10-05) (verified 2026-10-25: 16 QA tests [QaStewardDeskJobsGameTests]: guard order, baby/grown, research edges [raid 6/8 days, ill 1/2, store 80/79%], 600 seeded topic cases, world-counted store/raid/ill, approvals; 5/6 mutants killed [survivor: raid exactly 7 days, covered by StewardJobsGameTests]. 27.8 waits on B475.) **Jobs and research.** Two more effects:
   - `assign_jobs`: each morning every grown jobless villager (not a nitwit) gets a free workstation
     (`VillageHalls.freeStations`), the village's biggest gap first: a builder while there's none, a farmer while food
     is short, guards while guards are short, a porter at a free Storehouse, a scholar while research is idle, then the

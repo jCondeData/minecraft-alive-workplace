@@ -1191,7 +1191,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - screenshots at GUI scales 2 and 4 show no clipped or overlapping text (as 24.4 checks the other screens);
   - showcase scene `city_plan`: Homes, Workshops and Gardens zones painted in three styles over a real village, with
     stills of the screen and the finished plan.
-- [x] **27.4** (approved 2026-10-05) **Roads and the wall line on the plan, and the plan on the ground.** Two more tools on the plan
+- [x] **27.4** (approved 2026-10-05) (verified 2026-10-25: QaCityPlanGameTests [17: road/wall limits both sides, 64-point lines, 24 roads, map tints at radius 64 and 128, reload] and QaStewardPlotsGameTests [open-build table level x rank x cap, appointing reach, child/far/jobless refused, reload, trades, 0-ticket hall]; mutants planted 7/7 killed. 27.2, 27.3, 27.6, 27.7 wait on B468-B471.) **Roads and the wall line on the plan, and the plan on the ground.** Two more tools on the plan
   screen: **Road** (click points, double-click to end; a lane 1 wide, a street 3 wide or an avenue 5 wide, with a
   style, by default that of the zone it starts in) and **Wall line** (one line round the village, open or closed).
   Roads a player draws count as approved: the Steward builds them without asking (27.15). While a player holds the
@@ -1203,7 +1203,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     refused; the map drawn for a planned village has its zone tints on the right pixels;
   - showcase scene `city_plan_ground`: a player walks the village holding the plan (a still of the borders on the
     ground) and the framed plan by the hall.
-- [x] **27.5** (approved 2026-10-05) **The Steward.** A new job, `aliveworkplace:steward`, at the Village Hall, one per hall:
+- [x] **27.5** (approved 2026-10-05) (verified 2026-10-25: QaCityPlanGameTests [17: road/wall limits both sides, 64-point lines, 24 roads, map tints at radius 64 and 128, reload] and QaStewardPlotsGameTests [open-build table level x rank x cap, appointing reach, child/far/jobless refused, reload, trades, 0-ticket hall]; mutants planted 7/7 killed. 27.2, 27.3, 27.6, 27.7 wait on B468-B471.) **The Steward.** A new job, `aliveworkplace:steward`, at the Village Hall, one per hall:
   - **Appointing:** sneak-right-click a grown villager standing by the hall with its City Plan (a Village Hall entry in
     `work/Stations`), or the desk's "Appoint a Steward" button (27.8), which lists the jobless. The hall isn't an
     acquirable job site, so nobody takes it by himself. Its point of interest has 0 tickets today: it gets 1, and a

@@ -109,7 +109,7 @@ Vanilla scaffolding (`minecraft:scaffolding`). No new items, blocks or commands.
 
 ## 8. Proof
 
-GameTests: `ScaffoldingGameTests` (10): `ScaffoldingGameTests.builderClimbsAContinuousColumnBesideThePillar` (35.6a:
+GameTests: `ScaffoldingGameTests` (12): `ScaffoldingGameTests.builderClimbsAContinuousColumnBesideThePillar` (35.6a:
 every tick the scaffolding is one unbroken column from the ground, the builder never stands on the pillar or cap, the
 pillar never has a gap, and the builder is up the scaffolding at least 7 blocks high),
 `ScaffoldingGameTests.reloadWithTheBuilderUpTheScaffolding` (saved and loaded with the builder high up the column),
@@ -118,7 +118,9 @@ pillar with a 5 x 5 cap, nothing skipped, no scaffolding left, the chest as full
 `ScaffoldingGameTests.cancellingTakesTheScaffoldingDown`, `ScaffoldingGameTests.reloadWithScaffoldsUpFinishesTheBuild`,
 `ScaffoldingGameTests.oldSitesLoadWithNoScaffolds`, `ScaffoldingGameTests.noScaffoldingInTheChestsIsAskedFor`,
 `ScaffoldingGameTests.carpentersMakeScaffoldingFromBambooAndString`, `ScaffoldingGameTests.switchedOffNothingIsPutUp`,
-`ScaffoldingGameTests.follysDomeIsFinishedWithNoSkippedSteps` (the test folly's dome and finial, nothing skipped).
+`ScaffoldingGameTests.follysDomeIsFinishedWithNoSkippedSteps` (the test folly's dome and finial, nothing skipped), and QA's `ScaffoldingGameTests.theBuilderDyingWithScaffoldsUpTakesThemAllDown` (killed with scaffolds up: all down,
+none lost between the chest and his dropped bag) and `ScaffoldingGameTests.scaffoldingAPlayerBreaksIsStruckOffAndTheBuildFinishes`
+(the column's foot broken by someone else: struck off, the build finishes).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks
 away at the builder's height, with stills of it up the scaffolding and taking it down).

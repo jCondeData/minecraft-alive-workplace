@@ -97,6 +97,62 @@ public class ScaffoldingGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * QA (lane-b-1025-0937), the wiki (scaffolding.md): "A site removed with scaffolds still recorded (canceled, its
+	 * builder died, ...) has them all taken down at once, into the supply chests by its bench (else dropped there)". The
+	 * builder killed with scaffolds up: none is left standing, the site is gone, and every one of the 64 scaffolds is in
+	 * the chest or lying on the ground (what was in his bag drops where he fell), none lost.
+	 */
+	//$ gametest_ticks_batch BIG '6000' '"qaScaffoldBuilderDies"'
+	@GameTest(template = BIG, timeoutTicks = 6000, batch = "qaScaffoldBuilderDies")
+	public void theBuilderDyingWithScaffoldsUpTakesThemAllDown(GameTestHelper helper) {
+		Site s = pillar(helper, SCAFFOLDING);
+		int[] killedWith = {0};
+		helper.onEachTick(() -> {
+			if (killedWith[0] == 0 && s.site().scaffolds().size() >= 2) {
+				killedWith[0] = s.site().scaffolds().size();
+				s.builder()[0].kill();
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(killedWith[0] > 0, "no scaffolding up yet: " + s.site().scaffolds().size());
+			helper.assertTrue(BuildSiteManager.get(s.level()).get(s.site().id()) == null, "the dead builder's site is still there");
+			assertNoScaffolding(helper, s);
+			int loose = 0;
+			for (net.minecraft.world.entity.item.ItemEntity item : s.level().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+				new net.minecraft.world.phys.AABB(helper.absolutePos(BlockPos.ZERO)).expandTowards(32, 32, 32))) {
+				loose += item.getItem().is(Items.SCAFFOLDING) ? item.getItem().getCount() : 0;
+			}
+			helper.assertTrue(chestCount(helper, Items.SCAFFOLDING) + loose == SCAFFOLDING, "scaffolding after the builder died: "
+				+ chestCount(helper, Items.SCAFFOLDING) + " in the chest and " + loose + " on the ground, not " + SCAFFOLDING + " (killed with "
+				+ killedWith[0] + " up)");
+		});
+	}
+
+	/**
+	 * QA (lane-b-1025-0937), the wiki: "Scaffolding someone else broke is simply struck off the list." A player breaks the
+	 * foot of the builder's column while it's up (the column above falls, as vanilla scaffolding does): the build still
+	 * finishes whole and no scaffolding is left standing.
+	 */
+	//$ gametest_ticks_batch BIG '9000' '"qaScaffoldBroken"'
+	@GameTest(template = BIG, timeoutTicks = 9000, batch = "qaScaffoldBroken")
+	public void scaffoldingAPlayerBreaksIsStruckOffAndTheBuildFinishes(GameTestHelper helper) {
+		Site s = pillar(helper, SCAFFOLDING);
+		boolean[] broken = {false};
+		helper.onEachTick(() -> {
+			if (!broken[0] && s.site().scaffolds().size() >= 3) {
+				BlockPos lowest = s.site().scaffolds().stream().min(java.util.Comparator.comparingInt(BlockPos::getY)).orElseThrow();
+				broken[0] = s.level().destroyBlock(lowest, true);
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(broken[0], "no column was broken");
+			assertFinished(helper, s);
+			assertNoScaffolding(helper, s);
+			helper.assertTrue(s.site().scaffolds().isEmpty(), "the site still lists scaffolds: " + s.site().scaffolds());
+		});
+	}
+
 	/** Saved and loaded with scaffolds up (the site's list and the builder both): the build still finishes, all down. */
 	//$ gametest_ticks_batch BIG '9000' '"scaffoldReload"'
 	@GameTest(template = BIG, timeoutTicks = 9000, batch = "scaffoldReload")

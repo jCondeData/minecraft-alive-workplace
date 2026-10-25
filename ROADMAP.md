@@ -1810,7 +1810,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: the ten blueprints are in the table, lint-clean, with renders front and back in the package; a builder
   finishes each in a GameTest with its job block in place; showcase scene `pokemon_builds`.
-- [x] **28.14** (approved 2026-10-05) **A habitat of the village's own (Cobblemon 1.8).** The Habitat Block has no recipe and drops nothing:
+- [x] **28.14** (approved 2026-10-05) (verified 2026-10-25: QaVillageHabitatCompatTests on Cobblemon 1.8.1 [2: only an Expert by a finished garden founds it [Journeyman and unfinished refused]; tending reaches 64 blocks, not 65, never an activated block]; mutants Expert-1 and < reach both killed; wiki page village-habitat.md written [was in the baseline]) **A habitat of the village's own (Cobblemon 1.8).** The Habitat Block has no recipe and drops nothing:
   in survival it only comes in Cobblemon's 49 habitat structures. With `PokemonFeatures.HABITATS`:
   - Tending: natural Habitat Blocks within 64 blocks of the keeper's pasture (found through the loaded chunks' block
     entities, never a block scan) are visited each morning, and the hall's list posts today's phase ("Lush Cenote,

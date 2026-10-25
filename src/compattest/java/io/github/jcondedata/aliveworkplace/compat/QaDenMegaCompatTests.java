@@ -95,6 +95,21 @@ public class QaDenMegaCompatTests implements FabricGameTest {
 		return helper.absolutePos(HALL);
 	}
 
+	/**
+	 * The first of {@code ways} in which the point {@code steps} along it from {@code hall} has no Village Hall within
+	 * {@link RaidDens#REACH} (this test's hall is just out of reach there, so any hall found is another test's).
+	 */
+	private static int[] clearWay(GameTestHelper helper, BlockPos hall, int[][] ways, int steps) {
+		for (int[] way : ways) {
+			BlockPos at = hall.offset(steps * way[0], 0, steps * way[1]);
+			if (RaidDens.hallNear(helper.getLevel(), at).isEmpty()) {
+				return way;
+			}
+		}
+		throw new net.minecraft.gametest.framework.GameTestAssertException("setup: other tests' halls are within reach of "
+			+ steps + " blocks off this hall every way");
+	}
+
 	private static boolean known(GameTestHelper helper, BlockPos den) {
 		return RaidDens.Sites.get(helper.getLevel()).dens().stream().anyMatch(d -> d.pos().equals(den));
 	}
@@ -136,7 +151,8 @@ public class QaDenMegaCompatTests implements FabricGameTest {
 	/**
 	 * "Within 160 blocks of a hall", from both sides: a den 160 blocks east is the village's, one 161 blocks east isn't
 	 * (not even recorded); on the diagonal, 113 east and 113 south (159.8 blocks) is, 114 and 114 (161.2) isn't, so the
-	 * reach is a distance and not a 160-block square.
+	 * reach is a distance and not a 160-block square. East and south-east unless another test's hall reaches there (then
+	 * the first other way none does).
 	 */
 	//$ gametest_batch AREA '"qaDenReach"'
 	@GameTest(template = AREA, batch = "qaDenReach")
@@ -144,10 +160,14 @@ public class QaDenMegaCompatTests implements FabricGameTest {
 		List<BlockPos> placed = cleanup(helper);
 		BlockPos hall = hall(helper);
 		BlockState den = RaidDenCompatTests.den("tier_two", "fire", true);
-		BlockPos in = hall.offset(160, 0, 0);
-		BlockPos out = hall.offset(161, 0, 0);
-		BlockPos diagIn = hall.offset(113, 0, 113);
-		BlockPos diagOut = hall.offset(114, 0, 114);
+		// Halls other tests in this run left standing count as halls too (B417: one within 160 blocks of the den 161 blocks
+		// east recorded it in CI), so the dens go the way no other hall reaches: "the only hall" stays true.
+		int[] way = clearWay(helper, hall, new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}, 161);
+		int[] diag = clearWay(helper, hall, new int[][] {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, 114);
+		BlockPos in = hall.offset(160 * way[0], 0, 160 * way[1]);
+		BlockPos out = hall.offset(161 * way[0], 0, 161 * way[1]);
+		BlockPos diagIn = hall.offset(113 * diag[0], 0, 113 * diag[1]);
+		BlockPos diagOut = hall.offset(114 * diag[0], 0, 114 * diag[1]);
 		for (BlockPos p : List.of(in, out, diagIn, diagOut)) {
 			denAt(helper, p, den, placed);
 		}

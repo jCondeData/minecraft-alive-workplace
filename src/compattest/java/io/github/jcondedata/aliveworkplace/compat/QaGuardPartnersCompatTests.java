@@ -123,6 +123,9 @@ public class QaGuardPartnersCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaGuardPartnersCooldown")
 	public void aSecondHitInTheSameSecondGetsNoSecondMove(GameTestHelper helper) {
 		Villager guard = guardWithMachop(helper);
+		// Only the test's three hits: a guard left to itself goes for the husk between them when the run's clock is at
+		// night, and the move that brings takes the Machop's cooldown before the third (B389, seen at day time 19500).
+		guard.setNoAi(true);
 		float move = GuardPartners.damage(10);
 		float[] lost = new float[3];
 		Husk[] husk = {null};

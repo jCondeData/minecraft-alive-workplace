@@ -366,12 +366,17 @@ public final class RaidHelpers {
 
 	/** One look at a hiring (public for tests that drive it). */
 	public static void tick(ServerLevel level, Hire hire) {
-		List<Villager> helpers = helpers(level, hire);
-		if (helpers.isEmpty()) {
+		// B415: a helper that isn't loaded (its chunk unloaded, or the server just started) stays hired; only one that is
+		// here and no longer a trainer (or dying) leaves the hiring. The hiring itself ends on the raid, the day or the switch.
+		if (hire.helpers.removeIf(id -> level.getEntity(id) instanceof Villager v && (!v.isAlive() || !Trainers.isTrainer(v)))) {
+			Data.get(level).setDirty();
+		}
+		if (hire.helpers.isEmpty()) {
 			Data.get(level).hires.remove(hire.player);
 			Data.get(level).setDirty();
 			return;
 		}
+		List<Villager> helpers = helpers(level, hire);
 		long now = level.getGameTime();
 		if (now >= hire.until) {
 			over(level, hire, "message.aliveworkplace.raid_helpers.day_over");

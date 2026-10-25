@@ -8,7 +8,7 @@ the village knows (38.2), raid helpers (38.1a, which replaced 38.3's Den Wardens
 bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
 Shrine with its festival show (38.7), Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8), bean farms (38.9) and the partners' treats and dish luxuries (38.10); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.1a, 38.2, 38.3, 38.3a, 38.4, 38.4a, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.8a, 38.9, 38.10, 38.11, B190, B191, B215
+Roadmap items: 38.1, 38.1a, 38.2, 38.3, 38.3a, 38.4, 38.4a, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.8a, 38.9, 38.10, 38.11, B190, B191, B215, B414, B415
 
 ## What a player sees
 
@@ -31,7 +31,8 @@ boss's health every 5 seconds (0.6% times their rank divided by the den's tier, 
 quarter: the last blows are the player's. A helper more than one rank under the den's tier only cheers. A won raid
 goes in the chronicle ("<player> and <trainer>'s band beat the tier 3 Fire raid den") and earns the helpers battle
 experience; won, lost, the raid gone, a day after the hiring or the switch turned off, they walk home, and nobody can
-hire them until they're back. Without CobbleDollars the price is taken in emeralds from the player's inventory.
+hire them until they're back. A helper whose chunk isn't loaded for a while (the player logged off by the den, a
+server restart) stays hired and follows again once it loads; one that stops being a trainer leaves the hiring. Without CobbleDollars the price is taken in emeralds from the player's inventory.
 
 **More Mega trainers (38.5).** With Mega Showdown installed, Masters still carry a Mega Stone, and now so do: a Trainer
 Leader whose village (the nearest Village Hall) is a City, the two trainers of a Festival Cup's final (on the Cup's
@@ -373,6 +374,9 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   CobbleDollars", the price the click asks for, and emeralds in the inventory are left alone.
   `OptionalModsGameTests.raidHelpersCostEmeraldsWithoutCobbleDollars`: without it the price reads "5 emeralds a helper"
   ("1 emerald" at 1) and the hire's charge takes exactly that many emeralds.
+- `QaDenHelperBugTests.aHelperUnloadedForAMomentIsStillHired` (B415): one look with the helper's chunk unloaded keeps
+  the hiring, and the helper loaded back follows the player; `aDayLaterUnloadedHelpersAreSentHome`: the day's end still
+  sends an unloaded helper home and tells the player; `aHelperNoLongerATrainerLeavesTheHiring`.
 - `ConfigGameTests.anOldDenConfigLoads`: a config with 38.3's and 38.4's keys loads (38.1a).
 
 - `MegaTrainerCompatTests` (with Mega Showdown): `aCityLeaderMegaEvolvesATownLeaderDoesNot`,

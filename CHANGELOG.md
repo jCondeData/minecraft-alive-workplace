@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A paid raid helper stays hired when its chunk unloads for a while (the player logs off by the den, or the server restarts): the hiring used to vanish silently, the money gone and the helper neither following nor walking home once it loaded again. A hiring now ends only on a won or lost raid, the raid gone, a day passing or the switch turned off, and helpers away when it ends are still sent home (B415).
 - The Defence page's **Hire a raid helper** button now shows the price in the money the click takes: "500 CobbleDollars a helper" on a server with CobbleDollars (it said "5 emeralds a helper", then asked for 500 CobbleDollars), "5 emeralds a helper" without (B414).
 - A hand-edited server config with one value of the wrong kind (`"festivals": 0`, `"threatLevel": "high"`) no longer resets every setting: that value takes its default and the rest are kept; a file that isn't JSON at all is kept as `aliveworkplace.json.bad` before the defaults are written (B411).
 - A Librarian one leather short of a builder's last bookshelf now says "Can't be made yet: short of 1 Leather to make 1 Bookshelf" instead of "short of 4 Rabbit Hide": the shortage line names what the chest holds too few of, and only names what it's made from when that's at hand (logs for planks) (B409).

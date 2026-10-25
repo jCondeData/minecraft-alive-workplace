@@ -575,6 +575,9 @@ public class QaFireGameTests {
 		rowan.setCustomName(Component.literal("Rowan"));
 		long[] stopped = {-1};
 		int[] lost = {-1};
+		int[] doused = {0};
+		int[] relit = {0};
+		int[] burnedAtStop = {-1};
 		helper.runAfterDelay(2, () -> {
 			fire(helper, ROOF_TOP);
 			fire(helper, ROOF_TOP.offset(1, 0, 1));
@@ -583,6 +586,18 @@ public class QaFireGameTests {
 		helper.onEachTick(() -> {
 			if (stopped[0] >= 0 || helper.getTick() < 10) {
 				return;
+			}
+			// B405: vanilla fire can burn the plank under it to air and go out with it, so all three fires can be gone by
+			// the time the third block is (the level's random decides). Then there is nothing left to put out and the
+			// chronicle rightly says it burned out. The Firewarden comes to a fire that is still burning, so keep one
+			// burning on the roof that is left until the Firewarden puts it out; the count check is unchanged.
+			if (fires(helper) == 0) {
+				hut.blocks().stream().filter(p -> level.getBlockState(helper.absolutePos(p)).is(Blocks.OAK_PLANKS)
+						&& level.getBlockState(helper.absolutePos(p.above())).isAir())
+					.findFirst().ifPresent(p -> {
+						fire(helper, p.above());
+						relit[0]++;
+					});
 			}
 			long gone = hut.blocks().stream().filter(p -> !level.getBlockState(helper.absolutePos(p)).is(Blocks.OAK_PLANKS)
 				&& !level.getBlockState(helper.absolutePos(p)).is(Blocks.OAK_LOG)).count();
@@ -595,10 +610,11 @@ public class QaFireGameTests {
 				level.getGameRules().getRule(GameRules.RULE_DOFIRETICK).set(false, level.getServer());
 				for (BlockPos p : BlockPos.betweenClosed(BlockPos.containing(helper.getBounds().getMinPosition()), BlockPos.containing(helper.getBounds().getMaxPosition()))) {
 					if (level.getBlockState(p).is(BlockTags.FIRE)) {
-						VillageFire.douse(level, p.immutable(), 0, rowan);
+						doused[0] += VillageFire.douse(level, p.immutable(), 0, rowan);
 					}
 				}
 				stopped[0] = helper.getTick();
+				burnedAtStop[0] = VillageFire.incident(level, hut.hall()).map(VillageFire.Incident::burned).orElse(-1);
 				lost[0] = (int) hut.blocks().stream().filter(p -> !level.getBlockState(helper.absolutePos(p)).is(Blocks.OAK_PLANKS)
 					&& !level.getBlockState(helper.absolutePos(p)).is(Blocks.OAK_LOG)).count();
 			}
@@ -607,7 +623,9 @@ public class QaFireGameTests {
 			helper.assertTrue(stopped[0] >= 0 && VillageFire.incident(level, hut.hall()).isEmpty(), "the fire isn't over");
 			String text = fireEntry(level, hut.hall()).map(e -> e.text().getString()).orElse("nothing");
 			String want = lost[0] == 1 ? ": 1 block burned; " : ": " + lost[0] + " blocks burned; ";
-			helper.assertTrue(text.contains(want) && text.endsWith("Rowan the Firewarden put it out."), lost[0] + " blocks burned, and the chronicle says: " + text);
+			helper.assertTrue(text.contains(want) && text.endsWith("Rowan the Firewarden put it out."), lost[0] + " blocks burned, and the chronicle says: "
+				+ text + " (stopped at tick " + stopped[0] + ", Rowan put out " + doused[0] + " fire blocks, the fire was relit " + relit[0]
+				+ " times, the incident had counted " + burnedAtStop[0] + " burned)");
 		});
 	}
 

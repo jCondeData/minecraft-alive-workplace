@@ -155,7 +155,9 @@ GameTests: `LegendEngineGameTests` (6), `LegendSlotsGameTests` (6), `LegendsHall
 `PathfinderGameTests`, `OldSageGameTests`, `GolemSmithGameTests` (with `GolemHaulerFightGameTests`, 4: a hauler back at work
 after a fight, B329; `GolemHaulerRouteGameTests`, 2: a hauler whose nearest Storehouse is walled in gives it up after
 10 seconds without headway and takes its load to the next nearest, B450, and one whose nearest Drop Box is walled in
-fetches from the next, B456; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
+fetches from the next, B456; `QaHaulerGiveUpGameTests`, 3 (QA): a given-up Storehouse, and a given-up Drop Box, is left alone for the
+2,400-tick wait even once the way is open and used again after it, and a hauler saved and loaded right after giving up keeps its whole load and
+gets it home; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
 and walks back to it, a Nether route is refused and a blank map takes the post, each with its line, a foe 10 blocks
 from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,

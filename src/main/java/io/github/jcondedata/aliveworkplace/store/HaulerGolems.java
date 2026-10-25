@@ -7,10 +7,13 @@ import io.github.jcondedata.aliveworkplace.legend.GolemSmith;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Village;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
@@ -28,18 +31,26 @@ import org.jetbrains.annotations.Nullable;
  * worker's job makes, never what it needs: {@link PorterWork#goods}, at least {@link PorterWork#MIN_LOAD} items to be
  * worth a trip). The load is saved on the golem ({@link ModAttachments#HAULER_LOAD}), so a trip survives a reload:
  * a golem with a load heads to the Storehouse first. They never break blocks. The walking is the golem's own goal,
- * {@link GolemRoleGoal}.
+ * {@link GolemRoleGoal}. A Storehouse the golem can't get to (walled in, across water) is left alone for a while
+ * after {@link #GIVE_UP} ticks without headway, and the next nearest one takes the load (B450); nothing of that is
+ * saved, so after a reload the golem simply tries the nearest again.
  */
 public final class HaulerGolems {
 	public static final int STACKS = PorterWork.BASE_STACKS;
 	public static final int STOREHOUSE_RANGE = 64;
 	private static final double REACH = 3.0;
+	/** Ticks a loaded golem may stand without headway on its way to a Storehouse before it gives that one up. */
+	public static final int GIVE_UP = 200;
+	/** Ticks a given-up Storehouse is left alone before the golem tries it again (the way may have been opened). */
+	public static final int SKIP_FOR = 2400;
+	/** Storehouses each golem has given up on, with the game time it tries them again (in memory only). */
+	private static final Map<IronGolem, Map<BlockPos, Long>> UNREACHABLE = Collections.synchronizedMap(new WeakHashMap<>());
 
 	public static final Codec<Map<Item, Integer>> LOAD_CODEC = Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT);
 
 	/** One step of a hauler's round: store the load, or fetch goods from the nearest worker who has enough. */
 	public static void work(ServerLevel level, IronGolem golem) {
-		BlockPos storehouse = storehouse(level, golem.blockPosition()).orElse(null);
+		BlockPos storehouse = storehouse(level, golem).orElse(null);
 		if (storehouse == null) {
 			return;
 		}
@@ -51,6 +62,9 @@ public final class HaulerGolems {
 		if (!load.isEmpty()) {
 			if (GolemRoleGoal.walkTo(golem, store.get(0), REACH)) {
 				unload(level, golem, store, load);
+			} else if (GolemRoleGoal.stillFor(golem) >= GIVE_UP) {
+				UNREACHABLE.computeIfAbsent(golem, g -> new HashMap<>()).put(storehouse, level.getGameTime() + SKIP_FOR);
+				GolemRoleGoal.giveUp(golem);
 			}
 			return;
 		}
@@ -66,6 +80,18 @@ public final class HaulerGolems {
 	/** The nearest Storehouse within {@link #STOREHOUSE_RANGE}. */
 	public static Optional<BlockPos> storehouse(ServerLevel level, BlockPos near) {
 		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.STOREHOUSE_POI), near, STOREHOUSE_RANGE, PoiManager.Occupancy.ANY);
+	}
+
+	/** The nearest Storehouse within {@link #STOREHOUSE_RANGE} of {@code golem} that it hasn't lately given up on. */
+	public static Optional<BlockPos> storehouse(ServerLevel level, IronGolem golem) {
+		Map<BlockPos, Long> skip = UNREACHABLE.get(golem);
+		if (skip == null) {
+			return storehouse(level, golem.blockPosition());
+		}
+		long now = level.getGameTime();
+		skip.values().removeIf(until -> until <= now);
+		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> !skip.containsKey(p), golem.blockPosition(),
+			STOREHOUSE_RANGE, PoiManager.Occupancy.ANY);
 	}
 
 	/** The saved load (empty when none). */

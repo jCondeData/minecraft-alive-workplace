@@ -32,7 +32,9 @@ Every 2 days, while the village has fewer than one forged golem per 5 villagers,
 the chests by the smithing table near their workstation: **4 iron blocks, a carved pumpkin and one more thing** for the
 golem's role. Sneak-right-click them with an empty hand to choose which comes next:
 
-- **Hauler Golem** (a chest): carries goods to the [Storehouse](storehouse.md).
+- **Hauler Golem** (a chest): carries goods to the nearest [Storehouse](storehouse.md). If it can't get there
+  (walled in, across water), it gives up after about 10 seconds and takes the load to the next nearest Storehouse,
+  trying the first one again a couple of minutes later.
 - **Farmhand Golem** (an iron hoe): tends the fields and carries the harvest in.
 - **Wall Sentry** (a shield): a tougher golem that holds a spot on the wall. Sneak-right-click it with a
   [Patrol Map](patrol-map.md) to give it its post.

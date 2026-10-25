@@ -153,7 +153,8 @@ GameTests: `LegendEngineGameTests` (6), `LegendSlotsGameTests` (6), `LegendsHall
 `LegendNeedsGameTests` (9), `LegendGuestsGameTests` (8), `LegendSitesGameTests` (7), `StrangeMoodGameTests` (6),
 `GiftedGameTests` (6), `GiftedBornGameTests` (9), and one class per Legend: `MasterArchitectGameTests`,
 `PathfinderGameTests`, `OldSageGameTests`, `GolemSmithGameTests` (with `GolemHaulerFightGameTests`, 4: a hauler back at work
-after a fight, B329; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
+after a fight, B329; `GolemHaulerRouteGameTests`, 1: a hauler whose nearest Storehouse is walled in gives it up after
+10 seconds without headway and takes its load to the next nearest, B450; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
 and walks back to it, a Nether route is refused and a blank map takes the post, each with its line, a foe 10 blocks
 from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,

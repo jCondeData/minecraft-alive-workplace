@@ -51,7 +51,7 @@ public class GolemHaulerFightGameTests implements net.fabricmc.fabric.api.gamete
 	 * 11 blocks off across the area's edge, which it can't reach, and stand there with its load (2026-10-24). The test's
 	 * own Storehouse is the only one its hauler should know. Only for tests alone in their batch.
 	 */
-	private static void strayStorehouses(GameTestHelper helper) {
+	static void strayStorehouses(GameTestHelper helper) {
 		net.minecraft.world.phys.AABB box = helper.getBounds();
 		int reach = HaulerGolems.STOREHOUSE_RANGE + (int) Math.ceil(Math.hypot(box.getXsize(), box.getZsize()) / 2) + 1;
 		for (BlockPos stray : helper.getLevel().getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI),

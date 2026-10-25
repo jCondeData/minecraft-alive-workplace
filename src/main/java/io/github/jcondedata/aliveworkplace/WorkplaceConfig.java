@@ -502,8 +502,23 @@ public final class WorkplaceConfig {
 				// server that won't start.
 				AliveWorkplace.LOG.warn("Couldn't read {}, using the defaults: {}", file, e.toString());
 			}
+			keepAside(file);
 		}
 		return new WorkplaceConfig();
+	}
+
+	/** The name a file that couldn't be read is kept under, beside it, before the defaults are written over it (B411). */
+	public static final String BAD_FILE = FILE + ".bad";
+
+	/** Copies a file that couldn't be read to {@link #BAD_FILE}, so the owner's edits aren't lost when it's written back. */
+	private static void keepAside(Path file) {
+		Path copy = file.resolveSibling(BAD_FILE);
+		try {
+			Files.copy(file, copy, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+			AliveWorkplace.LOG.warn("Kept the unreadable config as {}", copy);
+		} catch (IOException | RuntimeException e) {
+			AliveWorkplace.LOG.warn("Couldn't keep the unreadable config as {}: {}", copy, e.toString());
+		}
 	}
 
 	/** Writes every option to {@code configDir} (clamped first). */
@@ -518,7 +533,7 @@ public final class WorkplaceConfig {
 		}
 	}
 
-	/** The config in {@code json} (missing values take their default), clamped to sensible ranges. */
+	/** The config in {@code json} (missing values and values that can't be read take their default), clamped to sensible ranges. */
 	public static WorkplaceConfig parse(String json) {
 		com.google.gson.JsonElement tree = com.google.gson.JsonParser.parseString(json);
 		com.google.gson.JsonObject object = tree.isJsonObject() ? tree.getAsJsonObject() : new com.google.gson.JsonObject();
@@ -528,6 +543,19 @@ public final class WorkplaceConfig {
 		com.google.gson.JsonObject options = object.deepCopy();
 		options.remove("configVersion");
 		options.remove("expansionsOpen");
+		// A value of the wrong kind ("festivals": 0, "supplyRadius": 12.5, "threatLevel": "high") makes Gson refuse the
+		// whole object: each one is tried alone first, and one that can't be read is dropped, so it takes its default and
+		// every other value in the file is kept (B411).
+		for (String key : new java.util.ArrayList<>(options.keySet())) {
+			com.google.gson.JsonObject single = new com.google.gson.JsonObject();
+			single.add(key, options.get(key));
+			try {
+				GSON.fromJson(single, WorkplaceConfig.class);
+			} catch (RuntimeException e) {
+				options.remove(key);
+				AliveWorkplace.LOG.warn("Couldn't read \"{}\" in {} ({}), it takes its default", key, FILE, e.getMessage());
+			}
+		}
 		WorkplaceConfig config = tree.isJsonObject() ? GSON.fromJson(options, WorkplaceConfig.class) : null;
 		if (config == null) {
 			config = new WorkplaceConfig();

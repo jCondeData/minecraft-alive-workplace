@@ -20,7 +20,7 @@ wool and concrete, and, with CobbleFurnies, the Furnicrafter its furniture (the 
 piece). A big order is made a bagful at a time until there's enough.
 
 When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
-under "Short of": "Can't be made yet: short of 4 Oak Log to make 3 Barrel". When no job in the village makes a crafted
+under "Short of": "Can't be made yet: short of 4 Oak Logs to make 3 Barrels" (items named in the plural after a count above one, B426). When no job in the village makes a crafted
 part at all (oak stairs in a village with a Mason but no Carpenter), the line says "Nobody here makes: Oak Stairs".
 A Mason's kiln counts its fuel as a raw material too: twelve clay balls and one coal for three brick stairs (a coal
 for every eight fired) is "short of 1 Coal to make 3 Brick Stairs", and nothing is taken (B352).

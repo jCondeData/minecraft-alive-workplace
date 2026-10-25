@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.work.PartnerShows;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -101,17 +102,19 @@ public class DaycareKeeperWork extends Behavior<Villager> {
 			return;
 		}
 		int eggs = pairs.stream().mapToInt(DaycareKeepers.Pair::eggs).sum();
-		status(villager, eggs > 0 ? "eggs" : "watching", Component.literal(String.valueOf(pairs.size())), Component.literal(String.valueOf(eggs)));
+		status(villager, eggs > 0 ? "eggs" : "watching", pairs.size(), eggs);
 		if (gameTime >= nextCompany) {
 			nextCompany = gameTime + COMPANY_EVERY;
 			PartnerShows.cue(villager, "keep_company", pasture);
 		}
 	}
 
-	private static void status(Villager villager, String state, Component... args) {
-		Component title = Component.translatable("message.aliveworkplace.daycare_keeper.title", DaycareKeepers.pairs(villager).size());
+	private static void status(Villager villager, String state, Object... args) {
+		Component title = Words.countedFirst("message.aliveworkplace.daycare_keeper.title", DaycareKeepers.pairs(villager).size());
 		boolean warn = state.equals("off");
-		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.daycare_keeper.state." + state, (Object[]) args)
+		WorkerStatus.set(villager, title, -1f, (state.equals("eggs") // two counts, each in its own form ("1 pair: 1 egg waiting")
+				? Words.countedTwo("message.aliveworkplace.daycare_keeper.state.eggs", ((Number) args[0]).longValue(), ((Number) args[1]).longValue(), args)
+				: Words.countedFirst("message.aliveworkplace.daycare_keeper.state." + state, args))
 			.withStyle(warn ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}
 }

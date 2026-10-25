@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.PartnerShows;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.List;
@@ -291,7 +292,7 @@ public class GemGrowerWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, String state, Component... args) {
-		Component title = Component.translatable("message.aliveworkplace.gem_grower.title",
+		Component title = Words.countedFirst("message.aliveworkplace.gem_grower.title",
 			ModAttachments.GEMS_PICKED.getOrElse(villager, 0));
 		boolean warn = state.startsWith("needs") || state.equals("no_chest") || state.equals("no_stonecutter") || state.equals("off")
 			|| state.equals("no_beds");

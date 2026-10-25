@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.Comparator;
 import java.util.List;
@@ -437,7 +438,7 @@ public class BeekeeperWork extends Behavior<Villager> {
 	}
 
 	private static void status(Villager villager, String state, Object... args) {
-		Component title = Component.translatable("message.aliveworkplace.beekeeper.title", ModAttachments.HIVES_HARVESTED.getOrElse(villager, 0));
+		Component title = Words.countedFirst("message.aliveworkplace.beekeeper.title", ModAttachments.HIVES_HARVESTED.getOrElse(villager, 0));
 		boolean warn = state.equals("no_chest") || state.equals("no_hives");
 		WorkerStatus.set(villager, title, -1f, Component.translatable("message.aliveworkplace.beekeeper.state." + state, args)
 			.withStyle(warn ? ChatFormatting.YELLOW : ChatFormatting.GRAY));

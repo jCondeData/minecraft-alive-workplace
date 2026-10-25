@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.hall.VillageMaps;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -396,7 +397,7 @@ public final class CityPlans {
 			}
 		}
 		if (refused > 0 && player != null) {
-			Chat.actionBar(player, Component.translatable("message.aliveworkplace.city_plan.other_village", refused).withStyle(ChatFormatting.YELLOW));
+			Chat.actionBar(player, Words.counted("message.aliveworkplace.city_plan.other_village", refused, refused).withStyle(ChatFormatting.YELLOW));
 		}
 		return out;
 	}

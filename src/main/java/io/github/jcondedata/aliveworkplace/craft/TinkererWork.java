@@ -98,6 +98,18 @@ public class TinkererWork extends CrafterWork {
 		return withFuel(level, plan, usable, Crafting.Kind.WORKSHOP, SMELTS_PER_FUEL);
 	}
 
+	/**
+	 * What's short of the forge's chain (37.14a), its fuel counted as a raw material (a coal for every
+	 * {@link #SMELTS_PER_FUEL} ore fired): the raw iron there but no coal names the coal (B408, as the Mason's kiln, B352).
+	 */
+	@Override
+	protected Map<Item, Integer> lackFor(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
+		if (Crafting.recipesFor(level, kind, item).isEmpty()) {
+			return Map.of();
+		}
+		return lackingWithFuel(level, kind, item, Math.min(Math.max(1, count), Crafting.MAX_CRAFTS), usable, SMELTS_PER_FUEL);
+	}
+
 	@Override
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
 		super.stop(level, villager, gameTime);

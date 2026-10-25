@@ -497,6 +497,10 @@ public final class WorkplaceConfig {
 				return parse(Files.readString(file));
 			} catch (IOException | JsonParseException e) {
 				AliveWorkplace.LOG.warn("Couldn't read {}, using the defaults: {}", file, e.getMessage());
+			} catch (RuntimeException e) {
+				// Last line of defence (B457): a file shaped in a way parse didn't foresee gives the defaults, never a
+				// server that won't start.
+				AliveWorkplace.LOG.warn("Couldn't read {}, using the defaults: {}", file, e.toString());
 			}
 		}
 		return new WorkplaceConfig();
@@ -517,17 +521,24 @@ public final class WorkplaceConfig {
 	/** The config in {@code json} (missing values take their default), clamped to sensible ranges. */
 	public static WorkplaceConfig parse(String json) {
 		com.google.gson.JsonElement tree = com.google.gson.JsonParser.parseString(json);
-		WorkplaceConfig config = tree.isJsonObject() ? GSON.fromJson(tree, WorkplaceConfig.class) : null;
+		com.google.gson.JsonObject object = tree.isJsonObject() ? tree.getAsJsonObject() : new com.google.gson.JsonObject();
+		// The format number and the open expansions are no options: read here by hand, so an empty or odd value in them
+		// (null, text, a list where a number goes) is a missing one and never costs the rest of the file (B457).
+		Integer writtenFormat = formatNumber(object.get("configVersion"));
+		com.google.gson.JsonObject options = object.deepCopy();
+		options.remove("configVersion");
+		options.remove("expansionsOpen");
+		WorkplaceConfig config = tree.isJsonObject() ? GSON.fromJson(options, WorkplaceConfig.class) : null;
 		if (config == null) {
 			config = new WorkplaceConfig();
 		}
-		boolean old = tree.isJsonObject() && !tree.getAsJsonObject().has("configVersion");
+		boolean old = tree.isJsonObject() && writtenFormat == null;
 		if (old && config.seasonDays == 8) {
 			config.seasonDays = 16;
 		}
 		// Format 4 (36.16): villagers live ten times longer. A file of before holding the old default 120 moves to the new
 		// default; any other number was someone's choice and stays.
-		int format = tree.isJsonObject() && tree.getAsJsonObject().has("configVersion") ? tree.getAsJsonObject().get("configVersion").getAsInt() : 0;
+		int format = writtenFormat == null ? 0 : writtenFormat;
 		if (format < 4 && config.villagerElderDays == 120) {
 			config.villagerElderDays = new WorkplaceConfig().villagerElderDays;
 		}
@@ -535,12 +546,16 @@ public final class WorkplaceConfig {
 		// Which gates were open when the file was written: its list, or none in a file a jar of format 2 wrote (0.139.0 to
 		// the last release before this); a file with neither (written by hand, or older) is taken as it says.
 		java.util.List<String> written = new java.util.ArrayList<>();
-		com.google.gson.JsonObject object = tree.isJsonObject() ? tree.getAsJsonObject() : new com.google.gson.JsonObject();
 		boolean recorded = object.get("expansionsOpen") instanceof com.google.gson.JsonArray;
 		if (recorded) {
-			object.getAsJsonArray("expansionsOpen").forEach(e -> written.add(e.getAsString()));
+			// An entry that isn't a name (null, a list, an object) is skipped.
+			object.getAsJsonArray("expansionsOpen").forEach(e -> {
+				if (e.isJsonPrimitive()) {
+					written.add(e.getAsString());
+				}
+			});
 		}
-		boolean closedWhenWritten = recorded || (object.has("configVersion") && object.get("configVersion").getAsInt() < 3);
+		boolean closedWhenWritten = recorded || (writtenFormat != null && writtenFormat < 3);
 		WorkplaceConfig defaults = new WorkplaceConfig();
 		for (java.lang.reflect.Field field : WorkplaceConfig.class.getFields()) {
 			String milestone = Expansions.milestone(field.getName());
@@ -556,6 +571,21 @@ public final class WorkplaceConfig {
 		config.expansionsOpen = Expansions.open();
 		config.clamp();
 		return config;
+	}
+
+	/**
+	 * The format number {@code value} holds ({@code 3}, {@code "3"}), or null when it holds none (missing, null, text
+	 * that isn't a whole number, a list or an object): such a file is read as one without a number.
+	 */
+	private static Integer formatNumber(com.google.gson.JsonElement value) {
+		if (value == null || !value.isJsonPrimitive() || value.getAsJsonPrimitive().isBoolean()) {
+			return null;
+		}
+		try {
+			return new java.math.BigDecimal(value.getAsString().trim()).intValueExact();
+		} catch (NumberFormatException | ArithmeticException e) {
+			return null;
+		}
 	}
 
 	/** The whole-number options' ranges: the file is clamped to them, and the config screen's sliders span them. */

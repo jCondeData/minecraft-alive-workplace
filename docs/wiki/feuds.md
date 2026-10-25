@@ -87,4 +87,4 @@ boards 125%/75% for the rival and not for a neutral player, the price tooltip, c
 off, the other side; then war from the next dawn and its letter), `aWarsGuardsFightTheEnemyOwnerOnly` (foe only in war,
 only the enemy owner, only in the village; the enemy's attack hurts a guard but not a farmer; no block broken, no chest
 opened; no relief riders; a fallen guard counted; PvP off mid-war; the war ends after 3 days with both chronicles and
-no treasury moved), `feudsSaveAndTheSwitches`. Showcase scene `feud`.
+no treasury moved), `feudsSaveAndTheSwitches`. QA: `QaHoursLeftGameTests.theWarButtonsHoursLeftCountAPartHourAsAWholeOne` (the war button 500, 1500 and 1000 ticks short of a day: "1 hour", "2 hours", "1 hour" left). Showcase scene `feud`.

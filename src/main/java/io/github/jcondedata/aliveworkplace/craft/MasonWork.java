@@ -105,18 +105,9 @@ public class MasonWork extends CrafterWork {
 			return cut; // short of makings either way: the stonecutter's, the way a player would try first
 		}
 		Map<Item, Integer> lack = new LinkedHashMap<>(makings);
-		if (kiln != null) {
-			int fired = 0;
-			for (Crafting.Step step : kiln.steps()) {
-				if (Crafting.isFired(level, Crafting.Kind.KILN, step)) {
-					fired += step.times();
-				}
-			}
-			int fuel = (fired + GLASS_PER_FUEL - 1) / GLASS_PER_FUEL;
-			long have = fuelSpare(Map.of(), usable); // coal and charcoal together (B396)
-			if (fuel > have) {
-				lack.merge(Items.COAL, (int) (fuel - have), Integer::sum);
-			}
+		int coal = fuelShort(level, kiln, Crafting.Kind.KILN, usable, GLASS_PER_FUEL);
+		if (coal > 0) {
+			lack.merge(Items.COAL, coal, Integer::sum);
 		}
 		return lack.isEmpty() ? cut : lack;
 	}

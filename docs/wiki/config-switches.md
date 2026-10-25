@@ -10,10 +10,13 @@ Roadmap items: 25.5, B76, B119, B131, B161, 36.15
 **The config file.** `config/aliveworkplace.json` is written with the defaults the first time the game starts. Edit
 it and restart. A value out of range is clamped to the nearest allowed one, a missing value takes its default, and
 the file is written back complete, so every option is always listed. A number or a switch written in quotes ("1",
-"false") is read as meant, and an empty value (null) takes its default (`QaConfigFileGameTests`). A file that can't
-be read at all (empty, cut short, not a `{...}` object) gives the defaults and is written over with them. In the lists
-and maps an empty entry takes its default (a Wonder cap, a disaster or raider culture switch: on) and a cap past its
-range is clamped (`QaConfigOddFilesGameTests`).
+"false") is read as meant, and an empty value (null) takes its default (`QaConfigFileGameTests`). The same holds for
+the two keys the mod keeps for itself: an empty or odd file format number ("configVersion": null, words, a list) is
+read as a file without one, and entries of "expansionsOpen" that aren't names (null, a list) are skipped, so the rest
+of the file is still read (B457). A file that can't be read at all (empty, cut short, not a `{...}` object) gives the
+defaults and is written over with them; nothing in the file stops the game from starting. In the lists and maps an
+empty entry takes its default (a Wonder cap, a disaster or raider culture switch: on) and a cap past its range is
+clamped (`QaConfigOddFilesGameTests`).
 
 **The settings screen.** With Mod Menu installed, the mod's Configure button opens the same settings as sliders and
 on/off buttons, each with a tooltip. Every setting's name fits its 150-pixel button at its widest value

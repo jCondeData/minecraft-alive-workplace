@@ -25,7 +25,8 @@ part at all (oak stairs in a village with a Mason but no Carpenter), the line sa
 A Mason's kiln counts its fuel as a raw material too: twelve clay balls and one coal for three brick stairs (a coal
 for every eight fired) is "short of 1 Coal to make 3 Brick Stairs", and nothing is taken (B352).
 Coal and charcoal count together: one coal and one charcoal are the two fuels twelve clay needs, and the Mason
-takes and burns both (B396). The same goes for a Tinkerer's forge.
+takes and burns both (B396). The same goes for a Tinkerer's forge: six raw iron for iron bars and no coal is "short
+of 1 Coal", not "Nobody here makes: Iron Bars", and the ore stays in the chest (B408).
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -44,7 +45,8 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   for the Furnicrafter), `Crafting.CHAIN_DEPTH` (3) steps down, a repeated recipe merged into one step;
 - tries the whole count, then half, down to one, so a big order is made a bagful at a time (12 stacks of makings);
 - when nothing fits, notes the chain's raw materials short (`Crafting.lacking`, or the Furnicrafter's own; the Mason's
-  kiln adds its coal, from `Crafting.shortfall`'s fired steps, and names it when the clay is all there) for that
+  kiln and the Tinkerer's forge add their coal, from `Crafting.shortfall`'s fired steps (`CrafterWork.fuelShort`), and
+  name it when the clay or ore is all there) for that
   build site and item in `JobShortages`; when it can make it, or another job has claimed it, notes it as covered;
 - makes the plan's steps one after another at the workstation (each in its own time), saving the job on the villager
   after every phase change and step (`crafter_job`); fuel a plan takes that no step uses is burnt at the end; a plan's
@@ -122,6 +124,8 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   builder's line, nothing taken.
 - `QaCrafterFurnitureBugTests.b352AMasonShortOfCoalSaysSoAndTakesNothing`: the kiln a coal short names the coal, not
   the bricks, and takes nothing (B352).
+- `QaJobChainBugGameTests.aTinkererWithOreButNoCoalNamesTheCoalAndTakesNothing`: the forge with the raw iron but no
+  coal names the coal and takes nothing (B408).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the
   stairs (B396).
 - `MasonMixedFuelGameTests.aMasonWithTwoCharcoalMakesTheStairs`, `aMasonWithOneCoalForTwelveClayIsShortOfOneCoal`,
@@ -133,6 +137,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   three cauldrons (B396).
 - `QaCrafterFurnitureBugTests.b353TheCarpentersBenchBrokenMidChainLosesNothing`: the bench broken at step 2 and not
   put back: the job let go, the wood back in the builder's chest (B353).
+- `QaJobChainLetGoGameTests.aBenchBrokenBeforeAnythingWasCarriedLetsTheJobGoCleanly`: the bench broken while the
+  Carpenter is still fetching, empty-handed: let go after half a minute, nothing taken, and the bench put back finishes
+  the build (B353).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.

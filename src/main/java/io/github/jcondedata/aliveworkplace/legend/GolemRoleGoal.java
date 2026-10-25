@@ -103,6 +103,18 @@ public class GolemRoleGoal extends Goal {
 		}
 	}
 
+	/** How long (ticks) {@code golem} has walked without getting a block farther; 0 when it isn't on a walk. */
+	public static long stillFor(IronGolem golem) {
+		double[] last = HEADWAY.get(golem);
+		return last == null ? 0 : golem.level().getGameTime() - (long) last[2];
+	}
+
+	/** Ends {@code golem}'s walk where it stands, as if it had arrived: the next walk starts its headway afresh. */
+	public static void giveUp(IronGolem golem) {
+		golem.getNavigation().stop();
+		arrived(golem);
+	}
+
 	private static void arrived(IronGolem golem) {
 		HEADWAY.remove(golem);
 		SQUEEZING.remove(golem);

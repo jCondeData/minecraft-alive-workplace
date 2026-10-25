@@ -83,7 +83,8 @@ want the household has; a Peasant pays exactly what every worker paid before, so
 bonuses go through the one pace rule and its cap. A Legend lives among the top class.
 
 **The job gate** applies only when a job is taken: picking it with its item, the hall's free-workstation list, a
-grown child taking a parent's trade, the Steward's morning jobs. A hired traveler arrives with the class of their
+grown child taking a parent's trade (any job a free block offers, so a Scholar's child may take a free lectern as a
+Scholar), the Steward's morning jobs. A hired traveler arrives with the class of their
 level (Apprentice: Peasant, Journeyman: Artisan, Expert: Burgher).
 
 ## Switching it on (34.22)

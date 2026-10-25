@@ -2581,7 +2581,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     on; progress survives lifting and a reload; the last step reforms it (no mood loss, pace kept), and it stays
     reformed when lifted and proclaimed again; a battle step falls back to its `fallback` without Cobblemon;
   - showcase scene `reform`: the quest page with a reform step, then the fireworks and the chronicle line.
-- [x] **30.6** (approved 2026-10-05) **Free Bread and Large Families.** Effects `food_use`, `births` and `sickness`, read by `VillageNeeds`,
+- [x] **30.6** (approved 2026-10-05) (verified 2026-10-25: QaEdictEffectsGameTests [10]: Free Bread's last-day edge and whole extra meal, Large Families' births/sickness inside vs outside the village and lifted, Open Gates' inns/legends/market only in the village, Festival cost steps every 4 villagers, 4.99 vs 5.00 with the player's lines, Tithe rounds half up and stops at the cap; 3 planted mutants killed; edicts.md checked) **Free Bread and Large Families.** Effects `food_use`, `births` and `sickness`, read by `VillageNeeds`,
   `VillageGrowth` and `people/Sickness`; each edict with its reform:
   - **Free Bread**: everyone fed in the last day is 10 happier ("free bread"); the village eats 30% more (for every
     meal eaten from the store the hall counts 0.3 of another, saved, and takes one more meal each time it reaches 1).
@@ -2595,7 +2595,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: GameTests for each number, with and without the reform (meals taken for 10 eaten, the gap between births,
   the food needed and taken, the daily chance of falling ill); showcase scenes `free_bread` (the hall's list with the
   "free bread" mood) and `large_families` (two births in one day, with the chronicle lines).
-- [x] **30.7** (approved 2026-10-05) **Open Gates.** Effects `inn`, `market_traders`, `legend_visits` and `bandit_camps`:
+- [x] **30.7** (approved 2026-10-05) (verified 2026-10-25: QaEdictEffectsGameTests [10]: Free Bread's last-day edge and whole extra meal, Large Families' births/sickness inside vs outside the village and lifted, Open Gates' inns/legends/market only in the village, Festival cost steps every 4 villagers, 4.99 vs 5.00 with the player's lines, Tithe rounds half up and stops at the cap; 3 planted mutants killed; edicts.md checked) **Open Gates.** Effects `inn`, `market_traders`, `legend_visits` and `bandit_camps`:
   - boost: inns in the village take 4 guests instead of 2, and up to two travellers arrive a morning; market days
     bring one more trader; Legends visit the inn twice as often once M29's inn visitors exist (until then nothing reads
     that effect, and the Book only promises travellers);
@@ -2606,7 +2606,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
 
   Done when: GameTests for the guests, the arrivals, the market traders and the bandits' chance, with and without the
   reform, and Open Gates refused while Curfew is in force; showcase scene `open_gates`: an inn with four guests.
-- [x] **30.8** (approved 2026-10-05) **Festival Season and Tithe**, the two treasury edicts. Effects `festival_every`, `festival_cost`,
+- [x] **30.8** (approved 2026-10-05) (verified 2026-10-25: QaEdictEffectsGameTests [10]: Free Bread's last-day edge and whole extra meal, Large Families' births/sickness inside vs outside the village and lifted, Open Gates' inns/legends/market only in the village, Festival cost steps every 4 villagers, 4.99 vs 5.00 with the player's lines, Tithe rounds half up and stops at the cap; 3 planted mutants killed; edicts.md checked) **Festival Season and Tithe**, the two treasury edicts. Effects `festival_every`, `festival_cost`,
   `tithe` and `trade_prices`:
   - **Festival Season**: a festival every 4 days instead of 8 (`Festivals` counts the days per hall); each one costs
     the treasury 3 emeralds and 1 more for every 4 villagers, taken on the festival's morning; when the treasury can't

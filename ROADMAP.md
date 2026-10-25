@@ -3930,7 +3930,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     the ring; a good spot is kept on the charter;
   - a test of the screen's map-to-world sum: a click lands within 16 blocks of the right place;
   - showcase scene `colony_charter` (the map screen with its ring and cross, the tooltip).
-- [x] **33.9** (approved 2026-10-11) **The settlers set out.** Right-click the hall with the charter, its spot chosen, and the village gets
+- [x] **33.9** (approved 2026-10-11) (verified 2026-10-25: QA tests [QaColonyCharterGameTests]: who stays home, two of a trade, the muster broken by deaths or a broken hall, calling it off, the setting-out sentences; an unnamed colony and no room. 33.8 waits on B447) **The settlers set out.** Right-click the hall with the charter, its spot chosen, and the village gets
   ready:
   - two settlers volunteer: the lowest-levelled builder if there are two or more, otherwise a jobless grown-up who
     becomes the colony's builder; and a jobless villager, otherwise the lowest-levelled worker of a job the village
@@ -3951,7 +3951,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     puts everyone and everything back;
   - the order survives save and reload mid-journey;
   - showcase scene `colony_departure` (the settlers gathered at the hall, a GIF of them walking out).
-- [x] **33.10** (approved 2026-10-11) **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
+- [x] **33.10** (approved 2026-10-11) (verified 2026-10-25: QA tests [QaColonyCharterGameTests]: who stays home, two of a trade, the muster broken by deaths or a broken hall, calling it off, the setting-out sentences; an unnamed colony and no room. 33.8 waits on B447) **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
   `KeepLoaded`'s) and the settlers make camp on the nearest open ground within 48 blocks (the Settler's Wagon's
   `makeCamp` checks; until 33.14's Colony Camp lands, the settlers' camp with a Village Hall and a Travel Post set
   beside it). Then:

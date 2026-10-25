@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A server whose `config/aliveworkplace.json` holds an empty format number (`"configVersion": null`) or an empty entry in `"expansionsOpen"` (`[null]`) now starts: the empty value is read as a missing one and the rest of the file is kept, instead of the game crashing at start-up. Any other file the mod can't make sense of gives the defaults rather than stopping the server (B457).
 - A Tinkerer with the raw iron for a build's iron bars but no coal now tells the builder it's short of coal ("Can't be made yet: short of 1 Coal...") instead of "Nobody here makes: Iron Bars", and leaves the ore in the chest (B408).
 - A Hauler Golem whose nearest Storehouse it can't get to (walled in, across water) no longer stands at the end of its path with its load forever: after about 10 seconds without getting closer it takes the load to the next nearest Storehouse, and tries the first one again a couple of minutes later (B450); an empty one that can't get to a Drop Box or a worker's chest likewise fetches from the next one instead (B456).
 - A grown child now takes up a parent's trade for every job, not only the Shopkeeper: a Scholar's child takes a free lectern as a Scholar (likewise Teachers, Tinkerers, Chefs, Nurses, Innkeepers and the other jobs that share a vanilla block), and a child whose class is too low for the trade waits (B397).

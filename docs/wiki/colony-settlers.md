@@ -101,7 +101,7 @@ The journey takes 3 minutes plus a tick for every block to the spot (612 blocks:
 - Supplies with extra data (a renamed bed, say) aren't taken: only plain items count, as elsewhere in the
   Storehouse's stock.
 - Seen in the real client only through the showcase scene, which GitHub films; it was not filmed locally.
-- The "never a Legend" rule has no GameTest of its own.
+- The "never a Legend" rule is tested by the QA class below (`theOnlyFarmersHusbandAndALegendStayHome`).
 
 ## Proof
 
@@ -112,5 +112,10 @@ The journey takes 3 minutes plus a tick for every block to the spot (612 blocks:
   feet, the owner watching), `callingItOffPutsEveryoneAndEverythingBack`,
   `theOrderSurvivesSaveAndReload`, `sendingIsRefusedWithoutASpotAnOwnerOrTheSwitch`,
   `afterThreeDaysTheyLeaveWithWhatThereIs`.
+- QA: `QaColonyCharterGameTests` (13): the charter refused one rank below at the hall's right-click, the 7-day wait's
+  last day, whole emeralds from the treasury and a friend buying, the ring and other halls' circles on the diagonals,
+  a charter from another dimension; the only farmer's husband and a Legend staying home, two of a trade, every settler
+  killed or the hall broken at the muster, calling it off, the setting-out sentences word for word; an unnamed colony
+  named and announced, and no room with everything sent home.
 
 Showcase scenes: `colony_departure`

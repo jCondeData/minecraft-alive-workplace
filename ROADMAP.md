@@ -563,6 +563,10 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B447** Two Colony Charter (33.8) sentences read wrong. (1) A spot just past a limit is refused with a self-contradicting number: 1024.0005 blocks out says 'a colony goes at most 1024 blocks from its hall (this is 1024)', 255.97 says 'at least 256 blocks (this is 256)': Colonies.java ~377-380 Math.round the distance; round up for too far, down for too near. (2) With coloniesPerVillage 1 the cap says 'has founded all 1 colonies', with 0 'all 0 colonies': Colonies.java ~303 uses plain translatable; use Words.counted with a .one form and a sentence for 0 (message.aliveworkplace.colony.cap). Tests: QaColonyCharterBugTests (2) on tests/colony-words (found by lane-c-1025-0653, 2026-10-25)
 - [ ] **B448** Player-visible (23.8, a blueprint is built turned as the player placed it): the mod's own facing blocks don't turn with the build. The Village Hall, Storehouse, Mailbox and Shop Counter blocks (BaseEntityBlock with a FACING, no rotate/mirror override; the Grave block is the same) keep the facing drawn in the blueprint, so in any build turned a quarter or half (the Village Hall, the Storehouse, the post office, the shops) the block faces the old north: the Storehouse turned a quarter has its Storehouse block facing north, not east. 0 skipped, since the plan expects the same unturned state. Expected: they turn and mirror like vanilla's facing blocks (HorizontalDirectionalBlock's rotate/mirror). Test: QaTurnedModBlocksGameTests (both tests) on tests/qa-turned-mod-blocks-1025 (found by lane-b-1025-0637, 2026-10-25)
 - [ ] **B449** Player-visible exploit (builder.md 'Builders never copy what is inside containers'; BlockEntityData: nothing that hands out free items or mobs is copied, 'a caged mob'): a grave built from a scanned blueprint holds the dead villager again. Scan a grave (a dead named Librarian in it) with the Scan Tool and have a builder build the blueprint: the new grave carries the whole villager (name, job, level, brain: 37 keys), because GraveBlockEntity saves it with saveWithoutId (no entity id), so BlockEntityData.stripStacksAndEntities keeps it; the Undertaker can then revive a copy, again for every build. Expected: a built grave is empty (or not copied at all), like a Village Hall from a scan. Test: QaScanGraveGameTests on tests/qa-scan-grave-1025 (found by lane-b-1025-0637, 2026-10-25)
+- [ ] **B450** Player-visible: a Hauler Golem whose nearest Storehouse (within 64 blocks) can't be reached (walled off, across water) stands at the end of its path with its full load forever; GolemRoleGoal.walkTo re-paths every 5 ticks but never tries another Storehouse or gives up. Expected: after a while it tries the next reachable Storehouse (or drops back to the Drop Box) and keeps hauling. Test: a GameTest with an unreachable Storehouse nearer than a reachable one (found by lane-a-1025-0923 while checking B399, 2026-10-25) (found by lane-a-1025-0923, 2026-10-25)
+- [ ] **B451** The elders showcase scene failed in showcase run 40177635160 (bf95838, 2026-10-25 09:43Z): 'not done: fed and housed, his mood has "a quiet old age" and his card shows it'. Player-visible if it reproduces: an elder who is fed and housed should get the 'a quiet old age' mood line on his Village Hall card (34.19). Reproduce: SCENE=elders tools/screenshots/run.sh; Test: scene elders (found by lane-c-1025-0953, 2026-10-25)
+- [ ] **B452** The class_switch_on showcase scene failed in showcase run 40177635160 (bf95838, 2026-10-25 09:43Z): 'not done: the couple in the cottage are Artisans: aliveworkplace:peasant'. Player-visible if it reproduces: with classes switched on, a household that meets the Artisans' needs should rise to Artisan (34.x classes) but stayed Peasant. Reproduce: SCENE=class_switch_on tools/screenshots/run.sh; Test: scene class_switch_on (found by lane-c-1025-0953, 2026-10-25)
+- [ ] **B453** Player-visible text: a Field Marker whose field is too far from the farmer's composter is refused with 'That spot is 63 blocks from the builder's Blueprint Table — keep it within 48.' (en_us assign.too_far), though a farmer has no Blueprint Table; Fields.assign (~line 113), Miners (quarry, ~line 128) and AreaJobs (~line 74) all send the builder's sentence. Expected: the line names the worker's own block (the composter, the miner's bench, the job block). Test: QaTooFarWordsBugTests.aFieldTooFarFromTheComposterDoesNotSpeakOfABlueprintTable on tests/too-far-words (found by lane-b-1025-0937) (found by lane-b-1025-0937, 2026-10-25)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -1624,7 +1628,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - Rancher + Normal or Ground: walks beside the wild horse being broken in (cue `tame`).
 
   Done when: a GameTest per cue, and showcase scene `partners_all`: one still per job with its partner at work.
-- [x] **28.7** (approved 2026-10-05) **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
+- [x] **28.7** (approved 2026-10-05) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Pokémon Center.** Two blueprints (architect skill, an original design, checked against STYLE.md in
   a render), in the Blueprint Table with Cobblemon only and sold by Journeyman Nurses:
   - **Pokémon Center**: a bright hall under a red roof, a glass front, a counter with Cobblemon's Healing Machine (the
     nurse's place), a PC by the counter, shelves of potions behind it, benches along the walls;
@@ -1671,7 +1675,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     harvests and replants Hearty Grains;
   - the README section and job table say how to start her;
   - showcase scene `camp_cook` with its GIF.
-- [x] **28.9** (approved 2026-10-05) **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
+- [x] **28.9** (approved 2026-10-05) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Berry Breeder.** Stand a villager by a composter and sneak-right-click them with any Cobblemon
   berry. Config `berryBreeders` (true).
   - The berry book: every berry and its `mutations` read from Cobblemon's own berry data (70 in 1.7.3), so a data pack's
     berries come too. Sneak-right-click the breeder: one page lists every berry, found ones lit, the rest with the pair
@@ -1736,7 +1740,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     and a forced full cluster picked (compat, 1.7.3); a Fire Gem Block set on a core and a forced stage-3 Fire Gem
     cluster picked (compat, 1.8.1); a malformed bed file is logged and skipped;
   - showcase scene `gem_grower`.
-- [x] **28.12** (approved 2026-10-05) **The Daycare Keeper.** Cobblemon has no breeding; the Cobbleverse pack adds it with Cobbreeding
+- [x] **28.12** (approved 2026-10-05) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Daycare Keeper.** Cobblemon has no breeding; the Cobbleverse pack adds it with Cobbreeding
   (eggs in the Pasture Block). Stand a villager by a Pasture Block and sneak-right-click them with an egg. Config
   `daycareKeepers` (true).
   - Right-click her (sneak for trades): the daycare screen (as the Rancher's, `compat/cobblemon/CobblemonDaycare`):
@@ -2312,7 +2316,7 @@ MarketDays) and research/.
   Seer comes only at midnight, at a full moon, to a Chapel; a raid foretold at dawn comes that night and none comes
   when none is foretold (fixed `RandomSource`); the festival and market days told are right; a blessed wedding's mood
   and baby; showcase scene `legend_seer` (GIF: the arrival under the full moon, the dawn foretelling in chat).
-- [x] **29.17** (approved 2026-10-06) **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
+- [x] **29.17** (approved 2026-10-06) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Merchant Prince (Legendary).** Comes: found as a castaway by a shipwreck (29.9) once the
   village's treasury has taken in 500 emeralds all told (`treasury_total`) and it sends caravans on 3 routes. Trade:
   `aliveworkplace:legend`; they keep to the Village Hall and the Market Square. Likes: wine. Powers:
   - **the bank** (`bank`): the treasury earns 2% a day on what it holds and holds twice as much; players deposit
@@ -2329,7 +2333,7 @@ MarketDays) and research/.
   cap; deposits and withdrawals with interest, kept through a reload, never more than 10 stacks; a fair with 6 traders
   plus one per linked village; the caravan pay; showcase scene `legend_merchant_prince` (the bank page, a GIF of the
   fair).
-- [x] **29.18** (approved 2026-10-06) **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
+- [x] **29.18** (approved 2026-10-06) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Grand Chef (Rare).** Comes: inspired (29.10): a Master Chef in a happy village whose store has 8
   kinds of meal (`VillageHalls.mealKinds`); the materials come from a pool of a golden apple, a glistering melon
   slice, a golden carrot, a honeycomb, glow berries, chorus fruit and a pufferfish, and the Masterwork is a cake named
   for the village ("The Thornholm Midsummer Cake"). Also a guest at the inn on the same condition, and born to a Chef
@@ -2343,7 +2347,7 @@ MarketDays) and research/.
   Outfit: a tall white toque and a gold ladle at the apron. Done when: GameTests: a banquet takes two meals each; the
   mood; two births a day for 3 days with free beds, and one a day after; chefs faster; showcase scene
   `legend_grand_chef` (GIF: the banquet).
-- [x] **29.19** (approved 2026-10-06) **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
+- [x] **29.19** (approved 2026-10-06) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Bard Laureate (Rare).** Comes: a guest at a festival once 30 villagers come to it (29.8); born
   to a Bard (29.7). Trade: Bard. Likes: books. Powers:
   - **the anthem** (`anthem`): when they settle they compose the village's anthem, 16 notes on one instrument (harp,
     flute, bell, chime, guitar or xylophone) made from the village's name, so it never changes, kept in the hall. It
@@ -2357,7 +2361,7 @@ MarketDays) and research/.
   Outfit: a green doublet, a lute on the back and a laurel wreath. Done when: GameTests: the same name always gives
   the same anthem and another name a different one; it is saved and played at each event (the sounds counted); the
   work-song pace only while they sing; showcase scene `legend_bard` (GIF with the notes).
-- [x] **29.20** (approved 2026-10-06) **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
+- [x] **29.20** (approved 2026-10-06) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Beastmaster (Rare).** Comes: found as a prisoner in a pillager outpost (29.9) once the village
   has a ranch: 10 animals within 16 blocks of a Rancher's, Butcher's or Shepherd's workstation; born to a Rancher
   (29.7). Trade: Rancher. Likes: clothes. Powers:
   - **war dogs** (`war_dogs`): with bones in their chest they tame a wolf for each guard without one (the village's
@@ -2404,7 +2408,7 @@ MarketDays) and research/.
   an Alpha (or the level-50 stand-in) near; a calmed Alpha doesn't attack a villager; a befriended Pokémon belongs to
   the owner and is in the pasture, and a banned species never is; nothing loads without Cobblemon; showcase scene
   `legend_ranger`.
-- [x] **29.23** (approved 2026-10-06) **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
+- [x] **29.23** (approved 2026-10-06) (verified 2026-10-25: 28 tests: QaRareLegendsGameTests [15: bank cap/interest/fair, banquet radius, bard 16-block edge and anthem, war dogs/scutes/foals, Founder mood and wagon, Charter] and QaPokemonJobsCompatTests [13: nurse by hand/full party, berry plot edge and book, daycare pairs/odds/egg cap/cost/undiscovered]; full build green; no mutation run) **The Founder (Mythic).** Comes: inspired (29.10), always, at the village's first rise to City: its
   most experienced Master (the most XP) is seized by the Founder's mood and asks for a block of gold, a block of
   emeralds and a diamond. The Masterwork is **The Charter of <village>**, a written book of the village's story drawn
   from its chronicle (its founding, each rank, its Legends, its first wedding, the raids it beat), signed by the

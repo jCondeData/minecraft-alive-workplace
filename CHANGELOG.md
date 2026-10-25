@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- The Village Hall card no longer says "Bram would like to retire: the village needs a jobless villager to take over" while a jobless grown villager is there and Bram waits for another reason (he holds a building site, quarry, daycare or parcels, or another villager retired under 3 days ago): the hall checks the line every round (B442).
 - The Settler's Wagon camp's chest of supplies can be opened where it stands: it moved to the wagon's open tail, with two steps up to it (it was wedged between the hay and the pumpkin under the cover, so the wagon had to be broken to unpack). The Colony Camp's wagon barrels moved to their tails the same way (B424).
 - A found Blueprint (or Wonder Plan) in the off hand, the main hand empty, now unlocks its build when right-clicked on the Blueprint Table and says "The village's library has a new blueprint", the same as from the main hand; before, the Table just opened (B419).
 - A paid raid helper stays hired when its chunk unloads for a while (the player logs off by the den, or the server restarts): the hiring used to vanish silently, the money gone and the helper neither following nor walking home once it loaded again. A hiring now ends only on a won or lost raid, the raid gone, a day passing or the switch turned off, and helpers away when it ends are still sent home (B415).

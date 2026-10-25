@@ -319,6 +319,7 @@
 			"io.github.jcondedata.aliveworkplace.test.WarPartyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWarPartyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWarPartyBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatFixesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageMomentGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReadingFocusGameTests",

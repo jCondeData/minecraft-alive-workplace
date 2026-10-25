@@ -1580,7 +1580,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     orchard, nurse; Mega Evolution too if Mega Showdown has a build for 1.8);
   - a GameTest shows the four features off under 1.7.3 and on under 1.8.1;
   - the README says which Cobblemon versions work. Nothing visible changed: land with `--no-review`.
-- [x] **28.3** (approved 2026-10-04) **Partners at work: the engine.** Partners speed jobs up today but are never seen doing it. Add
+- [x] **28.3** (approved 2026-10-04) (verified 2026-10-25: QaPartnerShowBudgetCompatTests [3: the 10 s wait at 199/200 ticks, 6 shows a level then the 7th, work 47.5/48.5 blocks from the only player], QaPartnerShowTableGameTests [every job and cue's types exactly the roadmap's 28.4-28.6 table]; 5 planted mutants killed [wait <=, cap >, range 49, plus 2 in 28.14]; scenes partners_engine/land/forge/all pass in showcase 40177635160; wiki pokemon-partners.md checked) **Partners at work: the engine.** Partners speed jobs up today but are never seen doing it. Add
   `work/PartnerShows`: a job calls `PartnerShows.cue(villager, "<cue>", pos)` at a moment of its work, and one of the
   worker's pastured helpers (the entities `PokemonPartners.fighters` already finds) of a type the show names walks to
   `pos`, does the show and walks back. New `PokemonPartners` methods, filled in `CobblemonPartners`: `walkTo`,
@@ -1605,7 +1605,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - a display left by a cut-off show is removed when its chunk loads (GameTest); no show runs with no player near, or
     with `partnerShows` off;
   - showcase scene `partners_engine`.
-- [x] **28.4** (approved 2026-10-04) **Partners at work: building and the land.** Shows (one data file each, cued from the job's own code):
+- [x] **28.4** (approved 2026-10-04) (verified 2026-10-25: QaPartnerShowBudgetCompatTests [3: the 10 s wait at 199/200 ticks, 6 shows a level then the 7th, work 47.5/48.5 blocks from the only player], QaPartnerShowTableGameTests [every job and cue's types exactly the roadmap's 28.4-28.6 table]; 5 planted mutants killed [wait <=, cap >, range 49, plus 2 in 28.14]; scenes partners_engine/land/forge/all pass in showcase 40177635160; wiki pokemon-partners.md checked) **Partners at work: building and the land.** Shows (one data file each, cued from the job's own code):
   - Builder + Fighting: shoulders the logs or planks the builder fetches from the supply chest (cue `fetch`) and punches
     each block home with a physical move as it's placed (cue `place`); + Rock: carries the stone; + Steel: carries the
     iron parts (bars, doors, chains, lanterns).
@@ -1623,7 +1623,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: a GameTest per cue (the show starts when the worker reaches that moment in real work; the watered
   farmland is at moisture 7), and showcase scene `partners_land` (the builder with a Machamp carrying beams, the farmer
   with a Wartortle watering) with its GIF in the review package.
-- [x] **28.5** (approved 2026-10-05) **Partners at work: post, forge and kitchen.** Shows:
+- [x] **28.5** (approved 2026-10-05) (verified 2026-10-25: QaPartnerShowBudgetCompatTests [3: the 10 s wait at 199/200 ticks, 6 shows a level then the 7th, work 47.5/48.5 blocks from the only player], QaPartnerShowTableGameTests [every job and cue's types exactly the roadmap's 28.4-28.6 table]; 5 planted mutants killed [wait <=, cap >, range 49, plus 2 in 28.14]; scenes partners_engine/land/forge/all pass in showcase 40177635160; wiki pokemon-partners.md checked) **Partners at work: post, forge and kitchen.** Shows:
   - Postman + Flying: when a parcel goes by air mail it takes off from the Mailbox with a bundle, climbs out of sight
     and lands back empty-handed (cue `air_mail`); on the round it flies ahead to the next mailbox (cue `deliver`).
   - Armorer, Miner or Fisherman + Fire: breathes fire into the furnace or smoker each time it smelts the 8 on the spot
@@ -1638,7 +1638,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
 
   Done when: a GameTest per cue, and showcase scene `partners_forge` with its GIF (the air mail take-off, a Charmander
   breathing into the blast furnace).
-- [x] **28.6** (approved 2026-10-05) **Partners at work: everyone else.** Shows:
+- [x] **28.6** (approved 2026-10-05) (verified 2026-10-25: QaPartnerShowBudgetCompatTests [3: the 10 s wait at 199/200 ticks, 6 shows a level then the 7th, work 47.5/48.5 blocks from the only player], QaPartnerShowTableGameTests [every job and cue's types exactly the roadmap's 28.4-28.6 table]; 5 planted mutants killed [wait <=, cap >, range 49, plus 2 in 28.14]; scenes partners_engine/land/forge/all pass in showcase 40177635160; wiki pokemon-partners.md checked) **Partners at work: everyone else.** Shows:
   - Miner + Ground, Rock or Steel: digs at the next block along with the miner (cue `dig`), with that block's crack
     particles.
   - Fisherman + Water or Ice: swims out round the bobber, with bubbles (cue `cast`).

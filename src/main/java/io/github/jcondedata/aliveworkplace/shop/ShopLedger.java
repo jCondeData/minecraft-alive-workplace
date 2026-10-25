@@ -20,6 +20,8 @@ import net.minecraft.world.level.saveddata.SavedData;
  */
 public final class ShopLedger extends SavedData {
 	private static final String NAME = "aliveworkplace_shops";
+	/** A full inventory of emeralds: a bigger sum without CobbleDollars is paid over several joins, not dropped in a heap. */
+	static final int MOST_EMERALDS_A_JOIN = 36 * 64;
 
 	private final Map<UUID, Long> pending = new HashMap<>();
 
@@ -40,9 +42,15 @@ public final class ShopLedger extends SavedData {
 		if (player != null) {
 			Money.pay(player, dollars, 0);
 		} else {
-			ShopLedger ledger = get(server);
-			ledger.pending.merge(owner, dollars, Long::sum);
-			ledger.setDirty();
+			get(server).owe(owner, dollars);
+		}
+	}
+
+	/** Adds {@code dollars} to what the owner is paid when they next join. */
+	public void owe(UUID owner, long dollars) {
+		if (dollars > 0) {
+			pending.merge(owner, dollars, Long::sum);
+			setDirty();
 		}
 	}
 
@@ -50,16 +58,37 @@ public final class ShopLedger extends SavedData {
 		return pending.getOrDefault(owner, 0L);
 	}
 
-	/** Pays out what the player's shops took while they were away. */
+	/**
+	 * Pays out what the player's shops took while they were away. Without CobbleDollars (taken out of the pack, or
+	 * broken by an update since the sales) the takings are paid in emeralds at the server's rate, and what doesn't
+	 * make a whole emerald (or more than an inventory of them) stays owed: paid in CobbleDollars once they're back, or
+	 * at a later join (B416).
+	 */
 	public static void collect(ServerPlayer player) {
 		ShopLedger ledger = get(player.server);
-		Long owed = ledger.pending.remove(player.getUUID());
+		Long owed = ledger.pending.get(player.getUUID());
 		if (owed == null || owed <= 0) {
 			return;
 		}
+		long rest = 0;
+		int emeralds = 0;
+		if (!Money.cobbleDollars()) {
+			long rate = Math.max(1, Money.DOLLARS_PER_EMERALD);
+			emeralds = (int) Math.min(MOST_EMERALDS_A_JOIN, owed / rate);
+			if (emeralds == 0) {
+				return; // not a whole emerald yet: kept owed
+			}
+			rest = owed - emeralds * rate;
+		}
+		long paid = owed - rest;
+		if (rest > 0) {
+			ledger.pending.put(player.getUUID(), rest);
+		} else {
+			ledger.pending.remove(player.getUUID());
+		}
 		ledger.setDirty();
-		Money.pay(player, owed, 0);
-		player.sendSystemMessage(Component.translatable("message.aliveworkplace.shop.while_away", Money.describe(owed, 0))
+		Money.pay(player, paid, emeralds);
+		player.sendSystemMessage(Component.translatable("message.aliveworkplace.shop.while_away", Money.describe(paid, emeralds))
 			.withStyle(ChatFormatting.GREEN));
 	}
 

@@ -107,6 +107,9 @@ None new. It uses the Village Hall, the Storehouse and its chests.
 - `CreateTrainCompatTests` (B214, with Create): the other hall taken away while the caravan waits at the station and
   while its logs ride in the train's chest (home once, none left in the chest), and the sender's hall taken away while
   it waits (it walks on).
+- `QaCreateTrainHallGoneCompatTests` (QA, B214, with Create): the sender's hall taken away while the logs ride in the
+  train's chest (out once, the caravan walks on and all arrive), and a caravan turned home off the train kept the same
+  over a save and load, every log home once.
 - `VillageHallGameTests.caravansCarryWhatAnotherVillageNeeds` passes unchanged.
 - `QaCaravansGameTests` (QA): the two-stack cap on top of the waited-for load, the 10% boundary at uneven prices
   (9.8% stays, 10.5% goes), short-of goods paid at the buyer's lower price with both boards moving, a partial payment

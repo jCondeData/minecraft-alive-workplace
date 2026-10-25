@@ -30,7 +30,8 @@ import net.minecraft.world.level.block.Rotation;
  * A Tinkerer with all the raw iron for a builder's iron bars
  * but no coal to fire it. Like the Mason's kiln (B352), the fuel is a raw material of the chain: nothing should be
  * taken and the builder's line should name the coal, not claim that nobody makes iron bars.
- * (B408. The branch's Librarian test stays there until its bug is fixed.)
+ * A Librarian one leather short of its last bookshelf should name the leather, not the rabbit hide that makes it
+ * (B408, B409).
  */
 public class QaJobChainBugGameTests {
 	private static final String AREA = "aliveworkplace_test:build_area";
@@ -76,6 +77,34 @@ public class QaJobChainBugGameTests {
 			helper.assertTrue(text != null && text.startsWith("Can't be made yet: short of") && text.contains("Coal"),
 				"the builder's line should name the missing coal (the tinkerer makes iron bars, it just can't fire the ore): " + text);
 			helper.succeed();
+		});
+	}
+
+	/**
+	 * Eight leather for three bookshelves (each takes three): the Librarian makes the two it can, and for the last it is
+	 * exactly one leather short: it takes none of the cane, leather or planks left, makes no paper or books it can't
+	 * finish, and the builder's line says "short of 1 Leather to make 1 Bookshelf" (not "4 Rabbit Hide": two leather are
+	 * right there, one more is what's short).
+	 */
+	//$ gametest_ticks_batch AREA '4000' '"qaChainLibrarianShort"'
+	@GameTest(template = AREA, timeoutTicks = 4000, batch = "qaChainLibrarianShort")
+	public void aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt(GameTestHelper helper) {
+		QaJobChainsGameTests.prepare(helper);
+		QaJobChainsGameTests.Asker a = QaJobChainsGameTests.asker(helper, Blocks.BOOKSHELF, new ItemStack(Items.SUGAR_CANE, 27), new ItemStack(Items.LEATHER, 8), new ItemStack(Items.OAK_PLANKS, 18));
+		Villager librarian = QaJobChainsGameTests.librarian(helper);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(a.site().missing().getOrDefault(Items.BOOKSHELF, 0) == 1, "two shelves should be built, still missing " + a.site().missing());
+			Component line = JobShortages.line(helper.getLevel(), a.site().id(), a.site().missing());
+			helper.assertTrue(line != null && line.getString().equals("Can't be made yet: short of 1 Leather to make 1 Bookshelf"),
+				"the builder's shortage line: " + (line == null ? null : line.getString()));
+			Container chest = helper.getBlockEntity(a.chest());
+			helper.assertTrue(chest.countItem(Items.SUGAR_CANE) == 9 && chest.countItem(Items.LEATHER) == 2 && chest.countItem(Items.OAK_PLANKS) == 6,
+				"the last shelf's makings should be left whole: " + chest.countItem(Items.SUGAR_CANE) + " cane, " + chest.countItem(Items.LEATHER) + " leather, "
+					+ chest.countItem(Items.OAK_PLANKS) + " planks");
+			helper.assertTrue(chest.countItem(Items.PAPER) == 0 && chest.countItem(Items.BOOK) == 0, "something was half made: "
+				+ chest.countItem(Items.PAPER) + " paper, " + chest.countItem(Items.BOOK) + " books");
+			helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(librarian).isEmpty(), "the librarian is carrying " + ModAttachments.BUILDER_BAG.getOrCreate(librarian).stacks());
+			helper.assertTrue(ModAttachments.CRAFTER_JOB.get(librarian) == null, "the librarian holds a job it can't finish");
 		});
 	}
 }

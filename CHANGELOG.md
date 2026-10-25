@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A hand-edited server config with one value of the wrong kind (`"festivals": 0`, `"threatLevel": "high"`) no longer resets every setting: that value takes its default and the rest are kept; a file that isn't JSON at all is kept as `aliveworkplace.json.bad` before the defaults are written (B411).
+- A Librarian one leather short of a builder's last bookshelf now says "Can't be made yet: short of 1 Leather to make 1 Bookshelf" instead of "short of 4 Rabbit Hide": the shortage line names what the chest holds too few of, and only names what it's made from when that's at hand (logs for planks) (B409).
 - A server whose `config/aliveworkplace.json` holds an empty format number (`"configVersion": null`) or an empty entry in `"expansionsOpen"` (`[null]`) now starts: the empty value is read as a missing one and the rest of the file is kept, instead of the game crashing at start-up. Any other file the mod can't make sense of gives the defaults rather than stopping the server (B457).
 - A Tinkerer with the raw iron for a build's iron bars but no coal now tells the builder it's short of coal ("Can't be made yet: short of 1 Coal...") instead of "Nobody here makes: Iron Bars", and leaves the ore in the chest (B408).
 - A Hauler Golem whose nearest Storehouse it can't get to (walled in, across water) no longer stands at the end of its path with its load forever: after about 10 seconds without getting closer it takes the load to the next nearest Storehouse, and tries the first one again a couple of minutes later (B450); an empty one that can't get to a Drop Box or a worker's chest likewise fetches from the next one instead (B456).

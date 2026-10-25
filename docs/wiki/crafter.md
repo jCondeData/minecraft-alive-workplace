@@ -127,6 +127,10 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `MasonMixedFuelGameTests.aMasonWithTwoCharcoalMakesTheStairs`, `aMasonWithOneCoalForTwelveClayIsShortOfOneCoal`,
   `aMixedFuelJobReloadedMidWayFinishes`: charcoal alone, a real shortage counted from both kinds, and a mixed-fuel job
   saved and loaded mid-way (B396).
+- `QaMixedFuelGameTests` (QA): a mix takes only the fuel it needs, coal first (one coal and five charcoal for twelve
+  clay leave four charcoal), a spare coal stays, no fuel at all reads "short of 2 Coal", glass fired on charcoal (from sand
+  or crushed cobblestone), glass with no fuel names "1 Coal", and a Tinkerer's forge burning two coal and a charcoal for
+  three cauldrons (B396).
 - `QaCrafterFurnitureBugTests.b353TheCarpentersBenchBrokenMidChainLosesNothing`: the bench broken at step 2 and not
   put back: the job let go, the wood back in the builder's chest (B353).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".

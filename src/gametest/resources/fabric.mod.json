@@ -532,6 +532,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.MasonMixedFuelGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMixedFuelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReputationPerksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoreSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainsGameTests",

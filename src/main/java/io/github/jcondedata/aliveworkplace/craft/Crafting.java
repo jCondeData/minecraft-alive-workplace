@@ -571,9 +571,11 @@ public final class Crafting {
 				if (!pool.budget.lenient) {
 					return null;
 				}
-				// 37.14, what's short: the first raw option (logs, not wood made from logs), or the first one
+				// 37.14, what's short: an option the chests hold some of (B409: the leather, not the rabbit hide that
+				// makes it), else the first raw option (logs, not wood made from logs), or the first one
 				if (pick == null) {
-					pick = slot.options().stream().filter(o -> recipesFor(level, kind, o).isEmpty()).findFirst().orElse(slot.options().get(0));
+					pick = slot.options().stream().filter(o -> pool.chest(o) > 0).findFirst()
+						.orElseGet(() -> slot.options().stream().filter(o -> recipesFor(level, kind, o).isEmpty()).findFirst().orElse(slot.options().get(0)));
 				}
 				pool.lacks.merge(pick, need - Math.max(0, pool.have(pick)), Long::sum);
 			}
@@ -607,6 +609,22 @@ public final class Crafting {
 			}
 			if (slot.options().stream().anyMatch(o -> recipesFor(level, kind, o).isEmpty())) {
 				return null; // a raw material: noted as short
+			}
+			if (slot.options().stream().anyMatch(o -> pool.chest(o) > 0)) {
+				// B409: the chests hold some, too few. Going further down is only worth saying when it uses something
+				// that's there (planks from the logs at hand); else the thing itself is what's short (the leather, not
+				// rabbit hide nobody has).
+				for (Item option : slot.options()) {
+					Pool trial = pool.copy();
+					List<Step> trialSteps = new ArrayList<>();
+					if (make(level, kind, option, (int) (need - trial.have(option)), trial, trialSteps, depth - 1, allowed)
+							&& trial.lacks.entrySet().stream().anyMatch(e -> e.getValue() > 0 && pool.chest(e.getKey()) > 0)) {
+						pool.set(trial);
+						steps.addAll(trialSteps);
+						return option;
+					}
+				}
+				return null; // noted as short
 			}
 		}
 		for (Item option : slot.options()) {

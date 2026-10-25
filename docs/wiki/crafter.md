@@ -27,6 +27,10 @@ for every eight fired) is "short of 1 Coal to make 3 Brick Stairs", and nothing 
 Coal and charcoal count together: one coal and one charcoal are the two fuels twelve clay needs, and the Mason
 takes and burns both (B396). The same goes for a Tinkerer's forge: six raw iron for iron bars and no coal is "short
 of 1 Coal", not "Nobody here makes: Iron Bars", and the ore stays in the chest (B408).
+The line names what the chest is short of, not some other way to make it: a Librarian with two leather where a
+bookshelf's books need three says "short of 1 Leather to make 1 Bookshelf", not "4 Rabbit Hide". It goes further down
+only when that uses something that's there (planks still to be sawn from the logs at hand read "short of 1 Oak Log")
+(B409).
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -126,6 +130,8 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   the bricks, and takes nothing (B352).
 - `QaJobChainBugGameTests.aTinkererWithOreButNoCoalNamesTheCoalAndTakesNothing`: the forge with the raw iron but no
   coal names the coal and takes nothing (B408).
+- `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
+  bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the
   stairs (B396).
 - `MasonMixedFuelGameTests.aMasonWithTwoCharcoalMakesTheStairs`, `aMasonWithOneCoalForTwelveClayIsShortOfOneCoal`,

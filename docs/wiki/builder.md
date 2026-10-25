@@ -277,9 +277,15 @@ claims and trip counts.
 - The question in chat goes only to a player who is online when the Builder asks; otherwise it waits on the Repairs page.
 - A site in unloaded chunks, queued, or without a Builder is not watched for stalls.
 - The table preview leaves out fluids (water and lava have no block model) and draws blocks at full brightness.
+- With Create, the fluid in a scanned fluid tank or spout is still copied, so each copy holds it for free (B486); a
+  depot's, deployer's or basin's item is not.
 - Not tested here: the pack-server soak result of the last run (see the soak scene's pass or fail on the showcase).
 
 ## 8. Proof
+
+Compat tests (QA, lane E, from "Builders never copy what is inside containers"): `QaPastureCopyCompatTests` (a scanned
+Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),
+`QaCreateItemsHeldCompatTests` (a scanned Create depot, deployer and basin each holding a diamond are built empty).
 
 GameTests (`src/gametest/java/.../test/`): `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
 `BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),

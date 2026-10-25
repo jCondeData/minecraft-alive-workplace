@@ -518,6 +518,9 @@ tested (the GameTests use the table as the server does).
   `TRAIN_MIN` (400 ticks) nor longer than the walk, both sides of each boundary; halves of the road `HALVES_MEET` apart
   make a railway, one block more or a half stopped at a milestone don't; the railway over a save, and a save with one
   village's station and track gone loads as none.
+- `QaTrainSiteRaceCompatTests` (QA, 39.7b, with Create): with both halls looking at their trains every tick, the
+  builder's train site is finished before the station assembles the train, the chronicle says a builder built it, and
+  no second set of its blocks is put up.
 - `QaTrainsOffCompatTests` (QA, B359, with Create): `villageTrains` switched off while the real village train runs with
   the caravan's 32 logs in its chest: they come out of the chest, the caravan takes the timed trip and comes in, and
   Ashford's 64 logs always add up (none left in the train, none twice); a world saved with a caravan waiting to board and

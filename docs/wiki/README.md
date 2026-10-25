@@ -59,6 +59,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Edicts](edicts.md): laws with a boost, a cost and a reform (1.4).
 - [Civic items](civic-items.md): the Cradle, the Village Banner and the Harvest Idol with the village year (1.4).
 - [Guilds](guilds.md): Guild Charters, Guildhalls and the eleven guilds (1.4).
+- [The Work Horn](work-horn.md): a rush, 50% faster for 5 minutes once a day, then worn out until dawn (1.4).
 - [Tonics](tonics.md): six drinks the Cleric and the Chef make, each 25% faster for a day for its own jobs (1.4).
 - [Classes](classes.md): Peasant to Noble, what each needs and gives, and the Vintner (1.8).
 - [The luxury workshops](luxury-workshops.md): the Winery, the Tailor's Shop, the Print Shop and the Jeweler's Workshop, their II, the village houses,

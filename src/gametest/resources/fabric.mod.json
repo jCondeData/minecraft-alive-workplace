@@ -511,6 +511,7 @@
 			"io.github.jcondedata.aliveworkplace.test.PlotGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardPlotsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardRulesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStewardDeskJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CityPlanScreenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CityPlanRoadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCityPlanGameTests",

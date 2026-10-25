@@ -5354,7 +5354,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   Leader of a realm once gets a Mega Bracelet from the capital's hall. Done when: compat GameTests: a Jeweller with a
   crystal and the makings in the store makes the stone; a Miner's find goes to the store, not the dump; the bracelet
   is given once; with M34 off the recipes simply don't run; scene `mega_jeweller`.
-  - [x] **38.6a** (approved 2026-10-19) Change from the owner (2026-10-18): the Jeweler cuts Mega Stones only from materials the player provides through the Storehouse storage, never on his own initiative from nothing.
+  - [x] **38.6a** (approved 2026-10-19) (verified 2026-10-25: QaJewellerMegaCompatTests [7: never cuts from nothing over 1200 ticks, one emerald short then exact, surplus leaves the rest, not from a chest outside the store, not from a crystal in his pockets, 3 meteorite ores not enough and 4 are, switched off then on; each checked to fail on a wrong expectation]; full build 3405 green, compat 646 of 647 [the one failure is the B474 flake, not 38.6a]) Change from the owner (2026-10-18): the Jeweler cuts Mega Stones only from materials the player provides through the Storehouse storage, never on his own initiative from nothing.
 - [x] **38.7** (approved 2026-10-19) **The Mega Shrine.** A new decoration blueprint, the Mega Shrine (a `mega_showdown:pedestal` on a dais
   of `mega_meteorid` bricks and blocks), listed at the Blueprint Table only when its blocks exist. A village with a
   finished shrine holds a partner show there on festival days (M28's partner shows): a village trainer Mega Evolves

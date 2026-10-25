@@ -3930,7 +3930,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     the ring; a good spot is kept on the charter;
   - a test of the screen's map-to-world sum: a click lands within 16 blocks of the right place;
   - showcase scene `colony_charter` (the map screen with its ring and cross, the tooltip).
-- [x] **33.9** (approved 2026-10-11) **The settlers set out.** Right-click the hall with the charter, its spot chosen, and the village gets
+- [x] **33.9** (approved 2026-10-11) (verified 2026-10-25: QA tests [QaColonyCharterGameTests]: who stays home, two of a trade, the muster broken by deaths or a broken hall, calling it off, the setting-out sentences; an unnamed colony and no room. 33.8 waits on B447) **The settlers set out.** Right-click the hall with the charter, its spot chosen, and the village gets
   ready:
   - two settlers volunteer: the lowest-levelled builder if there are two or more, otherwise a jobless grown-up who
     becomes the colony's builder; and a jobless villager, otherwise the lowest-levelled worker of a job the village
@@ -3951,7 +3951,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     puts everyone and everything back;
   - the order survives save and reload mid-journey;
   - showcase scene `colony_departure` (the settlers gathered at the hall, a GIF of them walking out).
-- [x] **33.10** (approved 2026-10-11) **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
+- [x] **33.10** (approved 2026-10-11) (verified 2026-10-25: QA tests [QaColonyCharterGameTests]: who stays home, two of a trade, the muster broken by deaths or a broken hall, calling it off, the setting-out sentences; an unnamed colony and no room. 33.8 waits on B447) **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
   `KeepLoaded`'s) and the settlers make camp on the nearest open ground within 48 blocks (the Settler's Wagon's
   `makeCamp` checks; until 33.14's Colony Camp lands, the settlers' camp with a Village Hall and a Travel Post set
   beside it). Then:
@@ -3975,7 +3975,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     sites; the sister route exists outside the cap; both chronicles have their lines;
   - a GameTest where there's no room: everyone and everything is back home;
   - showcase scene `colony` with a GIF of the arrival and the first walls going up.
-- [x] **33.11** (approved 2026-10-11) **Founding a realm.** The Realm tab: at a Town or better, the hall's owner (or a friend) can **found a
+- [x] **33.11** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaRealmFoundingGameTests]: the 2048 reach, 12-village cap, ranks both sides, crown passing with the treasury, two realms inviting one village, time-left wording, a candidate's hall broken mid-vote, levies, give/take, cap by rank, realms off; no bugs) **Founding a realm.** The Realm tab: at a Town or better, the hall's owner (or a friend) can **found a
   realm** with this village as its capital, named after it ("the Barony of Thornholm"; a named Name Tag clicked on the
   realm's icon renames it). The capital's owner adds, with one click, any village within 2,048 blocks that they or a
   friend own; colonies join their mother's realm by themselves; a member's owner can leave at any time and the capital
@@ -3992,7 +3992,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     rank up, the capital's hall broken (the crown passes, or the realm ends);
   - the realm survives save and reload;
   - showcase scene `realm` (the tab, the rank-up fireworks).
-- [x] **33.12** (approved 2026-10-11) **Other players' villages, and choosing the capital.** The capital's owner can invite a village
+- [x] **33.12** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaRealmFoundingGameTests]: the 2048 reach, 12-village cap, ranks both sides, crown passing with the treasury, two realms inviting one village, time-left wording, a candidate's hall broken mid-vote, levies, give/take, cap by rank, realms off; no bugs) **Other players' villages, and choosing the capital.** The capital's owner can invite a village
   another player owns: a letter goes to that owner's mailbox (or waits at the post office), with a line on their Realm
   tab to accept or decline within 3 days. Any member that's a Town or better can be put forward as capital by its
   owner: if one player owns every member it moves at once; otherwise each member's owner gets a vote on the Realm tab
@@ -4002,7 +4002,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - GameTests with two owners: an accepted invitation joins; a declined or lapsed one doesn't; a vote with a majority
     moves the capital and its treasury; a tie keeps it;
   - showcase scene `realm_invite` (the letter, the tab with the vote).
-- [x] **33.13** (approved 2026-10-11) **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
+- [x] **33.13** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaRealmFoundingGameTests]: the 2048 reach, 12-village cap, ranks both sides, crown passing with the treasury, two realms inviting one village, time-left wording, a candidate's hall broken mid-vote, levies, give/take, cap by rank, realms off; no bugs) **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
   realm treasury before the rest goes into its own: the **levy**, 0, 5, 10 (the default) or 20%, set by the capital's
   owner on the Realm tab. It's kept in the realm's saved data, so it never needs the capital loaded, and holds up to
   256 emeralds for a Barony, 512 for a County, 1,024 for a Duchy and 2,048 for a Kingdom. It pays for realm research,
@@ -4318,7 +4318,7 @@ on a real world.
   band. Luxury files `cider`, `berry_wine`, `vintage_wine`. Done when: `VintnerGameTests` (picked by each item at a
   cauldron, each wine made from stocked chests, vintage waiting its 3 days) pass; both outfits pass `lint.py` and the
   `OutfitGameTests`; scene `vintner` passes; a README section and job-table row.
-- [x] **34.10** (approved 2026-10-11) **Tailor.** A new job: stand a villager by a **loom** and sneak-right-click them with **string** (the
+- [x] **34.10** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaLuxuryTradesGameTests]: hiring refused without a job block, at a taken loom, each switch off; recipe boundaries both sides; Journeyman's Illuminated Book; luxuries made by a job the class below may take. 34.9 waits on B443) **Tailor.** A new job: stand a villager by a **loom** and sneak-right-click them with **string** (the
   loom's Shepherd stays, back with shears). They take the shepherds' wool and the dyers' coloured wool from the
   village and make:
   - **Work Clothes**: 3 wool of any colour, 2 leather and a string (Novice);
@@ -4332,7 +4332,7 @@ on a real world.
   `work_clothes`, `fine_clothes`, `noble_robes`. Done when: `TailorGameTests` (picked with string at a loom, each
   garment made, the dyed-wool rules kept) pass; both outfits pass `lint.py`; scene `tailor` passes; a README section
   and job-table row.
-- [x] **34.11** (approved 2026-10-11) **Printer.** A new job: stand a villager by a **cartography table** and sneak-right-click them with
+- [x] **34.11** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaLuxuryTradesGameTests]: hiring refused without a job block, at a taken loom, each switch off; recipe boundaries both sides; Journeyman's Illuminated Book; luxuries made by a job the class below may take. 34.9 waits on B443) **Printer.** A new job: stand a villager by a **cartography table** and sneak-right-click them with
   an **ink sac** (the table's Cartographer and Netherworker stay). Through 34.5 they make:
   - **Books**: 3 paper and a leather make 2 books (Novice). Scholars' research and builders take the store's books
     first, and with a scholar in the village the printer keeps 8 in the store;
@@ -4350,7 +4350,7 @@ on a real world.
   pages built from a staged hall's chronicle and quests, a scholar using printed books, the quest paid on delivery)
   pass; both outfits pass `lint.py`; scene `printer` (the Gazette opened and read) passes; a README section and
   job-table row.
-- [x] **34.12** (approved 2026-10-11) **Jeweller.** A new job: stand a villager by a **stonecutter** and sneak-right-click them with an
+- [x] **34.12** (approved 2026-10-11) (verified 2026-10-25: 13 QA tests [QaLuxuryTradesGameTests]: hiring refused without a job block, at a taken loom, each switch off; recipe boundaries both sides; Journeyman's Illuminated Book; luxuries made by a job the class below may take. 34.9 waits on B443) **Jeweller.** A new job: stand a villager by a **stonecutter** and sneak-right-click them with an
   **amethyst shard** (the stonecutter's Mason stays, back with cobblestone). Through 34.5 they make:
   - **Amethyst Ring**: 2 amethyst shards and 2 copper ingots (Novice);
   - **Emerald Brooch**: an emerald and 3 gold nuggets (Apprentice);
@@ -4427,7 +4427,7 @@ on a real world.
   from 34.17 replace v1 as they come. Done when: a GameTest checks the packet goes out on tracking and on a change;
   scene `class_outfits` (the four classes side by side in three jobs each, plus an elder, in daylight) passes with
   every job still readable; the shots are in the review package.
-- [x] **34.19** (approved 2026-10-11) **Life stages: elders.** Grown villagers count their days: `adult_since` (saved: the day they grew
+- [x] **34.19** (approved 2026-10-11) (verified 2026-10-25: 6 QA tests [QaElderLifeGameTests]: the charm by sneak-click at the elder boundary, kept when refused, one charm one villager; an ageless Master retires and mentors; passing only asleep with both wordings and graves; the Book of Families at exactly 400; the 60 family names. 34.20 waits on B442) **Life stages: elders.** Grown villagers count their days: `adult_since` (saved: the day they grew
   up; set in `Families.round` when a child grows up, seeded for everyone else by 34.22). After `villagerElderDays`
   (120) grown days a villager is an **elder**: the hall says so ("Elder · grown 131 days"), they wear the elder look
   (34.18), walk 15% slower (`Walker`), and their mood gets "a quiet old age" (+5) when they're fed and housed. The
@@ -4436,7 +4436,7 @@ on a real world.
   (`elderPassing` on), unless made ageless by 34.19a. Done when:
   `LifeStageGameTests` (an elder after the configured days with the clock moved on, the slower walk, the mood reason,
   a reload keeping the day, a child growing up getting today) pass; scene `elders` passes.
-- [x] **34.19a** (approved 2026-10-11) **The Evergreen Charm: ageless elders** (owner, 2026-10-06: "make an elder eternal if they have good
+- [x] **34.19a** (approved 2026-10-11) (verified 2026-10-25: 6 QA tests [QaElderLifeGameTests]: the charm by sneak-click at the elder boundary, kept when refused, one charm one villager; an ageless Master retires and mentors; passing only asleep with both wordings and graves; the Book of Families at exactly 400; the 60 family names. 34.20 waits on B442) **The Evergreen Charm: ageless elders** (owner, 2026-10-06: "make an elder eternal if they have good
   traits by building a specific item and giving it to them, so you don't lose good villagers"). A new item, the
   **Evergreen Charm** (pixel-art: a small gold-and-green leaf pendant; a rare craft: a totem of undying, a golden
   apple, 2 emeralds and a heart of the sea, our decision, tune in play). Sneak-right-click an elder with it: they
@@ -4464,7 +4464,7 @@ on a real world.
 
   Done when: `RetirementGameTests` (a full hand-over in order, each "never while" case, the level and assignments
   carried over, a retired elder never re-employed, the mentor's 50%) pass; scene `retirement` passes.
-- [x] **34.21** (approved 2026-10-12) **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
+- [x] **34.21** (approved 2026-10-12) (verified 2026-10-25: 6 QA tests [QaElderLifeGameTests]: the charm by sneak-click at the elder boundary, kept when refused, one charm one villager; an ageless Master retires and mentors; passing only asleep with both wordings and graves; the Book of Families at exactly 400; the 60 family names. 34.20 waits on B442) **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
   fields in `Families.Parents`; old records keep their names only). The hall keeps the village's **Book of
   Families**: everyone who has lived there (id, name, family name, the day they were born or grew up, the day they
   died, parents, partner, trade), up to 400, the longest dead forgotten first. **Family names**: a villager whose

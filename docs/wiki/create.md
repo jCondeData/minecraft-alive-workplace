@@ -467,7 +467,9 @@ tested (the GameTests use the table as the server does).
   after `createBuilds` went off half way up its walls. `QaCreateSchematicFilesCompatTests` (39.6): a schematic seen cut
   short mid-upload is imported, and said, once the upload is complete; a written Schematic of a file cut short says so,
   naming it, and makes no blueprint. `QaMechanicMendSaysCompatTests` (39.2): "Mechanic: fetching Shaft for the ..."
-  and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back.
+  and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back. `QaCreateItemsHeldCompatTests` (lane E's QA): a depot, a
+  deployer and a basin, each holding a diamond, scanned into a blueprint and built from exactly its material list, are
+  built holding nothing (a fluid in a tank or spout is still copied: B486).
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,

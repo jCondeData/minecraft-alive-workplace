@@ -603,6 +603,9 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B487** Player-visible: five builds still have a doorway a villager can't pass (B173 follow-up): a full block's step right at a two-high door leaves 1.00 of headroom. healing_center_3 and _4 door 5,1,14 (upside-down Stone Brick Stairs doorstep at 5,1,15); looks/lodge/pokemon_center_2 door 6,1,10 (Spruce Stairs doorstep 6,1,11); realm/royal_hall and royal_hall_2 treasury door 11,1,19 (opens onto the dais, 2 solid behind); royal_hall_2 east door 16,1,17 (hall floor one block up at 15,1,17). Real walks with the other doors walled up: a villager never gets in by the Healing Center III garden door, stands on the lodge's doorstep, sticks in Royal Hall II's east door (500 ticks). Expected: every door a villager can walk through (2 blocks clear over each step). Test: QaDoorwayBugGameTests on tests/qa-doorways-1025 (found by lane-b-1025-1838, 2026-10-25)
 - [ ] **B488** Player-visible: a wall tower whose builder dies with its roof on (e.g. killed in a raid) gets a second tower on top (B283 by another route): his site is dropped with him, the half-built tower has no open site and no finished record, so the next hall round lays it out on its own roof (-48 over -58) and gives a free builder a second tower; the first never finishes. Expected: the half-built tower's site stays open for the next builder (or nothing opens on it). Test: QaWallTowerBugGameTests.aTowersBuilderKilledWithTheRoofOnGetsNoSecondTowerOnTop on tests/qa-tower-builder-killed-1025 (found by lane-b-1025-1838, 2026-10-25)
 - [ ] **B489** Player-visible: the builder's shortage line for a Tinkerer's Iron Bars names the wrong ore (B408 follow-up): with 5 raw iron and 1 coal (one raw iron short) it reads 'Can't be made yet: short of 6 Deepslate Iron Ore to make 3 Iron Bars' (takes nothing, correct); with coal and no ore also '6 Deepslate Iron Ore', an ore players only get with Silk Touch. Expected (wiki B409 rule: name what the chest is short of, go further down only through what's there): 'short of 1 Raw Iron' / 'short of 6 Raw Iron'. Test: QaTinkererShortBugGameTests on tests/qa-tinkerer-line-1025 (found by lane-b-1025-1838, 2026-10-25)
+- [ ] **B490** With Cobblemon 1.8, the Gem Grower ends on 9 Blank TMs: with 7 in her chests (glass and shards there) she crafts once more and Cobblemon's recipe makes 2, so the chests hold 9. Expected (28.11: Blank TMs up to 8) she stops at 8 (craft only when the result still fits, or stop at 7 and over). Test: QaGemGrowerBugTests.qaSevenBlankTmsNeverBecomeNine on tests/gem-grower-1025 (compat, -Pcobblemon18=true; register it with the fix) (found by lane-d-1025-1908) (found by lane-d-1025-1908, 2026-10-25)
+- [ ] **B491** Festival Cup (28.17): the Sign up button signs a player up before sign-up has opened: the hall's Cup card says 'Sign-up opens after the festival on day N' and the click still makes them an entrant (Cups.signUp never checks the window). Expected: nothing happens (or a refusal line) until sign-up opens. Test: QaCupBugTests.noSignUpBeforeItOpens on tests/cup-1025 (found by lane-d-1025-1908) (found by lane-d-1025-1908, 2026-10-25)
+- [ ] **B492** Festival Cup (28.17): with one bye the Cup page reads 'A bracket of 8, with 1 byes for the top seeds'; expected '1 bye' (the lang line has no singular form; use Words.counted). Test: QaCupBugTests.oneByeIsSingular on tests/cup-1025 (found by lane-d-1025-1908) (found by lane-d-1025-1908, 2026-10-25)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -2578,7 +2581,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     on; progress survives lifting and a reload; the last step reforms it (no mood loss, pace kept), and it stays
     reformed when lifted and proclaimed again; a battle step falls back to its `fallback` without Cobblemon;
   - showcase scene `reform`: the quest page with a reform step, then the fireworks and the chronicle line.
-- [x] **30.6** (approved 2026-10-05) **Free Bread and Large Families.** Effects `food_use`, `births` and `sickness`, read by `VillageNeeds`,
+- [x] **30.6** (approved 2026-10-05) (verified 2026-10-25: QaEdictEffectsGameTests [10]: Free Bread's last-day edge and whole extra meal, Large Families' births/sickness inside vs outside the village and lifted, Open Gates' inns/legends/market only in the village, Festival cost steps every 4 villagers, 4.99 vs 5.00 with the player's lines, Tithe rounds half up and stops at the cap; 3 planted mutants killed; edicts.md checked) **Free Bread and Large Families.** Effects `food_use`, `births` and `sickness`, read by `VillageNeeds`,
   `VillageGrowth` and `people/Sickness`; each edict with its reform:
   - **Free Bread**: everyone fed in the last day is 10 happier ("free bread"); the village eats 30% more (for every
     meal eaten from the store the hall counts 0.3 of another, saved, and takes one more meal each time it reaches 1).
@@ -2592,7 +2595,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: GameTests for each number, with and without the reform (meals taken for 10 eaten, the gap between births,
   the food needed and taken, the daily chance of falling ill); showcase scenes `free_bread` (the hall's list with the
   "free bread" mood) and `large_families` (two births in one day, with the chronicle lines).
-- [x] **30.7** (approved 2026-10-05) **Open Gates.** Effects `inn`, `market_traders`, `legend_visits` and `bandit_camps`:
+- [x] **30.7** (approved 2026-10-05) (verified 2026-10-25: QaEdictEffectsGameTests [10]: Free Bread's last-day edge and whole extra meal, Large Families' births/sickness inside vs outside the village and lifted, Open Gates' inns/legends/market only in the village, Festival cost steps every 4 villagers, 4.99 vs 5.00 with the player's lines, Tithe rounds half up and stops at the cap; 3 planted mutants killed; edicts.md checked) **Open Gates.** Effects `inn`, `market_traders`, `legend_visits` and `bandit_camps`:
   - boost: inns in the village take 4 guests instead of 2, and up to two travellers arrive a morning; market days
     bring one more trader; Legends visit the inn twice as often once M29's inn visitors exist (until then nothing reads
     that effect, and the Book only promises travellers);
@@ -2603,7 +2606,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
 
   Done when: GameTests for the guests, the arrivals, the market traders and the bandits' chance, with and without the
   reform, and Open Gates refused while Curfew is in force; showcase scene `open_gates`: an inn with four guests.
-- [x] **30.8** (approved 2026-10-05) **Festival Season and Tithe**, the two treasury edicts. Effects `festival_every`, `festival_cost`,
+- [x] **30.8** (approved 2026-10-05) (verified 2026-10-25: QaEdictEffectsGameTests [10]: Free Bread's last-day edge and whole extra meal, Large Families' births/sickness inside vs outside the village and lifted, Open Gates' inns/legends/market only in the village, Festival cost steps every 4 villagers, 4.99 vs 5.00 with the player's lines, Tithe rounds half up and stops at the cap; 3 planted mutants killed; edicts.md checked) **Festival Season and Tithe**, the two treasury edicts. Effects `festival_every`, `festival_cost`,
   `tithe` and `trade_prices`:
   - **Festival Season**: a festival every 4 days instead of 8 (`Festivals` counts the days per hall); each one costs
     the treasury 3 emeralds and 1 more for every 4 villagers, taken on the festival's morning; when the treasury can't
@@ -2665,7 +2668,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Shifts and partners the total stops at the cap; a stranger's horn does nothing in an owned village; the icon passes
   `lint.py`; showcase scene `work_horn`: a GIF of builders before and during a rush (its check: more blocks placed a
   minute during the rush).
-- [x] **30.12** (approved 2026-10-05) **The Cradle.** A block of its own (pixel-art textures and a model: a wooden cradle on rockers with a
+- [x] **30.12** (approved 2026-10-05) (verified 2026-10-25: QaCivicItemsGameTests [10]: Cradle at 4 blocks not 5, village edge, placed/broken by a player with the hall's line, adults never seated; Village Banner crafted in the real grid with its tooltip, colours replaced, wall banner; harvest season's first/last tick at 16 and 8 days in every dimension, idol placed/broken, other crops ~x1.25, idols per dimension; 3 mutants killed; wrote civic-items.md) **The Cradle.** A block of its own (pixel-art textures and a model: a wooden cradle on rockers with a
   wool blanket), crafted from planks, sticks and white wool; a point of interest, so the hall finds it without
   scanning. A Cradle within 4 blocks of a bed in a village with a hall makes it a nursery village: every child there
   grows up in half the time (each hall round ages the children by the round's length again), and one more baby a day
@@ -2676,7 +2679,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   with a cradle and not without; with Large Families too, births a third of a day apart; a cradle with no bed near
   doesn't count; a child seated in it at night; the art passes `lint.py`; showcase scene `cradle`: a child asleep in a
   cradle at night, and a time-lapse of a child growing up.
-- [x] **30.13** (approved 2026-10-05) **The Village Banner.** An item of its own (pixel-art icon: a banner on a gilded crossbar), crafted
+- [x] **30.13** (approved 2026-10-05) (verified 2026-10-25: QaCivicItemsGameTests [10]: Cradle at 4 blocks not 5, village edge, placed/broken by a player with the hall's line, adults never seated; Village Banner crafted in the real grid with its tooltip, colours replaced, wall banner; harvest season's first/last tick at 16 and 8 days in every dimension, idol placed/broken, other crops ~x1.25, idols per dimension; 3 mutants killed; wrote civic-items.md) **The Village Banner.** An item of its own (pixel-art icon: a banner on a gilded crossbar), crafted
   from any banner (it keeps that banner's design, which its tooltip lists) and a gold ingot. Right-click the Village
   Hall with it to make that design the village's colours (saved on the hall; the banner isn't used up, as a Name Tag
   isn't; the chronicle notes it); place it like a banner to hang the design anywhere. The colours show:
@@ -2693,7 +2696,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   shield and a player's left alone, the routes icon, the festival's mood and days); the colours survive a reload; the
   icon passes `lint.py`; showcase scene `village_banner`: a street of finished houses under the village's banners, a
   knight with the painted shield, the routes page.
-- [x] **30.14** (approved 2026-10-05) **Seasons and the Harvest Idol.**
+- [x] **30.14** (approved 2026-10-05) (verified 2026-10-25: QaCivicItemsGameTests [10]: Cradle at 4 blocks not 5, village edge, placed/broken by a player with the hall's line, adults never seated; Village Banner crafted in the real grid with its tooltip, colours replaced, wall banner; harvest season's first/last tick at 16 and 8 days in every dimension, idol placed/broken, other crops ~x1.25, idols per dimension; 3 mutants killed; wrote civic-items.md) **Seasons and the Harvest Idol.**
   - A village year (`hall/Seasons`, core; if M28 already added a season clock for its Festival Cup, use that one):
     spring, summer, autumn and winter of `seasonDays` (8) days each, counted from the world's day; autumn is harvest
     season. The hall's festival icon names the season and its day ("Autumn: harvest season, day 3 of 8").
@@ -2727,7 +2730,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   refuses it; an alchemist with the makings brews it into the chests and stops at 4; a chef cooks Builder's Tea; a
   tonic from a test data pack works; with every bonus the cap holds; both icons pass `lint.py`; showcase scene
   `tonics`: a miner drinking, then their status line ("25% faster: Miner's Brew, 19 min left").
-- [x] **30.16** (approved 2026-10-05) **Four more tonics**, each its own item, data file and pixel-art icon:
+- [x] **30.16** (approved 2026-10-05) (verified 2026-10-25: QaTonicsGuildsGameTests [13]: each tonic's jobs and left-out jobs, last tick, save/reload, player drink lines; all 34 trades find their guild, charter by sneak-click, perks only for members inside the village and after reload, Herders/Harvest/Scholars/Merchants/Wardens/Healers numbers and rounding, sentences; Trainers' Guild with Cobblemon left to GuildTrainersCompatTests; 3 mutants killed; wrote tonics.md, fixed guilds.md) **Four more tonics**, each its own item, data file and pixel-art icon:
   - **Smith's Draught** (alchemist: a glass bottle, blaze powder, two iron nuggets): Armorers, Toolsmiths,
     Weaponsmiths, Tinkerers, Ball Smiths;
   - **Scholar's Infusion** (alchemist: a glass bottle, an amethyst shard, glow berries): Scholars, Teachers,
@@ -2765,7 +2768,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   faster, 5 helpers at one build); succession when the master dies; a builder builds the Guildhall I and II in a test;
   the renders checked against `STYLE.md` in the review package; showcase scene `guildhall`: the Guildhall II with its
   Guild Master inside, and the Builders' Guild on the Book's last row.
-- [x] **30.18** (approved 2026-10-06) **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
+- [x] **30.18** (approved 2026-10-06) (verified 2026-10-25: QaTonicsGuildsGameTests [13]: each tonic's jobs and left-out jobs, last tick, save/reload, player drink lines; all 34 trades find their guild, charter by sneak-click, perks only for members inside the village and after reload, Herders/Harvest/Scholars/Merchants/Wardens/Healers numbers and rounding, sentences; Trainers' Guild with Cobblemon left to GuildTrainersCompatTests; 3 mutants killed; wrote tonics.md, fixed guilds.md) **The Miners', Smiths' and Woodsmen's Guilds.** A data file each; members work 15% faster:
   - **Miners' Guild** (Miners, Sifters, Netherworkers): pickaxes, and the netherworker's gear, wear half as fast;
   - **Smiths' Guild** (Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths): every material a weaponsmith
     mends with puts back a third of the durability instead of a quarter (`MendingWork.PER_UNIT`);
@@ -2774,7 +2777,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   New effects: `tool_wear` and `mend_per_unit`. Done when: a GameTest per guild with its numbers, founded and not
   (durability lost over 20 blocks dug, 20 logs cut and 10 fish caught; what one ingot puts back); showcase scene
   `guilds`: each Guild Master's status and the guilds' row of the Book.
-- [x] **30.19** (approved 2026-10-06) **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
+- [x] **30.19** (approved 2026-10-06) (verified 2026-10-25: QaTonicsGuildsGameTests [13]: each tonic's jobs and left-out jobs, last tick, save/reload, player drink lines; all 34 trades find their guild, charter by sneak-click, perks only for members inside the village and after reload, Herders/Harvest/Scholars/Merchants/Wardens/Healers numbers and rounding, sentences; Trainers' Guild with Cobblemon left to GuildTrainersCompatTests; 3 mutants killed; wrote tonics.md, fixed guilds.md) **The Harvest, Herders' and Scholars' Guilds.** A data file each; members work 15% faster:
   - **Harvest Guild** (Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Chefs): the village's own farms and
     the orchard keepers' rounds reach 24 blocks instead of 16;
   - **Herders' Guild** (Shepherds, Butchers, Ranchers): every herd may be 4 bigger (shepherds and ranchers breed up to
@@ -2784,7 +2787,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
 
   New effects: `work_reach`, `herd_size`, `research_cost`. Done when: GameTests for each number, founded and not; the
   `guilds` scene gains their rows.
-- [x] **30.20** (approved 2026-10-06) **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
+- [x] **30.20** (approved 2026-10-06) (verified 2026-10-25: QaTonicsGuildsGameTests [13]: each tonic's jobs and left-out jobs, last tick, save/reload, player drink lines; all 34 trades find their guild, charter by sneak-click, perks only for members inside the village and after reload, Herders/Harvest/Scholars/Merchants/Wardens/Healers numbers and rounding, sentences; Trainers' Guild with Cobblemon left to GuildTrainersCompatTests; 3 mutants killed; wrote tonics.md, fixed guilds.md) **The Healers', Merchants', Wardens' and Trainers' Guilds.** A data file each:
   - **Healers' Guild** (Nurses, Clerics, Undertakers): members work 15% faster; the village's ill get well in two days
     instead of three, and nurses and undertakers look 48 blocks out instead of 32;
   - **Merchants' Guild** (Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters): members work 15% faster; travellers

@@ -27,8 +27,8 @@ Roadmap items: 32.15, 32.19
   job at that block. On the Village Map the Fire Station is a defense, the other two care.
 - **What next? suggests them** (32.19): "Drought can come here: build a Well House", with "No Well Keeper answers it
   yet. Build the Well House and hand a villager by its Cauldron the job's item (A shovel)". One tip for each disaster
-  that's switched on and can come to this village (its `when` holds: wood enough for a fire, a Town for the plague; a
-  drought can come anywhere), whose answering job is switched on and missing from the village. It goes once the
+  that's switched on and can come to this village (its `when` holds: for a fire, at least 3 blocks in 10 of the
+  village's finished builds wood; a Town or a City for the plague, not a Village; a drought can come anywhere), whose answering job is switched on and missing from the village. It goes once the
   village has that job, or with the disaster or the job switched off.
 - **The chronicle** has it begin, foretold and end, under the new kinds **Fire**, **Drought** and **Plague**.
 - **What it does** depends on the disaster's effects: crops grow slower, farmland dries even by water, water cauldrons
@@ -126,4 +126,8 @@ its windows; the shaft open down to water, the curb, the trough, the benches, th
 the herb garden); a builder builds each from chests and a jobless villager there handed the job's item takes the job
 at the house's block; What next? suggests the Well House to a hamlet without a Well Keeper (with its title and how),
 the Physician's House only to a town, neither once the village has those jobs, and none with drought switched off;
-every new sentence has its text. Showcase scene `defences` films the three after the walls and gates.
+every new sentence has its text. `QaAnsweringHousesGameTests` (QA): in each house exactly one block is any job's job
+site (the game's and the mod's jobs alike), and it is its own job's; What next? suggests the Fire Station at a wood
+share of 3 in 10 and not at 2 in 10, not with a Firewarden in the village but still with one only outside it, and not
+with fires switched off; the Physician's House not for a Village, but for a Town and a City; the Well House at every
+rank. Showcase scene `defences` films the three after the walls and gates.

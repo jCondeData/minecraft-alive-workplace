@@ -27,7 +27,7 @@ import net.minecraft.world.phys.Vec3;
  * tries the next reachable Storehouse ... and keeps hauling"; a given-up Storehouse "is left alone for a while ... (the
  * way may have been opened)"; "nothing of that is saved, so after a reload the golem simply tries the nearest again"
  * while the load itself is saved on the golem. GolemHaulerRouteGameTests covers the first trip; these cover what comes
- * after it: the wait, the way opened again, and a save and reload in the middle.
+ * after it: the wait, the way opened again (for a Storehouse and, B456, a Drop Box), and a save and reload in the middle.
  *
  * <p>Layout as GolemHaulerRouteGameTests: a Storehouse walled in and roofed over near the golem's start, an open one
  * farther off. Before each new load the golem is put back at its start, so the walled-in one is the nearest again.
@@ -148,6 +148,88 @@ public class QaHaulerGiveUpGameTests implements net.fabricmc.fabric.api.gametest
 				+ in(helper, NEAR_CHEST, Items.SAND) + " of 64 sand; the golem carries " + carried(golem) + " at " + golem.position()
 				+ ", heading for " + HaulerGolems.storehouse(level, golem));
 			helper.assertTrue(carried(golem) == 0, "the golem still carries " + carried(golem));
+		});
+	}
+
+	/**
+	 * B456 the same way for a pickup: an empty hauler gives up the Drop Box walled in nearest the Storehouse and fetches
+	 * from the open one; with the walls down at once it still leaves that box alone (the next load in the open box comes
+	 * first), and once the wait is over it fetches from it.
+	 */
+	//$ gametest_ticks_batch AREA '4400' '"qaHaulerPickupWaySpent"'
+	@GameTest(template = AREA, timeoutTicks = 4400, batch = "qaHaulerPickupWaySpent")
+	public void aGivenUpDropBoxIsLeftAloneAWhileThenFetchedFromOnceTheWayIsOpen(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		GolemHaulerFightGameTests.strayStorehouses(helper);
+		BlockPos storehouse = new BlockPos(24, 2, 24);
+		BlockPos storeChest = new BlockPos(25, 2, 24);
+		BlockPos walledBox = new BlockPos(17, 2, 17);
+		BlockPos openBox = new BlockPos(4, 2, 4);
+		for (int x = 14; x <= 20; x++) {
+			for (int y = 2; y <= 4; y++) {
+				for (int z = 14; z <= 20; z++) {
+					boolean shell = x == 14 || x == 20 || z == 14 || z == 20 || y == 4;
+					helper.setBlock(new BlockPos(x, y, z), shell ? Blocks.STONE_BRICKS : Blocks.AIR);
+				}
+			}
+		}
+		helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
+		helper.setBlock(storeChest, Blocks.CHEST);
+		helper.setBlock(walledBox, ModBlocks.DROP_BOX);
+		helper.setBlock(openBox, ModBlocks.DROP_BOX);
+		Container walled = helper.getBlockEntity(walledBox);
+		Container open = helper.getBlockEntity(openBox);
+		for (int i = 0; i < 3; i++) {
+			walled.setItem(i, new net.minecraft.world.item.ItemStack(Items.OAK_LOG, 64));
+			open.setItem(i, new net.minecraft.world.item.ItemStack(Items.COBBLESTONE, 64));
+		}
+		IronGolem golem = GolemSmith.build(helper.getLevel(), helper.absolutePos(new BlockPos(10, 1, 10)), GolemSmith.Role.HAULER);
+		helper.assertTrue(golem != null, "a hauler");
+		Leftovers.after(helper, golem::discard);
+		ServerLevel level = helper.getLevel();
+		AtomicInteger phase = new AtomicInteger();
+		AtomicLong firstHome = new AtomicLong();
+		helper.onEachTick(() -> {
+			long now = level.getGameTime();
+			switch (phase.get()) {
+				case 0 -> {
+					helper.assertTrue(walled.countItem(Items.OAK_LOG) == 3 * 64, "the golem got into the walled-in Drop Box: the test proves nothing");
+					if (in(helper, storeChest, Items.COBBLESTONE) == 3 * 64 && carried(golem) == 0) {
+						firstHome.set(now);
+						for (int x = 14; x <= 20; x++) {
+							for (int y = 2; y <= 4; y++) {
+								for (int z = 14; z <= 20; z++) {
+									BlockPos p = new BlockPos(x, y, z);
+									if (!p.equals(walledBox)) {
+										helper.setBlock(p, Blocks.AIR);
+									}
+								}
+							}
+						}
+						for (int i = 0; i < 3; i++) {
+							open.setItem(i, new net.minecraft.world.item.ItemStack(Items.COBBLESTONE, 64));
+						}
+						phase.set(1);
+					}
+				}
+				case 1 -> {
+					helper.assertTrue(walled.countItem(Items.OAK_LOG) == 3 * 64, "the golem fetched from the Drop Box it gave up "
+						+ (now - firstHome.get()) + " ticks after the first load was home: it should be left alone for a while");
+					if (in(helper, storeChest, Items.COBBLESTONE) == 6 * 64 && carried(golem) == 0) {
+						phase.set(2);
+					}
+				}
+				default -> { }
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(phase.get() == 2, "phase " + phase.get() + ": the store has " + in(helper, storeChest, Items.COBBLESTONE)
+				+ " cobblestone, the golem carries " + carried(golem) + " at " + golem.position());
+			helper.assertTrue(level.getGameTime() >= firstHome.get() + HaulerGolems.SKIP_FOR, "the given-up Drop Box was fetched from "
+				+ (level.getGameTime() - firstHome.get()) + " ticks after the first load was home, before its wait was over");
+			helper.assertTrue(in(helper, storeChest, Items.OAK_LOG) == 3 * 64, "once the wait was over the store has " + in(helper, storeChest, Items.OAK_LOG)
+				+ " of " + 3 * 64 + " logs from the Drop Box that was walled in; the box keeps " + walled.countItem(Items.OAK_LOG)
+				+ ", the golem carries " + carried(golem) + " at " + golem.position());
 		});
 	}
 

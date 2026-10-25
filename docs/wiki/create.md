@@ -470,6 +470,8 @@ tested (the GameTests use the table as the server does).
   and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back. `QaCreateItemsHeldCompatTests` (lane E's QA): a depot, a
   deployer and a basin, each holding a diamond, scanned into a blueprint and built from exactly its material list, are
   built holding nothing (a fluid in a tank or spout is still copied: B486).
+  `QaCreateStoresHeldCompatTests` (lane E's QA): the same for a millstone (holding wheat), a chute, an item vault, a
+  mechanical crafter and a toolbox.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,

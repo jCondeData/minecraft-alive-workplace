@@ -407,6 +407,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BardLaureateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BeastmasterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FounderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRareLegendsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GolemSmithGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GolemHaulerFightGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSitesGameTests",

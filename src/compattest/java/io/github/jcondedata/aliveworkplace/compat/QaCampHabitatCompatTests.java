@@ -255,19 +255,82 @@ public class QaCampHabitatCompatTests implements FabricGameTest {
 	public void rareIsToldCommonAndTooFarAreNot(GameTestHelper helper) {
 		helper.getLevel().getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(HabitatKeepers.SIGHT_RANGE + 4)).forEach(e -> e.discard());
 		ServerLevel level = helper.getLevel();
-		Villager keeper = HabitatKeeperCompatTests.keeper(helper);
-		keeper.setNoAi(true);
-		BlockPos pasture = helper.absolutePos(STATION);
-		wild(helper, "pidgey shiny=no level=5", new Vec3(STATION.getX() + 6.5, 2, STATION.getZ() + 0.5));
-		wild(helper, "bulbasaur shiny=no level=5", new Vec3(STATION.getX() + 0.5, 2, STATION.getZ() + 6.5));
-		wild(helper, "eevee shiny=yes level=5", new Vec3(STATION.getX() + 49.5, 2, STATION.getZ() + 0.5));
-		List<HabitatKeepers.Sighting> found = HabitatKeepers.sight(level, keeper, pasture);
-		helper.assertTrue(found.size() == 1 && found.get(0).kind().equals("rare") && found.get(0).what().getString().equals("a rare Bulbasaur"),
-			"sighted " + found.stream().map(s -> s.kind() + ": " + s.what().getString()).toList() + ", not just a rare Bulbasaur");
-		wild(helper, "eevee shiny=yes level=5", new Vec3(STATION.getX() + 47.5, 2, STATION.getZ() + 0.5));
-		List<HabitatKeepers.Sighting> near = HabitatKeepers.sight(level, keeper, pasture);
-		helper.assertTrue(near.size() == 1 && near.get(0).kind().equals("shiny"), "the shiny 47 blocks out: " + near.stream().map(s -> s.what().getString()).toList());
-		helper.succeed();
+		Vec3 tooFar = new Vec3(STATION.getX() + 49.5, 2, STATION.getZ() + 0.5);
+		Vec3 within = new Vec3(STATION.getX() + 47.5, 2, STATION.getZ() + 0.5);
+		// B498: 47 and 49 blocks east are three chunks past the test area, loaded or not depending on where the batch put
+		// it. A Pokémon added in a chunk that isn't loaded is added but never found by an entity query (as in play, where
+		// nothing is there to sight), so the shiny 47 out went unseen. Both chunks are held loaded until the test ends.
+		List<BlockPos> far = List.of(BlockPos.containing(helper.absoluteVec(tooFar)), BlockPos.containing(helper.absoluteVec(within)));
+		holdLoaded(helper, far);
+		whenEntitiesTick(helper, far, 0, () -> {
+			Villager keeper = HabitatKeeperCompatTests.keeper(helper);
+			keeper.setNoAi(true);
+			BlockPos pasture = helper.absolutePos(STATION);
+			wild(helper, "pidgey shiny=no level=5", new Vec3(STATION.getX() + 6.5, 2, STATION.getZ() + 0.5));
+			wild(helper, "bulbasaur shiny=no level=5", new Vec3(STATION.getX() + 0.5, 2, STATION.getZ() + 6.5));
+			PokemonEntity farEevee = wild(helper, "eevee shiny=yes level=5", tooFar);
+			helper.assertTrue(level.getEntity(farEevee.getUUID()) == farEevee && visible(level, farEevee),
+				"the shiny 49 blocks out isn't in the world to be looked for: " + near(helper, pasture));
+			List<HabitatKeepers.Sighting> found = HabitatKeepers.sight(level, keeper, pasture);
+			helper.assertTrue(found.size() == 1 && found.get(0).kind().equals("rare") && found.get(0).what().getString().equals("a rare Bulbasaur"),
+				"sighted " + found.stream().map(s -> s.kind() + ": " + s.what().getString()).toList() + ", not just a rare Bulbasaur; " + near(helper, pasture));
+			PokemonEntity nearEevee = wild(helper, "eevee shiny=yes level=5", within);
+			helper.assertTrue(visible(level, nearEevee), "the shiny 47 blocks out isn't in the world to be looked for: " + near(helper, pasture));
+			List<HabitatKeepers.Sighting> near = HabitatKeepers.sight(level, keeper, pasture);
+			helper.assertTrue(near.size() == 1 && near.get(0).kind().equals("shiny"), "the shiny 47 blocks out: sighted "
+				+ near.stream().map(s -> s.kind() + ": " + s.what().getString()).toList() + "; " + near(helper, pasture));
+			helper.succeed();
+		});
+	}
+
+	/** This class's chunk tickets, each with a key of its own so one test's never takes another's away. */
+	private static final net.minecraft.server.level.TicketType<Long> HELD = net.minecraft.server.level.TicketType.create("aliveworkplace_qa_held", Long::compare);
+	private static final java.util.concurrent.atomic.AtomicLong HOLDS = new java.util.concurrent.atomic.AtomicLong();
+
+	/**
+	 * Holds the chunks of {@code points} loaded, entities ticking, until the test ends. Not with setChunkForced: forced
+	 * chunks are a set, so lifting ours after the test also lifted the game test framework's own on a test area placed
+	 * there later, and that test waited for its chunks forever.
+	 */
+	private static void holdLoaded(GameTestHelper helper, List<BlockPos> points) {
+		var chunks = helper.getLevel().getChunkSource();
+		for (net.minecraft.world.level.ChunkPos chunk : points.stream().map(net.minecraft.world.level.ChunkPos::new).distinct().toList()) {
+			Long key = HOLDS.incrementAndGet();
+			// distance 2: ticket level 31, entity ticking in that chunk (as a forced chunk)
+			chunks.addRegionTicket(HELD, chunk, 2, key);
+			PartnerShowsCompatTests.after(helper, () -> chunks.removeRegionTicket(HELD, chunk, 2, key));
+		}
+	}
+
+	/** Runs {@code then} once entities at every one of {@code points} tick (at most 100 ticks), never blocking the server thread. */
+	private static void whenEntitiesTick(GameTestHelper helper, List<BlockPos> points, int waited, Runnable then) {
+		if (points.stream().allMatch(helper.getLevel()::isPositionEntityTicking)) {
+			then.run();
+			return;
+		}
+		if (waited > 100) {
+			helper.fail("the chunks at " + points + " didn't load in 100 ticks");
+			return;
+		}
+		helper.runAfterDelay(1, () -> whenEntitiesTick(helper, points, waited + 1, then));
+	}
+
+	/** Whether an entity query round {@code entity} finds it (it is in a loaded chunk). */
+	private static boolean visible(ServerLevel level, PokemonEntity entity) {
+		return level.getEntitiesOfClass(PokemonEntity.class, entity.getBoundingBox().inflate(1), e -> e == entity).size() == 1;
+	}
+
+	/** The Pokémon in the world round the pasture, and the ones this test added, with distance, shiny flag and whether they're found. */
+	private static String near(GameTestHelper helper, BlockPos pasture) {
+		ServerLevel level = helper.getLevel();
+		List<String> out = new ArrayList<>();
+		for (PokemonEntity e : level.getEntitiesOfClass(PokemonEntity.class, new net.minecraft.world.phys.AABB(pasture).inflate(HabitatKeepers.SIGHT_RANGE + 4))) {
+			out.add(e.getPokemon().getSpecies().getName() + (e.getPokemon().getShiny() ? " (shiny)" : "") + " at " + helper.relativePos(e.blockPosition())
+				+ String.format(" %.1f out", Math.sqrt(e.blockPosition().distSqr(pasture))) + (e.isAlive() ? "" : " dead")
+				+ (e.getPokemon().isWild() ? "" : " not wild") + (e.isBattling() ? " battling" : ""));
+		}
+		return "Pokémon found round the pasture " + out + "; entities tick at 47 out: "
+			+ level.isPositionEntityTicking(pasture.offset(47, 0, 0)) + ", at 49 out: " + level.isPositionEntityTicking(pasture.offset(49, 0, 0));
 	}
 
 	// ------------------------------------------------------------------ Camp Cook

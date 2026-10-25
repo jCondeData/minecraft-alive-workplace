@@ -950,14 +950,44 @@ public class CrafterWork extends Behavior<Villager> {
 			return plan;
 		}
 		int fuel = (fired + perFuel - 1) / perFuel;
-		for (Item coal : List.of(net.minecraft.world.item.Items.COAL, net.minecraft.world.item.Items.CHARCOAL)) {
-			if (usable.getOrDefault(coal, 0L) - plan.takes().getOrDefault(coal, 0) >= fuel) {
-				Map<Item, Integer> takes = new LinkedHashMap<>(plan.takes());
-				takes.merge(coal, fuel, Integer::sum);
-				return new Crafting.Plan(plan.target(), plan.count(), plan.steps(), takes, plan.makes());
+		Map<Item, Integer> takes = new LinkedHashMap<>(plan.takes());
+		return addFuel(takes, usable, fuel) ? new Crafting.Plan(plan.target(), plan.count(), plan.steps(), takes, plan.makes()) : null;
+	}
+
+	/** The fuels a kiln or a forge burns, in the order they're taken. */
+	protected static final List<Item> FUELS = List.of(net.minecraft.world.item.Items.COAL, net.minecraft.world.item.Items.CHARCOAL);
+
+	/**
+	 * Adds {@code fuel} coal and charcoal to {@code takes}, coal first, the two kinds mixed when neither alone is enough
+	 * (B396), from what {@code usable} has beyond what {@code takes} already takes; false (and {@code takes} unchanged) if
+	 * both together are too few.
+	 */
+	protected static boolean addFuel(Map<Item, Integer> takes, Map<Item, Long> usable, int fuel) {
+		if (fuel <= 0) {
+			return true;
+		}
+		if (fuelSpare(takes, usable) < fuel) {
+			return false;
+		}
+		int left = fuel;
+		for (Item coal : FUELS) {
+			long spare = Math.max(0, usable.getOrDefault(coal, 0L) - takes.getOrDefault(coal, 0));
+			int got = (int) Math.min(left, spare);
+			if (got > 0) {
+				takes.merge(coal, got, Integer::sum);
+				left -= got;
 			}
 		}
-		return null;
+		return true;
+	}
+
+	/** Coal and charcoal together in {@code usable} beyond what {@code takes} already takes. */
+	protected static long fuelSpare(Map<Item, Integer> takes, Map<Item, Long> usable) {
+		long spare = 0;
+		for (Item coal : FUELS) {
+			spare += Math.max(0, usable.getOrDefault(coal, 0L) - takes.getOrDefault(coal, 0));
+		}
+		return spare;
 	}
 
 	/** Whether {@code plan} (of {@code kind}) fires anything. */

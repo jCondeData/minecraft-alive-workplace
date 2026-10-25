@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396
 
 ## 1. What a player sees
 
@@ -24,6 +24,8 @@ under "Short of": "Can't be made yet: short of 4 Oak Log to make 3 Barrel". When
 part at all (oak stairs in a village with a Mason but no Carpenter), the line says "Nobody here makes: Oak Stairs".
 A Mason's kiln counts its fuel as a raw material too: twelve clay balls and one coal for three brick stairs (a coal
 for every eight fired) is "short of 1 Coal to make 3 Brick Stairs", and nothing is taken (B352).
+Coal and charcoal count together: one coal and one charcoal are the two fuels twelve clay needs, and the Mason
+takes and burns both (B396). The same goes for a Tinkerer's forge.
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -120,6 +122,11 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   builder's line, nothing taken.
 - `QaCrafterFurnitureBugTests.b352AMasonShortOfCoalSaysSoAndTakesNothing`: the kiln a coal short names the coal, not
   the bricks, and takes nothing (B352).
+- `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the
+  stairs (B396).
+- `MasonMixedFuelGameTests.aMasonWithTwoCharcoalMakesTheStairs`, `aMasonWithOneCoalForTwelveClayIsShortOfOneCoal`,
+  `aMixedFuelJobReloadedMidWayFinishes`: charcoal alone, a real shortage counted from both kinds, and a mixed-fuel job
+  saved and loaded mid-way (B396).
 - `QaCrafterFurnitureBugTests.b353TheCarpentersBenchBrokenMidChainLosesNothing`: the bench broken at step 2 and not
   put back: the job let go, the wood back in the builder's chest (B353).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".

@@ -549,7 +549,11 @@ facing, every shared property across every Spruce and Grand blueprint),
 `QaCarvedStylesCompatTests.aSavedSpruceSiteLoadsWithItsCarvedWoodBlocks`. B388 (compat):
 `QaCarvedLibraryBugTests.theSpruceStyleKeepsTheCarpentersCraftingTable`, and
 `QaCarvedLibraryCompatTests.everyStyleKeepsEveryJobSite` and `everyModdedCopyKeepsItsJobSites` (the Tom's storage
-copies included) no longer pass over the crafting table. Scene `carved_styles` (`-Pfurniture=true`, which now brings
+copies included) no longer pass over the crafting table; QA (compat):
+`QaSpruceCarpenterCompatTests.aCarpenterIsHiredAtTheSpruceCottagesCraftingTable` (a builder builds the Spruce Starter
+Cottage; its crafting table is the vanilla one and a Carpenter's job site, and a jobless villager by it, sneak-clicked
+with planks, becomes its Carpenter). Known (B433): the Spruce cottage's two lanterns on the flower boxes by the door
+are skipped. Scene `carved_styles` (`-Pfurniture=true`, which now brings
 Carved Wood and Rechiseled).
 37.10: with Tom's Simple Storage (compat): `TomsStorageCompatTests.aConnectorIsOneStoreForItsChestsAndCabinet` (two
 chests and a filing cabinet on the connector and its cable count once, the board line, in and out through the

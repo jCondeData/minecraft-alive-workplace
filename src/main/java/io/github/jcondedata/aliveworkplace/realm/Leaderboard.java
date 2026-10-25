@@ -297,7 +297,9 @@ public final class Leaderboard {
 			case "richest" -> TradePage.money((int) Math.min(Integer.MAX_VALUE, value));
 			case "happiest" -> Component.translatable("leaderboard.aliveworkplace.value.happiest", value);
 			case "realm" -> villagers < 0 ? Component.translatable("leaderboard.aliveworkplace.value.realm_members" + one, value)
-				: Component.translatable("leaderboard.aliveworkplace.value.realm" + one, value, villagers);
+				: Component.translatable("leaderboard.aliveworkplace.value.realm", // "1 village, 1 villager": each count its own number
+					Component.translatable("leaderboard.aliveworkplace.value.realm_members" + one, value),
+					Component.translatable("leaderboard.aliveworkplace.value.biggest" + (villagers == 1 ? ".one" : ""), villagers));
 			default -> Component.translatable("leaderboard.aliveworkplace.value." + board + one, value);
 		};
 	}

@@ -59,7 +59,7 @@ public class QaFirePartnersCompatTests implements FabricGameTest {
 		GameRules.BooleanValue fireTick = level.getGameRules().getRule(GameRules.RULE_DOFIRETICK);
 		Before before = new Before(fireTick.get(), FirewardenWork.ENABLED, VillageHalls.RADIUS);
 		VillageHalls.RADIUS = 20;
-		VillageFire.forget();
+		VillageFire.reset();
 		VillageFire.resetPartners();
 		fireTick.set(false, level.getServer());
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);

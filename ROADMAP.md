@@ -2531,7 +2531,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     or `Partners.factor` today gets its pace from `Pace` (a test per job family: builder, miner, crafter, explorer,
     teacher, scholar, rancher);
   - showcase scene `pace`: a capped builder's status line (its check: the line says "at the cap").
-- [x] **30.3** (approved 2026-10-05) **Edicts, and Long Shifts.** The engine and the first edict:
+- [x] **30.3** (approved 2026-10-05) (verified 2026-10-25: QaEdictsGameTests [13, lane-c-1024-0653] with B376 fixed; wiki re-read against the specs: edicts.md names the Lords and the reform steps, work-horn.md written [30.11 had no page], guilds.md and tonics.md match) **Edicts, and Long Shifts.** The engine and the first edict:
   - `hall/Edicts` loads `data/aliveworkplace/edicts/*.json` (a reload listener through `Platform`); a data pack can
     add edicts or switch ours off (`"enabled": false`); ours take their texts from the lang file, a data pack's may
     give plain text;
@@ -2570,7 +2570,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   click refused, the Ledger's sneak-use opening the page, the people list paging at 34; showcase scene `edicts`: the
   Book with Long Shifts in force, at GUI scales 2 and 4.
   - [x] **30.4a** (approved 2026-10-05) Change from the owner (2026-10-05): The Village Hall's screen should be a custom UI like vanilla's workstation screens (furnace, enchanting table, crafting table): its own drawn background, panels and buttons for the hall's pages (edicts, quests, treasury, ledger), instead of a plain chest-style grid of items like a multiplayer server menu. Do this for the whole hall screen, not just the Book of Edicts page: design it with the pixel-art skill, keep every existing feature, check at GUI scales 2 to 4, and show it in the hall scenes.
-- [x] **30.5** (approved 2026-10-05) **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
+- [x] **30.5** (approved 2026-10-05) (verified 2026-10-25: QaEdictsGameTests [13, lane-c-1024-0653] with B376 fixed; wiki re-read against the specs: edicts.md names the Lords and the reform steps, work-horn.md written [30.11 had no page], guilds.md and tonics.md match) **Reforms, and The Shift Bell.** While an edict is in force and not reformed, the hall keeps its
   reform's next step on the quest page (extra to the three daily quests, in the row below them, with a book-and-quill
   icon; it never expires). The next step goes up the morning after the last was done, so a reform takes three days at
   least. Steps use the quest kinds there are (bring, clear out monsters, beat a trainer), with a `fallback` step for a
@@ -2629,7 +2629,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   reformed free; a 20-emerald trade costs 22 and puts 2.20 in the treasury, a 4-emerald trade is unchanged, and
   reformed it costs 20 and still puts in 2.00; showcase scenes `festival_season` (the hall's festival icon and the
   treasury before and after) and `tithe` (a librarian's trades with and without it).
-- [x] **30.9** (approved 2026-10-05) **Curfew.** Effect `curfew`:
+- [x] **30.9** (approved 2026-10-05) (verified 2026-10-25: QaEdictsGameTests [13, lane-c-1024-0653] with B376 fixed; wiki re-read against the specs: edicts.md names the Lords and the reform steps, work-horn.md written [30.11 had no page], guilds.md and tonics.md match) **Curfew.** Effect `curfew`:
   - boost: from dusk (12000) to dawn every grown villager but the guards and mercenaries goes to bed, and a monster
     can't hurt a villager asleep in their bed; monster and bandit raids on the village are half as likely; at night the
     village's safety counts as full in its wellbeing;
@@ -2646,7 +2646,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   and hurts without it; the raid chance halved; a trade refused at night, allowed by day and after the reform; the
   festival's fireworks skipped; showcase scene `curfew`: a GIF of the village going indoors at dusk, the streets
   empty, the guards on watch.
-- [x] **30.10** (approved 2026-10-05) **Conscription.** Effects `militia` and `work_stops_in_raids`:
+- [x] **30.10** (approved 2026-10-05) (verified 2026-10-25: QaEdictsGameTests [13, lane-c-1024-0653] with B376 fixed; wiki re-read against the specs: edicts.md names the Lords and the reform steps, work-horn.md written [30.11 had no page], guilds.md and tonics.md match) **Conscription.** Effects `militia` and `work_stops_in_raids`:
   - boost: while the village is raided (our monster and bandit raids, or a vanilla pillager raid there) every grown
     villager who isn't ill fights: they wake, never panic (as `VillagerPanicTriggerMixin` keeps guards from panicking),
     hold a stone sword (shown in their hands, not taken from any chest, gone when the raid ends) and go for the nearest
@@ -2662,7 +2662,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   villager hide; no work during the raid or before noon after it; reformed, a builder with no raider near keeps
   building and work goes on at dawn; showcase scene `conscription`: a GIF of villagers and guards beating back a
   night raid.
-- [x] **30.11** (approved 2026-10-05) **The Work Horn.** An item of its own (pixel-art: a brass-banded horn), crafted from a goat horn, a
+- [x] **30.11** (approved 2026-10-05) (verified 2026-10-25: QaEdictsGameTests [13, lane-c-1024-0653] with B376 fixed; wiki re-read against the specs: edicts.md names the Lords and the reform steps, work-horn.md written [30.11 had no page], guilds.md and tonics.md match) **The Work Horn.** An item of its own (pixel-art: a brass-banded horn), crafted from a goat horn, a
   gold ingot and an emerald. Blown in a village (held like a goat horn until it sounds), it calls a rush: every grown
   villager of the village works 50% faster for 5 minutes (6000 ticks; a `Pace` source, so the cap holds), with sparks
   over the rushing workers now and then. Once a village a day (the hall keeps the day; a second blow is refused with
@@ -2718,7 +2718,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   ticks than without; nothing extra in summer, at 33 blocks, or from a second idol; the idols are found again after a
   reload; the season is right on days 1, 17 and 32; the art passes `lint.py`; showcase scene `harvest_idol`: two fields
   side by side through a harvest season, one with an idol.
-- [x] **30.15** (approved 2026-10-05) **Tonics: Miner's Brew and Builder's Tea.** Tonics are data (`data/aliveworkplace/tonics/<id>.json`:
+- [x] **30.15** (approved 2026-10-05) (verified 2026-10-25: QaEdictsGameTests [13, lane-c-1024-0653] with B376 fixed; wiki re-read against the specs: edicts.md names the Lords and the reform steps, work-horn.md written [30.11 had no page], guilds.md and tonics.md match) **Tonics: Miner's Brew and Builder's Tea.** Tonics are data (`data/aliveworkplace/tonics/<id>.json`:
   the item, its maker, `alchemist` or `chef`, its ingredients, the jobs it suits, how much faster, 25%, and for how
   long, 24000 ticks), so a server owner can make any item a tonic. Right-click a villager with a tonic that suits
   their job and they drink it: 25% faster for a day (a `Pace` source; attachment `tonic`, saved; another tonic starts
@@ -2749,7 +2749,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   ferrymen, bards, trainers, tutors or traders. Done when: a GameTest per tonic (its maker makes it, one of its jobs is
   25% faster with it, a job outside its list refuses it); the four icons pass `lint.py` and are shown in slots and in
   hand in the review package; the `tonics` scene films all six.
-- [x] **30.17** (approved 2026-10-06) **Guild Charters, the Guildhall and the Builders' Guild.**
+- [x] **30.17** (approved 2026-10-06) (verified 2026-10-25: QaEdictsGameTests [13, lane-c-1024-0653] with B376 fixed; wiki re-read against the specs: edicts.md names the Lords and the reform steps, work-horn.md written [30.11 had no page], guilds.md and tonics.md match) **Guild Charters, the Guildhall and the Builders' Guild.**
   - The **Guild Charter**, an item of its own (pixel-art: a rolled charter with a red seal), crafted from three paper,
     an emerald, a gold ingot and red dye. Sneak-right-click a Master of a trade with it in a village of Village rank or
     more: they become the **Guild Master** of that trade's guild (attachment `guild_master`; the hall's list and their

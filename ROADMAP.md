@@ -3001,7 +3001,7 @@ write their own stories; nothing waits forever on a player.
   - one GameTest per variant (a loop over set-up facts) picks it, and each keepsake comes once per player;
   - `langcheck.py` clean; a review package with a still of each family's 4-heart event; the `heart_event` scene gains
     a still of a 10-heart keepsake.
-- [x] **31.9** (approved 2026-10-11) **Personal requests: the asking, and six requests.** A villager with 3 hearts or more with a player
+- [x] **31.9** (approved 2026-10-11) (verified 2026-10-25: QaRequestsLeaderboardGameTests [15 tests, 1de5ab1]: 3-heart join both sides, offline helper, full pack, dead giver, save/reload mid-request, missed deadline, top-3, empty week, realm tie, missed weeks, ribbons for a week, config day/hour, unknown wellbeing; 3/3 mutants killed; 31.10 waits on B423, 33.19 singular realm line filed as B422) **Personal requests: the asking, and six requests.** A villager with 3 hearts or more with a player
   nearby, and no request open, may ask that player for help: each morning one such villager in the village is picked,
   a 25% chance. They walk up and ask over their head, and your chat gets the request with [I'll help] and [Not now]
   (clickable, through `/workplace quest accept|decline <id>`). It shows in the journal's Personal tab, on their
@@ -4062,7 +4062,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     cargo is paid for; a declined or lapsed offer changes nothing; a route saved before this item loads as a pact; an
     ally's raid brings relief; ending an alliance takes a day;
   - showcase scene `pacts` (the letter, the tab with an offer).
-- [x] **33.19** (approved 2026-10-12) **The weekly leaderboard.** Once a week (owner's call: a real week, or every 7 in-game days; meanwhile
+- [x] **33.19** (approved 2026-10-12) (verified 2026-10-25: QaRequestsLeaderboardGameTests [15 tests, 1de5ab1]: 3-heart join both sides, offline helper, full pack, dead giver, save/reload mid-request, missed deadline, top-3, empty week, realm tie, missed weeks, ribbons for a week, config day/hour, unknown wellbeing; 3/3 mutants killed; 31.10 waits on B423, 33.19 singular realm line filed as B422) **The weekly leaderboard.** Once a week (owner's call: a real week, or every 7 in-game days; meanwhile
   Sunday 19:00 server time, `leaderboardDay`, `leaderboardHour`) everyone online is told in chat how the villages did:
   **Biggest** (villagers), **Richest** (emeralds earned that week: takings, board trades and caravan sales),
   **Happiest** (average wellbeing over the week, from the hall's rounds), **Most Legends** (M29's Legends; Masters

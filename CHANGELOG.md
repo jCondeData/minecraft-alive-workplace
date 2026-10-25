@@ -25,6 +25,9 @@ asks for the steps, `latest.log` and any crash report).
 - The war party's muster line on the Defense page and in chat reads "1 keeps the walls" when one guard stays behind, not "1 keep the walls" (B387).
 - A Carpenter can take the crafting table again in Spruce-style buildings and in the Tom's Simple Storage Storage Hall and Warehouse: the Spruce style no longer swaps it for Carved Wood's spruce crafting table (no job site), and the Tom's copies keep the crafting table and put their crafting terminal in the counter beside it (B388).
 - A builder's "Dig the cellar" trade goes once the cellar is there, dug by them or by hand (also from builders saved with it), and one bought before starts nothing: given to a builder, it no longer starts a whole new build over the finished one (B386).
+- A relief band of one rider is told in the singular: "1 guard away helping Ashford" on the sender's hall, "1 guard rode to help Ashford in a raid" and "1 guard from Ashford rode in to help" in the chronicles, "1 guard from Ashford rides in to help!" in chat, "1 rider" in the realm treasury's ledger and in an ally's riders news (B425).
+- The weekly leaderboard's Biggest realm reads "1 village, 1 villager" for a realm of one villager, not "1 villagers" (B422).
+- "A cat by the door": a cat or tamed wolf exactly 10 blocks from the giver's bed now counts, as the request says ("within 10 blocks"); the distance is measured along the floor from the bed, not from half a block above it (B423).
 
 ## 0.149.0 — 2026-10-24
 

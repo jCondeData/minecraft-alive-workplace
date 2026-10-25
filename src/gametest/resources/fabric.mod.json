@@ -535,6 +535,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVoidStoreGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHoursLeftGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardCivicBoundariesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStewardHomesBoundariesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainFixesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.MasonMixedFuelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReputationPerksGameTests",

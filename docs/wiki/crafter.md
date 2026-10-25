@@ -129,6 +129,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   saved and loaded mid-way (B396).
 - `QaCrafterFurnitureBugTests.b353TheCarpentersBenchBrokenMidChainLosesNothing`: the bench broken at step 2 and not
   put back: the job let go, the wood back in the builder's chest (B353).
+- `QaJobChainLetGoGameTests.aBenchBrokenBeforeAnythingWasCarriedLetsTheJobGoCleanly`: the bench broken while the
+  Carpenter is still fetching, empty-handed: let go after half a minute, nothing taken, and the bench put back finishes
+  the build (B353).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.

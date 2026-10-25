@@ -47,6 +47,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.MegaCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaTrainerCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaShrineCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMegaShrineCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaStoneCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaJewellerMegaCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonDepthCompatTests",

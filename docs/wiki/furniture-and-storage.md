@@ -510,6 +510,8 @@ tool-linked link is counted through the controller, once);
 B371: `SophisticatedControllerCompatTests.theRoomBehindAControllerHoldingGoodsIsTheRealRoom` (a controller over a
 stack-upgraded barrel and a plain one: the board says 8640 empty and 8540 after 100 cobblestone, exactly 8540 more go in
 through the controller and land in the barrels, then not one more);
+QA, B371: `QaVoidStoreGameTests` (2): a store that takes items and holds none (a void upgrade) counts what it took, once,
+and a chest behind it gets none of them;
 QA, 37.8 and 37.9 (compat): `QaSophisticatedStorageCompatTests.qaAStackUpgradedSlotIsMeasuredInItemsAtTheStackEdge` (a
 stack-upgraded slot holding exactly 64 still has room, 65 one less, full none; the board agrees each time),
 `QaSophisticatedStorageCompatTests.qaTheLinkedCountFollowsBlocksAddedAndBroken` (the board's linked count goes 2, 3, 2,

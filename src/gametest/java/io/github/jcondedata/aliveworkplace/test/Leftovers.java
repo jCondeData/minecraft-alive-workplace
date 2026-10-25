@@ -173,6 +173,24 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every store (chest, barrel, modded storage: whatever {@code SupplyContainers.find} counts) outside the test
+	 * area within {@code SupplyContainers.RADIUS} and its height of {@code center} (absolute). A shop counter or worker
+	 * near the area's edge reaches six blocks past it, into the gap where an earlier batch's test may have left a chest of
+	 * its own, never cleared: a shop "holding 10" of a 16 lot counted a stray chest there and let the lot be taken (the
+	 * 2026-10-25 nightly repeats, 1 of 10). Only for tests alone in their batch.
+	 */
+	static void stores(GameTestHelper helper, net.minecraft.core.BlockPos center) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB area = helper.getBounds();
+		for (net.minecraft.core.BlockPos p : io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(level, center, null)) {
+			if (!area.contains(net.minecraft.world.phys.Vec3.atCenterOf(p))) {
+				level.removeBlockEntity(p);
+				level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+			}
+		}
+	}
+
+	/**
 	 * Turns village sharing on for this test ({@code Village.RADIUS}, normally off in tests) and off again when the test
 	 * ends, passed or failed — a failed test that left it on made the next batches' builders share chests and fail too.
 	 */

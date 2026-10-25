@@ -371,8 +371,14 @@ public class PorterWork extends Behavior<Villager> {
 	/** The nearest Drop Box near the storehouse with anything in it, as a stash with no job (everything in it goes). */
 	@Nullable
 	static Village.Stash dropBox(ServerLevel level, BlockPos storehouse) {
+		return dropBox(level, storehouse, p -> true);
+	}
+
+	/** The nearest non-empty Drop Box to {@code storehouse} that {@code allowed} lets through (a hauler's skip list, B456). */
+	@Nullable
+	static Village.Stash dropBox(ServerLevel level, BlockPos storehouse, java.util.function.Predicate<BlockPos> allowed) {
 		return level.getPoiManager().findAllClosestFirstWithType(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.DROP_BOX_POI),
-				p -> level.getBlockEntity(p) instanceof DropBoxBlockEntity box && !box.isEmpty(), storehouse, DROP_BOX_RANGE,
+				p -> allowed.test(p) && level.getBlockEntity(p) instanceof DropBoxBlockEntity box && !box.isEmpty(), storehouse, DROP_BOX_RANGE,
 				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
 			.findFirst().map(pair -> new Village.Stash(pair.getSecond(), VillagerProfession.NONE, List.of(pair.getSecond()))).orElse(null);
 	}

@@ -133,7 +133,9 @@ GameTests: `StewardGameTests` (12), `StewardRulesGameTests` (19), `StewardHomesR
 `OldHousesGameTests` (7), `RenewalGameTests` (9), `DoorJamGameTests` (1), `AtticBedGameTests` (1), `CountWordsGameTests`
 (2, B377: the workplace reason and the Storehouse stock line with one and with two), `QaStewardCivicBoundariesGameTests` (3, 27.12: a death 29 days back counts for the Graveyard and 30 days back not, 7
 villagers are too few; a raid 6 days ago is within 7 and 7 days ago not; 2 children get no Schoolhouse), `QaStewardHomesBoundariesGameTests` (2, 27.10: no Inn for a Town 3 beds short or a Village 4 short;
-the Storehouse grows at 22 of 27 slots, not 21, on to III and no further).
+the Storehouse grows at 22 of 27 slots, not 21, on to III and no further). `QaStewardDeskJobsGameTests` (16, 27.8 and 27.9: a decline and an unanswered proposal both end at exactly 3 days,
+9 proposals and never a 10th, strangers answer nothing while a friend of the owner can, Approve all, Rest and
+`stewardSelfRun` off, one morning line, guards only while short, a baby gets no job, the research order against the spec).
 
 Showcase scenes: `steward` (the morning rounds), `steward_rules`, `steward_desk`, `steward_safety`, `steward_jobs`,
 `steward_homes`, `steward_civic`, `old_houses`, `renewal`, `city_plan`, `city_plan_ground`, `city_timelapse` (a

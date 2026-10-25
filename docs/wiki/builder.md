@@ -354,13 +354,14 @@ with no build or no Builder keeps the book, `aTableWithNoBuildOrNoBuilderKeepsTh
 placed blueprint from the off hand, `aPlacedBlueprintFromTheOffHand`; Scan Tool corners on a chest then a barrel, neither
 opened, `scanToolCornersOnAChestThenABarrel`; the Storehouse board asks for nothing more after a hand-over,
 `theBoardOpenedAgainAfterAHandOverAsksForNothingMore`).
-`QaBuildsGameTests` (8, QA from B280/B300's specs and the builder's invariants: a cottage clicked onto a flower on a bump
+`QaBuildsGameTests` (9, QA from B280/B300's specs and the builder's invariants: a cottage clicked onto a flower on a bump
 leaves the lawn level, `aCottageClickedOntoAFlowerOnABumpLeavesTheLawnLevel`; a stall on tall grass leaves the lower
 terrace beside it low, `aStallClickedOntoTallGrassLeavesTheLowerTerraceBesideItLow`; pots whose support breaks mid-build
 are set down, `potsWhoseSupportIsBrokenMidBuildAreSetDown`, also across a reload, `aPotUnderminedThenAReloadMidDecorationIsStillSetDown`;
 a reload mid-foundation or mid-landscape loses and makes nothing, `aReloadMidFoundationLosesAndMakesNothing`,
 `aReloadMidLandscapeLosesAndMakesNothing`; the lead takes over a block two crew members hold,
-`theLeadTakesABlockOverFromTwoMembersHoldingItAtOnce`; `workplaceLevelGround` 0 leaves the ground alone,
+`theLeadTakesABlockOverFromTwoMembersHoldingItAtOnce`, while a member on another column keeps its block and column,
+`aMemberOnAnotherColumnKeepsItWhenTheLeadTakesAHoleOver`; `workplaceLevelGround` 0 leaves the ground alone,
 `levelGroundZeroLeavesTheGroundAlone`).
 `QaBuilderSwitchesGameTests` (4, QA of the builder's switches: `workplaceBuilderOwnership` off lets a stranger give a
 hired Builder a blueprint, `ownershipOffLetsAStrangerGiveTheBuilderABlueprint`; `workplaceLevelGround` 8 levels 8 blocks
@@ -378,7 +379,10 @@ with the chest full loses nothing; an upgrade lines up over its own finished bui
 sneaking and never over another kind of building). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
 does: each side 1 to 32, no Blank Blueprint or no block draws nothing and takes nothing, two draws give the same build
 for two blanks, a hollow and a solid box of one size are two builds, a blank in the first slot is used and a full bag
-gets the blueprint at the player's feet, a builder builds a drawn box from the chest).
+gets the blueprint at the player's feet, a builder builds a drawn box from the chest). `QaScanRoundTripGameTests` (1, from
+the Scan Tool's guide page: a hand-built room with two double chests lying either way, a door, a bed, a wall torch, a
+hanging lantern, an upside-down stair and a ladder, scanned with real clicks and built again a quarter turned, comes out
+block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`).
 
 Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the

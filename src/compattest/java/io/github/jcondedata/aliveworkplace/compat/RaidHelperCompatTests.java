@@ -417,7 +417,7 @@ public class RaidHelperCompatTests implements FabricGameTest {
 			for (int slot : DefencePage.HELPERS) {
 				lines.addAll(RaidDenCompatTests.lines(menu.icon(slot)));
 			}
-			helper.assertTrue(lines.contains("Hire a raid helper") && lines.contains(RaidHelpers.PRICE + " emeralds a helper")
+			helper.assertTrue(lines.contains("Hire a raid helper") && lines.contains(PRICE + " CobbleDollars a helper")
 				&& lines.contains("Hired: 0 of 3 (1 free in the village)"), "the Defence page: " + lines);
 			for (String l : lines) {
 				helper.assertFalse(l.contains("aliveworkplace.") || l.contains("%"), "a raw line: " + l);

@@ -101,9 +101,10 @@ public class BlueprintTableBlock extends HorizontalDirectionalBlock implements E
 	@Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
 		// B394: vanilla asks the main hand first and, empty, its turn opens the Table, so an off-hand Book and Quill never
-		// got the list (B337). As the hall's off-hand items (B357) and the Scan Tool (B374), the off hand's book is used
-		// on the main hand's empty turn; a Table no builder works at still opens as usual.
-		if (player.getMainHandItem().isEmpty() && player.getOffhandItem().is(net.minecraft.world.item.Items.WRITABLE_BOOK)) {
+		// got the list (B337). As the hall's off-hand items (B357) and the Scan Tool (B374), the off hand's item is used
+		// on the main hand's empty turn; a Table no builder works at still opens as usual. B419: the same for a found
+		// Blueprint, a Wonder Plan or a Schematic in the off hand (anything else passes and the Table opens).
+		if (player.getMainHandItem().isEmpty() && !player.getOffhandItem().isEmpty()) {
 			ItemInteractionResult fromOffHand = useItemOn(player.getOffhandItem(), state, level, pos, player, InteractionHand.OFF_HAND, hit);
 			if (fromOffHand != ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION) {
 				return fromOffHand.result();

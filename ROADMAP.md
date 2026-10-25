@@ -3106,7 +3106,7 @@ write their own stories; nothing waits forever on a player.
   - GameTests: the price at every heart and title step and the 40% cap; one festival gift per villager per festival;
     the named baby once; the weekly parcel arriving; `title_at_least`;
   - a screenshot of a discounted trade screen; showcase scene `festival_gifts`.
-- [x] **31.13** (approved 2026-10-11) **The bounty board and bandit captains.** A new block, the **Bounty Board** (planks, sticks and paper;
+- [x] **31.13** (approved 2026-10-11) (verified 2026-10-25: QaThreatsLateGameTests: bounty names, Town reward 18, hand-in refusals and the right hall, ownerless captain drops insignia; Great Wall arc +-10 degrees both sides and across +-180, hall inside footprint, raid gathers past the arc. 33.17 left unverified: B425) **The bounty board and bandit captains.** A new block, the **Bounty Board** (planks, sticks and paper;
   a notice board on two posts, drawn with the pixel-art skill like vanilla's wooden blocks, its face showing 0 to 4
   posters as block states): right-click it for the Bounties tab of the nearest hall's journal (the tab works without a
   board too). From Village rank a village posts a bounty while it has fewer than 2 open, at most one every 3 days;
@@ -4744,7 +4744,7 @@ Legends.
   IV 16 iron blocks (Armorer), 4 pumpkins (Farmer), 16 campfires (Carpenter): the iron and the pumpkins become its
   sentries. Done when: 35.9's four design checks pass for it, with the walk at a player's eye in its renders.
   - [x] **35.15a** (approved 2026-10-13) Change from the owner (2026-10-13): add solid tower bases with more decoration; wonders should have lots of decoration, so give the Great Wall a bit more decoration and detail, similar to the Hanging Gardens
-- [x] **35.16** (approved 2026-10-13) **The Great Wall: its powers and time-lapse.** While it stands, no raid gathers behind it: our night
+- [x] **35.16** (approved 2026-10-13) (verified 2026-10-25: QaThreatsLateGameTests: bounty names, Town reward 18, hand-in refusals and the right hall, ownerless captain drops insignia; Great Wall arc +-10 degrees both sides and across +-180, hall inside footprint, raid gathers past the arc. 33.17 left unverified: B425) **The Great Wall: its powers and time-lapse.** While it stands, no raid gathers behind it: our night
   raids and the bandits' (`guard/VillageRaids.gatheringPoint`, `guard/BanditCamps`) gather outside the arc the wall
   covers as seen from the hall, plus 10° either side, and (needs M32's sieges item) siege raiders can't put ladders to
   it or break the Great Gate. Its **sentries**: four iron golems watch from the walk (the Golem Smith's wall sentries,

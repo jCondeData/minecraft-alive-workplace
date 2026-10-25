@@ -367,7 +367,10 @@ public class CreateTrainCompatTests implements FabricGameTest {
 			}
 			if (!sent[0]) {
 				if (CaravanTrains.realTrain(level, v.a(), v.b())) {
-					helper.assertTrue(said(level, first, "chronicle.aliveworkplace.train_built"), "the chronicle doesn't say a builder built the train");
+					helper.assertTrue(said(level, first, "chronicle.aliveworkplace.train_built"), "the chronicle of " + first.toShortString()
+						+ " (the first village) doesn't say a builder built the train at tick " + tick[0] + ": "
+						+ hall(level, first).chronicle().stream().map(e -> e.text().getString()).toList() + ", sites still open "
+						+ Roads.openSegments(level, first).stream().map(st -> st.structure() + " " + st.stage() + " " + st.status()).toList());
 					helper.assertTrue(railway().cargo(level, owner).isEmpty(), "the new train's chest isn't empty: " + railway().cargo(level, owner));
 					sendAgain(level, v);
 					sent[0] = true;
@@ -395,6 +398,69 @@ public class CreateTrainCompatTests implements FabricGameTest {
 				railway().scrap(level, owner);
 				tidy(level, v);
 				helper.succeed();
+			}
+		});
+	}
+
+	/**
+	 * B483: the train's blocks all standing while its builder's site is still open (the builder hasn't finished its
+	 * stage yet; here it's held still): the station doesn't put the train together under the site. Once the builder
+	 * finishes it, the chronicle says who built the train, and then the train is put together.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"createTrainSiteOpen"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "createTrainSiteOpen")
+	public void theTrainWaitsForItsBuildersSiteToFinish(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		line(helper);
+		Villages v = villages(helper);
+		builder(helper, false);
+		conductor(helper, new BlockPos(6, 2, 16));
+		BlockPos first = CaravanTrains.first(v.a(), v.b()) ? v.a() : v.b();
+		UUID owner = CaravanTrains.railwayId(v.a(), v.b());
+		int[] tick = {0};
+		int[] held = {-1};
+		helper.onEachTick(() -> {
+			tick[0]++;
+			if (tick[0] % 10 == 0) {
+				CaravanTrains.serve(level, v.a(), hall(level, v.a()));
+				CaravanTrains.serve(level, v.b(), hall(level, v.b()));
+			}
+			BuildSite site = Roads.openSegments(level, first).stream().filter(st -> CaravanTrains.isTrainSite(st.structure())).findFirst().orElse(null);
+			if (held[0] < 0) {
+				if (site != null) { // the builder took the site: held still, and the train's blocks put up as if it had placed them
+					for (Villager villager : level.getEntitiesOfClass(Villager.class, helper.getBounds(), x -> Builders.isBuilder(x))) {
+						villager.setNoAi(true);
+					}
+					buildTrain(level, v);
+					helper.assertTrue(railway().built(level, v.data().stations(first).get(0), v.data().stations(first.equals(v.a()) ? v.b() : v.a()).get(0)),
+						"the train's blocks don't stand at the station");
+					held[0] = tick[0];
+				} else if (tick[0] == 1000) {
+					helper.fail("no train site opened in 1000 ticks");
+				}
+				return;
+			}
+			if (tick[0] < held[0] + 300) { // three of the hall's looks at its trains
+				helper.assertTrue(!CaravanTrains.realTrain(level, v.a(), v.b()), "the train was put together under its builder's open site "
+					+ (site == null ? "(gone)" : site.stage() + " " + site.status()) + ": " + hall(level, first).chronicle().stream().map(e -> e.text().getString()).toList());
+				helper.assertTrue(site != null, "the held builder's train site closed");
+				return;
+			}
+			if (tick[0] == held[0] + 300) {
+				for (Villager villager : level.getEntitiesOfClass(Villager.class, helper.getBounds(), x -> Builders.isBuilder(x))) {
+					villager.setNoAi(false);
+				}
+				return;
+			}
+			if (CaravanTrains.realTrain(level, v.a(), v.b())) {
+				helper.assertTrue(said(level, first, "chronicle.aliveworkplace.train_built"), "the chronicle of " + first.toShortString()
+					+ " doesn't say a builder built the train: " + hall(level, first).chronicle().stream().map(e -> e.text().getString()).toList());
+				railway().scrap(level, owner);
+				tidy(level, v);
+				helper.succeed();
+			} else if (tick[0] == 2300) {
+				helper.fail("no train after the builder finished: site " + (site == null ? "done" : site.stage() + " " + site.status() + " missing " + site.missing())
+					+ ", chronicle " + hall(level, first).chronicle().stream().map(e -> e.text().getString()).toList());
 			}
 		});
 	}

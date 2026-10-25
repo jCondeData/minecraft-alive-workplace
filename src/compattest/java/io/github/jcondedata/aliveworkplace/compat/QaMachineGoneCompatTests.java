@@ -1,7 +1,9 @@
 package io.github.jcondedata.aliveworkplace.compat;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.mechanic.MachineJob;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Stations;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
@@ -62,6 +64,47 @@ public class QaMachineGoneCompatTests implements FabricGameTest {
 			helper.assertTrue(ModAttachments.MACHINE_JOB.get(farmer) == null, "the trip is still on: " + ModAttachments.MACHINE_JOB.get(farmer) + "; said " + said);
 			helper.assertTrue(wheat == 8, "the store got back " + wheat + " of the 8 wheat carried to the broken millstone");
 			helper.assertTrue(said.stream().noneMatch(s -> s.contains("Air")), "the farmer's status named the broken millstone 'Air': " + said);
+			MachineWorkCompatTests.clearMachines(helper);
+		});
+	}
+
+	/**
+	 * The Mechanic's round: walking to see to a village millstone (that doesn't turn) that is broken on the way, they
+	 * never say "seeing to the Air" (B506's note: MechanicWork.machine names the block at the spot).
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"qa_machine_gone_mechanic"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qa_machine_gone_mechanic")
+	public void aMechanicWhoseMillstoneIsBrokenOnTheWayNeverSeesToTheAir(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		MachineWorkCompatTests.clearMachines(helper);
+		BuildSiteManager sites = BuildSiteManager.get(helper.getLevel());
+		for (BuildSiteManager.Finished f : sites.finishedNear(helper.getLevel(), helper.absolutePos(STATION), 64)) {
+			sites.forgetFinished(f.placement());
+		}
+		MachineWorkCompatTests.noVillage(helper);
+		MachineWorkCompatTests.villageWorkshop(helper);
+		BlockPos mill = new BlockPos(12, 2, 12);
+		helper.setBlock(mill, MechanicCompatTests.create("millstone").defaultBlockState());
+		helper.setBlock(STATION, MechanicCompatTests.create("brown_toolbox").defaultBlockState());
+		Villager mechanic = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Stations.assign(helper.getLevel(), mechanic, helper.absolutePos(STATION), ModVillagers.MECHANIC);
+		helper.setDayTime(2000);
+		Set<String> said = new LinkedHashSet<>();
+		long[] brokenAt = {-1};
+		helper.onEachTick(() -> {
+			WorkerStatus.Entry e = WorkerStatus.get(mechanic, helper.getLevel().getGameTime());
+			if (e != null) {
+				said.add(e.title().getString() + ": " + e.line().getString());
+			}
+			if (brokenAt[0] < 0 && said.contains("Mechanic: seeing to the Millstone")) {
+				helper.setBlock(mill, Blocks.AIR);
+				brokenAt[0] = helper.getLevel().getGameTime();
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(brokenAt[0] >= 0 && helper.getLevel().getGameTime() - brokenAt[0] > 200,
+				"waiting for the Mechanic to set off for the millstone and 200 ticks after it was broken: said " + said);
+			helper.assertTrue(said.stream().noneMatch(s -> s.contains("Air")), "the Mechanic named the broken millstone 'Air': " + said);
 			MachineWorkCompatTests.clearMachines(helper);
 		});
 	}

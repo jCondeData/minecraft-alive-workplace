@@ -2668,7 +2668,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Shifts and partners the total stops at the cap; a stranger's horn does nothing in an owned village; the icon passes
   `lint.py`; showcase scene `work_horn`: a GIF of builders before and during a rush (its check: more blocks placed a
   minute during the rush).
-- [x] **30.12** (approved 2026-10-05) **The Cradle.** A block of its own (pixel-art textures and a model: a wooden cradle on rockers with a
+- [x] **30.12** (approved 2026-10-05) (verified 2026-10-25: QaCivicItemsGameTests [10]: Cradle at 4 blocks not 5, village edge, placed/broken by a player with the hall's line, adults never seated; Village Banner crafted in the real grid with its tooltip, colours replaced, wall banner; harvest season's first/last tick at 16 and 8 days in every dimension, idol placed/broken, other crops ~x1.25, idols per dimension; 3 mutants killed; wrote civic-items.md) **The Cradle.** A block of its own (pixel-art textures and a model: a wooden cradle on rockers with a
   wool blanket), crafted from planks, sticks and white wool; a point of interest, so the hall finds it without
   scanning. A Cradle within 4 blocks of a bed in a village with a hall makes it a nursery village: every child there
   grows up in half the time (each hall round ages the children by the round's length again), and one more baby a day
@@ -2679,7 +2679,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   with a cradle and not without; with Large Families too, births a third of a day apart; a cradle with no bed near
   doesn't count; a child seated in it at night; the art passes `lint.py`; showcase scene `cradle`: a child asleep in a
   cradle at night, and a time-lapse of a child growing up.
-- [x] **30.13** (approved 2026-10-05) **The Village Banner.** An item of its own (pixel-art icon: a banner on a gilded crossbar), crafted
+- [x] **30.13** (approved 2026-10-05) (verified 2026-10-25: QaCivicItemsGameTests [10]: Cradle at 4 blocks not 5, village edge, placed/broken by a player with the hall's line, adults never seated; Village Banner crafted in the real grid with its tooltip, colours replaced, wall banner; harvest season's first/last tick at 16 and 8 days in every dimension, idol placed/broken, other crops ~x1.25, idols per dimension; 3 mutants killed; wrote civic-items.md) **The Village Banner.** An item of its own (pixel-art icon: a banner on a gilded crossbar), crafted
   from any banner (it keeps that banner's design, which its tooltip lists) and a gold ingot. Right-click the Village
   Hall with it to make that design the village's colours (saved on the hall; the banner isn't used up, as a Name Tag
   isn't; the chronicle notes it); place it like a banner to hang the design anywhere. The colours show:
@@ -2696,7 +2696,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   shield and a player's left alone, the routes icon, the festival's mood and days); the colours survive a reload; the
   icon passes `lint.py`; showcase scene `village_banner`: a street of finished houses under the village's banners, a
   knight with the painted shield, the routes page.
-- [x] **30.14** (approved 2026-10-05) **Seasons and the Harvest Idol.**
+- [x] **30.14** (approved 2026-10-05) (verified 2026-10-25: QaCivicItemsGameTests [10]: Cradle at 4 blocks not 5, village edge, placed/broken by a player with the hall's line, adults never seated; Village Banner crafted in the real grid with its tooltip, colours replaced, wall banner; harvest season's first/last tick at 16 and 8 days in every dimension, idol placed/broken, other crops ~x1.25, idols per dimension; 3 mutants killed; wrote civic-items.md) **Seasons and the Harvest Idol.**
   - A village year (`hall/Seasons`, core; if M28 already added a season clock for its Festival Cup, use that one):
     spring, summer, autumn and winter of `seasonDays` (8) days each, counted from the world's day; autumn is harvest
     season. The hall's festival icon names the season and its day ("Autumn: harvest season, day 3 of 8").

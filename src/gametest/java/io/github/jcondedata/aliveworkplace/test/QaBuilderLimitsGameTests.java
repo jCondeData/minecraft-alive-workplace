@@ -314,6 +314,59 @@ public class QaBuilderLimitsGameTests implements net.fabricmc.fabric.api.gametes
 		helper.succeed();
 	}
 
+	/**
+	 * The wiki (builder.md): the chests "within supplyRadius of the bench (and 4 blocks up or down)", from both sides and
+	 * below too (lane-b-1025-0937): 10 planks 4 blocks under the table count, 5 cobblestone 5 under and the torch 5 up
+	 * don't. The Book and Quill used on the builder: "45 × Oak Planks (of 55)", the torch and the cobblestone unticked.
+	 */
+	//$ gametest_ticks_batch HUGE '80' '"qaLimitsChestHeight"'
+	@GameTest(template = HUGE, timeoutTicks = 80, batch = "qaLimitsChestHeight")
+	public void chestsFourBlocksUpOrDownAreCountedAndFiveAreNot(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		noVillageProtection(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos table = new BlockPos(12, 8, 12);
+		helper.setBlock(table.below(), Blocks.STONE);
+		helper.setBlock(table, ModBlocks.BLUEPRINT_TABLE);
+		record Stock(BlockPos at, ItemStack items) {
+		}
+		List<Stock> stocks = List.of(
+			new Stock(table.below(4).east(2), new ItemStack(Items.OAK_PLANKS, 10)),
+			new Stock(table.below(5).west(2), new ItemStack(Items.COBBLESTONE, 5)),
+			new Stock(table.above(5).north(2), new ItemStack(Items.TORCH)));
+		for (Stock s : stocks) {
+			helper.setBlock(s.at(), Blocks.CHEST);
+			((Container) helper.getBlockEntity(s.at())).setItem(0, s.items().copy());
+		}
+		Villager builder = helper.spawn(EntityType.VILLAGER, table.south().east());
+		builder.setNoAi(true);
+		BlockPos bench = helper.absolutePos(table);
+		Builders.employ(level, builder, bench);
+		forgetSitesOf(helper, builder);
+		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qalH"));
+		ServerPlayer p = c.player();
+		ItemStack blueprint = placedHut(level, bench, new Vec3i(4, 2, 4));
+		p.setItemInHand(InteractionHand.MAIN_HAND, blueprint);
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		helper.assertTrue(Builders.activeSite(level, builder) != null, "the builder took no build: " + texts(c.seen()));
+		p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.WRITABLE_BOOK));
+		c.seen().clear();
+		QaStageSixGameTests.clickVillager(p, builder, c.seen());
+		ItemStack book = p.getMainHandItem();
+		var content = book.get(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT);
+		helper.assertTrue(content != null, "no list was written: " + book + ", saw " + texts(c.seen()));
+		String pages = String.join("\n", content.pages().stream().map(page -> page.raw().getString()).toList());
+		for (String line : List.of("☐ 45 × Oak Planks (of 55)", "☐ 1 × Torch")) {
+			helper.assertTrue(pages.contains(line), "the list lacks \"" + line + "\": " + pages);
+		}
+		// the hut stands two above the table, so its foundation adds cobblestone: the line counts it all, none ticked off
+		List<String> cobble = pages.lines().filter(l -> l.contains("× Cobblestone")).toList();
+		helper.assertTrue(cobble.size() == 1 && cobble.get(0).startsWith("☐ ") && !cobble.get(0).contains("(of"),
+			"the 5 cobblestone five blocks under the table were counted: " + cobble);
+		LOGGER.info("qa chest height: {}", pages.replace('\n', '|'));
+		helper.succeed();
+	}
+
 	// --- How far from the table ------------------------------------------------------------------------------------
 
 	/**

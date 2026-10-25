@@ -15,6 +15,15 @@ public final class Words {
 	}
 
 	/**
+	 * A sentence with two counts, each picking its own form ("3 guards would march, 1 keeps the walls"): {@code key},
+	 * then {@code .one} when {@code first} is 1, then {@code .rest_one} when {@code second} is 1. Such a key has four
+	 * forms: {@code key}, {@code key.one}, {@code key.rest_one} and {@code key.one.rest_one}.
+	 */
+	public static MutableComponent countedTwo(String key, long first, long second, Object... args) {
+		return Component.translatable(key + (first == 1 ? ".one" : "") + (second == 1 ? ".rest_one" : ""), args);
+	}
+
+	/**
 	 * {@code key.one} when the first argument is the number 1 and that key exists, else {@code key}: for keys whose
 	 * singular form is optional, such as a tip or a Steward reason read from a data file.
 	 */

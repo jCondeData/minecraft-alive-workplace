@@ -9,7 +9,8 @@ Roadmap items: 32.13, B117, 36.3
 ## What a player sees
 
 - **"Muster a war party"** on the hall's **Defense page** (the white banner in the third row). It says how many guards
-  would march and how many keep the walls. A click takes **three in four** of the village's guards, nearest the hall
+  would march and how many keep the walls, each number in its own form ("3 guards would march, 1 keeps the walls"; the
+  chat after the muster reads the same way). A click takes **three in four** of the village's guards, nearest the hall
   first, **at most 12** (a scout out and hired swords don't count), enlists them on the **Rally Banner** in your
   inventory and **raises it**; they gather by the hall and follow you, as a raised Rally Banner always makes them. With
   no Rally Banner the chat says "Craft a Rally Banner first: the war party gathers under it"; with one guard there is

@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- The war party's muster line on the Defense page and in chat reads "1 keeps the walls" when one guard stays behind, not "1 keep the walls" (B387).
 - A Carpenter can take the crafting table again in Spruce-style buildings and in the Tom's Simple Storage Storage Hall and Warehouse: the Spruce style no longer swaps it for Carved Wood's spruce crafting table (no job site), and the Tom's copies keep the crafting table and put their crafting terminal in the counter beside it (B388).
 - A builder's "Dig the cellar" trade goes once the cellar is there, dug by them or by hand (also from builders saved with it), and one bought before starts nothing: given to a builder, it no longer starts a whole new build over the finished one (B386).
 

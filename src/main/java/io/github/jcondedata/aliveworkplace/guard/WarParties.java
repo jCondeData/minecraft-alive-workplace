@@ -156,7 +156,8 @@ public final class WarParties {
 		return switch (result) {
 			case MUSTERED -> {
 				int all = (int) level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && Guards.isGuard(v) && !Mercenaries.isMercenary(v)).size();
-				yield Words.counted("message.aliveworkplace.war_party.mustered", guards, guards, Math.max(0, all - guards)).withStyle(ChatFormatting.GOLD);
+				int staying = Math.max(0, all - guards);
+				yield Words.countedTwo("message.aliveworkplace.war_party.mustered", guards, staying, guards, staying).withStyle(ChatFormatting.GOLD);
 			}
 			case NO_BANNER -> Component.translatable("message.aliveworkplace.war_party.no_banner").withStyle(ChatFormatting.YELLOW);
 			case NO_GUARDS -> Component.translatable("message.aliveworkplace.war_party.no_guards").withStyle(ChatFormatting.YELLOW);

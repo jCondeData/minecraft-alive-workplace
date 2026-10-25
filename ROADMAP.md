@@ -4631,7 +4631,7 @@ Legends.
     the emeralds and gives the plan, and refuses over the cap; placing is refused outside the village and over a
     finished building, and works elsewhere in all four turns;
   - scene `wonders_page`: the page with the folly's card, then the plan in hand and its see-through preview.
-- [x] **35.4** (approved 2026-10-13) **The Foundation Stone and stages that survive restarts.** Hand the placed Wonder Plan to any builder
+- [x] **35.4** (approved 2026-10-13) (verified 2026-10-25: 6 QA tests [QaFoundationStoneGameTests]: stone's list vs tooltip with the 8/9-block chest boundary, start announced to every player + chronicle, owner/stranger /workplace cancel [one plan back], pistons, save/reload at every stage boundary [only stage I founds], old save loads and saves unchanged; mutants 2/2; 5x repeats 30/30) **The Foundation Stone and stages that survive restarts.** Hand the placed Wonder Plan to any builder
   of the village: a **Foundation Stone** (a new block, art through the pixel-art skill: a carved stone with a brass
   plaque) goes down just outside the Wonder's front corner, and the Wonder becomes a `WonderSite` in a new saved
   `WonderManager` (one per dimension): which Wonder, its hall, its placement, the current stage, the goods delivered,

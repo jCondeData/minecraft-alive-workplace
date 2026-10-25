@@ -223,6 +223,9 @@ GameTests: `ClassGameTests` (16: the four files are the ladder, each kind of nee
 a player built or earned changed, the week of settling in, a hall loaded later, `villageClasses` off, the command, every
 new sentence), `ClassOutfitGameTests` (2: every class but the Peasant names a 64x64 layer that ships, and
 what a villager wears by class and age), `JewellerGameTests` (10), `VintnerGameTests` (10), `TailorGameTests` (10), `PrinterGameTests` (11).
+QA: `QaLuxuryTradesGameTests` (13: hiring refused with no job block in reach, at a taken loom and with each switch off;
+each recipe's boundary from both sides; a reload mid-recorking; the made-day tooltip's edges; every needed luxury made
+by a job the class below may take; the Vintner's trades at every level).
 
 Showcase scenes: `classes` (a household rises, and the Classes page), `class_switch_on` (the hall before and after the
 switch), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`,

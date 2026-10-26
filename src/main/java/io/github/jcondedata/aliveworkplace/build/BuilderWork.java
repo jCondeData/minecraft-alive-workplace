@@ -532,7 +532,8 @@ public class BuilderWork extends Behavior<Villager> {
 		if (!BuildBudget.take(level)) {
 			return; // 25.3: the level's block changes for this tick are spent; try again next tick
 		}
-		workTimer = BuilderLevels.delay(level, villager);
+		// B515: this tick is the first of the delay, so the next block comes exactly delay ticks later (not delay + 1)
+		workTimer = Math.max(0, BuilderLevels.delay(level, villager) - 1);
 		if (action == Action.BREAK && site.stage() == BuildPlan.Stage.DECONSTRUCT) {
 			takeDown(level, villager, site, bag, bench, step);
 		} else if (action == Action.BREAK) {
@@ -1423,6 +1424,11 @@ public class BuilderWork extends Behavior<Villager> {
 		// builders sharing the storehouse each carried the one log or slab the other waited for, and neither finished.
 		wanted.merge(requirement.item(), requirement.count(), Math::max);
 		boolean tookAny = false;
+		if (helping) {
+			// B519: a helper at the chests first puts back what its stretch no longer needs (the walls' last planks once
+			// the build is on its lanterns), so its bag never holds more than the work ahead
+			tookAny = putBackUnwanted(level, bag, wanted, supplies);
+		}
 		for (Map.Entry<Item, Integer> e : wanted.entrySet()) {
 			int want = e.getValue() - bag.count(e.getKey());
 			if (!mine.isEmpty()) {
@@ -1452,6 +1458,35 @@ public class BuilderWork extends Behavior<Villager> {
 			site.supplied();
 			level.playSound(null, source, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
 		}
+	}
+
+	/**
+	 * Puts back into {@code supplies} what the bag holds beyond {@code wanted} (by item). Stacks with data of their own
+	 * (a filled container) stay in the bag; what the chests have no room for stays too. True if anything went back.
+	 */
+	private static boolean putBackUnwanted(ServerLevel level, BuilderBag bag, Map<Item, Integer> wanted, List<BlockPos> supplies) {
+		Map<Item, Integer> held = new LinkedHashMap<>();
+		Set<Item> special = new HashSet<>();
+		for (ItemStack stack : bag.stacks()) {
+			held.merge(stack.getItem(), stack.getCount(), Integer::sum);
+			if (!stack.getComponentsPatch().isEmpty()) {
+				special.add(stack.getItem());
+			}
+		}
+		boolean any = false;
+		for (Map.Entry<Item, Integer> e : held.entrySet()) {
+			int extra = e.getValue() - wanted.getOrDefault(e.getKey(), 0);
+			if (extra <= 0 || special.contains(e.getKey())) {
+				continue;
+			}
+			int removed = bag.remove(e.getKey(), extra);
+			ItemStack rest = SupplyContainers.insert(level, supplies, new ItemStack(e.getKey(), removed));
+			if (!rest.isEmpty()) {
+				bag.add(rest);
+			}
+			any |= rest.getCount() < removed;
+		}
+		return any;
 	}
 
 	/**

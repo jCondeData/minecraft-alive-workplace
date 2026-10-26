@@ -144,7 +144,7 @@ quarter more, and room for ten more villagers. Roads never count as buildings an
 
 **Growth.** At most once a day, with a free bed, 16 meals in the store and wellbeing of 50% or more, the two
 villagers nearest the free bed have a baby (the family eats 8 meals), up to `villageGrowthCap`. The baby takes that
-bed at once (B206), so a second birth, an inn's traveller or vanilla breeding can't count the same bed free: a village
+bed at once (B206), so a second birth, an inn's traveler or vanilla breeding can't count the same bed free: a village
 with N free beds takes in at most N newcomers. With no bed free the Beds button says **The village is full: nobody new
 moves in until a bed is free**.
 
@@ -313,7 +313,7 @@ GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating fr
 `B301GameTests` (no clearing-out quest or step where nothing can be fought, bandits and wild Pokémon counting, the
 words, a stuck quest swapped after a save and reload, MobsBeGone's file read), compat `WildFoesCompatTests`,
 `WagonBedsGameTests` (B206, B207: settlers leave the wagon once the hall stands, an older camp's bedroll is mended,
-two free beds take in two newcomers and the hall says it's full, the inn takes a traveller only into a free house bed,
+two free beds take in two newcomers and the hall says it's full, the inn takes a traveler only into a free house bed,
 the wagon-bed list and its save),
 `HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
 `ProtectionSpecGameTests`, `HallProtectHintGameTests`, `ReadingFocusGameTests` (36.5: hovered, held on the way into

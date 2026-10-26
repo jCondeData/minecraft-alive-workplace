@@ -2,6 +2,7 @@
 """Translation checks: text players read is where silent bugs hide.
 
   langcheck.py [repo] [--since REV]
+  langcheck.py [repo] --spelling     only the American-spelling check below (the build runs this: checkSpelling)
 
 Reads assets/*/lang/en_us.json and the Java sources and reports:
   - keys the code uses literally that en_us.json doesn't have (players see the raw key)
@@ -12,6 +13,8 @@ Reads assets/*/lang/en_us.json and the Java sources and reports:
   - strings that mix %s with positional %1$s (easy to get wrong)
   - names written two ways (ROADMAP 24.5): a block or item of ours spelled in another case in running text
     ("travel post" for the Travel Post), and job names that aren't the README job table's (JOB_NAMES)
+  - British spellings (ROADMAP 36.19, spelling.py's word list and allowlist) in en_us.json values (keys are ignored),
+    the questbook, docs/guide/ and docs/wiki/: "colour", "Jeweller", "cancelled" ... fail; `spelling.py --fix` rewrites them
   - with --since: keys added or changed since REV. Render each in a GameTest with its REAL
     arguments (Component.translatable(key, args).getString() works on the server) and compare
     the sentence with the spec. A static check can't see which arguments a dynamic call passes.
@@ -25,6 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from modsrc import repo_root, source_sets, java_files, read, strip_comments  # noqa: E402
+import spelling  # noqa: E402
 
 # Title/detail pairs whose different placeholder counts were checked against the code (ROADMAP 24.5), with why
 # they're right. A pair listed here is no longer reported; change the reason if the code that fills them changes.
@@ -82,8 +86,16 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("repo", nargs="?", default=".")
     ap.add_argument("--since")
+    ap.add_argument("--spelling", action="store_true", help="only the American-spelling check")
     a = ap.parse_args()
     root = repo_root(a.repo)
+    british = spelling.check(root)
+    if a.spelling:
+        for p, k, b, w in british:
+            print(f"{p.relative_to(root)}{': ' + k if k else ''}: \"{b}\" is British, write \"{w}\" "
+                  f"(python3 tools/modtest/spelling.py --fix)")
+        print(f"spelling: {len(british)} British word(s)")
+        sys.exit(1 if british else 0)
     langs = sorted(root.glob("src/*/resources/assets/*/lang/en_us.json"))
     if not langs:
         sys.exit("no en_us.json found")
@@ -145,6 +157,9 @@ def main():
     print(f"\n## Names written another way ({len(misnamed)})\n")
     for k, got, use in misnamed[:60]:
         print(f"- `{k}`: \"{got}\", write \"{use}\": `{lang[k][:90]}`")
+    print(f"\n## British spellings ({len(british)})\n")
+    for p, k, b, w in british[:60]:
+        print(f"- {p.relative_to(root)}{': `' + k + '`' if k else ''}: \"{b}\", write \"{w}\"")
     if mixed:
         print(f"\n## Strings mixing %s and positional %1$s ({len(mixed)})\n")
         for k in mixed:
@@ -163,7 +178,7 @@ def main():
         print(f"\n## Added or changed since {a.since} ({len(changed)}): render each with its real arguments in a test\n")
         for k in changed:
             print(f"- `{k}` = `{lang.get(k, '')[:110]}`")
-    sys.exit(1 if missing or argmismatch or misnamed else 0)
+    sys.exit(1 if missing or argmismatch or misnamed or british else 0)
 
 
 if __name__ == "__main__":

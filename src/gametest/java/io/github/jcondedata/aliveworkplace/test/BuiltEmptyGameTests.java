@@ -57,6 +57,53 @@ public class BuiltEmptyGameTests implements net.fabricmc.fabric.api.gametest.v1.
 
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
+	public void cropsArePlantedAndFurnacesLecternsAndJukeboxesBuiltEmpty(GameTestHelper helper) {
+		// B493: planted at age 0, no berries; growing since still counts as built
+		BlockState ripe = Blocks.WHEAT.defaultBlockState().setValue(net.minecraft.world.level.block.CropBlock.AGE, 7);
+		BlockState wheat = MaterialRules.forPlacement(ripe);
+		helper.assertTrue(wheat.getValue(net.minecraft.world.level.block.CropBlock.AGE) == 0, "ripe wheat is placed as " + wheat);
+		helper.assertTrue(MaterialRules.matches(ripe, wheat), "wheat that grew no longer counts as built");
+		BlockState beets = MaterialRules.forPlacement(Blocks.BEETROOTS.defaultBlockState().setValue(net.minecraft.world.level.block.BeetrootBlock.AGE, 3));
+		helper.assertTrue(beets.getValue(net.minecraft.world.level.block.BeetrootBlock.AGE) == 0, "ripe beetroots are placed as " + beets);
+		helper.assertTrue(MaterialRules.forPlacement(Blocks.NETHER_WART.defaultBlockState().setValue(net.minecraft.world.level.block.NetherWartBlock.AGE, 3))
+			.getValue(net.minecraft.world.level.block.NetherWartBlock.AGE) == 0, "ripe nether wart isn't placed young");
+		helper.assertTrue(MaterialRules.forPlacement(Blocks.SWEET_BERRY_BUSH.defaultBlockState().setValue(net.minecraft.world.level.block.SweetBerryBushBlock.AGE, 3))
+			.getValue(net.minecraft.world.level.block.SweetBerryBushBlock.AGE) == 0, "a ripe berry bush isn't placed young");
+		helper.assertTrue(MaterialRules.forPlacement(Blocks.COCOA.defaultBlockState().setValue(net.minecraft.world.level.block.CocoaBlock.AGE, 2)
+			.setValue(net.minecraft.world.level.block.CocoaBlock.FACING, Direction.EAST)).getValue(net.minecraft.world.level.block.CocoaBlock.AGE) == 0, "ripe cocoa isn't placed young");
+		BlockState vines = MaterialRules.forPlacement(Blocks.CAVE_VINES.defaultBlockState().setValue(BlockStateProperties.BERRIES, true));
+		helper.assertTrue(!vines.getValue(BlockStateProperties.BERRIES), "cave vines are placed with a berry");
+		helper.assertTrue(MaterialRules.matches(Blocks.CAVE_VINES.defaultBlockState().setValue(BlockStateProperties.BERRIES, true), vines), "vines that fruited no longer count as built");
+		// B494: no book or disc shown that the block doesn't hold
+		BlockState lectern = MaterialRules.forPlacement(Blocks.LECTERN.defaultBlockState().setValue(BlockStateProperties.HAS_BOOK, true).setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST));
+		helper.assertTrue(!lectern.getValue(BlockStateProperties.HAS_BOOK) && lectern.getValue(BlockStateProperties.HORIZONTAL_FACING) == Direction.WEST, "a lectern is placed as " + lectern);
+		helper.assertTrue(!MaterialRules.forPlacement(Blocks.JUKEBOX.defaultBlockState().setValue(BlockStateProperties.HAS_RECORD, true)).getValue(BlockStateProperties.HAS_RECORD),
+			"a jukebox is placed showing a disc");
+		// B495: furnaces built cold; campfires as drawn
+		for (BlockState furnace : List.of(Blocks.FURNACE.defaultBlockState(), Blocks.SMOKER.defaultBlockState(), Blocks.BLAST_FURNACE.defaultBlockState())) {
+			BlockState lit = furnace.setValue(BlockStateProperties.LIT, true);
+			BlockState placed = MaterialRules.forPlacement(lit);
+			helper.assertTrue(!placed.getValue(BlockStateProperties.LIT), "a burning " + furnace.getBlock() + " is placed lit");
+			helper.assertTrue(MaterialRules.matches(lit, placed), "a " + furnace.getBlock() + " lit since no longer counts as built");
+		}
+		BlockState campfire = Blocks.CAMPFIRE.defaultBlockState().setValue(BlockStateProperties.LIT, true);
+		helper.assertTrue(MaterialRules.forPlacement(campfire).getValue(BlockStateProperties.LIT), "a blueprint's lit campfire is placed out");
+		// B496: 1.21.1 saves a hive's bees as 'bees'
+		CompoundTag hive = new CompoundTag();
+		ListTag bees = new ListTag();
+		CompoundTag bee = new CompoundTag();
+		bee.putInt("ticks_in_hive", 5);
+		bees.add(bee);
+		hive.put("bees", bees);
+		BlockPos at = new BlockPos(0, 1, 0);
+		helper.setBlock(at, Blocks.BEE_NEST);
+		CompoundTag out = BlockEntityData.sanitize(helper.getLevel(), helper.absolutePos(at), helper.getBlockState(at), helper.getBlockEntity(at), hive);
+		helper.assertTrue(out == null || !out.contains("bees"), "a nest's bees are copied: " + out);
+		helper.succeed();
+	}
+
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
 	public void aBlockFilledAfterItWasBuiltStillCountsAsBuilt(GameTestHelper helper) {
 		BlockState cauldron = MaterialRules.forPlacement(Blocks.LAVA_CAULDRON.defaultBlockState());
 		for (BlockState filled : List.of(Blocks.LAVA_CAULDRON.defaultBlockState(), Blocks.WATER_CAULDRON.defaultBlockState(), Blocks.CAULDRON.defaultBlockState())) {

@@ -14,7 +14,7 @@ Roadmap items: 26.11, 36.8, B170
   trestles; log piles before it (their ends to the street) and along the back, boards stood on end by the open gable.
 - **Kitchen**: a white plastered cookhouse under a hipped roof, a domed brick bread oven bulging out of its side (the
   smoker is its mouth inside) with a tall smoking flue, and herb beds either side of the path.
-- **Post Office**: a narrow two-storey house, its timber upper floor jettied over the street with flower boxes, a red
+- **Post Office**: a narrow two-story house, its timber upper floor jettied over the street with flower boxes, a red
   tiled roof with its gable to the street and a little dovecote on the ridge. A ladder leads upstairs.
 - **Guard House**: a squat stone blockhouse with barred arrow slits, a corbelled battlement round a flat roof and a
   timber watch hut on it; a ladder inside leads up.
@@ -28,7 +28,7 @@ Roadmap items: 26.11, 36.8, B170
   lintel stopped villagers, who are taller than players, in the doorway).
 - **Ball Workshop** (Cobblemon): a round tower with an open drying loft of slatted fences (apricorns, as colored carpets,
   laid out to dry) under a copper cone that greens with the years, and a low workshop beside it.
-- **Trade Hall** (Cobblemon): a market hall, its brick-and-timber upper storey on stone arches over an open trading
+- **Trade Hall** (Cobblemon): a market hall, its brick-and-timber upper story on stone arches over an open trading
   floor, an open cupola on the ridge.
 - **School** (Cobblemon): a brick U round a little courtyard with the tutor's Training Post in it.
 
@@ -48,7 +48,7 @@ calcite and spruce in the snow; spruce and mossy cobblestone in the taiga):
 - **Flower Shop**: a shop with a glasshouse wing full of flower beds.
 - **Ranch House**: a log cabin and a stable wing with stall gates and a hay loft.
 - **Schoolhouse**: a one-room clapboard schoolhouse under a steep roof, a lamp belfry on its gable.
-- **Inn**: two storeys, a balcony along the front, a chimney up the gable.
+- **Inn**: two stories, a balcony along the front, a chimney up the gable.
 - **Mortuary**: a narrow chapel with buttresses, lancet windows and a spirelet, a small graveyard with candles.
 - **Tinker's Shop**: a glass monitor roof along the ridge and a tall brick smokestack.
 - **Sifting Shed**: a long lean-to over a workroom and an open shed with gravel and sand heaps and a sieve.
@@ -56,7 +56,7 @@ calcite and spruce in the snow; spruce and mossy cobblestone in the taiga):
 - **Winery**: a stone cellar house with casks before it and a pergola hung with glow-berry grapes.
 - **Tailor's Shop**: two display windows, a striped awning, banners, a mansard roof.
 - **Print Shop**: a tall narrow house with crow-stepped gables and a lamp on an iron arm.
-- **Jeweller's Workshop**: a barred stone strongroom with a dome, an amethyst finial and gems on pedestals.
+- **Jeweler's Workshop**: a barred stone strongroom with a dome, an amethyst finial and gems on pedestals.
 - With Cobblemon: the **Trainer's House** a long dojo with a veranda and banners; the **Leader's Hall** a portico of
   columns; the **Ball Workshop** a round drying tower with a copper spire; the **Trade Hall** a market hall on an arcade
   with a cupola; the **School** a hall with a clock tower; the **Fossil Lab** a stone lab under a glass skylight with a
@@ -67,7 +67,7 @@ calcite and spruce in the snow; spruce and mossy cobblestone in the taiga):
 
 Two buildable ones from the Blueprint Table changed too: the **Weaver's Cottage** is a stone workroom with an open
 drying loft on top, dyed cloth hung in its bays, under a low hipped roof (the sheep pen and dye garden are as before);
-the **Inn** has its guest storey jettied over the street on brackets, under two gables side by side, its banner on a
+the **Inn** has its guest story jettied over the street on brackets, under two gables side by side, its banner on a
 tall post at the corner.
 
 The buildings are bigger than the old 9 x 10 house (up to 17 x 17 x 14), so their plots are bigger; the Ferry House

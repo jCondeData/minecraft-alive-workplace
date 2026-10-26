@@ -123,7 +123,7 @@ none lost between the chest and his dropped bag) and `ScaffoldingGameTests.scaff
 (the column's foot broken by someone else: struck off, the build finishes). QA's `QaScaffoldingGameTests` (6):
 too little scaffolding (none lost, none left up, no waiting), free materials (scaffolded with nothing skipped, no
 scaffolding item created), never on a drawn block and never carried past its stage, the chest broken then the build
-cancelled (all 64 on the ground), the chest emptied mid-column (none lost), and a two-builder crew (finished, nobody
+canceled (all 64 on the ground), the chest emptied mid-column (none lost), and a two-builder crew (finished, nobody
 hurt, the chest as full as before).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks

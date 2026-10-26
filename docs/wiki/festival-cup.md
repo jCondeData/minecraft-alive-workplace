@@ -41,7 +41,7 @@ Leader and no Arena yet (not before the 1.2 expansion is switched on).
 A bout between two village trainers is an exhibition at the ring. Each trainer stands in their box and sends out one
 Pokémon at a time beside the ring (real Pokémon, never catchable, removed if the game is saved with them out); the
 faster one moves first and they take turns. Damage follows a small formula (the theme's level, the move's power, attack
-against defence, the same-type bonus and type effectiveness), from `data/aliveworkplace/type_chart.json`: the games'
+against defense, the same-type bonus and type effectiveness), from `data/aliveworkplace/type_chart.json`: the games'
 18-type chart, every match-up as in the games since Fairy came in, and a Pokémon with two types takes both multipliers
 (Ice on Dragonite is 4x, Ground on Charizard nothing). A move the chart says can't touch the target does no damage; a
 Pokémon with no attacking move uses Struggle. A fainted Pokémon is called back and the next comes out, one on one even
@@ -80,8 +80,8 @@ they stay home ("it has helped a villager at work on 2 days, and this Cup asks f
   villages at most, nearest first. A village beyond the seventh, or with no route, is on no circuit and can't sign up.
 - **The calendar** (28.17): a Cup is held on the host's own festival day, on every `cupEveryFestivals`th festival
   counted from that day. The next Cup is today's until its bouts end (midnight; dawn for a theme that runs all night),
-  then the next one. Sign-up opens when the festival before ends (13000, dusk under the "stay in" policy) and closes
-  when the Cup's day dawns: then the entrants and the bracket are drawn and kept. The players in the circuit's villages
+  then the next one. Sign-up opens when the festival before ends (13000, dusk under the "stay in" policy; before then Sign up
+  only says when it opens) and closes when the Cup's day dawns: then the entrants and the bracket are drawn and kept. The players in the circuit's villages
   are told when it opens and at dusk the evening before, once each.
 - **Entrants** (28.17): each circuit village's Trainer Leader, else its best Trainer, else nobody. A far village that
   isn't loaded sends the one its hall's last round wrote on the trade-route list (name, tier and XP). Players sign up

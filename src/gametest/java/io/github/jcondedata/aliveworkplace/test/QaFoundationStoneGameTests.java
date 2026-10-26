@@ -209,7 +209,7 @@ public class QaFoundationStoneGameTests implements FabricGameTest {
 		helper.assertTrue(!seen.isEmpty(), "the right-click said nothing");
 		String text = seen.get(seen.size() - 1).getString();
 		String expected = top.need() + " " + top.item().getDescription().getString() + ", " + (top.need() - 1) + " still to bring";
-		helper.assertTrue(text.contains("Stage 1 of 3, The Ground Storey: 0% built") && text.contains("This stage still needs (from the chests within 8 blocks):")
+		helper.assertTrue(text.contains("Stage 1 of 3, The Ground Story: 0% built") && text.contains("This stage still needs (from the chests within 8 blocks):")
 			&& text.contains(expected), "the stone said: " + text + " (expected a line '" + expected + "')");
 		helper.assertTrue(!text.contains("aliveworkplace.") && !text.contains("%s") && !text.contains("%%"), "a raw key or placeholder in: " + text);
 		((Container) level.getBlockEntity(far)).clearContent();

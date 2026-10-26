@@ -310,7 +310,8 @@ public final class Builders {
 			tell(player, later, ChatFormatting.YELLOW);
 		}
 		if (existing != null) {
-			tell(player, Component.translatable("message.aliveworkplace.queue.added", villager.getDisplayName(),
+			// B514: a queued take-down builds nothing and needs no materials, so it gets its own line
+			tell(player, Component.translatable(deconstruct ? "message.aliveworkplace.queue.added_deconstruct" : "message.aliveworkplace.queue.added", villager.getDisplayName(),
 				Blueprints.displayName(site.structure()), Blueprints.displayName(existing.structure()), queued + 1), ChatFormatting.GREEN);
 		}
 		return InteractionResult.SUCCESS;
@@ -917,7 +918,8 @@ public final class Builders {
 		}
 		// Still placed where it was (23.8): hand it back to carry on there, or click the ground to move it first.
 		ItemStack blueprint = blueprintFor(level, site);
-		if (!site.isDeconstruction() && !site.isRepair()) {
+		// B513: a take-down's blueprint keeps its placement too (the cancel line promises it's still placed there)
+		if (!site.isRepair()) {
 			io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(blueprint).ifPresent(data -> blueprint.set(
 				io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT, data.withPlacement(Optional.of(site.placement()))
 					.withLevelGround(site.levelGround()).withMirrored(site.placement().mirror() != net.minecraft.world.level.block.Mirror.NONE)));

@@ -48,7 +48,7 @@ Ways to unlock, all for the village round the nearest hall:
 
 1. Buying a Blueprint from any villager or trader (builders, the other jobs' blueprint trades, market-day traders).
    The item is still sold.
-2. A builder of the village levelling up: the next 3 locked builds (lowest tier first, then by id; never a rare one).
+2. A builder of the village leveling up: the next 3 locked builds (lowest tier first, then by id; never a rare one).
 3. Questbook rewards (FTB Quests, The Builder chapter): Starter Cottage II and III, Stone House II and III, Terrace II.
 4. A Blueprint used on the Table, however it was had: found in a chest (village storehouses, carpenters', builders'
    workshops, inns and kitchens; pirate ships, war camps, coven huts, piglin hoards, bandit camps and the pharaoh's

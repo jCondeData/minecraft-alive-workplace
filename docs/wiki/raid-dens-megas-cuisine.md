@@ -5,7 +5,7 @@ dens around it, and the player hires its trainers to help in a raid), Mega Showd
 and the village makes Mega Stones and Key Stones) and Cobblecuisine (the kitchens cook its dishes and farmers grow its
 beans). Part of 2.2, behind its gate (`Expansions.M38`). Built so far: the plan, the gate, the test mods, the dens
 the village knows (38.2), raid helpers (38.1a, which replaced 38.3's Den Wardens and 38.4's village den challenges), more Mega trainers with their
-bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
+bracelets (38.5), the Jeweler's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
 Shrine with its festival show (38.7), Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8), bean farms (38.9) and the partners' treats and dish luxuries (38.10); the full plan is the design note, docs/design/M38.md.
 
 Roadmap items: 38.1, 38.1a, 38.2, 38.3, 38.3a, 38.4, 38.4a, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.8a, 38.9, 38.10, 38.11, B190, B191, B215, B414, B415
@@ -45,7 +45,7 @@ Mega Evolve wears a **Mega Bracelet** over their outfit: a gold band round the l
 set in it (`textures/entity/villager/mega_bracelet.png`, drawn by `tools/textures/art/megas.py`). Without Mega
 Showdown there are no extra stones, no bracelets and nothing is sent.
 
-**Mega Stones and Key Stones from the village (38.6).** With Mega Showdown, a Journeyman Jeweller (level 3) cuts, at the
+**Mega Stones and Key Stones from the village (38.6).** With Mega Showdown, a Journeyman Jeweler (level 3) cuts, at the
 stonecutter, only from makings in the **village store** (the hall's storehouses and kitchens, or without a hall the
 storehouses near the stonecutter; 38.6a, the owner: never from their own chest or other workers' chests, and never from
 nothing):
@@ -57,19 +57,19 @@ nothing):
 | a Mega Stone (what a Mega Stone Crystal drops), 2 gold ingots, 4 emeralds | the same | 3 | 1 of each |
 | 4 Mega meteorite ores (any mix, silk-touched), 2 gold ingots, 4 emeralds | the same | 4 | 1 of each |
 
-"A Mega Stone the village's trainers use": the Jeweller looks at the trainers of their village (round the nearest
+"A Mega Stone the village's trainers use": the Jeweler looks at the trainers of their village (round the nearest
 Village Hall, or within 48 blocks without one; visitors and Cup delegates left out), nearest first, and at the Pokémon
 on each one's home team, and cuts the Mega Stone of the first such Pokémon whose stone the store doesn't hold yet
 (both Charizardites for a Charizard). A village whose trainers have no Pokémon with a Mega Evolution gets no stones;
-the Jeweller never floods the store with all 46. Makings in the store are used up by the cut. While the store lacks
-them the Jeweller cuts nothing and the line above their head says what the Storehouse should hold ("needs 4 × Emerald
+the Jeweler never floods the store with all 46. Makings in the store are used up by the cut. While the store lacks
+them the Jeweler cuts nothing and the line above their head says what the Storehouse should hold ("needs 4 × Emerald
 in the Storehouse", for the stone closest to done); these aren't posted on the requests board, since a hand-over there
-goes to the Jeweller's own chest, which doesn't count.
+goes to the Jeweler's own chest, which doesn't count.
 
 A **Miner** drops off what they dig of Key Stone ore (a Key Stone, or the ore itself with a silk-touch pickaxe), Mega
 Stone Crystals (a Mega Stone, or the crystal) and Mega meteorite ores (silk-touched; without silk touch they drop
 Cobblemon's evolution stones, which stay in the Miner's chest) in the **village store** (the hall's storehouses and
-kitchens) for the Jeweller, instead of their own chest; what the store has no room for goes in their chest as before.
+kitchens) for the Jeweler, instead of their own chest; what the store has no room for goes in their chest as before.
 
 A player who beats the **Trainer Leader of every village of a realm** that has one gets a **Mega Bracelet** from the
 capital's hall: it goes into their inventory (or drops at their feet when it's full) with "You've beaten every Trainer
@@ -198,7 +198,7 @@ show within two seconds. Nothing is saved: it all follows from the village's ran
 
 The luxury recipe format grew three optional parts, so the stones stay data: an output named by a tag and a chooser
 (`"output": {"tag": "#mega_showdown:mega_stone", "for": "village_trainers"}`), `keep` (how many of each good the store
-is kept in; 8 by default) and `when` (a named switch: `village_megas` is `villageMegas` with Jewellers on). The files
+is kept in; 8 by default) and `when` (a named switch: `village_megas` is `villageMegas` with Jewelers on). The files
 `data/aliveworkplace/luxury_recipes/mega_*.json` load only with Cobblemon and Mega Showdown (Fabric load conditions).
 The chooser `village_trainers` (core `jeweller/MegaStones`) asks Cobblemon for each trainer's team
 (`CobblemonMegas.teamStones`: the same seeded team they field at home) and remembers the answer per trainer until
@@ -238,7 +238,7 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 |---|---|---|
 | `denHelpers` | on (once 2.2 ships) | Players hire the village's trainers to help in a den's raid. Off: no button, no hiring, and those hired walk home. (Replaced denWardens, denChallenges and denChallengeDays; an old file's keys are dropped.) |
 | `denHelperPrice` | 5 (1 to 64) | Emeralds one raid helper costs (100 CobbleDollars an emerald). |
-| `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweller's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6), and the Mega Shrine at the Table with its festival show (38.7). Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
+| `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweler's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6), and the Mega Shrine at the Table with its festival show (38.7). Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
 
 | `cuisineDishes` | on (once 2.2 ships) | Cobblecuisine's dishes asked of the Chef at the hall board's Dishes tab by his level (38.8a), counted by food group for the diet, the Camp Cook's curries and the Innkeeper's drinks (38.8), the partners' daily treat and the Deluxe Shake and Clodsire Eclair luxuries (38.10). Off: the menus and the diet are as before, no treats, and the two luxuries are neither wanted nor taken. |
 | `beanFarms` | on (once 2.2 ships) | Farmers sow Cobblecuisine's beans when the store is short of a color a menu dish needs, and cut them when ripe (38.9). Off: farmers never sow beans (ripe ones on a field are still cut, as any crop). |
@@ -266,7 +266,7 @@ of later items are listed in the design note.
 
 ## Items, blocks, jobs, commands
 
-None of our own yet; 38.6 adds four Jeweller recipes (`mega_keystone`, `mega_stone`, `mega_stone_cut`,
+None of our own yet; 38.6 adds four Jeweler recipes (`mega_keystone`, `mega_stone`, `mega_stone_cut`,
 `mega_stone_meteorite`) and two item tags (`jeweller_finds`, `mega_meteorite_ores`); 38.7 adds the decoration
 blueprint `aliveworkplace:mega_shrine` (tools/blueprints/decor.py, `mega_shrine`); 38.8 adds the dish lists
 `data/aliveworkplace/cuisine_dishes/` and three `camp_menu` files; 38.10 adds the luxuries `deluxe_shake` and `clodsire_eclair` (with
@@ -321,7 +321,7 @@ the design note and checked by `CobblemonDepthCompatTests`.
 - A Mega Stone holder's battle AI Mega Evolves at any tier, Novice included (a Cup finalist can be one) (38.5).
 - The Key Stone and Mega Stone recipes take 2 gold ingots and 4 emeralds each; the Key Stone is kept 2 in the store,
   each Mega Stone 1 (38.6).
-- Besides the Crystal block the spec names, the Jeweller also cuts a stone from the plain Mega Stone a Crystal drops
+- Besides the Crystal block the spec names, the Jeweler also cuts a stone from the plain Mega Stone a Crystal drops
   without silk touch, and (as a Master, level 4) from 4 Mega meteorite ores, which is what the Miner keeps them for
   (38.6).
 - A Miner's Key Stone ore drops a Key Stone without silk touch: that goes to the store too (38.6).
@@ -337,7 +337,7 @@ the design note and checked by `CobblemonDepthCompatTests`.
   (group `dessert`) and the Miltank Mix au Lait (a drink the inn doesn't serve) (38.8).
 - The Camp Cook cooks a Cobblecuisine curry in one go, not over the pot's cooking time: the Campfire Pot has no recipe
   for it. At most 4 at a time (38.8).
-- The Innkeeper serves only her guests (travellers), one a round (every 10 seconds), once a stay (38.8).
+- The Innkeeper serves only her guests (travelers), one a round (every 10 seconds), once a stay (38.8).
 - In local compat runs on the 7 GB dev box, `-PcompatHeap=2G` is needed now that the runtime holds two more mods
   (38.1); CI keeps the default.
 

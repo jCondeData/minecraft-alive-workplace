@@ -5701,7 +5701,7 @@ villages that both have one send their caravans and settlers through them. Wayst
 compat GameTests (`runCompatGameTest`). Without it nothing here appears and nothing breaks. Lane D builds it first.
 Depends on: nothing open.
 
-- [x] **41.1** (review: pending 2026-10-26) **A waystone by every Village Hall.** With Waystones installed, a village's builder raises a small
+- [x] **41.1** (review: pending 2026-10-26) (verified 2026-10-26: 8 new compat tests [WaystoneQaCompatTests]: switch off after the stones stand, one village without a stone, name-tag rename with an odd long name and the cleared name, hall-gone village, travelers' step-in spot, sentences; mutation spot check on VillageWaystones 2/4 killed by existing tests, both survivors now killed; 41.2 waits for B528) **A waystone by every Village Hall.** With Waystones installed, a village's builder raises a small
   waystone plaza near the hall (a new blueprint, architect skill and `STYLE.md`, in each village culture's style)
   once the village has a hall, as a normal build the Steward can propose; the stone is the mod's own waystone block,
   named after the village (renamed when the village is), so players who visit can discover it and travel there the
@@ -5713,7 +5713,7 @@ Depends on: nothing open.
   40.1 lands) lists the player's villages with a waystone, each with its distance and direction, and marks which
   ones the player has discovered. Done when: compat GameTests for two villages, one undiscovered, one with its stone
   broken; text in `en_us.json`; wiki; scene `hall_waystones`.
-- [x] **41.3** (review: pending 2026-10-26) **Caravans and settlers travel by waystone.** Between two villages that both have a waystone, trade
+- [x] **41.3** (review: pending 2026-10-26) (verified 2026-10-26: 8 new compat tests [WaystoneQaCompatTests]: switch off after the stones stand, one village without a stone, name-tag rename with an odd long name and the cleared name, hall-gone village, travelers' step-in spot, sentences; mutation spot check on VillageWaystones 2/4 killed by existing tests, both survivors now killed; 41.2 waits for B528) **Caravans and settlers travel by waystone.** Between two villages that both have a waystone, trade
   caravans and settlers walk to their stone and step out at the other village's (with the mod's own sound and
   particles) instead of walking the whole way; if either stone is missing or broken, they walk as today. Done when:
   compat GameTests for a caravan and a settler going through, a stone broken mid-trip (they walk), save and reload

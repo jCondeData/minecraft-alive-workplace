@@ -5220,6 +5220,84 @@ final class JobScenes {
 					}
 				}, 40)),
 			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
+		// Bring an old house up to its latest look (ROADMAP 36.21): a Stone House built from its first drawing stands north of
+		// the hall; the Repairs page offers "Refresh to the latest look", a click shows what changes, the button sends Bram,
+		// and the last still shows the house once he's done.
+		SCREENS.put("refresh_old_house", new Screen("a Stone House built from its first drawing was offered a refresh on the hall's Repairs page, "
+			+ "showed what changes, and Bram brought it up to its latest look",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos origin = STATION.offset(-5, 0, -15);
+				net.minecraft.resources.ResourceLocation house = StarterBlueprints.STONE_HOUSE.id();
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				var first = io.github.jcondedata.aliveworkplace.build.Refreshes.olderDrawing(level.getServer(), house, "25c521dcd");
+				Showcase.check(first.isPresent(), "the Stone House's first drawing is shipped");
+				if (first.isEmpty()) {
+					return;
+				}
+				for (var e : io.github.jcondedata.aliveworkplace.build.BuildPlan.create(first.get(), placement).targets().entrySet()) {
+					level.setBlock(e.getKey(), e.getValue(), 2 | 16);
+				}
+				BuildSiteManager.get(level).recordFinished(house, placement, player.getUUID());
+				BlockPos bench = new BlockPos(4, -60, -3);
+				place(level, bench, ModBlocks.BUILDERS_BENCH);
+				Villager builder = EntityType.VILLAGER.create(level);
+				builder.moveTo(4.5, -60, -1.5, 180, 0);
+				builder.setCustomName(Component.literal("Bram"));
+				level.addFreshEntity(builder);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_EMPLOYER.set(builder,
+					new io.github.jcondedata.aliveworkplace.build.Employer(player.getUUID(), player.getGameProfile().getName()));
+				classPeople.clear();
+				classPeople.add(builder);
+				var change = BuildSiteManager.get(level).finishedIn(level).stream().filter(f -> f.placement().equals(placement)).findFirst()
+					.flatMap(f -> io.github.jcondedata.aliveworkplace.build.Refreshes.change(level, f));
+				Showcase.check(change.isPresent(), "the old Stone House can be refreshed");
+				// what the new pieces take, in the chests by the bench
+				List<ItemStack> stock = new java.util.ArrayList<>();
+				var current = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, house).orElseThrow();
+				for (var need : io.github.jcondedata.aliveworkplace.build.BuildPlan.create(current, placement).materials().entrySet()) {
+					for (int left = need.getValue(); left > 0; left -= need.getKey().getDefaultMaxStackSize()) {
+						stock.add(new ItemStack(need.getKey(), Math.min(left, need.getKey().getDefaultMaxStackSize())));
+					}
+				}
+				for (int i = 0; i * 27 < stock.size(); i++) {
+					chest(level, bench.east(1 + 2 * i), stock.subList(i * 27, Math.min(stock.size(), i * 27 + 27)).toArray(ItemStack[]::new));
+				}
+			},
+			List.of(new Step("01_old_house", -1, 0, (level, player) -> player.closeContainer(), 30),
+				new Step("02_repairs_page", -2, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.RepairsPage.PAGE), player);
+						pickedSlot = -1;
+						for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+							if (m.icon(slot).is(Items.PAINTING)) {
+								pickedSlot = slot;
+							}
+						}
+						Showcase.check(pickedSlot >= 0 && m.icon(pickedSlot).is(Items.PAINTING), "the Stone House on the Repairs page, to refresh");
+					}
+				}, 40),
+				new Step("03_what_changes", io.github.jcondedata.aliveworkplace.hall.RepairsPage.REFRESH, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m && pickedSlot >= 0) {
+						m.press(pickedSlot, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.RepairsPage.REFRESH).is(Items.BRUSH), "the house's Refresh to the latest look");
+					}
+				}, 40),
+				new Step("04_after", -1, 0, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.RepairsPage.REFRESH, player);
+					}
+					player.closeContainer();
+				}, 3600)),
+			(level, player) -> BuildSiteManager.get(level).finishedIn(level).stream()
+				.filter(f -> f.structure().equals(StarterBlueprints.STONE_HOUSE.id()) && f.placement().origin().equals(STATION.offset(-5, 0, -15)))
+				.findFirst().map(f -> io.github.jcondedata.aliveworkplace.build.Refreshes.siteOf(level, f.placement()) == null
+					&& io.github.jcondedata.aliveworkplace.build.Refreshes.change(level, f).isEmpty()).orElse(false)));
 		// Upgrade a built home from the Village Hall (ROADMAP 36.14): a finished Starter Cottage and a finished Stone House II
 		// stand north of the hall; the hall's Upgrades page lists the cottage (level I, next the Starter Cottage II, its cost,
 		// the space free) and the Stone House II (next level III, blocked by a garden fence where its new back rooms go, with

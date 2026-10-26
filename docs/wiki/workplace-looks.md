@@ -4,7 +4,7 @@ The twelve workplaces the Steward asks a builder for each have their own buildin
 from the street, and so does every job's house that villages grow by themselves, the Weaver's Cottage and the Inn.
 Before, all of them were the same timber house with a different room inside (the owner's playtest, 2026-10-16).
 
-Roadmap items: 26.11, 36.8, B170
+Roadmap items: 26.11, 36.8, B170, 36.21
 
 ## 1. What a player sees
 
@@ -105,8 +105,11 @@ trade. The Ferry House kept its plot size so the shore rule and its tests stay a
 
 ## 7. Known limits
 
-- Builds already standing keep their old look; only new ones are built the new way. A workplace half built when the
-  update arrives is finished from the new drawing over what the old one put up.
+- Builds already standing keep their old look until their owner asks: since 36.21 the Village Hall's Repairs page
+  shows **Refresh to the latest look** on every finished build whose blueprint was redrawn since, and a Builder brings
+  it up to the new drawing (the old drawing's leftovers away, the new pieces in; chests, beds in use, job blocks and a
+  player's own blocks stay; builder.md). Only the older drawings the mod ships are recognized (those changed since
+  1.0). A workplace half built when the update arrives is finished from the new drawing over what the old one put up.
 - Village houses already grown keep the old look; new chunks grow the new ones. The larger houses fit a village's
   street a little less often than the old small one. Measured (36.8, 50 villages of each type): villages stay as
   full as before (houses per village moved by at most 1% for every type), but vanilla houses take the room, so a
@@ -119,7 +122,7 @@ taken by its worker), `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizes
 `VillageGameTests.noVillageHouseHasATrapdoorInItsFrontWalkRow`, `VillageGameTests.everyVillageTypeCanGrowTheOtherHouses`,
 `VillageGameTests.everyVillageTemplatePlacedLikeAVillageKeepsTheGroundInFrontOfItsDoor`, `CountryWorkplacesGameTests`.
 
-Showcase scenes: `workplaces` (all twelve placed side by side).
+Showcase scenes: `workplaces` (all twelve placed side by side), `refresh_old_house` (an old Stone House before and after its refresh, 36.21).
 
 Measurement (not part of `build`): `tools/modtest/village_density.sh` runs `VillageDensityMeasure` alone, 50 village
 starts per type at fixed seeds, and prints houses per village (mean, lowest, vanilla, ours) and footprint per type; the

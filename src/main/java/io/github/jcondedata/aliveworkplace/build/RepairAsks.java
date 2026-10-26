@@ -157,7 +157,7 @@ public final class RepairAsks {
 	@Nullable
 	public static BuildSite repairOf(ServerLevel level, BlueprintData.Placement placement) {
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
-			if (site.isRepair() && site.wonder() == null && site.placement().equals(placement)) {
+			if (site.isRepair() && !site.isRefresh() && site.wonder() == null && site.placement().equals(placement)) { // (a refresh, 36.21, has its own line)
 				return site;
 			}
 		}

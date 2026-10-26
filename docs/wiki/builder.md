@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519, 36.20
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519, 36.20, 36.21
 
 ## 1. What a player sees
 
@@ -14,7 +14,12 @@ Above the Builder's head you can see the progress, what it is short of, and wher
 chests run short, the Builder waits and tells you what is missing. Idle Builders walk over and help other Builders'
 builds nearby, and later offer to fix holes in buildings they finished (a creeper's hole, a broken window): the
 Builder asks first, "Repair it? [Yes] [Not now]" in chat and on the Village Hall's Repairs page, and repairs only what
-you said yes to (36.15). What raiders and village fires broke is put back without asking. Builders get
+you said yes to (36.15). What raiders and village fires broke is put back without asking. A finished build whose
+blueprint was redrawn since it was built shows **Refresh to the latest look** on the same page (36.21): a click shows
+what changes ("New: 3 decorations, 1 furniture piece · Taken away: 2 decorations"), a second hands it to the nearest
+free Builder, who takes away what the old drawing left (floating or invisible pieces included; their items go to the
+chests) and puts in the new pieces, as a repair. Chests and what's in them, beds villagers sleep in, job blocks and
+blocks a player put there or changed stay. With no Builder free it waits until one is. Builders get
 better with each building: they level up like villagers you trade with, and each level makes them faster.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
@@ -199,7 +204,9 @@ sites are remembered). Each site (`BuildSite.save`) holds:
 - `stage` (default CLEAR), `cursor` (0), `retrying`, `deferred` (list), `skipped` (0), `placed` (0).
 - `shown_progress`: the most progress shown so far, so the bar never goes backwards after a restart. Saves from
   0.138.0 and earlier lack it; it is worked out from the cursor (B64).
-- `builder` (the Builder's id; none by default), `queued` (false), `deconstruct` (false), `repair` (false).
+- `builder` (the Builder's id; none by default), `queued` (false), `deconstruct` (false), `repair` (false),
+  `refresh_from` (36.21: the older drawing a refresh brings the build on from, its key in `blueprint_history`; absent:
+  not a refresh, as in every older save).
 - `no_level_ground` (absent means leveling is on), `bench` (the lead's bench; absent in pre-0.6 saves).
 - `steward`, `hall` (a Steward's build from a Village Hall; absent for a player's own), `waiting_since` (absent:
   not waiting) and `player_blocks` (0): used by Stewards (27.19).
@@ -214,6 +221,7 @@ On the villager (attachments in `registry/ModAttachments`):
 Per finished building (36.15): `repair_ask` (`asked`, `yes`, `not_now` or `paused`; absent: never asked, as in every
 save from before 36.15) and `repair_missing` (the blocks missing when it was last looked at). It is cleared when the
 repair finishes, when nothing is missing any more, and when the building is taken down or built again on its spot.
+`refresh_asked` (36.21, true while a refresh waits for a free Builder; absent: false) is kept with it the same way.
 
 Friends are saved in `aliveworkplace_friends`. Not saved, worked out again: the plan, status, missing list, helpers'
 claims and trip counts.
@@ -303,6 +311,11 @@ claims and trip counts.
 - Upkeep looks only every 1200 ticks and only at buildings within range of the bench, so a damaged build is asked
   about at a Builder's next round, not the moment it breaks.
 - The question in chat goes only to a player who is online when the Builder asks; otherwise it waits on the Repairs page.
+- A refresh (36.21) knows only the older drawings the mod ships (`data/aliveworkplace/blueprint_history/`, written by
+  `tools/blueprints/history.py`: every earlier version of the blueprints changed since 1.0, and every version of the
+  Stone House line). A build of an older drawing not shipped, an imported or uploaded build, and a modded-furniture
+  variant drawn only in the `modded/` files show no button. The Repairs page lists refreshes after the repairs, so with
+  more builds than fit, the last ones are counted under "more" rather than shown.
 - A site in unloaded chunks, queued, or without a Builder is not watched for stalls.
 - The table preview leaves out fluids (water and lava have no block model) and draws blocks at full brightness.
 - With Create, the fluid in a scanned fluid tank or spout is still copied, so each copy holds it for free (B486); a
@@ -310,6 +323,13 @@ claims and trip counts.
 - Not tested here: the pack-server soak result of the last run (see the soak scene's pass or fail on the showcase).
 
 ## 8. Proof
+
+`RefreshGameTests` (36.21, through the Village Hall's Repairs page): a Stone House built from its first shipped drawing
+refreshed to the current one (every leftover gone or turned into the new piece, every new piece there, no button
+after); a small build's refresh keeping a chest and its diamonds, a bed and its sleeper's claim, a composter and the
+owner's own blocks, the leftovers' items in the store; no free Builder (it waits, the first one free takes it up);
+short of planks (the leftovers away, then the Builder waits and says what's missing, as for a repair); a build of the
+latest drawing (no button); saved and reloaded mid-way (it finishes).
 
 Compat tests (QA, lane E, from "Builders never copy what is inside containers"): `QaPastureCopyCompatTests` (a scanned
 Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),
@@ -442,7 +462,8 @@ block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurned
 shatters into no sherd when broken with a pickaxe, while the scanned pot itself gives its four,
 `aScannedSherdPotGivesNoFreeSherds`).
 
-Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
+Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes),
+`refresh_old_house` (36.21: a Stone House of its first drawing, the Refresh button with what changes, the house after), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the
 missing-materials tooltip and list), `table`, `table_preview` (the library's 3D preview), `table_basement` (Starter Cottage IV and the Storehouse with their cellars), `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
 `pace` (speed cap), `partners_engine`, `builder_list` (B279: the list of a build under way, as a book and in chat),

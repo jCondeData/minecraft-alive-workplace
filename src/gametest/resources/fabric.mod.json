@@ -115,6 +115,7 @@
 			"io.github.jcondedata.aliveworkplace.test.HallRetrainingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.UpgradesPageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RepairAskGameTests",
+			"io.github.jcondedata.aliveworkplace.test.RefreshGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageHallBuildGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallPagesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallSidebarGameTests",

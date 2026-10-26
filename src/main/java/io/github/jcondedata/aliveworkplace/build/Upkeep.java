@@ -54,6 +54,7 @@ public final class Upkeep {
 		protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
 			if (!ENABLED && !(THREATS && !io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).damaged().isEmpty())
 				&& !io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.anyDamaged(level) // a damaged Wonder is always repaired (35.8)
+				&& !BuildSiteManager.get(level).anyRefreshAsked() // a refresh the owner asked for (36.21), whatever builderRepairs says
 				|| !Builders.isBuilder(villager) || ModAttachments.BUILDER_JOB.has(villager) || Builders.isHelping(villager)) {
 				return false;
 			}
@@ -93,6 +94,11 @@ public final class Upkeep {
 		java.util.List<BuildSite> wonder = io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.repair(level, builder, bench);
 		if (!wonder.isEmpty()) {
 			return wonder.get(0);
+		}
+		// 36.21: a refresh to the latest look its owner asked for, waiting for a free builder
+		BuildSite refresh = Refreshes.takeUp(level, builder, bench);
+		if (refresh != null) {
+			return refresh;
 		}
 		if (!ENABLED && !THREATS) {
 			return null;

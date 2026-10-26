@@ -373,7 +373,7 @@ public final class MaterialRules {
 		}
 		for (Property<?> property : wanted.getProperties()) {
 			if (VOLATILE_PROPERTY_NAMES.contains(property.getName()) || property == BlockStateProperties.CHEST_TYPE || CONTENT_PROPERTIES.contains(property)
-				|| connected(wanted, property)) {
+				|| connected(wanted, property) || property == net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING && facingFree(wanted.getBlock())) {
 				continue;
 			}
 			if (!actual.hasProperty(property)) {
@@ -384,6 +384,18 @@ public final class MaterialRules {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * B448: the mod's own facing blocks that hold data (Village Hall, Storehouse, Mailbox, Shop Counter, Grave) only turn
+	 * with a turned build since this fix; one built turned before it faces as the blueprint was drawn. It is still the block
+	 * that was built: a builder never breaks it (it holds the hall's records, mail, a shop's list, a grave's items), so a
+	 * different facing counts as standing, in a finished build (repairs, upgrades, Wonders) and in one still going up.
+	 */
+	private static boolean facingFree(Block block) {
+		return block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL || block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE
+			|| block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.MAILBOX || block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.SHOP_COUNTER
+			|| block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.GRAVE;
 	}
 
 	/** Whether {@code property} of {@code state} is one its mod's piece takes from its neighbours ({@link #CONNECTED_BY_MOD}). */

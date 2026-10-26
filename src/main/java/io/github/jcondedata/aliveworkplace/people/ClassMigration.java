@@ -69,7 +69,7 @@ public final class ClassMigration {
 		if (!SocialClasses.ENABLED || SocialClasses.ladder().isEmpty()) {
 			return null;
 		}
-		List<Villager> village = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), ClassMigration::resident);
+		List<Villager> village = residents(level, hall);
 		boolean first = entity.classesVersion() < VERSION;
 		int seeded = seed(level, hall, entity, village, today, SLICE);
 		if (seeded > 0) {
@@ -83,6 +83,14 @@ public final class ClassMigration {
 		}
 		finish(level, hall, entity, village, today);
 		return new Round(seeded, true);
+	}
+
+	/**
+	 * The {@link #resident} villagers of the village round {@code hall}: inside its circle ({@link VillageHalls#contains}),
+	 * as the census counts them, not the square box round it (B548: a villager in the box's corner is in no village).
+	 */
+	static List<Villager> residents(ServerLevel level, BlockPos hall) {
+		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> resident(v) && VillageHalls.contains(hall, v.blockPosition()));
 	}
 
 	/** Lives here: not a mercenary, an inn's guest or a caravan's party passing through. */
@@ -223,7 +231,7 @@ public final class ClassMigration {
 		String key = GRACE_DAYS <= 0 ? "message.aliveworkplace.class.seeded_no_grace" : GRACE_DAYS == 1 ? "message.aliveworkplace.class.seeded_one" : "message.aliveworkplace.class.seeded";
 		Component line = Component.translatable(key, name, counts, GRACE_DAYS).withStyle(ChatFormatting.GOLD);
 		for (ServerPlayer player : level.players()) {
-			if (player.isAlive() && VillageHalls.area(hall).contains(player.position())) {
+			if (player.isAlive() && VillageHalls.contains(hall, player.blockPosition())) {
 				io.github.jcondedata.aliveworkplace.mc.Chat.chat(player, line);
 			}
 		}
@@ -321,7 +329,7 @@ public final class ClassMigration {
 			out.add(Component.translatable("command.aliveworkplace.classes.off", name));
 			return out;
 		}
-		List<Villager> village = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), ClassMigration::resident);
+		List<Villager> village = residents(level, hall);
 		long unseeded = village.stream().filter(v -> !ModAttachments.SOCIAL_CLASS.has(v)).count();
 		long today = Chronicle.day(level);
 		if (seeding(level, hall)) {
@@ -348,7 +356,7 @@ public final class ClassMigration {
 			return 0;
 		}
 		int cleared = 0;
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), ClassMigration::resident)) {
+		for (Villager v : residents(level, hall)) {
 			if (ModAttachments.SOCIAL_CLASS.has(v)) {
 				cleared++;
 			}

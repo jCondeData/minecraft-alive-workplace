@@ -34,6 +34,11 @@ public final class BlueprintNames {
 
 	/** S2C: names of player builds; {@code all} means every name the server has (on join), otherwise new ones. */
 	public record Sync(Map<ResourceLocation, String> names, boolean all) implements CustomPacketPayload {
+		/** Sorted by id, so the packet's bytes don't depend on a map's order (a packet reads back as the same bytes). */
+		public Sync {
+			names = java.util.Collections.unmodifiableSortedMap(new java.util.TreeMap<>(names));
+		}
+
 		public static final Type<Sync> TYPE = new Type<>(AliveWorkplace.id("blueprint_names"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, Sync> CODEC = StreamCodec.composite(
 			ByteBufCodecs.map(HashMap::new, ResourceLocation.STREAM_CODEC, ByteBufCodecs.stringUtf8(256)), Sync::names,

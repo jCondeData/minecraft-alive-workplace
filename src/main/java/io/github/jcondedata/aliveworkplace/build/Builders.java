@@ -941,6 +941,10 @@ public final class Builders {
 				io.github.jcondedata.aliveworkplace.wonder.WonderCrews.handOn(level, queued, villager);
 				continue;
 			}
+			if (keptForTheNext(queued)) {
+				leaveForTheNext(queued, villager);
+				continue;
+			}
 			if (!queued.isSteward() && !io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(queued.structure())) {
 				dropNear(level, villager.blockPosition(), blueprintFor(level, queued));
 			}
@@ -973,8 +977,44 @@ public final class Builders {
 				BlockPos p = villager.blockPosition();
 				tell(owner, Component.translatable("message.aliveworkplace.builder_died", Blueprints.displayName(site.structure()), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
 			}
-			BuildSiteManager.get(level).remove(site.id());
+			ModAttachments.BUILDER_JOB.remove(villager);
+			if (keptForTheNext(site)) {
+				leaveForTheNext(site, villager); // B488: the hall's round hands it to the next free builder
+			} else {
+				BuildSiteManager.get(level).remove(site.id());
+			}
 		}
+	}
+
+	/**
+	 * B488: whether a site whose builder died stays open for the next one: a wall piece the Steward opened. Dropped, a
+	 * half-built tower had neither a site nor a finished record, so the hall laid it out again on its own roof and a
+	 * second tower went up on the first, which never finished.
+	 */
+	private static boolean keptForTheNext(BuildSite site) {
+		return site.isSteward() && !site.isDone() && io.github.jcondedata.aliveworkplace.city.Walls.isPiece(site.structure());
+	}
+
+	/** The site keeps everything built and found so far, with nobody on it until {@link #takeOver} gives it to another. */
+	private static void leaveForTheNext(BuildSite site, Villager dead) {
+		site.release(dead.getUUID());
+		site.setBuilder(null);
+		site.setQueued(false);
+	}
+
+	/**
+	 * {@code villager} takes over {@code site}, a build with nobody on it (its builder died, B488): it carries on where
+	 * the site stands, from the supplies at its own bench.
+	 */
+	public static void takeOver(ServerLevel level, Villager villager, BuildSite site) {
+		if (isHelping(villager)) {
+			stopHelping(level, villager);
+		}
+		site.release(villager.getUUID());
+		site.setBuilder(villager.getUUID());
+		site.setBench(benchPos(villager).orElse(null));
+		site.setQueued(false);
+		ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(site.id()));
 	}
 
 	private static void endJob(ServerLevel level, Villager villager, BuildSite site) {

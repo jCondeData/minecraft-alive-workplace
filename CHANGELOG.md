@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- Village Hall: Bed ▾ in the People table opens the village's beds right under the villager's row. Free beds come first with where they are (the house and which bed, or "free · 14 blocks east" from the hall), then the beds others sleep in ("swap with Jem"), and "Short of beds? Plan a house ›" when none is free. A click makes the bed theirs at once (the old one freed, a swap moves both), the table and census show it straight away, and they sleep there that night.
 - Waystones: caravans and settlers travel by waystone between two villages that both have one: they walk to their stone and step out at the other's (with the mod's own sound and particles), a 30-second trip; if a stone is missing or broken they walk the road as before.
 - Waystones: the Village Hall's Map now lists your villages that have a waystone, each with its distance and direction, and whether you have discovered its stone, not yet, or it is broken.
 - Waystones: with the Waystones mod installed, the Steward proposes a Waystone Plaza by the Village Hall, in the village's own style (plains, desert, savanna, snowy or taiga); its waystone is named after the village, renamed with it, and put back by the builder if broken. Config `villageWaystones` (on).

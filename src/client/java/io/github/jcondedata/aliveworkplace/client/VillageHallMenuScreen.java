@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.client;
 
+import io.github.jcondedata.aliveworkplace.hall.HallBeds;
 import io.github.jcondedata.aliveworkplace.hall.HallJobs;
 import io.github.jcondedata.aliveworkplace.hall.HallPeople;
 import io.github.jcondedata.aliveworkplace.hall.HallSections;
@@ -337,7 +338,82 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	}
 
 	private int detailHeight(ItemStack icon, int w) {
-		return 2 + detailLines(icon, w).size() * 10 + 3 + BH + 4 + jobListHeight(icon, w);
+		return 2 + detailLines(icon, w).size() * 10 + 3 + BH + 4 + jobListHeight(icon, w) + bedListHeight(icon, w);
+	}
+
+	// --- Bed ▾'s list (40.4) ------------------------------------------------------------------------------------------
+
+	private static HallBeds.State bedStateOf(ItemStack line) {
+		CompoundTag mark = HallBeds.mark(line);
+		return mark == null ? HallBeds.State.NOTE : HallBeds.State.of(mark.getString("state"));
+	}
+
+	private int bedListHeight(ItemStack icon, int w) {
+		List<ItemStack> lines = HallBeds.lines(icon);
+		if (lines.isEmpty()) {
+			return 0;
+		}
+		int h = 4;
+		for (ItemStack line : lines) {
+			if (bedStateOf(line) == HallBeds.State.HEADER) {
+				h += 11;
+				for (Component c : loreOf(line)) {
+					h += font.split(c, w - 8).size() * 10;
+				}
+				h += 3;
+			} else {
+				h += JH;
+			}
+		}
+		return h + 4;
+	}
+
+	/** Draws the bed list from {@code y}; returns a tooltip for the line under the mouse (null: none). */
+	private List<Component> renderBedList(GuiGraphics g, ItemStack icon, int x, int y, int w, int mouseX, int mouseY) {
+		List<ItemStack> lines = HallBeds.lines(icon);
+		if (lines.isEmpty()) {
+			return null;
+		}
+		List<Component> tip = null;
+		g.fill(x - 2, y, x + w, y + bedListHeight(icon, w) - 2, 0x70000000);
+		int ly = y + 4;
+		for (ItemStack line : lines) {
+			HallBeds.State state = bedStateOf(line);
+			if (state == HallBeds.State.HEADER) {
+				g.drawString(font, TableStyle.trim(font, line.getHoverName(), w - 8), x + 2, ly, TableStyle.TITLE, false);
+				ly += 11;
+				for (Component c : loreOf(line)) {
+					for (FormattedCharSequence part : font.split(c, w - 8)) {
+						g.drawString(font, part, x + 2, ly, TableStyle.BODY, false);
+						ly += 10;
+					}
+				}
+				ly += 3;
+				continue;
+			}
+			boolean over = mouseX >= x && mouseX < x + w - 2 && mouseY >= ly && mouseY < ly + JH && mouseY >= tableTop && mouseY < tableTop + tableH;
+			if (over && state.pickable()) {
+				g.fill(x, ly - 1, x + w - 2, ly + JH - 1, 0x30FFFFFF);
+			}
+			g.pose().pushPose();
+			g.pose().translate(x + 2, ly, 0);
+			g.pose().scale(10 / 16f, 10 / 16f, 1f);
+			g.renderItem(line, 0, 0);
+			g.pose().popPose();
+			int colour = state == HallBeds.State.CURRENT ? TableStyle.TITLE : state.pickable() ? TableStyle.NAME : TableStyle.FAINT;
+			g.drawString(font, TableStyle.trim(font, line.getHoverName(), w - 20), x + 16, ly + 1, colour, false);
+			CompoundTag mark = HallBeds.mark(line);
+			if (state == HallBeds.State.PLAN) {
+				hits.add(new int[]{7, 0, x, ly - 1, w - 2, JH});
+			} else if (state.pickable() && mark != null) {
+				hits.add(new int[]{6, mark.getInt("id"), x, ly - 1, w - 2, JH});
+			}
+			if (over && !loreOf(line).isEmpty()) {
+				tip = loreOf(line);
+			}
+			ly += JH;
+		}
+		return tip;
 	}
 
 	// --- Job ▾'s list (40.3) ------------------------------------------------------------------------------------------
@@ -452,6 +528,17 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		for (int slot : personSlots()) {
 			CompoundTag row = HallPeople.row(menu.slots.get(slot).getItem());
 			if (row != null && row.getBoolean("jobs_open") && !row.getString("uuid").equals(uuid)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Whether a row loaded now has its bed list open, other than {@code uuid}'s. */
+	private boolean bedListOpenElsewhere(String uuid) {
+		for (int slot : personSlots()) {
+			CompoundTag row = HallPeople.row(menu.slots.get(slot).getItem());
+			if (row != null && row.getBoolean("beds_open") && !row.getString("uuid").equals(uuid)) {
 				return true;
 			}
 		}
@@ -603,7 +690,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				int bedX = bx;
 				bx = button(g, Component.translatable("screen.aliveworkplace.hall.people.bed_button"), bx, dy, true, 3, slot, mouseX, mouseY);
 				if (mouseX >= bedX && mouseX < bx - 4 && mouseY >= dy && mouseY < dy + BH) {
-					tip = Component.translatable("screen.aliveworkplace.hall.people.bed_hint");
+					tip = Component.translatable(row.getBoolean("beds_open") ? "screen.aliveworkplace.hall.people.bed_open" : "screen.aliveworkplace.hall.people.bed_hint");
 				}
 				if (!action.equals("assign")) {
 					button(g, Component.translatable("screen.aliveworkplace.hall.people.find_button"), bx, dy, true, 4, slot, mouseX, mouseY);
@@ -611,6 +698,10 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				List<Component> jobTip = renderJobList(g, icon, x + 12, dy + BH + 4, detailW, mouseX, mouseY);
 				if (jobTip != null) {
 					jobTips = jobTip;
+				}
+				List<Component> bedTip = renderBedList(g, icon, x + 12, dy + BH + 4 + jobListHeight(icon, detailW), detailW, mouseX, mouseY);
+				if (bedTip != null) {
+					jobTips = bedTip;
 				}
 			}
 		}
@@ -659,7 +750,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				if ((pass == 0) != isButton || mx < hit[2] || mx >= hit[2] + hit[4] || my < hit[3] || my >= hit[3] + hit[5]) {
 					continue;
 				}
-				if ((hit[0] == 0 || hit[0] == 5) && (my < tableTop || my >= tableTop + tableH)) {
+				if ((hit[0] == 0 || hit[0] == 5 || hit[0] == 6 || hit[0] == 7) && (my < tableTop || my >= tableTop + tableH)) {
 					continue;
 				}
 				click(hit[0], hit[1], button);
@@ -673,7 +764,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		if (minecraft != null) {
 			minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
 		}
-		ItemStack icon = kind == 5 ? ItemStack.EMPTY : menu.slots.get(slot).getItem();
+		ItemStack icon = kind >= 5 ? ItemStack.EMPTY : menu.slots.get(slot).getItem();
 		CompoundTag row = HallPeople.row(icon);
 		switch (kind) {
 			case 0 -> {
@@ -682,13 +773,18 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				if (jobListOpenElsewhere(openUuid)) {
 					menuButton(HallJobs.CLOSE); // the job list goes with the row it was open on
 				}
+				if (bedListOpenElsewhere(openUuid)) {
+					menuButton(HallBeds.CLOSE); // and so does the bed list (40.4)
+				}
 			}
 			case 1 -> press(slot, button, button == 0 && hasShiftDown());
 			// Job ▾: the list of every job opens (or closes) under the row (40.3)
 			case 2 -> menuButton(HallJobs.OPEN + slot);
-			case 3 -> open(Section.HOMES); // Bed ▾: the village's beds and who's homeless (40.4 replaces it)
+			case 3 -> menuButton(HallBeds.OPEN + slot); // Bed ▾: the village's beds open (or close) under the row (40.4)
 			case 4 -> press(slot, 0, false); // Find: they glow
 			case 5 -> menuButton(HallJobs.PICK + slot); // a job on Job ▾'s list (slot: the job's number)
+			case 6 -> menuButton(HallBeds.PICK + slot); // a bed on Bed ▾'s list (slot: the line's number)
+			case 7 -> open(Section.BUILDINGS); // "Short of beds? Plan a house ›"
 			default -> {
 			}
 		}
@@ -705,6 +801,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE && customBody() && openUuid != null) {
 			if (jobListOpenElsewhere(null)) {
 				menuButton(HallJobs.CLOSE);
+			}
+			if (bedListOpenElsewhere(null)) {
+				menuButton(HallBeds.CLOSE);
 			}
 			openUuid = null; // Esc closes the open row first
 			return true;
@@ -745,6 +844,23 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			}
 		}
 		return false;
+	}
+
+	/** Clicks Bed ▾ on the open row (the screenshot harness), as a player does; false with no row open. */
+	public boolean pressBed() {
+		for (int slot : personSlots()) {
+			CompoundTag row = HallPeople.row(menu.slots.get(slot).getItem());
+			if (row != null && row.getString("uuid").equals(openUuid)) {
+				click(3, slot, 0);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Clicks the bed on line {@code n} of the open bed list (the screenshot harness), as a player does. */
+	public void pickBed(int n) {
+		click(6, n, 0);
 	}
 
 	/** Clicks the job numbered {@code id} on the open job list (the screenshot harness), as a player does. */

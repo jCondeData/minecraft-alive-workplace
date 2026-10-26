@@ -478,6 +478,13 @@ SCENES = [
       [("01_job_list", "Job ▾ opened: the price by level on top, the free jobs with how many blocks, the rest grayed"),
        ("02_job_picked", "Mason clicked once: \"Click again to pay\" under it, nothing paid yet"),
        ("03_job_changed", "Clicked again: paid, and her row says Mason")]),
+    # Bed ▾ in the People table (ROADMAP 40.4): the village's beds, free first with where they are, a swap, a bed given
+    S("hall_people_bed", "Village Hall", "Giving a villager a bed from the People table",
+      "Bed ▾ on Dara's row opens the village's beds (the free ones first with how far and which way from the hall, "
+      "Jem's to swap with), a click makes the nearest free bed hers, and opened again it says \"their bed now\"", 50,
+      [("01_bed_list", "Bed ▾ opened: the free beds with where they are, Jem's bed to swap, the note on wagon beds and cradles"),
+       ("02_bed_given", "The nearest free bed clicked: hers from tonight"),
+       ("03_bed_after", "Opened again: her bed on top as \"their bed now\", the other free bed, Jem's to swap")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab")]),
     # Free job blocks (ROADMAP 36.9): the hall lists the job blocks nobody works at; picking a jobless villager gives one

@@ -49,7 +49,7 @@ there (`VillageHallScreen.renderFrom`); rows not yet loaded show "...". Mood: Ha
 (client only, kept by uuid) the villager's details under it: every line of the person's hall tooltip (traits, what
 they're doing, needs, mood and why, class and how to rise, home, where), with **Job ▾** (a worker's Change job page,
 36.18, as a right-click on the row; a jobless villager's free jobs, as a left click; grayed for children, nitwits,
-Legends or with retraining off), **Bed ▾** (opens Homes & Food for now; 40.4 makes it a bed list) and **Find** (the
+Legends or with retraining off), **Bed ▾** (the village's beds, 40.4, below) and **Find** (the
 glow). A click on a row whose villager has died or left the village since the screen was laid out lays the list out
 again without them (`HallPeople.gone`).
 
@@ -78,6 +78,27 @@ needs a free Stonecutter: place one in the village first"). Children, nitwits an
 (a `minecraft:container` of one stack per line, each with its name, tooltip and a `HallJobs.MARK` with its state and
 job number), and the row's mark gains `jobs_open` and `job_hidden`. Which list is open, and the job clicked once, live
 with the open screen (not saved).
+
+**Bed ▾ (40.4).** Bed ▾ on an open row opens the village's beds right under it (`hall/HallBeds`), the same way: "A bed
+for Dara" and where she sleeps now ("Sleeps in: Stone House, bed 2", or "Dara has no bed now."), then the free beds
+nearest the hall first, each with where it is: the finished building it's in and which of its beds (`Homes.in`, the
+beds of a building numbered by position), else how far and which way from the hall ("free · 14 blocks east"). Then
+the taken ones: hers ("… · their bed now"), a bed another villager of the village sleeps in ("… · swap with Jem"), or,
+when she has no bed to give in return, "… · Jem's bed" (grayed), and a bed someone from outside sleeps in ("… ·
+taken"). With no free bed, "Short of beds? Plan a house ›" opens the Buildings section; with no bed at all the list
+says "No beds in the village". The last line says wagon beds and cradles aren't listed (a wagon's bedrolls are no homes
+once the hall stands, `CampBeds`; a cradle holds a child of the house at night by itself, `Cradles`). Only the beds
+in the village round the hall (`VillageHalls.beds`). A click on a free bed makes it hers at once with vanilla's own
+home: the bed's point of interest is taken and her `HOME` memory set (`HallBeds.moveIn`); her old bed is released
+(`Villager.releasePoi`), so someone else can have it; a swap sets both villagers' `HOME` to the other's bed (both stay
+claimed, so nobody slips in between). Anyone asleep is woken first. She sleeps there that night by vanilla's own
+bedtime. The row and the census read the same memory through `VillageNeeds.bed` (B362: a broken bed houses nobody), so
+both show it straight away. If the bed was claimed by someone else (or changed hands) after the list was laid out,
+the click changes nothing, the action bar says "Someone took that bed first.", and the list shows it as it is now.
+No new packet: Bed ▾ is `HallBeds.OPEN` (300000) + the row's slot (again: closes), a bed is `HallBeds.PICK` (400000)
++ its line's number (the beds in the order the list showed them, kept with the open screen together with who slept in
+each), `HallBeds.CLOSE` closes it; the row's mark gains `beds_open`. Opening one list closes the other. Nothing new is
+saved: the bed is vanilla's own memory.
 
 **Reading without clicking (36.5).** A row or cell hovered stays read out while the mouse moves on into the pane
 (it changes only when another row or cell is hovered, and lets go once the mouse leaves the panel, when the pane goes
@@ -296,6 +317,11 @@ point of interest, saved by Minecraft).
   button"); the free jobs page and the jobless villager's own page still give them a block. The Builder's block is the
   Blueprint Table (the spec says Builder's Bench, its old name; an old bench still counts). The old right-click Change
   job page (36.18) stays for the list without the sidebar.
+- 40.4 (lane c, 2026-10-26): Bed ▾'s list rides in the open person's button as Job ▾'s does. A swap needs a bed to
+  give: a villager with none sees another's bed grayed ("Jem's bed": taking it would leave Jem homeless). "Plan a house
+  ›" opens the Buildings section (where the Steward's desk and the builders' plans are), shown when no bed is free.
+  The mod has no builder's-bench bed of its own, so the list's note names what isn't listed: wagon beds and cradles.
+  Anyone may be given a bed, children included (vanilla lets a child claim one too).
 
 - B301 (bug lane, 2026-10-22): "can monsters come" is read from the world (Peaceful) and the blocklist's own file,
   never from whether a monster was seen lately, so it's the same on every server start and testable. The game rule that
@@ -364,7 +390,10 @@ screen is open; scene `hall_people`). `HallPeopleJobGameTests` (40.3, every case
 `aChangeThatWorks` (price on top, "Mason · 1 free Stonecutter", the offer, then paid), `aJobWithNoFreeBlock`,
 `notEnoughEmeraldsChangesNothing`, `toTheBuilder`, `aBusyBuilderHandsHisBuildBack`, `noJob` (and reloaded),
 `aJoblessVillagerIsGivenABlockForNothing`, `childrenAndNitwitsCant`, `theRuleOffHidesTheButton`,
-`aChangeSurvivesASaveAndReload` with every new sentence; scene `hall_people_job`).
+`aChangeSurvivesASaveAndReload` with every new sentence; scene `hall_people_job`). `HallPeopleBedGameTests` (40.4,
+through Bed ▾'s clicks: `aFreeBed` (where the free beds are, the census, the old bed freed), `aSwap`, `noBedsAtAll`,
+`theChosenBedBrokenBeforeNight`, `aBedAnotherVillagerClaimsFirst`, `theChoiceSurvivesASaveAndReload` with every new
+sentence, `theySleepThereAtNight`; scene `hall_people_bed`).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end

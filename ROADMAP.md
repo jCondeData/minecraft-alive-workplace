@@ -1389,7 +1389,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   Done when:
   - a GameTest for each new condition, holding and not holding, and one per rule in a village staged to need it;
   - showcase scene `steward_civic`: a GIF of a lamp, a well and a schoolhouse going up as the village asks for them.
-- [x] **27.13** (approved 2026-10-05) **New workplaces I: Smithy, Mason's Yard, Fletcher's Lodge, Map Room.** Drawn with the architect
+- [x] **27.13** (approved 2026-10-05) (verified 2026-10-26: lane-c-1025-2153: full build green before the last merge [3670 GameTests, 684 compat]: QaNewWorkplacesGameTests [21: each of the 8 workplace rules fires for its own trades only and only while the worker lacks his block; each building's promised blocks, its II more; names and reasons as spelt; only the Bandstand counts for beauty; Fisher's Hut II shore/depth]; wrote docs/wiki/new-workplaces.md. Not re-run: builder builds, gallery scene) **New workplaces I: Smithy, Mason's Yard, Fletcher's Lodge, Map Room.** Drawn with the architect
   skill in `tools/blueprints/workshops.py` to STYLE.md, each checked in a render, each with its rule (27.11's form):
   - **Smithy**: a stone forge under a timber roof, an open front with an anvil and a quench trough, a chimney with a
     campfire for smoke; a blast furnace (Armorer; Miner with a pickaxe), a smithing table (Toolsmith) and a grindstone
@@ -1404,7 +1404,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - each is in `StarterBlueprints` with its size, in the Blueprint Table, clean in `check.py`, and built by a builder
     in a GameTest with its workers taking their blocks; the rules' GameTests pass;
   - a gallery package (front and back, as drawn and in two styles) and their builds in showcase scene `gallery`.
-- [x] **27.14** (approved 2026-10-05) **New workplaces II: Farmstead, Fisher's Hut, Weaver's Cottage, Bandstand.** Drawn the same way, each
+- [x] **27.14** (approved 2026-10-05) (verified 2026-10-26: lane-c-1025-2153: full build green before the last merge [3670 GameTests, 684 compat]: QaNewWorkplacesGameTests [21: each of the 8 workplace rules fires for its own trades only and only while the worker lacks his block; each building's promised blocks, its II more; names and reasons as spelt; only the Bandstand counts for beauty; Fisher's Hut II shore/depth]; wrote docs/wiki/new-workplaces.md. Not re-run: builder builds, gallery scene) **New workplaces II: Farmstead, Fisher's Hut, Weaver's Cottage, Bandstand.** Drawn the same way, each
   with its rule:
   - **Farmstead**: a farmhouse with one bed beside a 9×5 field of farmland round a water channel, a scarecrow, a
     composter (Farmer). **Farmstead II**: a barn and a second field;

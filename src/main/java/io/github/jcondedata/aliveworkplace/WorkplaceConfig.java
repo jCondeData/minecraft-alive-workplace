@@ -56,6 +56,11 @@ public final class WorkplaceConfig {
 	public boolean minerCraftsPickaxe = true;
 	/** The Quarry build (36.12): its Miner works its pit without a marker, and what they dig grows back. Off: not offered, nothing grows back. */
 	public boolean quarryBuild = true;
+	/**
+	 * With Waystones installed, the Steward proposes a waystone plaza by the Village Hall, its stone named after the village
+	 * (ROADMAP 41.1). Off: the plaza isn't proposed (stones already standing stay as they are). Without Waystones it does nothing.
+	 */
+	public boolean villageWaystones = true;
 	/** Blocks that grow back in a Quarry build's pit in a Minecraft day (0: none). */
 	public int quarryRegrowth = 100;
 	/** A village takes only so many fishermen (ROADMAP 26.13: storage barrels made most villagers fishermen). Off: vanilla. */
@@ -963,6 +968,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.ENABLED = fishermanCap && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.mine.PickaxeCrafting.ENABLED = minerCraftsPickaxe;
 		io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.ENABLED = quarryBuild;
+		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.ENABLED = villageWaystones;
 		io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.PER_DAY = quarryRegrowth;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.BASE = fishermenPerVillage;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.PER_VILLAGERS = villagersPerFisherman;

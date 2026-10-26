@@ -68,7 +68,7 @@ public final class RealmData extends SavedData {
 	 */
 	public record Order(GlobalPos mother, BlockPos spot, Optional<Component> name, String state, long leaves, long arrives, int cost,
 						long ordered, List<UUID> volunteers, Optional<UUID> builder, Map<Item, Integer> supplies, List<CompoundTag> settlers,
-						boolean blessed) {
+						boolean blessed, Optional<BlockPos> via) {
 		public static final Codec<Order> CODEC = RecordCodecBuilder.create(i -> i.group(
 			GlobalPos.CODEC.fieldOf("mother").forGetter(Order::mother),
 			BlockPos.CODEC.fieldOf("spot").forGetter(Order::spot),
@@ -82,8 +82,18 @@ public final class RealmData extends SavedData {
 			UUIDUtil.CODEC.optionalFieldOf("builder").forGetter(Order::builder),
 			Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT).optionalFieldOf("supplies", Map.of()).forGetter(Order::supplies),
 			CompoundTag.CODEC.listOf().optionalFieldOf("settlers", List.of()).forGetter(Order::settlers),
-			Codec.BOOL.optionalFieldOf("blessed", false).forGetter(Order::blessed)
+			Codec.BOOL.optionalFieldOf("blessed", false).forGetter(Order::blessed),
+			BlockPos.CODEC.optionalFieldOf("via").forGetter(Order::via)
 		).apply(i, Order::new));
+
+		/**
+		 * An order whose settlers walk the whole way (41.3: {@code via}, the hall of the village whose waystone they step out
+		 * of, empty; older saves have none).
+		 */
+		public Order(GlobalPos mother, BlockPos spot, Optional<Component> name, String state, long leaves, long arrives, int cost,
+					 long ordered, List<UUID> volunteers, Optional<UUID> builder, Map<Item, Integer> supplies, List<CompoundTag> settlers, boolean blessed) {
+			this(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, settlers, blessed, Optional.empty());
+		}
 
 		/** An order without the Founder's blessing (33.23: {@code blessed}, the Founder lived in the mother village when it was given). */
 		public Order(GlobalPos mother, BlockPos spot, Optional<Component> name, String state, long leaves, long arrives, int cost,
@@ -97,19 +107,24 @@ public final class RealmData extends SavedData {
 		}
 
 		public Order withState(String state, long leaves, long arrives) {
-			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, settlers, blessed);
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, settlers, blessed, via);
 		}
 
 		public Order withVolunteers(List<UUID> volunteers) {
-			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, List.copyOf(volunteers), builder, supplies, settlers, blessed);
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, List.copyOf(volunteers), builder, supplies, settlers, blessed, via);
 		}
 
 		public Order withSupplies(Map<Item, Integer> supplies) {
-			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, Map.copyOf(supplies), settlers, blessed);
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, Map.copyOf(supplies), settlers, blessed, via);
 		}
 
 		public Order withSettlers(List<CompoundTag> settlers) {
-			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, List.copyOf(settlers), blessed);
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, List.copyOf(settlers), blessed, via);
+		}
+
+		/** The order going by waystone to the village round {@code via} (41.3), or walking (empty). */
+		public Order withVia(Optional<BlockPos> via) {
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, settlers, blessed, via.map(BlockPos::immutable));
 		}
 
 		/** Whether the settlers have left the village (the order can't be called off any more). */

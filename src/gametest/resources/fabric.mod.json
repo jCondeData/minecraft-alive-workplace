@@ -619,6 +619,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWorkerTitlesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCountedLinesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardReasonWordsBugTests",
+			"io.github.jcondedata.aliveworkplace.test.VillageWaystonesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiratesThreatLevelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonProfessorGameTests",

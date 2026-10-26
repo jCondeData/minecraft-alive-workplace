@@ -638,6 +638,8 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B522** (approved auto 2026-10-26) Red main: QaStewardSafetyGameTests.aMarkCoversItsOwnSectionAndNoMore (27.19 QA, new in db0ddfb86) fails 'setup: no section edge in the area' (QaStewardSafetyGameTests.java:224) in CI build 1968 on d6b1a595 (1 required test failed); the test assumes its area crosses a 16-block section edge, which depends on where the test area lands. Expected: passes wherever the area is placed. Test: QaStewardSafetyGameTests (found by lane-a-1026-0625, 2026-10-26) Status: fixed in the test (mod code was right): it searched x 8..22, 15 columns, so it missed the edge whenever the area's x was 8 mod 16; it now takes the edge from 16 columns (8..23), checked at all 16 placements.
 - [ ] **B523** Player-visible text: more lines put a fixed 'a' before a name that can start with a vowel (B505 fixed the job, species and item lines with Words.articled and a .an form). Left: pokemon_trader.wrong_type ('Not a Ice type', 'a Electric type'), professor.stone_bought ('a Ice Stone'), golem_smith.next / chronicle golem_smith.built ('a Iron Golem' if a golem kind starts with a vowel), building names in class.need.building / building_tier, advice.rise.building, advice.disaster_house, steward.effect.build / effect.upgrade, steward.renew.title, chronicle plans_renew / renewed, quest.build / build.wedding, chapel_wedding.ask / wants ('a Inn', 'a Arena', 'a Apiary Garden'), mechanic.state.mend. Expected: 'an' before a vowel sound; use Words.articled(key, nameIndex, args) and add the key's .an line (ArticleGameTests.everyAnLineMatchesItsPlainLine keeps them in step). Test: extend ArticleGameTests (found by lane-a-1026-0625, 2026-10-26) (found by lane-a-1026-0625, 2026-10-26)
 - [ ] **B524** Red main, compat suite (from 28682fe66, B504's a/an fix): QaDenHelperCompatTests#threeHelpersCheerOnceEachAndAgainNextRaid fails: 'the cheer lines: [Master Trainer cheers you on: an Attack Cheer for the raid!, ...]'. The new message.aliveworkplace.raid_helpers.cheer.an line says 'an Attack Cheer', and the test still matches '.+ cheers you on: a .+ for the raid!'. Expected: the test accepts 'a' or 'an' (the sentence is right now). Test: ./gradlew runCompatGameTest (found by lane-b-1026-0639, 2026-10-26) (found by lane-b-1026-0639, 2026-10-26)
+- [ ] **B525** A hopper under someone's Mailbox pulls their mail out (3 diamonds gone in 60 ticks), and a hopper on top pushes items into the take-only inbox (5 rotten flesh posted), so anyone can empty or fill another player's mailbox with a hopper (the same hole B349 closed on the Shop Counter; Create funnels and chutes reach it the same way). Expected: only the post puts mail in, and only the owner, friends and operators take it out (docs/guide/mailbox.md; MailboxMenu's inbox is take-only). Test: QaMailboxHopperBugTests on tests/mailbox-hoppers (found by lane-e-1026-1016, 2026-10-26)
+- [ ] **B526** Player-visible (builder, take-down, B513 follow-up): after /workplace cancel of a take-down half-way, the player reads 'Canceled the build of Test Hut. Its blueprint is still placed there: hand it back to carry on, or click the ground to move it.', but a plain hand-back starts a BUILD over the half-taken-down hut ('Builder will build Test Hut! Put the materials in chests...'); only a sneak hand-over carries on the take-down. Expected (wiki builder.md, /workplace cancel: 'hand it back to carry on'): a plain hand-back carries on the take-down, or the line for a canceled take-down says it is a take-down and tells the player to sneak-hand it back (then update builder.md's cancel bullet). Test: QaBuilderFixes1026BugTests.aCancelledTakeDownHandedBackAsTheLineSaysCarriesOnTheTakeDown on tests/takedown-cancel-1026 (found by lane-b-1026-0938, 2026-10-26) (found by lane-b-1026-0938, 2026-10-26)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -5697,7 +5699,7 @@ villages that both have one send their caravans and settlers through them. Wayst
 compat GameTests (`runCompatGameTest`). Without it nothing here appears and nothing breaks. Lane D builds it first.
 Depends on: nothing open.
 
-- [ ] **41.1** **A waystone by every Village Hall.** With Waystones installed, a village's builder raises a small
+- [x] **41.1** (review: pending 2026-10-26) **A waystone by every Village Hall.** With Waystones installed, a village's builder raises a small
   waystone plaza near the hall (a new blueprint, architect skill and `STYLE.md`, in each village culture's style)
   once the village has a hall, as a normal build the Steward can propose; the stone is the mod's own waystone block,
   named after the village (renamed when the village is), so players who visit can discover it and travel there the
@@ -5705,11 +5707,11 @@ Depends on: nothing open.
   when: compat GameTests for the plaza built with a working, named waystone, the village renamed, the stone broken
   (the builder repairs it like any build), the switch off, and a GameTest without the mod that nothing is offered;
   blueprint render checked; text in `en_us.json`; wiki page `waystones.md`; scene `village_waystone`.
-- [ ] **41.2** **The hall's Map shows the waystone network.** The hall's Map section (40.1; today's map page until
+- [x] **41.2** (review: pending 2026-10-26) **The hall's Map shows the waystone network.** The hall's Map section (40.1; today's map page until
   40.1 lands) lists the player's villages with a waystone, each with its distance and direction, and marks which
   ones the player has discovered. Done when: compat GameTests for two villages, one undiscovered, one with its stone
   broken; text in `en_us.json`; wiki; scene `hall_waystones`.
-- [ ] **41.3** **Caravans and settlers travel by waystone.** Between two villages that both have a waystone, trade
+- [x] **41.3** (review: pending 2026-10-26) **Caravans and settlers travel by waystone.** Between two villages that both have a waystone, trade
   caravans and settlers walk to their stone and step out at the other village's (with the mod's own sound and
   particles) instead of walking the whole way; if either stone is missing or broken, they walk as today. Done when:
   compat GameTests for a caravan and a settler going through, a stone broken mid-trip (they walk), save and reload

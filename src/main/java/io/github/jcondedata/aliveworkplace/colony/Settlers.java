@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageProtection;
+import io.github.jcondedata.aliveworkplace.hall.VillageWaystones;
 import io.github.jcondedata.aliveworkplace.legend.Legends;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.people.Couples;
@@ -67,6 +68,9 @@ import org.jetbrains.annotations.Nullable;
  * <li><b>on the road</b> for {@link #JOURNEY_TICKS} (3 minutes) plus a tick a block; then {@link ColonyArrival} makes
  * the camp (33.10).</li>
  * </ol>
+ * 41.3: when a village's waystone stands nearer the spot than the mother village, and the mother's stands too
+ * ({@link #via}), the settlers walk to their own stone instead, step in, and step out of the other ({@link #stepOut}):
+ * the journey counts only from there. A stone broken by then, they walk the whole road.
  */
 public final class Settlers {
 	/** How long the village waits for missing supplies before the settlers leave with what there is: 3 days. */
@@ -571,8 +575,11 @@ public final class Settlers {
 						Chat.chat(player, Component.translatable("message.aliveworkplace.colony.set_out", names, colony, VillageHalls.name(level, hall))
 							.withStyle(ChatFormatting.GOLD));
 					}
-					data.putOrder(order.withVolunteers(here.stream().map(Villager::getUUID).toList()).withState(RealmData.LEAVING, now, 0));
-					walk(here, edge(level, order), true);
+					// 41.3: with a village's waystone nearer the spot than home and both stones standing, they go by waystone
+					RealmData.Order leaving = order.withVolunteers(here.stream().map(Villager::getUUID).toList()).withVia(via(level, order))
+						.withState(RealmData.LEAVING, now, 0);
+					data.putOrder(leaving);
+					walk(here, edge(level, leaving), true);
 				} else {
 					walk(here, hall, now % 10 == 0);
 				}
@@ -583,7 +590,10 @@ public final class Settlers {
 				boolean late = now - order.leaves() >= LEAVE_TICKS;
 				boolean unseen = !here.isEmpty() && here.stream().allMatch(v -> v.distanceToSqr(hall.getCenter()) >= OUT * OUT
 					|| level.getNearestPlayer(v.getX(), v.getY(), v.getZ(), SIGHT, false) == null);
-				if (!here.isEmpty() && (late || unseen)) {
+				// 41.3: going by waystone, they're gone once they all stand at the stone
+				BlockPos stone = byWaystone(level, order) ? edge(level, order) : null;
+				boolean stepIn = stone != null && !here.isEmpty() && here.stream().allMatch(v -> v.distanceToSqr(net.minecraft.world.phys.Vec3.atBottomCenterOf(stone)) <= 2.5 * 2.5);
+				if (!here.isEmpty() && (late || unseen || stepIn)) {
 					data.putOrder(depart(level, order, here));
 				} else {
 					walk(here, edge(level, order), now % 10 == 0);
@@ -679,6 +689,13 @@ public final class Settlers {
 	 */
 	public static BlockPos edge(ServerLevel level, RealmData.Order order) {
 		BlockPos hall = order.mother().pos();
+		if (byWaystone(level, order)) {
+			// 41.3: the spot beside the village's waystone, where they step in
+			Optional<BlockPos> stone = VillageWaystones.stoneOf(level, hall).filter(level::isLoaded);
+			if (stone.isPresent()) {
+				return VillageWaystones.beside(level, stone.get(), hall);
+			}
+		}
 		double dx = order.spot().getX() - hall.getX();
 		double dz = order.spot().getZ() - hall.getZ();
 		double length = Math.max(1, Math.sqrt(dx * dx + dz * dz));
@@ -717,7 +734,82 @@ public final class Settlers {
 			v.discard();
 		}
 		long now = level.getGameTime();
-		return order.withSettlers(saved).withVolunteers(List.of()).withState(RealmData.ON_ROAD, order.leaves(), now + journey(order));
+		// 41.3: by waystone, in at home's stone, and the journey only from the other village's stone to the spot
+		boolean waystone = byWaystone(level, order);
+		if (waystone) {
+			VillageWaystones.warp(level, order.mother().pos());
+		}
+		RealmData.Order gone = order.withSettlers(saved).withVolunteers(List.of()).withVia(waystone ? order.via() : Optional.empty());
+		return gone.withState(RealmData.ON_ROAD, order.leaves(), now + journey(gone, level));
+	}
+
+	/**
+	 * The village whose waystone the settlers for {@code order} go through (41.3): of the villages with a standing waystone
+	 * linked to the mother's ({@link VillageWaystones#linked}), the one whose stone is nearest the spot, when it is nearer
+	 * the spot than the mother village's hall. Empty (they walk) without, and without Waystones.
+	 */
+	public static Optional<BlockPos> via(ServerLevel level, RealmData.Order order) {
+		BlockPos mother = order.mother().pos();
+		if (!VillageWaystones.offered() || !VillageWaystones.standing(level, mother)) {
+			return Optional.empty();
+		}
+		BlockPos best = null;
+		double bestDistance = flat(mother, order.spot());
+		for (BlockPos hall : VillageWaystones.villages(level)) {
+			Optional<BlockPos> stone = VillageWaystones.stoneOf(level, hall);
+			if (stone.isEmpty() || hall.equals(mother)) {
+				continue;
+			}
+			double d = flat(stone.get(), order.spot());
+			if (d < bestDistance && VillageWaystones.linked(level, mother, hall)) {
+				best = hall;
+				bestDistance = d;
+			}
+		}
+		return Optional.ofNullable(best);
+	}
+
+	/** Whether the settlers for {@code order} go by waystone now (41.3): it has a village to go to, and both stones stand. */
+	public static boolean byWaystone(ServerLevel level, RealmData.Order order) {
+		return order.via().isPresent() && VillageWaystones.linked(level, order.mother().pos(), order.via().get());
+	}
+
+	/**
+	 * The settlers for {@code order} come to the other village's waystone on their journey by it (41.3), its time up: with
+	 * both stones standing they step out there (the mod's sound and particles) and the order goes on as it was; with
+	 * either broken they walk the whole road instead, {@link #journey(RealmData.Order)} from now, and the mother village's
+	 * chronicle says so. An order walking anyway comes back as it was.
+	 */
+	public static RealmData.Order stepOut(ServerLevel level, RealmData.Order order) {
+		if (order.via().isEmpty()) {
+			return order;
+		}
+		if (byWaystone(level, order)) {
+			VillageWaystones.warp(level, order.via().get());
+			return order;
+		}
+		Component colony = order.name().orElse(Component.translatable("screen.aliveworkplace.colonies.unnamed"));
+		if (level.isLoaded(order.mother().pos()) && level.getBlockEntity(order.mother().pos()) instanceof VillageHallBlockEntity) {
+			io.github.jcondedata.aliveworkplace.hall.Chronicle.atHall(level, order.mother().pos(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.ARRIVED,
+				Component.translatable("chronicle.aliveworkplace.settlers_walked", colony));
+		}
+		RealmData.Order walking = order.withVia(Optional.empty());
+		return walking.withState(order.state(), order.leaves(), level.getGameTime() + journey(walking));
+	}
+
+	private static double flat(BlockPos a, BlockPos b) {
+		double dx = a.getX() - b.getX();
+		double dz = a.getZ() - b.getZ();
+		return Math.sqrt(dx * dx + dz * dz);
+	}
+
+	/**
+	 * How long the journey takes (41.3): by waystone, 3 minutes plus a tick a block from the other village's stone to the
+	 * spot; else {@link #journey(RealmData.Order)}.
+	 */
+	public static long journey(RealmData.Order order, ServerLevel level) {
+		Optional<BlockPos> stone = order.via().flatMap(v -> VillageWaystones.stoneOf(level, v));
+		return stone.isPresent() ? JOURNEY_TICKS + Math.round(flat(stone.get(), order.spot())) : journey(order);
 	}
 
 	/** How long the journey takes: 3 minutes plus a tick a block from the hall to the spot. */

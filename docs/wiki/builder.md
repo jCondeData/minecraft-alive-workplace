@@ -340,6 +340,12 @@ after); a small build's refresh keeping a chest and its diamonds, a bed and its 
 owner's own blocks, the leftovers' items in the store; no free Builder (it waits, the first one free takes it up);
 short of planks (the leftovers away, then the Builder waits and says what's missing, as for a repair); a build of the
 latest drawing (no button); saved and reloaded mid-way (it finishes).
+`QaRefreshOldHouseGameTests` (36.21, the tester's, through the same page): the preview's exact counts by kind and every
+sentence of the feature; the nearer of two free Builders gets it; two hall screens pressing the button start one
+refresh; a player who doesn't own the build can't start one; every leftover's item reaches the store exactly once (also
+across a save and reload mid-way, and none for a leftover a player broke first); a player's block where a new piece
+goes stays; with `builderRepairs` off a waiting refresh is still taken up; a Builder dying mid-way leaves the build on
+the page for another to finish.
 
 Compat tests (QA, lane E, from "Builders never copy what is inside containers"): `QaPastureCopyCompatTests` (a scanned
 Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),

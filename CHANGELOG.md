@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Village Hall: a hall whose quest board holds a quest of a kind this version doesn't know (a server rolled back to an older jar after a newer one added a kind) now loads with everything else it keeps, leaving out only that quest; before, the whole hall came back empty: treasury, rank, research, families and chronicle (B509).
 - Walls: when a wall piece's builder dies (killed in a raid, say), the half-built piece now stays open and the next free builder finishes it where it stands, also after a restart; before, the site was forgotten, the next round laid a second tower on the first one's roof and neither ever finished (B488).
 - Jobs: a farmer, miner, lumberjack, orchard keeper or berry breeder handed a Field Marker or Quarry Marker for a spot too far away now names the block they work at: "That field is 63 blocks from the Composter the farmer works at — keep it within 48."; before, every one of them said "from the builder's Blueprint Table", a table none of them has (B453).
 - Builder: when a Tinkerer can't make a part yet, the shortage line now names the raw metal the chest is short of: five raw iron and a coal for iron bars read "short of 1 Raw Iron", and coal with no ore "short of 6 Raw Iron"; before, both said "6 Deepslate Iron Ore", an ore you only get with Silk Touch. Gold and copper read the same way, and any job with two recipes for one thing names the one that uses what's in the chest (B489).

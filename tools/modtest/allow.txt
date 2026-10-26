@@ -16,6 +16,8 @@ a test integration from test turned off
 Player test-mock-player just tried to change non-editable sign
 # MinerGameTests loads a quarry saved by a pre-0.45.0 bug to prove the repair stops it.
 Stopped quarry .* stretched over its Miner's Bench .* by a bug before 0\.45\.0
+# QaBlockSaveKindsGameTests and QaEveryCodecGameTests load halls with quests that can't be read, to prove each is left out and the hall still loads (B509).
+Left out a saved village quest that can't be read
 # GemGrowerGameTests feeds the bed reader malformed files (from a test pack) to prove each is logged and skipped.
 skipping gem bed testpack:gem_beds/
 # StewardRulesGameTests feeds the rule loader broken Steward rule files to prove each is skipped, naming its field.

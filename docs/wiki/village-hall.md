@@ -202,6 +202,8 @@ empty unless a default is given here:
   `lastRaidDay` (-100), `festivalDay` (-1), `feastDay` (-1), `festivalCalled` (-100), `festivalMissed` (-1).
 - Pages: `quests` and `questsDone`, `research`, `edicts`, `reforms`, `guilds`, `plan` (the City Plan), `steward`
   and `steward_desk`, `services`, `piece_looks`, `bannerBase` and `bannerPatterns` (the village's colors).
+- A saved quest that can't be read (a `kind` this version doesn't know, after going back to an older jar, or a hand
+  edit) is left out with a warning in the log; the hall's other quests and data load as usual.
 
 The calendar keeps the last day it fired for with the overworld. Friends are saved in `aliveworkplace_friends`.
 Not saved: the census (counted again every 600 ticks) and the screen's layout. The Free job blocks page saves

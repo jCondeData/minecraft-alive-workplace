@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
@@ -51,6 +52,37 @@ public final class VillageQuests {
 	public enum Kind { BRING, SLAY, BATTLE }
 
 	/**
+	 * A quest's kind, saved by its name. A name this jar doesn't know (a world opened with an older jar after a newer one
+	 * added a kind, or a hand edit) is a codec error, never a throw: a throw would escape the hall's load and cost the
+	 * village all its data (B509).
+	 */
+	public static final Codec<Kind> KIND_CODEC = Codec.STRING.comapFlatMap(name -> {
+		for (Kind kind : Kind.values()) {
+			if (kind.name().equals(name)) {
+				return DataResult.success(kind);
+			}
+		}
+		return DataResult.error(() -> "unknown quest kind " + name);
+	}, Kind::name);
+
+	/**
+	 * The quests saved in {@code tag} (a list of quests): one that can't be read (of a kind this jar doesn't know, say) is
+	 * left out with a warning in the log, and the others load (B509). Nothing saved, or not a list: none.
+	 */
+	public static List<Quest> readQuests(@Nullable net.minecraft.nbt.Tag tag) {
+		List<Quest> quests = new ArrayList<>();
+		if (!(tag instanceof net.minecraft.nbt.ListTag list)) {
+			return quests;
+		}
+		for (net.minecraft.nbt.Tag entry : list) {
+			DataResult<Quest> read = Quest.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, entry);
+			read.result().ifPresentOrElse(quests::add, () -> io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn(
+				"Left out a saved village quest that can't be read ({}): {}", read.error().map(DataResult.Error::message).orElse("?"), entry));
+		}
+		return quests;
+	}
+
+	/**
 	 * What makes a quest a reform step (ROADMAP 30.5, see {@link Reforms}): the edict's id and the step (0 for the first).
 	 * Saved as a map so M31 can add an {@code arc} field beside them without touching saves.
 	 */
@@ -70,7 +102,7 @@ public final class VillageQuests {
 						Optional<BlockPos> deliverTo, Optional<ReformStep> reform) {
 		public static final Codec<Quest> CODEC = RecordCodecBuilder.create(i -> i.group(
 			UUIDUtil.CODEC.fieldOf("id").forGetter(Quest::id),
-			Codec.STRING.xmap(Kind::valueOf, Kind::name).fieldOf("kind").forGetter(Quest::kind),
+			KIND_CODEC.fieldOf("kind").forGetter(Quest::kind),
 			Codec.STRING.optionalFieldOf("item", "minecraft:air").forGetter(Quest::item),
 			Codec.INT.fieldOf("count").forGetter(Quest::count),
 			Codec.INT.optionalFieldOf("progress", 0).forGetter(Quest::progress),

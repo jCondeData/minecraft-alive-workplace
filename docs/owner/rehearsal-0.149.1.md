@@ -1,24 +1,24 @@
 # Update rehearsal: 0.149.1 to main
 
-A world made with **0.149.1** (the last release before 1.8) on the Cobbleverse pack, saved, then opened with **alive-workplace-0.149.1+1.21.1.jar** with every expansion switched on, as 1.8 will ship, and run for 1 in-game day (`tools/packtest/rehearsal.sh`, ROADMAP 34.23; main b332e48, lane E QA, 2026-10-26).
+A world made with **0.149.1** (the last release) on the Cobbleverse pack, saved, then opened with **alive-workplace-0.149.1+1.21.1.jar** built from main bc3516f (after B509's hall-load fix) with every expansion switched on, and run for 1 in-game day (`tools/packtest/rehearsal.sh`, ROADMAP 34.23; lane E QA, lane-e-1026-0722, 2026-10-26 08:37Z).
 
-**Verdict:** nothing lost in the update (every villager, job, rank, container, parcel and build site came through, and the takings match the old jar's on the same day; no warning or error of ours in the three logs). The one miss is B436's one-off tick when the new jar first opens the world: 1153.6 ms this time (569.6 ms from 0.149.0 yesterday).
+**Verdict:** nothing lost in the update (every villager, job, rank, container, parcel and build site came through, and the takings match the old jar's control on the same day; no warning or error of ours in the three logs beyond the allow-listed line that the pack's mob blocklist kept a raid's zombies and skeletons from spawning). The seeding window is now under the target (p95 32.8 ms, was 1153.6 ms on b332e48 this morning, seeded over 1000 ticks instead of 20) and `/tick query` after it reads P50 6.8 / P95 12.2 ms (was 33.8 / 58.5). One tick is still long: the worst, 649.2 ms, the first tick the new jar opens the world (B436); the control on the old jar has a 629.3 ms first tick too, so it may be the pack's start more than ours.
 
 ## Per village
 
 | Village | Villagers (seeded / before / after) | Classes seeded | Jobs kept | Treasury takings a day, the same days (old jar / 1.8) | Rank (before / after) | Containers equal |
 |---|---|---|---|---|---|---|
 | Hamlet | 6 / 6 / 6 | 6 peasant | 4 of 4 | 0.78 / 0.78 emeralds | hamlet / hamlet | yes (10 containers, 683 items) |
-| Town | 22 / 22 / 22 | 22 peasant | 14 of 14 | 4.58 / 4.58 emeralds | town / town | yes (11 containers, 619 items) |
+| Town | 22 / 22 / 22 | 22 peasant | 14 of 14 | 4.49 / 4.49 emeralds | town / town | yes (11 containers, 619 items) |
 | City | 36 / 36 / 36 | 36 peasant | 26 of 26 | 9.10 / 9.10 emeralds | city / city | yes (16 containers, 735 items) |
 
 Mail: 1 parcel(s) before (in_transit), 1 after (in_transit). Build sites: structure before, structure after.
 
 ## Tick times while the classes were seeded
 
-`Rehearsal seeding: every hall seeded after 20 ticks; tick p50 76.7 ms, p95 1153.6 ms, worst 1153.6 ms` (target: p95 under 50 ms, no tick over 50 ms of ours).
+`Rehearsal seeding: every hall seeded after 1000 ticks; tick p50 9.9 ms, p95 32.8 ms, worst 649.2 ms` (target: p95 under 50 ms, no tick over 50 ms of ours).
 
-`/tick query` once seeded: P50: 33.8ms P95: 58.5ms P99: 101.3ms, sample: 100
+`/tick query` once seeded: P50: 6.8ms P95: 12.2ms P99: 21.8ms, sample: 100
 
 ## Log audit
 
@@ -32,46 +32,44 @@ Mail: 1 parcel(s) before (in_transit), 1 after (in_transit). Build sites: struct
 
 ## error (27 lines, 9 distinct)
 
-- 3x `[02:41:46] [main/ERROR]: Registry 'minecraft:wolf_sound_variant' was empty after loading`
-- 3x `[02:41:46] [main/ERROR]: Registry 'minecraft:cow_variant' was empty after loading`
-- 3x `[02:41:46] [main/ERROR]: Registry 'minecraft:chicken_variant' was empty after loading`
-- 3x `[02:41:46] [main/ERROR]: Registry 'minecraft:pig_variant' was empty after loading`
-- 3x `[02:41:46] [main/ERROR]: Registry 'vanillabackport:wolf_variant' was empty after loading`
-- 3x `[02:41:46] [main/ERROR]: Registry 'vanillabackport:frog_variant' was empty after loading`
-- 3x `[02:41:46] [main/ERROR]: Registry 'vanillabackport:cat_variant' was empty after loading`
-- 3x `[02:41:46] [main/ERROR]: Registry 'vanillabackport:sulfur_cube_archetypes' was empty after loading`
-- 3x `[02:42:23] [main/ERROR]: Unable to apply dex addition cobblemon:mega_z as the sub-dex cobblemon:mega_z does not exist`
+- 3x `[08:37:08] [main/ERROR]: Registry 'minecraft:wolf_sound_variant' was empty after loading`
+- 3x `[08:37:08] [main/ERROR]: Registry 'minecraft:cow_variant' was empty after loading`
+- 3x `[08:37:08] [main/ERROR]: Registry 'minecraft:chicken_variant' was empty after loading`
+- 3x `[08:37:08] [main/ERROR]: Registry 'minecraft:pig_variant' was empty after loading`
+- 3x `[08:37:08] [main/ERROR]: Registry 'vanillabackport:wolf_variant' was empty after loading`
+- 3x `[08:37:08] [main/ERROR]: Registry 'vanillabackport:frog_variant' was empty after loading`
+- 3x `[08:37:08] [main/ERROR]: Registry 'vanillabackport:cat_variant' was empty after loading`
+- 3x `[08:37:08] [main/ERROR]: Registry 'vanillabackport:sulfur_cube_archetypes' was empty after loading`
+- 3x `[08:37:27] [main/ERROR]: Unable to apply dex addition cobblemon:mega_z as the sub-dex cobblemon:mega_z does not exist`
 
-## perf (5 lines, 3 distinct)
+## perf (7 lines, 3 distinct)
 
-- 3x `[02:44:43] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 90063ms or 1801 ticks behind`
-- 1x `[02:41:43] [Mappings Cache Thread #1/INFO]: Verified cache of yarn mappings (took 1609ms)`
-- 1x `[02:41:44] [Mappings Cache Thread #1/INFO]: Cached mappings have been built (took 2134ms)`
+- 5x `[08:38:21] [Server thread/WARN]: Can't keep up! Is the server overloaded? Running 20952ms or 419 ticks behind`
+- 1x `[08:37:10] [Mappings Cache Thread #1/INFO]: Verified cache of yarn mappings (took 4016ms)`
+- 1x `[08:37:11] [Mappings Cache Thread #1/INFO]: Cached mappings have been built (took 4514ms)`
 
 ## warn (255 lines, 72 distinct)
 
-- 39x `[02:40:59] [main/WARN]: Error loading class: net/minecraft/class_906 (java.lang.ClassNotFoundException: net/minecraft/class_906)`
-- 9x `[02:44:50] [Server thread/WARN]: Skipping Entity with id cobblemon_pokemon_entity_placeholder`
-- 3x `[02:40:55] [ForkJoinPool-1-worker-2/WARN]: Mod com_github_rtyley_animated-gif-lib-for-java uses the version animated-gif-lib-1.7 which isn't compatible with Loader's extended semantic version format (Could not parse version number component 'animated'!), SemVer is recommended for reliably evaluating`
-- 3x `[02:40:56] [ForkJoinPool-1-worker-2/WARN]: Mod nochatrestrictions uses the version Fabric-MC1.21.11-v1.0.0 which isn't compatible with Loader's extended semantic version format (Could not parse version number component 'Fabric'!), SemVer is recommended for reliably evaluating dependencies and priori`
-- 3x `[02:40:56] [ForkJoinPool-1-worker-2/WARN]: The mod "accessories_compat_layer" contains invalid entries in its mod json:`
+- 39x `[08:36:40] [main/WARN]: Error loading class: net/minecraft/class_906 (java.lang.ClassNotFoundException: net/minecraft/class_906)`
+- 9x `[08:38:40] [Server thread/WARN]: Skipping Entity with id cobblemon_pokemon_entity_placeholder`
+- 3x `[08:36:38] [ForkJoinPool-1-worker-1/WARN]: Mod com_github_rtyley_animated-gif-lib-for-java uses the version animated-gif-lib-1.7 which isn't compatible with Loader's extended semantic version format (Could not parse version number component 'animated'!), SemVer is recommended for reliably evaluating`
+- 3x `[08:36:38] [ForkJoinPool-1-worker-2/WARN]: Mod nochatrestrictions uses the version Fabric-MC1.21.11-v1.0.0 which isn't compatible with Loader's extended semantic version format (Could not parse version number component 'Fabric'!), SemVer is recommended for reliably evaluating dependencies and priori`
+- 3x `[08:36:38] [ForkJoinPool-1-worker-1/WARN]: The mod "accessories_compat_layer" contains invalid entries in its mod json:`
     - Unsupported root entry "#COMMENT_breaks" at line 53 column 20
-- 3x `[02:40:56] [ForkJoinPool-1-worker-2/WARN]: Mod legendarymonuments uses the version Cobbleverse which isn't compatible with Loader's extended semantic version format (Could not parse version number component 'Cobbleverse'!), SemVer is recommended for reliably evaluating dependencies and prioritizing `
-- 3x `[02:40:59] [main/WARN]: Option 'mixin.bugfix.paper_chunk_patches' overriden (by mods [c2me]) to 'false'`
-- 3x `[02:40:59] [main/WARN]: Option 'mixin.perf.cache_strongholds' overriden (by mods [c2me]) to 'false'`
-- 3x `[02:40:59] [main/WARN]: Option 'mixin.bugfix.chunk_deadlock' overriden (by mods [c2me]) to 'false'`
-- 3x `[02:41:00] [main/WARN]: Error loading class: ca/spottedleaf/starlight/common/integration/v0/ChunkSystemHooks (java.lang.ClassNotFoundException: ca/spottedleaf/starlight/common/integration/v0/ChunkSystemHooks)`
-- 3x `[02:41:00] [main/WARN]: Error loading class: juuxel/adorn/block/variant/BlockVariantSets (java.lang.ClassNotFoundException: juuxel/adorn/block/variant/BlockVariantSets)`
-- 3x `[02:41:01] [main/WARN]: Error loading class: jeresources/api/util/BiomeHelper (java.lang.ClassNotFoundException: jeresources/api/util/BiomeHelper)`
-- 3x `[02:41:01] [main/WARN]: Error loading class: yalter/mousetweaks/Main (java.lang.ClassNotFoundException: yalter/mousetweaks/Main)`
-- 3x `[02:41:03] [main/WARN]: Error loading class: org/quiltmc/loader/api/plugin/ModContainerExt (java.lang.ClassNotFoundException: org/quiltmc/loader/api/plugin/ModContainerExt)`
+- 3x `[08:36:38] [ForkJoinPool-1-worker-2/WARN]: Mod legendarymonuments uses the version Cobbleverse which isn't compatible with Loader's extended semantic version format (Could not parse version number component 'Cobbleverse'!), SemVer is recommended for reliably evaluating dependencies and prioritizing `
+- 3x `[08:36:40] [main/WARN]: Option 'mixin.bugfix.paper_chunk_patches' overriden (by mods [c2me]) to 'false'`
+- 3x `[08:36:40] [main/WARN]: Option 'mixin.perf.cache_strongholds' overriden (by mods [c2me]) to 'false'`
+- 3x `[08:36:40] [main/WARN]: Option 'mixin.bugfix.chunk_deadlock' overriden (by mods [c2me]) to 'false'`
+- 3x `[08:36:41] [main/WARN]: Error loading class: ca/spottedleaf/starlight/common/integration/v0/ChunkSystemHooks (java.lang.ClassNotFoundException: ca/spottedleaf/starlight/common/integration/v0/ChunkSystemHooks)`
+- 3x `[08:36:41] [main/WARN]: Error loading class: juuxel/adorn/block/variant/BlockVariantSets (java.lang.ClassNotFoundException: juuxel/adorn/block/variant/BlockVariantSets)`
+- 3x `[08:36:42] [main/WARN]: Error loading class: jeresources/api/util/BiomeHelper (java.lang.ClassNotFoundException: jeresources/api/util/BiomeHelper)`
+- 3x `[08:36:42] [main/WARN]: Error loading class: yalter/mousetweaks/Main (java.lang.ClassNotFoundException: yalter/mousetweaks/Main)`
+- 3x `[08:36:43] [main/WARN]: Error loading class: org/quiltmc/loader/api/plugin/ModContainerExt (java.lang.ClassNotFoundException: org/quiltmc/loader/api/plugin/ModContainerExt)`
 ```
 
 ## Verdict
 
-**Did not pass:**
-
-- tick p95 while seeding 1153.6 ms (target under 50)
+**Passed.**
 
 ## Limits
 
@@ -86,7 +84,7 @@ Mail: 1 parcel(s) before (in_transit), 1 after (in_transit). Build sites: struct
 
 - Jobs before: 2 farmer, 1 fisherman, 1 shepherd.
 - Jobs lost: on opening none; by the end none.
-- Treasury: 20.83 emeralds before (total taken 0.83), 21.61 after (total 1.61); the old jar's first day took 0.83. Wellbeing 0.54 before, 0.47 on the old jar's last day, 0.47 on 1.8's (fed 1 / 0 / 0 of 6 adults). Research levels 0 / 0.
+- Treasury: 20.78 emeralds before (total taken 0.78), 21.56 after (total 1.56); the old jar's first day took 0.78. Wellbeing 0.48 before, 0.48 on the old jar's last day, 0.48 on 1.8's (fed 0 / 0 / 0 of 6 adults). Research levels 0 / 0.
 - Couples (villagers with a partner): 0 before, 0 after; children 0 / 0.
 
 | Container | Before (saved by the old jar) | As the new jar loaded it | After the days (workers use their stock) |
@@ -106,8 +104,8 @@ Mail: 1 parcel(s) before (in_transit), 1 after (in_transit). Build sites: struct
 
 - Jobs before: 1 armorer, 1 builder, 1 cartographer, 1 cleric, 3 farmer, 1 fisherman, 1 fletcher, 1 librarian, 1 mason, 1 scholar, 1 shepherd, 1 toolsmith.
 - Jobs lost: on opening none; by the end none.
-- Treasury: 24.66 emeralds before (total taken 4.66), 29.24 after (total 9.24); the old jar's first day took 4.66. Wellbeing 0.61 before, 0.59 on the old jar's last day, 0.59 on 1.8's (fed 1 / 0 / 0 of 20 adults). Research levels 4 / 4.
-- Couples (villagers with a partner): 6 before, 8 after; children 2 / 2.
+- Treasury: 24.83 emeralds before (total taken 4.83), 29.32 after (total 9.32); the old jar's first day took 4.83. Wellbeing 0.65 before, 0.57 on the old jar's last day, 0.57 on 1.8's (fed 4 / 0 / 0 of 20 adults). Research levels 4 / 4.
+- Couples (villagers with a partner): 6 before, 6 after; children 2 / 2.
 
 | Container | Before (saved by the old jar) | As the new jar loaded it | After the days (workers use their stock) |
 |---|---|---|---|
@@ -127,9 +125,9 @@ Mail: 1 parcel(s) before (in_transit), 1 after (in_transit). Build sites: struct
 
 - Jobs before: 1 armorer, 1 ball_smith, 1 builder, 1 butcher, 1 chef, 1 cleric, 3 farmer, 1 fossil_scientist, 1 innkeeper, 1 jeweller, 1 librarian, 1 netherworker, 1 nurse, 1 pokemon_trader, 1 postman, 1 printer, 1 rancher, 1 scholar, 1 shopkeeper, 1 teacher, 1 tinkerer, 1 trainer_leader, 1 tutor, 1 undertaker.
 - Jobs lost: on opening none; by the end none.
-- Treasury: 29.90 emeralds before (total taken 9.90), 39.00 after (total 19.00); the old jar's first day took 9.90. Wellbeing 0.59 before, 0.50 on the old jar's last day, 0.50 on 1.8's (fed 7 / 0 / 0 of 32 adults). Research levels 7 / 7.
+- Treasury: 29.56 emeralds before (total taken 9.56), 38.66 after (total 18.66); the old jar's first day took 9.56. Wellbeing 0.55 before, 0.50 on the old jar's last day, 0.50 on 1.8's (fed 4 / 0 / 0 of 32 adults). Research levels 7 / 7.
 - Couples (villagers with a partner): 4 before, 4 after; children 4 / 4.
-- Daycare boarders: 2 before, 2 after. Fossils reviving (ticks left): [109103] before, [98232] after. Builders on a site: 1 before, 1 after.
+- Daycare boarders: 2 before, 2 after. Fossils reviving (ticks left): [108787] before, [96608] after. Builders on a site: 1 before, 1 after.
 
 | Container | Before (saved by the old jar) | As the new jar loaded it | After the days (workers use their stock) |
 |---|---|---|---|

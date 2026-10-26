@@ -91,8 +91,9 @@ villager off work within 12 blocks, is the happier for it (a villager at work by
 fields, isn't one of the crowd and gets nothing, B420): +3 mood ("watched a Mega Evolution at the shrine") as long as a
 festival's good mood lasts (2 days). The shrine counts only while its pedestal stands: with the pedestal broken (or
 never placed) there is no show, no chat line and no mood, and once a pedestal is put back the next festival's show is
-held again (B421). Once a festival; then the crowd goes back to the square for the dancing and
-fireworks. The show is part of the festival itself: it needs the village's festival (six villagers or more, on its
+held again (B421). Once a festival, restart or not: the day each village's show was held is saved, so a server
+restart during the show's hours doesn't hold it again (B501), and the next festival day holds its own; then the crowd
+goes back to the square for the dancing and fireworks. The show is part of the festival itself: it needs the village's festival (six villagers or more, on its
 festival day or one called), and it begins at the festival's first tick after the hall's round has seen it start.
 
 **Cobblecuisine on the menus (38.8).** With Cobblecuisine, the Chef cooks its dishes, each from its own crafting recipe
@@ -252,7 +253,10 @@ has none. The 38.3 and 38.4 files (`aliveworkplace_den_wardens`, `aliveworkplace
 unread: a guard posted as a warden is simply a guard again. The Mega Bracelets are saved on the overworld (`aliveworkplace_leader_bracelets`): the villages
 known to have a Trainer Leader (`leaderHalls`) and, per player, the villages whose Leader they beat (`beaten`) and the
 realms whose bracelet they had (`megaBracelet`). An older save has none: nobody has a bracelet yet. A villager who
-watched a Mega Shrine's show keeps the day on them (`mega_show_day`, 38.7); an older save has none. Cobblecuisine's
+watched a Mega Shrine's show keeps the day on them (`mega_show_day`, 38.7); an older save has none. The day each
+village's shrine show was held is saved per dimension (`aliveworkplace_mega_shrines`: `held`, by the hall's position,
+B501); an older save has none, and every village's next show is held as before. Who came to the shrine for a show not
+yet held is kept in memory only: after a restart the trainer waits for them again (never past the show's last call). Cobblecuisine's
 dishes (38.8) save nothing new: the dishes go in chests and the meals in the villagers' `recent_meals`. Bean farms
 (38.9) save nothing new either: whether beans are wanted is worked out again at each look over the field. A partner's treat day (38.10) is kept in the Pokémon's own saved data
 (`aliveworkplace_treat_day` in its persistent data, which Cobblemon saves with it); a Pokémon from an older save has

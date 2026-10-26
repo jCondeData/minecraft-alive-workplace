@@ -275,14 +275,14 @@ public class QaCobblemonThreatsCompatTests implements FabricGameTest {
 		int radius = VillageHalls.RADIUS;
 		VillageHalls.RADIUS = 16;
 		long time = level.getDayTime();
-		MegaShrines.forget();
+		MegaShrines.forgetShows(level);
 		level.setDayTime((Chronicle.day(level) - 1) * 24000L + Festivals.START + 100);
 		PartnerShowsCompatTests.after(helper, () -> {
 			BuildSiteManager.get(level).forgetFinished(placement);
 			VillageHalls.RADIUS = radius;
 			MegaBracelets.ENABLED = true;
 			Festivals.forget();
-			MegaShrines.forget();
+			MegaShrines.forgetShows(level);
 			level.setDayTime(time);
 			for (Villager v : level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(4))) {
 				v.discard();

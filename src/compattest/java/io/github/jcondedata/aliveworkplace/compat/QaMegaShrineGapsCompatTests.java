@@ -74,14 +74,14 @@ public class QaMegaShrineGapsCompatTests implements FabricGameTest {
 		int radius = VillageHalls.RADIUS;
 		VillageHalls.RADIUS = 16;
 		long time = level.getDayTime();
-		MegaShrines.forget();
+		MegaShrines.forgetShows(level);
 		level.setDayTime((Chronicle.day(level) - 1) * 24000L + Festivals.START + 100);
 		PartnerShowsCompatTests.after(helper, () -> {
 			BuildSiteManager.get(level).forgetFinished(placement);
 			VillageHalls.RADIUS = radius;
 			MegaBracelets.ENABLED = true;
 			Festivals.forget();
-			MegaShrines.forget();
+			MegaShrines.forgetShows(level);
 			level.setDayTime(time);
 			for (Villager v : level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(4))) {
 				v.discard();
@@ -188,7 +188,7 @@ public class QaMegaShrineGapsCompatTests implements FabricGameTest {
 		helper.assertTrue(ModAttachments.MEGA_SHOW_DAY.get(watcher) != null, "no show with the pedestal standing");
 		// Next festival: the pedestal has been broken. A player stands by to read any show's line.
 		ModAttachments.MEGA_SHOW_DAY.remove(watcher);
-		MegaShrines.forget();
+		MegaShrines.forgetShows(level);
 		level.setBlockAndUpdate(pedestal, Blocks.AIR.defaultBlockState());
 		List<Component> read = new java.util.ArrayList<>();
 		ServerPlayer player = QaCampHabitatCompatTests.listener(helper, read, "ShrineWatcher");

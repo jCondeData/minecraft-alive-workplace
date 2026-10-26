@@ -52,6 +52,7 @@ public class MegaShrineCompatTests implements FabricGameTest {
 			VillageHalls.RADIUS = radius;
 			MegaBracelets.ENABLED = true;
 			Festivals.forget();
+			MegaShrines.forgetShows(level); // B501: the shows held are saved
 			level.setDayTime(time);
 			for (Villager v : level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(4))) {
 				v.discard();
@@ -138,7 +139,7 @@ public class MegaShrineCompatTests implements FabricGameTest {
 			Festivals.ENABLED = festivals;
 			MegaBracelets.ENABLED = true;
 			Festivals.forget();
-			MegaShrines.forget();
+			MegaShrines.forgetShows(level);
 			level.setDayTime(time);
 			for (Villager v : level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(4))) {
 				v.discard();
@@ -195,6 +196,7 @@ public class MegaShrineCompatTests implements FabricGameTest {
 		helper.assertTrue(MegaShrines.mood(level, late) == MegaShrines.MOOD, "a villager who came to the shrine missed the show: mood " + MegaShrines.mood(level, late));
 		// Next festival: one never comes (off work, far off); at the show's last call it is held without them.
 		Festivals.forget();
+		MegaShrines.forgetShows(level); // the next festival (B501: the show held is saved; the day is the same here)
 		ModAttachments.MEGA_SHOW_DAY.remove(near);
 		ModAttachments.MEGA_SHOW_DAY.remove(late);
 		late.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(5.5, 2, -12.5)));
@@ -238,6 +240,7 @@ public class MegaShrineCompatTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		shrine(helper);
 		Festivals.forget();
+		MegaShrines.forgetShows(level);
 		BlockPos hall = helper.absolutePos(HALL);
 		villager(helper, new BlockPos(5, 4, 7), true); // at the pedestal already
 		Villager early = villager(helper, new BlockPos(5, 2, 2), false); // at the crowd's spot
@@ -254,6 +257,48 @@ public class MegaShrineCompatTests implements FabricGameTest {
 		long today = Chronicle.day(level);
 		helper.assertTrue(Long.valueOf(today).equals(ModAttachments.MEGA_SHOW_DAY.get(late)), "the show waited for one who had already come and wandered off");
 		helper.assertTrue(Long.valueOf(today).equals(ModAttachments.MEGA_SHOW_DAY.get(early)), "one who came and wandered off missed the show");
+		helper.succeed();
+	}
+
+	/**
+	 * B501: the day each show was held is saved with the level, so a server restart in the show's hours (MegaShrines.forget,
+	 * what a stop loses) holds no second show, while the next festival day holds its own. The record survives a save; a
+	 * world from before (no record) has every show still to hold.
+	 */
+	//$ gametest_batch AREA '"mega_shrine_restart"'
+	@GameTest(template = AREA, batch = "mega_shrine_restart")
+	public void theShowHeldIsSavedThroughARestart(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		shrine(helper);
+		MegaShrines.forgetShows(level);
+		BlockPos hall = helper.absolutePos(HALL);
+		villager(helper, new BlockPos(5, 4, 7), true);
+		Villager watcher = villager(helper, new BlockPos(5, 2, 2), false);
+		long today = Chronicle.day(level);
+		// A world from before: no record at all, and an empty one, hold nothing; the show is held as it always was.
+		helper.assertTrue(MegaShrines.Data.load(new CompoundTag(), level.registryAccess()).held(hall) == -1, "an old save's empty record held a show");
+		helper.assertTrue(MegaShrines.Data.get(level).held(hall) == -1, "a show held before any was");
+		MegaShrines.tick(level, hall);
+		helper.assertTrue(Long.valueOf(today).equals(ModAttachments.MEGA_SHOW_DAY.get(watcher)), "no show at a world with no record");
+		helper.assertTrue(MegaShrines.Data.get(level).held(hall) == today, "the show held isn't recorded: " + MegaShrines.Data.get(level).held(hall));
+		// Saved: the record written and read back keeps the day.
+		CompoundTag saved = MegaShrines.Data.get(level).save(new CompoundTag(), level.registryAccess());
+		helper.assertTrue(MegaShrines.Data.load(saved, level.registryAccess()).held(hall) == today, "the show held lost in a save: " + saved);
+		// A restart in the show's hours: no second show, nobody newly in its mood.
+		Villager late = villager(helper, new BlockPos(6, 2, 2), false);
+		MegaShrines.forget();
+		for (int i = 0; i < 5; i++) {
+			MegaShrines.tick(level, hall);
+		}
+		helper.assertTrue(ModAttachments.MEGA_SHOW_DAY.get(late) == null, "the show was held again after a restart");
+		helper.assertTrue(Long.valueOf(today).equals(ModAttachments.MEGA_SHOW_DAY.get(watcher)) && MegaShrines.mood(level, watcher) == MegaShrines.MOOD,
+			"a restart changed the watcher's show: " + ModAttachments.MEGA_SHOW_DAY.get(watcher));
+		// The next festival day (after another restart): its show is held, and both watch it.
+		level.setDayTime(today * 24000L + Festivals.START + 100);
+		MegaShrines.forget();
+		MegaShrines.tick(level, hall);
+		helper.assertTrue(Long.valueOf(today + 1).equals(ModAttachments.MEGA_SHOW_DAY.get(late)) && Long.valueOf(today + 1).equals(ModAttachments.MEGA_SHOW_DAY.get(watcher)),
+			"the next festival day held no show: " + ModAttachments.MEGA_SHOW_DAY.get(late) + ", " + ModAttachments.MEGA_SHOW_DAY.get(watcher));
 		helper.succeed();
 	}
 }

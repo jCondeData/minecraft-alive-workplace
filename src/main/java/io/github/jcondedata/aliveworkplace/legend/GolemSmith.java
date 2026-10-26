@@ -199,7 +199,7 @@ public final class GolemSmith {
 		int at = OFFERED.indexOf(forge.role());
 		Role next = OFFERED.get((at + 1) % OFFERED.size());
 		ModAttachments.GOLEM_FORGE.set(smith, new Forge(next.id, forge.lastDay()));
-		Chat.system(player, Component.translatable("message.aliveworkplace.golem_smith.next", smith.getDisplayName(), next.title(),
+		Chat.system(player, io.github.jcondedata.aliveworkplace.work.Words.articled("message.aliveworkplace.golem_smith.next", 1, smith.getDisplayName(), next.title(),
 			costText(next)));
 	}
 
@@ -248,7 +248,7 @@ public final class GolemSmith {
 			SupplyContainers.extract(level, chests, e.getKey(), e.getValue());
 		}
 		ModAttachments.GOLEM_FORGE.set(smith, new Forge(forge.next(), today));
-		Chronicle.record(level, hall, Chronicle.Kind.ARRIVED, Component.translatable("chronicle.aliveworkplace.golem_smith.built",
+		Chronicle.record(level, hall, Chronicle.Kind.ARRIVED, io.github.jcondedata.aliveworkplace.work.Words.articled("chronicle.aliveworkplace.golem_smith.built", 1,
 			Component.literal(smith.getName().getString()), role.title()));
 		return golem;
 	}

@@ -81,7 +81,7 @@ public final class CobblemonTraders {
 				typeFits |= type.getName().equals(wanted.getName());
 			}
 			if (!typeFits) {
-				return Component.translatable("message.aliveworkplace.pokemon_trader.wrong_type", wanted.getDisplayName());
+				return Words.articled("message.aliveworkplace.pokemon_trader.wrong_type", 0, wanted.getDisplayName());
 			}
 			if (pokemon.getLevel() < minLevel) {
 				return Component.translatable("message.aliveworkplace.pokemon_trader.too_low", minLevel);

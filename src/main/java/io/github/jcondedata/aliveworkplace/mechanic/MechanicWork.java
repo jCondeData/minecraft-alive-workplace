@@ -504,7 +504,7 @@ public class MechanicWork extends Behavior<Villager> {
 			state.part = null; // put back by someone else (a builder, a player): the part in hand goes back with stop()
 			return;
 		}
-		status(villager, Component.translatable("message.aliveworkplace.mechanic.state.mend", part.state().getBlock().getName(),
+		status(villager, io.github.jcondedata.aliveworkplace.work.Words.articled("message.aliveworkplace.mechanic.state.mend", 0, part.state().getBlock().getName(),
 			Blueprints.displayName(part.structure())));
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(part.pos()));
 		if (state.walker.reach(level, villager, part.pos(), 3.5)) {

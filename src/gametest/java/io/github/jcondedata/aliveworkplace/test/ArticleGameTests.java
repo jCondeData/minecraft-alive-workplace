@@ -112,6 +112,50 @@ public class ArticleGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** B523: the type, stone, golem, building and part lines, with a vowel name and a consonant one. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void buildingStoneAndTypeLinesSayAnBeforeAVowel(GameTestHelper helper) {
+		Component inn = Component.literal("Inn");
+		Component bakery = Component.literal("Bakery");
+		String[][] cases = {
+			{Words.articled("message.aliveworkplace.pokemon_trader.wrong_type", 0, "Ice").getString(), "Not an Ice type"},
+			{Words.articled("message.aliveworkplace.pokemon_trader.wrong_type", 0, "Fire").getString(), "Not a Fire type"},
+			{Words.articled("message.aliveworkplace.professor.stone_bought", 0, "Ice Stone", "Oak").getString(), "You bought an Ice Stone from Oak"},
+			{Words.articled("message.aliveworkplace.professor.stone_bought", 0, "Fire Stone", "Oak").getString(), "You bought a Fire Stone from Oak"},
+			{Words.articled("message.aliveworkplace.golem_smith.next", 1, "Bram", "Iron Golem", "4 iron").getString(), "Bram will build an Iron Golem next (4 iron)."},
+			{Words.articled("chronicle.aliveworkplace.golem_smith.built", 1, "Bram", "Snow Golem").getString(), "Bram built a Snow Golem"},
+			{Words.articled("class.aliveworkplace.need.building", 0, inn).getString(), "An Inn in the village"},
+			{Words.articled("class.aliveworkplace.need.building", 0, bakery).getString(), "A Bakery in the village"},
+			{Words.articled("class.aliveworkplace.need.building_tier", 0, "Arena", "II").getString(), "An Arena (tier II) in the village"},
+			{Words.articled("advice.aliveworkplace.rise.building", 0, "Apiary Garden").getString(), "Have the builder put up an Apiary Garden"},
+			{Words.articled("steward.aliveworkplace.effect.build", 0, inn, "Civic").getString(), "build an Inn in a Civic zone"},
+			{Words.articled("steward.aliveworkplace.effect.build", 0, bakery, "Market").getString(), "build a Bakery in a Market zone"},
+			{Words.articled("steward.aliveworkplace.effect.upgrade", 0, inn).getString(), "upgrade an Inn"},
+			{Words.articled("steward.aliveworkplace.renew.title", 2, 12, "north", "Oak House").getString(), "Renew the old house 12 blocks north as an Oak House"},
+			{Words.articled("chronicle.aliveworkplace.plans_renew", 1, "Tess", inn, "Bram").getString(),
+				"Tess planned to renew an old house as an Inn: Bram takes it down and builds it again"},
+			{Words.articled("chronicle.aliveworkplace.renewed", 1, "Bram", bakery).getString(), "Bram renewed an old house as a Bakery; its villagers moved in"},
+			{Words.articled("quest.aliveworkplace.build", 0, inn).getString(), "An Inn finished in the village"},
+			{Words.articled("quest.aliveworkplace.build.wedding", 0, "Chapel").getString(), "A Chapel finished in the village, for the wedding"},
+			{Words.articled("message.aliveworkplace.mechanic.state.mend", 0, "Iron Door", "Windmill").getString(), "putting back an Iron Door in the Windmill"},
+			{Words.articledAuto("request.aliveworkplace.chapel_wedding.wants", "Dara", "", "Abbey").getString(), "Dara wants an Abbey built for their wedding"},
+			{Words.articledAuto("request.aliveworkplace.chapel_wedding.wants", "Dara", "", "Chapel").getString(), "Dara wants a Chapel built for their wedding"},
+			{Words.articledAuto("request.aliveworkplace.chapel_wedding.ask", "Dara", "Alex", "Abbey").getString(),
+				"Alex, I'm to be married, and I've always dreamed of a wedding in an Abbey. We have none here. If one were built, we'd wait for it. Would you help?"},
+			{new io.github.jcondedata.aliveworkplace.hall.VillageAdvice.Tip("disaster_house", net.minecraft.world.item.Items.BELL, "A flood", inn, "Armorer", "Bell", "x")
+				.title().getString(), "A flood can come here: build an Inn"},
+			{new io.github.jcondedata.aliveworkplace.hall.VillageAdvice.Tip("disaster_house", net.minecraft.world.item.Items.BELL, "A flood", bakery, "Armorer", "Bell", "x")
+				.title().getString(), "A flood can come here: build a Bakery"},
+			{new io.github.jcondedata.aliveworkplace.hall.VillageAdvice.Tip("disaster_answer", net.minecraft.world.item.Items.BELL, "A flood",
+				Stations.name(VillagerProfession.ARMORER)).how().getString(), "An Armorer answers it: give the village one"},
+		};
+		for (String[] c : cases) {
+			helper.assertTrue(c[0].equals(c[1]), "read \"" + c[0] + "\", expected \"" + c[1] + "\"");
+		}
+		helper.succeed();
+	}
+
 	/** Each {@code .an} line is its plain line with that one "a" turned to "an", so the two never drift apart. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
@@ -137,7 +181,7 @@ public class ArticleGameTests implements FabricGameTest {
 			}
 			helper.assertTrue(one, e.getKey() + " isn't its plain line with \"a\" made \"an\": \"" + plain + "\" / \"" + an + "\"");
 		}
-		helper.assertTrue(seen >= 19, "only " + seen + " .an lines");
+		helper.assertTrue(seen >= 39, "only " + seen + " .an lines");
 		helper.succeed();
 	}
 }

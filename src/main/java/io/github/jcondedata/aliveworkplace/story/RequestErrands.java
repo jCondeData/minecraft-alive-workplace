@@ -441,7 +441,7 @@ public final class RequestErrands {
 
 		@Override
 		public Component line() {
-			return Component.translatable(wedding ? "quest.aliveworkplace.build.wedding" : "quest.aliveworkplace.build", what());
+			return io.github.jcondedata.aliveworkplace.work.Words.articled(wedding ? "quest.aliveworkplace.build.wedding" : "quest.aliveworkplace.build", 0, what());
 		}
 
 		@Override

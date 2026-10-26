@@ -17,6 +17,9 @@ Stops a piece of work. You hardly ever type it: click the cancel button next to 
 
 - **A build:** "Canceled the build of Fountain." What's built stays, and the blueprint is still placed there: hand it
   back to the builder to carry on, or click the ground to move it.
+- **A take-down:** "Canceled the take-down of Fountain." What's still standing stays, and the blueprint is still placed
+  there: hand it back to the builder (no need to sneak) to carry on taking it down, or click the ground to move it,
+  which makes it a plain blueprint again.
 - **A quarry:** "Stopped the quarry."
 - **A field, fishing spot, orchard or tree farm:** the farmer, fisherman, orchard keeper or lumberjack is let go from
   it.

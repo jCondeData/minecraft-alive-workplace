@@ -120,7 +120,11 @@ pillar with a 5 x 5 cap, nothing skipped, no scaffolding left, the chest as full
 `ScaffoldingGameTests.carpentersMakeScaffoldingFromBambooAndString`, `ScaffoldingGameTests.switchedOffNothingIsPutUp`,
 `ScaffoldingGameTests.follysDomeIsFinishedWithNoSkippedSteps` (the test folly's dome and finial, nothing skipped), and QA's `ScaffoldingGameTests.theBuilderDyingWithScaffoldsUpTakesThemAllDown` (killed with scaffolds up: all down,
 none lost between the chest and his dropped bag) and `ScaffoldingGameTests.scaffoldingAPlayerBreaksIsStruckOffAndTheBuildFinishes`
-(the column's foot broken by someone else: struck off, the build finishes).
+(the column's foot broken by someone else: struck off, the build finishes). QA's `QaScaffoldingGameTests` (6):
+too little scaffolding (none lost, none left up, no waiting), free materials (scaffolded with nothing skipped, no
+scaffolding item created), never on a drawn block and never carried past its stage, the chest broken then the build
+cancelled (all 64 on the ground), the chest emptied mid-column (none lost), and a two-builder crew (finished, nobody
+hurt, the chest as full as before).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks
 away at the builder's height, with stills of it up the scaffolding and taking it down).

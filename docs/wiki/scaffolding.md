@@ -65,7 +65,7 @@ recipe (6 bamboo and a string make 6); builders sell it too.
 
 | Key | Default | What it does |
 |---|---|---|
-| `builderScaffolding` | on from 1.0 | Builders put up scaffolding to reach what has nowhere to stand near it. Off: those blocks are skipped as before |
+| `builderScaffolding` | on from 1.0 | Builders put up scaffolding to reach what has nowhere to stand near it. Off: those blocks are skipped as before (scaffolds already up still come down into the chests) |
 
 ## 4. Saved data
 
@@ -124,7 +124,10 @@ none lost between the chest and his dropped bag) and `ScaffoldingGameTests.scaff
 too little scaffolding (none lost, none left up, no waiting), free materials (scaffolded with nothing skipped, no
 scaffolding item created), never on a drawn block and never carried past its stage, the chest broken then the build
 canceled (all 64 on the ground), the chest emptied mid-column (none lost), and a two-builder crew (finished, nobody
-hurt, the chest as full as before).
+hurt, the chest as full as before). QA's `QaBuilderFixes1026GameTests.scaffoldingSwitchedOffWithScaffoldsUpStillTakesThemAllDown`
+(switched off with scaffolds up: all down, all 64 back in the chest) and
+`QaBuilderFixes1026GameTests.cancelWithTheChestFullDropsTheScaffoldingAndLosesNone` (canceled with the chest full: none
+left standing, none lost between the chest, the bag and the ground).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks
 away at the builder's height, with stills of it up the scaffolding and taking it down).

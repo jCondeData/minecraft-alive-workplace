@@ -318,6 +318,7 @@ public final class HallJobs {
 			} else if (isOpen(menu, villager)) {
 				OPEN_LISTS.remove(menu); // Job ▾ again closes it
 			} else {
+				HallBeds.close(menu); // one list at a time (40.4)
 				OPEN_LISTS.put(menu, new Open(villager.getUUID(), null));
 			}
 			relayout(menu, level, hall);
@@ -441,6 +442,11 @@ public final class HallJobs {
 	private static void relayout(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
 		VillageHallScreen.renderFrom(menu, level, hall, menu.state(HallSections.PEOPLE_FIRST));
 		menu.broadcastChanges();
+	}
+
+	/** Closes {@code menu}'s list (Bed ▾ opening its own list, 40.4). */
+	static void close(ChoiceMenu menu) {
+		OPEN_LISTS.remove(menu);
 	}
 
 	/** Forgets every open list (tests). */

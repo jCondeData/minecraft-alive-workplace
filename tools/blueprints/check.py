@@ -4,6 +4,9 @@ Architect building skill): blocks nothing holds up, lanterns hanging from nothin
 standing on air, ladders with no wall behind them, doors missing a half, sand and gravel over air. The bottom layer
 (y = 0) stands on the ground, so it holds itself up. And two the owner met in a playtest (B148, B149): chairs with their
 backs to the table, and upper floors no stairs or ladder lead up to; and since B154 open-air stands and terraces too.
+Since B537-B539: beds missing their other half (or with it on the wrong side), lanterns, candles and torches standing
+on a block whose top can't hold them (a lectern, a chest, a bottom slab...), and dirt paths or farmland under a block
+the game counts as solid (a fence, a wall, a slab...), which it turns to dirt.
 """
 
 AIR = {"minecraft:air", "minecraft:cave_air", "minecraft:structure_void", "minecraft:jigsaw"}
@@ -21,6 +24,60 @@ def holds_centre(block):
         return props.get("half", props.get("type")) in ("bottom", "double")
     return not (short.endswith("_trapdoor") or short.endswith("_carpet") or short.endswith("lantern") or "button" in short
                 or short.endswith("_sign") or short.endswith("_banner") or "torch" in short)
+
+
+# What the game lets a lantern, a candle or a torch stand on: Block.canSupportCenter, a solid middle in the block's top
+# face. These blocks' tops are lower than a full block, slanted or hollow, so the game drops what stands on them (B538).
+NO_CENTRE_TOP = ("lectern", "chest", "_bed", "_carpet", "pressure_plate", "campfire", "enchanting_table",
+                 "brewing_stand", "flower_pot", "potted_", "_leaves", "dirt_path", "farmland", "cake", "candle", "lantern",
+                 "_head", "skull", "stonecutter", "daylight_detector", "composter", "cauldron", "_button", "_sign",
+                 "_banner", "torch", "rail", "sea_pickle", "turtle_egg", "snow")
+CENTRE_STANDS = ("lantern", "soul_lantern", "torch", "soul_torch", "redstone_torch")
+
+
+def holds_on_top(block):
+    """Whether a lantern, candle or torch can stand on {@code block} (its top face has a solid middle)."""
+    name, props = block
+    short = name.split(":")[1]
+    if short.endswith("_slab"):
+        return props.get("type") in ("top", "double")
+    if short.endswith("_trapdoor"):
+        return props.get("half") == "top" and props.get("open") != "true"
+    if short == "snow":
+        return props.get("layers") == "8"
+    return not any(t in short for t in NO_CENTRE_TOP)
+
+
+# What turns a dirt path or farmland under it to dirt: a block the game counts as solid (BlockState.isSolid: a
+# collision box at least a block tall, or most of a block), e.g. a fence, a wall, a slab, stairs, a door, a banner
+# (B539). Not a fence gate (the game lets a path run under one), not small or walk-through things.
+# Another mod's block (a Cobblemon crop on farmland) is left alone: nothing here says how solid it is.
+SMALL = ("lantern", "candle", "flower_pot", "potted_", "_head", "skull", "sea_pickle", "turtle_egg", "_stem", "_crop",
+         "_mushroom", "_fungus", "_roots", "sweet_berry_bush")
+
+
+def turns_path(block):
+    """Whether the game turns a dirt path or farmland under {@code block} to dirt."""
+    if block is None or not block[0].startswith("minecraft:"):
+        return False
+    s = _short(block)
+    if "fence_gate" in s or any(t in s for t in SMALL):
+        return False
+    # Signs and banners have no collision but the game still counts them as solid (forceSolidOn)
+    return s.endswith(("_door", "trapdoor", "ladder", "_sign", "_banner")) or not passable(block)
+
+
+def bed_problem(blocks, p, props):
+    """What's wrong with the bed half at {@code p}: the head is one block from the foot towards its facing (B537)."""
+    dx, _, dz = FACING[props["facing"]]
+    foot = props.get("part") == "foot"
+    q = (p[0] + dx, p[1], p[2] + dz) if foot else (p[0] - dx, p[1], p[2] - dz)
+    other = blocks.get(q)
+    if other is not None and other[0] == blocks[p][0] and other[1].get("facing") == props["facing"] \
+            and other[1].get("part") == ("head" if foot else "foot"):
+        return None
+    return (f"({'foot' if foot else 'head'}, facing {props['facing']}) has no {'head' if foot else 'foot'} at "
+            f"{q[0]},{q[1]},{q[2]} ({_short(other)} there): a half bed no one can sleep in")
 
 
 def check(b, only=None, whole=None):
@@ -50,10 +107,17 @@ def check(b, only=None, whole=None):
     if floating:
         problems.append(f"{len(floating)} block(s) held up by nothing, e.g. " + "; ".join(
             f"{blocks[p][0].split(':')[1]}@{p[0]},{p[1]},{p[2]}" for p in floating[:5]))
+    # A Wonder's stage can also spoil what an earlier stage left: a lectern under its lantern (B538), a wall on its path
+    # (B539), a block over half of its bed. So the blocks beside this stage's are checked again.
+    near = None if only is None else only | {(x + dx, y + dy, z + dz) for x, y, z in only
+                                             for dx, dy, dz in ((0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1))}
     for (x, y, z), (name, props) in sorted(blocks.items()):
-        if only is not None and (x, y, z) not in only:
+        if near is not None and (x, y, z) not in near:
             continue
         short = name.split(":")[1]
+        if (x, y, z) not in (only or ()) and only is not None and not (
+                short.endswith("_bed") or short in ("dirt_path", "farmland") or short in CENTRE_STANDS or short.endswith("candle")):
+            continue
         below = blocks.get((x, y - 1, z))
         above = blocks.get((x, y + 1, z))
         bad = None
@@ -63,6 +127,10 @@ def check(b, only=None, whole=None):
                                                                    + " (the game drops it: nothing under its middle)")
             else:
                 bad = not grounded(x, y, z) and below is None and "stands on air"
+        elif short.endswith("_bed"):
+            bad = bed_problem(blocks, (x, y, z), props)
+        elif short in ("dirt_path", "farmland") and turns_path(above):
+            bad = "is under " + _short(above) + " (the game turns it to dirt: grass, dirt or coarse dirt there)"
         elif short == "ladder":
             dx, dy, dz = FACING[props["facing"]]
             bad = (x - dx, y, z - dz) not in blocks and "has no wall behind it"
@@ -75,6 +143,9 @@ def check(b, only=None, whole=None):
             bad = not grounded(x, y, z) and below is None and "stands on air"
         elif any(name.startswith(g) or g in name for g in GRAVITY):
             bad = not grounded(x, y, z) and below is None and "will fall"
+        if not bad and (short in CENTRE_STANDS or short.endswith("candle")) and props.get("hanging") != "true" \
+                and below is not None and not holds_on_top(below):
+            bad = "stands on " + _short(below) + " (its top can't hold it: the game drops it)"
         if bad:
             problems.append(f"{short}@{x},{y},{z} {bad}")
     problems += chair_problems(blocks, only)

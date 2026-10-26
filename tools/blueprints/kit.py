@@ -837,6 +837,25 @@ def finish(b):
             continue
         updates[(x, y, z)] = (block[0], tuple(sorted((k, str(v).lower()) for k, v in p.items())))
     b.blocks.update(updates)
+    settle_paths(b)
+
+
+def settle_paths(b):
+    """A dirt path or farmland under a block the game counts as solid (a fence post, a wall, a tent's wool, a bed) is
+    turned to dirt by the game as soon as that block is placed (B539), so the blueprint draws what will stay: grass
+    where grass is beside it, coarse dirt on a trodden path, dirt under farmland's crops."""
+    from check import turns_path
+    for (x, y, z), block in list(b.blocks.items()):
+        n = name_of(block)
+        if n not in ("dirt_path", "farmland") or not turns_path(b.get(x, y + 1, z)):
+            continue
+        if n == "farmland":
+            b.set(x, y, z, "dirt")
+        elif any(b.get(x + dx, y, z + dz) and name_of(b.get(x + dx, y, z + dz)) == "grass_block"
+                 for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+            b.set(x, y, z, "grass_block", snowy=False)
+        else:
+            b.set(x, y, z, "coarse_dirt")
 
 
 # --- Wonders (ROADMAP 35.3) ----------------------------------------------------------------------------------------

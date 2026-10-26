@@ -373,7 +373,7 @@ def smithy_store(b):
     b.set(5, 2, 11, "brick_wall", north="none", south="none", east="none", west="none", up=True, waterlogged=False)
     stairs(b, 5, 3, 11, BRICK, "south", top=True)
     slab(b, 5, 9, 12, BRICK)
-    lantern(b, 4, 2, 9)
+    lantern(b, 4, 2, 10)  # on the coal bin: a chest's top can't hold a lantern
 
 
 def smithy_2():
@@ -775,7 +775,7 @@ def map_room():
     b.set(2, 1, 6, "cartography_table")
     b.set(2, 1, 5, "chest", facing="east", type="single", waterlogged=False)
     b.set(6, 1, 2, "chest", facing="west", type="single", waterlogged=False)
-    lantern(b, 6, 2, 2)
+    lantern(b, 2, 2, 6)  # on the cartography table: a chest's top can't hold a lantern
     for z in range(2, 7):
         log(b, 4, 4, z, MAP_FRAME, axis="z")
     lantern(b, 4, 3, 4, hanging=True)
@@ -787,7 +787,7 @@ def map_room():
     b.set(4, 7, 4, "spruce_pressure_plate", powered=False)
     chair(b, 5, 6, 4, SPRUCE, "west")
     b.set(2, 6, 2, "chest", facing="east", type="single", waterlogged=False)
-    lantern(b, 2, 7, 2)
+    lantern(b, 2, 7, 5)  # on the bookshelf
     b.fill_air()
     return b
 

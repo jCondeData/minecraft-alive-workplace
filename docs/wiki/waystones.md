@@ -20,7 +20,7 @@ Roadmap items: 41.1, 41.2, 41.3
   village's own doesn't fit.
 - The stone is a **working waystone** of the mod's: a player discovers it by using it and travels to it the usual way.
   It is **named after the village** (the hall's own name, or the made-up one) the moment the builder sets it down, and
-  **renamed with the village**: at once when the hall is renamed, and at each hall round (every 600 ticks) in case the
+  **renamed with the village**: at once when the hall is renamed (a name tag used on the hall), and at each hall round (every 600 ticks) in case the
   name changed while the stone's chunk was unloaded.
 - **The waystone network on the hall's Map** (41.2). The Village Hall's Map button lists, under "Waystone network (3):",
   every village of the hall's owner (in this dimension) that has raised its waystone: this village first ("Ashford, this
@@ -116,7 +116,7 @@ Gradle: `deps.compat.waystones = "maven.modrinth:waystones:Ub2AL65v"` (Waystones
 
 | Key | Default | What it does |
 |---|---|---|
-| `villageWaystones` | on | Off: the plaza isn't proposed; stones already standing stay, and are no longer renamed; caravans and settlers walk (41.3). Without Waystones it does nothing. |
+| `villageWaystones` | on | Off: the plaza isn't proposed; stones already standing stay working waystones and are still renamed with the village; caravans and settlers walk (41.3), and a caravan already on its way by waystone walks the whole road when it's due. Without Waystones it does nothing. |
 
 ## Saved data
 
@@ -176,6 +176,9 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   play where the stone's chunk is loaded. The scene `waystone_caravan` films it; the compat tests check the trip, not
   the party's walk.
 
+- (41.3) A village whose hall is gone while its plaza and stone stand is off the Map, but its stone is still kept (no hall
+  round runs to forget it), so settlers for a spot beyond it may still go through that stone (QA, 2026-10-26).
+
 - The plaza blueprint's render (tools/blueprints/render) draws only vanilla blocks: the waystone itself is left out
   of the renders.
 
@@ -195,6 +198,12 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   out at Brookmere, an older save's caravan walks, and a colony order keeps `via` (an older one has none); settlers
   called to the hall go through Ashford's stone toward Brookmere's (journey from Brookmere's stone), step out with both
   standing, and walk the whole road with Brookmere's broken, as the chronicle says.
+- `WaystoneQaCompatTests` (compat suite, QA): the switch turned off after both stones stand (the stones stay and are
+  still renamed, a caravan under way by waystone walks the whole road with its goods, new caravans and settlers walk);
+  only one village with a stone (they walk); a name tag on the hall with a long name with an accent, an apostrophe and an
+  ampersand, and the hall's name cleared (the made-up name again); the Map's words for a village due north ("24 blocks
+  north") and one south-east; a village whose hall is gone leaves the Map; the network file through a save and reload,
+  a broken stone listed as broken, and the village off once the plazas are gone.
 - Scene `waystone_caravan` (showcase, with Waystones): Thornholm's caravan walks to its stone and steps in; Ashford's
   steps out of it, unloads and walks back in.
 - `VillageWaystonesGameTests` (main suite, no Waystones): the rule stands aside for the missing mod and no wish is the

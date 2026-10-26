@@ -226,12 +226,15 @@ the chests and puts the payment in.
 **Hoppers stay out of the price list (B349).** A hopper under a Shop Counter pulls nothing out of it, and a hopper,
 dropper or pipe pointed at it pushes nothing in, so nobody can empty or change someone's prices with automation. Only
 the counter's own screen changes them, and only the owner, friends and operators open it. The chests next to the
-counter are ordinary chests: hoppers still fill and drain those.
+counter are ordinary chests: hoppers still fill and drain those. The same holds for Create's funnels (an extracting
+funnel on a counter takes nothing) and for a Tom's Simple Storage inventory connector touching it, which leaves the
+counter out of its network.
 
 **Hoppers stay out of mailboxes (B525).** A hopper under a Mailbox pulls no mail out of it, and a hopper, dropper or
 pipe (Create's funnels and chutes too) pointed at it pushes nothing in, so nobody can empty someone's mail or fill
 their inbox with junk. Mail only comes in through the post, and only leaves through the mailbox's own screen, which
-only the owner, friends and operators open. Mail already in a mailbox stays there.
+only the owner, friends and operators open. Mail already in a mailbox stays there. An extracting Create funnel on a
+mailbox takes nothing, and a Tom's Simple Storage inventory connector touching one leaves it out of its network.
 
 **Item prices count the off hand (B350).** With CobbleDollars, a shop's own screen pays a price that isn't in emeralds
 (say 3 diamonds) with the price items you carry: the bag, the hotbar and the off hand all count, and the payment comes
@@ -406,7 +409,7 @@ is refused, up to 9 kinds). `ShopStockGameTests` (5, B348: the chest emptied whi
 nothing and shows sold out, emptied after the payment is in hands over nothing and keeps the emerald, less than a lot
 left isn't sold, a restocked shop sells again, a normal sale takes the goods from the chest), `ShopCounterHopperGameTests` (3,
 B349: a hopper under the counter pulls nothing out while one under a chest beside it does, a hopper on top pushes
-nothing in, the owner still sets and takes back a price on the counter's screen)), `QaMailboxHopperBugTests` (2, B525: a hopper under a Mailbox pulls no mail while one under a chest beside it does, a hopper on top posts nothing), `MailboxHopperGameTests` (2, B525: the owner opens the mailbox, takes the delivered mail and can't put items into the inbox; mail and owner survive a save). The client mixins themselves are proved by the scene.
+nothing in, the owner still sets and takes back a price on the counter's screen)), `QaMailboxHopperBugTests` (2, B525: a hopper under a Mailbox pulls no mail while one under a chest beside it does, a hopper on top posts nothing), `MailboxHopperGameTests` (2, B525: the owner opens the mailbox, takes the delivered mail and can't put items into the inbox; mail and owner survive a save), `QaMailboxHopperBugTests#theTransferApiTakesNoMailAndPostsNothingFromAnySide` and `QaShopCounterTransferGameTests` (Fabric's transfer API, the way Create and pipe mods reach blocks, from all six faces takes and puts nothing), `QaCreateFunnelMailboxCompatTests` and `QaCreateFunnelCounterCompatTests` (a real extracting Create funnel takes nothing, while on a chest it empties it), `QaTomsPrivateBoxesCompatTests` (Tom's connector joins the chest beside it, not the mailbox or counter). The client mixins themselves are proved by the scene.
 
 Showcase scenes: `job_plate` (a Journeyman fisherman, Dara the Expert builder and a jobless villager, each looked at), `miner_pickaxe` (a worn pickaxe breaks, a new one is made at the blast furnace), `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,

@@ -66,6 +66,13 @@ public class QaWaystonesGoneGameTests implements FabricGameTest {
 			data.clearRoad(b);
 			VillageWaystones.Data.get(level).forget(a);
 			VillageWaystones.Data.get(level).forget(b);
+			// Leave no village behind: tests that look 64-80 blocks around them count halls and stores (and this bread)
+			for (BlockPos at : List.of(CHEST_A, CHEST_B, STORE_A, STORE_B, HALL_A, HALL_B)) {
+				if (helper.getLevel().getBlockEntity(helper.absolutePos(at)) instanceof Container c) {
+					c.clearContent();
+				}
+				helper.setBlock(at, Blocks.AIR);
+			}
 		});
 		helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
 		helper.setBlock(STORE_A, ModBlocks.STOREHOUSE);

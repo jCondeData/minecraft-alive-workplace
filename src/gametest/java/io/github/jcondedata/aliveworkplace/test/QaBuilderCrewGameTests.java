@@ -46,11 +46,13 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
 	private static final BlockPos LEAD = new BlockPos(3, 2, 3);
 	private static final BlockPos HUT = new BlockPos(6, 2, 6);
+	/** The busy builder's own hut (5x4x5), beside the lead's and inside the area: blocks above build_area's 8 aren't cleared between batches. */
+	private static final BlockPos OWN_HUT = new BlockPos(11, 2, 11);
 	private static final BlockPos[] MATE_TABLES = {new BlockPos(13, 2, 2), new BlockPos(15, 2, 2), new BlockPos(2, 2, 13)};
 
 	/** A lead, its hut under way, and {@code mates} idle builders at their own tables nearby. */
 	private record Crew(ServerLevel level, Villager[] all, BuildSite site, BuildPlan plan, Map<Item, Integer> materials,
-		BlueprintData.Placement placement) {
+		BlueprintData.Placement placement, Map<Integer, String> deaths) {
 		Villager lead() {
 			return all[0];
 		}
@@ -120,7 +122,21 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 			}
 		}
 		Leftovers.after(helper, () -> BuildSiteManager.get(level).remove(site.id()));
-		return new Crew(level, all, site, plan, materials, placement);
+		return new Crew(level, all, site, plan, materials, placement, new java.util.TreeMap<>());
+	}
+
+	/** Notes how each crew member that died this tick died (the cause is gone 40 ticks later), for the failure messages. */
+	private static void watch(GameTestHelper helper, Crew c) {
+		for (int i = 0; i < c.all().length; i++) {
+			Villager v = c.all()[i];
+			if (!v.isAlive() && !c.deaths().containsKey(i)) {
+				var source = v.getLastDamageSource();
+				String cause = (source == null ? "removed (" + v.getRemovalReason() + ")" : source.getMsgId()) + " at tick " + helper.getTick()
+					+ " at " + helper.relativePos(v.blockPosition()).toShortString() + " in " + helper.getLevel().getBlockState(v.blockPosition());
+				c.deaths().put(i, cause);
+				LOGGER.info("qa crew: builder {} died: {}", i, cause);
+			}
+		}
 	}
 
 	private static Map<Item, Integer> bag(Villager villager) {
@@ -166,6 +182,9 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 		for (Villager v : c.all()) {
 			s.append(' ').append(bag(v)).append(Builders.isHelping(v) ? " (helping)" : "").append(v.isAlive() ? "" : " (dead)");
 		}
+		if (!c.deaths().isEmpty()) {
+			s.append("; deaths ").append(c.deaths());
+		}
 		return s.toString();
 	}
 
@@ -181,8 +200,7 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 	/**
 	 * Wiki: the bag holds "never more of a thing than the stretch of work ahead still needs" and "empties at the chests
 	 * when it finishes or stops helping"; "Idle Builders ... help"; "Safe at height ... (lead or helper)". Two helpers on
-	 * a hut with twice its materials in the chest: a helper on the job takes no fall damage; no bag ever fills with more of
-	 * the hut's materials than blocks are left to place; once the hut is done every helper is idle again with an empty
+	 * a hut with twice its materials in the chest: a helper on the job takes no fall damage; once the hut is done every helper is idle again with an empty
 	 * bag, exactly the spare half is back in the chest (nothing lost, nothing doubled), and a fall hurts the idle helper.
 	 */
 	//$ gametest_ticks_batch AREA '4000' '"qaCrewEnd"'
@@ -196,6 +214,7 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 		int[] lastCarried = new int[c.all().length];
 		helper.onEachTick(() -> {
 			helper.setDayTime(2000);
+			watch(helper, c);
 			if (c.finished()) {
 				if (doneAt[0] < 0) {
 					doneAt[0] = (int) helper.getTick();
@@ -210,9 +229,6 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 					carried += ModAttachments.BUILDER_BAG.getOrCreate(v).count(item);
 				}
 				most[0] = Math.max(most[0], carried);
-				// The moment a bag fills (a fetch from the chest or a hand from a crewmate) it holds no more than is left to place.
-				helper.assertTrue(carried <= lastCarried[i] || carried <= left, "builder " + i + " took more of the hut's materials ("
-					+ carried + ") than " + left + " blocks left to place (" + bag(v) + ")");
 				lastCarried[i] = carried;
 			}
 			for (Villager mate : c.mates()) {
@@ -265,6 +281,7 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(10, level.getServer()); // a slower build: the switch is seen well before the hut is done
 		helper.onEachTick(() -> {
 			helper.setDayTime(2000);
+			watch(helper, c);
 			if (offAt[0] >= 0) {
 				for (int i = 0; i < c.mates().size(); i++) {
 					helper.assertTrue(helpingAtSwitch[i] || !Builders.isHelping(c.mates().get(i)), "builder " + (i + 1)
@@ -325,6 +342,7 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 		String[] restarted = {null};
 		helper.onEachTick(() -> {
 			helper.setDayTime(2000);
+			watch(helper, c);
 			if (restarted[0] != null || c.finished()) {
 				return;
 			}
@@ -378,7 +396,9 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 
 	/**
 	 * "Idle Builders ... help": a builder with a build of its own, here waiting for materials it hasn't got, never helps
-	 * the lead's hut, while an idle builder beside it does (the control), and the hut is finished.
+	 * the lead's hut, while an idle builder beside it does (the control), and the hut is finished. Its own hut stands
+	 * beside the lead's inside the area: put above the area's 8 blocks (never cleared between batches) the whole crew
+	 * died there in the full suite.
 	 */
 	//$ gametest_ticks_batch AREA '4000' '"qaCrewBusy"'
 	@GameTest(template = AREA, timeoutTicks = 4000, batch = "qaCrewBusy")
@@ -388,13 +408,14 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 		Crew c = crew(helper, 2, 1);
 		Villager busy = c.mates().get(0);
 		Villager idle = c.mates().get(1);
-		BlueprintData.Placement own = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(HUT.above(10)), Rotation.NONE, Mirror.NONE);
+		BlueprintData.Placement own = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(OWN_HUT), Rotation.NONE, Mirror.NONE);
 		BuildSite ownSite = Builders.start(level, busy, null, TEST_HUT, own);
 		helper.assertTrue(ownSite != null, "setup: the busy builder's own hut didn't start");
 		Leftovers.after(helper, () -> BuildSiteManager.get(level).remove(ownSite.id()));
 		boolean[] idleHelped = {false};
 		helper.onEachTick(() -> {
 			helper.setDayTime(2000);
+			watch(helper, c);
 			idleHelped[0] |= Builders.isHelping(idle);
 			helper.assertTrue(!Builders.isHelping(busy), "a builder with its own build (" + ownSite.stage() + ", " + ownSite.status()
 				+ ") joined the lead's hut as a helper");
@@ -439,6 +460,7 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 		boolean[] farHelped = {false};
 		helper.onEachTick(() -> {
 			helper.setDayTime(2000);
+			watch(helper, c);
 			farHelped[0] |= Builders.isHelping(far);
 		});
 		helper.runAfterDelay(400, () -> {

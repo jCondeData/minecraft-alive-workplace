@@ -40,8 +40,8 @@ Journeyman the Gold Circlet from 2 gold ingots, an emerald and an amethyst shard
 the brooch a Noble's need, every 16 days; the circlet a Noble's want, every 32.
 
 **The Vintner (34.9).** Stand a villager by a cauldron and sneak-right-click them with sweet berries, glow berries
-or an apple. A Novice presses Cider, an Apprentice Berry Wine, and Vintage Wine waits three days to age. The drinks
-are luxuries the households take from the store, and players can drink them (the bottle comes back).
+or an apple. A Novice presses Cider, an Apprentice Berry Wine, and Vintage Wine waits three days to age. A Berry Wine
+bought from a Vintner is pressed the day it's sold and waits its three days too. The drinks are luxuries the households take from the store, and players can drink them (the bottle comes back).
 
 **The Tailor (34.10).** Stand a villager by a loom and sneak-right-click them with string (shears bring the Shepherd
 back). A Novice sews Work Clothes from 3 wool of any colors, 2 leather and a string; an Apprentice Fine Clothes from

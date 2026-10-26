@@ -33,7 +33,8 @@ import org.jetbrains.annotations.Nullable;
  * a golem with a load heads to the Storehouse first. They never break blocks. The walking is the golem's own goal,
  * {@link GolemRoleGoal}. A Storehouse the golem can't get to (walled in, across water) is left alone for a while
  * after {@link #GIVE_UP} ticks without headway, and the next nearest one takes the load (B450); a Drop Box or worker's
- * chest it can't get to is skipped the same way, and the next one with goods is fetched from (B456). Nothing of that
+ * chest it can't get to is skipped the same way, and the next one with goods is fetched from (B456). With no
+ * Storehouse left to try, the load goes back into the nearest Drop Box and the golem is free (B463). Nothing of that
  * is saved, so after a reload the golem simply tries the nearest again.
  */
 public final class HaulerGolems {
@@ -53,6 +54,10 @@ public final class HaulerGolems {
 	public static void work(ServerLevel level, IronGolem golem) {
 		BlockPos storehouse = storehouse(level, golem).orElse(null);
 		if (storehouse == null) {
+			Map<Item, Integer> carried = load(golem);
+			if (!carried.isEmpty()) {
+				putBack(level, golem, carried);
+			}
 			return;
 		}
 		List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
@@ -80,6 +85,26 @@ public final class HaulerGolems {
 			collect(level, golem, stash, Math.min(STACKS, SupplyContainers.freeSlots(level, store)));
 		} else {
 			giveUpIfStill(level, golem, pickup);
+		}
+	}
+
+	/**
+	 * With a load and no Storehouse it can get to (B463), the golem puts the load back into the nearest Drop Box with
+	 * room, so the goods aren't stuck on it and it is free to haul again; a Drop Box it can't get to is skipped the same
+	 * way as a Storehouse. With no Drop Box at all it keeps the load until a Storehouse can be reached.
+	 */
+	private static void putBack(ServerLevel level, IronGolem golem, Map<Item, Integer> load) {
+		Map<BlockPos, Long> skip = skipped(level, golem);
+		BlockPos box = level.getPoiManager().findClosest(h -> h.is(ModVillagers.DROP_BOX_POI),
+			p -> !skip.containsKey(p) && SupplyContainers.freeSlots(level, List.of(p)) > 0, golem.blockPosition(), STOREHOUSE_RANGE,
+			PoiManager.Occupancy.ANY).orElse(null);
+		if (box == null) {
+			return;
+		}
+		if (GolemRoleGoal.walkTo(golem, box, REACH)) {
+			unload(level, golem, List.of(box), load);
+		} else {
+			giveUpIfStill(level, golem, box);
 		}
 	}
 

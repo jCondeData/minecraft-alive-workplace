@@ -280,4 +280,29 @@ public class QaHaulerGiveUpGameTests implements net.fabricmc.fabric.api.gametest
 			helper.assertTrue(carried(g) == 0, "the reloaded golem still carries " + carried(g));
 		});
 	}
+
+	/**
+	 * B463: the only Storehouse in reach walled in, an open Drop Box farther off. The golem gives the Storehouse up, finds
+	 * no other, and puts its load back into the Drop Box instead of standing with it for good, and is free again.
+	 */
+	//$ gametest_ticks_batch AREA '2000' '"qaHaulerOnlyStorehouseWalled"'
+	@GameTest(template = AREA, timeoutTicks = 2000, batch = "qaHaulerOnlyStorehouseWalled")
+	public void aHaulerWhoseOnlyStorehouseIsWalledInPutsItsLoadBackInTheDropBox(GameTestHelper helper) {
+		layout(helper);
+		helper.setBlock(FAR, Blocks.AIR);
+		helper.setBlock(FAR_CHEST, Blocks.AIR);
+		BlockPos box = new BlockPos(20, 2, 20);
+		helper.setBlock(box, ModBlocks.DROP_BOX);
+		IronGolem golem = hauler(helper);
+		Leftovers.after(helper, golem::discard);
+		ModAttachments.HAULER_LOAD.set(golem, Map.of(Items.COBBLESTONE, 64));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(in(helper, NEAR_CHEST, Items.COBBLESTONE) == 0, "cobblestone got into the walled-in Storehouse's chest: the test proves nothing");
+			helper.assertTrue(in(helper, box, Items.COBBLESTONE) == 64, "the only Storehouse is walled in and the Drop Box has "
+				+ in(helper, box, Items.COBBLESTONE) + " of 64 cobblestone back; the golem carries " + HaulerGolems.load(golem) + " at "
+				+ golem.position() + ", heading for " + HaulerGolems.storehouse(helper.getLevel(), golem) + ", walking: "
+				+ golem.getNavigation().isInProgress());
+			helper.assertTrue(carried(golem) == 0, "the golem still carries " + carried(golem));
+		});
+	}
 }

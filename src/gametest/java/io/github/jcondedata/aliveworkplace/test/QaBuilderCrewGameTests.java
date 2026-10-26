@@ -380,8 +380,8 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 	 * "Idle Builders ... help": a builder with a build of its own, here waiting for materials it hasn't got, never helps
 	 * the lead's hut, while an idle builder beside it does (the control), and the hut is finished.
 	 */
-	//$ gametest_ticks_batch AREA '4000' '"qaCrewBusy"'
-	@GameTest(template = AREA, timeoutTicks = 4000, batch = "qaCrewBusy")
+	//$ gametest_ticks_batch AREA '4000' '"qaBuilderCrewBusy"'
+	@GameTest(template = AREA, timeoutTicks = 4000, batch = "qaBuilderCrewBusy")
 	public void aBuilderWithItsOwnBuildDoesNotHelp(GameTestHelper helper) {
 		prepare(helper);
 		ServerLevel level = helper.getLevel();

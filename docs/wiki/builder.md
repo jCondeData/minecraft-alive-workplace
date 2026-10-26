@@ -26,6 +26,13 @@ stock) hold ticked off. A sneak-right-click with an empty hand shows the status 
 nothing left to place, no build, or a building being taken down, the Builder says so and the book stays as it was.
 The Scan Tool marks whatever block it right-clicks as a corner, a chest, furnace, trapdoor or bench included: the click
 marks it and the block stays shut and unflipped (B335), from the off hand too when the main hand is empty (B374).
+A Scan Tool renamed in an anvil names the build exactly as typed, apostrophes and accents too: "Jesse's Café" is
+called that in the saved line, on the blueprint, at the Blueprint Table and in every message (B458). Its id and file
+stay plain (`scans/<player>/jesse_s_caf`); the name is kept by id in the world's `aliveworkplace_blueprint_names` data
+(`blueprint/BlueprintNames`) and sent to players as they join. A second build of the same name is "Jesse's Café 2". An
+uploaded file such as `Zoë's Hut.litematic` keeps its name the same way; a plain `zoe_hut.nbt` is still "Zoe Hut", as
+before. Builds saved before this keep the names made from their ids. Shape Planner builds are named by the mod, never
+typed, so they're unchanged.
 
 ## 2. How it works
 
@@ -377,7 +384,7 @@ the Supply Shop, turned too, and the Village Hall; the sweep over every build's 
 `QaWallTowerGameTests` (7, QA from B283: hall rounds open nothing on a Palisade Tower half way up, two towers decorating
 or a finished one; a tower saved and loaded mid-decoration stays one tower and is finished where it stands; its ladders
 balance when its builder is killed holding three and every second of a real build).
-`QaBuilderVerifyScan1026bBugTests.aScannedMailboxWithMailIsBuiltEmptyAndShowsNoMail` (B536, QA: a Mailbox scanned holding mail is built with has_mail false). `QaBlueprintLootGameTests` (1, QA: a scanned build of a lectern with a book, a jukebox with a disc, a chiseled bookshelf
+`QaScanNameBugTests.aScanNamedWithAnApostropheAndAnAccentKeepsItsName` (B458, QA: a Scan Tool named "Jesse's Café" in an anvil saves a build called that), `BlueprintNamesGameTests` (3, B458: two scans of one accented name are "…" and "… 2" on the blueprint, the saved line and after the saved names are written and read back; an unnamed scan is still "<Player>s Build"; an upload `Zoë's Hut.litematic` is "Zoë's Hut" and a plain `zoe_hut` file "Zoe Hut"). `QaBuilderVerifyScan1026bBugTests.aScannedMailboxWithMailIsBuiltEmptyAndShowsNoMail` (B536, QA: a Mailbox scanned holding mail is built with has_mail false). `QaBlueprintLootGameTests` (1, QA: a scanned build of a lectern with a book, a jukebox with a disc, a chiseled bookshelf
 with a book, a decorated pot of diamonds, a campfire cooking beef, a sign and a named chest of gold, built by a Builder:
 every block comes out empty, the sign keeps its words and the chest its name,
 `aBuildOfBlocksHoldingItemsComesOutEmptyWithItsWordsAndNames`).

@@ -116,6 +116,8 @@ public class WaystonesCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '2400' '"waystonePlaza"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "waystonePlaza")
 	public void theBuilderRaisesAWorkingWaystoneNamedAfterTheVillage(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		hall(helper, "Stonebridge");
@@ -179,6 +181,8 @@ public class WaystonesCompatTests implements FabricGameTest {
 	//$ gametest_batch AREA '"waystoneRenamed"'
 	@GameTest(template = AREA, batch = "waystoneRenamed")
 	public void renamingTheVillageRenamesItsWaystone(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		VillageHallBlockEntity hall = hall(helper, "Oldmere");
 		paste(helper, VillageWaystones.PLAZA, java.util.UUID.randomUUID());
 		VillageWaystones.round(helper.getLevel(), helper.absolutePos(HALL));
@@ -192,6 +196,8 @@ public class WaystonesCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '1600' '"waystoneRepair"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "waystoneRepair")
 	public void aBrokenWaystoneIsRepairedAndNamedAgain(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(1, level.getServer());

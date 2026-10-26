@@ -111,6 +111,8 @@ public class WaystoneNetworkCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '200' '"waystoneNetwork"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "waystoneNetwork")
 	public void theMapListsTheVillagesWithAWaystoneDiscoveredOrNotAndABrokenOne(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		try {
@@ -175,6 +177,8 @@ public class WaystoneNetworkCompatTests implements FabricGameTest {
 	//$ gametest_batch AREA '"waystoneNetworkNone"'
 	@GameTest(template = AREA, batch = "waystoneNetworkNone")
 	public void aVillageWithoutAWaystoneIsNotListed(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		ServerPlayer other = helper.makeMockServerPlayerInLevel();

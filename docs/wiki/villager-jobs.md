@@ -312,6 +312,11 @@ and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill
 - 21.1a (owner, 2026-09-30): not every villager needs a new custom table; items already in the game should give a
   villager their job. So jobs share vanilla blocks and are picked with an item.
 - 21.1c (owner, 2026-10-03): the Fossil Scientist works at Cobblemon's own Fossil Analyzer.
+- B453: a Field Marker or Quarry Marker area too far from the worker is refused in that worker's own words, naming the
+  block they work at: "That field is 63 blocks from the Composter the farmer works at — keep it within 48."
+  (`message.aliveworkplace.field.too_far`, `message.aliveworkplace.quarry.too_far` (64 blocks for a quarry),
+  `message.aliveworkplace.tree_farm.too_far`, `message.aliveworkplace.orchard_area.too_far`,
+  `message.aliveworkplace.berry_plot.too_far`); only the builder's line speaks of the Blueprint Table.
 - 21.1a: don't break old worlds. The replaced job blocks stay registered, and blocks that became workstations get
   their record when an old chunk loads.
 - 25.5: every "needs" system has its own switch, because babysitting is the top complaint about big colony mods.
@@ -357,7 +362,7 @@ and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill
 
 ## Proof
 
-GameTests: `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
+GameTests: `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits

@@ -522,6 +522,26 @@ public final class Walls {
 			return;
 		}
 		List<BuildSite> open = openSites(level, hall);
+		for (BuildSite site : open) {
+			if (site.builder() != null || site.isDone()) {
+				continue;
+			}
+			// B488: a piece whose builder died stays open with all that was built: the next free builder finishes it
+			// where it stands (laid out again, a tower with its roof on sat on its own roof)
+			Optional<BoundingBox> box = BlueprintLibrary.get(level, site.structure()).map(b -> BlueprintOutline.bounds(site.placement(), b.size()));
+			if (box.isEmpty()) {
+				continue;
+			}
+			Villager builder = Roads.builderFor(level, hall, box.get(), false);
+			if (builder == null) {
+				builder = Roads.builderFor(level, hall, box.get(), true);
+			}
+			if (builder == null) {
+				return; // nobody free: the open pieces first, then new ones
+			}
+			Builders.takeOver(level, builder, site);
+			TURNS.computeIfAbsent(level, l -> new HashMap<>()).put(hall.immutable(), Turn.WALL);
+		}
 		if (open.size() >= MAX_OPEN) {
 			return;
 		}

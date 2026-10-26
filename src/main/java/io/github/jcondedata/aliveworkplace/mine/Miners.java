@@ -125,7 +125,8 @@ public final class Miners {
 		double distance = Math.sqrt(shaft.isPresent() ? new BlockPos(center.getX(), bench.get().getY(), center.getZ()).distSqr(bench.get())
 			: center.distSqr(bench.get()));
 		if (distance > MAX_DISTANCE) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_DISTANCE), ChatFormatting.RED);
+			tell(player, Component.translatable("message.aliveworkplace.quarry.too_far", (int) Math.ceil(distance),
+				io.github.jcondedata.aliveworkplace.work.AreaJobs.workBlock(level, bench.get()), MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		if (box.isInside(bench.get())) {

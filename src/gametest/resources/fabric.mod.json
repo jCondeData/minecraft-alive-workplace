@@ -271,6 +271,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaEdictsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEdictEffectsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPaceAndBookGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTooFarWordsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCivicItemsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTonicsGuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuildHarvestGameTests",
@@ -428,6 +429,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CrafterWorkshopGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StorageHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorageHallGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderReloadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureSeatsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderPlanGameTests",
@@ -627,7 +629,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaAnsweringHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignpostGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTableJobsGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaNewWorkplacesGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaNewWorkplacesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTinkererShortBugGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWallTowerBugGameTests"
 		]
 	},
 	"depends": {

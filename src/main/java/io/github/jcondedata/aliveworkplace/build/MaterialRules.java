@@ -293,6 +293,22 @@ public final class MaterialRules {
 		ModdedBlocks.afterPlaced(level, pos, state);
 	}
 
+	/**
+	 * A blueprint state turned and flipped as its placement says. Like {@code state.mirror(mirror).rotate(rotation)},
+	 * except that a double chest half swaps left and right when mirrored (B438): vanilla's chest only turns its facing, so
+	 * a mirrored double chest's halves pointed away from each other and came out as two single chests. A mirror always
+	 * flips handedness, whichever way the chest faces.
+	 */
+	public static BlockState transformed(BlockState state, net.minecraft.world.level.block.Mirror mirror,
+										 net.minecraft.world.level.block.Rotation rotation) {
+		BlockState out = state.mirror(mirror);
+		if (mirror != net.minecraft.world.level.block.Mirror.NONE && out.getBlock() instanceof net.minecraft.world.level.block.ChestBlock
+			&& out.hasProperty(net.minecraft.world.level.block.ChestBlock.TYPE)) {
+			out = out.setValue(net.minecraft.world.level.block.ChestBlock.TYPE, out.getValue(net.minecraft.world.level.block.ChestBlock.TYPE).getOpposite());
+		}
+		return out.rotate(rotation);
+	}
+
 	/** Adjust a blueprint state before placing it: no free water, no decaying leaves. */
 	public static BlockState forPlacement(BlockState state) {
 		if (state.hasProperty(BlockStateProperties.WATERLOGGED)) {

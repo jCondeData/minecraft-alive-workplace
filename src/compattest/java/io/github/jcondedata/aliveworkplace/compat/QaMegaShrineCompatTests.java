@@ -75,6 +75,11 @@ public class QaMegaShrineCompatTests implements FabricGameTest {
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin, Rotation.NONE, Mirror.NONE);
 		BuildSiteManager.get(level).recordFinished(id, placement, UUID.randomUUID());
 		placements.add(placement);
+		if (id.equals(StarterBlueprints.MEGA_SHRINE.id())) {
+			// The shrine's pedestal stands, as a builder leaves it (B421: without it there is no show).
+			level.setBlockAndUpdate(io.github.jcondedata.aliveworkplace.hall.Arenas.world(placement, MegaShrines.PEDESTAL_SPOT),
+				net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(MegaShrines.PEDESTAL).defaultBlockState());
+		}
 	}
 
 	static Villager villager(GameTestHelper helper, BlockPos at, boolean trainer) {

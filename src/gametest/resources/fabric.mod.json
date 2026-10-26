@@ -652,7 +652,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaTableJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaNewWorkplacesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTinkererShortBugGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaWallTowerBugGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaWallTowerBugGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMenuClickFuzzGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMailboxLogoutGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaEveryMenuGameTests"
 		]
 	},
 	"depends": {

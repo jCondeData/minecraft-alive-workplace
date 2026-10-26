@@ -413,6 +413,7 @@ public class QaFireGameTests {
 	@GameTest(template = AREA, timeoutTicks = 500, batch = "qaFireTooFar")
 	public void waterBeyond16BlocksIsLeftAlone(GameTestHelper helper) {
 		village(helper, HALL, 20);
+		dryReach(helper, GRINDSTONE); // B527: water an earlier batch left in the reach isn't this test's
 		helper.setBlock(new BlockPos(3, 1, 20), Blocks.WATER);
 		Villager warden = firewarden(helper, new BlockPos(4, 2, 3));
 		FirewardenWork.setWater(warden, 0);

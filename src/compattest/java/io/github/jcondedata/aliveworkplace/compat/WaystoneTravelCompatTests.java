@@ -174,6 +174,8 @@ public class WaystoneTravelCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '100' '"waystoneCaravanThrough"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "waystoneCaravanThrough")
 	public void aCaravanGoesThroughTheWaystones(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		villages(helper);
 		Caravans.Data data = trade(helper);
 		helper.runAfterDelay(2, () -> { // (the Storehouses' points of interest are filed a moment after they're placed)
@@ -210,6 +212,8 @@ public class WaystoneTravelCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '100' '"waystoneCaravanBroken"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "waystoneCaravanBroken")
 	public void aStoneBrokenMidTripTheCaravanWalks(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		villages(helper);
 		Caravans.Data data = trade(helper);
 		helper.runAfterDelay(2, () -> {
@@ -258,6 +262,8 @@ public class WaystoneTravelCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '100' '"waystoneCaravanReload"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "waystoneCaravanReload")
 	public void aTripByWaystoneSurvivesASaveAndReload(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		villages(helper);
 		trade(helper);
 		helper.runAfterDelay(2, () -> {
@@ -313,6 +319,8 @@ public class WaystoneTravelCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '200' '"waystoneSettlers"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "waystoneSettlers")
 	public void settlersGoThroughTheWaystonesAndWalkWhenOneIsBroken(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		villages(helper);
 		ServerLevel level = helper.getLevel();
 		Villager dara = helper.spawn(EntityType.VILLAGER, new BlockPos(1, 2, 3));

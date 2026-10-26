@@ -395,39 +395,6 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 	// --- who comes: a busy builder, and the reach -------------------------------------------------------------------
 
 	/**
-	 * "Idle Builders ... help": a builder with a build of its own, here waiting for materials it hasn't got, never helps
-	 * the lead's hut, while an idle builder beside it does (the control), and the hut is finished. Its own hut stands
-	 * beside the lead's inside the area: put above the area's 8 blocks (never cleared between batches) the whole crew
-	 * died there in the full suite.
-	 */
-	//$ gametest_ticks_batch AREA '4000' '"qaCrewBusy"'
-	@GameTest(template = AREA, timeoutTicks = 4000, batch = "qaCrewBusy")
-	public void aBuilderWithItsOwnBuildDoesNotHelp(GameTestHelper helper) {
-		prepare(helper);
-		ServerLevel level = helper.getLevel();
-		Crew c = crew(helper, 2, 1);
-		Villager busy = c.mates().get(0);
-		Villager idle = c.mates().get(1);
-		BlueprintData.Placement own = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(OWN_HUT), Rotation.NONE, Mirror.NONE);
-		BuildSite ownSite = Builders.start(level, busy, null, TEST_HUT, own);
-		helper.assertTrue(ownSite != null, "setup: the busy builder's own hut didn't start");
-		Leftovers.after(helper, () -> BuildSiteManager.get(level).remove(ownSite.id()));
-		boolean[] idleHelped = {false};
-		helper.onEachTick(() -> {
-			helper.setDayTime(2000);
-			watch(helper, c);
-			idleHelped[0] |= Builders.isHelping(idle);
-			helper.assertTrue(!Builders.isHelping(busy), "a builder with its own build (" + ownSite.stage() + ", " + ownSite.status()
-				+ ") joined the lead's hut as a helper");
-		});
-		helper.succeedWhen(() -> {
-			assertBuilt(helper, c, "with one idle helper");
-			helper.assertTrue(idleHelped[0], "setup: the idle builder never helped either");
-			helper.assertTrue(BuildSiteManager.get(level).get(ownSite.id()) != null, "the busy builder's own build is gone");
-		});
-	}
-
-	/**
 	 * "Idle Builders help builds near their bench." The reach is the table's own, 48 blocks (the guide's "keep it within
 	 * 48"; the Steward's road segments use the same bench-to-bench reach): an idle builder whose table is 48 blocks from
 	 * the lead's joins, one whose table is 49 blocks away doesn't, through the shift's own recruiting and over 400

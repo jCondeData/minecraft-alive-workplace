@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Builder crews: when a helper Builder dies mid-build, the lead and the rest of the crew now finish the build, the steps the helper had taken on included, and only its bag drops; before, the lead's whole build was canceled half-built, a copy of the blueprint dropped where the helper fell and you were told your builder died (B516).
 - Village Hall: a hall whose quest board holds a quest of a kind this version doesn't know (a server rolled back to an older jar after a newer one added a kind) now loads with everything else it keeps, leaving out only that quest; before, the whole hall came back empty: treasury, rank, research, families and chronicle (B509).
 - Walls: when a wall piece's builder dies (killed in a raid, say), the half-built piece now stays open and the next free builder finishes it where it stands, also after a restart; before, the site was forgotten, the next round laid a second tower on the first one's roof and neither ever finished (B488).
 - Jobs: a farmer, miner, lumberjack, orchard keeper or berry breeder handed a Field Marker or Quarry Marker for a spot too far away now names the block they work at: "That field is 63 blocks from the Composter the farmer works at — keep it within 48."; before, every one of them said "from the builder's Blueprint Table", a table none of them has (B453).

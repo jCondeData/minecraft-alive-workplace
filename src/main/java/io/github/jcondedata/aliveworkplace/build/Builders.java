@@ -968,6 +968,11 @@ public final class Builders {
 			} else {
 				site.release(villager.getUUID());
 			}
+		} else if (site != null && job.helper()) {
+			// B516: a helper's death leaves the build to its lead and the rest of the crew; the steps it had claimed go
+			// back to them (its bag dropped above), and the lead's site, blueprint and owner are left alone.
+			ModAttachments.BUILDER_JOB.remove(villager);
+			site.release(villager.getUUID());
 		} else if (site != null) {
 			if (!site.isSteward() && !io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())) {
 				dropNear(level, villager.blockPosition(), blueprintFor(level, site));

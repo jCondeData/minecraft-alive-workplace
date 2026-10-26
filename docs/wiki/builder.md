@@ -95,7 +95,7 @@ village's 48 blocks from his table (the distance it gives is rounded up, so one 
 (`work/Pace`). XP: 1 per 5 blocks placed and 10 for finishing a build (`BuilderLevels`).
 
 **Queue and crew.** A Builder takes up to 5 more blueprints on top of its current one (`MAX_QUEUE`). Up to 3 idle
-Builders (`MAX_HELPERS`; Guilds can change this) help one site, each claiming steps ahead of the lead. The owner
+Builders (`MAX_HELPERS`; Guilds can change this) help one site, each claiming steps ahead of the lead. A helper that dies drops only its bag; the steps it claimed go back to the crew and the lead finishes the build (B516). The owner
 asked that time shrink with each Builder: tested at 2 builders = 50%, 4 = 29% of the time alone (ROADMAP 23.1a).
 
 **Who may order.** With `workplaceBuilderOwnership` on, a Builder takes orders only from the player who hired it,

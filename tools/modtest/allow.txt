@@ -4,6 +4,8 @@
 # --- ours, triggered on purpose by tests ---
 # B208GameTests and B211GameTests make the world refuse hostile mobs and village golems, wolves, horses and llamas, as Cobbleverse's MobsBeGone does, and set Peaceful, to prove each refusal is logged plainly.
 (Another mod refused to let minecraft:\S+ spawn for the|Could not spawn minecraft:\S+ for the) 
+# QaRoadGameTests ships three broken road style files in the test pack to prove each is skipped and the shipped styles still load (27.15).
+Skipping road style aliveworkplace_test:road_styles/qa_
 # FurnitureSpotGameTests ships a broken spots file in the test pack to prove it is logged with its path and skipped (37.2).
 Skipping furniture spots aliveworkplace_test:blueprint_furniture/broken\.json
 # FurnitureAnyModGameTests ships a broken equivalents file in the test pack to prove it is logged with its path and skipped (37.13).

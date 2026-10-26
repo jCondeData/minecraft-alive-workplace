@@ -14,8 +14,9 @@ on the ground as colored dust.
 
 Once the village has a Steward, the approved roads are built a stretch at a time by the nearest free builder, in the
 road style of the zone they start in. Every newly finished building gets a lane from its door to the nearest road.
-Streets get a lamp every 16 blocks and at crossings; lanes get a lantern post every 12. Water or a drop gets a
-bridge; a one-block rise gets stairs.
+Streets get a lamp every 16 blocks, on alternate sides, and at crossings (never in front of a door); lanes get a
+lantern post every 12. Water or a drop deeper than 2 blocks gets a bridge; a one-block rise gets stairs across the
+road's width, and a crossing is paved square.
 
 Villages joined by a caravan route each build their half of a road towards the other. If a half stops short it ends
 at a milestone: a stone post with a lantern and a sign naming the other village and how far it is.
@@ -98,7 +99,8 @@ The generated blueprints for stretches are saved the way the Shape Planner saves
 
 ## Known limits
 
-- A bridge longer than 16 blocks isn't built; the way has to go round.
+- A gap wider than 16 blocks isn't bridged: the road stops at the near bank and the Steward's desk says how wide the
+  gap is ("40+" past 40 blocks).
 - A road between villages reaches 256 blocks at most by default, so far-apart villages get two halves and two
   milestones, not one road.
 - Roads are built only while no building waits for a builder, so in a busy village they come last.
@@ -109,6 +111,13 @@ The generated blueprints for stretches are saved the way the Shape Planner saves
 GameTests: `RoadGameTests` (12: a 40-block street three wide in stonework with stair steps, a player's fence left
 standing, save and reload mid-stretch, the rank left alone, a new building's lane, the two-stretch limit, the switch
 off), `CaravanRoadGameTests` (4), `WallGameTests` (9), `CityPlanRoadGameTests` (4).
+
+QA (27.15, 27.16): `QaRoadGameTests` (6: each shipped style's blocks and mix weights, broken style files skipped,
+stretches of at most 24 that never overlap, no two-block step, going round a finished building and a player's blocks,
+an avenue's stairs across all 5 blocks, the chronicle and desk lines) and `QaRoadLampGameTests` (9: lamps every 16
+on alternate sides round corners, none by a row of doors, a crossing paved square and lit, lantern posts every 12, a
+Sandstone street's Sandstone lamp, a dark bed lit, a 16-wide river bridged with 4 pillars, a 17-wide one refused, a
+dry ravine bridged with a pillar stopping 12 down).
 
 Showcase scenes: `roads` (a street between two houses), `bridges`, `caravan_road`, `walls` (a palisade going up),
 `city_plan_ground` (the plan on the ground).

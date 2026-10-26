@@ -5047,7 +5047,7 @@ Depends on: nothing open.
   waxed boards with the expected words; a renamed village is renamed on it at the next dawn; a signpost in another
   style gets words too; a save and reload keeps them; the new lang lines pass `langcheck.py`; scene `signpost` (a
   signpost at a crossroads between two villages, each board up close).
-- [x] **36.5** (approved 2026-10-19) **Read a long entry without clicking it.** In `ChoiceTableScreen` (the Village Hall and the Storehouse
+- [x] **36.5** (approved 2026-10-19) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) **Read a long entry without clicking it.** In `ChoiceTableScreen` (the Village Hall and the Storehouse
   board) the pane on the right reads out the row under the mouse, but on the way to the pane the mouse crosses other
   rows and then leaves the list, so the pane falls back to the last button clicked: a long entry can only be read by
   clicking it, which also runs it. Three changes: the pane holds the last row hovered while the mouse moves from the
@@ -5084,7 +5084,7 @@ Depends on: nothing open.
   (a data check for all eight, a full build for three in `huge_area`), a Smithy with its cellar filled in offers "Dig
   the cellar" and the builder digs only the cellar, the offer isn't there when the cellar is, a save and reload
   mid-dig finishes it; scene `cellars` (the Inn III cut away to its cellar; an old Smithy getting its cellar).
-- [x] **36.8** (approved auto 2026-10-18) **Do the bigger village houses leave villages sparse?** 26.11 made our village houses up to 13×17×13
+- [x] **36.8** (approved auto 2026-10-18) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) **Do the bigger village houses leave villages sparse?** 26.11 made our village houses up to 13×17×13
   (from 9×10×10), and a jigsaw village only fits pieces that don't collide, so bigger houses may crowd out houses.
   Measure it: a measurement run (outside `build`: a GameTest class switched on by a system property, or a script on
   the pack test server) places 50 villages of each of the five types at fixed seeds and spots, and counts each
@@ -5102,7 +5102,7 @@ Depends on: nothing open.
   assigns that block to them (they claim the POI and walk to it). Paid retraining of a working villager (26.6) stays.
   GameTests: listing, assigning (the villager takes the job), a block claimed meanwhile, save and reload; scene
   `hall_jobs`.
-  - [x] **36.9a** (approved 2026-10-19) Change from the owner (2026-10-19): top of the work list (urgent: owner): the hall's Free job blocks page must be filmed and passing so I can see it
+  - [x] **36.9a** (approved 2026-10-19) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) Change from the owner (2026-10-19): top of the work list (urgent: owner): the hall's Free job blocks page must be filmed and passing so I can see it
 - [x] **36.10** (approved 2026-10-20) (verified 2026-10-24: QaBlueprintTableGameTests [13]: stored counts to the last one, 200 cap both sides, full bag, stack stored one taken, broken table drops exactly, two tables over a reload, another player; search case/whitespace, level-only match, shared job blocks; every basement build's depth, floored cells at scales 1-3, below-ground size line. Mutants 15/16 killed [survivor equivalent]. Full build green on 214464af/ed36b1c3 lineage: 2975/2975 GameTests, 534/534 compat. Wiki/guide pages read, correct. Scenes not re-filmed.) **Search the Blueprint Table** (owner, 2026-10-19). The library list has 150+ builds and no way to find one. Add a search box above
   the list in the Blueprint Table: typing filters the library live by name, id and the jobs a build brings ("smith", "inn",
   "fisherman"), case-insensitive, with the style/level rows kept under their build; an empty box shows everything and an
@@ -5145,7 +5145,7 @@ Depends on: nothing open.
   not now, cancel mid-repair, moving the Builder to another job, the switch, save and reload; text in `en_us.json`; scene
   `repair_ask`.
 
-- [x] **36.16** (approved 2026-10-22) **Villagers live much longer, and a death matters** (owner, 2026-10-20). Villagers die too soon: make
+- [x] **36.16** (approved 2026-10-22) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) **Villagers live much longer, and a death matters** (owner, 2026-10-20). Villagers die too soon: make
   their whole life about 10x longer (adulthood and elder days, `villagerElderDays` and the ages the life stages use;
   old saves keep each villager's age but use the new lengths). A death should be a bigger deal: the village mourns (a
   chronicle entry and a message to players near the village naming who died, their job and years, a few days of lower
@@ -5157,7 +5157,7 @@ Depends on: nothing open.
   fewest of is fine: the lane decides and writes it in the Notes), not always the same one. Done when: a list of every
   block that offers several jobs in the wiki page; GameTests that over many hires (fixed `RandomSource`) each job of a
   multi-job block comes up, a single-job block is unchanged, save and reload keeps the job taken; scene `random_job`.
-- [x] **36.18** (approved 2026-10-22) **Retrain any villager to any job from the Village Hall** (owner, 2026-10-21: "do I have to break the block
+- [x] **36.18** (approved 2026-10-22) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) **Retrain any villager to any job from the Village Hall** (owner, 2026-10-21: "do I have to break the block
   and bring it to them, then put it back? it would be easier if you can just do it at the Village Hall"). Today only a
   Builder can be retrained (at a Blueprint Table, 36.x/27.x); any other job change means breaking job blocks. In the
   Village Hall's residents list, a villager with a job gets a **Change job** button: it lists the village's free job
@@ -5173,7 +5173,7 @@ Depends on: nothing open.
   builder handing back the build, the rule off, save and reload; text in `en_us.json`; guide (village-hall.md, jobs.md)
   and wiki; scene `hall_retrain`.
 
-- [x] **36.19** (owner, 2026-10-26) (approved auto 2026-10-26) **American English everywhere a player reads.** The owner wants American spelling:
+- [x] **36.19** (owner, 2026-10-26) (approved auto 2026-10-26) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) **American English everywhere a player reads.** The owner wants American spelling:
   "Defense", not "Defence". Change every player-facing sentence in `en_us.json`, the questbook, sign and book text,
   blueprint and build names shown to players, the player guide and the wiki: defence → defense, jeweller → jeweler,
   honour → honor, colour → color, armour → armor, neighbour → neighbor, cancelled → canceled, grey → gray, centre →

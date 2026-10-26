@@ -83,12 +83,29 @@ public final class BuildEntities {
 			return Optional.empty();
 		}
 		made.ifPresent(entity -> {
-			// Like a structure template: turn it, then move it into place.
-			float yaw = entity.rotate(step.rotation());
-			yaw += entity.mirror(step.mirror()) - entity.getYRot();
+			// B439: mirror it, then turn it, the order the blocks and the positions go (MaterialRules.transformed,
+			// StructureTemplate.transform). A hanging entity's mirror depends on the way it faces, so mirroring
+			// after the turn hung a quarter-turned, mirrored frame facing away from its wall.
+			float yaw = entity.mirror(step.mirror());
+			yaw += entity.rotate(step.rotation()) - entity.getYRot();
 			entity.moveTo(step.pos().x, step.pos().y, step.pos().z, yaw, entity.getXRot());
+			if (entity instanceof HangingEntity hanging) {
+				hangAt(hanging, step.pos());
+			}
 		});
 		return made;
+	}
+
+	/**
+	 * B439: a hanging entity sits off the block it hangs from (a frame against its wall; a two-wide painting half a
+	 * block to one side), so the block holding its centre isn't always that block. This finds the block that puts its
+	 * centre, facing the way it now faces, at {@code centre}: the turned, mirrored spot the blueprint hangs it.
+	 */
+	private static void hangAt(HangingEntity hanging, net.minecraft.world.phys.Vec3 centre) {
+		BlockPos probe = hanging.getPos();
+		hanging.setPos(net.minecraft.world.phys.Vec3.atCenterOf(probe));
+		net.minecraft.world.phys.Vec3 offset = hanging.position().subtract(net.minecraft.world.phys.Vec3.atCenterOf(probe));
+		hanging.setPos(net.minecraft.world.phys.Vec3.atCenterOf(BlockPos.containing(centre.subtract(offset))));
 	}
 
 	private BuildEntities() {

@@ -148,7 +148,7 @@ public final class BlueprintPreviewRenderer {
 			List<Ghost> world = new ArrayList<>(template.size());
 			for (Ghost g : template) {
 				BlockPos pos = placement.origin().offset(StructureTemplate.transform(g.pos(), placement.mirror(), placement.rotation(), BlockPos.ZERO));
-				world.add(new Ghost(pos, MaterialRules.forPlacement(g.state().mirror(placement.mirror()).rotate(placement.rotation()))));
+				world.add(new Ghost(pos, MaterialRules.forPlacement(MaterialRules.transformed(g.state(), placement.mirror(), placement.rotation()))));
 			}
 			placed = world;
 			recheck = 0;

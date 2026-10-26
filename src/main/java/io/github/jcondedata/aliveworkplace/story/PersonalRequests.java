@@ -241,7 +241,7 @@ public final class PersonalRequests {
 	}
 
 	private static Component text(Quest quest, String part, Component player) {
-		return Component.translatable((quest.text == null ? "request.aliveworkplace.unknown" : quest.text) + "." + part, args(quest, player));
+		return io.github.jcondedata.aliveworkplace.work.Words.articledAuto((quest.text == null ? "request.aliveworkplace.unknown" : quest.text) + "." + part, args(quest, player));
 	}
 
 	/** How many days {@code quest} has left (at least 1). */

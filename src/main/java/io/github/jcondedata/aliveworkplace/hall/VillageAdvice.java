@@ -36,14 +36,16 @@ public final class VillageAdvice {
 	/** One piece of advice: {@code advice.aliveworkplace.<key>} (the title) and {@code <key>.how}, with {@code args}. */
 	public record Tip(String key, Item icon, Object... args) {
 		public Component title() {
-			return io.github.jcondedata.aliveworkplace.work.Words.countedFirst("advice.aliveworkplace." + key, args); // "1 villager has no bed"
+			String title = "advice.aliveworkplace." + key;
+			return net.minecraft.locale.Language.getInstance().has(title + ".an") ? io.github.jcondedata.aliveworkplace.work.Words.articledAuto(title, args) // B523: "build an Inn"
+				: io.github.jcondedata.aliveworkplace.work.Words.countedFirst(title, args); // "1 villager has no bed"
 		}
 
 		public Component how() {
 			if ((key.equals("class") || key.equals("class_one")) && args.length == 5 && args[4] instanceof Component how) {
 				return how; // a class tip (34.6) brings its how: one per kind of need
 			}
-			return Component.translatable("advice.aliveworkplace." + key + ".how", args);
+			return io.github.jcondedata.aliveworkplace.work.Words.articledAuto("advice.aliveworkplace." + key + ".how", args); // "An Armorer answers it"
 		}
 	}
 

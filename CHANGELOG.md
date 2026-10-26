@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Builder: a block the builder had already laid that is broken mid-build (by a player, a mob or an explosion) is now put back before the build is called finished; before, the build ended at 100% with the hole still there and, with Ask Before Repairs on, asked you whether to repair a building it had just reported done. If the block keeps getting broken, the builder goes back for it twice and then counts it as skipped (B508).
 
 - Builder crews: when a helper Builder dies mid-build, the lead and the rest of the crew now finish the build, the steps the helper had taken on included, and only its bag drops; before, the lead's whole build was canceled half-built, a copy of the blueprint dropped where the helper fell and you were told your builder died (B516).
 - Village Hall: a hall whose quest board holds a quest of a kind this version doesn't know (a server rolled back to an older jar after a newer one added a kind) now loads with everything else it keeps, leaving out only that quest; before, the whole hall came back empty: treasury, rank, research, families and chronicle (B509).

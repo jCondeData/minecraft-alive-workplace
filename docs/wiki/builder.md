@@ -195,6 +195,8 @@ sites are remembered). Each site (`BuildSite.save`) holds:
 - `no_level_ground` (absent means leveling is on), `bench` (the lead's bench; absent in pre-0.6 saves).
 - `steward`, `hall` (a Steward's build from a Village Hall; absent for a player's own), `waiting_since` (absent:
   not waiting) and `player_blocks` (0): used by Stewards (27.19).
+- `rechecks` (0): how often the build went back for blocks broken mid-build; `left_out` (empty): the structure and
+  decoration blocks given up for good, which that look leaves be (B508; older saves have neither).
 
 On the villager (attachments in `registry/ModAttachments`):
 - `builder_job` (`BuilderJob`): `site` and `helper` (false by default).
@@ -234,6 +236,12 @@ claims and trip counts.
   builder employed at a bench put down by a command holds it at once (B132).
 - Progress never drops after a restart (B46, B64).
 - Unfinished blocks are never claimed done: `MaterialRules.matches` ignores neighbor-dependent properties.
+  Nor is a hole: before a build is called done (once LANDSCAPE has run out), the Builder looks over every structure
+  and decoration block once. If one laid earlier is gone and its spot is open (a player, a mob or an explosion broke
+  it mid-build; the same test the repair round uses, crops aside), the Builder goes back to the first such block and
+  over the lists again, passing what still stands, and lays what's missing. It goes back at most twice a build; a
+  block broken again after that is counted in skipped and left for the repair round. Blocks already given up
+  (deferred, then skipped) are not gone back for (B508, `aPlankBrokenMidBuildIsBackWhenTheBuildEnds`).
 - An upgrade is a whole new blueprint on the same spot. Where its new room's roof runs in under the old roof's edge,
   the wall is carried up to that edge, so the roofs meet with no open blocks between them; `tools/blueprints/holes.py`
   checks every blueprint for roof holes, gaps between roofs and stray empty blocks (owner's report, 2026-10-14).

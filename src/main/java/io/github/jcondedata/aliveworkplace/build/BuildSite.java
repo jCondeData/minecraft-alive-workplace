@@ -127,7 +127,47 @@ public final class BuildSite {
 	 */
 	public void backToKineticParts(int index) {
 		kineticPasses++;
-		stage = BuildPlan.Stage.STRUCTURE;
+		backTo(BuildPlan.Stage.STRUCTURE, index);
+	}
+
+	/**
+	 * B508: how often the build went back over its structure and decoration for a block broken since it was laid (at
+	 * most {@link BuilderWork#MOST_RECHECKS} times a build). Saved; 0 in older saves.
+	 */
+	private int rechecks;
+	/**
+	 * B508: the structure and decoration blocks given up for good this build (deferred, then skipped), so the last look
+	 * before DONE doesn't go back for them and count them twice. Saved; empty in older saves.
+	 */
+	private final java.util.Set<BlockPos> leftOut = new java.util.HashSet<>();
+
+	/** How often the build went back for blocks broken mid-build (B508). */
+	public int rechecks() {
+		return rechecks;
+	}
+
+	/** Whether the block at {@code pos} was given up for good this build (B508). */
+	public boolean leftOut(BlockPos pos) {
+		return leftOut.contains(pos);
+	}
+
+	/**
+	 * B508: back to {@code stage}'s list at {@code index} (the first block broken since it was laid), to put back what's
+	 * gone before the build is called done; what's still in place is passed straight over.
+	 */
+	public void backToBroken(BuildPlan.Stage stage, int index) {
+		rechecks++;
+		backTo(stage, index);
+	}
+
+	/** B508: blocks still gone once the build has gone back for them as often as it does: counted as skipped. */
+	public void leftBroken(int count) {
+		skipped += count;
+		onChange.run();
+	}
+
+	private void backTo(BuildPlan.Stage stage, int index) {
+		this.stage = stage;
 		cursor = index;
 		retrying = false;
 		deferred.clear();
@@ -518,7 +558,11 @@ public final class BuildSite {
 		if (retrying) {
 			skipped++;
 			if (plan != null && cursor < deferred.size() && deferred.get(cursor) < plan.steps(stage).size()) {
-				gaveUp.add(plan.steps(stage).get(deferred.get(cursor)).pos()); // 35.5: a crew's layers don't wait for it
+				BlockPos pos = plan.steps(stage).get(deferred.get(cursor)).pos();
+				gaveUp.add(pos); // 35.5: a crew's layers don't wait for it
+				if (stage == BuildPlan.Stage.STRUCTURE || stage == BuildPlan.Stage.DECORATION) {
+					leftOut.add(pos.immutable()); // B508: the last look before DONE leaves it be
+				}
 			}
 		} else {
 			deferred.add(cursor);
@@ -891,6 +935,12 @@ public final class BuildSite {
 		if (kineticPasses > 0) {
 			tag.putInt("kinetic_passes", kineticPasses);
 		}
+		if (rechecks > 0) {
+			tag.putInt("rechecks", rechecks); // B508
+		}
+		if (!leftOut.isEmpty()) {
+			tag.putLongArray("left_out", leftOut.stream().mapToLong(BlockPos::asLong).toArray()); // B508
+		}
 		if (furniture == null) {
 			tag.putBoolean("furniture_unchosen", true); // 37.3: a new site not yet planned chooses when it is
 		} else if (!furniture.isVanilla()) {
@@ -944,6 +994,10 @@ public final class BuildSite {
 		}
 		site.kineticOrder = Nbt.getBoolean(tag, "kinetic_order"); // 39.5: older saves build in today's order
 		site.kineticPasses = Nbt.getInt(tag, "kinetic_passes");
+		site.rechecks = Nbt.getInt(tag, "rechecks"); // B508: none in older saves
+		for (long p : Nbt.getLongArray(tag, "left_out")) {
+			site.leftOut.add(BlockPos.of(p));
+		}
 		// 37.3: older saves have neither, and build vanilla
 		site.furniture = Nbt.getBoolean(tag, "furniture_unchosen") ? null
 			: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.load(Nbt.getList(tag, "furniture", Tag.TAG_COMPOUND));

@@ -406,7 +406,8 @@ public class PlotGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		// tables left by earlier batches round the area (this test is alone in its batch)
 		BlockPos corner = helper.absolutePos(BlockPos.ZERO);
 		BoundingBox area = new BoundingBox(corner.getX(), 0, corner.getZ(), corner.getX() + 29, 0, corner.getZ() + 29);
-		level.getPoiManager().findAll(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI), p -> true,
+		level.getPoiManager().findAll(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI)
+					|| h.is(ModVillagers.VILLAGE_HALL_POI), p -> true,
 				helper.absolutePos(HALL), 120, PoiManager.Occupancy.ANY).map(BlockPos::immutable).toList()
 			.forEach(p -> {
 				if (p.getX() < area.minX() || p.getX() > area.maxX() || p.getZ() < area.minZ() || p.getZ() > area.maxZ()) {

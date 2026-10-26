@@ -15,6 +15,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.AreaJobs;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
@@ -110,7 +111,8 @@ public final class Fields {
 		BoundingBox box = area.get();
 		double distance = Math.sqrt(box.getCenter().distSqr(composter.get()));
 		if (distance > MAX_DISTANCE) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_DISTANCE), ChatFormatting.RED);
+			tell(player, Component.translatable("message.aliveworkplace.field.too_far", (int) Math.ceil(distance),
+				AreaJobs.workBlock(level, composter.get()), MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		FieldJob old = ModAttachments.FARM_FIELD.get(villager);

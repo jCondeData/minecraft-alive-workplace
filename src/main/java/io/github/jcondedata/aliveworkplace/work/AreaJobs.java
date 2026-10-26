@@ -44,6 +44,15 @@ public final class AreaJobs {
 	/** Farthest an area can be from the worker's workstation. */
 	public static final int MAX_DISTANCE = 48;
 
+	/**
+	 * The name of the block a worker works at, for a too-far line ("the Composter the farmer works at"; B453): the
+	 * block's own name, or "workstation" when it's gone and the villager hasn't noticed yet.
+	 */
+	public static Component workBlock(ServerLevel level, BlockPos pos) {
+		var state = level.getBlockState(pos);
+		return state.isAir() ? Component.translatable("message.aliveworkplace.assign.work_block") : state.getBlock().getName();
+	}
+
 	/** Player right-clicked the worker while holding a Field Marker: the marked area becomes theirs to look after. */
 	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack, Attachment<FieldJob> type, String kind) {
 		ServerLevel level = Players.level(player);
@@ -71,7 +80,8 @@ public final class AreaJobs {
 		BoundingBox box = area.get();
 		double distance = Math.sqrt(box.getCenter().distSqr(station.get()));
 		if (distance > MAX_DISTANCE) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_DISTANCE), ChatFormatting.RED);
+			tell(player, Component.translatable("message.aliveworkplace." + kind + ".too_far", (int) Math.ceil(distance),
+				workBlock(level, station.get()), MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		FieldJob old = type.get(villager);

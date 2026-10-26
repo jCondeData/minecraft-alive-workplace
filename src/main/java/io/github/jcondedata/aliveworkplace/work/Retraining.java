@@ -149,6 +149,21 @@ public final class Retraining {
 		Stations.assign(level, villager, station, job);
 	}
 
+	/**
+	 * Takes {@code villager}'s job away (the hall's "No job", 40.3): a builder hands their builds back, the work block is
+	 * let go (free for someone else), and the job, its level and its trades go. Jobless, they may take a free block nearby
+	 * by themselves, as any jobless villager does.
+	 */
+	public static void unemploy(ServerLevel level, ServerPlayer player, Villager villager) {
+		dropWork(level, player, villager);
+		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).ifPresent(site -> Stations.releaseOld(level, villager, site));
+		villager.getBrain().eraseMemory(MemoryModuleType.JOB_SITE);
+		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+		villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE).setLevel(1));
+		villager.setVillagerXp(0);
+		villager.refreshBrain(level);
+	}
+
 	/** How much more the player needs: "7 emeralds" or "650 CobbleDollars". */
 	public static Component shortBy(ServerPlayer player, long dollars, int emeralds) {
 		Long balance = Bank.EXTENSION.call(bank -> bank.balance(player), null);

@@ -32,6 +32,7 @@
 		"mega_showdown": "*",
 		"ftbquests": "*",
 		"modmenu": "*",
-		"create": "*"
+		"create": "*",
+		"waystones": "*"
 	}
 }

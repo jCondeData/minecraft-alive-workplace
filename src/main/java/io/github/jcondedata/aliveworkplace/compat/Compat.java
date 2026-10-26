@@ -25,6 +25,13 @@ public final class Compat {
 				io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsCompat::init);
 		}
 		//?}
+		//? if waystones {
+		// A waystone by every Village Hall (41.1): Waystones' public API, never required.
+		if (Platform.get().isModLoaded("waystones")) {
+			enable("waystones", io.github.jcondedata.aliveworkplace.compat.waystones.WaystonesCompat.TESTED,
+				io.github.jcondedata.aliveworkplace.compat.waystones.WaystonesCompat::init);
+		}
+		//?}
 		// Create's trains for the villages (39.7a): the owner's port in libs/, compiled against, never required.
 		if (Platform.get().isModLoaded("create")) {
 			enable("create", io.github.jcondedata.aliveworkplace.compat.create.CreateCompat.TESTED,

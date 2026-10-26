@@ -120,14 +120,28 @@ public final class VillageHallScreen {
 	}
 
 	static void render(ChoiceMenu menu, ServerLevel level, BlockPos hall, int page) {
+		renderFrom(menu, level, hall, Math.max(0, page) * PER_PAGE);
+	}
+
+	/** The main page with the people list starting at person {@code from} (the People table's scroll, 40.2). */
+	static void renderFrom(ChoiceMenu menu, ServerLevel level, BlockPos hall, int from) {
 		menu.clearButtons();
+		if (menu.viewer() != null) {
+			HallSections.install(menu, menu.viewer(), level, hall); // the sidebar (40.1), on the viewer's last section
+		}
 		VillageHalls.Census census = VillageHalls.census(level, hall);
 		List<Villager> people = new ArrayList<>(census.workers());
 		people.addAll(census.jobless());
 		// Legends come first (29.4); the sort is stable, so everyone else keeps their order.
 		people.sort(java.util.Comparator.comparing(v -> io.github.jcondedata.aliveworkplace.legend.Legends.of(v).isEmpty()));
+		people.addAll(HallPeople.children(level, hall)); // the People table lists the children too, last (40.2)
 		int pages = Math.max(1, (people.size() + PER_PAGE - 1) / PER_PAGE);
-		int shown = Math.min(page, pages - 1);
+		int first = Math.max(0, Math.min(from, Math.max(0, people.size() - PER_PAGE)));
+		if (from % PER_PAGE == 0 && from < people.size()) {
+			first = from; // a whole page, as the arrows turn them (the last one may be short)
+		}
+		int shown = Math.min(first / PER_PAGE, pages - 1);
+		HallPeople.counts(menu, census, people.size(), first);
 
 		VillageRanks.Score score = VillageRanks.score(level, hall, census.villagers());
 		VillageRanks.Rank rank = VillageRanks.rank(score);
@@ -281,9 +295,15 @@ public final class VillageHallScreen {
 		});
 		menu.button(PlayerBank.BUTTON, PlayerBank.tab(level, hall), p -> PlayerBank.open(menu, level, hall, p)); // the bank (29.17)
 		List<VillageAdvice.Tip> tips = VillageAdvice.tips(level, hall);
+		List<Component> adviceLore = new ArrayList<>();
+		adviceLore.add(line(tips.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none")
+			: Component.translatable("screen.aliveworkplace.hall.advice_count", tips.size(), tips.get(0).title()), ChatFormatting.GRAY));
+		for (VillageAdvice.Tip tip : tips) { // every tip and how, read out on the Overview (40.1)
+			adviceLore.add(line(tip.title(), ChatFormatting.YELLOW));
+			adviceLore.add(line(tip.how(), ChatFormatting.GRAY));
+		}
 		menu.button(ADVICE, icon(Items.COMPASS, Component.translatable("screen.aliveworkplace.hall.advice"), ChatFormatting.WHITE,
-			line(tips.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none")
-				: Component.translatable("screen.aliveworkplace.hall.advice_count", tips.size(), tips.get(0).title()), ChatFormatting.GRAY)), p -> {
+			adviceLore.toArray(Component[]::new)), p -> {
 			renderAdvice(menu, level, hall);
 			menu.broadcastChanges();
 		});
@@ -292,6 +312,7 @@ public final class VillageHallScreen {
 		if (io.github.jcondedata.aliveworkplace.wonder.ObservatoryPowers.charts(level, hall)) { // the Observatory's Sky Chart (35.18)
 			mapLore.add(line(Component.translatable("screen.aliveworkplace.hall.map_sky_chart"), ChatFormatting.AQUA));
 		}
+		mapLore.addAll(VillageWaystones.mapLines(level, hall, menu.viewer())); // the waystone network (41.2)
 		menu.button(MAP, icon(Items.FILLED_MAP, Component.translatable("screen.aliveworkplace.hall.map"), ChatFormatting.WHITE,
 			mapLore.toArray(Component[]::new)), p -> {
 			Chat.chat(p, VillageMaps.draw(level, hall, p));
@@ -365,13 +386,18 @@ public final class VillageHallScreen {
 		int slot = FIRST_PERSON;
 		// One read of the village for every class need the list ticks (34.6).
 		io.github.jcondedata.aliveworkplace.people.ClassNeeds.Village classes = new io.github.jcondedata.aliveworkplace.people.ClassNeeds.Village(level, hall, Chronicle.day(level));
-		for (Villager villager : people.subList(shown * PER_PAGE, Math.min(people.size(), (shown + 1) * PER_PAGE))) {
+		for (Villager villager : people.subList(first, Math.min(people.size(), first + PER_PAGE))) {
 			boolean jobless = census.jobless().contains(villager) && io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).isEmpty();
 			if (slot == PREVIOUS) {
 				slot++;
 			}
-			menu.button(slot++, person(level, hall, villager, classes, menu.viewer()), p -> {
-				if (menu.shiftClicked() && villager.hasCustomName()) {
+			ItemStack personIcon = person(level, hall, villager, classes, menu.viewer());
+			HallPeople.tag(personIcon, level, villager); // the People table's columns (40.2)
+			HallJobs.attach(menu, personIcon, level, hall, villager); // Job ▾'s list, when it's open for them (40.3)
+			menu.button(slot++, personIcon, p -> {
+				if (HallPeople.gone(level, hall, villager)) {
+					refresh(menu, level, hall, shown); // died or left while the screen was open (40.2): the row goes, nothing else
+				} else if (menu.shiftClicked() && villager.hasCustomName()) {
 					// Their life story (31.7): hearts, name day, family, partner and what they've told.
 					io.github.jcondedata.aliveworkplace.story.LifeStory.render(menu, level, hall, villager, shown, p);
 					menu.broadcastChanges();
@@ -387,6 +413,10 @@ public final class VillageHallScreen {
 				}
 			});
 		}
+		// The sidebar's sections (40.1): every button marked with its sections, and which sections are empty.
+		boolean laws = entity != null && !entity.edicts().isEmpty() || realm != null;
+		HallSections.apply(menu, level, HallPages.shown(), new HallSections.Counts(census.villagers(), census.beds(), census.food(),
+			census.builds().size(), census.guards(), quests.size(), !Caravans.neighbours(level, hall).isEmpty(), laws));
 	}
 
 	/** The page row: a tab for each registered page, light glass after them. */

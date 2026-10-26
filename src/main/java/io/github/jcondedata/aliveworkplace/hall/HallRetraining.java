@@ -115,7 +115,8 @@ public final class HallRetraining {
 			Chat.actionBar(player, refusal.copy().withStyle(ChatFormatting.YELLOW));
 			return Outcome.REFUSED;
 		}
-		if (!VillageHalls.freeStations(level, hall).contains(station)) {
+		// Still free (by where it is: a block several jobs share is offered for each of them, 40.3)
+		if (VillageHalls.freeStations(level, hall).stream().noneMatch(s -> s.pos().equals(station.pos()))) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.hall.not_assigned").withStyle(ChatFormatting.YELLOW));
 			return Outcome.TAKEN;
 		}

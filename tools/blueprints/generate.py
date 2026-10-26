@@ -37,6 +37,7 @@ from basements import LEVEL_4, butchers_shop, cutaway
 from cellars import LEVEL_3
 from create_builds import *
 from quarry import quarry
+from waystones import waystone_plaza, save_all as save_waystone_plazas
 from storage_halls import storage_hall, terminal_nook, warehouse, save_all as save_storage_halls
 
 
@@ -147,6 +148,7 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)
     village_train().save(os.path.join(MAIN_STRUCTURES, "train"), "village_train")  # ROADMAP 39.7c: the village's Create train
     mega_shrine().save(MAIN_STRUCTURES, "mega_shrine")  # ROADMAP 38.7: listed only with Mega Showdown's blocks
+    save_waystone_plazas()  # ROADMAP 41.1: proposed only with Waystones
     stone_house().save(MAIN_STRUCTURES, "stone_house")
     stone_house_2().save(MAIN_STRUCTURES, "stone_house_2")
     stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")

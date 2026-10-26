@@ -57,8 +57,9 @@ Wonder's part called off) has them all taken down at once, into the supply chest
 its builder, if on a column, is first put down at the foot.
 
 **Asking for it.** When the column needs more scaffolding than the builder's bag, its chests and the village's spare
-hold, the shortfall is added to the site's missing list (the Storehouse's requests board shows it) and the step goes
-on as it always did: skipped and counted. The build never waits on scaffolding. A carpenter makes it by the vanilla
+hold, the shortfall is added to the site's missing list (the Storehouse's requests board and the Village Hall show it
+while the builder carries on, not only while it waits for other materials) and the step goes on as it always did:
+skipped and counted. The request goes away once the builder finds enough in its chests. The build never waits on scaffolding. A carpenter makes it by the vanilla
 recipe (6 bamboo and a string make 6); builders sell it too.
 
 ## 3. Switches

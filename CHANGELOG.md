@@ -28,6 +28,7 @@ asks for the steps, `latest.log` and any crash report).
 - Text: every sentence a player reads is now in American English: Smith's Draught is now Smith's Draft, the den-helpers and bean-farm settings say Defense and color, and the questbook, guide and wiki say gray, armor, Jeweler, canceled, traveler, leveled, curb and story (a floor). Item and block ids, saved data and lang keys are unchanged, so worlds and data packs keep working.
 
 ### Fixed
+- Scaffolding: with none in the chests, a builder's shortfall now shows on the Storehouse's requests board and the Village Hall while the build carries on (before, it never showed); it goes away once there's enough in the chests (B499).
 - Hauler Golems: a golem whose only Storehouse is walled in (or across water) no longer stands holding its load for good; it puts the goods back into the nearest Drop Box and is free to haul again (B463).
 - Steward plots: the same blueprint is now kept 24 blocks apart as promised, measured centre to centre; a finished Well 25 blocks off no longer refuses the spot (B470).
 - Walls: with no wall line drawn, the Steward's own line now runs 4 blocks outside the zones on every side; the east and south sides were 5 out (B510).

@@ -387,6 +387,12 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   the hiring, and the helper loaded back follows the player; `aDayLaterUnloadedHelpersAreSentHome`: the day's end still
   sends an unloaded helper home and tells the player; `aHelperNoLongerATrainerLeavesTheHiring`.
 - `ConfigGameTests.anOldDenConfigLoads`: a config with 38.3's and 38.4's keys loads (38.1a).
+- `QaDenSentencesCompatTests` (QA, from the spec, 38.1a/38.3a/38.4a): `theCheerLinesReadAsWritten` (three helpers: each
+  cheer line word for word with "a" or "an" before the cheer's name, then the strike line), `theWinIsWrittenWithThePlayersAndTheHelpersNames`
+  (the chronicle names the player and the best helper; the player's win line; the helper's status "helping <player> with a
+  raid", then the helper walking home), `aRaidGoneIsToldAndSendsTheHelpersHome` (the "is over" line, home, no chronicle
+  line), `aVillageAloneNeverRaidsTheDen` (a Master, a store and an active tier 3 den over four days with no player: the den
+  stays active, the store empty, no chronicle line, no Den Warden lines left) and `theSettingsTooltipsTellTheHiring`.
 
 - `MegaTrainerCompatTests` (with Mega Showdown): `aCityLeaderMegaEvolvesATownLeaderDoesNot`,
   `theCupFinalsTrainersHoldAMegaStone` (six seeds, the theme kept, as fighters too, not in earlier rounds; finalists
@@ -461,6 +467,12 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
 - `CuisineGameTests.withoutCobblecuisineTheDishLuxuriesAreSkipped` (38.10, without the mod): the files ship, are read
   as nothing, aren't loaded, no class takes them, the Classes page doesn't list them and the treat tag is empty;
   `theText` checks the switch tooltip and the luxuries' names. `ClassGameTests` now expects the two new wants.
+- `CampfirePotCompatTests` (38.11): every pot recipe on the menu by type, an EXP Candy and a data pack's Rare Candy
+  cooked, none short of a making, none with `cuisineDishes` off, the tooltip. `QaCampfirePotMenuCompatTests` (QA):
+  makings in two chests, a shapeless tag recipe, a recipe that makes four, a result with components left out, the old
+  dishes with the switch off. `QaCampfirePotStockCompatTests` (QA, with Strawberry Sweets, which no pot recipe uses up):
+  `makingsForOneCookMakeOneSweet` (the rest of the makings stay), `sixteenInTheChestMeansNoneCooked`,
+  `fifteenInTheChestGetsOneMore` (exactly 16) and `aChefLoadedAgainStillCooksThePotDish`. Keeping 16 EXP Candies is B435.
 - Scene `partner_treats` (38.10): a Machop at a builder's pasture eats a Poké Puff from the storehouse chest.
 - Scene `bean_farm` (38.9): a row ripe, a row green, a row bare; the ripe row cut into the chest and the bare rows sown.
 

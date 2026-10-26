@@ -25,7 +25,7 @@ import net.minecraft.world.level.saveddata.SavedData;
  * a hand-edited file) still loads: Minecraft drops a file whose load throws and starts it empty, so a throw there is
  * the whole file lost.</li>
  * </ul>
- * The 34 files are named below; {@link #everySavedFileIsListed} looks through the mod's own classes for every
+ * The 35 files are named below; {@link #everySavedFileIsListed} looks through the mod's own classes for every
  * {@code extends SavedData}, so a new file isn't left out silently (add it to {@link #FILES}; lane E, 2026-10-26: the
  * Mega Shrine's file, B501, had been).
  */
@@ -36,13 +36,13 @@ public class QaEverySavedDataGameTests implements FabricGameTest {
 	static final List<String> FILES = List.of(
 		"bounty.Bounties$Data", "build.BuildSiteManager", "build.Friends", "camp.CampBeds$Data", "city.PlayerBuilt",
 		"craft.DishRequests", "cup.CupData", "guard.RaidDens$Sites", "guard.Scouts$Data", "guard.WarParties$Data",
-		"hall.Caravans$Data", "hall.Seasons$Data", "legend.LegendRecord", "mail.PostOffice", "mine.QuarrySiteManager",
+		"hall.Caravans$Data", "hall.Seasons$Data", "hall.VillageWaystones$Data", "legend.LegendRecord", "mail.PostOffice", "mine.QuarrySiteManager",
 		"realm.Feuds$Data", "realm.Pacts$Data", "realm.RealmData", "shop.ShopLedger", "story.ReformStories$Data",
 		"story.Stories$Data", "table.BlueprintUnlocks$Wild", "threat.Covens$Data", "threat.Lairs$Data", "threat.Ships$Data",
 		"threat.ThreatData", "trainer.LeaderBracelets$Data", "trainer.RaidHelpers$Data", "travel.TravelNetwork",
 		"trainer.MegaShrines$Data", "wonder.StadiumDays$Data", "wonder.WonderManager", "work.JobSiteTickets", "work.WorkSites");
 
-	static final int KNOWN = 34;
+	static final int KNOWN = 35;
 
 	/** The file's loader: its static {@code load(CompoundTag, HolderLookup.Provider)}. */
 	private static Method loader(String name) {

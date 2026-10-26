@@ -417,7 +417,7 @@ public class QaDenHelperCompatTests implements FabricGameTest {
 		List<String> joined = t.said().subList(from, t.seen().size());
 		helper.assertTrue(count(player, "cobblemonraiddens:cheer_attack") == 1 && count(player, "cobblemonraiddens:cheer_defense") == 1
 			&& count(player, "cobblemonraiddens:cheer_heal") == 1, "the cheers: " + RaidHelperCompatTests.cheers(player) + " " + joined);
-		helper.assertTrue(joined.stream().filter(s -> s.matches(".+ cheers you on: a .+ for the raid!")).count() == 3, "the cheer lines: " + joined);
+		helper.assertTrue(joined.stream().filter(s -> s.matches(".+ cheers you on: an? .+ for the raid!")).count() == 3, "the cheer lines: " + joined);
 		String strike = RaidAssist.EXTENSION.present()
 			? "Your raid helpers send their Pokémon at the boss: they wear it down, but the last blows are yours"
 			: "Your raid helpers cheer from beside the den";

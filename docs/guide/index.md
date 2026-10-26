@@ -164,6 +164,10 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
 - [Cobblecuisine dishes](cobblecuisine.md): the salads, curries, cakes and drinks your Chef, Camp Cook and Innkeeper make and serve.
 - [Furnicrafter](furnicrafter.md): with CobbleFurnies, the villager who makes its furniture for your builders and your store.
 
+## With Waystones
+
+- [Waystone Plaza](waystone-plaza.md): a waystone by every Village Hall, named after the village, to travel between your villages.
+
 ## For server owners
 
 - [Settings](settings.md): what a server owner can switch on and off or tune, in plain words.

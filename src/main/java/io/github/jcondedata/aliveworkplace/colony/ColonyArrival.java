@@ -137,6 +137,11 @@ public final class ColonyArrival {
 		switch (order.state()) {
 			case RealmData.ON_ROAD -> {
 				if (now >= order.arrives()) {
+					RealmData.Order out = Settlers.stepOut(level, order); // 41.3: out of the other village's waystone, or a stone broken: they walk
+					if (out != order) {
+						data.putOrder(out);
+						return;
+					}
 					keepLoaded(level, order.spot());
 					data.putOrder(order.withState(RealmData.ARRIVING, order.leaves(), now));
 				}

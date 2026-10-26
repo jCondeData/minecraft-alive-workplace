@@ -11,7 +11,7 @@ stonecutter active "1.21.1"
 // Optional integrations (compat/<modid>/). Each id becomes a constant for `//? if <id> {`, true on nodes whose section in
 // stonecutter.properties.toml declares deps.compat.<id>. The whole of compat/cobblemon/ and compat/cobbledollars/ is
 // wrapped in such a guard, so a node without the mod never compiles them.
-val integrations = listOf("cobblemon", "cobbledollars")
+val integrations = listOf("cobblemon", "cobbledollars", "waystones")
 
 stonecutter parameters {
     val mc = current.parsed

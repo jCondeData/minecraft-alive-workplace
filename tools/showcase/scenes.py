@@ -37,14 +37,15 @@ START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03
 
 
 def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False, furniture=False,
-      create=False):
+      create=False, waystones=False):
     """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added).
     cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14).
     furniture: filmed with the pack's furniture mods (-Pfurniture=true, ROADMAP 37.4).
-    create: filmed with the owner's Create port (libs/, -Pcreate=true; Milestone 39)."""
+    create: filmed with the owner's Create port (libs/, -Pcreate=true; Milestone 39).
+    waystones: filmed with Waystones and Balm (-Pwaystones=true; Milestone 41)."""
     return {"name": name, "group": group, "title": title, "what": what, "est": est, "stills": stills,
             "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18,
-            "furniture": furniture, "create": create}
+            "furniture": furniture, "create": create, "waystones": waystones}
 
 
 def job(name, group, title, what, est=150, extra=(), **kw):
@@ -847,6 +848,10 @@ SCENES = [
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),
        ("05_hall_festival", "Festival")]),
+    # The waystone network on the hall's Map (ROADMAP 41.2, with Waystones): discovered, not yet, and a broken stone
+    S("hall_waystones", "Village Hall", "The waystone network on the hall's Map",
+      "the hall's Map listed the waystone network: this village (discovered), one not discovered yet and one whose waystone is broken", 45,
+      [("01_hall_waystones", "The Map: the waystone network")], waystones=True),
     S("quest_journal", "Village Hall", "The quest journal, a tracked quest and a quest map",
       "the quest journal opened on its four tabs, a quest was tracked (its bar at the top of the screen) and a quest map was held", 50,
       [("01_journal_tabs", "The journal: Village, Personal, Story and Bounties"), ("02_journal_tracked", "A tracked quest's bar at the top"),
@@ -1124,6 +1129,15 @@ SCENES = [
         "the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
         120, create=True),
     # More Create builds (ROADMAP 39.8, with Create): the Brass Foundry, Sawmill, Crushing Mill, Greenhouse, Clock Tower and Pump House, every machine turning
+    # A waystone by every Village Hall (ROADMAP 41.1): with Waystones, the builder raises the Waystone Plaza by the hall
+    job("village_waystone", "Builder", "A waystone by the Village Hall",
+        "the builder raised the Waystone Plaza by the Village Hall, and its stone became a working waystone named after the village",
+        180, waystones=True),
+    # Caravans travel by waystone (ROADMAP 41.3): with Waystones, a caravan walks to its village's stone and steps out at the other's
+    job("waystone_caravan", "Realm", "Caravans travel by waystone",
+        "Thornholm's carter led his two llamas from the Storehouse to the village's waystone and stepped into it; "
+        "then Ashford's caravan stepped out of the same stone, unloaded its logs at the Storehouse and walked back into the waystone",
+        170, waystones=True),
     job("create_builds_more", "Create", "Six more Create builds, their machines turning",
         "the six builds' wheels turned, and with them the Brass Foundry's mixer, the Sawmill's saws, the Crushing Mill's wheels, the Greenhouse's belt, the Clock Tower's cuckoo clock and the Pump House's pump",
         120, create=True),
@@ -1538,6 +1552,7 @@ def env(scene):
     if s["cobblemon18"]:
         out["COBBLEMON18"] = "true"
     out["CREATE"] = "true" if s.get("create") else "false"
+    out["WAYSTONES"] = "true" if s.get("waystones") else "false"
     out.update(s["env"])
     return out
 

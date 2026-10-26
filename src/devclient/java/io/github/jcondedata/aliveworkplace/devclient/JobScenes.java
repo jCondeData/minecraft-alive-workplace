@@ -785,6 +785,38 @@ final class JobScenes {
 			net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
 	}
 
+	/**
+	 * A village of {@code player}'s for the hall_waystones scene (41.2): a hall named {@code name} at {@code hall}, owned by
+	 * the player and known as a hall round knows it, and the Waystone Plaza set down at {@code plaza} as the builder
+	 * leaves it, recorded finished; the hall's round raises its stone, named after the village. Returns the hall.
+	 */
+	private static BlockPos waystoneVillage(ServerLevel level, ServerPlayer player, BlockPos hall, String name, BlockPos plaza) {
+		level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+			.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+		var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+		entity.setCustomName(Component.literal(name));
+		entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+		io.github.jcondedata.aliveworkplace.realm.RealmData.get(level.getServer()).putKnown(new io.github.jcondedata.aliveworkplace.realm.RealmData.Known(
+			net.minecraft.core.GlobalPos.of(level.dimension(), hall), Component.literal(name), java.util.Optional.of(player.getUUID()),
+			player.getGameProfile().getName(), "hamlet", 0, 0, level.getGameTime()));
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), plaza,
+			net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+		BlueprintLibrary.get(level, io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA).ifPresent(blueprint -> {
+			BuildPlan plan = BuildPlan.create(blueprint, placement);
+			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION, BuildPlan.Stage.LANDSCAPE)) {
+				for (BuildPlan.Step step : plan.steps(stage)) {
+					level.setBlock(step.pos(), step.state(), 2);
+					if (step.secondaryPos() != null && step.secondaryState() != null) {
+						level.setBlock(step.secondaryPos(), step.secondaryState(), 2);
+					}
+				}
+			}
+		});
+		BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA, placement, player.getUUID());
+		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.round(level, hall);
+		return hall;
+	}
+
 	// --- The scenes ------------------------------------------------------------------------------------------------
 
 	static {
@@ -1315,6 +1347,53 @@ final class JobScenes {
 				x += entry.size().getX() + 3;
 			}
 			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
+		}, null));
+		// A waystone by every Village Hall (ROADMAP 41.1, filmed with Waystones): a hall named Stonebridge, a builder at
+		// his bench with the Waystone Plaza's materials in barrels; he builds the plaza in front of the camera, and its
+		// stone becomes a working waystone of the mod's named after the village.
+		SCENES.put("village_waystone", new Job("the builder raised the Waystone Plaza by the Village Hall, and its stone became a working waystone named Stonebridge",
+			2400, new Vec3(0.5, -53.0, -14.5), new Vec3(0.5, -57.0, -5.5), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.offered(), "Waystones is loaded and the plaza is offered (villageWaystones)");
+			BlockPos hall = STATION.offset(-6, 0, 2);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setCustomName(net.minecraft.network.chat.Component.literal("Stonebridge"));
+			BlockPos bench = STATION.offset(5, 0, 1);
+			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), STATION.offset(-3, 0, -9),
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			BuildSite site = Builders.start(level, builder, null, io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA, placement);
+			Showcase.check(site != null, "the builder took the Waystone Plaza on");
+			if (site == null) {
+				return l -> false;
+			}
+			BuildPlan plan = site.plan(level);
+			List<ItemStack> stacks = new ArrayList<>();
+			plan.materials().forEach((item, total) -> {
+				for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+					stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+				}
+			});
+			for (int b = 0; b * 27 < stacks.size(); b++) {
+				BlockPos at = bench.offset(1, 0, b);
+				level.setBlockAndUpdate(at, Blocks.BARREL.defaultBlockState());
+				Container barrel = (Container) level.getBlockEntity(at);
+				for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+					barrel.setItem(slot, stacks.get(b * 27 + slot));
+				}
+			}
+			BlockPos stone = placement.origin().offset(3, 2, 3);
+			return l -> {
+				if (BuildSiteManager.get(l).get(site.id()) != null) {
+					return false;
+				}
+				java.util.Optional<String> name = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.EXTENSION.call(
+					w -> w.nameAt(l, stone), java.util.Optional.<String>empty());
+				Showcase.check(name.equals(java.util.Optional.of("Stonebridge")), "the plaza's stone is a working waystone named Stonebridge (" + name + ")");
+				return name.isPresent();
+			};
 		}, null));
 		// More Create builds (ROADMAP 39.8, filmed with Create): the Brass Foundry, the Sawmill and the Crushing Mill in
 		// front, the Greenhouse, the Clock Tower and the Pump House behind them, set down as a builder leaves them, facing
@@ -4320,6 +4399,80 @@ final class JobScenes {
 				return act[0] == 4 && ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 24;
 			};
 		}, null));
+		// Caravans travel by waystone (41.3, filmed with Waystones): Thornholm and Ashford, 180 blocks apart, each with its
+		// Waystone Plaza. Thornholm's caravan walks from the Storehouse to its stone and steps in (the mod's portal sound and
+		// particles); then Ashford's steps out of that stone, unloads at the Storehouse and walks back into it.
+		SCENES.put("waystone_caravan", new Job("Thornholm's carter led his two llamas from the Storehouse to the village's waystone and stepped into it; "
+			+ "then Ashford's caravan stepped out of the same stone, unloaded its logs at the Storehouse and walked back into the waystone", 4800,
+			new Vec3(16, -48, 13), new Vec3(12, -60, -5), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.offered(), "Waystones is loaded and village waystones are on");
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 28; // a small village, all of it in the picture
+			waystoneVillage(level, player, STATION, "Thornholm", STATION.offset(12, 0, -8));
+			place(level, new BlockPos(4, -60, -3), ModBlocks.STOREHOUSE);
+			Container ours = chest(level, new BlockPos(5, -60, -3), new ItemStack(Items.BREAD, 40));
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).setColours(
+				new io.github.jcondedata.aliveworkplace.hall.VillageBanners.Colours(net.minecraft.world.item.DyeColor.RED,
+					net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY));
+			// Ashford, 180 blocks east, kept loaded: a hall, its plaza, a Storehouse and a chest of logs
+			BlockPos ashford = STATION.east(180);
+			level.setChunkForced(ashford.getX() >> 4, ashford.getZ() >> 4, true);
+			waystoneVillage(level, player, ashford, "Ashford", ashford.offset(2, 0, 4));
+			place(level, ashford.east(4), ModBlocks.STOREHOUSE);
+			chest(level, ashford.east(5), new ItemStack(Items.OAK_LOG, 48));
+			Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.linked(level, STATION, ashford),
+				"both villages' waystones stand (" + io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, STATION) + ", "
+					+ io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, ashford) + ")");
+			io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			List<io.github.jcondedata.aliveworkplace.hall.Caravans.Want> logs = List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.OAK_LOG, 32));
+			data.setWants(STATION, Component.literal("Thornholm"), logs);
+			data.setWants(ashford, Component.literal("Ashford"), List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.BREAD, 16)));
+			if (!data.routesFrom(STATION).contains(ashford)) {
+				data.toggleRoute(STATION, ashford);
+			}
+			if (!data.routesFrom(ashford).contains(STATION)) {
+				data.toggleRoute(ashford, STATION);
+			}
+			data.clearRoad(STATION);
+			data.clearRoad(ashford);
+			data.sent(ashford, today); // Ashford's caravan waits for the scene to send it
+			int[] act = {0, 0};
+			boolean[] sent = {false};
+			return l -> {
+				if (!sent[0]) {
+					sent[0] = true; // (on the first look, once the Storehouse's point of interest is filed: B132)
+					data.sent(STATION, -1);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, STATION, null);
+					Showcase.check(data.onTheRoad().stream().anyMatch(s -> s.from().equals(STATION) && s.byWaystone()), "Thornholm's caravan goes by waystone");
+				}
+				io.github.jcondedata.aliveworkplace.hall.CaravanSights.Party party = io.github.jcondedata.aliveworkplace.hall.CaravanSights.party(l, STATION);
+				if (act[0] == 0 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.LEAVING) {
+					Showcase.check(party.waystone(), "the party walks to the waystone, not the village's edge (" + party.edge() + ")");
+					act[0] = 1;
+				} else if (act[0] == 1 && party == null) {
+					// stepped into the stone: now Ashford's caravan brings the logs, out of the same stone
+					data.setWants(STATION, Component.literal("Thornholm"), logs);
+					data.sent(ashford, -1);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, ashford, null);
+					Showcase.check(data.onTheRoad().stream().anyMatch(s -> s.from().equals(ashford) && s.byWaystone()), "Ashford's caravan goes by waystone");
+					data.hurry(STATION);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, STATION, null);
+					act[0] = 2;
+				} else if (act[0] == 2 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.UNLOADING
+					&& party.carter().getCustomName() != null && party.carter().getCustomName().getString().equals("Ashford's caravan")) {
+					Showcase.check(party.waystone(), "Ashford's caravan came out of the waystone");
+					act[0] = 3;
+				} else if (act[0] == 3 && party == null) {
+					act[0] = 4; // back into the stone
+				}
+				if (act[0] != act[1]) {
+					act[1] = act[0];
+					System.out.println("[showcase] waystone_caravan act " + act[0] + " at game tick " + l.getGameTime());
+				}
+				return act[0] == 4 && ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 24;
+			};
+		}, null));
 	}
 
 	// --- Screens ---------------------------------------------------------------------------------------------------
@@ -5709,6 +5862,37 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),
 				step("05_hall_festival", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		// The waystone network on the hall's Map (ROADMAP 41.2, filmed with Waystones): three villages of the player's, each
+		// with its Waystone Plaza as the builder leaves it: Ashford (here, its stone discovered), Brookmere to the north-east
+		// (not discovered yet) and Coldwater to the west (its stone broken). The hall's Map button lists all three.
+		SCREENS.put("hall_waystones", new Screen("the hall's Map listed the waystone network: Ashford here (discovered), Brookmere to the north-east "
+			+ "(not discovered yet) and Coldwater to the west (its waystone broken)", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.EXTENSION.present(), "Waystones is loaded (the waystones extension is filled)");
+				BlockPos ashford = waystoneVillage(level, player, STATION, "Ashford", STATION.offset(-12, 0, -12));
+				BlockPos brookmere = waystoneVillage(level, player, STATION.offset(140, 0, -110), "Brookmere", STATION.offset(128, 0, -122));
+				BlockPos coldwater = waystoneVillage(level, player, STATION.offset(-180, 0, 10), "Coldwater", STATION.offset(-192, 0, -2));
+				BlockPos stone = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, ashford).orElse(null);
+				Showcase.check(stone != null && io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, brookmere).isPresent()
+					&& io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, coldwater).isPresent(), "each village raised its waystone");
+				// The player discovered Ashford's stone (using it, as Waystones does); Coldwater's is broken.
+				if (stone != null && io.github.jcondedata.aliveworkplace.hall.VillageWaystones.EXTENSION.present()) {
+					ShowcaseWaystones.discover(player, level, stone); // (its own class: Waystones' classes load only here)
+				}
+				io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, coldwater).ifPresent(s -> {
+					level.setBlockAndUpdate(s.above(), Blocks.AIR.defaultBlockState());
+					level.setBlockAndUpdate(s, Blocks.AIR.defaultBlockState());
+				});
+			},
+			List.of(new Step("01_hall_waystones", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.MAP, 6, (level, player) -> {
+				io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+				List<io.github.jcondedata.aliveworkplace.hall.VillageWaystones.Village> network = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.network(level, STATION, player);
+				Showcase.check(network.size() == 3 && network.get(0).state() == io.github.jcondedata.aliveworkplace.hall.VillageWaystones.State.DISCOVERED
+					&& network.stream().anyMatch(v -> v.state() == io.github.jcondedata.aliveworkplace.hall.VillageWaystones.State.UNDISCOVERED)
+					&& network.stream().anyMatch(v -> v.state() == io.github.jcondedata.aliveworkplace.hall.VillageWaystones.State.BROKEN),
+					"the network: Ashford discovered, Brookmere not yet, Coldwater broken (" + network + ")");
+			}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		// The quest journal (ROADMAP 31.3): the four tabs, a tracked quest's bar on screen, a quest map in hand.
 		SCREENS.put("quest_journal", new Screen("the quest journal's four tabs, a tracked quest's bar at the top of the screen and a quest map in hand",
 			new Vec3(2.5, -58.4, 4.5), TARGET,

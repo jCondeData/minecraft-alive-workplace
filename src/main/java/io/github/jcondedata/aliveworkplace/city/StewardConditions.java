@@ -537,6 +537,20 @@ public final class StewardConditions {
 		}
 	}
 
+	/** {@code waystones_offered}: Waystones is installed and {@code villageWaystones} is on (41.1). */
+	public record WaystonesOffered() implements Condition {
+		@Override
+		public String type() {
+			return "waystones_offered";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			boolean on = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.offered();
+			return new Check(on, on ? 1 : 0, key(type()));
+		}
+	}
+
 	/** {@code no_worker {profession}}: nobody in the village works at that job (a nurse, a scholar); the number is how many do. */
 	public record NoWorker(ResourceLocation profession) implements Condition {
 		@Override
@@ -799,6 +813,7 @@ public final class StewardConditions {
 			return new ResearchAtLeast(topic, f.integer("level", 1, 1, topic.top())); // (the Great Library's levels too, 35.14)
 		});
 		register("mod_loaded", f -> new ModLoaded(f.string("mod", null)));
+		register("waystones_offered", f -> new WaystonesOffered()); // 41.1
 		// 27.12: care, learning, safety, beauty and the market
 		register("no_worker", f -> {
 			ResourceLocation job = f.id("profession");

@@ -157,6 +157,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaElderLifeBugTests",
 			"io.github.jcondedata.aliveworkplace.test.FamilyTreeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassMigrationGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClassMigrationGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClassMigrationBugTests",
 			"io.github.jcondedata.aliveworkplace.test.DaycareKeeperGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallPagesSeasonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B38GameTests",

@@ -36,7 +36,7 @@ import java.util.UUID;
  * she drank it, and her pace and status line say so.
  *
  * <p>30.16: the hotbar holds all six tonics (slots 0-5); the player holds each of the four new ones in turn, then a
- * Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack beside Dara each drink theirs (Smith's Draught, Scholar's
+ * Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack beside Dara each drink theirs (Smith's Draft, Scholar's
  * Infusion, Harvest Cordial, Woodsman's Broth). Checks: each one drank theirs and is 25% faster.
  */
 final class TonicsScene {

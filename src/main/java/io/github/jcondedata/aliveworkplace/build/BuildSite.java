@@ -59,6 +59,12 @@ public final class BuildSite {
 	private boolean deconstruct;
 	/** Putting back what's missing from a finished build (see {@link BuildPlan#repair}). */
 	private boolean repair;
+	/**
+	 * 36.21: a repair that brings the build up to its latest look ({@link Refreshes}): the older drawing it was built from
+	 * (its key in the shipped history), whose leftovers are cleared first. Null: an ordinary repair. None in older saves.
+	 */
+	@Nullable
+	private String refresh;
 	/** 36.7: works only the cellar of a build finished before its blueprint had one ({@link Cellars}). */
 	private boolean cellarOnly;
 	/** The lead builder's bench: where the supply chests are, for helpers too. Null in pre-0.6 saves. */
@@ -127,7 +133,47 @@ public final class BuildSite {
 	 */
 	public void backToKineticParts(int index) {
 		kineticPasses++;
-		stage = BuildPlan.Stage.STRUCTURE;
+		backTo(BuildPlan.Stage.STRUCTURE, index);
+	}
+
+	/**
+	 * B508: how often the build went back over its structure and decoration for a block broken since it was laid (at
+	 * most {@link BuilderWork#MOST_RECHECKS} times a build). Saved; 0 in older saves.
+	 */
+	private int rechecks;
+	/**
+	 * B508: the structure and decoration blocks given up for good this build (deferred, then skipped), so the last look
+	 * before DONE doesn't go back for them and count them twice. Saved; empty in older saves.
+	 */
+	private final java.util.Set<BlockPos> leftOut = new java.util.HashSet<>();
+
+	/** How often the build went back for blocks broken mid-build (B508). */
+	public int rechecks() {
+		return rechecks;
+	}
+
+	/** Whether the block at {@code pos} was given up for good this build (B508). */
+	public boolean leftOut(BlockPos pos) {
+		return leftOut.contains(pos);
+	}
+
+	/**
+	 * B508: back to {@code stage}'s list at {@code index} (the first block broken since it was laid), to put back what's
+	 * gone before the build is called done; what's still in place is passed straight over.
+	 */
+	public void backToBroken(BuildPlan.Stage stage, int index) {
+		rechecks++;
+		backTo(stage, index);
+	}
+
+	/** B508: blocks still gone once the build has gone back for them as often as it does: counted as skipped. */
+	public void leftBroken(int count) {
+		skipped += count;
+		onChange.run();
+	}
+
+	private void backTo(BuildPlan.Stage stage, int index) {
+		this.stage = stage;
 		cursor = index;
 		retrying = false;
 		deferred.clear();
@@ -245,6 +291,7 @@ public final class BuildSite {
 			int depth = foundation && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
 			int margin = levelGround && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
+				: repair && refresh != null ? Refreshes.plan(level, blueprint.get(), structure, refresh, placement, furniture)
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level, BuildSiteManager.get(level).gaveUp(placement))
 				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
 			if (kineticOrder && !deconstruct && !repair) {
@@ -254,7 +301,8 @@ public final class BuildSite {
 				progressFromCursor = false;
 				shownProgress = Math.max(shownProgress, oldSaveProgress(plan));
 			}
-			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE) {
+			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE || refresh != null) {
+				// (36.21: a refresh's lists are worked out from what stands too)
 				// The foundation and landscaping lists depend on the terrain, which we have been changing:
 				// start over (what's already done is skipped straight away).
 				cursor = 0;
@@ -518,7 +566,11 @@ public final class BuildSite {
 		if (retrying) {
 			skipped++;
 			if (plan != null && cursor < deferred.size() && deferred.get(cursor) < plan.steps(stage).size()) {
-				gaveUp.add(plan.steps(stage).get(deferred.get(cursor)).pos()); // 35.5: a crew's layers don't wait for it
+				BlockPos pos = plan.steps(stage).get(deferred.get(cursor)).pos();
+				gaveUp.add(pos); // 35.5: a crew's layers don't wait for it
+				if (stage == BuildPlan.Stage.STRUCTURE || stage == BuildPlan.Stage.DECORATION) {
+					leftOut.add(pos.immutable()); // B508: the last look before DONE leaves it be
+				}
 			}
 		} else {
 			deferred.add(cursor);
@@ -721,6 +773,30 @@ public final class BuildSite {
 		onChange.run();
 	}
 
+	/** Whether this repair brings the build up to its latest look (36.21). */
+	public boolean isRefresh() {
+		return refresh != null;
+	}
+
+	/** The key of the older drawing a refresh brings the build on from (36.21), or null. */
+	@Nullable
+	public String refreshFrom() {
+		return refresh;
+	}
+
+	/**
+	 * Turns a new site into a refresh (36.21, call right after creating it): a repair that first clears what the older
+	 * drawing {@code from} put there and the latest one no longer has, then puts in the new pieces.
+	 */
+	public void setRefresh(String from) {
+		repair = true;
+		refresh = from;
+		stage = BuildPlan.Stage.CLEAR;
+		cursor = 0;
+		plan = null;
+		onChange.run();
+	}
+
 	/** Whether this site digs and fits out only the cellar of the finished build on its spot (36.7). */
 	public boolean isCellarOnly() {
 		return cellarOnly;
@@ -854,6 +930,9 @@ public final class BuildSite {
 		if (repair) {
 			tag.putBoolean("repair", true);
 		}
+		if (refresh != null) {
+			tag.putString("refresh_from", refresh);
+		}
 		if (cellarOnly) {
 			tag.putBoolean("cellar_only", true);
 		}
@@ -890,6 +969,12 @@ public final class BuildSite {
 		}
 		if (kineticPasses > 0) {
 			tag.putInt("kinetic_passes", kineticPasses);
+		}
+		if (rechecks > 0) {
+			tag.putInt("rechecks", rechecks); // B508
+		}
+		if (!leftOut.isEmpty()) {
+			tag.putLongArray("left_out", leftOut.stream().mapToLong(BlockPos::asLong).toArray()); // B508
 		}
 		if (furniture == null) {
 			tag.putBoolean("furniture_unchosen", true); // 37.3: a new site not yet planned chooses when it is
@@ -928,6 +1013,7 @@ public final class BuildSite {
 		site.queued = Nbt.getBoolean(tag, "queued");
 		site.deconstruct = Nbt.getBoolean(tag, "deconstruct");
 		site.repair = Nbt.getBoolean(tag, "repair");
+		site.refresh = Nbt.has(tag, "refresh_from", Tag.TAG_STRING) ? Nbt.getString(tag, "refresh_from") : null; // 36.21: none in older saves
 		site.cellarOnly = Nbt.getBoolean(tag, "cellar_only"); // 36.7: none in older saves
 		site.levelGround = !Nbt.getBoolean(tag, "no_level_ground");
 		site.bench = Nbt.has(tag, "bench", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "bench")) : null;
@@ -944,6 +1030,10 @@ public final class BuildSite {
 		}
 		site.kineticOrder = Nbt.getBoolean(tag, "kinetic_order"); // 39.5: older saves build in today's order
 		site.kineticPasses = Nbt.getInt(tag, "kinetic_passes");
+		site.rechecks = Nbt.getInt(tag, "rechecks"); // B508: none in older saves
+		for (long p : Nbt.getLongArray(tag, "left_out")) {
+			site.leftOut.add(BlockPos.of(p));
+		}
 		// 37.3: older saves have neither, and build vanilla
 		site.furniture = Nbt.getBoolean(tag, "furniture_unchosen") ? null
 			: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.load(Nbt.getList(tag, "furniture", Tag.TAG_COMPOUND));

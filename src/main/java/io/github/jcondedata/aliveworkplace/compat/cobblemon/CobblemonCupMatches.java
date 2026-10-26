@@ -150,7 +150,7 @@ public final class CobblemonCupMatches implements CupBattles {
 			return Component.translatable("message.aliveworkplace.cup.why_final");
 		}
 		if (theme.partnerDays() > 0 && CobblemonPartners.partnerDays(pokemon) < theme.partnerDays()) {
-			return Component.translatable("message.aliveworkplace.cup.why_partner", theme.partnerDays(), CobblemonPartners.partnerDays(pokemon));
+			return io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.cup.why_partner", CobblemonPartners.partnerDays(pokemon), theme.partnerDays(), CobblemonPartners.partnerDays(pokemon));
 		}
 		if (!types.isEmpty()) {
 			for (ElementalType type : species.getStandardForm().getTypes()) {

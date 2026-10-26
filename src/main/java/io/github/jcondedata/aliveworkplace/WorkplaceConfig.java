@@ -31,8 +31,14 @@ import java.util.Map;
 public final class WorkplaceConfig {
 	/** Chests and barrels within this many blocks of a workstation are that villager's supply chests. */
 	public int supplyRadius = 8;
-	/** How far from their bench a builder takes a build. */
-	public int maxSiteDistance = 48;
+	/** How far from their bench a builder takes a build outside the village (36.20: anywhere in the village it stands in). */
+	public int maxSiteDistance = 128;
+	/** 36.20: how far from the workstation, outside the village, a quarry, field, tree farm, orchard or berry plot may be. */
+	public int quarryReach = 128;
+	public int fieldReach = 128;
+	public int treeFarmReach = 128;
+	public int orchardAreaReach = 128;
+	public int berryPlotReach = 128;
 	/** How far from the Guard Post guards patrol and fight. */
 	public int guardRadius = 24;
 	/** How far from their workstation lumberjacks cut, orchard keepers pick and fishers fish. */
@@ -56,6 +62,11 @@ public final class WorkplaceConfig {
 	public boolean minerCraftsPickaxe = true;
 	/** The Quarry build (36.12): its Miner works its pit without a marker, and what they dig grows back. Off: not offered, nothing grows back. */
 	public boolean quarryBuild = true;
+	/**
+	 * With Waystones installed, the Steward proposes a waystone plaza by the Village Hall, its stone named after the village
+	 * (ROADMAP 41.1). Off: the plaza isn't proposed (stones already standing stay as they are). Without Waystones it does nothing.
+	 */
+	public boolean villageWaystones = true;
 	/** Blocks that grow back in a Quarry build's pit in a Minecraft day (0: none). */
 	public int quarryRegrowth = 100;
 	/** A village takes only so many fishermen (ROADMAP 26.13: storage barrels made most villagers fishermen). Off: vanilla. */
@@ -468,7 +479,7 @@ public final class WorkplaceConfig {
 	 */
 	@SuppressWarnings("unused")
 	private int configVersion = VERSION;
-	static final int VERSION = 4;
+	static final int VERSION = 5;
 	/**
 	 * The expansions whose gates were open when the file was written ({@link Expansions#open()}; not an option). A gated
 	 * switch saved while its gate was closed holds its closed default, {@code false}, which is no player's choice: when
@@ -502,8 +513,23 @@ public final class WorkplaceConfig {
 				// server that won't start.
 				AliveWorkplace.LOG.warn("Couldn't read {}, using the defaults: {}", file, e.toString());
 			}
+			keepAside(file);
 		}
 		return new WorkplaceConfig();
+	}
+
+	/** The name a file that couldn't be read is kept under, beside it, before the defaults are written over it (B411). */
+	public static final String BAD_FILE = FILE + ".bad";
+
+	/** Copies a file that couldn't be read to {@link #BAD_FILE}, so the owner's edits aren't lost when it's written back. */
+	private static void keepAside(Path file) {
+		Path copy = file.resolveSibling(BAD_FILE);
+		try {
+			Files.copy(file, copy, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+			AliveWorkplace.LOG.warn("Kept the unreadable config as {}", copy);
+		} catch (IOException | RuntimeException e) {
+			AliveWorkplace.LOG.warn("Couldn't keep the unreadable config as {}: {}", copy, e.toString());
+		}
 	}
 
 	/** Writes every option to {@code configDir} (clamped first). */
@@ -518,7 +544,7 @@ public final class WorkplaceConfig {
 		}
 	}
 
-	/** The config in {@code json} (missing values take their default), clamped to sensible ranges. */
+	/** The config in {@code json} (missing values and values that can't be read take their default), clamped to sensible ranges. */
 	public static WorkplaceConfig parse(String json) {
 		com.google.gson.JsonElement tree = com.google.gson.JsonParser.parseString(json);
 		com.google.gson.JsonObject object = tree.isJsonObject() ? tree.getAsJsonObject() : new com.google.gson.JsonObject();
@@ -528,6 +554,19 @@ public final class WorkplaceConfig {
 		com.google.gson.JsonObject options = object.deepCopy();
 		options.remove("configVersion");
 		options.remove("expansionsOpen");
+		// A value of the wrong kind ("festivals": 0, "supplyRadius": 12.5, "threatLevel": "high") makes Gson refuse the
+		// whole object: each one is tried alone first, and one that can't be read is dropped, so it takes its default and
+		// every other value in the file is kept (B411).
+		for (String key : new java.util.ArrayList<>(options.keySet())) {
+			com.google.gson.JsonObject single = new com.google.gson.JsonObject();
+			single.add(key, options.get(key));
+			try {
+				GSON.fromJson(single, WorkplaceConfig.class);
+			} catch (RuntimeException e) {
+				options.remove(key);
+				AliveWorkplace.LOG.warn("Couldn't read \"{}\" in {} ({}), it takes its default", key, FILE, e.getMessage());
+			}
+		}
 		WorkplaceConfig config = tree.isJsonObject() ? GSON.fromJson(options, WorkplaceConfig.class) : null;
 		if (config == null) {
 			config = new WorkplaceConfig();
@@ -541,6 +580,11 @@ public final class WorkplaceConfig {
 		int format = writtenFormat == null ? 0 : writtenFormat;
 		if (format < 4 && config.villagerElderDays == 120) {
 			config.villagerElderDays = new WorkplaceConfig().villagerElderDays;
+		}
+		// Format 5 (36.20): a builder's reach outside the village goes from 48 to 128 (the owner's "this won't work for big
+		// villages"). A file of before holding the old default moves to the new one; any other number stays.
+		if (format < 5 && config.maxSiteDistance == 48) {
+			config.maxSiteDistance = new WorkplaceConfig().maxSiteDistance;
 		}
 		config.configVersion = VERSION;
 		// Which gates were open when the file was written: its list, or none in a file a jar of format 2 wrote (0.139.0 to
@@ -595,6 +639,11 @@ public final class WorkplaceConfig {
 	public static final Map<String, Range> RANGES = ranges(
 		"supplyRadius", 2, 32,
 		"maxSiteDistance", 16, 256,
+		"quarryReach", 16, 256,
+		"fieldReach", 16, 256,
+		"treeFarmReach", 16, 256,
+		"orchardAreaReach", 16, 256,
+		"berryPlotReach", 16, 256,
 		"guardRadius", 8, 64,
 		"lumberjackRadius", 4, 48,
 		"orchardRadius", 4, 48,
@@ -868,6 +917,11 @@ public final class WorkplaceConfig {
 	public void apply() {
 		SupplyContainers.RADIUS = supplyRadius;
 		Builders.MAX_SITE_DISTANCE = maxSiteDistance;
+		io.github.jcondedata.aliveworkplace.mine.Miners.MAX_DISTANCE = quarryReach;
+		io.github.jcondedata.aliveworkplace.farm.Fields.MAX_DISTANCE = fieldReach;
+		io.github.jcondedata.aliveworkplace.work.AreaJobs.TREE_FARM_REACH = treeFarmReach;
+		io.github.jcondedata.aliveworkplace.work.AreaJobs.ORCHARD_REACH = orchardAreaReach;
+		io.github.jcondedata.aliveworkplace.work.AreaJobs.BERRY_PLOT_REACH = berryPlotReach;
 		Guards.RADIUS = guardRadius;
 		LumberjackWork.RADIUS = lumberjackRadius;
 		OrchardWork.RADIUS = orchardRadius;
@@ -935,6 +989,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.ENABLED = fishermanCap && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.mine.PickaxeCrafting.ENABLED = minerCraftsPickaxe;
 		io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.ENABLED = quarryBuild;
+		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.ENABLED = villageWaystones;
 		io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.PER_DAY = quarryRegrowth;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.BASE = fishermenPerVillage;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.PER_VILLAGERS = villagersPerFisherman;

@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 public final class FarmhandGolems {
 	public static final int STACKS = 9;
 	/** How far from the golem a farmer's field may be. */
-	public static final int RANGE = Fields.MAX_DISTANCE;
+	public static final int RANGE = 48;
 	private static final double REACH = 2.5;
 	private static final double CHEST_REACH = 3.0;
 	private static final int RESCAN = 20;

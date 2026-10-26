@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): switched on in 1.0 with
 every other expansion (`Expansions.M34`).
 
-Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22, B398
+Roadmap items: 34.1, 34.5, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22, B398
 
 ## What a player sees
 
@@ -25,11 +25,11 @@ At the Village Hall:
 |---|---|---|---|
 | Peasant | nothing | nothing | pays the usual tax |
 | Artisan | a grade I home, fed 3 days running, a varied diet, a chapel, school or clinic near home, Work Clothes | Cider, a tavern near home | tax x1.5; crafters 10% faster; opens the Artisan jobs |
-| Burgher | a grade II home, fed 3 days, a varied diet, a school and one more service, a Market Square, Fine Clothes, Berry Wine, the Gazette | an Amethyst Ring, a library, beauty | tax x2.5; scholars research 15% faster; with 3 such households one more caravan route and market trader; opens the Burgher jobs |
-| Noble | a grade III home, fed 3 days, a varied diet, chapel, school, clinic and library, Town rank, beauty, Noble Robes, Vintage Wine, an Emerald Brooch | an Illuminated Book, a Gold Circlet | tax x4; +3% wellbeing per household up to 9%; every other festival is a Noble's Ball |
+| Burgher | a grade II home, fed 3 days, a varied diet, a school and one more service, a Market Square, Fine Clothes, Berry Wine, the Gazette | an Amethyst Ring, a library, beauty (with Cobblecuisine, a Deluxe Shake) | tax x2.5; scholars research 15% faster; with 3 such households one more caravan route and market trader; opens the Burgher jobs |
+| Noble | a grade III home, fed 3 days, a varied diet, chapel, school, clinic and library, Town rank, beauty, Noble Robes, Vintage Wine, an Emerald Brooch | an Illuminated Book, a Gold Circlet (with Cobblecuisine, a Clodsire Eclair) | tax x4; +3% wellbeing per household up to 9%; every other festival is a Noble's Ball |
 
-**Higher jobs need higher classes (34.8).** The Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper
-and, with Cobblemon, the Ball Smith, Move Tutor, Pokémon Trader and Fossil Scientist need an Artisan; the Scholar,
+**Higher jobs need higher classes (34.8).** The Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper,
+Printer and, with Cobblemon, the Ball Smith, Move Tutor, Pokémon Trader and Fossil Scientist need an Artisan; the Scholar,
 Undertaker, Jeweler and Trainer Leader a Burgher. Vanilla jobs are open to everyone. Nobody is ever fired: a worker below
 their job's class keeps it, and the hall's list marks them.
 
@@ -40,8 +40,19 @@ Journeyman the Gold Circlet from 2 gold ingots, an emerald and an amethyst shard
 the brooch a Noble's need, every 16 days; the circlet a Noble's want, every 32.
 
 **The Vintner (34.9).** Stand a villager by a cauldron and sneak-right-click them with sweet berries, glow berries
-or an apple. A Novice presses Cider, an Apprentice Berry Wine, and Vintage Wine waits three days to age. The drinks
-are luxuries the households take from the store, and players can drink them (the bottle comes back).
+or an apple. A Novice presses Cider (3 apples and a glass bottle), an Apprentice Berry Wine (6 sweet berries, 4 glow berries or,
+with Cobblemon, 4 of its berries, and a bottle) and a Journeyman Vintage Wine, from a Berry Wine at least 3 days old. A Berry Wine
+bought from a Vintner is pressed the day it's sold and waits its three days too. The drinks are luxuries the households take from the store, and players can drink them (the bottle comes back).
+
+**The luxury workshop engine (34.5).** The Vintner, Tailor, Printer and Jeweler make their goods from data:
+`data/aliveworkplace/luxury_recipes/<id>.json` names the job, the level that may make it, the makings (items or tags,
+each with an optional `min_age_days`), the output and the ticks. A maker (`LuxuryWork`) fills the stock orders the store
+holds first, then makes, in turn, whichever good the store and their own chests hold fewer than 8 of, from their own
+chests, the store and the other workers' chests (never a builder's), and only from recipes up to their level. A good that
+ages carries the day it was made (`made_day`): its tooltip reads "Pressed on day 42 · vintage in 2 days" (a Berry Wine),
+then "Pressed on day 42 · vintage". A maker takes an aged making only once it is old enough. When nothing short can be made, the first
+missing making goes on the requests board. Craftsmanship research speeds the makers like the other crafters. A data pack adds a good with
+a new recipe file and no code.
 
 **The Tailor (34.10).** Stand a villager by a loom and sneak-right-click them with string (shears bring the Shepherd
 back). A Novice sews Work Clothes from 3 wool of any colors, 2 leather and a string; an Apprentice Fine Clothes from
@@ -79,8 +90,13 @@ Luxuries (`data/aliveworkplace/luxuries/`) are taken from the village store at d
 **Mood.** Every villager has "has what their class needs" (+5), or -5 for each need lacking (at most -15).
 
 **What a class gives (34.7).** Taxes are the treasury's daily share times the class's factor, 10% more for each
-want the household has; a Peasant pays exactly what every worker paid before, so no village takes in less. Speed
-bonuses go through the one pace rule and its cap. A Legend lives among the top class.
+want the household has; a Peasant pays exactly what every worker paid before, so no village takes in less. A Noble
+without a job pays like a worker. The hall's name tag tooltip shows the split ("Daily takings by class:", then
+"Burgher: 1 pays 0.30 emeralds"). Speed
+bonuses go through the one pace rule and its cap. Nobles lift the village's wellbeing 3% a household (9% at most). With a Noble household, every other festival is a
+Noble's Ball: the guests gather in a Manor III's ballroom, else a Manor's hall, else the Village Hall; wine and the
+store's best food, gold fireworks at dusk, +15 mood for 3 days for everyone who came, and players there are Heroes of
+the Village for the night. A Legend lives among the top class.
 
 **The job gate** applies only when a job is taken: picking it with its item, the hall's free-workstation list, a
 grown child taking a parent's trade (any job a free block offers, so a Scholar's child may take a free lectern as a
@@ -97,9 +113,11 @@ The day a server first runs 1.8, every village with a hall switches on by itself
   earned); "fed 3 days" counts as "fed now", since nobody counted fed days before. Children get their parents' class
   (else that of the grown-ups in their building, else Peasant). Grown-ups who have no age yet get one spread over the
   last 100 days by their UUID, so the first elders come about three weeks later and one at a time; everyone gets a family
-  name. Mercenaries, inn guests and caravan parties are skipped.
+  name. Mercenaries, inn guests and caravan parties are skipped. Only villagers inside the village's circle (the
+  hall's radius, as the census counts them) are seeded by its hall; one standing farther off is left for the next
+  round that finds them in a village.
 - **Told once.** When the last one has a class the chronicle says "The people of Thornholm found their places: 14
-  peasants, 6 artisans and 2 burghers", and the players in the village get the same line in chat with the days they
+  peasants, 6 artisans and 2 burghers", and the players in the village (its circle) get the same line in chat with the days they
   have to settle in.
 - **Settling in.** For `classGraceDays` (7) days nobody falls a class, luxuries are taken when due but not yet needed
   (rising still needs them, and the mood doesn't count them as lacking), and no elder starts retiring. The Classes tab

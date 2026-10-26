@@ -18,7 +18,9 @@ public final class BlueprintLooks {
 	public static final String PREFIX = "looks/";
 
 	/** The looks drawn for each first-tier blueprint, besides the one as drawn (tools/blueprints/pokemon_looks.py). */
-	private static final Map<ResourceLocation, List<String>> LOOKS = Map.of(StarterBlueprints.POKEMON_CENTER.id(), List.of("lodge", "plaza"));
+	private static final Map<ResourceLocation, List<String>> LOOKS = Map.of(StarterBlueprints.POKEMON_CENTER.id(), List.of("lodge", "plaza"),
+		// 41.1: the Waystone Plaza in each village culture's style, plains as drawn (tools/blueprints/waystones.py)
+		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA, io.github.jcondedata.aliveworkplace.hall.VillageWaystones.LOOKS);
 
 	/** The blueprint {@code id} is a look of ({@code looks/lodge/pokemon_center_2} is {@code pokemon_center_2}); {@code id} itself if none. */
 	public static ResourceLocation base(ResourceLocation id) {

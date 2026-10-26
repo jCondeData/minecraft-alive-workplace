@@ -19,7 +19,7 @@ The Builder's Bench is kept so that a world that already has one keeps working, 
 ## What it does
 
 A villager without a job who stands near a Builder's Bench takes it by themselves and becomes a **Builder**: no item needed.
-They build the blueprints you hand them, block by block, from the chests round the bench, exactly as at a Blueprint Table. Builds go up within 48 blocks of it.
+They build the blueprints you hand them, block by block, from the chests round the bench, exactly as at a Blueprint Table. Builds go up anywhere in its village, or within 128 blocks of it outside the village.
 
 Chests and barrels within **8 blocks** are the worker's supply chests: their tools and materials come out of them,
 and their work goes into them. Right-click the Builder's Bench to see how many supply chests it has. More on the job in

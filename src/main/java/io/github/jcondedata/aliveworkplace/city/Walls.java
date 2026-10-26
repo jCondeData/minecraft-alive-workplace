@@ -111,11 +111,15 @@ public final class Walls {
 			}
 			BitSet cells = zone.cells();
 			for (int cell = cells.nextSetBit(0); cell >= 0; cell = cells.nextSetBit(cell + 1)) {
+				// the cell's first and last blocks (B510: centre + size / 2 was one past the last, so the east and south
+				// sides came out a block further than the west and north)
 				BlockPos centre = CityPlan.cellCentre(hall, cell);
-				minX = Math.min(minX, centre.getX() - size / 2);
-				maxX = Math.max(maxX, centre.getX() + size / 2);
-				minZ = Math.min(minZ, centre.getZ() - size / 2);
-				maxZ = Math.max(maxZ, centre.getZ() + size / 2);
+				int x0 = centre.getX() - size / 2;
+				int z0 = centre.getZ() - size / 2;
+				minX = Math.min(minX, x0);
+				maxX = Math.max(maxX, x0 + size - 1);
+				minZ = Math.min(minZ, z0);
+				maxZ = Math.max(maxZ, z0 + size - 1);
 			}
 		}
 		if (minX > maxX) {
@@ -522,6 +526,26 @@ public final class Walls {
 			return;
 		}
 		List<BuildSite> open = openSites(level, hall);
+		for (BuildSite site : open) {
+			if (site.builder() != null || site.isDone()) {
+				continue;
+			}
+			// B488: a piece whose builder died stays open with all that was built: the next free builder finishes it
+			// where it stands (laid out again, a tower with its roof on sat on its own roof)
+			Optional<BoundingBox> box = BlueprintLibrary.get(level, site.structure()).map(b -> BlueprintOutline.bounds(site.placement(), b.size()));
+			if (box.isEmpty()) {
+				continue;
+			}
+			Villager builder = Roads.builderFor(level, hall, box.get(), false);
+			if (builder == null) {
+				builder = Roads.builderFor(level, hall, box.get(), true);
+			}
+			if (builder == null) {
+				return; // nobody free: the open pieces first, then new ones
+			}
+			Builders.takeOver(level, builder, site);
+			TURNS.computeIfAbsent(level, l -> new HashMap<>()).put(hall.immutable(), Turn.WALL);
+		}
 		if (open.size() >= MAX_OPEN) {
 			return;
 		}

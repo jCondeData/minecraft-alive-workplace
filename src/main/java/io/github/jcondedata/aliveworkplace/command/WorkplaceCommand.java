@@ -530,6 +530,20 @@ public final class WorkplaceCommand {
 				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.quarry_cancelled"), false);
 				return 1;
 			}
+			// B462: the Wonder's own id (the stone's screen offers it). A stage waiting for its goods has no build sites, so
+			// a part's id isn't there to give; the Wonder ends and the goods of the stage not yet dedicated come back.
+			java.util.Optional<io.github.jcondedata.aliveworkplace.wonder.WonderSite> wonder =
+				io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).site(id);
+			if (wonder.isPresent() && !wonder.get().done()) {
+				boolean owner = source.getEntity() != null && wonder.get().owner().map(source.getEntity().getUUID()::equals).orElse(false);
+				if (!owner && !source.hasPermission(2)) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.not_owner"));
+					return 0;
+				}
+				io.github.jcondedata.aliveworkplace.wonder.WonderStages.cancel(level, id);
+				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.wonder_cancelled"), false);
+				return 1;
+			}
 			BuildSite site = BuildSiteManager.get(level).get(id);
 			if (site == null) {
 				continue;
@@ -546,7 +560,9 @@ public final class WorkplaceCommand {
 				return 1;
 			}
 			Builders.cancel(level, site);
-			source.sendSuccess(() -> Component.translatable("command.aliveworkplace.cancelled", Blueprints.displayName(site.structure())), false);
+			// B526: a take-down's line says it's a take-down (its blueprint carries on taking it down when handed back)
+			String line = site.isDeconstruction() ? "command.aliveworkplace.cancelled_deconstruct" : "command.aliveworkplace.cancelled";
+			source.sendSuccess(() -> Component.translatable(line, Blueprints.displayName(site.structure())), false);
 			return 1;
 		}
 		// A farmer's field has no site of its own: the id is the farmer's.

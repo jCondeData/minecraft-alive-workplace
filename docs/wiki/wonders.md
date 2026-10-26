@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B270, B308, B326
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B270, B308, B326, B461
 
 ## What a player sees
 
@@ -44,20 +44,19 @@ The chests within 8 blocks of the stone are the Wonder's stockpile. Refused, say
 the builder has no bench or works for another village or another player, the caps no longer allow it, or there's no
 room for the stone.
 
-- **Right-click the stone**: "The Test Folly of Testholm", "Stage 1 of 3, The Ground Storey: 34% built", then the
+- **Right-click the stone**: "The Test Folly of Testholm", "Stage 1 of 3, The Ground Story: 34% built", then the
   stage's material list, each line "40 Stone Bricks, 12 still to bring" or "… all there", what's still to bring first.
 - **Each stage starts when every part of the one before is done and its own goods are dedicated**, and the builder it
-  was handed to takes it on (the owner reads "Stage 2 of 3 of the Test Folly is next: The Upper Storey. It begins once
+  was handed to takes it on (the owner reads "Stage 2 of 3 of the Test Folly is next: The Upper Story. It begins once
   its goods are in").
 - **The builder tells the owner of each part it finishes** (B138): with other parts of the stage still going up, "Odo
-  finished a part of the Test Folly: 1 of 2 parts of stage 1 (The Ground Storey) stand."; the stage's last part, "Odo
-  finished stage 1 of 3 of the Test Folly: The Ground Storey."; the Wonder's very last part says nothing itself, as
+  finished a part of the Test Folly: 1 of 2 parts of stage 1 (The Ground Story) stand."; the stage's last part, "Odo
+  finished stage 1 of 3 of the Test Folly: The Ground Story."; the Wonder's very last part says nothing itself, as
   everyone hears the Wonder is finished. No blueprint comes back for a part.
-- **The chronicle tells a Wonder through its own lines** (B143): the Foundation Stone laid, each stage dedicated and
-  the Wonder finished. Its parts write no "finished the ..." building line of their own and aren't counted among the
-  village's buildings.
-- **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` on a part to abandon the Wonder: what's
-  built stays, the open parts end, the plan comes back (to the owner, else by the stone) and the chronicle says so. A
+- **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` with the Wonder's id (the stone's screen
+  has an **[Abandon this Wonder]** link that puts it in the chat; works at any stage, also while it waits for its goods,
+  B462) or a part's id to abandon the Wonder: what's built stays, the goods handed in for a stage not yet dedicated
+  come back, the open parts end, the plan comes back (to the owner, else by the stone) and the chronicle says so. A
   plain break says to sneak; anyone else is refused. Builders never clear it and pistons can't push it; a finished
   Wonder's stone breaks like any block (it drops nothing).
 
@@ -102,9 +101,9 @@ its file: the feast for the crew, their tools, what the rites need (candles, boo
 is in when the stockpile's chests and what was handed in at the stone hold its count together. A stage starts only
 when every line is in; then, by day, it is **dedicated** (at night it waits for the morning): the bell rings at the
 stone and at the village's bell, the goods are taken (exactly each line's count: what was handed in first, then from
-the chests), the chronicle says "Stage 2, The Upper Storey, of the Test Folly was dedicated: the village gathered at
+the chests), the chronicle says "Stage 2, The Upper Story, of the Test Folly was dedicated: the village gathered at
 the stone, the bell rang and the goods were given", the owner reads "Stage 2 of 3 of the Test Folly is dedicated: The
-Upper Storey begins", and the stage's parts go down for its lead. For the next 30 seconds the villagers off work
+Upper Story begins", and the stage's parts go down for its lead. For the next 30 seconds the villagers off work
 gather round the stone, the village's Bard plays a tune beside it ("playing at the dedication") and its guards stand
 in a line three blocks out, on the side away from the Wonder ("standing in line at the dedication"), when it has them.
 
@@ -1008,3 +1007,13 @@ hand is drawn and marked (B140): most of its pixels hold the land, holding it pu
 structure found, and the packet sent to its holder carries the whole land and the markers. Showcase scene
 `wonder_observatory` (group Wonders): the time-lapse, then the Sky Chart in hand and the hall's calendar with the
 Coming days.
+
+QA GameTests in `QaWonderPowersGameTests` (35.10, 35.12, 35.14, 35.18, 35.20, 35.22), from the items' text: the
+Colossus's mood reaches a village whose caravans run to its village but not that village's own partner, and its
+travelers and beauty stay at home; the Gardens' harvest reaches the partner while its births stay in its own village
+(12 meals and two a day there, 16 and one in the partner, never fewer than a village's usual); the Great Cathedral's
+undertakers, weddings and beauty, the Great Library's second tier and the Observatory's Sky Chart and Coming days are
+their own village's only; the Lighthouse's routes reach 4,096 blocks and not 4,097 (2,048 and not 2,049 without it),
+a partner's caravans neither reach further nor go faster, and fares are halved for a post at the village's edge both
+ways but not a block beyond it nor in the partner village; each turns off damaged or with Wonders off and comes back
+repaired, and the Gardens' and Lighthouse's powers come back from a save (one saved damaged loads powerless).

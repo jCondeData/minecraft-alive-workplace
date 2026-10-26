@@ -340,13 +340,13 @@ public class WonderFinishedGameTests implements FabricGameTest {
 
 		finishPart(level, v.builder(), first);
 		List<String> lines = v.heard().stream().map(Component::getString).toList();
-		String partLine = who + " finished a part of the Test Folly: 1 of 2 parts of stage 1 (The Ground Storey) stand.";
+		String partLine = who + " finished a part of the Test Folly: 1 of 2 parts of stage 1 (The Ground Story) stand.";
 		helper.assertTrue(lines.contains(partLine), "the first part: \"" + partLine + "\" not in " + lines);
 
 		v.heard().clear();
 		finishPart(level, v.builder(), second);
 		lines = v.heard().stream().map(Component::getString).toList();
-		String stageLine = who + " finished stage 1 of 3 of the Test Folly: The Ground Storey.";
+		String stageLine = who + " finished stage 1 of 3 of the Test Folly: The Ground Story.";
 		helper.assertTrue(lines.contains(stageLine), "the stage's last part: \"" + stageLine + "\" not in " + lines);
 		helper.assertTrue(!said(v.heard(), "message.aliveworkplace.wonder.part_built"), "the stage's last part told as one of several: " + lines);
 
@@ -364,7 +364,7 @@ public class WonderFinishedGameTests implements FabricGameTest {
 				finishPart(level, v.builder(), part);
 				lines = v.heard().stream().map(Component::getString).toList();
 				if (now.stage() == 2) {
-					helper.assertTrue(lines.contains(who + " finished stage 2 of 3 of the Test Folly: The Upper Storey."), "stage II: " + lines);
+					helper.assertTrue(lines.contains(who + " finished stage 2 of 3 of the Test Folly: The Upper Story."), "stage II: " + lines);
 				} else {
 					helper.assertTrue(lines.stream().noneMatch(l -> l.startsWith(who + " finished")), "the Wonder's last part told by the builder too: " + lines);
 				}

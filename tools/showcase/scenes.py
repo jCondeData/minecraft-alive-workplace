@@ -37,14 +37,15 @@ START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03
 
 
 def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False, furniture=False,
-      create=False):
+      create=False, waystones=False):
     """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added).
     cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14).
     furniture: filmed with the pack's furniture mods (-Pfurniture=true, ROADMAP 37.4).
-    create: filmed with the owner's Create port (libs/, -Pcreate=true; Milestone 39)."""
+    create: filmed with the owner's Create port (libs/, -Pcreate=true; Milestone 39).
+    waystones: filmed with Waystones and Balm (-Pwaystones=true; Milestone 41)."""
     return {"name": name, "group": group, "title": title, "what": what, "est": est, "stills": stills,
             "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18,
-            "furniture": furniture, "create": create}
+            "furniture": furniture, "create": create, "waystones": waystones}
 
 
 def job(name, group, title, what, est=150, extra=(), **kw):
@@ -127,6 +128,10 @@ SCENES = [
     # The Quarry build (ROADMAP 36.12): the Miner at its blast furnace digs its pit without a marker, and it grows back
     job("quarry_build", "Miner", "A Quarry that grows back",
         "the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up", 300),
+    # Village-wide reach (ROADMAP 36.20): a quarry marked 110 blocks out, far outside the village, and the miner walks out to it
+    job("far_site", "Miner", "A quarry far outside the village",
+        "the miner took a quarry marked 110 blocks out, far outside the village, walked out to it and dug it", 240,
+        extra=[("04_far_site_arrived", "Arrived at the far quarry")]),
     # Lumberjack
     S("forest", "Lumberjack", "Felling and replanting four trees", "the lumberjack felled all four trees", 240,
       [("frame_*@first", "Start"), ("frame_*@middle", "Felling"), ("50_forest_done", "Felled and replanted")]),
@@ -457,6 +462,34 @@ SCENES = [
     S("city_plan_ground", "Village Hall", "The plan on the ground", "zone edges, a street and the wall line show on the ground while the player holds the City Plan, and the hall's map of the plan hangs framed by the hall", 60,
       [("01_city_plan_ground", "Zone edges and the street on the ground"), ("02_city_plan_wall", "The wall line at the village's corner"),
        ("03_city_plan_framed", "The plan on the hall's map, framed")]),
+    # The hall's sidebar (ROADMAP 40.1): each of the ten sections, at GUI scales 2 and 3
+    S("hall_sidebar", "Village Hall", "The hall's sidebar and its sections",
+      "each of the hall's ten sections opened from the sidebar, at GUI scales 2 and 3", 70,
+      [("01_overview_scale2", "Overview: the village at a glance and what it needs next, GUI scale 2"),
+       ("02_people_scale2", "People, GUI scale 2"), ("05_defense_scale2", "Defense, GUI scale 2"),
+       ("12_people_scale3", "People, GUI scale 3")]),
+    # The People table (ROADMAP 40.2): Name, Job, Level, Mood, then one villager's row opened
+    S("hall_people", "Village Hall", "The People table",
+      "the hall's People section as a table of everyone (a builder, a guard, workers, a jobless villager, a nitwit and a "
+      "child), then the first row opened to that villager's details with Job and Bed buttons", 45,
+      [("01_people_table", "The People table: Name, Job, Level and Mood, with the village's counts on top"),
+       ("02_people_row_open", "A row opened: traits, what they're doing, needs, mood and why, class, and the Job and Bed buttons"),
+       ("03_people_story", "Story on the open row: their life story, as shift-click opened it from the old list (B547)")]),
+    # Job ▾ in the People table (ROADMAP 40.3): every job, the free ones with how many, the price, two clicks to pay
+    S("hall_people_job", "Village Hall", "Changing a job from the People table",
+      "Job ▾ on a librarian's row opens the list of every job (those with a free block say how many, the rest are grayed "
+      "with the block to place), the price by her level on top; a click on Mason shows the price, a second pays and she "
+      "is a Novice Mason", 50,
+      [("01_job_list", "Job ▾ opened: the price by level on top, the free jobs with how many blocks, the rest grayed"),
+       ("02_job_picked", "Mason clicked once: \"Click again to pay\" under it, nothing paid yet"),
+       ("03_job_changed", "Clicked again: paid, and her row says Mason")]),
+    # Bed ▾ in the People table (ROADMAP 40.4): the village's beds, free first with where they are, a swap, a bed given
+    S("hall_people_bed", "Village Hall", "Giving a villager a bed from the People table",
+      "Bed ▾ on Dara's row opens the village's beds (the free ones first with how far and which way from the hall, "
+      "Jem's to swap with), a click makes the nearest free bed hers, and opened again it says \"their bed now\"", 50,
+      [("01_bed_list", "Bed ▾ opened: the free beds with where they are, Jem's bed to swap, the note on wagon beds and cradles"),
+       ("02_bed_given", "The nearest free bed clicked: hers from tonight"),
+       ("03_bed_after", "Opened again: her bed on top as \"their bed now\", the other free bed, Jem's to swap")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab")]),
     # Free job blocks (ROADMAP 36.9): the hall lists the job blocks nobody works at; picking a jobless villager gives one
@@ -475,6 +508,13 @@ SCENES = [
       "its view had Yes and Not now, and after Yes the page showed Bram repairing it", 50,
       [("01_repair_question", "The question in chat: Repair it? [Yes] [Not now]"), ("02_repairs_page", "The hall's Repairs page: the cottage, waiting"),
        ("03_yes_or_not_now", "The cottage's view: Yes, repair it, or Not now"), ("04_repairing", "After Yes: being repaired by Bram")]),
+    # Bring an old house up to its latest look (ROADMAP 36.21): a Stone House built from its first drawing, the hall's Refresh
+    # button with what changes, then the house once Bram has refreshed it
+    S("refresh_old_house", "Village Hall", "Refresh an old house to its latest look",
+      "A Stone House built from its first drawing was offered Refresh to the latest look on the hall's Repairs page; a click "
+      "showed what changes, the button sent Bram, and he took the old leftovers away and put the new pieces in", 230,
+      [("01_old_house", "Before: the Stone House as its first drawing built it"), ("02_repairs_page", "The Repairs page: the house, to refresh"),
+       ("03_what_changes", "What changes, and the Refresh to the latest look button"), ("04_after", "After: the house in its latest look")]),
     # Upgrade a built home from the Village Hall (ROADMAP 36.14): the Upgrades page, a blocked row, and a click sending a Builder
     S("hall_upgrade", "Village Hall", "Upgrading a built home from the hall",
       "the Upgrades page listed the Starter Cottage with its level, cost and free space and the Stone House II blocked by a garden fence, "
@@ -835,6 +875,11 @@ SCENES = [
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),
        ("05_hall_festival", "Festival")]),
+    # The waystone network on the hall's Map (ROADMAP 41.2, with Waystones): discovered, not yet, and a broken stone
+    S("hall_waystones", "Village Hall", "The waystone network on the hall's Map",
+      "the hall's Map listed the waystone network: this village (discovered), one not discovered yet and one whose waystone is broken", 45,
+      [("01_waystone_plaza", "Ashford's Waystone Plaza by the hall, its stone named after the village"),
+       ("02_hall_waystones", "The Map: the waystone network")], waystones=True),
     S("quest_journal", "Village Hall", "The quest journal, a tracked quest and a quest map",
       "the quest journal opened on its four tabs, a quest was tracked (its bar at the top of the screen) and a quest map was held", 50,
       [("01_journal_tabs", "The journal: Village, Personal, Story and Bounties"), ("02_journal_tracked", "A tracked quest's bar at the top"),
@@ -1112,6 +1157,15 @@ SCENES = [
         "the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
         120, create=True),
     # More Create builds (ROADMAP 39.8, with Create): the Brass Foundry, Sawmill, Crushing Mill, Greenhouse, Clock Tower and Pump House, every machine turning
+    # A waystone by every Village Hall (ROADMAP 41.1): with Waystones, the builder raises the Waystone Plaza by the hall
+    job("village_waystone", "Builder", "A waystone by the Village Hall",
+        "the builder raised the Waystone Plaza by the Village Hall, and its stone became a working waystone named after the village",
+        180, waystones=True),
+    # Caravans travel by waystone (ROADMAP 41.3): with Waystones, a caravan walks to its village's stone and steps out at the other's
+    job("waystone_caravan", "Realm", "Caravans travel by waystone",
+        "Thornholm's carter led his two llamas from the Storehouse to the village's waystone and stepped into it; "
+        "then Ashford's caravan stepped out of the same stone, unloaded its logs at the Storehouse and walked back into the waystone",
+        170, waystones=True),
     job("create_builds_more", "Create", "Six more Create builds, their machines turning",
         "the six builds' wheels turned, and with them the Brass Foundry's mixer, the Sawmill's saws, the Crushing Mill's wheels, the Greenhouse's belt, the Clock Tower's cuckoo clock and the Pump House's pump",
         120, create=True),
@@ -1526,6 +1580,7 @@ def env(scene):
     if s["cobblemon18"]:
         out["COBBLEMON18"] = "true"
     out["CREATE"] = "true" if s.get("create") else "false"
+    out["WAYSTONES"] = "true" if s.get("waystones") else "false"
     out.update(s["env"])
     return out
 

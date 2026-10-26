@@ -291,6 +291,23 @@ public final class MaterialRules {
 	/** Finishes a block a builder has just placed (a Campfire Pot gets its pot). */
 	public static void afterPlaced(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, BlockState state) {
 		ModdedBlocks.afterPlaced(level, pos, state);
+		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.placed(level, pos, state); // a plaza's waystone, named after the village (41.1)
+	}
+
+	/**
+	 * A blueprint state turned and flipped as its placement says. Like {@code state.mirror(mirror).rotate(rotation)},
+	 * except that a double chest half swaps left and right when mirrored (B438): vanilla's chest only turns its facing, so
+	 * a mirrored double chest's halves pointed away from each other and came out as two single chests. A mirror always
+	 * flips handedness, whichever way the chest faces.
+	 */
+	public static BlockState transformed(BlockState state, net.minecraft.world.level.block.Mirror mirror,
+										 net.minecraft.world.level.block.Rotation rotation) {
+		BlockState out = state.mirror(mirror);
+		if (mirror != net.minecraft.world.level.block.Mirror.NONE && out.getBlock() instanceof net.minecraft.world.level.block.ChestBlock
+			&& out.hasProperty(net.minecraft.world.level.block.ChestBlock.TYPE)) {
+			out = out.setValue(net.minecraft.world.level.block.ChestBlock.TYPE, out.getValue(net.minecraft.world.level.block.ChestBlock.TYPE).getOpposite());
+		}
+		return out.rotate(rotation);
 	}
 
 	/** Adjust a blueprint state before placing it: no free water, no decaying leaves. */
@@ -301,6 +318,65 @@ public final class MaterialRules {
 		if (state.getBlock() instanceof LeavesBlock && state.hasProperty(BlockStateProperties.PERSISTENT)) {
 			state = state.setValue(BlockStateProperties.PERSISTENT, true);
 		}
+		return emptied(state);
+	}
+
+	/**
+	 * What a block holds as part of its state (B429, B434), never copied: a builder places it empty, as it places a chest
+	 * without its contents (BlockEntityData). A lava or powder snow cauldron is built as an empty cauldron (it costs only a
+	 * cauldron), a composter at level 0 (no ready bone meal), a beehive or bee nest with no honey, a respawn anchor
+	 * uncharged, and a chiseled bookshelf or brewing stand shows no books or bottles (it holds none). A water cauldron is
+	 * still built full, as shipped blueprints have it: water is free in vanilla (an endless spring), so it gives nothing
+	 * away. Also no glow berries, lectern book or jukebox disc shown (B494), no crop ripe (B493), no furnace lit (B495) and no Mailbox showing mail (B536).
+	 * By vanilla's properties, so a modded block that uses them is emptied too.
+	 */
+	public static BlockState emptied(BlockState state) {
+		if (state.is(Blocks.LAVA_CAULDRON) || state.is(Blocks.POWDER_SNOW_CAULDRON)) {
+			return Blocks.CAULDRON.defaultBlockState();
+		}
+		for (Property<?> property : state.getProperties()) {
+			if (CONTENT_PROPERTIES.contains(property) || "age".equals(property.getName()) && plantedFresh(state.getBlock())) {
+				state = emptyValue(state, property);
+			}
+		}
+		if (state.getBlock() instanceof net.minecraft.world.level.block.AbstractFurnaceBlock && state.hasProperty(BlockStateProperties.LIT)) {
+			// B495: a furnace, smoker or blast furnace scanned while burning is built cold (it has no fuel); campfires keep
+			// their lit, as blueprints place them lit on purpose
+			state = state.setValue(BlockStateProperties.LIT, false);
+		}
+		return state;
+	}
+
+	/**
+	 * B493: a crop is planted, never built ripe: wheat and other crops, melon and pumpkin stems, nether wart, a sweet berry
+	 * bush and cocoa go in at age 0 (one seed grows; it is no free harvest). Growth is no part of whether it is built.
+	 */
+	private static boolean plantedFresh(Block block) {
+		return block instanceof net.minecraft.world.level.block.CropBlock || block instanceof net.minecraft.world.level.block.StemBlock
+			|| block instanceof net.minecraft.world.level.block.NetherWartBlock || block instanceof net.minecraft.world.level.block.SweetBerryBushBlock
+			|| block instanceof net.minecraft.world.level.block.CocoaBlock;
+	}
+
+	/** Properties that show what a block holds: emptied when placed, and no part of whether the block is built. */
+	private static final Set<Property<?>> CONTENT_PROPERTIES = Set.of(
+		BlockStateProperties.LEVEL_COMPOSTER, BlockStateProperties.LEVEL_HONEY, BlockStateProperties.RESPAWN_ANCHOR_CHARGES,
+		BlockStateProperties.CHISELED_BOOKSHELF_SLOT_0_OCCUPIED, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_1_OCCUPIED,
+		BlockStateProperties.CHISELED_BOOKSHELF_SLOT_2_OCCUPIED, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_3_OCCUPIED,
+		BlockStateProperties.CHISELED_BOOKSHELF_SLOT_4_OCCUPIED, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_5_OCCUPIED,
+		BlockStateProperties.HAS_BOTTLE_0, BlockStateProperties.HAS_BOTTLE_1, BlockStateProperties.HAS_BOTTLE_2,
+		// B493, B494: cave vines' glow berries, a lectern's book and a jukebox's disc (built empty, they hold none)
+		BlockStateProperties.BERRIES, BlockStateProperties.HAS_BOOK, BlockStateProperties.HAS_RECORD,
+		// B536: our Mailbox's mail flag (built empty, it holds no letters, so it shows none and signals 0)
+		io.github.jcondedata.aliveworkplace.mail.MailboxBlock.HAS_MAIL
+	);
+
+	private static BlockState emptyValue(BlockState state, Property<?> property) {
+		if (property instanceof net.minecraft.world.level.block.state.properties.BooleanProperty b) {
+			return state.setValue(b, false);
+		}
+		if (property instanceof net.minecraft.world.level.block.state.properties.IntegerProperty i) {
+			return state.setValue(i, i.getPossibleValues().stream().min(Integer::compare).orElse(0));
+		}
 		return state;
 	}
 
@@ -309,11 +385,16 @@ public final class MaterialRules {
 		if (actual == wanted) {
 			return true;
 		}
+		if (wanted.is(Blocks.CAULDRON) && actual.getBlock() instanceof net.minecraft.world.level.block.AbstractCauldronBlock) {
+			// A cauldron is built empty (emptied); one filled since is still the cauldron that was built
+			return true;
+		}
 		if (actual.getBlock() != wanted.getBlock() && unweathered(actual.getBlock()) != unweathered(wanted.getBlock())) {
 			return false;
 		}
 		for (Property<?> property : wanted.getProperties()) {
-			if (VOLATILE_PROPERTY_NAMES.contains(property.getName()) || property == BlockStateProperties.CHEST_TYPE || connected(wanted, property)) {
+			if (VOLATILE_PROPERTY_NAMES.contains(property.getName()) || property == BlockStateProperties.CHEST_TYPE || CONTENT_PROPERTIES.contains(property)
+				|| connected(wanted, property) || property == net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING && facingFree(wanted.getBlock())) {
 				continue;
 			}
 			if (!actual.hasProperty(property)) {
@@ -324,6 +405,18 @@ public final class MaterialRules {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * B448: the mod's own facing blocks that hold data (Village Hall, Storehouse, Mailbox, Shop Counter, Grave) only turn
+	 * with a turned build since this fix; one built turned before it faces as the blueprint was drawn. It is still the block
+	 * that was built: a builder never breaks it (it holds the hall's records, mail, a shop's list, a grave's items), so a
+	 * different facing counts as standing, in a finished build (repairs, upgrades, Wonders) and in one still going up.
+	 */
+	private static boolean facingFree(Block block) {
+		return block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL || block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE
+			|| block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.MAILBOX || block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.SHOP_COUNTER
+			|| block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.GRAVE;
 	}
 
 	/** Whether {@code property} of {@code state} is one its mod's piece takes from its neighbours ({@link #CONNECTED_BY_MOD}). */

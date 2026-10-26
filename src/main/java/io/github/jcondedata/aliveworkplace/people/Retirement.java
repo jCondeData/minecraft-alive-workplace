@@ -170,6 +170,7 @@ public final class Retirement {
 				mentor(level, elder, all);
 			}
 		}
+		waiting(hall, all, day);
 		if (!ENABLED || busy || ClassMigration.quiet(level, hall, day) || all.stream().anyMatch(v -> { // nobody retires while classes settle in (34.22)
 			Retired r = ModAttachments.RETIRED.get(v);
 			return r != null && day - r.day() < EVERY_DAYS;
@@ -184,14 +185,36 @@ public final class Retirement {
 			}
 			Villager successor = successor(hall, elder, all, day);
 			if (successor == null) {
-				ModAttachments.RETIRE_WAITING.set(elder, true);
-				continue;
+				continue; // waiting (above) shows it on the hall's card
 			}
-			ModAttachments.RETIRE_WAITING.remove(elder);
 			ModAttachments.RETIRE_SHADOW.set(successor, new Shadow(elder.getUUID(), elder.getDisplayName().getString(), day));
 			Chronicle.atHall(level, hall, Chronicle.Kind.LIFE, Component.translatable("chronicle.aliveworkplace.retire.learning",
 				successor.getDisplayName(), trade(elder.getVillagerData().getProfession()), elder.getDisplayName()));
 			return;
+		}
+	}
+
+	/**
+	 * Sets the hall card's "would like to retire: the village needs a jobless villager" mark (34.20) on every elder for
+	 * whom nobody can take over, and clears it from every other villager. Done each round before anything can hold the
+	 * round back (a site the elder holds, another retirement under {@link #EVERY_DAYS} days ago, classes settling in), so
+	 * the line never stays up once a jobless villager is there (B442). An elder someone is already learning from waits
+	 * for nobody.
+	 */
+	private static void waiting(BlockPos hall, List<Villager> all, long day) {
+		java.util.Set<UUID> learnedFrom = new java.util.HashSet<>();
+		for (Villager v : all) {
+			Shadow shadow = shadow(v);
+			if (shadow != null) {
+				learnedFrom.add(shadow.elder());
+			}
+		}
+		for (Villager v : all) {
+			if (hasJob(v) && !isRetired(v) && LifeStages.isElder(v, day) && !learnedFrom.contains(v.getUUID()) && successor(hall, v, all, day) == null) {
+				ModAttachments.RETIRE_WAITING.set(v, true);
+			} else {
+				ModAttachments.RETIRE_WAITING.remove(v);
+			}
 		}
 	}
 

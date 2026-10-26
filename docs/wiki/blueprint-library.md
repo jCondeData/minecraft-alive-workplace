@@ -3,14 +3,14 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419
 
 ## 1. What a player sees
 
-- **Unlocked builds** show in colour, first in the list, and Get Blueprint works as before (for a Blank Blueprint).
-- **Locked builds** show greyed out with a line saying how to get one ("Sold by a Journeyman Builder", "A market-day
+- **Unlocked builds** show in color, first in the list, and Get Blueprint works as before (for a Blank Blueprint).
+- **Locked builds** show grayed out with a line saying how to get one ("Sold by a Journeyman Builder", "A market-day
   trader", "A questbook reward", "Found in chests", "Sold by a builder once the tier below stands", "Sold by a
-  villager of its trade"). Their 3D preview is still drawn, dimmed, with the materials; Get Blueprint is greyed out.
+  villager of its trade"). Their 3D preview is still drawn, dimmed, with the materials; Get Blueprint is grayed out.
 - **Rare builds** (the builder-only grander homes, the Wonders, and `rare.json`'s Chapel, Market Square, Map Room,
   Bandstand, Guildhall, Nether Gate and Library III) are a dark **???** at the end of the list, with no name, preview or
   materials, until the village unlocks one.
@@ -19,7 +19,8 @@ Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13
   wrapped, "Jobs: Fisherman (1), Butcher/Chef/Rancher (3)" (one entry per kind of job block in the build, the jobs that
   share it joined by a slash with the one a jobless villager takes by itself first, and how many of that block the build
   holds), then "Beds: 2" when it has beds. A build with neither shows nothing there. Uploaded, scanned and imported
-  builds get the lines too, from their own blocks; a build in a style shows its styled blocks'.
+  builds get the lines too, from their own blocks; a build in a style shows its styled blocks'. A job that needs a mod
+  that isn't installed (Cobblemon's Ball Smith or Trainer) isn't named, so a Training Post alone shows no Jobs line.
 - **Search** (36.10): a box over the list ("Search: name, id or job" until something is typed, focused when the Table
   opens) narrows the list live, ignoring case, by a build's name, id or the jobs it brings ("inn", "fishers_hut",
   "fisherman", "smith"); every word typed must be found. A build's levels and styles are kept under it: when any of
@@ -47,11 +48,12 @@ Ways to unlock, all for the village round the nearest hall:
 
 1. Buying a Blueprint from any villager or trader (builders, the other jobs' blueprint trades, market-day traders).
    The item is still sold.
-2. A builder of the village levelling up: the next 3 locked builds (lowest tier first, then by id; never a rare one).
+2. A builder of the village leveling up: the next 3 locked builds (lowest tier first, then by id; never a rare one).
 3. Questbook rewards (FTB Quests, The Builder chapter): Starter Cottage II and III, Stone House II and III, Terrace II.
 4. A Blueprint used on the Table, however it was had: found in a chest (village storehouses, carpenters', builders'
    workshops, inns and kitchens; pirate ships, war camps, coven huts, piglin hoards, bandit camps and the pharaoh's
-   tomb), bought, or given. A Wonder Plan used on the Table names its Wonder there (view only).
+   tomb), bought, or given. A Wonder Plan used on the Table names its Wonder there (view only). Either hand works: from
+   the off hand when the main hand is empty too (B419).
 
 ## 2. How it works
 
@@ -159,11 +161,17 @@ stand-in ids and no size, and no rare id in the encoded packet), `BlueprintUnloc
 `BlueprintUnlocksGameTests.levelUpsCommandsAndFoundBlueprintsUnlock` (a level-up, `/workplace unlock`, a found Chapel
 used on the Table through the player's own click, and blueprints in a storehouse chest's loot),
 `BlueprintUnlocksGameTests.anOldSaveUnlocksWhatStands`, `BlueprintUnlocksGameTests.unlocksSurviveSaveAndReload`,
-`BlueprintUnlocksGameTests.theSwitchOffUnlocksEverything`. QA's `QaBlueprintUnlocksGameTests` (7): a found blueprint used twice says so once and the screen that opens lists it unlocked; one village's unlock leaves the other's build locked; a styled id of a locked or ??? build asked for over the network is refused, and handed out once unlocked; `/workplace unlock` again and with an unknown id; an unlocked build of a closed expansion stays off the Table; a level-up tells the players out to the village's edge (not a block beyond) and, with nothing locked, says nothing. `TableGameTests` and `TablePreviewGameTests` pass unchanged
+`BlueprintUnlocksGameTests.theSwitchOffUnlocksEverything`. QA's `QaBlueprintUnlocksGameTests` (7): a found blueprint used twice says so once and the screen that opens lists it unlocked; one village's unlock leaves the other's build locked; a styled id of a locked or ??? build asked for over the network is refused, and handed out once unlocked; `/workplace unlock` again and with an unknown id; an unlocked build of a closed expansion stays off the Table; a level-up tells the players out to the village's edge (not a block beyond) and, with nothing locked, says nothing. `QaBlueprintUnlocksBugTests` (3, B419): a found Market Stall in the off hand with the main hand empty unlocks it, says so and stays in the hand; from the off hand the line comes once and the Table opens once with the build unlocked; a stick in the off hand opens the Table as usual and unlocks nothing. `TableGameTests` and `TablePreviewGameTests` pass unchanged
 with the switch off. `TableJobsGameTests` (5, 36.6a): `TableJobsGameTests.sharedJobBlocksAreCountedAndJoined` (the owner's example:
 "Jobs: Fisherman (1), Butcher/Chef/Rancher (3)", "Beds: 2"), `TableJobsGameTests.bedsOnlyAndNeither`,
 `TableJobsGameTests.aSwitchedOffJobIsLeftOut` (config tailors off), `TableJobsGameTests.theTableSendsAShippedBuildsJobsAndBeds`
 (the Fishers' Hut and the Starter Cottage through `TableServer.details` and over the wire), `TableJobsGameTests.theLinesAreInEnglish`.
+QA's `QaTableJobsGameTests` (5): `QaTableJobsGameTests.everyListedBuildShowsItsOwnJobsAndBeds` (all 141 listed builds and
+their 777 styles: each count matches the job blocks and beds counted in its own template, in the exact format, every job's
+name in English), `QaTableJobsGameTests.theStarterCottageShowsTheOwnersExample` ("Jobs: Fisherman (1), Carpenter (1)",
+"Beds: 1"), `QaTableJobsGameTests.aScannedBuildShowsTheJobsAndBedsOfItsBlocks` (two Scan Tool scans, one with neither line),
+`QaTableJobsGameTests.aJobWhoseModIsMissingIsLeftOut` (no Cobblemon), `QaTableJobsGameTests.theLinesReadInThePlayersLanguage`
+(another language's words and names, three beds).
 `TableSearchGameTests` (6, 36.10): `TableSearchGameTests.searchFindsABuildByNameWithItsLevelsUnderIt` ("inn" with Inn
 II and III right under the Inn, "INN" the same, "iii" bringing each build with its third level),
 `TableSearchGameTests.searchFindsABuildById`, `TableSearchGameTests.searchFindsBuildsByTheJobsTheyBring` ("Fisherman"

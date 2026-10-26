@@ -22,16 +22,14 @@ B5 B6 B19
 26.2 26.2a 26.3
 
 # Milestone 27: the new workplaces
-27.13 27.14
 
 # Milestone 28: the design note, the Pokémon Center, builds for the Pokémon jobs, village habitats, village houses
-28.1 28.7 28.7a 28.13 28.14 28.15
+28.1 28.7 28.7a 28.13
 
 # Milestone 29: more research trees
 29.11
 
 # Milestone 30: the civic items (Work Horn, Cradle, Village Banner, Harvest Idol, tonics)
-30.11 30.12 30.13 30.14 30.15 30.16
 
 # Milestone 31: the quest journal, story arcs, friendship
 31.3 31.4 31.5

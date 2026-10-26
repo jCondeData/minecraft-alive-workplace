@@ -15,6 +15,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.AreaJobs;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
@@ -41,8 +42,11 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  * their vanilla routine is paused (see {@link #vanillaMayRun}) except when the field needs nothing.
  */
 public final class Fields {
-	/** A field must be within this many blocks of the farmer's composter. */
-	public static final int MAX_DISTANCE = 48;
+	/**
+	 * Outside the village, a field must be within this many blocks of the farmer's composter ({@code fieldReach}); in the
+	 * village the composter stands in, anywhere in it will do (36.20, {@link io.github.jcondedata.aliveworkplace.work.Reach}).
+	 */
+	public static int MAX_DISTANCE = 128;
 
 	public static void init() {
 		// Saved farmers load their field after the brain is built: give them the longer shift now.
@@ -109,8 +113,9 @@ public final class Fields {
 		}
 		BoundingBox box = area.get();
 		double distance = Math.sqrt(box.getCenter().distSqr(composter.get()));
-		if (distance > MAX_DISTANCE) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_DISTANCE), ChatFormatting.RED);
+		if (!io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, composter.get(), box.getCenter(), MAX_DISTANCE)) {
+			tell(player, io.github.jcondedata.aliveworkplace.work.Reach.refusal(level, composter.get(), "message.aliveworkplace.field.too_far", (int) Math.ceil(distance),
+				AreaJobs.workBlock(level, composter.get()), MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		FieldJob old = ModAttachments.FARM_FIELD.get(villager);

@@ -98,7 +98,7 @@ public class BoardTradeCompatTests implements FabricGameTest {
 				helper.assertTrue(timber >= 0, "no Timber on the Prices tab");
 				helper.assertTrue(lore(menu.icon(timber)).contains("We pay: 150 CobbleDollars") && lore(menu.icon(timber)).contains("We sell: 165 CobbleDollars"),
 					"the prices in CobbleDollars: " + lore(menu.icon(timber)));
-				helper.assertTrue(menu.icon(TradePage.TREASURY).getHoverName().getString().equals("Treasury: 1000 CobbleDollars"), "the treasury: "
+				helper.assertTrue(menu.icon(TradePage.TREASURY).getHoverName().getString().equals("Treasury: 1,000 CobbleDollars"), "the treasury: "
 					+ menu.icon(TradePage.TREASURY).getHoverName().getString());
 
 				// a sale: 1.5 emeralds is 150 CobbleDollars, to the cent, out of the treasury

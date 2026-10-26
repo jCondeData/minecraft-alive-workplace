@@ -42,12 +42,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import io.github.jcondedata.aliveworkplace.work.Reach;
 import org.jetbrains.annotations.Nullable;
 
 /** Builder job lifecycle: hand over a blueprint, report status, finish, cancel. */
 public final class Builders {
-	/** A build site's centre must be within this many blocks of the builder's bench. */
-	public static int MAX_SITE_DISTANCE = 48;
+	/**
+	 * Outside the village, a build site's centre must be within this many blocks of the builder's bench
+	 * ({@code maxSiteDistance}); in the village the bench stands in, anywhere in it will do (36.20, {@link Reach}).
+	 */
+	public static int MAX_SITE_DISTANCE = 128;
 	/** How many blueprints a builder accepts on top of the one they are building. */
 	public static final int MAX_QUEUE = 5;
 	/** How many idle builders can help one site at a time. */
@@ -231,6 +235,7 @@ public final class Builders {
 			return InteractionResult.PASS;
 		}
 		Optional<BlueprintData.Placement> placement = data.get().placement();
+		deconstruct |= data.get().takeDown(); // B526: a canceled take-down's blueprint carries on taking it down
 		if (placement.isEmpty()) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.not_placed"), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
@@ -263,9 +268,9 @@ public final class Builders {
 		}
 		BoundingBox box = BlueprintOutline.bounds(placement.get(), blueprint.get().size());
 		double distance = Math.sqrt(box.getCenter().distSqr(bench.get()));
-		if (distance > MAX_SITE_DISTANCE) {
+		if (!Reach.inReach(level, bench.get(), box.getCenter(), MAX_SITE_DISTANCE)) {
 			// B378: rounded up, so a refused spot never reads as within the reach (48.5 blocks: 49)
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_SITE_DISTANCE), ChatFormatting.RED);
+			tell(player, Reach.refusal(level, bench.get(), "message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_SITE_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		BuildSiteManager manager = BuildSiteManager.get(level);
@@ -310,7 +315,8 @@ public final class Builders {
 			tell(player, later, ChatFormatting.YELLOW);
 		}
 		if (existing != null) {
-			tell(player, Component.translatable("message.aliveworkplace.queue.added", villager.getDisplayName(),
+			// B514: a queued take-down builds nothing and needs no materials, so it gets its own line
+			tell(player, Component.translatable(deconstruct ? "message.aliveworkplace.queue.added_deconstruct" : "message.aliveworkplace.queue.added", villager.getDisplayName(),
 				Blueprints.displayName(site.structure()), Blueprints.displayName(existing.structure()), queued + 1), ChatFormatting.GREEN);
 		}
 		return InteractionResult.SUCCESS;
@@ -919,10 +925,12 @@ public final class Builders {
 		}
 		// Still placed where it was (23.8): hand it back to carry on there, or click the ground to move it first.
 		ItemStack blueprint = blueprintFor(level, site);
-		if (!site.isDeconstruction() && !site.isRepair()) {
+		// B513: a take-down's blueprint keeps its placement too (the cancel line promises it's still placed there)
+		if (!site.isRepair()) {
 			io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(blueprint).ifPresent(data -> blueprint.set(
 				io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT, data.withPlacement(Optional.of(site.placement()))
-					.withLevelGround(site.levelGround()).withMirrored(site.placement().mirror() != net.minecraft.world.level.block.Mirror.NONE)));
+					.withLevelGround(site.levelGround()).withMirrored(site.placement().mirror() != net.minecraft.world.level.block.Mirror.NONE)
+					.withTakeDown(site.isDeconstruction()))); // B526: handed back as it is, the take-down carries on
 		}
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 		if (owner != null && owner.getInventory().add(blueprint)) {
@@ -941,6 +949,10 @@ public final class Builders {
 				// 35.5: a Wonder's part waiting for this builder goes to another; its site stays (a part whose site is
 				// gone counts as built, so removing it finished the Wonder with the part never put up)
 				io.github.jcondedata.aliveworkplace.wonder.WonderCrews.handOn(level, queued, villager);
+				continue;
+			}
+			if (keptForTheNext(queued)) {
+				leaveForTheNext(queued, villager);
 				continue;
 			}
 			if (!queued.isSteward() && !io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(queued.structure())) {
@@ -966,6 +978,11 @@ public final class Builders {
 			} else {
 				site.release(villager.getUUID());
 			}
+		} else if (site != null && job.helper()) {
+			// B516: a helper's death leaves the build to its lead and the rest of the crew; the steps it had claimed go
+			// back to them (its bag dropped above), and the lead's site, blueprint and owner are left alone.
+			ModAttachments.BUILDER_JOB.remove(villager);
+			site.release(villager.getUUID());
 		} else if (site != null) {
 			if (!site.isSteward() && !io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())) {
 				dropNear(level, villager.blockPosition(), blueprintFor(level, site));
@@ -975,8 +992,44 @@ public final class Builders {
 				BlockPos p = villager.blockPosition();
 				tell(owner, Component.translatable("message.aliveworkplace.builder_died", Blueprints.displayName(site.structure()), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
 			}
-			BuildSiteManager.get(level).remove(site.id());
+			ModAttachments.BUILDER_JOB.remove(villager);
+			if (keptForTheNext(site)) {
+				leaveForTheNext(site, villager); // B488: the hall's round hands it to the next free builder
+			} else {
+				BuildSiteManager.get(level).remove(site.id());
+			}
 		}
+	}
+
+	/**
+	 * B488: whether a site whose builder died stays open for the next one: a wall piece the Steward opened. Dropped, a
+	 * half-built tower had neither a site nor a finished record, so the hall laid it out again on its own roof and a
+	 * second tower went up on the first, which never finished.
+	 */
+	private static boolean keptForTheNext(BuildSite site) {
+		return site.isSteward() && !site.isDone() && io.github.jcondedata.aliveworkplace.city.Walls.isPiece(site.structure());
+	}
+
+	/** The site keeps everything built and found so far, with nobody on it until {@link #takeOver} gives it to another. */
+	private static void leaveForTheNext(BuildSite site, Villager dead) {
+		site.release(dead.getUUID());
+		site.setBuilder(null);
+		site.setQueued(false);
+	}
+
+	/**
+	 * {@code villager} takes over {@code site}, a build with nobody on it (its builder died, B488): it carries on where
+	 * the site stands, from the supplies at its own bench.
+	 */
+	public static void takeOver(ServerLevel level, Villager villager, BuildSite site) {
+		if (isHelping(villager)) {
+			stopHelping(level, villager);
+		}
+		site.release(villager.getUUID());
+		site.setBuilder(villager.getUUID());
+		site.setBench(benchPos(villager).orElse(null));
+		site.setQueued(false);
+		ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(site.id()));
 	}
 
 	private static void endJob(ServerLevel level, Villager villager, BuildSite site) {

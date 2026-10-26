@@ -8,7 +8,7 @@ Recipe: blue dye on top, a cartography table in the middle with planks on each s
 Used by: [Builder](builder.md)
 Takes a jobless villager: yes, by itself
 Supply chests: within 8 blocks
-Build Distance: builds within 48 blocks
+Build Distance: anywhere in the village, or within 128 blocks outside it
 Mined with: an axe
 Stack size: 64
 Found in creative tab: yes
@@ -28,8 +28,8 @@ the two bottom corners. You'll also find it in the mod's creative tab.
 
 Put a Blueprint Table down near a villager without a job and they take it by themselves: they're now a **Builder**.
 Chests and barrels within 8 blocks of the table are their supply chests. Hand them a [Blueprint](blueprint.md) and they
-build it, block by block, as long as it stands within 48 blocks of the table (a server owner can change that as
-**Build Distance** in the [Settings](settings.md)). A blueprint you hold tells you when there's no table close enough.
+build it, block by block, anywhere in the village the table stands in, however big, or outside the village within 128
+blocks of the table (a server owner can change that as **Build Distance** in the [Settings](settings.md)). A blueprint you hold tells you when there's no table close enough.
 
 ## The library
 
@@ -88,10 +88,10 @@ top of the table's screen: it lists every blueprint stored in this table with it
 
 Each village's table is a collection. A new village starts with the basics, about eighteen builds: the Starter
 Cottage, the first Stone House and Terrace, and a first workplace for each everyday job (the Farmstead, the
-Storehouse, the Smithy, the Mason's Yard, the Kitchen and the like). Those show in colour, and Get Blueprint works as
+Storehouse, the Smithy, the Mason's Yard, the Kitchen and the like). Those show in color, and Get Blueprint works as
 always.
 
-Everything else starts **locked**. A locked build shows greyed out, with a line saying how to get it, such as "Sold by
+Everything else starts **locked**. A locked build shows grayed out, with a line saying how to get it, such as "Sold by
 a Journeyman Builder", "A market-day trader", "A questbook reward" or "Found in chests". You can still look round
 its picture, dimmed, and see what it needs, but Get Blueprint stays off. A few rare builds (the grander homes only a
 builder sells, the Wonders and some special builds) show as a dark **???** with no name, picture or materials, like a

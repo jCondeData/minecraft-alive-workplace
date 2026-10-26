@@ -15,7 +15,7 @@ Roadmap items: 26.14, 36.4, B186
 | Flower Planters | 7 x 3 x 3 | 1 | a two-tier brick planter of flowers in their own soil between two lanterns |
 | Signpost | 3 x 5 x 3 | 1 | a spruce post on a cobbled foot, four fingerboards at two heights that name what lies each way (36.4), a lantern on top |
 | Stone Archway | 7 x 7 x 3 | 2 | mossy stone brick piers, an arch of stairs to a chiseled keystone, ivy, a hanging lantern, lilies at its feet |
-| Lily Pond | 9 x 3 x 7 | 2 | an oval of water in a low mossy kerb with lily pads, a grassy bank of ferns and flowers, a stone seat |
+| Lily Pond | 9 x 3 x 7 | 2 | an oval of water in a low mossy curb with lily pads, a grassy bank of ferns and flowers, a stone seat |
 | Hay Cart | 6 x 4 x 5 | 1 | a spruce cart on dark oak wheels loaded with bales, its shafts down, a lantern on the corner |
 | Notice Board | 5 x 5 x 3 | 1 | a spruce board between dark oak posts under a little gabled roof, notices pinned to it, lanterns either side |
 | Lantern Pergola | 5 x 6 x 7 | 2 | a pergola walk of spruce posts and slats grown over with azalea, lanterns on chains, benches either side |
@@ -23,7 +23,7 @@ Roadmap items: 26.14, 36.4, B186
 | Sundial | 7 x 3 x 7 | 2 | a round smooth-stone plaza with chiseled hour stones, a dial of slabs and its gnomon, two lamp posts |
 | Topiary Garden | 9 x 5 x 9 | 3 | a clipped hedge round gravel walks, four shapes (cones of spruce, a ball and a cube of oak) and an azalea urn |
 | Market Corner | 5 x 5 x 5 | 1 | crates, wool sacks, hay, pumpkins and melons under a striped awning on dark oak posts |
-| Footbridge | 7 x 4 x 7 | 2 | a spruce bridge with rails over a stone-kerbed channel of water with lily pads, a lantern at each end |
+| Footbridge | 7 x 4 x 7 | 2 | a spruce bridge with rails over a stone-curbed channel of water with lily pads, a lantern at each end |
 
 All are in the Blueprint Table with the other decorations. The Flower Planters are unlocked from the start; the rest
 start locked ("A market-day trader"): a traveling trader on market day may sell any of them, and a builder's level-up
@@ -38,7 +38,7 @@ unlocks locked builds too.
 - The village map marks the larger ones as decorations; the Signpost, Flower Planters, Hay Cart, Notice Board and Market
   Corner are too small to mark, like the Street Lamp.
 - None holds a block a villager takes a job or a meeting from (no barrel, composter, cauldron, lectern, smoker, loom,
-  bell...): a decoration never hands out a job. Plants stand in their own soil; water and lily pads go in after the kerbs.
+  bell...): a decoration never hands out a job. Plants stand in their own soil; water and lily pads go in after the curbs.
 - Each has a hidden `aliveworkplace:built/<name>` advancement (written by `tools/questbook/generate.py`) for quests.
 - **The Signpost's boards (36.4, `city/Signposts`).** When a builder finishes a Signpost in any style
   (`Builders` calls `Signposts.finished` after recording it), each wall sign within its few blocks is written and
@@ -47,7 +47,7 @@ unlocks locked builds too.
   of villages, by the live name when its hall is loaded), else the nearest finished build that way (its display name
   and distance; not another signpost), else the village's own name and "Welcome". The hall's round, once a day,
   writes the boards of its village's finished signposts again where the words changed (a village renamed, a new
-  neighbour, a build pulled down); unchanged boards aren't touched.
+  neighbor, a build pulled down); unchanged boards aren't touched.
   The post's own village is the nearest hall by its point-of-interest record or, where that record isn't filed yet,
   by the caravans' list (where the hall really stands), and is never named as somewhere to go. A place exactly on a
   diagonal goes to the north or south board only, so no place is named on two boards (B186).
@@ -92,7 +92,10 @@ block in any; each a decoration with beauty and a name; the Flower Planters star
 day), `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `SignpostGameTests` (36.4: four
 waxed boards naming the village east, a village west and a Well south, kept through a save and load; a renamed
 village renamed at the next dawn; a Dark Oak signpost gets words too; B186: the own hall on an exact diagonal with
-its record unfiled is never named, and a village on the diagonal is named on one board only).
+its record unfiled is never named, and a village on the diagonal is named on one board only), `QaSignpostGameTests` (QA: a village 999 or 1,000 blocks away is named, 1,001 is
+not; nothing either way says the village's name and "Welcome" on all four boards; a player can't dye or edit a
+written board; a build pulled down and a new nearer neighbor are both picked up at the next dawn; reloaded boards
+keep their words).
 
 Showcase scenes: `decor` (every decoration placed side by side), `signpost` (a signpost at a crossroads between two
 villages, each board up close).

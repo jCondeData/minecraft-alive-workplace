@@ -7,7 +7,7 @@ with every other expansion. It covers: ages, the slower walk, the "quiet old age
 Families, the Family page and the Printer's family tree (34.21), and the seeding of everyone's age when classes switch
 on (34.22, [Classes](classes.md)).
 
-Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187, B380
+Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187, B380, B442
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -38,7 +38,9 @@ one level below Bram's (at least Apprentice: an Expert's successor is a Journeym
 job's assignments: field, tree farm, orchard, courier routes, patrol route, ball orders and who hired them. The
 chronicle says "Bram retired from the Farmer trade after 132 days grown" and "Tom took over the Farmer trade from Bram,
 as Journeyman". With nobody to take over, the elder keeps working and their card on the hall's list says "Bram would
-like to retire: the village needs a jobless villager to take over". An elder never retires while holding something for
+like to retire: the village needs a jobless villager to take over". The hall checks that line every round, so it's only
+up while nobody could take over: once a jobless grown villager is there it goes, even while the elder waits for another
+reason, and it comes back if that villager takes a job (B442). An elder never retires while holding something for
 a player or a build: a site or a queue (builder), a quarry (miner), Pokémon in their daycare, fossils being revived,
 parcels on their round.
 
@@ -62,7 +64,7 @@ undying, a golden apple, 2 emeralds and a heart of the sea (any arrangement). Sn
   "Bram will never leave us: Jesse gave them an Evergreen Charm (a Master of their trade)", and their card wears a gold
   leaf badge, "❦ Ageless: will never leave us". They stay an elder in every other way.
 - anyone else refuses, with the reason over the hotbar, and the player keeps the charm:
-  - "Fenn is not an elder yet (grown 30 of 120 days): the Evergreen Charm is for elders." (or "is not an elder" for a
+  - "Fenn is not an elder yet (grown 30 of 1200 days): the Evergreen Charm is for elders." (or "is not an elder" for a
     child or someone whose age nobody knows);
   - "Dara won't take it. The charm is for an elder who is a Master of their trade, Gifted, a Legend, or happy (mood 80
     or more) for 20 days running. Happy days so far: 19.";
@@ -113,8 +115,8 @@ village with a hall a death is as before.
 - **Age.** `adult_since` is the `Chronicle.day` a villager grew up. It is written when a child grows up in a hall's
   round (`Families.round`). Whether someone is an elder is never saved: it is `today - adult_since >= villagerElderDays`
   (`people/LifeStages`). A villager with no `adult_since` is never an elder and never passes;
-  in a world from before 1.8 the hall's first rounds give everyone one, spread over the last 100 days by their UUID
-  (34.22), so the first elders come about three weeks later, one at a time.
+  in a world from before 1.8 the hall's first rounds give everyone one, spread over the last 1000 days by their UUID
+  (34.22; 36.16 made it ten times the first 100), so the first elders come about 200 days later, one at a time.
 - **The chronicle's note.** The hall's round writes "Bram is an elder now" (kind `LIFE`) the first time it sees them
   as an elder, and marks them `elder_noted` so it is written once: on the day itself, or, if the village wasn't loaded
   that day, the next time it is. An elder an Evergreen Charm already wrote into the chronicle gets no second line.
@@ -367,5 +369,8 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
 - QA: `QaElderLifeGameTests` (6: the charm by sneak-click at the elder boundary, kept when refused, one charm one
   villager; an ageless Master still retires and mentors an Apprentice; only an elder retires and never to a baby; passing
   only asleep with the village told; the Book of Families at exactly 400; the 60 family names and the config numbers).
+- QA: `QaElderLifeBugTests` (4, B442: the waiting line goes while a jobless villager is there and the elder holds a
+  site or the 3-day wait runs; it comes back when that villager takes a job and goes when the villager is no elder; never
+  while someone learns the elder's trade).
 - Showcase scene: `family_tree` (the hall's list, Dara's Family page, Mira's grandparents with Bram marked, the printed
   tree as a book).

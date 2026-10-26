@@ -19,10 +19,10 @@ public final class Money {
 		return Bank.EXTENSION.present();
 	}
 
-	/** "600 CobbleDollars" or "6 emeralds". */
+	/** "600 CobbleDollars" (thousands marked: "150,000 CobbleDollars", B466) or "6 emeralds". */
 	public static Component describe(long dollars, int emeralds) {
 		return cobbleDollars()
-			? Component.translatable("message.aliveworkplace.money.dollars", dollars)
+			? Component.translatable("message.aliveworkplace.money.dollars", String.format(java.util.Locale.ROOT, "%,d", dollars))
 			: Words.counted("message.aliveworkplace.money.emeralds", emeralds, emeralds);
 	}
 
@@ -71,9 +71,15 @@ public final class Money {
 		if (paid) {
 			return;
 		}
-		ItemStack prize = new ItemStack(Items.EMERALD, emeralds);
-		if (!player.getInventory().add(prize)) {
-			player.drop(prize, false);
+		// in stacks: a big sum (shop takings while away, B416) is more than one stack, and what doesn't fit is dropped
+		int left = emeralds;
+		while (left > 0) {
+			ItemStack prize = new ItemStack(Items.EMERALD, Math.min(left, Items.EMERALD.getDefaultMaxStackSize()));
+			left -= prize.getCount();
+			player.getInventory().add(prize);
+			if (!prize.isEmpty()) {
+				player.drop(prize, false);
+			}
 		}
 	}
 

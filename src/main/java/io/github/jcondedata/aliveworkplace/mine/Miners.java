@@ -37,8 +37,11 @@ import org.jetbrains.annotations.Nullable;
 
 /** Hiring miners for quarries: hand-over, status, finishing and cancelling. */
 public final class Miners {
-	/** A quarry must be within this many blocks of the miner's bench. */
-	public static final int MAX_DISTANCE = 64;
+	/**
+	 * Outside the village, a quarry must be within this many blocks of the miner's bench ({@code quarryReach}); in the
+	 * village the bench stands in, anywhere in it will do (36.20, {@link io.github.jcondedata.aliveworkplace.work.Reach}).
+	 */
+	public static int MAX_DISTANCE = 128;
 
 	public static boolean isMiner(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.MINER;
@@ -124,8 +127,9 @@ public final class Miners {
 		// Down a shaft, the way there is straight down: only the distance across counts.
 		double distance = Math.sqrt(shaft.isPresent() ? new BlockPos(center.getX(), bench.get().getY(), center.getZ()).distSqr(bench.get())
 			: center.distSqr(bench.get()));
-		if (distance > MAX_DISTANCE) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_DISTANCE), ChatFormatting.RED);
+		if (distance > MAX_DISTANCE && !io.github.jcondedata.aliveworkplace.work.Reach.inSameVillage(level, bench.get(), center)) {
+			tell(player, io.github.jcondedata.aliveworkplace.work.Reach.refusal(level, bench.get(), "message.aliveworkplace.quarry.too_far", (int) Math.ceil(distance),
+				io.github.jcondedata.aliveworkplace.work.AreaJobs.workBlock(level, bench.get()), MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		if (box.isInside(bench.get())) {

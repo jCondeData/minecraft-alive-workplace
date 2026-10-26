@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.mixin.MobAccessor;
 import io.github.jcondedata.aliveworkplace.people.Sickness;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -207,11 +208,11 @@ public final class Covens {
 			Component name = VillageHalls.name(level, lair.hall());
 			double r = VillageHalls.RADIUS + 32.0;
 			for (ServerPlayer player : level.getPlayers(p -> p.blockPosition().distSqr(lair.hall()) <= r * r)) {
-				Chat.chat(player, Component.translatable(culture == null ? "message.aliveworkplace.coven.hex"
-					: culture.messages().key("hex", "message.aliveworkplace.coven.hex"), name, hexed.size()).withStyle(ChatFormatting.DARK_PURPLE));
+				Chat.chat(player, Words.countedIfAny(culture == null ? "message.aliveworkplace.coven.hex"
+					: culture.messages().key("hex", "message.aliveworkplace.coven.hex"), hexed.size(), name, hexed.size()).withStyle(ChatFormatting.DARK_PURPLE));
 			}
-			Chronicle.atHall(level, lair.hall(), Chronicle.Kind.RAID, Component.translatable(culture == null ? "chronicle.aliveworkplace.coven.hex"
-				: culture.chronicle().key("hex", "chronicle.aliveworkplace.coven.hex"), hexed.size()));
+			Chronicle.atHall(level, lair.hall(), Chronicle.Kind.RAID, Words.countedIfAny(culture == null ? "chronicle.aliveworkplace.coven.hex"
+				: culture.chronicle().key("hex", "chronicle.aliveworkplace.coven.hex"), hexed.size(), hexed.size()));
 		}
 		return hexed;
 	}

@@ -233,6 +233,37 @@ final class JobScenes {
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
+	/**
+	 * Runs {@code action} on the client's Village Hall screen, again every 50 ms (at most {@code tries} times) until it
+	 * returns true. A step that opens the hall on the server and clicks in it in the same tick found no screen yet, or a
+	 * screen without the section's rows, so the click never happened (hall_people_job, hall_people_bed: lane C's own 40.3
+	 * and 40.4 scenes, failing since they landed). The action must be safe to repeat until it succeeds.
+	 */
+	/** Scrolls the hall's table to the open row's Job/Bed list a little later, once the list has arrived: the stills show it. */
+	private static void scrollHallLater() {
+		java.util.concurrent.CompletableFuture.delayedExecutor(700, java.util.concurrent.TimeUnit.MILLISECONDS).execute(() -> {
+			Minecraft mc = Minecraft.getInstance();
+			mc.execute(() -> {
+				if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+					s.scrollToLists(); // the Job/Bed buttons on top, the list under them
+				}
+			});
+		});
+	}
+
+	private static void onHallScreen(java.util.function.Predicate<io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen> action, int tries) {
+		Minecraft mc = Minecraft.getInstance();
+		mc.execute(() -> {
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s && action.test(s)) {
+				return;
+			}
+			if (tries > 1) {
+				java.util.concurrent.CompletableFuture.delayedExecutor(50, java.util.concurrent.TimeUnit.MILLISECONDS)
+					.execute(() -> onHallScreen(action, tries - 1));
+			}
+		});
+	}
+
 	/** The wonder_crew scene's ten builders (35.5). */
 	private static final List<Villager> crewBuilders = new java.util.ArrayList<>();
 
@@ -785,6 +816,46 @@ final class JobScenes {
 			net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
 	}
 
+	/**
+	 * A village of {@code player}'s for the hall_waystones scene (41.2): a hall named {@code name} at {@code hall}, owned by
+	 * the player and known as a hall round knows it, and the Waystone Plaza set down at {@code plaza} as the builder
+	 * leaves it, recorded finished; the hall's round raises its stone, named after the village. Returns the hall.
+	 */
+	private static BlockPos waystoneVillage(ServerLevel level, ServerPlayer player, BlockPos hall, String name, BlockPos plaza) {
+		level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+			.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+		var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+		entity.setCustomName(Component.literal(name));
+		entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+		// B534: the scene is set up inside a server task, where the game files a placed block's point of interest only at
+		// the next task; until then VillageHalls.nearest finds no hall here and the round below raised no stone. Filed now,
+		// as the game does a moment later (and a hall standing for a while in play always has it).
+		if (level.getPoiManager().getType(hall).isEmpty()) {
+			net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(level.getBlockState(hall))
+				.ifPresent(type -> level.getPoiManager().add(hall.immutable(), type));
+		}
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+		io.github.jcondedata.aliveworkplace.realm.RealmData.get(level.getServer()).putKnown(new io.github.jcondedata.aliveworkplace.realm.RealmData.Known(
+			net.minecraft.core.GlobalPos.of(level.dimension(), hall), Component.literal(name), java.util.Optional.of(player.getUUID()),
+			player.getGameProfile().getName(), "hamlet", 0, 0, level.getGameTime()));
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), plaza,
+			net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+		BlueprintLibrary.get(level, io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA).ifPresent(blueprint -> {
+			BuildPlan plan = BuildPlan.create(blueprint, placement);
+			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION, BuildPlan.Stage.LANDSCAPE)) {
+				for (BuildPlan.Step step : plan.steps(stage)) {
+					level.setBlock(step.pos(), step.state(), 2);
+					if (step.secondaryPos() != null && step.secondaryState() != null) {
+						level.setBlock(step.secondaryPos(), step.secondaryState(), 2);
+					}
+				}
+			}
+		});
+		BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA, placement, player.getUUID());
+		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.round(level, hall);
+		return hall;
+	}
+
 	// --- The scenes ------------------------------------------------------------------------------------------------
 
 	static {
@@ -1315,6 +1386,53 @@ final class JobScenes {
 				x += entry.size().getX() + 3;
 			}
 			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
+		}, null));
+		// A waystone by every Village Hall (ROADMAP 41.1, filmed with Waystones): a hall named Stonebridge, a builder at
+		// his bench with the Waystone Plaza's materials in barrels; he builds the plaza in front of the camera, and its
+		// stone becomes a working waystone of the mod's named after the village.
+		SCENES.put("village_waystone", new Job("the builder raised the Waystone Plaza by the Village Hall, and its stone became a working waystone named Stonebridge",
+			2400, new Vec3(0.5, -53.0, -14.5), new Vec3(0.5, -57.0, -5.5), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.offered(), "Waystones is loaded and the plaza is offered (villageWaystones)");
+			BlockPos hall = STATION.offset(-6, 0, 2);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setCustomName(net.minecraft.network.chat.Component.literal("Stonebridge"));
+			BlockPos bench = STATION.offset(5, 0, 1);
+			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), STATION.offset(-3, 0, -9),
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			BuildSite site = Builders.start(level, builder, null, io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA, placement);
+			Showcase.check(site != null, "the builder took the Waystone Plaza on");
+			if (site == null) {
+				return l -> false;
+			}
+			BuildPlan plan = site.plan(level);
+			List<ItemStack> stacks = new ArrayList<>();
+			plan.materials().forEach((item, total) -> {
+				for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+					stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+				}
+			});
+			for (int b = 0; b * 27 < stacks.size(); b++) {
+				BlockPos at = bench.offset(1, 0, b);
+				level.setBlockAndUpdate(at, Blocks.BARREL.defaultBlockState());
+				Container barrel = (Container) level.getBlockEntity(at);
+				for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+					barrel.setItem(slot, stacks.get(b * 27 + slot));
+				}
+			}
+			BlockPos stone = placement.origin().offset(3, 2, 3);
+			return l -> {
+				if (BuildSiteManager.get(l).get(site.id()) != null) {
+					return false;
+				}
+				java.util.Optional<String> name = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.EXTENSION.call(
+					w -> w.nameAt(l, stone), java.util.Optional.<String>empty());
+				Showcase.check(name.equals(java.util.Optional.of("Stonebridge")), "the plaza's stone is a working waystone named Stonebridge (" + name + ")");
+				return name.isPresent();
+			};
 		}, null));
 		// More Create builds (ROADMAP 39.8, filmed with Create): the Brass Foundry, the Sawmill and the Crushing Mill in
 		// front, the Greenhouse, the Clock Tower and the Pump House behind them, set down as a builder leaves them, facing
@@ -2934,6 +3052,50 @@ final class JobScenes {
 				return site.isPresent() && site.get().mined() >= 12 && site.get().grownTotal() >= 8;
 			};
 		}, null));
+		// Village-wide reach (36.20): a quarry marked 110 blocks east of the Miner's blast furnace, far outside Stonebrook (a hall
+		// radius of 64): out of the old 64 reach, inside the new 128. The miner takes it and walks out to it, and digs.
+		SCENES.put("far_site", new Job("the miner took a quarry marked 110 blocks out, far outside the village, walked out to it and dug it",
+			3600, new Vec3(116.5, -54, 6.5), new Vec3(70, -60, 0), (level, player) -> {
+			BlockPos hall = STATION.offset(-4, 0, 3);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			entity.setCustomName(Component.literal("Stonebrook"));
+			entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+			if (level.getPoiManager().getType(hall).isEmpty()) { // filed now, as in waystoneVillage (B534)
+				PoiTypes.forState(level.getBlockState(hall)).ifPresent(type -> level.getPoiManager().add(hall.immutable(), type));
+			}
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+			level.setBlockAndUpdate(STATION, Blocks.BLAST_FURNACE.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+			chest(level, chestPos(), new ItemStack(Items.TORCH, 4));
+			BlockPos min = new BlockPos(109, -60, -1);
+			BlockPos max = new BlockPos(111, -59, 1);
+			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+				level.setBlockAndUpdate(p, Blocks.STONE.defaultBlockState());
+			}
+			Villager m = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Dara"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, STATION);
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
+			// handed over as the player does: the Quarry Marker with both corners, right-clicked on the miner
+			ItemStack marker = new ItemStack(ModItems.QUARRY_MARKER);
+			marker.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.QUARRY, new io.github.jcondedata.aliveworkplace.mine.QuarryData(
+				java.util.Optional.of(level.dimension().location()), java.util.Optional.of(min.above()), java.util.Optional.of(max), 2));
+			io.github.jcondedata.aliveworkplace.mine.Miners.assign(player, m, marker);
+			var site = io.github.jcondedata.aliveworkplace.mine.Miners.activeSite(level, m);
+			Showcase.check(site != null, "the miner took the quarry 110 blocks out, outside the village");
+			Showcase.check(io.github.jcondedata.aliveworkplace.work.Reach.village(level, STATION).isPresent()
+				&& !io.github.jcondedata.aliveworkplace.work.Reach.inSameVillage(level, STATION, min), "the blast furnace is in Stonebrook and the quarry outside it");
+			boolean[] there = {false};
+			return l -> {
+				if (!there[0] && m.blockPosition().getX() >= 100) {
+					there[0] = true;
+					SHOTS.add("04_far_site_arrived");
+				}
+				var now = site == null ? null : io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).get(site.id());
+				return there[0] && site != null && (now == null || now.mined() >= 9);
+			};
+		}, null));
 		SCENES.put("weaponsmith", job("the weaponsmith mended the worn pickaxe", 1800, (level, player) -> {
 			Villager w = worker(level, STATION, Blocks.GRINDSTONE.defaultBlockState()
 				.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR)
@@ -4321,6 +4483,80 @@ final class JobScenes {
 				return act[0] == 4 && ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 24;
 			};
 		}, null));
+		// Caravans travel by waystone (41.3, filmed with Waystones): Thornholm and Ashford, 180 blocks apart, each with its
+		// Waystone Plaza. Thornholm's caravan walks from the Storehouse to its stone and steps in (the mod's portal sound and
+		// particles); then Ashford's steps out of that stone, unloads at the Storehouse and walks back into it.
+		SCENES.put("waystone_caravan", new Job("Thornholm's carter led his two llamas from the Storehouse to the village's waystone and stepped into it; "
+			+ "then Ashford's caravan stepped out of the same stone, unloaded its logs at the Storehouse and walked back into the waystone", 4800,
+			new Vec3(16, -48, 13), new Vec3(12, -60, -5), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.offered(), "Waystones is loaded and village waystones are on");
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 28; // a small village, all of it in the picture
+			waystoneVillage(level, player, STATION, "Thornholm", STATION.offset(12, 0, -8));
+			place(level, new BlockPos(4, -60, -3), ModBlocks.STOREHOUSE);
+			Container ours = chest(level, new BlockPos(5, -60, -3), new ItemStack(Items.BREAD, 40));
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).setColours(
+				new io.github.jcondedata.aliveworkplace.hall.VillageBanners.Colours(net.minecraft.world.item.DyeColor.RED,
+					net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY));
+			// Ashford, 180 blocks east, kept loaded: a hall, its plaza, a Storehouse and a chest of logs
+			BlockPos ashford = STATION.east(180);
+			level.setChunkForced(ashford.getX() >> 4, ashford.getZ() >> 4, true);
+			waystoneVillage(level, player, ashford, "Ashford", ashford.offset(2, 0, 4));
+			place(level, ashford.east(4), ModBlocks.STOREHOUSE);
+			chest(level, ashford.east(5), new ItemStack(Items.OAK_LOG, 48));
+			Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.linked(level, STATION, ashford),
+				"both villages' waystones stand (" + io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, STATION) + ", "
+					+ io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, ashford) + ")");
+			io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			List<io.github.jcondedata.aliveworkplace.hall.Caravans.Want> logs = List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.OAK_LOG, 32));
+			data.setWants(STATION, Component.literal("Thornholm"), logs);
+			data.setWants(ashford, Component.literal("Ashford"), List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.BREAD, 16)));
+			if (!data.routesFrom(STATION).contains(ashford)) {
+				data.toggleRoute(STATION, ashford);
+			}
+			if (!data.routesFrom(ashford).contains(STATION)) {
+				data.toggleRoute(ashford, STATION);
+			}
+			data.clearRoad(STATION);
+			data.clearRoad(ashford);
+			data.sent(ashford, today); // Ashford's caravan waits for the scene to send it
+			int[] act = {0, 0};
+			boolean[] sent = {false};
+			return l -> {
+				if (!sent[0]) {
+					sent[0] = true; // (on the first look, once the Storehouse's point of interest is filed: B132)
+					data.sent(STATION, -1);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, STATION, null);
+					Showcase.check(data.onTheRoad().stream().anyMatch(s -> s.from().equals(STATION) && s.byWaystone()), "Thornholm's caravan goes by waystone");
+				}
+				io.github.jcondedata.aliveworkplace.hall.CaravanSights.Party party = io.github.jcondedata.aliveworkplace.hall.CaravanSights.party(l, STATION);
+				if (act[0] == 0 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.LEAVING) {
+					Showcase.check(party.waystone(), "the party walks to the waystone, not the village's edge (" + party.edge() + ")");
+					act[0] = 1;
+				} else if (act[0] == 1 && party == null) {
+					// stepped into the stone: now Ashford's caravan brings the logs, out of the same stone
+					data.setWants(STATION, Component.literal("Thornholm"), logs);
+					data.sent(ashford, -1);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, ashford, null);
+					Showcase.check(data.onTheRoad().stream().anyMatch(s -> s.from().equals(ashford) && s.byWaystone()), "Ashford's caravan goes by waystone");
+					data.hurry(STATION);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, STATION, null);
+					act[0] = 2;
+				} else if (act[0] == 2 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.UNLOADING
+					&& party.carter().getCustomName() != null && party.carter().getCustomName().getString().equals("Ashford's caravan")) {
+					Showcase.check(party.waystone(), "Ashford's caravan came out of the waystone");
+					act[0] = 3;
+				} else if (act[0] == 3 && party == null) {
+					act[0] = 4; // back into the stone
+				}
+				if (act[0] != act[1]) {
+					act[1] = act[0];
+					System.out.println("[showcase] waystone_caravan act " + act[0] + " at game tick " + l.getGameTime());
+				}
+				return act[0] == 4 && ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 24;
+			};
+		}, null));
 	}
 
 	// --- Screens ---------------------------------------------------------------------------------------------------
@@ -4611,6 +4847,199 @@ final class JobScenes {
 					ModItems.PRICE_TAG.use(level, player, InteractionHand.MAIN_HAND);
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// The hall's sidebar (ROADMAP 40.1): each of the ten sections opened from the sidebar, at GUI scale 2, then at 3.
+		SCREENS.put("hall_sidebar", new Screen("the Village Hall's sidebar opened each of its ten sections at GUI scales 2 and 3", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				guard(level, new BlockPos(4, -60, -3), new ItemStack(Items.IRON_SWORD));
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				io.github.jcondedata.aliveworkplace.hall.HallSections.forget();
+			},
+			java.util.stream.IntStream.range(0, 2 * io.github.jcondedata.aliveworkplace.hall.HallSections.Section.values().length).mapToObj(i -> {
+				var sections = io.github.jcondedata.aliveworkplace.hall.HallSections.Section.values();
+				var section = sections[i % sections.length];
+				int scale = i < sections.length ? 2 : 3;
+				return new Step(String.format("%02d_%s_scale%d", i + 1, section.id(), scale), -1, 6, (level, player) -> {
+					if (i % sections.length == 0) {
+						Minecraft mc = Minecraft.getInstance();
+						mc.execute(() -> {
+							mc.options.guiScale().set(scale);
+							mc.resizeDisplay();
+						});
+					}
+					if (!(player.containerMenu instanceof ChoiceMenu)) {
+						io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					}
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						io.github.jcondedata.aliveworkplace.hall.HallSections.choose(m, level, STATION, player, section); // the sidebar's click
+						Showcase.check(io.github.jcondedata.aliveworkplace.hall.HallSections.current(m) == section
+							&& !io.github.jcondedata.aliveworkplace.hall.HallSections.slots(m, section).isEmpty(), section.id() + " opened with its buttons");
+					}
+				}, 25);
+			}).toList(),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		SCREENS.put("hall_people", new Screen("the Village Hall's People table, then one villager's row opened", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				String[] names = {"Dara", "Bram", "Wren", "Tomas", "Ilse", "Pip", "Jem"};
+				List<Villager> folk = new java.util.ArrayList<>();
+				folk.add(worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER));
+				folk.add(guard(level, new BlockPos(4, -60, -3), new ItemStack(Items.IRON_SWORD)));
+				folk.add(worker(level, new BlockPos(-6, -60, 2), Blocks.STONECUTTER, PoiTypes.MASON, VillagerProfession.MASON));
+				folk.add(worker(level, new BlockPos(6, -60, 2), Blocks.LECTERN, PoiTypes.LIBRARIAN, VillagerProfession.LIBRARIAN));
+				Villager jobless = EntityType.VILLAGER.spawn(level, new BlockPos(-2, -60, 5), MobSpawnType.COMMAND);
+				folk.add(jobless);
+				Villager nitwit = EntityType.VILLAGER.spawn(level, new BlockPos(2, -60, 5), MobSpawnType.COMMAND);
+				nitwit.setVillagerData(nitwit.getVillagerData().setProfession(VillagerProfession.NITWIT));
+				folk.add(nitwit);
+				Villager child = EntityType.VILLAGER.spawn(level, new BlockPos(0, -60, 6), MobSpawnType.COMMAND);
+				child.setAge(-24000);
+				folk.add(child);
+				for (int i = 0; i < folk.size(); i++) {
+					folk.get(i).setCustomName(Component.literal(names[i]));
+				}
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				io.github.jcondedata.aliveworkplace.hall.HallSections.forget();
+			},
+			List.of(new Step("01_people_table", -1, 6, (level, player) -> {
+					if (!(player.containerMenu instanceof ChoiceMenu)) {
+						io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					}
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						io.github.jcondedata.aliveworkplace.hall.HallSections.choose(m, level, STATION, player,
+							io.github.jcondedata.aliveworkplace.hall.HallSections.Section.PEOPLE); // the sidebar's click
+						Showcase.check(m.state(io.github.jcondedata.aliveworkplace.hall.HallSections.PEOPLE_TOTAL) >= 7, "the table lists the village's seven");
+					}
+				}, 30),
+				new Step("02_people_row_open", -1, 6, (level, player) -> {
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+							s.openRow(0); // a click on the first row: their details open right under it
+						}
+					});
+				}, 40),
+				new Step("03_people_story", -1, 6, (level, player) -> {
+					// Story on the open row: their life story opens, as shift-click did in the old list (B547)
+					onHallScreen(s -> s.pressStory(), 40);
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		SCREENS.put("hall_people_job", new Screen("the People table's Job list: every job, the free ones with how many, the price, then a librarian made a Mason",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				Villager dara = worker(level, new BlockPos(6, -60, 2), Blocks.LECTERN, PoiTypes.LIBRARIAN, VillagerProfession.LIBRARIAN);
+				dara.setVillagerData(dara.getVillagerData().setLevel(3));
+				dara.setVillagerXp(210);
+				dara.setCustomName(Component.literal("Dara"));
+				Villager bram = worker(level, new BlockPos(-6, -60, 2), Blocks.FLETCHING_TABLE, PoiTypes.FLETCHER, VillagerProfession.FLETCHER);
+				bram.setCustomName(Component.literal("Bram"));
+				Villager wren = EntityType.VILLAGER.spawn(level, new BlockPos(-2, -60, 5), MobSpawnType.COMMAND);
+				wren.setCustomName(Component.literal("Wren"));
+				place(level, new BlockPos(-4, -60, -3), Blocks.STONECUTTER); // two free stonecutters and a free Blueprint Table
+				place(level, new BlockPos(4, -60, -3), Blocks.STONECUTTER);
+				place(level, new BlockPos(0, -60, -4), ModBlocks.BLUEPRINT_TABLE);
+				player.getInventory().add(new ItemStack(Items.EMERALD, 32));
+				io.github.jcondedata.aliveworkplace.hall.HallSections.forget();
+				io.github.jcondedata.aliveworkplace.hall.HallJobs.forget();
+			},
+			List.of(new Step("01_job_list", -1, 6, (level, player) -> {
+					if (!(player.containerMenu instanceof ChoiceMenu)) {
+						io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					}
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						io.github.jcondedata.aliveworkplace.hall.HallSections.choose(m, level, STATION, player,
+							io.github.jcondedata.aliveworkplace.hall.HallSections.Section.PEOPLE); // the sidebar's click
+					}
+					// Job ▾ on Dara's row: the list of every job opens under it (once the screen and its rows have arrived)
+					onHallScreen(s -> s.openRowNamed("Dara") && s.pressJob(), 40);
+					scrollHallLater();
+				}, 40),
+				new Step("02_job_picked", -1, 6, (level, player) -> {
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+							s.pickJob(net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getId(VillagerProfession.MASON)); // once: the price
+						}
+					});
+					scrollHallLater();
+				}, 40),
+				new Step("03_job_changed", -1, 6, (level, player) -> {
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+							s.pickJob(net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getId(VillagerProfession.MASON)); // again: paid
+						}
+					});
+					scrollHallLater();
+				}, 40),
+				new Step("04_job_after", -1, 6, (level, player) -> {
+					boolean mason = !level.getEntities(EntityType.VILLAGER, v -> v.hasCustomName() && v.getCustomName().getString().equals("Dara")
+						&& v.getVillagerData().getProfession() == VillagerProfession.MASON).isEmpty();
+					Showcase.check(mason, "Dara the librarian was made a Mason from the People table's Job list");
+				}, 20)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		SCREENS.put("hall_people_bed", new Screen("the People table's Bed list: the village's free beds with where they are, a swap, then a bed given",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				for (BlockPos foot : List.of(new BlockPos(-8, -60, -6), new BlockPos(9, -60, -8), new BlockPos(-10, -60, 6))) {
+					level.setBlockAndUpdate(foot, Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.SOUTH)
+						.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+					level.setBlockAndUpdate(foot.south(), Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.SOUTH)
+						.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+				}
+				Villager dara = EntityType.VILLAGER.spawn(level, new BlockPos(5, -60, 3), MobSpawnType.COMMAND);
+				dara.setCustomName(Component.literal("Dara"));
+				dara.setNoAi(true);
+				Villager jem = EntityType.VILLAGER.spawn(level, new BlockPos(-5, -60, 3), MobSpawnType.COMMAND);
+				jem.setCustomName(Component.literal("Jem"));
+				jem.setNoAi(true);
+				io.github.jcondedata.aliveworkplace.hall.HallSections.forget();
+				io.github.jcondedata.aliveworkplace.hall.HallBeds.forget();
+			},
+			List.of(new Step("01_bed_list", -1, 6, (level, player) -> {
+					// Jem sleeps in the bed to the south-west (the beds' records are filed by now, a step after staging).
+					level.getEntities(EntityType.VILLAGER, v -> v.hasCustomName() && v.getCustomName().getString().equals("Jem")).forEach(jem ->
+						io.github.jcondedata.aliveworkplace.camp.CampBeds.claim(level, jem, new BlockPos(-10, -60, 7)));
+					if (!(player.containerMenu instanceof ChoiceMenu)) {
+						io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					}
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						io.github.jcondedata.aliveworkplace.hall.HallSections.choose(m, level, STATION, player,
+							io.github.jcondedata.aliveworkplace.hall.HallSections.Section.PEOPLE); // the sidebar's click
+					}
+					// Bed ▾ on Dara's row: the village's beds open under it (once the screen and its rows have arrived)
+					onHallScreen(s -> s.openRowNamed("Dara") && s.pressBed(), 40);
+					scrollHallLater();
+				}, 40),
+				new Step("02_bed_given", -1, 6, (level, player) -> {
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+							s.pickBed(0); // the nearest free bed: hers from now on
+						}
+					});
+					scrollHallLater();
+				}, 40),
+				new Step("03_bed_after", -1, 6, (level, player) -> {
+					boolean housed = !level.getEntities(EntityType.VILLAGER, v -> v.hasCustomName() && v.getCustomName().getString().equals("Dara")
+						&& io.github.jcondedata.aliveworkplace.hall.VillageNeeds.bed(level, v) != null).isEmpty();
+					Showcase.check(housed, "Dara was given a free bed from the People table's Bed list");
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+							s.pressBed(); // open again: hers on top as "their bed now", Jem's to swap
+						}
+					});
+					scrollHallLater();
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("hall_pages", new Screen("the Village Hall's chronicle and trade-route pages opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
@@ -4825,6 +5254,84 @@ final class JobScenes {
 					}
 				}, 40)),
 			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
+		// Bring an old house up to its latest look (ROADMAP 36.21): a Stone House built from its first drawing stands north of
+		// the hall; the Repairs page offers "Refresh to the latest look", a click shows what changes, the button sends Bram,
+		// and the last still shows the house once he's done.
+		SCREENS.put("refresh_old_house", new Screen("a Stone House built from its first drawing was offered a refresh on the hall's Repairs page, "
+			+ "showed what changes, and Bram brought it up to its latest look",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos origin = STATION.offset(-5, 0, -15);
+				net.minecraft.resources.ResourceLocation house = StarterBlueprints.STONE_HOUSE.id();
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				var first = io.github.jcondedata.aliveworkplace.build.Refreshes.olderDrawing(level.getServer(), house, "25c521dcd");
+				Showcase.check(first.isPresent(), "the Stone House's first drawing is shipped");
+				if (first.isEmpty()) {
+					return;
+				}
+				for (var e : io.github.jcondedata.aliveworkplace.build.BuildPlan.create(first.get(), placement).targets().entrySet()) {
+					level.setBlock(e.getKey(), e.getValue(), 2 | 16);
+				}
+				BuildSiteManager.get(level).recordFinished(house, placement, player.getUUID());
+				BlockPos bench = new BlockPos(4, -60, -3);
+				place(level, bench, ModBlocks.BUILDERS_BENCH);
+				Villager builder = EntityType.VILLAGER.create(level);
+				builder.moveTo(4.5, -60, -1.5, 180, 0);
+				builder.setCustomName(Component.literal("Bram"));
+				level.addFreshEntity(builder);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_EMPLOYER.set(builder,
+					new io.github.jcondedata.aliveworkplace.build.Employer(player.getUUID(), player.getGameProfile().getName()));
+				classPeople.clear();
+				classPeople.add(builder);
+				var change = BuildSiteManager.get(level).finishedIn(level).stream().filter(f -> f.placement().equals(placement)).findFirst()
+					.flatMap(f -> io.github.jcondedata.aliveworkplace.build.Refreshes.change(level, f));
+				Showcase.check(change.isPresent(), "the old Stone House can be refreshed");
+				// what the new pieces take, in the chests by the bench
+				List<ItemStack> stock = new java.util.ArrayList<>();
+				var current = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, house).orElseThrow();
+				for (var need : io.github.jcondedata.aliveworkplace.build.BuildPlan.create(current, placement).materials().entrySet()) {
+					for (int left = need.getValue(); left > 0; left -= need.getKey().getDefaultMaxStackSize()) {
+						stock.add(new ItemStack(need.getKey(), Math.min(left, need.getKey().getDefaultMaxStackSize())));
+					}
+				}
+				for (int i = 0; i * 27 < stock.size(); i++) {
+					chest(level, bench.east(1 + 2 * i), stock.subList(i * 27, Math.min(stock.size(), i * 27 + 27)).toArray(ItemStack[]::new));
+				}
+			},
+			List.of(new Step("01_old_house", -1, 0, (level, player) -> player.closeContainer(), 30),
+				new Step("02_repairs_page", -2, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.RepairsPage.PAGE), player);
+						pickedSlot = -1;
+						for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+							if (m.icon(slot).is(Items.PAINTING)) {
+								pickedSlot = slot;
+							}
+						}
+						Showcase.check(pickedSlot >= 0 && m.icon(pickedSlot).is(Items.PAINTING), "the Stone House on the Repairs page, to refresh");
+					}
+				}, 40),
+				new Step("03_what_changes", io.github.jcondedata.aliveworkplace.hall.RepairsPage.REFRESH, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m && pickedSlot >= 0) {
+						m.press(pickedSlot, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.RepairsPage.REFRESH).is(Items.BRUSH), "the house's Refresh to the latest look");
+					}
+				}, 40),
+				new Step("04_after", -1, 0, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.RepairsPage.REFRESH, player);
+					}
+					player.closeContainer();
+				}, 3600)),
+			(level, player) -> BuildSiteManager.get(level).finishedIn(level).stream()
+				.filter(f -> f.structure().equals(StarterBlueprints.STONE_HOUSE.id()) && f.placement().origin().equals(STATION.offset(-5, 0, -15)))
+				.findFirst().map(f -> io.github.jcondedata.aliveworkplace.build.Refreshes.siteOf(level, f.placement()) == null
+					&& io.github.jcondedata.aliveworkplace.build.Refreshes.change(level, f).isEmpty()).orElse(false)));
 		// Upgrade a built home from the Village Hall (ROADMAP 36.14): a finished Starter Cottage and a finished Stone House II
 		// stand north of the hall; the hall's Upgrades page lists the cottage (level I, next the Starter Cottage II, its cost,
 		// the space free) and the Stone House II (next level III, blocked by a garden fence where its new back rooms go, with
@@ -5634,6 +6141,51 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),
 				step("05_hall_festival", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		// The waystone network on the hall's Map (ROADMAP 41.2, filmed with Waystones): three villages of the player's, each
+		// with its Waystone Plaza as the builder leaves it: Ashford (here, its stone discovered), Brookmere to the north-east
+		// (not discovered yet) and Coldwater to the west (its stone broken). The hall's Map button lists all three.
+		SCREENS.put("hall_waystones", new Screen("the hall's Map listed the waystone network: Ashford here (discovered), Brookmere to the north-east "
+			+ "(not discovered yet) and Coldwater to the west (its waystone broken)", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.EXTENSION.present(), "Waystones is loaded (the waystones extension is filled)");
+				BlockPos ashford = waystoneVillage(level, player, STATION, "Ashford", STATION.offset(-12, 0, -12));
+				BlockPos brookmere = waystoneVillage(level, player, STATION.offset(140, 0, -110), "Brookmere", STATION.offset(128, 0, -122));
+				BlockPos coldwater = waystoneVillage(level, player, STATION.offset(-180, 0, 10), "Coldwater", STATION.offset(-192, 0, -2));
+				BlockPos stone = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, ashford).orElse(null);
+				Showcase.check(stone != null && io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, brookmere).isPresent()
+					&& io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, coldwater).isPresent(), "each village raised its waystone");
+				// The player discovered Ashford's stone (using it, as Waystones does); Coldwater's is broken.
+				if (stone != null && io.github.jcondedata.aliveworkplace.hall.VillageWaystones.EXTENSION.present()) {
+					ShowcaseWaystones.discover(player, level, stone); // (its own class: Waystones' classes load only here)
+				}
+				io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, coldwater).ifPresent(s -> {
+					level.setBlockAndUpdate(s.above(), Blocks.AIR.defaultBlockState());
+					level.setBlockAndUpdate(s, Blocks.AIR.defaultBlockState());
+				});
+			},
+			List.of(new Step("01_waystone_plaza", -1, 0, (level, player) -> {
+					// B532: first the village's Waystone Plaza by the hall, its stone named after the village, then the Map.
+					player.closeContainer();
+					BlockPos stone = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, STATION).orElse(null);
+					Showcase.check(stone != null && io.github.jcondedata.aliveworkplace.hall.VillageWaystones.standing(level, STATION),
+						"Ashford's plaza stone stands as a working waystone (" + stone + ")");
+					if (stone != null) {
+						Vec3 eye = Vec3.atBottomCenterOf(stone).add(3.5, 1.6, 4.5);
+						Vec3 look = Vec3.atBottomCenterOf(stone).add(0, 1.2, 0).subtract(eye);
+						float yaw = (float) (Math.toDegrees(Math.atan2(look.z, look.x)) - 90);
+						float pitch = (float) -Math.toDegrees(Math.atan2(look.y, Math.sqrt(look.x * look.x + look.z * look.z)));
+						player.teleportTo(level, eye.x, eye.y - player.getEyeHeight(), eye.z, yaw, pitch);
+					}
+				}, 30),
+				new Step("02_hall_waystones", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.MAP, 6, (level, player) -> {
+				io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+				List<io.github.jcondedata.aliveworkplace.hall.VillageWaystones.Village> network = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.network(level, STATION, player);
+				Showcase.check(network.size() == 3 && network.get(0).state() == io.github.jcondedata.aliveworkplace.hall.VillageWaystones.State.DISCOVERED
+					&& network.stream().anyMatch(v -> v.state() == io.github.jcondedata.aliveworkplace.hall.VillageWaystones.State.UNDISCOVERED)
+					&& network.stream().anyMatch(v -> v.state() == io.github.jcondedata.aliveworkplace.hall.VillageWaystones.State.BROKEN),
+					"the network: Ashford discovered, Brookmere not yet, Coldwater broken (" + network + ")");
+			}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		// The quest journal (ROADMAP 31.3): the four tabs, a tracked quest's bar on screen, a quest map in hand.
 		SCREENS.put("quest_journal", new Screen("the quest journal's four tabs, a tracked quest's bar at the top of the screen and a quest map in hand",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
@@ -7504,7 +8056,7 @@ final class JobScenes {
 		// The Foundation Stone (ROADMAP 35.4): a Town's builder at his bench, the folly's plan placed north of the hall; the
 		// plan handed to him lays the Foundation Stone at the folly's front corner and stage I begins from the chests by the
 		// stone; right-clicking the stone tells the stage, how far along it is and what the chests hold.
-		SCREENS.put("wonder_site", new Screen("a Wonder Plan placed north of the hall was handed to the village's builder: the Foundation Stone (carved stone, brass plaque) went down at the folly's front corner, the start was announced in chat, and stage I, the Ground Storey, began from the chests by the stone; right-clicking the stone told the stage, its progress and its material list",
+		SCREENS.put("wonder_site", new Screen("a Wonder Plan placed north of the hall was handed to the village's builder: the Foundation Stone (carved stone, brass plaque) went down at the folly's front corner, the start was announced in chat, and stage I, the Ground Story, began from the chests by the stone; right-clicking the stone told the stage, its progress and its material list",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()

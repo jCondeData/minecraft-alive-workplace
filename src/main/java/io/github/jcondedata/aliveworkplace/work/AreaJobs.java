@@ -41,8 +41,33 @@ import org.jetbrains.annotations.Nullable;
  * {@code stop}, {@code stop_hover}.
  */
 public final class AreaJobs {
-	/** Farthest an area can be from the worker's workstation. */
-	public static final int MAX_DISTANCE = 48;
+	/**
+	 * Outside the village, farthest an area can be from the worker's workstation, per kind (36.20: config
+	 * {@code treeFarmReach}, {@code orchardAreaReach}, {@code berryPlotReach}); in the village the workstation stands in,
+	 * anywhere in it will do ({@link Reach}).
+	 */
+	public static int TREE_FARM_REACH = 128;
+	public static int ORCHARD_REACH = 128;
+	public static int BERRY_PLOT_REACH = 128;
+
+	/** The long reach for an area job of {@code kind} ({@code tree_farm}, {@code orchard_area}, {@code berry_plot}). */
+	public static int reach(String kind) {
+		return switch (kind) {
+			case "tree_farm" -> TREE_FARM_REACH;
+			case "orchard_area" -> ORCHARD_REACH;
+			case "berry_plot" -> BERRY_PLOT_REACH;
+			default -> TREE_FARM_REACH;
+		};
+	}
+
+	/**
+	 * The name of the block a worker works at, for a too-far line ("the Composter the farmer works at"; B453): the
+	 * block's own name, or "workstation" when it's gone and the villager hasn't noticed yet.
+	 */
+	public static Component workBlock(ServerLevel level, BlockPos pos) {
+		var state = level.getBlockState(pos);
+		return state.isAir() ? Component.translatable("message.aliveworkplace.assign.work_block") : state.getBlock().getName();
+	}
 
 	/** Player right-clicked the worker while holding a Field Marker: the marked area becomes theirs to look after. */
 	public static InteractionResult assign(ServerPlayer player, Villager villager, ItemStack stack, Attachment<FieldJob> type, String kind) {
@@ -70,8 +95,10 @@ public final class AreaJobs {
 		}
 		BoundingBox box = area.get();
 		double distance = Math.sqrt(box.getCenter().distSqr(station.get()));
-		if (distance > MAX_DISTANCE) {
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_DISTANCE), ChatFormatting.RED);
+		int reach = reach(kind);
+		if (!Reach.inReach(level, station.get(), box.getCenter(), reach)) {
+			tell(player, Reach.refusal(level, station.get(), "message.aliveworkplace." + kind + ".too_far", (int) Math.ceil(distance),
+				workBlock(level, station.get()), reach), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		FieldJob old = type.get(villager);

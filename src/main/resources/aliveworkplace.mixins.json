@@ -4,6 +4,7 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"AbstractVillagerMixin",
+		"MerchantSaleDayMixin",
 		"AcquirePoiMixin",
 		"AxeItemAccessor",
 		"BehaviorMixin",
@@ -19,6 +20,7 @@
 		"PlagueBedMixin",
 		"RaidStatMixin",
 		"CaravanPartyMixin",
+		"CaravanPartyLootMixin",
 		"EntityAccessor",
 		"FarmlandTrampleMixin",
 		"ExplosionMixin",

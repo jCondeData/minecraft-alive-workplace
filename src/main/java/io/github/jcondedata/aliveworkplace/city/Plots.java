@@ -58,7 +58,8 @@ import org.jetbrains.annotations.Nullable;
  * <li>nothing in its box is anything but natural ground, plants and natural trees ({@link BuildPlan#isTerrain},
  * {@link Trees}, flowers, saplings, unplaced leaves and the tag {@link #CLEARABLE} for packs);</li>
  * <li>it is {@link #CLEAR} blocks clear of every build site and finished building of anyone's;</li>
- * <li>its centre is within {@code maxSiteDistance} of a builder's Blueprint Table (or Builder's Bench);</li>
+ * <li>a builder's Blueprint Table (or Builder's Bench) stands in the village, or its centre is within {@code maxSiteDistance}
+ * of one (36.20, {@link io.github.jcondedata.aliveworkplace.work.Reach});</li>
  * <li>no build site or finished building of the same blueprint with the same mirroring stands within
  * {@link #SAME_RANGE} blocks (the spot is then tried mirrored, or with the request's next blueprint).</li>
  * </ul>
@@ -196,8 +197,11 @@ public final class Plots {
 		LAND, WATER, LAVA, BLOCKED, UNLOADED
 	}
 
-	/** A build in the way: its box grown by {@link #CLEAR}, its blueprint without style, mirroring and centre. */
-	record Build(BoundingBox near, ResourceLocation base, Mirror mirror, int cx, int cz) {
+	/**
+	 * A build in the way: its box grown by {@link #CLEAR}, its blueprint without style, mirroring and centre (the middle
+	 * of its box, {@code (min + max + 1) / 2}, worked out as a candidate's is: B470).
+	 */
+	record Build(BoundingBox near, ResourceLocation base, Mirror mirror, double cx, double cz) {
 	}
 
 	private record Key(BlockPos hall, Request request) {
@@ -446,7 +450,7 @@ public final class Plots {
 			BoundingBox near = box.inflatedBy(CLEAR);
 			if (near.intersects(area)) {
 				out.add(new Build(near, BlueprintStyles.base(structure), placement.mirror(),
-					(box.minX() + box.maxX()) / 2, (box.minZ() + box.maxZ()) / 2));
+					(box.minX() + box.maxX() + 1) / 2.0, (box.minZ() + box.maxZ() + 1) / 2.0));
 			}
 		});
 	}
@@ -483,6 +487,8 @@ public final class Plots {
 		private final boolean[] road;
 		private final List<double[]> segments = new ArrayList<>();
 		private final List<BlockPos> tables;
+		/** 36.20: a table stands in this hall's village, so every spot in its zones is in reach (Reach). */
+		private final boolean villageTable;
 		private final List<Build> builds;
 		/** Candidate spots (x, z) nearest the hall first. */
 		private final List<int[]> spots;
@@ -538,6 +544,7 @@ public final class Plots {
 				}
 			}
 			tables = shared ? tablesThisTick(level, hall) : tables(level, hall);
+			villageTable = tables.stream().anyMatch(t -> io.github.jcondedata.aliveworkplace.work.Reach.village(level, t).filter(this.hall::equals).isPresent());
 			int half = CityPlan.half();
 			BoundingBox near = new BoundingBox(hall.getX() - half - SAME_RANGE, level.getMinBuildHeight(), hall.getZ() - half - SAME_RANGE,
 				hall.getX() + half + SAME_RANGE, level.getMaxBuildHeight(), hall.getZ() + half + SAME_RANGE);
@@ -582,6 +589,10 @@ public final class Plots {
 					for (int oz = step / 2; oz < size; oz += step) {
 						int x = baseX + ox;
 						int z = baseZ + oz;
+						if (villageTable) {
+							out.add(new int[]{x, z});
+							continue;
+						}
 						for (BlockPos t : tables) {
 							long dx = t.getX() - x;
 							long dz = t.getZ() - z;
@@ -742,7 +753,9 @@ public final class Plots {
 				}
 			}
 			for (Build b : builds) {
-				if (b.base().equals(plain) && b.mirror() == mirror && sq((long) (b.cx() - cx)) + sq((long) (b.cz() - cz)) <= (long) SAME_RANGE * SAME_RANGE) {
+				double dx = b.cx() - cx;
+				double dz = b.cz() - cz;
+				if (b.base().equals(plain) && b.mirror() == mirror && dx * dx + dz * dz <= (double) SAME_RANGE * SAME_RANGE) {
 					return Verdict.no(Reason.SAME_NEARBY);
 				}
 			}
@@ -973,6 +986,9 @@ public final class Plots {
 		}
 
 		private boolean nearTable(double x, double z) {
+			if (villageTable) {
+				return true;
+			}
 			double reach = (double) Builders.MAX_SITE_DISTANCE * Builders.MAX_SITE_DISTANCE;
 			for (BlockPos t : tables) {
 				double dx = t.getX() + 0.5 - x;

@@ -73,6 +73,8 @@ public class BuilderWork extends Behavior<Villager> {
 	private static final int FAR_LOOKAHEAD = 4 * LOOKAHEAD;
 	/** Already-finished steps skipped per tick (cheap checks). */
 	private static final int SKIP_BUDGET = 256;
+	/** B508: how many times a build goes back over its structure and decoration for blocks broken since they were laid. */
+	static final int MOST_RECHECKS = 2;
 	private static final int STUCK_TICKS = 100;
 	/** How long a builder with no path to where it's going waits before hopping there. */
 	private static final int NO_PATH_TICKS = 30;
@@ -355,6 +357,9 @@ public class BuilderWork extends Behavior<Villager> {
 					setStatus(site, BuildSite.Status.WORKING);
 					return; // B254: a member is laying a block the lead gave up on: the stage waits for it, not for long
 				}
+				if (site.endsStage() && site.stage() == BuildPlan.Stage.LANDSCAPE && backToBroken(level, site, plan)) {
+					continue; // B508: a block laid earlier is gone (broken by a player, a mob, an explosion): put back first
+				}
 				if (site.endsStage() && site.stage() == BuildPlan.Stage.LANDSCAPE) {
 					// B300: nothing left floating. Once the ground is levelled, not at the end of DECORATION: a pot on a
 					// grave over a hollow on a hillside has its ground filled in by LANDSCAPE
@@ -364,7 +369,8 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			action = actionFor(level, site, candidate, bench);
-			if (action == Action.NONE || crew && site.placedThisStage(candidate.pos())) {
+			if (action == Action.NONE || crew && site.placedThisStage(candidate.pos()) || site.rechecks() > 0 && site.leftOut(candidate.pos())) {
+				// (B508: going back for broken blocks, the ones given up earlier stay given up)
 				site.advance(); // (B139: a crew member placed it, and it has changed by itself since: it stays)
 			} else if (action == Action.PLACE && outForLandscape(level, site, candidate, bag)) {
 				site.defer(); // nothing to fill it with: comes round once more at the end, then is left
@@ -491,6 +497,12 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!free && bag.count(net.minecraft.world.item.Items.SCAFFOLDING) < toPlace) {
 				MaterialRules.Requirement need = new MaterialRules.Requirement(net.minecraft.world.item.Items.SCAFFOLDING, toPlace);
 				if (inStock(level, villager, site, bench, plan, need)) {
+					if (site.missing().containsKey(net.minecraft.world.item.Items.SCAFFOLDING)) {
+						// B499: there's enough now, so the board stops asking for it
+						Map<net.minecraft.world.item.Item, Integer> missing = new LinkedHashMap<>(site.missing());
+						missing.remove(net.minecraft.world.item.Items.SCAFFOLDING);
+						site.setMissing(missing);
+					}
 					// 35.6a: takes enough for the column to grow on as the part rises, not one or two a trip
 					int carry = (int) Math.max(toPlace, Math.min(Scaffolds.CARRY, scaffoldingOnHand(level, site, plan)));
 					fetch(level, villager, site, plan, bag, bench, new MaterialRules.Requirement(net.minecraft.world.item.Items.SCAFFOLDING, carry));
@@ -526,7 +538,8 @@ public class BuilderWork extends Behavior<Villager> {
 		if (!BuildBudget.take(level)) {
 			return; // 25.3: the level's block changes for this tick are spent; try again next tick
 		}
-		workTimer = BuilderLevels.delay(level, villager);
+		// B515: this tick is the first of the delay, so the next block comes exactly delay ticks later (not delay + 1)
+		workTimer = Math.max(0, BuilderLevels.delay(level, villager) - 1);
 		if (action == Action.BREAK && site.stage() == BuildPlan.Stage.DECONSTRUCT) {
 			takeDown(level, villager, site, bag, bench, step);
 		} else if (action == Action.BREAK) {
@@ -817,6 +830,43 @@ public class BuilderWork extends Behavior<Villager> {
 		if (site.bench() != null && !near(villager, site.bench(), 6)) {
 			walkTo(villager, site.bench(), 3);
 		}
+	}
+
+	/**
+	 * B508: the build's last look before it's called done. One pass over the structure and decoration: if a block laid
+	 * earlier is gone and its spot is open ({@link BuildPlan#missing}, as the repair round sees it; crops and blocks
+	 * given up for good aside), the lead goes back to the first such block and over the lists again, what still stands
+	 * passed straight over (at most {@link #MOST_RECHECKS} times a build). After that, what's still gone is counted as
+	 * skipped. True if it went back.
+	 */
+	static boolean backToBroken(ServerLevel level, BuildSite site, BuildPlan plan) {
+		if (site.isDeconstruction() || site.isRepair()) {
+			return false; // a repair only fills the holes it was made for; upkeep looks again later
+		}
+		int gone = 0;
+		BuildPlan.Stage first = null;
+		int at = -1;
+		for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
+			List<BuildPlan.Step> steps = plan.steps(stage);
+			for (int i = 0; i < steps.size(); i++) {
+				BuildPlan.Step s = steps.get(i);
+				if (!site.leftOut(s.pos()) && !BuildPlan.isCrop(s.state()) && BuildPlan.missing(level, s)) {
+					if (first == null) {
+						first = stage;
+						at = i;
+						if (site.rechecks() < MOST_RECHECKS) {
+							site.backToBroken(first, at);
+							return true;
+						}
+					}
+					gone++;
+				}
+			}
+		}
+		if (gone > 0) {
+			site.leftBroken(gone); // broken again and again: left for the repair round, not claimed done
+		}
+		return false;
 	}
 
 	/** A step can't be done now. The lead retries it at the end of the stage; a helper leaves it to the lead. */
@@ -1380,6 +1430,11 @@ public class BuilderWork extends Behavior<Villager> {
 		// builders sharing the storehouse each carried the one log or slab the other waited for, and neither finished.
 		wanted.merge(requirement.item(), requirement.count(), Math::max);
 		boolean tookAny = false;
+		if (helping) {
+			// B519: a helper at the chests first puts back what its stretch no longer needs (the walls' last planks once
+			// the build is on its lanterns), so its bag never holds more than the work ahead
+			tookAny = putBackUnwanted(level, bag, wanted, supplies);
+		}
 		for (Map.Entry<Item, Integer> e : wanted.entrySet()) {
 			int want = e.getValue() - bag.count(e.getKey());
 			if (!mine.isEmpty()) {
@@ -1409,6 +1464,35 @@ public class BuilderWork extends Behavior<Villager> {
 			site.supplied();
 			level.playSound(null, source, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
 		}
+	}
+
+	/**
+	 * Puts back into {@code supplies} what the bag holds beyond {@code wanted} (by item). Stacks with data of their own
+	 * (a filled container) stay in the bag; what the chests have no room for stays too. True if anything went back.
+	 */
+	private static boolean putBackUnwanted(ServerLevel level, BuilderBag bag, Map<Item, Integer> wanted, List<BlockPos> supplies) {
+		Map<Item, Integer> held = new LinkedHashMap<>();
+		Set<Item> special = new HashSet<>();
+		for (ItemStack stack : bag.stacks()) {
+			held.merge(stack.getItem(), stack.getCount(), Integer::sum);
+			if (!stack.getComponentsPatch().isEmpty()) {
+				special.add(stack.getItem());
+			}
+		}
+		boolean any = false;
+		for (Map.Entry<Item, Integer> e : held.entrySet()) {
+			int extra = e.getValue() - wanted.getOrDefault(e.getKey(), 0);
+			if (extra <= 0 || special.contains(e.getKey())) {
+				continue;
+			}
+			int removed = bag.remove(e.getKey(), extra);
+			ItemStack rest = SupplyContainers.insert(level, supplies, new ItemStack(e.getKey(), removed));
+			if (!rest.isEmpty()) {
+				bag.add(rest);
+			}
+			any |= rest.getCount() < removed;
+		}
+		return any;
 	}
 
 	/**

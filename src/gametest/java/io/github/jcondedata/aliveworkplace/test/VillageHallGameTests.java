@@ -79,7 +79,10 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON + 1).is(ModBlocks.GUARD_POST.asItem()), "second listed: "
 				+ menu.icon(VillageHallScreen.FIRST_PERSON + 1));
 			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON + 2).is(Items.PAPER), "the jobless villager isn't listed last");
-			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON + 3).isEmpty(), "the child is listed");
+			// Since 40.2 the People table lists the children too, last and marked as such (it used to leave them out).
+			net.minecraft.nbt.CompoundTag childRow = io.github.jcondedata.aliveworkplace.hall.HallPeople.row(menu.icon(VillageHallScreen.FIRST_PERSON + 3));
+			helper.assertTrue(childRow != null && childRow.getString("kind").equals("child"), "the child isn't listed last, marked as a child");
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_PERSON + 4).isEmpty(), "someone else is listed after the child");
 			menu.press(VillageHallScreen.FIRST_PERSON, player);
 			helper.assertTrue(builder.hasEffect(MobEffects.GLOWING), "the builder isn't glowing");
 			helper.succeed();

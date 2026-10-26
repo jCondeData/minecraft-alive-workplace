@@ -57,15 +57,16 @@ Wonder's part called off) has them all taken down at once, into the supply chest
 its builder, if on a column, is first put down at the foot.
 
 **Asking for it.** When the column needs more scaffolding than the builder's bag, its chests and the village's spare
-hold, the shortfall is added to the site's missing list (the Storehouse's requests board shows it) and the step goes
-on as it always did: skipped and counted. The build never waits on scaffolding. A carpenter makes it by the vanilla
+hold, the shortfall is added to the site's missing list (the Storehouse's requests board and the Village Hall show it
+while the builder carries on, not only while it waits for other materials) and the step goes on as it always did:
+skipped and counted. The request goes away once the builder finds enough in its chests. The build never waits on scaffolding. A carpenter makes it by the vanilla
 recipe (6 bamboo and a string make 6); builders sell it too.
 
 ## 3. Switches
 
 | Key | Default | What it does |
 |---|---|---|
-| `builderScaffolding` | on from 1.0 | Builders put up scaffolding to reach what has nowhere to stand near it. Off: those blocks are skipped as before |
+| `builderScaffolding` | on from 1.0 | Builders put up scaffolding to reach what has nowhere to stand near it. Off: those blocks are skipped as before (scaffolds already up still come down into the chests) |
 
 ## 4. Saved data
 
@@ -120,7 +121,14 @@ pillar with a 5 x 5 cap, nothing skipped, no scaffolding left, the chest as full
 `ScaffoldingGameTests.carpentersMakeScaffoldingFromBambooAndString`, `ScaffoldingGameTests.switchedOffNothingIsPutUp`,
 `ScaffoldingGameTests.follysDomeIsFinishedWithNoSkippedSteps` (the test folly's dome and finial, nothing skipped), and QA's `ScaffoldingGameTests.theBuilderDyingWithScaffoldsUpTakesThemAllDown` (killed with scaffolds up: all down,
 none lost between the chest and his dropped bag) and `ScaffoldingGameTests.scaffoldingAPlayerBreaksIsStruckOffAndTheBuildFinishes`
-(the column's foot broken by someone else: struck off, the build finishes).
+(the column's foot broken by someone else: struck off, the build finishes). QA's `QaScaffoldingGameTests` (6):
+too little scaffolding (none lost, none left up, no waiting), free materials (scaffolded with nothing skipped, no
+scaffolding item created), never on a drawn block and never carried past its stage, the chest broken then the build
+canceled (all 64 on the ground), the chest emptied mid-column (none lost), and a two-builder crew (finished, nobody
+hurt, the chest as full as before). QA's `QaBuilderFixes1026GameTests.scaffoldingSwitchedOffWithScaffoldsUpStillTakesThemAllDown`
+(switched off with scaffolds up: all down, all 64 back in the chest) and
+`QaBuilderFixes1026GameTests.cancelWithTheChestFullDropsTheScaffoldingAndLosesNone` (canceled with the chest full: none
+left standing, none lost between the chest, the bag and the ground).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks
 away at the builder's height, with stills of it up the scaffolding and taking it down).

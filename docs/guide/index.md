@@ -164,6 +164,10 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
 - [Cobblecuisine dishes](cobblecuisine.md): the salads, curries, cakes and drinks your Chef, Camp Cook and Innkeeper make and serve.
 - [Furnicrafter](furnicrafter.md): with CobbleFurnies, the villager who makes its furniture for your builders and your store.
 
+## With Waystones
+
+- [Waystone Plaza](waystone-plaza.md): a waystone by every Village Hall, named after the village, to travel between your villages.
+
 ## For server owners
 
 - [Settings](settings.md): what a server owner can switch on and off or tune, in plain words.
@@ -249,7 +253,7 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
 - [Guild Charter](guild-charter.md) and the [Guildhall](guildhall-build.md): how a guild starts and where it meets.
 - [Work Horn](work-horn.md), [Village Banner](village-banner.md), [Cradle](cradle.md) and
   [Harvest Idol](harvest-idol.md): the village's civic things.
-- [Tonics](tonics.md): [Miner's Brew](miners-brew.md), [Smith's Draught](smiths-draught.md),
+- [Tonics](tonics.md): [Miner's Brew](miners-brew.md), [Smith's Draft](smiths-draught.md),
   [Scholar's Infusion](scholars-infusion.md), [Builder's Tea](builders-tea.md), [Harvest Cordial](harvest-cordial.md)
   and [Woodsman's Broth](woodsmans-broth.md).
 

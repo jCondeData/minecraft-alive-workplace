@@ -8,6 +8,11 @@ Roadmap items: 34.15, 34.15a, 34.15b, 34.16, B106
 
 ## What a player sees
 
+A villager's home can be chosen for them: **Bed ▾** in the Village Hall's People table lists the village's beds (free
+ones first, with the house and which bed, or how far and which way from the hall; then the taken ones, to swap) and a
+click makes one theirs at once, the old bed freed (see `village-hall.md`, 40.4). The home a bed gives them, and its
+grade, follow from the building it's in, as below.
+
 Three new houses, all **sold by builders only** (not in the Blueprint Table): a builder sells the Artisan's House from
 Apprentice on, the Townhouse once the village round the nearest hall has a household of Artisans or higher and the
 Noble's Manor once it has a household of Burghers or higher, and each upgrade comes from the builder who finishes the
@@ -45,7 +50,7 @@ tier below:
 
 **Every kind of home looks different** (26.11): the Starter Cottage is the timber-framed one under a spruce roof; the
 Stone House a stone croft with crow-stepped gables (the gable walls rise above the slate roof in steps), a chimney
-breast and a woodpile, rising a full storey in stone at II and growing a crow-gabled wing at III; the Terrace a brick
+breast and a woodpile, rising a full story in stone at II and growing a crow-gabled wing at III; the Terrace a brick
 row with a stone string course and cornice, a bay window and a hooded door for each home, the middle home's front
 plastered white, a chimney stack over each party wall and dormers in a dark oak roof; then the three grander homes
 above. Their beds, chests and rooms are where they were, so homes already built keep working.
@@ -177,4 +182,10 @@ worked out from the finished buildings already saved.
   `BuilderGameTests.buildsTownhouseII`, `BuilderGameTests.buildsTownhouseIII`, `BuilderGameTests.buildsManor`,
   `BuilderGameTests.buildsManorII`, `BuilderGameTests.buildsManorIII` (in the huge area): a builder builds each tier from bare
   ground with exactly the materials it needs.
+- QA (2026-10-26): `QaGranderHomesGameTests.badHomeFilesAreSkippedAndTheGoodOneStillLoads`,
+  `QaGranderHomesGameTests.upgradesAddOneUpToIIIAndATierAboveIIIKeepsIt`,
+  `QaGranderHomesGameTests.aCoupleWantsAGranderHomeWhileEitherBedIsInALowerOne`,
+  `QaGranderHomesGameTests.noMoreThanThreeHouseholdsGetATip`, `QaGranderHomesGameTests.theTipReadsRightForEveryClassAndCount`,
+  `QaGranderHomesGameTests.openingABuildersTradesAddsTheGranderHomesOnce`,
+  `QaGranderHomesGameTests.onlyTheNearestHallsVillageBringsTheTownhouse`.
 - Showcase scenes: `grand_houses`.

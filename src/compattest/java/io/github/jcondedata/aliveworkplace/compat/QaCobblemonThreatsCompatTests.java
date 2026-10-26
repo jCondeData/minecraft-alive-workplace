@@ -268,18 +268,21 @@ public class QaCobblemonThreatsCompatTests implements FabricGameTest {
 		BlueprintData.Placement placement = placement(helper);
 		if (finished) {
 			BuildSiteManager.get(level).recordFinished(StarterBlueprints.MEGA_SHRINE.id(), placement, UUID.randomUUID());
+			// The shrine's pedestal stands, as a builder leaves it (B421: without it there is no show).
+			level.setBlockAndUpdate(io.github.jcondedata.aliveworkplace.hall.Arenas.world(placement, MegaShrines.PEDESTAL_SPOT),
+				net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(MegaShrines.PEDESTAL).defaultBlockState());
 		}
 		int radius = VillageHalls.RADIUS;
 		VillageHalls.RADIUS = 16;
 		long time = level.getDayTime();
-		MegaShrines.forget();
+		MegaShrines.forgetShows(level);
 		level.setDayTime((Chronicle.day(level) - 1) * 24000L + Festivals.START + 100);
 		PartnerShowsCompatTests.after(helper, () -> {
 			BuildSiteManager.get(level).forgetFinished(placement);
 			VillageHalls.RADIUS = radius;
 			MegaBracelets.ENABLED = true;
 			Festivals.forget();
-			MegaShrines.forget();
+			MegaShrines.forgetShows(level);
 			level.setDayTime(time);
 			for (Villager v : level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(4))) {
 				v.discard();

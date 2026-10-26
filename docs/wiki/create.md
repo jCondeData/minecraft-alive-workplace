@@ -8,14 +8,14 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484
 
 ## What a player sees
 
 Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create installed:
 
-- **The Mechanic** (39.2). A jobless villager next to a Create Toolbox (any of its sixteen colours) becomes the
-  village's Mechanic, in a grey canvas work apron with a cogwheel stitched on it, brass goggles pushed up on the brow
+- **The Mechanic** (39.2). A jobless villager next to a Create Toolbox (any of its sixteen colors) becomes the
+  village's Mechanic, in a gray canvas work apron with a cogwheel stitched on it, brass goggles pushed up on the brow
   and a brass-headed wrench at the belt. When a shaft, gearbox, cogwheel or belt goes missing from a finished build
   within 32 blocks of the toolbox, the Mechanic fetches the part from the chest by the toolbox, carries it over and
   puts it back as the blueprint has it (the same axis and facing): shafts first, then the cogwheels on them, then
@@ -35,7 +35,9 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   ("the store is full: the Millstone waits"). A trip is short, and the job's own work picks up again after it. The
   Mechanic's round now covers the press, the mixer and the crushing wheels too. Only the village's own machines and
   chests are used (B243): a machine or a chest counts when it stands inside a building the village's builders
-  finished. A player's own millstone, press, mixer or crushing wheels, and a player's chests by a toolbox or a
+  finished (in a turned or flipped building, exactly the blocks its builders placed: one block past its walls, floor or
+  roof is a player's; a building finished or taken down counts at once; one in another dimension doesn't count here,
+  `QaVillageMachinesGameTests`). A player's own millstone, press, mixer or crushing wheels, and a player's chests by a toolbox or a
   workstation, are left alone: nothing of theirs is fed in, taken out or carried off.
 
 - **Create-powered builds** (39.4). The Blueprint Table offers three new workplaces, only with Create installed: the
@@ -121,9 +123,11 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   placement makes one). A dip of one block, a step on a turn and a turn with no room stay gaps (the railway then never
   joins and caravans take the timed trip). The train's six blocks are a generated blueprint
   (`aliveworkplace:roads/<hall>/train_<other>`, "Village Train") at the first village's station, built by an idle
-  builder of the village from the bench's chests; the bogey is placed with railway casing. When they all stand, the
-  station's next look glues and assembles them ("Bob built the village's train at the station, ready to be put on the
-  rails"). At the departing station the caravan's goods go into the carriage's chest (Create's mounted storage, all or
+  builder of the village from the bench's chests; the bogey is placed with railway casing. When they all stand and the
+  builder has finished the train's site, the station's next look glues and assembles them (B483: never while the site is
+  still open, so its builder finishes and the chronicle says "Bob built the village's train at the station, ready to be
+  put on the rails"; a builder killed before then takes the site with him, and the standing blocks are assembled all
+  the same). At the departing station the caravan's goods go into the carriage's chest (Create's mounted storage, all or
   nothing; arrival `IN_CHEST`; no room: they ride as the caravan's record as before), and at the other station what is
   still in the chest of them comes out and is delivered. Train gone or the far station gone while they're in the chest:
   what a derailed train still holds comes back out and the caravan takes the timed trip; a train broken up keeps them
@@ -173,7 +177,7 @@ list. The road tick (`Roads.tick`) opens, every 100 ticks, one track site at a t
 (both villages have a station, the half is built, it isn't tracked yet), with any idle builder of the village (as for
 a far road segment). Its blueprint is `aliveworkplace:roads/<hall>/track_<other>_<road key>`, so it is a road segment
 to everything that treats them specially (not a building, not at the table, no blueprint handed back); a track piece
-goes on each node of the half's way at feet height, straight or diagonal by its neighbours, but not where the road
+goes on each node of the half's way at feet height, straight or diagonal by its neighbors, but not where the road
 steps a block (its stairs) or where something already stands (the hall it starts from). The finished site
 (`Roads.segmentBuilt`) marks the half tracked. `Caravans.send` asks `CaravanTrains.rides` (switch, Create, roads on,
 a station at both ends, the road finished, both halves tracked) and saves the answer on the shipment.
@@ -343,7 +347,7 @@ The planned fields of later items, each with its default, are listed in the desi
 
 ## Items, blocks, jobs, commands
 
-- Job: the **Mechanic** (`aliveworkplace:mechanic`, only with Create), at a Create Toolbox of any colour (POI
+- Job: the **Mechanic** (`aliveworkplace:mechanic`, only with Create), at a Create Toolbox of any color (POI
   `aliveworkplace:toolbox`). In the Village Hall's list a Mechanic shows with the toolbox's own item, as every job shows
   with its workstation.
 
@@ -357,6 +361,10 @@ The planned fields of later items, each with its default, are listed in the desi
   after a restart, is not called). Riders are found by id: Create may save a carriage's riders and put them back as
   new entities on the way. Trades in `ModTrades.conductorTrades`, Create's items looked up by id when offered.
   Nothing new in the save; a villager saved as a Conductor in a world Create was removed from loads jobless.
+- **Taking Create off a server** (B542). A villager who was a Mechanic or Conductor loads as a jobless Novice: her
+  name and clothes stay, her old trades, level and xp go, so a right click gets a shake of the head as from any jobless
+  villager, and she takes a new job by herself (`ModVillagers.forgetVanishedJob`, after vanilla reads the save; any job
+  whose mod is gone, the Furnicrafter without CobbleFurnies too). A villager whose job still exists is left as she was.
 
 - Blueprints (39.6): `aliveworkplace:create_schematics/<player>/<name>`, one for each uploaded schematic.
 
@@ -369,7 +377,7 @@ The planned fields of later items, each with its default, are listed in the desi
 
 No items or blocks of our own. The ids the milestone reads from Create (the machines, the drive-train parts, the sails, the
 toolboxes, the schematic items and components, the recipe types) are listed in the design note and checked by
-`CreateCompatTests`. The Mechanic's job block will be Create's Toolbox, in any of its sixteen colours.
+`CreateCompatTests`. The Mechanic's job block will be Create's Toolbox, in any of its sixteen colors.
 
 ## Decisions
 
@@ -381,7 +389,7 @@ toolboxes, the schematic items and components, the recipe types) are listed in t
 - What a machine makes is read from Create's own recipes, never our own list (39.1).
 - The windmill is started the way a player starts it, an empty-hand use of its bearing, by a fake player; a sign
   tells the player how if that fails (39.1, for 39.4).
-- The Mechanic waits for all sixteen toolbox colours before registering its workstation, and its profession exists
+- The Mechanic waits for all sixteen toolbox colors before registering its workstation, and its profession exists
   only with Create; a hired Mechanic stays one when the switch is off, standing idle (39.2).
 - The Mechanic mends only the village's own finished builds near the toolbox, as written in the design note; the
   owner's question about players' own factories is still open (39.2).
@@ -429,7 +437,7 @@ toolboxes, the schematic items and components, the recipe types) are listed in t
 Nothing is built for players yet (the gate). Only one machine of each kind per trip, and a worker
 looks only near their own workstation; a stopped machine shows on the Mechanic's status, not yet in the chronicle.
 Putting back a belt has no test with a real belt yet (shafts and cogwheels do). A part broken after a contraption is
-finished is the Mechanic's to mend, not the builder's; one broken while the ground is levelled is listed by the check.
+finished is the Mechanic's to mend, not the builder's; one broken while the ground is leveled is listed by the check.
 Trains (39.7): the track is
 straight pieces node by node, so at a bend or a step of the road Create sees separate pieces, not one line a real
 Create train could run along; the Train Station's station isn't bound to its track (a player re-places it to make a
@@ -465,7 +473,11 @@ tested (the GameTests use the table as the server does).
   after `createBuilds` went off half way up its walls. `QaCreateSchematicFilesCompatTests` (39.6): a schematic seen cut
   short mid-upload is imported, and said, once the upload is complete; a written Schematic of a file cut short says so,
   naming it, and makes no blueprint. `QaMechanicMendSaysCompatTests` (39.2): "Mechanic: fetching Shaft for the ..."
-  and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back.
+  and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back. `QaCreateItemsHeldCompatTests` (lane E's QA): a depot, a
+  deployer and a basin, each holding a diamond, scanned into a blueprint and built from exactly its material list, are
+  built holding nothing (a fluid in a tank or spout is still copied: B486).
+  `QaCreateStoresHeldCompatTests` (lane E's QA): the same for a millstone (holding wheat), a chute, an item vault, a
+  mechanical crafter and a toolbox.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,
@@ -490,7 +502,7 @@ tested (the GameTests use the table as the server does).
   naming any that's missing.
 - `ExpansionGateGameTests.createIntegrationIsGated`: the gate is shut for players and open in GameTests, for each of
   the five switches.
-- `MechanicCompatTests` (with Create): a jobless villager takes a red toolbox by themselves, and every colour is the
+- `MechanicCompatTests` (with Create): a jobless villager takes a red toolbox by themselves, and every color is the
   job's block; a shaft and a cogwheel gone from a finished build go back from its blueprint, shaft first, with the
   chest's parts (and the toolbox isn't a supply chest); without the part the hole waits and the Mechanic says what's
   needed; a millstone turned by a creative motor gets the chest's wheat and its flour comes back, one that doesn't
@@ -514,6 +526,13 @@ tested (the GameTests use the table as the server does).
   `TRAIN_MIN` (400 ticks) nor longer than the walk, both sides of each boundary; halves of the road `HALVES_MEET` apart
   make a railway, one block more or a half stopped at a milestone don't; the railway over a save, and a save with one
   village's station and track gone loads as none.
+- `QaTrainSiteRaceCompatTests` (QA, 39.7b, with Create): with both halls looking at their trains every tick, the
+  builder's train site is finished before the station assembles the train, the chronicle says a builder built it, and
+  no second set of its blocks is put up.
+- `QaTrainSiteHeldCompatTests` (QA, B483, with Create): the train's blocks standing with the builder's site still open,
+  the sites and the builder saved and loaded: the station still waits, then the builder finishes, the chronicle says so
+  and the train is assembled with no site left open; the builder killed in that gap: the standing blocks become the
+  train, with no second train site.
 - `QaTrainsOffCompatTests` (QA, B359, with Create): `villageTrains` switched off while the real village train runs with
   the caravan's 32 logs in its chest: they come out of the chest, the caravan takes the timed trip and comes in, and
   Ashford's 64 logs always add up (none left in the train, none twice); a world saved with a caravan waiting to board and

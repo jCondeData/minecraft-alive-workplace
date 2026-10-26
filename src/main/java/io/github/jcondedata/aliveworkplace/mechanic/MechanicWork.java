@@ -196,7 +196,7 @@ public class MechanicWork extends Behavior<Villager> {
 				if (!level.isLoaded(world)) {
 					continue;
 				}
-				BlockState state = MaterialRules.forPlacement(entry.state().mirror(placement.mirror()).rotate(placement.rotation()));
+				BlockState state = MaterialRules.forPlacement(MaterialRules.transformed(entry.state(), placement.mirror(), placement.rotation()));
 				BlockState there = level.getBlockState(world);
 				if (!there.canBeReplaced() || MaterialRules.matches(there, state)) {
 					continue; // in place, or something else stands there now (a player's): not a hole to fill
@@ -504,7 +504,7 @@ public class MechanicWork extends Behavior<Villager> {
 			state.part = null; // put back by someone else (a builder, a player): the part in hand goes back with stop()
 			return;
 		}
-		status(villager, Component.translatable("message.aliveworkplace.mechanic.state.mend", part.state().getBlock().getName(),
+		status(villager, io.github.jcondedata.aliveworkplace.work.Words.articled("message.aliveworkplace.mechanic.state.mend", 0, part.state().getBlock().getName(),
 			Blueprints.displayName(part.structure())));
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(part.pos()));
 		if (state.walker.reach(level, villager, part.pos(), 3.5)) {

@@ -15,6 +15,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.trader.PokemonTradeView;
 import io.github.jcondedata.aliveworkplace.trader.PokemonTraders;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -71,7 +72,7 @@ public final class CobblemonTraders {
 			}
 			if (wantedSpecies != null) {
 				if (root(pokemon.getSpecies()) != root(wantedSpecies)) {
-					return Component.translatable("message.aliveworkplace.pokemon_trader.wrong_species", wantedSpecies.getTranslatedName());
+					return Words.articled("message.aliveworkplace.pokemon_trader.wrong_species", 0, wantedSpecies.getTranslatedName());
 				}
 				return pokemon.getLevel() < minLevel ? Component.translatable("message.aliveworkplace.pokemon_trader.too_low", minLevel) : null;
 			}
@@ -80,7 +81,7 @@ public final class CobblemonTraders {
 				typeFits |= type.getName().equals(wanted.getName());
 			}
 			if (!typeFits) {
-				return Component.translatable("message.aliveworkplace.pokemon_trader.wrong_type", wanted.getDisplayName());
+				return Words.articled("message.aliveworkplace.pokemon_trader.wrong_type", 0, wanted.getDisplayName());
 			}
 			if (pokemon.getLevel() < minLevel) {
 				return Component.translatable("message.aliveworkplace.pokemon_trader.too_low", minLevel);
@@ -208,7 +209,7 @@ public final class CobblemonTraders {
 			icon.set(DataComponents.LORE, lore(
 				types(offer.species().getTypes()),
 				offer.wantedSpecies() != null
-					? Component.translatable("message.aliveworkplace.pokemon_trader.wants_species", offer.wantedSpecies().getTranslatedName(),
+					? Words.articled("message.aliveworkplace.pokemon_trader.wants_species", 0, offer.wantedSpecies().getTranslatedName(),
 						offer.minLevel()).withStyle(ChatFormatting.LIGHT_PURPLE)
 					: Component.translatable("message.aliveworkplace.pokemon_trader.wants", offer.wanted().getDisplayName().copy()
 						.withColor(offer.wanted().getHue()), offer.minLevel()).withStyle(ChatFormatting.YELLOW),
@@ -218,11 +219,11 @@ public final class CobblemonTraders {
 			}
 			Pokemon shown = offer.create();
 			ItemStack ball = shown.getCaughtBall().stack(1);
-			ball.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.pokemon_trader.ball",
+			ball.set(DataComponents.CUSTOM_NAME, plain(Words.articled("screen.aliveworkplace.pokemon_trader.ball", 0,
 				ball.getItem().getName(ball)).withStyle(ChatFormatting.WHITE)));
 			menu.button(PokemonTradeView.BALLS + i, ball, null);
 			menu.button(PokemonTradeView.COSTS + i, named(Items.PAPER, offer.wantedSpecies() != null
-				? Component.translatable("screen.aliveworkplace.pokemon_trader.cost_species", offer.wantedSpecies().getTranslatedName(), offer.minLevel())
+				? Words.articled("screen.aliveworkplace.pokemon_trader.cost_species", 0, offer.wantedSpecies().getTranslatedName(), offer.minLevel())
 				: Component.translatable("screen.aliveworkplace.pokemon_trader.cost", offer.wanted().getDisplayName(), offer.minLevel())), null);
 			menu.button(PokemonTradeView.OFFERS + i, icon, p -> {
 				state.offer = index;

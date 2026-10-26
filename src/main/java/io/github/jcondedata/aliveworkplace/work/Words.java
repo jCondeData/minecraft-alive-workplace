@@ -36,6 +36,75 @@ public final class Words {
 	}
 
 	/**
+	 * {@code key.one} when {@code count} is 1 and that key exists, else {@code key}, with {@code args}: for a count that
+	 * isn't the first argument of a key whose singular is optional, such as a raider culture's own line.
+	 */
+	public static MutableComponent countedIfAny(String key, long count, Object... args) {
+		boolean one = count == 1 && Language.getInstance().has(key + ".one");
+		return Component.translatable(one ? key + ".one" : key, args);
+	}
+
+	/**
+	 * A sentence with "a" before a name (B505: "an Armorer", "an Omanyte", never "a Armorer"): {@code key.an} when the
+	 * argument at {@code nameIndex} begins with a vowel sound and that key exists, else {@code key}, with {@code args}.
+	 */
+	public static MutableComponent articled(String key, int nameIndex, Object... args) {
+		boolean an = nameIndex >= 0 && nameIndex < args.length && startsWithVowelSound(text(args[nameIndex]))
+			&& Language.getInstance().has(key + ".an");
+		return Component.translatable(an ? key + ".an" : key, args);
+	}
+
+	/**
+	 * {@link #articled} for a key whose name argument isn't known in code, such as a tip or a request line read from a
+	 * data file (B523): the name is the argument after the plain line's first "a %s" ("a %3$s" names it outright).
+	 */
+	public static MutableComponent articledAuto(String key, Object... args) {
+		return articled(key, articleIndex(Language.getInstance().getOrDefault(key, key)), args);
+	}
+
+	/** The argument index after the first "a %s" or "A %2$s" in {@code template}, or -1 when it has none. */
+	static int articleIndex(String template) {
+		java.util.regex.Matcher m = java.util.regex.Pattern.compile("%(?:(\\d+)\\$)?([s%])").matcher(template);
+		int next = 0;
+		while (m.find()) {
+			if (m.group(2).equals("%")) {
+				continue;
+			}
+			int index = m.group(1) != null ? Integer.parseInt(m.group(1)) - 1 : next++;
+			int at = m.start();
+			if (at >= 2 && template.charAt(at - 1) == ' ' && (template.charAt(at - 2) == 'a' || template.charAt(at - 2) == 'A')
+				&& (at == 2 || !Character.isLetter(template.charAt(at - 3)))) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Whether "an" goes before {@code word}: it starts with a, e, i or o, or with a u that isn't said "you" (an Ultra
+	 * Ball, an Umbreon; a Unicorn, a Useful one, a Utopia). "Eu" is said "you" too (a Eulogy).
+	 */
+	public static boolean startsWithVowelSound(String word) {
+		String w = word.strip().toLowerCase(java.util.Locale.ROOT);
+		if (w.isEmpty()) {
+			return false;
+		}
+		char c = w.charAt(0);
+		if (c == 'e') {
+			return !w.startsWith("eu") && !w.startsWith("ewe");
+		}
+		if (c == 'u') {
+			return !(w.startsWith("uni") || w.startsWith("use") || w.startsWith("usu") || w.startsWith("uti") || w.startsWith("uto") || w.startsWith("ura")
+				|| w.startsWith("uro") || w.startsWith("ubi"));
+		}
+		return c == 'a' || c == 'i' || c == 'o';
+	}
+
+	private static String text(Object arg) {
+		return arg instanceof Component c ? c.getString() : String.valueOf(arg);
+	}
+
+	/**
 	 * An item's name after a count (B407: "4 Baked Potatoes", "1 Pumpkin Pie"): for any count but one, its plural
 	 * {@code plural.aliveworkplace.<namespace>.<path>} when the lang has it, else the item's own name.
 	 */

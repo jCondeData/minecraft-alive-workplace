@@ -101,9 +101,9 @@ never twice the same day). A show's carried display is a temporary entity tagged
 ## Proof
 
 GameTests: `PartnerShowsGameTests` (9: every show file loads, each type carries only its own materials, a malformed
-file says what is wrong, a cut-off show's display is removed), `QaPartnerShowsGameTests`, `PaceGameTests` (10). With
+file says what is wrong, a cut-off show's display is removed), `QaPartnerShowsGameTests`, `QaPartnerShowTableGameTests` (every job and cue's types are the roadmap's), `PaceGameTests` (10). With
 Cobblemon: `PartnerShowsCompatTests` (2), `PartnersAtWorkCompatTests` (10), `PartnersForgeCompatTests` (11),
-`PartnersAllCompatTests` (12), `PaceCompatTests.aSifterWithTwoPartnersTakesSeventyPercent`.
+`PartnersAllCompatTests` (12), `QaPartnerShowBudgetCompatTests` (3: the 10 s wait, 6 at once, 48 blocks, each from both sides), `PaceCompatTests.aSifterWithTwoPartnersTakesSeventyPercent`.
 
 Showcase scenes: `partners_engine`, `partners_land` (building and the land), `partners_forge` (post, forge and
 kitchen), `partners_all` (everyone else), `pace` (a builder past the cap), `guard_pokemon`.

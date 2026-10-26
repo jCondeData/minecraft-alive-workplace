@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547
 
 ## What a player sees
 
@@ -16,6 +16,95 @@ their level) with their name and job. The pane on the right reads out whatever i
 with nothing there it shows the village's numbers "at a glance". Click a villager and they glow for ten seconds so you
 can find them, and stay in the pane (the wheel scrolls a long one; × or Esc puts them away). Click a jobless villager
 to see the free workstations and give them one. Every page of the hall opens in the same screen.
+
+**The sidebar (40.1).** Since 40.1 the screen has a sidebar on the left: the village's name and the date
+("Spring, day 1 · Year 1") over ten labeled buttons, Overview, People, Homes & Food, Buildings, Defense, Quests,
+Trade, Calendar, Laws & Realm and Map (`hall/HallSections`, the map of what goes where in `docs/design/M40.md`). The
+server still lays out the same 54-slot main page with the same clicks; at the end of `VillageHallScreen.render` it
+marks each button with the sections it belongs to (an int mask in the icon's custom data, under `HallSections.MARK`;
+page tabs by `HallSections.place`/their page id, unplaced pages under Overview; the people list under People) and sets
+five numbers on the menu (`ChoiceMenu.state`, data slots only on the hall's menu type): the open section, a bit per
+empty section, season, day and year. The client (`VillageHallMenuScreen`, hooks in `ChoiceTableScreen`) shows only
+the open section's buttons, all as labeled rows, a plain sentence over the list when the section is empty (People
+with nobody, Homes & Food with no beds or food, Buildings with nothing going up, Defense with no guards, Quests with
+none open, Trade with no neighbor in range, Laws & Realm with no edict or realm), and with nothing hovered the advice
+tips (Overview; the advice button's lines carry every tip and how) or the section's one-line purpose. A sidebar click
+is vanilla's menu-button click (`clickMenuButton(player, ordinal)`), which remembers the section per player while
+the server runs (`HallSections.last`, not saved) and lays the main page out again, from any page. A page opened from a
+section keeps the sidebar; its back button returns to the section. The Book of Edicts or a page opened on its own
+(bounty board, ledger sneak-click) has no year set, so no sidebar.
+
+**The People table (40.2).** With People open, the client (`VillageHallMenuScreen.renderBody`, a body hook in
+`ChoiceTableScreen`) draws the section as a table in place of the list and pane: the section's other buttons (the
+figures, the recall bell, the Legends/Classes/Free jobs tabs) as a strip of icons on top, then "8 · 6 working · 2
+jobless" (plus "· 2 children" when there are some), a hint line, and Name | Job | Level | Mood columns. The server
+(`hall/HallPeople`) marks each person's button with the table's columns (custom data under `HallPeople.MARK`: uuid,
+kind = worker/builder/guard/jobless/nitwit/child, the job's lang key, level, mood word, what Job ▾ does) and sets five
+more menu numbers (`HallSections.PEOPLE_TOTAL`, `_WORKING`, `_JOBLESS`, `_CHILDREN`, `_FIRST`; `ChoiceMenu.STATE` is
+10). The people list now includes the children, last, nearest the hall first. Big villages: the main page still holds
+25 people (`PER_PAGE`); the table scrolls over all of them and, when the scroll reaches people not loaded, sends a
+menu-button click of `HallPeople.SCROLL` (1000) + the first person to show, and the server lays the list out from
+there (`VillageHallScreen.renderFrom`); rows not yet loaded show "...". Mood: Happy (score >= `Moods.HAPPY`), Unhappy
+(< `Moods.UNHAPPY`), Content between, and "No bed" (red) when they have no bed and aren't happy. A row click opens
+(client only, kept by uuid) the villager's details under it: every line of the person's hall tooltip (traits, what
+they're doing, needs, mood and why, class and how to rise, home, where), with **Job ▾** (the list of jobs, 40.3,
+below; grayed for children, nitwits and Legends, hidden on every row with retraining off), **Bed ▾** (the village's beds, 40.4, below), **Find** (the
+glow) and, for a named villager (the row's lore carries `life_story_hint`), **Story** (B547: the row's slot clicked as
+`QUICK_MOVE`, the shift-click that opens `LifeStory`, then Family, as in the old list). The details leave out the old
+list's click hints (`click_to_find`, `worker_click`, `life_story_hint`, `jobless_click`), none of which is true in the
+table. The open row is drawn, and takes clicks, while any part of its block shows: a row is culled only when its name
+line and its details and lists are all above the table's top (B546); every table hit is clipped to the table. The
+header says "1 child" for one (`header_child`, B547). A click on a row whose villager has died or left the village since the screen was laid out lays the list out
+again without them (`HallPeople.gone`).
+
+**Job ▾ (40.3).** Job ▾ on an open row opens a list of every job right under it (`hall/HallJobs`), the table
+scrolling over it. On top: "A new job for Dara", then the price by their level ("Retraining costs 20 emeralds
+(Journeyman)", the Blueprint Table's `retrainPrices`) and "Their trades and level are lost: they start again as a
+Novice", before anything is paid; a jobless villager's list says a free block is theirs for nothing instead. Then one
+line per job a villager takes at a work block (every registered job with a block, behind its config switch: not the
+Steward, Legends, the Trainer Leader, nitwits): those with a free block in the village first, "Mason · 1 free
+Stonecutter" (counted over every free block, a shared block such as a lectern counting for each of its jobs), then the
+rest grayed: "Mason · place a Stonecutter first", a job above their class with the class it needs (34.8), "Librarian ·
+their job now". The Builder is one of them ("Builder · 1 free Blueprint Table"). Last, for a villager with a job, **No
+job**. Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
+click on a job sends the offer to chat and marks the line ("Click again to pay 20 emeralds: Dara becomes a Mason"); a
+second pays and retrains them through 36.18's `HallRetraining.retrain` (the price, the class check, "someone took that
+workstation first", not enough emeralds: nothing changes and the player is told how short), and the list closes on a
+row that says the new job. A builder hands his builds back (`Retraining.dropWork`). A jobless villager is given the
+block in one click, for nothing (`VillageHalls.assign`, as the free jobs page). No job is free, also two clicks: the
+first says plainly that their trades and level go and their block is left free; the second takes the job away
+(`Retraining.unemploy`: the builds handed back, the block let go, profession none, level 1). They may then take a free
+block nearby by themselves, as any jobless villager does. A grayed line's click says what's missing ("The Mason job
+needs a free Stonecutter: place one in the village first"). Children, nitwits and Legends get a grayed Job ▾; with
+`workplaceRetraining` off it's hidden on every row. No new packet: Job ▾ is a menu-button click of `HallJobs.OPEN`
+(100000) + the row's slot (again: closes), a job is `HallJobs.PICK` (200000) + its registry number (No job:
+`VillagerProfession.NONE`'s), `HallJobs.CLOSE` closes it; the list reaches the client inside the open person's button
+(a `minecraft:container` of one stack per line, each with its name, tooltip and a `HallJobs.MARK` with its state and
+job number), and the row's mark gains `jobs_open` and `job_hidden`. Which list is open, and the job clicked once, live
+with the open screen (not saved).
+
+**Bed ▾ (40.4).** Bed ▾ on an open row opens the village's beds right under it (`hall/HallBeds`), the same way: "A bed
+for Dara" and where she sleeps now ("Sleeps in: Stone House, bed 2", or "Dara has no bed now."), then the free beds
+nearest the hall first, each with where it is: the finished building it's in and which of its beds (`Homes.in`, the
+beds of a building numbered by position), else how far and which way from the hall ("free · 14 blocks east"). Then
+the taken ones: hers ("… · their bed now"), a bed another villager of the village sleeps in ("… · swap with Jem"), or,
+when she has no bed to give in return, "… · Jem's bed" (grayed), and a bed someone from outside sleeps in ("… ·
+taken"). With no free bed, "Short of beds? Plan a house ›" opens the Buildings section; with no bed at all the list
+says "No beds in the village". The last line says wagon beds and cradles aren't listed (a wagon's bedrolls are no homes
+once the hall stands, `CampBeds`; a cradle holds a child of the house at night by itself, `Cradles`). Only the beds
+in the village round the hall (`VillageHalls.beds`). A click on a free bed makes it hers at once with vanilla's own
+home: the bed's point of interest is taken and her `HOME` memory set (`HallBeds.moveIn`); her old bed is released
+(`Villager.releasePoi`), so someone else can have it; a swap sets both villagers' `HOME` to the other's bed (both stay
+claimed, so nobody slips in between). Anyone asleep is woken first. She sleeps there that night by vanilla's own
+bedtime. The row and the census read the same memory through `VillageNeeds.bed` (B362: a broken bed houses nobody), so
+both show it straight away. If the bed changed after the list was laid out, the click changes nothing and the list
+shows it as it is now; the action bar says "Someone took that bed first." (a free bed claimed by someone else), "That
+bed changed hands: the list shows it as it is now." (a bed whose sleeper changed, such as a swap partner who moved) or
+"That bed is gone." (the bed broken).
+No new packet: Bed ▾ is `HallBeds.OPEN` (300000) + the row's slot (again: closes), a bed is `HallBeds.PICK` (400000)
++ its line's number (the beds in the order the list showed them, kept with the open screen together with who slept in
+each), `HallBeds.CLOSE` closes it; the row's mark gains `beds_open`. Opening one list closes the other. Nothing new is
+saved: the bed is vanilla's own memory.
 
 **Reading without clicking (36.5).** A row or cell hovered stays read out while the mouse moves on into the pane
 (it changes only when another row or cell is hovered, and lets go once the mouse leaves the panel, when the pane goes
@@ -40,7 +129,7 @@ at the block itself (26.6, see [Villager jobs](villager-jobs.md)), for a price.
 the worker, Find, and a **Change job** emerald at slot 22). It's offered when `HallRetraining.canRetrain` holds: rule
 `workplaceRetraining` on, a grown villager with a job and a job site, not a nitwit, Legend or caravan carter. Change job
 lists `VillageHalls.freeStations` of a job other than theirs, each with the price (`Retraining.price`, 5/10/20/35/50 by
-level, config `retrainPrices`), and the Builder: a free Blueprint Table is listed like any block; with none, a grey
+level, config `retrainPrices`), and the Builder: a free Blueprint Table is listed like any block; with none, a gray
 Builder entry says to place one. The first click marks the block (glint, "Click again to pay") and posts the 26.6 offer
 text; the second runs `HallRetraining.retrain`: the hired-worker check (`Friends.mayCommand`), the class check (34.8),
 the block still free, the money (`Money`, CobbleDollars when present), then `Retraining.retrain` (a builder's
@@ -108,7 +197,7 @@ quarter more, and room for ten more villagers. Roads never count as buildings an
 
 **Growth.** At most once a day, with a free bed, 16 meals in the store and wellbeing of 50% or more, the two
 villagers nearest the free bed have a baby (the family eats 8 meals), up to `villageGrowthCap`. The baby takes that
-bed at once (B206), so a second birth, an inn's traveller or vanilla breeding can't count the same bed free: a village
+bed at once (B206), so a second birth, an inn's traveler or vanilla breeding can't count the same bed free: a village
 with N free beds takes in at most N newcomers. With no bed free the Beds button says **The village is full: nobody new
 moves in until a bed is free**.
 
@@ -139,7 +228,7 @@ have room (the same list a jobless villager's own page shows), each matched to t
 (finished builds, and builds going up). Who could take a block: a grown villager in the village without a job, not a
 nitwit or a Legend. One who has never worked takes any block; one who still has an old job's trades but lost the block
 is offered only a block of that same job, because changing job is paid retraining (26.6). A job above a villager's
-class (34.8) is greyed with the class it needs. The pick is checked again on the click: if someone took the block
+class (34.8) is grayed with the class it needs. The pick is checked again on the click: if someone took the block
 meanwhile, or the villager found work, nothing changes, the action bar says why and the list comes back. The page
 shows up to 36 lines; past that, the last slot says how many more blocks there are further away.
 
@@ -202,6 +291,8 @@ empty unless a default is given here:
   `lastRaidDay` (-100), `festivalDay` (-1), `feastDay` (-1), `festivalCalled` (-100), `festivalMissed` (-1).
 - Pages: `quests` and `questsDone`, `research`, `edicts`, `reforms`, `guilds`, `plan` (the City Plan), `steward`
   and `steward_desk`, `services`, `piece_looks`, `bannerBase` and `bannerPatterns` (the village's colors).
+- A saved quest that can't be read (a `kind` this version doesn't know, after going back to an older jar, or a hand
+  edit) is left out with a warning in the log; the hall's other quests and data load as usual.
 
 The calendar keeps the last day it fired for with the overworld. Friends are saved in `aliveworkplace_friends`.
 Not saved: the census (counted again every 600 ticks) and the screen's layout. The Free job blocks page saves
@@ -218,6 +309,25 @@ point of interest, saved by Minecraft).
 - Commands: `/workplace quests`, `/workplace friend add|remove|list`.
 
 ## Decisions
+
+- 40.2 (lane c, 2026-10-26): the People table keeps the server's 54 slots: the main page still carries 25 people, and
+  the table's scroll moves that window with a menu-button click (1000 + first person), so no new packet and every old
+  people-list click still works. Job ▾ and Bed ▾ open what exists today (36.18's Change job or the free jobs page; the
+  Homes & Food section) until 40.3 and 40.4 replace them, so neither is a dead button. Children join the people list
+  (last), since the table lists them; a click on a child or a nitwit only makes them glow, as before.
+- 40.3 (lane c, 2026-10-26): Job ▾'s list rides in the open person's button (a container component of one stack per
+  line), so no new packet and the 54 slots stay. "No job" is free (nothing new is learned) but takes two clicks, since
+  trades and level go; the jobless villager it leaves may take a free block nearby by themselves (vanilla's way, not
+  held back). A jobless villager's first job stays free and one click, as 36.9's free jobs page. With
+  `workplaceRetraining` off Job ▾ is hidden for everyone, the jobless included (the spec: "the rule off hides the
+  button"); the free jobs page and the jobless villager's own page still give them a block. The Builder's block is the
+  Blueprint Table (the spec says Builder's Bench, its old name; an old bench still counts). The old right-click Change
+  job page (36.18) stays for the list without the sidebar.
+- 40.4 (lane c, 2026-10-26): Bed ▾'s list rides in the open person's button as Job ▾'s does. A swap needs a bed to
+  give: a villager with none sees another's bed grayed ("Jem's bed": taking it would leave Jem homeless). "Plan a house
+  ›" opens the Buildings section (where the Steward's desk and the builders' plans are), shown when no bed is free.
+  The mod has no builder's-bench bed of its own, so the list's note names what isn't listed: wagon beds and cradles.
+  Anyone may be given a bed, children included (vanilla lets a child claim one too).
 
 - B301 (bug lane, 2026-10-22): "can monsters come" is read from the world (Peaceful) and the blocklist's own file,
   never from whether a monster was seen lately, so it's the same on every server start and testable. The game rule that
@@ -269,7 +379,7 @@ GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating fr
 `B301GameTests` (no clearing-out quest or step where nothing can be fought, bandits and wild Pokémon counting, the
 words, a stuck quest swapped after a save and reload, MobsBeGone's file read), compat `WildFoesCompatTests`,
 `WagonBedsGameTests` (B206, B207: settlers leave the wagon once the hall stands, an older camp's bedroll is mended,
-two free beds take in two newcomers and the hall says it's full, the inn takes a traveller only into a free house bed,
+two free beds take in two newcomers and the hall says it's full, the inn takes a traveler only into a free house bed,
 the wagon-bed list and its save),
 `HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
 `ProtectionSpecGameTests`, `HallProtectHintGameTests`, `ReadingFocusGameTests` (36.5: hovered, held on the way into
@@ -280,9 +390,20 @@ meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockS
 `aFreeUpgradeIsBuilt` by the village's Builder; `aBlockedUpgradeSaysWhatIsInTheWay` with another build's block, a
 fence, a path, then water (natural); `naturalGroundDoesNotBlockAnUpgrade`, all of it cleared;
 `residentsKeepTheirBedsThroughAnUpgrade`; `anOrderedUpgradeSurvivesAReload`; every sentence written).
+`HallPeopleGameTests` (40.2: the rows and counts of a village of 8 and of 60 scrolled to its last villager, the
+details of a builder, a guard, a child and a nitwit and Job ▾ on the builder, a villager who dies or leaves while the
+screen is open; scene `hall_people`). `HallPeopleJobGameTests` (40.3, every case through Job ▾'s clicks:
+`aChangeThatWorks` (price on top, "Mason · 1 free Stonecutter", the offer, then paid), `aJobWithNoFreeBlock`,
+`notEnoughEmeraldsChangesNothing`, `toTheBuilder`, `aBusyBuilderHandsHisBuildBack`, `noJob` (and reloaded),
+`aJoblessVillagerIsGivenABlockForNothing`, `childrenAndNitwitsCant`, `theRuleOffHidesTheButton`,
+`aChangeSurvivesASaveAndReload` with every new sentence; scene `hall_people_job`). `HallPeopleBedGameTests` (40.4,
+through Bed ▾'s clicks: `aFreeBed` (where the free beds are, the census, the old bed freed), `aSwap`, `noBedsAtAll`,
+`theChosenBedBrokenBeforeNight`, `aBedAnotherVillagerClaimsFirst`, `theChoiceSurvivesASaveAndReload` with every new
+sentence, `theySleepThereAtNight`; scene `hall_people_bed`).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end
 from the pane without a click, then the Storehouse board), `hall_jobs` (the Free job blocks page, the Storehouse's
 takers, Dara picked as its Porter), `hall_upgrade` (the Upgrades page: the Starter Cottage free, the Stone House II
-blocked by a garden fence, a click sending Bram to build the Starter Cottage II).
+blocked by a garden fence, a click sending Bram to build the Starter Cottage II), `hall_people_job` (40.3: Job ▾ on
+Dara's row, Mason clicked once for the price, then paid).

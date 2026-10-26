@@ -373,7 +373,12 @@ public class WonderGardensGameTests implements FabricGameTest {
 			level.setBlock(hall, Blocks.AIR.defaultBlockState(), 3);
 		});
 		for (WonderUpkeep.Block b : blocks) {
-			level.setBlock(b.pos(), b.state(), 2);
+			// Builders plant crops young (B493); this test is about a farmer taking up a grown field.
+			net.minecraft.world.level.block.state.BlockState s = b.state();
+			if (s.getBlock() instanceof net.minecraft.world.level.block.CropBlock crop) {
+				s = crop.getStateForAge(crop.getMaxAge());
+			}
+			level.setBlock(b.pos(), s, 2);
 		}
 		// The four farm corners: a composter, a chest by it, and the terrace's field within a farmer's reach.
 		List<BlockPos> composters = blocks.stream().filter(b -> b.state().is(Blocks.COMPOSTER)).map(WonderUpkeep.Block::pos).toList();

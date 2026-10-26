@@ -3,7 +3,8 @@
 With CobbleFurnies installed, a villager by its Furni Crafter becomes the village's Furnicrafter, who makes CobbleFurnies
 furniture from the store's materials: the chairs, tables and lamps the builders are waiting for (a furnished home's
 pieces, 37.x) and the pieces the storehouse orders. Part of Cobblemon depth (2.2), behind its gate (`Expansions.M38`).
-Without CobbleFurnies nothing changes: there is no such job.
+Without CobbleFurnies nothing changes: there is no such job. A Furnicrafter in a world CobbleFurnies was taken off
+loads as a jobless Novice with no trades, her name and clothes kept (B542), and takes another job by herself.
 
 Roadmap items: 38.12
 
@@ -33,7 +34,7 @@ store". She trades too: planks and wool bought, chairs, lamps, tables, a cabinet
   order for one that its store is short of. Materials come from what the builder's chests and the village's stashes
   (the store among them) can spare; never what the rest of that build still needs, and never what the storehouse's
   other orders keep.
-- **Short materials** are made first with the crafting table's recipes, from what's there: an Oak Chair (an oak plank
+- **Short materials** are made first with the crafting table's recipes, from what's there, and only when the whole piece can be made (a store one plank short of a chair keeps its planks uncut); what the store already holds is used as it is: an Oak Chair (an oak plank
   and two sticks) from three planks cuts two of them into four sticks, and the two left over go back with the chair.
 - **How many.** As many as asked for if the materials are there, or half, down to one (16 Red Lamps ordered and wool
   for 2: she makes 2). One trip carries at most 12 stacks of materials.
@@ -85,6 +86,9 @@ the chests by her Furni Crafter.
   `FurnicrafterCompatTests.withFurnicraftersOffTheFurniCrafterIsNoJob`,
   `FurnicrafterCompatTests.theRecipesAreReadFromCobbleFurniesFiles`, `FurnicrafterCompatTests.aPieceIsMadeFromTheStoresMaterials`,
   `FurnicrafterCompatTests.aBuilderBuildsTheFurnicraftersPiece`, `FurnicrafterCompatTests.theFurnicrafterTrades`.
+- QA: `QaFurnicrafterCompatTests` (a store one plank short makes nothing and cuts no planks, then makes the chair once
+  the plank comes; sticks in the store are used as they are; planks another stock order keeps aren't used; 16 Red
+  Lamps ordered with wool for 2 makes 2).
 - `FurnicrafterGameTests` (without it, nothing changes): `FurnicrafterGameTests.withoutCobbleFurniesThereIsNoFurnicrafter`,
   `FurnicrafterGameTests.aSavedFurnicrafterLoadsJoblessWithoutCobbleFurnies`, `FurnicrafterGameTests.theFurnicraftersSwitchHasItsText`.
 - Showcase scene `furnicrafter`: the Furnicrafter makes the Oak Chairs, Red Lamps and Poké Ball Desk a storehouse

@@ -128,7 +128,7 @@ public final class BuildPlan {
 		BlockPos savedAt = io.github.jcondedata.aliveworkplace.mechanic.Contraptions.savedOrigin(blueprint);
 		for (Blueprint.Entry entry : blueprint.blocks()) {
 			BlockPos world = placement.origin().offset(StructureTemplate.transform(entry.pos(), placement.mirror(), placement.rotation(), BlockPos.ZERO));
-			BlockState state = MaterialRules.forPlacement(entry.state().mirror(placement.mirror()).rotate(placement.rotation()));
+			BlockState state = MaterialRules.forPlacement(MaterialRules.transformed(entry.state(), placement.mirror(), placement.rotation()));
 			CompoundTag nbt = io.github.jcondedata.aliveworkplace.mechanic.Contraptions.blockData(state, entry.nbt(), savedAt, placement);
 			byPos.put(world, new Step(world, state, nbt, null, null));
 		}
@@ -360,6 +360,48 @@ public final class BuildPlan {
 		List<Step> structure = build.structure.stream().filter(s -> !gaveUp.contains(s.pos()) && !isCrop(s.state()) && missing(level, s)).toList();
 		List<Step> decoration = build.decoration.stream().filter(s -> !gaveUp.contains(s.pos()) && !isCrop(s.state()) && missing(level, s)).toList();
 		BuildPlan out = new BuildPlan(List.of(), List.of(), structure, decoration, List.of(), List.of(), build.bounds);
+		out.standing = true;
+		return out;
+	}
+
+	/** Every block the plan puts, by where (the second halves of doors and beds too). */
+	public Map<BlockPos, BlockState> targets() {
+		return java.util.Collections.unmodifiableMap(targets);
+	}
+
+	/**
+	 * 36.21: bringing a finished build from the older drawing {@code old} up to {@code current}. Cleared first (top down):
+	 * every block {@code old} put that {@code current} no longer has or has otherwise and that still stands as {@code old}
+	 * drew it, except those {@code kept} says stay (a chest, a bed someone sleeps in, a job block); what stands otherwise
+	 * was put there or changed by a player and stays. Then, as a repair: the pieces {@code current} has that {@code old}
+	 * didn't, where the spot is open or was just cleared.
+	 */
+	static BuildPlan refresh(Blueprint current, Blueprint old, BlueprintData.Placement placement, Level level,
+							 java.util.function.BiPredicate<BlockPos, BlockState> kept) {
+		BuildPlan now = create(current, placement);
+		BuildPlan was = create(old, placement);
+		List<Step> clear = new ArrayList<>();
+		java.util.Set<BlockPos> changed = new java.util.HashSet<>();
+		for (Map.Entry<BlockPos, BlockState> e : was.targets.entrySet()) {
+			BlockState drawn = e.getValue();
+			BlockState wanted = now.targets.getOrDefault(e.getKey(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			if (drawn.isAir() || !wanted.isAir() && MaterialRules.matches(drawn, wanted)) {
+				continue; // the same in both drawings
+			}
+			BlockState world = level.getBlockState(e.getKey());
+			if (!MaterialRules.matches(world, drawn) || kept.test(e.getKey(), world)) {
+				continue; // a player's block (or gone), or one that always stays
+			}
+			clear.add(new Step(e.getKey(), wanted, null, null, null));
+			if (!wanted.isAir()) {
+				changed.add(e.getKey());
+			}
+		}
+		clear.sort(order(now.bounds, true));
+		java.util.function.Predicate<Step> wantedNow = s -> !isCrop(s.state()) && (changed.contains(s.pos())
+			|| missing(level, s) && !(was.targets.containsKey(s.pos()) && MaterialRules.matches(was.targets.get(s.pos()), s.state())));
+		BuildPlan out = new BuildPlan(List.copyOf(clear), List.of(), now.structure.stream().filter(wantedNow).toList(),
+			now.decoration.stream().filter(wantedNow).toList(), List.of(), List.of(), now.bounds);
 		out.standing = true;
 		return out;
 	}

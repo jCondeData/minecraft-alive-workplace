@@ -215,6 +215,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			Services.round(server, pos, hall, census.workers()); // the day's service list (34.3), before the class check reads it
 			io.github.jcondedata.aliveworkplace.people.SocialClasses.round(server, pos, hall); // the dawn class check (34.2)
 			io.github.jcondedata.aliveworkplace.city.Signposts.round(server, pos, hall); // the signposts' boards brought up to date (36.4)
+			VillageWaystones.round(server, pos); // the plaza's waystone a working one, with the village's name (41.1)
 			VillageMoments.catchUp(server, pos, hall, java.util.stream.Stream.concat(census.workers().stream(), census.jobless().stream()).toList()); // moments passed before they were moments (36.2)
 			if (Treasury.ENABLED) {
 				Treasury.round(server, pos, hall, census.workers(), census.jobless()); // by class (34.7)
@@ -954,6 +955,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	public void setCustomName(@Nullable Component name) {
 		this.name = name;
 		setChanged();
+		if (level instanceof net.minecraft.server.level.ServerLevel server) {
+			VillageWaystones.renamed(server, worldPosition); // the village's waystones take the new name (41.1)
+		}
 	}
 
 	@Override
@@ -971,8 +975,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				: net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY;
 			colours = new VillageBanners.Colours(base, patterns);
 		}
-		quests = VillageQuests.Quest.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("quests"))
-			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
+		quests = java.util.List.copyOf(VillageQuests.readQuests(tag.get("quests")));
 		lastQuestDay = tag.contains("lastQuestDay") ? Nbt.getLong(tag, "lastQuestDay") : -1;
 		questsDone = Nbt.getInt(tag, "questsDone");
 		lastMarketDay = tag.contains("lastMarketDay") ? Nbt.getLong(tag, "lastMarketDay") : -1;

@@ -454,6 +454,11 @@ with it. Effect types (`caravan_carry` (named apart from the guilds' `carry`), `
   mounted, named, the realm's arms, the home's side, saved and loaded, a zombie killed by a rider, gone with their horses after the
   raid, the hall line and both chronicles), `noRealmNoSwitchNoMoney` (no realm, `realmRelief` off, an empty treasury
   brings only the capital's band, once a raid, band sizes), `aVanillaRaidCallsThemToo`.
+- `QaReliefGameTests` (7, QA lane d, 33.17): the reach counts at it and not one block past, hired mercenaries don't
+  count as guards, a raided capital is helped by its members and never by itself, one relief (and one payment) a raid
+  and a new one for the next, `realmRelief` turned on mid-raid calls at the next check, a raid over before the band
+  comes sends it home after a minute, every line with 1 and 2 riders and a fallen rider's horse gone, a rider loaded
+  mid-relief still goes home after the raid.
 - `RealmBuildsGameTests` (33.14): `theColonyCampPlacesWhole`, `theCapitalDrawsTheRoyalHall` (the tab's button, refused
   without a Blank Blueprint, the drawn line, hidden from the table, a hall on the map, the II next, nothing after),
   `theRoyalHallRaisesTheCap` (40 blocks off: no; styled: twice, gifts up to 512; II: three times; realms off; taken

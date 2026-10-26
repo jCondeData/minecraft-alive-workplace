@@ -3,7 +3,7 @@
 Every setting of the mod in one place: the server's config file, the ten game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
-Roadmap items: 25.5, B76, B119, B131, B161, 36.15
+Roadmap items: 25.5, B76, B119, B131, B161, 36.15, 36.20
 
 ## What a player sees
 
@@ -13,10 +13,14 @@ the file is written back complete, so every option is always listed. A number or
 "false") is read as meant, and an empty value (null) takes its default (`QaConfigFileGameTests`). The same holds for
 the two keys the mod keeps for itself: an empty or odd file format number ("configVersion": null, words, a list) is
 read as a file without one, and entries of "expansionsOpen" that aren't names (null, a list) are skipped, so the rest
-of the file is still read (B457). A file that can't be read at all (empty, cut short, not a `{...}` object) gives the
-defaults and is written over with them; nothing in the file stops the game from starting. In the lists and maps an
+of the file is still read (B457). A value of the wrong kind (a switch written 0, a number written "high") takes its
+default alone, with a warning in the log naming it, and every other value in the file is kept and written back
+(B411, `QaConfigFileBugTests`). A file that can't be read at all (empty, cut short, not a `{...}` object) gives the
+defaults and is written over with them, but is first kept beside it as aliveworkplace.json.bad, so a hand edit is
+never lost; nothing in the file stops the game from starting. In the lists and maps an
 empty entry takes its default (a Wonder cap, a disaster or raider culture switch: on) and a cap past its range is
-clamped (`QaConfigOddFilesGameTests`).
+clamped (`QaConfigOddFilesGameTests`). A bad list or map costs only that option; comments and a byte-order mark are read as meant, while a
+trailing comma makes the file unreadable (the defaults, the file kept aside); a second start reads exactly what the first wrote (`QaConfigHandEditsGameTests`).
 
 **The settings screen.** With Mod Menu installed, the mod's Configure button opens the same settings as sliders and
 on/off buttons, each with a tooltip. Every setting's name fits its 150-pixel button at its widest value
@@ -65,7 +69,12 @@ range is in brackets.
 | Key | Default | Expansion | What it does |
 |---|---|---|---|
 | `supplyRadius` | 8 (2 to 32) |  | Chests and barrels within this many blocks of a workstation are that villager's supply chests. |
-| `maxSiteDistance` | 48 (16 to 256) |  | How far from their Blueprint Table (or bench) a builder takes a build; also how far upkeep looks. |
+| `maxSiteDistance` | 128 (16 to 256) |  | How far from their Blueprint Table (or bench) a builder takes a build outside the village; anywhere in the village the table stands in is always in reach (36.20). Also how far upkeep looks. |
+| `quarryReach` | 128 (16 to 256) |  | How far from their Miner's Bench a miner takes a quarry outside the village (anywhere in the village is in reach). |
+| `fieldReach` | 128 (16 to 256) |  | How far from their composter a farmer takes a marked field outside the village (anywhere in the village is in reach). |
+| `treeFarmReach` | 128 (16 to 256) |  | How far from their Chopping Block a lumberjack takes a tree farm outside the village (anywhere in the village is in reach). |
+| `orchardAreaReach` | 128 (16 to 256) |  | How far from their workstation an orchard keeper takes a marked orchard outside the village (anywhere in the village is in reach). |
+| `berryPlotReach` | 128 (16 to 256) |  | How far from their workstation a berry breeder takes a berry plot outside the village (anywhere in the village is in reach). |
 | `guardRadius` | 24 (8 to 64) |  | How far from their workstation guards patrol and fight. |
 | `lumberjackRadius` | 16 (4 to 48) |  | How far from their workstation lumberjacks cut. |
 | `orchardRadius` | 16 (4 to 48) |  | How far from their workstation orchard keepers pick. |
@@ -77,6 +86,7 @@ range is in brackets.
 | `randomStationJobs` | on |  | A jobless villager who takes a block several jobs share (a composter, a lectern, a Shop Counter...) by themselves gets one of its jobs at random, likelier the fewer of it the village has (36.17). Off: always the block's vanilla job, as before. See [Random jobs at shared blocks](random-jobs.md). |
 | `minerCraftsPickaxe` | on |  | A Miner whose pickaxe wore out, or who has none, makes a new one at their workstation from what they mined (stone, iron from Journeyman, diamond from Expert). Off: they wait for a pickaxe from you or the Toolsmith. |
 | `quarryBuild` | on |  | The Quarry build (36.12): the Miner at its blast furnace digs its pit without a Quarry Marker, and what they dig grows back slowly from the bottom up. Off: the Quarry isn't offered and nothing grows back; the Quarry Marker works as before. |
+| `villageWaystones` | on |  | With Waystones installed, the Steward proposes a waystone plaza by the Village Hall in the village's own style, its waystone named after the village and renamed with it (41.1). Off: the plaza isn't proposed; stones already standing stay. Without Waystones it does nothing. See [Waystones](waystones.md). |
 | `quarryRegrowth` | 100 (0 to 2400) |  | Blocks that grow back in a Quarry's pit in a Minecraft day (0: none). At 100 a pit dug to the bottom takes about a week to fill. |
 | `fishermanCap` | on |  | A village takes only so many fishermen: other jobless villagers pass free barrels (storage in builds) by for another workstation. A fisherman a village already has keeps his job. Off: as in vanilla. |
 | `fishermenPerVillage` | 1 (1 to 20) |  | With the fisherman cap on, the fishermen every village takes. |
@@ -190,11 +200,11 @@ range is in brackets.
 | `furnitureMods` | handcrafted, cozyhome, cobblefurnies, beautify | 2.1 | The order the furniture mods are tried in for each piece; a mod that isn't installed is passed over, an empty list means vanilla. In the file only. |
 | `moddedStorageNetworks` | on from 2.1 | 2.1 | A Sophisticated Storage controller or a Tom's Simple Storage connector in the Storehouse counts as one store for everything it links. Off: each linked chest is its own store. |
 | `moddedLibrary` | on from 2.1 | 2.1 | Homes and workshops are built from the modded library (the same builds dressed with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted blocks) when all of those mods are installed and `furnishedBuilds` is on; a build keeps the library it was planned with. Off, or a mod missing: the vanilla library. See [Furniture and storage mods](furniture-and-storage.md). |
-| `denHelpers` | on | 2.2 | Players hire the village's trainers from the hall's Defence page to help in a raid at a den the village knows (Cobblemon Raid Dens): they follow, cheer once a raid with a cheer item each, and wear the boss down. Off: no hiring, and those hired walk home. Replaced denWardens, denChallenges and denChallengeDays (38.1a). See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
+| `denHelpers` | on | 2.2 | Players hire the village's trainers from the hall's Defense page to help in a raid at a den the village knows (Cobblemon Raid Dens): they follow, cheer once a raid with a cheer item each, and wear the boss down. Off: no hiring, and those hired walk home. Replaced denWardens, denChallenges and denChallengeDays (38.1a). See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
 | `denHelperPrice` | 5 (1 to 64) | 2.2 | Emeralds one raid helper costs. |
-| `villageMegas` | on | 2.2 | With Mega Showdown, a City's Trainer Leaders, the Festival Cup's finalists and the Stadium Day's visitors carry a Mega Stone too, and every trainer who can Mega Evolve wears a Mega Bracelet; the Jeweller cuts Mega Stones and Key Stones, Miners take Key Stone ore and Mega Stone Crystals to the store, and beating every Trainer Leader of a realm earns a Mega Bracelet (38.6); the Mega Shrine is at the Blueprint Table and holds a festival show (38.7). Off: only Masters Mega Evolve, nobody wears a bracelet, the village makes no Mega Stones and the Mega Shrine isn't listed. See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
+| `villageMegas` | on | 2.2 | With Mega Showdown, a City's Trainer Leaders, the Festival Cup's finalists and the Stadium Day's visitors carry a Mega Stone too, and every trainer who can Mega Evolve wears a Mega Bracelet; the Jeweler cuts Mega Stones and Key Stones, Miners take Key Stone ore and Mega Stone Crystals to the store, and beating every Trainer Leader of a realm earns a Mega Bracelet (38.6); the Mega Shrine is at the Blueprint Table and holds a festival show (38.7). Off: only Masters Mega Evolve, nobody wears a bracelet, the village makes no Mega Stones and the Mega Shrine isn't listed. See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
 | `cuisineDishes` | on | 2.2 | With Cobblecuisine, the Chef cooks the dishes players ask for on the hall board's Dishes tab (38.8a; locked until the village has a Chef) from their own recipes by his level (salads and sandwiches first, drinks, curries, cakes), each counts as its food group for the villagers' diet, the Camp Cook cooks three of its curries and the Innkeeper serves its drinks. Off: the menus and the diet are as before. See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
-| `beanFarms` | on | 2.2 | With Cobblecuisine, farmers sow its beans when the store holds fewer than 16 of a colour a dish on the menu needs, and harvest them when fully grown, into the store. Off: farmers never sow beans. See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
+| `beanFarms` | on | 2.2 | With Cobblecuisine, farmers sow its beans when the store holds fewer than 16 of a color a dish on the menu needs, and harvest them when fully grown, into the store. Off: farmers never sow beans. See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
 | `furnicrafters` | on | 2.2 | With CobbleFurnies, a jobless villager by its Furni Crafter becomes the Furnicrafter, who makes the CobbleFurnies furniture the builders are waiting for and the storehouse's stock orders ask for, from the store's materials. Off: no new Furnicrafters, and those hired stand idle. See [The Furnicrafter](furnicrafter.md). |
 | `mechanics` | on from 2.3 | 2.3 | With Create installed, a jobless villager by a Create Toolbox becomes the village's Mechanic: they put back shafts, cogwheels and belts missing from finished builds and keep the millstones fed and emptied. Off: no Mechanic job, and Mechanics already hired stand idle. Without Create it does nothing. See [Create](create.md). |
 | `machineWork` | on from 2.3 | 2.3 | With Create installed, villagers work Create's machines: the farmer mills wheat into flour, the armorer presses ingots into sheets, the chef mixes dough and the miner crushes raw ore, taking the input from the store and bringing back what's made, only while the machine turns and the store has room. Off: nobody feeds a machine. Without Create it does nothing. See [Create](create.md). |

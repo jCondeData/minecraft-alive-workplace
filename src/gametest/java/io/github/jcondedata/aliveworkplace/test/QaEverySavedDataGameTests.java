@@ -25,23 +25,24 @@ import net.minecraft.world.level.saveddata.SavedData;
  * a hand-edited file) still loads: Minecraft drops a file whose load throws and starts it empty, so a throw there is
  * the whole file lost.</li>
  * </ul>
- * The 33 files are named below; {@link #KNOWN} fails when one more {@code extends SavedData} than listed is found by its
- * loader, so a new file isn't left out silently (add it to {@link #FILES}).
+ * The 36 files are named below; {@link #everySavedFileIsListed} looks through the mod's own classes for every
+ * {@code extends SavedData}, so a new file isn't left out silently (add it to {@link #FILES}; lane E, 2026-10-26: the
+ * Mega Shrine's file, B501, had been).
  */
 public class QaEverySavedDataGameTests implements FabricGameTest {
 	private static final String P = "io.github.jcondedata.aliveworkplace.";
 
 	/** Every class of the mod that extends SavedData (grep "extends SavedData" in src/main/java). */
 	static final List<String> FILES = List.of(
-		"bounty.Bounties$Data", "build.BuildSiteManager", "build.Friends", "camp.CampBeds$Data", "city.PlayerBuilt",
+		"blueprint.BlueprintNames$Data", "bounty.Bounties$Data", "build.BuildSiteManager", "build.Friends", "camp.CampBeds$Data", "city.PlayerBuilt",
 		"craft.DishRequests", "cup.CupData", "guard.RaidDens$Sites", "guard.Scouts$Data", "guard.WarParties$Data",
-		"hall.Caravans$Data", "hall.Seasons$Data", "legend.LegendRecord", "mail.PostOffice", "mine.QuarrySiteManager",
+		"hall.Caravans$Data", "hall.Seasons$Data", "hall.VillageWaystones$Data", "legend.LegendRecord", "mail.PostOffice", "mine.QuarrySiteManager",
 		"realm.Feuds$Data", "realm.Pacts$Data", "realm.RealmData", "shop.ShopLedger", "story.ReformStories$Data",
 		"story.Stories$Data", "table.BlueprintUnlocks$Wild", "threat.Covens$Data", "threat.Lairs$Data", "threat.Ships$Data",
 		"threat.ThreatData", "trainer.LeaderBracelets$Data", "trainer.RaidHelpers$Data", "travel.TravelNetwork",
-		"wonder.StadiumDays$Data", "wonder.WonderManager", "work.JobSiteTickets", "work.WorkSites");
+		"trainer.MegaShrines$Data", "wonder.StadiumDays$Data", "wonder.WonderManager", "work.JobSiteTickets", "work.WorkSites");
 
-	static final int KNOWN = 33;
+	static final int KNOWN = 36;
 
 	/** The file's loader: its static {@code load(CompoundTag, HolderLookup.Provider)}. */
 	private static Method loader(String name) {
@@ -78,7 +79,48 @@ public class QaEverySavedDataGameTests implements FabricGameTest {
 	public void everySavedFileIsListed(GameTestHelper helper) {
 		helper.assertTrue(FILES.size() == KNOWN && FILES.stream().distinct().count() == KNOWN, "the list holds " + FILES.size() + " files, not " + KNOWN);
 		FILES.forEach(QaEverySavedDataGameTests::loader);
+		List<String> found = savedDataClasses();
+		helper.assertTrue(found.size() >= KNOWN, "only " + found.size() + " saved files found among the mod's classes: " + found);
+		List<String> missing = new ArrayList<>(found);
+		missing.removeAll(FILES);
+		helper.assertTrue(missing.isEmpty(), "saved files not on the list (add them to FILES): " + missing);
 		helper.succeed();
+	}
+
+	/** Every class of the mod's own code (core: not compat, mixin or the client) that extends SavedData, as "pkg.Name$Inner". */
+	private static List<String> savedDataClasses() {
+		List<String> found = new ArrayList<>();
+		try {
+			java.nio.file.Path root = java.nio.file.Path.of(io.github.jcondedata.aliveworkplace.AliveWorkplace.class.getProtectionDomain()
+				.getCodeSource().getLocation().toURI());
+			java.nio.file.FileSystem jar = java.nio.file.Files.isDirectory(root) ? null : java.nio.file.FileSystems.newFileSystem(root);
+			java.nio.file.Path base = jar == null ? root : jar.getPath("/");
+			java.nio.file.Path pkg = base.resolve(P.replace('.', '/'));
+			try (java.util.stream.Stream<java.nio.file.Path> files = java.nio.file.Files.walk(pkg)) {
+				for (java.nio.file.Path f : (Iterable<java.nio.file.Path>) files::iterator) {
+					String rel = pkg.relativize(f).toString().replace('\\', '/');
+					if (!rel.endsWith(".class") || rel.startsWith("compat/") || rel.startsWith("mixin/") || rel.contains("/client/")
+						|| rel.startsWith("client/")) {
+						continue;
+					}
+					String name = rel.substring(0, rel.length() - ".class".length()).replace('/', '.');
+					try {
+						Class<?> type = Class.forName(P + name, false, QaEverySavedDataGameTests.class.getClassLoader());
+						if (SavedData.class.isAssignableFrom(type) && !Modifier.isAbstract(type.getModifiers())) {
+							found.add(name);
+						}
+					} catch (Throwable e) {
+						// a class that can't be looked at on the server (client-only): not a saved file
+					}
+				}
+			}
+			if (jar != null) {
+				jar.close();
+			}
+		} catch (Exception e) {
+			throw new GameTestAssertException("couldn't look through the mod's classes: " + e);
+		}
+		return found;
 	}
 
 	/** An empty file (a world from before) loads, and the new jar's save of it reads back to the same save. */

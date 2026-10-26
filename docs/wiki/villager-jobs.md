@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20
 
 ## What a player sees
 
@@ -24,7 +24,8 @@ about 3 blocks away, and a name plate over its head reads "Fisherman, Journeyman
 **Retraining (26.6).** A villager who already has a job (vanilla, ours or another mod's, traded with or not; never a
 child or a nitwit) becomes a Builder at a free Blueprint Table within about 4 blocks, sneak-right-clicked with a
 Blueprint or a Blank Blueprint. The first click shows the price ("Dara (Librarian, Journeyman) can be retrained as a
-Builder for 20 emeralds. Their trades and level are lost: they start again as a Novice."); a second click within 5
+Builder for 20 emeralds. Their trades and level are lost: they start again as a Novice."; "an Armorer" for a job
+that starts with a vowel); a second click within 5
 seconds pays and retrains them. The price goes by level: Novice 5, Apprentice 10, Journeyman 20, Expert 35, Master
 50 emeralds (`retrainPrices`), or 100 CobbleDollars an emerald with the Cobbleverse pack. Too little money: "Retraining
 Dara costs 5 emeralds: you're 2 emeralds short. Nothing changed." A jobless villager becomes a Builder the same way
@@ -32,7 +33,13 @@ for free. A builder given another job hands their builds back first: what's buil
 its owner still placed, and another builder carries on from there. The Village Hall's **Change job** (36.18, see
 [The Village Hall](village-hall.md)) retrains a worker to any free job block in the village, or the Builder, for the
 same price, with no need to bring them to the block: the job and the block's claim are set on the paying click, and one
-who can't walk there within about a minute is moved beside it.
+who can't walk there within about a minute is moved beside it. Since 40.3 the same is in the hall's People table:
+**Job ▾** on a villager's row lists every job, those with a free block in the village saying how many ("Mason · 1
+free Stonecutter"), the rest grayed with the block to place ("Mason · place a Stonecutter first"), the Builder among
+them and **No job** last (free, two clicks: their trades and level go and their block is left free). The price by
+their level is on top before anything is paid, a first click shows the offer and a second pays. A jobless villager is
+given a free block for nothing, in one click. Children, nitwits and Legends can't; game rule `workplaceRetraining` off
+hides Job ▾.
 
 **Fishermen per village (26.13).** A barrel is the Fisherman's workstation, and builds are full of storage barrels,
 so a village takes only so many fishermen: 1, plus 1 more for every 10 villagers within the village radius (48 blocks)
@@ -45,7 +52,8 @@ its brick oven, is still taken: a villager who picks it walks to the open floor 
 onto a chest or worktop nearby, and takes it from there.
 
 Chests and barrels within 8 blocks of the workstation are that worker's supply chests: tools and materials come out
-of them and the work goes into them. A line over a worker's head says what they are doing or waiting for, and
+of them and the work goes into them. A line over a worker's head says what they are doing or waiting for (its count reads "Netherworker · 1 expedition", "2
+expeditions", in the singular at one, B444), and
 sneak-right-clicking a worker with an empty hand shows their status, ending with their level in their own job
 ("Apprentice Miner · 10/70 XP to the next level") and how fast that makes them.
 
@@ -87,7 +95,7 @@ sneak-right-clicking a worker with an empty hand shows their status, ending with
 | Firewarden | Grindstone + a water bucket | any |
 | Well Keeper | Cauldron + a shovel | any |
 | Physician | Brewing stand + a glistering melon slice | any |
-| Mechanic (with Create) | Create Toolbox, any colour (2.3) | any |
+| Mechanic (with Create) | Create Toolbox, any color (2.3) | any |
 | Furnicrafter (with CobbleFurnies) | CobbleFurnies' Furni Crafter (2.2) | any |
 | Fletcher | Fletching Table (vanilla) | any |
 | Shepherd | Loom (vanilla) | any |
@@ -150,8 +158,8 @@ villager for free since 21.1a, and their tests rely on it (ROADMAP Notes, 26.6).
 player, for 100 ticks; the second click goes through every check again before it pays (`Money`, so CobbleDollars
 through the `Bank` extension point). Paying sets the villager to level 1 with no experience; changing the profession
 drops vanilla's trades, and the new job's are made afresh. A builder changing job, paid or not, first lets go of
-their work as on death, minus the dropping: queued builds are cancelled (blueprints back), a crew member stops
-helping, a Wonder's part goes on to its crew (`WonderCrews.handOn`), and their own build is cancelled with the
+their work as on death, minus the dropping: queued builds are canceled (blueprints back), a crew member stops
+helping, a Wonder's part goes on to its crew (`WonderCrews.handOn`), and their own build is canceled with the
 blueprint returned still placed.
 
 **Villages share.** Workers whose workstations are within `villageRadius` blocks (48) of each other are one
@@ -218,7 +226,15 @@ the chests and puts the payment in.
 **Hoppers stay out of the price list (B349).** A hopper under a Shop Counter pulls nothing out of it, and a hopper,
 dropper or pipe pointed at it pushes nothing in, so nobody can empty or change someone's prices with automation. Only
 the counter's own screen changes them, and only the owner, friends and operators open it. The chests next to the
-counter are ordinary chests: hoppers still fill and drain those.
+counter are ordinary chests: hoppers still fill and drain those. The same holds for Create's funnels (an extracting
+funnel on a counter takes nothing) and for a Tom's Simple Storage inventory connector touching it, which leaves the
+counter out of its network.
+
+**Hoppers stay out of mailboxes (B525).** A hopper under a Mailbox pulls no mail out of it, and a hopper, dropper or
+pipe (Create's funnels and chutes too) pointed at it pushes nothing in, so nobody can empty someone's mail or fill
+their inbox with junk. Mail only comes in through the post, and only leaves through the mailbox's own screen, which
+only the owner, friends and operators open. Mail already in a mailbox stays there. An extracting Create funnel on a
+mailbox takes nothing, and a Tom's Simple Storage inventory connector touching one leaves it out of its network.
 
 **Item prices count the off hand (B350).** With CobbleDollars, a shop's own screen pays a price that isn't in emeralds
 (say 3 diamonds) with the price items you carry: the bag, the hotbar and the off hand all count, and the payment comes
@@ -241,7 +257,7 @@ the pit's lower third or below y 0, with a random fixed by the site's id, the sp
 catches up when the pit loads again; nothing is banked while the pit is full. When the cursor reaches the end, the
 Miner drops off the finds and waits at the shed ("waiting at the shed for the pit to grow back") until a layer's worth
 (72 blocks) has grown since the last pass, then starts again from the top. A Quarry Marker handed to them ends the
-pit's site and starts the marked one; once that is done or cancelled the pit is given back. Cancelling the pit's site
+pit's site and starts the marked one; once that is done or canceled the pit is given back. Canceling the pit's site
 gives no marker back (there was none), and the Miner takes the pit again within 5 seconds.
 
 ## Switches
@@ -311,6 +327,18 @@ and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill
 - 21.1a (owner, 2026-09-30): not every villager needs a new custom table; items already in the game should give a
   villager their job. So jobs share vanilla blocks and are picked with an item.
 - 21.1c (owner, 2026-10-03): the Fossil Scientist works at Cobblemon's own Fossil Analyzer.
+- 36.20 (owner, 2026-10-26, "village-wide"): a quarry, a field, a tree farm, an orchard or a berry plot may be anywhere
+  in the village the worker's block stands in (within the hall's radius, or in a painted City Plan zone), and outside it
+  within 128 blocks of the block, each job's own config key: `quarryReach`, `fieldReach`, `treeFarmReach`,
+  `orchardAreaReach`, `berryPlotReach` (16 to 256). Past it, the refusal names the village: "That spot is outside
+  Mapleridge and 140 blocks from the Miner's Bench the miner works at — keep it within 128." (`<kind>.too_far_village`).
+  A worker with no village round their block has only the 128. The worker walks out to a far area in legs
+  (`workerPathRange`) and waits there while its chunks aren't loaded.
+- B453: a Field Marker or Quarry Marker area too far from the worker is refused in that worker's own words, naming the
+  block they work at: "That field is 143 blocks from the Composter the farmer works at — keep it within 128."
+  (`message.aliveworkplace.field.too_far`, `message.aliveworkplace.quarry.too_far`,
+  `message.aliveworkplace.tree_farm.too_far`, `message.aliveworkplace.orchard_area.too_far`,
+  `message.aliveworkplace.berry_plot.too_far`); only the builder's line speaks of the Blueprint Table.
 - 21.1a: don't break old worlds. The replaced job blocks stay registered, and blocks that became workstations get
   their record when an old chunk loads.
 - 25.5: every "needs" system has its own switch, because babysitting is the top complaint about big colony mods.
@@ -338,7 +366,7 @@ and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill
   (what they mined), the sticks may come from the village store too.
 - 36.12 (owner, 2026-10-19): the Quarry's pit is the ground it's built on, not blocks the builder places (no stone or
   ore to bring); the regrowth fills only air, bottom up, so the Miner's own steps and a player's blocks stay. The Miner
-  starts again after a layer's worth has grown back, not after every block. A cancelled pit is taken again: to stop it
+  starts again after a layer's worth has grown back, not after every block. A canceled pit is taken again: to stop it
   for good, switch `quarryBuild` off or give the Miner another workstation.
 
 ## Known limits
@@ -356,11 +384,12 @@ and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill
 
 ## Proof
 
-GameTests: `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
+GameTests: `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits
-refuse, save and reload, the switch off), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
+refuse, save and reload, the switch off), `HallPeopleJobGameTests` (10, 40.3: the hall's Job ▾, see
+[The Village Hall](village-hall.md)), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
 `HandOffGameTests` (5, B220: a fisherman handed a rod and a builder handed a blueprint are at work within 10 ticks,
 mid-shift and late in it; before the shift and at night they say when they start, and a night's hire stays in bed),
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,
@@ -380,7 +409,7 @@ is refused, up to 9 kinds). `ShopStockGameTests` (5, B348: the chest emptied whi
 nothing and shows sold out, emptied after the payment is in hands over nothing and keeps the emerald, less than a lot
 left isn't sold, a restocked shop sells again, a normal sale takes the goods from the chest), `ShopCounterHopperGameTests` (3,
 B349: a hopper under the counter pulls nothing out while one under a chest beside it does, a hopper on top pushes
-nothing in, the owner still sets and takes back a price on the counter's screen). The client mixins themselves are proved by the scene.
+nothing in, the owner still sets and takes back a price on the counter's screen)), `QaMailboxHopperBugTests` (2, B525: a hopper under a Mailbox pulls no mail while one under a chest beside it does, a hopper on top posts nothing), `MailboxHopperGameTests` (2, B525: the owner opens the mailbox, takes the delivered mail and can't put items into the inbox; mail and owner survive a save), `QaMailboxHopperBugTests#theTransferApiTakesNoMailAndPostsNothingFromAnySide` and `QaShopCounterTransferGameTests` (Fabric's transfer API, the way Create and pipe mods reach blocks, from all six faces takes and puts nothing), `QaCreateFunnelMailboxCompatTests` and `QaCreateFunnelCounterCompatTests` (a real extracting Create funnel takes nothing, while on a chest it empties it), `QaTomsPrivateBoxesCompatTests` (Tom's connector joins the chest beside it, not the mailbox or counter). The client mixins themselves are proved by the scene.
 
 Showcase scenes: `job_plate` (a Journeyman fisherman, Dara the Expert builder and a jobless villager, each looked at), `miner_pickaxe` (a worn pickaxe breaks, a new one is made at the blast furnace), `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,

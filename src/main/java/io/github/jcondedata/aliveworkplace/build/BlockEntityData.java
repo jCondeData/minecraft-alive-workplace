@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 public final class BlockEntityData {
 	/** Keys that hold items, loot, mobs or ownership in vanilla and common mods. */
 	private static final String[] STRIP_KEYS = {
-		"Items", "LootTable", "LootTableSeed", "RecordItem", "Book", "item", "Bees", "SpawnData", "SpawnPotentials",
+		"Items", "LootTable", "LootTableSeed", "RecordItem", "Book", "item", "Bees", "bees", "SpawnData", "SpawnPotentials",
 		"Owner", "OwnerName", "owner", "Password", "password", "Lock", "lock"
 	};
 
@@ -36,6 +36,11 @@ public final class BlockEntityData {
 		if (blockEntity instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) {
 			// A Village Hall from a scanned build starts a village of its own: never another village's name, treasury
 			// or chronicle
+			return null;
+		}
+		if (blockEntity instanceof io.github.jcondedata.aliveworkplace.grave.GraveBlockEntity) {
+			// B449: a grave from a scanned build is a fresh, empty one: never the dead villager the scanned grave held
+			// (the Undertaker could revive a copy for every build), nor their name on it
 			return null;
 		}
 		// A belt carries items but is no store: its place on the belt is copied (39.5; the items on it never are)
@@ -67,7 +72,10 @@ public final class BlockEntityData {
 		}
 	}
 
-	/** Removes every nested compound that is an item stack or an entity (anything with an item/entity "id"). */
+	/**
+	 * Removes every nested compound that is an item stack or an entity (anything with an item/entity "id", or an entity
+	 * saved without one).
+	 */
 	static void stripStacksAndEntities(CompoundTag tag) {
 		for (String key : Nbt.keys(tag).toArray(String[]::new)) {
 			Tag child = tag.get(key);
@@ -99,6 +107,11 @@ public final class BlockEntityData {
 	}
 
 	private static boolean isStackOrEntity(CompoundTag compound) {
+		if (Nbt.hasUuid(compound, "UUID") && Nbt.has(compound, "Pos", Tag.TAG_LIST)) {
+			// B449: an entity saved without its id (Entity.saveWithoutId, as a mod's block keeps a mob it holds) is still
+			// an entity: its UUID and position give it away
+			return true;
+		}
 		if (!Nbt.has(compound, "id", Tag.TAG_STRING)) {
 			return false;
 		}

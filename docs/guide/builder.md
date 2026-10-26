@@ -76,11 +76,20 @@ take it down and put the blocks back in the chests.
   and they leave it until more goes missing. A repair under way can be paused or stopped from the same tab, and handing
   the builder a new blueprint puts the repair aside until they're free. What raiders or a village fire broke is put
   back without asking. **Ask Before Repairs** in the settings, turned off, has them repair by themselves.
+- **They bring old houses up to date.** When a house's blueprint has been improved since your Builder put it up (no
+  more floating or invisible bits, new furniture), the Village Hall's Repairs tab shows it with **Refresh to the latest
+  look**. Click it to see what changes ("New: 12 decorations, 3 furniture pieces"), and click the button to send the
+  nearest free Builder. They take away only what the old drawing left behind (its items go to their chests) and put in
+  the new pieces. Your chests and what's in them, beds someone sleeps in, job blocks and anything you placed or changed
+  yourself stay as they are. If no Builder is free, it waits for the first one who is. Houses already in their latest
+  look don't show the button.
 - **They lay paths.** After a building they lay a dirt path from its door to the village bell or hall.
 
 ![A crew of four on one build](https://jcondedata.github.io/minecraft-alive-workplace/crew/still-2.jpg)
 
 ![The Village Hall's Repairs tab: a cottage waiting for your answer](https://jcondedata.github.io/minecraft-alive-workplace/repair_ask/still-2.jpg)
+
+![An old Stone House after its refresh to the latest look](https://jcondedata.github.io/minecraft-alive-workplace/refresh_old_house/still-4.jpg)
 
 ## How the builder fits in
 
@@ -111,7 +120,7 @@ The builder is the village's biggest customer. Almost every other worker ends up
 
 The **Blueprint Table** lists the server's blueprints with its size and exactly what it needs. **Get Blueprint**
 gives you a copy for a Blank Blueprint. Each village's table is a collection: it starts with the basics (the Starter
-Cottage, the first Stone House and Terrace, and a first workplace for each everyday job), and the rest show greyed out
+Cottage, the first Stone House and Terrace, and a first workplace for each everyday job), and the rest show grayed out
 with how to get them until the village unlocks them by buying blueprints, builders' level-ups, questbook rewards or a
 blueprint used on the table. See [Blueprint Table](blueprint-table.md#a-collection-that-grows).
 

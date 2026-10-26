@@ -259,6 +259,96 @@ public class CaravanTradeGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B430: a seller whose treasury has room for only 1.5 emeralds is paid only what it can take. Of two bundles (1.3,
+	 * then 1.27) B buys the first; the second goes home as if B couldn't pay, and B's chronicle says why. No emerald is
+	 * lost: what B pays, A gets.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"caravanSellerFull"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "caravanSellerFull")
+	public void aSellerWithANearlyFullTreasuryIsSoldOnlyWhatItCanTake(GameTestHelper helper) {
+		Two two = build(helper);
+		int[] full = new int[1];
+		helper.runAfterDelay(2, () -> {
+			open(helper, two, 1000, List.of());
+			full[0] = io.github.jcondedata.aliveworkplace.hall.Treasury.cap(two.hallA()) * 100;
+			two.hallA().setTreasury(full[0] - 150);
+			two.ours().setItem(0, new ItemStack(Items.OAK_LOG, 48));
+			helper.assertTrue(two.data().toggleRoute(two.a(), two.b()), "no route");
+			Caravans.round(two.level(), two.a(), null);
+			helper.assertTrue(two.ours().countItem(Items.OAK_LOG) == 16, "loaded: " + two.ours().countItem(Items.OAK_LOG));
+		});
+		helper.runAfterDelay(40, () -> {
+			Caravans.round(two.level(), two.b(), null);
+			helper.assertTrue(two.theirs().countItem(Items.OAK_LOG) == 16, "B should buy the one bundle A can be paid for: " + two.theirs().countItem(Items.OAK_LOG));
+			helper.assertTrue(two.hallB().treasury() == 870 && two.hallA().treasury() == full[0] - 20, "B " + two.hallB().treasury() + ", A " + two.hallA().treasury()
+				+ " of " + full[0]);
+			helper.assertTrue(two.priceB(TIMBER).equals(new Market.Price(127, 130, -1)) && two.priceA(TIMBER).equals(new Market.Price(102, 100, 1)),
+				"one bundle moves the prices: B " + two.priceB(TIMBER) + ", A " + two.priceA(TIMBER));
+			helper.assertTrue(chronicle(two.hallB()).contains("Thornholm's treasury is full and can't take our money: their caravan took 16 × Oak Log home"),
+				"B's chronicle: " + chronicle(two.hallB()));
+			helper.assertTrue(chronicle(two.hallB()).stream().noneMatch(l -> l.startsWith("Our treasury couldn't pay")), "B could pay: " + chronicle(two.hallB()));
+			helper.assertTrue(two.data().refunds(two.b()) == 0 && two.data().sales().isEmpty(), "nothing owed: " + two.data().refunds(two.b()));
+		});
+		helper.runAfterDelay(70, () -> {
+			Caravans.round(two.level(), two.a(), null);
+			helper.assertTrue(two.ours().countItem(Items.OAK_LOG) == 32, "the unsold bundle should be back in A's Storehouse: " + two.ours().countItem(Items.OAK_LOG));
+			helper.assertTrue(two.hallA().treasury() == full[0] - 20 && two.hallB().treasury() == 870, "the way home cost or paid something");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B430: a sale booked later (the seller's hall wasn't loaded when the caravan arrived) into a treasury that has
+	 * filled up meanwhile: what the cap leaves out goes back to the buyer, at once when its hall is loaded. A buyer
+	 * that is full itself is owed it (kept through a save and reload) until its next round with room.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"caravanRefund"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "caravanRefund")
+	public void whatAFullTreasuryCantTakeGoesBackToTheBuyer(GameTestHelper helper) {
+		Two two = build(helper);
+		helper.runAfterDelay(2, () -> {
+			ServerLevel level = two.level();
+			open(helper, two, 870, List.of());
+			int capA = io.github.jcondedata.aliveworkplace.hall.Treasury.cap(two.hallA()) * 100;
+			int capB = io.github.jcondedata.aliveworkplace.hall.Treasury.cap(two.hallB()) * 100;
+			two.hallA().setTreasury(capA - 50);
+			two.data().sold(new Caravans.Sale(two.a(), Component.literal("Ashford"), TIMBER, 16, 130, 7, two.b()));
+			Caravans.Data loaded = Caravans.Data.load(two.data().save(new CompoundTag(), level.registryAccess()), level.registryAccess());
+			helper.assertTrue(loaded.sales().size() == 1 && two.b().equals(loaded.sales().get(0).buyerHall()), "the buyer after a reload: " + loaded.sales());
+			CaravanTrade.book(level, two.a(), two.data());
+			helper.assertTrue(two.hallA().treasury() == capA && two.hallB().treasury() == 950, "A " + two.hallA().treasury() + " of " + capA + ", B " + two.hallB().treasury());
+			helper.assertTrue(chronicle(two.hallA()).contains("Sold 16 Test Timber to Ashford for 1.3 emeralds")
+				&& chronicle(two.hallA()).contains("Our treasury was full: 0.8 emeralds went back to Ashford"), "A's chronicle: " + chronicle(two.hallA()));
+			helper.assertTrue(chronicle(two.hallB()).contains("0.8 emeralds came back to our treasury: a full treasury couldn't take what we paid for caravan goods"),
+				"B's chronicle: " + chronicle(two.hallB()));
+			helper.assertTrue(two.data().refunds(two.b()) == 0, "still owed: " + two.data().refunds(two.b()));
+
+			// the buyer full itself: owed, through a save and reload, until it has room
+			two.hallA().setTreasury(capA);
+			two.hallB().setTreasury(capB);
+			two.data().sold(new Caravans.Sale(two.a(), Component.literal("Ashford"), TIMBER, 16, 130, 7, two.b()));
+			CaravanTrade.book(level, two.a(), two.data());
+			helper.assertTrue(two.hallA().treasury() == capA && two.hallB().treasury() == capB && two.data().refunds(two.b()) == 130,
+				"owed to the full buyer: " + two.data().refunds(two.b()));
+			Caravans.Data again = Caravans.Data.load(two.data().save(new CompoundTag(), level.registryAccess()), level.registryAccess());
+			helper.assertTrue(again.refunds(two.b()) == 130, "the debt after a reload: " + again.refunds(two.b()));
+			two.hallB().setTreasury(capB - 100);
+			CaravanTrade.book(level, two.b(), two.data());
+			helper.assertTrue(two.hallB().treasury() == capB && two.data().refunds(two.b()) == 30, "paid as far as there's room: B " + two.hallB().treasury()
+				+ ", owed " + two.data().refunds(two.b()));
+			two.hallB().setTreasury(0);
+			CaravanTrade.book(level, two.b(), two.data());
+			helper.assertTrue(two.hallB().treasury() == 30 && two.data().refunds(two.b()) == 0, "the rest: B " + two.hallB().treasury());
+			// an old sale without its buyer still books
+			two.hallA().setTreasury(0);
+			two.data().sold(new Caravans.Sale(two.a(), Component.literal("Ashford"), TIMBER, 16, 130, 7));
+			CaravanTrade.book(level, two.a(), two.data());
+			helper.assertTrue(two.hallA().treasury() == 130, "the old sale: A " + two.hallA().treasury());
+			helper.succeed();
+		});
+	}
+
+	/**
 	 * What goes: only goods the village is known for; only where they're short of it or pay at least 10% more; whole
 	 * bundles of one item, a stack at most, over the 16 the chests keep; never an item the other village is waiting for
 	 * (that travels free); two stacks at most, what they're short of first, then where it pays best.

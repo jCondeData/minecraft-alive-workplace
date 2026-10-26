@@ -1024,6 +1024,31 @@ public final class ModVillagers {
 	}
 
 	/**
+	 * After a villager is loaded (mixin/VillagerMixin, B542): one saved with a job that isn't registered any more (the
+	 * Mechanic or Conductor once Create is removed, the Furnicrafter once CobbleFurnies is) loads as jobless, but vanilla
+	 * keeps her saved Offers, level and xp, so she'd still trade her old job's goods. She's made a jobless Novice with no
+	 * trades instead, as a villager who loses her job; her name, type and everything else stay. A villager whose saved
+	 * job still exists is left untouched.
+	 */
+	public static void forgetVanishedJob(net.minecraft.world.entity.npc.Villager villager, net.minecraft.nbt.CompoundTag saved) {
+		if (villager.getVillagerData().getProfession() != VillagerProfession.NONE) {
+			return;
+		}
+		net.minecraft.nbt.CompoundTag data = io.github.jcondedata.aliveworkplace.mc.Nbt.getCompound(saved, "VillagerData");
+		String job = io.github.jcondedata.aliveworkplace.mc.Nbt.getString(data, "profession");
+		if (job.isEmpty()) {
+			return;
+		}
+		ResourceLocation id = ResourceLocation.tryParse(job);
+		if (id != null && BuiltInRegistries.VILLAGER_PROFESSION.containsKey(id)) {
+			return;
+		}
+		villager.setVillagerData(villager.getVillagerData().setLevel(1));
+		villager.setVillagerXp(0);
+		villager.setOffers(new net.minecraft.world.item.trading.MerchantOffers());
+	}
+
+	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
 	 */

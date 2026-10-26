@@ -170,7 +170,7 @@ public class JobChainGameTests {
 
 	/**
 	 * A raw material short: the Carpenter takes nothing (no logs sawn into planks nobody can use), and the builder's
-	 * shortage line says what the chain lacks ("short of 4 Oak Log to make 3 Barrel").
+	 * shortage line says what the chain lacks ("short of 4 Oak Logs to make 3 Barrels").
 	 */
 	//$ gametest_ticks_batch AREA '1200' '"jobChainLacks"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "jobChainLacks")
@@ -181,10 +181,10 @@ public class JobChainGameTests {
 		helper.runAfterDelay(600, () -> {
 			ServerLevel level = helper.getLevel();
 			Component lack = JobShortages.lackOf(a.site().id(), Items.BARREL, level.getGameTime());
-			helper.assertTrue(lack != null && lack.getString().equals("short of 4 Oak Log to make 3 Barrel"),
+			helper.assertTrue(lack != null && lack.getString().equals("short of 4 Oak Logs to make 3 Barrels"),
 				"the builder's line should say the barrels are short of oak logs: " + (lack == null ? null : lack.getString()));
 			Component line = JobShortages.line(level, a.site().id(), a.site().missing());
-			helper.assertTrue(line != null && line.getString().equals("Can't be made yet: short of 4 Oak Log to make 3 Barrel"),
+			helper.assertTrue(line != null && line.getString().equals("Can't be made yet: short of 4 Oak Logs to make 3 Barrels"),
 				"the builder's shortage line: " + (line == null ? null : line.getString()));
 			Container chest = helper.getBlockEntity(a.chest());
 			helper.assertTrue(chest.countItem(Items.OAK_LOG) == 2, "the logs should stay in the chest, " + chest.countItem(Items.OAK_LOG) + " there");
@@ -356,7 +356,7 @@ public class JobChainGameTests {
 		helper.succeed();
 	}
 
-	/** The lack line lists each short thing with its count, a comma between them ("short of 2 Oak Log, 1 Stick to make 4 Barrel"). */
+	/** The lack line lists each short thing with its count, a comma between them ("short of 2 Oak Logs, 1 Stick to make 4 Barrels"). */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void theLackLineNamesEveryShortThingWithACommaBetween(GameTestHelper helper) {
@@ -364,7 +364,7 @@ public class JobChainGameTests {
 		lack.put(Items.OAK_LOG, 2);
 		lack.put(Items.STICK, 1);
 		String line = JobShortages.lackLine(lack, 4, Items.BARREL).getString();
-		helper.assertTrue(line.equals("short of 2 Oak Log, 1 Stick to make 4 Barrel"), "the lack line reads \"" + line + "\"");
+		helper.assertTrue(line.equals("short of 2 Oak Logs, 1 Stick to make 4 Barrels"), "the lack line reads \"" + line + "\"");
 		helper.succeed();
 	}
 

@@ -12,8 +12,9 @@ are the village's edict slots, one per rank: in force with its days, free, or lo
 Below is every edict with its boost and its cost. Click an edict twice to proclaim it; click one in force to lift it.
 In a realm, the row under the village's slots holds the realm's slots, and the capital's book lists the six realm
 edicts too (see [Founding a realm](realms.md), "Realm edicts").
-Everyone in the village is told, and the chronicle notes it. Only the hall's owner, their friends and operators may
-click; everyone else can read the book and is told why a click was refused.
+Everyone in the village is told, and the chronicle notes it. Only the hall's owner, their friends, operators and the
+village's Lords (see [Reputation](reputation.md)) may click; everyone else can read the book and is told why a click
+was refused. An edict that can't be lifted yet says when it can ("Can be lifted tomorrow", "in 2 days").
 
 While an edict is in force its reform appears on the hall's Quests page, one step a morning: bring a few hundred
 items, or slay monsters, or win a Pokémon battle. Finish the last step and fireworks go up over the hall: the boost
@@ -45,7 +46,9 @@ and is read by exactly the system it changes: work speed by the pace rule, food 
 village growth, raids by the raid code. The effects in force are added up per hall whenever its edicts change, so
 nothing is worked out every tick. Guilds, tonics and classes use the same toolbox.
 
-**Reforms.** The next step goes up the morning after the last one was done, so a reform takes three days at least.
+**Reforms.** Each step sits on the Quests page in the row below the daily quests (a book-and-quill icon), never
+expires and pays its emeralds as a quest does. The next step goes up the morning after the last one was done, so a
+reform takes three days at least.
 Progress is kept per edict, also while the edict is lifted, and a step handed in halfway stays half done. A battle
 step falls back to slaying monsters when Cobblemon or a trainer is missing.
 
@@ -129,14 +132,22 @@ the hall loads.
   villager; the arc system casts roles by trade only.
 - 31.22: the Shift Bell needs a level 3 by 3 of natural ground 3 to 12 blocks from the hall; with none, the story
   still ends and the edict is reformed, without the bell.
-- The Tithe's price rise is rounded to whole emeralds, so trades under 5 emeralds don't change.
+- The Tithe's price rise is rounded to whole emeralds, half an emerald up: trades under 5 emeralds don't change,
+  5 emeralds become 6 and 15 become 17. The tithe is a tenth of what was paid, so the 6 put 0.60 in the treasury.
+- Free Bread's "fed in the last day" means not hungry yet: a Glutton counts for half a day after a meal, a Frugal
+  villager for two days. A villager who has never eaten from the store gets no free bread.
+- An edict reaches only the villagers, inns and traders within the hall's radius: an inn or librarian just outside
+  keeps the usual guests and prices. A lifted edict stops at once; Free Bread's part-meal stays saved for next time.
 - With `villageEdicts` off the book can't be used; edicts already in force come back when it is switched on again.
 
 ## Proof
 
 GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, rank drops, save and reload),
 `EdictBookGameTests` (6), `ReformGameTests` (7), `FamilyEdictGameTests` (5), `OpenGatesGameTests` (6),
-`TreasuryEdictGameTests` (8), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `CivicTalkGameTests` (7),
+`TreasuryEdictGameTests` (8), `QaEdictEffectsGameTests` (10: the QA lane's boundaries for 30.6 to 30.8),
+`QaEdictsGameTests` (14: the QA lane's boundaries for 30.3, 30.5, 30.9 to 30.11, 30.15 and 30.17),
+`QaPaceAndBookGameTests` (11: the QA lane's for 30.1a, 30.2, 30.4 and 30.21: the 300th bread, friends' and operators'
+clicks, the last day before lifting, the cap at 100 and 400), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `CivicTalkGameTests` (7),
 `PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`, `ReformStoryGameTests` (10: each of the eight stories from
 the ask through M30's three steps to its ending and the edict reformed in that village only; `storyArcs` off; side
 arcs and `arcsAtOnce`). Showcase scene `reform_story`.

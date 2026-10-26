@@ -14,13 +14,14 @@ on the ground as colored dust.
 
 Once the village has a Steward, the approved roads are built a stretch at a time by the nearest free builder, in the
 road style of the zone they start in. Every newly finished building gets a lane from its door to the nearest road.
-Streets get a lamp every 16 blocks and at crossings; lanes get a lantern post every 12. Water or a drop gets a
-bridge; a one-block rise gets stairs.
+Streets get a lamp every 16 blocks, on alternate sides, and at crossings (never in front of a door); lanes get a
+lantern post every 12. Water or a drop deeper than 2 blocks gets a bridge; a one-block rise gets stairs across the
+road's width, and a crossing is paved square.
 
 Villages joined by a caravan route each build their half of a road towards the other. If a half stops short it ends
 at a milestone: a stone post with a lantern and a sign naming the other village and how far it is.
 
-After a raid (or with a bandit camp near) the Steward proposes a wall on his desk. The line goes on the plan first,
+After a raid (or with a bandit camp preying on the village) the Steward proposes a wall on his desk. The line goes on the plan first,
 so you see what he means before you approve it. A Hamlet or Village gets a palisade; a Town or City gets stone, and a
 Town replaces its palisade a piece at a time.
 
@@ -43,17 +44,21 @@ style picks its road style.
 **Bridges and steps (27.16).** A bridge spans at most 16 blocks, with a pillar every 4 blocks going down at most 12.
 
 **Roads between villages (27.17).** Each village plans a street from its own roads towards the point halfway to the
-other hall, up to `caravanRoadReach` blocks or halfway, whichever is less. When the two halves would end within 32
-blocks of each other, both go on to the halfway point so they meet. The way is only searched where the world is
+other hall (from the end of its road nearest the other village, or from the hall with none), in the style of the
+zone it starts from, up to `caravanRoadReach` blocks or halfway, whichever is less. When the two halves would end
+within 32 blocks of each other (32 included), both go on to the halfway point so they meet. The way is only searched where the world is
 loaded: no chunk is loaded for it, and the search waits. On a finished road caravans arrive in three quarters of the
 time.
 
 **Walls (27.18).** A wall is made from a kit (`data/aliveworkplace/wall_kits/`): a segment, a corner tower and a
 gate, for a range of ranks. The line is laid out into pieces: a tower at every corner and at least every 28 blocks,
 whole segments between them, and a gate wherever a road of the plan crosses. Each piece sits at its own ground
-height. With no wall line drawn, the Steward draws one of his own, 4 blocks outside the zones. At most 3 wall pieces
+height. With no wall line drawn, the Steward draws one of his own, 4 blocks outside the zones on every side. At most 3 wall pieces
 are open at once, and never one on the spot of a piece still being built, at any height (B283: a tower with its roof
 on but its ladders not yet in had a second tower opened on top of it).
+If a piece's builder dies (in a raid, say), its site stays open with everything built so far, and the hall's
+next round hands it to the next free builder, who finishes it where it stands; new pieces wait until it has someone
+(B488: the half-built tower was forgotten and a second one went up on its roof).
 
 ## Switches
 
@@ -98,7 +103,8 @@ The generated blueprints for stretches are saved the way the Shape Planner saves
 
 ## Known limits
 
-- A bridge longer than 16 blocks isn't built; the way has to go round.
+- A gap wider than 16 blocks isn't bridged: the road stops at the near bank and the Steward's desk says how wide the
+  gap is ("40+" past 40 blocks).
 - A road between villages reaches 256 blocks at most by default, so far-apart villages get two halves and two
   milestones, not one road.
 - Roads are built only while no building waits for a builder, so in a busy village they come last.
@@ -109,6 +115,21 @@ The generated blueprints for stretches are saved the way the Shape Planner saves
 GameTests: `RoadGameTests` (12: a 40-block street three wide in stonework with stair steps, a player's fence left
 standing, save and reload mid-stretch, the rank left alone, a new building's lane, the two-stretch limit, the switch
 off), `CaravanRoadGameTests` (4), `WallGameTests` (9), `CityPlanRoadGameTests` (4).
+
+QA (27.15, 27.16): `QaRoadGameTests` (6: each shipped style's blocks and mix weights, broken style files skipped,
+stretches of at most 24 that never overlap, no two-block step, going round a finished building and a player's blocks,
+an avenue's stairs across all 5 blocks, the chronicle and desk lines) and `QaRoadLampGameTests` (9: lamps every 16
+on alternate sides round corners, none by a row of doors, a crossing paved square and lit, lantern posts every 12, a
+Sandstone street's Sandstone lamp, a dark bed lit, a 16-wide river bridged with 4 pillars, a 17-wide one refused, a
+dry ravine bridged with a pillar stopping 12 down).
+
+QA (27.17, 27.18): `QaCaravanRoadGameTests` (6: the reach and the join at their boundaries, halfway at exactly 256,
+halves 30 and 32 apart joined, 34 apart stopping at 256; `caravanRoadReach` at 100; no route no road; the zone's style;
+starting from the end of the nearest street; both chronicle lines and the milestone sign read as written) and
+`QaWallGameTests` (9: raided 6 days ago still proposed; a bandit camp wants a wall and not once it's gone; the
+Steward's own line round the zones, on the plan and not built before approval; wall kit files refused whole when
+malformed and skipped without their mod; a gate for each crossing and none for a road inside; towers at least every
+28 blocks; each piece at its ground's height; at most 3 sites open; the desk and chronicle lines read as written).
 
 Showcase scenes: `roads` (a street between two houses), `bridges`, `caravan_road`, `walls` (a palisade going up),
 `city_plan_ground` (the plan on the ground).

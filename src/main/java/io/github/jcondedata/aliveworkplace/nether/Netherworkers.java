@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.explore.Explorers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.List;
@@ -354,7 +355,7 @@ public final class Netherworkers {
 	}
 
 	static Component title(Villager villager) {
-		return Component.translatable("message.aliveworkplace.netherworker.title", ModAttachments.NETHER_TRIPS.getOrElse(villager, 0));
+		return Words.countedFirst("message.aliveworkplace.netherworker.title", ModAttachments.NETHER_TRIPS.getOrElse(villager, 0));
 	}
 
 	private Netherworkers() {

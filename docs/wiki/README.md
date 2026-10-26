@@ -19,6 +19,9 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [The Furnicrafter](furnicrafter.md): CobbleFurnies' Furni Crafter as a job: furniture for the builders and the store's orders, from the store's materials (2.2, 38.12).
 - [Furniture and storage mods](furniture-and-storage.md): builds furnished with Handcrafted, Lucky's Cozy Home, CobbleFurnies and Beautify, and Sophisticated Storage and Tom's Simple Storage in the Storehouse (2.1, being built: 37.1 to 37.11).
 - [Pokémon partners](pokemon-partners.md): pastured Pokémon that help at work, and are seen doing it (Cobblemon).
+- [The village's own habitat](village-habitat.md): an Expert Habitat Keeper founds a Habitat Block for the village (Cobblemon 1.8).
+- [The Gem Grower](gem-grower.md): a villager at a stonecutter, picked with an amethyst shard, who tends amethyst, tumblestone and Type Gem beds and makes Blank TMs (28.11).
+- [Pokémon jobs' village houses](pokemon-village-houses.md): villages grow a house for each Pokémon job, its villager already in it (Cobblemon).
 - [The Pokémon Trader](pokemon-trader.md): the day's Pokémon offers and the trader's own trade screen (Cobblemon).
 - [Gifts](gifts.md): Gift Wrap, the Gift, what villagers think of it, name days and taste files (31.6).
 - [Heart events and life stories](heart-events.md): what villagers tell their friends at 2 to 10 hearts, their
@@ -54,7 +57,10 @@ How everything in the mod works, in plain words: written for the owner first, th
 **The village**
 - [The Village Hall](village-hall.md): the village at a glance, its needs, ranks, calendar, treasury and pages.
 - [Edicts](edicts.md): laws with a boost, a cost and a reform (1.4).
+- [Civic items](civic-items.md): the Cradle, the Village Banner and the Harvest Idol with the village year (1.4).
 - [Guilds](guilds.md): Guild Charters, Guildhalls and the eleven guilds (1.4).
+- [The Work Horn](work-horn.md): a rush, 50% faster for 5 minutes once a day, then worn out until dawn (1.4).
+- [Tonics](tonics.md): six drinks the Cleric and the Chef make, each 25% faster for a day for its own jobs (1.4).
 - [Classes](classes.md): Peasant to Noble, what each needs and gives, and the Vintner (1.8).
 - [The luxury workshops](luxury-workshops.md): the Winery, the Tailor's Shop, the Print Shop and the Jeweler's Workshop, their II, the village houses,
   the Journeyman's blueprint and the Steward's rules (1.8).
@@ -65,6 +71,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Elders](elders.md): elders, their retirement and apprentices, their passing, the Evergreen Charm that keeps a good one, and family trees (1.8).
 - [Wonders](wonders.md): the eight Wonders, what each needs and gives; the data files, requirements, the Wonders page, the Wonder Plan, the Foundation Stone, crews, goods and dedication, a finished Wonder's celebration, upkeep and powers, and each Wonder's design and powers (2.0, 35.1 to 35.24).
 - [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md): Cobblemon depth, three of the pack's Pokémon mods in village life: raid dens, more Mega trainers and Mega Stones, Cobblecuisine dishes and bean farms (2.2, 38.1 to 38.10).
+- [Waystones](waystones.md): a waystone by every Village Hall, named after the village and renamed with it (41.1).
 - [Create](create.md): Create integration: the Mechanic, villagers working Create's machines, Create-powered builds, contraptions, Create schematics at the table and trains (2.3, being built: 39.1, 39.2).
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (Cobblemon, 1.2).
 - [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
@@ -86,6 +93,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 
 **Villages that build themselves**
 - [Steward](steward.md): the City Plan, the Steward, his rules and his desk (1.1).
+- [New workplaces](new-workplaces.md): the Smithy, Mason's Yard, Fletcher's Lodge, Map Room, Farmstead, Fisher's Hut, Weaver's Cottage and Bandstand, and the Steward's rules that ask for them (1.1).
 - [Roads and walls](roads-and-walls.md): streets, lamps, bridges, roads between villages and walls (1.1).
 
 **Legends**

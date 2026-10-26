@@ -395,8 +395,9 @@ dependencies {
         // PERF_STACK=true (-PperfStack=true): the pack's performance mods too (ROADMAP 25.4).
         // FURNITURE=true (-Pfurniture=true): the pack's furniture mods (ROADMAP 37.4, scene furnished_home),
         // Sophisticated Storage (37.9) and Tom's Simple Storage (37.10), both in scene modded_storehouse.
+        // WAYSTONES=true (-Pwaystones=true): Waystones and Balm (ROADMAP 41.1, scene village_waystone).
         listOf("cobblemon" to "screenshot_cobblemon", "mega" to "screenshot_mega", "perfStack" to "screenshot_perf",
-            "furniture" to "screenshot_furniture").forEach { (flag, key) ->
+            "furniture" to "screenshot_furniture", "waystones" to "screenshot_waystones").forEach { (flag, key) ->
             if (findProperty(flag) == "true") {
                 val mods = forCobblemon(tomlList("tests", key))
                 mods.forEach { "modDevclientRuntimeOnly"(it) }
@@ -609,6 +610,20 @@ tasks {
         commandLine("python3", "tools/modtest/guidecheck.py")
     }
     named("check") { dependsOn(checkGuide) }
+
+    /**
+     * American English in every sentence a player reads (owner, 2026-10-26; ROADMAP 36.19): langcheck.py --spelling fails
+     * on a British spelling (colour, Jeweller, cancelled, storey ...) in an en_us.json value, the questbook, docs/guide/
+     * or docs/wiki/; keys, ids and code spans are ignored. The word list and its allowlist are in tools/modtest/spelling.py,
+     * and `spelling.py --fix` rewrites what it finds. Under a second, checked-in files only, so it always runs.
+     */
+    val checkSpelling by registering(Exec::class) {
+        group = "verification"
+        description = "Fails on a British spelling in an en_us.json value, the questbook, docs/guide or docs/wiki"
+        workingDir = rootProject.projectDir
+        commandLine("python3", "tools/modtest/langcheck.py", "--spelling")
+    }
+    named("check") { dependsOn(checkSpelling) }
 
     /** Writes the compile classpath for the minecraft-mod-engineer skill's api.py (per-node API lookups). */
     register("apiClasspath") {

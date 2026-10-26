@@ -55,7 +55,8 @@ looking after. On the settings screen they are:
 | Setting | Normally | What it changes |
 |---|---|---|
 | [Chest Reach](settings-reach-and-range.md) | 8 blocks | how close chests must be to a workstation to be its supply chests |
-| Build Distance | 48 blocks | how far from their table a builder takes a build |
+| [Build Distance](settings-reach-and-range.md) | 128 blocks | how far from their table a builder takes a build outside the village (anywhere in it is always in reach) |
+| [Quarry, Field, Tree Farm, Orchard and Berry Plot Distance](settings-reach-and-range.md) | 128 blocks | the same for the areas you mark for miners, farmers, lumberjacks, orchard keepers and berry breeders |
 | Guard Patrol Range | 24 blocks | how far from their post guards fight |
 | [Lumberjack Range, Orchard Range, Fisherman Range](settings-reach-and-range.md) | 16 blocks | how far those workers look for trees, fruit and water |
 | Explorer Range | 48 blocks | how far explorers go on an expedition |

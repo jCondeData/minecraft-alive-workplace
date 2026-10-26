@@ -378,7 +378,7 @@ public final class Founder {
 		BlockPos centre = BlueprintOutline.bounds(placement, blueprint.size()).getCenter();
 		Villager builder = level.getEntities(EntityType.VILLAGER, VillageHalls.area(hall), v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent())
 			.stream()
-			.filter(v -> Math.sqrt(centre.distSqr(Builders.benchPos(v).orElseThrow())) <= Builders.MAX_SITE_DISTANCE)
+			.filter(v -> io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).orElseThrow(), centre, Builders.MAX_SITE_DISTANCE))
 			.filter(v -> busy(level, v) <= Builders.MAX_QUEUE)
 			.min(Comparator.comparingInt((Villager v) -> busy(level, v)).thenComparingDouble(v -> v.blockPosition().distSqr(centre)))
 			.orElse(null);

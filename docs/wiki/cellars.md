@@ -19,7 +19,7 @@ workers' chests and job blocks stay where they were.
 | Winery III | a barrel vault under the barrel cellar: casks two high under a vault of stone-brick stairs, a tasting table, a chest of bottles | ladder in the barrel cellar's corner |
 | Farmstead III | a root cellar: bins of pumpkins and melons, hay, sacks (chests), potted mushrooms, a sorting table | ladder by the kitchen |
 | Guildhall III | a strongroom: gold, emerald and lapis and the guild's chests caged behind iron bars, ledgers in chests two high, a counting table | ladder by the hall's west wall |
-| Barracks III | an armoury and lock-up: a cell behind iron bars, an anvil, chests of kit, hay targets | ladder by the east wall |
+| Barracks III | an armory and lock-up: a cell behind iron bars, an anvil, chests of kit, hay targets | ladder by the east wall |
 | Research Lab III | a lower lab: bookshelves, a stone bench of specimens (amethyst, tinted jars, bone, potted cactus and fungus), chests of samples, a work table with candles | ladder by the lab's front wall |
 | Jeweler's Workshop III | a vault: gold, amethyst, raw gold and emerald caged behind bars with chests of cut stones on them, chests of rough stones, a sorting table | ladder in the shop's north-west corner |
 | Artisan's House III | a storeroom: chests two high, bolts of cloth, crates, a packing table | ladder in the back corner of the hall |

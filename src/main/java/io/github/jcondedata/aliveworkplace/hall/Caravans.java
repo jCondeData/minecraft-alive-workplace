@@ -43,7 +43,9 @@ import org.jetbrains.annotations.Nullable;
  * sell ({@link Lot}), which the other village's treasury pays for when they arrive
  * ({@link io.github.jcondedata.aliveworkplace.trade.CaravanTrade}); what it can't pay for travels home again. 33.7: a
  * caravan leaving or arriving where a player is near is also seen ({@link CaravanSights}: a carter and two llamas);
- * the goods travel as before either way.
+ * the goods travel as before either way. 41.3: between two villages whose waystones both stand
+ * ({@link VillageWaystones#linked}) a caravan walks to its stone and steps out at the other's, the trip as short as the
+ * shortest ({@link #waystoneTrip}); a stone broken when it steps out, it walks the road instead.
  */
 public final class Caravans {
 	/** How far apart villages can trade. */
@@ -100,8 +102,15 @@ public final class Caravans {
 	 * board's price when they arrive. {@code back}: a caravan bringing home what {@code from} couldn't pay for, or
 	 * couldn't buy. {@code byTrain} (39.7): it rides the train between two villages with stations
 	 * ({@link io.github.jcondedata.aliveworkplace.city.CaravanTrains}); saved, false (it walks) in older saves.
+	 * {@code byWaystone} (41.3): it walked to its village's waystone and steps out at the other's when it {@code arrives}
+	 * ({@link VillageWaystones#linked}); saved, false in older saves.
 	 */
-	public record Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back, boolean byTrain) {
+	public record Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back, boolean byTrain, boolean byWaystone) {
+		/** A caravan that doesn't go by waystone (41.3: {@code byWaystone} false). */
+		public Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back, boolean byTrain) {
+			this(from, to, goods, arrives, sale, back, byTrain, false);
+		}
+
 		public Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives) {
 			this(from, to, goods, arrives, List.of(), false);
 		}
@@ -115,9 +124,13 @@ public final class Caravans {
 	/**
 	 * A caravan's sale the selling village hasn't booked yet (33.6): {@code items} of {@code good} sold to {@code buyer}
 	 * for {@code cents} on {@code day}. Booked (the treasury paid, the chronicle written) in the seller's next round, at
-	 * once when its hall is loaded.
+	 * once when its hall is loaded. {@code buyerHall} (B430; null in older saves) gets back what the seller's full
+	 * treasury can't take.
 	 */
-	public record Sale(BlockPos seller, Component buyer, ResourceLocation good, int items, int cents, long day) {
+	public record Sale(BlockPos seller, Component buyer, ResourceLocation good, int items, int cents, long day, @Nullable BlockPos buyerHall) {
+		public Sale(BlockPos seller, Component buyer, ResourceLocation good, int items, int cents, long day) {
+			this(seller, buyer, good, items, cents, day, null);
+		}
 	}
 
 	/** The list of villages, routes and caravans on the road in one dimension. */
@@ -128,6 +141,8 @@ public final class Caravans {
 		final List<Shipment> onTheRoad = new ArrayList<>();
 		/** Caravan sales their sellers haven't booked yet (33.6). */
 		final List<Sale> sales = new ArrayList<>();
+		/** Hundredths of an emerald owed back to buying villages whose money a full treasury couldn't take (B430). */
+		final Map<BlockPos, Integer> refunds = new LinkedHashMap<>();
 		/** The halves of roads between villages (27.17), from one hall towards another. */
 		final Map<BlockPos, Map<BlockPos, Half>> halves = new LinkedHashMap<>();
 		/** Each village's Trainer Leader (28.17); none until its hall's round writes one. */
@@ -235,6 +250,7 @@ public final class Caravans {
 			routes.remove(hall);
 			routes.values().forEach(to -> to.remove(hall));
 			sales.removeIf(s -> s.seller().equals(hall));
+			refunds.remove(hall); // B430: a village gone is owed nothing
 			// 33.6, B212: a caravan on its way here turns round for home with everything it carried, the goods it brought
 			// for nothing and those to sell (if home is still on the list); one coming home here, or whose home is gone
 			// too, has nowhere to go and is dropped. A caravan that set out from here still arrives where it was going.
@@ -456,7 +472,7 @@ public final class Caravans {
 
 		/** Brings the caravans on the road to {@code hall} in now (tests: one waiting for room tries again at once). */
 		public void hurry(BlockPos hall) {
-			onTheRoad.replaceAll(s -> s.to().equals(hall) ? new Shipment(s.from(), s.to(), s.goods(), 0, s.sale(), s.back(), s.byTrain()) : s);
+			onTheRoad.replaceAll(s -> s.to().equals(hall) ? new Shipment(s.from(), s.to(), s.goods(), 0, s.sale(), s.back(), s.byTrain(), s.byWaystone()) : s);
 			setDirty();
 		}
 
@@ -475,6 +491,26 @@ public final class Caravans {
 				long arrives = io.github.jcondedata.aliveworkplace.city.CaravanTrains.waiting(s.arrives()) ? now + walk.applyAsLong(s) // 39.7a: never boarded
 					: Math.max(s.arrives(), now + walk.applyAsLong(s));
 				return new Shipment(s.from(), s.to(), s.goods(), arrives, s.sale(), s.back(), false);
+			});
+			if (!from.isEmpty()) {
+				setDirty();
+			}
+			return from;
+		}
+
+		/**
+		 * 41.3: the caravans by waystone come to {@code hall} ({@code arrives} up) when the stone at either end isn't standing
+		 * ({@code linked} false) can't step out: they walk the whole road instead, arriving {@code walk} ticks from {@code now}.
+		 * Returns the villages they came from.
+		 */
+		List<BlockPos> offTheWaystones(BlockPos hall, long now, java.util.function.Predicate<Shipment> linked, java.util.function.ToLongFunction<Shipment> walk) {
+			List<BlockPos> from = new ArrayList<>();
+			onTheRoad.replaceAll(s -> {
+				if (!s.to().equals(hall) || !s.byWaystone() || s.arrives() > now || linked.test(s)) {
+					return s;
+				}
+				from.add(s.from());
+				return new Shipment(s.from(), s.to(), s.goods(), now + walk.applyAsLong(s), s.sale(), s.back(), false, false);
 			});
 			if (!from.isEmpty()) {
 				setDirty();
@@ -644,6 +680,32 @@ public final class Caravans {
 			return List.copyOf(sales);
 		}
 
+		/** Hundredths of an emerald {@code seller}'s caravans have sold that it hasn't booked yet. */
+		public int unbooked(BlockPos seller) {
+			return sales.stream().filter(s -> s.seller().equals(seller)).mapToInt(Sale::cents).sum();
+		}
+
+		/** Owes {@code cents} back to {@code buyer}, whose money a full treasury couldn't take (B430). */
+		public void refund(BlockPos buyer, int cents) {
+			if (cents > 0) {
+				refunds.merge(buyer.immutable(), cents, Integer::sum);
+				setDirty();
+			}
+		}
+
+		/** What is owed back to {@code buyer}. */
+		public int refunds(BlockPos buyer) {
+			return refunds.getOrDefault(buyer, 0);
+		}
+
+		/** Sets what is still owed back to {@code buyer} after paying some of it. */
+		public void setRefund(BlockPos buyer, int cents) {
+			Integer old = cents > 0 ? refunds.put(buyer.immutable(), cents) : refunds.remove(buyer);
+			if (old == null || old != cents) {
+				setDirty();
+			}
+		}
+
 		/** The caravans for {@code hall} that have arrived by {@code now}, taken off the road. */
 		List<Shipment> arrived(BlockPos hall, long now) {
 			List<Shipment> out = new ArrayList<>();
@@ -755,6 +817,9 @@ public final class Caravans {
 				if (s.byTrain()) { // 39.7
 					t.putBoolean("byTrain", true);
 				}
+				if (s.byWaystone()) { // 41.3
+					t.putBoolean("byWaystone", true);
+				}
 				road.add(t);
 			}
 			tag.put("road", road);
@@ -768,9 +833,22 @@ public final class Caravans {
 					t.putInt("items", s.items());
 					t.putInt("cents", s.cents());
 					t.putLong("day", s.day());
+					if (s.buyerHall() != null) { // B430
+						t.putLong("buyerHall", s.buyerHall().asLong());
+					}
 					sold.add(t);
 				}
 				tag.put("sales", sold);
+			}
+			if (!refunds.isEmpty()) { // B430
+				ListTag owed = new ListTag();
+				refunds.forEach((hall, cents) -> {
+					CompoundTag t = new CompoundTag();
+					t.putLong("hall", hall.asLong());
+					t.putInt("cents", cents);
+					owed.add(t);
+				});
+				tag.put("refunds", owed);
 			}
 			ListTag bank = new ListTag();
 			banked.forEach((hall, m) -> m.forEach((id, xp) -> {
@@ -864,7 +942,7 @@ public final class Caravans {
 					}
 				}
 				data.onTheRoad.add(new Shipment(BlockPos.of(Nbt.getLong(t, "from")), BlockPos.of(Nbt.getLong(t, "to")), goods, Nbt.getLong(t, "arrives"),
-					sale, Nbt.getBoolean(t, "back"), Nbt.getBoolean(t, "byTrain"))); // byTrain: 39.7, false in older saves
+					sale, Nbt.getBoolean(t, "back"), Nbt.getBoolean(t, "byTrain"), Nbt.getBoolean(t, "byWaystone"))); // byTrain: 39.7, byWaystone: 41.3, false in older saves
 			}
 			ListTag sold = Nbt.getList(tag, "sales", Tag.TAG_COMPOUND); // 33.6; older saves have none
 			for (int i = 0; i < sold.size(); i++) {
@@ -873,8 +951,13 @@ public final class Caravans {
 				Component buyer = Component.Serializer.fromJson(Nbt.getString(t, "buyer"), registries);
 				if (good != null) {
 					data.sales.add(new Sale(BlockPos.of(Nbt.getLong(t, "seller")), buyer == null ? Component.empty() : buyer, good, Nbt.getInt(t, "items"),
-						Nbt.getInt(t, "cents"), Nbt.getLong(t, "day")));
+						Nbt.getInt(t, "cents"), Nbt.getLong(t, "day"), Nbt.has(t, "buyerHall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(t, "buyerHall")) : null)); // buyerHall: B430
 				}
+			}
+			ListTag owed = Nbt.getList(tag, "refunds", Tag.TAG_COMPOUND); // B430; older saves have none
+			for (int i = 0; i < owed.size(); i++) {
+				CompoundTag t = Nbt.compoundAt(owed, i);
+				data.refunds.merge(BlockPos.of(Nbt.getLong(t, "hall")), Nbt.getInt(t, "cents"), Integer::sum);
 			}
 			ListTag bank = Nbt.getList(tag, "bankedXp", Tag.TAG_COMPOUND); // 28.18; older saves have none
 			for (int i = 0; i < bank.size(); i++) {
@@ -916,6 +999,14 @@ public final class Caravans {
 			+ io.github.jcondedata.aliveworkplace.realm.RealmEdicts.caravanSpeed(level, from, to)); // and the Royal Highway (33.22)
 		ticks = sooner <= 0 ? ticks : Math.max(1, ticks * (100 - sooner) / 100);
 		return io.github.jcondedata.aliveworkplace.wonder.LighthousePowers.caravanTrip(level, from, ticks); // half the time with the Lighthouse (35.12)
+	}
+
+	/**
+	 * How long a caravan by waystone takes (41.3): the walk to its village's stone and from the other's, the shortest trip
+	 * ({@link #MIN_TRAVEL}), never longer than the road.
+	 */
+	public static long waystoneTrip(ServerLevel level, BlockPos from, BlockPos to, Data data) {
+		return Math.min(MIN_TRAVEL / 2, trip(level, from, to, data));
 	}
 
 	/**
@@ -989,6 +1080,13 @@ public final class Caravans {
 					them == null ? Component.translatable("chronicle.aliveworkplace.someone") : them.name()), true);
 			}
 		}
+		// 41.3: a caravan by waystone that finds a stone broken when it steps out walks the road instead
+		for (BlockPos from : data.offTheWaystones(hall, level.getGameTime(), s -> VillageWaystones.linked(level, s.from(), s.to()),
+			s -> trip(level, s.from(), s.to(), data))) {
+			Village them = data.village(from);
+			Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.waystone_walked",
+				them == null ? Component.translatable("chronicle.aliveworkplace.someone") : them.name()), true);
+		}
 		unload(level, hall, data);
 		io.github.jcondedata.aliveworkplace.trade.CaravanTrade.book(level, hall, data); // 33.6: what our caravans sold
 		long day = Chronicle.day(level);
@@ -1042,28 +1140,30 @@ public final class Caravans {
 		}
 		// 39.7: between two villages with stations and track along the road, the caravan rides the train
 		boolean train = io.github.jcondedata.aliveworkplace.city.CaravanTrains.rides(data, hall, to);
-		long ticks = trip(level, hall, to, data);
+		// 41.3: else, between two villages whose waystones both stand, it walks to its stone and steps out at theirs
+		boolean waystone = !train && VillageWaystones.linked(level, hall, to);
+		long ticks = waystone ? waystoneTrip(level, hall, to, data) : trip(level, hall, to, data);
 		// 39.7a: with the village's own Create train on the line, the goods wait at the station to be loaded onto it
 		long arrives = train && io.github.jcondedata.aliveworkplace.city.CaravanTrains.realTrain(level, hall, to)
 			? io.github.jcondedata.aliveworkplace.city.CaravanTrains.BOARDING
 			: level.getGameTime() + (train ? io.github.jcondedata.aliveworkplace.city.CaravanTrains.trainTrip(ticks) : ticks);
-		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods), arrives, sale, false, train);
+		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods), arrives, sale, false, train, waystone);
 		List<ItemStack> all = new ArrayList<>(goods);
 		sale.forEach(lot -> all.addAll(lot.stacks()));
 		// 31.20: on a long road, one caravan in lostCaravanChance goes missing; the Lost Caravan's arc holds its goods (never a train's)
-		boolean lost = !train && io.github.jcondedata.aliveworkplace.story.LostCaravanStory.lose(level, hall, to, all, level.random);
+		boolean lost = !train && !waystone && io.github.jcondedata.aliveworkplace.story.LostCaravanStory.lose(level, hall, to, all, level.random);
 		if (!lost) {
 			data.ship(shipment);
 			io.github.jcondedata.aliveworkplace.realm.RealmEdicts.caravanSent(level, hall, to); // a realm reform's count (33.22)
 		}
 		level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1f);
 		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable(train ? "chronicle.aliveworkplace.train_left"
-			: "chronicle.aliveworkplace.caravan_left", them.name(), describe(all)), true);
+			: waystone ? "chronicle.aliveworkplace.waystone_left" : "chronicle.aliveworkplace.caravan_left", them.name(), describe(all)), true);
 		VillageMoments.award(level, hall, VillageMoments.CARAVAN, null); // the questbook's first caravan
 		if (train) {
 			io.github.jcondedata.aliveworkplace.city.CaravanTrains.whistle(level, hall, data); // 39.7: steam and a bell at the station
 		} else if (!lost) {
-			CaravanSights.leave(level, hall, to, data); // 33.7: seen setting out, when someone is there to see it
+			CaravanSights.leave(level, hall, to, data, waystone); // 33.7: seen setting out, when someone is there to see it (41.3: to the stone)
 		}
 		return shipment;
 	}
@@ -1129,6 +1229,9 @@ public final class Caravans {
 				if (s.byTrain()) {
 					io.github.jcondedata.aliveworkplace.city.CaravanTrains.whistle(level, hall, data); // 39.7: the train comes in
 				} else {
+					if (s.byWaystone()) {
+						VillageWaystones.warp(level, hall); // 41.3: out of the stone, seen or not
+					}
 					CaravanSights.come(level, hall, s, data);
 				}
 			}
@@ -1153,7 +1256,8 @@ public final class Caravans {
 			}
 			if (left.size() < s.goods().size() || left.stream().mapToInt(ItemStack::getCount).sum() < s.goods().stream().mapToInt(ItemStack::getCount).sum()) {
 				Village from = data.village(s.from());
-				Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable(s.byTrain() ? "chronicle.aliveworkplace.train_came" : "chronicle.aliveworkplace.caravan_came",
+				Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable(s.byTrain() ? "chronicle.aliveworkplace.train_came"
+					: s.byWaystone() ? "chronicle.aliveworkplace.waystone_came" : "chronicle.aliveworkplace.caravan_came",
 					from == null ? Component.translatable("chronicle.aliveworkplace.someone") : from.name(), describe(s.goods())), true);
 				level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1.2f);
 			}
@@ -1194,7 +1298,7 @@ public final class Caravans {
 				int cents = Math.min(entity.treasury(), io.github.jcondedata.aliveworkplace.trade.Board.price(level, hall, good) * stack.getCount() / Math.max(1, good.bundle()));
 				if (cents > 0) {
 					entity.setTreasury(entity.treasury() - cents);
-					data.sold(new Sale(from, buyerName, good.id(), stack.getCount(), cents, Chronicle.day(level)));
+					data.sold(new Sale(from, buyerName, good.id(), stack.getCount(), cents, Chronicle.day(level), hall));
 					total += cents;
 				}
 				break;

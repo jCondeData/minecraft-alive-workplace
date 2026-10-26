@@ -4,14 +4,22 @@
 # --- ours, triggered on purpose by tests ---
 # B208GameTests and B211GameTests make the world refuse hostile mobs and village golems, wolves, horses and llamas, as Cobbleverse's MobsBeGone does, and set Peaceful, to prove each refusal is logged plainly.
 (Another mod refused to let minecraft:\S+ spawn for the|Could not spawn minecraft:\S+ for the) 
+# QaRoadGameTests ships three broken road style files in the test pack to prove each is skipped and the shipped styles still load (27.15).
+Skipping road style aliveworkplace_test:road_styles/qa_
+# QaRenewalGameTests loads five broken renewal lists through a fake resource manager to prove each is skipped and the good lists still load (27.21).
+Skipping renewal list qa:steward_renewal/(bad_job|no_buildings|array|broken|no_kind)\.json
 # FurnitureSpotGameTests ships a broken spots file in the test pack to prove it is logged with its path and skipped (37.2).
 Skipping furniture spots aliveworkplace_test:blueprint_furniture/broken\.json
 # FurnitureAnyModGameTests ships a broken equivalents file in the test pack to prove it is logged with its path and skipped (37.13).
 Skipping furniture equivalents aliveworkplace_test:furniture_equivalents/broken\.json
 # OptionalModsGameTests feeds an integration a missing method to prove it switches itself off.
 a test integration from test turned off
+# QaSignpostGameTests has a mock player try to edit a waxed signpost board, to prove it can't (36.4).
+Player test-mock-player just tried to change non-editable sign
 # MinerGameTests loads a quarry saved by a pre-0.45.0 bug to prove the repair stops it.
 Stopped quarry .* stretched over its Miner's Bench .* by a bug before 0\.45\.0
+# QaBlockSaveKindsGameTests and QaEveryCodecGameTests load halls with quests that can't be read, to prove each is left out and the hall still loads (B509).
+Left out a saved village quest that can't be read
 # GemGrowerGameTests feeds the bed reader malformed files (from a test pack) to prove each is logged and skipped.
 skipping gem bed testpack:gem_beds/
 # StewardRulesGameTests feeds the rule loader broken Steward rule files to prove each is skipped, naming its field.
@@ -37,6 +45,8 @@ Raider culture testpack:odd_keys: the (key|condition) '.*' isn't known and is ig
 # HeartEventGameTests' pack has an event with one line, and the tests feed the reader more broken files, to prove each is skipped and named.
 Skipping heart event aliveworkplace_test:broken
 Skipping heart event mypack:
+# WonderDataGameTests and QaWonderRulesGameTests feed the Wonder loader broken files (owner_pack, qa_pack) to prove each is skipped with its path and reason (35.2).
+Skipping Wonder (qa_pack|owner_pack):wonders/
 
 # --- other mods in the compat test server (dev environment, not our code) ---
 # Modded entities have no DataFixerUpper schema; every mod's entity logs this once.

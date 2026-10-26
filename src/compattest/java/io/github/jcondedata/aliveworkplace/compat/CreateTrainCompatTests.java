@@ -49,7 +49,7 @@ public class CreateTrainCompatTests implements FabricGameTest {
 	private static final BlockPos HALL_B = new BlockPos(23, 2, 22);
 
 	/** A flat stone floor, the track and the two stations. */
-	private static void line(GameTestHelper helper) {
+	static void line(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		for (int x = 0; x < 30; x++) {
 			for (int z = 0; z < 30; z++) {
@@ -82,11 +82,11 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		return (Comparable) prop(state, name).getValue(value).orElseThrow();
 	}
 
-	private static CaravanTrains.Railway railway() {
+	static CaravanTrains.Railway railway() {
 		return CaravanTrains.RAILWAY.call(r -> r, null);
 	}
 
-	private static Villager conductor(GameTestHelper helper, BlockPos at) {
+	static Villager conductor(GameTestHelper helper, BlockPos at) {
 		Villager villager = EntityType.VILLAGER.spawn(helper.getLevel(), helper.absolutePos(at), MobSpawnType.COMMAND);
 		villager.setNoAi(true);
 		return villager;
@@ -335,7 +335,7 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		Builders.employ(level, builder, helper.absolutePos(bench));
 	}
 
-	private static int logs(List<ItemStack> stacks) {
+	static int logs(List<ItemStack> stacks) {
 		return stacks.stream().filter(st -> st.is(Items.OAK_LOG)).mapToInt(ItemStack::getCount).sum();
 	}
 
@@ -367,7 +367,10 @@ public class CreateTrainCompatTests implements FabricGameTest {
 			}
 			if (!sent[0]) {
 				if (CaravanTrains.realTrain(level, v.a(), v.b())) {
-					helper.assertTrue(said(level, first, "chronicle.aliveworkplace.train_built"), "the chronicle doesn't say a builder built the train");
+					helper.assertTrue(said(level, first, "chronicle.aliveworkplace.train_built"), "the chronicle of " + first.toShortString()
+						+ " (the first village) doesn't say a builder built the train at tick " + tick[0] + ": "
+						+ hall(level, first).chronicle().stream().map(e -> e.text().getString()).toList() + ", sites still open "
+						+ Roads.openSegments(level, first).stream().map(st -> st.structure() + " " + st.stage() + " " + st.status()).toList());
 					helper.assertTrue(railway().cargo(level, owner).isEmpty(), "the new train's chest isn't empty: " + railway().cargo(level, owner));
 					sendAgain(level, v);
 					sent[0] = true;
@@ -395,6 +398,69 @@ public class CreateTrainCompatTests implements FabricGameTest {
 				railway().scrap(level, owner);
 				tidy(level, v);
 				helper.succeed();
+			}
+		});
+	}
+
+	/**
+	 * B483: the train's blocks all standing while its builder's site is still open (the builder hasn't finished its
+	 * stage yet; here it's held still): the station doesn't put the train together under the site. Once the builder
+	 * finishes it, the chronicle says who built the train, and then the train is put together.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"createTrainSiteOpen"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "createTrainSiteOpen")
+	public void theTrainWaitsForItsBuildersSiteToFinish(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		line(helper);
+		Villages v = villages(helper);
+		builder(helper, false);
+		conductor(helper, new BlockPos(6, 2, 16));
+		BlockPos first = CaravanTrains.first(v.a(), v.b()) ? v.a() : v.b();
+		UUID owner = CaravanTrains.railwayId(v.a(), v.b());
+		int[] tick = {0};
+		int[] held = {-1};
+		helper.onEachTick(() -> {
+			tick[0]++;
+			if (tick[0] % 10 == 0) {
+				CaravanTrains.serve(level, v.a(), hall(level, v.a()));
+				CaravanTrains.serve(level, v.b(), hall(level, v.b()));
+			}
+			BuildSite site = Roads.openSegments(level, first).stream().filter(st -> CaravanTrains.isTrainSite(st.structure())).findFirst().orElse(null);
+			if (held[0] < 0) {
+				if (site != null) { // the builder took the site: held still, and the train's blocks put up as if it had placed them
+					for (Villager villager : level.getEntitiesOfClass(Villager.class, helper.getBounds(), x -> Builders.isBuilder(x))) {
+						villager.setNoAi(true);
+					}
+					buildTrain(level, v);
+					helper.assertTrue(railway().built(level, v.data().stations(first).get(0), v.data().stations(first.equals(v.a()) ? v.b() : v.a()).get(0)),
+						"the train's blocks don't stand at the station");
+					held[0] = tick[0];
+				} else if (tick[0] == 1000) {
+					helper.fail("no train site opened in 1000 ticks");
+				}
+				return;
+			}
+			if (tick[0] < held[0] + 300) { // three of the hall's looks at its trains
+				helper.assertTrue(!CaravanTrains.realTrain(level, v.a(), v.b()), "the train was put together under its builder's open site "
+					+ (site == null ? "(gone)" : site.stage() + " " + site.status()) + ": " + hall(level, first).chronicle().stream().map(e -> e.text().getString()).toList());
+				helper.assertTrue(site != null, "the held builder's train site closed");
+				return;
+			}
+			if (tick[0] == held[0] + 300) {
+				for (Villager villager : level.getEntitiesOfClass(Villager.class, helper.getBounds(), x -> Builders.isBuilder(x))) {
+					villager.setNoAi(false);
+				}
+				return;
+			}
+			if (CaravanTrains.realTrain(level, v.a(), v.b())) {
+				helper.assertTrue(said(level, first, "chronicle.aliveworkplace.train_built"), "the chronicle of " + first.toShortString()
+					+ " doesn't say a builder built the train: " + hall(level, first).chronicle().stream().map(e -> e.text().getString()).toList());
+				railway().scrap(level, owner);
+				tidy(level, v);
+				helper.succeed();
+			} else if (tick[0] == 2300) {
+				helper.fail("no train after the builder finished: site " + (site == null ? "done" : site.stage() + " " + site.status() + " missing " + site.missing())
+					+ ", chronicle " + hall(level, first).chronicle().stream().map(e -> e.text().getString()).toList());
 			}
 		});
 	}
@@ -536,13 +602,13 @@ public class CreateTrainCompatTests implements FabricGameTest {
 	}
 
 	/** The logs in both villages' chests. */
-	private static int chestLogs(ServerLevel level, Villages v) {
+	static int chestLogs(ServerLevel level, Villages v) {
 		return ((Container) level.getBlockEntity(v.a().east(3).north(2))).countItem(Items.OAK_LOG)
 			+ ((Container) level.getBlockEntity(v.b().east(3).north(2))).countItem(Items.OAK_LOG);
 	}
 
 	/** The caravans on the road to or from either village. */
-	private static List<Caravans.Shipment> road(Villages v) {
+	static List<Caravans.Shipment> road(Villages v) {
 		return v.data().onTheRoad().stream().filter(s -> s.to().equals(v.a()) || s.to().equals(v.b()) || s.from().equals(v.a()) || s.from().equals(v.b())).toList();
 	}
 
@@ -619,11 +685,11 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		});
 	}
 
-	private record Villages(BlockPos a, BlockPos b, Caravans.Data data) {
+	record Villages(BlockPos a, BlockPos b, Caravans.Data data) {
 	}
 
 	/** Two halls with a storehouse chest each, a caravan route, the road between them built and tracked, and the stations noted. */
-	private static Villages villages(GameTestHelper helper) {
+	static Villages villages(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		BlockPos a = helper.absolutePos(HALL_A);
 		BlockPos b = helper.absolutePos(HALL_B);
@@ -664,7 +730,7 @@ public class CreateTrainCompatTests implements FabricGameTest {
 	 * Today's caravan sent now that the train runs: the hall's own first round (its first tick) may have sent one already,
 	 * before there was a train; that one is taken off the road, its logs put back, and the day's caravan sent again.
 	 */
-	private static void sendAgain(ServerLevel level, Villages v) {
+	static void sendAgain(ServerLevel level, Villages v) {
 		v.data().clearRoad(v.a());
 		((Container) level.getBlockEntity(v.a().east(3).north(2))).setItem(0, new ItemStack(Items.OAK_LOG, 64));
 		((Container) level.getBlockEntity(v.b().east(3).north(2))).clearContent();
@@ -678,7 +744,7 @@ public class CreateTrainCompatTests implements FabricGameTest {
 	 * The train's blocks put up at the first village's station as its builder would (39.7b; the builder itself:
 	 * {@link #aTrainOnASteppedRoadRunsWithTheGoodsInItsChest}), once Create knows both stations on one network.
 	 */
-	private static void buildTrain(ServerLevel level, Villages v) {
+	static void buildTrain(ServerLevel level, Villages v) {
 		BlockPos hall = CaravanTrains.first(v.a(), v.b()) ? v.a() : v.b();
 		BlockPos other = hall.equals(v.a()) ? v.b() : v.a();
 		List<BlockPos> ours = v.data().stations(hall);
@@ -697,7 +763,7 @@ public class CreateTrainCompatTests implements FabricGameTest {
 	 * Takes the two villages away again (halls, storehouses and their emptied chests, and their entries on the list): the
 	 * next batch's test areas stand within a hall's reach of this one, and a storehouse left here would take their goods.
 	 */
-	private static void tidy(ServerLevel level, Villages v) {
+	static void tidy(ServerLevel level, Villages v) {
 		for (BlockPos hall : List.of(v.a(), v.b())) {
 			if (level.getBlockEntity(hall.east(3).north(2)) instanceof Container c) {
 				c.clearContent();
@@ -710,11 +776,11 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		}
 	}
 
-	private static VillageHallBlockEntity hall(ServerLevel level, BlockPos pos) {
+	static VillageHallBlockEntity hall(ServerLevel level, BlockPos pos) {
 		return (VillageHallBlockEntity) level.getBlockEntity(pos);
 	}
 
-	private static boolean said(ServerLevel level, BlockPos hall, String key) {
+	static boolean said(ServerLevel level, BlockPos hall, String key) {
 		return hall(level, hall).chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.CARAVAN
 			&& e.text().getContents() instanceof TranslatableContents t && t.getKey().equals(key));
 	}

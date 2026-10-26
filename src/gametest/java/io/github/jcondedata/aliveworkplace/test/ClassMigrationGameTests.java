@@ -172,7 +172,7 @@ public class ClassMigrationGameTests implements net.fabricmc.fabric.api.gametest
 		finished(helper, emptyBlueprint(helper, "class_migration_house_2", new Vec3i(7, 5, 7)), townhouse);
 		finished(helper, emptyBlueprint(helper, "class_migration_cottage", new Vec3i(6, 5, 6)), cottage);
 
-		Villager scholar = villager(helper, new BlockPos(2, 2, 2), "Sela");
+		Villager scholar = villager(helper, new BlockPos(3, 2, 3), "Sela");
 		scholar.setVillagerData(scholar.getVillagerData().setProfession(ModVillagers.SCHOLAR).setLevel(3));
 		sleepsAt(level, scholar, sky(helper).offset(40, 1, 40)); // a plain house no builder built
 		wellFed(level, scholar);

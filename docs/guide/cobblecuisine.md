@@ -69,10 +69,10 @@ ask the Chef for some at the board and keep them there.
 
 ## Beans on the farm
 
-Your [Farmers](farmer.md) grow the beans the dishes need. When the store holds fewer than 16 of a colour of bean that
+Your [Farmers](farmer.md) grow the beans the dishes need. When the store holds fewer than 16 of a color of bean that
 a dish on the menu uses, a farmer takes **bean seeds** from her chests and sows them on her field's empty farmland. She
-cuts the beans only when they're fully grown and takes them to the store with the rest of her harvest. The colour of
-each bean is Cobblecuisine's choice, so a field brings a mix. Once the store has 16 of every colour the menu wants,
+cuts the beans only when they're fully grown and takes them to the store with the rest of her harvest. The color of
+each bean is Cobblecuisine's choice, so a field brings a mix. Once the store has 16 of every color the menu wants,
 she plants no more, and the seeds stay in the chest. Put a few bean seeds in her chest to start.
 
 ## Treats for partner Pokémon

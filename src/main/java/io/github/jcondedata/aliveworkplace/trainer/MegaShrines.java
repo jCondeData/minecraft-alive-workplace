@@ -7,17 +7,21 @@ import io.github.jcondedata.aliveworkplace.hall.Arenas;
 import io.github.jcondedata.aliveworkplace.hall.Festivals;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -27,6 +31,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.AABB;
 
 /**
@@ -35,6 +40,7 @@ import net.minecraft.world.phys.AABB;
  * village with a finished shrine holds a show there first: a village trainer walks to the pedestal and Mega Evolves their
  * ace, and the villagers off work gather at the shrine to watch; each watcher is {@link #MOOD} happier for as long as a
  * festival's good mood lasts. Behind {@code villageMegas} (38.5's switch, M38's gate) and Mega Showdown; ids only.
+ * Saved: the day each village's show was held ({@link Data}, B501), so it is held once a festival day, restart or not.
  */
 public final class MegaShrines {
 	/** The blueprint. */
@@ -42,7 +48,7 @@ public final class MegaShrines {
 	/** Mega Showdown's pedestal: while it isn't a block, the shrine isn't listed. */
 	public static final ResourceLocation PEDESTAL = ResourceLocation.fromNamespaceAndPath("mega_showdown", "pedestal");
 	/** The pedestal in the blueprint (tools/blueprints/decor.py, mega_shrine), and where its watchers stand (in front). */
-	static final BlockPos PEDESTAL_SPOT = new BlockPos(3, 3, 3);
+	public static final BlockPos PEDESTAL_SPOT = new BlockPos(3, 3, 3);
 	static final BlockPos TRAINER_SPOT = new BlockPos(3, 3, 2);
 	static final BlockPos CROWD_SPOT = new BlockPos(3, 1, -4);
 	/** The show runs from the festival's start for this many ticks (an in-game hour and a half), then the square has them. */
@@ -52,8 +58,6 @@ public final class MegaShrines {
 	/** How near the pedestal the trainer must be to Mega Evolve, and the watchers to see it. */
 	static final double TRAINER_REACH = 3.5;
 	static final int WATCH_RANGE = 12;
-	/** The day each village's show was held (by its hall), so it's held once a festival. */
-	private static final Map<GlobalPos, Long> HELD = new ConcurrentHashMap<>();
 	/**
 	 * How long the trainer at the pedestal waits for the villagers off work to come (B215: the show was held the moment the
 	 * trainer got there, before the crowd had walked over, and only those standing near the pedestal just then cheered).
@@ -79,15 +83,29 @@ public final class MegaShrines {
 		return MegaBracelets.extraMegas() && blocksExist();
 	}
 
-	/** The pedestal of the village round {@code hall}'s finished shrine, the nearest first; empty without one. */
+	/**
+	 * The pedestal of the village round {@code hall}'s finished shrine whose pedestal still stands, the nearest first; empty
+	 * without one.
+	 */
 	public static Optional<BlockPos> pedestal(ServerLevel level, BlockPos hall) {
 		return finished(level, hall).map(f -> Arenas.world(f.placement(), PEDESTAL_SPOT));
 	}
 
+	/**
+	 * The nearest finished shrine round {@code hall} whose pedestal stands (B421: a shrine whose pedestal was broken, or
+	 * never placed, still held the show at the empty spot; the finished-build record alone was checked). A shrine whose
+	 * pedestal is put back counts again.
+	 */
 	private static Optional<BuildSiteManager.Finished> finished(ServerLevel level, BlockPos hall) {
 		return BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
 			.filter(f -> BlueprintStyles.base(f.structure()).equals(SHRINE))
+			.filter(f -> standing(level, Arenas.world(f.placement(), PEDESTAL_SPOT)))
 			.min(Comparator.comparingDouble(f -> f.placement().origin().distSqr(hall)));
+	}
+
+	/** Whether Mega Showdown's pedestal stands at {@code pos} (by id); a spot whose chunk isn't loaded isn't read (and isn't). */
+	static boolean standing(ServerLevel level, BlockPos pos) {
+		return level.isLoaded(pos) && PEDESTAL.equals(BuiltInRegistries.BLOCK.getKey(level.getBlockState(pos).getBlock()));
 	}
 
 	/** Whether the festival round {@code hall} is in its show's hours now (it started less than {@link #SHOW_TICKS} ago). */
@@ -115,7 +133,7 @@ public final class MegaShrines {
 		Optional<Villager> trainer = trainer(level, hall, pedestal);
 		long today = Chronicle.day(level);
 		GlobalPos key = GlobalPos.of(level.dimension(), hall);
-		boolean held = Long.valueOf(today).equals(HELD.get(key));
+		boolean held = Data.get(level).held(hall) == today; // B501: saved, so a restart in the show's hours doesn't hold it again
 		Crowd came = CROWDS.compute(key, (k, c) -> c == null || c.day != today ? new Crowd(today, level.getGameTime()) : c);
 		boolean everyone = true; // every villager off work has come to the shrine
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
@@ -168,7 +186,7 @@ public final class MegaShrines {
 
 	/**
 	 * The show: {@code trainer} Mega Evolves their ace by the pedestal (the light, the sound, a line to the players near),
-	 * and every villager watching within {@link #WATCH_RANGE} is the happier for it. Held once a day per village. Returns
+	 * and every villager off work watching within {@link #WATCH_RANGE} is the happier for it (one at work isn't, B420). Held once a day per village. Returns
 	 * how many watched.
 	 */
 	public static int show(ServerLevel level, BlockPos hall, BlockPos pedestal, Villager trainer) {
@@ -181,7 +199,7 @@ public final class MegaShrines {
 	 */
 	public static int show(ServerLevel level, BlockPos hall, BlockPos pedestal, Villager trainer, java.util.Set<java.util.UUID> came) {
 		long today = Chronicle.day(level);
-		HELD.put(GlobalPos.of(level.dimension(), hall), today);
+		Data.get(level).setHeld(hall, today);
 		double x = pedestal.getX() + 0.5;
 		double y = pedestal.getY() + 1.2;
 		double z = pedestal.getZ() + 0.5;
@@ -193,7 +211,7 @@ public final class MegaShrines {
 		int watchers = 0;
 		AABB near = new AABB(pedestal).inflate(WATCH_RANGE);
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, near.minmax(VillageHalls.area(hall)),
-			v -> v.isAlive() && v != trainer && (v.getBoundingBox().intersects(near) || came.contains(v.getUUID())))) {
+			v -> v.isAlive() && v != trainer && (came.contains(v.getUUID()) || v.getBoundingBox().intersects(near) && watching(v)))) {
 			ModAttachments.MEGA_SHOW_DAY.set(villager, today);
 			watchers++;
 		}
@@ -204,16 +222,89 @@ public final class MegaShrines {
 		return watchers;
 	}
 
+	/**
+	 * Whether {@code villager}, near the pedestal, is one of the crowd: off work or seated, as {@code Festivals.gatherAt}
+	 * gathers them (B420: a farmer at his job by the shrine got the show's mood though he never came to watch).
+	 */
+	private static boolean watching(Villager villager) {
+		return villager.isPassenger() || Festivals.offWork(villager);
+	}
+
 	/** {@link #MOOD} while the last show {@code villager} watched is as fresh as a festival's good mood, else 0. */
 	public static int mood(ServerLevel level, Villager villager) {
 		Long day = ModAttachments.MEGA_SHOW_DAY.get(villager);
 		return day != null && Chronicle.day(level) - day <= Festivals.MOOD_DAYS ? MOOD : 0;
 	}
 
-	/** Forgets the shows held (server stop). */
+	/**
+	 * Forgets what a server stop loses: who came to each shrine today (in memory only). The day each show was held is saved
+	 * ({@link Data}, B501), so a restart in the show's hours doesn't hold it again; a villager who came and wandered off
+	 * before a restart is waited for again (the show never waits past its last call), and the mood isn't doubled either
+	 * way (it is the day of the show a villager watched, {@code MEGA_SHOW_DAY}).
+	 */
 	public static void forget() {
-		HELD.clear();
 		CROWDS.clear();
+	}
+
+	/** Forgets the shows held in {@code level} too, as if none had been (tests: the next festival on the same day). */
+	public static void forgetShows(ServerLevel level) {
+		forget();
+		Data.get(level).clear();
+	}
+
+	// ---------------------------------------------------------------- saved
+
+	/**
+	 * The day each village's show was held, by its hall (B501: it was in memory only, and a restart in the show's hours held
+	 * it a second time). Saved with the level as {@code aliveworkplace_mega_shrines}: {@code held}, a hall's position (as a
+	 * long) to the day. A world from before has no file and no entry: every show not yet held, as before.
+	 */
+	public static final class Data extends SavedData {
+		public static final String NAME = "aliveworkplace_mega_shrines";
+		/** Days kept after a show, then forgotten (only today's is read). */
+		static final long KEEP_DAYS = 2;
+		private final Map<Long, Long> held = new HashMap<>();
+
+		public static Data get(ServerLevel level) {
+			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
+		}
+
+		/** The day the show round {@code hall} was last held; -1: never. */
+		public long held(BlockPos hall) {
+			return held.getOrDefault(hall.asLong(), -1L);
+		}
+
+		public void setHeld(BlockPos hall, long day) {
+			held.values().removeIf(d -> d < day - KEEP_DAYS);
+			held.put(hall.asLong(), day);
+			setDirty();
+		}
+
+		void clear() {
+			held.clear();
+			setDirty();
+		}
+
+		@Override
+		public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+			CompoundTag halls = new CompoundTag();
+			held.forEach((hall, day) -> halls.putLong(Long.toString(hall), day));
+			tag.put("held", halls);
+			return tag;
+		}
+
+		public static Data load(CompoundTag tag, HolderLookup.Provider registries) {
+			Data data = new Data();
+			CompoundTag halls = Nbt.getCompound(tag, "held");
+			for (String key : Nbt.keys(halls)) {
+				try {
+					data.held.put(Long.parseLong(key), Nbt.getLong(halls, key));
+				} catch (NumberFormatException e) {
+					// a broken key: forgotten
+				}
+			}
+			return data;
+		}
 	}
 
 	private MegaShrines() {

@@ -37,7 +37,8 @@ have, the ways they come, their powers. A file with an unknown condition or powe
 a typo never makes a Legend come for free. The two Pokémon Legends load only with Cobblemon.
 
 **Rarity (29.3).** A Rare Legend comes once to each village; a Legendary one once to each world; a Mythic one as
-many as the villages' ranks allow (`mythicLegendCap`: by default a Town holds 1 and a City 2). The server keeps one
+many as the villages' ranks allow (`mythicLegendCap`: by default a Town holds 1 and a City 2). A full one says so
+("A Town can hold 1 Mythic Legend, and this one has 1."). The server keeps one
 record of every Legend settled anywhere. A Legend holds their slot alive, as a zombie villager, or dead in a grave;
 dead with no grave they fall 7 days later and the slot is free again.
 
@@ -155,12 +156,18 @@ GameTests: `LegendEngineGameTests` (6), `LegendSlotsGameTests` (6), `LegendsHall
 `PathfinderGameTests`, `OldSageGameTests`, `GolemSmithGameTests` (with `GolemHaulerFightGameTests`, 4: a hauler back at work
 after a fight, B329; `GolemHaulerRouteGameTests`, 2: a hauler whose nearest Storehouse is walled in gives it up after
 10 seconds without headway and takes its load to the next nearest, B450, and one whose nearest Drop Box is walled in
-fetches from the next, B456; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
+fetches from the next, B456; `QaHaulerGiveUpGameTests`, 4 (QA): a given-up Storehouse, and a given-up Drop Box, is left alone for the
+2,400-tick wait even once the way is open and used again after it, a hauler saved and loaded right after giving up keeps its whole load and
+gets it home, and one whose only Storehouse is walled in puts its load back into the Drop Box and is free again, B463; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
 and walks back to it, a Nether route is refused and a blank map takes the post, each with its line, a foe 10 blocks
 from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
 `PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
 `RealmLegendsGameTests` (5, 33.23); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
+QA (lane d): `QaLegendRecordGameTests` (12, 29.3 and 29.5): a Rare per kind per village, a Legendary per world
+(any dimension), the Mythic caps at every rank from both sides, a fallen Legend's slot free on day 7 not day 6 and the
+line written once, the record's save and old-save defaults, many rounds on one day counting one unmet day, the 3 days'
+grace, a strike partly met going on, the `legendNeeds` and Legends switches, every record and strike sentence.
 
 Showcase scenes: `legend`, `legend_announce`, `legends_hall`, `legend_guest`, `legend_sites`, `legend_strike`,
 `strange_mood`, `gifted`, `gifted_born`, `research_trees`, `legend_architect`, `legend_pathfinder`, `legend_sage`,

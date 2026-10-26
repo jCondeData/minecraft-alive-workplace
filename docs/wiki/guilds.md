@@ -23,8 +23,8 @@ village is only a Hamlet, it already has that guild, or it has all the guilds it
 | Smiths' Guild | Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths | 15% faster; an ingot mends a third (not a quarter) |
 | Woodsmen's Guild | Lumberjacks, Fletchers, Fishermen | 15% faster; axes and fishing rods wear half as fast |
 | Harvest Guild | Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Chefs | 15% faster; farms and orchard rounds reach 24 blocks (not 16) |
-| Herders' Guild | Shepherds, Butchers, Ranchers | 15% faster; every herd may be 4 bigger |
-| Scholars' Guild | Scholars, Teachers, Librarians, Cartographers | 15% faster; research costs a quarter less |
+| Herders' Guild | Shepherds, Butchers, Ranchers | 15% faster; every herd may be 4 bigger (12 of a kind bred, not 8; 14 kept by a hired butcher, not 10) |
+| Scholars' Guild | Scholars, Teachers, Librarians, Cartographers | 15% faster; research costs a quarter less paper, books and emeralds (rounded up) |
 | Healers' Guild | Nurses, Clerics, Undertakers | 15% faster; the ill get well in two days (not three); nurses and undertakers look 48 blocks out |
 | Merchants' Guild | Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters | 15% faster; travelers a quarter cheaper to hire; porters carry 3 more stacks |
 | Wardens' Guild | Guards | Train on the dummies up to Master (not Expert); hit 10% harder |
@@ -45,8 +45,16 @@ guild row has pages (B78). A full village refuses the next charter with its coun
 "guildhall") founds it. Each guild needs a Guildhall of its own: the oldest chartered guild without one claims the
 next one finished. While a guild's Guildhall is no longer finished (a creeper, say), its perks wait.
 
-**Perks reach members only**: villagers of the guild's trades who live in that village. The 15% goes through the one
-pace rule, so it shares the cap with every other bonus.
+**Perks reach members only**: villagers of the guild's trades who live in that village. A member outside the village,
+or a villager of another guild's trade in it, gains nothing (a Shepherd gets nothing from the Harvest Guild, a Fossil
+Scientist nothing from the Scholars' Guild). The village-wide perks (a shorter illness, cheaper research and hires)
+reach everyone in the village. The 15% goes through the one pace rule, so it shares the cap with every other bonus.
+
+**Who has no guild.** The Bard has none, and without Cobblemon neither do
+the Trainers' Guild's trades: their charter is refused with "There is no guild for ...'s trade."
+
+**"A quarter less" rounds up.** Research and a traveler's hire cost a quarter less, rounded up: 1 stays 1, 4 is 3,
+5 is 4, 16 is 12.
 
 **Succession.** When the Guild Master dies, the most experienced member takes over and the village is told. With no
 member left the guild is dissolved.
@@ -101,6 +109,8 @@ GameTests: `GuildGameTests` (6: loading, every refusal and the grant, the master
 for the Guildhall, five helpers at one build), `GuildPerkGameTests` (5), `GuildHarvestGameTests` (6),
 `GuildServiceGameTests` (5), `GuildTrainersCompatTests`, `EdictBookGameTests.everyGuildShowsOnTheGuildRow`,
 `EdictBookGameTests.qaSixGuildsHaveNoPageButtonAndSevenPage`, `QaEdictsGameTests.qaATownHasTwoGuildsAndACityThree` and
-`QaEdictsGameTests.qaAFullVillageSaysOneGuild`.
+`QaEdictsGameTests.qaAFullVillageSaysOneGuild`, and `QaTonicsGuildsGameTests` (10: which trade finds which guild, a
+charter given by sneak-right-click, perks only in the village and kept over a reload of the hall, each guild's
+numbers for its members and not for the others, the rounding, the plural refusal in a Town).
 
 Showcase scenes: `guildhall` (charters and the Guildhall), `guilds` (the other guilds at work).

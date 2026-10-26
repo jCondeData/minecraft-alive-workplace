@@ -116,7 +116,7 @@ public final class Retraining {
 		if (offer == null || now > offer.until() || !offer.villager().equals(villager.getUUID()) || offer.job() != job
 			|| !offer.station().equals(station)) {
 			OFFERS.put(player.getUUID(), new Offer(villager.getUUID(), job, station.immutable(), now + CONFIRM_TICKS));
-			Chat.chat(player, Component.translatable("message.aliveworkplace.retrain.offer", who,
+			Chat.chat(player, Words.articled("message.aliveworkplace.retrain.offer", 3, who,
 				Stations.name(villager.getVillagerData().getProfession()), levelName(villager), Stations.name(job), price)
 				.withStyle(ChatFormatting.GOLD));
 			Chat.chat(player, Component.translatable("message.aliveworkplace.retrain.confirm", CONFIRM_TICKS / 20).withStyle(ChatFormatting.GRAY));
@@ -132,7 +132,7 @@ public final class Retraining {
 		VillagerProfession old = villager.getVillagerData().getProfession();
 		retrain(level, player, villager, station, job);
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		Chat.chat(player, Component.translatable("message.aliveworkplace.retrain.done", who, Stations.name(old), Stations.name(job),
+		Chat.chat(player, Words.articled("message.aliveworkplace.retrain.done", 2, who, Stations.name(old), Stations.name(job),
 			level.getBlockState(station).getBlock().getName(), price).withStyle(ChatFormatting.GREEN));
 		return InteractionResult.SUCCESS;
 	}
@@ -147,6 +147,21 @@ public final class Retraining {
 		villager.setVillagerData(villager.getVillagerData().setLevel(1)); // the old job's level goes (its trades go with the job)
 		villager.setVillagerXp(0);
 		Stations.assign(level, villager, station, job);
+	}
+
+	/**
+	 * Takes {@code villager}'s job away (the hall's "No job", 40.3): a builder hands their builds back, the work block is
+	 * let go (free for someone else), and the job, its level and its trades go. Jobless, they may take a free block nearby
+	 * by themselves, as any jobless villager does.
+	 */
+	public static void unemploy(ServerLevel level, ServerPlayer player, Villager villager) {
+		dropWork(level, player, villager);
+		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).ifPresent(site -> Stations.releaseOld(level, villager, site));
+		villager.getBrain().eraseMemory(MemoryModuleType.JOB_SITE);
+		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+		villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE).setLevel(1));
+		villager.setVillagerXp(0);
+		villager.refreshBrain(level);
 	}
 
 	/** How much more the player needs: "7 emeralds" or "650 CobbleDollars". */

@@ -802,7 +802,7 @@ def trade_hall(b, P):
         ridge = gable_roof(b, 0, 12, 1, 9, 9, P.roof, axis="x", gable=P.wall, gable_at=(1, 11), eave_trim=P.wood)
         for x in (5, 7):
             fence(b, x, ridge + 1, 5, P.fence)
-        lantern(b, 6, ridge + 1, 5)
+        lantern(b, 6, ridge + 1, 5, hanging=True)  # from the little roof: the ridge slab under it can't hold one
         for x in (5, 6, 7):
             slab(b, x, ridge + 2, 5, P.roof)
         b.set(6, ridge + 3, 5, "lightning_rod", facing="up", powered=False, waterlogged=False)

@@ -6,9 +6,11 @@ Roadmap items: 28.16, 28.17, 28.18, 28.19, 28.20, 28.21, 28.22
 
 ## What a player sees
 
-A village with a Village Hall, a finished Arena and at least Village rank holds its festivals as a Festival Cup. The
-villages it has trade routes with make up its circuit, and each one sends its Trainer Leader. Players can sign up on the
-hall's Cup page too. On Cup day the far villages' delegates walk in, a fair opens on the Arena's fair lane, the villagers
+A village with a Village Hall, a finished Arena and at least Village rank holds its festivals as a Festival Cup (every
+festival by default, or every second or third one: `cupEveryFestivals`). The villages it has trade routes with make up
+its circuit, and each one sends its Trainer Leader (or, without one, its best Trainer). Players can sign up on the
+hall's Cup page too, and the players in the circuit's villages are told in chat when sign-up opens and on the evening
+before the Cup. On Cup day the far villages' delegates walk in, a fair opens on the Arena's fair lane, the villagers
 fill the stands from noon, and bouts are fought at the ring until there's a champion. Fireworks follow.
 
 The champion's village **holds the Cup** until a new champion is crowned at that host. It goes on the roll of champions
@@ -17,6 +19,36 @@ Thornholm Cup, won on day 12"), in other halls' trade-route lists and on its Vil
 Cup"). The **Cup banner**, a trophy on a banner in the theme's colors (gold on red for the Grand Cup), flies over the
 holder: on both faces of its Arena III's champion's pole, else on top of its Village Hall. It comes down when the title
 passes. While they hold the Cup, every villager there has the mood reason "our village holds the Cup" (+5).
+
+### The Arena (28.16)
+
+Three tiers, each an upgrade of the one before, in the Blueprint Table only when Cobblemon is installed; an Expert
+Trainer Leader sells the first one's blueprint (no Leader below Expert does).
+
+- **Arena** (25 × 19): a 15 × 9 battle ring of packed mud inside a white line, with a half-way line and a center
+  circle; a trainer's box on a dais at each end with a lamp post; benches for 12 along the back; two banner poles and
+  a notice board at the front.
+- **Arena II** (25 × 29): stands on both long sides (30 seats), a gate arch, lanterns round the ring, and a fair lane
+  with two striped kiosks behind the back stand.
+- **Arena III** (25 × 29): a covered grandstand on stone terraces (52 seats), a trainers' room at each end with a
+  Healing Machine, and the champion's pole before the gate.
+
+The hall's "What next?" suggests an Arena to a Cobblemon village of Village rank or more that has a grown-up Trainer
+Leader and no Arena yet (not before the 1.2 expansion is switched on).
+
+### Bouts between villagers (28.18)
+
+A bout between two village trainers is an exhibition at the ring. Each trainer stands in their box and sends out one
+Pokémon at a time beside the ring (real Pokémon, never catchable, removed if the game is saved with them out); the
+faster one moves first and they take turns. Damage follows a small formula (the theme's level, the move's power, attack
+against defense, the same-type bonus and type effectiveness), from `data/aliveworkplace/type_chart.json`: the games'
+18-type chart, every match-up as in the games since Fairy came in, and a Pokémon with two types takes both multipliers
+(Ice on Dragonite is 4x, Ground on Charizard nothing). A move the chart says can't touch the target does no damage; a
+Pokémon with no attacking move uses Struggle. A fainted Pokémon is called back and the next comes out, one on one even
+in a doubles Cup. A bout lasts 90 seconds at most, then the side with more of its team's health left wins, whichever
+box it stands in; a bout neither side can win by its moves (a Normal-moved Snorlax against a Ghost-moved Gengar) still
+ends at 90 seconds with a winner. Each bout is played from its own seed, so a bout saved halfway carries on exactly the
+same after a restart.
 
 ### The eight themes (28.22)
 
@@ -42,6 +74,26 @@ they stay home ("it has helped a villager at work on 2 days, and this Cup asks f
 
 ## How it works
 
+- **The host** (28.17): `festivalCup` on, Cobblemon installed, a Village Hall, Village rank or more and a finished
+  Arena (any tier, any rotation) within the hall's reach. The Cup page says which of these is missing.
+- **The circuit** (28.17): the host and every village with a hall that has a trade route with it, either way, seven
+  villages at most, nearest first. A village beyond the seventh, or with no route, is on no circuit and can't sign up.
+- **The calendar** (28.17): a Cup is held on the host's own festival day, on every `cupEveryFestivals`th festival
+  counted from that day. The next Cup is today's until its bouts end (midnight; dawn for a theme that runs all night),
+  then the next one. Sign-up opens when the festival before ends (13000, dusk under the "stay in" policy; before then Sign up
+  only says when it opens) and closes when the Cup's day dawns: then the entrants and the bracket are drawn and kept. The players in the circuit's villages
+  are told when it opens and at dusk the evening before, once each.
+- **Entrants** (28.17): each circuit village's Trainer Leader, else its best Trainer, else nobody. A far village that
+  isn't loaded sends the one its hall's last round wrote on the trade-route list (name, tier and XP). Players sign up
+  for the village whose hall they're at: one they own, one whose owner made them a friend, or one nobody owns, two
+  players a village (not two a Cup). Up to two of the host's other Trainers fill the bracket.
+- **The bracket** (28.17): 4, 8 for a Town host, 16 for a City host; the smallest of these that fits everyone. A full
+  bracket leaves the lowest seeds out (17 entrants in a City's Cup: the 17th is out). Seeds: the villages' Leaders and
+  Trainers by tier (a Leader first at a tier), then the players in sign-up order, then the host's Trainers. Byes go to
+  the top seeds, and seeds 1 and 2 are in different halves. Fewer than 4 entrants: no Cup, a plain festival, and the
+  page says so.
+- **The theme** (28.17): the next one in order after the last Cup's. The host's owner (anyone while nobody owns the
+  hall) may click through to another on the Cup page until sign-up closes, not after.
 - **The title** (28.21): the newest champion on a host's roll holds that host's Cup. A player who wins stands for a
   village, and that village holds the Cup. The player gets the purse only.
 - **The banner** (28.21): put up when the champion is crowned, if the holder's hall is loaded, or else at its hall's
@@ -66,12 +118,21 @@ they stay home ("it has helped a villager at work on 2 days, and this Cup asks f
 
 ## Switches
 
-- `festivalCup` (true): Cups at all. Off: nobody holds a Cup, banners come down at each holder's next round, no pride.
-- `cupEveryFestivals` (1): every how many festivals is a Cup.
+| Key | Default | What it does |
+|---|---|---|
+| `festivalCup` | true | Cups at all. Off: no Cup is set, nobody can sign up or pick a theme, the Cup page says it's switched off; nobody holds a Cup, banners come down at each holder's next round, no pride. |
+| `cupEveryFestivals` | 1 | Every how many festivals is a Cup (2: every second one). |
 
 ## Saved data
 
-`aliveworkplace_cups` (per dimension):
+`aliveworkplace_cups` (per dimension, by host; 28.17): the theme, the day, whether the owner picked the theme, the
+last theme, the signed-up players, the drawn entrants and bracket, the results, the roll of champions, and the days
+the players were told. A Cup saved with none of these loads with no theme, no day and sign-up open.
+
+The trade-route list (`Caravans`) keeps each village's Trainer Leader (or best Trainer): id, name, tier, XP and
+whether it's a Leader (none by default).
+
+Later additions:
 - each champion on a host's roll now also keeps the champion's id (`id`, none in older saves, so seeding falls back to
   the village's entrant);
 - `banners`: where each holder's Cup banners were put up (none by default).
@@ -95,10 +156,23 @@ they stay home ("it has helped a villager at work on 2 days, and this Cup asks f
 ## Known limits
 
 - A Cup banner broken by hand goes back up at the holder's next hall round.
+- Found by QA (2026-10-25), not fixed yet (B491): the Sign up button works before sign-up has opened, while the card
+  still says "Sign-up opens after the festival on day N".
+- Operators picking the theme of an owned host isn't tested (the test server gives operators no permission level).
 
 ## Proof
 
 - GameTests: `CupChampionGameTests` (the banner on the pole and its colors, passing to a hall, the pride, the chronicle
   in every circuit hall, the name lines, the win bonuses, seeding, saving, `festivalCup` off, a far champion's banner
   when it loads), `CupThemesCompatTests` (each theme's team, player filter and fair; the Workers' counter), plus `CupGameTests`, `CupBoutGameTests`, `CupDayGameTests` and `CupMatchGameTests`.
+- The Arena: `ArenaGameTests` (a builder finishes each tier, `Arenas.find` in every rotation and mirrored, "What
+  next?"), `ArenaCompatTests` (the Expert Trainer Leader's trade, Arena III's Healing Machines),
+  `QaArenaGameTests.everyArenaHasAFifteenByNineRingAndTheFirstFits`.
+- QA (28.17): `QaCupGameTests` (sign-up opening a tick either side of the festival's end and who's told, the next Cup
+  rolling over when the bouts end, sign-up from every circuit village but an eighth, the bracket's limits and one over,
+  `festivalCup` off, the theme only until sign-up closes, the bracket line with 3 byes, and with one: "A bracket of 8,
+  with 1 bye for the top seed").
+- QA (28.18): `QaCupBoutGameTests` (all 324 match-ups of the chart against the games', two-type multipliers; on time the
+  side with more health wins from either box and never past 90 seconds; a bout nobody can hurt in ends on time; a
+  moveless Pokémon struggles).
 - Showcase scenes: `cup_page`, `cup_bout`, `cup_day`, `cup_match`, `cup_champions`, `cup_themes`.

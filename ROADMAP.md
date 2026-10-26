@@ -4775,7 +4775,7 @@ Legends.
   - its review package has the renders after two critique rounds: each stage as the village would see it, and the
     whole from the front, the back and at eye level;
   - scene `wonder_gallery` (made here; each Wonder's design adds to it) shows it whole from the front and the back.
-- [x] **35.10** (approved 2026-10-13) **The Great Cathedral: its powers and time-lapse.** While it stands, the village's Undertakers need no
+- [x] **35.10** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Great Cathedral: its powers and time-lapse.** While it stands, the village's Undertakers need no
   golden apple, potion or totem, look for graves across the whole village instead of 32 blocks, and bring each
   villager back by the next morning (`grave/UndertakerWork`). Weddings are held at the Cathedral, before a Chapel or
   the bell (`people/Couples`), and are **blessed**: the whole village gets +15 mood for 3 days, the couple's first
@@ -4799,7 +4799,7 @@ Legends.
   explorer's maps (Cartographer), 32 spectral arrows (Fletcher), 32 leather (Butcher); IV 64 glowstone dust
   (Netherworker), 32 redstone (Miner), 16 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it, with
   the jetty over water in its renders.
-- [x] **35.12** (approved 2026-10-13) **The Lighthouse: its powers and time-lapse.** While it stands, caravans from its village reach
+- [x] **35.12** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Lighthouse: its powers and time-lapse.** While it stands, caravans from its village reach
   villages up to 4,096 blocks away (twice `Caravans.RANGE`) and arrive in half the time (`Caravans.travelTicks`);
   ferry fares to and from the village's Travel Posts are halved (`TravelNetwork.fare`: an emerald per 512 blocks), and
   the jetty's post joins the network under the village's name ("Thornholm Lighthouse"). And it watches the sea: the
@@ -4823,7 +4823,7 @@ Legends.
   II 64 books (Librarian), 64 black dye (Dyer), 16 lanterns (Tinkerer); III 8 explorer's maps (Cartographer), 32 lapis
   lazuli (Sifter), 32 copper ingots (Armorer); IV 64 nether quartz (Netherworker), 32 cookies (Chef), 16 bookshelves
   (Librarian). Done when: 35.9's four design checks pass for it, with the rotunda's inside in its renders.
-- [x] **35.14** (approved 2026-10-13) **The Great Library: its powers and time-lapse.** While it stands, the research tree
+- [x] **35.14** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Great Library: its powers and time-lapse.** While it stands, the research tree
   (`research/Research`) opens a second tier, shown on the scholar's screen in a row of its own ("needs the Great
   Library" until then). Each level costs 24 paper, 6 books and 8 emeralds times its level, and twice the points of the
   first tier:
@@ -4884,7 +4884,7 @@ Legends.
   (Toolsmith), 32 amethyst shards (Miner); III 16 books (Librarian), 8 tinted glass (Carpenter), 32 feathers
   (Butcher); IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). Done when: 35.9's four design
   checks pass for it.
-- [x] **35.18** (approved 2026-10-13) **The Observatory: its powers and time-lapse.** While it stands:
+- [x] **35.18** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Observatory: its powers and time-lapse.** While it stands:
   - **The Sky Chart**: the hall's map button also draws, on an empty map, a chart about 6,144 blocks across (384 chunks,
     12 regions; 35.18a) centred on the hall, marking every structure found: villages, pillager outposts, desert and jungle temples, witch
     huts, igloos, ocean monuments, woodland mansions, shipwrecks, ruined portals, trail ruins, ancient cities, trial
@@ -4915,7 +4915,7 @@ Legends.
   Keeper), 64 small flowers (Florist), 16 saplings (Lumberjack); III 32 honey bottles (Beekeeper), 64 carrots and 64
   potatoes (Farmer), 32 cocoa beans (Orchard Keeper); IV 16 cakes (Chef), 32 eggs (Butcher), 32 raw cod (Fisherman).
   Done when: 35.9's four design checks pass for it, with the falls running in its renders.
-- [x] **35.20** (approved 2026-10-13) **The Hanging Gardens: its powers and time-lapse.** While it stands, across its realm (the villages
+- [x] **35.20** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Hanging Gardens: its powers and time-lapse.** While it stands, across its realm (the villages
   linked to its village, M33; until that lands, its caravan partners; always its own): every farmer and orchard keeper
   harvests a quarter more (one more item for every four picked, counted per worker; no extra crop growth ticks), and
   villages grow faster (`hall/VillageGrowth`): a baby needs 12 meals in the store instead of 16, and up to two are
@@ -4938,7 +4938,7 @@ Legends.
   oak logs (Lumberjack), 16 potions of strength (Cleric); IV 32 glowstone dust (Netherworker), 64 small flowers
   (Florist), 16 cakes (Chef). Done when: 35.9's four design checks pass for it, with the face seen from the road in
   its renders.
-- [x] **35.22** (approved 2026-10-13) **The Colossus: its powers and time-lapse.** While it stands, every villager in its realm is happier
+- [x] **35.22** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Colossus: its powers and time-lapse.** While it stands, every villager in its realm is happier
   (+8 mood, +12 in its own village; "the Colossus" shows among the reasons for their mood, `people/Moods`), travellers
   come to its village's inns twice as often and are twice as likely to be Experts (`inn/Innkeepers`), and it counts 8
   beauty. When it's finished, the plaque's signs are filled in: the Founder's name (M29's Founder; the hall's owner

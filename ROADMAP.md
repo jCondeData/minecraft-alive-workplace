@@ -5208,7 +5208,7 @@ Depends on: nothing open.
   village, save and reload; text in `en_us.json`; wiki (builder.md, the area-job pages, config-switches.md) and the
   guide; scene `far_site` (a quarry marked far outside the village, the miner walking out to it).
 
-- [x] **36.21** (owner, 2026-10-26) (review: pending 2026-10-26) **Bring an old house up to its latest look.** The owner: "the decoration for the
+- [x] **36.21** (owner, 2026-10-26) (review: pending 2026-10-26) (verified 2026-10-26: 10 tests [QaRefreshOldHouseGameTests] through the hall's Repairs page: exact preview counts and every sentence, nearest of two free Builders, double press, non-owner, exact leftover items [and across save/reload, and a leftover broken first], player block where a new piece goes kept, builderRepairs off still takes a waiting refresh, Builder dying mid-way) **Bring an old house up to its latest look.** The owner: "the decoration for the
   stone house haven't updated in the house I built - is this by design? will houses going forward have the fixes we
   implemented? such as no more floating objects or invisible objects?" Today builds already standing keep the look
   they were built with (docs/wiki/workplace-looks.md, "Known limits"); new builds use the fixed drawings. He chose

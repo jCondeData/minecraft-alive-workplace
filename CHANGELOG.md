@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Text: names that start with a vowel now get "an": the blast furnace's tooltip says "takes it as an Armorer", the hall says "Bram is now an Armorer", and the same for retraining, guards ("an Archer"), inn travelers ("an Apprentice"), the Fossil Scientist ("reviving an Omanyte"), the Daycare Keeper ("an Eevee Egg"), the Pokémon Trader ("Comes in an Ultra Ball") and the raid helpers' cheer (B505).
+- Text: the Steward's desk now reads 'Declined: "Give 1 villager a job" won't be proposed again for 3 days'; before, it said "Declined: the Give 1 villager a job won't be proposed" for jobs and research proposals (B475).
+- Text: the Festival Cup page says "with 1 bye for the top seed" and a full Town "can hold 1 Mythic Legend"; before, "1 byes" and "1 Mythic Legends" (B492, B504).
+- Text: two config tooltips are now in American spelling: the hall's "Defense page" and "a color" (B507, B518).
 - Builder: a block the builder had already laid that is broken mid-build (by a player, a mob or an explosion) is now put back before the build is called finished; before, the build ended at 100% with the hole still there and, with Ask Before Repairs on, asked you whether to repair a building it had just reported done. If the block keeps getting broken, the builder goes back for it twice and then counts it as skipped (B508).
 
 - Builder crews: when a helper Builder dies mid-build, the lead and the rest of the crew now finish the build, the steps the helper had taken on included, and only its bag drops; before, the lead's whole build was canceled half-built, a copy of the blueprint dropped where the helper fell and you were told your builder died (B516).

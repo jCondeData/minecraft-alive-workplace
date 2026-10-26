@@ -863,4 +863,29 @@ public class QaStewardDeskJobsGameTests implements FabricGameTest {
 			"a second research proposal while busy");
 		helper.succeed();
 	}
+
+	/**
+	 * B475: declining a jobs or a research proposal read "Declined: the Give 1 villager a job won't be proposed for 3 days".
+	 * The line quotes the proposal's name instead, so it reads for every kind.
+	 */
+	//$ gametest_ticks_batch AREA '40' '"qaDeclineLine"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "qaDeclineLine")
+	public void decliningJobsOrResearchReadsAsEnglish(GameTestHelper helper) {
+		List<Seen> heard = new ArrayList<>();
+		Village v = village(helper, heard, jobsWish(), researchWish());
+		helper.setBlock(new BlockPos(6, 2, 22), Blocks.COMPOSTER);
+		jobless(helper, new BlockPos(12, 2, 15));
+		morning(v);
+		List<String> names = StewardDesk.of(v.level(), v.hall()).proposals().stream().map(p -> p.name().getString()).toList();
+		helper.assertTrue(names.size() == 2, "setup: proposals " + names);
+		for (int i = 0; i < names.size(); i++) {
+			ChoiceMenu menu = desk(v.owner(), v.hall());
+			menu.press(StewardDeskPage.FIRST_PROPOSAL, v.owner());
+			menu.press(StewardDeskPage.DECLINE, v.owner());
+		}
+		List<String> declined = lines(heard, "message.aliveworkplace.steward.desk.declined", true).stream().map(s -> s.text().getString()).toList();
+		List<String> expected = names.stream().map(n -> "Declined: \"" + n + "\" won't be proposed again for 3 days").toList();
+		helper.assertTrue(declined.size() == 2 && declined.containsAll(expected), "the decline lines read " + declined + ", expected " + expected);
+		helper.succeed();
+	}
 }

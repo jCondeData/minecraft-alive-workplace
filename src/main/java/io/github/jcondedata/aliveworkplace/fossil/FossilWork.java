@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +128,7 @@ public class FossilWork extends Behavior<Villager> {
 	private static void status(Villager villager, Revival current, String state) {
 		Component title = Component.translatable("message.aliveworkplace.fossil.title", ModAttachments.FOSSILS_REVIVED.getOrElse(villager, 0));
 		Component line = current != null
-			? Component.translatable("message.aliveworkplace.fossil.state.reviving", FossilScientists.what(current.items()), current.ownerName())
+			? Words.articled("message.aliveworkplace.fossil.state.reviving", 0, FossilScientists.what(current.items()), current.ownerName())
 				.withStyle(ChatFormatting.GRAY)
 			: Component.translatable("message.aliveworkplace.fossil.state." + state).withStyle(ChatFormatting.GRAY);
 		WorkerStatus.set(villager, title, current != null ? current.progress() : -1f, line);

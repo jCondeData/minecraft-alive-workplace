@@ -25,6 +25,7 @@ import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -253,7 +254,7 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 				AliveWorkplace.LOG.warn("Cobbreeding gave no egg for {} ({}): {}", player.getGameProfile().getName(), command, failure);
 				return null;
 			}
-			return Component.translatable("message.aliveworkplace.daycare_keeper.egg", baby.getSpecies().getTranslatedName());
+			return Words.articled("message.aliveworkplace.daycare_keeper.egg", 0, baby.getSpecies().getTranslatedName());
 		}
 		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
 		if (!party.add(baby)) {

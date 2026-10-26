@@ -116,7 +116,7 @@ public final class Retraining {
 		if (offer == null || now > offer.until() || !offer.villager().equals(villager.getUUID()) || offer.job() != job
 			|| !offer.station().equals(station)) {
 			OFFERS.put(player.getUUID(), new Offer(villager.getUUID(), job, station.immutable(), now + CONFIRM_TICKS));
-			Chat.chat(player, Component.translatable("message.aliveworkplace.retrain.offer", who,
+			Chat.chat(player, Words.articled("message.aliveworkplace.retrain.offer", 3, who,
 				Stations.name(villager.getVillagerData().getProfession()), levelName(villager), Stations.name(job), price)
 				.withStyle(ChatFormatting.GOLD));
 			Chat.chat(player, Component.translatable("message.aliveworkplace.retrain.confirm", CONFIRM_TICKS / 20).withStyle(ChatFormatting.GRAY));
@@ -132,7 +132,7 @@ public final class Retraining {
 		VillagerProfession old = villager.getVillagerData().getProfession();
 		retrain(level, player, villager, station, job);
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		Chat.chat(player, Component.translatable("message.aliveworkplace.retrain.done", who, Stations.name(old), Stations.name(job),
+		Chat.chat(player, Words.articled("message.aliveworkplace.retrain.done", 2, who, Stations.name(old), Stations.name(job),
 			level.getBlockState(station).getBlock().getName(), price).withStyle(ChatFormatting.GREEN));
 		return InteractionResult.SUCCESS;
 	}

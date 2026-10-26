@@ -4334,7 +4334,7 @@ on a real world.
   nothing is taken before it's due, an Artisan household also takes the Burgher luxuries the store has, an empty
   store counts as missed, a porter carries a maker's goods to the storehouse, a reload keeps `luxuries_had`. Nothing
   to see yet: `--no-review`.
-- [x] **34.5** (approved auto 2026-10-05) **The luxury workshop engine** that the four new jobs share.
+- [x] **34.5** (approved auto 2026-10-05) (verified 2026-10-26: QaLuxuryJobsGameTests [9, lane-c-1024-0353, aging and store-count mutants caught] and QaLuxuryTradesGameTests [13, lane-c-1025-0653] green on main's CI with B367 and B443 fixed; LuxuryWorkGameTests cover the Done when; wiki classes.md and guide vintner/vintage-wine read against the code by lane-c-1026-1853 and corrected [trades per level, stock orders first, 8 kept, 3-day wine, tooltip]) **The luxury workshop engine** that the four new jobs share.
   `data/aliveworkplace/luxury_recipes/<id>.json`: the job, the job level that may make it, the makings, what comes
   out and how long it takes, e.g. `{"job": "aliveworkplace:vintner", "level": 3, "inputs": [{"item":
   "aliveworkplace:berry_wine", "count": 1, "min_age_days": 3}], "output": {"id": "aliveworkplace:vintage_wine"},
@@ -4401,7 +4401,7 @@ on a real world.
   `ClassJobGameTests` cover each way of taking a job, a grandfathered worker keeping their job across a reload, a
   hired Expert arriving as a Burgher, and no gate with `villageClasses` off; scene `class_jobs` (a Peasant refused
   the Scholar's paper, a Burgher taking it) passes; the README's job table gets a Class column.
-- [x] **34.9** (approved 2026-10-11) **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
+- [x] **34.9** (approved 2026-10-11) (verified 2026-10-26: QaLuxuryJobsGameTests [9, lane-c-1024-0353, aging and store-count mutants caught] and QaLuxuryTradesGameTests [13, lane-c-1025-0653] green on main's CI with B367 and B443 fixed; LuxuryWorkGameTests cover the Done when; wiki classes.md and guide vintner/vintage-wine read against the code by lane-c-1026-1853 and corrected [trades per level, stock orders first, 8 kept, 3-day wine, tooltip]) **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
   berries, glow berries or an apple** (a new line in `Stations`; the cauldron's Leatherworker and Sifter stay). The
   cauldron is their vat (purple splashes and a squelch while pressing), and through 34.5 they make:
   - **Cider**: 3 apples and a glass bottle (Novice);

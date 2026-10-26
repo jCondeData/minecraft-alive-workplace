@@ -659,6 +659,9 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B543** Showcase-only (B322/B327 again): scene conscription failed in showcase run 40305546483 (main b142f2a, 2026-10-26 11:01Z): 'the conscripts struck the raiders: 2 of 3': all three raiders died (hit by farmer, builder, guard) before the librarian landed a blow, so the check that each conscript strikes fails though the edict worked. Expected the scene to give each conscript a raider of its own (or judge strikes by conscripts that reached a raider). Test: SCENE=conscription tools/screenshots/run.sh (found by lane-c-1026-1553, 2026-10-26)
 - [ ] **B544** Test-only flake: QaHeartsGameTests.aGiftReachingTwoHeartsStartsHerStoryAndAnotherGiftDoesNotCutIt failed once in a local runGameTest on main (2026-10-26, lane-c-1026-1553's B535 run) with "Alex's cake: 170 points, holding 0 minecraft:air" and passed in the full build after; the test reads the gift's hand slot after the villager has already eaten or dropped it. Expected the test to pass every run. Test: QaHeartsGameTests#aGiftReachingTwoHeartsStartsHerStoryAndAnotherGiftDoesNotCutIt (repeat generator) (found by lane-c-1026-1553, 2026-10-26)
 - [ ] **B545** VillageGameTests.aVillagerFromAVanillaDesertHouseCorridorStandsOnTheFloor failed in a local full build on main c331cb360 (lane-d-1026-1614, 2026-10-26 19:00Z): 'the villager is at house y 0.00, not on the corridor floor (1)'. Expected: a villager placed from a vanilla desert house corridor stands on the floor (y 1). Not seen in two earlier full builds this run (at 0def6d06d and a952091ef-), so either lane a's merge a952091ef brought it in or it is a flake; check CI. Test: VillageGameTests.aVillagerFromAVanillaDesertHouseCorridorStandsOnTheFloor (found by lane-d-1026-1614, 2026-10-26)
+- [x] **B546** (lane: c) (review: pending 2026-10-26) Player-visible (hall People table, 40.2/40.3/40.4): once a villager's row is open and the player scrolls the table down to reach the Job ▾ or Bed ▾ list under the details, the open row's whole block (details, Job list, Bed list) goes blank as soon as the row's own name line scrolls above the table's top, and its entries can't be clicked. With long details (a Journeyman librarian's traits, mood, class and 'To become Artisan' lines) the Job list starts below the fold at 960x540 GUI scale 2, so a player can never see or click it. Cause seen: VillageHallMenuScreen's row loop skips a row when 'top + RH < tableTop', which also skips the open row's details block drawn under it (top+RH .. top+RH+openH); the hits for its list lines are skipped too. Expected: the open block draws and takes clicks while any part of it is in view (cull on top + RH + openH for the open row). Test: SCENE=hall_people_job and SCENE=hall_people_bed (the harness now scrolls to the table's foot after Job ▾/Bed ▾: every still from 01 on shows an empty table with only the last row; lane-c-1026-1853's run, before/after stills in the commit message) (found by lane-c-1026-1853, 2026-10-26) (found by lane-c-1026-1853, 2026-10-26)
+- [x] **B547** (lane: c) (review: pending 2026-10-26) Player-visible (hall People table, 40.2): a villager's life story (and its Family page) can no longer be opened from the hall. In the old list shift-click opened it; in the People table every click on a row (plain, right or shift) only opens or closes the row, and the open row's buttons are Job ▾, Bed ▾ and Find, so the page is unreachable, though 40's intro says nothing the hall does today may be lost and docs/design/M40.md puts the life story under People. The open row's details also still print the old list's hints 'Click: make them glow so you can find them', 'Right-click: change their job' and 'Shift-click: their life story', none of which is true in the table (seen in SCENE=hall_people_job's 03 still). Expected: a Story button on the open row opening the life story (then Family) as shift-click did, and the three stale hints left out of the table's details. (found by lane-c-1026-1853, 2026-10-26) (found by lane-c-1026-1853, 2026-10-26)
+- [ ] **B548** Player-visible (34.22, like B361): when classes are switched on in an old village, seeding gathers villagers and the players it tells with the square box round the hall (VillageHalls.area in ClassMigration, lines 72, 226, 324, 351), not the village's circle (VillageHalls.contains): a villager standing 15/15 blocks off the hall (21 blocks away, outside a 16-block village) is seeded and given a class by this hall and counted in its chronicle line ('The people of ... found their places: 4 peasants', expected 3), and a player standing there gets the chat line. Near a neighboring village the wrong hall can class its corner villagers. Expected: only villagers and players inside the circle. Test: QaClassMigrationBugTests#theSquaresCornerIsOutsideTheVillage on tests/class-migration-1026 (found by lane-c-1026-1853, 2026-10-26) (found by lane-c-1026-1853, 2026-10-26)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4279,7 +4282,7 @@ on a real world.
   vanilla jobs are never class-gated, family names show on the hall but never rename a villager. Sent to the owner as
   a review package; lanes don't wait for his reply. Done when: the note is on `main`, its tables match this
   milestone's numbers, and the package is sent.
-- [x] **34.2** (approved auto 2026-10-05) **The class engine.** The four classes are data: `data/aliveworkplace/classes/<id>.json` (`peasant`,
+- [x] **34.2** (approved auto 2026-10-05) (verified 2026-10-26: QA tests by lane-c-1024-1553 [QaClassesGameTests 18, QaClassPerksGameTests 16; mutants 12 of 12 killed then] green on main's CI [a952091] with their bugs' fixes in [B397, B398, B400, B401]; wiki classes.md and guide peasant/burgher read against the code and tests by lane-c-1026-1853: Printer added to the Artisan jobs, jobless Noble tax, tax split, Noble's Ball, Cobblecuisine wants, the real refusal sentence, Noble services fixed) **The class engine.** The four classes are data: `data/aliveworkplace/classes/<id>.json` (`peasant`,
   `artisan`, `burgher`, `noble`), one file holding the class's tier (0-3), tax factor, outfit, `needs` (all must hold
   to be that class), `wants` (optional extras) and what it gives (`jobs`, `effects`; read by 34.7 and 34.8), e.g.
   `{"tier": 1, "tax": 1.5, "needs": [{"type": "home", "grade": 1}, {"type": "fed_days", "days": 3}, {"type": "diet",
@@ -4310,7 +4313,7 @@ on a real world.
   step a day, children following their household, a datapack class file changing a need) pass; a save and reload
   keeps class and progress; 60 households take under 2 ms a hall round (timed in a GameTest). Nothing to see yet:
   `--no-review`.
-- [x] **34.3** (approved auto 2026-10-05) **Services nearby.** `data/aliveworkplace/services/<id>.json`: which workers or finished builds give a
+- [x] **34.3** (approved auto 2026-10-05) (verified 2026-10-26: QA tests by lane-c-1024-1553 [QaClassesGameTests 18, QaClassPerksGameTests 16; mutants 12 of 12 killed then] green on main's CI [a952091] with their bugs' fixes in [B397, B398, B400, B401]; wiki classes.md and guide peasant/burgher read against the code and tests by lane-c-1026-1853: Printer added to the Artisan jobs, jobless Noble tax, tax split, Noble's Ball, Cobblecuisine wants, the real refusal sentence, Noble services fixed) **Services nearby.** `data/aliveworkplace/services/<id>.json`: which workers or finished builds give a
   service and how far it reaches, e.g. `{"jobs": ["aliveworkplace:teacher"], "blueprints":
   ["aliveworkplace:schoolhouse"], "range": 48, "icon": "minecraft:lectern"}`. Six to start: **chapel** (a finished
   Chapel), **school** (a Teacher, or a Schoolhouse), **clinic** (a Nurse, or a Healing Center), **library** (a
@@ -4321,7 +4324,7 @@ on a real world.
   `ServiceGameTests`: each of the six found by its worker and by its build, a Chapel in Stonework counts, one 60
   blocks from home doesn't, a teacher who quits stops counting at the next dawn, a datapack file adds a seventh
   service; the list is worked out at most once a day (a counter in the test). Nothing to see yet: `--no-review`.
-- [x] **34.4** (approved auto 2026-10-05) **Luxuries from the village store.** `data/aliveworkplace/luxuries/<id>.json`: the item (or tag) and
+- [x] **34.4** (approved auto 2026-10-05) (verified 2026-10-26: QA tests by lane-c-1024-1553 [QaClassesGameTests 18, QaClassPerksGameTests 16; mutants 12 of 12 killed then] green on main's CI [a952091] with their bugs' fixes in [B397, B398, B400, B401]; wiki classes.md and guide peasant/burgher read against the code and tests by lane-c-1026-1853: Printer added to the Artisan jobs, jobless Noble tax, tax split, Noble's Ball, Cobblecuisine wants, the real refusal sentence, Noble services fixed) **Luxuries from the village store.** `data/aliveworkplace/luxuries/<id>.json`: the item (or tag) and
   how often a household wants one, e.g. `{"item": "aliveworkplace:berry_wine", "every_days": 2}`. At dawn, in 34.2's
   slices, each household takes from the village store (`VillageNeeds.store`: the kitchens' chests, then the
   Storehouses') every luxury of its own class, and of the class above, that is due, and remembers the day it had it
@@ -4332,7 +4335,7 @@ on a real world.
   nothing is taken before it's due, an Artisan household also takes the Burgher luxuries the store has, an empty
   store counts as missed, a porter carries a maker's goods to the storehouse, a reload keeps `luxuries_had`. Nothing
   to see yet: `--no-review`.
-- [x] **34.5** (approved auto 2026-10-05) **The luxury workshop engine** that the four new jobs share.
+- [x] **34.5** (approved auto 2026-10-05) (verified 2026-10-26: QaLuxuryJobsGameTests [9, lane-c-1024-0353, aging and store-count mutants caught] and QaLuxuryTradesGameTests [13, lane-c-1025-0653] green on main's CI with B367 and B443 fixed; LuxuryWorkGameTests cover the Done when; wiki classes.md and guide vintner/vintage-wine read against the code by lane-c-1026-1853 and corrected [trades per level, stock orders first, 8 kept, 3-day wine, tooltip]) **The luxury workshop engine** that the four new jobs share.
   `data/aliveworkplace/luxury_recipes/<id>.json`: the job, the job level that may make it, the makings, what comes
   out and how long it takes, e.g. `{"job": "aliveworkplace:vintner", "level": 3, "inputs": [{"item":
   "aliveworkplace:berry_wine", "count": 1, "min_age_days": 3}], "output": {"id": "aliveworkplace:vintage_wine"},
@@ -4364,7 +4367,7 @@ on a real world.
   Done when: `ClassHallGameTests` check the page's counts and the tips against a staged village; `langcheck.py` is
   clean; scene `classes` (a household rising at dawn, then the hall's Classes page) passes; the README gets a Classes
   section.
-- [x] **34.7** (approved 2026-10-11) **What each class gives.** From the `effects` in the class files:
+- [x] **34.7** (approved 2026-10-11) (verified 2026-10-26: QA tests by lane-c-1024-1553 [QaClassesGameTests 18, QaClassPerksGameTests 16; mutants 12 of 12 killed then] green on main's CI [a952091] with their bugs' fixes in [B397, B398, B400, B401]; wiki classes.md and guide peasant/burgher read against the code and tests by lane-c-1026-1853: Printer added to the Artisan jobs, jobless Noble tax, tax split, Noble's Ball, Cobblecuisine wants, the real refusal sentence, Noble services fixed) **What each class gives.** From the `effects` in the class files:
   - **taxes** (`Treasury.takings`): each worker pays `treasuryPerWorker` × their class's factor (Peasant 1, Artisan
     1.5, Burgher 2.5, Noble 4), 10% more for each want they have; a Noble without a job pays like a worker. A Peasant
     pays exactly today's rate, so no village takes in less than before; the name tag's tooltip shows the split by
@@ -4385,7 +4388,7 @@ on a real world.
   Done when: `ClassPerkGameTests` (the takings for a staged mix of classes and wants, never below the old formula for
   Peasants; the crafter pace staying within the cap; wellbeing capped at 9%; the ball replacing one festival in two)
   pass; scene `noble_ball` passes; README updated.
-- [x] **34.8** (approved 2026-10-11) **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
+- [x] **34.8** (approved 2026-10-11) (verified 2026-10-26: QA tests by lane-c-1024-1553 [QaClassesGameTests 18, QaClassPerksGameTests 16; mutants 12 of 12 killed then] green on main's CI [a952091] with their bugs' fixes in [B397, B398, B400, B401]; wiki classes.md and guide peasant/burgher read against the code and tests by lane-c-1026-1853: Printer added to the Artisan jobs, jobless Noble tax, tax split, Noble's Ball, Cobblecuisine wants, the real refusal sentence, Noble services fixed) **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
   be that class or higher to take. To start: **Artisan**: Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper,
   Innkeeper, Printer and, with Cobblemon, Ball Smith, Move Tutor, Pokémon Trader, Fossil Scientist; **Burgher**:
   Scholar, Undertaker, Jeweller, Trainer Leader; **Noble**: none yet (kept for M29's Legends and M33's offices).
@@ -4399,7 +4402,7 @@ on a real world.
   `ClassJobGameTests` cover each way of taking a job, a grandfathered worker keeping their job across a reload, a
   hired Expert arriving as a Burgher, and no gate with `villageClasses` off; scene `class_jobs` (a Peasant refused
   the Scholar's paper, a Burgher taking it) passes; the README's job table gets a Class column.
-- [x] **34.9** (approved 2026-10-11) **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
+- [x] **34.9** (approved 2026-10-11) (verified 2026-10-26: QaLuxuryJobsGameTests [9, lane-c-1024-0353, aging and store-count mutants caught] and QaLuxuryTradesGameTests [13, lane-c-1025-0653] green on main's CI with B367 and B443 fixed; LuxuryWorkGameTests cover the Done when; wiki classes.md and guide vintner/vintage-wine read against the code by lane-c-1026-1853 and corrected [trades per level, stock orders first, 8 kept, 3-day wine, tooltip]) **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
   berries, glow berries or an apple** (a new line in `Stations`; the cauldron's Leatherworker and Sifter stay). The
   cauldron is their vat (purple splashes and a squelch while pressing), and through 34.5 they make:
   - **Cider**: 3 apples and a glass bottle (Novice);
@@ -5045,7 +5048,7 @@ Depends on: nothing open.
   waxed boards with the expected words; a renamed village is renamed on it at the next dawn; a signpost in another
   style gets words too; a save and reload keeps them; the new lang lines pass `langcheck.py`; scene `signpost` (a
   signpost at a crossroads between two villages, each board up close).
-- [x] **36.5** (approved 2026-10-19) **Read a long entry without clicking it.** In `ChoiceTableScreen` (the Village Hall and the Storehouse
+- [x] **36.5** (approved 2026-10-19) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) **Read a long entry without clicking it.** In `ChoiceTableScreen` (the Village Hall and the Storehouse
   board) the pane on the right reads out the row under the mouse, but on the way to the pane the mouse crosses other
   rows and then leaves the list, so the pane falls back to the last button clicked: a long entry can only be read by
   clicking it, which also runs it. Three changes: the pane holds the last row hovered while the mouse moves from the
@@ -5082,7 +5085,7 @@ Depends on: nothing open.
   (a data check for all eight, a full build for three in `huge_area`), a Smithy with its cellar filled in offers "Dig
   the cellar" and the builder digs only the cellar, the offer isn't there when the cellar is, a save and reload
   mid-dig finishes it; scene `cellars` (the Inn III cut away to its cellar; an old Smithy getting its cellar).
-- [x] **36.8** (approved auto 2026-10-18) **Do the bigger village houses leave villages sparse?** 26.11 made our village houses up to 13×17×13
+- [x] **36.8** (approved auto 2026-10-18) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) **Do the bigger village houses leave villages sparse?** 26.11 made our village houses up to 13×17×13
   (from 9×10×10), and a jigsaw village only fits pieces that don't collide, so bigger houses may crowd out houses.
   Measure it: a measurement run (outside `build`: a GameTest class switched on by a system property, or a script on
   the pack test server) places 50 villages of each of the five types at fixed seeds and spots, and counts each
@@ -5100,7 +5103,7 @@ Depends on: nothing open.
   assigns that block to them (they claim the POI and walk to it). Paid retraining of a working villager (26.6) stays.
   GameTests: listing, assigning (the villager takes the job), a block claimed meanwhile, save and reload; scene
   `hall_jobs`.
-  - [x] **36.9a** (approved 2026-10-19) Change from the owner (2026-10-19): top of the work list (urgent: owner): the hall's Free job blocks page must be filmed and passing so I can see it
+  - [x] **36.9a** (approved 2026-10-19) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) Change from the owner (2026-10-19): top of the work list (urgent: owner): the hall's Free job blocks page must be filmed and passing so I can see it
 - [x] **36.10** (approved 2026-10-20) (verified 2026-10-24: QaBlueprintTableGameTests [13]: stored counts to the last one, 200 cap both sides, full bag, stack stored one taken, broken table drops exactly, two tables over a reload, another player; search case/whitespace, level-only match, shared job blocks; every basement build's depth, floored cells at scales 1-3, below-ground size line. Mutants 15/16 killed [survivor equivalent]. Full build green on 214464af/ed36b1c3 lineage: 2975/2975 GameTests, 534/534 compat. Wiki/guide pages read, correct. Scenes not re-filmed.) **Search the Blueprint Table** (owner, 2026-10-19). The library list has 150+ builds and no way to find one. Add a search box above
   the list in the Blueprint Table: typing filters the library live by name, id and the jobs a build brings ("smith", "inn",
   "fisherman"), case-insensitive, with the style/level rows kept under their build; an empty box shows everything and an
@@ -5143,7 +5146,7 @@ Depends on: nothing open.
   not now, cancel mid-repair, moving the Builder to another job, the switch, save and reload; text in `en_us.json`; scene
   `repair_ask`.
 
-- [x] **36.16** (approved 2026-10-22) **Villagers live much longer, and a death matters** (owner, 2026-10-20). Villagers die too soon: make
+- [x] **36.16** (approved 2026-10-22) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) **Villagers live much longer, and a death matters** (owner, 2026-10-20). Villagers die too soon: make
   their whole life about 10x longer (adulthood and elder days, `villagerElderDays` and the ages the life stages use;
   old saves keep each villager's age but use the new lengths). A death should be a bigger deal: the village mourns (a
   chronicle entry and a message to players near the village naming who died, their job and years, a few days of lower
@@ -5155,7 +5158,7 @@ Depends on: nothing open.
   fewest of is fine: the lane decides and writes it in the Notes), not always the same one. Done when: a list of every
   block that offers several jobs in the wiki page; GameTests that over many hires (fixed `RandomSource`) each job of a
   multi-job block comes up, a single-job block is unchanged, save and reload keeps the job taken; scene `random_job`.
-- [x] **36.18** (approved 2026-10-22) **Retrain any villager to any job from the Village Hall** (owner, 2026-10-21: "do I have to break the block
+- [x] **36.18** (approved 2026-10-22) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) **Retrain any villager to any job from the Village Hall** (owner, 2026-10-21: "do I have to break the block
   and bring it to them, then put it back? it would be easier if you can just do it at the Village Hall"). Today only a
   Builder can be retrained (at a Blueprint Table, 36.x/27.x); any other job change means breaking job blocks. In the
   Village Hall's residents list, a villager with a job gets a **Change job** button: it lists the village's free job
@@ -5171,7 +5174,7 @@ Depends on: nothing open.
   builder handing back the build, the rule off, save and reload; text in `en_us.json`; guide (village-hall.md, jobs.md)
   and wiki; scene `hall_retrain`.
 
-- [x] **36.19** (owner, 2026-10-26) (approved auto 2026-10-26) **American English everywhere a player reads.** The owner wants American spelling:
+- [x] **36.19** (owner, 2026-10-26) (approved auto 2026-10-26) (verified 2026-10-26: on main a42573689 + lane-c-1026-1853's fixes: Mourning/QaVillagerLifeJobs[+Bug]/HallRetraining/QaHallJobsShops/ReadingFocus/FamilyTree/HallPeople* green [105 of 105, only those classes]; B380 and B384's fixes in; scenes village_mourns, hall_retrain, hall_jobs, hall_reading, village PASS on the showcase; 36.8's before/after table and commands in the Notes; 36.19: no British spelling left in lang values, guide, wiki, questbook, data JSON text [only ids: honour/defences/travellers/colour types], structure sign/book text [none] or literal Java strings a player reads [only datapack-author log lines]; elders.md fixed [1200-day example, 1000-day age spread]) **American English everywhere a player reads.** The owner wants American spelling:
   "Defense", not "Defence". Change every player-facing sentence in `en_us.json`, the questbook, sign and book text,
   blueprint and build names shown to players, the player guide and the wiki: defence → defense, jeweller → jeweler,
   honour → honor, colour → color, armour → armor, neighbour → neighbor, cancelled → canceled, grey → gray, centre →

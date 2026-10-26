@@ -359,4 +359,52 @@ public class HallPeopleGameTests {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * B547: a villager's life story is still reached from the People table. Its Story button sends the hall's own
+	 * shift-click on their row (a QUICK_MOVE click), as the old list's shift-click did: a named worker's and a named
+	 * jobless villager's life story opens (its Family button there); the row carries the hint the client shows Story by,
+	 * and only for a named villager; the Story words are in the language file; one child reads "1 child".
+	 */
+	//$ gametest_ticks_batch AREA '200' '"hallPeopleStory"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "hallPeopleStory")
+	public void theStoryButtonOpensTheirLifeStory(GameTestHelper helper) {
+		village(helper, 16);
+		helper.setBlock(new BlockPos(8, 2, 8), Blocks.LECTERN);
+		Villager dara = villager(helper, 8, 10);
+		dara.setCustomName(Component.literal("Dara"));
+		Villager odo = villager(helper, 12, 20);
+		odo.setCustomName(Component.literal("Odo"));
+		Villager plain = villager(helper, 16, 20);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		helper.runAfterDelay(3, () -> {
+			employ(helper, dara, new BlockPos(8, 2, 8), PoiTypes.LIBRARIAN, VillagerProfession.LIBRARIAN);
+			for (Villager who : List.of(dara, odo)) {
+				ChoiceMenu menu = openPeople(helper, player);
+				Row row = rowOf(helper, menu, who);
+				helper.assertTrue(storyHint(row.icon()), who.getName().getString() + "'s row has no story hint to show Story by");
+				menu.clicked(row.slot(), 0, ClickType.QUICK_MOVE, player); // Story: the client's shift-click on the row
+				helper.assertTrue(menu.icon(io.github.jcondedata.aliveworkplace.hall.FamilyPage.BUTTON).getHoverName().getString().equals("Family"),
+					who.getName().getString() + "'s life story didn't open: " + menu.icon(io.github.jcondedata.aliveworkplace.hall.FamilyPage.BUTTON));
+				player.closeContainer();
+			}
+			ChoiceMenu menu = openPeople(helper, player);
+			helper.assertFalse(storyHint(rowOf(helper, menu, plain).icon()), "an unnamed villager's row offers a story");
+			Language lang = Language.getInstance();
+			for (String key : List.of("story_button", "story_hint", "header_child")) {
+				helper.assertTrue(lang.has("screen.aliveworkplace.hall.people." + key), "no text for screen.aliveworkplace.hall.people." + key);
+			}
+			helper.assertTrue(HallPeople.header(5, 3, 1, 1).getString().equals("5 · 3 working · 1 jobless · 1 child"), "one child: "
+				+ HallPeople.header(5, 3, 1, 1).getString());
+			helper.assertTrue(HallPeople.header(6, 3, 1, 2).getString().equals("6 · 3 working · 1 jobless · 2 children"), "two children: "
+				+ HallPeople.header(6, 3, 1, 2).getString());
+			helper.succeed();
+		});
+	}
+
+	private static boolean storyHint(ItemStack icon) {
+		ItemLore lore = icon.get(DataComponents.LORE);
+		return lore != null && lore.lines().stream().anyMatch(l -> l.getContents() instanceof TranslatableContents t
+			&& t.getKey().equals("screen.aliveworkplace.hall.life_story_hint"));
+	}
 }

@@ -1532,7 +1532,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   vanilla plains house (placed from its template as a fixture) is found and its box measured exactly; the same shape
   in deepslate and quartz isn't; one with a chest isn't; one a player changed since 1.1 isn't; the fill never passes
   256 blocks in a tick.
-- [x] **27.21** (approved 2026-10-06) **Old villages renewed.** One old house at a time (at most one every 2 days in a village), the Steward
+- [x] **27.21** (approved 2026-10-06) (verified 2026-10-26: QaRenewalGameTests [9]: stewardRenewal default and off, one renewal per 2 days from both sides, a fletcher's house becomes a Fletcher's Lodge facing the old door within footprint+3, proposal and chronicle sentences rendered, tight zone, broken renewal lists skipped, a building too big passed over, a zone not renewed left alone; mutants 4/9 killed in Renewals [survivors in fit[]'s north/south/east branches, untested]; full build green [3831 + 695 compat] on 349777ac2+QA) **Old villages renewed.** One old house at a time (at most one every 2 days in a village), the Steward
   rebuilds it in its zone's style: "Renew the old house 14 blocks west as a Stone House (Cherry)". Renewal lists are
   data: `data/aliveworkplace/steward_renewal/<name>.json` holds one: the kind of old house (a home, or a job's point
   of interest) and the buildings to try, in order. Shipped lists: homes (Starter Cottage, Stone House, Terrace: the

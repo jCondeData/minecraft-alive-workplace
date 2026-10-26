@@ -25,8 +25,8 @@ taiga.
 ## The waystone
 
 The stone is a real waystone. Walk up to it and use it to discover it, then travel to it from any other waystone the
-usual way. It carries the village's name, and when you rename the village (a Name Tag or an anvil on the Village
-Hall) the stone is renamed with it.
+usual way. It carries the village's name, and when you rename the village (a Name Tag, named in an anvil, used on
+the Village Hall) the stone is renamed with it at once.
 
 If the stone is broken, the builder puts it back when they look over the village's buildings, like any hole in a
 finished build, and the new stone takes the village's name again. They need a waystone of the same kind in their
@@ -53,4 +53,4 @@ stone broken when they step out walk the whole road from then, and the village's
 
 ## Switch
 
-`villageWaystones` (on). Off: the plaza isn't proposed; stones already standing stay as they are, and caravans and settlers walk.
+`villageWaystones` (on). Off: the plaza isn't proposed; stones already standing stay (and are still renamed with the village), and caravans and settlers walk.

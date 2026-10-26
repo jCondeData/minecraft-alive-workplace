@@ -217,6 +217,7 @@ def lg_pen(b):
     b.set(6, 2, 10, "air")
     b.set(6, 3, 10, LG_PLASTER.at(6, 3, 10))
     door(b, 6, 1, 10, "spruce_door", "north")
+    b.set(6, 1, 11, "air")  # the back window's sill goes with the window: a step under the lintel (B487)
     stairs(b, 6, 0, 11, COBBLE, "north")
     box(b, 1, 0, 12, 11, 0, 17, "grass_block", snowy=False)
     for z in range(12, 15):

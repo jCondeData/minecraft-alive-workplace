@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519, B487
 
 ## 1. What a player sees
 
@@ -263,7 +263,10 @@ claims and trip counts.
   is a full block up, and a villager climbing onto it still has its back in the doorway. A bed counts too: it is 9/16
   high, under a villager's step, so its path runs over a bed like a slab, and no bed stands right inside a door (the
   Carpenter's Workshop and the builder's and carpenter's village looks). `tools/blueprints/check.py` refuses every
-  blueprint that breaks it (B170, B173, B178). Tents are two high only under their ridge: nothing stands in a tent's
+  blueprint that breaks it (B170, B173, B178). A whole block counts as well: a door opens onto a floor at its own
+  level, never onto a window's old sill, a dais or a raised floor (that leaves a villager 1.00), and a wooden door
+  never opens onto a wall (B487: the Healing Center III's garden door, the Mountain Lodge II's back door, the Royal
+  Hall's vault door, now a block up level with the dais, and Royal Hall II's east door). Tents are two high only under their ridge: nothing stands in a tent's
   mouth there, and no carpet lies under the low sides (the War Camp's tents, B178).
 - Not only in doorways: anywhere a villager walks, a step (a carpet, a shut trapdoor, a bottom slab or stair, a bed)
   leaves it its 1.95 under whatever is over it. The game lets a villager walk where the two cells its body is in are

@@ -144,7 +144,7 @@ def chair_problems(blocks, only=None):
     return problems
 
 
-# --- Doorways a villager fits through (B170, B173, B178) ----------------------------------------------------------
+# --- Doorways a villager fits through (B170, B173, B178, B487) -------------------------------------------------
 # A villager is 1.95 blocks tall. Under a lintel two blocks up it fits with 0.05 to spare, so any step up in or beside
 # the doorway (a carpet is 1/16, a slab half a block) puts its head into the lintel: it stands in the doorway for good.
 VILLAGER_HEIGHT = 1.95
@@ -218,12 +218,28 @@ def doorway_problems(blocks, only=None):
             if all((open_at(*q) or raise_of(blocks.get(q))) and open_at(q[0], y + 1, q[2]) for q in sides) \
                     and any(open_at(q[0], y + 2, q[2]) for q in sides):
                 doorways.setdefault(c, (ax, az))
+    def lift_of(cell):
+        """How far a villager's feet rise in {@code cell}: a step (raise_of), or a whole block's top (B487: a sill of
+        upside-down stairs left under a window made a door, a dais or a raised floor right behind the door)."""
+        block = blocks.get(cell)
+        if raise_of(block):
+            return raise_of(block)
+        if block is None or _thin(block):
+            return 0
+        return 0 if passable(block) else 1
+
     problems = []
     for (x, y, z), (ax, az) in sorted(doorways.items()):
         room = lintel(x, y, z)
         for cell in ((x, y, z), (x + ax, y, z + az), (x - ax, y, z - az)):
-            lift = raise_of(blocks.get(cell))
-            if lift and open_at(cell[0], y + 1, cell[2]) and room - lift < VILLAGER_HEIGHT:
+            lift = lift_of(cell)
+            door = _short(blocks.get((x, y, z)))
+            if lift == 1 and cell != (x, y, z) and door.endswith("_door") and door != "iron_door" \
+                    and not open_at(cell[0], y + 1, cell[2]) and not _thin(blocks[(cell[0], y + 1, cell[2])]):
+                over = _short(blocks.get((cell[0], y + 1, cell[2])))
+                problems.append(f"doorway@{x},{y},{z}: {_short(blocks.get(cell))}@{cell[0]},{y},{cell[2]} and {over} "
+                                f"over it: the door opens onto a wall (an iron door may: no villager opens one)")
+            elif lift and open_at(cell[0], y + 1, cell[2]) and room - lift < VILLAGER_HEIGHT:
                 where = "in" if cell == (x, y, z) else "beside"
                 problems.append(f"doorway@{x},{y},{z}: {_short(blocks.get(cell))}@{cell[0]},{y},{cell[2]} {where} it "
                                 f"leaves {room - lift:.2f} under the lintel, a villager needs {VILLAGER_HEIGHT}")

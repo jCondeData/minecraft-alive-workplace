@@ -194,6 +194,7 @@
 			"io.github.jcondedata.aliveworkplace.test.MirroredChestGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaChairFacingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDoorwayClearanceGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDoorwayBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanPotGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanRoundTripGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildsGameTests",

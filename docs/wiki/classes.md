@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): switched on in 1.0 with
 every other expansion (`Expansions.M34`).
 
-Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22, B398
+Roadmap items: 34.1, 34.5, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22, B398
 
 ## What a player sees
 
@@ -40,8 +40,19 @@ Journeyman the Gold Circlet from 2 gold ingots, an emerald and an amethyst shard
 the brooch a Noble's need, every 16 days; the circlet a Noble's want, every 32.
 
 **The Vintner (34.9).** Stand a villager by a cauldron and sneak-right-click them with sweet berries, glow berries
-or an apple. A Novice presses Cider, an Apprentice Berry Wine, and Vintage Wine waits three days to age. A Berry Wine
+or an apple. A Novice presses Cider (3 apples and a glass bottle), an Apprentice Berry Wine (6 sweet berries, 4 glow berries or,
+with Cobblemon, 4 of its berries, and a bottle) and a Journeyman Vintage Wine, from a Berry Wine at least 3 days old. A Berry Wine
 bought from a Vintner is pressed the day it's sold and waits its three days too. The drinks are luxuries the households take from the store, and players can drink them (the bottle comes back).
+
+**The luxury workshop engine (34.5).** The Vintner, Tailor, Printer and Jeweler make their goods from data:
+`data/aliveworkplace/luxury_recipes/<id>.json` names the job, the level that may make it, the makings (items or tags,
+each with an optional `min_age_days`), the output and the ticks. A maker (`LuxuryWork`) fills the stock orders the store
+holds first, then makes, in turn, whichever good the store and their own chests hold fewer than 8 of, from their own
+chests, the store and the other workers' chests (never a builder's), and only from recipes up to their level. A good that
+ages carries the day it was made (`made_day`): its tooltip reads "Pressed on day 42 · vintage in 2 days" (a Berry Wine),
+then "Pressed on day 42 · vintage". A maker takes an aged making only once it is old enough. When nothing short can be made, the first
+missing making goes on the requests board. Craftsmanship research speeds the makers like the other crafters. A data pack adds a good with
+a new recipe file and no code.
 
 **The Tailor (34.10).** Stand a villager by a loom and sneak-right-click them with string (shears bring the Shepherd
 back). A Novice sews Work Clothes from 3 wool of any colors, 2 leather and a string; an Apprentice Fine Clothes from

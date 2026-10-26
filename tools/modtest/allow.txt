@@ -6,6 +6,8 @@
 (Another mod refused to let minecraft:\S+ spawn for the|Could not spawn minecraft:\S+ for the) 
 # QaRoadGameTests ships three broken road style files in the test pack to prove each is skipped and the shipped styles still load (27.15).
 Skipping road style aliveworkplace_test:road_styles/qa_
+# QaRenewalGameTests loads five broken renewal lists through a fake resource manager to prove each is skipped and the good lists still load (27.21).
+Skipping renewal list qa:steward_renewal/(bad_job|no_buildings|array|broken|no_kind)\.json
 # FurnitureSpotGameTests ships a broken spots file in the test pack to prove it is logged with its path and skipped (37.2).
 Skipping furniture spots aliveworkplace_test:blueprint_furniture/broken\.json
 # FurnitureAnyModGameTests ships a broken equivalents file in the test pack to prove it is logged with its path and skipped (37.13).

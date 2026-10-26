@@ -7171,6 +7171,8 @@
   "message.aliveworkplace.wonder.status.short": "%s %s, %s still to bring",
   "message.aliveworkplace.wonder.status.there": "%s %s, all there",
   "message.aliveworkplace.wonder.status.abandon": "Sneak-break the stone to abandon the Wonder (what's built stays, the plan comes back)",
+  "message.aliveworkplace.wonder.status.cancel": "[Abandon this Wonder]",
+  "message.aliveworkplace.wonder.status.cancel_hover": "Puts /workplace cancel with this Wonder's id in the chat. What's built stays; the plan and the goods handed in for a stage not yet dedicated come back.",
   "message.aliveworkplace.wonder.status.crew": "Led by %s, with a crew of %s (at most %s)",
   "message.aliveworkplace.wonder.status.call": "[Call every builder]",
   "message.aliveworkplace.wonder.status.call_hover": "Every builder of the village joins the crew as they finish what they're on",

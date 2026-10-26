@@ -327,7 +327,7 @@ public final class MaterialRules {
 	 * cauldron), a composter at level 0 (no ready bone meal), a beehive or bee nest with no honey, a respawn anchor
 	 * uncharged, and a chiseled bookshelf or brewing stand shows no books or bottles (it holds none). A water cauldron is
 	 * still built full, as shipped blueprints have it: water is free in vanilla (an endless spring), so it gives nothing
-	 * away. Also no glow berries, lectern book or jukebox disc shown (B494), no crop ripe (B493) and no furnace lit (B495).
+	 * away. Also no glow berries, lectern book or jukebox disc shown (B494), no crop ripe (B493), no furnace lit (B495) and no Mailbox showing mail (B536).
 	 * By vanilla's properties, so a modded block that uses them is emptied too.
 	 */
 	public static BlockState emptied(BlockState state) {
@@ -365,7 +365,9 @@ public final class MaterialRules {
 		BlockStateProperties.CHISELED_BOOKSHELF_SLOT_4_OCCUPIED, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_5_OCCUPIED,
 		BlockStateProperties.HAS_BOTTLE_0, BlockStateProperties.HAS_BOTTLE_1, BlockStateProperties.HAS_BOTTLE_2,
 		// B493, B494: cave vines' glow berries, a lectern's book and a jukebox's disc (built empty, they hold none)
-		BlockStateProperties.BERRIES, BlockStateProperties.HAS_BOOK, BlockStateProperties.HAS_RECORD
+		BlockStateProperties.BERRIES, BlockStateProperties.HAS_BOOK, BlockStateProperties.HAS_RECORD,
+		// B536: our Mailbox's mail flag (built empty, it holds no letters, so it shows none and signals 0)
+		io.github.jcondedata.aliveworkplace.mail.MailboxBlock.HAS_MAIL
 	);
 
 	private static BlockState emptyValue(BlockState state, Property<?> property) {

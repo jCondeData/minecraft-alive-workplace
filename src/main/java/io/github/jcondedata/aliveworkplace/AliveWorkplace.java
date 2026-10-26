@@ -55,6 +55,7 @@ public final class AliveWorkplace {
 		Platform.get().allowUseItem(io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem::allowBookUse); // B365: the off hand's blueprint writes into the main hand's book
 		Platform.get().onUseBlock(io.github.jcondedata.aliveworkplace.shop.ShopCounterBlock::beforeBlock); // B336: the sales log with anything in hand
 		BuilderStatusSync.init();
+		io.github.jcondedata.aliveworkplace.blueprint.BlueprintNames.init(); // the names players gave their builds (B458)
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.init();
 		io.github.jcondedata.aliveworkplace.farm.Fields.init();
 		io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.init(); // 36.12: the Quarry build's Miner and its pit growing back

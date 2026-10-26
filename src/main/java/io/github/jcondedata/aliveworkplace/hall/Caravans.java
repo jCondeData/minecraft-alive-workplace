@@ -124,9 +124,13 @@ public final class Caravans {
 	/**
 	 * A caravan's sale the selling village hasn't booked yet (33.6): {@code items} of {@code good} sold to {@code buyer}
 	 * for {@code cents} on {@code day}. Booked (the treasury paid, the chronicle written) in the seller's next round, at
-	 * once when its hall is loaded.
+	 * once when its hall is loaded. {@code buyerHall} (B430; null in older saves) gets back what the seller's full
+	 * treasury can't take.
 	 */
-	public record Sale(BlockPos seller, Component buyer, ResourceLocation good, int items, int cents, long day) {
+	public record Sale(BlockPos seller, Component buyer, ResourceLocation good, int items, int cents, long day, @Nullable BlockPos buyerHall) {
+		public Sale(BlockPos seller, Component buyer, ResourceLocation good, int items, int cents, long day) {
+			this(seller, buyer, good, items, cents, day, null);
+		}
 	}
 
 	/** The list of villages, routes and caravans on the road in one dimension. */
@@ -137,6 +141,8 @@ public final class Caravans {
 		final List<Shipment> onTheRoad = new ArrayList<>();
 		/** Caravan sales their sellers haven't booked yet (33.6). */
 		final List<Sale> sales = new ArrayList<>();
+		/** Hundredths of an emerald owed back to buying villages whose money a full treasury couldn't take (B430). */
+		final Map<BlockPos, Integer> refunds = new LinkedHashMap<>();
 		/** The halves of roads between villages (27.17), from one hall towards another. */
 		final Map<BlockPos, Map<BlockPos, Half>> halves = new LinkedHashMap<>();
 		/** Each village's Trainer Leader (28.17); none until its hall's round writes one. */
@@ -244,6 +250,7 @@ public final class Caravans {
 			routes.remove(hall);
 			routes.values().forEach(to -> to.remove(hall));
 			sales.removeIf(s -> s.seller().equals(hall));
+			refunds.remove(hall); // B430: a village gone is owed nothing
 			// 33.6, B212: a caravan on its way here turns round for home with everything it carried, the goods it brought
 			// for nothing and those to sell (if home is still on the list); one coming home here, or whose home is gone
 			// too, has nowhere to go and is dropped. A caravan that set out from here still arrives where it was going.
@@ -673,6 +680,32 @@ public final class Caravans {
 			return List.copyOf(sales);
 		}
 
+		/** Hundredths of an emerald {@code seller}'s caravans have sold that it hasn't booked yet. */
+		public int unbooked(BlockPos seller) {
+			return sales.stream().filter(s -> s.seller().equals(seller)).mapToInt(Sale::cents).sum();
+		}
+
+		/** Owes {@code cents} back to {@code buyer}, whose money a full treasury couldn't take (B430). */
+		public void refund(BlockPos buyer, int cents) {
+			if (cents > 0) {
+				refunds.merge(buyer.immutable(), cents, Integer::sum);
+				setDirty();
+			}
+		}
+
+		/** What is owed back to {@code buyer}. */
+		public int refunds(BlockPos buyer) {
+			return refunds.getOrDefault(buyer, 0);
+		}
+
+		/** Sets what is still owed back to {@code buyer} after paying some of it. */
+		public void setRefund(BlockPos buyer, int cents) {
+			Integer old = cents > 0 ? refunds.put(buyer.immutable(), cents) : refunds.remove(buyer);
+			if (old == null || old != cents) {
+				setDirty();
+			}
+		}
+
 		/** The caravans for {@code hall} that have arrived by {@code now}, taken off the road. */
 		List<Shipment> arrived(BlockPos hall, long now) {
 			List<Shipment> out = new ArrayList<>();
@@ -800,9 +833,22 @@ public final class Caravans {
 					t.putInt("items", s.items());
 					t.putInt("cents", s.cents());
 					t.putLong("day", s.day());
+					if (s.buyerHall() != null) { // B430
+						t.putLong("buyerHall", s.buyerHall().asLong());
+					}
 					sold.add(t);
 				}
 				tag.put("sales", sold);
+			}
+			if (!refunds.isEmpty()) { // B430
+				ListTag owed = new ListTag();
+				refunds.forEach((hall, cents) -> {
+					CompoundTag t = new CompoundTag();
+					t.putLong("hall", hall.asLong());
+					t.putInt("cents", cents);
+					owed.add(t);
+				});
+				tag.put("refunds", owed);
 			}
 			ListTag bank = new ListTag();
 			banked.forEach((hall, m) -> m.forEach((id, xp) -> {
@@ -905,8 +951,13 @@ public final class Caravans {
 				Component buyer = Component.Serializer.fromJson(Nbt.getString(t, "buyer"), registries);
 				if (good != null) {
 					data.sales.add(new Sale(BlockPos.of(Nbt.getLong(t, "seller")), buyer == null ? Component.empty() : buyer, good, Nbt.getInt(t, "items"),
-						Nbt.getInt(t, "cents"), Nbt.getLong(t, "day")));
+						Nbt.getInt(t, "cents"), Nbt.getLong(t, "day"), Nbt.has(t, "buyerHall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(t, "buyerHall")) : null)); // buyerHall: B430
 				}
+			}
+			ListTag owed = Nbt.getList(tag, "refunds", Tag.TAG_COMPOUND); // B430; older saves have none
+			for (int i = 0; i < owed.size(); i++) {
+				CompoundTag t = Nbt.compoundAt(owed, i);
+				data.refunds.merge(BlockPos.of(Nbt.getLong(t, "hall")), Nbt.getInt(t, "cents"), Integer::sum);
 			}
 			ListTag bank = Nbt.getList(tag, "bankedXp", Tag.TAG_COMPOUND); // 28.18; older saves have none
 			for (int i = 0; i < bank.size(); i++) {
@@ -1247,7 +1298,7 @@ public final class Caravans {
 				int cents = Math.min(entity.treasury(), io.github.jcondedata.aliveworkplace.trade.Board.price(level, hall, good) * stack.getCount() / Math.max(1, good.bundle()));
 				if (cents > 0) {
 					entity.setTreasury(entity.treasury() - cents);
-					data.sold(new Sale(from, buyerName, good.id(), stack.getCount(), cents, Chronicle.day(level)));
+					data.sold(new Sale(from, buyerName, good.id(), stack.getCount(), cents, Chronicle.day(level), hall));
 					total += cents;
 				}
 				break;

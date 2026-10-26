@@ -247,8 +247,13 @@ public class B261GameTests {
 		return copy;
 	}
 
-	/** As on the live server: repairs on without asking (the ask has RepairAskGameTests), no scaffolding. */
+	/**
+	 * As on the live server: repairs on without asking (the ask has RepairAskGameTests), no scaffolding, in the builder's
+	 * work hours. The day cycle runs in the suite, so the clock here is wherever earlier batches left it: started after
+	 * about 11000 a builder rests through the whole timeout and never puts the blocks back (B512).
+	 */
 	private static void liveServer(GameTestHelper helper) {
+		helper.setDayTime(2000);
 		boolean upkeep = Upkeep.ENABLED;
 		boolean asks = Upkeep.ASK;
 		boolean scaffolds = Scaffolds.ENABLED;

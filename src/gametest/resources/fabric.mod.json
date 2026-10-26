@@ -350,6 +350,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWarPartySavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEverySavedDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEveryBlockSaveGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBlockSaveKindsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLairGrowthGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatFixesGameTests",

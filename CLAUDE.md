@@ -171,6 +171,8 @@ Commands:
 ## Rules
 
 - Player-visible text goes through `assets/aliveworkplace/lang/en_us.json`. Run `langcheck.py` when you add some.
+  Write it in **American English** (owner, 2026-10-26): defense, color, armor, jeweler, canceled, gray; never rename
+  a key or id to match.
 - **Don't break existing saves.** The mod runs on the owner's live server: new saved fields need defaults, and
   registry ids are never renamed.
 - Code from GPL-3.0(-or-later) projects such as MineColonies may be adapted **with attribution in the file header**.

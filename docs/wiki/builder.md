@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21
 
 ## 1. What a player sees
 
@@ -14,7 +14,12 @@ Above the Builder's head you can see the progress, what it is short of, and wher
 chests run short, the Builder waits and tells you what is missing. Idle Builders walk over and help other Builders'
 builds nearby, and later offer to fix holes in buildings they finished (a creeper's hole, a broken window): the
 Builder asks first, "Repair it? [Yes] [Not now]" in chat and on the Village Hall's Repairs page, and repairs only what
-you said yes to (36.15). What raiders and village fires broke is put back without asking. Builders get
+you said yes to (36.15). What raiders and village fires broke is put back without asking. A finished build whose
+blueprint was redrawn since it was built shows **Refresh to the latest look** on the same page (36.21): a click shows
+what changes ("New: 3 decorations, 1 furniture piece · Taken away: 2 decorations"), a second hands it to the nearest
+free Builder, who takes away what the old drawing left (floating or invisible pieces included; their items go to the
+chests) and puts in the new pieces, as a repair. Chests and what's in them, beds villagers sleep in, job blocks and
+blocks a player put there or changed stay. With no Builder free it waits until one is. Builders get
 better with each building: they level up like villagers you trade with, and each level makes them faster.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
@@ -109,8 +114,8 @@ asked that time shrink with each Builder: tested at 2 builders = 50%, 4 = 29% of
 **Who may order.** With `workplaceBuilderOwnership` on, a Builder takes orders only from the player who hired it,
 their friends (`/workplace friend add|remove|list`) and operators.
 
-**Upkeep and paths.** An idle Builder looks over buildings it (or its employer) finished within
-`maxSiteDistance`, every 1200 ticks, and fills only the holes with its usual materials; things players put there
+**Upkeep and paths.** An idle Builder looks over buildings it (or its employer) finished anywhere in the village his
+table stands in, or outside it within `maxSiteDistance` (36.20), every 1200 ticks, and fills only the holes with its usual materials; things players put there
 are left alone.
 
 **Asking before a repair (36.15).** With `repairAsk` on (the default) a Builder who finds blocks missing doesn't start:
@@ -172,7 +177,7 @@ Config file keys (`WorkplaceConfig`):
 | Key | Default | What it does |
 |---|---|---|
 | `supplyRadius` | 8 | Chests and barrels this close to a workstation are that villager's supply chests |
-| `maxSiteDistance` | 48 | How far from its bench a Builder takes a build (also how far upkeep looks) |
+| `maxSiteDistance` | 128 | How far from its bench a Builder takes a build outside the village (anywhere in the village is in reach; also how far upkeep looks) |
 | `builderPaths` | true | Builders lay a dirt path from each finished building to the bell or hall |
 | `builderRepairs` | true | Idle Builders repair buildings they finished when blocks go missing |
 | `repairAsk` | true | Builders ask before a repair (Repair it? Yes / Not now) and repair only what was agreed; off: they repair by themselves. Threat damage is never asked about |
@@ -199,7 +204,9 @@ sites are remembered). Each site (`BuildSite.save`) holds:
 - `stage` (default CLEAR), `cursor` (0), `retrying`, `deferred` (list), `skipped` (0), `placed` (0).
 - `shown_progress`: the most progress shown so far, so the bar never goes backwards after a restart. Saves from
   0.138.0 and earlier lack it; it is worked out from the cursor (B64).
-- `builder` (the Builder's id; none by default), `queued` (false), `deconstruct` (false), `repair` (false).
+- `builder` (the Builder's id; none by default), `queued` (false), `deconstruct` (false), `repair` (false),
+  `refresh_from` (36.21: the older drawing a refresh brings the build on from, its key in `blueprint_history`; absent:
+  not a refresh, as in every older save).
 - `no_level_ground` (absent means leveling is on), `bench` (the lead's bench; absent in pre-0.6 saves).
 - `steward`, `hall` (a Steward's build from a Village Hall; absent for a player's own), `waiting_since` (absent:
   not waiting) and `player_blocks` (0): used by Stewards (27.19).
@@ -214,6 +221,7 @@ On the villager (attachments in `registry/ModAttachments`):
 Per finished building (36.15): `repair_ask` (`asked`, `yes`, `not_now` or `paused`; absent: never asked, as in every
 save from before 36.15) and `repair_missing` (the blocks missing when it was last looked at). It is cleared when the
 repair finishes, when nothing is missing any more, and when the building is taken down or built again on its spot.
+`refresh_asked` (36.21, true while a refresh waits for a free Builder; absent: false) is kept with it the same way.
 
 Friends are saved in `aliveworkplace_friends`. Not saved, worked out again: the plan, status, missing list, helpers'
 claims and trip counts.
@@ -263,12 +271,22 @@ claims and trip counts.
   is a full block up, and a villager climbing onto it still has its back in the doorway. A bed counts too: it is 9/16
   high, under a villager's step, so its path runs over a bed like a slab, and no bed stands right inside a door (the
   Carpenter's Workshop and the builder's and carpenter's village looks). `tools/blueprints/check.py` refuses every
-  blueprint that breaks it (B170, B173, B178). Tents are two high only under their ridge: nothing stands in a tent's
+  blueprint that breaks it (B170, B173, B178). A whole block counts as well: a door opens onto a floor at its own
+  level, never onto a window's old sill, a dais or a raised floor (that leaves a villager 1.00), and a wooden door
+  never opens onto a wall (B487: the Healing Center III's garden door, the Mountain Lodge II's back door, the Royal
+  Hall's vault door, now a block up level with the dais, and Royal Hall II's east door). Tents are two high only under their ridge: nothing stands in a tent's
   mouth there, and no carpet lies under the low sides (the War Camp's tents, B178).
 - Not only in doorways: anywhere a villager walks, a step (a carpet, a shut trapdoor, a bottom slab or stair, a bed)
   leaves it its 1.95 under whatever is over it. The game lets a villager walk where the two cells its body is in are
   open, so a carpet under a ceiling two blocks up (1.94 of room) or a seat under a shut trapdoor is a place it walks
   to and can't get onto. `tools/blueprints/check.py` flags every such step a player can get to (B197).
+- Nothing a build leaves is broken or changed by the game itself once placed: every bed has its head one block
+  towards its facing (the Observatory's, B537); a standing lantern, candle or torch stands on a block whose top holds
+  its middle, never a lectern, a chest or a bottom slab (the Great Library's lantern on a lectern, B538); and no dirt
+  path or farmland lies under a block the game counts as solid (a fence post, a wall, a tent's wool, a bed), since the
+  game turns it to dirt (the Hanging Gardens' paths, B539). The blueprint kit draws grass or coarse dirt there by
+  itself, `tools/blueprints/check.py` flags all three, and `BlueprintsStayGameTests` reads every shipped blueprint for
+  them with the game's own rules.
 - No villager is left standing inside a block in a growing village. A baby fits in nooks a grown villager doesn't
   (under a roof's stair being laid, beside a lantern on a fence post), and when it grows up vanilla finds no room for
   the bigger body there; a villager standing still in a doorway can have the door shut on it by a neighbor walking
@@ -287,15 +305,27 @@ claims and trip counts.
 
 ## 7. Known limits
 
-- Only builds whose middle is within `maxSiteDistance` (48) of the bench are taken. A spot past it is refused with its
-  distance rounded up, so one just past the reach reads past it: 48.5 blocks says "That spot is 49 blocks from the
-  builder's Blueprint Table — keep it within 48." (B378; Farmers', Miners' and other area jobs' spots say it the same way).
+- **How far a build may be (36.20, the owner's "village-wide").** Anywhere in the village the builder's table stands in
+  is in reach, however big the village: within the Village Hall's radius (`villageHallRadius`) or in a cell painted into
+  one of the City Plan's zones. Outside the village, a build's middle must be within `maxSiteDistance` (128) of the
+  table. A spot past it is refused with its distance rounded up, so one just past the reach reads past it, and naming the
+  village when the table stands in one: "That spot is outside Mapleridge and 140 blocks from the builder's Blueprint
+  Table — keep it within 128." (`assign.too_far_village`; with no village round the table, `assign.too_far`: "That spot
+  is 140 blocks from the builder's Blueprint Table — keep it within 128."; B378). Farmers', Miners' and other area jobs'
+  spots follow the same rule and say it the same way. A far site in chunks nobody has loaded waits until someone does:
+  nothing loads chunks for it. A world from before keeps its sites, and a config file holding the old default 48 moves to
+  128 (format 5); any other number stays.
 - Blocks on the never-placed list (spawners, portals, bedrock, command blocks...) are skipped, not substituted.
 - Steps that cannot be done after being put off once are skipped, so a build can finish with a few blocks missing
   (the `skipped` count).
 - Upkeep looks only every 1200 ticks and only at buildings within range of the bench, so a damaged build is asked
   about at a Builder's next round, not the moment it breaks.
 - The question in chat goes only to a player who is online when the Builder asks; otherwise it waits on the Repairs page.
+- A refresh (36.21) knows only the older drawings the mod ships (`data/aliveworkplace/blueprint_history/`, written by
+  `tools/blueprints/history.py`: every earlier version of the blueprints changed since 1.0, and every version of the
+  Stone House line). A build of an older drawing not shipped, an imported or uploaded build, and a modded-furniture
+  variant drawn only in the `modded/` files show no button. The Repairs page lists refreshes after the repairs, so with
+  more builds than fit, the last ones are counted under "more" rather than shown.
 - A site in unloaded chunks, queued, or without a Builder is not watched for stalls.
 - The table preview leaves out fluids (water and lava have no block model) and draws blocks at full brightness.
 - With Create, the fluid in a scanned fluid tank or spout is still copied, so each copy holds it for free (B486); a
@@ -304,11 +334,18 @@ claims and trip counts.
 
 ## 8. Proof
 
+`RefreshGameTests` (36.21, through the Village Hall's Repairs page): a Stone House built from its first shipped drawing
+refreshed to the current one (every leftover gone or turned into the new piece, every new piece there, no button
+after); a small build's refresh keeping a chest and its diamonds, a bed and its sleeper's claim, a composter and the
+owner's own blocks, the leftovers' items in the store; no free Builder (it waits, the first one free takes it up);
+short of planks (the leftovers away, then the Builder waits and says what's missing, as for a repair); a build of the
+latest drawing (no button); saved and reloaded mid-way (it finishes).
+
 Compat tests (QA, lane E, from "Builders never copy what is inside containers"): `QaPastureCopyCompatTests` (a scanned
 Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),
 `QaCreateItemsHeldCompatTests` (a scanned Create depot, deployer and basin each holding a diamond are built empty).
 
-GameTests (`src/gametest/java/.../test/`): `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
+GameTests (`src/gametest/java/.../test/`): `BlueprintsStayGameTests.everyBlueprintKeepsItsLampsPathsAndBeds` (B537-B539: in every shipped blueprint no standing lantern, candle or torch is on a top that can't hold it, no dirt path or farmland under a solid block, no half bed; with QaWonderDesignsGameTests' qaWonderStagesStand and qaWonderBedsWhole now run for the Great Library, the Hanging Gardens and the Observatory too), `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
 `BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbor's bench outlasts a build;
 a bench put down and employed at in one command is held),
@@ -435,7 +472,8 @@ block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurned
 shatters into no sherd when broken with a pickaxe, while the scanned pot itself gives its four,
 `aScannedSherdPotGivesNoFreeSherds`).
 
-Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
+Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes),
+`refresh_old_house` (36.21: a Stone House of its first drawing, the Refresh button with what changes, the house after), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the
 missing-materials tooltip and list), `table`, `table_preview` (the library's 3D preview), `table_basement` (Starter Cottage IV and the Storehouse with their cellars), `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
 `pace` (speed cap), `partners_engine`, `builder_list` (B279: the list of a build under way, as a book and in chat),

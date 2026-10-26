@@ -30,7 +30,7 @@ public class QaBuilderLimitsBugTests implements net.fabricmc.fabric.api.gametest
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final BlockPos TABLE = new BlockPos(2, 2, 2);
 	private static final BlockPos VILLAGER = new BlockPos(3, 2, 3);
-	private static final Pattern TOO_FAR = Pattern.compile("That spot is ([0-9.,]+) blocks from the builder's Blueprint Table — keep it within ([0-9]+)\\.");
+	private static final Pattern TOO_FAR = Pattern.compile("That spot is (?:outside .+ and )?([0-9.,]+) blocks from the builder's Blueprint Table — keep it within ([0-9]+)\\.");
 
 	private static final net.minecraft.resources.ResourceLocation TEST_HUT = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
 

@@ -407,8 +407,8 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 	}
 
 	/**
-	 * "Idle Builders help builds near their bench." The reach is the table's own, 48 blocks (the guide's "keep it within
-	 * 48"; the Steward's road segments use the same bench-to-bench reach): an idle builder whose table is 48 blocks from
+	 * "Idle Builders help builds near their bench." The reach is the table's own, 128 blocks since 36.20 (was 48; the guide's "keep it within
+	 * 128"; the Steward's road segments use the same bench-to-bench reach): an idle builder whose table is 48 blocks from
 	 * the lead's joins, one whose table is 49 blocks away doesn't, through the shift's own recruiting and over 400
 	 * ticks of real work.
 	 */
@@ -420,7 +420,7 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 		Crew c = crew(helper, 0, 1);
 		BlockPos table = helper.absolutePos(TABLE);
 		int reach = Builders.MAX_SITE_DISTANCE;
-		helper.assertTrue(reach == 48, "the guide gives a table's reach as 48, the code has " + reach);
+		helper.assertTrue(reach == 128, "the guide gives a table's reach as 128 (36.20; was 48), the code has " + reach);
 		BlockPos nearTable = table.above(reach);
 		BlockPos farTable = table.above(reach + 1);
 		for (BlockPos p : List.of(nearTable, farTable)) {
@@ -431,11 +431,11 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 		Villager far = helper.spawn(EntityType.VILLAGER, new BlockPos(2, 2, 13));
 		Builders.employ(level, near, nearTable);
 		Builders.employ(level, far, farTable);
-		helper.assertTrue(Math.sqrt(c.site().bench().distSqr(nearTable)) == 48, "setup: the near table isn't 48 from the site's table");
+		helper.assertTrue(Math.sqrt(c.site().bench().distSqr(nearTable)) == reach, "setup: the near table isn't " + reach + " from the site's table");
 		helper.assertTrue(Builders.recruit(level, far) == null, "an idle builder whose table is " + String.format("%.2f", Math.sqrt(c.site().bench().distSqr(farTable)))
-			+ " blocks away was recruited (the most is 48)");
+			+ " blocks away was recruited (the most is " + reach + ")");
 		BuildSite joined = Builders.recruit(level, near);
-		helper.assertTrue(joined != null && joined.id().equals(c.site().id()), "an idle builder whose table is 48 blocks away wasn't recruited: " + joined);
+		helper.assertTrue(joined != null && joined.id().equals(c.site().id()), "an idle builder whose table is " + reach + " blocks away wasn't recruited: " + joined);
 		boolean[] farHelped = {false};
 		helper.onEachTick(() -> {
 			helper.setDayTime(2000);

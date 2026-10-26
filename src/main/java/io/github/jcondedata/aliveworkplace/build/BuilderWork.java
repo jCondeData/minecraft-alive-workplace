@@ -497,6 +497,12 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!free && bag.count(net.minecraft.world.item.Items.SCAFFOLDING) < toPlace) {
 				MaterialRules.Requirement need = new MaterialRules.Requirement(net.minecraft.world.item.Items.SCAFFOLDING, toPlace);
 				if (inStock(level, villager, site, bench, plan, need)) {
+					if (site.missing().containsKey(net.minecraft.world.item.Items.SCAFFOLDING)) {
+						// B499: there's enough now, so the board stops asking for it
+						Map<net.minecraft.world.item.Item, Integer> missing = new LinkedHashMap<>(site.missing());
+						missing.remove(net.minecraft.world.item.Items.SCAFFOLDING);
+						site.setMissing(missing);
+					}
 					// 35.6a: takes enough for the column to grow on as the part rises, not one or two a trip
 					int carry = (int) Math.max(toPlace, Math.min(Scaffolds.CARRY, scaffoldingOnHand(level, site, plan)));
 					fetch(level, villager, site, plan, bag, bench, new MaterialRules.Requirement(net.minecraft.world.item.Items.SCAFFOLDING, carry));

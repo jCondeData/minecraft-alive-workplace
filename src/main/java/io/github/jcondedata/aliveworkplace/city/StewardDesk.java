@@ -548,11 +548,12 @@ public final class StewardDesk {
 	 * village (B86: an old house at the village's edge stands in the village, if past every bench's reach).
 	 */
 	public static Optional<Builder> builderFor(ServerLevel level, BlockPos hall, Proposal proposal, boolean far) {
-		Optional<Builder> near = builderFor(level, hall, proposal, Builders.MAX_SITE_DISTANCE);
-		return near.isEmpty() && far ? builderFor(level, hall, proposal, Double.MAX_VALUE) : near;
+		Optional<Builder> near = pickBuilder(level, hall, proposal, true);
+		return near.isEmpty() && far ? pickBuilder(level, hall, proposal, false) : near;
 	}
 
-	private static Optional<Builder> builderFor(ServerLevel level, BlockPos hall, Proposal proposal, double reach) {
+	/** {@code inReach}: only a builder whose bench reaches the proposal (36.20, {@link io.github.jcondedata.aliveworkplace.work.Reach}). */
+	private static Optional<Builder> pickBuilder(ServerLevel level, BlockPos hall, Proposal proposal, boolean inReach) {
 		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, proposal.blueprint());
 		if (blueprint.isEmpty()) {
 			return Optional.empty();
@@ -562,7 +563,7 @@ public final class StewardDesk {
 		int bestQueue = Integer.MAX_VALUE;
 		for (Villager v : builders(level, hall)) {
 			BlockPos bench = Builders.benchPos(v).orElseThrow();
-			if (Math.sqrt(centre.distSqr(bench)) > reach) {
+			if (inReach && !io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, bench, centre, Builders.MAX_SITE_DISTANCE)) {
 				continue;
 			}
 			BuildSite active = Builders.activeSite(level, v);

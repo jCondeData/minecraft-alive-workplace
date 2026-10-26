@@ -5,7 +5,8 @@ type: Setting
 image: https://jcondedata.github.io/minecraft-alive-workplace/config/still-1.jpg
 caption: The settings screen's numbers
 Chest Reach: 8 blocks (2 to 32)
-Build Distance: 48 blocks (16 to 256)
+Build Distance: 128 blocks (16 to 256)
+Quarry, Field, Tree Farm, Orchard and Berry Plot Distance: 128 blocks each (16 to 256)
 Guard Patrol Range: 24 blocks (8 to 64)
 Lumberjack Range: 16 blocks (4 to 48)
 Orchard Range: 16 blocks (4 to 48)
@@ -19,7 +20,7 @@ categories: Settings
 related: settings.md, jobs.md, village-hall.md, settings-worker-limits-and-performance.md
 ```
 
-Eleven sliders on the settings screen say how far things reach: how far a worker looks for chests, trees or water, how
+Sixteen sliders on the settings screen say how far things reach: how far a worker looks for chests, trees or water, how
 far a builder or postman will go, and how big a village is. All are in blocks. A number out of range is set to the
 nearest allowed one. See [Settings](settings.md) for where to change them.
 
@@ -28,8 +29,15 @@ nearest allowed one. See [Settings](settings.md) for where to change them.
 - **Chest Reach** (normally 8): chests and barrels this close to a workstation are that villager's supply chests. Raise
   it if your chests sit farther from the tables; lower it to keep two workshops' chests apart. Every job uses it (see
   [Giving villagers jobs](jobs.md)).
-- **Build Distance** (normally 48): how far from their Blueprint Table a builder takes a build. Place blueprints within this
-  distance of a builder's table. See [The Builder and blueprints](builder.md).
+- **Build Distance** (normally 128): how far from their Blueprint Table a builder takes a build **outside the village**.
+  Anywhere inside the village the table stands in is always in reach, however big the village grows (its
+  [Village Hall](village-hall.md)'s reach, and every cell painted into a [City Plan](city-plan.md) zone). See
+  [The Builder and blueprints](builder.md).
+- **Quarry, Field, Tree Farm, Orchard and Berry Plot Distance** (normally 128 each): the same for the areas you mark for
+  a miner, a farmer, a lumberjack, an orchard keeper and a berry breeder. Anywhere in the village is in reach; outside
+  it, keep the area within this distance of the worker's block. So you can dig your quarry well away from the houses.
+  A spot too far is refused with what to do: "That spot is outside Mapleridge and 140 blocks from the Miner's Bench the
+  miner works at — keep it within 128."
 
 ## Workers out in the world
 

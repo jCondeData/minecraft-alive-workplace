@@ -42,12 +42,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import io.github.jcondedata.aliveworkplace.work.Reach;
 import org.jetbrains.annotations.Nullable;
 
 /** Builder job lifecycle: hand over a blueprint, report status, finish, cancel. */
 public final class Builders {
-	/** A build site's centre must be within this many blocks of the builder's bench. */
-	public static int MAX_SITE_DISTANCE = 48;
+	/**
+	 * Outside the village, a build site's centre must be within this many blocks of the builder's bench
+	 * ({@code maxSiteDistance}); in the village the bench stands in, anywhere in it will do (36.20, {@link Reach}).
+	 */
+	public static int MAX_SITE_DISTANCE = 128;
 	/** How many blueprints a builder accepts on top of the one they are building. */
 	public static final int MAX_QUEUE = 5;
 	/** How many idle builders can help one site at a time. */
@@ -264,9 +268,9 @@ public final class Builders {
 		}
 		BoundingBox box = BlueprintOutline.bounds(placement.get(), blueprint.get().size());
 		double distance = Math.sqrt(box.getCenter().distSqr(bench.get()));
-		if (distance > MAX_SITE_DISTANCE) {
+		if (!Reach.inReach(level, bench.get(), box.getCenter(), MAX_SITE_DISTANCE)) {
 			// B378: rounded up, so a refused spot never reads as within the reach (48.5 blocks: 49)
-			tell(player, Component.translatable("message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_SITE_DISTANCE), ChatFormatting.RED);
+			tell(player, Reach.refusal(level, bench.get(), "message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_SITE_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		BuildSiteManager manager = BuildSiteManager.get(level);

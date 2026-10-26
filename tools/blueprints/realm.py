@@ -198,8 +198,11 @@ def royal_hall_shell(b):
     b.clear(10, 1, 2, 10, 2, 2)
     door(b, 9, 1, HALL_Z0, "dark_oak_door", "north")
     b.set(9, 3, HALL_Z0, "chiseled_stone_bricks")
-    # The vault's door from the dais's side, its barred windows
-    door(b, 11, 1, HALL_Z1, "dark_oak_door", "south")
+    # The vault's door from the dais's side, its barred windows. The dais is two blocks high there, so the door sits a
+    # block up, level with the dais's lower step, a stair down inside (B487: at floor level it opened onto the dais)
+    b.set(11, 1, HALL_Z1, ROYAL_STONE.at(11, 1, HALL_Z1))
+    door(b, 11, 2, HALL_Z1, "dark_oak_door", "south")
+    stairs(b, 11, 1, HALL_Z1 + 1, STONE_BRICK, "north")
     for z in (21,):
         b.set(6, 2, z, "iron_bars")
         b.set(12, 2, z, "iron_bars")
@@ -250,6 +253,7 @@ def royal_hall_inside(b):
     for x in (3, 15):
         for z in (15, 16, 17, 18):
             b.set(x, 1, z, "polished_andesite")
+    b.set(11, 2, 18, "air")  # the landing at the vault's door (B487): the upper step comes off behind it
     # The seat of state: a dark oak throne with arms and a gold back, banners behind
     stairs(b, 9, 3, 17, ROYAL_WOOD, "north")
     trapdoor(b, 8, 3, 17, "dark_oak_trapdoor", "west", open_=True)
@@ -414,6 +418,8 @@ def royal_hall_2():
         b.set(HALL_X1, y, 5, ROYAL_STONE.at(HALL_X1, y, 5))
     door(b, HALL_X1, 1, 5, "dark_oak_door", "east")
     for z in (5, 13):  # the bench seats inside the new doors come off: a step a villager can't take under a lintel (B173)
+        b.set(HALL_X1 - 1, 1, z, "air")
+    for z in range(15, 19):  # the dais's end by the east wall too: a way along the wall to the back door (B487)
         b.set(HALL_X1 - 1, 1, z, "air")
     b.set(T0, 1, 5, "air")
     b.set(T0, 2, 5, "air")

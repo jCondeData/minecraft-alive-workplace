@@ -54,6 +54,26 @@ public final class BuildSiteManager extends SavedData {
 	/** 36.15: per finished building, the question about repairing it and its answer ({@link RepairAsks}; none: never asked). Saved with the building. */
 	private final Map<BlueprintData.Placement, RepairAsks.Ask> repairAsks = new java.util.HashMap<>();
 
+	/** 36.21: the finished buildings whose owner asked for a refresh to the latest look that no builder has taken up yet. Saved with the building. */
+	private final java.util.Set<BlueprintData.Placement> refreshAsked = new java.util.HashSet<>();
+
+	/** Whether a refresh of the building at {@code placement} waits for a free builder (36.21). */
+	public boolean refreshAsked(BlueprintData.Placement placement) {
+		return refreshAsked.contains(placement);
+	}
+
+	/** Whether any refresh waits for a free builder (36.21). */
+	public boolean anyRefreshAsked() {
+		return !refreshAsked.isEmpty();
+	}
+
+	/** Records (or, false, takes back) a refresh of the building at {@code placement} waiting for a free builder (36.21). */
+	public void setRefreshAsked(BlueprintData.Placement placement, boolean asked) {
+		if (asked ? refreshAsked.add(placement) : refreshAsked.remove(placement)) {
+			setDirty();
+		}
+	}
+
 	/** The question about repairing the building at {@code placement} (36.15), or null if it was never asked or is settled. */
 	@Nullable
 	public RepairAsks.Ask repairAsk(BlueprintData.Placement placement) {
@@ -117,6 +137,7 @@ public final class BuildSiteManager extends SavedData {
 		furniture.remove(placement);
 		notTurning.remove(placement);
 		repairAsks.remove(placement);
+		refreshAsked.remove(placement);
 		finished.addLast(new Finished(structure, placement, owner));
 		while (finished.size() > MAX_FINISHED) {
 			finished.removeFirst();
@@ -148,6 +169,7 @@ public final class BuildSiteManager extends SavedData {
 		furniture.remove(placement);
 		notTurning.remove(placement);
 		repairAsks.remove(placement);
+		refreshAsked.remove(placement);
 		turnChecks.removeIf(c -> c.placement().equals(placement));
 		if (finished.removeIf(f -> f.placement().equals(placement))) {
 			changes++;
@@ -282,6 +304,9 @@ public final class BuildSiteManager extends SavedData {
 				entry.putString("repair_ask", ask.state().key());
 				entry.putInt("repair_missing", ask.missing());
 			}
+			if (refreshAsked.contains(f.placement())) { // 36.21
+				entry.putBoolean("refresh_asked", true);
+			}
 			done.add(entry);
 		}
 		tag.put("finished", done);
@@ -338,6 +363,9 @@ public final class BuildSiteManager extends SavedData {
 				}
 				RepairAsks.State.of(Nbt.getString(entry, "repair_ask")).ifPresent(state -> // 36.15: older saves have none (never asked)
 					manager.repairAsks.put(placement.get(), new RepairAsks.Ask(state, Nbt.getInt(entry, "repair_missing"))));
+				if (Nbt.getBoolean(entry, "refresh_asked")) { // 36.21: older saves have none
+					manager.refreshAsked.add(placement.get());
+				}
 			}
 		}
 		ListTag checks = Nbt.getList(tag, "turn_checks", Tag.TAG_COMPOUND); // 39.5: older saves have none

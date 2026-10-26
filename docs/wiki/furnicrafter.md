@@ -3,7 +3,8 @@
 With CobbleFurnies installed, a villager by its Furni Crafter becomes the village's Furnicrafter, who makes CobbleFurnies
 furniture from the store's materials: the chairs, tables and lamps the builders are waiting for (a furnished home's
 pieces, 37.x) and the pieces the storehouse orders. Part of Cobblemon depth (2.2), behind its gate (`Expansions.M38`).
-Without CobbleFurnies nothing changes: there is no such job.
+Without CobbleFurnies nothing changes: there is no such job. A Furnicrafter in a world CobbleFurnies was taken off
+loads as a jobless Novice with no trades, her name and clothes kept (B542), and takes another job by herself.
 
 Roadmap items: 38.12
 

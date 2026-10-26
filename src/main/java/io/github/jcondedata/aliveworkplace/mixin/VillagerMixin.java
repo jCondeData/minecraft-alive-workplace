@@ -76,6 +76,12 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.work.StuckVillagers.tick((Villager) (Object) this); // never left inside a block (B185)
 	}
 
+	/** One saved with a job whose mod was removed loads as a jobless Novice without her old trades (B542). */
+	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
+	private void aliveworkplace$vanishedJob(net.minecraft.nbt.CompoundTag tag, CallbackInfo ci) {
+		ModVillagers.forgetVanishedJob((Villager) (Object) this, tag);
+	}
+
 	/** A villager placed by a structure template gets room to stand (B6). */
 	@Inject(method = "finalizeSpawn", at = @At("HEAD"))
 	private void aliveworkplace$structureSpot(net.minecraft.world.level.ServerLevelAccessor level, net.minecraft.world.DifficultyInstance difficulty,

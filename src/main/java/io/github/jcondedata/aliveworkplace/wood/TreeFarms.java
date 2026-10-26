@@ -45,8 +45,6 @@ import org.jetbrains.annotations.Nullable;
  * even when it's further from the Chopping Block than they'd look on their own.
  */
 public final class TreeFarms {
-	/** Farthest a tree farm can be from the Chopping Block. */
-	public static final int MAX_DISTANCE = 48;
 	/** Blocks between saplings: 3 for one-block trunks, 4 for 2 × 2 ones. */
 	static final int SPACING = 3;
 	static final int SPACING_2X2 = 4;

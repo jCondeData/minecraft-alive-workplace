@@ -890,7 +890,7 @@ def coven_hut():
         b.set(x, PY + 2, 11, "bookshelf")
     b.set_nbt(8, PY + 1, 11, Compound({"LootTable": String("aliveworkplace:chests/coven_hut"), "id": String("minecraft:chest")}))
     b.set(8, PY + 1, 11, "chest", facing="north", type="single", waterlogged=False)
-    b.set(8, PY + 2, 11, "candle", candles="3", lit=True, waterlogged=False)
+    b.set(7, PY + 3, 11, "candle", candles="3", lit=True, waterlogged=False)  # on a bookshelf: not on the chest's lid
     for x, z, pot in ((5, 7, "potted_red_mushroom"), (11, 7, "potted_brown_mushroom")):
         b.set(x, PY + 1, z, "barrel", facing="up", open=False)
         b.set(x, PY + 2, z, pot)

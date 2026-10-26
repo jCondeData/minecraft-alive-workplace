@@ -672,7 +672,7 @@ public final class Roads {
 		for (Villager v : StewardDesk.builders(level, hall)) {
 			BlockPos bench = Builders.benchPos(v).orElseThrow();
 			if (Builders.activeSite(level, v) != null || !Builders.queue(level, v).isEmpty()
-				|| !far && Math.sqrt(centre.distSqr(bench)) > Builders.MAX_SITE_DISTANCE) {
+				|| !far && !io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, bench, centre, Builders.MAX_SITE_DISTANCE)) {
 				continue;
 			}
 			double d = v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ());

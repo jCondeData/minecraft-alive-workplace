@@ -59,6 +59,24 @@ public class WaystonesCompatTests implements FabricGameTest {
 	/** The stone's spot in the plaza (lower half), as tools/blueprints/waystones.py draws it. */
 	private static final BlockPos STONE = new BlockPos(3, 2, 3);
 
+	/**
+	 * B541: removes every Village Hall an earlier batch left whose village reaches this test area. A plaza's stone belongs
+	 * to the hall nearest the plaza, so a leftover hall 11 blocks north of the plaza (outside this area, never cleared)
+	 * took it from this test's hall 12 blocks away, and the round never raised it. Only for tests alone in their batch;
+	 * call it before placing anything.
+	 */
+	private static void clearLeftoverHalls(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		net.minecraft.world.phys.AABB box = helper.getBounds();
+		double halfDiagonal = Math.sqrt(box.getXsize() * box.getXsize() + box.getYsize() * box.getYsize() + box.getZsize() * box.getZsize()) / 2;
+		int reach = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS + (int) Math.ceil(halfDiagonal);
+		for (BlockPos hall : level.getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.VILLAGE_HALL_POI),
+				p -> true, BlockPos.containing(box.getCenter()), reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+			level.removeBlock(hall, false);
+		}
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+	}
+
 	private static VillageHallBlockEntity hall(GameTestHelper helper, String name) {
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		VillageHallBlockEntity hall = helper.getBlockEntity(HALL);
@@ -116,6 +134,7 @@ public class WaystonesCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '2400' '"waystonePlaza"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "waystonePlaza")
 	public void theBuilderRaisesAWorkingWaystoneNamedAfterTheVillage(GameTestHelper helper) {
+		clearLeftoverHalls(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		hall(helper, "Stonebridge");
@@ -179,6 +198,7 @@ public class WaystonesCompatTests implements FabricGameTest {
 	//$ gametest_batch AREA '"waystoneRenamed"'
 	@GameTest(template = AREA, batch = "waystoneRenamed")
 	public void renamingTheVillageRenamesItsWaystone(GameTestHelper helper) {
+		clearLeftoverHalls(helper);
 		VillageHallBlockEntity hall = hall(helper, "Oldmere");
 		paste(helper, VillageWaystones.PLAZA, java.util.UUID.randomUUID());
 		VillageWaystones.round(helper.getLevel(), helper.absolutePos(HALL));
@@ -192,6 +212,7 @@ public class WaystonesCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '1600' '"waystoneRepair"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "waystoneRepair")
 	public void aBrokenWaystoneIsRepairedAndNamedAgain(GameTestHelper helper) {
+		clearLeftoverHalls(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(1, level.getServer());

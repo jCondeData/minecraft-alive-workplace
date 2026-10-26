@@ -64,7 +64,7 @@ undying, a golden apple, 2 emeralds and a heart of the sea (any arrangement). Sn
   "Bram will never leave us: Jesse gave them an Evergreen Charm (a Master of their trade)", and their card wears a gold
   leaf badge, "❦ Ageless: will never leave us". They stay an elder in every other way.
 - anyone else refuses, with the reason over the hotbar, and the player keeps the charm:
-  - "Fenn is not an elder yet (grown 30 of 120 days): the Evergreen Charm is for elders." (or "is not an elder" for a
+  - "Fenn is not an elder yet (grown 30 of 1200 days): the Evergreen Charm is for elders." (or "is not an elder" for a
     child or someone whose age nobody knows);
   - "Dara won't take it. The charm is for an elder who is a Master of their trade, Gifted, a Legend, or happy (mood 80
     or more) for 20 days running. Happy days so far: 19.";
@@ -115,8 +115,8 @@ village with a hall a death is as before.
 - **Age.** `adult_since` is the `Chronicle.day` a villager grew up. It is written when a child grows up in a hall's
   round (`Families.round`). Whether someone is an elder is never saved: it is `today - adult_since >= villagerElderDays`
   (`people/LifeStages`). A villager with no `adult_since` is never an elder and never passes;
-  in a world from before 1.8 the hall's first rounds give everyone one, spread over the last 100 days by their UUID
-  (34.22), so the first elders come about three weeks later, one at a time.
+  in a world from before 1.8 the hall's first rounds give everyone one, spread over the last 1000 days by their UUID
+  (34.22; 36.16 made it ten times the first 100), so the first elders come about 200 days later, one at a time.
 - **The chronicle's note.** The hall's round writes "Bram is an elder now" (kind `LIFE`) the first time it sees them
   as an elder, and marks them `elder_noted` so it is written once: on the day itself, or, if the village wasn't loaded
   that day, the next time it is. An elder an Evergreen Charm already wrote into the chronicle gets no second line.

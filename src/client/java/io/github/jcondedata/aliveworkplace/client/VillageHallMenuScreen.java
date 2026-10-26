@@ -287,6 +287,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	/** The open row's villager (null: none), kept by who they are so it stays open as the list moves. */
 	private String openUuid;
 	private int tableScroll;
+	/** The open row's Job ▾/Bed ▾ line, as a table scroll (the screenshot harness's {@link #scrollToLists}). */
+	private int openButtonsAt = -1;
 	/** The window start last asked of the server (-1: none). */
 	private int askedFirst = -1;
 	/** What the last frame drew, for clicks: [kind, slot, x, y, w, h] (kind 0 row, 1 strip button, 2 job, 3 bed, 4 find). */
@@ -325,13 +327,33 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		return Math.max(menu.state(HallSections.PEOPLE_TOTAL), personSlots().size());
 	}
 
-	/** The open row's details: the lines today's resident pane shows, wrapped. */
+	/**
+	 * The old list's click hints ("Click: make them glow", "Right-click: change their job", "Shift-click: their life
+	 * story", "Click: give them a job"): none is true in the table, where a click opens the row and the row's own buttons
+	 * do the rest (B547), so the details leave them out.
+	 */
+	private static final java.util.Set<String> LIST_HINTS = java.util.Set.of("screen.aliveworkplace.hall.click_to_find",
+		"screen.aliveworkplace.hall.worker_click", "screen.aliveworkplace.hall.life_story_hint", "screen.aliveworkplace.hall.jobless_click");
+
+	private static boolean hint(Component line, String key) {
+		return line.getContents() instanceof TranslatableContents t && t.getKey().equals(key);
+	}
+
+	/** Whether the row's villager has a life story to open: the hall writes its hint only for a named villager (31.7). */
+	private static boolean hasStory(ItemStack icon) {
+		ItemLore lore = icon.get(DataComponents.LORE);
+		return lore != null && lore.lines().stream().anyMatch(l -> hint(l, "screen.aliveworkplace.hall.life_story_hint"));
+	}
+
+	/** The open row's details: the lines today's resident pane shows, wrapped, without the old list's click hints. */
 	private List<FormattedCharSequence> detailLines(ItemStack icon, int w) {
 		List<FormattedCharSequence> out = new ArrayList<>();
 		ItemLore lore = icon.get(DataComponents.LORE);
 		if (lore != null) {
 			for (Component line : lore.lines()) {
-				out.addAll(font.split(line, w));
+				if (LIST_HINTS.stream().noneMatch(key -> hint(line, key))) {
+					out.addAll(font.split(line, w));
+				}
 			}
 		}
 		return out;
@@ -636,7 +658,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		g.enableScissor(x, tableTop, x + w, tableTop + tableH);
 		for (int i = 0; i < total; i++) {
 			int top = tableTop + 2 + i * RH - tableScroll + (openAt >= 0 && i > openAt ? openH : 0);
-			if (top + RH < tableTop || top > tableTop + tableH) {
+			// The open row is drawn while any of it shows: its details and Job/Bed lists hang under its name line (B546)
+			if (top + RH + (i == openAt ? openH : 0) < tableTop || top > tableTop + tableH) {
 				continue;
 			}
 			int k = i - first;
@@ -677,6 +700,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 					dy += 10;
 				}
 				dy += 3;
+				openButtonsAt = tableScroll + dy - tableTop; // where the Job/Bed buttons sit in the table's content
 				int bx = x + 12;
 				String action = row.getString("job_action");
 				boolean listOpen = row.getBoolean("jobs_open");
@@ -693,7 +717,14 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 					tip = Component.translatable(row.getBoolean("beds_open") ? "screen.aliveworkplace.hall.people.bed_open" : "screen.aliveworkplace.hall.people.bed_hint");
 				}
 				if (!action.equals("assign")) {
-					button(g, Component.translatable("screen.aliveworkplace.hall.people.find_button"), bx, dy, true, 4, slot, mouseX, mouseY);
+					bx = button(g, Component.translatable("screen.aliveworkplace.hall.people.find_button"), bx, dy, true, 4, slot, mouseX, mouseY);
+				}
+				if (hasStory(icon)) { // Story: their life story, then Family, as shift-click opened it from the old list (B547)
+					int storyX = bx;
+					bx = button(g, Component.translatable("screen.aliveworkplace.hall.people.story_button"), bx, dy, true, 8, slot, mouseX, mouseY);
+					if (mouseX >= storyX && mouseX < bx - 4 && mouseY >= dy && mouseY < dy + BH) {
+						tip = Component.translatable("screen.aliveworkplace.hall.people.story_hint");
+					}
 				}
 				List<Component> jobTip = renderJobList(g, icon, x + 12, dy + BH + 4, detailW, mouseX, mouseY);
 				if (jobTip != null) {
@@ -750,7 +781,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				if ((pass == 0) != isButton || mx < hit[2] || mx >= hit[2] + hit[4] || my < hit[3] || my >= hit[3] + hit[5]) {
 					continue;
 				}
-				if ((hit[0] == 0 || hit[0] == 5 || hit[0] == 6 || hit[0] == 7) && (my < tableTop || my >= tableTop + tableH)) {
+				// the table's rows, buttons and list lines take clicks only inside it: a part scrolled out of view is hidden (B546)
+				if ((hit[0] == 0 || hit[0] >= 2) && (my < tableTop || my >= tableTop + tableH)) {
 					continue;
 				}
 				click(hit[0], hit[1], button);
@@ -785,6 +817,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			case 5 -> menuButton(HallJobs.PICK + slot); // a job on Job ▾'s list (slot: the job's number)
 			case 6 -> menuButton(HallBeds.PICK + slot); // a bed on Bed ▾'s list (slot: the line's number)
 			case 7 -> open(Section.BUILDINGS); // "Short of beds? Plan a house ›"
+			case 8 -> press(slot, 0, true); // Story: the shift-click that opens their life story (B547)
 			default -> {
 			}
 		}
@@ -858,6 +891,19 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		return false;
 	}
 
+	/** Clicks Story on the open row (the screenshot harness), as a player does; false with no row open or no story. */
+	public boolean pressStory() {
+		for (int slot : personSlots()) {
+			ItemStack icon = menu.slots.get(slot).getItem();
+			CompoundTag row = HallPeople.row(icon);
+			if (row != null && row.getString("uuid").equals(openUuid) && hasStory(icon)) {
+				click(8, slot, 0);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/** Clicks the bed on line {@code n} of the open bed list (the screenshot harness), as a player does. */
 	public void pickBed(int n) {
 		click(6, n, 0);
@@ -866,6 +912,13 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	/** Clicks the job numbered {@code id} on the open job list (the screenshot harness), as a player does. */
 	public void pickJob(int id) {
 		click(5, id, 0);
+	}
+
+	/** Scrolls the table so the open row's Job ▾/Bed ▾ line and the list under it are on top (the screenshot harness). */
+	public void scrollToLists() {
+		if (openUuid != null && openButtonsAt >= 0) {
+			tableScroll = Math.max(0, openButtonsAt - 4); // the render clamps it to the table's foot
+		}
 	}
 
 	/** Scrolls the table by {@code rows} (the screenshot harness). */

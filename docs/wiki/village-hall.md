@@ -48,8 +48,13 @@ there (`VillageHallScreen.renderFrom`); rows not yet loaded show "...". Mood: Ha
 (< `Moods.UNHAPPY`), Content between, and "No bed" (red) when they have no bed and aren't happy. A row click opens
 (client only, kept by uuid) the villager's details under it: every line of the person's hall tooltip (traits, what
 they're doing, needs, mood and why, class and how to rise, home, where), with **Job ▾** (the list of jobs, 40.3,
-below; grayed for children, nitwits and Legends, hidden on every row with retraining off), **Bed ▾** (the village's beds, 40.4, below) and **Find** (the
-glow). A click on a row whose villager has died or left the village since the screen was laid out lays the list out
+below; grayed for children, nitwits and Legends, hidden on every row with retraining off), **Bed ▾** (the village's beds, 40.4, below), **Find** (the
+glow) and, for a named villager (the row's lore carries `life_story_hint`), **Story** (B547: the row's slot clicked as
+`QUICK_MOVE`, the shift-click that opens `LifeStory`, then Family, as in the old list). The details leave out the old
+list's click hints (`click_to_find`, `worker_click`, `life_story_hint`, `jobless_click`), none of which is true in the
+table. The open row is drawn, and takes clicks, while any part of its block shows: a row is culled only when its name
+line and its details and lists are all above the table's top (B546); every table hit is clipped to the table. The
+header says "1 child" for one (`header_child`, B547). A click on a row whose villager has died or left the village since the screen was laid out lays the list out
 again without them (`HallPeople.gone`).
 
 **Job ▾ (40.3).** Job ▾ on an open row opens a list of every job right under it (`hall/HallJobs`), the table

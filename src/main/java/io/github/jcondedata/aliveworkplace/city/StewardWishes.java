@@ -298,7 +298,9 @@ public final class StewardWishes {
 	public static java.util.Optional<Plots.Request> plotFor(ServerLevel level, BlockPos hall, Wish wish) {
 		java.util.Optional<String> near = wish.effect().near();
 		return plotFor(wish).map(request -> request.blueprints().size() == 1
-				? new Plots.Request(io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.forVillage(request.blueprints().get(0), hall),
+				? new Plots.Request(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.isPlaza(request.blueprints().get(0))
+					? io.github.jcondedata.aliveworkplace.hall.VillageWaystones.forVillage(level, hall) // 41.1: the village culture's own plaza first
+					: io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.forVillage(request.blueprints().get(0), hall),
 					request.zoneKind(), request.skip(), request.near())
 				: request)
 			.map(request -> near.isPresent() && near.get().equals(StewardRules.Effect.NEAR_DARK_BEDS)

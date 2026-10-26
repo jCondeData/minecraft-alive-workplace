@@ -1,0 +1,12 @@
+{
+  "when": [
+    {"mod_loaded": {"mod": "waystones"}},
+    {"waystones_offered": {}},
+    {"built_count_below": {"blueprint": "aliveworkplace:waystone_plaza", "n": 1}}
+  ],
+  "do": {"build": {"blueprint": "aliveworkplace:waystone_plaza", "zone": "civic"}},
+  "priority": 45,
+  "why": "steward.aliveworkplace.why.waystone_plaza",
+  "max": 1,
+  "requires": ["waystones"]
+}

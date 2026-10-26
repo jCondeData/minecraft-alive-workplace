@@ -291,6 +291,7 @@ public final class MaterialRules {
 	/** Finishes a block a builder has just placed (a Campfire Pot gets its pot). */
 	public static void afterPlaced(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, BlockState state) {
 		ModdedBlocks.afterPlaced(level, pos, state);
+		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.placed(level, pos, state); // a plaza's waystone, named after the village (41.1)
 	}
 
 	/**

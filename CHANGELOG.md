@@ -16,6 +16,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- Waystones: with the Waystones mod installed, the Steward proposes a Waystone Plaza by the Village Hall, in the village's own style (plains, desert, savanna, snowy or taiga); its waystone is named after the village, renamed with it, and put back by the builder if broken. Config `villageWaystones` (on).
+
 ### Fixed
 - Builder: a block the builder had already laid that is broken mid-build (by a player, a mob or an explosion) is now put back before the build is called finished; before, the build ended at 100% with the hole still there and, with Ask Before Repairs on, asked you whether to repair a building it had just reported done. If the block keeps getting broken, the builder goes back for it twice and then counts it as skipped (B508).
 

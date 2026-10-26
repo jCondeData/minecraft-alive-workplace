@@ -395,8 +395,9 @@ dependencies {
         // PERF_STACK=true (-PperfStack=true): the pack's performance mods too (ROADMAP 25.4).
         // FURNITURE=true (-Pfurniture=true): the pack's furniture mods (ROADMAP 37.4, scene furnished_home),
         // Sophisticated Storage (37.9) and Tom's Simple Storage (37.10), both in scene modded_storehouse.
+        // WAYSTONES=true (-Pwaystones=true): Waystones and Balm (ROADMAP 41.1, scene village_waystone).
         listOf("cobblemon" to "screenshot_cobblemon", "mega" to "screenshot_mega", "perfStack" to "screenshot_perf",
-            "furniture" to "screenshot_furniture").forEach { (flag, key) ->
+            "furniture" to "screenshot_furniture", "waystones" to "screenshot_waystones").forEach { (flag, key) ->
             if (findProperty(flag) == "true") {
                 val mods = forCobblemon(tomlList("tests", key))
                 mods.forEach { "modDevclientRuntimeOnly"(it) }

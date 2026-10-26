@@ -1316,6 +1316,53 @@ final class JobScenes {
 			}
 			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
 		}, null));
+		// A waystone by every Village Hall (ROADMAP 41.1, filmed with Waystones): a hall named Stonebridge, a builder at
+		// his bench with the Waystone Plaza's materials in barrels; he builds the plaza in front of the camera, and its
+		// stone becomes a working waystone of the mod's named after the village.
+		SCENES.put("village_waystone", new Job("the builder raised the Waystone Plaza by the Village Hall, and its stone became a working waystone named Stonebridge",
+			2400, new Vec3(0.5, -53.0, -14.5), new Vec3(0.5, -57.0, -5.5), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.offered(), "Waystones is loaded and the plaza is offered (villageWaystones)");
+			BlockPos hall = STATION.offset(-6, 0, 2);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setCustomName(net.minecraft.network.chat.Component.literal("Stonebridge"));
+			BlockPos bench = STATION.offset(5, 0, 1);
+			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), STATION.offset(-3, 0, -9),
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			BuildSite site = Builders.start(level, builder, null, io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA, placement);
+			Showcase.check(site != null, "the builder took the Waystone Plaza on");
+			if (site == null) {
+				return l -> false;
+			}
+			BuildPlan plan = site.plan(level);
+			List<ItemStack> stacks = new ArrayList<>();
+			plan.materials().forEach((item, total) -> {
+				for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+					stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+				}
+			});
+			for (int b = 0; b * 27 < stacks.size(); b++) {
+				BlockPos at = bench.offset(1, 0, b);
+				level.setBlockAndUpdate(at, Blocks.BARREL.defaultBlockState());
+				Container barrel = (Container) level.getBlockEntity(at);
+				for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+					barrel.setItem(slot, stacks.get(b * 27 + slot));
+				}
+			}
+			BlockPos stone = placement.origin().offset(3, 2, 3);
+			return l -> {
+				if (BuildSiteManager.get(l).get(site.id()) != null) {
+					return false;
+				}
+				java.util.Optional<String> name = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.EXTENSION.call(
+					w -> w.nameAt(l, stone), java.util.Optional.<String>empty());
+				Showcase.check(name.equals(java.util.Optional.of("Stonebridge")), "the plaza's stone is a working waystone named Stonebridge (" + name + ")");
+				return name.isPresent();
+			};
+		}, null));
 		// More Create builds (ROADMAP 39.8, filmed with Create): the Brass Foundry, the Sawmill and the Crushing Mill in
 		// front, the Greenhouse, the Clock Tower and the Pump House behind them, set down as a builder leaves them, facing
 		// the camera. Water falls from each header tank through its wheel, and every machine turns: the mixer, the saws,

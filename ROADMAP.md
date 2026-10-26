@@ -5696,7 +5696,7 @@ villages that both have one send their caravans and settlers through them. Wayst
 compat GameTests (`runCompatGameTest`). Without it nothing here appears and nothing breaks. Lane D builds it first.
 Depends on: nothing open.
 
-- [ ] **41.1** **A waystone by every Village Hall.** With Waystones installed, a village's builder raises a small
+- [x] **41.1** (review: pending 2026-10-26) **A waystone by every Village Hall.** With Waystones installed, a village's builder raises a small
   waystone plaza near the hall (a new blueprint, architect skill and `STYLE.md`, in each village culture's style)
   once the village has a hall, as a normal build the Steward can propose; the stone is the mod's own waystone block,
   named after the village (renamed when the village is), so players who visit can discover it and travel there the

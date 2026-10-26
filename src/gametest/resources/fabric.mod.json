@@ -456,6 +456,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderRecheck1026GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderVerify1026bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderVerifyScan1026bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupply1026bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureSeatsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderPlanGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderStageGameTests",

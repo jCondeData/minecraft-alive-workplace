@@ -137,6 +137,17 @@ public class QaPaceAndBookGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** B497: a disaster reads in lower case mid-sentence, "held back by a disaster in the village", like the other pace sources. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void qaADisasterReadsLowerCaseInTheStatusLine(GameTestHelper helper) {
+		Villager villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new BlockPos(1, 2, 1));
+		String line = Component.translatable("message.aliveworkplace.pace.held_back", Pace.DISASTER.label().of(villager)).getString();
+		helper.assertTrue(line.equals("held back by a disaster in the village"), "the line reads: " + line);
+		villager.discard();
+		helper.succeed();
+	}
+
 	// --- 30.4: the Book of Edicts ------------------------------------------------------------------------------------
 
 	/** "Only the hall's owner, friends and operators can click": a friend of the owner proclaims Long Shifts by two clicks, and lifts it in time. */

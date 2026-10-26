@@ -163,6 +163,10 @@ from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
 `PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
 `RealmLegendsGameTests` (5, 33.23); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
+QA (lane d): `QaLegendRecordGameTests` (12, 29.3 and 29.5): a Rare per kind per village, a Legendary per world
+(any dimension), the Mythic caps at every rank from both sides, a fallen Legend's slot free on day 7 not day 6 and the
+line written once, the record's save and old-save defaults, many rounds on one day counting one unmet day, the 3 days'
+grace, a strike partly met going on, the `legendNeeds` and Legends switches, every record and strike sentence.
 
 Showcase scenes: `legend`, `legend_announce`, `legends_hall`, `legend_guest`, `legend_sites`, `legend_strike`,
 `strange_mood`, `gifted`, `gifted_born`, `research_trees`, `legend_architect`, `legend_pathfinder`, `legend_sage`,

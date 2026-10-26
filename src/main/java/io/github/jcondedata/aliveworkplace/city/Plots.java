@@ -196,8 +196,11 @@ public final class Plots {
 		LAND, WATER, LAVA, BLOCKED, UNLOADED
 	}
 
-	/** A build in the way: its box grown by {@link #CLEAR}, its blueprint without style, mirroring and centre. */
-	record Build(BoundingBox near, ResourceLocation base, Mirror mirror, int cx, int cz) {
+	/**
+	 * A build in the way: its box grown by {@link #CLEAR}, its blueprint without style, mirroring and centre (the middle
+	 * of its box, {@code (min + max + 1) / 2}, worked out as a candidate's is: B470).
+	 */
+	record Build(BoundingBox near, ResourceLocation base, Mirror mirror, double cx, double cz) {
 	}
 
 	private record Key(BlockPos hall, Request request) {
@@ -446,7 +449,7 @@ public final class Plots {
 			BoundingBox near = box.inflatedBy(CLEAR);
 			if (near.intersects(area)) {
 				out.add(new Build(near, BlueprintStyles.base(structure), placement.mirror(),
-					(box.minX() + box.maxX()) / 2, (box.minZ() + box.maxZ()) / 2));
+					(box.minX() + box.maxX() + 1) / 2.0, (box.minZ() + box.maxZ() + 1) / 2.0));
 			}
 		});
 	}
@@ -742,7 +745,9 @@ public final class Plots {
 				}
 			}
 			for (Build b : builds) {
-				if (b.base().equals(plain) && b.mirror() == mirror && sq((long) (b.cx() - cx)) + sq((long) (b.cz() - cz)) <= (long) SAME_RANGE * SAME_RANGE) {
+				double dx = b.cx() - cx;
+				double dz = b.cz() - cz;
+				if (b.base().equals(plain) && b.mirror() == mirror && dx * dx + dz * dz <= (double) SAME_RANGE * SAME_RANGE) {
 					return Verdict.no(Reason.SAME_NEARBY);
 				}
 			}

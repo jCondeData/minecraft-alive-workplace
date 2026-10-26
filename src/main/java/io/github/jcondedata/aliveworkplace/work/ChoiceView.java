@@ -45,6 +45,16 @@ public class ChoiceView extends AbstractContainerMenu {
 		for (int i = 0; i < 9; i++) {
 			addSlot(new Hidden(inventory, i));
 		}
+		if (type == ModBlocks.VILLAGE_HALL_MENU) {
+			addDataSlots(state); // the hall's open section and date (40.1), as the server's ChoiceMenu sends them
+		}
+	}
+
+	/** The screen's numbers from the server ({@link ChoiceMenu#state}; all 0 on screens other than the hall's). */
+	private final net.minecraft.world.inventory.SimpleContainerData state = new net.minecraft.world.inventory.SimpleContainerData(ChoiceMenu.STATE);
+
+	public int state(int index) {
+		return state.get(index);
 	}
 
 	/** Whether {@code icon} is a real button (not nothing, not a divider pane). */

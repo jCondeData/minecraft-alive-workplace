@@ -457,6 +457,18 @@ SCENES = [
     S("city_plan_ground", "Village Hall", "The plan on the ground", "zone edges, a street and the wall line show on the ground while the player holds the City Plan, and the hall's map of the plan hangs framed by the hall", 60,
       [("01_city_plan_ground", "Zone edges and the street on the ground"), ("02_city_plan_wall", "The wall line at the village's corner"),
        ("03_city_plan_framed", "The plan on the hall's map, framed")]),
+    # The hall's sidebar (ROADMAP 40.1): each of the ten sections, at GUI scales 2 and 3
+    S("hall_sidebar", "Village Hall", "The hall's sidebar and its sections",
+      "each of the hall's ten sections opened from the sidebar, at GUI scales 2 and 3", 70,
+      [("01_overview_scale2", "Overview: the village at a glance and what it needs next, GUI scale 2"),
+       ("02_people_scale2", "People, GUI scale 2"), ("05_defense_scale2", "Defense, GUI scale 2"),
+       ("12_people_scale3", "People, GUI scale 3")]),
+    # The People table (ROADMAP 40.2): Name, Job, Level, Mood, then one villager's row opened
+    S("hall_people", "Village Hall", "The People table",
+      "the hall's People section as a table of everyone (a builder, a guard, workers, a jobless villager, a nitwit and a "
+      "child), then the first row opened to that villager's details with Job and Bed buttons", 45,
+      [("01_people_table", "The People table: Name, Job, Level and Mood, with the village's counts on top"),
+       ("02_people_row_open", "A row opened: traits, what they're doing, needs, mood and why, class, and the Job and Bed buttons")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab")]),
     # Free job blocks (ROADMAP 36.9): the hall lists the job blocks nobody works at; picking a jobless villager gives one

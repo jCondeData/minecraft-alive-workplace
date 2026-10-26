@@ -106,7 +106,9 @@ the Jigglypuff Fruity Flan and Miltank Mix au Lait (27 dishes). The sandwiches' 
 diet counts it as its group: a salad, a sandwich and a curry are three kinds (a varied diet), three salads one. The
 Camp Cook's menu has three curries (Beanburger, Mild Honey, Spicy Potato): the pot has no recipe for them, so she
 cooks them by their own recipe over the fire, makings out of the chests and the curry into her bag in one go, and
-takes them to the chests by the pot (16 kept). The Innkeeper serves each guest one of the three drinks once a stay,
+takes them to the chests by the pot (16 kept). What she keeps of every dish is counted however each one was cooked:
+a dish out of the pot carries what it was cooked with, and once only plain ones counted, so 15 Poké Snacks became 18
+(B465); now 15 become 16 and no more. The Innkeeper serves each guest one of the three drinks once a stay,
 from the chests by her counter or else the village store; it counts in the guest's diet, and her status says "served
 a guest Bouncy Brionne Soda".
 

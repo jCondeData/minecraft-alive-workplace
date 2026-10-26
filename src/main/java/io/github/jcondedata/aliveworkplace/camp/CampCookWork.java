@@ -268,7 +268,7 @@ public class CampCookWork extends Behavior<Villager> {
 			// Asked seasoned a particular way (28.10): only the dishes seasoned so count, and only those berries season it.
 			java.util.Set<Item> asked = new java.util.LinkedHashSet<>();
 			CampCooks.askedSeasonings(level, station, dish).forEach(id -> BuiltInRegistries.ITEM.getOptional(id).ifPresent(asked::add));
-			if (asked.isEmpty() ? !wanted(level, station, dish, item, stock)
+			if (asked.isEmpty() ? !wanted(level, station, dish, item, dishCount(level, chests, item))
 				: seasonedCount(level, chests, pot, item, asked) >= dish.keep() || !CampCooks.When.ASKED.equals(dish.when())) {
 				continue;
 			}
@@ -282,7 +282,7 @@ public class CampCookWork extends Behavior<Villager> {
 			// Another mod's dish the pot can't make (a Cobblecuisine curry, 38.8): by its own recipe, over the fire.
 			if (asked.isEmpty() && io.github.jcondedata.aliveworkplace.craft.CuisineDishes.isDish(new ItemStack(item))
 				&& pot.recipes(level, item).isEmpty()) {
-				long have = stock.getOrDefault(item, 0L);
+				long have = dishCount(level, chests, item);
 				int most = dish.when() == CampCooks.When.ALWAYS ? (int) Math.max(1, Math.min(BY_HAND_BATCH, dish.keep() - have)) : 1;
 				for (int count = most; count >= 1; count /= 2) {
 					io.github.jcondedata.aliveworkplace.craft.Crafting.Plan plan = io.github.jcondedata.aliveworkplace.craft.Crafting.plan(level,
@@ -318,11 +318,26 @@ public class CampCookWork extends Behavior<Villager> {
 		return n;
 	}
 
-	/** Whether the menu wants {@code dish} cooked now. */
-	static boolean wanted(ServerLevel level, BlockPos station, CampCooks.Dish dish, Item item, Map<Item, Long> stock) {
+	/**
+	 * How many of {@code item} the chests hold, however each was cooked (B465): a dish out of the pot carries what it was
+	 * cooked with, so counting only plain stacks never saw what she had just cooked and she cooked on past what the menu
+	 * keeps.
+	 */
+	static long dishCount(ServerLevel level, List<BlockPos> chests, Item item) {
+		long n = 0;
+		for (BlockPos chest : chests) {
+			for (ItemStack stack : SupplyContainers.peekMatching(level, chest, s -> s.is(item))) {
+				n += stack.getCount();
+			}
+		}
+		return n;
+	}
+
+	/** Whether the menu wants {@code dish} cooked now, with {@code have} of it in the chests. */
+	static boolean wanted(ServerLevel level, BlockPos station, CampCooks.Dish dish, Item item, long have) {
 		return switch (dish.when()) {
-			case ALWAYS -> stock.getOrDefault(item, 0L) < dish.keep();
-			case ASKED -> stock.getOrDefault(item, 0L) < dish.keep() && asked(level, station, dish);
+			case ALWAYS -> have < dish.keep();
+			case ASKED -> have < dish.keep() && asked(level, station, dish);
 			case ORDER -> orderShort(level, station, item) != null;
 		};
 	}
@@ -345,7 +360,7 @@ public class CampCookWork extends Behavior<Villager> {
 				continue;
 			}
 			List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
-			if (!store.isEmpty() && SupplyContainers.count(level, store, item) < keep) {
+			if (!store.isEmpty() && dishCount(level, store, item) < keep) {
 				return storehouse;
 			}
 		}

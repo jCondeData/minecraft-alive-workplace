@@ -327,18 +327,34 @@ public final class MaterialRules {
 	 * cauldron), a composter at level 0 (no ready bone meal), a beehive or bee nest with no honey, a respawn anchor
 	 * uncharged, and a chiseled bookshelf or brewing stand shows no books or bottles (it holds none). A water cauldron is
 	 * still built full, as shipped blueprints have it: water is free in vanilla (an endless spring), so it gives nothing
-	 * away. By vanilla's properties, so a modded block that uses them is emptied too.
+	 * away. Also no glow berries, lectern book or jukebox disc shown (B494), no crop ripe (B493) and no furnace lit (B495).
+	 * By vanilla's properties, so a modded block that uses them is emptied too.
 	 */
 	public static BlockState emptied(BlockState state) {
 		if (state.is(Blocks.LAVA_CAULDRON) || state.is(Blocks.POWDER_SNOW_CAULDRON)) {
 			return Blocks.CAULDRON.defaultBlockState();
 		}
 		for (Property<?> property : state.getProperties()) {
-			if (CONTENT_PROPERTIES.contains(property)) {
+			if (CONTENT_PROPERTIES.contains(property) || "age".equals(property.getName()) && plantedFresh(state.getBlock())) {
 				state = emptyValue(state, property);
 			}
 		}
+		if (state.getBlock() instanceof net.minecraft.world.level.block.AbstractFurnaceBlock && state.hasProperty(BlockStateProperties.LIT)) {
+			// B495: a furnace, smoker or blast furnace scanned while burning is built cold (it has no fuel); campfires keep
+			// their lit, as blueprints place them lit on purpose
+			state = state.setValue(BlockStateProperties.LIT, false);
+		}
 		return state;
+	}
+
+	/**
+	 * B493: a crop is planted, never built ripe: wheat and other crops, melon and pumpkin stems, nether wart, a sweet berry
+	 * bush and cocoa go in at age 0 (one seed grows; it is no free harvest). Growth is no part of whether it is built.
+	 */
+	private static boolean plantedFresh(Block block) {
+		return block instanceof net.minecraft.world.level.block.CropBlock || block instanceof net.minecraft.world.level.block.StemBlock
+			|| block instanceof net.minecraft.world.level.block.NetherWartBlock || block instanceof net.minecraft.world.level.block.SweetBerryBushBlock
+			|| block instanceof net.minecraft.world.level.block.CocoaBlock;
 	}
 
 	/** Properties that show what a block holds: emptied when placed, and no part of whether the block is built. */
@@ -347,7 +363,9 @@ public final class MaterialRules {
 		BlockStateProperties.CHISELED_BOOKSHELF_SLOT_0_OCCUPIED, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_1_OCCUPIED,
 		BlockStateProperties.CHISELED_BOOKSHELF_SLOT_2_OCCUPIED, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_3_OCCUPIED,
 		BlockStateProperties.CHISELED_BOOKSHELF_SLOT_4_OCCUPIED, BlockStateProperties.CHISELED_BOOKSHELF_SLOT_5_OCCUPIED,
-		BlockStateProperties.HAS_BOTTLE_0, BlockStateProperties.HAS_BOTTLE_1, BlockStateProperties.HAS_BOTTLE_2
+		BlockStateProperties.HAS_BOTTLE_0, BlockStateProperties.HAS_BOTTLE_1, BlockStateProperties.HAS_BOTTLE_2,
+		// B493, B494: cave vines' glow berries, a lectern's book and a jukebox's disc (built empty, they hold none)
+		BlockStateProperties.BERRIES, BlockStateProperties.HAS_BOOK, BlockStateProperties.HAS_RECORD
 	);
 
 	private static BlockState emptyValue(BlockState state, Property<?> property) {

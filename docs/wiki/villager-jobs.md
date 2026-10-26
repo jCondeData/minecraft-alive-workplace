@@ -24,7 +24,8 @@ about 3 blocks away, and a name plate over its head reads "Fisherman, Journeyman
 **Retraining (26.6).** A villager who already has a job (vanilla, ours or another mod's, traded with or not; never a
 child or a nitwit) becomes a Builder at a free Blueprint Table within about 4 blocks, sneak-right-clicked with a
 Blueprint or a Blank Blueprint. The first click shows the price ("Dara (Librarian, Journeyman) can be retrained as a
-Builder for 20 emeralds. Their trades and level are lost: they start again as a Novice."); a second click within 5
+Builder for 20 emeralds. Their trades and level are lost: they start again as a Novice."; "an Armorer" for a job
+that starts with a vowel); a second click within 5
 seconds pays and retrains them. The price goes by level: Novice 5, Apprentice 10, Journeyman 20, Expert 35, Master
 50 emeralds (`retrainPrices`), or 100 CobbleDollars an emerald with the Cobbleverse pack. Too little money: "Retraining
 Dara costs 5 emeralds: you're 2 emeralds short. Nothing changed." A jobless villager becomes a Builder the same way
@@ -151,8 +152,8 @@ villager for free since 21.1a, and their tests rely on it (ROADMAP Notes, 26.6).
 player, for 100 ticks; the second click goes through every check again before it pays (`Money`, so CobbleDollars
 through the `Bank` extension point). Paying sets the villager to level 1 with no experience; changing the profession
 drops vanilla's trades, and the new job's are made afresh. A builder changing job, paid or not, first lets go of
-their work as on death, minus the dropping: queued builds are cancelled (blueprints back), a crew member stops
-helping, a Wonder's part goes on to its crew (`WonderCrews.handOn`), and their own build is cancelled with the
+their work as on death, minus the dropping: queued builds are canceled (blueprints back), a crew member stops
+helping, a Wonder's part goes on to its crew (`WonderCrews.handOn`), and their own build is canceled with the
 blueprint returned still placed.
 
 **Villages share.** Workers whose workstations are within `villageRadius` blocks (48) of each other are one
@@ -242,7 +243,7 @@ the pit's lower third or below y 0, with a random fixed by the site's id, the sp
 catches up when the pit loads again; nothing is banked while the pit is full. When the cursor reaches the end, the
 Miner drops off the finds and waits at the shed ("waiting at the shed for the pit to grow back") until a layer's worth
 (72 blocks) has grown since the last pass, then starts again from the top. A Quarry Marker handed to them ends the
-pit's site and starts the marked one; once that is done or cancelled the pit is given back. Cancelling the pit's site
+pit's site and starts the marked one; once that is done or canceled the pit is given back. Canceling the pit's site
 gives no marker back (there was none), and the Miner takes the pit again within 5 seconds.
 
 ## Switches
@@ -344,7 +345,7 @@ and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill
   (what they mined), the sticks may come from the village store too.
 - 36.12 (owner, 2026-10-19): the Quarry's pit is the ground it's built on, not blocks the builder places (no stone or
   ore to bring); the regrowth fills only air, bottom up, so the Miner's own steps and a player's blocks stay. The Miner
-  starts again after a layer's worth has grown back, not after every block. A cancelled pit is taken again: to stop it
+  starts again after a layer's worth has grown back, not after every block. A canceled pit is taken again: to stop it
   for good, switch `quarryBuild` off or give the Miner another workstation.
 
 ## Known limits

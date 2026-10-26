@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 public final class BlockEntityData {
 	/** Keys that hold items, loot, mobs or ownership in vanilla and common mods. */
 	private static final String[] STRIP_KEYS = {
-		"Items", "LootTable", "LootTableSeed", "RecordItem", "Book", "item", "Bees", "SpawnData", "SpawnPotentials",
+		"Items", "LootTable", "LootTableSeed", "RecordItem", "Book", "item", "Bees", "bees", "SpawnData", "SpawnPotentials",
 		"Owner", "OwnerName", "owner", "Password", "password", "Lock", "lock"
 	};
 

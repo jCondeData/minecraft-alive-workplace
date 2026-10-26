@@ -470,4 +470,69 @@ public class QaCupGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/** B492: seven entrants in a Town's bracket of 8 leave one bye, and the page says so in the singular. */
+	//$ gametest_ticks_batch HUGE '200' '"qaCupOneBye"'
+	@GameTest(template = HUGE, timeoutTicks = 200, batch = "qaCupOneBye")
+	public void oneByeIsSingular(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.runAfterDelay(2, () -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall)).forEach(Villager::discard);
+			VillageHallBlockEntity entity = host(helper, hall, (VillageHallBlockEntity) helper.getBlockEntity(HALL), List.of());
+			entity.setRank(VillageRanks.Rank.TOWN);
+			Cups.round(level, hall, entity);
+			CupData.Cup cup = CupData.get(level).existing(hall);
+			List<CupData.Entrant> seven = new ArrayList<>();
+			for (int i = 0; i < 7; i++) {
+				seven.add(entrant(CupData.Kind.LEADER, 5 - i % 5, "L" + i, hall));
+			}
+			cup.closed = true;
+			cup.noCup = "";
+			cup.entrants.clear();
+			cup.entrants.addAll(Cups.seed(seven));
+			cup.bracket.clear();
+			cup.bracket.addAll(Cups.bracket(cup.entrants, Cups.capacity(VillageRanks.Rank.TOWN)));
+			helper.assertTrue(Cups.byes(cup.bracket) == 1, "setup: byes " + Cups.byes(cup.bracket));
+			List<String> lines = lore(page(helper.makeMockServerPlayerInLevel(), hall).icon(CupPage.BRACKET));
+			helper.assertTrue(lines.contains("A bracket of 8, with 1 bye for the top seed"), "lines " + lines);
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B491 (28.17): before sign-up opens (the page says "Sign-up opens after the festival on day N"), Sign up doesn't put
+	 * the player's name down and tells them when it opens; once it's open, the same click signs them up.
+	 */
+	//$ gametest_ticks_batch HUGE '200' '"qaCupBugEarly"'
+	@GameTest(template = HUGE, timeoutTicks = 200, batch = "qaCupBugEarly")
+	public void noSignUpBeforeItOpens(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.runAfterDelay(2, () -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall)).forEach(Villager::discard);
+			VillageHallBlockEntity entity = host(helper, hall, (VillageHallBlockEntity) helper.getBlockEntity(HALL), List.of());
+			Cups.EVERY = 2;
+			int gap = Festivals.every(entity);
+			long cupDay = Cups.cupDay(300, Festivals.offset(hall), gap, 2);
+			level.setDayTime((cupDay - gap - 1) * DAY + 12_999); // the festival before, a tick before it ends
+			Cups.round(level, hall, entity);
+			CupData.Cup cup = CupData.get(level).existing(hall);
+			ServerPlayer player = helper.makeMockServerPlayerInLevel();
+			ChoiceMenu menu = page(player, hall);
+			helper.assertTrue(lore(menu.icon(CupPage.CARD)).contains("Sign-up opens after the festival on day " + (cupDay - gap)), "setup: the card "
+				+ lore(menu.icon(CupPage.CARD)));
+			String said = Cups.signUp(level, hall, player).getString();
+			helper.assertTrue(cup.signups.isEmpty(), "signed up before sign-up opened (told \"" + said + "\")");
+			helper.assertTrue(said.equals("Sign-up for this Cup isn't open yet: it opens after the festival on day " + (cupDay - gap)), "told " + said);
+			level.setDayTime((cupDay - gap) * DAY + 100); // the day after: open
+			String open = Cups.signUp(level, hall, player).getString();
+			helper.assertTrue(cup.signups.size() == 1 && open.startsWith("You're signed up"), "once open: " + open + " " + cup.signups);
+			helper.succeed();
+		});
+	}
 }

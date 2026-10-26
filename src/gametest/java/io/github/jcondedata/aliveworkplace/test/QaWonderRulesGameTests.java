@@ -481,7 +481,7 @@ public class QaWonderRulesGameTests implements FabricGameTest {
 			for (Component line : said) {
 				allTranslated(helper, line, "a /workplace wonders line");
 			}
-			String follyLine = "Test Folly in " + VillageHalls.name(level, a).getString() + " (no owner): stage 2 of 3, The Upper Storey";
+			String follyLine = "Test Folly in " + VillageHalls.name(level, a).getString() + " (no owner): stage 2 of 3, The Upper Story";
 			String goneLine = GONE + " in " + VillageHalls.name(level, b).getString() + " (Ana): stage 4";
 			helper.assertTrue(text.contains(follyLine), "no line \"" + follyLine + "\" in " + text);
 			helper.assertTrue(text.contains(goneLine), "no line \"" + goneLine + "\" in " + text);

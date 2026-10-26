@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import io.github.jcondedata.aliveworkplace.wonder.powers.TravellersPower;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -195,7 +196,7 @@ public final class Innkeepers {
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, guest.getX(), guest.getY() + 1.0, guest.getZ(), 8, 0.3, 0.5, 0.3, 0.0);
 		level.playSound(null, counter, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 0.8f, 1f);
 		for (ServerPlayer player : level.getPlayers(p -> p.distanceToSqr(counter.getCenter()) < 64 * 64)) {
-			Chat.chat(player, Component.translatable("message.aliveworkplace.inn.arrived", BuilderLevels.levelName(lvl))
+			Chat.chat(player, Words.articled("message.aliveworkplace.inn.arrived", 0, BuilderLevels.levelName(lvl))
 				.withStyle(ChatFormatting.GREEN));
 		}
 		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, counter, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.ARRIVED, Component.translatable("chronicle.aliveworkplace.arrived",
@@ -299,7 +300,7 @@ public final class Innkeepers {
 		info.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.inn.traveller", BuilderLevels.levelName(t.level())),
 			ChatFormatting.GOLD));
 		info.set(DataComponents.LORE, new ItemLore(List.of(
-			plain(Component.translatable("screen.aliveworkplace.inn.starts_as", BuilderLevels.levelName(t.level())), ChatFormatting.GRAY),
+			plain(Words.articled("screen.aliveworkplace.inn.starts_as", 0, BuilderLevels.levelName(t.level())), ChatFormatting.GRAY),
 			plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.inn.staying", daysLeft, daysLeft), ChatFormatting.GRAY))));
 		menu.button(INFO_SLOT, info, null);
 		Component gifted = io.github.jcondedata.aliveworkplace.legend.Gifted.hallLine(guest);
@@ -346,9 +347,9 @@ public final class Innkeepers {
 		guest.refreshBrain(level);
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, guest.getX(), guest.getY() + 1.0, guest.getZ(), 12, 0.4, 0.5, 0.4, 0.0);
 		level.playSound(null, guest.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		Chat.chat(player, Component.translatable("message.aliveworkplace.inn.hired", BuilderLevels.levelName(t.level()))
+		Chat.chat(player, Words.articled("message.aliveworkplace.inn.hired", 0, BuilderLevels.levelName(t.level()))
 			.withStyle(ChatFormatting.GREEN));
-		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, guest.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.JOINED, Component.translatable("chronicle.aliveworkplace.joined",
+		io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, guest.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.JOINED, Words.articled("chronicle.aliveworkplace.joined", 0,
 			BuilderLevels.levelName(t.level()), player.getDisplayName()));
 		io.github.jcondedata.aliveworkplace.legend.Gifted.Gift gift = io.github.jcondedata.aliveworkplace.legend.Gifted.of(guest);
 		if (gift != null) {

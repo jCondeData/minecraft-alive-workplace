@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.guard;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -81,7 +82,7 @@ public final class Guards {
 		if (!old.isEmpty() && !player.getInventory().add(old)) {
 			player.drop(old, false);
 		}
-		io.github.jcondedata.aliveworkplace.mc.Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.guard.kind",
+		io.github.jcondedata.aliveworkplace.mc.Chat.actionBar(player, Words.articled("message.aliveworkplace.guard.kind", 1,
 			villager.getDisplayName(), kind(villager).title()).withStyle(net.minecraft.ChatFormatting.GREEN));
 		villager.level().playSound(null, villager.blockPosition(), net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_GENERIC.value(),
 			net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);

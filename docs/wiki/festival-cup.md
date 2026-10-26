@@ -41,7 +41,7 @@ Leader and no Arena yet (not before the 1.2 expansion is switched on).
 A bout between two village trainers is an exhibition at the ring. Each trainer stands in their box and sends out one
 Pokémon at a time beside the ring (real Pokémon, never catchable, removed if the game is saved with them out); the
 faster one moves first and they take turns. Damage follows a small formula (the theme's level, the move's power, attack
-against defence, the same-type bonus and type effectiveness), from `data/aliveworkplace/type_chart.json`: the games'
+against defense, the same-type bonus and type effectiveness), from `data/aliveworkplace/type_chart.json`: the games'
 18-type chart, every match-up as in the games since Fairy came in, and a Pokémon with two types takes both multipliers
 (Ice on Dragonite is 4x, Ground on Charizard nothing). A move the chart says can't touch the target does no damage; a
 Pokémon with no attacking move uses Struggle. A fainted Pokémon is called back and the next comes out, one on one even
@@ -80,8 +80,8 @@ they stay home ("it has helped a villager at work on 2 days, and this Cup asks f
   villages at most, nearest first. A village beyond the seventh, or with no route, is on no circuit and can't sign up.
 - **The calendar** (28.17): a Cup is held on the host's own festival day, on every `cupEveryFestivals`th festival
   counted from that day. The next Cup is today's until its bouts end (midnight; dawn for a theme that runs all night),
-  then the next one. Sign-up opens when the festival before ends (13000, dusk under the "stay in" policy) and closes
-  when the Cup's day dawns: then the entrants and the bracket are drawn and kept. The players in the circuit's villages
+  then the next one. Sign-up opens when the festival before ends (13000, dusk under the "stay in" policy; before then Sign up
+  only says when it opens) and closes when the Cup's day dawns: then the entrants and the bracket are drawn and kept. The players in the circuit's villages
   are told when it opens and at dusk the evening before, once each.
 - **Entrants** (28.17): each circuit village's Trainer Leader, else its best Trainer, else nobody. A far village that
   isn't loaded sends the one its hall's last round wrote on the trade-route list (name, tier and XP). Players sign up
@@ -156,9 +156,8 @@ Later additions:
 ## Known limits
 
 - A Cup banner broken by hand goes back up at the holder's next hall round.
-- Found by QA (2026-10-25), not fixed yet (B491, B492): the Sign up button works before
-  sign-up has opened, while the card still says "Sign-up opens after the festival on day N"; and with one bye the page
-  says "with 1 byes".
+- Found by QA (2026-10-25), not fixed yet (B491): the Sign up button works before sign-up has opened, while the card
+  still says "Sign-up opens after the festival on day N".
 - Operators picking the theme of an owned host isn't tested (the test server gives operators no permission level).
 
 ## Proof
@@ -171,7 +170,8 @@ Later additions:
   `QaArenaGameTests.everyArenaHasAFifteenByNineRingAndTheFirstFits`.
 - QA (28.17): `QaCupGameTests` (sign-up opening a tick either side of the festival's end and who's told, the next Cup
   rolling over when the bouts end, sign-up from every circuit village but an eighth, the bracket's limits and one over,
-  `festivalCup` off, the theme only until sign-up closes, the bracket line with 3 byes).
+  `festivalCup` off, the theme only until sign-up closes, the bracket line with 3 byes, and with one: "A bracket of 8,
+  with 1 bye for the top seed").
 - QA (28.18): `QaCupBoutGameTests` (all 324 match-ups of the chart against the games', two-type multipliers; on time the
   side with more health wins from either box and never past 90 seconds; a bout nobody can hurt in ends on time; a
   moveless Pokémon struggles).

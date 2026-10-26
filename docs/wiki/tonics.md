@@ -9,16 +9,16 @@ Roadmap items: 30.15, 30.16
 ## What a player sees
 
 A Cleric with the makings in the chests by their brewing stand brews tonics into those chests; a Chef cooks theirs
-after the menu. Take one and right-click a villager it suits: they drink it ("Bo drinks the Smith's Draught: 25%
-faster for 20 minutes.") and their status line shows "25% faster (Smith's Draught, 20 min left)". A villager it
-doesn't suit refuses it and you keep the bottle ("Ash has no use for Smith's Draught."). In creative the bottle isn't
+after the menu. Take one and right-click a villager it suits: they drink it ("Bo drinks the Smith's Draft: 25%
+faster for 20 minutes.") and their status line shows "25% faster (Smith's Draft, 20 min left)". A villager it
+doesn't suit refuses it and you keep the bottle ("Ash has no use for Smith's Draft."). In creative the bottle isn't
 used up. Players can't craft tonics.
 
 | Tonic | Made by, from | For |
 |---|---|---|
 | Miner's Brew | Cleric: a glass bottle, glowstone dust, coal, sugar | Miners, Sifters, Netherworkers |
 | Builder's Tea | Chef: a glass bottle, two sweet berries, sugar | Builders, Carpenters, Masons, Dyers |
-| Smith's Draught | Cleric: a glass bottle, blaze powder, two iron nuggets | Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths |
+| Smith's Draft | Cleric: a glass bottle, blaze powder, two iron nuggets | Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths |
 | Scholar's Infusion | Cleric: a glass bottle, an amethyst shard, glow berries | Scholars, Teachers, Librarians, Cartographers, Fossil Scientists |
 | Harvest Cordial | Chef: a glass bottle, an apple, wheat, sugar | Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Shepherds, Butchers, Ranchers, Chefs |
 | Woodsman's Broth | Chef: a bowl, a cooked salmon, a carrot, a brown mushroom | Lumberjacks, Fletchers, Fishermen, Porters, Postmen |

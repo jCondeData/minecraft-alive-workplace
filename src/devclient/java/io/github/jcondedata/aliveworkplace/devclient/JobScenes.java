@@ -7687,7 +7687,7 @@ final class JobScenes {
 		// The Foundation Stone (ROADMAP 35.4): a Town's builder at his bench, the folly's plan placed north of the hall; the
 		// plan handed to him lays the Foundation Stone at the folly's front corner and stage I begins from the chests by the
 		// stone; right-clicking the stone tells the stage, how far along it is and what the chests hold.
-		SCREENS.put("wonder_site", new Screen("a Wonder Plan placed north of the hall was handed to the village's builder: the Foundation Stone (carved stone, brass plaque) went down at the folly's front corner, the start was announced in chat, and stage I, the Ground Storey, began from the chests by the stone; right-clicking the stone told the stage, its progress and its material list",
+		SCREENS.put("wonder_site", new Screen("a Wonder Plan placed north of the hall was handed to the village's builder: the Foundation Stone (carved stone, brass plaque) went down at the folly's front corner, the start was announced in chat, and stage I, the Ground Story, began from the chests by the stone; right-clicking the stone told the stage, its progress and its material list",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()

@@ -44,14 +44,14 @@ The chests within 8 blocks of the stone are the Wonder's stockpile. Refused, say
 the builder has no bench or works for another village or another player, the caps no longer allow it, or there's no
 room for the stone.
 
-- **Right-click the stone**: "The Test Folly of Testholm", "Stage 1 of 3, The Ground Storey: 34% built", then the
+- **Right-click the stone**: "The Test Folly of Testholm", "Stage 1 of 3, The Ground Story: 34% built", then the
   stage's material list, each line "40 Stone Bricks, 12 still to bring" or "… all there", what's still to bring first.
 - **Each stage starts when every part of the one before is done and its own goods are dedicated**, and the builder it
-  was handed to takes it on (the owner reads "Stage 2 of 3 of the Test Folly is next: The Upper Storey. It begins once
+  was handed to takes it on (the owner reads "Stage 2 of 3 of the Test Folly is next: The Upper Story. It begins once
   its goods are in").
 - **The builder tells the owner of each part it finishes** (B138): with other parts of the stage still going up, "Odo
-  finished a part of the Test Folly: 1 of 2 parts of stage 1 (The Ground Storey) stand."; the stage's last part, "Odo
-  finished stage 1 of 3 of the Test Folly: The Ground Storey."; the Wonder's very last part says nothing itself, as
+  finished a part of the Test Folly: 1 of 2 parts of stage 1 (The Ground Story) stand."; the stage's last part, "Odo
+  finished stage 1 of 3 of the Test Folly: The Ground Story."; the Wonder's very last part says nothing itself, as
   everyone hears the Wonder is finished. No blueprint comes back for a part.
 - **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` on a part to abandon the Wonder: what's
   built stays, the open parts end, the plan comes back (to the owner, else by the stone) and the chronicle says so. A
@@ -99,9 +99,9 @@ its file: the feast for the crew, their tools, what the rites need (candles, boo
 is in when the stockpile's chests and what was handed in at the stone hold its count together. A stage starts only
 when every line is in; then, by day, it is **dedicated** (at night it waits for the morning): the bell rings at the
 stone and at the village's bell, the goods are taken (exactly each line's count: what was handed in first, then from
-the chests), the chronicle says "Stage 2, The Upper Storey, of the Test Folly was dedicated: the village gathered at
+the chests), the chronicle says "Stage 2, The Upper Story, of the Test Folly was dedicated: the village gathered at
 the stone, the bell rang and the goods were given", the owner reads "Stage 2 of 3 of the Test Folly is dedicated: The
-Upper Storey begins", and the stage's parts go down for its lead. For the next 30 seconds the villagers off work
+Upper Story begins", and the stage's parts go down for its lead. For the next 30 seconds the villagers off work
 gather round the stone, the village's Bard plays a tune beside it ("playing at the dedication") and its guards stand
 in a line three blocks out, on the side away from the Wonder ("standing in line at the dedication"), when it has them.
 

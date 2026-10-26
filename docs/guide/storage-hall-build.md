@@ -28,7 +28,7 @@ of plain chests and barrels, and work like any Storehouse.
   them all.
 - **Terminal Nook**: a small room that fits beside a house: six chests round a connector along the back wall and a
   Storage Terminal in front of it.
-- **Warehouse**: a big two-storey store with four racks of chests and barrels below and two more in the loft, a
+- **Warehouse**: a big two-story store with four racks of chests and barrels below and two more in the loft, a
   Crafting Terminal at the packing counter inside the loading doors, and a loading bay with a handcart out front. The
   racks stand on Inventory Trim in the floor, which links them to the connector.
 

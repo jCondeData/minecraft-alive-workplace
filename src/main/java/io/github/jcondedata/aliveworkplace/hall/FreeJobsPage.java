@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Stations;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -459,7 +460,7 @@ public final class FreeJobsPage {
 			Component click = isBuilder(villager)
 				? Component.translatable("screen.aliveworkplace.free_jobs.move_builder", villager.getDisplayName(),
 					io.github.jcondedata.aliveworkplace.build.Builders.benchPos(villager).map(io.github.jcondedata.aliveworkplace.build.BenchMoves::at).orElse(Component.literal("?")))
-				: Component.translatable("screen.aliveworkplace.hall.give_job", villager.getDisplayName(), jobName);
+				: Words.articled("screen.aliveworkplace.hall.give_job", 1, villager.getDisplayName(), jobName);
 			menu.button(slot++, withLine(icon, VillageHallScreen.line(click, ChatFormatting.GREEN)), p -> pick(menu, level, hall, block.station(), villager, p));
 		}
 		if (block.takers().isEmpty()) {
@@ -484,7 +485,7 @@ public final class FreeJobsPage {
 			return;
 		}
 		if (give(level, villager, station)) {
-			Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.assigned", villager.getDisplayName(), job).withStyle(ChatFormatting.GREEN));
+			Chat.actionBar(p, Words.articled("message.aliveworkplace.hall.assigned", 1, villager.getDisplayName(), job).withStyle(ChatFormatting.GREEN));
 			level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 0.8f, 1f);
 			backToList(menu, level, hall, p);
 		} else {

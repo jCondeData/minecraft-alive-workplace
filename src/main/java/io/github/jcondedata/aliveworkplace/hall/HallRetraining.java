@@ -12,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.work.Money;
 import io.github.jcondedata.aliveworkplace.work.Retraining;
 import io.github.jcondedata.aliveworkplace.work.Stations;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -133,7 +134,7 @@ public final class HallRetraining {
 		villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(station.pos(), WALK_SPEED, 1));
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.2, villager.getZ(), 8, 0.4, 0.4, 0.4, 0);
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		Chat.chat(player, Component.translatable("message.aliveworkplace.retrain.done", who, Stations.name(old), Stations.name(station.profession()),
+		Chat.chat(player, Words.articled("message.aliveworkplace.retrain.done", 2, who, Stations.name(old), Stations.name(station.profession()),
 			level.getBlockState(station.pos()).getBlock().getName(), price).withStyle(ChatFormatting.GREEN));
 		return Outcome.DONE;
 	}
@@ -256,8 +257,8 @@ public final class HallRetraining {
 			ItemStack icon = VillageHallScreen.icon(item == Items.AIR ? Items.PAPER : item, job.copy(), chosen ? ChatFormatting.GOLD : ChatFormatting.WHITE,
 				VillageHallScreen.line(VillageHallScreen.where(hall, station.pos()), ChatFormatting.GRAY),
 				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.hall_retrain.price", price, Retraining.levelName(villager)), ChatFormatting.GOLD),
-				chosen ? VillageHallScreen.line(Component.translatable("screen.aliveworkplace.hall_retrain.pay", price, who, job), ChatFormatting.GREEN)
-					: VillageHallScreen.line(Component.translatable("screen.aliveworkplace.hall_retrain.pick", who, job), ChatFormatting.GREEN));
+				chosen ? VillageHallScreen.line(Words.articled("screen.aliveworkplace.hall_retrain.pay", 2, price, who, job), ChatFormatting.GREEN)
+					: VillageHallScreen.line(Words.articled("screen.aliveworkplace.hall_retrain.pick", 1, who, job), ChatFormatting.GREEN));
 			if (chosen) {
 				icon.set(net.minecraft.core.component.DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 			}
@@ -278,7 +279,7 @@ public final class HallRetraining {
 	static void pick(ChoiceMenu menu, ServerLevel level, BlockPos hall, Villager villager, int page, VillageHalls.FreeStation station, boolean chosen,
 		ServerPlayer p) {
 		if (!chosen) {
-			Chat.chat(p, Component.translatable("message.aliveworkplace.retrain.offer", villager.getDisplayName(),
+			Chat.chat(p, Words.articled("message.aliveworkplace.retrain.offer", 3, villager.getDisplayName(),
 				Stations.name(villager.getVillagerData().getProfession()), Retraining.levelName(villager), Stations.name(station.profession()), price(villager))
 				.withStyle(ChatFormatting.GOLD));
 			Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall_retrain.confirm").withStyle(ChatFormatting.GRAY));

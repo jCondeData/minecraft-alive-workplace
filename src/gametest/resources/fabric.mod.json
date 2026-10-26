@@ -605,6 +605,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRoadLampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCaravanRoadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWallGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWallLineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardDeskModesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWorkplaceCopiesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CityPlanScreenGameTests",

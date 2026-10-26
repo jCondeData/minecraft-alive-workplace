@@ -971,8 +971,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				: net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY;
 			colours = new VillageBanners.Colours(base, patterns);
 		}
-		quests = VillageQuests.Quest.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("quests"))
-			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
+		quests = java.util.List.copyOf(VillageQuests.readQuests(tag.get("quests")));
 		lastQuestDay = tag.contains("lastQuestDay") ? Nbt.getLong(tag, "lastQuestDay") : -1;
 		questsDone = Nbt.getInt(tag, "questsDone");
 		lastMarketDay = tag.contains("lastMarketDay") ? Nbt.getLong(tag, "lastMarketDay") : -1;

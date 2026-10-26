@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484
 
 ## What a player sees
 
@@ -123,9 +123,11 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   placement makes one). A dip of one block, a step on a turn and a turn with no room stay gaps (the railway then never
   joins and caravans take the timed trip). The train's six blocks are a generated blueprint
   (`aliveworkplace:roads/<hall>/train_<other>`, "Village Train") at the first village's station, built by an idle
-  builder of the village from the bench's chests; the bogey is placed with railway casing. When they all stand, the
-  station's next look glues and assembles them ("Bob built the village's train at the station, ready to be put on the
-  rails"). At the departing station the caravan's goods go into the carriage's chest (Create's mounted storage, all or
+  builder of the village from the bench's chests; the bogey is placed with railway casing. When they all stand and the
+  builder has finished the train's site, the station's next look glues and assembles them (B483: never while the site is
+  still open, so its builder finishes and the chronicle says "Bob built the village's train at the station, ready to be
+  put on the rails"; a builder killed before then takes the site with him, and the standing blocks are assembled all
+  the same). At the departing station the caravan's goods go into the carriage's chest (Create's mounted storage, all or
   nothing; arrival `IN_CHEST`; no room: they ride as the caravan's record as before), and at the other station what is
   still in the chest of them comes out and is delivered. Train gone or the far station gone while they're in the chest:
   what a derailed train still holds comes back out and the caravan takes the timed trip; a train broken up keeps them
@@ -523,6 +525,10 @@ tested (the GameTests use the table as the server does).
 - `QaTrainSiteRaceCompatTests` (QA, 39.7b, with Create): with both halls looking at their trains every tick, the
   builder's train site is finished before the station assembles the train, the chronicle says a builder built it, and
   no second set of its blocks is put up.
+- `QaTrainSiteHeldCompatTests` (QA, B483, with Create): the train's blocks standing with the builder's site still open,
+  the sites and the builder saved and loaded: the station still waits, then the builder finishes, the chronicle says so
+  and the train is assembled with no site left open; the builder killed in that gap: the standing blocks become the
+  train, with no second train site.
 - `QaTrainsOffCompatTests` (QA, B359, with Create): `villageTrains` switched off while the real village train runs with
   the caravan's 32 logs in its chest: they come out of the chest, the caravan takes the timed trip and comes in, and
   Ashford's 64 logs always add up (none left in the train, none twice); a world saved with a caravan waiting to board and

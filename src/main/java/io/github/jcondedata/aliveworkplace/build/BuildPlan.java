@@ -128,7 +128,7 @@ public final class BuildPlan {
 		BlockPos savedAt = io.github.jcondedata.aliveworkplace.mechanic.Contraptions.savedOrigin(blueprint);
 		for (Blueprint.Entry entry : blueprint.blocks()) {
 			BlockPos world = placement.origin().offset(StructureTemplate.transform(entry.pos(), placement.mirror(), placement.rotation(), BlockPos.ZERO));
-			BlockState state = MaterialRules.forPlacement(entry.state().mirror(placement.mirror()).rotate(placement.rotation()));
+			BlockState state = MaterialRules.forPlacement(MaterialRules.transformed(entry.state(), placement.mirror(), placement.rotation()));
 			CompoundTag nbt = io.github.jcondedata.aliveworkplace.mechanic.Contraptions.blockData(state, entry.nbt(), savedAt, placement);
 			byPos.put(world, new Step(world, state, nbt, null, null));
 		}

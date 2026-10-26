@@ -197,7 +197,7 @@ public final class UpgradesPage {
 			if (there.isAir()) {
 				continue;
 			}
-			BlockState wanted = entry.state().mirror(placement.mirror()).rotate(placement.rotation());
+			BlockState wanted = MaterialRules.transformed(entry.state(), placement.mirror(), placement.rotation());
 			if (MaterialRules.matches(there, wanted)) {
 				continue;
 			}

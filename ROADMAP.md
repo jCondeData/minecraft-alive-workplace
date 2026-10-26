@@ -5174,6 +5174,43 @@ Depends on: nothing open.
   value (keys ignored), with its word list; GameTests that compare player sentences expect the new spelling; a
   CHANGELOG line. Not visible as a scene: `done` without `--review`.
 
+- [ ] **36.20** (owner, 2026-10-26) **Work anywhere in the village, and far outside it.** The owner: "another big
+  annoyance is the 64 block build limit. I can't build any further in my village because apparently it's too far -
+  this won't work for big villages ... also an issue for things like mining and farming where you don't want to mine a
+  giant hole in your village so you want to go further". He chose (2026-10-26): **village-wide**. Today every reach is
+  measured from the worker's own block (Builder 48 from the Blueprint Table, `maxSiteDistance`; miner 64,
+  `Miners.MAX_DISTANCE`; farmer, lumberjack, orchard keeper, berry breeder 48, `AreaJobs`/`Fields`/`TreeFarms`
+  `MAX_DISTANCE`). New rule: a spot is in reach when it is **inside the village's claimed area** (it grows with the
+  village; the City Plan zones and the hall's radius, whatever the mod already calls the village's extent), wherever
+  the worker's block stands in it, **or** within a long reach of the worker's block outside it: builds 128, mines,
+  fields, tree farms, orchards and berry plots 128. Every reach becomes a config key with its range (the existing
+  `maxSiteDistance` keeps its key and becomes the outside reach; new keys for the area jobs), and upkeep, the
+  Steward's proposals and `Plots` use the same rule so the Steward plans across the whole village too. The refusal
+  sentences name the new rule ("outside Mapleridge and 140 blocks from the Blueprint Table — keep it within 128").
+  A worker whose far site sits in unloaded chunks waits there as today (no chunk loading). No saved field changes;
+  old sites keep working. Done when: GameTests through the player's own entry points (placing a build with the
+  Blueprint, marking a quarry, a field, a tree farm) for a spot far across a big village (accepted), a spot 100 blocks
+  outside the village (accepted), one 140 out (refused, with the sentence), each config key set low and high, a
+  village with no hall (worker-block reach only), the Steward proposing a plot 90 blocks from the bench inside the
+  village, save and reload; text in `en_us.json`; wiki (builder.md, the area-job pages, config-switches.md) and the
+  guide; scene `far_site` (a quarry marked far outside the village, the miner walking out to it).
+
+- [ ] **36.21** (owner, 2026-10-26) **Bring an old house up to its latest look.** The owner: "the decoration for the
+  stone house haven't updated in the house I built - is this by design? will houses going forward have the fixes we
+  implemented? such as no more floating objects or invisible objects?" Today builds already standing keep the look
+  they were built with (docs/wiki/workplace-looks.md, "Known limits"); new builds use the fixed drawings. He chose
+  (2026-10-26): **a hall button**. On the Village Hall's Buildings section (40.1) and the Repairs page, each finished
+  build whose blueprint has changed since it was built gets **Refresh to the latest look**: a click shows what changes
+  ("12 decorations, 3 furniture pieces"), a second click hands it to the nearest free Builder, who removes only the
+  blocks the new drawing no longer has (floating or invisible leftovers included; their items go to the store) and
+  places the new ones, as a repair. Never touched: chests and their contents, beds villagers sleep in (their claim
+  kept), job blocks, and anything a player placed or changed (the build's own record of what the Builder put there
+  decides). Builds with no change don't show the button. Done when: GameTests through the hall's entry point for a
+  Stone House built from an older drawing refreshed to the current one (old leftovers gone, new pieces there), a chest
+  with items kept, a player's own block kept, a bed's owner keeping it, no free Builder (waits), materials short (asks
+  like a repair), a build with nothing changed (no button), save and reload mid-refresh; text in `en_us.json`; wiki
+  (builder.md, workplace-looks.md) and the guide; scene `refresh_old_house` (before and after of an old Stone House).
+
 ## Milestone 37: Furnished homes and modded storage (2.1)
 
 Builds use the pack's furniture mods when they're installed: Handcrafted chairs round a Handcrafted table, Lucky's

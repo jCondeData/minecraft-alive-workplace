@@ -342,7 +342,7 @@ public class QaStewardDeskModesGameTests implements FabricGameTest {
 		menu.press(StewardDeskPage.FIRST_PROPOSAL, owner);
 		menu.press(StewardDeskPage.DECLINE, owner);
 		List<String> said = seen.stream().map(s -> s.text().getString()).toList();
-		helper.assertTrue(said.contains("Declined: the Well won't be proposed for 3 days"), "the decline said: " + said);
+		helper.assertTrue(said.contains("Declined: \"Well\" won't be proposed again for 3 days"), "the decline said: " + said);
 		// three, after the decline's 3 days
 		long time = v.level().getDayTime();
 		try {

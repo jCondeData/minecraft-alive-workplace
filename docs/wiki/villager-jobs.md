@@ -24,7 +24,8 @@ about 3 blocks away, and a name plate over its head reads "Fisherman, Journeyman
 **Retraining (26.6).** A villager who already has a job (vanilla, ours or another mod's, traded with or not; never a
 child or a nitwit) becomes a Builder at a free Blueprint Table within about 4 blocks, sneak-right-clicked with a
 Blueprint or a Blank Blueprint. The first click shows the price ("Dara (Librarian, Journeyman) can be retrained as a
-Builder for 20 emeralds. Their trades and level are lost: they start again as a Novice."); a second click within 5
+Builder for 20 emeralds. Their trades and level are lost: they start again as a Novice."; "an Armorer" for a job
+that starts with a vowel); a second click within 5
 seconds pays and retrains them. The price goes by level: Novice 5, Apprentice 10, Journeyman 20, Expert 35, Master
 50 emeralds (`retrainPrices`), or 100 CobbleDollars an emerald with the Cobbleverse pack. Too little money: "Retraining
 Dara costs 5 emeralds: you're 2 emeralds short. Nothing changed." A jobless villager becomes a Builder the same way

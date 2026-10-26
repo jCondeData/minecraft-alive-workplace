@@ -37,7 +37,8 @@ have, the ways they come, their powers. A file with an unknown condition or powe
 a typo never makes a Legend come for free. The two Pokémon Legends load only with Cobblemon.
 
 **Rarity (29.3).** A Rare Legend comes once to each village; a Legendary one once to each world; a Mythic one as
-many as the villages' ranks allow (`mythicLegendCap`: by default a Town holds 1 and a City 2). The server keeps one
+many as the villages' ranks allow (`mythicLegendCap`: by default a Town holds 1 and a City 2). A full one says so
+("A Town can hold 1 Mythic Legend, and this one has 1."). The server keeps one
 record of every Legend settled anywhere. A Legend holds their slot alive, as a zombie villager, or dead in a grave;
 dead with no grave they fall 7 days later and the slot is free again.
 

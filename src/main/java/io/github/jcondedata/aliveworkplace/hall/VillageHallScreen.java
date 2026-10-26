@@ -465,9 +465,9 @@ public final class VillageHallScreen {
 			}
 			menu.button(slot++, icon(item == Items.AIR ? Items.PAPER : item, job.copy(), ChatFormatting.WHITE,
 				line(where(hall, station.pos()), ChatFormatting.GRAY),
-				line(Component.translatable("screen.aliveworkplace.hall.give_job", villager.getDisplayName(), job), ChatFormatting.GREEN)), p -> {
+				line(Words.articled("screen.aliveworkplace.hall.give_job", 1, villager.getDisplayName(), job), ChatFormatting.GREEN)), p -> {
 				if (VillageHalls.assign(level, villager, station)) {
-					Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.assigned", villager.getDisplayName(), job)
+					Chat.actionBar(p, Words.articled("message.aliveworkplace.hall.assigned", 1, villager.getDisplayName(), job)
 						.withStyle(ChatFormatting.GREEN));
 					level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 0.8f, 1f);
 					refresh(menu, level, hall, page);

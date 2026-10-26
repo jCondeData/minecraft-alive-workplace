@@ -16,6 +16,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.WaystoneNetworkCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystoneTravelCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystoneQaCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.WaystoneQaBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CrafterFurnitureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QuestbookCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonCompatTests",

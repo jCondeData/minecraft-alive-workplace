@@ -251,7 +251,10 @@ worker (`MachineWork.tickTrip`, B244): machine work switched off (`machineWork` 
 or the worker no longer in the file's job (their workstation broken at Novice, or another job taken). What they
 carried goes straight into the village's store by their workstation (or by where they stand, when it's gone); what
 doesn't fit, or finds no store, drops at their feet. A broken machine, or a file gone, still runs the trip, which
-brings the load back on foot, and a worker killed mid-trip drops it where they fell. The chef's water is poured straight into the basin's tank (a bucket's
+brings the load back on foot: a worker whose machine is broken on the way turns back at once and shows "the Millstone
+is gone: bringing the load back to the store" (the machine is named from its file, never from what now stands at its
+spot, B506), and a Mechanic whose machine is broken while she walks to it says "the Millstone is gone" and goes on
+with her round, and a worker killed mid-trip drops it where they fell. The chef's water is poured straight into the basin's tank (a bucket's
 worth, 1000 mB), the way villages draw water anywhere; no bucket is used up. Items go in and out through Fabric's item
 and fluid transfer, which Create's port exposes; a depot, basin or crusher is never anyone's supply chest. The
 Mechanic's round uses the same files and the same work done on the spot.

@@ -145,7 +145,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaStoreSupplyCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCobblemonThreatsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCuisineCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaMegaShrineGapsCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaMegaShrineGapsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMachineGoneCompatTests"
 		]
 	},
 	"depends": {

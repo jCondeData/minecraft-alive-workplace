@@ -344,6 +344,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaEconomyBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRealmBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaColonyCharterGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaColonyCharterBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallHomesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderClicksBugTests",

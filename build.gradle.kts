@@ -610,6 +610,20 @@ tasks {
     }
     named("check") { dependsOn(checkGuide) }
 
+    /**
+     * American English in every sentence a player reads (owner, 2026-10-26; ROADMAP 36.19): langcheck.py --spelling fails
+     * on a British spelling (colour, Jeweller, cancelled, storey ...) in an en_us.json value, the questbook, docs/guide/
+     * or docs/wiki/; keys, ids and code spans are ignored. The word list and its allowlist are in tools/modtest/spelling.py,
+     * and `spelling.py --fix` rewrites what it finds. Under a second, checked-in files only, so it always runs.
+     */
+    val checkSpelling by registering(Exec::class) {
+        group = "verification"
+        description = "Fails on a British spelling in an en_us.json value, the questbook, docs/guide or docs/wiki"
+        workingDir = rootProject.projectDir
+        commandLine("python3", "tools/modtest/langcheck.py", "--spelling")
+    }
+    named("check") { dependsOn(checkSpelling) }
+
     /** Writes the compile classpath for the minecraft-mod-engineer skill's api.py (per-node API lookups). */
     register("apiClasspath") {
         group = "help"

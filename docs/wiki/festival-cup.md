@@ -41,7 +41,7 @@ Leader and no Arena yet (not before the 1.2 expansion is switched on).
 A bout between two village trainers is an exhibition at the ring. Each trainer stands in their box and sends out one
 Pokémon at a time beside the ring (real Pokémon, never catchable, removed if the game is saved with them out); the
 faster one moves first and they take turns. Damage follows a small formula (the theme's level, the move's power, attack
-against defence, the same-type bonus and type effectiveness), from `data/aliveworkplace/type_chart.json`: the games'
+against defense, the same-type bonus and type effectiveness), from `data/aliveworkplace/type_chart.json`: the games'
 18-type chart, every match-up as in the games since Fairy came in, and a Pokémon with two types takes both multipliers
 (Ice on Dragonite is 4x, Ground on Charizard nothing). A move the chart says can't touch the target does no damage; a
 Pokémon with no attacking move uses Struggle. A fainted Pokémon is called back and the next comes out, one on one even

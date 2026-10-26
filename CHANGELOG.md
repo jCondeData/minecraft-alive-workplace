@@ -16,6 +16,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+- Text: every sentence a player reads is now in American English: Smith's Draught is now Smith's Draft, the den-helpers and bean-farm settings say Defense and color, and the questbook, guide and wiki say gray, armor, Jeweler, canceled, traveler, leveled, curb and story (a floor). Item and block ids, saved data and lang keys are unchanged, so worlds and data packs keep working.
+
 ### Fixed
 - Festival Cup: Sign up no longer puts a player's name down before sign-up opens (B491); it says "Sign-up for this Cup isn't open yet: it opens after the festival on day N", as the Cup card does.
 - A Berry Wine bought from a Vintner is now pressed the day it's sold (B443): it shows "Pressed on day N" and waits its 3 days before a Journeyman makes it Vintage Wine, instead of counting as old at once.

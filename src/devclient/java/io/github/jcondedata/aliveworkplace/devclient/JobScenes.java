@@ -796,6 +796,14 @@ final class JobScenes {
 		var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
 		entity.setCustomName(Component.literal(name));
 		entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+		// B534: the scene is set up inside a server task, where the game files a placed block's point of interest only at
+		// the next task; until then VillageHalls.nearest finds no hall here and the round below raised no stone. Filed now,
+		// as the game does a moment later (and a hall standing for a while in play always has it).
+		if (level.getPoiManager().getType(hall).isEmpty()) {
+			net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(level.getBlockState(hall))
+				.ifPresent(type -> level.getPoiManager().add(hall.immutable(), type));
+		}
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		io.github.jcondedata.aliveworkplace.realm.RealmData.get(level.getServer()).putKnown(new io.github.jcondedata.aliveworkplace.realm.RealmData.Known(
 			net.minecraft.core.GlobalPos.of(level.dimension(), hall), Component.literal(name), java.util.Optional.of(player.getUUID()),
 			player.getGameProfile().getName(), "hamlet", 0, 0, level.getGameTime()));

@@ -153,7 +153,7 @@ first painter's claim is saved, a block's zone comes from the nearest hall, an 8
 `QaStewardRulesDataGameTests` (2, 27.6), `QaStewardPlotFitGameTests` (2, 27.7: the front faces the nearer road;
 clearable plants), `QaStewardDeskModesGameTests` (10, 27.8: mode buttons, operator and friend approvals, approving
 twice, Steward or hall gone, Run's morning line, save and reload, the desk's sentences, the Ledger, Show me's 30
-seconds) `QaWorkplaceCopiesGameTests` (4, 27.11), `QaStewardSafetyGameTests` (10, 27.19: a broken block marks its section,
+seconds), `QaWorkplaceCopiesGameTests` (4, 27.11), `QaStewardSafetyGameTests` (10, 27.19: a broken block marks its section,
 nothing outside a hall's area, one section only, per dimension, Keep Clear over the owner's approval, the 8 most
 needed, caravans, once a day, the pause's day from both sides, the sentences), `QaOldHousesGameTests` (12, 27.20: 85%
 from both sides, abandoned blocks, allowed block entities, containers, 2000 blocks and 20×16×20 from both sides, a

@@ -64,6 +64,12 @@ buttons: **Job ▾** changes their job (or gives a jobless villager one), **Bed 
 **Find** makes them glow so you can spot them. Click the row again (or press Esc) to close it. The bell, the figures
 and the Legends, Classes and Free job blocks pages sit in a row of pictures over the table.
 
+**Giving a bed.** Bed ▾ opens the village's beds under the villager's row. Free beds come first, with the house and
+which bed when a builder put it up, or how far and which way from the hall ("free · 14 blocks east"). Then the beds
+others sleep in: click one to swap ("swap with Jem"; you need a bed to give in return). Click a free bed and it's
+theirs at once, their old bed freed, and they sleep there tonight. A broken bed houses nobody. No free beds? "Short of
+beds? Plan a house ›" opens Buildings. Wagon beds and cradles aren't listed.
+
 **Changing a job.** Job ▾ opens a list of every job under the villager's row. On top is what it costs, by their
 level (5 emeralds for a Novice up to 50 for a Master), and what they lose: their trades and level, so they start again
 as a Novice. Jobs with a free work block in the village come first and say how many ("Mason · 1 free Stonecutter");

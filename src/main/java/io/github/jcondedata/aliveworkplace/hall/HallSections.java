@@ -255,6 +255,9 @@ public final class HallSections {
 			if (HallJobs.handles(id)) {
 				return HallJobs.click(menu, level, hall, p, id); // Job ▾'s list (40.3)
 			}
+			if (HallBeds.handles(id)) {
+				return HallBeds.click(menu, level, hall, p, id); // Bed ▾'s list (40.4)
+			}
 			if (id >= HallPeople.SCROLL) {
 				HallPeople.scrollTo(menu, level, hall, id - HallPeople.SCROLL); // the People table scrolled (40.2)
 				return true;

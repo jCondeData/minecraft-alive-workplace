@@ -118,6 +118,7 @@
 			"io.github.jcondedata.aliveworkplace.test.HallSidebarGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallPeopleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallPeopleJobGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HallPeopleBedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonCenterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ArenaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonBuildsGameTests",
@@ -657,7 +658,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaTableJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaNewWorkplacesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTinkererShortBugGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaWallTowerBugGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaWallTowerBugGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMenuClickFuzzGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMailboxLogoutGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaEveryMenuGameTests"
 		]
 	},
 	"depends": {

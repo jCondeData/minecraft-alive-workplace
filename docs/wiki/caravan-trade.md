@@ -46,12 +46,19 @@ says "Our caravan came home from Ashford with 16 × Oak Log unsold". The logs ar
   as if they had been bought at yours. So two bundles at 1.3 earn 1.3 + 1.27 = 2.57 emeralds.
 - **No rounding between villages.** Treasuries keep hundredths of an emerald, so the sale is exact (in CobbleDollars
   with the pack, the same sums read in CobbleDollars). Your treasury stops at its cap, as with all its earnings.
+- **Your treasury is full** (or nearly). The other village buys only what your treasury can still take; the rest
+  comes home like unpaid goods, and theirs says "Thornholm's treasury is full and can't take our money: their caravan
+  took 16 × Oak Log home". No emerald is paid to nobody: collect your treasury's emeralds and the next caravan sells
+  everything again.
 - **What it can't pay for** goes home in a caravan of its own, which takes the road's time again and unloads into
   your Storehouse.
 - **No room in their Storehouse.** Those bundles wait on the road and try again at each of that village's rounds;
   they're paid for when they go in.
 - **Your village isn't loaded when the caravan arrives.** The sale still happens; your treasury is paid and your
-  chronicle written the next time your hall is loaded, dated the day of the sale.
+  chronicle written the next time your hall is loaded, dated the day of the sale. If your treasury has filled up by
+  then, what it can't take goes back to the buyer: yours says "Our treasury was full: 0.8 emeralds went back to
+  Ashford", theirs "0.8 emeralds came back to our treasury: …" (at once if their hall is loaded, else at its next
+  round, kept over a restart).
 
 ## Switches
 
@@ -98,8 +105,10 @@ None new. It uses the Village Hall, the Storehouse and its chests.
 
 ## Proof
 
-- `CaravanTradeGameTests` (9): the sale between two halls with the Routes tab's lines and both chronicles; what the
-  other village can't pay for coming home; what goes (known for, short of or 10% dearer, whole bundles, 16 kept,
+- `CaravanTradeGameTests` (11): the sale between two halls with the Routes tab's lines and both chronicles; what the
+  other village can't pay for coming home; (B430) a nearly full seller sold only what its treasury can take, the
+  rest home, and a sale booked into a treasury that filled meanwhile paying the overflow back to the buyer (owed over
+  a save and reload while the buyer is full itself); what goes (known for, short of or 10% dearer, whole bundles, 16 kept,
   never what they wait for, two stacks at most); save and reload with a caravan on the road, and a save from before
   1.7; the economy off (before loading and mid-journey); no room at the other end and a seller that's gone; the
   buying hall taken away mid-journey, with goods for sale and (B212) with only free goods; a caravan whose home hall is
@@ -114,4 +123,6 @@ None new. It uses the Village Hall, the Storehouse and its chests.
 - `QaCaravansGameTests` (QA): the two-stack cap on top of the waited-for load, the 10% boundary at uneven prices
   (9.8% stays, 10.5% goes), short-of goods paid at the buyer's lower price with both boards moving, a partial payment
   that loses and makes nothing, the waited-for load free and first, and the sentences at one emerald (singular).
+- `QaCaravansBugTests.qaEmeraldsDoNotVanishWhenTheSellersTreasuryIsFull` (QA, B430): with the seller's treasury at
+  its cap, the two treasuries together lose nothing.
 - Showcase scene `caravan_trade`: the Routes tab with its earnings, then the chronicle line.

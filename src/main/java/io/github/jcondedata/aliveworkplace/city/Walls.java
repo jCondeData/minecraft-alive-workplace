@@ -111,11 +111,15 @@ public final class Walls {
 			}
 			BitSet cells = zone.cells();
 			for (int cell = cells.nextSetBit(0); cell >= 0; cell = cells.nextSetBit(cell + 1)) {
+				// the cell's first and last blocks (B510: centre + size / 2 was one past the last, so the east and south
+				// sides came out a block further than the west and north)
 				BlockPos centre = CityPlan.cellCentre(hall, cell);
-				minX = Math.min(minX, centre.getX() - size / 2);
-				maxX = Math.max(maxX, centre.getX() + size / 2);
-				minZ = Math.min(minZ, centre.getZ() - size / 2);
-				maxZ = Math.max(maxZ, centre.getZ() + size / 2);
+				int x0 = centre.getX() - size / 2;
+				int z0 = centre.getZ() - size / 2;
+				minX = Math.min(minX, x0);
+				maxX = Math.max(maxX, x0 + size - 1);
+				minZ = Math.min(minZ, z0);
+				maxZ = Math.max(maxZ, z0 + size - 1);
 			}
 		}
 		if (minX > maxX) {

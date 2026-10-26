@@ -553,4 +553,45 @@ public class CaravanSightGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * B431: damage that goes through "nothing hurts them" (the void, as {@code /kill}) kills a party member, and the
+	 * party leaves nothing to pick up: no leather, chest, carpet or lead from the llamas, nothing from the carter. The
+	 * party is taken away, the goods are still on the road, and a plain llama with a chest still drops its things.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"caravanSightVoid"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "caravanSightVoid")
+	public void aPartyKilledByTheVoidDropsNothing(GameTestHelper helper) {
+		Two two = build(helper, true);
+		playerAt(helper, new BlockPos(10, 2, 3));
+		Llama[] plain = new Llama[1];
+		helper.runAfterDelay(2, () -> {
+			open(helper, two);
+			Caravans.round(two.level(), two.a(), null);
+			CaravanSights.Party party = CaravanSights.party(two.level(), two.a());
+			helper.assertTrue(party != null && party.llamas().size() == 2, "no party");
+			for (Llama llama : party.llamas()) {
+				llama.hurt(two.level().damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+				helper.assertTrue(!llama.isAlive(), "the void didn't kill a llama");
+			}
+			party.carter().hurt(two.level().damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+			helper.assertTrue(!party.carter().isAlive(), "the void didn't kill the carter");
+			// a llama that isn't the caravan's: the mixin leaves it alone
+			plain[0] = helper.spawn(EntityType.LLAMA, new BlockPos(12, 2, 12));
+			plain[0].setChest(true);
+			plain[0].hurt(two.level().damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+		});
+		helper.runAfterDelay(30, () -> {
+			helper.assertTrue(CaravanSights.party(two.level(), two.a()) == null, "the party is still out");
+			List<String> left = dropped(helper);
+			helper.assertTrue(left.stream().anyMatch(s -> s.contains("chest")), "the plain llama should drop its chest: " + left);
+			helper.assertTrue(left.stream().allMatch(s -> s.contains("chest") || s.contains("leather")) && left.stream().filter(s -> s.contains("chest")).count() == 1,
+				"the killed party left things to pick up: " + left);
+			helper.assertTrue(two.ours().countItem(Items.BREAD) == 24, "the goods should be on the road: " + two.ours().countItem(Items.BREAD));
+			arrive(two);
+			helper.assertTrue(two.theirs().countItem(Items.BREAD) == 16, "the bread should arrive whole: " + two.theirs().countItem(Items.BREAD));
+			helper.getLevel().getEntitiesOfClass(ItemEntity.class, helper.getBounds().inflate(48), e -> true).forEach(ItemEntity::discard);
+			helper.succeed();
+		});
+	}
 }

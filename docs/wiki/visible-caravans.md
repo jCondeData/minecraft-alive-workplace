@@ -21,7 +21,9 @@ carter leads them back out the way they came, and at the edge they are gone.
 without a banner gets one of the sixteen colors, picked from where its hall stands, so it always wears the same.
 
 **They are only a sight.** Right-clicking the carter or a llama does nothing: no trade, no ride, no look in the
-chests, no feeding. Nothing can hurt them, they pick nothing up, and when they go they leave nothing behind.
+chests, no feeding. Nothing can hurt them, they pick nothing up, and when they go they leave nothing behind. Even
+`/kill` or a fall into the void (which nothing stops) leaves no leather, chest, carpet or lead: the party is simply
+gone, and the goods still arrive.
 
 ## How it works
 
@@ -93,13 +95,16 @@ All 33.7, lane a, 2026-10-10 (the full list is in ROADMAP's Notes):
 
 ## Proof
 
-- `CaravanSightGameTests` (7): `aLeavingCaravanIsSeenWalkingOffAndIsGone` (the carter's outfit and name, two llamas
+- `CaravanSightGameTests` (8): `aLeavingCaravanIsSeenWalkingOffAndIsGone` (the carter's outfit and name, two llamas
   on leads with chests and the village's carpet, gone at the edge with nothing left on the ground);
   `anArrivingCaravanComesInUnloadsAndGoesBack` (in from the edge, the banner's color, the llamas standing while
   unloading, back out); `nothingIsSeenWithNoPlayerNear` (100 blocks away nobody, 90 blocks a party);
   `aSavedAndReloadedCarterIsTakenAway`; `theGoodsAreTheSameWithTheSwitchOnOrOff`;
   `onePartyPerVillageAndGoneAfterTwoMinutes`; `thePartyNeverTradesTakesAJobOrBreeds` (also: not counted by the hall,
-  no ride, no hay, no harm, no bread picked up).
+  no ride, no hay, no harm, no bread picked up); `aPartyKilledByTheVoidDropsNothing` (B431: nothing on the ground,
+  the goods still arrive, a plain llama still drops its chest).
+- `QaCaravansBugTests.qaKillingThePartyLosesNoGoodsAndDropsNothing` (QA, B431): killed as `/kill` does, the party
+  drops nothing and the bread arrives whole.
 - `QaCaravansGameTests` (QA): seen with a player at 96 blocks, not at 97; a whole trading run (sale, partial
   payment, unpaid goods home in the sender's own caravan) the same seen or not; a player's lead or name tag doesn't
   take the party.

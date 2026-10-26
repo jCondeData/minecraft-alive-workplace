@@ -180,6 +180,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScanRoundTripGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderLimitsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintHandlingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShapePlannerGameTests",

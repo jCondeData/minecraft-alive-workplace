@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1
 
 ## What a player sees
 
@@ -16,6 +16,23 @@ their level) with their name and job. The pane on the right reads out whatever i
 with nothing there it shows the village's numbers "at a glance". Click a villager and they glow for ten seconds so you
 can find them, and stay in the pane (the wheel scrolls a long one; × or Esc puts them away). Click a jobless villager
 to see the free workstations and give them one. Every page of the hall opens in the same screen.
+
+**The sidebar (40.1).** Since 40.1 the screen has a sidebar on the left: the village's name and the date
+("Spring, day 1 · Year 1") over ten labeled buttons, Overview, People, Homes & Food, Buildings, Defense, Quests,
+Trade, Calendar, Laws & Realm and Map (`hall/HallSections`, the map of what goes where in `docs/design/M40.md`). The
+server still lays out the same 54-slot main page with the same clicks; at the end of `VillageHallScreen.render` it
+marks each button with the sections it belongs to (an int mask in the icon's custom data, under `HallSections.MARK`;
+page tabs by `HallSections.place`/their page id, unplaced pages under Overview; the people list under People) and sets
+five numbers on the menu (`ChoiceMenu.state`, data slots only on the hall's menu type): the open section, a bit per
+empty section, season, day and year. The client (`VillageHallMenuScreen`, hooks in `ChoiceTableScreen`) shows only
+the open section's buttons, all as labeled rows, a plain sentence over the list when the section is empty (People
+with nobody, Homes & Food with no beds or food, Buildings with nothing going up, Defense with no guards, Quests with
+none open, Trade with no neighbor in range, Laws & Realm with no edict or realm), and with nothing hovered the advice
+tips (Overview; the advice button's lines carry every tip and how) or the section's one-line purpose. A sidebar click
+is vanilla's menu-button click (`clickMenuButton(player, ordinal)`), which remembers the section per player while
+the server runs (`HallSections.last`, not saved) and lays the main page out again, from any page. A page opened from a
+section keeps the sidebar; its back button returns to the section. The Book of Edicts or a page opened on its own
+(bounty board, ledger sneak-click) has no year set, so no sidebar.
 
 **Reading without clicking (36.5).** A row or cell hovered stays read out while the mouse moves on into the pane
 (it changes only when another row or cell is hovered, and lets go once the mouse leaves the panel, when the pane goes

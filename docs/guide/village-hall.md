@@ -34,13 +34,33 @@ leaves the caravans' trade routes and its open quests are dropped, so put it bac
 
 ## The hall's screen
 
-Right-click the hall. It looks like the Blueprint Table's screen. Under the title is a row of icon buttons: first the
-village's numbers (its name and rank, villagers, beds, food in store, guards, wellbeing, what the workers are waiting
-for, the buildings going up and quests), then the page buttons. On the left is a list: the hall's page tabs, then
-everyone who lives there, each with their name and job. **Point at anything and the pane on the right tells you all
-about it.** Move the mouse on into the pane and it keeps reading the same thing, so you can scroll a long entry
-there with the mouse wheel without clicking it (or hold Shift and scroll over the row); a little arrow at the bottom
-shows there's more. With the mouse elsewhere, the pane shows the village's numbers at a glance.
+Right-click the hall. It looks like the Blueprint Table's screen, with a **sidebar** down the left: the village's
+name and today's date ("Spring, day 3 · Year 1") at the top, then ten buttons, each with a picture and a word:
+
+| Button | What's in it |
+|---|---|
+| **Overview** | the village at a glance (name and rank, villagers, beds, food, guards, wellbeing, what workers wait for, buildings going up, quests) and "What next?" |
+| **People** | everyone who lives there, their wellbeing and what they wait for, the bell that calls everyone home, Legends, classes and free job blocks |
+| **Homes & Food** | beds and food in store |
+| **Buildings** | buildings going up and their looks, repairs, upgrades, Wonders and the Steward's desk |
+| **Defense** | guards and the Defense page, the bell, mercenaries |
+| **Quests** | the village's quests |
+| **Trade** | caravans and trade routes (prices, pacts and colonies when they're on), the bank |
+| **Calendar** | the calendar, festivals, the Festival Cup and the chronicle |
+| **Laws & Realm** | the treasury and protection (the name icon), the Book of Edicts and your realm |
+| **Map** | draw a map of the village |
+
+Click a button and its things fill the right side as a list, each with its picture, its name and a line about it. A
+section with nothing in it says so in plain words ("No guards yet."), and its buttons stay there for you to use. The
+hall remembers the section you opened last until you leave the game. With nothing under the mouse, the pane on the
+right shows what the village needs next on the Overview, and what a section is for on the others.
+
+**Point at anything and the pane on the right tells you all about it.** Move the mouse on into the pane and it keeps
+reading the same thing, so you can scroll a long entry there with the mouse wheel without clicking it (or hold Shift
+and scroll over the row); a little arrow at the bottom shows there's more. A page you open from a section (the
+chronicle, the Book of Edicts...) fills the right side; click a sidebar button to go back to a list.
+
+![The hall's sidebar](https://jcondedata.github.io/minecraft-alive-workplace/hall_sidebar/still-1.jpg)
 
 Each worker is shown as their workstation, stacked as high as their level, with what they're doing ("Market Stall ·
 45%") and what they're waiting for. **Click a villager to make them glow** for ten seconds so you can find them; they stay in the pane, where the mouse

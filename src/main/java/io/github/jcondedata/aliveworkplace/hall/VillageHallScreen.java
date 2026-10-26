@@ -121,6 +121,9 @@ public final class VillageHallScreen {
 
 	static void render(ChoiceMenu menu, ServerLevel level, BlockPos hall, int page) {
 		menu.clearButtons();
+		if (menu.viewer() != null) {
+			HallSections.install(menu, menu.viewer(), level, hall); // the sidebar (40.1), on the viewer's last section
+		}
 		VillageHalls.Census census = VillageHalls.census(level, hall);
 		List<Villager> people = new ArrayList<>(census.workers());
 		people.addAll(census.jobless());
@@ -281,9 +284,15 @@ public final class VillageHallScreen {
 		});
 		menu.button(PlayerBank.BUTTON, PlayerBank.tab(level, hall), p -> PlayerBank.open(menu, level, hall, p)); // the bank (29.17)
 		List<VillageAdvice.Tip> tips = VillageAdvice.tips(level, hall);
+		List<Component> adviceLore = new ArrayList<>();
+		adviceLore.add(line(tips.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none")
+			: Component.translatable("screen.aliveworkplace.hall.advice_count", tips.size(), tips.get(0).title()), ChatFormatting.GRAY));
+		for (VillageAdvice.Tip tip : tips) { // every tip and how, read out on the Overview (40.1)
+			adviceLore.add(line(tip.title(), ChatFormatting.YELLOW));
+			adviceLore.add(line(tip.how(), ChatFormatting.GRAY));
+		}
 		menu.button(ADVICE, icon(Items.COMPASS, Component.translatable("screen.aliveworkplace.hall.advice"), ChatFormatting.WHITE,
-			line(tips.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none")
-				: Component.translatable("screen.aliveworkplace.hall.advice_count", tips.size(), tips.get(0).title()), ChatFormatting.GRAY)), p -> {
+			adviceLore.toArray(Component[]::new)), p -> {
 			renderAdvice(menu, level, hall);
 			menu.broadcastChanges();
 		});
@@ -387,6 +396,10 @@ public final class VillageHallScreen {
 				}
 			});
 		}
+		// The sidebar's sections (40.1): every button marked with its sections, and which sections are empty.
+		boolean laws = entity != null && !entity.edicts().isEmpty() || realm != null;
+		HallSections.apply(menu, level, HallPages.shown(), new HallSections.Counts(census.villagers(), census.beds(), census.food(),
+			census.builds().size(), census.guards(), quests.size(), !Caravans.neighbours(level, hall).isEmpty(), laws));
 	}
 
 	/** The page row: a tab for each registered page, light glass after them. */

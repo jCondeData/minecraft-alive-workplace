@@ -53,6 +53,8 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	/** The list's rows (button slots), in order. */
 	private final List<Integer> rows = new ArrayList<>();
 	private int listScroll;
+	/** The height of the plain sentence over the list ({@link #listNote}; 0 without one). */
+	private int noteH;
 	private boolean draggingBar;
 	/** What the pane reads out (36.5): hovered, held while the mouse goes into the pane, or the button last clicked. */
 	private final io.github.jcondedata.aliveworkplace.work.ReadingFocus reading = new io.github.jcondedata.aliveworkplace.work.ReadingFocus();
@@ -91,22 +93,24 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	private void layout() {
 		cells.clear();
-		int x = left + 8;
+		int side = sidebarWidth();
+		int x = left + 8 + side;
 		int y = top + 20;
 		int right = left + panelW - 8;
 		boolean any = false;
-		for (int r = 0; r < stripRows.length; r++) {
+		boolean allRows = rowsOnly();
+		for (int r = 0; r < stripRows.length && !allRows; r++) {
 			boolean groupStarted = false;
 			for (int c = 0; c < 9; c++) {
 				int slot = stripRows[r] * 9 + c;
-				if (!shown(icon(slot))) {
+				if (!shown(icon(slot)) || !showSlot(slot)) {
 					continue;
 				}
 				if (!groupStarted && any) {
 					x += GROUP_GAP;
 				}
 				if (x + TableStyle.CELL - 2 > right) {
-					x = left + 8;
+					x = left + 8 + side;
 					y += TableStyle.CELL;
 				}
 				cells.add(new int[]{slot, x, y});
@@ -116,19 +120,21 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 			}
 		}
 		rows.clear();
-		for (int slot = listFrom * 9; slot < ChoiceMenu.SIZE; slot++) {
-			if (shown(icon(slot))) {
+		for (int slot = allRows ? 0 : listFrom * 9; slot < ChoiceMenu.SIZE; slot++) {
+			if (shown(icon(slot)) && showSlot(slot)) {
 				rows.add(slot);
 			}
 		}
-		listX = left + 8;
+		listX = left + 8 + side;
 		listY = any ? y + TableStyle.CELL + 4 : top + 22;
-		listW = TableStyle.listWidth(panelW);
+		listW = TableStyle.listWidth(panelW - side);
 		listH = top + panelH - 16 - listY;
 		paneX = listX + listW + 10;
 		paneY = listY;
 		paneW = left + panelW - 8 - paneX;
 		paneH = listH;
+		Component note = listNote();
+		noteH = note == null ? 0 : font.split(note, listW - 12).size() * LINE + 6;
 		listScroll = Math.max(0, Math.min(listScroll, maxListScroll()));
 		int pinned = reading.pinned();
 		if (pinned >= 0 && (!shown(icon(pinned)) || !icon(pinned).getHoverName().getString().equals(pinnedName))) {
@@ -142,11 +148,11 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	}
 
 	private int maxListScroll() {
-		return Math.max(0, rows.size() * TableStyle.ROW + 4 - listH);
+		return Math.max(0, noteH + rows.size() * TableStyle.ROW + 4 - listH);
 	}
 
 	private int rowTop(int index) {
-		return listY + 4 + index * TableStyle.ROW - listScroll;
+		return listY + 4 + noteH + index * TableStyle.ROW - listScroll;
 	}
 
 	private boolean overList(double mx, double my) {
@@ -183,7 +189,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		renderBlurredBackground(partialTick);
 		renderMenuBackground(g);
 		TableStyle.panel(g, left, top, panelW, panelH);
-		TableStyle.header(g, font, title, subtitle(), left, top, panelW);
+		int side = sidebarWidth();
+		TableStyle.header(g, font, headerTitle(), subtitle(), left + side, top, panelW - side);
+		renderSidebar(g, mouseX, mouseY);
 		int hovered = slotAt(mouseX, mouseY);
 		int pinned = reading.pinned();
 		for (int[] cell : cells) {
@@ -199,7 +207,7 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		}
 		if (focus >= 0) {
 			renderDetail(g, focus, mouseX, mouseY);
-		} else {
+		} else if (!renderIdle(g, paneX, paneY, paneW, paneH)) {
 			renderOverview(g);
 		}
 		Component hint = Component.translatable("screen.aliveworkplace.choice.hint");
@@ -209,6 +217,52 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	/** The line at the title's right (none by default). */
 	protected Component subtitle() {
 		return Component.empty();
+	}
+
+	/** The gold title at the panel's top left (the menu's title by default). */
+	protected Component headerTitle() {
+		return title;
+	}
+
+	// --- hooks for a sidebar (the Village Hall's, 40.1) ---------------------------------------------------------------
+
+	/** The width a sidebar takes at the panel's left (none by default); everything else moves right of it. */
+	protected int sidebarWidth() {
+		return 0;
+	}
+
+	/** Draws the sidebar (nothing by default). */
+	protected void renderSidebar(GuiGraphics g, int mouseX, int mouseY) {
+	}
+
+	/** Takes a click on the sidebar; true when it did. */
+	protected boolean sidebarClicked(double mx, double my, int button) {
+		return false;
+	}
+
+	/** Whether button {@code slot} is shown at all (every button by default). */
+	protected boolean showSlot(int slot) {
+		return true;
+	}
+
+	/** Whether every button shown is a list row, the strip rows' too (no by default). */
+	protected boolean rowsOnly() {
+		return false;
+	}
+
+	/** A plain sentence over the list's rows (none by default). */
+	protected Component listNote() {
+		return null;
+	}
+
+	/** Draws the pane with nothing chosen in the box given; false to leave it to "At a glance" (the default). */
+	protected boolean renderIdle(GuiGraphics g, int x, int y, int w, int h) {
+		return false;
+	}
+
+	/** The panel's left edge, top edge, width and height (for a sidebar). */
+	protected int[] panelBox() {
+		return new int[]{left, top, panelW, panelH};
 	}
 
 	@Override
@@ -224,11 +278,15 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	private void renderList(GuiGraphics g, int mouseX, int mouseY, int hovered) {
 		int pinned = reading.pinned();
 		TableStyle.listBackground(g, listX, listY, listW, listH);
-		if (rows.isEmpty()) {
+		Component note = listNote();
+		if (rows.isEmpty() && note == null) {
 			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.choice.empty"), listX + 6, listY + 6, listW - 12, TableStyle.LOADING);
 			return;
 		}
 		g.enableScissor(listX, listY, listX + listW, listY + listH);
+		if (note != null) {
+			g.drawWordWrap(font, note, listX + 6, listY + 6 - listScroll, listW - 12, TableStyle.BODY);
+		}
 		int x0 = listX + 6;
 		int x1 = listX + listW - 6;
 		for (int i = 0; i < rows.size(); i++) {
@@ -489,6 +547,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
 		layout();
+		if (sidebarClicked(mx, my, button)) {
+			return true;
+		}
 		if (button == 0 && overBar(mx, my)) {
 			draggingBar = true;
 			return true;

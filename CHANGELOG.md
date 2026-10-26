@@ -16,6 +16,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- Village Hall: the hall's screen has a sidebar: the village's name and today's date over ten labeled buttons (Overview, People, Homes & Food, Buildings, Defense, Quests, Trade, Calendar, Laws & Realm, Map). The section you pick fills the right side, an empty one says so plainly, the Overview shows the village at a glance with what it needs next, and the hall opens on the section you used last. Every page and button of the old screen is still there, under its section (40.1).
+
 ### Fixed
 - Builder: a block the builder had already laid that is broken mid-build (by a player, a mob or an explosion) is now put back before the build is called finished; before, the build ended at 100% with the hole still there and, with Ask Before Repairs on, asked you whether to repair a building it had just reported done. If the block keeps getting broken, the builder goes back for it twice and then counts it as skipped (B508).
 

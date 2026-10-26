@@ -5647,7 +5647,7 @@ flag: it replaces today's hall screen for everyone the day it lands, so nothing 
 Text in American English (36.19). Lane C builds it, in order (each item builds on the one before).
 Depends on: nothing open.
 
-- [ ] **40.1** **The sidebar and its sections.** The hall screen gets a left sidebar of labeled buttons, each with
+- [x] **40.1** (review: pending 2026-10-26) **The sidebar and its sections.** The hall screen gets a left sidebar of labeled buttons, each with
   its item icon and word: **Overview, People, Homes & Food, Buildings, Defense, Quests, Trade, Calendar, Laws &
   Realm, Map**; above them the village's name and "Spring, day 1 · Year 1". The chosen section is highlighted and
   fills the right side. Before coding, write in `docs/design/M40.md` where every page, button and action of today's

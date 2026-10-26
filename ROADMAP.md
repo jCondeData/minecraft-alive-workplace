@@ -5723,7 +5723,7 @@ Depends on: nothing open.
   as such. Done when: GameTests for the table's rows and counts in a village of 8 and of 60 (scroll), the details of
   a builder, a guard, a child and a nitwit, a villager who dies or leaves while the screen is open; text in
   `en_us.json`; wiki; scene `hall_people` (the table and one open row).
-- [x] **40.3** (approved 2026-10-26) **Change a villager's job from the People table.** Job ▾ opens a list of every job: those with a free
+- [x] **40.3** (approved 2026-10-26) (verified 2026-10-26: with B535's fix: QaHallScreenGameTests Job-list clicks plus twoFreeBlocksArePlural and everyListedBlockHasAPlural green in the full build) **Change a villager's job from the People table.** Job ▾ opens a list of every job: those with a free
   work block in the village show how many ("Mason · 1 free Stonecutter"), those without are grayed with "place a
   Lectern first", plus Builder (with a free Builder's Bench) and "No job". It uses today's retraining (36.x
   `HallRetraining`): its price by level is shown before paying, the "click again to pay" step, trades and level lost

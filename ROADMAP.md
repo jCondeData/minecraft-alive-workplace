@@ -622,6 +622,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B506** Player-visible text (Create, 39.3): a worker on a trip to a Create machine that was broken meanwhile shows 'Machine work: working the Air' and then 'bringing what the Air made to the store' (MachineWork.tick names the block now at the machine's spot). The carried input does come back to the store (8 of 8 wheat). Expected: the machine's name (the Millstone), or a line saying it's gone. The Mechanic says 'seeing to the Air' the same way when the millstone it walks to is broken (QaMachineGoneCompatTests.aMechanicWhoseMillstoneIsBrokenOnTheWayNeverSeesToTheAir, same branch); by code reading MachineWork's 'full'/'stopped' lines too (not tested). Test: QaMachineGoneCompatTests.aMillstoneBrokenMidTripGetsItsWheatBackInTheStore on tests/machine-gone-1025 (runCompatGameTest) (found by lane-e-1025-2213, 2026-10-25)
 - [ ] **B507** Player-visible text (22.10a, American spelling in all lang text): the config screen's denHelpers tooltip says 'the hall's Defence page' (the page is titled Defense) and beanFarms' says 'a colour'. Expected: Defense, color. Test: QaSpellingGameTests.everyLineAPlayerReadsIsInAmericanSpelling on tests/spelling-1025 (a guard on all of en_us.json for the owner's eight words) (found by lane-e-1025-2213, 2026-10-25)
 - [ ] **B508** Player-visible (builder, wiki builder.md 'Unfinished blocks are never claimed done'): a block the builder already placed that a player (or a mob, an explosion) breaks mid-build is never put back by the build: the site goes to DONE, 100%, skipped 0, with the hole still there; only the later repair round (upkeep, every 1200 ticks) notices it, and with Ask Before Repairs on (the default) that becomes a 'Repair it?' question to the owner about a building just reported finished. Expected: the build re-checks its placed steps (MaterialRules.matches) before DONE and lays what's missing, or counts it in skipped. Test: QaBuilderDisruptionBugTests.aPlankBrokenMidBuildIsBackWhenTheBuildEnds on tests/builder-hole-1026 (found by lane-b-1026-0038, 2026-10-26)
+- [ ] **B509** Saves (village data loss): a Village Hall whose saved quests hold one of a kind this jar doesn't know loses ALL its data when its chunk loads: treasury, rank, research, families, chronicle, edicts. VillageQuests.Quest.CODEC reads 'kind' with Codec.STRING.xmap(Kind::valueOf, ...), which throws IllegalArgumentException ('No enum constant ...Kind.TRAIN') instead of returning a codec error; the throw escapes VillageHallBlockEntity.loadAdditional and BlockEntity.loadStatic logs 'Failed to load data for block entity' and returns null, so the hall comes back empty. Paths: the owner's server opened with an older jar after a newer one adds a quest kind (a rollback), or an NBT edit of the hall; the fuzz found no other key of the 8 block entity types that does this. Expected: the unknown quest is left out (or the whole quests list falls back to empty) and everything else in the hall loads. Test: QaBlockSaveKindsGameTests (aQuestOfAnUnknownKindDoesNotCostTheVillageItsHall, aKeyOfAnotherKindDoesNotLoseTheBlocksData) on tests/hall-quest-kind-1026 (found by lane-e-1026-0113, 2026-10-26)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -5134,6 +5135,18 @@ Depends on: nothing open.
   builder handing back the build, the rule off, save and reload; text in `en_us.json`; guide (village-hall.md, jobs.md)
   and wiki; scene `hall_retrain`.
 
+- [ ] **36.19** (owner, 2026-10-26) **American English everywhere a player reads.** The owner wants American spelling:
+  "Defense", not "Defence". Change every player-facing sentence in `en_us.json`, the questbook, sign and book text,
+  blueprint and build names shown to players, the player guide and the wiki: defence → defense, jeweller → jeweler,
+  honour → honor, colour → color, armour → armor, neighbour → neighbor, cancelled → canceled, grey → gray, centre →
+  center, labelled → labeled, travelled → traveled, -ise/-isation → -ize/-ization, theatre → theater, metre → meter,
+  catalogue → catalog, plough → plow (and any other British form found). **Never rename** a lang key, registry id,
+  saved field, tag, file name an id depends on or a class (`DefencePage`, `jewellers_workshop` stay; only the words
+  shown change), so no save breaks. Done when: no British spelling is left in any lang value, guide or wiki page; a
+  check (in `tools/modtest/langcheck.py`, run by the build or the tester) fails on a British spelling in a lang
+  value (keys ignored), with its word list; GameTests that compare player sentences expect the new spelling; a
+  CHANGELOG line. Not visible as a scene: `done` without `--review`.
+
 ## Milestone 37: Furnished homes and modded storage (2.1)
 
 Builds use the pack's furniture mods when they're installed: Handcrafted chairs round a Handcrafted table, Lucky's
@@ -5610,6 +5623,82 @@ the owner's port jar; M33's caravans (39.7).
 - **Sprint mode** (2026-10-03): the owner asked to go back to how the first chat worked, after four lanes and an
   hourly QA lane built one feature in four days. Two build lanes (odd/even numbers) commit straight to `main` in
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
+
+## Milestone 40: The Village Hall, simpler
+
+The owner picked a new layout for the Village Hall screen (2026-10-26, from the design canvas "Village Hall redesign
+options", option E and its two "E · Changing a job" and "E · Assigning a bed" boards): a **labeled sidebar** on the
+left instead of 18 unlabeled icons, one section at a time on the right, and a **People** table where clicking a
+villager opens their details under their row, with buttons to change their job and give them a bed. No expansion
+flag: it replaces today's hall screen for everyone the day it lands, so nothing the hall does today may be lost.
+Text in American English (36.19). Lane C builds it, in order (each item builds on the one before).
+Depends on: nothing open.
+
+- [ ] **40.1** **The sidebar and its sections.** The hall screen gets a left sidebar of labeled buttons, each with
+  its item icon and word: **Overview, People, Homes & Food, Buildings, Defense, Quests, Trade, Calendar, Laws &
+  Realm, Map**; above them the village's name and "Spring, day 1 · Year 1". The chosen section is highlighted and
+  fills the right side. Before coding, write in `docs/design/M40.md` where every page, button and action of today's
+  hall goes (toolbar icons, the left list's calendar, Festival Cup, classes, Legends, Wonders, free job blocks,
+  repairs, upgrades, the Steward's desk, chronicle, routes and trade tabs, recall bell, advice, map, treasury, edicts,
+  family, rank and protection lines, and any other page in `HallPages`), so nothing is lost; a page that fits no
+  section goes under the closest one, never dropped. **Overview** shows today's "At a glance" numbers laid out
+  plainly and the advice tips. The section a player last opened is remembered while the game runs. Readable at GUI
+  scale 2, 3 and 4 and at 1280×720. Done when: GameTests open every section through the hall's own entry point and
+  reach every page and action listed in the design note; a section with nothing in it says so plainly; text in
+  `en_us.json`; wiki (village-hall.md) and guide updated; scene `hall_sidebar` (each section, GUI scale 2 and 3).
+- [ ] **40.2** **The People table.** The People section is a table: Name, Job, Level, Mood, with "8 · 6 working · 2
+  jobless" at the top and a scroll for big villages. Mood is a word players read at once (Happy, Content, Unhappy,
+  "No bed" in red when that's the reason). Clicking a row opens the villager's details right under it (traits, what
+  they're doing now, what they need, happiness and why, class and how to rise: what today's pane shows), and two
+  buttons, **Job ▾** and **Bed ▾** (40.3, 40.4); clicking again closes it. Children and builders appear too, marked
+  as such. Done when: GameTests for the table's rows and counts in a village of 8 and of 60 (scroll), the details of
+  a builder, a guard, a child and a nitwit, a villager who dies or leaves while the screen is open; text in
+  `en_us.json`; wiki; scene `hall_people` (the table and one open row).
+- [ ] **40.3** **Change a villager's job from the People table.** Job ▾ opens a list of every job: those with a free
+  work block in the village show how many ("Mason · 1 free Stonecutter"), those without are grayed with "place a
+  Lectern first", plus Builder (with a free Builder's Bench) and "No job". It uses today's retraining (36.x
+  `HallRetraining`): its price by level is shown before paying, the "click again to pay" step, trades and level lost
+  (said plainly), children and nitwits can't, and game rule `workplaceRetraining` off hides the button. Done when:
+  GameTests through the People row for a change that works, one with no free block, not enough emeralds (nothing
+  changes), to and from Builder (a busy builder hands his build back), "No job", the rule off, save and reload; text
+  in `en_us.json`; wiki (village-hall.md, jobs.md); scene `hall_people_job`.
+- [ ] **40.4** **Give a villager a bed from the People table.** Bed ▾ opens a list of the village's beds: free ones
+  first with where they are (the building's name and which bed, when the mod knows it, else the distance and
+  direction from the hall: "free · 14 blocks east"), then taken ones with "swap with Jem", and "Short of beds? Plan a
+  house ›" leading to the Steward's desk or the Buildings section. Choosing a bed makes it that villager's home at
+  once (the game's own home memory and bed claim, the old bed freed; a swap moves both) and they sleep there that
+  night; it shows in the table and the census straight away (B362's rule: a broken bed houses nobody). Only beds in
+  that village; a builder's bench bed and a cradle follow their own rules (say so in the list). Done when: GameTests
+  through the People row for a free bed, a swap, no beds at all, the chosen bed broken before night, a bed another
+  villager claims first, save and reload (the choice kept), the villager sleeping there at night; text in
+  `en_us.json`; wiki (village-hall.md, homes); scene `hall_people_bed`.
+
+## Milestone 41: Waystones
+
+Villages join the Waystones mod's travel network (owner, 2026-10-26): each village raises a waystone by its hall, and
+villages that both have one send their caravans and settlers through them. Waystones is in the owner's pack
+(`waystones-fabric-1.21.1-21.1.37`, mod id `waystones`); like every mod it is optional: its classes only in
+`compat/waystones/`, `modCompileOnly` from the Modrinth maven, listed in `suggests`, never a hard `depends`, and
+compat GameTests (`runCompatGameTest`). Without it nothing here appears and nothing breaks. Lane D builds it first.
+Depends on: nothing open.
+
+- [ ] **41.1** **A waystone by every Village Hall.** With Waystones installed, a village's builder raises a small
+  waystone plaza near the hall (a new blueprint, architect skill and `STYLE.md`, in each village culture's style)
+  once the village has a hall, as a normal build the Steward can propose; the stone is the mod's own waystone block,
+  named after the village (renamed when the village is), so players who visit can discover it and travel there the
+  usual way. A config switch (`villageWaystones`, on) turns it off. Without the mod, the plaza isn't offered. Done
+  when: compat GameTests for the plaza built with a working, named waystone, the village renamed, the stone broken
+  (the builder repairs it like any build), the switch off, and a GameTest without the mod that nothing is offered;
+  blueprint render checked; text in `en_us.json`; wiki page `waystones.md`; scene `village_waystone`.
+- [ ] **41.2** **The hall's Map shows the waystone network.** The hall's Map section (40.1; today's map page until
+  40.1 lands) lists the player's villages with a waystone, each with its distance and direction, and marks which
+  ones the player has discovered. Done when: compat GameTests for two villages, one undiscovered, one with its stone
+  broken; text in `en_us.json`; wiki; scene `hall_waystones`.
+- [ ] **41.3** **Caravans and settlers travel by waystone.** Between two villages that both have a waystone, trade
+  caravans and settlers walk to their stone and step out at the other village's (with the mod's own sound and
+  particles) instead of walking the whole way; if either stone is missing or broken, they walk as today. Done when:
+  compat GameTests for a caravan and a settler going through, a stone broken mid-trip (they walk), save and reload
+  mid-trip; text; wiki; scene `waystone_caravan`.
 
 ## Notes / blocked
 

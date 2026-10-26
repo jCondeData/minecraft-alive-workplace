@@ -170,10 +170,10 @@ public class SavedDataGameTests implements FabricGameTest {
 		return null;
 	}
 
-	private record Entry(String name, Attachment<Object> attachment, Object value) {}
+	record Entry(String name, Attachment<Object> attachment, Object value) {}
 
 	@SuppressWarnings("unchecked")
-	private static List<Entry> entries(GameTestHelper helper) {
+	static List<Entry> entries(GameTestHelper helper) {
 		Map<String, Object> samples = samples();
 		List<Entry> entries = new ArrayList<>();
 		List<String> missing = new ArrayList<>();

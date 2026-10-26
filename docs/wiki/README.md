@@ -92,6 +92,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 
 **Villages that build themselves**
 - [Steward](steward.md): the City Plan, the Steward, his rules and his desk (1.1).
+- [New workplaces](new-workplaces.md): the Smithy, Mason's Yard, Fletcher's Lodge, Map Room, Farmstead, Fisher's Hut, Weaver's Cottage and Bandstand, and the Steward's rules that ask for them (1.1).
 - [Roads and walls](roads-and-walls.md): streets, lamps, bridges, roads between villages and walls (1.1).
 
 **Legends**

@@ -222,6 +222,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CuisineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MegaStoneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MegaShrineGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMegaShrineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CreateBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageTrainGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassOutfitGameTests",
@@ -239,12 +240,14 @@
 			"io.github.jcondedata.aliveworkplace.test.RealmInviteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PactGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FeudGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFeudGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LeaderboardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmTreasuryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmResearchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmTopicsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmEdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReliefGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReliefGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ColonySettlersGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ColonyArrivalGameTests",
@@ -442,6 +445,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaArenaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PieceLooksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendNeedsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendRecordGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftedBornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendGuestsGameTests",
@@ -604,7 +608,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaDefenceUpgradeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaAnsweringHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignpostGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaTableJobsGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaTableJobsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaNewWorkplacesGameTests"
 		]
 	},
 	"depends": {

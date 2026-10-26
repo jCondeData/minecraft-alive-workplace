@@ -109,7 +109,8 @@ Roadmap items: 32.10
   vanilla mob), the band turned zombified when the Warlord fell used to vanish: the game's own conversion adds the new
   mob the ordinary way, which the blocklist refuses. Now a refused turned mob goes the way of every other foe (B208):
   with `forceThreatSpawns` on it is placed directly, zombified and with its raid tags; off, it is left out and the
-  log says so once (B356).
+  log says so once (B356). The turned mobs stay when the players walk away (they don't despawn), and are no longer
+  counted in a lair's band.
 
 ## Proof
 
@@ -137,6 +138,8 @@ Roadmap items: 32.10
   a raiding hoglin and a raiding brute, penned with a villager, strike it themselves.
 - `QaRefusedThreatsGameTests.aPiglinOutpostStandsWhenAnotherModRefusesItsMobs`: with the world refusing every hostile
   mob (as Cobbleverse's MobsBeGone does), the outpost's Warlord and band are in the world and still there 100 ticks on.
+- `QaWarlordBandStaysGameTests.theTurnedBandStaysWhenThePlayersWalkAway`: with the world refusing every hostile mob, each
+  piglin and hoglin turned when the Warlord falls, of the band and the raid, is persistent and no longer a lair's.
 - `QaRefusedThreatsGameTests.aWarlordsWholeBandAndRaidTurnZombifiedWhenHeFalls`: every piglin and hoglin of the band and
   the raid is zombified and still there when he falls.
 - `QaRefusedWarlordGameTests.aWarlordsBandTurnsZombifiedWhenAnotherModRefusesZombifiedPiglins`: the same while the world

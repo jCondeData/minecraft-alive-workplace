@@ -363,6 +363,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLairGrowthGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSurvivorsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCupBoutGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWarlordBandStaysGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatFixesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatRepairGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageMomentGameTests",

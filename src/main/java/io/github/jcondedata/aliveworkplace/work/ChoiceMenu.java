@@ -40,12 +40,41 @@ public class ChoiceMenu extends ChestMenu {
 	private boolean shift;
 	/** Whether the button being pressed was right-clicked (the price board buys on a right click, 33.5). */
 	private boolean right;
+	/** Numbers the screen shows besides the buttons (the hall's open section and date, 40.1); sent to the hall's screen. */
+	private final net.minecraft.world.inventory.SimpleContainerData state = new net.minecraft.world.inventory.SimpleContainerData(STATE);
+	/** What a menu-button click (not a slot: the hall's sidebar, 40.1) does; true when it took the click. */
+	@Nullable
+	private java.util.function.BiPredicate<ServerPlayer, Integer> menuButton;
+	/** How many numbers {@link #state} holds. */
+	public static final int STATE = 10;
 
 	private ChoiceMenu(MenuType<?> type, int id, net.minecraft.world.entity.player.Inventory inventory, SimpleContainer icons, Predicate<Player> valid) {
 		super(type, id, inventory, icons, ROWS);
 		this.icons = icons;
 		this.valid = valid;
 		this.viewer = inventory.player instanceof ServerPlayer p ? p : null;
+		if (type == io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL_MENU) {
+			addDataSlots(state); // the hall's screen (ChoiceView) has the same numbers; a chest has none
+		}
+	}
+
+	/** Number {@code index} of the screen's numbers (see {@link #STATE}). */
+	public int state(int index) {
+		return state.get(index);
+	}
+
+	public void setState(int index, int value) {
+		state.set(index, value);
+	}
+
+	/** Runs {@code action} for a menu-button click with its number (the hall's sidebar, 40.1). */
+	public void onMenuButton(java.util.function.BiPredicate<ServerPlayer, Integer> action) {
+		this.menuButton = action;
+	}
+
+	@Override
+	public boolean clickMenuButton(Player player, int id) {
+		return player instanceof ServerPlayer sp && menuButton != null && menuButton.test(sp, id);
 	}
 
 	/** The player the menu is shown to (null on a client's copy). */

@@ -231,6 +231,7 @@ public final class Builders {
 			return InteractionResult.PASS;
 		}
 		Optional<BlueprintData.Placement> placement = data.get().placement();
+		deconstruct |= data.get().takeDown(); // B526: a canceled take-down's blueprint carries on taking it down
 		if (placement.isEmpty()) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.not_placed"), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
@@ -922,7 +923,8 @@ public final class Builders {
 		if (!site.isRepair()) {
 			io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(blueprint).ifPresent(data -> blueprint.set(
 				io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT, data.withPlacement(Optional.of(site.placement()))
-					.withLevelGround(site.levelGround()).withMirrored(site.placement().mirror() != net.minecraft.world.level.block.Mirror.NONE)));
+					.withLevelGround(site.levelGround()).withMirrored(site.placement().mirror() != net.minecraft.world.level.block.Mirror.NONE)
+					.withTakeDown(site.isDeconstruction()))); // B526: handed back as it is, the take-down carries on
 		}
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 		if (owner != null && owner.getInventory().add(blueprint)) {

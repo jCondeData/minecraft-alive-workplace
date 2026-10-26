@@ -24,26 +24,39 @@ import net.minecraft.world.level.block.Rotation;
  * @param placement where the build goes; empty until the player right-clicks the ground
  * @param levelGround whether the builder levels the natural ground around it (right-click the air to switch)
  * @param mirrored  whether it's built flipped left to right (chosen on the style screen)
+ * @param takeDown  a canceled take-down's blueprint (B526): handed back at the same spot, the take-down carries on;
+ *                  moving it (a new placement) makes it a plain blueprint again
  */
-public record BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Optional<Placement> placement, boolean levelGround, boolean mirrored) {
+public record BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Optional<Placement> placement, boolean levelGround, boolean mirrored,
+							boolean takeDown) {
 	public static final Codec<BlueprintData> CODEC = RecordCodecBuilder.create(i -> i.group(
 		ResourceLocation.CODEC.fieldOf("structure").forGetter(BlueprintData::structure),
 		Vec3i.CODEC.optionalFieldOf("size").forGetter(BlueprintData::size),
 		Placement.CODEC.optionalFieldOf("placement").forGetter(BlueprintData::placement),
 		Codec.BOOL.optionalFieldOf("level_ground", true).forGetter(BlueprintData::levelGround),
-		Codec.BOOL.optionalFieldOf("mirrored", false).forGetter(BlueprintData::mirrored)
+		Codec.BOOL.optionalFieldOf("mirrored", false).forGetter(BlueprintData::mirrored),
+		Codec.BOOL.optionalFieldOf("take_down", false).forGetter(BlueprintData::takeDown)
 	).apply(i, BlueprintData::new));
 
 	public BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Optional<Placement> placement) {
 		this(structure, size, placement, true, false);
 	}
 
+	public BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Optional<Placement> placement, boolean levelGround, boolean mirrored) {
+		this(structure, size, placement, levelGround, mirrored, false);
+	}
+
+	/** Marks it as a canceled take-down's blueprint (B526): handed back where it's placed, the take-down carries on. */
+	public BlueprintData withTakeDown(boolean down) {
+		return new BlueprintData(structure, size, placement, levelGround, mirrored, down);
+	}
+
 	public BlueprintData withLevelGround(boolean level) {
-		return new BlueprintData(structure, size, placement, level, mirrored);
+		return new BlueprintData(structure, size, placement, level, mirrored, takeDown);
 	}
 
 	public BlueprintData withMirrored(boolean flip) {
-		return new BlueprintData(structure, size, placement, levelGround, flip);
+		return new BlueprintData(structure, size, placement, levelGround, flip, takeDown);
 	}
 
 	/** How a new placement of it is mirrored: flipped left to right (the front stays the front), or not. */
@@ -53,16 +66,17 @@ public record BlueprintData(ResourceLocation structure, Optional<Vec3i> size, Op
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, BlueprintData> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
 
+	/** A new spot makes a take-down's blueprint (B526) a plain one again: there's nothing to take down there. */
 	public BlueprintData withPlacement(Optional<Placement> newPlacement) {
-		return new BlueprintData(structure, size, newPlacement, levelGround, mirrored);
+		return new BlueprintData(structure, size, newPlacement, levelGround, mirrored, takeDown && newPlacement.equals(placement));
 	}
 
 	public BlueprintData withStructure(ResourceLocation newStructure) {
-		return new BlueprintData(newStructure, size, placement, levelGround, mirrored);
+		return new BlueprintData(newStructure, size, placement, levelGround, mirrored, false);
 	}
 
 	public BlueprintData withSize(Vec3i newSize) {
-		return new BlueprintData(structure, Optional.of(newSize), placement, levelGround, mirrored);
+		return new BlueprintData(structure, Optional.of(newSize), placement, levelGround, mirrored, takeDown);
 	}
 
 	/**

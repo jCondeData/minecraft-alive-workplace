@@ -290,8 +290,13 @@ public class BlueprintItem extends Item {
 				Direction front = d.placement().get().rotation().rotate(Direction.NORTH);
 				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.placed", o.getX(), o.getY(), o.getZ(),
 					Component.translatable("direction.aliveworkplace." + front.getSerializedName())).withStyle(ChatFormatting.AQUA));
-				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.hand_over").withStyle(ChatFormatting.GRAY));
-				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.deconstruct_hint").withStyle(ChatFormatting.DARK_GRAY));
+				if (d.takeDown()) {
+					// B526: a canceled take-down's blueprint carries on taking the building down
+					tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.hand_over_deconstruct").withStyle(ChatFormatting.GRAY));
+				} else {
+					tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.hand_over").withStyle(ChatFormatting.GRAY));
+					tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.deconstruct_hint").withStyle(ChatFormatting.DARK_GRAY));
+				}
 			} else {
 				tooltip.add(Component.translatable("tooltip.aliveworkplace.blueprint.place_hint").withStyle(ChatFormatting.GRAY));
 			}

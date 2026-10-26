@@ -36,6 +36,20 @@ Trainer Leader sells the first one's blueprint (no Leader below Expert does).
 The hall's "What next?" suggests an Arena to a Cobblemon village of Village rank or more that has a grown-up Trainer
 Leader and no Arena yet (not before the 1.2 expansion is switched on).
 
+### Bouts between villagers (28.18)
+
+A bout between two village trainers is an exhibition at the ring. Each trainer stands in their box and sends out one
+Pokémon at a time beside the ring (real Pokémon, never catchable, removed if the game is saved with them out); the
+faster one moves first and they take turns. Damage follows a small formula (the theme's level, the move's power, attack
+against defence, the same-type bonus and type effectiveness), from `data/aliveworkplace/type_chart.json`: the games'
+18-type chart, every match-up as in the games since Fairy came in, and a Pokémon with two types takes both multipliers
+(Ice on Dragonite is 4x, Ground on Charizard nothing). A move the chart says can't touch the target does no damage; a
+Pokémon with no attacking move uses Struggle. A fainted Pokémon is called back and the next comes out, one on one even
+in a doubles Cup. A bout lasts 90 seconds at most, then the side with more of its team's health left wins, whichever
+box it stands in; a bout neither side can win by its moves (a Normal-moved Snorlax against a Ghost-moved Gengar) still
+ends at 90 seconds with a winner. Each bout is played from its own seed, so a bout saved halfway carries on exactly the
+same after a restart.
+
 ### The eight themes (28.22)
 
 Each Cup has a theme, in this order (the host's owner may pick another on the Cup page until sign-up closes). Every
@@ -158,4 +172,7 @@ Later additions:
 - QA (28.17): `QaCupGameTests` (sign-up opening a tick either side of the festival's end and who's told, the next Cup
   rolling over when the bouts end, sign-up from every circuit village but an eighth, the bracket's limits and one over,
   `festivalCup` off, the theme only until sign-up closes, the bracket line with 3 byes).
+- QA (28.18): `QaCupBoutGameTests` (all 324 match-ups of the chart against the games', two-type multipliers; on time the
+  side with more health wins from either box and never past 90 seconds; a bout nobody can hurt in ends on time; a
+  moveless Pokémon struggles).
 - Showcase scenes: `cup_page`, `cup_bout`, `cup_day`, `cup_match`, `cup_champions`, `cup_themes`.

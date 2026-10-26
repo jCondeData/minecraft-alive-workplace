@@ -192,12 +192,11 @@ public class QaWallGameTests implements FabricGameTest {
 			int hx = wall.points().stream().mapToInt(BlockPos::getX).max().orElseThrow();
 			int lz = wall.points().stream().mapToInt(BlockPos::getZ).min().orElseThrow();
 			int hz = wall.points().stream().mapToInt(BlockPos::getZ).max().orElseThrow();
-			// round the zones with room: at least 4 blocks out on every side, and exactly 4 on the west and north (the
-			// east and south are 5 out today: see the report of 2026-10-26, tests/wall-line-1026)
+			// round the zones with room: exactly 4 blocks out on every side (B510: the east and south were 5 out)
 			helper.assertTrue(minX - lx == 4 && minZ - lz == 4, "the line is " + (minX - lx) + " (west) and " + (minZ - lz)
 				+ " (north) blocks out from the zone, not 4: zone x " + minX + ".." + maxX + ", z " + minZ + ".." + maxZ + "; line " + wall.points());
-			helper.assertTrue(hx - maxX >= 4 && hz - maxZ >= 4, "the line is " + (hx - maxX) + " (east) and " + (hz - maxZ)
-				+ " (south) blocks out from the zone, under 4: zone x " + minX + ".." + maxX + ", z " + minZ + ".." + maxZ + "; line " + wall.points());
+			helper.assertTrue(hx - maxX == 4 && hz - maxZ == 4, "the line is " + (hx - maxX) + " (east) and " + (hz - maxZ)
+				+ " (south) blocks out from the zone, not 4: zone x " + minX + ".." + maxX + ", z " + minZ + ".." + maxZ + "; line " + wall.points());
 			// shown for approval, not built
 			helper.assertTrue(Walls.pieces(level, hall).isEmpty(), "the proposed wall has pieces to build before it's approved");
 			for (int i = 0; i < 3; i++) {

@@ -82,6 +82,7 @@ public class QaBuilderDisruptionGameTests implements FabricGameTest {
 	/** The same for any blueprint, its list plus EXTRA of each in the chest and the barrels beside it. */
 	static Run start(GameTestHelper helper, Block table, ResourceLocation id, BlockPos origin) {
 		Leftovers.clear(helper);
+		Leftovers.buildSites(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		int delay = level.getGameRules().getInt(ModGameRules.BUILD_DELAY);

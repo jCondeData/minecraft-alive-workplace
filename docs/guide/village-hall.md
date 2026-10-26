@@ -64,6 +64,15 @@ buttons: **Job ▾** changes their job (or gives a jobless villager one), **Bed 
 **Find** makes them glow so you can spot them. Click the row again (or press Esc) to close it. The bell, the figures
 and the Legends, Classes and Free job blocks pages sit in a row of pictures over the table.
 
+**Changing a job.** Job ▾ opens a list of every job under the villager's row. On top is what it costs, by their
+level (5 emeralds for a Novice up to 50 for a Master), and what they lose: their trades and level, so they start again
+as a Novice. Jobs with a free work block in the village come first and say how many ("Mason · 1 free Stonecutter");
+the others are gray and say which block to place first ("Mason · place a Stonecutter first"). Click a job once to see
+the price, and again to pay: the job and the block are theirs at once, and they walk over. A builder who was building
+hands the build back, and its blueprint comes back to you, still placed, for another builder. **No job** at the bottom
+is free: click it twice and they stop working. A villager with no job is given a free block for nothing, in one click.
+Children and nitwits can't change jobs, and with the game rule `workplaceRetraining` off the button isn't there.
+
 **Point at anything and the pane on the right tells you all about it.** Move the mouse on into the pane and it keeps
 reading the same thing, so you can scroll a long entry there with the mouse wheel without clicking it (or hold Shift
 and scroll over the row); a little arrow at the bottom shows there's more. A page you open from a section (the

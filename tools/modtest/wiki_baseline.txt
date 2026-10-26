@@ -22,7 +22,6 @@ B5 B6 B19
 26.2 26.2a 26.3
 
 # Milestone 27: the new workplaces
-27.13 27.14
 
 # Milestone 28: the design note, the Pokémon Center, builds for the Pokémon jobs, village habitats, village houses
 28.1 28.7 28.7a 28.13

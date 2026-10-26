@@ -53,6 +53,7 @@ public class QaMegaShrineCompatTests implements FabricGameTest {
 		VillageHalls.RADIUS = 16;
 		long time = level.getDayTime();
 		Festivals.forget();
+		MegaShrines.forgetShows(level); // B501: the shows held are saved; none yet for this test
 		level.setDayTime((Chronicle.day(level) - 1) * 24000L + Festivals.START + 100);
 		PartnerShowsCompatTests.after(helper, () -> {
 			for (BlueprintData.Placement p : placements) {
@@ -61,6 +62,7 @@ public class QaMegaShrineCompatTests implements FabricGameTest {
 			VillageHalls.RADIUS = radius;
 			MegaBracelets.ENABLED = true;
 			Festivals.forget();
+			MegaShrines.forgetShows(level);
 			level.setDayTime(time);
 			for (Villager v : level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(20))) {
 				v.discard();
@@ -222,7 +224,7 @@ public class QaMegaShrineCompatTests implements FabricGameTest {
 		PartnerShowsCompatTests.after(helper, () -> {
 			VillageNeeds.CHECK_EVERY = every;
 			Festivals.ENABLED = festivals;
-			MegaShrines.forget();
+			MegaShrines.forgetShows(level);
 		});
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos hall = helper.absolutePos(HALL);

@@ -376,7 +376,7 @@ public final class PokemonProfessor {
 			player.drop(bought, false);
 		}
 		level.playSound(null, professor.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
-		return Component.translatable("message.aliveworkplace.professor.stone_bought", name, professor.getDisplayName()).withStyle(ChatFormatting.GREEN);
+		return io.github.jcondedata.aliveworkplace.work.Words.articled("message.aliveworkplace.professor.stone_bought", 0, name, professor.getDisplayName()).withStyle(ChatFormatting.GREEN);
 	}
 
 	private PokemonProfessor() {

@@ -299,8 +299,8 @@ public final class ClassesPage {
 			case ClassNeeds.DietNeed d -> Component.translatable(d.kind() == Diet.Kind.VARIED ? "class.aliveworkplace.need.diet_varied" : "class.aliveworkplace.need.diet_plain");
 			case ClassNeeds.Beauty b -> Component.translatable("class.aliveworkplace.need.beauty", b.points());
 			case ClassNeeds.Building b -> b.tier() > 1
-				? Component.translatable("class.aliveworkplace.need.building_tier", Blueprints.displayName(b.blueprint()), Component.translatable("enchantment.level." + b.tier()))
-				: Component.translatable("class.aliveworkplace.need.building", Blueprints.displayName(b.blueprint()));
+				? io.github.jcondedata.aliveworkplace.work.Words.articled("class.aliveworkplace.need.building_tier", 0, Blueprints.displayName(b.blueprint()), Component.translatable("enchantment.level." + b.tier()))
+				: io.github.jcondedata.aliveworkplace.work.Words.articled("class.aliveworkplace.need.building", 0, Blueprints.displayName(b.blueprint()));
 			case ClassNeeds.VillageRank r -> Component.translatable("class.aliveworkplace.need.village_rank", r.rank().title());
 			case ClassNeeds.Services s -> services(s);
 			case ClassNeeds.Luxury l -> luxuryName(l.id());
@@ -528,7 +528,7 @@ public final class ClassesPage {
 			case ClassNeeds.FedDays f -> Component.translatable("advice.aliveworkplace.rise.fed_days", f.days());
 			case ClassNeeds.DietNeed d -> Component.translatable("advice.aliveworkplace.rise.diet", io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS);
 			case ClassNeeds.Beauty b -> Component.translatable("advice.aliveworkplace.rise.beauty", b.points());
-			case ClassNeeds.Building b -> Component.translatable("advice.aliveworkplace.rise.building", Blueprints.displayName(b.blueprint()));
+			case ClassNeeds.Building b -> io.github.jcondedata.aliveworkplace.work.Words.articled("advice.aliveworkplace.rise.building", 0, Blueprints.displayName(b.blueprint()));
 			case ClassNeeds.VillageRank r -> Component.translatable("advice.aliveworkplace.rise.village_rank", r.rank().title());
 			case ClassNeeds.Services s -> Component.translatable("advice.aliveworkplace.rise.services");
 			case ClassNeeds.Luxury l -> Component.translatable("advice.aliveworkplace.rise.luxury", luxuryName(l.id()));

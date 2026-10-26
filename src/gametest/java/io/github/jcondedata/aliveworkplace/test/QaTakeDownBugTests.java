@@ -125,7 +125,7 @@ public class QaTakeDownBugTests {
 			done[0] = true;
 			QaStageSixGameTests.command(c, "/workplace cancel " + site.id());
 			String hut = Blueprints.displayName(TEST_HUT).getString();
-			helper.assertTrue(texts(c.seen()).contains("Canceled the build of " + hut + ". Its blueprint is still placed there: hand it back to carry on, or click the ground to move it."),
+			helper.assertTrue(texts(c.seen()).contains("Canceled the take-down of " + hut + ". Its blueprint is still placed there: hand it back to carry on taking it down, or click the ground to move it.") /* B526: a take-down's own line */,
 				"/workplace cancel said " + texts(c.seen()));
 			ItemStack back = ItemStack.EMPTY;
 			for (int i = 0; i < c.player().getInventory().getContainerSize(); i++) {

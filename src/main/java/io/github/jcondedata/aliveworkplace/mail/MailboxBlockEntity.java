@@ -5,11 +5,13 @@ import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import net.minecraft.server.level.ServerPlayer;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -17,9 +19,19 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-/** A player's mailbox: 27 slots of mail that arrived for them, and who it belongs to. */
-public class MailboxBlockEntity extends BaseContainerBlockEntity implements io.github.jcondedata.aliveworkplace.work.PrivateContainer {
+/**
+ * A player's mailbox: 27 slots of mail that arrived for them, and who it belongs to.
+ *
+ * <p>B525 (as B349 on the Shop Counter): the inbox is a {@link WorldlyContainer} that offers no slot on any side, so
+ * hoppers, droppers and other automation (vanilla's, and Fabric's item transfer that Create's funnels and chutes use,
+ * which honours the same sides) can neither pull someone's mail out nor push items in as mail. Mail only comes in
+ * through the post ({@link #receive}) and only leaves through the mailbox's screen, which only the owner, friends and
+ * operators open.
+ */
+public class MailboxBlockEntity extends BaseContainerBlockEntity
+	implements io.github.jcondedata.aliveworkplace.work.PrivateContainer, WorldlyContainer {
 	public static final int SIZE = 27;
+	private static final int[] NO_SLOTS = new int[0];
 
 	private NonNullList<ItemStack> items = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 	@Nullable
@@ -102,6 +114,21 @@ public class MailboxBlockEntity extends BaseContainerBlockEntity implements io.g
 	@Override
 	public int getContainerSize() {
 		return SIZE;
+	}
+
+	@Override
+	public int[] getSlotsForFace(Direction side) {
+		return NO_SLOTS;
+	}
+
+	@Override
+	public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
+		return false;
+	}
+
+	@Override
+	public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+		return false;
 	}
 
 	@Override

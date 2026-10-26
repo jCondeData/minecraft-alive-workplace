@@ -59,6 +59,8 @@ public class OldHousesGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 
 	private static Village village(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B530: a hall an earlier batch left nearby is nearer the far houses' corners than this one, so they're its village
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos a = helper.absolutePos(BlockPos.ZERO);
 		BoundingBox near = new BoundingBox(a.getX() - 40, level.getMinBuildHeight(), a.getZ() - 40, a.getX() + 70, level.getMaxBuildHeight(), a.getZ() + 70);

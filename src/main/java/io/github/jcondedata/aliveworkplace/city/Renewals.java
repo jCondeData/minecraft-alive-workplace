@@ -191,7 +191,7 @@ public final class Renewals {
 		long distance = p.numbers().isEmpty() ? 0 : p.numbers().get(0);
 		int eighth = p.numbers().size() < 2 ? 0 : (int) (long) p.numbers().get(1);
 		String[] directions = {"s", "sw", "w", "nw", "n", "ne", "e", "se"};
-		return Component.translatable("steward.aliveworkplace.renew.title", distance,
+		return io.github.jcondedata.aliveworkplace.work.Words.articled("steward.aliveworkplace.renew.title", 2, distance,
 			Component.translatable("screen.aliveworkplace.hall.dir." + directions[Math.floorMod(eighth, 8)]), Blueprints.displayName(p.blueprint()));
 	}
 
@@ -436,7 +436,7 @@ public final class Renewals {
 		StewardDesk.save(level, hall, state.withRenewals(new Book(active, StewardWishes.day(level)))
 			.withProposals(state.proposals().stream().filter(p -> p.id() != proposal.id()).toList()));
 		UNFIT.remove(house);
-		Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.plans_renew",
+		Chronicle.record(level, hall, Chronicle.Kind.PLANS, io.github.jcondedata.aliveworkplace.work.Words.articled("chronicle.aliveworkplace.plans_renew", 1,
 			steward.getDisplayName(), Blueprints.displayName(proposal.blueprint()), villager.getDisplayName()));
 		return busy ? StewardDesk.Outcome.QUEUED : StewardDesk.Outcome.STARTED;
 	}
@@ -528,7 +528,7 @@ public final class Renewals {
 		}
 		StewardDesk.save(level, hall, state.withRenewals(state.renewals().with(active)));
 		moveIn(level, renewal);
-		Chronicle.record(level, hall, Chronicle.Kind.BUILT, Component.translatable("chronicle.aliveworkplace.renewed",
+		Chronicle.record(level, hall, Chronicle.Kind.BUILT, io.github.jcondedata.aliveworkplace.work.Words.articled("chronicle.aliveworkplace.renewed", 1,
 			villager.getDisplayName(), Blueprints.displayName(renewal.blueprint())));
 	}
 

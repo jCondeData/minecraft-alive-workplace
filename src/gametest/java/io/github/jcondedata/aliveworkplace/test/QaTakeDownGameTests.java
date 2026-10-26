@@ -469,7 +469,7 @@ public class QaTakeDownGameTests {
 				}
 				Map<Item, Integer> carried = bag(villager);
 				QaStageSixGameTests.command(c, "/workplace cancel " + site.id());
-				helper.assertTrue(texts(c.seen()).contains("Canceled the build of " + hut + ". Its blueprint is still placed there: hand it back to carry on, or click the ground to move it."),
+				helper.assertTrue(texts(c.seen()).contains("Canceled the take-down of " + hut + ". Its blueprint is still placed there: hand it back to carry on taking it down, or click the ground to move it.") /* B526: a take-down's own line */,
 					"/workplace cancel said " + texts(c.seen()));
 				helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "the take-down is still on after the cancel");
 				helper.assertTrue(bag(villager).isEmpty(), "after the cancel the builder still carries " + bag(villager) + " (had " + carried + ")");

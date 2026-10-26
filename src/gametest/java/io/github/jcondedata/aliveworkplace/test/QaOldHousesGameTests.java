@@ -66,6 +66,8 @@ public class QaOldHousesGameTests implements FabricGameTest {
 	/** OldHousesGameTests' village, cleared up to the area's top (the size tests build 17 high). */
 	static Village village(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B530: a hall an earlier batch left nearby is nearer the far houses' corners than this one, so they're its village
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos a = helper.absolutePos(BlockPos.ZERO);
 		BoundingBox near = new BoundingBox(a.getX() - 40, level.getMinBuildHeight(), a.getZ() - 40, a.getX() + 70, level.getMaxBuildHeight(), a.getZ() + 70);
@@ -134,6 +136,19 @@ public class QaOldHousesGameTests implements FabricGameTest {
 	private static OldHouses.House at(GameTestHelper helper, List<OldHouses.House> houses, BlockPos at) {
 		BlockPos abs = helper.absolutePos(at);
 		return houses.stream().filter(h -> h.box().isInside(abs)).findFirst().orElse(null);
+	}
+
+	/** For a failure message: the zone and nearest hall of each corner of {@code house}'s box, the two things OUTSIDE_ZONE checks. */
+	static String why(Village v, OldHouses.House house) {
+		BoundingBox b = house.box();
+		CityPlan plan = v.entity().plan();
+		StringBuilder out = new StringBuilder(" (hall " + v.hall().toShortString() + "; corners:");
+		for (BlockPos c : List.of(new BlockPos(b.minX(), b.minY(), b.minZ()), new BlockPos(b.maxX(), b.minY(), b.minZ()),
+			new BlockPos(b.minX(), b.minY(), b.maxZ()), new BlockPos(b.maxX(), b.minY(), b.maxZ()))) {
+			out.append(' ').append(c.toShortString()).append(" zone ").append(plan.zoneAt(v.hall(), c).map(z -> z.name() + (z.renew() ? " renew" : "")).orElse("none"))
+				.append(" nearest hall ").append(io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(v.level(), c).map(BlockPos::toShortString).orElse("none")).append(';');
+		}
+		return out.append(')').toString();
 	}
 
 	private static BoundingBox box(GameTestHelper helper, BlockPos from, BlockPos to) {
@@ -271,7 +286,7 @@ public class QaOldHousesGameTests implements FabricGameTest {
 			OldHouses.House at2000 = at(helper, houses, a);
 			helper.assertTrue(at2000 != null && at2000.blocks() == OldHouses.MAX_BLOCKS, "the 2000-block house measured as " + at2000);
 			helper.assertTrue(at2000.box().equals(box(helper, a, a.offset(19, 9, 9))), "measured " + at2000.box());
-			helper.assertTrue(at2000.renewable(), "a 2000-block house counted as " + at2000.verdict());
+			helper.assertTrue(at2000.renewable(), "a 2000-block house counted as " + at2000.verdict() + why(v, at2000));
 			OldHouses.House at2001 = at(helper, houses, b);
 			helper.assertTrue(at2001 == null || at2001.verdict() == OldHouses.Verdict.TOO_BIG, "a 2001-block house counted as " + at2001);
 			helper.assertTrue(houses.size() == 1, "expected only the 2000-block house listed, found " + houses);

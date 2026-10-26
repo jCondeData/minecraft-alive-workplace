@@ -118,10 +118,10 @@ public final class StewardRules implements ResourceManagerReloadListener {
 		/** "Build a Stone House in a Homes zone", for explain and the Steward's line. */
 		public Component describe() {
 			return switch (kind) {
-				case BUILD -> Component.translatable("steward.aliveworkplace.effect.build", Blueprints.displayName(blueprint.orElseThrow()),
+				case BUILD -> io.github.jcondedata.aliveworkplace.work.Words.articled("steward.aliveworkplace.effect.build", 0, Blueprints.displayName(blueprint.orElseThrow()),
 					CityZones.get(zone.orElse("")).map(CityZones.Kind::title).orElse(Component.literal(zone.orElse(""))));
 				case UPGRADE -> blueprint.isPresent()
-					? Component.translatable("steward.aliveworkplace.effect.upgrade", Blueprints.displayName(blueprint.get()))
+					? io.github.jcondedata.aliveworkplace.work.Words.articled("steward.aliveworkplace.effect.upgrade", 0, Blueprints.displayName(blueprint.get()))
 					: Component.translatable(forClass ? "steward.aliveworkplace.effect.upgrade.class"
 						: addsBeds ? "steward.aliveworkplace.effect.upgrade.beds" : "steward.aliveworkplace.effect.upgrade.any");
 				case ASSIGN_JOBS -> Component.translatable("steward.aliveworkplace.effect.assign_jobs");

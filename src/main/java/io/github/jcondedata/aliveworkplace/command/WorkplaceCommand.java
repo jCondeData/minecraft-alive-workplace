@@ -546,7 +546,9 @@ public final class WorkplaceCommand {
 				return 1;
 			}
 			Builders.cancel(level, site);
-			source.sendSuccess(() -> Component.translatable("command.aliveworkplace.cancelled", Blueprints.displayName(site.structure())), false);
+			// B526: a take-down's line says it's a take-down (its blueprint carries on taking it down when handed back)
+			String line = site.isDeconstruction() ? "command.aliveworkplace.cancelled_deconstruct" : "command.aliveworkplace.cancelled";
+			source.sendSuccess(() -> Component.translatable(line, Blueprints.displayName(site.structure())), false);
 			return 1;
 		}
 		// A farmer's field has no site of its own: the id is the farmer's.

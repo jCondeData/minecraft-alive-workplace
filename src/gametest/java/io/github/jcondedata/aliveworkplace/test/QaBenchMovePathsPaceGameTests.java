@@ -432,7 +432,11 @@ public class QaBenchMovePathsPaceGameTests implements net.fabricmc.fabric.api.ga
 		Villager master = bench(helper, new BlockPos(26, 2, 2), hutMaterials());
 		master.setVillagerData(master.getVillagerData().setLevel(5));
 		helper.assertTrue(novice.getVillagerData().getLevel() == 1 && master.getVillagerData().getLevel() == 5, "setup: levels");
-		helper.assertTrue(Pace.factor(novice) == 1f && Pace.factor(master) == 1f, "setup: pace " + Pace.factor(novice) + " " + Pace.factor(master));
+		helper.assertTrue(Pace.factor(novice) == 1f && Pace.factor(master) == 1f, "setup: pace " + Pace.of(novice) + " / " + Pace.of(master));
+		// the level's share alone: 40 ticks for a Novice, 16 for a Master (each pace 1, checked above)
+		int noviceDelay = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(level, novice);
+		int masterDelay = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(level, master);
+		helper.assertTrue(noviceDelay == 40 && masterDelay == 16, "setup: delays " + noviceDelay + " / " + masterDelay);
 		BuildSite noviceSite = Builders.start(level, novice, null, TEST_HUT, placement(helper, new BlockPos(4, 2, 12)));
 		BuildSite masterSite = Builders.start(level, master, null, TEST_HUT, placement(helper, new BlockPos(20, 2, 12)));
 		BuildPlan novicePlan = noviceSite.plan(level);
@@ -503,6 +507,11 @@ public class QaBenchMovePathsPaceGameTests implements net.fabricmc.fabric.api.ga
 	static ServerLevel prepare(GameTestHelper helper, int delay) {
 		Leftovers.clear(helper);
 		Leftovers.players(helper);
+		// a Village Hall another batch left nearby gives these villagers a village (its mood, needs, edicts, research):
+		// their pace would change with it (0.86 in a full run)
+		Leftovers.halls(helper);
+		VillageHalls.forgetNearest();
+		io.github.jcondedata.aliveworkplace.people.Moods.forget();
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		int wasDelay = level.getGameRules().getInt(ModGameRules.BUILD_DELAY);

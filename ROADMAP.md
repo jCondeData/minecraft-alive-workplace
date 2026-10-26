@@ -2127,7 +2127,7 @@ MarketDays) and research/.
   Done when: GameTests check the page's cards (each condition's progress, the taken and Mythic lines) against staged
   villages; screenshots show a test Legend in a placeholder outfit (pixel-art skill) and the page at GUI scales 2 and
   4; showcase scene `legends_hall`.
-- [x] **29.5** (approved 2026-10-05) **Needs and strikes.** Each settled Legend's needs are checked once a day in the hall's round:
+- [x] **29.5** (approved 2026-10-05) (verified 2026-10-26: lane D QA on main 69ce114: QaLegendRecordGameTests [12: slots, record save, strikes once a day, 3 days' grace, partly met, switches, sentences; 29.3 waits on B504], QaReliefGameTests [7: reach at/past, hired swords, capital helped, one relief a raid, switch mid-raid, raid over before arrival, lines for 1 and 2 riders, reload], QaFeudGameTests [9: war button and vote line at 1/999/1000/1001 ticks [kills Feuds:604, RealmTab:225], who may feud whom, realm-wide feud, peace once, 7-day fade, war end, save]; planted bugs 9 of 9 caught; full build green 3692 + 689 on d16f984 before the last merge; wiki legends.md, feuds.md, realms.md checked and listed) **Needs and strikes.** Each settled Legend's needs are checked once a day in the hall's round:
   - **a home of their own**: their bed is in a finished building of tier III or higher (`Homes.at`), and nobody else's
     bed is in it but their spouse's (`Couples`);
   - **a liked luxury**: once every 7 days they take one item of their kind from a chest in their home, else the
@@ -4118,7 +4118,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
 
   Done when: a GameTest for each topic shows its effect at level 1 (and at level 2 where it has one); the Realm row
   shows all eight with what each needs; `langcheck.py` is clean.
-- [x] **33.17** (approved 2026-10-12) **Relief in a raid.** When a realm village is raided (our night raids, bandit raids, or a vanilla
+- [x] **33.17** (approved 2026-10-12) (verified 2026-10-26: lane D QA on main 69ce114: QaLegendRecordGameTests [12: slots, record save, strikes once a day, 3 days' grace, partly met, switches, sentences; 29.3 waits on B504], QaReliefGameTests [7: reach at/past, hired swords, capital helped, one relief a raid, switch mid-raid, raid over before arrival, lines for 1 and 2 riders, reload], QaFeudGameTests [9: war button and vote line at 1/999/1000/1001 ticks [kills Feuds:604, RealmTab:225], who may feud whom, realm-wide feud, peace once, 7-day fade, war end, save]; planted bugs 9 of 9 caught; full build green 3692 + 689 on d16f984 before the last merge; wiki legends.md, feuds.md, realms.md checked and listed) **Relief in a raid.** When a realm village is raided (our night raids, bandit raids, or a vanilla
   pillager raid at the village; M32's sieges call `Relief.call` too), the other members send help: the capital,
   wherever it is, and every other member within 1,024 blocks that has 2 guards or more. Each sends one rider for every
   3 guards it has (at least 1, at most 3; more with Levies), 6 riders at most in all, after a ride of a tick per 4
@@ -4158,7 +4158,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - GameTests (with a clock the test sets): three halls with known numbers come out in the right order with the right
     lines; a village left off isn't listed; a tie goes to the bigger village; a missed week is announced once;
   - showcase scene `leaderboard` (the chat).
-- [x] **33.20** (approved 2026-10-12) **Feuds, and war where PvP is on.** On the Pacts tab an owner can declare a **feud** on another
+- [x] **33.20** (approved 2026-10-12) (verified 2026-10-26: lane D QA on main 69ce114: QaLegendRecordGameTests [12: slots, record save, strikes once a day, 3 days' grace, partly met, switches, sentences; 29.3 waits on B504], QaReliefGameTests [7: reach at/past, hired swords, capital helped, one relief a raid, switch mid-raid, raid over before arrival, lines for 1 and 2 riders, reload], QaFeudGameTests [9: war button and vote line at 1/999/1000/1001 ticks [kills Feuds:604, RealmTab:225], who may feud whom, realm-wide feud, peace once, 7-day fade, war end, save]; planted bugs 9 of 9 caught; full build green 3692 + 689 on d16f984 before the last merge; wiki legends.md, feuds.md, realms.md checked and listed) **Feuds, and war where PvP is on.** On the Pacts tab an owner can declare a **feud** on another
   owner's village or realm: a letter tells them, pacts and routes between the two end, each side's board pays 25% less
   for the rival's goods and charges the rival's players 25% more, villagers grumble about the rivals (a chatter topic
   with three lines), and the chronicles note it. Either side can offer peace by letter, which the other accepts; a

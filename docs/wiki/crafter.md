@@ -30,7 +30,9 @@ of 1 Coal", not "Nobody here makes: Iron Bars", and the ore stays in the chest (
 The line names what the chest is short of, not some other way to make it: a Librarian with two leather where a
 bookshelf's books need three says "short of 1 Leather to make 1 Bookshelf", not "4 Rabbit Hide". It goes further down
 only when that uses something that's there (planks still to be sawn from the logs at hand read "short of 1 Oak Log")
-(B409).
+(B409). The same holds between two recipes for one thing: a Tinkerer with five raw iron and a coal for iron bars says
+"short of 1 Raw Iron", and with coal and no ore at all "short of 6 Raw Iron", never iron ore a player only gets with
+Silk Touch; gold and copper read the same (B489).
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -48,7 +50,8 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   kiln's with a furnace by it, for the Mason; the blast furnace's for the Tinkerer; CobbleFurnies' Furni Crafter's files
   for the Furnicrafter), `Crafting.CHAIN_DEPTH` (3) steps down, a repeated recipe merged into one step;
 - tries the whole count, then half, down to one, so a big order is made a bagful at a time (12 stacks of makings);
-- when nothing fits, notes the chain's raw materials short (`Crafting.lacking`, or the Furnicrafter's own; the Mason's
+- when nothing fits, notes the chain's raw materials short (`Crafting.lacking`: of several recipes for one thing, the
+  one closest to what's there, by `Crafting.shortRank`, never one that only unpacks a storage block, B489; or the Furnicrafter's own; the Mason's
   kiln and the Tinkerer's forge add their coal, from `Crafting.shortfall`'s fired steps (`CrafterWork.fuelShort`), and
   name it when the clay or ore is all there) for that
   build site and item in `JobShortages`; when it can make it, or another job has claimed it, notes it as covered;
@@ -132,8 +135,11 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   coal names the coal and takes nothing (B408).
 - `QaTinkererShortGameTests` (5, QA from B408): the line reads exactly "Can't be made yet: short of 1 Coal to make 3
   Iron Bars" the whole minute and never "Nobody here makes"; coal and no ore names the iron; neither names both; six raw
-  iron on one charcoal make the bars; with no Tinkerer it is "Nobody here makes: Iron Bars" and the ore stays. The ore it
-  names is Deepslate Iron Ore, not Raw Iron (B489).
+  iron on one charcoal make the bars; with no Tinkerer it is "Nobody here makes: Iron Bars" and the ore stays.
+- `QaTinkererShortBugGameTests` (4, B489): five raw iron and a coal read "short of 1 Raw Iron to make 3 Iron Bars",
+  coal alone "short of 6 Raw Iron", one raw gold for pressure plates "short of 5 Raw Gold", all taking nothing; read
+  off the forge's recipes, five raw copper for a copper block lack 4 raw copper, nine nuggets from nothing 1 raw iron,
+  and a raw iron block is unpacked rather than named.
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the

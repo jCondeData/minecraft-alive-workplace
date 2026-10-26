@@ -403,6 +403,15 @@ public final class Crafting {
 				return true;
 			}
 		}
+		// Planning what's short (B489, the B409 rule across recipes): not the first recipe that can be noted as short, but
+		// the one closest to what's there (raw iron fired into ingots when the chest holds raw iron, not the iron ore no
+		// one has); a recipe that only unpacks a storage block is no way to say what's short (raw iron from its block).
+		boolean lenient = pool.budget.lenient;
+		Pool best = null;
+		List<Step> bestSteps = null;
+		Step bestStep = null;
+		long bestMade = 0;
+		int bestRank = -1;
 		for (RecipeHolder<?> holder : recipesFor(level, kind, target)) {
 			Recipe<?> recipe = holder.value();
 			if (!pool.budget.types.test(recipe.getType())) {
@@ -412,7 +421,13 @@ public final class Crafting {
 			if (out.isEmpty() || !out.is(target) || !out.getComponentsPatch().isEmpty()) {
 				continue;
 			}
+			if (lenient && unpacks(level, kind, recipe, target)) {
+				continue;
+			}
 			if (!pool.budget.tryOne()) {
+				if (best != null) {
+					break;
+				}
 				return false; // tried enough for one plan (B101)
 			}
 			int times = Math.min(MAX_CRAFTS, (count + out.getCount() - 1) / out.getCount());
@@ -423,16 +438,100 @@ public final class Crafting {
 			if (in == null) {
 				continue;
 			}
-			pool.set(trial);
-			steps.addAll(trialSteps);
-			steps.add(new Step(in, out.copy(), times));
-			pool.addMade(target, (long) out.getCount() * times);
+			Step step = new Step(in, out.copy(), times);
+			if (!lenient) {
+				pool.set(trial);
+				steps.addAll(trialSteps);
+				steps.add(step);
+				pool.addMade(target, (long) out.getCount() * times);
+				return true;
+			}
+			int rank = shortRank(pool, trial);
+			if (rank > bestRank) {
+				best = trial;
+				bestSteps = trialSteps;
+				bestStep = step;
+				bestMade = (long) out.getCount() * times;
+				bestRank = rank;
+			}
+			if (rank == RANK_ALL_THERE) {
+				break;
+			}
+		}
+		if (best != null) {
+			pool.set(best);
+			steps.addAll(bestSteps);
+			steps.add(bestStep);
+			pool.addMade(target, bestMade);
 			return true;
 		}
 		if (kind == Kind.CRAFTER && !CrafterBenches.all().isEmpty()) {
 			return makeAtBench(level, kind, target, count, pool, steps, depth, allowed);
 		}
 		return false;
+	}
+
+	/** {@link #shortRank}: nothing short at all. */
+	private static final int RANK_ALL_THERE = 3;
+
+	/**
+	 * How well a recipe tried while planning what's short ({@code trial}, on top of {@code pool}) fits what's there:
+	 * {@link #RANK_ALL_THERE} if nothing's short; 2 if it uses something the chests hold (five raw iron of six); 1 if
+	 * what's short are items, not blocks (raw iron, not the ore a player only gets with Silk Touch); else 0.
+	 */
+	private static int shortRank(Pool pool, Pool trial) {
+		if (trial.lacks.values().stream().noneMatch(n -> n > 0)) {
+			return RANK_ALL_THERE;
+		}
+		if (trial.takes.keySet().stream().anyMatch(item -> pool.chest(item) > 0)) {
+			return 2;
+		}
+		boolean blocks = trial.lacks.entrySet().stream()
+			.anyMatch(e -> e.getValue() > 0 && e.getKey() instanceof net.minecraft.world.item.BlockItem);
+		return blocks ? 0 : 1;
+	}
+
+	/**
+	 * Whether {@code recipe} only unpacks a storage form of {@code target}: all its ingredients are one item that every
+	 * recipe of {@code kind} for it packs from {@code target} alone (raw iron from a raw iron block, ingots from a block
+	 * or nuggets; not nuggets from ingots, which are fired from raw iron too).
+	 */
+	private static boolean unpacks(ServerLevel level, Kind kind, Recipe<?> recipe, Item target) {
+		Item from = null;
+		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
+			if (ingredient.isEmpty()) {
+				continue;
+			}
+			List<Item> options = options(level, ingredient);
+			if (options.size() != 1 || (from != null && from != options.get(0))) {
+				return false;
+			}
+			from = options.get(0);
+		}
+		if (from == null || from == target) {
+			return false;
+		}
+		List<RecipeHolder<?>> packs = recipesFor(level, kind, from);
+		if (packs.isEmpty()) {
+			return false;
+		}
+		for (RecipeHolder<?> holder : packs) {
+			boolean any = false;
+			for (Ingredient ingredient : Recipes.ingredients(holder.value())) {
+				if (ingredient.isEmpty()) {
+					continue;
+				}
+				any = true;
+				List<Item> options = options(level, ingredient);
+				if (options.size() != 1 || options.get(0) != target) {
+					return false; // made some other way too (ingots, fired from raw iron, are no mere storage of nuggets)
+				}
+			}
+			if (!any) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

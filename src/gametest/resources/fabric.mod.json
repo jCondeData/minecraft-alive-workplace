@@ -615,7 +615,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaAnsweringHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignpostGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTableJobsGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaNewWorkplacesGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaNewWorkplacesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTinkererShortBugGameTests"
 		]
 	},
 	"depends": {

@@ -54,7 +54,7 @@ public class QaRefusedThreatsGameTests implements FabricGameTest {
 	private static final long DAY = 24000;
 
 	/** A hall (village radius 16) with four villagers while the world refuses every hostile mob; all undone at the end. */
-	private static BlockPos village(GameTestHelper helper, int radius) {
+	static BlockPos village(GameTestHelper helper, int radius) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();

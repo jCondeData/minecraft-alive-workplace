@@ -196,7 +196,7 @@ public class MechanicWork extends Behavior<Villager> {
 				if (!level.isLoaded(world)) {
 					continue;
 				}
-				BlockState state = MaterialRules.forPlacement(entry.state().mirror(placement.mirror()).rotate(placement.rotation()));
+				BlockState state = MaterialRules.forPlacement(MaterialRules.transformed(entry.state(), placement.mirror(), placement.rotation()));
 				BlockState there = level.getBlockState(world);
 				if (!there.canBeReplaced() || MaterialRules.matches(there, state)) {
 					continue; // in place, or something else stands there now (a player's): not a hole to fill

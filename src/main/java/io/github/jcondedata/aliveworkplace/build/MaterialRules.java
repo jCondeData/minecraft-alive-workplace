@@ -293,6 +293,22 @@ public final class MaterialRules {
 		ModdedBlocks.afterPlaced(level, pos, state);
 	}
 
+	/**
+	 * A blueprint state turned and flipped as its placement says. Like {@code state.mirror(mirror).rotate(rotation)},
+	 * except that a double chest half swaps left and right when mirrored (B438): vanilla's chest only turns its facing, so
+	 * a mirrored double chest's halves pointed away from each other and came out as two single chests. A mirror always
+	 * flips handedness, whichever way the chest faces.
+	 */
+	public static BlockState transformed(BlockState state, net.minecraft.world.level.block.Mirror mirror,
+										 net.minecraft.world.level.block.Rotation rotation) {
+		BlockState out = state.mirror(mirror);
+		if (mirror != net.minecraft.world.level.block.Mirror.NONE && out.getBlock() instanceof net.minecraft.world.level.block.ChestBlock
+			&& out.hasProperty(net.minecraft.world.level.block.ChestBlock.TYPE)) {
+			out = out.setValue(net.minecraft.world.level.block.ChestBlock.TYPE, out.getValue(net.minecraft.world.level.block.ChestBlock.TYPE).getOpposite());
+		}
+		return out.rotate(rotation);
+	}
+
 	/** Adjust a blueprint state before placing it: no free water, no decaying leaves. */
 	public static BlockState forPlacement(BlockState state) {
 		if (state.hasProperty(BlockStateProperties.WATERLOGGED)) {
@@ -357,7 +373,7 @@ public final class MaterialRules {
 		}
 		for (Property<?> property : wanted.getProperties()) {
 			if (VOLATILE_PROPERTY_NAMES.contains(property.getName()) || property == BlockStateProperties.CHEST_TYPE || CONTENT_PROPERTIES.contains(property)
-				|| connected(wanted, property)) {
+				|| connected(wanted, property) || property == net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING && facingFree(wanted.getBlock())) {
 				continue;
 			}
 			if (!actual.hasProperty(property)) {
@@ -368,6 +384,18 @@ public final class MaterialRules {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * B448: the mod's own facing blocks that hold data (Village Hall, Storehouse, Mailbox, Shop Counter, Grave) only turn
+	 * with a turned build since this fix; one built turned before it faces as the blueprint was drawn. It is still the block
+	 * that was built: a builder never breaks it (it holds the hall's records, mail, a shop's list, a grave's items), so a
+	 * different facing counts as standing, in a finished build (repairs, upgrades, Wonders) and in one still going up.
+	 */
+	private static boolean facingFree(Block block) {
+		return block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL || block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE
+			|| block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.MAILBOX || block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.SHOP_COUNTER
+			|| block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.GRAVE;
 	}
 
 	/** Whether {@code property} of {@code state} is one its mod's piece takes from its neighbours ({@link #CONNECTED_BY_MOD}). */

@@ -6409,7 +6409,7 @@
   "chronicle.aliveworkplace.disaster.foretold": "%1$s foretold %2$s.",
   "chronicle.aliveworkplace.disaster.end": "%s is over.",
   "mood.aliveworkplace.reason.disaster": "%s in the village",
-  "pace.aliveworkplace.source.disaster": "A disaster in the village",
+  "pace.aliveworkplace.source.disaster": "a disaster in the village",
   "screen.aliveworkplace.hall.disaster": "%1$s (days left: %2$s)",
   "screen.aliveworkplace.hall.disaster_rain": "%s, until it rains",
   "screen.aliveworkplace.hall.disaster_foretold": "%1$s foretold (days until it strikes: %2$s)",

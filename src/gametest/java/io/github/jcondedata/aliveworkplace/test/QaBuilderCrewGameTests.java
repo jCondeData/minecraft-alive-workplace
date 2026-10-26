@@ -400,8 +400,8 @@ public class QaBuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.
 	 * beside the lead's inside the area: put above the area's 8 blocks (never cleared between batches) the whole crew
 	 * died there in the full suite.
 	 */
-	//$ gametest_ticks_batch AREA '4000' '"qaCrewBusy"'
-	@GameTest(template = AREA, timeoutTicks = 4000, batch = "qaCrewBusy")
+	//$ gametest_ticks_batch AREA '4000' '"qaBuilderCrewBusy"'
+	@GameTest(template = AREA, timeoutTicks = 4000, batch = "qaBuilderCrewBusy")
 	public void aBuilderWithItsOwnBuildDoesNotHelp(GameTestHelper helper) {
 		prepare(helper);
 		ServerLevel level = helper.getLevel();

@@ -638,4 +638,36 @@ public class LadderGameTests implements FabricGameTest {
 	/** Keeps the ground east of the ring live for {@link #aSiegeGathersOutsideTheRingOfWalls} (B176); it lapses by itself after 1500 ticks. */
 	private static final net.minecraft.server.level.TicketType<net.minecraft.world.level.ChunkPos> RING_TICKET = net.minecraft.server.level.TicketType.create(
 		"aliveworkplace_test_ring", java.util.Comparator.comparingLong(net.minecraft.world.level.ChunkPos::toLong), 1500);
+
+	/**
+	 * QA (lane D, 2026-10-26): short grass, as on any plains village's ground, along the whole outer foot of the wall
+	 * (on grass blocks): the climber still ladders over within 600 ticks; the grass his ladder stands in may go, nothing
+	 * else changes. Kin of B553 (dead bushes at a desert wall's foot stop the sand ramp).
+	 */
+	//$ gametest_ticks_batch AREA '700' '"qaLadderInGrass"'
+	@GameTest(template = AREA, timeoutTicks = 700, batch = "qaLadderInGrass")
+	public void aLadderGoesUpThroughShortGrassAtTheWallsFoot(GameTestHelper helper) {
+		Yard yard = yard(helper);
+		ServerLevel level = yard.level();
+		for (int x = WEST + 1; x < EAST; x++) {
+			helper.setBlock(new BlockPos(x, 1, FRONT + 1), Blocks.GRASS_BLOCK);
+			helper.setBlock(new BlockPos(x, 2, FRONT + 1), Blocks.SHORT_GRASS);
+		}
+		Map<BlockPos, BlockState> before = blocks(helper);
+		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 21.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
+		yard.siege(helper);
+		int[] most = {0};
+		helper.onEachTick(() -> {
+			most[0] = Math.max(most[0], Ladders.rungs(level, yard.hall()).size());
+			if (inside(helper, climber)) {
+				List<String> changed = changes(helper, before);
+				changed.removeIf(c -> c.contains("-> Block{minecraft:ladder}") || c.contains("Block{minecraft:short_grass} -> Block{minecraft:air}"));
+				helper.assertTrue(changed.isEmpty(), "something other than ladders and grass changed: " + changed);
+				helper.succeed();
+			} else if (helper.getTick() > 600) {
+				helper.fail("not over the wall within 600 ticks with grass at its foot: the climber is at " + climber.position() + ", most rungs " + most[0]);
+			}
+		});
+	}
 }

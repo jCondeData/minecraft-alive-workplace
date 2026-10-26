@@ -53,7 +53,7 @@ reach everyone in the village. The 15% goes through the one pace rule, so it sha
 **Who has no guild.** The Bard has none, and without Cobblemon neither do
 the Trainers' Guild's trades: their charter is refused with "There is no guild for ...'s trade."
 
-**"A quarter less" rounds up.** Research and a traveller's hire cost a quarter less, rounded up: 1 stays 1, 4 is 3,
+**"A quarter less" rounds up.** Research and a traveler's hire cost a quarter less, rounded up: 1 stays 1, 4 is 3,
 5 is 4, 16 is 12.
 
 **Succession.** When the Guild Master dies, the most experienced member takes over and the village is told. With no

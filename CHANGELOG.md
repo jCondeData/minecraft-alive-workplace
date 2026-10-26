@@ -16,6 +16,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+- Text: every sentence a player reads is now in American English: Smith's Draught is now Smith's Draft, the den-helpers and bean-farm settings say Defense and color, and the questbook, guide and wiki say gray, armor, Jeweler, canceled, traveler, leveled, curb and story (a floor). Item and block ids, saved data and lang keys are unchanged, so worlds and data packs keep working.
+
 ### Fixed
 - Builder: a block the builder had already laid that is broken mid-build (by a player, a mob or an explosion) is now put back before the build is called finished; before, the build ended at 100% with the hole still there and, with Ask Before Repairs on, asked you whether to repair a building it had just reported done. If the block keeps getting broken, the builder goes back for it twice and then counts it as skipped (B508).
 

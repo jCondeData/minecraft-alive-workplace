@@ -410,7 +410,7 @@ public class TonicGameTests implements FabricGameTest {
 	 * The pace's numbers alone: no hall another batch left nearby (its village's pace) and no mood (its own pace comes and
 	 * goes); put back after. Only for tests alone in their batch.
 	 */
-	/** A Cleric with the makings of one Smith's Draught in the chest by their station makes it from them (30.16). */
+	/** A Cleric with the makings of one Smith's Draft in the chest by their station makes it from them (30.16). */
 	//$ gametest_ticks_batch AREA '3000' '"tonicSmithMade"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "tonicSmithMade")
 	public void theClericBrewsSmithsDraught(GameTestHelper helper) {
@@ -427,13 +427,13 @@ public class TonicGameTests implements FabricGameTest {
 		Villager maker = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Jobs.employ(helper.getLevel(), maker, helper.absolutePos(stand), PoiTypes.CLERIC, VillagerProfession.CLERIC);
 		helper.succeedWhen(() -> {
-			helper.assertTrue(chest.countItem(ModItems.SMITHS_DRAUGHT) == 1, "Smith's Draught in the chest: " + contents(chest));
+			helper.assertTrue(chest.countItem(ModItems.SMITHS_DRAUGHT) == 1, "Smith's Draft in the chest: " + contents(chest));
 			helper.assertTrue(chest.countItem(Items.GLASS_BOTTLE) == 0 && chest.countItem(Items.BLAZE_POWDER) == 0 && chest.countItem(Items.IRON_NUGGET) == 0, "the makings left: " + contents(chest));
 		});
 	}
 
 	/**
-	 * Smith's Draught (30.16): a Toolsmith drinks it from a right-click and works 25% faster for a day; a Cleric has no use
+	 * Smith's Draft (30.16): a Toolsmith drinks it from a right-click and works 25% faster for a day; a Cleric has no use
 	 * for it and the player keeps it.
 	 */
 	//$ gametest_ticks_batch AREA '100' '"tonicSmith"'
@@ -447,7 +447,7 @@ public class TonicGameTests implements FabricGameTest {
 		helper.runAfterDelay(5, () -> {
 			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.SMITHS_DRAUGHT));
 			Tonics.Offer refused = Tonics.offer(player, other, player.getMainHandItem());
-			helper.assertTrue(refused.outcome() == Tonics.Outcome.REFUSED && refused.message().getString().equals("Ash has no use for Smith's Draught."),
+			helper.assertTrue(refused.outcome() == Tonics.Outcome.REFUSED && refused.message().getString().equals("Ash has no use for Smith's Draft."),
 				"refused: " + refused.outcome() + " " + (refused.message() == null ? null : refused.message().getString()));
 			helper.assertTrue(rightClick(player, other) == InteractionResult.SUCCESS && player.getMainHandItem().getCount() == 1
 				&& !ModAttachments.TONIC.has(other) && part(other) == 1f, "the Cleric drank it");
@@ -458,7 +458,7 @@ public class TonicGameTests implements FabricGameTest {
 				&& drunk.until() == helper.getLevel().getGameTime() + 24000, "drunk: " + drunk);
 			helper.assertTrue(Math.abs(Pace.factor(suited) - 1f / 1.25f) < EPSILON && Pace.of(suited).percent() == 25, "pace: " + Pace.of(suited));
 			String status = Pace.describe(suited).getString();
-			helper.assertTrue(status.equals("25% faster (Smith's Draught, 20 min left)"), "status: " + status);
+			helper.assertTrue(status.equals("25% faster (Smith's Draft, 20 min left)"), "status: " + status);
 			helper.succeed();
 		});
 	}
@@ -637,7 +637,7 @@ public class TonicGameTests implements FabricGameTest {
 			"Cooked by a Chef from Glass Bottle, Apple, Wheat and Sugar"));
 		want.put("woodsmans_broth", List.of("For Lumberjacks, Fletchers, Fishermen, Porters and Postmen",
 			"Cooked by a Chef from Bowl, Cooked Salmon, Carrot and Brown Mushroom"));
-		Map<String, String> names = Map.of("smiths_draught", "Smith's Draught", "scholars_infusion", "Scholar's Infusion",
+		Map<String, String> names = Map.of("smiths_draught", "Smith's Draft", "scholars_infusion", "Scholar's Infusion",
 			"harvest_cordial", "Harvest Cordial", "woodsmans_broth", "Woodsman's Broth");
 		want.forEach((id, lines) -> {
 			Tonics.Tonic tonic = Tonics.get(AliveWorkplace.id(id)).orElseThrow();

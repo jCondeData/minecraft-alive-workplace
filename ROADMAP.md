@@ -5148,7 +5148,7 @@ Depends on: nothing open.
   builder handing back the build, the rule off, save and reload; text in `en_us.json`; guide (village-hall.md, jobs.md)
   and wiki; scene `hall_retrain`.
 
-- [ ] **36.19** (owner, 2026-10-26) **American English everywhere a player reads.** The owner wants American spelling:
+- [x] **36.19** (owner, 2026-10-26) (approved auto 2026-10-26) **American English everywhere a player reads.** The owner wants American spelling:
   "Defense", not "Defence". Change every player-facing sentence in `en_us.json`, the questbook, sign and book text,
   blueprint and build names shown to players, the player guide and the wiki: defence → defense, jeweller → jeweler,
   honour → honor, colour → color, armour → armor, neighbour → neighbor, cancelled → canceled, grey → gray, centre →

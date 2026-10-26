@@ -182,4 +182,10 @@ worked out from the finished buildings already saved.
   `BuilderGameTests.buildsTownhouseII`, `BuilderGameTests.buildsTownhouseIII`, `BuilderGameTests.buildsManor`,
   `BuilderGameTests.buildsManorII`, `BuilderGameTests.buildsManorIII` (in the huge area): a builder builds each tier from bare
   ground with exactly the materials it needs.
+- QA (2026-10-26): `QaGranderHomesGameTests.badHomeFilesAreSkippedAndTheGoodOneStillLoads`,
+  `QaGranderHomesGameTests.upgradesAddOneUpToIIIAndATierAboveIIIKeepsIt`,
+  `QaGranderHomesGameTests.aCoupleWantsAGranderHomeWhileEitherBedIsInALowerOne`,
+  `QaGranderHomesGameTests.noMoreThanThreeHouseholdsGetATip`, `QaGranderHomesGameTests.theTipReadsRightForEveryClassAndCount`,
+  `QaGranderHomesGameTests.openingABuildersTradesAddsTheGranderHomesOnce`,
+  `QaGranderHomesGameTests.onlyTheNearestHallsVillageBringsTheTownhouse`.
 - Showcase scenes: `grand_houses`.

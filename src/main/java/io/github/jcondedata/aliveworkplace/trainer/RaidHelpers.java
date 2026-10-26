@@ -96,6 +96,8 @@ public final class RaidHelpers {
 	public static final long STAY = 24000;
 	/** The helpers' Pokémon strike this often. */
 	public static final int STRIKE_EVERY = 100;
+	/** The helpers look for the player's raid this often. */
+	static final int LOOK_EVERY = 20;
 	/** What one helper's strike takes off a boss of their own rank's tier, as a share of its full health. */
 	public static final float BASE = 0.006f;
 	/** Helpers never bring the boss below this share of its health. */
@@ -214,13 +216,19 @@ public final class RaidHelpers {
 		}
 		String path = stat.getPath();
 		if ((path.equals(JOINED) || path.equals(HOSTED)) && (nearDen(player, level, hire) || level.getGameTime() - hire.lastNear <= RECENT)) {
-			joined(level, hire, player, null);
+			// B476: Raid Dens awards this as the player enters, so the raid is usually running already; keep its id, or the
+			// helpers never strike its boss nor see it end (their own look below keeps trying when it isn't found yet).
+			joined(level, hire, player, raidOf(player).map(RaidAssist.Raid::id).orElse(null));
 		} else if (path.endsWith("_completed") && hire.joined) {
 			int tier = RaidDens.TIERS.indexOf(path.substring(0, path.length() - "_completed".length())) + 1;
 			if (tier > 0) {
 				won(level, hire);
 			}
 		}
+	}
+
+	private static Optional<RaidAssist.Raid> raidOf(ServerPlayer player) {
+		return RaidAssist.EXTENSION.call(a -> a.raidOf(player), Optional.<RaidAssist.Raid>empty());
 	}
 
 	private static ServerLevel levelOf(MinecraftServer server, Hire hire) {
@@ -387,8 +395,13 @@ public final class RaidHelpers {
 		if (player != null && nearDen(player, level, hire)) {
 			hire.lastNear = now;
 		}
-		if (!hire.joined && player != null && now % 20 == 0 && now - hire.lastNear <= RECENT) {
-			Optional<RaidAssist.Raid> raid = RaidAssist.EXTENSION.call(a -> a.raidOf(player), Optional.<RaidAssist.Raid>empty());
+		// The helpers look for the player's raid once a second: before the join (by the den, or a minute after), and after a
+		// join by the statistic that found no raid yet. B476: timed by the hiring's own clock, since this look runs only
+		// every fifth server tick and a gameTime % 20 test then never fires in a world whose two counters are out of step.
+		boolean looking = hire.joined ? hire.raid == null : now - hire.lastNear <= RECENT;
+		if (looking && player != null && now >= hire.nextLook) {
+			hire.nextLook = now + LOOK_EVERY;
+			Optional<RaidAssist.Raid> raid = raidOf(player);
 			if (raid.isPresent()) {
 				joined(level, hire, player, raid.get().id());
 			}
@@ -552,6 +565,8 @@ public final class RaidHelpers {
 		public UUID raid;
 		public long lastNear = Long.MIN_VALUE / 2;
 		public long nextStrike;
+		/** When the helpers next look for the player's raid (not saved: after a restart they look at once). */
+		public long nextLook;
 		public float dealt;
 
 		Hire(UUID player, BlockPos hall, BlockPos den, int tier, String type, long until) {

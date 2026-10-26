@@ -20,6 +20,7 @@ deps.fabric_api = "0.116.17+1.21.1"
 # Modrinth version ids, not version numbers (numbers collide across loaders).
 deps.compat.cobblemon = "maven.modrinth:cobblemon:kF7CvxTo"          # Cobblemon 1.7.3
 deps.compat.cobbledollars = "maven.modrinth:cobbledollars:cqsHXSXe"  # CobbleDollars 2.0.0 Beta-5.1
+deps.compat.waystones = "maven.modrinth:waystones:Ub2AL65v"        # Waystones 21.1.37 (the pack's; ROADMAP 41.1)
 deps.compat.modmenu = "maven.modrinth:modmenu:6lgOkclV"              # Mod Menu 11.0.5 (the config screen's button)
 # Cobblemon is Kotlin: its API mentions kotlin.* types.
 deps.compat_compile.cobblemon = "org.jetbrains.kotlin:kotlin-stdlib:2.1.21"
@@ -61,6 +62,9 @@ tests.compat_mods = [
     "maven.modrinth:GebWh45l:Lecb595b",         # Cobblemon Raid Dens 0.11.3 (raid dens near villages)
     "maven.modrinth:8BmcQJ2H:dnJdtm0u",         # GeckoLib 4.9.2 (for Raid Dens)
     "maven.modrinth:dlx62Wp3:KQwSroDP",         # Cobblecuisine 2.0.1 (the Chef's dishes, bean farms)
+    # Milestone 41 (Waystones), the pack's version
+    "maven.modrinth:waystones:Ub2AL65v",        # Waystones 21.1.37 (village waystones, 41.1)
+    "maven.modrinth:MBAkmtvl:R6U3hZRZ",         # Balm 21.0.63 (for Waystones)
 ]
 # Local mod jars (files in the repo, not on a maven) the compat suite runs with. They go into the run's mods/ folder,
 # where Fabric Loader treats them as in a real install (build.gradle.kts, localModsInto), without their own GameTests.
@@ -88,6 +92,7 @@ tests.screenshot_cobblemon = ["maven.modrinth:cobblemon:kF7CvxTo", "maven.modrin
 tests.screenshot_perf = ["maven.modrinth:AANobbMI:KIRFiWG4", "maven.modrinth:gvQqBUqZ:N08Z8wog", "maven.modrinth:VSNURh3q:h8ey5B7D", "maven.modrinth:uXXizFIs:sOzRw3CG", "maven.modrinth:nmDcB62a:NnNX8LBn", "maven.modrinth:NNAgCjsB:hsWvcyFJ", "maven.modrinth:5ZwdcRci:ATB4eNEP", "maven.modrinth:fQEb0iXm:Acz3ttTp", "maven.modrinth:Ps1zyz6x:Yx1tgJMI"]
 # -Pcreate=true (CREATE=true, a scene's create=True in tools/showcase/scenes.py): the owner's Create port too (M39).
 tests.screenshot_create = ["libs/create-fabric-6.0.10.0+mc1.21.1.jar"]
+tests.screenshot_waystones = ["maven.modrinth:waystones:Ub2AL65v", "maven.modrinth:MBAkmtvl:R6U3hZRZ"]
 tests.screenshot_mega = ["maven.modrinth:SszvX85I:Y6di9Ram", "maven.modrinth:jtmvUHXj:Xlt4eWBe", "maven.modrinth:ccKDOlHs:JB1fLQnc", "maven.modrinth:lhGA9TYQ:Wto0RchG"]
 # The pack's furniture mods for -Pfurniture=true (ROADMAP 37.4, scene furnished_home): Handcrafted with Resourceful Lib,
 # Beautify with Cloth Config, CobbleFurnies with Architectury and Athena (CobbleFurnies also needs Cobblemon, -Pcobblemon),

@@ -19,6 +19,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -519,5 +520,32 @@ public class HallPeopleJobGameTests {
 				"the article");
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * B535: every block the list can name has a plural, so "Mason · 2 free Stonecutters" (and every other job's line)
+	 * reads right for two or more free blocks, whatever jobs are on the list in this run.
+	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:build_area"' '100' '"hallJobPlurals"'
+	@GameTest(template = "aliveworkplace_test:build_area", timeoutTicks = 100, batch = "hallJobPlurals")
+	public void everyListedBlockHasAPlural(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Villager pip = helper.spawn(EntityType.VILLAGER, new BlockPos(2, 2, 2));
+		pip.setNoAi(true);
+		List<String> missing = new ArrayList<>();
+		List<HallJobs.Option> options = HallJobs.options(helper.getLevel(), helper.absolutePos(new BlockPos(1, 2, 1)), pip);
+		for (HallJobs.Option option : options) {
+			ItemStack two = new ItemStack(option.block().asItem());
+			String one = Words.itemName(option.block().asItem(), 1).getString();
+			String many = Words.itemName(option.block().asItem(), 2).getString();
+			if (two.isEmpty() || many.equals(one)) {
+				missing.add(BuiltInRegistries.BLOCK.getKey(option.block()) + " (" + one + ")");
+			}
+		}
+		helper.assertTrue(options.size() >= 13, "only " + options.size() + " jobs on the list");
+		helper.assertTrue(missing.isEmpty(), "no plural for " + missing);
+		helper.assertTrue(Words.itemName(Items.STONECUTTER, 2).getString().equals("Stonecutters"), "Stonecutters");
+		pip.discard();
+		helper.succeed();
 	}
 }

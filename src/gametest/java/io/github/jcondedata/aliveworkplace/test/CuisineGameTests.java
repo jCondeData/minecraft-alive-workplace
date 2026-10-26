@@ -120,7 +120,7 @@ public class CuisineGameTests implements FabricGameTest {
 		String name = JewellerGameTests.english(net.minecraft.network.chat.Component.translatable("aliveworkplace.config.beanFarms"));
 		helper.assertTrue(name.equals("Bean Farms"), name);
 		String tip = JewellerGameTests.english(net.minecraft.network.chat.Component.translatable("aliveworkplace.config.beanFarms.tooltip"));
-		helper.assertTrue(tip.contains("fewer than 16 of a colour") && tip.contains("Needs Cobblecuisine"), tip);
+		helper.assertTrue(tip.contains("fewer than 16 of a color") && tip.contains("Needs Cobblecuisine"), tip);
 		helper.succeed();
 	}
 }

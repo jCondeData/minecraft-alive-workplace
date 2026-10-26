@@ -201,6 +201,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuildGhostContentsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanGraveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanFreeGoodsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanFreeGoodsBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B261GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B251GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B224GameTests",

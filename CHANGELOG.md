@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Builders no longer hand out a scanned block's harvest or look for free (B493-B496): a ripe field is planted at age 0 (wheat and other crops, stems, nether wart, sweet berry bushes, cocoa) and cave vines without berries; a lectern or jukebox built empty no longer shows a book or disc, also after a reload mid-build; a furnace, smoker or blast furnace scanned burning is built cold (campfires stay lit as drawn); and a bee nest or hive is built with no bees inside. Shipped farm blueprints now come up as young crops that grow. A crop that grew or a furnace lit since still counts as built.
 - Text: names that start with a vowel now get "an": the blast furnace's tooltip says "takes it as an Armorer", the hall says "Bram is now an Armorer", and the same for retraining, guards ("an Archer"), inn travelers ("an Apprentice"), the Fossil Scientist ("reviving an Omanyte"), the Daycare Keeper ("an Eevee Egg"), the Pokémon Trader ("Comes in an Ultra Ball") and the raid helpers' cheer (B505).
 - Text: the Steward's desk now reads 'Declined: "Give 1 villager a job" won't be proposed again for 3 days'; before, it said "Declined: the Give 1 villager a job won't be proposed" for jobs and research proposals (B475).
 - Text: the Festival Cup page says "with 1 bye for the top seed" and a full Town "can hold 1 Mythic Legend"; before, "1 byes" and "1 Mythic Legends" (B492, B504).

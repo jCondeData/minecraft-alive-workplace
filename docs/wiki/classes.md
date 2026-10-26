@@ -243,6 +243,10 @@ what a villager wears by class and age), `JewellerGameTests` (10), `VintnerGameT
 QA: `QaLuxuryTradesGameTests` (13: hiring refused with no job block in reach, at a taken loom and with each switch off;
 each recipe's boundary from both sides; a reload mid-recorking; the made-day tooltip's edges; every needed luxury made
 by a job the class below may take; the Vintner's trades at every level).
+QA: `QaClassHallRetirementGameTests` (34.6 and 34.18 part: a want counted over five households, "A varied diet: 2 of
+5" under the wants; the three biggest of five class tips, most households first; -10 for two needs lacking and -15
+for three; the rise's chat line read 31 blocks off and not 33 off; a child sent their class and CHILD on tracking, a
+zombie villager never sent a look, nothing on tracking with `classOutfits` off, the look surviving the wire).
 
 Showcase scenes: `classes` (a household rises, and the Classes page), `class_switch_on` (the hall before and after the
 switch), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`,

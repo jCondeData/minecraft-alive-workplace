@@ -369,6 +369,12 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
 - QA: `QaElderLifeGameTests` (6: the charm by sneak-click at the elder boundary, kept when refused, one charm one
   villager; an ageless Master still retires and mentors an Apprentice; only an elder retires and never to a baby; passing
   only asleep with the village told; the Book of Families at exactly 400; the 60 family names and the config numbers).
+- QA: `QaClassHallRetirementGameTests` (34.20 part: the elder's baby and working child passed over for another
+  jobless villager; a Teacher's successor an Artisan, never a Peasant; an Apprentice's and a Journeyman's successors
+  both Apprentice; a builder's queue and a daycare pair holding the start, a site picked up mid-shadowing holding the
+  hand-over; the field, tree farm, orchard and courier routes carried over; a retired elder reloaded still taking no
+  job; a successor who takes another job calling it off; no "would like to retire" line with `elderRetirement` off;
+  every retirement sentence).
 - QA: `QaElderLifeBugTests` (4, B442: the waiting line goes while a jobless villager is there and the elder holds a
   site or the 3-day wait runs; it comes back when that villager takes a job and goes when the villager is no elder; never
   while someone learns the elder's trade).

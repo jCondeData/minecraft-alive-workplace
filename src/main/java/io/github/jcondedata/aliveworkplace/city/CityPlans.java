@@ -32,6 +32,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -296,6 +297,11 @@ public final class CityPlans {
 			sync(player, entity);
 			return undone;
 		}
+		if ((edit.op() == Op.ADD_ZONE || edit.op() == Op.EDIT_ZONE) && !zoneOk(plan, edit)) {
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.city_plan.bad_zone", MAX_NAME).withStyle(ChatFormatting.RED));
+			sync(player, entity);
+			return false;
+		}
 		CityPlan next = switch (edit.op()) {
 			case ADD_ZONE -> plan.addZone(edit.kind(), edit.name(), edit.style());
 			case EDIT_ZONE -> plan.editZone(edit.zone(), edit.kind(), edit.name(), edit.style(), edit.renew());
@@ -318,6 +324,30 @@ public final class CityPlans {
 		entity.changePlan(next, UNDO_STEPS);
 		sync(player, entity);
 		return true;
+	}
+
+	/**
+	 * Whether a zone's name and style in {@code edit} are ones the plan screen can send (B468/B503): a name of 1 to
+	 * {@link #MAX_NAME} letters a text box accepts, and a style that is one of {@link BlueprintStyles#all()} or "" (as
+	 * drawn). Editing a zone may keep the style it already has, so a zone saved with a style that is gone can still be
+	 * renamed.
+	 */
+	static boolean zoneOk(CityPlan plan, Edit edit) {
+		String name = edit.name();
+		if (name.isBlank() || name.length() > MAX_NAME || !name.equals(StringUtil.filterText(name))) {
+			return false;
+		}
+		String style = edit.style();
+		if (edit.op() == Op.EDIT_ZONE && edit.zone() >= 0 && edit.zone() < plan.zones().size()
+			&& plan.zones().get(edit.zone()).style().equals(style)) {
+			return true;
+		}
+		return style.isEmpty() || BlueprintStyles.all().stream().anyMatch(s -> s.name().equals(style));
+	}
+
+	/** The style a zone builds in: its own, or as drawn ("") for a style that no longer exists (a zone saved before B468). */
+	public static String buildStyle(CityPlan.Zone zone) {
+		return zone.style().isEmpty() || BlueprintStyles.get(zone.style()).isPresent() ? zone.style() : "";
 	}
 
 	/**
@@ -345,7 +375,7 @@ public final class CityPlans {
 		List<BlockPos> points = flat(edit.points());
 		String style = edit.style();
 		if (style.isEmpty()) {
-			style = plan.zoneAt(BlockPos.ZERO, points.get(0)).map(CityPlan.Zone::style).orElse("");
+			style = plan.zoneAt(BlockPos.ZERO, points.get(0)).map(CityPlans::buildStyle).orElse("");
 		}
 		return plan.addRoad(new CityPlan.Road(points, edit.width(), style, true));
 	}

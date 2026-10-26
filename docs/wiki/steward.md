@@ -11,6 +11,9 @@ Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.
 it. Right-click the air to open the plan: the village map under a grid of 32 by 32 cells. You paint up to 16 zones,
 each with a kind, a name, a building style and a "renew old houses" switch. Holding the plan shows the zone edges,
 roads and wall line on the ground around you as colored dust that only you see.
+A zone's name is 1 to 32 letters and its style is one the plan lists (or as drawn); the server refuses anything
+else a changed game sends. A zone saved earlier with a style that no longer exists keeps its name and cells and is
+built as drawn until you pick a style again.
 
 | Zone | What goes there |
 |---|---|

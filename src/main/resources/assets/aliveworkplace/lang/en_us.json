@@ -4371,6 +4371,7 @@
   "message.aliveworkplace.city_plan.too_many_roads": "The plan has %s roads already: take one off first",
   "message.aliveworkplace.city_plan.too_many_points": "A line can have at most %s points",
   "message.aliveworkplace.city_plan.bad_line": "That line can't go on the plan: it needs two points on the map",
+  "message.aliveworkplace.city_plan.bad_zone": "That zone can't go on the plan: its name must be 1 to %s letters and its style one the plan lists",
   "zone.aliveworkplace.homes": "Homes",
   "zone.aliveworkplace.workshops": "Workshops",
   "zone.aliveworkplace.farms": "Farms",

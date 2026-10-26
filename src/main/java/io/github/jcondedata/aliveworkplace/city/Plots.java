@@ -710,7 +710,7 @@ public final class Plots {
 				return Verdict.no(Reason.ZONE_EDGE);
 			}
 			CityPlan.Zone zone = zones.get(zoneOf[cell]);
-			ResourceLocation id = BlueprintStyles.styled(base, zone.style());
+			ResourceLocation id = BlueprintStyles.styled(base, CityPlans.buildStyle(zone));
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(level, id);
 			if (blueprint.isEmpty()) {
 				return Verdict.no(Reason.NO_BLUEPRINT);

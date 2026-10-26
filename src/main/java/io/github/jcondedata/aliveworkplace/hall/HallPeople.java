@@ -138,7 +138,8 @@ public final class HallPeople {
 
 	/** The line over the table: "8 · 6 working · 2 jobless" (and the children when there are some). */
 	public static Component header(int total, int working, int jobless, int children) {
-		return children > 0 ? Component.translatable("screen.aliveworkplace.hall.people.header_children", total, working, jobless, children)
+		return children == 1 ? Component.translatable("screen.aliveworkplace.hall.people.header_child", total, working, jobless) // "1 child" (B547)
+			: children > 0 ? Component.translatable("screen.aliveworkplace.hall.people.header_children", total, working, jobless, children)
 			: Component.translatable("screen.aliveworkplace.hall.people.header", total, working, jobless);
 	}
 

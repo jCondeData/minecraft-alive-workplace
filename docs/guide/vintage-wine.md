@@ -13,12 +13,12 @@ categories: Items, Classes
 related: vintner.md, luxuries.md, noble.md, berry-wine.md
 ```
 
-The Nobles' wine: Berry Wine left to age in the Vintner's cellar until it's worth four times as much.
+The Nobles' wine: Berry Wine left to age at the Vintner's until it's three days old and ready to be re-corked.
 
 ## Getting it
 
 A Journeyman [Vintner](vintner.md) turns a [Berry Wine](berry-wine.md) into Vintage Wine once that bottle is **3 days
-old**, counted from the day it was pressed. So a village with Nobles needs its Vintner pressing Berry Wine well ahead.
+old**, counted from the day it was pressed (a bought Berry Wine counts from the day you bought it). The Berry Wine's tooltip says "Pressed on day 42 · vintage in 2 days". So a village with Nobles needs its Vintner pressing Berry Wine well ahead.
 You can buy it from a Vintner for 5 emeralds.
 
 ## What it's for

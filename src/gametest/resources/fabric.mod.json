@@ -681,6 +681,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMenuClickFuzzGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMailboxLogoutGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEveryMenuGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWaystonesGoneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardSameRangeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaModGoneVillagersGameTests"
 		]

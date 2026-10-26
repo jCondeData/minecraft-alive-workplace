@@ -252,6 +252,9 @@ public final class HallSections {
 		menu.setState(DAY, today.dayOfSeason());
 		menu.setState(YEAR, (int) Math.max(1, Math.min(Short.MAX_VALUE, today.year())));
 		menu.onMenuButton((p, id) -> {
+			if (HallJobs.handles(id)) {
+				return HallJobs.click(menu, level, hall, p, id); // Job ▾'s list (40.3)
+			}
 			if (id >= HallPeople.SCROLL) {
 				HallPeople.scrollTo(menu, level, hall, id - HallPeople.SCROLL); // the People table scrolled (40.2)
 				return true;

@@ -233,6 +233,37 @@ final class JobScenes {
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
+	/**
+	 * Runs {@code action} on the client's Village Hall screen, again every 50 ms (at most {@code tries} times) until it
+	 * returns true. A step that opens the hall on the server and clicks in it in the same tick found no screen yet, or a
+	 * screen without the section's rows, so the click never happened (hall_people_job, hall_people_bed: lane C's own 40.3
+	 * and 40.4 scenes, failing since they landed). The action must be safe to repeat until it succeeds.
+	 */
+	/** Scrolls the hall's table to the open row's Job/Bed list a little later, once the list has arrived: the stills show it. */
+	private static void scrollHallLater() {
+		java.util.concurrent.CompletableFuture.delayedExecutor(700, java.util.concurrent.TimeUnit.MILLISECONDS).execute(() -> {
+			Minecraft mc = Minecraft.getInstance();
+			mc.execute(() -> {
+				if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+					s.scrollToLists(); // the Job/Bed buttons on top, the list under them
+				}
+			});
+		});
+	}
+
+	private static void onHallScreen(java.util.function.Predicate<io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen> action, int tries) {
+		Minecraft mc = Minecraft.getInstance();
+		mc.execute(() -> {
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s && action.test(s)) {
+				return;
+			}
+			if (tries > 1) {
+				java.util.concurrent.CompletableFuture.delayedExecutor(50, java.util.concurrent.TimeUnit.MILLISECONDS)
+					.execute(() -> onHallScreen(action, tries - 1));
+			}
+		});
+	}
+
 	/** The wonder_crew scene's ten builders (35.5). */
 	private static final List<Villager> crewBuilders = new java.util.ArrayList<>();
 
@@ -4845,6 +4876,10 @@ final class JobScenes {
 							s.openRow(0); // a click on the first row: their details open right under it
 						}
 					});
+				}, 40),
+				new Step("03_people_story", -1, 6, (level, player) -> {
+					// Story on the open row: their life story opens, as shift-click did in the old list (B547)
+					onHallScreen(s -> s.pressStory(), 40);
 				}, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("hall_people_job", new Screen("the People table's Job list: every job, the free ones with how many, the price, then a librarian made a Mason",
@@ -4875,12 +4910,9 @@ final class JobScenes {
 						io.github.jcondedata.aliveworkplace.hall.HallSections.choose(m, level, STATION, player,
 							io.github.jcondedata.aliveworkplace.hall.HallSections.Section.PEOPLE); // the sidebar's click
 					}
-					Minecraft mc = Minecraft.getInstance();
-					mc.execute(() -> {
-						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s && s.openRowNamed("Dara")) {
-							s.pressJob(); // Job ▾ on Dara's row: the list of every job opens under it
-						}
-					});
+					// Job ▾ on Dara's row: the list of every job opens under it (once the screen and its rows have arrived)
+					onHallScreen(s -> s.openRowNamed("Dara") && s.pressJob(), 40);
+					scrollHallLater();
 				}, 40),
 				new Step("02_job_picked", -1, 6, (level, player) -> {
 					Minecraft mc = Minecraft.getInstance();
@@ -4889,6 +4921,7 @@ final class JobScenes {
 							s.pickJob(net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getId(VillagerProfession.MASON)); // once: the price
 						}
 					});
+					scrollHallLater();
 				}, 40),
 				new Step("03_job_changed", -1, 6, (level, player) -> {
 					Minecraft mc = Minecraft.getInstance();
@@ -4897,6 +4930,7 @@ final class JobScenes {
 							s.pickJob(net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getId(VillagerProfession.MASON)); // again: paid
 						}
 					});
+					scrollHallLater();
 				}, 40),
 				new Step("04_job_after", -1, 6, (level, player) -> {
 					boolean mason = !level.getEntities(EntityType.VILLAGER, v -> v.hasCustomName() && v.getCustomName().getString().equals("Dara")
@@ -4935,12 +4969,9 @@ final class JobScenes {
 						io.github.jcondedata.aliveworkplace.hall.HallSections.choose(m, level, STATION, player,
 							io.github.jcondedata.aliveworkplace.hall.HallSections.Section.PEOPLE); // the sidebar's click
 					}
-					Minecraft mc = Minecraft.getInstance();
-					mc.execute(() -> {
-						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s && s.openRowNamed("Dara")) {
-							s.pressBed(); // Bed ▾ on Dara's row: the village's beds open under it
-						}
-					});
+					// Bed ▾ on Dara's row: the village's beds open under it (once the screen and its rows have arrived)
+					onHallScreen(s -> s.openRowNamed("Dara") && s.pressBed(), 40);
+					scrollHallLater();
 				}, 40),
 				new Step("02_bed_given", -1, 6, (level, player) -> {
 					Minecraft mc = Minecraft.getInstance();
@@ -4949,6 +4980,7 @@ final class JobScenes {
 							s.pickBed(0); // the nearest free bed: hers from now on
 						}
 					});
+					scrollHallLater();
 				}, 40),
 				new Step("03_bed_after", -1, 6, (level, player) -> {
 					boolean housed = !level.getEntities(EntityType.VILLAGER, v -> v.hasCustomName() && v.getCustomName().getString().equals("Dara")
@@ -4960,6 +4992,7 @@ final class JobScenes {
 							s.pressBed(); // open again: hers on top as "their bed now", Jem's to swap
 						}
 					});
+					scrollHallLater();
 				}, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("hall_pages", new Screen("the Village Hall's chronicle and trade-route pages opened", new Vec3(2.5, -58.4, 4.5), TARGET,

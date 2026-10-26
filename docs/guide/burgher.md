@@ -41,7 +41,7 @@ the household pay 10% more tax.
 
 ## Rising to Noble
 
-Two dawns running with everything a [Noble](noble.md) needs: a tier III home, every service, a Town, decorations, Noble
+Two dawns running with everything a [Noble](noble.md) needs: a tier III home, a chapel, school, clinic and library, a Town, decorations, Noble
 Robes, Vintage Wine and an Emerald Brooch.
 
 ## How it fits with the rest

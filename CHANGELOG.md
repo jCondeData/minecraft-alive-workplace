@@ -28,6 +28,8 @@ asks for the steps, `latest.log` and any crash report).
 - Text: every sentence a player reads is now in American English: Smith's Draught is now Smith's Draft, the den-helpers and bean-farm settings say Defense and color, and the questbook, guide and wiki say gray, armor, Jeweler, canceled, traveler, leveled, curb and story (a floor). Item and block ids, saved data and lang keys are unchanged, so worlds and data packs keep working.
 
 ### Fixed
+- Village Hall: in the People table, scrolling down an open villager's row to reach its Job ▾ or Bed ▾ list no longer blanks the row out once its name scrolls off the top; the details and lists stay in view and can be clicked (B546).
+- Village Hall: a villager's life story can be opened from the People table again, with a new Story button on their open row (it was only reachable by the old list's shift-click). The open row no longer shows the old list's click hints, and the count says "1 child", not "1 children" (B547).
 - Steward plots: the same blueprint is now kept 24 blocks apart as promised, measured centre to centre; a finished Well 25 blocks off no longer refuses the spot (B470).
 - Walls: with no wall line drawn, the Steward's own line now runs 4 blocks outside the zones on every side; the east and south sides were 5 out (B510).
 - Visible caravans: a carter or pack llama killed by /kill or the void no longer drops leather, a chest or anything else (B431); the party is only a sight and the goods still arrive.

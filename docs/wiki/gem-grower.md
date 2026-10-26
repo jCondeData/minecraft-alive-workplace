@@ -44,7 +44,8 @@ Roadmap items: 28.11
   first, then the floor, then any sturdy face, facing away from it.
 - Her chests keep 16 of each thing she plants, and of glass and shards; the porter takes the rest of her picking to the
   store.
-- Blank TMs come from Cobblemon's own `blank_tm` recipe, one craft every 200 ticks while her chests hold fewer than 8.
+- Blank TMs come from Cobblemon's own `blank_tm` recipe, one craft every 200 ticks, only while what her chests hold
+  plus what one craft makes stays at or under 8 (B490: the recipe makes 2, so with 7 she makes none and stays on 7).
 - Her stonecutter broken: she stops and says so. Config off: she stands idle and says so.
 
 ## Switches
@@ -79,8 +80,6 @@ save and reload; a villager saved before 28.11 has none.
 
 ## Known limits
 
-- Blank TMs come two a craft, so with 7 in her chests she ends on 9, one over the 8 the spec says (QA 2026-10-25,
-  B490, not yet fixed).
 - Any ripe cluster of a bed's kind within 2 blocks of its touch block is hers, including one a player placed there.
 - The "no beds" line names magma, lava and the crystal core even without Cobblemon, where only amethyst counts.
 

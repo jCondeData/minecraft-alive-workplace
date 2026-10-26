@@ -3,7 +3,7 @@
 A seasoned Builder who runs a village from its City Plan: he decides what the village needs next, finds the plot and
 has the builders build it. Part of 1.1 (Villages that build themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B469, B471, B472
+Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B469, B471, B472
 
 ## What a player sees
 
@@ -33,7 +33,10 @@ wants a grander home", "1 topic is open", and on the City Plan "1 cell is nearer
 **His desk.** The hall's "What next?" page becomes his desk. Three modes: Ask me first, Run the village, Rest. Up to
 9 proposals, each saying what, why, where and what it needs, with Approve, Decline, Show me, Another spot and Another
 style. In Run the village he approves them himself and tells you in one line a morning. He also gives jobless
-villagers jobs and picks the scholars' next research.
+villagers jobs and picks the scholars' next research. The hall's owner, their friends and operators may answer,
+at the hall or from a bound Village Ledger; Show me outlines the spot for 30 seconds. A proposal starts one build
+however often it is approved, and nothing starts once the Steward or the hall is gone. His mode and open proposals
+are kept over a restart.
 
 ## How it works
 
@@ -45,9 +48,9 @@ the hall's "What next?" tips, so the Steward and the tips never disagree. `/work
 rule with each condition's number and whether it held.
 
 **Finding a plot.** For a build wish he looks for a spot in the right zone, nearest the hall first, trying the
-blueprint's four turns and its mirror image. A spot is good only if the front faces a road (or the hall), the
+blueprint's four turns and its mirror image. A spot is good only if the front faces the nearest road (or the hall), the
 footprint and a 2-block margin lie inside the zone and off the roads, the ground varies by at most 4 blocks, nothing
-stands there but natural ground and trees, and a builder's bench is within `maxSiteDistance`. At most a tenth of
+stands there but natural ground, trees and the plants of the `steward_clearable` tag (a carved pumpkin is not one), and a builder's bench is within `maxSiteDistance`. At most a tenth of
 the footprint may be over water and none of it over lava, it stays 2 blocks clear of every build site and finished
 building, and the same blueprint with the same mirroring is never put within 24 blocks of another.
 
@@ -137,6 +140,13 @@ villagers are too few; a raid 6 days ago is within 7 and 7 days ago not; 2 child
 the Storehouse grows at 22 of 27 slots, not 21, on to III and no further). `QaStewardDeskJobsGameTests` (16, 27.8 and 27.9: a decline and an unanswered proposal both end at exactly 3 days,
 9 proposals and never a 10th, strangers answer nothing while a friend of the owner can, Approve all, Rest and
 `stewardSelfRun` off, one morning line, guards only while short, a baby gets no job, the research order against the spec).
+`QaCityPlanPaintGameTests` (7, 27.2 and 27.3: a dragged rectangle is one stroke and one undo, a deleted zone comes back
+with its cells, strokes that change nothing take no undo step, a stranger's eraser and side panel are refused, the
+first painter's claim is saved, a block's zone comes from the nearest hall, an 8x8 cell at radius 128),
+`QaStewardRulesDataGameTests` (2, 27.6), `QaStewardPlotFitGameTests` (2, 27.7: the front faces the nearer road;
+clearable plants), `QaStewardDeskModesGameTests` (10, 27.8: mode buttons, operator and friend approvals, approving
+twice, Steward or hall gone, Run's morning line, save and reload, the desk's sentences, the Ledger, Show me's 30
+seconds) and `QaWorkplaceCopiesGameTests` (4, 27.11).
 
 Showcase scenes: `steward` (the morning rounds), `steward_rules`, `steward_desk`, `steward_safety`, `steward_jobs`,
 `steward_homes`, `steward_civic`, `old_houses`, `renewal`, `city_plan`, `city_plan_ground`, `city_timelapse` (a

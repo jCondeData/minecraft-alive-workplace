@@ -47,9 +47,8 @@ menu-button click of `HallPeople.SCROLL` (1000) + the first person to show, and 
 there (`VillageHallScreen.renderFrom`); rows not yet loaded show "...". Mood: Happy (score >= `Moods.HAPPY`), Unhappy
 (< `Moods.UNHAPPY`), Content between, and "No bed" (red) when they have no bed and aren't happy. A row click opens
 (client only, kept by uuid) the villager's details under it: every line of the person's hall tooltip (traits, what
-they're doing, needs, mood and why, class and how to rise, home, where), with **Job ▾** (a worker's Change job page,
-36.18, as a right-click on the row; a jobless villager's free jobs, as a left click; grayed for children, nitwits,
-Legends or with retraining off), **Bed ▾** (the village's beds, 40.4, below) and **Find** (the
+they're doing, needs, mood and why, class and how to rise, home, where), with **Job ▾** (the list of jobs, 40.3,
+below; grayed for children, nitwits and Legends, hidden on every row with retraining off), **Bed ▾** (the village's beds, 40.4, below) and **Find** (the
 glow). A click on a row whose villager has died or left the village since the screen was laid out lays the list out
 again without them (`HallPeople.gone`).
 
@@ -93,8 +92,10 @@ home: the bed's point of interest is taken and her `HOME` memory set (`HallBeds.
 (`Villager.releasePoi`), so someone else can have it; a swap sets both villagers' `HOME` to the other's bed (both stay
 claimed, so nobody slips in between). Anyone asleep is woken first. She sleeps there that night by vanilla's own
 bedtime. The row and the census read the same memory through `VillageNeeds.bed` (B362: a broken bed houses nobody), so
-both show it straight away. If the bed was claimed by someone else (or changed hands) after the list was laid out,
-the click changes nothing, the action bar says "Someone took that bed first.", and the list shows it as it is now.
+both show it straight away. If the bed changed after the list was laid out, the click changes nothing and the list
+shows it as it is now; the action bar says "Someone took that bed first." (a free bed claimed by someone else), "That
+bed changed hands: the list shows it as it is now." (a bed whose sleeper changed, such as a swap partner who moved) or
+"That bed is gone." (the bed broken).
 No new packet: Bed ▾ is `HallBeds.OPEN` (300000) + the row's slot (again: closes), a bed is `HallBeds.PICK` (400000)
 + its line's number (the beds in the order the list showed them, kept with the open screen together with who slept in
 each), `HallBeds.CLOSE` closes it; the row's mark gains `beds_open`. Opening one list closes the other. Nothing new is

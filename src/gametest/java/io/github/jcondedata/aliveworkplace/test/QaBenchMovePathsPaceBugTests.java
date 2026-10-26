@@ -62,6 +62,12 @@ public class QaBenchMovePathsPaceBugTests implements net.fabricmc.fabric.api.gam
 		Villager novice = QaBenchMovePathsPaceGameTests.bench(helper, new BlockPos(2, 2, 2), QaBenchMovePathsPaceGameTests.hutMaterials());
 		Villager master = QaBenchMovePathsPaceGameTests.bench(helper, new BlockPos(26, 2, 2), QaBenchMovePathsPaceGameTests.hutMaterials());
 		master.setVillagerData(master.getVillagerData().setLevel(5));
+		// no village about (another test's hall would change their pace): the delay is the level's share alone
+		helper.assertTrue(Pace.factor(novice) == 1f && Pace.factor(master) == 1f, "setup: pace " + Pace.of(novice) + " / " + Pace.of(master));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(level, novice) == 8
+			&& io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(level, master) == 3, "setup: delays "
+			+ io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(level, novice) + " / "
+			+ io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(level, master));
 		BuildSite noviceSite = Builders.start(level, novice, null, TEST_HUT, QaBenchMovePathsPaceGameTests.placement(helper, new BlockPos(4, 2, 12)));
 		BuildSite masterSite = Builders.start(level, master, null, TEST_HUT, QaBenchMovePathsPaceGameTests.placement(helper, new BlockPos(20, 2, 12)));
 		BuildPlan novicePlan = noviceSite.plan(level);

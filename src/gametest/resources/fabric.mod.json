@@ -416,6 +416,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CrafterWorkshopGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StorageHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorageHallGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureSeatsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderPlanGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderStageGameTests",

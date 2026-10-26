@@ -247,6 +247,7 @@
 			"io.github.jcondedata.aliveworkplace.test.MegaStoneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MegaShrineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMegaShrineGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMegaShrineIdleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CreateBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageTrainGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassOutfitGameTests",

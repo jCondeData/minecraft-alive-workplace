@@ -295,7 +295,7 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 		synchronized (DAWNS) {
 			dawn = DAWNS.get(entity);
 			if (dawn == null || dawn.context.today() != today || !dawn.hall.equals(hall)) {
-				dawn = new Dawn(level, hall, level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive), today);
+				dawn = new Dawn(level, hall, VillageHalls.villagers(level, hall), today);
 				DAWNS.put(entity, dawn);
 				dawn.context.prepare();
 				// The day's first round only finds who to count and reads the village; counting starts next round, so no

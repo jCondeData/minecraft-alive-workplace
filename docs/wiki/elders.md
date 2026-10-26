@@ -108,7 +108,9 @@ When a grown villager of a village with a hall dies, of anything:
   the Undertaker brings them back or lays the grave in the graveyard as before.
 
 Mercenaries, inn guests and caravan carters are not the village's own: nobody is told and nobody grieves. Outside a
-village with a hall a death is as before.
+village with a hall a death is as before. Only family inside the village's circle (the hall's radius) grieve; kin
+standing farther off, out in the corners of the square round the hall, don't (B549). The Book of Families likewise
+writes in only the villagers inside the circle, and only couples inside it court, wed and count as courting.
 
 ## How it works
 

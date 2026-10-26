@@ -369,6 +369,13 @@ public class QaVillageReachGameTests {
 		refused(helper, kit, seen, atHall, "a spot in the village 140 blocks from a composter outside it",
 			l -> l.equals("That field is 141 blocks from the Composter the farmer works at — keep it within 128."),
 			"\"That field is 141 blocks from the Composter the farmer works at — keep it within 128.\"");
+		// Halls left standing by earlier batches' test areas (GameTest never clears a passed test's structure) can be
+		// nearer the composter than this test's own, 140 blocks off, once the radius is 160; then that hall's village
+		// would hold the composter and this test would fail by where it happened to be laid out. This test runs in its
+		// own batch, so every other hall in range belongs to a finished test: take them away first.
+		level.getPoiManager().findAll(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> !p.equals(hall), work, 170,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.toList().forEach(other -> level.setBlockAndUpdate(other, Blocks.AIR.defaultBlockState()));
 		radius(160);
 		taken(helper, kit, seen, atHall, "a spot 141 blocks off in the village that now holds the composter");
 		helper.succeed();

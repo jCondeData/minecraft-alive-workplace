@@ -565,7 +565,8 @@ def cmd_review(a):
 # The owner hands bugs straight to the bug lane's chat, so b, c and d never take a bug.
 BUG_MILESTONES = (26,)
 QUICK_MILESTONES = (36,)
-BIG_ORDER = {"c": (37, 38, 39), "d": (38, 37, 39), "e": (39, 37, 38)}
+# Owner, 2026-10-26: the new Village Hall (40) goes to lane c first, Waystones (41) to lane d, lane e helps with 40.
+BIG_ORDER = {"c": (40, 41, 37, 38, 39), "d": (41, 40, 38, 37, 39), "e": (40, 41, 39, 37, 38)}
 
 
 def lane_of(who):

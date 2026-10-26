@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3
 
 ## What a player sees
 
@@ -33,7 +33,13 @@ for free. A builder given another job hands their builds back first: what's buil
 its owner still placed, and another builder carries on from there. The Village Hall's **Change job** (36.18, see
 [The Village Hall](village-hall.md)) retrains a worker to any free job block in the village, or the Builder, for the
 same price, with no need to bring them to the block: the job and the block's claim are set on the paying click, and one
-who can't walk there within about a minute is moved beside it.
+who can't walk there within about a minute is moved beside it. Since 40.3 the same is in the hall's People table:
+**Job ▾** on a villager's row lists every job, those with a free block in the village saying how many ("Mason · 1
+free Stonecutter"), the rest grayed with the block to place ("Mason · place a Stonecutter first"), the Builder among
+them and **No job** last (free, two clicks: their trades and level go and their block is left free). The price by
+their level is on top before anything is paid, a first click shows the offer and a second pays. A jobless villager is
+given a free block for nothing, in one click. Children, nitwits and Legends can't; game rule `workplaceRetraining` off
+hides Job ▾.
 
 **Fishermen per village (26.13).** A barrel is the Fisherman's workstation, and builds are full of storage barrels,
 so a village takes only so many fishermen: 1, plus 1 more for every 10 villagers within the village radius (48 blocks)
@@ -367,7 +373,8 @@ GameTests: `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumbe
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits
-refuse, save and reload, the switch off), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
+refuse, save and reload, the switch off), `HallPeopleJobGameTests` (10, 40.3: the hall's Job ▾, see
+[The Village Hall](village-hall.md)), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
 `HandOffGameTests` (5, B220: a fisherman handed a rod and a builder handed a blueprint are at work within 10 ticks,
 mid-shift and late in it; before the shift and at night they say when they start, and a night's hire stays in bed),
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,

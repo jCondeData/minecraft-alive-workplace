@@ -470,6 +470,14 @@ SCENES = [
       "child), then the first row opened to that villager's details with Job and Bed buttons", 45,
       [("01_people_table", "The People table: Name, Job, Level and Mood, with the village's counts on top"),
        ("02_people_row_open", "A row opened: traits, what they're doing, needs, mood and why, class, and the Job and Bed buttons")]),
+    # Job ▾ in the People table (ROADMAP 40.3): every job, the free ones with how many, the price, two clicks to pay
+    S("hall_people_job", "Village Hall", "Changing a job from the People table",
+      "Job ▾ on a librarian's row opens the list of every job (those with a free block say how many, the rest are grayed "
+      "with the block to place), the price by her level on top; a click on Mason shows the price, a second pays and she "
+      "is a Novice Mason", 50,
+      [("01_job_list", "Job ▾ opened: the price by level on top, the free jobs with how many blocks, the rest grayed"),
+       ("02_job_picked", "Mason clicked once: \"Click again to pay\" under it, nothing paid yet"),
+       ("03_job_changed", "Clicked again: paid, and her row says Mason")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab")]),
     # Free job blocks (ROADMAP 36.9): the hall lists the job blocks nobody works at; picking a jobless villager gives one

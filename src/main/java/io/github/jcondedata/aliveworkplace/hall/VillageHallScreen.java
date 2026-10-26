@@ -393,6 +393,7 @@ public final class VillageHallScreen {
 			}
 			ItemStack personIcon = person(level, hall, villager, classes, menu.viewer());
 			HallPeople.tag(personIcon, level, villager); // the People table's columns (40.2)
+			HallJobs.attach(menu, personIcon, level, hall, villager); // Job ▾'s list, when it's open for them (40.3)
 			menu.button(slot++, personIcon, p -> {
 				if (HallPeople.gone(level, hall, villager)) {
 					refresh(menu, level, hall, shown); // died or left while the screen was open (40.2): the row goes, nothing else

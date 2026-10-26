@@ -652,7 +652,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaNewWorkplacesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTinkererShortBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWallTowerBugGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaMenuClickFuzzGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMailboxHopperBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMailboxHopperBugTests"
 		]
 	},

@@ -6162,7 +6162,21 @@ final class JobScenes {
 					level.setBlockAndUpdate(s, Blocks.AIR.defaultBlockState());
 				});
 			},
-			List.of(new Step("01_hall_waystones", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.MAP, 6, (level, player) -> {
+			List.of(new Step("01_waystone_plaza", -1, 0, (level, player) -> {
+					// B532: first the village's Waystone Plaza by the hall, its stone named after the village, then the Map.
+					player.closeContainer();
+					BlockPos stone = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, STATION).orElse(null);
+					Showcase.check(stone != null && io.github.jcondedata.aliveworkplace.hall.VillageWaystones.standing(level, STATION),
+						"Ashford's plaza stone stands as a working waystone (" + stone + ")");
+					if (stone != null) {
+						Vec3 eye = Vec3.atBottomCenterOf(stone).add(3.5, 1.6, 4.5);
+						Vec3 look = Vec3.atBottomCenterOf(stone).add(0, 1.2, 0).subtract(eye);
+						float yaw = (float) (Math.toDegrees(Math.atan2(look.z, look.x)) - 90);
+						float pitch = (float) -Math.toDegrees(Math.atan2(look.y, Math.sqrt(look.x * look.x + look.z * look.z)));
+						player.teleportTo(level, eye.x, eye.y - player.getEyeHeight(), eye.z, yaw, pitch);
+					}
+				}, 30),
+				new Step("02_hall_waystones", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.MAP, 6, (level, player) -> {
 				io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 				List<io.github.jcondedata.aliveworkplace.hall.VillageWaystones.Village> network = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.network(level, STATION, player);
 				Showcase.check(network.size() == 3 && network.get(0).state() == io.github.jcondedata.aliveworkplace.hall.VillageWaystones.State.DISCOVERED

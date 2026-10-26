@@ -128,6 +128,8 @@ public class WaystoneMapQaCompatTests implements FabricGameTest {
 	//$ gametest_batch AREA '"qaWaystoneMapCompass"'
 	@GameTest(template = AREA, batch = "qaWaystoneMapCompass")
 	public void theMapGivesEveryDirectionAndDistanceNearestFirst(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		UUID owner = player.getUUID();
@@ -201,6 +203,8 @@ public class WaystoneMapQaCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '1200' '"qaWaystoneMapUnloaded"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qaWaystoneMapUnloaded")
 	public void aFarVillageNotLoadedIsListedDiscoveredOrNotPerPlayer(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		ServerLevel level = helper.getLevel();
 		ServerPlayer traveler = helper.makeMockServerPlayerInLevel();
 		ServerPlayer newcomer = helper.makeMockServerPlayerInLevel();
@@ -265,6 +269,8 @@ public class WaystoneMapQaCompatTests implements FabricGameTest {
 	//$ gametest_batch AREA '"qaWaystoneMapSwitchOff"'
 	@GameTest(template = AREA, batch = "qaWaystoneMapSwitchOff")
 	public void theSwitchOffTheStandingStonesStayOnTheMap(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		WaystoneQaCompatTests.cleanUp(helper);
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();

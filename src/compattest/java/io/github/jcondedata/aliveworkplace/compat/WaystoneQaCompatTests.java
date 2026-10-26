@@ -208,6 +208,8 @@ public class WaystoneQaCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '100' '"qaWaystoneSwitchOff"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaWaystoneSwitchOff")
 	public void theSwitchTurnedOffAfterTheStonesStandTheyWalk(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		cleanUp(helper);
 		villages(helper, true);
 		Caravans.Data data = trade(helper);
@@ -265,6 +267,8 @@ public class WaystoneQaCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '100' '"qaWaystoneOnlyOne"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaWaystoneOnlyOne")
 	public void twoVillagesOnlyOneWithAWaystoneWalk(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		cleanUp(helper);
 		villages(helper, false);
 		Caravans.Data data = trade(helper);
@@ -294,6 +298,8 @@ public class WaystoneQaCompatTests implements FabricGameTest {
 	//$ gametest_batch AREA '"qaWaystoneHallGone"'
 	@GameTest(template = AREA, batch = "qaWaystoneHallGone")
 	public void aVillageWhoseHallIsGoneLeavesTheMap(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		cleanUp(helper);
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -324,6 +330,8 @@ public class WaystoneQaCompatTests implements FabricGameTest {
 	//$ gametest_batch AREA '"qaWaystoneRename"'
 	@GameTest(template = AREA, batch = "qaWaystoneRename")
 	public void aNameTagOnTheHallRenamesTheStoneEvenWithOddLongNames(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		cleanUp(helper);
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -374,6 +382,8 @@ public class WaystoneQaCompatTests implements FabricGameTest {
 	//$ gametest_batch AREA '"qaWaystoneMapWords"'
 	@GameTest(template = AREA, batch = "qaWaystoneMapWords")
 	public void theMapSaysHowFarAndWhichWayInWords(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		BlockPos hallA = new BlockPos(3, 2, 27);
 		BlockPos hallB = new BlockPos(3, 2, 8);
 		BlockPos plazaA = new BlockPos(8, 2, 20);
@@ -415,6 +425,8 @@ public class WaystoneQaCompatTests implements FabricGameTest {
 	//$ gametest_batch AREA '"qaWaystoneNetworkReload"'
 	@GameTest(template = AREA, batch = "qaWaystoneNetworkReload")
 	public void theNetworkFileSurvivesASaveAndReloadAndKeepsABrokenStone(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		cleanUp(helper);
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -472,6 +484,8 @@ public class WaystoneQaCompatTests implements FabricGameTest {
 	//$ gametest_batch AREA '"qaWaystoneBeside"'
 	@GameTest(template = AREA, batch = "qaWaystoneBeside")
 	public void travelersStepInFromAnOpenSpotBesideTheStone(GameTestHelper helper) {
+		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		cleanUp(helper);
 		ServerLevel level = helper.getLevel();
 		try {

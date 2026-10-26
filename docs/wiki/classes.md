@@ -113,9 +113,11 @@ The day a server first runs 1.8, every village with a hall switches on by itself
   earned); "fed 3 days" counts as "fed now", since nobody counted fed days before. Children get their parents' class
   (else that of the grown-ups in their building, else Peasant). Grown-ups who have no age yet get one spread over the
   last 100 days by their UUID, so the first elders come about three weeks later and one at a time; everyone gets a family
-  name. Mercenaries, inn guests and caravan parties are skipped.
+  name. Mercenaries, inn guests and caravan parties are skipped. Only villagers inside the village's circle (the
+  hall's radius, as the census counts them) are seeded by its hall; one standing farther off is left for the next
+  round that finds them in a village.
 - **Told once.** When the last one has a class the chronicle says "The people of Thornholm found their places: 14
-  peasants, 6 artisans and 2 burghers", and the players in the village get the same line in chat with the days they
+  peasants, 6 artisans and 2 burghers", and the players in the village (its circle) get the same line in chat with the days they
   have to settle in.
 - **Settling in.** For `classGraceDays` (7) days nobody falls a class, luxuries are taken when due but not yet needed
   (rising still needs them, and the mood doesn't count them as lacking), and no elder starts retiring. The Classes tab

@@ -256,6 +256,11 @@ public final class WonderStages {
 				.withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT,
 					Component.translatable("message.aliveworkplace.wonder.status.call_hover")))));
 		text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.abandon").withStyle(ChatFormatting.DARK_GRAY));
+		// B462: the Wonder's id for /workplace cancel, which works at any stage (also while it waits for its goods)
+		text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.cancel").withStyle(s -> s.withColor(ChatFormatting.RED).withUnderlined(true)
+			.withClickEvent(new net.minecraft.network.chat.ClickEvent(net.minecraft.network.chat.ClickEvent.Action.SUGGEST_COMMAND, "/workplace cancel " + site.id()))
+			.withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT,
+				Component.translatable("message.aliveworkplace.wonder.status.cancel_hover")))));
 		return text;
 	}
 

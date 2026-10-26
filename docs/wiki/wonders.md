@@ -53,8 +53,10 @@ room for the stone.
   finished a part of the Test Folly: 1 of 2 parts of stage 1 (The Ground Story) stand."; the stage's last part, "Odo
   finished stage 1 of 3 of the Test Folly: The Ground Story."; the Wonder's very last part says nothing itself, as
   everyone hears the Wonder is finished. No blueprint comes back for a part.
-- **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` on a part to abandon the Wonder: what's
-  built stays, the open parts end, the plan comes back (to the owner, else by the stone) and the chronicle says so. A
+- **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` with the Wonder's id (the stone's screen
+  has an **[Abandon this Wonder]** link that puts it in the chat; works at any stage, also while it waits for its goods,
+  B462) or a part's id to abandon the Wonder: what's built stays, the goods handed in for a stage not yet dedicated
+  come back, the open parts end, the plan comes back (to the owner, else by the stone) and the chronicle says so. A
   plain break says to sneak; anyone else is refused. Builders never clear it and pistons can't push it; a finished
   Wonder's stone breaks like any block (it drops nothing).
 

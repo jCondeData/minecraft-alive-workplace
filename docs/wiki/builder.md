@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519, 36.20, 36.21
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21
 
 ## 1. What a player sees
 
@@ -271,12 +271,22 @@ claims and trip counts.
   is a full block up, and a villager climbing onto it still has its back in the doorway. A bed counts too: it is 9/16
   high, under a villager's step, so its path runs over a bed like a slab, and no bed stands right inside a door (the
   Carpenter's Workshop and the builder's and carpenter's village looks). `tools/blueprints/check.py` refuses every
-  blueprint that breaks it (B170, B173, B178). Tents are two high only under their ridge: nothing stands in a tent's
+  blueprint that breaks it (B170, B173, B178). A whole block counts as well: a door opens onto a floor at its own
+  level, never onto a window's old sill, a dais or a raised floor (that leaves a villager 1.00), and a wooden door
+  never opens onto a wall (B487: the Healing Center III's garden door, the Mountain Lodge II's back door, the Royal
+  Hall's vault door, now a block up level with the dais, and Royal Hall II's east door). Tents are two high only under their ridge: nothing stands in a tent's
   mouth there, and no carpet lies under the low sides (the War Camp's tents, B178).
 - Not only in doorways: anywhere a villager walks, a step (a carpet, a shut trapdoor, a bottom slab or stair, a bed)
   leaves it its 1.95 under whatever is over it. The game lets a villager walk where the two cells its body is in are
   open, so a carpet under a ceiling two blocks up (1.94 of room) or a seat under a shut trapdoor is a place it walks
   to and can't get onto. `tools/blueprints/check.py` flags every such step a player can get to (B197).
+- Nothing a build leaves is broken or changed by the game itself once placed: every bed has its head one block
+  towards its facing (the Observatory's, B537); a standing lantern, candle or torch stands on a block whose top holds
+  its middle, never a lectern, a chest or a bottom slab (the Great Library's lantern on a lectern, B538); and no dirt
+  path or farmland lies under a block the game counts as solid (a fence post, a wall, a tent's wool, a bed), since the
+  game turns it to dirt (the Hanging Gardens' paths, B539). The blueprint kit draws grass or coarse dirt there by
+  itself, `tools/blueprints/check.py` flags all three, and `BlueprintsStayGameTests` reads every shipped blueprint for
+  them with the game's own rules.
 - No villager is left standing inside a block in a growing village. A baby fits in nooks a grown villager doesn't
   (under a roof's stair being laid, beside a lantern on a fence post), and when it grows up vanilla finds no room for
   the bigger body there; a villager standing still in a doorway can have the door shut on it by a neighbor walking
@@ -335,7 +345,7 @@ Compat tests (QA, lane E, from "Builders never copy what is inside containers"):
 Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),
 `QaCreateItemsHeldCompatTests` (a scanned Create depot, deployer and basin each holding a diamond are built empty).
 
-GameTests (`src/gametest/java/.../test/`): `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
+GameTests (`src/gametest/java/.../test/`): `BlueprintsStayGameTests.everyBlueprintKeepsItsLampsPathsAndBeds` (B537-B539: in every shipped blueprint no standing lantern, candle or torch is on a top that can't hold it, no dirt path or farmland under a solid block, no half bed; with QaWonderDesignsGameTests' qaWonderStagesStand and qaWonderBedsWhole now run for the Great Library, the Hanging Gardens and the Observatory too), `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
 `BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbor's bench outlasts a build;
 a bench put down and employed at in one command is held),

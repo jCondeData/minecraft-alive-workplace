@@ -473,7 +473,8 @@ SCENES = [
       "the hall's People section as a table of everyone (a builder, a guard, workers, a jobless villager, a nitwit and a "
       "child), then the first row opened to that villager's details with Job and Bed buttons", 45,
       [("01_people_table", "The People table: Name, Job, Level and Mood, with the village's counts on top"),
-       ("02_people_row_open", "A row opened: traits, what they're doing, needs, mood and why, class, and the Job and Bed buttons")]),
+       ("02_people_row_open", "A row opened: traits, what they're doing, needs, mood and why, class, and the Job and Bed buttons"),
+       ("03_people_story", "Story on the open row: their life story, as shift-click opened it from the old list (B547)")]),
     # Job ▾ in the People table (ROADMAP 40.3): every job, the free ones with how many, the price, two clicks to pay
     S("hall_people_job", "Village Hall", "Changing a job from the People table",
       "Job ▾ on a librarian's row opens the list of every job (those with a free block say how many, the rest are grayed "

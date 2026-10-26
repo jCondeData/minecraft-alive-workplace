@@ -67,9 +67,6 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 	static final List<String> WONDERS = List.of("great_cathedral", "lighthouse", "great_library", "great_wall", "observatory",
 		"hanging_gardens", "colossus", "stadium");
 
-	/** Their stages-stand checks fail on the shipped blueprints, so they are in QaWonderDesignsBugTests until fixed. */
-	static final Set<String> BUGGY_STAND = Set.of("great_library", "hanging_gardens");
-
 	@GameTestGenerator
 	public Collection<TestFunction> designs() {
 		List<TestFunction> out = new ArrayList<>();
@@ -77,15 +74,12 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 			add(out, "qaWonderSizes_" + id, id, QaWonderDesignsGameTests::sizes);
 			add(out, "qaWonderFeatures_" + id, id, QaWonderDesignsGameTests::features);
 			add(out, "qaWonderStagesGrounded_" + id, id, QaWonderDesignsGameTests::grounded);
-			if (!BUGGY_STAND.contains(id)) {
-				add(out, "qaWonderStagesStand_" + id, id, QaWonderDesignsGameTests::stand);
-			}
+			add(out, "qaWonderStagesStand_" + id, id, QaWonderDesignsGameTests::stand); // the Library and the Gardens since B538, B539
 			add(out, "qaWonderDoorways_" + id, id, QaWonderDesignsGameTests::doorways);
 			add(out, "qaWonderNothingFree_" + id, id, QaWonderDesignsGameTests::nothingFree);
 			add(out, "qaWonderNames_" + id, id, QaWonderDesignsGameTests::names);
-			if (!id.equals("observatory")) { // the Observatory's bed is half the wrong way round: QaWonderDesignsBugTests
-				add(out, "qaWonderBedsWhole_" + id, id, (h, w) -> h.assertTrue(brokenBeds(whole(h, w)).isEmpty(), w + ": " + brokenBeds(whole(h, w))));
-			}
+			// the Observatory's too since B537 (its bed was half the wrong way round)
+			add(out, "qaWonderBedsWhole_" + id, id, (h, w) -> h.assertTrue(brokenBeds(whole(h, w)).isEmpty(), w + ": " + brokenBeds(whole(h, w))));
 		}
 		add(out, "qaWonderLampsLightAtNight_lighthouse", "lighthouse", (h, id) -> lampsLight(h, id, 1, 8));
 		add(out, "qaWonderLampsLightAtNight_stadium", "stadium", (h, id) -> lampsLight(h, id, 4, 4));

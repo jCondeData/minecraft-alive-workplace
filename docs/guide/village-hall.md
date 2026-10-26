@@ -59,9 +59,12 @@ right shows what the village needs next on the Overview, and what a section is f
 ("8 · 6 working · 2 jobless"). Scroll it with the mouse wheel in a big village. The mood is one word: Happy, Content,
 Unhappy, or **No bed** in red when having no bed is what's wrong. Children and builders are in the list too ("Child"
 in the Job column, builders in gold). Click a villager's row to open their details right under it: their traits,
-what they're doing now, what they need, their mood and why, and their class and how to rise. Under that are three
-buttons: **Job ▾** changes their job (or gives a jobless villager one), **Bed ▾** shows the village's beds, and
-**Find** makes them glow so you can spot them. Click the row again (or press Esc) to close it. The bell, the figures
+what they're doing now, what they need, their mood and why, and their class and how to rise. Under that are the
+buttons: **Job ▾** changes their job (or gives a jobless villager one), **Bed ▾** shows the village's beds,
+**Find** makes them glow so you can spot them, and **Story** (for a villager with a name) opens their life story:
+your hearts with them, their name day, their family and partner, and what they've told you. A long row can be
+scrolled through: its details and lists stay in view while you scroll down to them. Click the row again (or press
+Esc) to close it. The bell, the figures
 and the Legends, Classes and Free job blocks pages sit in a row of pictures over the table.
 
 **Giving a bed.** Bed ▾ opens the village's beds under the villager's row. Free beds come first, with the house and

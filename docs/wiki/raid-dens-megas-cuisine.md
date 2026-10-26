@@ -8,7 +8,7 @@ the village knows (38.2), raid helpers (38.1a, which replaced 38.3's Den Wardens
 bracelets (38.5), the Jeweler's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
 Shrine with its festival show (38.7), Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8), bean farms (38.9) and the partners' treats and dish luxuries (38.10); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.1a, 38.2, 38.3, 38.3a, 38.4, 38.4a, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.8a, 38.9, 38.10, 38.11, B190, B191, B215, B414, B415
+Roadmap items: 38.1, 38.1a, 38.2, 38.3, 38.3a, 38.4, 38.4a, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.8a, 38.9, 38.10, 38.11, B190, B191, B215, B414, B415, B476
 
 ## What a player sees
 

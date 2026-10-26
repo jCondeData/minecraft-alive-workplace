@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -96,7 +97,7 @@ public final class CupPage {
 		menu.button(BRACKET, VillageHallScreen.icon(Items.MAP, Component.translatable("screen.aliveworkplace.cup.bracket", capacity), ChatFormatting.WHITE,
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.cup.entrants", entrants.size()), ChatFormatting.GRAY),
 			bracket.isEmpty() ? VillageHallScreen.line(Component.translatable("screen.aliveworkplace.cup.why.few", Cups.MIN_ENTRANTS), ChatFormatting.YELLOW)
-				: VillageHallScreen.line(Component.translatable("screen.aliveworkplace.cup.byes", bracket.size(), Cups.byes(bracket)), ChatFormatting.GRAY)), null);
+				: VillageHallScreen.line(Words.counted("screen.aliveworkplace.cup.byes", Cups.byes(bracket), bracket.size(), Cups.byes(bracket)), ChatFormatting.GRAY)), null);
 		champions(menu, level, cup);
 		if (CupMatches.running(level, host) != null) {
 			menu.button(WATCH, VillageHallScreen.icon(Items.ENDER_EYE, Component.translatable("screen.aliveworkplace.cup.watch"), ChatFormatting.AQUA,

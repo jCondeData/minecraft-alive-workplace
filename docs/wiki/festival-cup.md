@@ -156,9 +156,8 @@ Later additions:
 ## Known limits
 
 - A Cup banner broken by hand goes back up at the holder's next hall round.
-- Found by QA (2026-10-25), not fixed yet (B491, B492): the Sign up button works before
-  sign-up has opened, while the card still says "Sign-up opens after the festival on day N"; and with one bye the page
-  says "with 1 byes".
+- Found by QA (2026-10-25), not fixed yet (B491): the Sign up button works before sign-up has opened, while the card
+  still says "Sign-up opens after the festival on day N".
 - Operators picking the theme of an owned host isn't tested (the test server gives operators no permission level).
 
 ## Proof
@@ -171,7 +170,8 @@ Later additions:
   `QaArenaGameTests.everyArenaHasAFifteenByNineRingAndTheFirstFits`.
 - QA (28.17): `QaCupGameTests` (sign-up opening a tick either side of the festival's end and who's told, the next Cup
   rolling over when the bouts end, sign-up from every circuit village but an eighth, the bracket's limits and one over,
-  `festivalCup` off, the theme only until sign-up closes, the bracket line with 3 byes).
+  `festivalCup` off, the theme only until sign-up closes, the bracket line with 3 byes, and with one: "A bracket of 8,
+  with 1 bye for the top seed").
 - QA (28.18): `QaCupBoutGameTests` (all 324 match-ups of the chart against the games', two-type multipliers; on time the
   side with more health wins from either box and never past 90 seconds; a bout nobody can hurt in ends on time; a
   moveless Pokémon struggles).

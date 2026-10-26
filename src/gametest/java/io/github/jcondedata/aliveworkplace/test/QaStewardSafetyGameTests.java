@@ -214,14 +214,11 @@ public class QaStewardSafetyGameTests implements FabricGameTest {
 	public void aMarkCoversItsOwnSectionAndNoMore(GameTestHelper helper) {
 		Village v = village(helper);
 		int base = helper.absolutePos(BlockPos.ZERO).getX();
-		int relX = -1;
-		for (int x = 8; x <= 22; x++) {
-			if (((base + x) & 15) == 15) {
-				relX = x;
-				break;
-			}
-		}
-		helper.assertTrue(relX > 0, "setup: no section edge in the area");
+		// The first x from 8 on whose absolute coordinate is a section's east edge (x & 15 == 15). Any 16 columns hold
+		// exactly one, so this lands in 8..23 wherever the framework places the area (B522: a 15-column search missed it
+		// whenever the edge fell on x = 7 or 23), and the plans below reach x + 4 <= 27, inside the 30-wide area.
+		int relX = 8 + Math.floorMod(15 - (base + 8), 16);
+		helper.assertTrue(((base + relX) & 15) == 15 && relX <= 23, "setup: no section edge in the area");
 		BlockPos edge = helper.absolutePos(new BlockPos(relX, 2, 20));
 		PlayerBuilt ledger = PlayerBuilt.get(v.level());
 		int before = ledger.size();

@@ -361,6 +361,10 @@ The planned fields of later items, each with its default, are listed in the desi
   after a restart, is not called). Riders are found by id: Create may save a carriage's riders and put them back as
   new entities on the way. Trades in `ModTrades.conductorTrades`, Create's items looked up by id when offered.
   Nothing new in the save; a villager saved as a Conductor in a world Create was removed from loads jobless.
+- **Taking Create off a server** (B542). A villager who was a Mechanic or Conductor loads as a jobless Novice: her
+  name and clothes stay, her old trades, level and xp go, so a right click gets a shake of the head as from any jobless
+  villager, and she takes a new job by herself (`ModVillagers.forgetVanishedJob`, after vanilla reads the save; any job
+  whose mod is gone, the Furnicrafter without CobbleFurnies too). A villager whose job still exists is left as she was.
 
 - Blueprints (39.6): `aliveworkplace:create_schematics/<player>/<name>`, one for each uploaded schematic.
 

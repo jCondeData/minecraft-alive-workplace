@@ -81,6 +81,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicFilesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateItemsHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateStoresHeldCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelCounterCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelMailboxCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainSiteRaceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainSiteHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPastureCopyCompatTests",

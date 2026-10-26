@@ -514,11 +514,31 @@ public class QaRaiderCulturesGameTests implements FabricGameTest {
 	 * player's sand still there and nothing else changed. Used by QaRaiderCulturesBugTests (the ramp stalls there).
 	 */
 	static void playersSand(GameTestHelper helper, List<Integer> xs) {
+		atTheWallsFoot(helper, xs, Blocks.SAND, null);
+	}
+
+	/**
+	 * {@code foot} standing at the Stone Wall's outside foot at each of {@code xs} (on {@code ground}, when given, laid
+	 * under it first): the husk should still ramp over the wall. Sand must stay after the siege, untouched; anything else
+	 * (a plant the ramp buries) may be gone, but no other block may change.
+	 */
+	static void atTheWallsFoot(GameTestHelper helper, List<Integer> xs, net.minecraft.world.level.block.Block foot,
+		@org.jetbrains.annotations.Nullable net.minecraft.world.level.block.Block ground) {
 		Yard yard = yard(helper, pilers(helper));
 		ServerLevel level = yard.level();
+		boolean keep = foot == Blocks.SAND;
 		List<BlockPos> mine = new ArrayList<>();
+		if (ground != null) {
+			// the ground in front of the wall, out to where the husk comes from
+			for (int x = WEST; x <= EAST; x++) {
+				for (int z = FRONT + 1; z <= FRONT + 10; z++) {
+					helper.setBlock(new BlockPos(x, 0, z), Blocks.SANDSTONE); // under the floor: sand there would fall
+					helper.setBlock(new BlockPos(x, 1, z), ground);
+				}
+			}
+		}
 		for (int x : xs) {
-			helper.setBlock(new BlockPos(x, 2, FRONT + 1), Blocks.SAND);
+			helper.setBlock(new BlockPos(x, 2, FRONT + 1), foot);
 			mine.add(helper.absolutePos(new BlockPos(x, 2, FRONT + 1)));
 		}
 		Map<BlockPos, BlockState> before = blocks(helper);
@@ -533,7 +553,7 @@ public class QaRaiderCulturesGameTests implements FabricGameTest {
 					+ climber.position().subtract(base.getX(), base.getY(), base.getZ()) + (climber.isAlive() ? "" : " (dead)"));
 			}
 			for (BlockPos p : sand) {
-				helper.assertTrue(!mine.contains(p), "the player's sand at " + p.subtract(base).toShortString() + " is recorded as the raiders'");
+				helper.assertTrue(!keep || !mine.contains(p), "the player's sand at " + p.subtract(base).toShortString() + " is recorded as the raiders'");
 			}
 			if (ramped[0]) {
 				return;
@@ -546,10 +566,17 @@ public class QaRaiderCulturesGameTests implements FabricGameTest {
 				Sieges.lift(level, siege.get());
 				helper.runAfterDelay(5, () -> {
 					for (BlockPos p : mine) {
-						helper.assertTrue(level.getBlockState(p).is(Blocks.SAND), "the player's sand at " + p.subtract(base).toShortString() + " was taken away");
+						helper.assertTrue(!keep || level.getBlockState(p).is(Blocks.SAND), "the player's sand at " + p.subtract(base).toShortString() + " was taken away");
+						helper.assertTrue(!level.getBlockState(p).is(Blocks.SAND) || keep, "the raiders' sand left at " + p.subtract(base).toShortString());
 					}
 					helper.assertTrue(SandRamps.sand(level, yard.hall()).isEmpty(), "sand still recorded");
-					helper.assertTrue(changes(helper, before).isEmpty(), "blocks changed after the siege: " + changes(helper, before));
+					List<String> changed = new ArrayList<>(changes(helper, before));
+					if (!keep) {
+						for (BlockPos p : mine) {
+							changed.removeIf(c -> c.startsWith(p.toShortString() + ":") && c.endsWith("Block{minecraft:air}"));
+						}
+					}
+					helper.assertTrue(changed.isEmpty(), "blocks changed after the siege: " + changed);
 					helper.succeed();
 				});
 			}

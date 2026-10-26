@@ -1,5 +1,7 @@
 package io.github.jcondedata.aliveworkplace.client;
 
+import io.github.jcondedata.aliveworkplace.hall.HallBeds;
+import io.github.jcondedata.aliveworkplace.hall.HallJobs;
 import io.github.jcondedata.aliveworkplace.hall.HallPeople;
 import io.github.jcondedata.aliveworkplace.hall.HallSections;
 import io.github.jcondedata.aliveworkplace.hall.HallSections.Section;
@@ -336,7 +338,217 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	}
 
 	private int detailHeight(ItemStack icon, int w) {
-		return 2 + detailLines(icon, w).size() * 10 + 3 + BH + 4;
+		return 2 + detailLines(icon, w).size() * 10 + 3 + BH + 4 + jobListHeight(icon, w) + bedListHeight(icon, w);
+	}
+
+	// --- Bed ▾'s list (40.4) ------------------------------------------------------------------------------------------
+
+	private static HallBeds.State bedStateOf(ItemStack line) {
+		CompoundTag mark = HallBeds.mark(line);
+		return mark == null ? HallBeds.State.NOTE : HallBeds.State.of(mark.getString("state"));
+	}
+
+	private int bedListHeight(ItemStack icon, int w) {
+		List<ItemStack> lines = HallBeds.lines(icon);
+		if (lines.isEmpty()) {
+			return 0;
+		}
+		int h = 4;
+		for (ItemStack line : lines) {
+			if (bedStateOf(line) == HallBeds.State.HEADER) {
+				h += 11;
+				for (Component c : loreOf(line)) {
+					h += font.split(c, w - 8).size() * 10;
+				}
+				h += 3;
+			} else {
+				h += JH;
+			}
+		}
+		return h + 4;
+	}
+
+	/** Draws the bed list from {@code y}; returns a tooltip for the line under the mouse (null: none). */
+	private List<Component> renderBedList(GuiGraphics g, ItemStack icon, int x, int y, int w, int mouseX, int mouseY) {
+		List<ItemStack> lines = HallBeds.lines(icon);
+		if (lines.isEmpty()) {
+			return null;
+		}
+		List<Component> tip = null;
+		g.fill(x - 2, y, x + w, y + bedListHeight(icon, w) - 2, 0x70000000);
+		int ly = y + 4;
+		for (ItemStack line : lines) {
+			HallBeds.State state = bedStateOf(line);
+			if (state == HallBeds.State.HEADER) {
+				g.drawString(font, TableStyle.trim(font, line.getHoverName(), w - 8), x + 2, ly, TableStyle.TITLE, false);
+				ly += 11;
+				for (Component c : loreOf(line)) {
+					for (FormattedCharSequence part : font.split(c, w - 8)) {
+						g.drawString(font, part, x + 2, ly, TableStyle.BODY, false);
+						ly += 10;
+					}
+				}
+				ly += 3;
+				continue;
+			}
+			boolean over = mouseX >= x && mouseX < x + w - 2 && mouseY >= ly && mouseY < ly + JH && mouseY >= tableTop && mouseY < tableTop + tableH;
+			if (over && state.pickable()) {
+				g.fill(x, ly - 1, x + w - 2, ly + JH - 1, 0x30FFFFFF);
+			}
+			g.pose().pushPose();
+			g.pose().translate(x + 2, ly, 0);
+			g.pose().scale(10 / 16f, 10 / 16f, 1f);
+			g.renderItem(line, 0, 0);
+			g.pose().popPose();
+			int colour = state == HallBeds.State.CURRENT ? TableStyle.TITLE : state.pickable() ? TableStyle.NAME : TableStyle.FAINT;
+			g.drawString(font, TableStyle.trim(font, line.getHoverName(), w - 20), x + 16, ly + 1, colour, false);
+			CompoundTag mark = HallBeds.mark(line);
+			if (state == HallBeds.State.PLAN) {
+				hits.add(new int[]{7, 0, x, ly - 1, w - 2, JH});
+			} else if (state.pickable() && mark != null) {
+				hits.add(new int[]{6, mark.getInt("id"), x, ly - 1, w - 2, JH});
+			}
+			if (over && !loreOf(line).isEmpty()) {
+				tip = loreOf(line);
+			}
+			ly += JH;
+		}
+		return tip;
+	}
+
+	// --- Job ▾'s list (40.3) ------------------------------------------------------------------------------------------
+
+	/** A line of the job list's height. */
+	private static final int JH = 12;
+
+	/** The job list's lines on an open row's button (empty: it isn't open). */
+	private static List<ItemStack> jobLines(ItemStack icon) {
+		CompoundTag row = HallPeople.row(icon);
+		return row != null && row.getBoolean("jobs_open") ? HallJobs.lines(icon) : List.of();
+	}
+
+	private static HallJobs.State stateOf(ItemStack line) {
+		CompoundTag mark = HallJobs.mark(line);
+		return mark == null ? HallJobs.State.NO_BLOCK : HallJobs.State.of(mark.getString("state"));
+	}
+
+	private List<Component> loreOf(ItemStack line) {
+		ItemLore lore = line.get(DataComponents.LORE);
+		return lore == null ? List.of() : lore.lines();
+	}
+
+	/** The last line of a picked job's tooltip ("Click again to pay ..."), drawn under it. */
+	private List<FormattedCharSequence> pickedLines(ItemStack line, int w) {
+		List<Component> lore = loreOf(line);
+		return lore.isEmpty() ? List.of() : font.split(lore.get(lore.size() - 1), w);
+	}
+
+	private int jobListHeight(ItemStack icon, int w) {
+		List<ItemStack> lines = jobLines(icon);
+		if (lines.isEmpty()) {
+			return 0;
+		}
+		int h = 4;
+		for (ItemStack line : lines) {
+			HallJobs.State state = stateOf(line);
+			if (state == HallJobs.State.HEADER) {
+				h += 11;
+				for (Component c : loreOf(line)) {
+					h += font.split(c, w - 8).size() * 10;
+				}
+				h += 3;
+			} else {
+				h += JH;
+				if (state == HallJobs.State.PICKED || state == HallJobs.State.NO_JOB_PICKED) {
+					h += pickedLines(line, w - 24).size() * 10 + 1;
+				}
+			}
+		}
+		return h + 4;
+	}
+
+	/** Draws the job list from {@code y}; returns a tooltip for the line under the mouse (null: none). */
+	private List<Component> renderJobList(GuiGraphics g, ItemStack icon, int x, int y, int w, int mouseX, int mouseY) {
+		List<ItemStack> lines = jobLines(icon);
+		if (lines.isEmpty()) {
+			return null;
+		}
+		List<Component> tip = null;
+		g.fill(x - 2, y, x + w, y + jobListHeight(icon, w) - 2, 0x70000000);
+		int ly = y + 4;
+		for (ItemStack line : lines) {
+			HallJobs.State state = stateOf(line);
+			if (state == HallJobs.State.HEADER) {
+				g.drawString(font, TableStyle.trim(font, line.getHoverName(), w - 8), x + 2, ly, TableStyle.TITLE, false);
+				ly += 11;
+				for (Component c : loreOf(line)) {
+					for (FormattedCharSequence part : font.split(c, w - 8)) {
+						g.drawString(font, part, x + 2, ly, TableStyle.BODY, false);
+						ly += 10;
+					}
+				}
+				ly += 3;
+				continue;
+			}
+			boolean picked = state == HallJobs.State.PICKED || state == HallJobs.State.NO_JOB_PICKED;
+			List<FormattedCharSequence> under = picked ? pickedLines(line, w - 24) : List.of();
+			int lineH = JH + (picked ? under.size() * 10 + 1 : 0);
+			boolean over = mouseX >= x && mouseX < x + w - 2 && mouseY >= ly && mouseY < ly + lineH && mouseY >= tableTop && mouseY < tableTop + tableH;
+			if (picked) {
+				g.fill(x, ly - 1, x + w - 2, ly + lineH - 1, 0x50FFAA00);
+			} else if (over && state.pickable()) {
+				g.fill(x, ly - 1, x + w - 2, ly + lineH - 1, 0x30FFFFFF);
+			}
+			g.pose().pushPose();
+			g.pose().translate(x + 2, ly, 0);
+			g.pose().scale(10 / 16f, 10 / 16f, 1f);
+			g.renderItem(line, 0, 0);
+			g.pose().popPose();
+			int colour = picked ? TableStyle.TITLE : state.pickable() ? TableStyle.NAME : TableStyle.FAINT;
+			g.drawString(font, TableStyle.trim(font, line.getHoverName(), w - 20), x + 16, ly + 1, colour, false);
+			int uy = ly + JH;
+			for (FormattedCharSequence part : under) {
+				g.drawString(font, part, x + 16, uy, 0xFF55FF55, false);
+				uy += 10;
+			}
+			CompoundTag mark = HallJobs.mark(line);
+			if (state != HallJobs.State.CURRENT && mark != null) {
+				hits.add(new int[]{5, mark.getInt("id"), x, ly - 1, w - 2, lineH});
+			}
+			if (over && !loreOf(line).isEmpty()) {
+				tip = loreOf(line);
+			}
+			ly += lineH;
+		}
+		return tip;
+	}
+
+	/** Whether a row loaded now has its job list open, other than {@code uuid}'s. */
+	private boolean jobListOpenElsewhere(String uuid) {
+		for (int slot : personSlots()) {
+			CompoundTag row = HallPeople.row(menu.slots.get(slot).getItem());
+			if (row != null && row.getBoolean("jobs_open") && !row.getString("uuid").equals(uuid)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Whether a row loaded now has its bed list open, other than {@code uuid}'s. */
+	private boolean bedListOpenElsewhere(String uuid) {
+		for (int slot : personSlots()) {
+			CompoundTag row = HallPeople.row(menu.slots.get(slot).getItem());
+			if (row != null && row.getBoolean("beds_open") && !row.getString("uuid").equals(uuid)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void menuButton(int id) {
+		if (minecraft != null && minecraft.gameMode != null) {
+			minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
+		}
 	}
 
 	/** Asks the server for the window of people that the table's scroll shows, when it isn't loaded. */
@@ -365,6 +577,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		hits.clear();
 		ItemStack tooltip = null;
 		Component tip = null;
+		List<Component> jobTips = null;
 		// The strip of the section's other buttons.
 		int sx = x;
 		for (int slot : stripSlots()) {
@@ -466,17 +679,29 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				dy += 3;
 				int bx = x + 12;
 				String action = row.getString("job_action");
-				bx = button(g, Component.translatable("screen.aliveworkplace.hall.people.job_button"), bx, dy, !action.isEmpty(), 2, slot, mouseX, mouseY);
-				if (mouseX >= bx - 4 - buttonWidth("job_button") && mouseX < bx - 4 && mouseY >= dy && mouseY < dy + BH) {
-					tip = Component.translatable(action.isEmpty() ? "screen.aliveworkplace.hall.people.job_none" : "screen.aliveworkplace.hall.people.job_" + action);
+				boolean listOpen = row.getBoolean("jobs_open");
+				if (!row.getBoolean("job_hidden")) { // game rule workplaceRetraining off hides Job ▾ (40.3)
+					bx = button(g, Component.translatable("screen.aliveworkplace.hall.people.job_button"), bx, dy, !action.isEmpty(), 2, slot, mouseX, mouseY);
+					if (mouseX >= bx - 4 - buttonWidth("job_button") && mouseX < bx - 4 && mouseY >= dy && mouseY < dy + BH) {
+						tip = Component.translatable(listOpen ? "screen.aliveworkplace.hall.people.job_open" : action.isEmpty()
+							? "screen.aliveworkplace.hall.people.job_none" : "screen.aliveworkplace.hall.people.job_" + action);
+					}
 				}
 				int bedX = bx;
 				bx = button(g, Component.translatable("screen.aliveworkplace.hall.people.bed_button"), bx, dy, true, 3, slot, mouseX, mouseY);
 				if (mouseX >= bedX && mouseX < bx - 4 && mouseY >= dy && mouseY < dy + BH) {
-					tip = Component.translatable("screen.aliveworkplace.hall.people.bed_hint");
+					tip = Component.translatable(row.getBoolean("beds_open") ? "screen.aliveworkplace.hall.people.bed_open" : "screen.aliveworkplace.hall.people.bed_hint");
 				}
 				if (!action.equals("assign")) {
 					button(g, Component.translatable("screen.aliveworkplace.hall.people.find_button"), bx, dy, true, 4, slot, mouseX, mouseY);
+				}
+				List<Component> jobTip = renderJobList(g, icon, x + 12, dy + BH + 4, detailW, mouseX, mouseY);
+				if (jobTip != null) {
+					jobTips = jobTip;
+				}
+				List<Component> bedTip = renderBedList(g, icon, x + 12, dy + BH + 4 + jobListHeight(icon, detailW), detailW, mouseX, mouseY);
+				if (bedTip != null) {
+					jobTips = bedTip;
 				}
 			}
 		}
@@ -484,6 +709,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		TableStyle.scrollbar(g, x + w - 6, tableTop, tableH, tableScroll, max, content);
 		if (tooltip != null) {
 			g.renderTooltip(font, tooltip, mouseX, mouseY);
+		} else if (jobTips != null) {
+			g.renderComponentTooltip(font, jobTips, mouseX, mouseY);
 		} else if (tip != null) {
 			g.renderTooltip(font, tip, mouseX, mouseY);
 		}
@@ -523,7 +750,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				if ((pass == 0) != isButton || mx < hit[2] || mx >= hit[2] + hit[4] || my < hit[3] || my >= hit[3] + hit[5]) {
 					continue;
 				}
-				if (hit[0] == 0 && (my < tableTop || my >= tableTop + tableH)) {
+				if ((hit[0] == 0 || hit[0] == 5 || hit[0] == 6 || hit[0] == 7) && (my < tableTop || my >= tableTop + tableH)) {
 					continue;
 				}
 				click(hit[0], hit[1], button);
@@ -537,18 +764,27 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		if (minecraft != null) {
 			minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
 		}
-		ItemStack icon = menu.slots.get(slot).getItem();
+		ItemStack icon = kind >= 5 ? ItemStack.EMPTY : menu.slots.get(slot).getItem();
 		CompoundTag row = HallPeople.row(icon);
 		switch (kind) {
 			case 0 -> {
 				String uuid = row == null ? null : row.getString("uuid");
 				openUuid = uuid != null && uuid.equals(openUuid) ? null : uuid; // click again closes it
+				if (jobListOpenElsewhere(openUuid)) {
+					menuButton(HallJobs.CLOSE); // the job list goes with the row it was open on
+				}
+				if (bedListOpenElsewhere(openUuid)) {
+					menuButton(HallBeds.CLOSE); // and so does the bed list (40.4)
+				}
 			}
 			case 1 -> press(slot, button, button == 0 && hasShiftDown());
-			// Job ▾: today's Change job for a worker (36.18), the free jobs for a jobless villager (40.3 replaces it)
-			case 2 -> press(slot, row != null && row.getString("job_action").equals("retrain") ? 1 : 0, false);
-			case 3 -> open(Section.HOMES); // Bed ▾: the village's beds and who's homeless (40.4 replaces it)
+			// Job ▾: the list of every job opens (or closes) under the row (40.3)
+			case 2 -> menuButton(HallJobs.OPEN + slot);
+			case 3 -> menuButton(HallBeds.OPEN + slot); // Bed ▾: the village's beds open (or close) under the row (40.4)
 			case 4 -> press(slot, 0, false); // Find: they glow
+			case 5 -> menuButton(HallJobs.PICK + slot); // a job on Job ▾'s list (slot: the job's number)
+			case 6 -> menuButton(HallBeds.PICK + slot); // a bed on Bed ▾'s list (slot: the line's number)
+			case 7 -> open(Section.BUILDINGS); // "Short of beds? Plan a house ›"
 			default -> {
 			}
 		}
@@ -563,6 +799,12 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	@Override
 	public boolean keyPressed(int key, int scanCode, int modifiers) {
 		if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE && customBody() && openUuid != null) {
+			if (jobListOpenElsewhere(null)) {
+				menuButton(HallJobs.CLOSE);
+			}
+			if (bedListOpenElsewhere(null)) {
+				menuButton(HallBeds.CLOSE);
+			}
 			openUuid = null; // Esc closes the open row first
 			return true;
 		}
@@ -579,6 +821,51 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		openUuid = row == null ? null : row.getString("uuid");
 		tableScroll = Math.max(0, (menu.state(HallSections.PEOPLE_FIRST) + index - 1) * RH);
 		return openUuid != null;
+	}
+
+	/** Opens the row of the villager called {@code name} (the screenshot harness), scrolled into view; false if there's none. */
+	public boolean openRowNamed(String name) {
+		List<Integer> people = personSlots();
+		for (int i = 0; i < people.size(); i++) {
+			if (menu.slots.get(people.get(i)).getItem().getHoverName().getString().startsWith(name)) {
+				return openRow(i);
+			}
+		}
+		return false;
+	}
+
+	/** Clicks Job ▾ on the open row (the screenshot harness), as a player does; false with no row open. */
+	public boolean pressJob() {
+		for (int slot : personSlots()) {
+			CompoundTag row = HallPeople.row(menu.slots.get(slot).getItem());
+			if (row != null && row.getString("uuid").equals(openUuid)) {
+				click(2, slot, 0);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Clicks Bed ▾ on the open row (the screenshot harness), as a player does; false with no row open. */
+	public boolean pressBed() {
+		for (int slot : personSlots()) {
+			CompoundTag row = HallPeople.row(menu.slots.get(slot).getItem());
+			if (row != null && row.getString("uuid").equals(openUuid)) {
+				click(3, slot, 0);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Clicks the bed on line {@code n} of the open bed list (the screenshot harness), as a player does. */
+	public void pickBed(int n) {
+		click(6, n, 0);
+	}
+
+	/** Clicks the job numbered {@code id} on the open job list (the screenshot harness), as a player does. */
+	public void pickJob(int id) {
+		click(5, id, 0);
 	}
 
 	/** Scrolls the table by {@code rows} (the screenshot harness). */

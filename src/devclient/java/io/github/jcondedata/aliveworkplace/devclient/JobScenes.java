@@ -4839,6 +4839,121 @@ final class JobScenes {
 					});
 				}, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		SCREENS.put("hall_people_job", new Screen("the People table's Job list: every job, the free ones with how many, the price, then a librarian made a Mason",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				Villager dara = worker(level, new BlockPos(6, -60, 2), Blocks.LECTERN, PoiTypes.LIBRARIAN, VillagerProfession.LIBRARIAN);
+				dara.setVillagerData(dara.getVillagerData().setLevel(3));
+				dara.setVillagerXp(210);
+				dara.setCustomName(Component.literal("Dara"));
+				Villager bram = worker(level, new BlockPos(-6, -60, 2), Blocks.FLETCHING_TABLE, PoiTypes.FLETCHER, VillagerProfession.FLETCHER);
+				bram.setCustomName(Component.literal("Bram"));
+				Villager wren = EntityType.VILLAGER.spawn(level, new BlockPos(-2, -60, 5), MobSpawnType.COMMAND);
+				wren.setCustomName(Component.literal("Wren"));
+				place(level, new BlockPos(-4, -60, -3), Blocks.STONECUTTER); // two free stonecutters and a free Blueprint Table
+				place(level, new BlockPos(4, -60, -3), Blocks.STONECUTTER);
+				place(level, new BlockPos(0, -60, -4), ModBlocks.BLUEPRINT_TABLE);
+				player.getInventory().add(new ItemStack(Items.EMERALD, 32));
+				io.github.jcondedata.aliveworkplace.hall.HallSections.forget();
+				io.github.jcondedata.aliveworkplace.hall.HallJobs.forget();
+			},
+			List.of(new Step("01_job_list", -1, 6, (level, player) -> {
+					if (!(player.containerMenu instanceof ChoiceMenu)) {
+						io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					}
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						io.github.jcondedata.aliveworkplace.hall.HallSections.choose(m, level, STATION, player,
+							io.github.jcondedata.aliveworkplace.hall.HallSections.Section.PEOPLE); // the sidebar's click
+					}
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s && s.openRowNamed("Dara")) {
+							s.pressJob(); // Job ▾ on Dara's row: the list of every job opens under it
+						}
+					});
+				}, 40),
+				new Step("02_job_picked", -1, 6, (level, player) -> {
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+							s.pickJob(net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getId(VillagerProfession.MASON)); // once: the price
+						}
+					});
+				}, 40),
+				new Step("03_job_changed", -1, 6, (level, player) -> {
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+							s.pickJob(net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getId(VillagerProfession.MASON)); // again: paid
+						}
+					});
+				}, 40),
+				new Step("04_job_after", -1, 6, (level, player) -> {
+					boolean mason = !level.getEntities(EntityType.VILLAGER, v -> v.hasCustomName() && v.getCustomName().getString().equals("Dara")
+						&& v.getVillagerData().getProfession() == VillagerProfession.MASON).isEmpty();
+					Showcase.check(mason, "Dara the librarian was made a Mason from the People table's Job list");
+				}, 20)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		SCREENS.put("hall_people_bed", new Screen("the People table's Bed list: the village's free beds with where they are, a swap, then a bed given",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				for (BlockPos foot : List.of(new BlockPos(-8, -60, -6), new BlockPos(9, -60, -8), new BlockPos(-10, -60, 6))) {
+					level.setBlockAndUpdate(foot, Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.SOUTH)
+						.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+					level.setBlockAndUpdate(foot.south(), Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.SOUTH)
+						.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+				}
+				Villager dara = EntityType.VILLAGER.spawn(level, new BlockPos(5, -60, 3), MobSpawnType.COMMAND);
+				dara.setCustomName(Component.literal("Dara"));
+				dara.setNoAi(true);
+				Villager jem = EntityType.VILLAGER.spawn(level, new BlockPos(-5, -60, 3), MobSpawnType.COMMAND);
+				jem.setCustomName(Component.literal("Jem"));
+				jem.setNoAi(true);
+				io.github.jcondedata.aliveworkplace.hall.HallSections.forget();
+				io.github.jcondedata.aliveworkplace.hall.HallBeds.forget();
+			},
+			List.of(new Step("01_bed_list", -1, 6, (level, player) -> {
+					// Jem sleeps in the bed to the south-west (the beds' records are filed by now, a step after staging).
+					level.getEntities(EntityType.VILLAGER, v -> v.hasCustomName() && v.getCustomName().getString().equals("Jem")).forEach(jem ->
+						io.github.jcondedata.aliveworkplace.camp.CampBeds.claim(level, jem, new BlockPos(-10, -60, 7)));
+					if (!(player.containerMenu instanceof ChoiceMenu)) {
+						io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					}
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						io.github.jcondedata.aliveworkplace.hall.HallSections.choose(m, level, STATION, player,
+							io.github.jcondedata.aliveworkplace.hall.HallSections.Section.PEOPLE); // the sidebar's click
+					}
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s && s.openRowNamed("Dara")) {
+							s.pressBed(); // Bed ▾ on Dara's row: the village's beds open under it
+						}
+					});
+				}, 40),
+				new Step("02_bed_given", -1, 6, (level, player) -> {
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+							s.pickBed(0); // the nearest free bed: hers from now on
+						}
+					});
+				}, 40),
+				new Step("03_bed_after", -1, 6, (level, player) -> {
+					boolean housed = !level.getEntities(EntityType.VILLAGER, v -> v.hasCustomName() && v.getCustomName().getString().equals("Dara")
+						&& io.github.jcondedata.aliveworkplace.hall.VillageNeeds.bed(level, v) != null).isEmpty();
+					Showcase.check(housed, "Dara was given a free bed from the People table's Bed list");
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+							s.pressBed(); // open again: hers on top as "their bed now", Jem's to swap
+						}
+					});
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("hall_pages", new Screen("the Village Hall's chronicle and trade-route pages opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()

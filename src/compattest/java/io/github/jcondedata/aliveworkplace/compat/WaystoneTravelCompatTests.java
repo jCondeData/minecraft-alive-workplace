@@ -58,6 +58,9 @@ public class WaystoneTravelCompatTests implements FabricGameTest {
 	private static void villages(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		cleanUp(helper);
+		// Each test here runs in a batch of its own: no other test's village with a standing stone (left by an earlier
+		// batch, e.g. WaystonesCompatTests') may be the one settlers pick on the way to their spot.
+		VillageWaystones.Data.get(level).halls().forEach(VillageWaystones.Data.get(level)::forget);
 		UUID owner = UUID.randomUUID();
 		for (Object[] v : new Object[][] {{HALL_A, "Ashford", PLAZA_A}, {HALL_B, "Brookmere", PLAZA_B}}) {
 			helper.setBlock((BlockPos) v[0], ModBlocks.VILLAGE_HALL);

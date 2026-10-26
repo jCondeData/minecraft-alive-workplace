@@ -24,8 +24,8 @@ Roadmap items: 41.1, 41.2, 41.3
   name changed while the stone's chunk was unloaded.
 - **The waystone network on the hall's Map** (41.2). The Village Hall's Map button lists, under "Waystone network (3):",
   every village of the hall's owner (in this dimension) that has raised its waystone: this village first ("Ashford, this
-  village"), then the others nearest first, each with its distance and direction from this hall ("Brookmere, 178 blocks
-  north-east"), and how it stands for the player looking: **discovered** (green), **not discovered yet** (yellow: use
+  village"), then the others nearest first, each with its distance and direction from this hall to that village's stone
+  ("Brookmere, 178 blocks north-east", in eight directions, from "4 blocks north" to thousands of blocks off), and how it stands for the player looking: **discovered** (green), **not discovered yet** (yellow: use
   the stone once to discover it) or **its waystone is broken** (red: the plaza is there but its stone isn't, until the
   builder's upkeep puts it back). Six villages are listed, the rest counted ("and 2 more"). A village with no stone yet
   makes the line "Waystone network: no village has a waystone yet". Without Waystones the Map lists nothing of this.
@@ -116,7 +116,7 @@ Gradle: `deps.compat.waystones = "maven.modrinth:waystones:Ub2AL65v"` (Waystones
 
 | Key | Default | What it does |
 |---|---|---|
-| `villageWaystones` | on | Off: the plaza isn't proposed; stones already standing stay working waystones and are still renamed with the village; caravans and settlers walk (41.3), and a caravan already on its way by waystone walks the whole road when it's due. Without Waystones it does nothing. |
+| `villageWaystones` | on | Off: the plaza isn't proposed; stones already standing stay working waystones, are still renamed with the village and stay on the hall's Map (a broken one as broken); caravans and settlers walk (41.3), and a caravan already on its way by waystone walks the whole road when it's due. Without Waystones it does nothing. |
 
 ## Saved data
 
@@ -169,8 +169,8 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   position back to the foot at the next round, rename or placement.
 
 - An unloaded village is listed by its last kept stone and the name its last hall round saw; whether its stone stands
-  is asked of Waystones' saved list. The compat tests cover loaded villages only (both halls in one test area); the
-  unloaded path is not tested in a GameTest.
+  is asked of Waystones' saved list (QA's `WaystoneMapQaCompatTests` checks a village 1,500 blocks off whose chunks
+  are unloaded: discovered for one player, not yet for another, never broken).
 
 - (41.3) The visible caravan party (33.7) only shows with a player near the village; the stones' sound and particles
   play where the stone's chunk is loaded. The scene `waystone_caravan` films it; the compat tests check the trip, not
@@ -204,6 +204,11 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   ampersand, and the hall's name cleared (the made-up name again); the Map's words for a village due north ("24 blocks
   north") and one south-east; a village whose hall is gone leaves the Map; the network file through a save and reload,
   a broken stone listed as broken, and the village off once the plazas are gone.
+- `WaystoneMapQaCompatTests` (compat suite, QA, 41.2): the Map's distance and direction for twelve villages, each of
+  the eight directions, both sides of the east/north-east edge, one 4 blocks off and one 5,000 blocks off, nearest
+  first, six listed with "and 6 more" and the next six once the nearest leave; a village 1,500 blocks off whose chunks
+  are unloaded, discovered by one player and not by another; the switch off after the stones stand (both stay listed,
+  a broken one as broken). Every line read through `en_us.json`, no raw keys.
 - Scene `waystone_caravan` (showcase, with Waystones): Thornholm's caravan walks to its stone and steps in; Ashford's
   steps out of it, unloads and walks back in.
 - `VillageWaystonesGameTests` (main suite, no Waystones): the rule stands aside for the missing mod and no wish is the

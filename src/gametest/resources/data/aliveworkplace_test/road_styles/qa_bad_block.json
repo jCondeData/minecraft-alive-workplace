@@ -1,0 +1,9 @@
+{
+  "middle": "minecraft:no_such_block",
+  "edge": "minecraft:cobblestone",
+  "slab": "minecraft:stone_brick_slab",
+  "stairs": "minecraft:stone_brick_stairs",
+  "bridge": {"deck": "minecraft:stone_bricks", "rail": "minecraft:stone_brick_wall", "pillar": "minecraft:stone_bricks"},
+  "lamp": "minecraft:lantern",
+  "lantern_post": "minecraft:cobblestone_wall"
+}

@@ -5708,7 +5708,7 @@ Depends on: nothing open.
   40.1 lands) lists the player's villages with a waystone, each with its distance and direction, and marks which
   ones the player has discovered. Done when: compat GameTests for two villages, one undiscovered, one with its stone
   broken; text in `en_us.json`; wiki; scene `hall_waystones`.
-- [ ] **41.3** **Caravans and settlers travel by waystone.** Between two villages that both have a waystone, trade
+- [x] **41.3** (review: pending 2026-10-26) **Caravans and settlers travel by waystone.** Between two villages that both have a waystone, trade
   caravans and settlers walk to their stone and step out at the other village's (with the mod's own sound and
   particles) instead of walking the whole way; if either stone is missing or broken, they walk as today. Done when:
   compat GameTests for a caravan and a settler going through, a stone broken mid-trip (they walk), save and reload

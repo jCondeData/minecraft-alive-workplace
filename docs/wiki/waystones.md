@@ -1,10 +1,10 @@
 # Waystones
 
 The Waystones mod in village life: each village raises a waystone by its Village Hall, named after the village (41.1);
-next, the hall's Map lists the waystone network (41.2) and caravans and settlers travel by waystone (41.3). Waystones is
+the hall's Map lists the waystone network (41.2), and caravans and settlers travel by waystone (41.3). Waystones is
 optional like every other mod: without it nothing here is offered and nothing runs.
 
-Roadmap items: 41.1, 41.2
+Roadmap items: 41.1, 41.2, 41.3
 
 ## What a player sees
 
@@ -29,6 +29,20 @@ Roadmap items: 41.1, 41.2
   the stone once to discover it) or **its waystone is broken** (red: the plaza is there but its stone isn't, until the
   builder's upkeep puts it back). Six villages are listed, the rest counted ("and 2 more"). A village with no stone yet
   makes the line "Waystone network: no village has a waystone yet". Without Waystones the Map lists nothing of this.
+- **Caravans travel by waystone** (41.3). Between two villages whose waystones both stand, a trade caravan walks from
+  the Storehouse to its village's stone and steps into it, with Waystones' own teleport sound and burst of portal
+  particles; it steps out of the other village's stone, comes in to that Storehouse to unload, and walks back into the
+  stone. The trip takes half the shortest trip (30 seconds) instead of the road's time. The chronicles say "A caravan
+  left for Brookmere by waystone with 32 × Oak Log" and "A caravan from Ashford stepped out of the waystone with ...".
+  If either stone is broken or missing when the caravan sets out, it walks the road as before; if one is broken by the
+  time it steps out, it walks the whole road from then ("The caravan from Ashford found a waystone broken and is walking
+  the road instead"). Trains (39.7) come first: between two villages with a train line the caravan rides the train.
+- **Settlers travel by waystone** (41.3). Settlers leaving for a new colony go by waystone when another village's
+  waystone stands nearer the colony's spot than their own village does, and their own stands too: after the bell they
+  walk to their village's stone and step in, and the journey counts only from the other village's stone to the spot
+  (3 minutes plus a tick a block from there). When their time is up they step out of that stone; if it (or their own) is
+  broken by then, they walk the whole road from their village instead, and its chronicle says "The settlers for Newbrook
+  found a waystone broken and are walking the road instead".
 - **A broken stone** is a hole in a finished build: the builder's upkeep puts it back like any other block (asking the
   owner first, as with every repair, under `repairAsk`), from a waystone in the chest; the new stone is registered and
   named again.
@@ -64,6 +78,28 @@ The compat answers from the block (`WaystonesAPI.getWaystoneAt`) where the chunk
 list (`WaystoneBlockBase.onRemove`). Unfilled, both answer false (and nothing is listed, since `network` is empty
 without the mod).
 
+Travel by waystone (41.3): `VillageWaystones.linked(level, from, to)` is true when the plaza is offered (the switch on,
+the mod installed) and the stone each village raised stands now (`standing`). The extension gained a default
+`warp(level, pos)`, a no-op unfilled; the compat does what Waystones' own `WaystoneTeleportManager.performTeleport` does
+for a teleport: the vanilla `PORTAL_TRAVEL` sound at the mod's volume (0.05) and the mod's `TeleportEffectMessage(pos)`
+to the players tracking the spot (its client draws 128 portal particles), sent as a plain `ClientboundCustomPayloadPacket`
+so Balm isn't needed on the compile classpath (portal particles from the server if that fails).
+- Caravans: `Caravans.send` checks trains first, then `linked`: a caravan by waystone is a `Shipment` marked
+  by waystone (its byWaystone flag, saved, false in older saves), arriving in `Caravans.waystoneTrip` (half `MIN_TRAVEL`,
+  never longer than the road), never lost on the way (31.20). At the receiving hall's round, `Data.offTheWaystones`
+  turns a due caravan by waystone whose link is gone into a walking one, arriving a whole `trip` later, before
+  `unload`; an unloaded caravan by waystone plays `warp` at the receiving stone. `CaravanSights.start` with a waystone
+  makes the party's edge the open spot beside the stone (`VillageWaystones.beside`), and plays `warp` when the party
+  leaves at it (`Party.waystone()`).
+- Settlers: `RealmData.Order` gained `via` (the hall of the village they go through; saved as `via`, empty in older
+  saves). At the bell (`MUSTER` to `LEAVING`) `Settlers.via` picks, of the villages kept in `VillageWaystones.Data`,
+  the one linked to the mother whose stone is nearest the spot, if nearer than the mother's hall. While leaving,
+  `Settlers.edge` is the spot beside the mother's stone, and they depart when all stand there (or the usual way:
+  unseen, or after `LEAVE_TICKS`). `depart` plays `warp` and sets the journey from the via village's stone
+  (`Settlers.journey(order, level)`). When the time is up, `ColonyArrival.tick` asks `Settlers.stepOut`: both stones
+  standing, `warp` at the via stone and the arrival goes on; else the order walks (`via` cleared, a whole `journey`
+  from now) and the mother's chronicle notes it.
+
 The Steward's rule is data: `data/aliveworkplace/steward_rules/waystone_plaza.json` (`mod_loaded waystones`, the new
 condition `waystones_offered`, `built_count_below 1`, `requires: ["waystones"]`, at most once). The culture's look comes
 first in the plot request (`StewardWishes.plotFor`); the looks are registered in `BlueprintLooks`, so the family counts
@@ -80,13 +116,15 @@ Gradle: `deps.compat.waystones = "maven.modrinth:waystones:Ub2AL65v"` (Waystones
 
 | Key | Default | What it does |
 |---|---|---|
-| `villageWaystones` | on | Off: the plaza isn't proposed; stones already standing stay, and are no longer renamed. Without Waystones it does nothing. |
+| `villageWaystones` | on | Off: the plaza isn't proposed; stones already standing stay, and are no longer renamed; caravans and settlers walk (41.3). Without Waystones it does nothing. |
 
 ## Saved data
 
 The plaza is an ordinary build site and finished build; the waystone and its name and who discovered it are saved by
 Waystones. New in 41.2: `aliveworkplace_village_waystones` (per dimension), the stone each village raised. Older
 worlds start with it empty, and each hall's next round (every 600 ticks) fills it.
+New in 41.3: a caravan on the road keeps `byWaystone` (in `aliveworkplace_caravans`, false when missing) and a
+colony order keeps `via` (in `aliveworkplace_realms`, empty when missing): older saves walk, as before.
 
 ## Items, blocks, jobs, commands
 
@@ -112,6 +150,17 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   back, and the line turns green or yellow again. A village whose plaza is gone (demolished, forgotten) leaves the list
   at its next hall round. A village whose hall is gone is never listed.
 - At most six villages are listed, then "and N more": the Map button's lore has to fit on the screen.
+- (41.3) A caravan by waystone takes half the shortest trip (30 seconds: the walk to the stone and from the other),
+  whatever the distance, and is never lost on the way. A train line between the two villages wins over the waystones.
+- (41.3) Whether the stones stand is asked when the caravan sets out and again when it steps out; a stone broken in
+  between makes it walk the whole road from then (not a share of it): the simplest rule a player can follow, and the
+  goods are never lost. Caravans walking back home (the other village's hall gone) walk.
+- (41.3) Settlers go to a new spot, where no village stands yet, so "the other village" is the waystone village nearest
+  the spot, used only when it is nearer than home; any village of the network in the dimension counts (Waystones'
+  stones are public), not only the owner's. The journey's 3 minutes stay (making camp); only the distance counts from
+  the other stone. Their step out is when their time is up, so the broken-stone check is then.
+- (41.3) The sound is Waystones' own (vanilla's portal travel at the mod's very low volume) and the particles are the
+  mod's own message: no new sound or particle of ours. No new switch: `villageWaystones` covers it.
 
 ## Known limits
 
@@ -122,6 +171,10 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
 - An unloaded village is listed by its last kept stone and the name its last hall round saw; whether its stone stands
   is asked of Waystones' saved list. The compat tests cover loaded villages only (both halls in one test area); the
   unloaded path is not tested in a GameTest.
+
+- (41.3) The visible caravan party (33.7) only shows with a player near the village; the stones' sound and particles
+  play where the stone's chunk is loaded. The scene `waystone_caravan` films it; the compat tests check the trip, not
+  the party's walk.
 
 - The plaza blueprint's render (tools/blueprints/render) draws only vanilla blocks: the waystone itself is left out
   of the renders.
@@ -136,6 +189,14 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   this one first and discovered, the other "31 blocks south-east: not discovered yet"; another player has discovered
   neither; the other's stone broken, it's listed as broken. A village with no stone isn't listed ("no village has a
   waystone yet"), another owner's village isn't either, and the kept stones survive a save and reload.
+- `WaystoneTravelCompatTests` (compat suite, 41.3): a caravan through the waystones (by waystone, half the shortest
+  trip, the chronicle lines at both ends); Brookmere's stone broken mid-trip, the caravan walks the whole road and
+  arrives walking, and the next one walks from the start; a trip by waystone saved and reloaded mid-trip still steps
+  out at Brookmere, an older save's caravan walks, and a colony order keeps `via` (an older one has none); settlers
+  called to the hall go through Ashford's stone toward Brookmere's (journey from Brookmere's stone), step out with both
+  standing, and walk the whole road with Brookmere's broken, as the chronicle says.
+- Scene `waystone_caravan` (showcase, with Waystones): Thornholm's caravan walks to its stone and steps in; Ashford's
+  steps out of it, unloads and walks back in.
 - `VillageWaystonesGameTests` (main suite, no Waystones): the rule stands aside for the missing mod and no wish is the
   plaza; the hall's Map lists no network.
 - Showcase scenes `village_waystone` and `hall_waystones` (41.2: the Map's network, one village of each state).

@@ -52,6 +52,12 @@ import org.jetbrains.annotations.Nullable;
  * <p>The waystone network (ROADMAP 41.2): each stone a village raises is kept ({@link Data}, {@link #stoneOf}), and the
  * hall's Map lists the owner's villages that have one ({@link #network}, {@link #mapLines}), with distance and direction,
  * marked discovered by the player looking or not, or broken.
+ *
+ * <p>Travel by waystone (ROADMAP 41.3): between two villages whose stones both stand ({@link #linked}), a trade caravan
+ * walks to its village's stone and steps out at the other's ({@link Caravans}, {@link CaravanSights}), and settlers for a
+ * colony go through to the village whose stone stands nearest the spot and walk on from there
+ * ({@code colony/Settlers}), with the mod's own teleport sound and particles ({@link #warp}). A stone found broken when
+ * they step out: they walk the road as before.
  */
 public final class VillageWaystones {
 	/** The config's {@code villageWaystones}. */
@@ -82,6 +88,13 @@ public final class VillageWaystones {
 
 		/** Whether {@code player} has discovered (activated) the working waystone whose lower half is at {@code pos} (41.2). */
 		boolean discovered(ServerPlayer player, ServerLevel level, BlockPos pos);
+
+		/**
+		 * The mod's own teleport sound and particles at the working waystone whose lower half is at {@code pos} (41.3):
+		 * a caravan or the settlers going through it. Nothing by default.
+		 */
+		default void warp(ServerLevel level, BlockPos pos) {
+		}
 	}
 
 	public static final Extension<Stones> EXTENSION = new Extension<>("village waystones");
@@ -222,6 +235,66 @@ public final class VillageWaystones {
 		return plazas;
 	}
 
+	// ---- travel by waystone (41.3) ----------------------------------------------------------------------------------------
+
+	/**
+	 * Whether caravans and settlers between the villages round {@code from} and {@code to} go by waystone (41.3): Waystones
+	 * installed, {@code villageWaystones} on, and the stone each village raised standing now (broken or missing: they walk).
+	 */
+	public static boolean linked(ServerLevel level, BlockPos from, BlockPos to) {
+		return offered() && !from.equals(to) && standing(level, from) && standing(level, to);
+	}
+
+	/** The villages of this dimension that have raised a waystone (41.3), their halls in no particular order. */
+	public static List<BlockPos> villages(ServerLevel level) {
+		return Data.get(level).halls();
+	}
+
+	/** The mod's teleport sound and particles at the stone of the village round {@code hall}, where it's loaded (41.3). */
+	public static void warp(ServerLevel level, BlockPos hall) {
+		stoneOf(level, hall).filter(level::isLoaded).ifPresent(stone -> EXTENSION.call(s -> {
+			s.warp(level, stone);
+			return true;
+		}, false));
+	}
+
+	/**
+	 * Where a traveler stands to step into the stone at {@code stone} (41.3): the nearest open spot beside it (footing, two
+	 * blocks of room) nearest {@code toward}, else the stone's own spot.
+	 */
+	public static BlockPos beside(ServerLevel level, BlockPos stone, BlockPos toward) {
+		BlockPos best = null;
+		for (int r = 1; r <= 2 && best == null; r++) {
+			for (int dx = -r; dx <= r; dx++) {
+				for (int dz = -r; dz <= r; dz++) {
+					if (Math.max(Math.abs(dx), Math.abs(dz)) != r) {
+						continue;
+					}
+					for (int dy : new int[] {0, -1, 1}) {
+						BlockPos p = stone.offset(dx, dy, dz);
+						if (open(level, p) && (best == null || p.distSqr(toward) < best.distSqr(toward))) {
+							best = p;
+						}
+					}
+				}
+			}
+		}
+		return best != null ? best : stone;
+	}
+
+	private static boolean open(ServerLevel level, BlockPos pos) {
+		if (!level.isLoaded(pos) || level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty()) {
+			return false;
+		}
+		for (BlockPos p : List.of(pos, pos.above())) {
+			BlockState state = level.getBlockState(p);
+			if (!state.getCollisionShape(level, p).isEmpty() || !state.getFluidState().isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	// ---- the waystone network (41.2) -----------------------------------------------------------------------------------
 
 	/** Lines the hall's Map lists at most, besides its heading: more villages are counted on one last line. */
@@ -341,6 +414,15 @@ public final class VillageWaystones {
 		/** The stone kept for the village round {@code hall}. */
 		public Optional<BlockPos> stone(BlockPos hall) {
 			return stones.containsKey(hall.asLong()) ? Optional.of(BlockPos.of(stones.get(hall.asLong()))) : Optional.empty();
+		}
+
+		/** The halls of the villages kept (41.3). */
+		public List<BlockPos> halls() {
+			List<BlockPos> out = new ArrayList<>();
+			for (long h : stones.keySet().toLongArray()) {
+				out.add(BlockPos.of(h));
+			}
+			return out;
 		}
 
 		void put(BlockPos hall, BlockPos stone) {

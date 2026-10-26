@@ -1121,6 +1121,11 @@ SCENES = [
     job("village_waystone", "Builder", "A waystone by the Village Hall",
         "the builder raised the Waystone Plaza by the Village Hall, and its stone became a working waystone named after the village",
         180, waystones=True),
+    # Caravans travel by waystone (ROADMAP 41.3): with Waystones, a caravan walks to its village's stone and steps out at the other's
+    job("waystone_caravan", "Realm", "Caravans travel by waystone",
+        "Thornholm's carter led his two llamas from the Storehouse to the village's waystone and stepped into it; "
+        "then Ashford's caravan stepped out of the same stone, unloaded its logs at the Storehouse and walked back into the waystone",
+        170, waystones=True),
     job("create_builds_more", "Create", "Six more Create builds, their machines turning",
         "the six builds' wheels turned, and with them the Brass Foundry's mixer, the Sawmill's saws, the Crushing Mill's wheels, the Greenhouse's belt, the Clock Tower's cuckoo clock and the Pump House's pump",
         120, create=True),

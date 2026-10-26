@@ -40,6 +40,17 @@ blocks north-east"). Each says whether you have discovered its stone (green), no
 that its waystone is broken (red: the builder will put it back). Without Waystones on the server the Map doesn't show
 this list.
 
+## Caravans and settlers by waystone
+
+When two of your villages both have their waystone, their trade caravans don't walk the road any more: the carter
+leads the llamas from the Storehouse to the village's waystone and steps in, and they step out of the other village's
+stone with the usual waystone sound and swirl of purple particles. The trip takes 30 seconds instead of minutes.
+Settlers leaving for a new colony do the same when another village's waystone stands nearer the spot than theirs: they
+step out there and walk only the rest of the way.
+
+If a waystone is broken (or one village has none), they walk the road as before. A caravan or settlers that find a
+stone broken when they step out walk the whole road from then, and the village's chronicle tells you.
+
 ## Switch
 
-`villageWaystones` (on). Off: the plaza isn't proposed; stones already standing stay as they are.
+`villageWaystones` (on). Off: the plaza isn't proposed; stones already standing stay as they are, and caravans and settlers walk.

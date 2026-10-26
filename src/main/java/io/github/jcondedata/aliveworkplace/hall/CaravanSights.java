@@ -51,6 +51,9 @@ import org.jetbrains.annotations.Nullable;
  * of them can be hurt, clicked, bred or robbed. One party per village at a time; every party is gone after
  * {@link #LIFE_TICKS} wherever it is; and its members carry {@link #TAG}, so any found after a restart are taken
  * away (like the ferry's ride boats). {@code visibleCaravans} in the config.
+ *
+ * <p>41.3: a caravan by waystone walks from the Storehouse to the spot beside the village's waystone and steps into it
+ * (the mod's teleport sound and particles), or steps out of it and comes in from there.
  */
 public final class CaravanSights {
 	/** {@code visibleCaravans} in the config (with M33's gate; off in gametests unless a test turns it on). Off: no party is shown, and any out walking is taken away. */
@@ -94,6 +97,8 @@ public final class CaravanSights {
 		final long born;
 		Phase phase;
 		long unloadingSince;
+		/** 41.3: the edge is the spot beside the village's waystone, where the party steps in or out. */
+		boolean waystone;
 
 		Party(ServerLevel level, BlockPos hall, BlockPos store, BlockPos yard, BlockPos edge, Villager carter, List<Llama> llamas, Phase phase) {
 			this.level = level;
@@ -122,6 +127,11 @@ public final class CaravanSights {
 		/** The spot by the Storehouse where the party loads and unloads. */
 		public BlockPos yard() {
 			return yard;
+		}
+
+		/** Whether the party goes through the village's waystone (41.3): its edge is the spot beside the stone. */
+		public boolean waystone() {
+			return waystone;
 		}
 
 		/** The spot at the edge of the village, toward the other village, where the party goes out of sight or comes in. */
@@ -291,6 +301,9 @@ public final class CaravanSights {
 			Party p = it.next();
 			boolean atEdge = p.phase != Phase.ARRIVING && p.phase != Phase.UNLOADING && !p.carter.isRemoved() && p.at(p.edge);
 			if (!p.step()) {
+				if (atEdge && p.waystone) {
+					VillageWaystones.warp(p.level, p.hall); // 41.3: into the stone
+				}
 				p.end(!atEdge);
 				it.remove();
 			}
@@ -311,7 +324,13 @@ public final class CaravanSights {
 	/** {@code hall}'s caravan has just left for the village at {@code to}: its party sets out from the Storehouse. */
 	@Nullable
 	static Party leave(ServerLevel level, BlockPos hall, BlockPos to, Caravans.Data data) {
-		return start(level, hall, hall, to, Phase.LEAVING, data);
+		return leave(level, hall, to, data, false);
+	}
+
+	/** As {@link #leave(ServerLevel, BlockPos, BlockPos, Caravans.Data)}; {@code waystone} (41.3): it walks to the village's stone and steps in. */
+	@Nullable
+	static Party leave(ServerLevel level, BlockPos hall, BlockPos to, Caravans.Data data, boolean waystone) {
+		return start(level, hall, hall, to, Phase.LEAVING, data, waystone);
 	}
 
 	/**
@@ -320,7 +339,7 @@ public final class CaravanSights {
 	 */
 	@Nullable
 	static Party come(ServerLevel level, BlockPos hall, Caravans.Shipment shipment, Caravans.Data data) {
-		return start(level, hall, shipment.back() ? shipment.to() : shipment.from(), shipment.from(), Phase.ARRIVING, data);
+		return start(level, hall, shipment.back() ? shipment.to() : shipment.from(), shipment.from(), Phase.ARRIVING, data, shipment.byWaystone());
 	}
 
 	/**
@@ -329,7 +348,7 @@ public final class CaravanSights {
 	 * to walk.
 	 */
 	@Nullable
-	private static Party start(ServerLevel level, BlockPos hall, BlockPos owner, BlockPos other, Phase phase, Caravans.Data data) {
+	private static Party start(ServerLevel level, BlockPos hall, BlockPos owner, BlockPos other, Phase phase, Caravans.Data data, boolean waystone) {
 		if (!ENABLED || party(level, hall) != null || !playerNear(level, hall)) {
 			return null;
 		}
@@ -351,8 +370,10 @@ public final class CaravanSights {
 		if (yard == null) {
 			return null;
 		}
-		BlockPos edge = edge(level, hall, yard, dx, dz);
-		if (edge.distSqr(yard) < 9) {
+		// 41.3: by waystone, the edge is the spot beside the village's stone (it walks there and steps in, or steps out there)
+		BlockPos stone = waystone ? VillageWaystones.stoneOf(level, hall).filter(level::isLoaded).orElse(null) : null;
+		BlockPos edge = stone != null ? VillageWaystones.beside(level, stone, yard) : edge(level, hall, yard, dx, dz);
+		if (edge.distSqr(yard) < 9 && stone == null) {
 			return null; // walled in: no walk to show
 		}
 		BlockPos from = phase == Phase.LEAVING ? yard : edge;
@@ -386,6 +407,7 @@ public final class CaravanSights {
 			llamas.add(llama);
 		}
 		Party party = new Party(level, hall.immutable(), store.immutable(), yard, edge, carter, llamas, phase);
+		party.waystone = stone != null;
 		PARTIES.add(party);
 		party.walk(toward, true);
 		return party;

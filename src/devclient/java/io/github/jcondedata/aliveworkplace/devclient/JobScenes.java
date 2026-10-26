@@ -4399,6 +4399,80 @@ final class JobScenes {
 				return act[0] == 4 && ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 24;
 			};
 		}, null));
+		// Caravans travel by waystone (41.3, filmed with Waystones): Thornholm and Ashford, 180 blocks apart, each with its
+		// Waystone Plaza. Thornholm's caravan walks from the Storehouse to its stone and steps in (the mod's portal sound and
+		// particles); then Ashford's steps out of that stone, unloads at the Storehouse and walks back into it.
+		SCENES.put("waystone_caravan", new Job("Thornholm's carter led his two llamas from the Storehouse to the village's waystone and stepped into it; "
+			+ "then Ashford's caravan stepped out of the same stone, unloaded its logs at the Storehouse and walked back into the waystone", 4800,
+			new Vec3(16, -48, 13), new Vec3(12, -60, -5), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.offered(), "Waystones is loaded and village waystones are on");
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 28; // a small village, all of it in the picture
+			waystoneVillage(level, player, STATION, "Thornholm", STATION.offset(12, 0, -8));
+			place(level, new BlockPos(4, -60, -3), ModBlocks.STOREHOUSE);
+			Container ours = chest(level, new BlockPos(5, -60, -3), new ItemStack(Items.BREAD, 40));
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).setColours(
+				new io.github.jcondedata.aliveworkplace.hall.VillageBanners.Colours(net.minecraft.world.item.DyeColor.RED,
+					net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY));
+			// Ashford, 180 blocks east, kept loaded: a hall, its plaza, a Storehouse and a chest of logs
+			BlockPos ashford = STATION.east(180);
+			level.setChunkForced(ashford.getX() >> 4, ashford.getZ() >> 4, true);
+			waystoneVillage(level, player, ashford, "Ashford", ashford.offset(2, 0, 4));
+			place(level, ashford.east(4), ModBlocks.STOREHOUSE);
+			chest(level, ashford.east(5), new ItemStack(Items.OAK_LOG, 48));
+			Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.linked(level, STATION, ashford),
+				"both villages' waystones stand (" + io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, STATION) + ", "
+					+ io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, ashford) + ")");
+			io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			List<io.github.jcondedata.aliveworkplace.hall.Caravans.Want> logs = List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.OAK_LOG, 32));
+			data.setWants(STATION, Component.literal("Thornholm"), logs);
+			data.setWants(ashford, Component.literal("Ashford"), List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.BREAD, 16)));
+			if (!data.routesFrom(STATION).contains(ashford)) {
+				data.toggleRoute(STATION, ashford);
+			}
+			if (!data.routesFrom(ashford).contains(STATION)) {
+				data.toggleRoute(ashford, STATION);
+			}
+			data.clearRoad(STATION);
+			data.clearRoad(ashford);
+			data.sent(ashford, today); // Ashford's caravan waits for the scene to send it
+			int[] act = {0, 0};
+			boolean[] sent = {false};
+			return l -> {
+				if (!sent[0]) {
+					sent[0] = true; // (on the first look, once the Storehouse's point of interest is filed: B132)
+					data.sent(STATION, -1);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, STATION, null);
+					Showcase.check(data.onTheRoad().stream().anyMatch(s -> s.from().equals(STATION) && s.byWaystone()), "Thornholm's caravan goes by waystone");
+				}
+				io.github.jcondedata.aliveworkplace.hall.CaravanSights.Party party = io.github.jcondedata.aliveworkplace.hall.CaravanSights.party(l, STATION);
+				if (act[0] == 0 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.LEAVING) {
+					Showcase.check(party.waystone(), "the party walks to the waystone, not the village's edge (" + party.edge() + ")");
+					act[0] = 1;
+				} else if (act[0] == 1 && party == null) {
+					// stepped into the stone: now Ashford's caravan brings the logs, out of the same stone
+					data.setWants(STATION, Component.literal("Thornholm"), logs);
+					data.sent(ashford, -1);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, ashford, null);
+					Showcase.check(data.onTheRoad().stream().anyMatch(s -> s.from().equals(ashford) && s.byWaystone()), "Ashford's caravan goes by waystone");
+					data.hurry(STATION);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, STATION, null);
+					act[0] = 2;
+				} else if (act[0] == 2 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.UNLOADING
+					&& party.carter().getCustomName() != null && party.carter().getCustomName().getString().equals("Ashford's caravan")) {
+					Showcase.check(party.waystone(), "Ashford's caravan came out of the waystone");
+					act[0] = 3;
+				} else if (act[0] == 3 && party == null) {
+					act[0] = 4; // back into the stone
+				}
+				if (act[0] != act[1]) {
+					act[1] = act[0];
+					System.out.println("[showcase] waystone_caravan act " + act[0] + " at game tick " + l.getGameTime());
+				}
+				return act[0] == 4 && ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 24;
+			};
+		}, null));
 	}
 
 	// --- Screens ---------------------------------------------------------------------------------------------------

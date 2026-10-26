@@ -10,14 +10,20 @@ import net.blay09.mods.waystones.api.WaystoneStyles;
 import net.blay09.mods.waystones.api.WaystonesAPI;
 import net.blay09.mods.waystones.core.WaystoneManagerImpl;
 import net.blay09.mods.waystones.core.WaystoneSyncManager;
+import net.blay09.mods.waystones.network.message.TeleportEffectMessage;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-// The Waystones integration (ROADMAP 41.1, 41.2): the only code that touches Waystones' classes. It fills
+// The Waystones integration (ROADMAP 41.1, 41.2, 41.3): the only code that touches Waystones' classes. It fills
 // VillageWaystones.EXTENSION, so a plaza's waystone (set down by a builder as a plain block) becomes a working waystone
 // of the mod's, named after the village. Uses Waystones' public API (WaystonesAPI.getWaystoneAt / placeWaystone,
 // MutableWaystone.setName, WaystonesAPI.isWaystoneActivated for discovery) and, to save and send a new name, what its own rename message does (WaystoneManagerImpl
@@ -47,6 +53,11 @@ public final class WaystonesCompat {
 			public boolean discovered(ServerPlayer player, ServerLevel level, BlockPos pos) {
 				return known(level, pos).map(w -> WaystonesAPI.isWaystoneActivated(player, w)).orElse(false);
 			}
+
+			@Override
+			public void warp(ServerLevel level, BlockPos pos) {
+				WaystonesCompat.warp(level, pos);
+			}
 		});
 	}
 
@@ -65,6 +76,23 @@ public final class WaystonesCompat {
 		return WaystoneManagerImpl.get(level.getServer()).getWaystones()
 			.filter(w -> w.getDimension().equals(level.dimension()) && (w.getPos().equals(pos) || w.getPos().equals(pos.above())))
 			.filter(Waystone::isValid).findFirst();
+	}
+
+	// A caravan or the settlers going through the stone at pos (41.3): what WaystoneTeleportManager.performTeleport does
+	// for a teleport, the vanilla portal-travel sound at the mod's volume and the mod's own TeleportEffectMessage (its
+	// client draws the burst of portal particles) to the players tracking the spot. Sent as a plain custom payload (the
+	// type is registered by the mod, through Balm), so nothing here needs Balm on the classpath.
+	static void warp(ServerLevel level, BlockPos pos) {
+		level.playSound(null, pos, SoundEvents.PORTAL_TRAVEL, SoundSource.PLAYERS, 0.05f, 1f);
+		try {
+			ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket(new TeleportEffectMessage(pos));
+			for (ServerPlayer player : level.getChunkSource().chunkMap.getPlayers(new ChunkPos(pos), false)) {
+				player.connection.send(packet);
+			}
+		} catch (RuntimeException e) {
+			// (a Waystones without the message: the same burst drawn from here)
+			level.sendParticles(ParticleTypes.PORTAL, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, 128, 1.5, 1.5, 1.5, 0.5);
+		}
 	}
 
 	static boolean raise(ServerLevel level, BlockPos pos, String name) {

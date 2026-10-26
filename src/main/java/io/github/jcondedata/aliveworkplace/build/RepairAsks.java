@@ -228,7 +228,7 @@ public final class RepairAsks {
 		List<Villager> builders = new ArrayList<>(level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
 			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && !ModAttachments.BUILDER_JOB.has(v)
 				&& Upkeep.looksAfter(level, v, f.owner())
-				&& Math.sqrt(Builders.benchPos(v).get().distSqr(origin)) <= Builders.MAX_SITE_DISTANCE));
+				&& io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).get(), origin, Builders.MAX_SITE_DISTANCE)));
 		builders.sort(Comparator.comparingDouble(v -> v.distanceToSqr(origin.getX(), origin.getY(), origin.getZ())));
 		for (Villager v : builders) {
 			if (Builders.activeSite(level, v) == null && !ModAttachments.BUILDER_JOB.has(v)) {

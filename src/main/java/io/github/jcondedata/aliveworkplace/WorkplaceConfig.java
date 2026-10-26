@@ -31,8 +31,14 @@ import java.util.Map;
 public final class WorkplaceConfig {
 	/** Chests and barrels within this many blocks of a workstation are that villager's supply chests. */
 	public int supplyRadius = 8;
-	/** How far from their bench a builder takes a build. */
-	public int maxSiteDistance = 48;
+	/** How far from their bench a builder takes a build outside the village (36.20: anywhere in the village it stands in). */
+	public int maxSiteDistance = 128;
+	/** 36.20: how far from the workstation, outside the village, a quarry, field, tree farm, orchard or berry plot may be. */
+	public int quarryReach = 128;
+	public int fieldReach = 128;
+	public int treeFarmReach = 128;
+	public int orchardAreaReach = 128;
+	public int berryPlotReach = 128;
 	/** How far from the Guard Post guards patrol and fight. */
 	public int guardRadius = 24;
 	/** How far from their workstation lumberjacks cut, orchard keepers pick and fishers fish. */
@@ -473,7 +479,7 @@ public final class WorkplaceConfig {
 	 */
 	@SuppressWarnings("unused")
 	private int configVersion = VERSION;
-	static final int VERSION = 4;
+	static final int VERSION = 5;
 	/**
 	 * The expansions whose gates were open when the file was written ({@link Expansions#open()}; not an option). A gated
 	 * switch saved while its gate was closed holds its closed default, {@code false}, which is no player's choice: when
@@ -575,6 +581,11 @@ public final class WorkplaceConfig {
 		if (format < 4 && config.villagerElderDays == 120) {
 			config.villagerElderDays = new WorkplaceConfig().villagerElderDays;
 		}
+		// Format 5 (36.20): a builder's reach outside the village goes from 48 to 128 (the owner's "this won't work for big
+		// villages"). A file of before holding the old default moves to the new one; any other number stays.
+		if (format < 5 && config.maxSiteDistance == 48) {
+			config.maxSiteDistance = new WorkplaceConfig().maxSiteDistance;
+		}
 		config.configVersion = VERSION;
 		// Which gates were open when the file was written: its list, or none in a file a jar of format 2 wrote (0.139.0 to
 		// the last release before this); a file with neither (written by hand, or older) is taken as it says.
@@ -628,6 +639,11 @@ public final class WorkplaceConfig {
 	public static final Map<String, Range> RANGES = ranges(
 		"supplyRadius", 2, 32,
 		"maxSiteDistance", 16, 256,
+		"quarryReach", 16, 256,
+		"fieldReach", 16, 256,
+		"treeFarmReach", 16, 256,
+		"orchardAreaReach", 16, 256,
+		"berryPlotReach", 16, 256,
 		"guardRadius", 8, 64,
 		"lumberjackRadius", 4, 48,
 		"orchardRadius", 4, 48,
@@ -901,6 +917,11 @@ public final class WorkplaceConfig {
 	public void apply() {
 		SupplyContainers.RADIUS = supplyRadius;
 		Builders.MAX_SITE_DISTANCE = maxSiteDistance;
+		io.github.jcondedata.aliveworkplace.mine.Miners.MAX_DISTANCE = quarryReach;
+		io.github.jcondedata.aliveworkplace.farm.Fields.MAX_DISTANCE = fieldReach;
+		io.github.jcondedata.aliveworkplace.work.AreaJobs.TREE_FARM_REACH = treeFarmReach;
+		io.github.jcondedata.aliveworkplace.work.AreaJobs.ORCHARD_REACH = orchardAreaReach;
+		io.github.jcondedata.aliveworkplace.work.AreaJobs.BERRY_PLOT_REACH = berryPlotReach;
 		Guards.RADIUS = guardRadius;
 		LumberjackWork.RADIUS = lumberjackRadius;
 		OrchardWork.RADIUS = orchardRadius;

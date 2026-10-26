@@ -98,7 +98,10 @@ public class QaStewardPlotsGameTests implements net.fabricmc.fabric.api.gametest
 		BitSet out = new BitSet();
 		for (int x = x0; x <= x1; x++) {
 			for (int z = z0; z <= z1; z++) {
-				out.set(CityPlan.cellAt(hall, helper.absolutePos(new BlockPos(x, 2, z))));
+				int cell = CityPlan.cellAt(hall, helper.absolutePos(new BlockPos(x, 2, z)));
+				if (cell >= 0) { // off the grid of a small village (theTablesReachIsInclusive)
+					out.set(cell);
+				}
 			}
 		}
 		return out;
@@ -184,7 +187,10 @@ public class QaStewardPlotsGameTests implements net.fabricmc.fabric.api.gametest
 		helper.succeed();
 	}
 
-	/** Its centre within maxSiteDistance of a table: exactly at the distance fits, one block more doesn't. */
+	/**
+	 * Its centre within maxSiteDistance of a table outside the village: exactly at the distance fits, one block more doesn't.
+	 * 36.20: a table in the village reaches all of it, so the village is made small (hall radius 20) to leave the tables out.
+	 */
 	//$ gametest_ticks_batch AREA '20' '"qaPlotTableReach"'
 	@GameTest(template = AREA, timeoutTicks = 20, batch = "qaPlotTableReach")
 	public void theTablesReachIsInclusive(GameTestHelper helper) {
@@ -192,7 +198,14 @@ public class QaStewardPlotsGameTests implements net.fabricmc.fabric.api.gametest
 		ServerLevel level = helper.getLevel();
 		int reach = Builders.MAX_SITE_DISTANCE;
 		Builders.MAX_SITE_DISTANCE = 16;
-		Leftovers.after(helper, () -> Builders.MAX_SITE_DISTANCE = reach);
+		int radius = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 20; // the tables 25 and 26 from the hall are outside it
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+		Leftovers.after(helper, () -> {
+			Builders.MAX_SITE_DISTANCE = reach;
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = radius;
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+		});
 		BlockPos corner = helper.absolutePos(BlockPos.ZERO);
 		level.getPoiManager().findAll(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI), p -> true,
 				helper.absolutePos(HALL), 120, PoiManager.Occupancy.ANY).map(BlockPos::immutable).toList()

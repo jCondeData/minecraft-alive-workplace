@@ -3021,6 +3021,50 @@ final class JobScenes {
 				return site.isPresent() && site.get().mined() >= 12 && site.get().grownTotal() >= 8;
 			};
 		}, null));
+		// Village-wide reach (36.20): a quarry marked 110 blocks east of the Miner's blast furnace, far outside Stonebrook (a hall
+		// radius of 64): out of the old 64 reach, inside the new 128. The miner takes it and walks out to it, and digs.
+		SCENES.put("far_site", new Job("the miner took a quarry marked 110 blocks out, far outside the village, walked out to it and dug it",
+			3600, new Vec3(116.5, -54, 6.5), new Vec3(70, -60, 0), (level, player) -> {
+			BlockPos hall = STATION.offset(-4, 0, 3);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			entity.setCustomName(Component.literal("Stonebrook"));
+			entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+			if (level.getPoiManager().getType(hall).isEmpty()) { // filed now, as in waystoneVillage (B534)
+				PoiTypes.forState(level.getBlockState(hall)).ifPresent(type -> level.getPoiManager().add(hall.immutable(), type));
+			}
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+			level.setBlockAndUpdate(STATION, Blocks.BLAST_FURNACE.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+			chest(level, chestPos(), new ItemStack(Items.TORCH, 4));
+			BlockPos min = new BlockPos(109, -60, -1);
+			BlockPos max = new BlockPos(111, -59, 1);
+			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+				level.setBlockAndUpdate(p, Blocks.STONE.defaultBlockState());
+			}
+			Villager m = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Dara"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, STATION);
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
+			// handed over as the player does: the Quarry Marker with both corners, right-clicked on the miner
+			ItemStack marker = new ItemStack(ModItems.QUARRY_MARKER);
+			marker.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.QUARRY, new io.github.jcondedata.aliveworkplace.mine.QuarryData(
+				java.util.Optional.of(level.dimension().location()), java.util.Optional.of(min.above()), java.util.Optional.of(max), 2));
+			io.github.jcondedata.aliveworkplace.mine.Miners.assign(player, m, marker);
+			var site = io.github.jcondedata.aliveworkplace.mine.Miners.activeSite(level, m);
+			Showcase.check(site != null, "the miner took the quarry 110 blocks out, outside the village");
+			Showcase.check(io.github.jcondedata.aliveworkplace.work.Reach.village(level, STATION).isPresent()
+				&& !io.github.jcondedata.aliveworkplace.work.Reach.inSameVillage(level, STATION, min), "the blast furnace is in Stonebrook and the quarry outside it");
+			boolean[] there = {false};
+			return l -> {
+				if (!there[0] && m.blockPosition().getX() >= 100) {
+					there[0] = true;
+					SHOTS.add("04_far_site_arrived");
+				}
+				var now = site == null ? null : io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).get(site.id());
+				return there[0] && site != null && (now == null || now.mined() >= 9);
+			};
+		}, null));
 		SCENES.put("weaponsmith", job("the weaponsmith mended the worn pickaxe", 1800, (level, player) -> {
 			Villager w = worker(level, STATION, Blocks.GRINDSTONE.defaultBlockState()
 				.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR)

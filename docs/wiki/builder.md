@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519, 36.20
 
 ## 1. What a player sees
 
@@ -109,8 +109,8 @@ asked that time shrink with each Builder: tested at 2 builders = 50%, 4 = 29% of
 **Who may order.** With `workplaceBuilderOwnership` on, a Builder takes orders only from the player who hired it,
 their friends (`/workplace friend add|remove|list`) and operators.
 
-**Upkeep and paths.** An idle Builder looks over buildings it (or its employer) finished within
-`maxSiteDistance`, every 1200 ticks, and fills only the holes with its usual materials; things players put there
+**Upkeep and paths.** An idle Builder looks over buildings it (or its employer) finished anywhere in the village his
+table stands in, or outside it within `maxSiteDistance` (36.20), every 1200 ticks, and fills only the holes with its usual materials; things players put there
 are left alone.
 
 **Asking before a repair (36.15).** With `repairAsk` on (the default) a Builder who finds blocks missing doesn't start:
@@ -172,7 +172,7 @@ Config file keys (`WorkplaceConfig`):
 | Key | Default | What it does |
 |---|---|---|
 | `supplyRadius` | 8 | Chests and barrels this close to a workstation are that villager's supply chests |
-| `maxSiteDistance` | 48 | How far from its bench a Builder takes a build (also how far upkeep looks) |
+| `maxSiteDistance` | 128 | How far from its bench a Builder takes a build outside the village (anywhere in the village is in reach; also how far upkeep looks) |
 | `builderPaths` | true | Builders lay a dirt path from each finished building to the bell or hall |
 | `builderRepairs` | true | Idle Builders repair buildings they finished when blocks go missing |
 | `repairAsk` | true | Builders ask before a repair (Repair it? Yes / Not now) and repair only what was agreed; off: they repair by themselves. Threat damage is never asked about |
@@ -287,9 +287,16 @@ claims and trip counts.
 
 ## 7. Known limits
 
-- Only builds whose middle is within `maxSiteDistance` (48) of the bench are taken. A spot past it is refused with its
-  distance rounded up, so one just past the reach reads past it: 48.5 blocks says "That spot is 49 blocks from the
-  builder's Blueprint Table — keep it within 48." (B378; Farmers', Miners' and other area jobs' spots say it the same way).
+- **How far a build may be (36.20, the owner's "village-wide").** Anywhere in the village the builder's table stands in
+  is in reach, however big the village: within the Village Hall's radius (`villageHallRadius`) or in a cell painted into
+  one of the City Plan's zones. Outside the village, a build's middle must be within `maxSiteDistance` (128) of the
+  table. A spot past it is refused with its distance rounded up, so one just past the reach reads past it, and naming the
+  village when the table stands in one: "That spot is outside Mapleridge and 140 blocks from the builder's Blueprint
+  Table — keep it within 128." (`assign.too_far_village`; with no village round the table, `assign.too_far`: "That spot
+  is 140 blocks from the builder's Blueprint Table — keep it within 128."; B378). Farmers', Miners' and other area jobs'
+  spots follow the same rule and say it the same way. A far site in chunks nobody has loaded waits until someone does:
+  nothing loads chunks for it. A world from before keeps its sites, and a config file holding the old default 48 moves to
+  128 (format 5); any other number stays.
 - Blocks on the never-placed list (spawners, portals, bedrock, command blocks...) are skipped, not substituted.
 - Steps that cannot be done after being put off once are skipped, so a build can finish with a few blocks missing
   (the `skipped` count).

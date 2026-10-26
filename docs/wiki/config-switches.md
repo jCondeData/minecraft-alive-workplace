@@ -3,7 +3,7 @@
 Every setting of the mod in one place: the server's config file, the ten game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
-Roadmap items: 25.5, B76, B119, B131, B161, 36.15
+Roadmap items: 25.5, B76, B119, B131, B161, 36.15, 36.20
 
 ## What a player sees
 
@@ -69,7 +69,12 @@ range is in brackets.
 | Key | Default | Expansion | What it does |
 |---|---|---|---|
 | `supplyRadius` | 8 (2 to 32) |  | Chests and barrels within this many blocks of a workstation are that villager's supply chests. |
-| `maxSiteDistance` | 48 (16 to 256) |  | How far from their Blueprint Table (or bench) a builder takes a build; also how far upkeep looks. |
+| `maxSiteDistance` | 128 (16 to 256) |  | How far from their Blueprint Table (or bench) a builder takes a build outside the village; anywhere in the village the table stands in is always in reach (36.20). Also how far upkeep looks. |
+| `quarryReach` | 128 (16 to 256) |  | How far from their Miner's Bench a miner takes a quarry outside the village (anywhere in the village is in reach). |
+| `fieldReach` | 128 (16 to 256) |  | How far from their composter a farmer takes a marked field outside the village (anywhere in the village is in reach). |
+| `treeFarmReach` | 128 (16 to 256) |  | How far from their Chopping Block a lumberjack takes a tree farm outside the village (anywhere in the village is in reach). |
+| `orchardAreaReach` | 128 (16 to 256) |  | How far from their workstation an orchard keeper takes a marked orchard outside the village (anywhere in the village is in reach). |
+| `berryPlotReach` | 128 (16 to 256) |  | How far from their workstation a berry breeder takes a berry plot outside the village (anywhere in the village is in reach). |
 | `guardRadius` | 24 (8 to 64) |  | How far from their workstation guards patrol and fight. |
 | `lumberjackRadius` | 16 (4 to 48) |  | How far from their workstation lumberjacks cut. |
 | `orchardRadius` | 16 (4 to 48) |  | How far from their workstation orchard keepers pick. |

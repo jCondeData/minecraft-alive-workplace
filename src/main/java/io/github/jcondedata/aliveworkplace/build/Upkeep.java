@@ -99,7 +99,9 @@ public final class Upkeep {
 		}
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		java.util.List<BlockPos> taken = threatDamage(level);
-		java.util.List<BuildSiteManager.Finished> finished = new java.util.ArrayList<>(manager.finishedNear(level, bench, Builders.MAX_SITE_DISTANCE));
+		// 36.20: every building of the village the bench stands in, and outside it those within the builder's reach
+		java.util.List<BuildSiteManager.Finished> finished = new java.util.ArrayList<>(manager.finishedIn(level).stream()
+			.filter(f -> io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, bench, f.placement().origin(), Builders.MAX_SITE_DISTANCE)).toList());
 		if (io.github.jcondedata.aliveworkplace.threat.SiegeReport.defencesFirst(level, bench)) {
 			// In a siege and for two days after it (32.6): the walls, gates and towers before anything else (the sort keeps the rest in order).
 			finished.sort(java.util.Comparator.comparingInt(f -> io.github.jcondedata.aliveworkplace.threat.Sieges.isDefence(f.structure()) ? 0 : 1));

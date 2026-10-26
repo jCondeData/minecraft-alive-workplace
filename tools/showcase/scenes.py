@@ -128,6 +128,10 @@ SCENES = [
     # The Quarry build (ROADMAP 36.12): the Miner at its blast furnace digs its pit without a marker, and it grows back
     job("quarry_build", "Miner", "A Quarry that grows back",
         "the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up", 300),
+    # Village-wide reach (ROADMAP 36.20): a quarry marked 110 blocks out, far outside the village, and the miner walks out to it
+    job("far_site", "Miner", "A quarry far outside the village",
+        "the miner took a quarry marked 110 blocks out, far outside the village, walked out to it and dug it", 240,
+        extra=[("04_far_site_arrived", "Arrived at the far quarry")]),
     # Lumberjack
     S("forest", "Lumberjack", "Felling and replanting four trees", "the lumberjack felled all four trees", 240,
       [("frame_*@first", "Start"), ("frame_*@middle", "Felling"), ("50_forest_done", "Felled and replanted")]),

@@ -45,7 +45,8 @@ village grows compact, trying the blueprint's four turns and its mirror image. A
   water and none over lava;
 - nothing stands there but **natural ground, plants and trees**, and it's 2 blocks clear of every other build site and
   finished building;
-- it's within the **Build Distance** of a builder's [Blueprint Table](blueprint-table.md).
+- a builder's [Blueprint Table](blueprint-table.md) stands in the village (then any spot in the zones will do), or the
+  spot is within the **Build Distance** of one.
 
 He never puts the same building the same way round within 24 blocks of itself, so a street isn't one house repeated:
 he mirrors it, or picks the next building on his list. On his desk, **Another spot** asks for the next one that fits

@@ -5630,7 +5630,7 @@ options", option E and its two "E · Changing a job" and "E · Assigning a bed" 
 left instead of 18 unlabeled icons, one section at a time on the right, and a **People** table where clicking a
 villager opens their details under their row, with buttons to change their job and give them a bed. No expansion
 flag: it replaces today's hall screen for everyone the day it lands, so nothing the hall does today may be lost.
-Text in American English (36.19). Lane C builds it first; lane E helps when lane C has it in hand.
+Text in American English (36.19). Lane C builds it, in order (each item builds on the one before).
 Depends on: nothing open.
 
 - [ ] **40.1** **The sidebar and its sections.** The hall screen gets a left sidebar of labeled buttons, each with

@@ -168,6 +168,23 @@ public class QaFireGameTests {
 		return v;
 	}
 
+	/**
+	 * B479: the Firewarden looks for water 16 blocks round the grindstone, which reaches past the test area, where water an
+	 * earlier batch left (outside its own area, never cleared) is found before the test's own. Takes every water source
+	 * and water cauldron in that reach out (only for tests alone in their batch), so the test sees just what it placed.
+	 */
+	static void dryReach(GameTestHelper helper, BlockPos post) {
+		ServerLevel level = helper.getLevel();
+		BlockPos centre = helper.absolutePos(post);
+		for (BlockPos p : BlockPos.betweenClosed(centre.offset(-FirewardenWork.WATER_REACH, -6, -FirewardenWork.WATER_REACH),
+				centre.offset(FirewardenWork.WATER_REACH, 6, FirewardenWork.WATER_REACH))) {
+			BlockState state = level.getBlockState(p);
+			if (state.is(Blocks.WATER_CAULDRON) || state.getFluidState().is(net.minecraft.tags.FluidTags.WATER)) {
+				level.setBlock(p, Blocks.AIR.defaultBlockState(), 2 | 16);
+			}
+		}
+	}
+
 	static Optional<Chronicle.Entry> fireEntry(ServerLevel level, BlockPos hall) {
 		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			return Optional.empty();
@@ -350,8 +367,10 @@ public class QaFireGameTests {
 		BlockPos post = new BlockPos(2, 2, 2);
 		helper.setBlock(post, Blocks.GRINDSTONE.defaultBlockState().setValue(BlockStateProperties.ATTACH_FACE, AttachFace.FLOOR));
 		BlockPos abs = helper.absolutePos(post);
+		dryReach(helper, post);
 		helper.runAfterDelay(1, () -> {
-			helper.assertTrue(FirewardenWork.findWater(level, abs).isEmpty(), "water found with none about");
+			helper.assertTrue(FirewardenWork.findWater(level, abs).isEmpty(), "water found with none about: "
+				+ FirewardenWork.findWater(level, abs).map(w -> w.subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()).orElse(""));
 			for (BlockPos[] pair : new BlockPos[][] {{new BlockPos(18, 1, 2), new BlockPos(19, 1, 2)}, {new BlockPos(2, 1, 18), new BlockPos(2, 1, 19)}}) {
 				helper.setBlock(pair[1], Blocks.WATER);
 				helper.assertTrue(FirewardenWork.findWater(level, abs).isEmpty(), "water 17 blocks from the grindstone was found: " + pair[1].toShortString());
@@ -377,6 +396,7 @@ public class QaFireGameTests {
 	@GameTest(template = AREA, timeoutTicks = 900, batch = "qaFireCauldron")
 	public void anEmptyFirewardenFillsABucketAtAWaterCauldron16BlocksOut(GameTestHelper helper) {
 		village(helper, HALL, 20);
+		dryReach(helper, GRINDSTONE);
 		BlockPos cauldron = new BlockPos(3, 2, 19);
 		helper.setBlock(cauldron, Blocks.WATER_CAULDRON.defaultBlockState().setValue(LayeredCauldronBlock.LEVEL, 3));
 		Villager warden = firewarden(helper, new BlockPos(4, 2, 3));

@@ -54,6 +54,7 @@ public final class Upkeep {
 		protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
 			if (!ENABLED && !(THREATS && !io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).damaged().isEmpty())
 				&& !io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.anyDamaged(level) // a damaged Wonder is always repaired (35.8)
+				&& !BuildSiteManager.get(level).anyRefreshAsked() // a refresh the owner asked for (36.21), whatever builderRepairs says
 				|| !Builders.isBuilder(villager) || ModAttachments.BUILDER_JOB.has(villager) || Builders.isHelping(villager)) {
 				return false;
 			}
@@ -94,12 +95,19 @@ public final class Upkeep {
 		if (!wonder.isEmpty()) {
 			return wonder.get(0);
 		}
+		// 36.21: a refresh to the latest look its owner asked for, waiting for a free builder
+		BuildSite refresh = Refreshes.takeUp(level, builder, bench);
+		if (refresh != null) {
+			return refresh;
+		}
 		if (!ENABLED && !THREATS) {
 			return null;
 		}
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		java.util.List<BlockPos> taken = threatDamage(level);
-		java.util.List<BuildSiteManager.Finished> finished = new java.util.ArrayList<>(manager.finishedNear(level, bench, Builders.MAX_SITE_DISTANCE));
+		// 36.20: every building of the village the bench stands in, and outside it those within the builder's reach
+		java.util.List<BuildSiteManager.Finished> finished = new java.util.ArrayList<>(manager.finishedIn(level).stream()
+			.filter(f -> io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, bench, f.placement().origin(), Builders.MAX_SITE_DISTANCE)).toList());
 		if (io.github.jcondedata.aliveworkplace.threat.SiegeReport.defencesFirst(level, bench)) {
 			// In a siege and for two days after it (32.6): the walls, gates and towers before anything else (the sort keeps the rest in order).
 			finished.sort(java.util.Comparator.comparingInt(f -> io.github.jcondedata.aliveworkplace.threat.Sieges.isDefence(f.structure()) ? 0 : 1));

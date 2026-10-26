@@ -50,12 +50,13 @@ public class QaTooFarWordsBugTests {
 		Jobs.employ(level, farmer, helper.absolutePos(composter), PoiTypes.FARMER, VillagerProfession.FARMER);
 		List<Component> seen = new ArrayList<>();
 		ServerPlayer player = QaStageFourGameTests.player(helper, seen, GameType.SURVIVAL);
-		BlockPos far = helper.absolutePos(composter).east(60);
+		BlockPos far = helper.absolutePos(composter).east(Fields.MAX_DISTANCE + 12); // 36.20: the reach is 128 now
 		ItemStack marker = new ItemStack(ModItems.FIELD_MARKER);
 		marker.set(ModComponents.FIELD, new FieldData(Optional.of(Ids.of(level.dimension())), Optional.of(far), Optional.of(far.offset(4, 0, 4))));
 		Fields.assign(player, farmer, marker);
 		List<String> lines = seen.stream().map(Component::getString).toList();
-		helper.assertTrue(lines.stream().anyMatch(l -> l.contains("63") && l.contains("48")), "the field 63 blocks off (reach 48) wasn't refused for its distance: " + lines);
+		helper.assertTrue(lines.stream().anyMatch(l -> l.contains(String.valueOf(Fields.MAX_DISTANCE + 15)) && l.contains(String.valueOf(Fields.MAX_DISTANCE))),
+			"the field " + (Fields.MAX_DISTANCE + 15) + " blocks off wasn't refused for its distance: " + lines);
 		helper.assertTrue(lines.stream().noneMatch(l -> l.contains("Blueprint Table") || l.contains("builder")),
 			"a farmer's too-far line speaks of the builder's Blueprint Table: " + lines);
 		helper.assertTrue(lines.stream().anyMatch(l -> l.contains("Composter the farmer works at")), "the farmer's line doesn't name his composter: " + lines);
@@ -98,13 +99,13 @@ public class QaTooFarWordsBugTests {
 		Jobs.employ(level, lumberjack, helper.absolutePos(block), ModVillagers.CHOPPING_BLOCK_POI, ModVillagers.LUMBERJACK);
 		List<Component> seen = new ArrayList<>();
 		ServerPlayer player = QaStageFourGameTests.player(helper, seen, GameType.SURVIVAL);
-		BlockPos far = helper.absolutePos(block).east(60);
+		BlockPos far = helper.absolutePos(block).east(AreaJobs.TREE_FARM_REACH + 12); // 36.20: the reach is 128 now
 		ItemStack marker = new ItemStack(ModItems.FIELD_MARKER);
 		marker.set(ModComponents.FIELD, new FieldData(Optional.of(Ids.of(level.dimension())), Optional.of(far), Optional.of(far.offset(4, 0, 4))));
 		TreeFarms.assign(player, lumberjack, marker);
 		List<String> lines = seen.stream().map(Component::getString).toList();
-		helper.assertTrue(TreeFarms.farm(lumberjack) == null, "a tree farm 63 blocks off was taken");
-		helper.assertTrue(lines.stream().anyMatch(l -> l.contains("63") && l.contains(String.valueOf(AreaJobs.MAX_DISTANCE))
+		helper.assertTrue(TreeFarms.farm(lumberjack) == null, "a tree farm " + (AreaJobs.TREE_FARM_REACH + 15) + " blocks off was taken");
+		helper.assertTrue(lines.stream().anyMatch(l -> l.contains(String.valueOf(AreaJobs.TREE_FARM_REACH + 15)) && l.contains(String.valueOf(AreaJobs.TREE_FARM_REACH))
 			&& l.contains("Chopping Block the lumberjack works at")), "the lumberjack's too-far line doesn't name the Chopping Block: " + lines);
 		helper.assertTrue(lines.stream().noneMatch(l -> l.contains("Blueprint Table") || l.contains("builder")), "the lumberjack's line speaks of the builder: " + lines);
 		helper.succeed();

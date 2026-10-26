@@ -364,6 +364,48 @@ public final class BuildPlan {
 		return out;
 	}
 
+	/** Every block the plan puts, by where (the second halves of doors and beds too). */
+	public Map<BlockPos, BlockState> targets() {
+		return java.util.Collections.unmodifiableMap(targets);
+	}
+
+	/**
+	 * 36.21: bringing a finished build from the older drawing {@code old} up to {@code current}. Cleared first (top down):
+	 * every block {@code old} put that {@code current} no longer has or has otherwise and that still stands as {@code old}
+	 * drew it, except those {@code kept} says stay (a chest, a bed someone sleeps in, a job block); what stands otherwise
+	 * was put there or changed by a player and stays. Then, as a repair: the pieces {@code current} has that {@code old}
+	 * didn't, where the spot is open or was just cleared.
+	 */
+	static BuildPlan refresh(Blueprint current, Blueprint old, BlueprintData.Placement placement, Level level,
+							 java.util.function.BiPredicate<BlockPos, BlockState> kept) {
+		BuildPlan now = create(current, placement);
+		BuildPlan was = create(old, placement);
+		List<Step> clear = new ArrayList<>();
+		java.util.Set<BlockPos> changed = new java.util.HashSet<>();
+		for (Map.Entry<BlockPos, BlockState> e : was.targets.entrySet()) {
+			BlockState drawn = e.getValue();
+			BlockState wanted = now.targets.getOrDefault(e.getKey(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			if (drawn.isAir() || !wanted.isAir() && MaterialRules.matches(drawn, wanted)) {
+				continue; // the same in both drawings
+			}
+			BlockState world = level.getBlockState(e.getKey());
+			if (!MaterialRules.matches(world, drawn) || kept.test(e.getKey(), world)) {
+				continue; // a player's block (or gone), or one that always stays
+			}
+			clear.add(new Step(e.getKey(), wanted, null, null, null));
+			if (!wanted.isAir()) {
+				changed.add(e.getKey());
+			}
+		}
+		clear.sort(order(now.bounds, true));
+		java.util.function.Predicate<Step> wantedNow = s -> !isCrop(s.state()) && (changed.contains(s.pos())
+			|| missing(level, s) && !(was.targets.containsKey(s.pos()) && MaterialRules.matches(was.targets.get(s.pos()), s.state())));
+		BuildPlan out = new BuildPlan(List.copyOf(clear), List.of(), now.structure.stream().filter(wantedNow).toList(),
+			now.decoration.stream().filter(wantedNow).toList(), List.of(), List.of(), now.bounds);
+		out.standing = true;
+		return out;
+	}
+
 	/** A crop a farmer tends (wheat, carrots, stems, ...): planted on the first build, never put back by a repair. */
 	static boolean isCrop(BlockState state) {
 		return state.is(net.minecraft.tags.BlockTags.CROPS) || state.getBlock() instanceof net.minecraft.world.level.block.CropBlock;

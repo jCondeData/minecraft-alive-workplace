@@ -106,7 +106,7 @@ def prisoner_cage():
                 log(b, x, 3, z, "dark_oak_log", axis="x" if z in (0, 4) else "z")
             else:
                 slab(b, x, 3, z, DARK_OAK)
-    lantern(b, 2, 4, 2)
+    lantern(b, 0, 4, 0)  # on the corner log: the slab lid's top is too low to hold one
     # straw to sleep on, a cauldron for water
     b.set(1, 1, 3, "hay_block", axis="z")
     b.set(3, 1, 3, "cauldron")

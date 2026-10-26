@@ -489,7 +489,8 @@ public class QaBuilderLimitsGameTests implements net.fabricmc.fabric.api.gametes
 		p.setItemInHand(InteractionHand.MAIN_HAND, far);
 		QaStageSixGameTests.clickVillager(p, builder, c.seen());
 		helper.assertTrue(Builders.activeSite(level, builder) == null, "a spot " + (reach + 1) + " blocks off was taken");
-		helper.assertTrue(texts(c.seen()).contains("That spot is " + (reach + 1) + " blocks from the builder's Blueprint Table — keep it within " + reach + "."),
+		// 36.20: "outside <village> and " when a hall an earlier batch left has the table in its village
+		helper.assertTrue(texts(c.seen()).stream().anyMatch(l -> l.matches("That spot is (outside .+ and )?" + (reach + 1) + " blocks from the builder's Blueprint Table — keep it within " + reach + "\\.")),
 			"the far spot said " + texts(c.seen()));
 		helper.assertTrue(p.getMainHandItem().is(ModItems.BLUEPRINT), "the refused blueprint went: " + p.getMainHandItem());
 

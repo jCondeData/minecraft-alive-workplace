@@ -32,6 +32,8 @@ block to start over. Then hand it to the worker:
 ## How it fits in
 
 - **Feeds** the village's food and wood: a porter carries the harvest to the [Storehouse](storehouse.md).
+- **How far.** Anywhere in the village the worker's block stands in, or outside the village within 128 blocks of it
+  (each job's distance is in the [Settings](settings-reach-and-range.md)).
 - **A village's own farmers** look after the farm by their composter by themselves once there's a chest by it.
 
 More in [Jobs on the land](jobs-land.md).

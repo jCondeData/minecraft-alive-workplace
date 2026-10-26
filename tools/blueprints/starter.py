@@ -659,6 +659,7 @@ def healing_center_3():
     stairs(b, 9, 1, 20, "dark_oak_stairs", "south")
     b.set(5, 2, 14, "air")
     door(b, 5, 1, 14, "birch_door", "north")
+    b.set(5, 1, 15, "air")  # the ward window's sill goes with the window: a step under the lintel (B487)
     b.fill_air()
     return b
 

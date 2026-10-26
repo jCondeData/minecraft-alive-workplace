@@ -311,7 +311,7 @@ public final class UpgradesPage {
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()))).toList();
 		for (Villager v : builders) {
 			BlockPos bench = Builders.benchPos(v).orElseThrow();
-			if (Math.sqrt(centre.distSqr(bench)) > Builders.MAX_SITE_DISTANCE) {
+			if (!io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, bench, centre, Builders.MAX_SITE_DISTANCE)) {
 				continue;
 			}
 			int queue = Builders.activeSite(level, v) == null ? 0 : 1 + Builders.queue(level, v).size();

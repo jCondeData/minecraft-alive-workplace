@@ -8,7 +8,7 @@ Recipe: blue dye on top, a cartography table in the middle with planks on each s
 Used by: [Builder](builder.md)
 Takes a jobless villager: yes, by itself
 Supply chests: within 8 blocks
-Build Distance: builds within 48 blocks
+Build Distance: anywhere in the village, or within 128 blocks outside it
 Mined with: an axe
 Stack size: 64
 Found in creative tab: yes
@@ -28,8 +28,8 @@ the two bottom corners. You'll also find it in the mod's creative tab.
 
 Put a Blueprint Table down near a villager without a job and they take it by themselves: they're now a **Builder**.
 Chests and barrels within 8 blocks of the table are their supply chests. Hand them a [Blueprint](blueprint.md) and they
-build it, block by block, as long as it stands within 48 blocks of the table (a server owner can change that as
-**Build Distance** in the [Settings](settings.md)). A blueprint you hold tells you when there's no table close enough.
+build it, block by block, anywhere in the village the table stands in, however big, or outside the village within 128
+blocks of the table (a server owner can change that as **Build Distance** in the [Settings](settings.md)). A blueprint you hold tells you when there's no table close enough.
 
 ## The library
 

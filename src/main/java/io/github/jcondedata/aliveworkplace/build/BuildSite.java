@@ -59,6 +59,12 @@ public final class BuildSite {
 	private boolean deconstruct;
 	/** Putting back what's missing from a finished build (see {@link BuildPlan#repair}). */
 	private boolean repair;
+	/**
+	 * 36.21: a repair that brings the build up to its latest look ({@link Refreshes}): the older drawing it was built from
+	 * (its key in the shipped history), whose leftovers are cleared first. Null: an ordinary repair. None in older saves.
+	 */
+	@Nullable
+	private String refresh;
 	/** 36.7: works only the cellar of a build finished before its blueprint had one ({@link Cellars}). */
 	private boolean cellarOnly;
 	/** The lead builder's bench: where the supply chests are, for helpers too. Null in pre-0.6 saves. */
@@ -285,6 +291,7 @@ public final class BuildSite {
 			int depth = foundation && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
 			int margin = levelGround && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
+				: repair && refresh != null ? Refreshes.plan(level, blueprint.get(), structure, refresh, placement, furniture)
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level, BuildSiteManager.get(level).gaveUp(placement))
 				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
 			if (kineticOrder && !deconstruct && !repair) {
@@ -294,7 +301,8 @@ public final class BuildSite {
 				progressFromCursor = false;
 				shownProgress = Math.max(shownProgress, oldSaveProgress(plan));
 			}
-			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE) {
+			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE || refresh != null) {
+				// (36.21: a refresh's lists are worked out from what stands too)
 				// The foundation and landscaping lists depend on the terrain, which we have been changing:
 				// start over (what's already done is skipped straight away).
 				cursor = 0;
@@ -765,6 +773,30 @@ public final class BuildSite {
 		onChange.run();
 	}
 
+	/** Whether this repair brings the build up to its latest look (36.21). */
+	public boolean isRefresh() {
+		return refresh != null;
+	}
+
+	/** The key of the older drawing a refresh brings the build on from (36.21), or null. */
+	@Nullable
+	public String refreshFrom() {
+		return refresh;
+	}
+
+	/**
+	 * Turns a new site into a refresh (36.21, call right after creating it): a repair that first clears what the older
+	 * drawing {@code from} put there and the latest one no longer has, then puts in the new pieces.
+	 */
+	public void setRefresh(String from) {
+		repair = true;
+		refresh = from;
+		stage = BuildPlan.Stage.CLEAR;
+		cursor = 0;
+		plan = null;
+		onChange.run();
+	}
+
 	/** Whether this site digs and fits out only the cellar of the finished build on its spot (36.7). */
 	public boolean isCellarOnly() {
 		return cellarOnly;
@@ -898,6 +930,9 @@ public final class BuildSite {
 		if (repair) {
 			tag.putBoolean("repair", true);
 		}
+		if (refresh != null) {
+			tag.putString("refresh_from", refresh);
+		}
 		if (cellarOnly) {
 			tag.putBoolean("cellar_only", true);
 		}
@@ -978,6 +1013,7 @@ public final class BuildSite {
 		site.queued = Nbt.getBoolean(tag, "queued");
 		site.deconstruct = Nbt.getBoolean(tag, "deconstruct");
 		site.repair = Nbt.getBoolean(tag, "repair");
+		site.refresh = Nbt.has(tag, "refresh_from", Tag.TAG_STRING) ? Nbt.getString(tag, "refresh_from") : null; // 36.21: none in older saves
 		site.cellarOnly = Nbt.getBoolean(tag, "cellar_only"); // 36.7: none in older saves
 		site.levelGround = !Nbt.getBoolean(tag, "no_level_ground");
 		site.bench = Nbt.has(tag, "bench", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "bench")) : null;

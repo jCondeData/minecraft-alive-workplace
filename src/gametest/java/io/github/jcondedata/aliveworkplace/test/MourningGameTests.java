@@ -68,7 +68,7 @@ public class MourningGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 		helper.assertTrue(WorkplaceConfig.parse("{\"configVersion\": 3, \"villagerElderDays\": 300}").villagerElderDays == 300, "a choice of 300 was lost");
 		helper.assertTrue(WorkplaceConfig.parse("{\"configVersion\": 4, \"villagerElderDays\": 120}").villagerElderDays == 120, "a choice of 120 was lost");
 		String written = new com.google.gson.Gson().toJson(WorkplaceConfig.parse("{\"villagerElderDays\": 120}"));
-		helper.assertTrue(WorkplaceConfig.parse(written).villagerElderDays == 1200 && written.contains("\"configVersion\":4"), "written back: " + written);
+		helper.assertTrue(WorkplaceConfig.parse(written).villagerElderDays == 1200 && written.contains("\"configVersion\":5"), "written back: " + written);
 		helper.succeed();
 	}
 

@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.hall;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
+import io.github.jcondedata.aliveworkplace.build.Refreshes;
 import io.github.jcondedata.aliveworkplace.build.RepairAsks;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Words;
@@ -35,6 +36,8 @@ public final class RepairsPage {
 	/** While it's being repaired: pause it, or stop it. */
 	public static final int PAUSE = VillageHallScreen.FIRST_ROW + 11;
 	public static final int STOP = VillageHallScreen.FIRST_ROW + 15;
+	/** On a build that can be refreshed (36.21): the button that hands it to a builder. */
+	public static final int REFRESH = VillageHallScreen.FIRST_ROW + 13;
 	/** Builds on the page at most: the four rows under the divider, less the last slot when there are more. */
 	public static final int SHOWN = ChoiceMenu.SIZE - VillageHallScreen.FIRST_ROW;
 
@@ -67,12 +70,14 @@ public final class RepairsPage {
 	/** The page: a button per build, the questions waiting first; with more than fit, the last slot says how many more. */
 	static void fill(ChoiceMenu menu, ServerLevel level, BlockPos hall, ServerPlayer viewer) {
 		List<RepairAsks.Entry> entries = RepairAsks.entries(level, hall);
-		if (entries.isEmpty()) {
+		List<Refreshes.Entry> refreshes = Refreshes.entries(level, hall); // 36.21: after the repairs
+		if (entries.isEmpty() && refreshes.isEmpty()) {
 			menu.button(VillageHallScreen.FIRST_ROW + 4, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.repairs.none"),
 				ChatFormatting.GRAY, VillageHallScreen.line("screen.aliveworkplace.repairs.none_hint", ChatFormatting.DARK_GRAY)), null);
 			return;
 		}
-		int fit = entries.size() > SHOWN ? SHOWN - 1 : SHOWN;
+		int total = entries.size() + refreshes.size();
+		int fit = total > SHOWN ? SHOWN - 1 : SHOWN;
 		int slot = VillageHallScreen.FIRST_ROW;
 		for (RepairAsks.Entry entry : entries.subList(0, Math.min(fit, entries.size()))) {
 			BlockPos at = entry.building().placement().origin();
@@ -81,8 +86,15 @@ public final class RepairsPage {
 				menu.broadcastChanges();
 			});
 		}
-		if (entries.size() > fit) {
-			menu.button(ChoiceMenu.SIZE - 1, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.repairs.more", entries.size() - fit),
+		for (Refreshes.Entry entry : refreshes.subList(0, Math.max(0, Math.min(fit - entries.size(), refreshes.size())))) {
+			BlockPos at = entry.building().placement().origin();
+			menu.button(slot++, refreshIcon(level, hall, entry, true), p -> {
+				renderRefresh(menu, level, hall, at, p);
+				menu.broadcastChanges();
+			});
+		}
+		if (total > fit) {
+			menu.button(ChoiceMenu.SIZE - 1, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.repairs.more", total - fit),
 				ChatFormatting.GRAY), null);
 		}
 	}
@@ -164,6 +176,61 @@ public final class RepairsPage {
 			menu.button(NOT_NOW, VillageHallScreen.icon(Items.RED_DYE, Component.translatable("screen.aliveworkplace.repairs.not_now"), ChatFormatting.RED,
 				VillageHallScreen.line("screen.aliveworkplace.repairs.not_now_hint", ChatFormatting.GRAY)), p -> answered(menu, level, hall, p, RepairAsks.notNow(p, at)));
 		}
+	}
+
+	/** A build that can be brought up to its latest look (36.21), as the page shows it: where, what changes, where its refresh stands. */
+	public static ItemStack refreshIcon(ServerLevel level, BlockPos hall, Refreshes.Entry entry, boolean clickable) {
+		List<Component> lore = new ArrayList<>();
+		lore.add(VillageHallScreen.line(VillageHallScreen.where(hall, entry.building().placement().origin()), ChatFormatting.GRAY));
+		BuildSite site = entry.site();
+		if (site != null) {
+			BuildPlan plan = site.plan(level);
+			int percent = plan == null ? 0 : Math.round(site.progress(plan) * 100);
+			Component builder = site.builder() != null && level.getEntity(site.builder()) instanceof Villager v ? v.getDisplayName()
+				: Component.translatable("screen.aliveworkplace.piece_looks.a_builder");
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.refresh.going", builder, percent), ChatFormatting.AQUA));
+		} else {
+			lore.add(VillageHallScreen.line(entry.waiting() ? "screen.aliveworkplace.refresh.waiting" : "screen.aliveworkplace.refresh.offer",
+				entry.waiting() ? ChatFormatting.YELLOW : ChatFormatting.AQUA));
+			Component in = Refreshes.counts(entry.change().added());
+			Component out = Refreshes.counts(entry.change().removed());
+			if (in != null) {
+				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.refresh.put_in", in), ChatFormatting.GRAY));
+			}
+			if (out != null) {
+				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.refresh.take_away", out), ChatFormatting.GRAY));
+			}
+			if (clickable) {
+				lore.add(VillageHallScreen.line("screen.aliveworkplace.refresh.click", ChatFormatting.DARK_GRAY));
+			}
+		}
+		return VillageHallScreen.icon(site != null ? Items.SCAFFOLDING : Items.PAINTING, Blueprints.displayName(entry.building().structure()).copy(),
+			ChatFormatting.WHITE, lore.toArray(Component[]::new));
+	}
+
+	/** A build's refresh view (36.21): back to the list, the build and what changes, then the button that hands it to a builder. */
+	public static void renderRefresh(ChoiceMenu menu, ServerLevel level, BlockPos hall, BlockPos at, ServerPlayer viewer) {
+		Refreshes.Entry entry = Refreshes.entries(level, hall).stream().filter(e -> e.building().placement().origin().equals(at)).findFirst().orElse(null);
+		if (entry == null) { // refreshed, or put right, while the list was open
+			backToList(menu, level, hall, viewer);
+			return;
+		}
+		menu.clearButtons();
+		menu.button(0, VillageHallScreen.icon(Items.ARROW, Component.translatable("screen.aliveworkplace.repairs.back"), ChatFormatting.WHITE),
+			p -> backToList(menu, level, hall, p));
+		menu.button(4, refreshIcon(level, hall, entry, false), null);
+		menu.divider(1);
+		if (entry.site() != null || entry.waiting()) {
+			return; // handed over already: the builder (or the first one free) sees to it
+		}
+		menu.button(REFRESH, VillageHallScreen.icon(Items.BRUSH, Component.translatable("screen.aliveworkplace.refresh.button"), ChatFormatting.GREEN,
+				VillageHallScreen.line("screen.aliveworkplace.refresh.button_hint", ChatFormatting.GRAY),
+				VillageHallScreen.line("screen.aliveworkplace.refresh.stays", ChatFormatting.DARK_GRAY)),
+			p -> {
+				Refreshes.Outcome outcome = Refreshes.refresh(p, at);
+				level.playSound(null, p.blockPosition(), outcome.ok() ? SoundEvents.VILLAGER_YES : SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);
+				backToList(menu, level, hall, p);
+			});
 	}
 
 	private static void answered(ChoiceMenu menu, ServerLevel level, BlockPos hall, ServerPlayer p, RepairAsks.Outcome outcome) {

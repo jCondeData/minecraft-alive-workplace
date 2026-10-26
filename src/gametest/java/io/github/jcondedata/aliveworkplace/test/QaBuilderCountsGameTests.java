@@ -245,7 +245,7 @@ public class QaBuilderCountsGameTests implements net.fabricmc.fabric.api.gametes
 
 	// --- B378: the builder's reach -------------------------------------------------------------------------------
 
-	private static final Pattern TOO_FAR = Pattern.compile("That spot is ([0-9]+) blocks from the builder's Blueprint Table — keep it within ([0-9]+)\\.");
+	private static final Pattern TOO_FAR = Pattern.compile("That spot is (?:outside .+ and )?([0-9]+) blocks from the builder's Blueprint Table — keep it within ([0-9]+)\\.");
 
 	/** A placed test-hut blueprint whose outline's centre is {@code offset} from {@code bench} (as QaBuilderLimitsBugTests). */
 	private static ItemStack placedHut(ServerLevel level, BlockPos bench, Vec3i offset) {
@@ -267,8 +267,8 @@ public class QaBuilderCountsGameTests implements net.fabricmc.fabric.api.gametes
 
 	/**
 	 * B378: "whenever the spot is refused, the distance shown is past the reach". Handed to the builder by a right-click:
-	 * a spot 60 blocks off is refused with "60 blocks ... within 48"; one a hair past the reach (48.01) is refused with a
-	 * number past 48 (49); a spot exactly at the reach (48.0) is taken, with no too-far line.
+	 * a spot 140 blocks off is refused with "140 blocks ... within 128" (36.20; was 60 and 48); one a hair past the reach is refused with a
+	 * number past it (129); a spot exactly at the reach (128.0) is taken, with no too-far line.
 	 */
 	//$ gametest_ticks_batch AREA '60' '"qaCountsReach"'
 	@GameTest(template = AREA, timeoutTicks = 60, batch = "qaCountsReach")
@@ -283,12 +283,12 @@ public class QaBuilderCountsGameTests implements net.fabricmc.fabric.api.gametes
 		BlockPos bench = helper.absolutePos(table);
 		Builders.employ(level, builder, bench);
 		int reach = Builders.MAX_SITE_DISTANCE;
-		helper.assertTrue(reach == 48, "the reach is " + reach);
+		helper.assertTrue(reach == 128, "the reach is " + reach); // 36.20: 48 became 128
 		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qacF"));
 		ServerPlayer p = c.player();
 		record Spot(Vec3i offset, int shown) {
 		}
-		for (Spot spot : List.of(new Spot(new Vec3i(60, 0, 0), 60), new Spot(new Vec3i(reach, 0, 1), 49))) {
+		for (Spot spot : List.of(new Spot(new Vec3i(reach + 12, 0, 0), reach + 12), new Spot(new Vec3i(reach, 0, 1), reach + 1))) {
 			ItemStack stack = placedHut(level, bench, spot.offset());
 			double d = distance(level, stack, bench);
 			helper.assertTrue(d > reach, "the spot is " + d + " blocks off");

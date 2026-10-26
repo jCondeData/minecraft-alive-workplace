@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20
 
 ## What a player sees
 
@@ -324,9 +324,16 @@ and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill
 - 21.1a (owner, 2026-09-30): not every villager needs a new custom table; items already in the game should give a
   villager their job. So jobs share vanilla blocks and are picked with an item.
 - 21.1c (owner, 2026-10-03): the Fossil Scientist works at Cobblemon's own Fossil Analyzer.
+- 36.20 (owner, 2026-10-26, "village-wide"): a quarry, a field, a tree farm, an orchard or a berry plot may be anywhere
+  in the village the worker's block stands in (within the hall's radius, or in a painted City Plan zone), and outside it
+  within 128 blocks of the block, each job's own config key: `quarryReach`, `fieldReach`, `treeFarmReach`,
+  `orchardAreaReach`, `berryPlotReach` (16 to 256). Past it, the refusal names the village: "That spot is outside
+  Mapleridge and 140 blocks from the Miner's Bench the miner works at — keep it within 128." (`<kind>.too_far_village`).
+  A worker with no village round their block has only the 128. The worker walks out to a far area in legs
+  (`workerPathRange`) and waits there while its chunks aren't loaded.
 - B453: a Field Marker or Quarry Marker area too far from the worker is refused in that worker's own words, naming the
-  block they work at: "That field is 63 blocks from the Composter the farmer works at — keep it within 48."
-  (`message.aliveworkplace.field.too_far`, `message.aliveworkplace.quarry.too_far` (64 blocks for a quarry),
+  block they work at: "That field is 143 blocks from the Composter the farmer works at — keep it within 128."
+  (`message.aliveworkplace.field.too_far`, `message.aliveworkplace.quarry.too_far`,
   `message.aliveworkplace.tree_farm.too_far`, `message.aliveworkplace.orchard_area.too_far`,
   `message.aliveworkplace.berry_plot.too_far`); only the builder's line speaks of the Blueprint Table.
 - 21.1a: don't break old worlds. The replaced job blocks stay registered, and blocks that became workstations get

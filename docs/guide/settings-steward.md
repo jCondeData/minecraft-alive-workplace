@@ -31,7 +31,8 @@ how to open the screen.
 | **Stewards Build Walls** | on | A raided village's Steward proposes a wall. Off: he never does. |
 | **Steward Renewals** | on | Old houses in renew zones get rebuilt. Off: they're listed, never renewed. |
 
-Two older settings matter too: **Build Distance** (how far a plot may be from a builder's Blueprint Table) and
+Two older settings matter too: **Build Distance** (how far a plot may be from a builder's Blueprint Table standing outside the village; one in the
+village reaches all of it) and
 **Village Hall Reach** (how far the plan reaches; a cell of the plan is 4 by 4 blocks at 64).
 
 ## How it fits with the rest

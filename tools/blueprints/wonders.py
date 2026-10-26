@@ -1593,7 +1593,11 @@ def map_room(b, w):
             if wing_inside(w, k, v) and abs(v) <= 3:
                 b.set(*_kyv(w, k, 3, v), G_MAP[c])
     b.set(*_kyv(w, 2, 3, 0), "cartography_table")
+    # The lectern takes the middle of the reading table at k 6: its lantern moves to the table's slab beside it, since
+    # a lectern's slanted top can't hold one (B538)
     lectern(b, *_kyv(w, 6, 3, 0), OPP[w.out])
+    b.set(*_kyv(w, 6, 4, 0), "air")
+    lantern(b, *_kyv(w, 6, 4, 1))
     for s in (-1, 1):
         stairs(b, *_kyv(w, 6, 3, 2 * s), DARK_OAK, w.side(s))
 
@@ -2214,8 +2218,7 @@ def o_lodging(b, x0, x1):
         for z in range(16, 25):
             if (x + z) % 2 == 0 and 2 <= x - x0 <= 4 and 18 <= z <= 22:
                 b.set(x, 4, z, "purple_carpet")
-    b.set(x1 - 1, 4, 23, "purple_bed", facing="north", part="foot", occupied=False)
-    b.set(x1 - 1, 4, 24, "purple_bed", facing="north", part="head", occupied=False)
+    b.bed(x1 - 1, 4, 23, "purple", "south")  # the head against the south wall, one block towards its facing (B537)
     b.set(x1 - 1, 4, 16, "polished_blackstone")
     b.set(x1 - 1, 5, 16, "brewing_stand", has_bottle_0=False, has_bottle_1=False, has_bottle_2=False)
     b.set(x1 - 1, 4, 17, "barrel", facing="up", open=False)

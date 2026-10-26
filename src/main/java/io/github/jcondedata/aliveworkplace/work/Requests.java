@@ -240,6 +240,9 @@ public final class Requests {
 			site.missing().entrySet().stream()
 				.sorted(Map.Entry.<Item, Integer>comparingByValue().reversed())
 				.forEach(e -> out.add(forItem(worker, station, e.getKey(), e.getValue())));
+		} else if (site != null && site.missing().getOrDefault(Items.SCAFFOLDING, 0) > 0) {
+			// B499: a build never waits on scaffolding (35.6), so its shortfall is asked for while the builder works on
+			out.add(forItem(worker, station, Items.SCAFFOLDING, site.missing().get(Items.SCAFFOLDING)));
 		}
 		QuarrySite quarry = Miners.activeSite(level, worker);
 		if (quarry != null && quarry.status() == QuarrySite.Status.NEEDS_PICKAXE) {

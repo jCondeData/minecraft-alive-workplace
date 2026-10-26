@@ -394,7 +394,7 @@ public class PlotGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		helper.succeed();
 	}
 
-	/** Its centre within maxSiteDistance of a Blueprint Table; none in reach, no plot. */
+	/** A Blueprint Table in the village reaches all of it (36.20); none, no plot. */
 	//$ gametest_ticks_batch AREA '20' '"plotTable"'
 	@GameTest(template = AREA, timeoutTicks = 20, batch = "plotTable")
 	public void noPlotOutOfATablesReach(GameTestHelper helper) {
@@ -406,7 +406,8 @@ public class PlotGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		// tables left by earlier batches round the area (this test is alone in its batch)
 		BlockPos corner = helper.absolutePos(BlockPos.ZERO);
 		BoundingBox area = new BoundingBox(corner.getX(), 0, corner.getZ(), corner.getX() + 29, 0, corner.getZ() + 29);
-		level.getPoiManager().findAll(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI), p -> true,
+		level.getPoiManager().findAll(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI)
+					|| h.is(ModVillagers.VILLAGE_HALL_POI), p -> true,
 				helper.absolutePos(HALL), 120, PoiManager.Occupancy.ANY).map(BlockPos::immutable).toList()
 			.forEach(p -> {
 				if (p.getX() < area.minX() || p.getX() > area.maxX() || p.getZ() < area.minZ() || p.getZ() > area.maxZ()) {
@@ -415,8 +416,9 @@ public class PlotGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			});
 		CityPlan plan = homes(helper, "");
 		fits(helper, atSpot(helper, plan), "10 blocks from the table");
-		// 22 blocks from the table: out of a reach of 16
-		refused(helper, check(helper, plan, new BlockPos(23, 2, 13), Rotation.COUNTERCLOCKWISE_90, Mirror.NONE), Plots.Reason.NO_TABLE, "22 blocks off");
+		// 22 blocks from the table, out of a reach of 16: 36.20, the table stands in the village, so anywhere in it will do
+		// (a table outside the village keeps the reach: QaStewardPlotsGameTests.theTablesReachIsInclusive)
+		fits(helper, check(helper, plan, new BlockPos(23, 2, 13), Rotation.COUNTERCLOCKWISE_90, Mirror.NONE), "22 blocks off, the table in the village");
 		helper.setBlock(TABLE, Blocks.AIR);
 		refused(helper, atSpot(helper, plan), Plots.Reason.NO_TABLE, "no table");
 		helper.assertTrue(search(helper, plan, List.of(WELL)).isEmpty(), "a plot with no table");

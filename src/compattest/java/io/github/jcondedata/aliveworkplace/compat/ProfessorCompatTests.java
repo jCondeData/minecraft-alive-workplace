@@ -439,7 +439,9 @@ public class ProfessorCompatTests implements FabricGameTest {
 			helper.assertTrue(key(PokemonProfessor.buyStone(player, prof)).equals("message.aliveworkplace.professor.stone_sold"), "a second stone today");
 			helper.assertTrue(player.getInventory().countItem(stone) == 1, "two stones in a day");
 			ModAttachments.PROFESSOR_STONE.set(prof, io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level) - 1);
-			helper.assertTrue(key(PokemonProfessor.buyStone(player, prof)).equals("message.aliveworkplace.professor.stone_bought"), "no stone the next day");
+			String bought = "message.aliveworkplace.professor.stone_bought"
+				+ (io.github.jcondedata.aliveworkplace.work.Words.startsWithVowelSound(new net.minecraft.world.item.ItemStack(stone).getHoverName().getString()) ? ".an" : ""); // B523: "an Ice Stone"
+			helper.assertTrue(key(PokemonProfessor.buyStone(player, prof)).equals(bought), "no stone the next day");
 			helper.succeed();
 		});
 	}

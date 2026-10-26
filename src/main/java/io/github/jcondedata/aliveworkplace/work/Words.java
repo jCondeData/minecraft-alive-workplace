@@ -55,6 +55,32 @@ public final class Words {
 	}
 
 	/**
+	 * {@link #articled} for a key whose name argument isn't known in code, such as a tip or a request line read from a
+	 * data file (B523): the name is the argument after the plain line's first "a %s" ("a %3$s" names it outright).
+	 */
+	public static MutableComponent articledAuto(String key, Object... args) {
+		return articled(key, articleIndex(Language.getInstance().getOrDefault(key, key)), args);
+	}
+
+	/** The argument index after the first "a %s" or "A %2$s" in {@code template}, or -1 when it has none. */
+	static int articleIndex(String template) {
+		java.util.regex.Matcher m = java.util.regex.Pattern.compile("%(?:(\\d+)\\$)?([s%])").matcher(template);
+		int next = 0;
+		while (m.find()) {
+			if (m.group(2).equals("%")) {
+				continue;
+			}
+			int index = m.group(1) != null ? Integer.parseInt(m.group(1)) - 1 : next++;
+			int at = m.start();
+			if (at >= 2 && template.charAt(at - 1) == ' ' && (template.charAt(at - 2) == 'a' || template.charAt(at - 2) == 'A')
+				&& (at == 2 || !Character.isLetter(template.charAt(at - 3)))) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	/**
 	 * Whether "an" goes before {@code word}: it starts with a, e, i or o, or with a u that isn't said "you" (an Ultra
 	 * Ball, an Umbreon; a Unicorn, a Useful one, a Utopia). "Eu" is said "you" too (a Eulogy).
 	 */

@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.150.0 — 2026-10-26
+
 ### Added
 - Refresh an old house to its latest look: the Village Hall's Repairs page shows **Refresh to the latest look** on every finished build whose blueprint has been redrawn since it was built (the Stone House's fixed decorations, say). A click shows what changes ("New: 12 decorations, 3 furniture pieces"), a second sends the nearest free Builder, who takes away only what the old drawing left (floating or invisible pieces too; their items go to the chests) and puts in the new pieces. Chests and their contents, beds villagers sleep in, job blocks and your own blocks stay. No Builder free: it waits for one. Short of materials: the Builder asks as for a repair.
 - Work anywhere in the village, and far outside it: builders, miners, farmers, lumberjacks, orchard keepers and berry breeders take a build, quarry, field, tree farm, orchard or berry plot anywhere in the village their block stands in (the Village Hall's reach and the City Plan's zones), however big, and outside the village up to 128 blocks from their block (was 48, 64 for quarries). Each reach is a setting (Build, Quarry, Field, Tree Farm, Orchard and Berry Plot Distance, 16 to 256); a spot too far says so: "That spot is outside Mapleridge and 140 blocks from the Miner's Bench the miner works at — keep it within 128." Upkeep and the Steward's plans reach the whole village too.

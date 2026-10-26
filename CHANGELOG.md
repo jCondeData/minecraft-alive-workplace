@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Disasters: a worker held back by a disaster now reads "held back by a disaster in the village" in his status line and the hall's list, no longer with a capital A mid-sentence (B497).
 - Mega Shrine (with Mega Showdown): a villager busy at his job near the shrine, such as a farmer at his fields, no longer gets the show's +3 mood and "watched a Mega Evolution at the shrine" though he never came to watch; only villagers off work who gather for the show get it (B420).
 - Mega Shrine (with Mega Showdown): a shrine whose pedestal was broken no longer holds the festival show at the empty spot (no Mega Evolution, no chat line, no mood for the crowd); put the pedestal back and the next festival's show is held again (B421).
 - Mega Shrine (with Mega Showdown): restarting the server during the festival show no longer holds the show a second time (the trainer Mega Evolving again, the chat line again, and villagers who came late getting the +3 mood); each village holds one show per festival day, restart or not, and the next festival holds its own (B501).

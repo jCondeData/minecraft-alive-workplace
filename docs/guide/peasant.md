@@ -4,7 +4,7 @@
 type: Class
 expansion: M34
 image: https://jcondedata.github.io/minecraft-alive-workplace/class_jobs/still-1.jpg
-caption: Dara, a Peasant, is refused: a Scholar must be a Burgher
+caption: Dara, a Peasant, is refused: a Scholar needs Burgher or better
 Rank: the first of four classes
 Needs: nothing
 Wants: nothing
@@ -22,7 +22,7 @@ it works, eats and pays the usual tax, exactly what every worker paid before cla
 
 Peasants take any job of plain Minecraft villagers (farmer, fisherman, smith, librarian and the rest), the Builder,
 Miner, Lumberjack, Porter, Guard and the other jobs no class asks for. The higher crafts need a higher class: a Peasant
-offered the Scholar's job is refused ("a Scholar must be a Burgher"). Nobody is ever fired, though: a Peasant who
+offered the Scholar's job is refused ("Dara is Peasant class; Scholar needs Burgher or better"). Nobody is ever fired, though: a Peasant who
 already had such a job keeps it.
 
 Peasants wear just their job's clothes.

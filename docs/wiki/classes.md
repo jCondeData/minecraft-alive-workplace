@@ -25,11 +25,11 @@ At the Village Hall:
 |---|---|---|---|
 | Peasant | nothing | nothing | pays the usual tax |
 | Artisan | a grade I home, fed 3 days running, a varied diet, a chapel, school or clinic near home, Work Clothes | Cider, a tavern near home | tax x1.5; crafters 10% faster; opens the Artisan jobs |
-| Burgher | a grade II home, fed 3 days, a varied diet, a school and one more service, a Market Square, Fine Clothes, Berry Wine, the Gazette | an Amethyst Ring, a library, beauty | tax x2.5; scholars research 15% faster; with 3 such households one more caravan route and market trader; opens the Burgher jobs |
-| Noble | a grade III home, fed 3 days, a varied diet, chapel, school, clinic and library, Town rank, beauty, Noble Robes, Vintage Wine, an Emerald Brooch | an Illuminated Book, a Gold Circlet | tax x4; +3% wellbeing per household up to 9%; every other festival is a Noble's Ball |
+| Burgher | a grade II home, fed 3 days, a varied diet, a school and one more service, a Market Square, Fine Clothes, Berry Wine, the Gazette | an Amethyst Ring, a library, beauty (with Cobblecuisine, a Deluxe Shake) | tax x2.5; scholars research 15% faster; with 3 such households one more caravan route and market trader; opens the Burgher jobs |
+| Noble | a grade III home, fed 3 days, a varied diet, chapel, school, clinic and library, Town rank, beauty, Noble Robes, Vintage Wine, an Emerald Brooch | an Illuminated Book, a Gold Circlet (with Cobblecuisine, a Clodsire Eclair) | tax x4; +3% wellbeing per household up to 9%; every other festival is a Noble's Ball |
 
-**Higher jobs need higher classes (34.8).** The Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper
-and, with Cobblemon, the Ball Smith, Move Tutor, Pokémon Trader and Fossil Scientist need an Artisan; the Scholar,
+**Higher jobs need higher classes (34.8).** The Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper,
+Printer and, with Cobblemon, the Ball Smith, Move Tutor, Pokémon Trader and Fossil Scientist need an Artisan; the Scholar,
 Undertaker, Jeweler and Trainer Leader a Burgher. Vanilla jobs are open to everyone. Nobody is ever fired: a worker below
 their job's class keeps it, and the hall's list marks them.
 
@@ -79,8 +79,13 @@ Luxuries (`data/aliveworkplace/luxuries/`) are taken from the village store at d
 **Mood.** Every villager has "has what their class needs" (+5), or -5 for each need lacking (at most -15).
 
 **What a class gives (34.7).** Taxes are the treasury's daily share times the class's factor, 10% more for each
-want the household has; a Peasant pays exactly what every worker paid before, so no village takes in less. Speed
-bonuses go through the one pace rule and its cap. A Legend lives among the top class.
+want the household has; a Peasant pays exactly what every worker paid before, so no village takes in less. A Noble
+without a job pays like a worker. The hall's name tag tooltip shows the split ("Daily takings by class:", then
+"Burgher: 1 pays 0.30 emeralds"). Speed
+bonuses go through the one pace rule and its cap. Nobles lift the village's wellbeing 3% a household (9% at most). With a Noble household, every other festival is a
+Noble's Ball: the guests gather in a Manor III's ballroom, else a Manor's hall, else the Village Hall; wine and the
+store's best food, gold fireworks at dusk, +15 mood for 3 days for everyone who came, and players there are Heroes of
+the Village for the night. A Legend lives among the top class.
 
 **The job gate** applies only when a job is taken: picking it with its item, the hall's free-workstation list, a
 grown child taking a parent's trade (any job a free block offers, so a Scholar's child may take a free lectern as a

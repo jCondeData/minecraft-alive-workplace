@@ -353,6 +353,13 @@ public final class LuxuryRecipes implements ResourceManagerReloadListener {
 		return stack;
 	}
 
+	/** A sold {@code stack} (a trade's result) stamped with the day it's sold, if it ages and has no day yet (B443). */
+	public static void stampSale(ItemStack stack, Level level) {
+		if (!stack.isEmpty()) {
+			stamp(stack, today(level));
+		}
+	}
+
 	/** The tooltip line: "Pressed on day 42 · vintage in 2 days" (or "· vintage" once it's old enough). */
 	public static Component tooltip(MadeDay made, long today) {
 		long left = made.day() + made.vintageDays() - today;

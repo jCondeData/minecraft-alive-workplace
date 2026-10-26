@@ -4,6 +4,7 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"AbstractVillagerMixin",
+		"MerchantSaleDayMixin",
 		"AcquirePoiMixin",
 		"AxeItemAccessor",
 		"BehaviorMixin",

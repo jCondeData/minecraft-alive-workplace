@@ -449,6 +449,11 @@ public final class Cups {
 		if (cup.closed || cup.day < 0) {
 			return Component.translatable("message.aliveworkplace.cup.closed").withStyle(ChatFormatting.YELLOW);
 		}
+		VillageHallBlockEntity hostHall = level.getBlockEntity(host.get()) instanceof VillageHallBlockEntity e ? e : null;
+		if (hostHall == null || !signupOpen(level, hostHall, cup)) { // the card says when it opens (B491)
+			return Component.translatable("message.aliveworkplace.cup.not_open", hostHall == null ? cup.day : opensDay(cup.day, hostHall))
+				.withStyle(ChatFormatting.YELLOW);
+		}
 		if (!mayStandFor(level, player.getUUID(), village)) {
 			return Component.translatable("message.aliveworkplace.cup.not_yours", VillageHalls.name(level, village)).withStyle(ChatFormatting.YELLOW);
 		}

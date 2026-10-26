@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Festival Cup: Sign up no longer puts a player's name down before sign-up opens (B491); it says "Sign-up for this Cup isn't open yet: it opens after the festival on day N", as the Cup card does.
+- A Berry Wine bought from a Vintner is now pressed the day it's sold (B443): it shows "Pressed on day N" and waits its 3 days before a Journeyman makes it Vintage Wine, instead of counting as old at once.
 - Builders no longer hand out a scanned block's harvest or look for free (B493-B496): a ripe field is planted at age 0 (wheat and other crops, stems, nether wart, sweet berry bushes, cocoa) and cave vines without berries; a lectern or jukebox built empty no longer shows a book or disc, also after a reload mid-build; a furnace, smoker or blast furnace scanned burning is built cold (campfires stay lit as drawn); and a bee nest or hive is built with no bees inside. Shipped farm blueprints now come up as young crops that grow. A crop that grew or a furnace lit since still counts as built.
 - Text: names that start with a vowel now get "an": the blast furnace's tooltip says "takes it as an Armorer", the hall says "Bram is now an Armorer", and the same for retraining, guards ("an Archer"), inn travelers ("an Apprentice"), the Fossil Scientist ("reviving an Omanyte"), the Daycare Keeper ("an Eevee Egg"), the Pokémon Trader ("Comes in an Ultra Ball") and the raid helpers' cheer (B505).
 - Text: the Steward's desk now reads 'Declined: "Give 1 villager a job" won't be proposed again for 3 days'; before, it said "Declined: the Give 1 villager a job won't be proposed" for jobs and research proposals (B475).

@@ -5255,6 +5255,7 @@
   "message.aliveworkplace.cup.tomorrow": "The %s at %s is tomorrow: the bouts start at %s.",
   "message.aliveworkplace.cup.no_host": "This village is on no Festival Cup's circuit",
   "message.aliveworkplace.cup.closed": "Sign-up for this Cup has closed",
+  "message.aliveworkplace.cup.not_open": "Sign-up for this Cup isn't open yet: it opens after the festival on day %s",
   "message.aliveworkplace.cup.not_yours": "You may not stand for %s: only its owner and the owner's friends may",
   "message.aliveworkplace.cup.already": "You've already signed up for this Cup",
   "message.aliveworkplace.cup.full": "%s already has its %s players",

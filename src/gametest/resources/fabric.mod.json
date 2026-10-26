@@ -343,6 +343,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryJobsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryTradesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLuxuryTradesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRealmGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRealmFoundingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageSevenGameTests",

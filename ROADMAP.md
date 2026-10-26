@@ -1423,7 +1423,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - as 27.13: in `StarterBlueprints` and the table, clean in `check.py`, built by a builder in a GameTest with its
     worker taking the block, the farmer working the field and the fisherman fishing from the jetty; the rules' tests;
   - a gallery package and their builds in showcase scene `gallery`.
-- [x] **27.15** (approved 2026-10-06) **Roads.** The roads on the plan get built, and every new building joins them. Road styles are data:
+- [x] **27.15** (approved 2026-10-06) (verified 2026-10-26: QaRoadGameTests [6], QaRoadLampGameTests [9], QaCaravanRoadGameTests [6]: style data and weights, broken styles skipped, segments, cliffs, keep-clear, avenue stairs, lamp spacing/sides/doors/crossings, lane posts, 16 vs 17-wide bridges, ravine pillars, reach 256 and join boundaries, caravanRoadReach, zone style, chronicle/desk/sign lines; mutants on Roads.java and CaravanRoads.java killed except one equivalent [lane post loop bound]) **Roads.** The roads on the plan get built, and every new building joins them. Road styles are data:
   `data/aliveworkplace/road_styles/<name>.json` holds one style: the surface blocks for the middle and the edges
   (weighted mixes, as STYLE.md's), the slab and stairs for steps, the bridge's deck, rail and pillar blocks, its lamp
   and lantern post (27.16). One shipped style per blueprint style: **As drawn** (dirt path, coarse dirt and gravel
@@ -1446,7 +1446,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     its line is gone round and left standing; a half-built segment survives save and reload; roads leave the village's
     rank and building count unchanged; a new building's lane joins the street;
   - showcase scene `roads`: a GIF of a street being laid between two houses.
-- [x] **27.16** (approved 2026-10-06) **Lamps, bridges and steps.**
+- [x] **27.16** (approved 2026-10-06) (verified 2026-10-26: QaRoadGameTests [6], QaRoadLampGameTests [9], QaCaravanRoadGameTests [6]: style data and weights, broken styles skipped, segments, cliffs, keep-clear, avenue stairs, lamp spacing/sides/doors/crossings, lane posts, 16 vs 17-wide bridges, ravine pillars, reach 256 and join boundaries, caravanRoadReach, zone style, chronicle/desk/sign lines; mutants on Roads.java and CaravanRoads.java killed except one equivalent [lane post loop bound]) **Lamps, bridges and steps.**
   - **Lamps:** the road style's lamp (the Street Lamp blueprint in the road's style, a styled id) every 16 blocks on
     alternate sides of streets and avenues and at every crossing, never in front of a door; lanes get a lantern post
     (the style's fence, two high, a lantern on top) every 12 blocks. Lamps count as Street Lamps for beauty
@@ -1461,7 +1461,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     is bridged with 2 pillars and villagers walk over it; a 20-wide gap is refused with the desk's note; stairs on a
     slope of one in one;
   - showcase scene `bridges`: a GIF of a bridge going up over a river, and the street lit at night.
-- [x] **27.17** (approved 2026-10-06) **Roads between villages.** For each caravan route (`Caravans`), the village builds its half of a road
+- [x] **27.17** (approved 2026-10-06) (verified 2026-10-26: QaRoadGameTests [6], QaRoadLampGameTests [9], QaCaravanRoadGameTests [6]: style data and weights, broken styles skipped, segments, cliffs, keep-clear, avenue stairs, lamp spacing/sides/doors/crossings, lane posts, 16 vs 17-wide bridges, ravine pillars, reach 256 and join boundaries, caravanRoadReach, zone style, chronicle/desk/sign lines; mutants on Roads.java and CaravanRoads.java killed except one equivalent [lane post loop bound]) **Roads between villages.** For each caravan route (`Caravans`), the village builds its half of a road
   to the other village: a street from the end of its nearest road toward the other hall, in the style of the zone it
   starts from, planned only in loaded chunks (no chunk tickets for roads), up to `caravanRoadReach` (256) blocks or
   halfway, whichever is less. The other village builds the other half, and the two are joined when they come within

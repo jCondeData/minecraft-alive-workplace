@@ -292,6 +292,7 @@ public final class VillageHallScreen {
 		if (io.github.jcondedata.aliveworkplace.wonder.ObservatoryPowers.charts(level, hall)) { // the Observatory's Sky Chart (35.18)
 			mapLore.add(line(Component.translatable("screen.aliveworkplace.hall.map_sky_chart"), ChatFormatting.AQUA));
 		}
+		mapLore.addAll(VillageWaystones.mapLines(level, hall, menu.viewer())); // the waystone network (41.2)
 		menu.button(MAP, icon(Items.FILLED_MAP, Component.translatable("screen.aliveworkplace.hall.map"), ChatFormatting.WHITE,
 			mapLore.toArray(Component[]::new)), p -> {
 			Chat.chat(p, VillageMaps.draw(level, hall, p));

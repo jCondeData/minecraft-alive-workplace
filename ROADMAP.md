@@ -5704,7 +5704,7 @@ Depends on: nothing open.
   when: compat GameTests for the plaza built with a working, named waystone, the village renamed, the stone broken
   (the builder repairs it like any build), the switch off, and a GameTest without the mod that nothing is offered;
   blueprint render checked; text in `en_us.json`; wiki page `waystones.md`; scene `village_waystone`.
-- [ ] **41.2** **The hall's Map shows the waystone network.** The hall's Map section (40.1; today's map page until
+- [x] **41.2** (review: pending 2026-10-26) **The hall's Map shows the waystone network.** The hall's Map section (40.1; today's map page until
   40.1 lands) lists the player's villages with a waystone, each with its distance and direction, and marks which
   ones the player has discovered. Done when: compat GameTests for two villages, one undiscovered, one with its stone
   broken; text in `en_us.json`; wiki; scene `hall_waystones`.

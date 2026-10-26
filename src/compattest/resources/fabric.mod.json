@@ -13,6 +13,7 @@
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystonesCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.WaystoneNetworkCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CrafterFurnitureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QuestbookCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonCompatTests",

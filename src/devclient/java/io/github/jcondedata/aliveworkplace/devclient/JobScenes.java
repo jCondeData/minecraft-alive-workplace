@@ -785,6 +785,38 @@ final class JobScenes {
 			net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
 	}
 
+	/**
+	 * A village of {@code player}'s for the hall_waystones scene (41.2): a hall named {@code name} at {@code hall}, owned by
+	 * the player and known as a hall round knows it, and the Waystone Plaza set down at {@code plaza} as the builder
+	 * leaves it, recorded finished; the hall's round raises its stone, named after the village. Returns the hall.
+	 */
+	private static BlockPos waystoneVillage(ServerLevel level, ServerPlayer player, BlockPos hall, String name, BlockPos plaza) {
+		level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+			.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+		var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+		entity.setCustomName(Component.literal(name));
+		entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+		io.github.jcondedata.aliveworkplace.realm.RealmData.get(level.getServer()).putKnown(new io.github.jcondedata.aliveworkplace.realm.RealmData.Known(
+			net.minecraft.core.GlobalPos.of(level.dimension(), hall), Component.literal(name), java.util.Optional.of(player.getUUID()),
+			player.getGameProfile().getName(), "hamlet", 0, 0, level.getGameTime()));
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), plaza,
+			net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+		BlueprintLibrary.get(level, io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA).ifPresent(blueprint -> {
+			BuildPlan plan = BuildPlan.create(blueprint, placement);
+			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION, BuildPlan.Stage.LANDSCAPE)) {
+				for (BuildPlan.Step step : plan.steps(stage)) {
+					level.setBlock(step.pos(), step.state(), 2);
+					if (step.secondaryPos() != null && step.secondaryState() != null) {
+						level.setBlock(step.secondaryPos(), step.secondaryState(), 2);
+					}
+				}
+			}
+		});
+		BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA, placement, player.getUUID());
+		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.round(level, hall);
+		return hall;
+	}
+
 	// --- The scenes ------------------------------------------------------------------------------------------------
 
 	static {
@@ -5680,6 +5712,37 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION), 30),
 				step("05_hall_festival", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FESTIVAL, 6)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		// The waystone network on the hall's Map (ROADMAP 41.2, filmed with Waystones): three villages of the player's, each
+		// with its Waystone Plaza as the builder leaves it: Ashford (here, its stone discovered), Brookmere to the north-east
+		// (not discovered yet) and Coldwater to the west (its stone broken). The hall's Map button lists all three.
+		SCREENS.put("hall_waystones", new Screen("the hall's Map listed the waystone network: Ashford here (discovered), Brookmere to the north-east "
+			+ "(not discovered yet) and Coldwater to the west (its waystone broken)", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				Showcase.check(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.EXTENSION.present(), "Waystones is loaded (the waystones extension is filled)");
+				BlockPos ashford = waystoneVillage(level, player, STATION, "Ashford", STATION.offset(-12, 0, -12));
+				BlockPos brookmere = waystoneVillage(level, player, STATION.offset(140, 0, -110), "Brookmere", STATION.offset(128, 0, -122));
+				BlockPos coldwater = waystoneVillage(level, player, STATION.offset(-180, 0, 10), "Coldwater", STATION.offset(-192, 0, -2));
+				BlockPos stone = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, ashford).orElse(null);
+				Showcase.check(stone != null && io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, brookmere).isPresent()
+					&& io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, coldwater).isPresent(), "each village raised its waystone");
+				// The player discovered Ashford's stone (using it, as Waystones does); Coldwater's is broken.
+				if (stone != null && io.github.jcondedata.aliveworkplace.hall.VillageWaystones.EXTENSION.present()) {
+					ShowcaseWaystones.discover(player, level, stone); // (its own class: Waystones' classes load only here)
+				}
+				io.github.jcondedata.aliveworkplace.hall.VillageWaystones.stoneOf(level, coldwater).ifPresent(s -> {
+					level.setBlockAndUpdate(s.above(), Blocks.AIR.defaultBlockState());
+					level.setBlockAndUpdate(s, Blocks.AIR.defaultBlockState());
+				});
+			},
+			List.of(new Step("01_hall_waystones", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.MAP, 6, (level, player) -> {
+				io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+				List<io.github.jcondedata.aliveworkplace.hall.VillageWaystones.Village> network = io.github.jcondedata.aliveworkplace.hall.VillageWaystones.network(level, STATION, player);
+				Showcase.check(network.size() == 3 && network.get(0).state() == io.github.jcondedata.aliveworkplace.hall.VillageWaystones.State.DISCOVERED
+					&& network.stream().anyMatch(v -> v.state() == io.github.jcondedata.aliveworkplace.hall.VillageWaystones.State.UNDISCOVERED)
+					&& network.stream().anyMatch(v -> v.state() == io.github.jcondedata.aliveworkplace.hall.VillageWaystones.State.BROKEN),
+					"the network: Ashford discovered, Brookmere not yet, Coldwater broken (" + network + ")");
+			}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		// The quest journal (ROADMAP 31.3): the four tabs, a tracked quest's bar on screen, a quest map in hand.
 		SCREENS.put("quest_journal", new Screen("the quest journal's four tabs, a tracked quest's bar at the top of the screen and a quest map in hand",
 			new Vec3(2.5, -58.4, 4.5), TARGET,

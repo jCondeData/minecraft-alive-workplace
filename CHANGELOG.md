@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- Waystones: the Village Hall's Map now lists your villages that have a waystone, each with its distance and direction, and whether you have discovered its stone, not yet, or it is broken.
 - Waystones: with the Waystones mod installed, the Steward proposes a Waystone Plaza by the Village Hall, in the village's own style (plains, desert, savanna, snowy or taiga); its waystone is named after the village, renamed with it, and put back by the builder if broken. Config `villageWaystones` (on).
 
 ### Fixed

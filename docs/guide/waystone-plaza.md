@@ -32,6 +32,14 @@ If the stone is broken, the builder puts it back when they look over the village
 finished build, and the new stone takes the village's name again. They need a waystone of the same kind in their
 chest to do it.
 
+## Your waystones on the hall's Map
+
+Hover over the **Map** button on a Village Hall to see the waystone network: every one of your villages that has its
+waystone, this one first, then the others nearest first, each with how far it is and which way ("Brookmere, 178
+blocks north-east"). Each says whether you have discovered its stone (green), not yet (yellow: go and use it once), or
+that its waystone is broken (red: the builder will put it back). Without Waystones on the server the Map doesn't show
+this list.
+
 ## Switch
 
 `villageWaystones` (on). Off: the plaza isn't proposed; stones already standing stay as they are.

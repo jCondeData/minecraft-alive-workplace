@@ -13,13 +13,14 @@ import net.blay09.mods.waystones.core.WaystoneSyncManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-// The Waystones integration (ROADMAP 41.1): the only code that touches Waystones' classes. It fills
+// The Waystones integration (ROADMAP 41.1, 41.2): the only code that touches Waystones' classes. It fills
 // VillageWaystones.EXTENSION, so a plaza's waystone (set down by a builder as a plain block) becomes a working waystone
 // of the mod's, named after the village. Uses Waystones' public API (WaystonesAPI.getWaystoneAt / placeWaystone,
-// MutableWaystone.setName) and, to save and send a new name, what its own rename message does (WaystoneManagerImpl
+// MutableWaystone.setName, WaystonesAPI.isWaystoneActivated for discovery) and, to save and send a new name, what its own rename message does (WaystoneManagerImpl
 // marked dirty, WaystoneSyncManager.sendWaystoneUpdateToAll).
 public final class WaystonesCompat {
 	// The Waystones versions this was tested with (the pack's 21.1.37).
@@ -36,6 +37,16 @@ public final class WaystonesCompat {
 			public Optional<String> nameAt(ServerLevel level, BlockPos pos) {
 				return working(level, pos).map(w -> w.getName().getString());
 			}
+
+			@Override
+			public boolean standing(ServerLevel level, BlockPos pos) {
+				return known(level, pos).isPresent();
+			}
+
+			@Override
+			public boolean discovered(ServerPlayer player, ServerLevel level, BlockPos pos) {
+				return known(level, pos).map(w -> WaystonesAPI.isWaystoneActivated(player, w)).orElse(false);
+			}
 		});
 	}
 
@@ -43,6 +54,17 @@ public final class WaystonesCompat {
 		// (the waystone's own position may read as its upper half: the upper half's block entity shares the waystone)
 		return WaystonesAPI.getWaystoneAt(level, pos).filter(Waystone::isValid)
 			.filter(w -> w.getPos().equals(pos) || w.getPos().equals(pos.above()));
+	}
+
+	// The waystone at pos (41.2): from its block where the chunk is loaded, else from the mod's saved list (Waystones takes
+	// a broken stone off that list, WaystoneBlockBase.onRemove -> WaystoneManagerImpl.removeWaystone).
+	static Optional<Waystone> known(ServerLevel level, BlockPos pos) {
+		if (level.isLoaded(pos)) {
+			return working(level, pos);
+		}
+		return WaystoneManagerImpl.get(level.getServer()).getWaystones()
+			.filter(w -> w.getDimension().equals(level.dimension()) && (w.getPos().equals(pos) || w.getPos().equals(pos.above())))
+			.filter(Waystone::isValid).findFirst();
 	}
 
 	static boolean raise(ServerLevel level, BlockPos pos, String name) {

@@ -836,6 +836,10 @@ SCENES = [
       "the quests, advice, village map, mercenaries and festival opened", 60,
       [("01_hall_quests", "Quests"), ("02_hall_advice", "What next?"), ("03_hall_map", "Village map"),
        ("05_hall_festival", "Festival")]),
+    # The waystone network on the hall's Map (ROADMAP 41.2, with Waystones): discovered, not yet, and a broken stone
+    S("hall_waystones", "Village Hall", "The waystone network on the hall's Map",
+      "the hall's Map listed the waystone network: this village (discovered), one not discovered yet and one whose waystone is broken", 45,
+      [("01_hall_waystones", "The Map: the waystone network")], waystones=True),
     S("quest_journal", "Village Hall", "The quest journal, a tracked quest and a quest map",
       "the quest journal opened on its four tabs, a quest was tracked (its bar at the top of the screen) and a quest map was held", 50,
       [("01_journal_tabs", "The journal: Village, Personal, Story and Bounties"), ("02_journal_tracked", "A tracked quest's bar at the top"),

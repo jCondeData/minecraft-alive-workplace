@@ -433,7 +433,7 @@ toolboxes, the schematic items and components, the recipe types) are listed in t
 Nothing is built for players yet (the gate). Only one machine of each kind per trip, and a worker
 looks only near their own workstation; a stopped machine shows on the Mechanic's status, not yet in the chronicle.
 Putting back a belt has no test with a real belt yet (shafts and cogwheels do). A part broken after a contraption is
-finished is the Mechanic's to mend, not the builder's; one broken while the ground is levelled is listed by the check.
+finished is the Mechanic's to mend, not the builder's; one broken while the ground is leveled is listed by the check.
 Trains (39.7): the track is
 straight pieces node by node, so at a bend or a step of the road Create sees separate pieces, not one line a real
 Create train could run along; the Train Station's station isn't bound to its track (a player re-places it to make a

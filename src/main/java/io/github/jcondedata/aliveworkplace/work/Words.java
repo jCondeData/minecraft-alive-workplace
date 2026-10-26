@@ -45,6 +45,40 @@ public final class Words {
 	}
 
 	/**
+	 * A sentence with "a" before a name (B505: "an Armorer", "an Omanyte", never "a Armorer"): {@code key.an} when the
+	 * argument at {@code nameIndex} begins with a vowel sound and that key exists, else {@code key}, with {@code args}.
+	 */
+	public static MutableComponent articled(String key, int nameIndex, Object... args) {
+		boolean an = nameIndex >= 0 && nameIndex < args.length && startsWithVowelSound(text(args[nameIndex]))
+			&& Language.getInstance().has(key + ".an");
+		return Component.translatable(an ? key + ".an" : key, args);
+	}
+
+	/**
+	 * Whether "an" goes before {@code word}: it starts with a, e, i or o, or with a u that isn't said "you" (an Ultra
+	 * Ball, an Umbreon; a Unicorn, a Useful one, a Utopia). "Eu" is said "you" too (a Eulogy).
+	 */
+	public static boolean startsWithVowelSound(String word) {
+		String w = word.strip().toLowerCase(java.util.Locale.ROOT);
+		if (w.isEmpty()) {
+			return false;
+		}
+		char c = w.charAt(0);
+		if (c == 'e') {
+			return !w.startsWith("eu") && !w.startsWith("ewe");
+		}
+		if (c == 'u') {
+			return !(w.startsWith("uni") || w.startsWith("use") || w.startsWith("usu") || w.startsWith("uti") || w.startsWith("uto") || w.startsWith("ura")
+				|| w.startsWith("uro") || w.startsWith("ubi"));
+		}
+		return c == 'a' || c == 'i' || c == 'o';
+	}
+
+	private static String text(Object arg) {
+		return arg instanceof Component c ? c.getString() : String.valueOf(arg);
+	}
+
+	/**
 	 * An item's name after a count (B407: "4 Baked Potatoes", "1 Pumpkin Pie"): for any count but one, its plural
 	 * {@code plural.aliveworkplace.<namespace>.<path>} when the lang has it, else the item's own name.
 	 */

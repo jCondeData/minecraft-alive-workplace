@@ -135,7 +135,7 @@ public class QaTonicsGuildsGameTests implements FabricGameTest {
 			Tonics.Offer offer = Tonics.offer(player, smith, draught);
 			helper.assertTrue(offer.outcome() == Tonics.Outcome.DRUNK && draught.isEmpty(), "the Ball Smith: " + offer.outcome() + " " + draught);
 			String said = offer.message().getString();
-			helper.assertTrue(said.equals("Bo drinks the Smith's Draught: 25% faster for 20 minutes."), "said: " + said);
+			helper.assertTrue(said.equals("Bo drinks the Smith's Draft: 25% faster for 20 minutes."), "said: " + said);
 			ServerPlayer creative = player(helper, GameType.CREATIVE);
 			ItemStack broth = new ItemStack(ModItems.WOODSMANS_BROTH);
 			helper.assertTrue(Tonics.offer(creative, postman, broth).outcome() == Tonics.Outcome.DRUNK && broth.getCount() == 1, "creative: the Postman drank, the broth kept: " + broth);

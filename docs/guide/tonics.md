@@ -23,7 +23,7 @@ for 20 minutes**, a whole Minecraft day.
 | Tonic | For | Made by | From |
 |---|---|---|---|
 | [Miner's Brew](miners-brew.md) | Miners, Sifters, Netherworkers | Cleric | a glass bottle, glowstone dust, coal, sugar |
-| [Smith's Draught](smiths-draught.md) | Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths | Cleric | a glass bottle, blaze powder, 2 iron nuggets |
+| [Smith's Draft](smiths-draught.md) | Armorers, Toolsmiths, Weaponsmiths, Tinkerers, Ball Smiths | Cleric | a glass bottle, blaze powder, 2 iron nuggets |
 | [Scholar's Infusion](scholars-infusion.md) | Scholars, Teachers, Librarians, Cartographers, Fossil Scientists | Cleric | a glass bottle, an amethyst shard, glow berries |
 | [Builder's Tea](builders-tea.md) | Builders, Carpenters, Masons, Dyers | Chef | a glass bottle, 2 sweet berries, sugar |
 | [Harvest Cordial](harvest-cordial.md) | Farmers, Orchard Keepers, Florists, Beekeepers, Composters, Shepherds, Butchers, Ranchers, Chefs | Chef | a glass bottle, an apple, wheat, sugar |

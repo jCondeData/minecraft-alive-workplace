@@ -590,7 +590,7 @@ public final class Stations {
 		}
 		List<Component> lines = new ArrayList<>();
 		if (station.byItself() && jobs.get(0) == station.jobs().get(0)) {
-			lines.add(Component.translatable("tooltip.aliveworkplace.station.by_itself", name(jobs.get(0).profession().get())).withStyle(ChatFormatting.GRAY));
+			lines.add(Words.articled("tooltip.aliveworkplace.station.by_itself", 0, name(jobs.get(0).profession().get())).withStyle(ChatFormatting.GRAY));
 		}
 		lines.add(Component.translatable("tooltip.aliveworkplace.station.header").withStyle(ChatFormatting.GOLD));
 		for (Job job : jobs) {

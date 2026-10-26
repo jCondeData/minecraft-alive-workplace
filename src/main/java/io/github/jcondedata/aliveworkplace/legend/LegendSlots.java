@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +64,7 @@ public final class LegendSlots {
 				long have = record.holding(e -> !e.villager().equals(self) && e.rarity() == Rarity.MYTHIC && e.in(dim, hall));
 				int cap = mythicCap(rank);
 				yield have < cap ? Optional.empty()
-					: Optional.of(Component.translatable("message.aliveworkplace.legend.refused.mythic", rank.title(), cap, have));
+					: Optional.of(Words.counted("message.aliveworkplace.legend.refused.mythic", cap, rank.title(), cap, have));
 			}
 		};
 	}

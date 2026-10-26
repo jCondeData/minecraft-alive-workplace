@@ -205,7 +205,7 @@ public class WonderSiteGameTests implements FabricGameTest {
 		helper.assertTrue(said.contains("message.aliveworkplace.wonder.status.header") && said.contains("message.aliveworkplace.wonder.status.stage")
 			&& said.contains("message.aliveworkplace.wonder.status.materials") && said.contains("message.aliveworkplace.wonder.status.short")
 			&& said.contains("message.aliveworkplace.wonder.status.abandon"), "the status with nothing in the chests: " + said);
-		helper.assertTrue(status.getString().contains("The Ground Storey"), "the stage's name: " + status.getString());
+		helper.assertTrue(status.getString().contains("The Ground Story"), "the stage's name: " + status.getString());
 		List<WonderStages.Line> lines = WonderStages.materials(level, site, stone);
 		helper.assertTrue(!lines.isEmpty() && lines.stream().allMatch(l -> l.toBring() == l.need()), "everything short: " + lines);
 		BlockPos chestPos = stone.offset(-2, 0, 0);

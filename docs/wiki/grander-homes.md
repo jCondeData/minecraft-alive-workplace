@@ -45,7 +45,7 @@ tier below:
 
 **Every kind of home looks different** (26.11): the Starter Cottage is the timber-framed one under a spruce roof; the
 Stone House a stone croft with crow-stepped gables (the gable walls rise above the slate roof in steps), a chimney
-breast and a woodpile, rising a full storey in stone at II and growing a crow-gabled wing at III; the Terrace a brick
+breast and a woodpile, rising a full story in stone at II and growing a crow-gabled wing at III; the Terrace a brick
 row with a stone string course and cornice, a bay window and a hooded door for each home, the middle home's front
 plastered white, a chimney stack over each party wall and dormers in a dark oak roof; then the three grander homes
 above. Their beds, chests and rooms are where they were, so homes already built keep working.

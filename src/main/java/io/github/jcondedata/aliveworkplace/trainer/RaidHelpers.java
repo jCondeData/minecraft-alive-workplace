@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import io.github.jcondedata.aliveworkplace.work.Walker;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -256,7 +257,7 @@ public final class RaidHelpers {
 				continue;
 			}
 			ItemStack stack = new ItemStack(cheer.get());
-			player.sendSystemMessage(Component.translatable("message.aliveworkplace.raid_helpers.cheer", Trainers.title(helper), stack.getHoverName())
+			player.sendSystemMessage(Words.articled("message.aliveworkplace.raid_helpers.cheer", 1, Trainers.title(helper), stack.getHoverName())
 				.withStyle(ChatFormatting.LIGHT_PURPLE));
 			if (!player.getInventory().add(stack)) {
 				player.drop(stack, false);

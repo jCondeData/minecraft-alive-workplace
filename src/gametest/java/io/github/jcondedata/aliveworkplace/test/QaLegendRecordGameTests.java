@@ -202,7 +202,7 @@ public class QaLegendRecordGameTests implements net.fabricmc.fabric.api.gametest
 			// a different Mythic kind still counts against the cap
 			helper.assertTrue(!Legends.canCome(level, a, m2), "a second Mythic (another kind) allowed in a Town");
 			String text = LegendSlots.whyNot(level, a, m2, null).map(Component::getString).orElse("");
-			helper.assertTrue(text.matches("A Town can hold 1 Mythic Legends?, and this one has 1\\."), "refusal text: " + text);
+			helper.assertTrue(text.equals("A Town can hold 1 Mythic Legend, and this one has 1."), "refusal text (B504): " + text);
 			// Mythics elsewhere don't count: another village, or the same spot in the Nether
 			UUID far = uuid("mythic-far");
 			UUID hell = uuid("mythic-nether");
@@ -216,6 +216,8 @@ public class QaLegendRecordGameTests implements net.fabricmc.fabric.api.gametest
 			made.add(two);
 			record.settled(m2.id(), two, level.dimension(), Optional.of(a), Rarity.MYTHIC, "Di", 1);
 			helper.assertTrue(!Legends.canCome(level, a, m3), "a third Mythic allowed in a City");
+			String full = LegendSlots.whyNot(level, a, m3, null).map(Component::getString).orElse("");
+			helper.assertTrue(full.equals("A City can hold 2 Mythic Legends, and this one has 2."), "refusal text at cap 2: " + full);
 			helper.assertTrue(LegendSlots.whyNot(level, a, m3, two).isEmpty(), "a Mythic held against themselves");
 			helper.assertTrue(!Legends.canCome(nether, a, m3) == (LegendSlots.mythicCap(VillageRanks.of(nether, a)) <= 1), "the Nether village counts the Overworld's");
 			// a zombie Mythic keeps the slot; one fallen frees it

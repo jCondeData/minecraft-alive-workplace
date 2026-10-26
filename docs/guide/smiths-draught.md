@@ -1,4 +1,4 @@
-# Smith's Draught
+# Smith's Draft
 
 ```infobox
 type: Item
@@ -15,7 +15,7 @@ categories: Items, Jobs
 related: tonics.md, cleric.md
 ```
 
-A fiery draught for the forge. The [Cleric](cleric.md) brews it at the brewing stand.
+A fiery draft for the forge. The [Cleric](cleric.md) brews it at the brewing stand.
 
 ## Getting it
 

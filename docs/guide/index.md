@@ -249,7 +249,7 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
 - [Guild Charter](guild-charter.md) and the [Guildhall](guildhall-build.md): how a guild starts and where it meets.
 - [Work Horn](work-horn.md), [Village Banner](village-banner.md), [Cradle](cradle.md) and
   [Harvest Idol](harvest-idol.md): the village's civic things.
-- [Tonics](tonics.md): [Miner's Brew](miners-brew.md), [Smith's Draught](smiths-draught.md),
+- [Tonics](tonics.md): [Miner's Brew](miners-brew.md), [Smith's Draft](smiths-draught.md),
   [Scholar's Infusion](scholars-infusion.md), [Builder's Tea](builders-tea.md), [Harvest Cordial](harvest-cordial.md)
   and [Woodsman's Broth](woodsmans-broth.md).
 

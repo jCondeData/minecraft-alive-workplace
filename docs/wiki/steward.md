@@ -134,7 +134,8 @@ Roads and walls have their own switches: see [Roads and walls](roads-and-walls.m
 - Breaking the hall ends the job.
 - He needs builders: he plans, they build. With no builder's bench within reach of a plot, no plot is found.
 - Player-built places are known only from 1.1 on; what players built before is not in the ledger.
-- A proposal nobody answers lapses after 3 days; a declined one stays away 3 days.
+- A proposal nobody answers lapses after 3 days; a declined one stays away 3 days. The line names it
+  in quotes: Declined: "Give 1 villager a job" won't be proposed again for 3 days.
 
 ## Proof
 

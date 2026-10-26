@@ -530,6 +530,20 @@ public final class WorkplaceCommand {
 				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.quarry_cancelled"), false);
 				return 1;
 			}
+			// B462: the Wonder's own id (the stone's screen offers it). A stage waiting for its goods has no build sites, so
+			// a part's id isn't there to give; the Wonder ends and the goods of the stage not yet dedicated come back.
+			java.util.Optional<io.github.jcondedata.aliveworkplace.wonder.WonderSite> wonder =
+				io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).site(id);
+			if (wonder.isPresent() && !wonder.get().done()) {
+				boolean owner = source.getEntity() != null && wonder.get().owner().map(source.getEntity().getUUID()::equals).orElse(false);
+				if (!owner && !source.hasPermission(2)) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.not_owner"));
+					return 0;
+				}
+				io.github.jcondedata.aliveworkplace.wonder.WonderStages.cancel(level, id);
+				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.wonder_cancelled"), false);
+				return 1;
+			}
 			BuildSite site = BuildSiteManager.get(level).get(id);
 			if (site == null) {
 				continue;

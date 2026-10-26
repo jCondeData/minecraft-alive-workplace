@@ -354,7 +354,7 @@ public final class GemGrowers {
 
 	/**
 	 * Makes Blank TMs at the stonecutter from the shards and glass in {@code chests} (Cobblemon's recipe), while there are
-	 * fewer than {@link #BLANK_TMS_KEPT}: true if she made some.
+	 * fewer than {@link #BLANK_TMS_KEPT} and one craft still fits under it: true if she made some.
 	 */
 	public static boolean makeBlankTms(ServerLevel level, List<BlockPos> chests) {
 		Recipe<?> recipe = blankTmRecipe(level).orElse(null);
@@ -362,7 +362,8 @@ public final class GemGrowers {
 			return false;
 		}
 		ItemStack result = Recipes.result(recipe, level.registryAccess());
-		if (result.isEmpty() || SupplyContainers.count(level, chests, result.getItem()) >= BLANK_TMS_KEPT) {
+		// Only when what one craft makes still fits under the 8 (B490: Cobblemon's recipe makes 2, so 7 became 9).
+		if (result.isEmpty() || SupplyContainers.count(level, chests, result.getItem()) + result.getCount() > BLANK_TMS_KEPT) {
 			return false;
 		}
 		// What the recipe needs, one item kind per ingredient (the first in the chests that fits it).

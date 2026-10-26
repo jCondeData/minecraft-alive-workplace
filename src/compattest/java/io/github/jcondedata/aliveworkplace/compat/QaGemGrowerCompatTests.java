@@ -171,6 +171,27 @@ public class QaGemGrowerCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * B490: 7 Blank TMs, glass and shards in her chest: she never holds more than 8. Cobblemon's recipe makes 2 a craft, so
+	 * crafting whenever the chests held fewer than 8 turned 7 into 9.
+	 */
+	//$ gametest_ticks_batch AREA '1600' '"qa_gem_tm_bug"'
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "qa_gem_tm_bug")
+	public void qaSevenBlankTmsNeverBecomeNine(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		if (!PokemonFeatures.TYPE_GEMS.available()) {
+			helper.succeed();
+			return;
+		}
+		Item tm = item("blank_tm");
+		GemGrowerCompatTests.grower(helper, new ItemStack(tm, 7), new ItemStack(Items.GLASS, 16), new ItemStack(Items.AMETHYST_SHARD, 16));
+		helper.onEachTick(() -> {
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(tm) <= GemGrowers.BLANK_TMS_KEPT, "more than 8 Blank TMs: " + chest.countItem(tm));
+		});
+		helper.runAtTickTime(1200, helper::succeed);
+	}
+
+	/**
 	 * Trades with Cobblemon: an Apprentice sells tumblestones (three of her four Apprentice trades are tumblestones and
 	 * she gets two, so at least one); an Expert sells Type Gems (both Expert trades).
 	 */

@@ -326,6 +326,35 @@ public class QaCampHabitatCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B465: she keeps up to 16 Poké Snacks: with 15 by the pot she cooks (one pot's worth), and once there are 16 or more
+	 * she cooks no more of them, though the makings for more are there. The snack out of the pot carries what it was
+	 * cooked with, and only plain snacks were counted, so she cooked 15 up to 18.
+	 */
+	//$ gametest_ticks_batch AREA '3600' '"qa_cook_keep"'
+	@GameTest(template = AREA, timeoutTicks = 3600, batch = "qa_cook_keep")
+	public void fifteenSnacksAreToppedUpThenNoMore(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		Villager cook = cook(helper, snackMakings(15));
+		List<Integer> history = new ArrayList<>(List.of(15));
+		long[] reached = {-1};
+		helper.onEachTick(() -> {
+			int n = snacks(helper, cook);
+			if (n != history.get(history.size() - 1)) {
+				history.add(n);
+			}
+			if (n >= 16 && reached[0] < 0) {
+				reached[0] = helper.getTick();
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(reached[0] >= 0, "15 snacks never became 16; she says " + said(helper, cook));
+			int first = history.stream().filter(n -> n >= 16).findFirst().orElseThrow();
+			helper.assertTrue(history.stream().allMatch(n -> n <= first), "she went on cooking snacks past 16: " + history);
+			helper.assertTrue(helper.getTick() - reached[0] >= 800, "waiting to see she stops: " + history);
+		});
+	}
+
 	/** Switched off (campCooks false), a Camp Cook with all the makings cooks nothing and says she's switched off. */
 	//$ gametest_ticks_batch AREA '400' '"qa_cook_off"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_cook_off")

@@ -64,13 +64,20 @@ free block. When a scholar has nothing to research he picks the next topic by wh
 
 **Safe by design (27.19).** Everything he builds passes one check: only inside his own village, never in Keep Clear,
 never in a protected village of another owner, never through a place where a player placed or broke blocks unless the
-owner approved that one by hand. His sites clear only natural blocks. While two of his builds have waited a whole day
-for materials he proposes nothing new and tells the owner the shopping list instead.
+owner approved that one by hand (Keep Clear refuses even that). A player placing or breaking a block inside a hall's
+area marks its 16×16×16 section, and only that one. His sites clear only natural blocks. Waiting builds share one
+shopping list, the 8 most needed added up over all of them, on the desk, the Storehouse's requests board and in the
+caravans' wants; the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
+less, isn't enough) he proposes nothing new and the desk says so.
 
 **Old houses (27.20, 27.21).** In zones with "renew old houses" on he finds the houses no builder built (by their
-beds and job blocks), never one with a chest, never one a player changed. One at a time, at most one every 2 days,
+beds and job blocks), never one with a chest, never one a player changed, never one inside a finished build. A house
+counts when 85% or more of its blocks are village blocks (mossy, cracked and cobwebbed ones too) and it is at most
+2000 blocks and 20×16×20; beds, bells, signs, banners, campfires and job blocks may stay in it, any other container
+(a furnace, a hopper) rules it out. The desk says "Old houses: 2, 1 can be renewed". One at a time, at most one every 2 days,
 he proposes to renew one in the zone's style: builders take the old house down (its blocks go to the store) and
-build the new one on the plot. The sleepers get the new beds and the worker keeps the job. Two of them coming home
+build the new one on the plot, the first building on the list that fits the old footprint plus 3, its front where
+the old door was. A renewal list file that is broken, or a building it names that doesn't exist, is skipped. The sleepers get the new beds and the worker keeps the job. Two of them coming home
 through the one front door together no longer jam on the doorstep: the one further from the door steps back a moment
 and follows the other in, and the jam never counts towards vanilla giving a bed up (B255; this holds at any door, for
 any villagers walking to bed). A jobless villager walking to a workstation it picked before dusk gives that walk up at
@@ -146,7 +153,13 @@ first painter's claim is saved, a block's zone comes from the nearest hall, an 8
 `QaStewardRulesDataGameTests` (2, 27.6), `QaStewardPlotFitGameTests` (2, 27.7: the front faces the nearer road;
 clearable plants), `QaStewardDeskModesGameTests` (10, 27.8: mode buttons, operator and friend approvals, approving
 twice, Steward or hall gone, Run's morning line, save and reload, the desk's sentences, the Ledger, Show me's 30
-seconds) and `QaWorkplaceCopiesGameTests` (4, 27.11).
+seconds) `QaWorkplaceCopiesGameTests` (4, 27.11), `QaStewardSafetyGameTests` (10, 27.19: a broken block marks its section,
+nothing outside a hall's area, one section only, per dimension, Keep Clear over the owner's approval, the 8 most
+needed, caravans, once a day, the pause's day from both sides, the sentences), `QaOldHousesGameTests` (12, 27.20: 85%
+from both sides, abandoned blocks, allowed block entities, containers, 2000 blocks and 20×16×20 from both sides, a
+finished build, placed leaves, the ledger, the desk line) and `QaRenewalGameTests` (9, 27.21: the switch, two days
+from both sides, a Fletcher's Lodge facing the old door, the sentences, a tight zone, broken lists, a building too big
+passed over, a zone not renewed).
 
 Showcase scenes: `steward` (the morning rounds), `steward_rules`, `steward_desk`, `steward_safety`, `steward_jobs`,
 `steward_homes`, `steward_civic`, `old_houses`, `renewal`, `city_plan`, `city_plan_ground`, `city_timelapse` (a

@@ -38,7 +38,9 @@ restartable at any tick for this reason.
 - CLEAR takes away what is in the way, but never breaks containers, its own bench or any other Builder's Bench (a
   neighbor's bench inside the build's box stays, and the build finishes round it, B132).
 - FOUNDATION fills under a build standing on uneven ground. How deep is the `workplaceFoundationDepth` rule.
-- STRUCTURE goes bottom-up so every block has something to stand on.
+- STRUCTURE goes bottom-up so every block has something to stand on. A block a player puts mid-build where the
+  drawing has another is taken out into the builder's chests and the drawn block laid (a Steward's build keeps the
+  player's block instead; tests `QaBuilderDisruptionGameTests`, `StewardSafetyGameTests`).
 - DECORATION is what needs something to hang on or stand on (torches, doors, ladders, carpets...), placed after
   the structure is up.
 - LANDSCAPE (leveling the ground round the build, dirt) never waits for materials.

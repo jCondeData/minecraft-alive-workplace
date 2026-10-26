@@ -656,6 +656,8 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B540** Spec mismatch (35.21 Colossus design, low): the spec says 'a cloak of cut copper ... (about 250 copper blocks)', the blueprint has 368 copper blocks (47% more for the player to pay). Expected: redraw near 250, or amend 35.21's number in the ROADMAP (the bug lane decides; nothing looks wrong in the build). Test: QaWonderDesignsBugTests#qaWonderColossusCopperAbout250 on tests/wonder-designs-1026 (found by lane-b-1026-1538, 2026-10-26) (found by lane-b-1026-1538, 2026-10-26)
 - [ ] **B541** [lane: d] Test-only, order-dependent (41.x waystones): WaystonesCompatTests#renamingTheVillageRenamesItsWaystone fails in a full runCompatGameTest on branch qa/create-transfer-1026 (main 0def6d0 + three new QA compat classes in their own batches: QaCreateFunnelCounterCompatTests, QaCreateFunnelMailboxCompatTests, QaTomsPrivateBoxesCompatTests), twice in a row (2026-10-26 15:27Z and 16:04Z, 1 of 725 each): 'the stone after the round: Optional.empty ... at=InvalidWaystone valid=false' (WaystonesCompatTests.java:185). The class alone passes 4 of 4, and with the three new classes 7 of 7, and main's CI (725 minus 3) is green, so the test depends on what ran before it in the full suite (a waystone left registered by an earlier batch, or the Waystones mod's saved data). Expected: passes in any suite. The QA branch waits on this before it goes to main. Test: runCompatGameTest on qa/create-transfer-1026 (found by lane-e-1026-1343, 2026-10-26) (found by lane-e-1026-1343, 2026-10-26)
 - [ ] **B542** Player-visible (saves, optional mod removed; 39.2 Mechanic, 39.7d Conductor, 38.12 Furnicrafter): a villager who worked as a Mechanic, Conductor or Furnicrafter loads as jobless once Create (or CobbleFurnies) is taken off the server, as ModVillagers promises, but keeps her old job's trades: a right click on her opens a trade screen with them (an ex-Conductor still buys coal and sells rails and powered rails; Create-item trades drop). Name, desert type and level survive. Expected: the jobless villager trades nothing (vanilla's jobless never do; clear the offers when the saved profession isn't registered), as a vanilla villager who loses his job. Test: QaModGoneVillagersGameTests (3 tests) on tests/mod-gone-villagers (found by lane-e-1026-1614, 2026-10-26)
+- [ ] **B543** Showcase-only (B322/B327 again): scene conscription failed in showcase run 40305546483 (main b142f2a, 2026-10-26 11:01Z): 'the conscripts struck the raiders: 2 of 3': all three raiders died (hit by farmer, builder, guard) before the librarian landed a blow, so the check that each conscript strikes fails though the edict worked. Expected the scene to give each conscript a raider of its own (or judge strikes by conscripts that reached a raider). Test: SCENE=conscription tools/screenshots/run.sh (found by lane-c-1026-1553, 2026-10-26)
+- [ ] **B544** Test-only flake: QaHeartsGameTests.aGiftReachingTwoHeartsStartsHerStoryAndAnotherGiftDoesNotCutIt failed once in a local runGameTest on main (2026-10-26, lane-c-1026-1553's B535 run) with "Alex's cake: 170 points, holding 0 minecraft:air" and passed in the full build after; the test reads the gift's hand slot after the villager has already eaten or dropped it. Expected the test to pass every run. Test: QaHeartsGameTests#aGiftReachingTwoHeartsStartsHerStoryAndAnotherGiftDoesNotCutIt (repeat generator) (found by lane-c-1026-1553, 2026-10-26)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4775,7 +4777,7 @@ Legends.
   - its review package has the renders after two critique rounds: each stage as the village would see it, and the
     whole from the front, the back and at eye level;
   - scene `wonder_gallery` (made here; each Wonder's design adds to it) shows it whole from the front and the back.
-- [x] **35.10** (approved 2026-10-13) **The Great Cathedral: its powers and time-lapse.** While it stands, the village's Undertakers need no
+- [x] **35.10** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Great Cathedral: its powers and time-lapse.** While it stands, the village's Undertakers need no
   golden apple, potion or totem, look for graves across the whole village instead of 32 blocks, and bring each
   villager back by the next morning (`grave/UndertakerWork`). Weddings are held at the Cathedral, before a Chapel or
   the bell (`people/Couples`), and are **blessed**: the whole village gets +15 mood for 3 days, the couple's first
@@ -4799,7 +4801,7 @@ Legends.
   explorer's maps (Cartographer), 32 spectral arrows (Fletcher), 32 leather (Butcher); IV 64 glowstone dust
   (Netherworker), 32 redstone (Miner), 16 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it, with
   the jetty over water in its renders.
-- [x] **35.12** (approved 2026-10-13) **The Lighthouse: its powers and time-lapse.** While it stands, caravans from its village reach
+- [x] **35.12** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Lighthouse: its powers and time-lapse.** While it stands, caravans from its village reach
   villages up to 4,096 blocks away (twice `Caravans.RANGE`) and arrive in half the time (`Caravans.travelTicks`);
   ferry fares to and from the village's Travel Posts are halved (`TravelNetwork.fare`: an emerald per 512 blocks), and
   the jetty's post joins the network under the village's name ("Thornholm Lighthouse"). And it watches the sea: the
@@ -4823,7 +4825,7 @@ Legends.
   II 64 books (Librarian), 64 black dye (Dyer), 16 lanterns (Tinkerer); III 8 explorer's maps (Cartographer), 32 lapis
   lazuli (Sifter), 32 copper ingots (Armorer); IV 64 nether quartz (Netherworker), 32 cookies (Chef), 16 bookshelves
   (Librarian). Done when: 35.9's four design checks pass for it, with the rotunda's inside in its renders.
-- [x] **35.14** (approved 2026-10-13) **The Great Library: its powers and time-lapse.** While it stands, the research tree
+- [x] **35.14** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Great Library: its powers and time-lapse.** While it stands, the research tree
   (`research/Research`) opens a second tier, shown on the scholar's screen in a row of its own ("needs the Great
   Library" until then). Each level costs 24 paper, 6 books and 8 emeralds times its level, and twice the points of the
   first tier:
@@ -4884,7 +4886,7 @@ Legends.
   (Toolsmith), 32 amethyst shards (Miner); III 16 books (Librarian), 8 tinted glass (Carpenter), 32 feathers
   (Butcher); IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). Done when: 35.9's four design
   checks pass for it.
-- [x] **35.18** (approved 2026-10-13) **The Observatory: its powers and time-lapse.** While it stands:
+- [x] **35.18** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Observatory: its powers and time-lapse.** While it stands:
   - **The Sky Chart**: the hall's map button also draws, on an empty map, a chart about 6,144 blocks across (384 chunks,
     12 regions; 35.18a) centred on the hall, marking every structure found: villages, pillager outposts, desert and jungle temples, witch
     huts, igloos, ocean monuments, woodland mansions, shipwrecks, ruined portals, trail ruins, ancient cities, trial
@@ -4915,7 +4917,7 @@ Legends.
   Keeper), 64 small flowers (Florist), 16 saplings (Lumberjack); III 32 honey bottles (Beekeeper), 64 carrots and 64
   potatoes (Farmer), 32 cocoa beans (Orchard Keeper); IV 16 cakes (Chef), 32 eggs (Butcher), 32 raw cod (Fisherman).
   Done when: 35.9's four design checks pass for it, with the falls running in its renders.
-- [x] **35.20** (approved 2026-10-13) **The Hanging Gardens: its powers and time-lapse.** While it stands, across its realm (the villages
+- [x] **35.20** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Hanging Gardens: its powers and time-lapse.** While it stands, across its realm (the villages
   linked to its village, M33; until that lands, its caravan partners; always its own): every farmer and orchard keeper
   harvests a quarter more (one more item for every four picked, counted per worker; no extra crop growth ticks), and
   villages grow faster (`hall/VillageGrowth`): a baby needs 12 meals in the store instead of 16, and up to two are
@@ -4938,7 +4940,7 @@ Legends.
   oak logs (Lumberjack), 16 potions of strength (Cleric); IV 32 glowstone dust (Netherworker), 64 small flowers
   (Florist), 16 cakes (Chef). Done when: 35.9's four design checks pass for it, with the face seen from the road in
   its renders.
-- [x] **35.22** (approved 2026-10-13) **The Colossus: its powers and time-lapse.** While it stands, every villager in its realm is happier
+- [x] **35.22** (approved 2026-10-13) (verified 2026-10-26: 7 QA GameTests [QaWonderPowersGameTests]: realm reach one route either way and no further, village powers stay home, Lighthouse range 4,096/4,097 and half-fare edge, damaged/Wonders off/repaired, powers after save+reload; full build green 4048+725) **The Colossus: its powers and time-lapse.** While it stands, every villager in its realm is happier
   (+8 mood, +12 in its own village; "the Colossus" shows among the reasons for their mood, `people/Moods`), travellers
   come to its village's inns twice as often and are twice as likely to be Experts (`inn/Innkeepers`), and it counts 8
   beauty. When it's finished, the plaque's signs are filled in: the Founder's name (M29's Founder; the hall's owner

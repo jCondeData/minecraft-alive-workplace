@@ -5660,7 +5660,7 @@ Depends on: nothing open.
   scale 2, 3 and 4 and at 1280×720. Done when: GameTests open every section through the hall's own entry point and
   reach every page and action listed in the design note; a section with nothing in it says so plainly; text in
   `en_us.json`; wiki (village-hall.md) and guide updated; scene `hall_sidebar` (each section, GUI scale 2 and 3).
-- [ ] **40.2** **The People table.** The People section is a table: Name, Job, Level, Mood, with "8 · 6 working · 2
+- [x] **40.2** (review: pending 2026-10-26) **The People table.** The People section is a table: Name, Job, Level, Mood, with "8 · 6 working · 2
   jobless" at the top and a scroll for big villages. Mood is a word players read at once (Happy, Content, Unhappy,
   "No bed" in red when that's the reason). Clicking a row opens the villager's details right under it (traits, what
   they're doing now, what they need, happiness and why, class and how to rise: what today's pane shows), and two

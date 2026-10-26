@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Added
 - Village Hall: the hall's screen has a sidebar: the village's name and today's date over ten labeled buttons (Overview, People, Homes & Food, Buildings, Defense, Quests, Trade, Calendar, Laws & Realm, Map). The section you pick fills the right side, an empty one says so plainly, the Overview shows the village at a glance with what it needs next, and the hall opens on the section you used last. Every page and button of the old screen is still there, under its section (40.1).
+- Village Hall: the People section is now a table of everyone in the village: Name, Job, Level and Mood, with "8 · 6 working · 2 jobless" on top and a scroll for big villages. Mood is a word (Happy, Content, Unhappy, or "No bed" in red when that's why). Click a row to open that villager's details right under it (traits, what they're doing, what they need, their mood and why, their class and how to rise), with Job ▾ (change or give them a job) and Bed ▾ (the village's beds); click again to close it. Children and builders are listed too, marked as such (40.2).
 
 ### Fixed
 - Text: names that start with a vowel now get "an": the blast furnace's tooltip says "takes it as an Armorer", the hall says "Bram is now an Armorer", and the same for retraining, guards ("an Archer"), inn travelers ("an Apprentice"), the Fossil Scientist ("reviving an Omanyte"), the Daycare Keeper ("an Eevee Egg"), the Pokémon Trader ("Comes in an Ultra Ball") and the raid helpers' cheer (B505).

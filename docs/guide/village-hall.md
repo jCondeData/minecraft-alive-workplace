@@ -55,6 +55,15 @@ section with nothing in it says so in plain words ("No guards yet."), and its bu
 hall remembers the section you opened last until you leave the game. With nothing under the mouse, the pane on the
 right shows what the village needs next on the Overview, and what a section is for on the others.
 
+**People is a table** of everyone who lives in the village: their name, job, level and mood, with the count on top
+("8 · 6 working · 2 jobless"). Scroll it with the mouse wheel in a big village. The mood is one word: Happy, Content,
+Unhappy, or **No bed** in red when having no bed is what's wrong. Children and builders are in the list too ("Child"
+in the Job column, builders in gold). Click a villager's row to open their details right under it: their traits,
+what they're doing now, what they need, their mood and why, and their class and how to rise. Under that are three
+buttons: **Job ▾** changes their job (or gives a jobless villager one), **Bed ▾** shows the village's beds, and
+**Find** makes them glow so you can spot them. Click the row again (or press Esc) to close it. The bell, the figures
+and the Legends, Classes and Free job blocks pages sit in a row of pictures over the table.
+
 **Point at anything and the pane on the right tells you all about it.** Move the mouse on into the pane and it keeps
 reading the same thing, so you can scroll a long entry there with the mouse wheel without clicking it (or hold Shift
 and scroll over the row); a little arrow at the bottom shows there's more. A page you open from a section (the

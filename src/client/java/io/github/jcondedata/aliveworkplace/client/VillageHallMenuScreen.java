@@ -1,12 +1,15 @@
 package io.github.jcondedata.aliveworkplace.client;
 
+import io.github.jcondedata.aliveworkplace.hall.HallPeople;
 import io.github.jcondedata.aliveworkplace.hall.HallSections;
 import io.github.jcondedata.aliveworkplace.hall.HallSections.Section;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.ChoiceView;
 import java.util.List;
+import java.util.ArrayList;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -268,5 +271,318 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		}
 		g.disableScissor();
 		return true;
+	}
+
+	// --- the People table (40.2) ------------------------------------------------------------------------------------
+
+	/** A table row's height, and a details button's. */
+	private static final int RH = 12;
+	private static final int BH = 14;
+	private static final int MOOD_HAPPY = 0xFF55FF55;
+	private static final int MOOD_UNHAPPY = 0xFFFFAA00;
+	private static final int MOOD_NO_BED = 0xFFFF5555;
+
+	/** The open row's villager (null: none), kept by who they are so it stays open as the list moves. */
+	private String openUuid;
+	private int tableScroll;
+	/** The window start last asked of the server (-1: none). */
+	private int askedFirst = -1;
+	/** What the last frame drew, for clicks: [kind, slot, x, y, w, h] (kind 0 row, 1 strip button, 2 job, 3 bed, 4 find). */
+	private final List<int[]> hits = new ArrayList<>();
+	private int tableTop, tableH, tableX, tableW;
+
+	@Override
+	protected boolean customBody() {
+		return hasSidebar() && onMain() && section() == Section.PEOPLE;
+	}
+
+	/** The People section's other buttons (the figures, the recall bell, the page tabs): a strip over the table. */
+	private List<Integer> stripSlots() {
+		List<Integer> out = new ArrayList<>();
+		for (int slot = 0; slot < ChoiceMenu.SIZE; slot++) {
+			ItemStack icon = menu.slots.get(slot).getItem();
+			if ((HallSections.marks(icon) & Section.PEOPLE.bit()) != 0 && HallPeople.row(icon) == null && slot != VillageHallScreen.PREVIOUS && slot != VillageHallScreen.NEXT && ChoiceTableScreen.shown(icon)) {
+				out.add(slot);
+			}
+		}
+		return out;
+	}
+
+	/** The people loaded now (the server's window), in order. */
+	private List<Integer> personSlots() {
+		List<Integer> out = new ArrayList<>();
+		for (int slot = VillageHallScreen.FIRST_PERSON; slot < ChoiceMenu.SIZE; slot++) {
+			if (HallPeople.row(menu.slots.get(slot).getItem()) != null) {
+				out.add(slot);
+			}
+		}
+		return out;
+	}
+
+	private int total() {
+		return Math.max(menu.state(HallSections.PEOPLE_TOTAL), personSlots().size());
+	}
+
+	/** The open row's details: the lines today's resident pane shows, wrapped. */
+	private List<FormattedCharSequence> detailLines(ItemStack icon, int w) {
+		List<FormattedCharSequence> out = new ArrayList<>();
+		ItemLore lore = icon.get(DataComponents.LORE);
+		if (lore != null) {
+			for (Component line : lore.lines()) {
+				out.addAll(font.split(line, w));
+			}
+		}
+		return out;
+	}
+
+	private int detailHeight(ItemStack icon, int w) {
+		return 2 + detailLines(icon, w).size() * 10 + 3 + BH + 4;
+	}
+
+	/** Asks the server for the window of people that the table's scroll shows, when it isn't loaded. */
+	private void keepWindow(int visibleRows) {
+		int total = total();
+		int loaded = personSlots().size();
+		int first = menu.state(HallSections.PEOPLE_FIRST);
+		if (total <= loaded || loaded == 0) {
+			return;
+		}
+		int a = Math.max(0, tableScroll / RH - 1);
+		int b = Math.min(total, a + visibleRows + 2);
+		if (a >= first && b <= first + loaded) {
+			askedFirst = -1;
+			return;
+		}
+		int want = Math.max(0, Math.min(total - VillageHallScreen.PER_PAGE, a - 4));
+		if (want != askedFirst && minecraft != null && minecraft.gameMode != null) {
+			askedFirst = want;
+			minecraft.gameMode.handleInventoryButtonClick(menu.containerId, HallPeople.SCROLL + want);
+		}
+	}
+
+	@Override
+	protected void renderBody(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
+		hits.clear();
+		ItemStack tooltip = null;
+		Component tip = null;
+		// The strip of the section's other buttons.
+		int sx = x;
+		for (int slot : stripSlots()) {
+			boolean over = mouseX >= sx && mouseX < sx + 18 && mouseY >= y && mouseY < y + 18;
+			TableStyle.cell(g, sx, y, false, over);
+			g.renderItem(menu.slots.get(slot).getItem(), sx + 1, y + 1);
+			hits.add(new int[]{1, slot, sx, y, 18, 18});
+			if (over) {
+				tooltip = menu.slots.get(slot).getItem();
+			}
+			sx += 20;
+		}
+		int ly = y + 22;
+		Component note = listNote();
+		if (note != null) {
+			g.drawWordWrap(font, note, x, ly, w, TableStyle.BODY);
+			ly += font.split(note, w).size() * 10 + 4;
+		}
+		g.drawString(font, TableStyle.trim(font, HallPeople.header(menu.state(HallSections.PEOPLE_TOTAL), menu.state(HallSections.PEOPLE_WORKING),
+			menu.state(HallSections.PEOPLE_JOBLESS), menu.state(HallSections.PEOPLE_CHILDREN)), w), x, ly, TableStyle.TITLE, false);
+		ly += 11;
+		g.drawString(font, TableStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.people.hint"), w), x, ly, TableStyle.FAINT, false);
+		ly += 12;
+		int[] cols = {x + 4, x + 4 + w * 36 / 100, x + 4 + w * 64 / 100, x + 4 + w * 82 / 100};
+		int[] colW = {cols[1] - cols[0] - 4, cols[2] - cols[1] - 4, cols[3] - cols[2] - 4, x + w - 8 - cols[3]};
+		String[] heads = {"name", "job", "level", "mood"};
+		for (int c = 0; c < 4; c++) {
+			g.drawString(font, TableStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.people.col." + heads[c]), colW[c]), cols[c], ly,
+				TableStyle.SUBTITLE, false);
+		}
+		ly += 11;
+		TableStyle.rule(g, x, ly - 2, w);
+		tableX = x;
+		tableW = w;
+		tableTop = ly;
+		tableH = y + h - ly;
+		TableStyle.listBackground(g, x, tableTop, w, tableH);
+
+		List<Integer> people = personSlots();
+		int first = menu.state(HallSections.PEOPLE_FIRST);
+		int total = total();
+		int detailW = w - 24;
+		int openAt = -1;
+		int openH = 0;
+		for (int i = 0; i < people.size(); i++) {
+			CompoundTag row = HallPeople.row(menu.slots.get(people.get(i)).getItem());
+			if (row != null && row.getString("uuid").equals(openUuid)) {
+				openAt = first + i;
+				openH = detailHeight(menu.slots.get(people.get(i)).getItem(), detailW);
+			}
+		}
+		int content = total * RH + openH + 4;
+		int max = Math.max(0, content - tableH);
+		tableScroll = Math.max(0, Math.min(max, tableScroll));
+		keepWindow(tableH / RH);
+		g.enableScissor(x, tableTop, x + w, tableTop + tableH);
+		for (int i = 0; i < total; i++) {
+			int top = tableTop + 2 + i * RH - tableScroll + (openAt >= 0 && i > openAt ? openH : 0);
+			if (top + RH < tableTop || top > tableTop + tableH) {
+				continue;
+			}
+			int k = i - first;
+			if (k < 0 || k >= people.size()) {
+				g.drawString(font, "...", cols[0], top + 2, TableStyle.LOADING, false);
+				continue;
+			}
+			int slot = people.get(k);
+			ItemStack icon = menu.slots.get(slot).getItem();
+			CompoundTag row = HallPeople.row(icon);
+			boolean open = i == openAt;
+			boolean over = mouseX >= x && mouseX < x + w - 6 && mouseY >= Math.max(top, tableTop) && mouseY < top + RH && mouseY < tableTop + tableH;
+			if (open) {
+				g.fill(x + 1, top, x + w - 7, top + RH + openH - 1, 0x40FFD66B);
+			} else if (over) {
+				g.fill(x + 1, top, x + w - 7, top + RH, 0x30FFFFFF);
+			}
+			hits.add(new int[]{0, slot, x, top, w - 6, RH});
+			String kind = row.getString("kind");
+			g.drawString(font, TableStyle.trim(font, icon.getHoverName(), colW[0]), cols[0], top + 2, TableStyle.NAME, false);
+			Component job = Component.translatable(row.getString("job"));
+			int jobColour = kind.equals("builder") ? TableStyle.TITLE : kind.equals("child") || kind.equals("jobless") || kind.equals("nitwit")
+				? TableStyle.SUBLINE : TableStyle.BODY;
+			g.drawString(font, TableStyle.trim(font, job, colW[1]), cols[1], top + 2, jobColour, false);
+			g.drawString(font, TableStyle.trim(font, HallPeople.level(row.getInt("level")), colW[2]), cols[2], top + 2, TableStyle.BODY, false);
+			HallPeople.MoodWord mood = moodOf(row);
+			int moodColour = switch (mood) {
+				case HAPPY -> MOOD_HAPPY;
+				case UNHAPPY -> MOOD_UNHAPPY;
+				case NO_BED -> MOOD_NO_BED;
+				default -> TableStyle.BODY;
+			};
+			g.drawString(font, TableStyle.trim(font, mood.word(), colW[3]), cols[3], top + 2, moodColour, false);
+			if (open) {
+				int dy = top + RH + 2;
+				for (FormattedCharSequence line : detailLines(icon, detailW)) {
+					g.drawString(font, line, x + 12, dy, TableStyle.BODY, false);
+					dy += 10;
+				}
+				dy += 3;
+				int bx = x + 12;
+				String action = row.getString("job_action");
+				bx = button(g, Component.translatable("screen.aliveworkplace.hall.people.job_button"), bx, dy, !action.isEmpty(), 2, slot, mouseX, mouseY);
+				if (mouseX >= bx - 4 - buttonWidth("job_button") && mouseX < bx - 4 && mouseY >= dy && mouseY < dy + BH) {
+					tip = Component.translatable(action.isEmpty() ? "screen.aliveworkplace.hall.people.job_none" : "screen.aliveworkplace.hall.people.job_" + action);
+				}
+				int bedX = bx;
+				bx = button(g, Component.translatable("screen.aliveworkplace.hall.people.bed_button"), bx, dy, true, 3, slot, mouseX, mouseY);
+				if (mouseX >= bedX && mouseX < bx - 4 && mouseY >= dy && mouseY < dy + BH) {
+					tip = Component.translatable("screen.aliveworkplace.hall.people.bed_hint");
+				}
+				if (!action.equals("assign")) {
+					button(g, Component.translatable("screen.aliveworkplace.hall.people.find_button"), bx, dy, true, 4, slot, mouseX, mouseY);
+				}
+			}
+		}
+		g.disableScissor();
+		TableStyle.scrollbar(g, x + w - 6, tableTop, tableH, tableScroll, max, content);
+		if (tooltip != null) {
+			g.renderTooltip(font, tooltip, mouseX, mouseY);
+		} else if (tip != null) {
+			g.renderTooltip(font, tip, mouseX, mouseY);
+		}
+	}
+
+	private static HallPeople.MoodWord moodOf(CompoundTag row) {
+		try {
+			return HallPeople.MoodWord.valueOf(row.getString("mood").toUpperCase());
+		} catch (IllegalArgumentException e) {
+			return HallPeople.MoodWord.NONE;
+		}
+	}
+
+	private int buttonWidth(String key) {
+		return font.width(Component.translatable("screen.aliveworkplace.hall.people." + key)) + 10;
+	}
+
+	/** A small button in an open row; returns where the next one goes. */
+	private int button(GuiGraphics g, Component text, int x, int y, boolean on, int kind, int slot, int mouseX, int mouseY) {
+		int bw = font.width(text) + 10;
+		boolean over = on && mouseX >= x && mouseX < x + bw && mouseY >= y && mouseY < y + BH;
+		g.fill(x, y, x + bw, y + BH, over ? TableStyle.CELL_HOVER : TableStyle.CELL_BG);
+		g.fill(x, y, x + bw, y + 1, 0x40FFFFFF);
+		g.drawString(font, text, x + 5, y + 3, on ? TableStyle.NAME : TableStyle.FAINT, false);
+		if (on) {
+			hits.add(new int[]{kind, slot, x, y, bw, BH});
+		}
+		return x + bw + 4;
+	}
+
+	@Override
+	protected boolean bodyClicked(double mx, double my, int button) {
+		// Buttons first (they sit on an open row's area), then strip and rows.
+		for (int pass = 0; pass < 2; pass++) {
+			for (int[] hit : hits) {
+				boolean isButton = hit[0] >= 2;
+				if ((pass == 0) != isButton || mx < hit[2] || mx >= hit[2] + hit[4] || my < hit[3] || my >= hit[3] + hit[5]) {
+					continue;
+				}
+				if (hit[0] == 0 && (my < tableTop || my >= tableTop + tableH)) {
+					continue;
+				}
+				click(hit[0], hit[1], button);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void click(int kind, int slot, int button) {
+		if (minecraft != null) {
+			minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
+		}
+		ItemStack icon = menu.slots.get(slot).getItem();
+		CompoundTag row = HallPeople.row(icon);
+		switch (kind) {
+			case 0 -> {
+				String uuid = row == null ? null : row.getString("uuid");
+				openUuid = uuid != null && uuid.equals(openUuid) ? null : uuid; // click again closes it
+			}
+			case 1 -> press(slot, button, button == 0 && hasShiftDown());
+			// Job ▾: today's Change job for a worker (36.18), the free jobs for a jobless villager (40.3 replaces it)
+			case 2 -> press(slot, row != null && row.getString("job_action").equals("retrain") ? 1 : 0, false);
+			case 3 -> open(Section.HOMES); // Bed ▾: the village's beds and who's homeless (40.4 replaces it)
+			case 4 -> press(slot, 0, false); // Find: they glow
+			default -> {
+			}
+		}
+	}
+
+	@Override
+	protected boolean bodyScrolled(double mx, double my, double scrollY) {
+		tableScroll = Math.max(0, tableScroll - (int) Math.round(scrollY * RH * 2));
+		return true;
+	}
+
+	@Override
+	public boolean keyPressed(int key, int scanCode, int modifiers) {
+		if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE && customBody() && openUuid != null) {
+			openUuid = null; // Esc closes the open row first
+			return true;
+		}
+		return super.keyPressed(key, scanCode, modifiers);
+	}
+
+	/** Opens the table's row {@code index} of those loaded (the screenshot harness), scrolled into view; false if there's none. */
+	public boolean openRow(int index) {
+		List<Integer> people = personSlots();
+		if (index < 0 || index >= people.size()) {
+			return false;
+		}
+		CompoundTag row = HallPeople.row(menu.slots.get(people.get(index)).getItem());
+		openUuid = row == null ? null : row.getString("uuid");
+		tableScroll = Math.max(0, (menu.state(HallSections.PEOPLE_FIRST) + index - 1) * RH);
+		return openUuid != null;
+	}
+
+	/** Scrolls the table by {@code rows} (the screenshot harness). */
+	public void scrollTable(int rows) {
+		tableScroll = Math.max(0, tableScroll + rows * RH);
 	}
 }

@@ -192,6 +192,13 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		int side = sidebarWidth();
 		TableStyle.header(g, font, headerTitle(), subtitle(), left + side, top, panelW - side);
 		renderSidebar(g, mouseX, mouseY);
+		if (customBody()) {
+			// A body drawn by the screen itself (the hall's People table, 40.2) in place of the list and the pane.
+			renderBody(g, left + 8 + side, top + 22, panelW - 16 - side, panelH - 16 - 22, mouseX, mouseY);
+			Component bodyHint = Component.translatable("screen.aliveworkplace.choice.hint");
+			g.drawString(font, font.plainSubstrByWidth(bodyHint.getString(), panelW - 16), left + 8, top + panelH - 12, TableStyle.FAINT, false);
+			return;
+		}
 		int hovered = slotAt(mouseX, mouseY);
 		int pinned = reading.pinned();
 		for (int[] cell : cells) {
@@ -257,6 +264,25 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	/** Draws the pane with nothing chosen in the box given; false to leave it to "At a glance" (the default). */
 	protected boolean renderIdle(GuiGraphics g, int x, int y, int w, int h) {
+		return false;
+	}
+
+	/** Whether the screen draws the right side itself ({@link #renderBody}) in place of the list and the pane (no by default). */
+	protected boolean customBody() {
+		return false;
+	}
+
+	/** Draws the right side in the box given, when {@link #customBody} says so. */
+	protected void renderBody(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
+	}
+
+	/** Takes a click on a body drawn by the screen; true when it did. */
+	protected boolean bodyClicked(double mx, double my, int button) {
+		return false;
+	}
+
+	/** Takes the wheel over a body drawn by the screen; true when it did. */
+	protected boolean bodyScrolled(double mx, double my, double scrollY) {
 		return false;
 	}
 
@@ -550,6 +576,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		if (sidebarClicked(mx, my, button)) {
 			return true;
 		}
+		if (customBody()) {
+			return bodyClicked(mx, my, button) || mx >= left && mx < left + panelW && my >= top && my < top + panelH;
+		}
 		if (button == 0 && overBar(mx, my)) {
 			draggingBar = true;
 			return true;
@@ -596,6 +625,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	@Override
 	public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
 		layout();
+		if (customBody()) {
+			return bodyScrolled(mx, my, scrollY);
+		}
 		boolean list = overList(mx, my);
 		boolean pane = overPane(mx, my);
 		if (io.github.jcondedata.aliveworkplace.work.ReadingFocus.wheelReads(list, pane, hasShiftDown())) {

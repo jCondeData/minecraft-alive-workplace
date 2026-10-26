@@ -33,6 +33,12 @@ public final class HallSections {
 	public static final int SEASON = 2;
 	public static final int DAY = 3;
 	public static final int YEAR = 4;
+	/** The People table's numbers (40.2, {@link HallPeople}): everyone listed, working, jobless, children, the first person shown. */
+	public static final int PEOPLE_TOTAL = 5;
+	public static final int PEOPLE_WORKING = 6;
+	public static final int PEOPLE_JOBLESS = 7;
+	public static final int PEOPLE_CHILDREN = 8;
+	public static final int PEOPLE_FIRST = 9;
 	/** The mark on a main-page button: a bit for each section it sits in. */
 	public static final String MARK = "aliveworkplace:hall_sections";
 
@@ -246,6 +252,10 @@ public final class HallSections {
 		menu.setState(DAY, today.dayOfSeason());
 		menu.setState(YEAR, (int) Math.max(1, Math.min(Short.MAX_VALUE, today.year())));
 		menu.onMenuButton((p, id) -> {
+			if (id >= HallPeople.SCROLL) {
+				HallPeople.scrollTo(menu, level, hall, id - HallPeople.SCROLL); // the People table scrolled (40.2)
+				return true;
+			}
 			if (id < 0 || id >= Section.values().length) {
 				return false;
 			}

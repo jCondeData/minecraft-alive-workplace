@@ -4643,6 +4643,49 @@ final class JobScenes {
 				}, 25);
 			}).toList(),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		SCREENS.put("hall_people", new Screen("the Village Hall's People table, then one villager's row opened", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				String[] names = {"Dara", "Bram", "Wren", "Tomas", "Ilse", "Pip", "Jem"};
+				List<Villager> folk = new java.util.ArrayList<>();
+				folk.add(worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER));
+				folk.add(guard(level, new BlockPos(4, -60, -3), new ItemStack(Items.IRON_SWORD)));
+				folk.add(worker(level, new BlockPos(-6, -60, 2), Blocks.STONECUTTER, PoiTypes.MASON, VillagerProfession.MASON));
+				folk.add(worker(level, new BlockPos(6, -60, 2), Blocks.LECTERN, PoiTypes.LIBRARIAN, VillagerProfession.LIBRARIAN));
+				Villager jobless = EntityType.VILLAGER.spawn(level, new BlockPos(-2, -60, 5), MobSpawnType.COMMAND);
+				folk.add(jobless);
+				Villager nitwit = EntityType.VILLAGER.spawn(level, new BlockPos(2, -60, 5), MobSpawnType.COMMAND);
+				nitwit.setVillagerData(nitwit.getVillagerData().setProfession(VillagerProfession.NITWIT));
+				folk.add(nitwit);
+				Villager child = EntityType.VILLAGER.spawn(level, new BlockPos(0, -60, 6), MobSpawnType.COMMAND);
+				child.setAge(-24000);
+				folk.add(child);
+				for (int i = 0; i < folk.size(); i++) {
+					folk.get(i).setCustomName(Component.literal(names[i]));
+				}
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				io.github.jcondedata.aliveworkplace.hall.HallSections.forget();
+			},
+			List.of(new Step("01_people_table", -1, 6, (level, player) -> {
+					if (!(player.containerMenu instanceof ChoiceMenu)) {
+						io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					}
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						io.github.jcondedata.aliveworkplace.hall.HallSections.choose(m, level, STATION, player,
+							io.github.jcondedata.aliveworkplace.hall.HallSections.Section.PEOPLE); // the sidebar's click
+						Showcase.check(m.state(io.github.jcondedata.aliveworkplace.hall.HallSections.PEOPLE_TOTAL) >= 7, "the table lists the village's seven");
+					}
+				}, 30),
+				new Step("02_people_row_open", -1, 6, (level, player) -> {
+					Minecraft mc = Minecraft.getInstance();
+					mc.execute(() -> {
+						if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen s) {
+							s.openRow(0); // a click on the first row: their details open right under it
+						}
+					});
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("hall_pages", new Screen("the Village Hall's chronicle and trade-route pages opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()

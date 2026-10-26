@@ -156,6 +156,7 @@
   "message.aliveworkplace.assign.wrong_dimension": "That blueprint is placed in another dimension.",
   "message.aliveworkplace.assign.busy": "%s is already building %s.",
   "message.aliveworkplace.queue.added": "%s will build %s after %s (number %s in line). Stock the materials for it too.",
+  "message.aliveworkplace.queue.added_deconstruct": "%s will take down %s after %s (number %s in line). It needs no materials.",
   "message.aliveworkplace.queue.full": "%s already has %s blueprints lined up. Hire another builder, or wait.",
   "message.aliveworkplace.queue.next": "%s is starting on %s next.",
   "message.aliveworkplace.status.queued": "%s — %s — waiting until %s is finished",

@@ -215,7 +215,7 @@ claims and trip counts.
 - Block: Builder's Bench (`aliveworkplace:builders_bench`), the job block. Profession: Builder (`entity.minecraft.villager.builder`).
 - Items: Blueprint (`aliveworkplace:blueprint`; "Blueprint: %s" when named), Blank Blueprint (`aliveworkplace:blank_blueprint`, bought from
   villagers for emeralds), Builder's Tea (`aliveworkplace:builders_tea`). The Blueprint Table makes and uploads blueprints.
-- Hand over: right-click the Builder with a Blueprint. Sneak-right-click with an empty hand: status. A Blueprint, a Book and Quill or a
+- Hand over: right-click the Builder with a Blueprint. Sneak-right-click with an empty hand: status. A placed Blueprint sneak-handed over its finished building: take it down (a busy Builder queues it and says so: "Builder will take down Test Hut after Cottage (number 1 in line). It needs no materials.", B514). A Blueprint, a Book and Quill or a
   Wonder Plan in the off hand works too when the main hand is empty.
 - Commands: `/workplace blueprints`, `/workplace blueprint`, `/workplace import`, `/workplace sites`,
   `/workplace cancel <site>` (the blueprint stays placed; hand it back to carry on), `/workplace friend add|remove|list`,
@@ -413,7 +413,7 @@ Apprentice to Master tells the owner the level_up sentence with the new level's 
 amethyst between cobblestone asks only for the cobblestone and is finished with none of the three placed). `QaBlueprintHandlingGameTests` (3: place, four quarter turns back to the
 start, pick up, the levelling switch off/on/off kept through placing, turning and the hand-over; a building taken down
 with the chest full loses nothing; an upgrade lines up over its own finished building, turned or not, never when
-sneaking and never over another kind of building). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
+sneaking and never over another kind of building). `QaTakeDownGameTests` (8: a camp, a turned and mirrored hut and a hut with its table broken come down losing no block; a plain hand-over leaves the building standing; a stranger can't have it taken down; a take-down handed to a busy Builder waits its turn; one canceled halfway carries on when its blueprint is handed back as it came; the placed blueprint's tooltip tells how) and `QaTakeDownBugTests` (2: a canceled take-down's blueprint comes back still placed, B513; a queued take-down is announced as one, with no materials sentence, B514). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
 does: each side 1 to 32, no Blank Blueprint or no block draws nothing and takes nothing, two draws give the same build
 for two blanks, a hollow and a solid box of one size are two builds, a blank in the first slot is used and a full bag
 gets the blueprint at the player's feet, a builder builds a drawn box from the chest). `QaScanRoundTripGameTests` (1, from

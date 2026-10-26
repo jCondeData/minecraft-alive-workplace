@@ -1005,3 +1005,13 @@ hand is drawn and marked (B140): most of its pixels hold the land, holding it pu
 structure found, and the packet sent to its holder carries the whole land and the markers. Showcase scene
 `wonder_observatory` (group Wonders): the time-lapse, then the Sky Chart in hand and the hall's calendar with the
 Coming days.
+
+QA GameTests in `QaWonderPowersGameTests` (35.10, 35.12, 35.14, 35.18, 35.20, 35.22), from the items' text: the
+Colossus's mood reaches a village whose caravans run to its village but not that village's own partner, and its
+travelers and beauty stay at home; the Gardens' harvest reaches the partner while its births stay in its own village
+(12 meals and two a day there, 16 and one in the partner, never fewer than a village's usual); the Great Cathedral's
+undertakers, weddings and beauty, the Great Library's second tier and the Observatory's Sky Chart and Coming days are
+their own village's only; the Lighthouse's routes reach 4,096 blocks and not 4,097 (2,048 and not 2,049 without it),
+a partner's caravans neither reach further nor go faster, and fares are halved for a post at the village's edge both
+ways but not a block beyond it nor in the partner village; each turns off damaged or with Wonders off and comes back
+repaired, and the Gardens' and Lighthouse's powers come back from a save (one saved damaged loads powerless).

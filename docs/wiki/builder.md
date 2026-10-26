@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438
 
 ## 1. What a player sees
 
@@ -38,7 +38,9 @@ restartable at any tick for this reason.
 - CLEAR takes away what is in the way, but never breaks containers, its own bench or any other Builder's Bench (a
   neighbor's bench inside the build's box stays, and the build finishes round it, B132).
 - FOUNDATION fills under a build standing on uneven ground. How deep is the `workplaceFoundationDepth` rule.
-- STRUCTURE goes bottom-up so every block has something to stand on.
+- STRUCTURE goes bottom-up so every block has something to stand on. A block a player puts mid-build where the
+  drawing has another is taken out into the builder's chests and the drawn block laid (a Steward's build keeps the
+  player's block instead; tests `QaBuilderDisruptionGameTests`, `StewardSafetyGameTests`).
 - DECORATION is what needs something to hang on or stand on (torches, doors, ladders, carpets...), placed after
   the structure is up.
 - LANDSCAPE (leveling the ground round the build, dirt) never waits for materials.
@@ -61,7 +63,7 @@ A Builder takes what it needs from the chests and barrels within `supplyRadius` 
 down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing than the stretch of work ahead still
 needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
 other carried), and empties the bag at the chests when it finishes or
-stops helping. Builders never copy what is inside containers, nor what a block holds in its look (B429, B434, B449): a scanned lava or powder snow cauldron is built as an empty cauldron (it asks only a cauldron), a ready composter at level 0, a full beehive or bee nest with no honey, a charged respawn anchor uncharged, a chiseled bookshelf or brewing stand showing no books or bottles, and a grave empty (never the dead villager it held). A water cauldron is still built full, as the shipped blueprints have it (water is free in vanilla). One filled by a player since still counts as built. The blueprint's tooltip and a Book and Quill list what
+stops helping. A build placed mirrored (the mirror button, or a Steward's street mirroring its houses) keeps its double chests whole: each half swaps left and right with the mirror, whichever way the chest faces (B438). The mod's own facing blocks turn and mirror with the build as vanilla's do: a Storehouse built turned a quarter has its Storehouse block facing the way the building faces, and the same goes for the Village Hall, Mailbox, Shop Counter and Grave blocks (B448). One built facing the old way, in a turned build from before, still counts as built: it is never broken or repaired, so what it holds stays. Item frames, glow item frames, paintings and armour stands are put up turned and mirrored with the build too: each hangs on the wall the blueprint hangs it on and faces the way the turned, mirrored blueprint faces it, so a Guildhall placed mirrored and turned a quarter gets its item frame, a two-wide painting hangs where it was drawn, and an armour stand faces the way it was scanned (B439). Builders never copy what is inside containers, nor what a block holds in its look (B429, B434, B449): a scanned lava or powder snow cauldron is built as an empty cauldron (it asks only a cauldron), a ready composter at level 0, a full beehive or bee nest with no honey, a charged respawn anchor uncharged, a chiseled bookshelf or brewing stand showing no books or bottles, and a grave empty (never the dead villager it held). A water cauldron is still built full, as the shipped blueprints have it (water is free in vanilla). One filled by a player since still counts as built. The blueprint's tooltip and a Book and Quill list what
 is still missing (the blueprint and the book in either hand, B365). A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
 repair counts them (`BuildPlan.supplyExclude`, B261): the building stands, so a Storehouse Shed being repaired, or a
 shed the bench's chests stand in, hands the Builder what its chests hold.
@@ -353,6 +355,10 @@ the status says so with numbers that agree, the distance rounded up to 21, `aSto
 `aSpotJustPastTheReachIsRefusedWithANumberPastTheReach`).
 `QaChairFacingGameTests` (4, QA from B148: in every listed build each stair chair beside a table opens toward it, 251
 chairs, and still does turned four ways and mirrored, 2008; a Manor chair turned round is caught).
+`QaMirroredBuildsGameTests` (2, QA from B438: every starter build's doors, beds and double chests stay whole in all four
+turns, plain and mirrored; a builder builds the mirrored Tinker's Workshop with its double chest joined) and
+`QaTurnedFramesGameTests` (2, QA from B439: every starter build's item frames and paintings hang on their wall in all four turns, plain and mirrored; a builder finishes the Guildhall turned a quarter and mirrored with its item frame), `B439GameTests` (1: an item frame on a wall and on a floor, a glow item frame, a one- and a two-wide painting and an armour stand each stand where the blueprint puts them and face its way in every turn and all three mirror settings, also after a save and load), `QaTurnedModBlocksGameTests` (2, QA from B448: every facing block in every starter build faces its blueprint facing turned with the build, in all four turns, plain and mirrored; a builder builds the Storehouse turned a quarter with its Storehouse block turned), `B448GameTests` (3: every block of ours with a facing turns and mirrors like vanilla's and keeps its other state; an old-facing Storehouse block in a finished turned build, and in one going up, stays built through a restart, keeping its orders, nothing skipped), `MirroredChestGameTests` (2, B438: a double chest facing any way stays joined in every turn and both mirrors, plain or
+trapped, and joins when placed).
 `QaDoorwayClearanceGameTests` (5, QA from B173: a villager slid through a doorway with a carpet under the lintel is
 caught, and so are the Village Hall's and Supply Shop's with one moved there; villagers walk in by the shut front doors of
 the Supply Shop, turned too, and the Village Hall; the sweep over every build's doors is B487's test on tests/qa-doorways-1025).

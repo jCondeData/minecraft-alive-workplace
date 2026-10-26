@@ -21,9 +21,12 @@ public final class BlueprintEntities {
 		"minecraft:armor_stand", Items.ARMOR_STAND
 	);
 
-	/** Data that must not be copied: contents, identity, motion and anything that makes it unbreakable. */
+	/**
+	 * Data that must not be copied: contents, identity, motion and anything that makes it unbreakable. Its facing
+	 * ("Rotation") is kept, so an armour stand faces the way the blueprint draws it (B439).
+	 */
 	private static final Set<String> STRIP = Set.of(
-		"UUID", "Pos", "Motion", "Rotation", "Item", "ItemDropChance", "ArmorItems", "HandItems", "ArmorDropChances",
+		"UUID", "Pos", "Motion", "Item", "ItemDropChance", "ArmorItems", "HandItems", "ArmorDropChances",
 		"HandDropChances", "body_armor_item", "body_armor_drop_chance", "Invulnerable", "Fixed", "Tags", "Passengers",
 		"leash", "Leash", "Fire", "Air", "FallDistance", "PortalCooldown", "OnGround", "active_effects", "Brain",
 		"DisabledSlots", "CustomName", "CustomNameVisible"

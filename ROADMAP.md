@@ -4281,7 +4281,7 @@ on a real world.
   vanilla jobs are never class-gated, family names show on the hall but never rename a villager. Sent to the owner as
   a review package; lanes don't wait for his reply. Done when: the note is on `main`, its tables match this
   milestone's numbers, and the package is sent.
-- [x] **34.2** (approved auto 2026-10-05) **The class engine.** The four classes are data: `data/aliveworkplace/classes/<id>.json` (`peasant`,
+- [x] **34.2** (approved auto 2026-10-05) (verified 2026-10-26: QA tests by lane-c-1024-1553 [QaClassesGameTests 18, QaClassPerksGameTests 16; mutants 12 of 12 killed then] green on main's CI [a952091] with their bugs' fixes in [B397, B398, B400, B401]; wiki classes.md and guide peasant/burgher read against the code and tests by lane-c-1026-1853: Printer added to the Artisan jobs, jobless Noble tax, tax split, Noble's Ball, Cobblecuisine wants, the real refusal sentence, Noble services fixed) **The class engine.** The four classes are data: `data/aliveworkplace/classes/<id>.json` (`peasant`,
   `artisan`, `burgher`, `noble`), one file holding the class's tier (0-3), tax factor, outfit, `needs` (all must hold
   to be that class), `wants` (optional extras) and what it gives (`jobs`, `effects`; read by 34.7 and 34.8), e.g.
   `{"tier": 1, "tax": 1.5, "needs": [{"type": "home", "grade": 1}, {"type": "fed_days", "days": 3}, {"type": "diet",
@@ -4312,7 +4312,7 @@ on a real world.
   step a day, children following their household, a datapack class file changing a need) pass; a save and reload
   keeps class and progress; 60 households take under 2 ms a hall round (timed in a GameTest). Nothing to see yet:
   `--no-review`.
-- [x] **34.3** (approved auto 2026-10-05) **Services nearby.** `data/aliveworkplace/services/<id>.json`: which workers or finished builds give a
+- [x] **34.3** (approved auto 2026-10-05) (verified 2026-10-26: QA tests by lane-c-1024-1553 [QaClassesGameTests 18, QaClassPerksGameTests 16; mutants 12 of 12 killed then] green on main's CI [a952091] with their bugs' fixes in [B397, B398, B400, B401]; wiki classes.md and guide peasant/burgher read against the code and tests by lane-c-1026-1853: Printer added to the Artisan jobs, jobless Noble tax, tax split, Noble's Ball, Cobblecuisine wants, the real refusal sentence, Noble services fixed) **Services nearby.** `data/aliveworkplace/services/<id>.json`: which workers or finished builds give a
   service and how far it reaches, e.g. `{"jobs": ["aliveworkplace:teacher"], "blueprints":
   ["aliveworkplace:schoolhouse"], "range": 48, "icon": "minecraft:lectern"}`. Six to start: **chapel** (a finished
   Chapel), **school** (a Teacher, or a Schoolhouse), **clinic** (a Nurse, or a Healing Center), **library** (a
@@ -4323,7 +4323,7 @@ on a real world.
   `ServiceGameTests`: each of the six found by its worker and by its build, a Chapel in Stonework counts, one 60
   blocks from home doesn't, a teacher who quits stops counting at the next dawn, a datapack file adds a seventh
   service; the list is worked out at most once a day (a counter in the test). Nothing to see yet: `--no-review`.
-- [x] **34.4** (approved auto 2026-10-05) **Luxuries from the village store.** `data/aliveworkplace/luxuries/<id>.json`: the item (or tag) and
+- [x] **34.4** (approved auto 2026-10-05) (verified 2026-10-26: QA tests by lane-c-1024-1553 [QaClassesGameTests 18, QaClassPerksGameTests 16; mutants 12 of 12 killed then] green on main's CI [a952091] with their bugs' fixes in [B397, B398, B400, B401]; wiki classes.md and guide peasant/burgher read against the code and tests by lane-c-1026-1853: Printer added to the Artisan jobs, jobless Noble tax, tax split, Noble's Ball, Cobblecuisine wants, the real refusal sentence, Noble services fixed) **Luxuries from the village store.** `data/aliveworkplace/luxuries/<id>.json`: the item (or tag) and
   how often a household wants one, e.g. `{"item": "aliveworkplace:berry_wine", "every_days": 2}`. At dawn, in 34.2's
   slices, each household takes from the village store (`VillageNeeds.store`: the kitchens' chests, then the
   Storehouses') every luxury of its own class, and of the class above, that is due, and remembers the day it had it
@@ -4366,7 +4366,7 @@ on a real world.
   Done when: `ClassHallGameTests` check the page's counts and the tips against a staged village; `langcheck.py` is
   clean; scene `classes` (a household rising at dawn, then the hall's Classes page) passes; the README gets a Classes
   section.
-- [x] **34.7** (approved 2026-10-11) **What each class gives.** From the `effects` in the class files:
+- [x] **34.7** (approved 2026-10-11) (verified 2026-10-26: QA tests by lane-c-1024-1553 [QaClassesGameTests 18, QaClassPerksGameTests 16; mutants 12 of 12 killed then] green on main's CI [a952091] with their bugs' fixes in [B397, B398, B400, B401]; wiki classes.md and guide peasant/burgher read against the code and tests by lane-c-1026-1853: Printer added to the Artisan jobs, jobless Noble tax, tax split, Noble's Ball, Cobblecuisine wants, the real refusal sentence, Noble services fixed) **What each class gives.** From the `effects` in the class files:
   - **taxes** (`Treasury.takings`): each worker pays `treasuryPerWorker` × their class's factor (Peasant 1, Artisan
     1.5, Burgher 2.5, Noble 4), 10% more for each want they have; a Noble without a job pays like a worker. A Peasant
     pays exactly today's rate, so no village takes in less than before; the name tag's tooltip shows the split by
@@ -4387,7 +4387,7 @@ on a real world.
   Done when: `ClassPerkGameTests` (the takings for a staged mix of classes and wants, never below the old formula for
   Peasants; the crafter pace staying within the cap; wellbeing capped at 9%; the ball replacing one festival in two)
   pass; scene `noble_ball` passes; README updated.
-- [x] **34.8** (approved 2026-10-11) **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
+- [x] **34.8** (approved 2026-10-11) (verified 2026-10-26: QA tests by lane-c-1024-1553 [QaClassesGameTests 18, QaClassPerksGameTests 16; mutants 12 of 12 killed then] green on main's CI [a952091] with their bugs' fixes in [B397, B398, B400, B401]; wiki classes.md and guide peasant/burgher read against the code and tests by lane-c-1026-1853: Printer added to the Artisan jobs, jobless Noble tax, tax split, Noble's Ball, Cobblecuisine wants, the real refusal sentence, Noble services fixed) **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
   be that class or higher to take. To start: **Artisan**: Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper,
   Innkeeper, Printer and, with Cobblemon, Ball Smith, Move Tutor, Pokémon Trader, Fossil Scientist; **Burgher**:
   Scholar, Undertaker, Jeweller, Trainer Leader; **Noble**: none yet (kept for M29's Legends and M33's offices).

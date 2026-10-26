@@ -524,6 +524,7 @@
 			"io.github.jcondedata.aliveworkplace.test.StewardDeskGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardPlanningCostGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardSafetyGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStewardSafetyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DoorwayHeadroomGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShutTrapdoorGameTests",

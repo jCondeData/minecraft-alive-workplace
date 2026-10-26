@@ -11,6 +11,10 @@ public final class Blueprints {
 	 * exists, otherwise turns {@code houses/big_barn} into "Big Barn".
 	 */
 	public static Component displayName(ResourceLocation id) {
+		java.util.Optional<String> given = BlueprintNames.get(id);
+		if (given.isPresent()) {
+			return Component.literal(given.get()); // the name a player gave their own build, as typed (B458)
+		}
 		java.util.Optional<BlueprintStyles.Styled> styled = BlueprintStyles.parse(id);
 		if (styled.isPresent()) {
 			String style = styled.get().style();

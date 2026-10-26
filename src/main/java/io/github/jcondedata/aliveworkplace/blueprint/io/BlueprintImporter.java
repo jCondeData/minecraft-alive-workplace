@@ -47,7 +47,10 @@ public final class BlueprintImporter {
 	 * "uploads/&lt;player&gt;" for uploads); the file name becomes the blueprint's name.
 	 */
 	public static Imported importBytes(MinecraftServer server, String folder, String fileName, byte[] bytes) throws BlueprintFormatException {
-		return importAs(server, uniqueId(server.getStructureManager(), folder, fileName), bytes);
+		Imported imported = importAs(server, uniqueId(server.getStructureManager(), folder, fileName), bytes);
+		// "Jesse's Café.nbt" is called that, though its id can't hold the apostrophe or the accent (B458)
+		io.github.jcondedata.aliveworkplace.blueprint.BlueprintNames.keep(server, imported.id(), folder, fileName, false);
+		return imported;
 	}
 
 	/**

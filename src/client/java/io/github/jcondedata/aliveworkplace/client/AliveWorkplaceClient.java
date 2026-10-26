@@ -51,6 +51,9 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 				helper.register(new GolemRoleLayer(golems));
 			}
 		});
+		// The names players gave their own builds (B458), for the Blueprint Table and the blueprint's name.
+		ClientPlayNetworking.registerGlobalReceiver(io.github.jcondedata.aliveworkplace.blueprint.BlueprintNames.Sync.TYPE,
+			(payload, context) -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintNames.received(payload));
 		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.Open.TYPE, (payload, context) -> {
 			Minecraft mc = context.client();
 			if (mc.screen instanceof BlueprintTableScreen screen && screen.table().equals(payload.table())) {

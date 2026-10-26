@@ -116,7 +116,7 @@ public class ScanToolItem extends Item {
 			if (!data.isComplete() || !data.dimension().get().equals(Ids.of(level.dimension()))) {
 				Chat.actionBar(player, Component.translatable("message.aliveworkplace.scan.unmarked").withStyle(ChatFormatting.YELLOW));
 			} else {
-				String name = stack.has(DataComponents.CUSTOM_NAME) ? stack.getHoverName().getString() : player.getGameProfile().getName() + "s_build";
+				String name = stack.has(DataComponents.CUSTOM_NAME) ? stack.getHoverName().getString() : null;
 				Component result = save(serverLevel, serverPlayer, data.area().get(), name);
 				Chat.chat(player, result);
 			}
@@ -135,8 +135,9 @@ public class ScanToolItem extends Item {
 	/**
 	 * Saves what's in {@code box} as a blueprint called {@code name} (under {@code scans/<player>/}), for a Blank Blueprint
 	 * from {@code player}'s inventory (none needed in creative), and gives them the blueprint. Returns what to tell them.
+	 * The name is kept as typed, apostrophes and accents too (B458); {@code null} names it "&lt;player&gt;s Build".
 	 */
-	public static Component save(ServerLevel level, ServerPlayer player, BoundingBox box, String name) {
+	public static Component save(ServerLevel level, ServerPlayer player, BoundingBox box, @org.jetbrains.annotations.Nullable String name) {
 		if (!fits(box)) {
 			return tooBig(box).withStyle(ChatFormatting.RED);
 		}
@@ -155,7 +156,9 @@ public class ScanToolItem extends Item {
 			return Component.translatable("message.aliveworkplace.scan.no_blank").withStyle(ChatFormatting.YELLOW);
 		}
 		StructureTemplateManager manager = level.getServer().getStructureManager();
-		ResourceLocation id = BlueprintImporter.uniqueId(manager, "scans/" + BlueprintImporter.sanitizeFolder(player.getGameProfile().getName()), name + ".nbt");
+		String folder = "scans/" + BlueprintImporter.sanitizeFolder(player.getGameProfile().getName());
+		String fileName = (name == null ? player.getGameProfile().getName() + "s_build" : name) + ".nbt";
+		ResourceLocation id = BlueprintImporter.uniqueId(manager, folder, fileName);
 		Vec3i size = new Vec3i(box.getXSpan(), box.getYSpan(), box.getZSpan());
 		StructureTemplate template = manager.getOrCreate(id);
 		template.fillFromWorld(level, new BlockPos(box.minX(), box.minY(), box.minZ()), size, false, Blocks.STRUCTURE_VOID);
@@ -164,6 +167,7 @@ public class ScanToolItem extends Item {
 			manager.remove(id);
 			return Component.translatable("message.aliveworkplace.scan.failed").withStyle(ChatFormatting.RED);
 		}
+		BlueprintNames.keep(level.getServer(), id, folder, fileName, name != null);
 		if (blank >= 0 && !player.getAbilities().instabuild) {
 			player.getInventory().getItem(blank).shrink(1);
 		}

@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.hall.Caravans;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.Tithe;
+import io.github.jcondedata.aliveworkplace.hall.Treasury;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,10 +29,12 @@ import net.minecraft.world.item.ItemStack;
  * free.</li>
  * <li><b>On arrival</b> ({@link #sell}): the receiving village's treasury pays the sender's, bundle by bundle, at the
  * receiver's board price, and both boards move as if the goods had been traded there (2% a bundle: down where they
- * were sold, up where they came from). Bundles the treasury can't pay for go home in a caravan of their own; bundles
- * the Storehouse has no room for wait on the road, like any cargo.</li>
+ * were sold, up where they came from). Bundles the treasury can't pay for, or (its hall loaded) the sender's full
+ * treasury couldn't take the money for (B430), go home in a caravan of their own; bundles the Storehouse has no room
+ * for wait on the road, like any cargo.</li>
  * <li><b>The seller's side</b> ({@link #book}): the money reaches its treasury (up to its cap) and its chronicle says
- * "Sold 32 Timber to Ashford for 2.6 emeralds", at once if its hall is loaded, else in its next round.</li>
+ * "Sold 32 Timber to Ashford for 2.6 emeralds", at once if its hall is loaded, else in its next round. What a full
+ * treasury can't take goes back to the buyer (B430): no emerald is paid to nobody.</li>
  * </ul>
  * Treasuries are kept in hundredths of an emerald, so village to village nothing is rounded; players read the sums
  * through {@link TradePage#money} (CobbleDollars with the pack). Off ({@code villageEconomy}): nothing is loaded to
@@ -186,7 +189,13 @@ public final class CaravanTrade {
 			return new Outcome(waiting, home);
 		}
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
+		// B430: a seller whose hall is loaded is paid only what its treasury can still take (less sales not booked yet)
+		long room = Long.MAX_VALUE;
+		if (level.isLoaded(shipment.from()) && level.getBlockEntity(shipment.from()) instanceof VillageHallBlockEntity from) {
+			room = Math.max(0L, Treasury.cap(from) * 100L - from.treasury() - data.unbooked(shipment.from()));
+		}
 		List<ItemStack> unpaid = new ArrayList<>();
+		List<ItemStack> full = new ArrayList<>();
 		for (Caravans.Lot lot : shipment.sale()) {
 			TradeGoods.Good good = TradeGoods.get(lot.good());
 			if (!Economy.ENABLED || entity == null || buyer == null || good == null) {
@@ -198,15 +207,20 @@ public final class CaravanTrade {
 			int price = Board.price(level, hall, good);
 			int cents = 0;
 			int done = 0;
-			boolean room = true;
+			boolean space = true;
+			boolean sellerFull = false;
 			while (left.stream().mapToInt(ItemStack::getCount).sum() >= good.bundle()) {
 				if (entity.treasury() - cents < price) {
+					break;
+				}
+				if (cents + price > room) {
+					sellerFull = true;
 					break;
 				}
 				List<ItemStack> bundle = split(left, good.bundle());
 				if (!put(level, chests, bundle)) {
 					bundle.forEach(s -> add(left, s));
-					room = false;
+					space = false;
 					break;
 				}
 				cents += price;
@@ -214,6 +228,7 @@ public final class CaravanTrade {
 				price = Prices.sold(good.basePrice(), price);
 			}
 			if (done > 0) {
+				room -= cents;
 				entity.setTreasury(entity.treasury() - cents);
 				Board.move(level, hall, good, price, -done);
 				int theirs = Board.price(level, shipment.from(), good);
@@ -222,14 +237,14 @@ public final class CaravanTrade {
 				}
 				Board.move(level, shipment.from(), good, theirs, done);
 				int items = done * good.bundle();
-				data.sold(new Caravans.Sale(shipment.from(), buyer.name(), good.id(), items, cents, Chronicle.day(level)));
+				data.sold(new Caravans.Sale(shipment.from(), buyer.name(), good.id(), items, cents, Chronicle.day(level), hall));
 				Chronicle.atHall(level, hall, Chronicle.Kind.CARAVAN,
 					Component.translatable("chronicle.aliveworkplace.caravan_bought", items, good.name(), seller.name(), TradePage.money(cents)));
 			}
 			if (!left.isEmpty()) {
-				if (room) {
+				if (space) {
 					home.add(new Caravans.Lot(lot.good(), left));
-					unpaid.addAll(left);
+					(sellerFull ? full : unpaid).addAll(left);
 				} else {
 					waiting.add(new Caravans.Lot(lot.good(), left));
 				}
@@ -239,6 +254,10 @@ public final class CaravanTrade {
 			Chronicle.atHall(level, hall, Chronicle.Kind.CARAVAN,
 				Component.translatable("chronicle.aliveworkplace.caravan_unpaid", Caravans.describe(unpaid), seller.name()));
 		}
+		if (!full.isEmpty()) {
+			Chronicle.atHall(level, hall, Chronicle.Kind.CARAVAN,
+				Component.translatable("chronicle.aliveworkplace.caravan_seller_full", seller.name(), Caravans.describe(full)));
+		}
 		if (level.isLoaded(shipment.from())) {
 			book(level, shipment.from(), data);
 		}
@@ -247,19 +266,46 @@ public final class CaravanTrade {
 
 	/**
 	 * Books what {@code hall}'s caravans have sold since it last did: the money into its treasury (up to its cap, as
-	 * all its earnings) and a line in its chronicle for each sale, dated the day of the sale. Its hall must be loaded.
+	 * all its earnings) and a line in its chronicle for each sale, dated the day of the sale. What the cap leaves out
+	 * goes back to the buyer (B430), at once if its hall is loaded, else in its next round. Also pays {@code hall} what
+	 * is owed back to it. Its hall must be loaded.
 	 */
 	public static void book(ServerLevel level, BlockPos hall, Caravans.Data data) {
 		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			return;
 		}
+		refund(level, hall, data);
 		for (Caravans.Sale sale : data.takeSales(hall)) {
-			Tithe.put(entity, sale.cents());
-			io.github.jcondedata.aliveworkplace.realm.Leaderboard.earned(level, hall, sale.cents()); // the week's caravan sales (33.19)
+			int in = Tithe.put(entity, sale.cents());
+			io.github.jcondedata.aliveworkplace.realm.Leaderboard.earned(level, hall, in); // the week's caravan sales (33.19)
 			TradeGoods.Good good = TradeGoods.get(sale.good());
 			Chronicle.atHall(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_sold", sale.items(),
 				good == null ? Component.literal(sale.good().getPath()) : good.name(), sale.buyer(), TradePage.money(sale.cents())), sale.day());
+			int over = sale.cents() - in;
+			if (over > 0 && sale.buyerHall() != null) {
+				data.refund(sale.buyerHall(), over);
+				Chronicle.atHall(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_refunded",
+					TradePage.money(over), sale.buyer()), sale.day());
+				if (level.isLoaded(sale.buyerHall())) {
+					refund(level, sale.buyerHall(), data);
+				}
+			}
 		}
+	}
+
+	/** Pays {@code hall} back what sellers' full treasuries couldn't take of its money, as far as its own cap goes (B430). */
+	private static void refund(ServerLevel level, BlockPos hall, Caravans.Data data) {
+		int owed = data.refunds(hall);
+		if (owed <= 0 || !(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
+			return;
+		}
+		int back = (int) Math.max(0L, Math.min(owed, Treasury.cap(entity) * 100L - entity.treasury()));
+		if (back <= 0) {
+			return; // full itself: owed until there's room
+		}
+		entity.setTreasury(entity.treasury() + back); // its own money back: not takings
+		data.setRefund(hall, owed - back);
+		Chronicle.atHall(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_refund", TradePage.money(back)));
 	}
 
 	/** The Routes tab's line for a stack that would go: "Timber ×2 for 2.6 emeralds". */

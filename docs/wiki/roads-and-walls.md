@@ -53,7 +53,7 @@ time.
 **Walls (27.18).** A wall is made from a kit (`data/aliveworkplace/wall_kits/`): a segment, a corner tower and a
 gate, for a range of ranks. The line is laid out into pieces: a tower at every corner and at least every 28 blocks,
 whole segments between them, and a gate wherever a road of the plan crosses. Each piece sits at its own ground
-height. With no wall line drawn, the Steward draws one of his own, 4 blocks outside the zones. At most 3 wall pieces
+height. With no wall line drawn, the Steward draws one of his own, 4 blocks outside the zones on every side. At most 3 wall pieces
 are open at once, and never one on the spot of a piece still being built, at any height (B283: a tower with its roof
 on but its ladders not yet in had a second tower opened on top of it).
 If a piece's builder dies (in a raid, say), its site stays open with everything built so far, and the hall's

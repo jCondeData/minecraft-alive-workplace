@@ -5571,7 +5571,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   (a GameTest); the wiki gets a "Raid dens, Megas and Cobblecuisine" page and the player guide a section, and
   `wikicheck.py` passes.
 
-- [x] **38.11** (approved 2026-10-19) **Campfire pot recipes** (owner, 2026-10-18). The Chef (or the cook's job) also cooks Cobblemon's
+- [x] **38.11** (approved 2026-10-19) (verified 2026-10-27: 3 new compat tests [QaCampfirePotRecipesCompatTests]: every one of the 99 pot recipes [29 shaped] planned from exactly its makings and never over-taking when one short, the stove broken mid-job and makings taken mid-fetch cook nothing and lose nothing; compat suite 810/810 twice; wiki updated) **Campfire pot recipes** (owner, 2026-10-18). The Chef (or the cook's job) also cooks Cobblemon's
   campfire pot recipes, such as the candies (Rare Candy, EXP Candies and the IV/EV candies the pack's mods add),
   from the store's ingredients, and stocks them for trainers and players. Done when: every campfire pot recipe the
   installed mods register can be cooked (found by recipe type, not a fixed list), the cook only makes what the

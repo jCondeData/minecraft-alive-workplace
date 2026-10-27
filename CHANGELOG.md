@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A little less server lag in busy villages: a villager's pathfinding reads each block once for its trapdoor and small-block checks instead of twice, and builders no longer rebuild a research name on every tick (B412).
 - The Mechanic: a big Create build that stands within 32 blocks of the toolbox now gets its missing shafts, gears and belts mended even when its blueprint's corner lies farther off; the reach is measured to the build's nearest block, not its corner (B598).
 - The Founder: on a server with `colonyCooldownDays` set to 0, his village no longer waits a day between colonies while every other village may send the next one at once; half of no wait is no wait (B589).
 - The Pacts tab: a village you have a trade pact with now gets **Offer X an alliance**, so a pact can become an alliance without ending it and stopping its routes (B582). With the Lighthouse, an offer to a village the tab lists 3,000 blocks off is no longer refused as beyond caravan range: offers use the village's own range, the one the tab lists by, and the refusal writes it as "2,048" or "4,096" (B595).

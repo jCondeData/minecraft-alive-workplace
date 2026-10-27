@@ -70,6 +70,6 @@ Roadmap items: 31.2, 31.3
 
 ## Proof
 
-GameTests: `QuestEngineGameTests`, `QuestJournalGameTests`, `QaQuestJournalGameTests` (the hall's Quests button and the
+GameTests: `QuestEngineGameTests`, `QuestJournalGameTests`, and `QaQuestJournalGameTests` (out of the suite until B572; the hall's Quests button and the
 Ledger, hand-ins to the goal and once, the boundaries of days, ticks and radius, save and reload, two players, the hall
 broken, the command, the switch off, broken files, places and maps, every sentence).

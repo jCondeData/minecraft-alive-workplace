@@ -125,6 +125,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaStageTwoCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaStageFourCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCampHabitatCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCampHabitatBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaLureSpotsSaveCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCampCookCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaHabitatKeeperCompatTests",

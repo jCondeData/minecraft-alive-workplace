@@ -2117,7 +2117,7 @@ MarketDays) and research/.
   the server-wide `aliveworkplace_legends` record) and what an existing world sees after the update (some villagers
   turn out Gifted; nobody is a Legend until a village earns one). Sent to the owner as a review package; lanes don't
   wait for his reply. Done when: the note is on `main` and the package is sent.
-- [x] **29.2** (approved 2026-10-05) **The Legend engine.** A new `legend/` package. `Legends` loads one file per Legend from
+- [x] **29.2** (approved 2026-10-05) (verified 2026-10-27: lane D QA 2026-10-27: QaLegendEngineGameTests [malformed legend files fail alone, a Master Legend's job never reset, pace radius 8 in / 9 out and only its trades, a dead Legend's aura ends by the refresh, condition edges [Hamlet/Village, treasury 99/100], a guest never counts]; QaGiftedGameTests [7: giftedChance 1/10/30 nest and 0 none, malformed gift files, a none or removed-gift attachment, exact gold hall lines, Silver Tongue 5/20/64 to 4/16/52 and off at 0, Night Owl schedule edges, miner on it, child/nitwit/jobless not, kept through a save]; 29.4 left for a visual check) **The Legend engine.** A new `legend/` package. `Legends` loads one file per Legend from
   `data/aliveworkplace/legends/<id>.json` through `Platform.get().onDataReload` (as `ranch/PokemonChores` does), so
   server owners can add their own. A file holds: `rarity` (`rare`, `legendary`, `mythic`); `job` (the trade they work,
   always as a Master, with every level's trades through `Schools.headStart`; `aliveworkplace:legend` for Legends
@@ -2210,7 +2210,7 @@ MarketDays) and research/.
   - unmet two days: a strike, during which the Legend's `pace` power is gone and their trade's work stops; met again:
     back at work that day; a Legend on strike for 20 days is still in the village;
   - a screenshot and a GIF of a Legend picketing at the hall under the red line; showcase scene `legend_strike`.
-- [x] **29.6** (approved 2026-10-05) **Gifted villagers (1): the engine, Prodigy, Iron Will, Silver Tongue and Night Owl.** Gifted traits
+- [x] **29.6** (approved 2026-10-05) (verified 2026-10-27: lane D QA 2026-10-27: QaLegendEngineGameTests [malformed legend files fail alone, a Master Legend's job never reset, pace radius 8 in / 9 out and only its trades, a dead Legend's aura ends by the refresh, condition edges [Hamlet/Village, treasury 99/100], a guest never counts]; QaGiftedGameTests [7: giftedChance 1/10/30 nest and 0 none, malformed gift files, a none or removed-gift attachment, exact gold hall lines, Silver Tongue 5/20/64 to 4/16/52 and off at 0, Night Owl schedule edges, miner on it, child/nitwit/jobless not, kept through a save]; 29.4 left for a visual check) **Gifted villagers (1): the engine, Prodigy, Iron Will, Silver Tongue and Night Owl.** Gifted traits
   are data: `data/aliveworkplace/gifted/<id>.json` holds a weight and effects from the shared toolbox, with lang keys
   for the name and description. About one villager in 30 is Gifted (config `giftedChance`, 30; 0 turns them off),
   rolled from the UUID as `Traits.of` does, so every existing villager has theirs with nothing to migrate; the

@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Settler's Wagon camp's chest of supplies opens again: it moved out from under the wagon's wool cover onto its open tailboard (the cover sat right on the chest and kept its lid shut, so clicking it did nothing); a melon takes its old place. Camps already set up keep their old chest; break the wool block above it to open it (B590).
 - Hauler Golems: in a village with no Drop Box, a golem whose only Storehouse is walled in (or across water) no longer stands holding the goods it fetched; it puts them back into the worker's chest they came from (or the nearest worker's chest with room) and is free again (B593).
 - Legend guests: a guest no longer claims a workstation (it stayed taken for good, so no jobless villager could use it); a guest who is killed no longer keeps other Legends away for about four days; a guest settles in the village that hosted them, not the one whose hall is nearest; and a Legendary already visiting one village no longer visits a second and settles in both (B584, B585, B586, B587).
 - The Realm tab: an invitation in its last hour has "less than an hour left" instead of "0 days and 0 hours left" (B597).

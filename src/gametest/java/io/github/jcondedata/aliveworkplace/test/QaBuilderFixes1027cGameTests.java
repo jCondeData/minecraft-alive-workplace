@@ -1,9 +1,11 @@
 package io.github.jcondedata.aliveworkplace.test;
 
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem;
 import io.github.jcondedata.aliveworkplace.colony.ColonyArrival;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.wonder.WonderManager;
 import io.github.jcondedata.aliveworkplace.wonder.WonderSite;
 import java.util.List;
@@ -15,17 +17,27 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * QA (qa-lane-b-1027-0638): adversarial checks of two landed fixes, written from the spec.
  * <ul>
  * <li>B424: the Settler's Wagon camp's chest of supplies and the Colony camp's barrels open where they stand. Beyond the
- * original ray-pick tests: the Colony camp turned a quarter either way still has every container reachable. (A third
- * test, the chest really opening for a player's click, fails: the wagon's wool cover sits on the chest; it is on branch
- * tests/camp-chest-open-1027.)</li>
+ * original ray-pick tests: the chest really opens for a player clicking it from a standing spot (its menu shows the
+ * Village Hall and the blueprints), and the Colony camp turned a quarter either way still has every container reachable.</li>
  * <li>B467: when a Wonder crew's lead dies or is retrained mid-stage, the member who took the part over is named. Beyond
  * the original tests: the lead dying twice in a row (the name handed on again) and surviving a restart; and a crew of
  * one whose only builder dies (no lead, then the next builder to come is named).</li>
@@ -37,6 +49,91 @@ public class QaBuilderFixes1027cGameTests {
 	private static final String TALL = "aliveworkplace_test:tall_area";
 
 	// ---- B424 ----
+
+	/** The camp's chest of supplies, clicked by a player from a standing spot round the wagon, opens and shows the supplies. */
+	//$ gametest_ticks_batch AREA '40' '"qaB424ChestOpens"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "qaB424ChestOpens")
+	public void theCampChestOpensForAPlayerAndHoldsTheSupplies(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		try {
+			List<Villager> settlers = SettlersWagonItem.makeCamp(level, player, helper.absolutePos(new BlockPos(11, 2, 6)));
+			helper.assertTrue(settlers.size() == 2, "no camp was made: " + settlers.size() + " settlers");
+			BlockPos chest = null;
+			for (BlockPos p : BlockPos.betweenClosed(helper.absolutePos(new BlockPos(0, 1, 0)), helper.absolutePos(new BlockPos(21, 8, 21)))) {
+				if (level.getBlockState(p).is(Blocks.CHEST)) {
+					chest = p.immutable();
+				}
+			}
+			helper.assertTrue(chest != null, "the camp has no chest");
+			// B590: nothing on the chest keeps its lid shut (the wagon's wool cover sat on it)
+			helper.assertFalse(ChestBlock.isChestBlockedAt(level, chest), "the camp's chest is blocked: above it " + level.getBlockState(chest.above()));
+			BlockHitResult hit = null;
+			BlockPos from = null;
+			for (BlockPos feet : BlockPos.betweenClosed(chest.offset(-5, -3, -5), chest.offset(5, 3, 5))) {
+				if (!QaCampReachGameTests.fits(level, feet)) {
+					continue;
+				}
+				hit = aim(level, player, feet, chest);
+				if (hit != null) {
+					from = feet.immutable();
+					break;
+				}
+			}
+			helper.assertTrue(hit != null, "no standing spot round the camp puts the chest under the crosshair");
+			// the check itself: a lone chest on open ground, clicked the same way, opens its menu
+			helper.setBlock(new BlockPos(2, 2, 18), Blocks.CHEST);
+			BlockPos lone = helper.absolutePos(new BlockPos(2, 2, 18));
+			BlockHitResult loneHit = aim(level, player, helper.absolutePos(new BlockPos(4, 2, 18)), lone);
+			helper.assertTrue(loneHit != null, "the check can't aim at a lone chest two blocks away");
+			player.gameMode.useItemOn(player, level, ItemStack.EMPTY, InteractionHand.MAIN_HAND, loneHit);
+			helper.assertTrue(player.containerMenu instanceof ChestMenu, "the check can't even open a lone chest: " + player.containerMenu);
+			player.closeContainer();
+			player.moveTo(from.getX() + 0.5, from.getY(), from.getZ() + 0.5, 0, 0);
+			InteractionResult result = player.gameMode.useItemOn(player, level, ItemStack.EMPTY, InteractionHand.MAIN_HAND, hit);
+			helper.assertTrue(result.consumesAction(), "clicking the chest from " + helper.relativePos(from).toShortString() + " did nothing: " + result);
+			helper.assertTrue(player.containerMenu instanceof ChestMenu, "clicking the chest at " + helper.relativePos(chest).toShortString() + " from " + helper.relativePos(from).toShortString()
+				+ " opened no chest menu (above it: " + level.getBlockState(chest.above()) + ")");
+			Container shown = ((ChestMenu) player.containerMenu).getContainer();
+			boolean hall = false;
+			int blueprints = 0;
+			for (int i = 0; i < shown.getContainerSize(); i++) {
+				ItemStack s = shown.getItem(i);
+				hall |= s.is(ModBlocks.VILLAGE_HALL.asItem());
+				if (s.getItem() instanceof BlueprintItem) {
+					blueprints += s.getCount();
+				}
+			}
+			helper.assertTrue(hall, "the opened chest shows no Village Hall");
+			helper.assertTrue(blueprints >= 2, "the opened chest shows " + blueprints + " blueprints, not two");
+			player.closeContainer();
+		} finally {
+			level.getServer().getPlayerList().remove(player);
+		}
+		helper.succeed();
+	}
+
+	/** The hit a standing player at {@code feet} gets on {@code target} (null: never under the crosshair in reach). */
+	private static BlockHitResult aim(ServerLevel level, ServerPlayer player, BlockPos feet, BlockPos target) {
+		Vec3 eye = new Vec3(feet.getX() + 0.5, feet.getY() + 1.62, feet.getZ() + 0.5);
+		double reach = player.blockInteractionRange();
+		for (double dx = 0.1; dx <= 0.9; dx += 0.4) {
+			for (double dy = 0.1; dy <= 0.9; dy += 0.4) {
+				for (double dz = 0.1; dz <= 0.9; dz += 0.4) {
+					Vec3 to = new Vec3(target.getX() + dx, target.getY() + dy, target.getZ() + dz);
+					if (to.distanceTo(eye) > reach) {
+						continue;
+					}
+					BlockHitResult hit = level.clip(new ClipContext(eye, to, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
+					if (hit.getType() == HitResult.Type.BLOCK && hit.getBlockPos().equals(target)) {
+						return hit;
+					}
+				}
+			}
+		}
+		return null;
+	}
 
 	/** The Colony camp turned a quarter clockwise: every chest and barrel still opens where it stands. */
 	//$ gametest_ticks_batch HUGE '40' '"qaB424ColonyCw"'

@@ -154,8 +154,26 @@ public final class Refreshes {
 	 */
 	private static Optional<Blueprint> asBuilt(ServerLevel level, ResourceLocation structure, String key,
 											   io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		if (LATEST.equals(key)) {
+			return latestDrawing(level, structure, furniture).map(furniture::applyAsBuilt);
+		}
 		return history(level.getServer(), historyId(structure, furniture)).stream().filter(o -> o.key().equals(key)).findFirst()
 			.map(o -> furniture.applyAsBuilt(o.drawing()));
+	}
+
+	/**
+	 * B641: the "older drawing" that is today's drawing itself, furnished as the build was, for a build furnished by an
+	 * older spots file ({@link io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice#staleFor}): a Terrace planned
+	 * before B281 has no piece for the east kitchen's table and chair, which kept their spruce stand-ins, and a refresh
+	 * swaps them for the mods' pieces (and takes down the library's crockery that hung over its tables).
+	 */
+	public static final String LATEST = "latest";
+
+	/** Today's drawing of {@code structure} as the build's library has it (the modded library's copy for a modded build). */
+	private static Optional<Blueprint> latestDrawing(ServerLevel level, ResourceLocation structure,
+													 io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		Optional<Blueprint> drawn = BlueprintLibrary.get(level, structure);
+		return furniture.modded() ? io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.copy(structure).or(() -> drawn) : drawn;
 	}
 
 	/** Whose older drawings a build's are: the blueprint's own, or (37.12) its modded library copy's ({@code modded/<path>}). */
@@ -198,7 +216,10 @@ public final class Refreshes {
 			return Optional.empty();
 		}
 		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = BuildSiteManager.get(level).furniture(f.placement());
-		List<Old> olds = history(level.getServer(), historyId(f.structure(), furniture));
+		List<Old> olds = new ArrayList<>(history(level.getServer(), historyId(f.structure(), furniture)));
+		if (furniture.staleFor(io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture.of(f.structure()))) {
+			latestDrawing(level, f.structure(), furniture).ifPresent(d -> olds.add(new Old(LATEST, d))); // B641
+		}
 		if (olds.isEmpty()) {
 			return Optional.empty(); // (a modded library build: its copy's older drawings aren't shipped yet)
 		}

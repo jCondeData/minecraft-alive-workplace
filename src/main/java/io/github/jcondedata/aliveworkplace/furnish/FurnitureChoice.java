@@ -313,8 +313,10 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 	}
 
 	/**
-	 * {@code base} with the chosen pieces in place of their spots' vanilla blocks (a spot whose index, position or kind no
-	 * longer matches the spots file is left vanilla).
+	 * {@code base} with the chosen pieces in place of their spots' vanilla blocks. A piece goes on the spot of its index,
+	 * or, when the spots file has been redrawn since the build was furnished (B641: B281 added the Terrace's east kitchen
+	 * table and chair before its beds, so every bed's index moved by two), on the spot with its position and kind; a piece
+	 * with no such spot any more is left out (the spot is built vanilla).
 	 */
 	public Blueprint apply(Blueprint base, List<FurnitureSpot> spotsOfBase) {
 		if (spots.isEmpty()) {
@@ -322,11 +324,42 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 		}
 		Map<BlockPos, BlockState> swap = new HashMap<>();
 		spots.forEach((i, placed) -> {
-			if (i < spotsOfBase.size() && spotsOfBase.get(i).pos().equals(placed.pos()) && spotsOfBase.get(i).kind() == placed.kind()) {
+			if (spotOf(i, placed, spotsOfBase) >= 0) {
 				placed.cells().forEach((at, state) -> swap.put(placed.pos().offset(at), state));
 			}
 		});
-		return swapped(base, swap);
+		return swapped(base, swap, true);
+	}
+
+	/** The index in {@code spotsOfBase} of the spot {@code placed} (saved as spot {@code i}) is on: its own, or the one at its place of its kind; -1 if none. */
+	static int spotOf(int i, Placed placed, List<FurnitureSpot> spotsOfBase) {
+		if (i >= 0 && i < spotsOfBase.size() && on(placed, spotsOfBase.get(i))) {
+			return i;
+		}
+		for (int j = 0; j < spotsOfBase.size(); j++) {
+			if (on(placed, spotsOfBase.get(j))) {
+				return j;
+			}
+		}
+		return -1;
+	}
+
+	private static boolean on(Placed placed, FurnitureSpot spot) {
+		return spot.pos().equals(placed.pos()) && spot.kind() == placed.kind();
+	}
+
+	/**
+	 * B641: whether this choice was made against an older spots file than {@code today}: a piece no longer on the spot
+	 * of its index (the file was redrawn with spots added or moved before it).
+	 */
+	public boolean staleFor(List<FurnitureSpot> today) {
+		for (Map.Entry<Integer, Placed> e : spots.entrySet()) {
+			int i = e.getKey();
+			if (i < 0 || i >= today.size() || !on(e.getValue(), today.get(i))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -341,7 +374,7 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 		}
 		Map<BlockPos, BlockState> swap = new HashMap<>();
 		spots.values().forEach(placed -> placed.cells().forEach((at, state) -> swap.put(placed.pos().offset(at), state)));
-		return swapped(base, swap);
+		return swapped(base, swap, false); // (as such builds were put up: B641's set-down of the library's crockery came later)
 	}
 
 	/**
@@ -371,7 +404,7 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 		return out.isEmpty() && !modded ? VANILLA : new FurnitureChoice(Collections.unmodifiableMap(out), modded);
 	}
 
-	private static Blueprint swapped(Blueprint base, Map<BlockPos, BlockState> swap) {
+	private static Blueprint swapped(Blueprint base, Map<BlockPos, BlockState> swap, boolean library) {
 		if (swap.isEmpty()) {
 			return base;
 		}
@@ -385,14 +418,18 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 			}
 		}
 		// B300: a pot or lantern on a cell the piece left empty (a fence-and-carpet table become a one-block one) sits down on the piece
-		return Resting.reseat(new Blueprint(base.id(), base.size(), List.copyOf(entries), base.entities()), emptied);
+		// B641: and the modded library's crockery on such a table too
+		return Resting.reseat(new Blueprint(base.id(), base.size(), List.copyOf(entries), base.entities()), emptied, library);
 	}
 
 	/** {@code base} as this choice builds it, the spots read from {@code blueprint}'s file. */
 	public Blueprint apply(Blueprint base, ResourceLocation blueprint) {
 		// 37.12: the modded library's copy has the vanilla build's shape and furniture spots, so the pieces go in the same places
 		Blueprint built = modded ? io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.copy(blueprint).orElse(base) : base;
-		return spots.isEmpty() ? built : apply(built, BlueprintFurniture.of(blueprint));
+		List<FurnitureSpot> spotsOfBase = BlueprintFurniture.of(blueprint);
+		Blueprint out = spots.isEmpty() ? built : apply(built, spotsOfBase);
+		// B641: no library crockery left hanging over a table that stayed vanilla (its thin plate under it)
+		return modded ? Resting.offThinTops(out, spotsOfBase) : out;
 	}
 
 	public ListTag save() {

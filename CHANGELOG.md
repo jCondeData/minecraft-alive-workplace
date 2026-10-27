@@ -28,6 +28,10 @@ asks for the steps, `latest.log` and any crash report).
   today's spots are furnished once, so there is no second table and no leftover clock; afterwards the house matches a
   newly built one, turned or mirrored too (B642).
 - The Village Hall's golem list says "...and 1 more golem" with one golem over the shown seven (B629).
+- Both kitchens of a Terrace get the furniture mods' pieces: a Terrace furnished before the east kitchen's table was
+  found had spruce stand-ins in one kitchen and its beds' pieces misread; it now shows Refresh to the latest look on the
+  Village Hall's Repairs page, which swaps in the mods' table and chair. The modded library's crockery sits on the
+  table instead of hanging a block above it (B641).
 - Old houses measure right beside a tall dead trunk: a bare log column taller than a house can be, standing against the wall, is now judged from its root and left out wherever the measuring reaches it, so renewing the house no longer takes the trunk's upper part down with it (B599).
 - A finished Wonder gets its festival that evening even when another festival was already planned for a later day; the later one still comes after it (B605)
 - The Sickness: when only one or two far herbs grow within reach, the healer's chat, the chronicle and the thanks say one or two, not three (B617)

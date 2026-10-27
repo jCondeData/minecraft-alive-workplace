@@ -3,7 +3,7 @@
 Rare named villagers with powers, who come to a village that has earned them. Also the Gifted: about one villager in
 thirty with a rare gift. Part of 1.3 (Legends): switched on in 1.0 with every other expansion.
 
-Roadmap items: 29.2, 29.3, 29.4, 29.5, 29.6, 29.7, 29.8, 29.9, 29.10, 29.12, 29.13, 29.14, 29.15, 29.16, 29.17, 29.18,
+Roadmap items: 29.2, 29.3, 29.4, 29.5, 29.6, 29.7, 29.8, 29.9, 29.10, 29.11, 29.12, 29.13, 29.14, 29.15, 29.16, 29.17, 29.18,
 29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136, B345
 
 ## What a player sees
@@ -27,7 +27,7 @@ guest, and a Legend on strike, and a Legend talks about themself.
 
 | Legend | Rarity | Comes | The village must have | Brings |
 |---|---|---|---|---|
-| Master Architect | Legendary | visits the inn | Town rank, buildings in 3 styles | builders nearby twice as fast; a grand rebuild of a house |
+| Master Architect | Legendary | visits the inn | Town rank, buildings in 3 styles | builders within 32 blocks twice as fast; every 3 days a building made grander |
 | Pathfinder | Rare | found at a ruined portal; or born | a Cartographer who is an Expert (level 4) or higher | far expeditions; leads the player on one |
 | Old Sage | Rare | found in a hermit's hut; or born | 5 research levels | riddles, then a research tree of his own |
 | Golem Smith | Legendary | a strange mood (a Master Tinkerer) | 4 iron golems | a forge that makes golems which work |
@@ -105,6 +105,39 @@ Beloved (neighbors are happier), Born Leader (workers of their trade nearby 10% 
   rolled once when they grow up; the chronicle says "Wren, child of Dara and Tom, has grown up Gifted: Prodigy". The
   inn's travelers are Gifted 1 in 10, shown on the hire screen ("Gifted: twice the usual price") at twice the price.
   With `giftedChance` 0 nobody grows up or is hired Gifted.
+
+**The Master Architect (29.12).** Comes as a guest at the inn to a Town or a City whose builders finished
+buildings in at least 3 styles (a blueprint as drawn is one style; three buildings in one or two styles aren't
+enough). Every Builder within 32 blocks of them works twice as fast (33 blocks is too far), held under the Legends'
+shared cap. Every 3 days (not after 2) they hand the least busy builder a building the village's builders finished,
+homes first: its next upgrade, or, with none, the building redrawn in the Grand style, built like an upgrade (only the
+changed blocks). Never a decoration and never a player's own build; with no builder free nothing is handed and the 3
+days aren't spent. One at a time; a sneak-right-click pauses it (kept through a save and reload); a strike stops the
+rebuild under way. Each goes in the chronicle.
+
+**The Pathfinder (29.13).** Found at a ruined portal once one of the village's Cartographers is an Expert or a Master
+(an Expert of another trade doesn't count); or born to a Cartographer. Their own expeditions range twice as far and roll
+`aliveworkplace:explorer/pathfinder`. Sneak-right-click them, with 8 food in the chests by their table (any food that
+fills 4 or more and has no side effects: rotten flesh doesn't count; exactly 8 are taken), and pick a Stronghold, an
+Ancient City or Trial Chambers (tags `#aliveworkplace:expedition/stronghold`, `/ancient_city`, `/trial_chambers`).
+They hand over a map, lead, wait for a player more than 24 blocks behind, catch up beyond 64, and fight a monster
+going for either of them (one after nobody, and animals, are left alone). At the place a banner; right-click them for
+Home, and after 5 seconds standing still both are by the hall. Not on strike; one a day; only the player on it can ask
+for Home; a logout or a death cancels it and they are home the next morning; a new one may start the next day. An
+expedition under way survives a save and reload.
+
+**Research trees (29.11).** A Legend with a tree of their own (the Old Sage, the Pokémon Professor) gets a tab on the
+hall's research screen while they live in the village; it goes when they leave. Trees are data
+(`data/<ns>/research_trees/<tree>.json`): topics with levels, a cost per level, points, what they need, an optional
+`unlock` (a village counter at a number) and `exclusive` group, and effects (`wellbeing`, `illness`, `raid_chance`,
+`xp`, `loot_luck`, `flag`). The Legend pays a level from the chests (the whole cost or nothing: 8 paper without the
+book takes nothing) and works it at a lectern within 8 blocks of their home (9 is too far); scholars help at half
+speed; on strike the work stops and the points stay. A topic is refused, with a reason on the screen, while another
+paid-for topic is under way ("Busy with Calm Minds until it's done"), at its top ("Fully researched"), before what it
+needs ("Herb Lore can't be researched yet"), below its counter ("Census opens when the village has 3 test things"),
+and for good once a rival of its group is taken ("The village took The Iron Pact for good: The Flame can't be
+researched"), also after a reload. Levels are kept in the hall's research map as `<tree>/<topic>`, so an old hall's
+research loads unchanged.
 
 ## Switches
 
@@ -219,6 +252,15 @@ QA (29.4): `QaLegendsHallGameTests` (7): conditions one short, exactly met and o
 "1 of 1"), the "What next?" tip at one missing but not two or none, "lives in" only for a Legendary taken elsewhere,
 every way a Legend comes in English, a need unmet 1 day crossed and 0 days ticked with two Legends first on the hall's
 list, and all six Legend chatter lines with names filled in.
+QA (lane d, 29.11 to 29.13): `QaResearchTreesGameTests` (6): the lectern at 8 blocks from home and not 9; needs, the
+top level and a busy Legend refused on the screen, a second level's two-item cost taken only whole; an exclusive group
+the other way round and after a reload; an unlock past its number; the tab gone when the Legend leaves; a strike
+keeping the points; every refusal sentence. `QaMasterArchitectGameTests` (5): the pace at 32 blocks and not 33, never a
+farmer; a City qualifies, one or two styles don't; the next rebuild on day 3 not day 2; decorations only or no builder
+hand nothing and spend no days; a pause kept through a reload. `QaPathfinderGameTests` (7): a Master explorer counts,
+a Master Librarian and a Novice don't; 8 real foods of any kind and exactly 8 taken; a strike refuses and only their
+player asks for Home; a death cancels and the next day is free; a monster after the player is fought, others not; an
+expedition through a save and reload; the three tags hold vanilla's structures, and a pick with no offer is refused.
 QA (29.8): `QaLegendGuestsGameTests` (6): a guest still there a tick before the third evening and gone at it, with the
 leaving line in English; every need met that evening settles them instead; the 7 days from the day they came (day 11
 no, day 12 yes for a day-5 visit); a way's chance of 0 never and 1 always (over 1 read as 1); a Legendary settled in

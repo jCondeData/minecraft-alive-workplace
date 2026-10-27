@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21
 
 ## 1. What a player sees
 
@@ -169,6 +169,15 @@ locked build in a style, is refused (`TableServer.styleTaken`; tests in `TableGa
 
 **Stall watch.** If a site with a Builder on shift makes no progress for 600 ticks (30 s), a log line starting
 "Builder stalled" is written. The soak test counts these lines.
+
+**Getting unstuck (23.2).** A Builder that can't walk to where it has to stand (no path at all, or a path it can't
+follow) waits a moment, then hops onto that spot: it never digs or breaks its way out, so no block of the build and no
+block of yours is ever broken getting it free. It gets out of a hole three deep, a well of water with sheer sides, an
+island in a moat of lava, a ring of fences or a pen with its gate shut, a room with a wooden or an iron door, and the
+top of its own build, in the tests within a few seconds (about 1.5 s for each of the harder traps), and goes on
+building. The same holds when its chunk
+unloads, or the server restarts, while it is trapped. Tests: `BuilderChaosGameTests` (five seeds, a new trap every 150
+to 300 ticks through the starter cottage) and `QaBuilderStuckGameTests` (each harder trap three times through a build).
 
 ## 3. Switches
 
@@ -352,7 +361,7 @@ Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon
 `QaCreateItemsHeldCompatTests` (a scanned Create depot, deployer and basin each holding a diamond are built empty).
 
 GameTests (`src/gametest/java/.../test/`): `BlueprintsStayGameTests.everyBlueprintKeepsItsLampsPathsAndBeds` (B537-B539: in every shipped blueprint no standing lantern, candle or torch is on a top that can't hold it, no dirt path or farmland under a solid block, no half bed; with QaWonderDesignsGameTests' qaWonderStagesStand and qaWonderBedsWhole now run for the Great Library, the Hanging Gardens and the Observatory too), `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
-`BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
+`BuilderChaosGameTests` (5 seeds, stuck recovery), `QaBuilderStuckGameTests` (6, 23.2: a 3-deep hole, an iron-door room, a deep well of water, a lava moat, a fence pen with a shut gate, and the hole through a restart, each three times: out within 600 ticks, nothing placed or of the trap broken, the build whole), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbor's bench outlasts a build;
 a bench put down and employed at in one command is held),
 `TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `QaStageFiveGameTests.madeUpPreviewIdsAreNotRemembered` (B340: 5000 made-up preview ids remembered as 0, a real one

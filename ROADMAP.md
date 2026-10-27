@@ -1816,7 +1816,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     harvest with a mutation gives Lum and the book marks it found; the chain to Sitrus (Lum + Figy) is planned from Oran,
     Cheri and Figy;
   - showcase scene `berry_breeder` (the book page, the paired plot).
-- [x] **28.10** (approved 2026-10-05) **The Habitat Keeper.** Stand a villager by a Pasture Block (POI when Cobblemon registers
+- [x] **28.10** (approved 2026-10-05) (verified 2026-10-27: 9 new compat tests [QaHabitatKeeperCompatTests]: re-slather after wear-off, log scan 32/33 edge, sapling by a lure spot, 3 snacks max, who hears a sighting, hall's last five, config keys, lure names + egg group pick, trades) **The Habitat Keeper.** Stand a villager by a Pasture Block (POI when Cobblemon registers
   `cobblemon:pasture`; never taken by a jobless villager) and sneak-right-click them with a honey bottle. Config
   `habitatKeepers` (true), `habitatSightings` (true).
   - Lure spots: up to 3 Poké Snacks kept set out within 32 blocks of the pasture, on spots marked with a Field Marker

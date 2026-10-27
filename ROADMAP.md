@@ -1769,7 +1769,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - a builder builds both tiers (GameTest), and the renders are in the package;
   - showcase scene `pokemon_center` (stills of both tiers, a GIF of the healing).
   - [x] **28.7a** (approved 2026-10-06) Change from the owner (2026-10-05): Approved, but add more Pokémon Center variants later (more looks for the tiers).
-- [x] **28.8** (approved 2026-10-05) **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
+- [x] **28.8** (approved 2026-10-05) (verified 2026-10-27: 5 new compat tests [QaCampCookCompatTests]: no snack without honey, reload with the lid shut, shipped menu always/asked/order, campCooks key, trades by level; on top of 14 existing) **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
   Cobblemon registers `cobblemon:campfire`) and sneak-right-click them with Hearty Grains. Never taken by a jobless
   villager. Config `campCooks` (true).
   - She cooks in the pot itself: the makings into its slots and seasonings into its top row through its container (as
@@ -1816,7 +1816,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     harvest with a mutation gives Lum and the book marks it found; the chain to Sitrus (Lum + Figy) is planned from Oran,
     Cheri and Figy;
   - showcase scene `berry_breeder` (the book page, the paired plot).
-- [x] **28.10** (approved 2026-10-05) **The Habitat Keeper.** Stand a villager by a Pasture Block (POI when Cobblemon registers
+- [x] **28.10** (approved 2026-10-05) (verified 2026-10-27: 9 new compat tests [QaHabitatKeeperCompatTests]: re-slather after wear-off, log scan 32/33 edge, sapling by a lure spot, 3 snacks max, who hears a sighting, hall's last five, config keys, lure names + egg group pick, trades) **The Habitat Keeper.** Stand a villager by a Pasture Block (POI when Cobblemon registers
   `cobblemon:pasture`; never taken by a jobless villager) and sneak-right-click them with a honey bottle. Config
   `habitatKeepers` (true), `habitatSightings` (true).
   - Lure spots: up to 3 Poké Snacks kept set out within 32 blocks of the pasture, on spots marked with a Field Marker

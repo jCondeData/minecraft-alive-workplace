@@ -289,6 +289,7 @@
 			"io.github.jcondedata.aliveworkplace.test.RealmInviteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PactGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FeudGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LeaderboardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmTreasuryGameTests",

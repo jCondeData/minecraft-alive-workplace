@@ -90,6 +90,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFluidsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateDrainFluidsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicFluidsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaBuilderFixes1027CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelCounterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelMailboxCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTomsPrivateBoxesCompatTests",

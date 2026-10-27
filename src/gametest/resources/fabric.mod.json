@@ -14,6 +14,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaTakeDownGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTakeDownBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaContraptionLinesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaEverySavedCollectionGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneUpkeepGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LanternCageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BasementGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CellarGameTests",

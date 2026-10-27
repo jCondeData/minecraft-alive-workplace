@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Desert raiders: a husk piling a sand ramp against a wall no longer stands for good on the very spot where the ramp's next block goes, leaving the ramp one short of the top for the rest of the siege; it now steps aside and the ramp reaches the top (B591).
+- Performance: a builder levelling up no longer stalls the server for up to half a second in a big modpack; the blueprint library's list of every structure is now kept until the data packs reload or a structure is saved in the world, instead of read again from every mod jar on each level-up (B412).
 - Builders: the dirt path a builder lays from a finished building to the bell or hall now leaves alone any spot where a player placed or broke blocks (the same 16-block sections the Steward keeps out of), and still paves the rest of the way; before, it could turn the grass in a player's own build to path.
 - Server config: a whole number too big to count in ("maxSiteDistance": 3000000000) is now clamped to the most allowed value instead of wrapping round to the least (or any value), for every whole-number option and price; and a config file that is valid JSON but not a {...} object (a list, a bare word, a number) is now kept as aliveworkplace.json.bad before the defaults are written over it (B477).
 - Lairs and bounties: a captain who is a zombie of some kind (the Pirate Captain, a drowned) now always has just his own extra health over his mob's; before, on hard difficulty in a long-played spot vanilla now and then made him a "leader zombie" as well, and a Pirate Captain could come with about 180 health instead of 60 (B579).

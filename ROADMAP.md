@@ -2351,7 +2351,7 @@ MarketDays) and research/.
   it loads; costs are taken; levels are saved in the hall and come back after a reload; an exclusive group refuses a
   second pick; an unlock waits for its counter; each effect works; an old hall's research loads unchanged; a
   screenshot of the test tree's tab.
-- [x] **29.12** (approved 2026-10-05) **The Master Architect (Legendary).** `legends/master_architect.json`. Comes: a guest at the inn once
+- [x] **29.12** (approved 2026-10-05) (verified 2026-10-27: 5 QA tests [QaMasterArchitectGameTests]: pace at 32 not 33 and never a farmer, City qualifies but one or two styles don't, rebuild on day 3 not 2, decorations only or no builder hand nothing and spend no days, pause kept through reload; full suite 4516/4516; wiki checked and expanded) **The Master Architect (Legendary).** `legends/master_architect.json`. Comes: a guest at the inn once
   the village is a Town with finished buildings in at least 3 styles (a blueprint's own drawing counts as one;
   `BlueprintStyles` ids tell the rest). Trade: Builder. Likes: jewels. Powers:
   - builders working on a site within 32 blocks of the Architect build twice as fast (`pace`; with the shared cap,

@@ -14,6 +14,16 @@ their trade's, their name in gold over their head and a soft sparkle every few s
 Nothing about them is secret. The hall's Legends page (the nether star in the page row) lists the village's own
 Legends first, then every other Legend as a card: its rarity, how it comes, each thing the village must have with how
 far it has got ("Kinds of meal in the store: 5 of 8"), the luxury it likes and its powers.
+Each thing has a tick when it is met (exactly met counts) and a cross when it isn't, and a card with every tick says
+"This village has all they need: they may come". A Legendary one already living in another village says who and
+where ("Wren lives in Thornholm"); a Rare one settled elsewhere can still come here, so its card doesn't. The page's
+header and every Mythic card show the Mythic line ("Mythic Legends: 0 of 1, as a Town").
+
+On the hall's list of villagers the village's Legends come first, name and title in gold, with their rarity, each
+power, and each need with a tick, or a cross once it has gone unmet a day, plus "On strike since day N" in red. When a
+Legend lacks only one thing, "What next?" says so ("The Grand Chef could come: Kinds of meal in the store: 7 of 8");
+not when two things are missing, nor once nothing is. Villagers chat about the Legend living with them, a Legend
+guest, and a Legend on strike, and a Legend talks about themself.
 
 | Legend | Rarity | Comes | The village must have | Brings |
 |---|---|---|---|---|
@@ -187,6 +197,11 @@ unknown rarity, job, way or luxury, a pace below 1, a typo in a way's conditions
 Sage keeps the Legend job as a Master where a jobless farmer is reset; a pace power reaches a builder exactly 8 blocks
 away but not 9, and never a farmer; a dead Legend's aura is gone by the next 200-tick refresh; condition numbers one
 short and exactly met, and a guest Legend never counts as settled; the Legends page's Mythic line at each rank.
+QA (29.4): `QaLegendsHallGameTests` (7): conditions one short, exactly met and over (99 cents isn't an emerald;
+"1 of 1"), the "What next?" tip at one missing but not two or none, "lives in" only for a Legendary taken elsewhere,
+every way a Legend comes in English, a need unmet 1 day crossed and 0 days ticked with two Legends first on the hall's
+list, and all six Legend chatter lines with names filled in. `QaLegendsHallBugTests` (1, fails until fixed): "Born to
+a Armorer".
 `QaGiftedGameTests` (7): `giftedChance` 1 gifts everyone and 10 about one in ten, keeping everyone Gifted at 30; a
 malformed gift file fails; a `gifted` attachment of "none" or a removed gift makes nobody Gifted; the hall's gold line
 for each of the four; Silver Tongue on 5, 20 and 64 emeralds (4, 16, 52) and gone with `giftedChance` 0; the Night

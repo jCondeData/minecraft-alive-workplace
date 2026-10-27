@@ -1607,7 +1607,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   missing materials of two waiting sites; proposals stop while two sites wait and start again once supplied; the
   ledger survives save and reload; a chaos run (the tester skill's `ChaosTests`, 3 seeds) of a self-run village breaks
   no block a player placed.
-- [x] **27.20** (approved 2026-10-06) **Old houses, found and measured.** In zones with "renew old houses" on, the Steward looks for houses
+- [x] **27.20** (approved 2026-10-06) (verified 2026-10-27: on main 39a690ce7, full build green [4612 + 807 compat]: 2 new tests [QaStewardSafetyOldHouses1027GameTests]: a house on the renew zone's last column is renewable and measured exactly, one column more is OUTSIDE_ZONE; a fisherman's barrel is allowed, a chest gives CONTAINER; mutants killed 2/2 [zone edge <=, job-block clause]; 2000/20x16x20/85% boundaries by existing QaOldHouses tests; wiki steward.md read against it) **Old houses, found and measured.** In zones with "renew old houses" on, the Steward looks for houses
   no builder built: a bed or a workstation (by its point of interest) that isn't in a finished build (`Homes.at`,
   `BuildSiteManager.finishedAt`), and the house round it, measured by a flood fill over built blocks (not terrain,
   plants or natural trees: at most 2000 blocks and 20×16×20, 256 blocks a tick). Keyed on blocks, never on the

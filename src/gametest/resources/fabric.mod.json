@@ -343,6 +343,7 @@
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ArticleGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaArticlesLeftBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaAmericanSpellingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileBugTests",

@@ -2370,7 +2370,7 @@ MarketDays) and research/.
   isn't; a rebuild picks an upgrade, the Grand style when there's none, places only the changed blocks, never touches
   a player's build and stops on strike; the Grand style's renders (three builds, front and back) and the outfit in the
   review package; showcase scene `legend_architect` (GIF: the Stone House redrawn in the Grand style).
-- [x] **29.13** (approved 2026-10-05) **The Pathfinder (Rare).** Comes: found at a ruined portal (29.9) once one of the village's explorers
+- [x] **29.13** (approved 2026-10-05) (verified 2026-10-27: 7 QA tests [QaPathfinderGameTests]: Master explorer counts, Master Librarian/Novice don't, 8 real foods exactly taken, strike refuses, only their player asks Home, death cancels and next day free, fights only a monster after the player, save/reload mid-expedition, expedition tags, no-offer pick refused; full suite 4516/4516; wiki checked and expanded) **The Pathfinder (Rare).** Comes: found at a ruined portal (29.9) once one of the village's explorers
   (Cartographers) is an Expert; born to a Cartographer (29.7). Trade: Cartographer. Likes: clothes. Powers:
   - their own expeditions (`ExplorerWork`) range twice as far and roll the new `explorer/pathfinder` loot table (more
     maps, now and then a trial key or an echo shard);

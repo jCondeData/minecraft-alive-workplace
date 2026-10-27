@@ -2474,7 +2474,7 @@ MarketDays) and research/.
   village; each riddle takes its answer and refuses others, with the hint after two misses; the guest arrives; every
   topic's effect and the exclusive last pick; the hut's render in the review package; showcase scene `legend_sage`
   (the hut, a riddle, the Ancient Lore tab).
-- [x] **29.15** (approved 2026-10-06) **The Golem Smith (Legendary).** Comes: inspired (29.10): a Master Tinkerer in a happy village with 4
+- [x] **29.15** (approved 2026-10-06) (verified 2026-10-27: QaGolemSmith1027GameTests [5, all pass; full suite 4786 green]: mending every 10 ticks vs a Tinkerer's 20, a stranger's sneak-click in a protected village chooses nothing, every golem hall line reads in English with numbers, a farmhand leaves ripe crops outside its fields alone, a farmer's fields count at 48 blocks and not 49; wiki Proof updated. Not tested: the 48-block reach is a box, not a circle [spec doesn't say].) **The Golem Smith (Legendary).** Comes: inspired (29.10): a Master Tinkerer in a happy village with 4
   iron golems; the materials come from a pool of a diamond, a block of copper, a block of redstone, a blaze rod, a
   breeze rod, an amethyst shard and an echo shard, and the Masterwork is a heavy core named "The Heart of <name>".
   Trade: Tinkerer. Likes: wine. Powers (`golem_forge`): from the chests by their smithing table they build one golem
@@ -2574,7 +2574,7 @@ MarketDays) and research/.
   and is replaced 2 days after it dies; a foal's stats are at least its best parent's and never over vanilla's
   highest; cavalry picks the bred horses; showcase scene `legend_beastmaster` (GIF: a guard and a war dog against
   zombies).
-- [x] **29.21** (approved 2026-10-06) **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
+- [x] **29.21** (approved 2026-10-06) (verified 2026-10-27: QaPokemonLegends1027CompatTests [5, all pass on runCompatGameTest, 833 green]: sent-out Pokemon never befriended, offline owner's befriended Pokemon waits in their PC with its chronicle line, a pasture outside the village not counted, an unpaid stone costs nothing and stays one a day [800 CobbleDollars], hints show only the clicker's party; wiki legends.md gains the two Pokemon Legends' powers. Last nightly mutation: no survivor in their code.) **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
   Pasture Blocks hold 25 Pokémon of 10 types (the condition `pastured_pokemon`, through a new extension point
   `legend/PokemonCensus` filled in `compat/cobblemon/`; without Cobblemon the file doesn't load). Trade:
   `aliveworkplace:legend`, at a lectern. Likes: books. Powers:
@@ -2591,7 +2591,7 @@ MarketDays) and research/.
   Outfit: a white lab coat. Done when: compat GameTests (`runCompatGameTest`): the census; hints that match the
   Pokémon's real IVs, nature, ability and EVs; each species logged once; every topic's unlock and effect; without
   Cobblemon nothing loads or errors; showcase scene `legend_professor` (Cobblemon: the hints, the Pokédex tab).
-- [x] **29.22** (approved 2026-10-06) **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
+- [x] **29.22** (approved 2026-10-06) (verified 2026-10-27: QaPokemonLegends1027CompatTests [5, all pass on runCompatGameTest, 833 green]: sent-out Pokemon never befriended, offline owner's befriended Pokemon waits in their PC with its chronicle line, a pasture outside the village not counted, an unpaid stone costs nothing and stays one a day [800 CobbleDollars], hints show only the clicker's party; wiki legends.md gains the two Pokemon Legends' powers. Last nightly mutation: no survivor in their code.) **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
   morning, while an Alpha Pokémon is within 96 blocks of the hall (Cobblemon's own Alpha mark if the installed version
   has one, checked with the engineer skill's `api.py`; otherwise a wild Pokémon of level 50 or more): the condition
   `alpha_near`, through a new extension point `legend/WildPokemon` filled in `compat/cobblemon/`. Trade:

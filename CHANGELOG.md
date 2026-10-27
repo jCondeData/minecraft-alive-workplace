@@ -23,6 +23,8 @@ asks for the steps, `latest.log` and any crash report).
   the spiral stair goes all the way down (36.22).
 
 ### Fixed
+- The Sickness: the village's healer no longer catches the Grey Cough from the coughing villagers they work beside,
+  so the one brewing the cure is never counted among the ill (B646).
 - Refresh to the latest look no longer leaves a furnished old house in a mess: a house furnished before its drawing was
   redrawn now has its old table, chairs, clock and beds taken away where they stand (their items to the store), and
   today's spots are furnished once, so there is no second table and no leftover clock; afterwards the house matches a

@@ -248,7 +248,9 @@ fetches from the next, B456; `QaHaulerGiveUpGameTests`, 4 (QA): a given-up Store
 2,400-tick wait even once the way is open and used again after it, a hauler saved and loaded right after giving up keeps its whole load and
 gets it home, and one whose only Storehouse is walled in puts its load back into the Drop Box and is free again, B463; `QaHaulerNoDropBoxGameTests`, 2 (QA): with no Drop Box, a hauler whose only Storehouse is walled in puts a lumberjack's 128 logs back in the chests they came from, and one loaded from a save carrying 64 logs puts them in a worker's chest, B593; `QaLedgerFramesHaulGameTests.aHaulerWhoseStorehouseIsBrokenMidTripPutsItsLoadBackInTheDropBox`: the same when the player breaks the only Storehouse while the golem carries a Drop Box's 3 stacks; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
 and walks back to it, a Nether route is refused and a blank map takes the post, each with its line, a foe 10 blocks
-from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
+from the post is left alone; `QaGolemSmith1027GameTests`, 5 (QA): the Smith mends a golem every 10 ticks to a Tinkerer's 20, a stranger's
+sneak-click in a protected village chooses nothing, every golem line on the hall reads in English, a farmhand leaves ripe crops outside
+the fields alone, and a farmer's fields count at 48 blocks and not at 49), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
 `PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
 `QaPokemonLegendsCompatTests` (10, QA, 29.21 and 29.22: the census at 24 and 25 Pokémon and at 9 and 10 types, a released

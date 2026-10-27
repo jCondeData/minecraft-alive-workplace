@@ -820,6 +820,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaOldSageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGolemSmithGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGolemSmithEdgesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGolemSmith1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSeerGameTests"
 		]
 	},

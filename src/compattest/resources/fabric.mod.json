@@ -120,6 +120,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaStageFourCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCampHabitatCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaLureSpotsSaveCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCampCookCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaHabitatKeeperCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.GemGrowerCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaGemGrowerCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DaycareKeeperCompatTests",

@@ -55,7 +55,8 @@ blueprint's four turns and its mirror image. A spot is good only if the front fa
 footprint and a 2-block margin lie inside the zone and off the roads, the ground varies by at most 4 blocks, nothing
 stands there but natural ground, trees and the plants of the `steward_clearable` tag (a carved pumpkin is not one), and a builder's bench stands in the village (anywhere in it then reaches, 36.20) or is within `maxSiteDistance` of the spot. At most a tenth of
 the footprint may be over water and none of it over lava, it stays 2 blocks clear of every build site and finished
-building, and the same blueprint with the same mirroring is never put within 24 blocks of another, center to center.
+building, and the same blueprint with the same mirroring is never put within 24 blocks of another, center to center (exactly 24 counts
+as within; a turned twin counts, a mirrored one doesn't).
 
 **Open builds.** His level sets how many of his builds may be open at once (1, 2, 2, 3, 4 from Novice to Master),
 never more than the village's rank allows (Hamlet 1 to City 4) nor more than `stewardMaxOpenBuilds`. An approved
@@ -169,7 +170,10 @@ needed, caravans, once a day, the pause's day from both sides, the sentences), `
 from both sides, abandoned blocks, allowed block entities, containers, 2000 blocks and 20×16×20 from both sides, a
 finished build, placed leaves, the ledger, the desk line) and `QaRenewalGameTests` (9, 27.21: the switch, two days
 from both sides, a Fletcher's Lodge facing the old door, the sentences, a tight zone, broken lists, a building too big
-passed over, a zone not renewed).
+passed over, a zone not renewed), `QaStewardSameRangeGameTests` (1, B470: Wells 25 and 24.04 blocks apart are not within
+24) and `QaBuilderFixes1027bGameTests` (B470's two: 24 blocks off refused on all four sides and 25 not, diagonals 23.35
+and 23.77 refused and 24.04 not, a turned twin still counts and a mirrored one doesn't; the even Market Stall and the
+Hay Cart turned against an unturned one, half a block off on both axes, measured the same way).
 
 Showcase scenes: `steward` (the morning rounds), `steward_rules`, `steward_desk`, `steward_safety`, `steward_jobs`,
 `steward_homes`, `steward_civic`, `old_houses`, `renewal`, `city_plan`, `city_plan_ground`, `city_timelapse` (a

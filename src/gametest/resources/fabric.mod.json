@@ -217,6 +217,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCrewCarryBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCrewBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1026GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1027GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1027bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1027cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1026BugTests",
 			"io.github.jcondedata.aliveworkplace.test.TakeDownCancelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintHandlingGameTests",
@@ -339,6 +342,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigHandEditsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigHandEditsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageMachinesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigOddFilesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWorldSavesGameTests",
@@ -375,6 +379,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerLifeJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerLifeJobsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactsBoardStewardGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPactsRealmEdictsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTradeBoardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryJobsBugTests",
@@ -546,6 +551,7 @@
 			"io.github.jcondedata.aliveworkplace.test.PathfinderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MerchantPrinceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmLegendsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRealmLegendsBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GrandChefGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BardLaureateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BeastmasterGameTests",
@@ -604,6 +610,7 @@
 			"io.github.jcondedata.aliveworkplace.test.StewardSafetyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardSafetyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneLedgerBugTests",
+			"io.github.jcondedata.aliveworkplace.test.PathLedgerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesBugTests",
@@ -748,7 +755,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaItemComponentsSaveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcCommandBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsBugTests"
 		]
 	},
 	"depends": {

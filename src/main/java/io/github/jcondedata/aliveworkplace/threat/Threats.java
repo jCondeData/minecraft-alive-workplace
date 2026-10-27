@@ -29,6 +29,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.ItemStack;
@@ -391,6 +394,29 @@ public final class Threats implements ResourceManagerReloadListener {
 			made.discard();
 		}
 		return null;
+	}
+
+	/**
+	 * The id of vanilla's leader-zombie bonus: {@code finalizeSpawn} makes a zombie (a drowned, a husk) a "leader" now and
+	 * then where the local difficulty is high, multiplying its max health by 2 to 5.
+	 */
+	static final ResourceLocation LEADER_ZOMBIE_BONUS = ResourceLocation.withDefaultNamespace("leader_zombie_bonus");
+
+	/**
+	 * Gives a captain (already through {@code finalizeSpawn}) {@code extra} health over his mob's own, as his file says,
+	 * under the modifier {@code id}, and heals him to it. Vanilla's leader-zombie bonus goes first (B579): on a hard,
+	 * long-played spot it made a drowned captain's +40 come out as 178 instead of 60.
+	 */
+	public static void captainHealth(Mob captain, ResourceLocation id, double extra) {
+		AttributeInstance health = captain.getAttribute(Attributes.MAX_HEALTH);
+		if (health == null) {
+			return;
+		}
+		health.removeModifier(LEADER_ZOMBIE_BONUS);
+		if (extra > 0) {
+			health.addOrReplacePermanentModifier(new AttributeModifier(id, extra, AttributeModifier.Operation.ADD_VALUE));
+		}
+		captain.setHealth(captain.getMaxHealth());
 	}
 
 	/**

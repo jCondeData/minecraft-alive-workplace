@@ -890,6 +890,9 @@ called, a stranger can't call, the stone names the crew and offers the call, the
 lead killed mid-part hands the part to a living member, who leads it, and the crew finishes the folly as drawn.
 `QaWonderCrewBugTests` (B467): a lead who dies or is retrained mid-stage is no longer named on the stone or the hall's
 card; a living member of the crew who took the part over is.
+`QaBuilderFixes1027cGameTests` (B467): `aLeadWhoDiesTwiceIsHandedOnAgainAndSurvivesARestart` (the new lead dies too,
+the last member is named on the stone and the card, and still after the Wonders are read back from their save),
+`aCrewOfOneWhoseBuilderDiesIsLedByTheNextBuilderToCome` (no lead left, then the next builder takes the part and is named).
 Showcase scene `wonder_crew` (group Wonders): ten builders on the folly.
 
 GameTests in `WonderGoodsGameTests` (35.7): the folly's stage II (three lines) waits through one line, two, a line one
@@ -1021,3 +1024,9 @@ their own village's only; the Lighthouse's routes reach 4,096 blocks and not 4,0
 a partner's caravans neither reach further nor go faster, and fares are halved for a post at the village's edge both
 ways but not a block beyond it nor in the partner village; each turns off damaged or with Wonders off and comes back
 repaired, and the Gardens' and Lighthouse's powers come back from a save (one saved damaged loads powerless).
+
+GameTests for `/workplace cancel` on a Wonder waiting for its goods (B462): `WonderCancelGameTests` (3: with goods in,
+a stranger refused and the stone's [Abandon this Wonder] link; with none in; after a save and reload) and QA's
+`QaBuilderFixes1027bGameTests` (3: a stack of 64 candles offered twice comes back as exactly 64 and one plan, and a
+second cancel gives nothing more; an operator who isn't the owner ends it and the goods and plan go to the owner, not
+the operator; a wrong id leaves the Wonder and its handed-in goods alone).

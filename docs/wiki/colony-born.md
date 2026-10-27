@@ -107,5 +107,7 @@ it and the owner hears it in chat. No colony is counted, so no wait before the n
 - `QaCampReachGameTests` (3, B424): `theCampsChestOfSuppliesCanBeOpened` (the game's own ray pick from every spot a
   player fits within 5 blocks), `everyChestAndBarrelInTheColonyCampCanBeOpened`, `theSettlersCampTurnedRoundStillOpens`;
   `QaBuildReachGameTests` walks to both camps' containers too.
+- `QaBuilderFixes1027cGameTests` (2, B424): `theColonyCampTurnedClockwiseStillOpens`,
+  `theColonyCampTurnedCounterClockwiseStillOpens` (every chest and barrel of the Colony camp turned a quarter either way).
 
 Showcase scenes: `colony`

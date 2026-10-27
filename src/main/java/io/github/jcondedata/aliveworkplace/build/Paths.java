@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.build;
 
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
+import io.github.jcondedata.aliveworkplace.city.PlayerBuilt;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.ArrayList;
@@ -30,7 +31,8 @@ import org.jetbrains.annotations.Nullable;
  * Paths: when a builder finishes a building, they lay a dirt path from its door to the heart of the village — the
  * meeting bell or the Village Hall (their bench if there's neither) within {@link #REACH} blocks. The route is found over
  * the ground (steps of at most a block up or down, round water, buildings and trees) and only natural ground on it is
- * turned into path; stone, gravel, sand and roads already there are walked over as they are.
+ * turned into path; stone, gravel, sand and roads already there are walked over as they are. Nothing in a section the
+ * ledger of what players built marks is turned into path (B575): the builder made the path himself, nobody approved it.
  */
 public final class Paths {
 	/** Whether builders lay paths at all ({@code builderPaths} in the config). */
@@ -58,8 +60,9 @@ public final class Paths {
 		}
 		List<BlockPos> route = route(level, start, goal, box);
 		List<BlockPos> path = new ArrayList<>();
+		PlayerBuilt ledger = PlayerBuilt.get(level);
 		for (BlockPos p : route) {
-			if (convertible(level.getBlockState(p.below()))) {
+			if (convertible(level.getBlockState(p.below())) && !ledger.marked(p.below())) {
 				path.add(p.below());
 			}
 			if (path.size() >= MAX_LENGTH) {
@@ -150,6 +153,14 @@ public final class Paths {
 	private static boolean open(ServerLevel level, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
 		return (state.isAir() || state.canBeReplaced() && !state.is(Blocks.WATER) && !state.is(Blocks.LAVA)) && level.getFluidState(pos).isEmpty();
+	}
+
+	/**
+	 * Whether the block at {@code pos} may be turned into path now: natural ground, outside every section of the ledger of
+	 * what players built (B575; the path is the builder's own idea, so it keeps out like the Steward's own lanes do).
+	 */
+	public static boolean mayPave(ServerLevel level, BlockPos pos) {
+		return convertible(level.getBlockState(pos)) && !PlayerBuilt.get(level).marked(pos);
 	}
 
 	/** Ground that turns into dirt path. */

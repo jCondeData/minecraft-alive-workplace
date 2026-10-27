@@ -5312,6 +5312,18 @@ Depends on: nothing open.
   like a repair), a build with nothing changed (no button), save and reload mid-refresh; text in `en_us.json`; wiki
   (builder.md, workplace-looks.md) and the guide; scene `refresh_old_house` (before and after of an old Stone House).
 
+- [ ] **36.22** (owner, 2026-10-27) **Miners dig deeper as they level up.** Owner: "miners only mining 16 blocks deep is
+  annoying, with higher levels you should be able to mine further". Today the Quarry Marker cycles 4, 8, 16, 32, 64 and
+  strip mines for every miner (`mine/QuarryData.DEPTHS`, starting at 16). He chose (2026-10-27, asked by
+  digest-1027-1255): **deeper with levels**: keep 4 to 64 for every miner, and add deeper choices unlocked by the
+  miner's level (e.g. Expert 128, Master down to just above bedrock; pick sensible steps and write them in the Notes).
+  The marker's cycle shows the deeper choices; handing a marker deeper than the miner's level allows tells the player
+  plainly which level is needed (nothing dug past it), and a miner who levels up mid-quarry may take a deeper one.
+  Keep the quarry's safety rules (water and lava, too hard for the pickaxe) and the spiral stair all the way down.
+  Saved quarries keep their depth. Done when: GameTests for a Master digging past 64, a Novice handed a 128 marker
+  (told, nothing past 64), save and reload deep in a quarry, the deep pit's stair reaching the bottom; text in
+  `en_us.json`; wiki (the miner's page) and the guide (miner.md); scene `deep_quarry`.
+
 ## Milestone 37: Furnished homes and modded storage (2.1)
 
 Builds use the pack's furniture mods when they're installed: Handcrafted chairs round a Handcrafted table, Lucky's

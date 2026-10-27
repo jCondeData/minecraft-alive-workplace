@@ -198,6 +198,10 @@ public final class CobblemonTrainers {
 			CobblemonMegas.megaAce(team, t, new Random(trainer.getMostSignificantBits() ^ 0x4D454741L), species -> fitsTheme(species, theme, types));
 			team.forEach(Pokemon::heal);
 		}
+		// the species are already all different (each is taken out of the pool); Item Clause needs its own pass
+		if (CobblemonCupMatches.hasRule(theme, CobblemonCupMatches.ITEM_CLAUSE)) {
+			itemClause(team);
+		}
 		return team;
 	}
 
@@ -242,17 +246,52 @@ public final class CobblemonTrainers {
 			pokemon.getEvs().set(Stats.SPEED, 252);
 			pokemon.getEvs().set(Stats.HP, 4);
 			pokemon.setNature(physical ? com.cobblemon.mod.common.api.pokemon.Natures.ADAMANT : com.cobblemon.mod.common.api.pokemon.Natures.MODEST);
-			List<net.minecraft.world.item.Item> items = physical
-				? List.of(CobblemonItems.LIFE_ORB, CobblemonItems.CHOICE_BAND, CobblemonItems.MUSCLE_BAND, CobblemonItems.LEFTOVERS,
-					CobblemonItems.SITRUS_BERRY, CobblemonItems.FOCUS_SASH, CobblemonItems.EXPERT_BELT, CobblemonItems.CHOICE_SCARF)
-				: List.of(CobblemonItems.LIFE_ORB, CobblemonItems.CHOICE_SPECS, CobblemonItems.WISE_GLASSES, CobblemonItems.LEFTOVERS,
-					CobblemonItems.SITRUS_BERRY, CobblemonItems.FOCUS_SASH, CobblemonItems.EXPERT_BELT, CobblemonItems.ASSAULT_VEST);
+			List<net.minecraft.world.item.Item> items = heldItems(physical);
 			pokemon.swapHeldItem(new net.minecraft.world.item.ItemStack(items.get(random.nextInt(items.size()))), false, false);
 			if (t >= 4) {
 				pickMoves(pokemon, physical, random);
 			}
 		}
 		pokemon.heal();
+	}
+
+	// The held items a trainer picks from for a physical or a special attacker (Expert and Master).
+	static List<net.minecraft.world.item.Item> heldItems(boolean physical) {
+		return physical
+			? List.of(CobblemonItems.LIFE_ORB, CobblemonItems.CHOICE_BAND, CobblemonItems.MUSCLE_BAND, CobblemonItems.LEFTOVERS,
+				CobblemonItems.SITRUS_BERRY, CobblemonItems.FOCUS_SASH, CobblemonItems.EXPERT_BELT, CobblemonItems.CHOICE_SCARF)
+			: List.of(CobblemonItems.LIFE_ORB, CobblemonItems.CHOICE_SPECS, CobblemonItems.WISE_GLASSES, CobblemonItems.LEFTOVERS,
+				CobblemonItems.SITRUS_BERRY, CobblemonItems.FOCUS_SASH, CobblemonItems.EXPERT_BELT, CobblemonItems.ASSAULT_VEST);
+	}
+
+	// Item Clause (B565): no two of the team hold the same item. A later holder of an item already held takes the first
+	// item of its own kind (physical or special) nobody holds yet, or holds nothing when none is left. Mega Stones and
+	// other items keep their first holder.
+	static void itemClause(List<Pokemon> team) {
+		Set<net.minecraft.world.item.Item> held = new java.util.HashSet<>();
+		for (Pokemon pokemon : team) {
+			if (!pokemon.heldItem().isEmpty()) {
+				held.add(pokemon.heldItem().getItem());
+			}
+		}
+		Set<net.minecraft.world.item.Item> seen = new java.util.HashSet<>();
+		for (Pokemon pokemon : team) {
+			if (pokemon.heldItem().isEmpty() || seen.add(pokemon.heldItem().getItem())) {
+				continue;
+			}
+			net.minecraft.world.item.ItemStack instead = net.minecraft.world.item.ItemStack.EMPTY;
+			Map<com.cobblemon.mod.common.api.pokemon.stats.Stat, Integer> base = pokemon.getForm().getBaseStats();
+			boolean physical = base.getOrDefault(Stats.ATTACK, 0) >= base.getOrDefault(Stats.SPECIAL_ATTACK, 0);
+			for (net.minecraft.world.item.Item item : heldItems(physical)) {
+				if (!held.contains(item)) {
+					instead = new net.minecraft.world.item.ItemStack(item);
+					held.add(item);
+					seen.add(item);
+					break;
+				}
+			}
+			pokemon.swapHeldItem(instead, false, false);
+		}
 	}
 
 	// Moves a Master's team never gets: they charge, recharge, knock the user out or only work in odd situations.

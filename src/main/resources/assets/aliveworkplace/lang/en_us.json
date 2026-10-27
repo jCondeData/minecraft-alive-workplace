@@ -5537,6 +5537,8 @@
   "message.aliveworkplace.cup.why_partner": "it has helped a villager at work on %2$s days, and this Cup asks for %1$s",
   "message.aliveworkplace.cup.why_partner.one": "it has helped a villager at work on %2$s day, and this Cup asks for %1$s",
   "message.aliveworkplace.cup.why_count": "only the first %s eligible may come",
+  "message.aliveworkplace.cup.why_species_clause": "Species Clause: one %s is going already",
+  "message.aliveworkplace.cup.why_item_clause": "Item Clause: a Pokémon already going holds %s",
   "message.aliveworkplace.cup.no_team": "None of your Pokémon may fight in this Cup, so you lose the bout.",
   "message.aliveworkplace.cup.going": "Your team: %s. Everyone fights healed, at the Cup's level, and nobody gains experience or keeps damage.",
   "message.aliveworkplace.cup.cant_start": "The bout couldn't start (are you already in a battle?). Click [I'm ready] again.",

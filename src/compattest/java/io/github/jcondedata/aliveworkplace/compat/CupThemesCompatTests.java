@@ -275,6 +275,40 @@ public class CupThemesCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * The Grand Cup's Species and Item Clause on a player's party (B565): a second Gastly and a second Leftovers holder
+	 * stay home, each with the clause's reason; a third Pokémon holding another item goes; a Master's team never holds
+	 * one item twice.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"cupThemesCompat"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "cupThemesCompat")
+	public void theGrandCupsClausesKeepASecondHome(GameTestHelper helper) {
+		CupThemes.Theme t = theme(helper, "grand_cup", "Grand Cup");
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
+		String[][] specs = {{"gastly", "leftovers"}, {"machop", "leftovers"}, {"gastly", ""}, {"tauros", "choice_scarf"}};
+		for (String[] spec : specs) {
+			Pokemon p = PokemonProperties.Companion.parse(spec[0] + " level=40", " ", "=").create();
+			if (!spec[1].isEmpty()) {
+				p.swapHeldItem(new net.minecraft.world.item.ItemStack(BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemon", spec[1]))), false, false);
+			}
+			party.add(p);
+		}
+		List<Component> leftOut = new ArrayList<>();
+		List<String> going = CobblemonCupMatches.eligible(party, t, leftOut).stream().map(p -> p.getSpecies().getName()).toList();
+		List<String> why = leftOut.stream().map(Component::getString).toList();
+		helper.getLevel().getServer().getPlayerList().remove(player);
+		helper.assertTrue(going.equals(List.of("Gastly", "Tauros")), "going " + going);
+		helper.assertTrue(why.equals(List.of("Machop: Item Clause: a Pokémon already going holds Leftovers", "Gastly: Species Clause: one Gastly is going already")), "left out " + why);
+		for (int i = 0; i < 40; i++) {
+			List<Pokemon> team = CobblemonTrainers.team(UUID.nameUUIDFromBytes(("clause" + i).getBytes()), 5, t);
+			List<net.minecraft.world.item.Item> items = team.stream().filter(p -> !p.heldItem().isEmpty()).map(p -> p.heldItem().getItem()).toList();
+			helper.assertTrue(team.size() == 6 && items.size() == Set.copyOf(items).size(), "a Master's Grand Cup team holds " + items);
+		}
+		helper.succeed();
+	}
+
+	/**
 	 * The Workers' Cup's counter: a pastured partner helping a builder at work gets one day; a second look the same day
 	 * (the same worker, or another) adds nothing; the next day adds one; a worker not at work counts nothing; the
 	 * counter is in the Pokémon's own saved data.

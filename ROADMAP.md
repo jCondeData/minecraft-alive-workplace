@@ -4297,7 +4297,7 @@ into elders who retire and teach, and every family has a tree. It builds on `peo
 switches on for every village of the owner's live server at once, so it ends with a careful migration and a rehearsal
 on a real world.
 
-- [x] **34.1** (approved 2026-10-06) **Design note.** `docs/design/M34.md`: what the player sees (the class ladder, a household rising at
+- [x] **34.1** (approved 2026-10-06) (verified 2026-10-27: Read: docs/design/M34.md present; docs/owner/rehearsal-1.8.md reports per village jobs kept, takings, ranks and containers equal, seeding tick p95 42.7 ms, log audit clean of our errors; docs/owner/updating-to-1.8.md present. The rehearsal seeded every villager Peasant [no village met an Artisan's needs], so it didn't exercise higher classes) **Design note.** `docs/design/M34.md`: what the player sees (the class ladder, a household rising at
   dawn, the four luxury trades and their goods, villagers dressed by class, grander homes, elders, family trees, and
   the first week after the update); the data formats with one example file each (`classes/`, `services/`,
   `luxuries/`, `luxury_recipes/`, `homes/` under `data/aliveworkplace/`); every config switch; every new saved field
@@ -4620,7 +4620,7 @@ on a real world.
   Scholar in a plain house, a married couple, a child, a builder mid-build, a rancher with daycare boarders, a hall
   of City rank), prove each bullet, including a save and reload part-way through seeding and a second round that
   changes nothing; scene `class_switch_on` (the hall's pages before and after) passes.
-- [x] **34.23** (approved auto 2026-10-11) **A rehearsal on a real world.** With `tools/packtest` on the Cobbleverse pack: a world made with the
+- [x] **34.23** (approved auto 2026-10-11) (verified 2026-10-27: Read: docs/design/M34.md present; docs/owner/rehearsal-1.8.md reports per village jobs kept, takings, ranks and containers equal, seeding tick p95 42.7 ms, log audit clean of our errors; docs/owner/updating-to-1.8.md present. The rehearsal seeded every villager Peasant [no village met an Artisan's needs], so it didn't exercise higher classes) **A rehearsal on a real world.** With `tools/packtest` on the Cobbleverse pack: a world made with the
   last release before 1.8, with three villages with halls (a Hamlet of 6; a Town of 22 with research and couples; a
   City of 36 with every class-gated job, children, a build in progress, daycare boarders, fossils reviving, mail on
   the way), saved, then opened with the 1.8 jar and run for 2 in-game days. Done when: the log audit is clean; the

@@ -580,10 +580,11 @@ def clinic(b, P):
         def pav(t):
             gable_roof(t, 0, 8, 1, 9, 5, P.roof, axis="z", gable=P.wall, gable_at=(2, 8), eave_trim=P.wood, closed=True)
         roofs(b, ward, pav)
-    # the cross window over the door: a stone mullion and transom
-    for y in (5, 6, 7):
+    # the cross window over the door, in the gable: a stone mullion and transom (none under a flat roof, B648: there
+    # it stood over the parapet, its top panes ending in the air)
+    for y in (5, 6, 7) if not P.flat else ():
         b.set(4, y, 2, P.sfam.full)
-    for x in (3, 5):
+    for x in (3, 5) if not P.flat else ():
         b.set(x, 6, 2, P.sfam.full)
         pane(b, x, 5, 2)
         pane(b, x, 7, 2)
@@ -1195,6 +1196,10 @@ def mortuary(b, P):
     for z in (3, 6, 9):
         wall_block(b, 10, 1, z, P.sfam.wall or P.parapet)
         b.set(10, 2, z, "candle", candles=1, lit=False, waterlogged=False)
+    for x, z in ((9, 1), (10, 10)):  # the railing ends at a post on the ground, not in the air (B648)
+        if b.get(x, 0, z) is None:
+            b.set(x, 0, z, P.soil, **({"snowy": False} if P.soil in ("grass_block", "podzol") else {}))
+        wall_block(b, x, 1, z, P.sfam.wall or P.parapet)
     b.set(9, 1, 5, "potted_lily_of_the_valley")
 
 
@@ -1452,6 +1457,7 @@ def print_shop(b, P):
     # the lamp on its arm
     b.set(6, 5, 1, "iron_bars", north=False, south=False, east=False, west=False, waterlogged=False)
     b.set(6, 5, 0, "iron_bars", north=False, south=False, east=False, west=False, waterlogged=False)
+    b.open_panes = {**getattr(b, "open_panes", {}), (6, 5, 0): "the lamp's arm ends over the lantern it holds"}
     lantern(b, 6, 4, 0, hanging=True)
     tie(b, P, 5)
     tie(b, P, 9, lamps=())

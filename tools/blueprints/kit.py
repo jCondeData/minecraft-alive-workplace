@@ -86,6 +86,7 @@ class Build:
         b.nbt = dict(getattr(self, "nbt", {}))
         b.cellars = list(self.cellars)
         b.spots = [dict(s) for s in getattr(self, "spots", [])]
+        b.open_panes = dict(getattr(self, "open_panes", {}))  # B648: pane ends left free on purpose, with their reason
         return b
 
     def clear(self, x0, y0, z0, x1, y1, z1):
@@ -594,6 +595,14 @@ def seal_slots(b):
         slots = scan((b.w, b.h, b.d), cells, only_slots=True)
         if not slots:
             return
+        filling = {(x, z): (down, up) for (x, _, z), _, down, up in slots if (x, z) not in keep_open}
+
+        def walled(x, yy, z):
+            """Whether (x, yy, z) holds a block, or will once this pass fills its slot."""
+            if b.blocks.get((x, yy, z), ("minecraft:air",))[0] not in ("minecraft:air", "minecraft:cave_air"):
+                return True
+            span = filling.get((x, z))
+            return span is not None and span[0] < yy < span[1]
         for (x, y, z), (dx, dz), down, up in slots:
             if (x, z) in keep_open:
                 continue
@@ -610,7 +619,12 @@ def seal_slots(b):
             # order depends on PYTHONHASHSEED, so ties once came out differently run to run, e.g. ranch_2's gable)
             fallback = max(dict.fromkeys(plain or usable), key=(plain or usable).count)
             for yy, w in zip(column, wall):
-                b.blocks[(x, yy, z)] = w if w in usable else fallback
+                # A window's glass is carried out only between blocks: a pane or bars with air beside it in the slot
+                # joins the window behind it and nothing else, a thin strip ending in the air (B648), so the wall's
+                # plain block closes the slot there instead
+                loose = w is not None and any(t in w[0] for t in ("pane", "_bars")) \
+                    and not (walled(x + dz, yy, z + dx) and walled(x - dz, yy, z - dx))
+                b.blocks[(x, yy, z)] = w if w in usable and not loose else fallback
 
 
 def full_of(block_id):

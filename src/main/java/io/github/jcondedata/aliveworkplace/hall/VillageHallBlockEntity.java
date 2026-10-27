@@ -71,6 +71,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private long lastDisasterDay = -100;
 	/** The day of the village's next (or last) festival, when it last feasted, when a player last called one. */
 	private long festivalDay = -1;
+	/** A later festival that was already planned when an earlier one was brought in before it (a Wonder's, 35.8); -1: none. */
+	private long festivalAfter = -1;
 	private long feastDay = -1;
 	private long festivalCalled = -100;
 	/** Whether the next festival is a Noble's Ball (34.7: every other one in a village with a Noble), and the day of the last ball (-100: none). */
@@ -521,6 +523,16 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 
 	public void setFestivalDay(long day) {
 		festivalDay = day;
+		setChanged();
+	}
+
+	/** The later festival still to come after the next one (see {@link Festivals#before}); -1: none. */
+	public long festivalAfter() {
+		return festivalAfter;
+	}
+
+	public void setFestivalAfter(long day) {
+		festivalAfter = day;
 		setChanged();
 	}
 
@@ -985,6 +997,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		disasterEnds = disaster != null && tag.contains("disasterEnds") ? Nbt.getLong(tag, "disasterEnds") : -1;
 		lastDisasterDay = tag.contains("lastDisasterDay") ? Nbt.getLong(tag, "lastDisasterDay") : -100;
 		festivalDay = tag.contains("festivalDay") ? Nbt.getLong(tag, "festivalDay") : -1;
+		festivalAfter = tag.contains("festivalAfter") ? Nbt.getLong(tag, "festivalAfter") : -1;
 		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
 		ballTurn = tag.contains("ballTurn") && Nbt.getBoolean(tag, "ballTurn");
@@ -1123,6 +1136,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			tag.putLong("lastDisasterDay", lastDisasterDay);
 		}
 		tag.putLong("festivalDay", festivalDay);
+		tag.putLong("festivalAfter", festivalAfter);
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);
 		tag.putBoolean("ballTurn", ballTurn);

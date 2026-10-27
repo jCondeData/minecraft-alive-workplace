@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A finished Wonder gets its festival that evening even when another festival was already planned for a later day; the later one still comes after it (B605)
+- The Sickness: when only one or two far herbs grow within reach, the healer's chat, the chronicle and the thanks say one or two, not three (B617)
+- The Sickness: if Doctor Wren is killed while the tonic brews, another healer is sent for and the cure still goes round, instead of the village coughing to the end (B618)
 - Smoother English in more lines: 'an' before a vowel sound in the rank-up messages, the Ball Smith's locked balls, the People table's give-up tip, the road chronicle and before numbers like 8, 11, 18 and 80 ('an 8 × 8 strip mine', 'an 80% chance'); 'by a builder' on the Repairs page; 'another village' and 'someone' mid-sentence and 'A villager' at a line's start in the chronicle; '1 child', '1 tree felled', '1 villager sparred'; a road with no style is just 'a road', a raid won without helpers no longer reads 'trainers's band', and a Founder's Wagon from nowhere names its new village with a real village name instead of 'New the wilds' (B606, B607, B608, B611, B612, B613).
 - The Steward keeps off more of what players built: a stripped log, stripped wood or oak wood a player puts in a running site's way now stays and its step is skipped, like any other player's block (B601); a Keep Clear cell inside a planned building now refuses it at every hall radius, also below 64 where cells are under 4 blocks (B602); and a bed or door placed across a 16-block section edge marks both halves' sections as player-built (B603).
 - The Builder keeps up every build he was allowed to place: a build at the far edge of his reach, whose corner lay past it, is now repaired and refreshed like the rest; placing, upkeep, refreshes and repair questions all measure from the build's middle (B615).

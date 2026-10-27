@@ -357,9 +357,19 @@ public final class SicknessStory {
 		return found instanceof Villager v && v.isAlive() ? v : null;
 	}
 
-	/** Whether Doctor Wren is the healer (or coming). */
+	/**
+	 * A villager died: when it's Doctor Wren (B618), his part in the arc is over (as for any arc mob that dies, so he isn't
+	 * silently put back at the hall); the story's next round sends for someone to take the healer's part.
+	 */
+	public static void onDeath(ServerLevel level, Villager villager) {
+		if (villager.getTags().contains(Arcs.MOB_TAG) && villager.getTags().contains(ArcEffects.roleTag(HEALER))) {
+			Arcs.onDeath(level, villager);
+		}
+	}
+
+	/** Whether Doctor Wren is the healer (or coming); a Wren who was killed isn't (B618: another is sent for). */
 	static boolean wren(ArcState s) {
-		return s.mobs.stream().anyMatch(m -> m.key.equals(WREN)) || stamp(s, WREN_DUE) >= 0;
+		return s.mobs.stream().anyMatch(m -> m.key.equals(WREN) && !m.dead) || stamp(s, WREN_DUE) >= 0;
 	}
 
 	/**
@@ -537,12 +547,20 @@ public final class SicknessStory {
 			return;
 		}
 		Component names = list(herbs.stream().map(h -> (Component) h.getName()).toList());
-		tell(level, hall, "herbs", ChatFormatting.YELLOW, who, names, EACH);
-		chronicle(level, hall, "herbs", who, names);
+		tell(level, hall, "herbs" + howMany(herbs.size()), ChatFormatting.YELLOW, who, names, EACH); // B617: the words say how many
+		chronicle(level, hall, "herbs" + howMany(herbs.size()), who, names);
 		for (ServerPlayer player : ArcEffects.audience(level, hall)) {
 			giveMaps(level, s, player);
 		}
 		Stories.Data.get(level).setDirty();
+	}
+
+	/**
+	 * The key suffix for a sentence that says how many far herbs were named (B617): none for three, {@code .two} or
+	 * {@code .one} when fewer biomes were within reach.
+	 */
+	static String howMany(int herbs) {
+		return herbs == 1 ? ".one" : herbs == 2 ? ".two" : "";
 	}
 
 	static Component roleName(ArcState s) {
@@ -660,7 +678,7 @@ public final class SicknessStory {
 			says(player, healer, "thanks_more", list(took), EACH, list(wanted));
 			return;
 		}
-		says(player, healer, "thanks_all");
+		says(player, healer, "thanks_all" + howMany(herbs(s).size()));
 		s.flags.put(HERBS_GIVEN, ArcState.FOREVER);
 		Arcs.advance(level, r.hall(), r.entry(), s); // the brew begins
 	}

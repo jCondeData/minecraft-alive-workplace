@@ -486,6 +486,9 @@ tested (the GameTests use the table as the server does).
   B506): a trip saved on the farmer and loaded again (a restart) keeps its machine, file, stage and load, and when the
   millstone is then broken reads "the Millstone is gone: bringing the load back to the store" and returns all 8 wheat;
   a Mechanic says "the Millstone is gone".
+  QA's `QaBuilderFixes1027CompatTests` (1, B486): a two-block-tall tank
+  holding two buckets of Create's honey and a spout holding a bucket of water, scanned and built turned a quarter and
+  mirrored from exactly the material list, go up whole and empty.
   `QaCreateStoresHeldCompatTests` (lane E's QA): the same for a millstone (holding wheat), a chute, an item vault, a
   mechanical crafter and a toolbox.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)

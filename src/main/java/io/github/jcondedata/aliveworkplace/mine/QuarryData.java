@@ -20,9 +20,24 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  */
 public record QuarryData(Optional<ResourceLocation> dimension, Optional<BlockPos> first, Optional<BlockPos> second, int depth,
 						 Optional<Integer> stripLevel) {
-	/** The last choice, 2, is a strip mine: 2-high tunnels with 2 blocks of rock between them (see {@link #isStripMine}). */
-	public static final List<Integer> DEPTHS = List.of(4, 8, 16, 32, 64, 2);
+	/**
+	 * Down to just above bedrock (the world's floor plus 5, {@link #area(int)}): the deepest choice, for Master miners
+	 * only (36.22). Saved on the marker as its depth.
+	 */
+	public static final int BEDROCK = -1;
+	/**
+	 * The marker's choices, in order. 4 to 64 are for every miner; 96, 128 and {@link #BEDROCK} need a Journeyman, an
+	 * Expert and a Master ({@link #levelFor}, 36.22). The last, 2, is a strip mine: 2-high tunnels with 2 blocks of
+	 * rock between them (see {@link #isStripMine}).
+	 */
+	public static final List<Integer> DEPTHS = List.of(4, 8, 16, 32, 64, 96, 128, BEDROCK, 2);
 	public static final int STRIP_MINE = 2;
+	/** How deep every miner digs, Novice up; and the deeper steps, by villager level (Journeyman 96, Expert 128, Master to bedrock). */
+	public static final int ANY_LEVEL_DEPTH = 64;
+	public static final int JOURNEYMAN_DEPTH = 96;
+	public static final int EXPERT_DEPTH = 128;
+	/** The floor a {@link #BEDROCK} marker shows in its tooltip before it is handed over: the Overworld's (-64 + 5). */
+	public static final int OVERWORLD_FLOOR = -59;
 	/** Heights a strip mine can be dug at down a ladder shaft (the tunnels' floor): iron, redstone/gold/lapis, diamonds. */
 	public static final List<Integer> STRIP_LEVELS = List.of(16, -16, -53);
 	public static final int DEFAULT_DEPTH = 16;
@@ -52,6 +67,33 @@ public record QuarryData(Optional<ResourceLocation> dimension, Optional<BlockPos
 		return depth == STRIP_MINE;
 	}
 
+	/** Down to just above bedrock (36.22): as deep as the world goes, for Master miners. */
+	public boolean toBedrock() {
+		return depth == BEDROCK;
+	}
+
+	/**
+	 * The villager level a miner needs to dig a pit {@code depth} blocks deep (or {@link #BEDROCK}): 1 (Novice) up to
+	 * 64 and for strip mines, 3 (Journeyman) up to 96, 4 (Expert) up to 128, 5 (Master) deeper (36.22).
+	 */
+	public static int levelFor(int depth) {
+		if (depth == BEDROCK || depth > EXPERT_DEPTH) {
+			return 5;
+		}
+		return depth > JOURNEYMAN_DEPTH ? 4 : depth > ANY_LEVEL_DEPTH ? 3 : 1;
+	}
+
+	/** How many blocks deep a miner at villager level {@code level} digs (a Master: all the way, {@link Integer#MAX_VALUE}). */
+	public static int maxDepth(int level) {
+		return level >= 5 ? Integer.MAX_VALUE : level == 4 ? EXPERT_DEPTH : level == 3 ? JOURNEYMAN_DEPTH : ANY_LEVEL_DEPTH;
+	}
+
+	/** The lowest layer a miner at villager level {@code level} digs in a pit whose top layer is at {@code top}. */
+	public static int lowestFor(int level, int top) {
+		int max = maxDepth(level);
+		return max == Integer.MAX_VALUE ? Integer.MIN_VALUE : top - max + 1;
+	}
+
 	public boolean isComplete() {
 		return dimension.isPresent() && first.isPresent() && second.isPresent();
 	}
@@ -71,7 +113,8 @@ public record QuarryData(Optional<ResourceLocation> dimension, Optional<BlockPos
 		int top = Math.max(a.getY(), b.getY());
 		OptionalInt shaft = shaftTop(floor);
 		int maxY = shaft.isPresent() ? tunnelFloor(floor) + 1 : top;
-		return Optional.of(new BoundingBox(Math.min(a.getX(), b.getX()), maxY - depth + 1, Math.min(a.getZ(), b.getZ()),
+		int minY = toBedrock() ? Math.min(maxY, floor == Integer.MIN_VALUE ? OVERWORLD_FLOOR : floor) : maxY - depth + 1;
+		return Optional.of(new BoundingBox(Math.min(a.getX(), b.getX()), minY, Math.min(a.getZ(), b.getZ()),
 			Math.max(a.getX(), b.getX()), maxY, Math.max(a.getZ(), b.getZ())));
 	}
 

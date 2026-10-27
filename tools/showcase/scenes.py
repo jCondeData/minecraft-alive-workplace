@@ -132,6 +132,9 @@ SCENES = [
     job("far_site", "Miner", "A quarry far outside the village",
         "the miner took a quarry marked 110 blocks out, far outside the village, walked out to it and dug it", 240,
         extra=[("04_far_site_arrived", "Arrived at the far quarry")]),
+    # Miners dig deeper as they level up (ROADMAP 36.22): a Master's quarry down to bedrock, 96 deep, filmed through a window at the bottom
+    job("deep_quarry", "Miner", "A Master digs down to bedrock",
+        "a Master miner took a quarry down to bedrock, 96 blocks deep, and dug its bottom layers far past the 64 every miner digs, keeping the spiral stair", 240),
     # Lumberjack
     S("forest", "Lumberjack", "Felling and replanting four trees", "the lumberjack felled all four trees", 240,
       [("frame_*@first", "Start"), ("frame_*@middle", "Felling"), ("50_forest_done", "Felled and replanted")]),

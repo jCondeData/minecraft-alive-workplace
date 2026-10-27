@@ -147,4 +147,60 @@ public class BuiltEmptyGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		helper.assertTrue(out.contains("looks"), "plain data was dropped with it: " + out);
 		helper.succeed();
 	}
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void aFluidHeldInBlockDataIsNotCopied(GameTestHelper helper) {
+		// B486: Create's tank as it saves 1000 mB of lava ({TankContent: {Fluid: {id, amount}}}), a Forge-style and a
+		// Fabric-style tank, and a list of tanks (Create's spout and basin): every fluid goes, the tank's own setup stays
+		BlockPos pos = new BlockPos(0, 1, 0);
+		helper.setBlock(pos, Blocks.OAK_SIGN);
+		CompoundTag nbt = new CompoundTag();
+		nbt.put("TankContent", tankOf(fluid("id", "minecraft:lava")));
+		nbt.putInt("Size", 2);
+		nbt.putInt("Height", 3);
+		nbt.putInt("Luminosity", 15);
+		CompoundTag forge = new CompoundTag();
+		forge.putString("FluidName", "minecraft:water");
+		forge.putInt("Amount", 1000);
+		nbt.put("forge", forge);
+		CompoundTag fabric = new CompoundTag();
+		fabric.put("variant", fluid("fluid", "minecraft:flowing_lava"));
+		fabric.putLong("amount", 81000);
+		fabric.putLong("capacity", 81000);
+		nbt.put("fabric", fabric);
+		ListTag tanks = new ListTag();
+		CompoundTag segment = new CompoundTag();
+		segment.put("TankContent", tankOf(fluid("id", "minecraft:lava")));
+		segment.putFloat("Level", 1);
+		tanks.add(segment);
+		nbt.put("Tanks", tanks);
+		CompoundTag empty = fluid("id", "minecraft:empty");
+		nbt.put("emptyTank", empty);
+		CompoundTag out = BlockEntityData.sanitize(helper.getLevel(), helper.absolutePos(pos), helper.getBlockState(pos), helper.getBlockEntity(pos), nbt);
+		helper.assertTrue(out != null, "the tank's data was dropped whole");
+		helper.assertTrue(out.getCompound("TankContent").isEmpty(), "Create's tank keeps its lava: " + out);
+		helper.assertTrue(out.getInt("Size") == 2 && out.getInt("Height") == 3, "the tank's size was lost: " + out);
+		helper.assertTrue(!out.contains("Luminosity"), "the emptied tank still glows: " + out);
+		helper.assertTrue(!out.contains("forge"), "a Forge-style fluid stack is copied: " + out);
+		helper.assertTrue(!out.getCompound("fabric").contains("variant") && !out.getCompound("fabric").contains("amount")
+			&& out.getCompound("fabric").getLong("capacity") == 81000, "a Fabric-style tank isn't built empty with its capacity: " + out);
+		helper.assertTrue(out.getList("Tanks", 10).size() == 1 && out.getList("Tanks", 10).getCompound(0).getCompound("TankContent").isEmpty()
+			&& out.getList("Tanks", 10).getCompound(0).contains("Level"), "a list of tanks isn't emptied in place: " + out);
+		helper.assertTrue(out.contains("emptyTank"), "an empty fluid stack was taken for a fluid: " + out);
+		helper.succeed();
+	}
+
+	private static CompoundTag fluid(String key, String id) {
+		CompoundTag fluid = new CompoundTag();
+		fluid.putString(key, id);
+		fluid.putLong("amount", 81000);
+		return fluid;
+	}
+
+	/** Create's {@code TankContent}: {@code {Fluid: {...}}}. */
+	private static CompoundTag tankOf(CompoundTag fluid) {
+		CompoundTag content = new CompoundTag();
+		content.put("Fluid", fluid);
+		return content;
+	}
 }

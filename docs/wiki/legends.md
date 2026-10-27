@@ -201,7 +201,8 @@ From the design note `docs/design/M29.md`, section 7 (the owner may change any):
 
 - Legends never leave, even on strike, so a Legendary one stays in the first village that earned them.
 - The found way needs a player to walk into the right kind of structure; nothing is searched while nobody is online.
-- The Pokémon Professor and Ranger don't exist without Cobblemon; Alphas need Cobblemon 1.8.
+- The Pokémon Professor and Ranger don't exist without Cobblemon. Alpha-marked Pokémon need Cobblemon 1.8, but with any
+  version a wild Pokémon of level 50 or more counts as an Alpha (49 doesn't), so the Ranger comes with the pack's 1.7.3.
 - The Pathfinder's file asked for a Cartographer of level 3 (Journeyman) until B96; it now asks for an Expert
   (level 4), as roadmap 29.13 says. A Pathfinder who has already come stays.
 
@@ -237,6 +238,10 @@ and walks back to it, a Nether route is refused and a blank map takes the post, 
 from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
 `PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
+`QaPokemonLegendsCompatTests` (10, QA, 29.21 and 29.22: the census at 24 and 25 Pokémon and at 9 and 10 types, a released
+species kept in the Pokédex once, the IV words at every boundary, natures and hidden abilities as read, the hints by a
+real right-click, the Alpha stand-in at level 49 and 50, the 96- and 64-block reaches from both sides, every banned
+kind refused, no befriending into a full pasture, one Alpha calmed of two),
 `RealmLegendsGameTests` (5, 33.23); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
 `QaLegendSitesGameTests` (9, 29.9): the 5-second check on the real tick, the 1500-block reach from both sides, the
 nearest hall, friends one way only, 29.3's slots and conditions at a site, a slot filled before the morning, only a

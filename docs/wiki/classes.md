@@ -79,7 +79,8 @@ nothing is inherited from the class below.
 **The dawn check.** Each dawn the hall checks its households 8 at a time. When the next class's needs held
 `classRiseDays` dawns running (2) the household rises one class; when a need of its own class failed
 `classFallDays` dawns running (3) it falls one, never below Peasant. One step a day at most. For a couple a need
-holds only when it holds for both.
+holds only when it holds for both. The dawn counts only villagers inside the village's circle (the hall's radius, as
+the census counts them), not one standing in the corners of the square round it (B549).
 
 **Needs.** A home's grade comes from the building their bed is in. "Fed" counts dawns fed running. Diet goes by
 their last meals. Services (chapel, school, clinic, library, market, tavern) are data too

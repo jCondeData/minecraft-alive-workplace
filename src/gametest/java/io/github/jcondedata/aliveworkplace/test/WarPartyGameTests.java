@@ -348,4 +348,55 @@ public class WarPartyGameTests implements FabricGameTest {
 		helper.assertFalse(campBroken(player), "camp_broken granted with no war party");
 		helper.succeed();
 	}
+
+	/**
+	 * 36.3 QA (lane D, 2026-10-26): a guard of the war party strikes the captain down, not a player: the player leading
+	 * that guard is in the war party and still completes "Take the fight to them"; a player standing by the lair who
+	 * leads no one, and isn't the striker, gets nothing.
+	 */
+	//$ gametest_batch AREA '"qaWarPartyGuardBlow"'
+	@GameTest(template = AREA, batch = "qaWarPartyGuardBlow")
+	public void aGuardsLastBlowCompletesItForThePartyButNotForABystander(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		Expansions.openForTests = true;
+		ServerLevel level = helper.getLevel();
+		Lairs.Lair lair = lair(helper, hall);
+		Villager first = guard(helper, new BlockPos(11, 2, 12));
+		ServerPlayer leader = leading(helper, new BlockPos(11, 2, 11), first);
+		ServerPlayer bystander = player(helper);
+		bystander.moveTo(helper.absolutePos(new BlockPos(14, 2, 11)).getCenter());
+		Escorts.scan(level.getServer());
+		helper.assertTrue(Escorts.isEscorting(first), "the war party isn't marching");
+		Mob captain = (Mob) level.getEntity(lair.captain());
+		captain.hurt(level.damageSources().mobAttack(first), 1000f);
+		helper.assertTrue(Lairs.near(level, hall).isEmpty(), "the lair stands after the guard's blow");
+		helper.assertTrue(campBroken(leader), "the player leading the guard who struck the last blow didn't get camp_broken");
+		helper.assertFalse(campBroken(bystander), "a bystander by the lair, in no war party, got camp_broken");
+		helper.succeed();
+	}
+
+	/**
+	 * 36.3 QA: the player who strikes the last blow gets it, with the war party there, even when he leads none of its
+	 * guards himself (another player raised the banner).
+	 */
+	//$ gametest_batch AREA '"qaWarPartyHelperBlow"'
+	@GameTest(template = AREA, batch = "qaWarPartyHelperBlow")
+	public void aPlayerStrikingTheLastBlowBesideAnotherPlayersWarPartyGetsIt(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		Expansions.openForTests = true;
+		ServerLevel level = helper.getLevel();
+		Lairs.Lair lair = lair(helper, hall);
+		Villager first = guard(helper, new BlockPos(11, 2, 12));
+		ServerPlayer leader = leading(helper, new BlockPos(11, 2, 11), first);
+		ServerPlayer striker = player(helper);
+		striker.moveTo(helper.absolutePos(new BlockPos(12, 2, 12)).getCenter());
+		Escorts.scan(level.getServer());
+		helper.assertTrue(Escorts.isEscorting(first), "the war party isn't marching");
+		Mob captain = (Mob) level.getEntity(lair.captain());
+		captain.hurt(level.damageSources().playerAttack(striker), 1000f);
+		helper.assertTrue(Lairs.near(level, hall).isEmpty(), "the lair stands");
+		helper.assertTrue(campBroken(striker), "the player who struck the last blow didn't get camp_broken");
+		helper.assertTrue(campBroken(leader), "the player leading the war party didn't get camp_broken");
+		helper.succeed();
+	}
 }

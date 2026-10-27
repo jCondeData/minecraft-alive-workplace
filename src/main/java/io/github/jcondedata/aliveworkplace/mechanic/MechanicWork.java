@@ -115,6 +115,8 @@ public class MechanicWork extends Behavior<Villager> {
 		BlockPos store;
 		@Nullable
 		BlockPos machine;
+		@Nullable
+		Component machineName;
 		long nextLook;
 		long nextMachine;
 		long busyUntil;
@@ -438,6 +440,7 @@ public class MechanicWork extends Behavior<Villager> {
 			MechanicRound round = round(level, villager, post);
 			if (round.current() != null) {
 				state.machine = round.current();
+				state.machineName = level.getBlockState(round.current()).getBlock().getName();
 				state.task = Task.MACHINE;
 				return true;
 			}
@@ -528,7 +531,13 @@ public class MechanicWork extends Behavior<Villager> {
 		if (machine == null) {
 			return;
 		}
-		Component name = level.getBlockState(machine).getBlock().getName();
+		// the name it had when the round picked it: the spot may hold something else by now (B506: "seeing to the Air")
+		Component name = state.machineName != null ? state.machineName : level.getBlockState(machine).getBlock().getName();
+		if (level.isLoaded(machine) && !Kinetics.isMachine(level.getBlockState(machine))) {
+			status(villager, Component.translatable("message.aliveworkplace.mechanic.state.gone", name));
+			giveUp(state, gameTime); // the round finds the machines again next time, without this one
+			return;
+		}
 		status(villager, Component.translatable("message.aliveworkplace.mechanic.state.machine", name));
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(machine));
 		if (state.walker.reach(level, villager, machine, 3.0) || state.walker.noSpot()) {

@@ -84,6 +84,9 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicFilesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateItemsHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateStoresHeldCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelCounterCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelMailboxCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaTomsPrivateBoxesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainSiteRaceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainSiteHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPastureCopyCompatTests",
@@ -145,7 +148,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaStoreSupplyCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCobblemonThreatsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCuisineCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaMegaShrineGapsCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaMegaShrineGapsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMachineGoneCompatTests"
 		]
 	},
 	"depends": {

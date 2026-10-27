@@ -336,7 +336,15 @@ public final class VillageHalls {
 
 	/** The living villagers in the village round {@code hall} ({@link #contains}). */
 	public static List<Villager> villagers(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(Villager.class, area(hall), v -> v.isAlive() && contains(hall, v.blockPosition()));
+		return villagers(level, hall, v -> true);
+	}
+
+	/**
+	 * The living villagers in the village round {@code hall} ({@link #contains}) that pass {@code filter}. The village is
+	 * the circle, not the square {@link #area} round it (B548, B549: a villager in the square's corner is in no village).
+	 */
+	public static List<Villager> villagers(ServerLevel level, BlockPos hall, java.util.function.Predicate<Villager> filter) {
+		return level.getEntitiesOfClass(Villager.class, area(hall), v -> v.isAlive() && contains(hall, v.blockPosition()) && filter.test(v));
 	}
 
 	/** The beds (home points of interest, taken or not) in the village round {@code hall} ({@link #contains}). */

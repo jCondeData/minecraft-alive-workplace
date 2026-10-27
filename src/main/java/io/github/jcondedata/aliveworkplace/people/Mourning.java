@@ -130,8 +130,8 @@ public final class Mourning {
 			Chat.chat(p, told);
 		}
 		Component name = villager.getDisplayName().copy();
-		for (Villager other : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall.get()),
-			v -> v != villager && v.isAlive() && Couples.related(villager, v))) {
+		for (Villager other : VillageHalls.villagers(level, hall.get(),
+			v -> v != villager && Couples.related(villager, v))) {
 			ModAttachments.GRIEF.set(other, new Grief(day, name));
 			Moods.forget(other);
 		}

@@ -206,6 +206,19 @@ From the design note `docs/design/M29.md`, section 7 (the owner may change any):
 - The Pathfinder's file asked for a Cartographer of level 3 (Journeyman) until B96; it now asks for an Expert
   (level 4), as roadmap 29.13 says. A Pathfinder who has already come stays.
 
+## The Pokémon Legends (29.21, 29.22)
+
+Both need Cobblemon. **The Pokémon Professor** counts only the Pasture Blocks inside the village (a pasture outside
+the hall's reach adds nothing to the census or the village Pokédex). Right-clicking them shows the clicking player's
+own party, never another player's, with each Pokémon's IVs in words, its nature, its hidden ability and its EVs
+(exact numbers with Regional Survey). With Evolution Studies they sell one evolution stone a day, to whoever buys it
+first, for 8 emeralds (800 CobbleDollars when CobbleDollars is installed); a player who can't pay is told the price
+and loses nothing, and the stone stays for sale until someone buys it.
+
+**The Pokémon Ranger** befriends only wild Pokémon: a Pokémon a player has sent out is never chosen, even when it's
+the only one near. A befriended Pokémon becomes the hall owner's; when the owner is offline it waits in their PC and
+the chronicle says so ("befriended a wild Eevee; it waits in Alex's PC").
+
 ## Legends of the realm (33.23)
 
 Two Legends gain a power each with 1.7's colonies and trade:
@@ -242,6 +255,9 @@ from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 species kept in the Pokédex once, the IV words at every boundary, natures and hidden abilities as read, the hints by a
 real right-click, the Alpha stand-in at level 49 and 50, the 96- and 64-block reaches from both sides, every banned
 kind refused, no befriending into a full pasture, one Alpha calmed of two),
+`QaPokemonLegends1027CompatTests` (5, QA, 29.21 and 29.22: a player's sent-out Pokémon never befriended, a Pokémon
+befriended while the owner is offline waits in their PC, a pasture outside the village not counted, a stone nobody
+can pay for costs nothing and stays one a day, the hints show only the clicking player's party),
 `RealmLegendsGameTests` (5, 33.23); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
 `QaLegendSitesGameTests` (9, 29.9): the 5-second check on the real tick, the 1500-block reach from both sides, the
 nearest hall, friends one way only, 29.3's slots and conditions at a site, a slot filled before the morning, only a

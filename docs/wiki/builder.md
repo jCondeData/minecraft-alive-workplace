@@ -442,6 +442,12 @@ trapped, and joins when placed).
 `QaDoorwayClearanceGameTests` (5, QA from B173: a villager slid through a doorway with a carpet under the lintel is
 caught, and so are the Village Hall's and Supply Shop's with one moved there; villagers walk in by the shut front doors of
 the Supply Shop, turned too, and the Village Hall; the sweep over every build's doors is B487's test on tests/qa-doorways-1025).
+`QaDoorwayBugGameTests` (5, QA from B173, fixed by B487: the sweep over every listed build's doors, and walks in by the
+Healing Center III's garden door, Royal Hall II's east door and the lodge look II's front door, and out of the Royal
+Hall's vault) and `QaBuilderFixes1027bGameTests` (B487's four: a villager walks in by the Healing Center IV's garden
+door turned a quarter, out by the lodge look II's front door turned the other way, out by Royal Hall II's east door,
+and into the Royal Hall's vault from the dais with the hall turned half round; all four fail on the builds before the
+fix).
 `QaWallTowerGameTests` (7, QA from B283: hall rounds open nothing on a Palisade Tower half way up, two towers decorating
 or a finished one; a tower saved and loaded mid-decoration stays one tower and is finished where it stands; its ladders
 balance when its builder is killed holding three and every second of a real build).

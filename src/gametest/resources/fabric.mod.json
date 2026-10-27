@@ -547,6 +547,7 @@
 			"io.github.jcondedata.aliveworkplace.test.GiftedBornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGiftedLaneCGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendGuestsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendGuestsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MasterArchitectGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PathfinderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MerchantPrinceGameTests",
@@ -563,6 +564,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerGiveUpGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StrangeMoodGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStrangeMoodGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ScribeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OutfitGameTests",
@@ -610,6 +612,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStewardSafetyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneLedgerBugTests",
 			"io.github.jcondedata.aliveworkplace.test.PathLedgerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLedgerFramesHaulGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesBugTests",
@@ -661,6 +664,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaB30JobSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStuckJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendCampGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScoutReportGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPeacefulLairGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedGameTests",
@@ -753,9 +757,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaItemComponentsSaveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcCommandBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsBugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFixEdges1027GameTests"
 		]
 	},
 	"depends": {

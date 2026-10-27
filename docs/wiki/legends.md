@@ -14,6 +14,16 @@ their trade's, their name in gold over their head and a soft sparkle every few s
 Nothing about them is secret. The hall's Legends page (the nether star in the page row) lists the village's own
 Legends first, then every other Legend as a card: its rarity, how it comes, each thing the village must have with how
 far it has got ("Kinds of meal in the store: 5 of 8"), the luxury it likes and its powers.
+Each thing has a tick when it is met (exactly met counts) and a cross when it isn't, and a card with every tick says
+"This village has all they need: they may come". A Legendary one already living in another village says who and
+where ("Wren lives in Thornholm"); a Rare one settled elsewhere can still come here, so its card doesn't. The page's
+header and every Mythic card show the Mythic line ("Mythic Legends: 0 of 1, as a Town").
+
+On the hall's list of villagers the village's Legends come first, name and title in gold, with their rarity, each
+power, and each need with a tick, or a cross once it has gone unmet a day, plus "On strike since day N" in red. When a
+Legend lacks only one thing, "What next?" says so ("The Grand Chef could come: Kinds of meal in the store: 7 of 8");
+not when two things are missing, nor once nothing is. Villagers chat about the Legend living with them, a Legend
+guest, and a Legend on strike, and a Legend talks about themself.
 
 | Legend | Rarity | Comes | The village must have | Brings |
 |---|---|---|---|---|
@@ -44,15 +54,29 @@ dead with no grave they fall 7 days later and the slot is free again.
 
 **Four ways to come.**
 - *Visit* (29.8): once a day a village with no guest may get one, at the inn, the market, a festival, the Chapel or
-  the hall, one time in four by default. A guest stays up to 3 days; the same Legend doesn't visit again for 7.
+  the hall, one time in four by default. A guest stays up to 3 days and leaves on the evening of the third, once no
+  player is within 24 blocks (a guest whose needs are all met that evening settles instead). The same Legend doesn't
+  visit again until 7 days after the day they came.
 - *Found* (29.9): at a ruined portal, a pillager outpost or a shipwreck, for a player who owns (or is a friend of
-  the owner of) a qualifying hall within 1500 blocks. A small camp is set down with the Legend in it; each structure
-  is used once.
+  the owner of) a qualifying hall within 1500 blocks, with the Legend's slot free and their conditions met (checked
+  every 5 seconds for each player; the sites are the structure tags `#aliveworkplace:legend_sites/ruined_portal`,
+  `/outpost` and `/shipwreck`, so packs can add their own variants). A small camp is set down with the Legend in it;
+  each structure is used once. A traveler by a portal is freed by talking to them, a prisoner caged at an outpost by
+  breaking the cage's bars, and a castaway on the beach near a wreck by handing them a cooked meal. Freed, they thank
+  you, walk off, and come to the village's hall the next morning as a guest; if the slot was filled meanwhile, they
+  don't come, and can be found again later.
 - *Born* (29.7): when the child of two schooled Masters grows up, one time in 20 they are a Rare Legend of a
   parent's trade; otherwise one time in 4 they are Gifted.
-- *Strange mood* (29.10): once a day in a happy village a Master may be seized (one time in 8). They stand at
-  their workstation and ask for three rare materials within 3 days. Bring them and they make a Masterwork and become
-  the Legend; fail and they sulk for 7 days.
+- *Strange mood* (29.10): once a day in a happy village a Master may be seized (one time in 8). Only a Master:
+  a Novice to an Expert never is. Never during a raid or a festival, and never two at once in one village. They claim
+  their workstation ("Taken by a strange mood" in purple over their head) and ask for three rare materials, one of
+  each, in a chest by it within 3 days; the village's players are told and the materials go on the requests board.
+  All three in on the last day still counts; two of the three never does, however many of each. Bring them and they
+  make a Masterwork (a made-up name, lore naming the maker, the village, the day and the materials) and become the
+  Legend. It goes to the player who brought the most, or into the chest when nobody did or their pack is full. A
+  Masterwork in an item frame in the village is worth 3 beauty; in a chest, none. Fail and they sulk for 7 days
+  ("Sulking": 30 less mood, half pace), a material that comes late makes nothing, and the village has no strange
+  mood for 10 days.
 
 **Needs and strikes (29.5).** A settled Legend needs a home of their own (their bed in a finished tier III
 building), their luxury once every 7 days, and a happy village (average mood 60 or more). A need unmet 2 days
@@ -89,7 +113,7 @@ Beloved (neighbors are happier), Born Leader (workers of their trade nearby 10% 
 | `legends` | on from 1.0 | Off: none come; settled Legends stay as ordinary Masters and come back when it is on again |
 | `legendNeeds` | on from 1.0 | Off: no needs and no strikes |
 | `legendSites` | on from 1.0 | Off: no Legends found at ruins, outposts or shipwrecks |
-| `strangeMoods` | on from 1.0 | Off: no strange moods |
+| `strangeMoods` | on from 1.0 | Off: no strange moods, and a mood already on is called off |
 | `giftedChance` | 30 (0 to 1000) | One villager in this many is Gifted; 0: nobody is, and nothing is erased |
 | `mythicLegendCap` | 0, 0, 1, 2 | Mythic Legends by rank (Hamlet, Village, Town, City); in the file only |
 
@@ -172,12 +196,16 @@ after a fight, B329; `GolemHaulerRouteGameTests`, 2: a hauler whose nearest Stor
 10 seconds without headway and takes its load to the next nearest, B450, and one whose nearest Drop Box is walled in
 fetches from the next, B456; `QaHaulerGiveUpGameTests`, 4 (QA): a given-up Storehouse, and a given-up Drop Box, is left alone for the
 2,400-tick wait even once the way is open and used again after it, a hauler saved and loaded right after giving up keeps its whole load and
-gets it home, and one whose only Storehouse is walled in puts its load back into the Drop Box and is free again, B463; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
+gets it home, and one whose only Storehouse is walled in puts its load back into the Drop Box and is free again, B463; `QaLedgerFramesHaulGameTests.aHaulerWhoseStorehouseIsBrokenMidTripPutsItsLoadBackInTheDropBox`: the same when the player breaks the only Storehouse while the golem carries a Drop Box's 3 stacks; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
 and walks back to it, a Nether route is refused and a blank map takes the post, each with its line, a foe 10 blocks
 from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
 `PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
 `RealmLegendsGameTests` (5, 33.23); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
+`QaLegendSitesGameTests` (9, 29.9): the 5-second check on the real tick, the 1500-block reach from both sides, the
+nearest hall, friends one way only, 29.3's slots and conditions at a site, a slot filled before the morning, only a
+cage's own bars freeing its prisoner, a Legend who walked off arriving the next morning, the `legendSites` switch, the
+site tags, and every camp sentence in English.
 QA (lane d): `QaLegendRecordGameTests` (12, 29.3 and 29.5): a Rare per kind per village, a Legendary per world
 (any dimension), the Mythic caps at every rank from both sides, a fallen Legend's slot free on day 7 not day 6 and the
 line written once, the record's save and old-save defaults, many rounds on one day counting one unmet day, the 3 days'
@@ -187,6 +215,15 @@ unknown rarity, job, way or luxury, a pace below 1, a typo in a way's conditions
 Sage keeps the Legend job as a Master where a jobless farmer is reset; a pace power reaches a builder exactly 8 blocks
 away but not 9, and never a farmer; a dead Legend's aura is gone by the next 200-tick refresh; condition numbers one
 short and exactly met, and a guest Legend never counts as settled; the Legends page's Mythic line at each rank.
+QA (29.4): `QaLegendsHallGameTests` (7): conditions one short, exactly met and over (99 cents isn't an emerald;
+"1 of 1"), the "What next?" tip at one missing but not two or none, "lives in" only for a Legendary taken elsewhere,
+every way a Legend comes in English, a need unmet 1 day crossed and 0 days ticked with two Legends first on the hall's
+list, and all six Legend chatter lines with names filled in.
+QA (29.8): `QaLegendGuestsGameTests` (6): a guest still there a tick before the third evening and gone at it, with the
+leaving line in English; every need met that evening settles them instead; the 7 days from the day they came (day 11
+no, day 12 yes for a day-5 visit); a way's chance of 0 never and 1 always (over 1 read as 1); a Legendary settled in
+another village keeps them away while a Rare there doesn't; the terms screen's lines in English ("2 days left of my
+stay", "My last day here", a Legend with no powers).
 `QaGiftedGameTests` (7): `giftedChance` 1 gifts everyone and 10 about one in ten, keeping everyone Gifted at 30; a
 malformed gift file fails; a `gifted` attachment of "none" or a removed gift makes nobody Gifted; the hall's gold line
 for each of the four; Silver Tongue on 5, 20 and 64 emeralds (4, 16, 52) and gone with `giftedChance` 0; the Night

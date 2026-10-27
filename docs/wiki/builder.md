@@ -345,7 +345,8 @@ claims and trip counts.
   its saved pieces stand where the spots file of its day put them, so they are the Builder's and come away; today's
   spots keep a piece only where one of the same kind already stands, and the others are furnished as a new build is
   (B642). A furnished build whose spots file has gained spots since it was furnished (the Terraces before B281) is
-  offered a refresh of today's drawing itself, furnished anew where it lacked a piece (B641). The refreshed build's furniture is saved by today's spots. The Repairs page lists refreshes after the repairs, so with
+  offered a refresh of today's drawing itself, furnished anew where it lacked a piece (B641). The refreshed build's furniture is saved by today's spots. A bed a villager has claimed stays where the old drawing put it, so a new
+  piece whose place it takes (a chest, the new bed beside it) isn't put in. The Repairs page lists refreshes after the repairs, so with
   more builds than fit, the last ones are counted under "more" rather than shown.
 - A site in unloaded chunks, queued, or without a Builder is not watched for stalls.
 - The table preview leaves out fluids (water and lava have no block model) and draws blocks at full brightness.
@@ -370,6 +371,11 @@ refresh; a player who doesn't own the build can't start one; every leftover's it
 across a save and reload mid-way, and none for a leftover a player broke first); a player's block where a new piece
 goes stays; with `builderRepairs` off a waiting refresh is still taken up; a Builder dying mid-way leaves the build on
 the page for another to finish.
+`QaRefreshFurnishedGameTests` (B642, the tester's, through the same page): a Starter Cottage, an Inn and a Townhouse,
+each furnished by the spots file of its older drawing's day and turned or mirrored, end equal to a fresh build of the
+current drawing with nothing floating; a Builder refreshing a furnished, turned Stone House of before B260 across a save
+and reload keeps a player's block on an old piece's spot and one where a new piece goes, leaves nothing floating and
+no second refresh on the page.
 
 Compat tests (QA, lane E, from "Builders never copy what is inside containers"): `QaPastureCopyCompatTests` (a scanned
 Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),

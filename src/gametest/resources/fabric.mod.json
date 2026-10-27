@@ -550,6 +550,7 @@
 			"io.github.jcondedata.aliveworkplace.test.PathfinderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MerchantPrinceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmLegendsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRealmLegendsBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GrandChefGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BardLaureateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BeastmasterGameTests",

@@ -82,7 +82,7 @@ def job_steps(villager_by, item, job, step=None):
             "A villager who already took another job at that block works too: sneak-right-click them the same way."]
 
 
-LOCKED = "Its name is grey at the Blueprint Table at first: it's locked. Pick it there and the line under its name says how to get it."
+LOCKED = "Its name is gray at the Blueprint Table at first: it's locked. Pick it there and the line under its name says how to get it."
 
 
 def done_built(name):

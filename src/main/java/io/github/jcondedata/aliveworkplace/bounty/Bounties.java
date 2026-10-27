@@ -62,8 +62,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
@@ -636,11 +634,7 @@ public final class Bounties implements ResourceManagerReloadListener {
 			captain.setItemSlot(slot, stack);
 			captain.setDropChance(slot, 0f);
 		});
-		var health = captain.getAttribute(Attributes.MAX_HEALTH);
-		if (health != null && quirk.health() > 0) {
-			health.addPermanentModifier(new AttributeModifier(AliveWorkplace.id("bounty_captain"), quirk.health(), AttributeModifier.Operation.ADD_VALUE));
-			captain.setHealth(captain.getMaxHealth());
-		}
+		io.github.jcondedata.aliveworkplace.threat.Threats.captainHealth(captain, AliveWorkplace.id("bounty_captain"), quirk.health());
 		for (Effect e : quirk.effects()) {
 			Lookup.holder(BuiltInRegistries.MOB_EFFECT, ResourceKey.create(Registries.MOB_EFFECT, e.id()))
 				.ifPresent(h -> captain.addEffect(new MobEffectInstance(h, MobEffectInstance.INFINITE_DURATION, e.amplifier(), false, true)));

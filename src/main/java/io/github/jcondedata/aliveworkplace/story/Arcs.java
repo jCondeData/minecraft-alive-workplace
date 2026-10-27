@@ -424,11 +424,14 @@ public final class Arcs implements ResourceManagerReloadListener {
 
 	/**
 	 * Starts {@code arc} in the village round {@code hall} now, whatever its trigger (the operators' command, events,
-	 * tests): its roles are cast and its first chapter begins. Null when the village already runs one of its kind, or a
-	 * role can't be cast.
+	 * tests): its roles are cast and its first chapter begins. Null when the arc is in {@code disabledArcs}, the village
+	 * already runs one of its kind, or a role can't be cast.
 	 */
 	@Nullable
 	public static ArcState start(ServerLevel level, BlockPos hall, Arc arc) {
+		if (disabled(arc.id())) {
+			return null; // (B574: it would be cast and counted, then end at once and restart the village's cooldown)
+		}
 		Stories.Data data = Stories.Data.get(level);
 		Stories.Entry e = data.entry(hall);
 		if (arc.side() ? e.sideArcs.stream().anyMatch(s -> s.id.equals(arc.id().toString())) : e.arc != null) {

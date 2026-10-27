@@ -80,7 +80,9 @@ public final class BlueprintNames {
 			clean = "";
 		}
 		if (clean.length() > 128) {
-			clean = clean.substring(0, 128);
+			// Cut on a code point: an emoji is two chars, and half of one can't be sent to players.
+			int cut = Character.isHighSurrogate(clean.charAt(127)) ? 127 : 128;
+			clean = clean.substring(0, cut);
 		}
 		if (clean.isEmpty() && !names.containsKey(id)) {
 			return;

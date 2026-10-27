@@ -31,8 +31,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.block.state.BlockState;
@@ -304,6 +308,42 @@ public class QaPiratesThreatLevelGameTests {
 			}
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * A captain is his mob plus his file's extra health even when vanilla made him a leader zombie (B579): on a hard,
+	 * long-played spot {@code finalizeSpawn} now and then multiplies a zombie's max health by 2 to 5, and CI once saw a
+	 * pirate captain at 178.7 instead of 60. A drowned that vanilla made a leader at the hardest local difficulty comes
+	 * out at its base + 40 once he is made a captain.
+	 */
+	//$ gametest_ticks_batch BIG '40' '"qaCaptainLeaderZombie"'
+	@GameTest(template = BIG, timeoutTicks = 40, batch = "qaCaptainLeaderZombie")
+	public void aCaptainVanillaMadeALeaderZombieHasJustHisFortyMore(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		double base = EntityType.DROWNED.create(level).getMaxHealth();
+		// Hard, a long-played chunk under a full moon: the special multiplier is 1, so 1 drowned in 20 is a leader.
+		DifficultyInstance hardest = new DifficultyInstance(Difficulty.HARD, 3_600_000L, 3_600_000L, 1f);
+		helper.assertTrue(hardest.getSpecialMultiplier() == 1f, "not the hardest local difficulty: " + hardest.getSpecialMultiplier());
+		Vec3 at = helper.absoluteVec(new Vec3(4.5, 2, 4.5));
+		Mob leader = null;
+		for (int i = 0; i < 2000 && leader == null; i++) {
+			Mob drowned = EntityType.DROWNED.create(level);
+			drowned.moveTo(at.x, at.y, at.z, 0f, 0f);
+			// (a grown drowned with no jockey: nothing else is spawned)
+			drowned.finalizeSpawn(level, hardest, MobSpawnType.EVENT, new Zombie.ZombieGroupData(false, false));
+			if (drowned.getMaxHealth() > base + 0.01) {
+				leader = drowned;
+			} else {
+				drowned.discard();
+			}
+		}
+		helper.assertTrue(leader != null, "vanilla made no leader drowned in 2000 at the hardest difficulty");
+		Threats.captainHealth(leader, AliveWorkplace.id("bandit_chief"), 40);
+		helper.assertTrue(Math.abs(leader.getMaxHealth() - (base + 40)) < 0.01,
+			"a leader drowned made a captain has " + leader.getMaxHealth() + " health, not " + (base + 40));
+		helper.assertTrue(leader.getHealth() == leader.getMaxHealth(), "the captain isn't healed to his max: " + leader.getHealth());
+		leader.discard();
+		helper.succeed();
 	}
 
 	/**

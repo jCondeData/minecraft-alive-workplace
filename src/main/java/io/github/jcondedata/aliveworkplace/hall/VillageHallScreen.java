@@ -215,7 +215,8 @@ public final class VillageHallScreen {
 			line(Component.translatable("screen.aliveworkplace.hall.born", entity == null ? 0 : entity.births()), ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.graves", io.github.jcondedata.aliveworkplace.grave.Graves.near(level, hall, VillageHalls.RADIUS).size()),
 				ChatFormatting.GRAY),
-			line(Component.translatable("screen.aliveworkplace.hall.growth." + growth.name().toLowerCase(), VillageGrowth.foodNeeded(level, hall),
+			line(Component.translatable("screen.aliveworkplace.hall.growth." + (growth == VillageGrowth.Blocker.FULL && VillageGrowth.CAP <= 0 ? "off" // (B576: villageGrowthCap 0)
+				: growth.name().toLowerCase()), VillageGrowth.foodNeeded(level, hall),
 				Math.round(VillageGrowth.WELLBEING_NEEDED * 100), VillageRanks.growthCap(VillageRanks.of(level, hall))), growth == VillageGrowth.Blocker.NONE ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
 		menu.button(BEDS, icon(Items.RED_BED, Component.translatable("screen.aliveworkplace.hall.beds", census.beds()), ChatFormatting.WHITE,
 			bedLines(level, hall, census)), null);

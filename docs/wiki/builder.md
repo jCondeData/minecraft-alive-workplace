@@ -138,7 +138,8 @@ starts the new job at once instead of queueing it behind the repair; the repair 
 up again when the Builder is free. Its owner, their friends, the village's leader and operators may answer; anyone
 else is told it isn't theirs. Not asked: what threats took (32.16a: a gate a ram broke, a block a village fire burned),
 repaired without asking as before, and a damaged Wonder's parts (35.8). `repairAsk` off: Builders repair by
-themselves, as before 36.15. After a build, it can lay a dirt path to the village bell or hall (at most 96 blocks long).
+themselves, as before 36.15. After a build, it can lay a dirt path to the village bell or hall (at most 96 blocks long). The path skips every 16x16x16 section where a player placed or broke blocks (the Steward's ledger, see
+[Steward](steward.md)), even one built in after the path was planned, and paves the rest of the way.
 
 **Safe at height.** A Builder with a build (lead or helper) takes no fall damage: he stands on the build's own
 upper rows (a palisade's stake tops, a tower's platform before its parapet) and can step, jump or be shoved off them.
@@ -369,7 +370,7 @@ fluid tank, spout, basin and item drain each holding a bucket of lava, scanned o
 exactly their material list holding no lava). `BuiltEmptyGameTests.aFluidHeldInBlockDataIsNotCopied` (B486, without
 Create: Create's, Forge's and Fabric's saved fluids are dropped, the tank's size and capacity kept).
 
-GameTests (`src/gametest/java/.../test/`): `BlueprintsStayGameTests.everyBlueprintKeepsItsLampsPathsAndBeds` (B537-B539: in every shipped blueprint no standing lantern, candle or torch is on a top that can't hold it, no dirt path or farmland under a solid block, no half bed; with QaWonderDesignsGameTests' qaWonderStagesStand and qaWonderBedsWhole now run for the Great Library, the Hanging Gardens and the Observatory too), `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
+GameTests (`src/gametest/java/.../test/`): `BlueprintsStayGameTests.everyBlueprintKeepsItsLampsPathsAndBeds` (B537-B539: in every shipped blueprint no standing lantern, candle or torch is on a top that can't hold it, no dirt path or farmland under a solid block, no half bed; with QaWonderDesignsGameTests' qaWonderStagesStand and qaWonderBedsWhole now run for the Great Library, the Hanging Gardens and the Observatory too), `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3), `PathLedgerGameTests` (2, B575: the path to the bell keeps out of a section a player built in, planned or laid),
 `BuilderChaosGameTests` (5 seeds, stuck recovery), `QaBuilderStuckGameTests` (6, 23.2: a 3-deep hole, an iron-door room, a deep well of water, a lava moat, a fence pen with a shut gate, and the hole through a restart, each three times: out within 600 ticks, nothing placed or of the trap broken, the build whole), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbor's bench outlasts a build;
 a bench put down and employed at in one command is held),
@@ -442,6 +443,12 @@ trapped, and joins when placed).
 `QaDoorwayClearanceGameTests` (5, QA from B173: a villager slid through a doorway with a carpet under the lintel is
 caught, and so are the Village Hall's and Supply Shop's with one moved there; villagers walk in by the shut front doors of
 the Supply Shop, turned too, and the Village Hall; the sweep over every build's doors is B487's test on tests/qa-doorways-1025).
+`QaDoorwayBugGameTests` (5, QA from B173, fixed by B487: the sweep over every listed build's doors, and walks in by the
+Healing Center III's garden door, Royal Hall II's east door and the lodge look II's front door, and out of the Royal
+Hall's vault) and `QaBuilderFixes1027bGameTests` (B487's four: a villager walks in by the Healing Center IV's garden
+door turned a quarter, out by the lodge look II's front door turned the other way, out by Royal Hall II's east door,
+and into the Royal Hall's vault from the dais with the hall turned half round; all four fail on the builds before the
+fix).
 `QaWallTowerGameTests` (7, QA from B283: hall rounds open nothing on a Palisade Tower half way up, two towers decorating
 or a finished one; a tower saved and loaded mid-decoration stays one tower and is finished where it stands; its ladders
 balance when its builder is killed holding three and every second of a real build).

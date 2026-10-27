@@ -2388,7 +2388,7 @@ MarketDays) and research/.
   Outfit: a hooded travel cloak, a pack and a lantern. Done when: GameTests: they are found only for a village with an
   Expert explorer; an expedition to a staged target leads, waits and catches up; Home brings both back; a logout
   cancels it; the loot table rolls; showcase scene `legend_pathfinder` (GIF: leading the player through a forest).
-- [x] **29.14** (approved 2026-10-05) (verified 2026-10-27: 7 QA tests [QaOldSageGameTests]: hint on 2nd miss not 1st and reset by an answer, stack and off-hand answers, quest through save, rumor to owner only with direction, no hut with Legends off, riddle draws, Iron Pact 5-day round and cap 15/16, Warding I; mutation caught; wiki checked) **The Old Sage (Rare).** Comes: found in a hermit's hut once the village has finished 5 research
+- [x] **29.14** (approved 2026-10-05) (verified 2026-10-27: 15 new tests [QaSageSeerGameTests]: riddles [3 of 8, hint on 2nd miss, off hand, reload], hut at 4 vs 5 levels, Ancient Lore I numbers, Iron Pact golems 7/8/16 and every 5th day, guard damage; Seer arrival edges [full moon, 17500-18999, 1 in 2, Chapel], dawn foretelling once, blessing within 32 of the Chapel, reload, sentences; no bugs) **The Old Sage (Rare).** Comes: found in a hermit's hut once the village has finished 5 research
   levels; born to a Scholar (29.7). The hut (`legend/hermit_hut` through the architect skill: mossy cobblestone and
   spruce, a lectern, bookshelves, a cauldron and an herb garden) is placed 150-250 blocks from the hall on dry, flat,
   loaded ground (as `BanditCamps.site` picks), and the village's players hear a rumour of it with its direction.
@@ -2448,7 +2448,7 @@ MarketDays) and research/.
   it is an ordinary golem. A farmhand tends the fields of farmers within 48 blocks (Field Marker or adopted farms),
   picks only crops and nether wart, and carries up to 9 stacks to the chests by that farmer's composter. A new golem
   stands on solid ground beside the Smith (never on a roof). The hall's line for each golem is on the guards button.
-- [x] **29.16** (approved 2026-10-06) (verified 2026-10-27: 4 QA tests [QaSeerGameTests]: strike/Legends off foretell nothing, blessing mood day 7 yes day 8 no through save and baby once, dawn lines in English, foretelling state through save; mutation caught; wiki checked) **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
+- [x] **29.16** (approved 2026-10-06) (verified 2026-10-27: 15 new tests [QaSageSeerGameTests]: riddles [3 of 8, hint on 2nd miss, off hand, reload], hut at 4 vs 5 levels, Ancient Lore I numbers, Iron Pact golems 7/8/16 and every 5th day, guard damage; Seer arrival edges [full moon, 17500-18999, 1 in 2, Chapel], dawn foretelling once, blessing within 32 of the Chapel, reload, sentences; no bugs) **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
   time in 2 (29.8); born to a Cleric (29.7). Trade: `aliveworkplace:legend`; by day they keep to the Chapel. Likes:
   jewels. Powers:
   - **foretelling** (`foretell`), each dawn, to the village's players in chat and on the hall's "What next?": whether

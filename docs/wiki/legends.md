@@ -264,11 +264,16 @@ hand nothing and spend no days; a pause kept through a reload. `QaPathfinderGame
 a Master Librarian and a Novice don't; 8 real foods of any kind and exactly 8 taken; a strike refuses and only their
 player asks for Home; a death cancels and the next day is free; a monster after the player is fought, others not; an
 expedition through a save and reload; the three tags hold vanilla's structures, and a pick with no offer is refused.
-QA (29.8): `QaLegendGuestsGameTests` (6): a guest still there a tick before the third evening and gone at it, with the
+QA (29.8): `QaLegendGuestsGameTests` (7): a guest still there a tick before the third evening and gone at it, with the
 leaving line in English; every need met that evening settles them instead; the 7 days from the day they came (day 11
 no, day 12 yes for a day-5 visit); a way's chance of 0 never and 1 always (over 1 read as 1); a Legendary settled in
 another village keeps them away while a Rare there doesn't; the terms screen's lines in English ("2 days left of my
-stay", "My last day here", a Legend with no powers).
+stay", "My last day here", a Legend with no powers); a guest kept past their last evening never names a day already
+gone (B588). `QaLegendCapsVisitsGameTests` (5, 29.3 and 29.8): no inn guest with no free bed or in the afternoon, then
+one instead of the traveler; a festival one short of its crowd brings nobody, one that reaches it the guest; no
+Chapel guest with no Chapel or off the full moon, then one at the next full moon; with Legends off no place brings a
+guest and no day's roll is spent; a Mythic guest refused by a Village and welcome in a Town, heard 5,000 blocks away
+where a Rare guest isn't.
 QA (lane d, 29.14 to 29.16): `QaOldSageGameTests` (7): the hint on the second miss and not the first, a right answer
 starting the count again; one answer taken from a stack, the off hand's answer taken and a wrong off-hand item kept; a
 wet sponge is a sponge; the quest half done through a save and reload; the rumor told once to the owner with the

@@ -419,8 +419,8 @@ public class QaQuestJournalGameTests implements FabricGameTest {
 	}
 
 	/** The hall broken mid-quest: its quests go, nothing can be handed in or killed for them, and the server's tick takes the tracker's bar down. */
-	//$ gametest_ticks_batch AREA '100' '"qaHallBroken"'
-	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaHallBroken")
+	//$ gametest_ticks_batch AREA '100' '"qaQuestHallBroken"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaQuestHallBroken")
 	public void breakingTheHallEndsItsQuestsAndBars(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();

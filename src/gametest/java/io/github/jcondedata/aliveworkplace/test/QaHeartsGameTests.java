@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.story.Gifts;
 import io.github.jcondedata.aliveworkplace.story.HeartEvents;
 import io.github.jcondedata.aliveworkplace.story.JobFamilies;
 import io.github.jcondedata.aliveworkplace.story.Keepsakes;
+import io.github.jcondedata.aliveworkplace.story.Tastes;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -339,11 +340,18 @@ public class QaHeartsGameTests implements FabricGameTest {
 			level.setDayTime(at(quiet(8, 1, 1, dara), 1000));
 			QaStageFiveGameTests.Client alex = client(helper, "qaha");
 			QaStageFiveGameTests.Client sam = client(helper, "qahs");
+			// B544: the cake once counted 20 (neutral), not 80: the taste files as shipped (cake loved by everyone), whatever
+			// an earlier test loaded, as GiftGameTests does; and a failure names the band she had for it then
+			Tastes.load(Tastes.files(level.getServer().getResourceManager()));
+			Tastes.Band cake = Tastes.of(dara, new ItemStack(Items.CAKE));
+			helper.assertTrue(cake == Tastes.Band.LOVED, "setup: Dara's band for cake is " + cake + " with the shipped taste files " + Tastes.all().keySet());
 			Friendship.add(dara, alex.player(), 150);
+			int before = Friendship.points(dara, alex.player().getUUID());
 			alex.player().setItemInHand(InteractionHand.MAIN_HAND, Gifts.wrap(new ItemStack(Items.CAKE), alex.player().getGameProfile().getName()));
 			QaStageSixGameTests.clickVillager(alex.player(), dara, alex.seen());
-			helper.assertTrue(alex.player().getMainHandItem().isEmpty() && Friendship.points(dara, alex.player().getUUID()) == 230,
-				"Alex's cake: " + Friendship.points(dara, alex.player().getUUID()) + " points, holding " + alex.player().getMainHandItem());
+			helper.assertTrue(alex.player().getMainHandItem().isEmpty() && before == 150 && Friendship.points(dara, alex.player().getUUID()) == 230,
+				"Alex's cake: " + before + " -> " + Friendship.points(dara, alex.player().getUUID()) + " points, holding " + alex.player().getMainHandItem()
+					+ ", band now " + Tastes.of(dara, new ItemStack(Items.CAKE)) + ", told " + heard(alex, 0));
 			HeartEvents.Event event = HeartEvents.pending(level, dara, alex.player().getUUID());
 			helper.assertTrue(event != null && event.hearts() == 2, "at 230 points: " + (event == null ? "nothing to tell" : event.id()));
 			int from = alex.seen().size();

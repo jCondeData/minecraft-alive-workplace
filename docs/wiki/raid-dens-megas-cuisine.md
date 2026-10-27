@@ -153,7 +153,8 @@ the sweets, mochi and teas. A result with its own components (a potion's content
 other dishes, at his Kitchen Stove (no pot needed there), only when the chests by the stove and the porters' and
 butcher's spare hold every making, and keeps 16 of each in the chests by the stove, which are the village store's
 kitchen: players take them from there and the partners' treats and the hall read the same store. With the makings
-short (sculk and no honeycomb for an EXP Candy XS) nothing is cooked or taken. He never cooks one of his dishes up or
+short (sculk and no honeycomb for an EXP Candy XS) nothing is cooked or taken; if the stove is broken or a player
+empties the chests while he is fetching, he cooks nothing and the makings he carries are not lost. He never cooks one of his dishes up or
 breaks it down into another (B435, B459): a recipe whose makings are all dishes he keeps (six EXP Candies XS into an S
 in the pot, Cobblemon's crafting recipes that split an XL into three L, and so on) is not his, so the store's 15 XS
 stay XS and a player's XL is only used where a recipe also wants other makings (Mighty Candy: four Kelpsy Berries, four
@@ -481,7 +482,11 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   `fifteenInTheChestGetsOneMore` (exactly 16) and `aChefLoadedAgainStillCooksThePotDish`. `QaCuisineCandyBugTests`
 (B435): `theChefStopsAtSixteenCandies` (20 makings, 16 EXP Candies XS, 4 left) and `fifteenCandiesGetOneMore`.
 `QaCampfirePotCompatTests` (B459, a shaped recipe): Mighty Candy from exactly its makings makes 3, and one berry short
-nothing is cooked and the XL stays.
+nothing is cooked and the XL stays. `QaCampfirePotRecipesCompatTests` (QA): recipe by recipe from the recipe manager
+(99 pot recipes in the test pack, 29 of them shaped), the kitchen plans each dish from exactly its makings and, one
+making short, never takes more than the chests hold (the four EXP Candy step-ups, all kept dishes, are not his); the
+stove broken while he carries a Strawberry Sweet's makings and the chests emptied mid-fetch cook nothing and lose no
+making.
 - Scene `partner_treats` (38.10): a Machop at a builder's pasture eats a Poké Puff from the storehouse chest.
 - Scene `bean_farm` (38.9): a row ripe, a row green, a row bare; the ripe row cut into the chest and the bare rows sown.
 

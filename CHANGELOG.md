@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.0 — 2026-10-27
+
 ### Added
 - Miners dig deeper as they level up: the Quarry Marker now also offers 96 blocks (Journeyman miners and up), 128
   (Expert and up) and down to just above bedrock (Master). A miner handed a deeper marker than their level allows

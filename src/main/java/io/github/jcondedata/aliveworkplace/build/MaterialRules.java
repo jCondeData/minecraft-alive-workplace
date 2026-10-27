@@ -181,7 +181,16 @@ public final class MaterialRules {
 			|| b instanceof CandleBlock || b instanceof SnowLayerBlock || b instanceof FlowerPotBlock || b instanceof TrapDoorBlock
 			|| b instanceof TripWireHookBlock || b instanceof TripWireBlock || b instanceof CocoaBlock || b instanceof AbstractSkullBlock
 			|| b instanceof AmethystClusterBlock || b instanceof PointedDripstoneBlock || b instanceof MultifaceBlock
-			|| b instanceof BellBlock || b instanceof CakeBlock;
+			|| b instanceof BellBlock || b instanceof CakeBlock || modLantern(b);
+	}
+
+	/**
+	 * B433: a modded lantern (Carved Wood's wooden lanterns) stands on or hangs from its neighbour as vanilla's does, so it
+	 * goes up with the decoration, after the trapdoor or post it stands on. Found by its boolean {@code hanging}
+	 * property (vanilla's lantern has the same), so no mod class is needed.
+	 */
+	private static boolean modLantern(Block b) {
+		return b.getStateDefinition().getProperty("hanging") instanceof net.minecraft.world.level.block.state.properties.BooleanProperty;
 	}
 
 	/** Upper door half, bed head, top of a tall flower: placed together with their other half. */

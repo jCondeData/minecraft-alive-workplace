@@ -2177,7 +2177,7 @@ happy village, and an unhappy Legend never leaves but goes on strike. It builds 
 Homes, Couples), inn/ (Innkeepers), school/ (Schools), hall/ (VillageRanks, Chronicle, Festivals, Treasury, Caravans,
 MarketDays) and research/.
 
-- [x] **29.1** (approved auto 2026-10-04) **Design note.** `docs/design/M29.md`: what the player sees (the Gifted, each Legend, how each arrives,
+- [x] **29.1** (approved auto 2026-10-04) (verified 2026-10-27: design note docs/design/M29.md on main; every config switch [legends, giftedChance, legendSites, strangeMoods, legendNeeds, mythicLegendCap], attachment [LEGEND, GIFTED, STRANGE_MOOD], data folder [legends, gifted, research_trees] and luxury tag [books, clothes, jewels, wine] it names exists in the code) **Design note.** `docs/design/M29.md`: what the player sees (the Gifted, each Legend, how each arrives,
   the hall's Legends page, needs and strikes); the data formats (`legends/`, `gifted/` and `research_trees/` under
   `data/aliveworkplace/`, and the four `aliveworkplace:luxury/*` item tags); the config switches (`legends`,
   `giftedChance`, `legendSites`, `strangeMoods`, `legendNeeds`, `mythicLegendCap`); the save data (the villager

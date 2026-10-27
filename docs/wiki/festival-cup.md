@@ -94,6 +94,15 @@ they stay home ("it has helped a villager at work on 2 days, and this Cup asks f
   page says so.
 - **The theme** (28.17): the next one in order after the last Cup's. The host's owner (anyone while nobody owns the
   hall) may click through to another on the Cup page until sign-up closes, not after.
+- **Cup day** (28.19): the far villages' delegates arrive at 1000 (not before), one per far entrant, from the side
+  their home lies; they never keep a job site or a bed, are saved with the villager, and leave at dawn out of sight (at
+  once if `festivalCup` is switched off that day). The fair is a market day's traders and two more. The stands open at
+  noon (6000; not at 5999) and close at the theme's end time.
+- **Players' bouts** (28.20): the call gives two minutes (2,400 ticks) to click [I'm ready] inside the Arena; a tick
+  before, nothing is decided. A player who isn't ready loses by walkover, and the winner of a walkover is paid like any
+  win: 100,000 a bout and 600,000 for the final (the bout and 500,000 more), half again (150,000 and 900,000) only at a
+  City host (a Town pays the plain purse); without CobbleDollars in emeralds at `dollarsPerEmerald`. A player with no
+  eligible Pokémon loses the bout without a battle and isn't paid.
 - **The title** (28.21): the newest champion on a host's roll holds that host's Cup. A player who wins stands for a
   village, and that village holds the Cup. The player gets the purse only.
 - **The banner** (28.21): put up when the champion is crowned, if the holder's hall is loaded, or else at its hall's
@@ -152,19 +161,27 @@ Later additions:
 - 28.22: the Lantern Cup's bouts run from dusk (12000) to dawn (24000), when the delegates leave too.
 - 28.22: only the Grand Cup has Showdown clauses; the others name none, as the spec lists none.
 - 28.21: "on top of its Village Hall" means the hall block, or the roof over it when the hall stands indoors.
+- 28.21: a village that holds several hosts' Cups flies one banner and keeps it, with its
+  pride, until it holds none. A block on the hall is never replaced: the banner goes on the highest block over it.
 
 ## Known limits
 
 - A Cup banner broken by hand goes back up at the holder's next hall round.
 - Found by QA (2026-10-25), not fixed yet (B491): the Sign up button works before sign-up has opened, while the card
   still says "Sign-up opens after the festival on day N".
+- Found by QA (2026-10-27), not fixed yet (B563): [Watch] never puts a player in the spectator view; it answers "You
+  can't watch that bout right now." (its failing test is on branch `tests/cup-day-1027`).
+- Found by QA (2026-10-27), not fixed yet (B565): the Grand Cup's Species and Item Clause aren't applied. A player's
+  two of one species both go, and an Expert or Master delegate's team often has two Pokémon holding the same item.
+- Found by QA (2026-10-27), not fixed yet (B566): the Workers' Cup banner is gold on red, like the Grand Cup's, instead
+  of gold on brown (the failing tests of both are on branch `tests/cup-champions-1027`).
 - Operators picking the theme of an owned host isn't tested (the test server gives operators no permission level).
 
 ## Proof
 
 - GameTests: `CupChampionGameTests` (the banner on the pole and its colors, passing to a hall, the pride, the chronicle
   in every circuit hall, the name lines, the win bonuses, seeding, saving, `festivalCup` off, a far champion's banner
-  when it loads), `CupThemesCompatTests` (each theme's team, player filter and fair; the Workers' counter), plus `CupGameTests`, `CupBoutGameTests`, `CupDayGameTests` and `CupMatchGameTests`.
+  when it loads), `CupThemesCompatTests` (each theme's team, player filter and fair; the Workers' counter), plus `CupGameTests`, `CupBoutGameTests`, `CupDayGameTests` and `CupMatchGameTests`; QA: `QaCupChampionGameTests` (a player champion's village flies the banner and the player gets no trainer XP, the chronicle line word for word, a village holding two Cups, a Cup that isn't held keeping the holder, a block on the hall never replaced, an old holder away when the title passes), `QaCupThemesGameTests` (the eight shipped files against the spec: rules, wares, dish, vanilla disc, banner colors, Cup page rules), `QaCupThemesCompatTests` (each theme's types from both sides with two-type Pokémon, the Little Cup's stage, the Workers' reasons at 0 and 1 days, the Grand Cup's bans and their reasons), QA: `QaCupDayGameTests` (the day's numbers from both sides, the walkover purse, a City's purse, the players' sentences) and `QaCupMatchCompatTests` (no eligible Pokémon, a players' bout's purse).
 - The Arena: `ArenaGameTests` (a builder finishes each tier, `Arenas.find` in every rotation and mirrored, "What
   next?"), `ArenaCompatTests` (the Expert Trainer Leader's trade, Arena III's Healing Machines),
   `QaArenaGameTests.everyArenaHasAFifteenByNineRingAndTheFirstFits`.

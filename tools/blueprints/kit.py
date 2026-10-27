@@ -446,7 +446,7 @@ def _swap(axis, u, v):
 
 
 def gable_roof(b, x0, x1, z0, z1, y, fam, axis="x", gable=None, gable_at=None, ridge=None, steep=False, eave_trim=None,
-               fill_under=None):
+               fill_under=None, closed=False):
     """A gable roof over the rectangle (x0, z0)-(x1, z1) (overhang included), its lowest row at {@code y}.
     axis: which way the ridge runs. The two slopes are stairs of {@code fam}; the top is a ridge of {@code ridge}
     (a Family: its slabs on an odd span, else a cap of stairs), or the slab of {@code fam}.
@@ -454,6 +454,8 @@ def gable_roof(b, x0, x1, z0, z1, y, fam, axis="x", gable=None, gable_at=None, r
     where the end walls are; default one in from each end, under the overhang). steep: two blocks up per step in (a
     stair over a full block), for a tall medieval roof. eave_trim: upside-down stairs under the lowest row (a family).
     fill_under: fill the roof's inside down to its lowest row (a solid attic floor look) with this block.
+    closed: on an odd span, a full block under the ridge slab, so the ceiling seen from inside has no open block at the
+    top where the two stair runs meet (B639).
     Returns the y of the ridge."""
     if axis == "x":
         u0, u1, v0, v1 = x0, x1, z0, z1
@@ -474,6 +476,8 @@ def gable_roof(b, x0, x1, z0, z1, y, fam, axis="x", gable=None, gable_at=None, r
                 x, z = _swap(axis, u, lo)
                 r = ridge or fam
                 slab(b, x, yy, z, r)
+                if closed and not steep:
+                    b.set(x, yy - 1, z, fam.full)
                 if steep:
                     x, z = _swap(axis, u, lo)
                     b.set(x, yy - 1, z, (ridge or fam).full)

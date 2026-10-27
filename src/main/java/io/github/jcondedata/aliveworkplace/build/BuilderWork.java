@@ -109,6 +109,8 @@ public class BuilderWork extends Behavior<Villager> {
 	@Nullable
 	private BuilderBag bagNow;
 	private int waitTimer;
+	/** B636: when the site's shortfall was last worked out while building (-1: not yet, as after a load). */
+	private long shortCheckedAt = -1;
 	private int blockedAttempts;
 	private int stuckTimer;
 	private int reachTicks;
@@ -245,6 +247,22 @@ public class BuilderWork extends Behavior<Villager> {
 		bag.setSlots(engineeringSlots(villager)); // 9 more stacks a level of Engineering while the Great Library stands (35.14)
 		bagNow = bag;
 		boolean free = Rules.on(level, ModGameRules.FREE_MATERIALS);
+
+		// B636: what the rest of the build is short of goes on the Storehouse's board (and to the jobs that make things)
+		// while he works on with what he has, not only once he stands waiting. The list isn't saved: the first tick after
+		// a load works it out again.
+		if (!helping && !free && !site.isDeconstruction() && !site.isDone() && site.status() != BuildSite.Status.WAITING_FOR_MATERIALS
+			&& (shortCheckedAt < 0 || gameTime - shortCheckedAt >= WAIT_RECHECK || gameTime < shortCheckedAt)) {
+			shortCheckedAt = gameTime;
+			List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
+			Map<net.minecraft.world.item.Item, Integer> missing = new LinkedHashMap<>(
+				Builders.computeMissing(level, site, plan, bag, supplies, spareElsewhere(level, villager, site, plan, bench)));
+			Integer scaffolding = site.missing().get(net.minecraft.world.item.Items.SCAFFOLDING);
+			if (scaffolding != null) {
+				missing.merge(net.minecraft.world.item.Items.SCAFFOLDING, scaffolding, Math::max); // B499 keeps its own count
+			}
+			site.setMissing(missing);
+		}
 
 		// 0. Getting out of its own way.
 		if (stepAsideSpot != null) {

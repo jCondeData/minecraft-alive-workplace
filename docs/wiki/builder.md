@@ -29,6 +29,10 @@ Bench) becomes the material list of the rest of it (B279; held in either hand, B
 frames included, with what the bench's chests, the crew's bags and the village (a storehouse, other workers' spare
 stock) hold ticked off. A sneak-right-click with an empty hand shows the status and then the whole list in chat. With
 nothing left to place, no build, or a building being taken down, the Builder says so and the book stays as it was.
+What that list is short of goes on the Storehouse's requests board straight away, while the Builder builds on with what
+he has (B636): the Porter, Carpenter, Mason and Lumberjack fetch or make it during the build, not only once he reaches
+the block that needs it and stands waiting. The shortfall is worked out again every 5 seconds and on the first tick
+after a restart (it isn't saved), and is off the board once the chests hold enough.
 The Scan Tool marks whatever block it right-clicks as a corner, a chest, furnace, trapdoor or bench included: the click
 marks it and the block stays shut and unflipped (B335), from the off hand too when the main hand is empty (B374).
 A Scan Tool renamed in an anvil names the build exactly as typed, apostrophes and accents too: "Jesse's Café" is
@@ -352,6 +356,9 @@ claims and trip counts.
 
 ## 8. Proof
 
+`B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not
+waiting); a click there hands one over and it's off the board; after a save and reload it's listed again while he builds
+on, and a torch put in the chest takes it off before the hut is done.
 `RefreshGameTests` (36.21, through the Village Hall's Repairs page): a Stone House built from its first shipped drawing
 refreshed to the current one (every leftover gone or turned into the new piece, every new piece there, no button
 after); a small build's refresh keeping a chest and its diamonds, a bed and its sleeper's claim, a composter and the

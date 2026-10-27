@@ -8,7 +8,7 @@ different room inside). Each tells its trade from the street: its own footprint,
     kitchen              a plastered cookhouse under a hipped roof, a brick bread oven bulging out of its side, herb beds
     post_office          a narrow two-storey house, its upper floor jettied over the street, a dovecote on the ridge
     guard_house          a squat stone blockhouse with a battlemented flat roof and a timber watch hut on it
-    clinic               a white pavilion with a long ward wing across the back, cross-mullioned windows, cots inside
+    clinic               a white pavilion with a long ward wing across the back, cross-mullioned windows, a ward of beds inside
     ferry_house          a boathouse under a gambrel roof, a landing stage at the front and a light on a mast
     trainers_house       a long low dojo with a deep veranda and a fenced sparring ring before it
     leaders_hall         a stone hall with a columned portico and a pediment, steps the whole width of the front
@@ -483,7 +483,7 @@ def guard_house_build():
 # --- The Clinic: a white pavilion and its ward ---------------------------------------------------------------------
 # A plastered pavilion (walls x 4-8, z 2-6) with its gable to the street, a big cross-mullioned window over the door;
 # behind it, across the whole width, the ward (walls x 1-11, z 6-10) under a lower roof, with cross windows in its
-# gable ends and back and cots along the back wall. Grey stone roofs, andesite quoins and mullions, white walls.
+# gable ends and back and beds along the back wall. Grey stone roofs, andesite quoins and mullions, white walls.
 CL_PLASTER = Mix((8, "white_concrete"), (1, "polished_diorite"), seed=351)
 CL_ROOF = STONE_BRICK
 CL_MULLION = "polished_andesite"
@@ -517,8 +517,10 @@ def clinic_build():
         b.set(x, 2, 6, "air")
         b.set(x, 0, 6, "birch_planks")
     roofs(b,
-          lambda t: gable_roof(t, 0, 12, 5, 11, 6, CL_ROOF, axis="x", gable=CL_PLASTER, gable_at=(1, 11), eave_trim=CL_ROOF),
-          lambda t: gable_roof(t, 3, 9, 1, 7, 7, CL_ROOF, axis="z", gable=CL_PLASTER, gable_at=(2,), eave_trim=CL_ROOF))
+          lambda t: gable_roof(t, 0, 12, 5, 11, 6, CL_ROOF, axis="x", gable=CL_PLASTER, gable_at=(1, 11), eave_trim=CL_ROOF,
+                               closed=True),
+          lambda t: gable_roof(t, 3, 9, 1, 7, 7, CL_ROOF, axis="z", gable=CL_PLASTER, gable_at=(2,), eave_trim=CL_ROOF,
+                               closed=True))
     # The front: the door, the cross window over it, a window in the gable; the ward's ends either side
     front_door(b, 6, 2, "birch_door", STONE_BRICK)
     cross_window(b, 6, 4, 2, "x")
@@ -534,17 +536,15 @@ def clinic_build():
     cross_window(b, 3, 3, 10, "x")
     cross_window(b, 9, 3, 10, "x")
     window(b, 6, 2, 10, "south", height=2, sill=CL_ROOF)
-    # Inside: the brewing stand (the nurse's) by the door, a chest of remedies, cots, the nurse's bed, lanterns
+    # Inside: the brewing stand (the nurse's) by the door, a chest of remedies, four white beds along the back wall
+    # (heads to it; B639: they were cots of slab and carpet, which read as broken beds), lanterns
     b.set(5, 1, 3, "polished_andesite")
     b.set(5, 2, 3, "potted_poppy")
     b.set(5, 1, 4, "brewing_stand", has_bottle_0=False, has_bottle_1=False, has_bottle_2=False)
     b.set(7, 1, 4, "chest", facing="west", type="single", waterlogged=False)
     b.set(7, 1, 3, "potted_azure_bluet")
-    for x in (2, 4, 8):
-        for z in (8, 9):
-            slab(b, x, 1, z, BIRCH)
-            b.set(x, 2, z, "white_carpet")
-    b.bed(10, 1, 8, "white", facing="south")
+    for x in (2, 4, 8, 10):
+        b.bed(x, 1, 8, "white", facing="south")
     for x in range(2, 11):
         log(b, x, 5, 8, "stripped_spruce_log", axis="x")
     for x in (3, 6, 9):

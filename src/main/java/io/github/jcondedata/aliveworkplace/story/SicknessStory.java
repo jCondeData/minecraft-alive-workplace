@@ -293,11 +293,12 @@ public final class SicknessStory {
 
 	/**
 	 * A night's pass-on: each coughing villager passes it to one villager who worked or slept within {@link #NEAR} blocks
-	 * of them, at {@link #CHANCE}, never past half the village. Returns how many caught it.
+	 * of them (never the healer), at {@link #CHANCE}, never past half the village. Returns how many caught it.
 	 */
 	public static int spread(ServerLevel level, BlockPos hall, ArcState s, RandomSource random) {
 		List<Villager> all = villagers(level, hall);
 		int cap = all.size() / 2;
+		Villager healer = healer(level, s); // the healer never catches it, as at the outbreak (B646)
 		List<Villager> coughing = all.stream().filter(Sickness::isGrey).toList();
 		int ill = coughing.size();
 		int caught = 0;
@@ -308,7 +309,7 @@ public final class SicknessStory {
 			if (random.nextFloat() >= CHANCE) {
 				continue;
 			}
-			List<Villager> near = all.stream().filter(v -> v != c && !Sickness.isIll(v)
+			List<Villager> near = all.stream().filter(v -> v != c && v != healer && !Sickness.isIll(v)
 				&& !io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(v) && near(level, c, v)).toList();
 			if (near.isEmpty()) {
 				continue;

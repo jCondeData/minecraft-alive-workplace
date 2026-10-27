@@ -4,7 +4,7 @@ What a home is worth to the [classes](classes.md): every home has a grade, and t
 Burghers and the Nobles the homes their class asks for: the Artisan's House, the Burgher's Townhouse and the Noble's
 Manor. Part of Classes and luxuries (1.8).
 
-Roadmap items: 34.15, 34.15a, 34.15b, 34.16, B106
+Roadmap items: 34.15, 34.15a, 34.15b, 34.16, B106, B640
 
 ## What a player sees
 
@@ -51,8 +51,8 @@ tier below:
 **Every kind of home looks different** (26.11): the Starter Cottage is the timber-framed one under a spruce roof; the
 Stone House a stone croft with crow-stepped gables (the gable walls rise above the slate roof in steps), a chimney
 breast and a woodpile, rising a full story in stone at II and growing a crow-gabled wing at III; the Terrace a brick
-row with a stone string course and cornice, a bay window and a hooded door for each home, the middle home's front
-plastered white, a chimney stack over each party wall and dormers in a dark oak roof; then the three grander homes
+row with a stone string course and cornice, a bay window between two stone piers and a hooded door for each home,
+the middle home's front plastered white, a chimney stack over each party wall and dormers in a dark oak roof; then the three grander homes
 above. Their beds, chests and rooms are where they were, so homes already built keep working.
 
 The hall's "What next?" page names the households that want a grander home: "Dara and Tomas are Burghers and want a
@@ -163,6 +163,12 @@ worked out from the finished buildings already saved.
 - B106: a style that turns a block into one standing on an axis (stone into deepslate in dark oak) gives it the
   game's default, upright, in renders too; before, the dark oak renders showed the chimneys as floating tops. In game
   they were always whole; `StyleGameTests.chimneysStayWholeInEveryStyle` checks every chimney in every style.
+- B640 (the owner's screenshot, 2026-10-27): the Terrace's bay windows had nothing at their sides, so their glass panes
+  joined only each other and stopped half way across their outer blocks, thin strips of glass with open gaps beside
+  them. Each bay now stands between two stone piers (one shared by the two bays, one in place of the door hood's bracket
+  beside it), and the glass fills the opening. The Builder already shapes every pane, fence and wall it puts down
+  against its real neighbours, as the game does; a test now holds it to that. Terraces already standing get the new
+  bays with the hall's **Refresh to the latest look** (36.21: the old drawing ships for it).
 
 ## Known limits
 
@@ -191,4 +197,8 @@ worked out from the finished buildings already saved.
   `QaGranderHomesGameTests.noMoreThanThreeHouseholdsGetATip`, `QaGranderHomesGameTests.theTipReadsRightForEveryClassAndCount`,
   `QaGranderHomesGameTests.openingABuildersTradesAddsTheGranderHomesOnce`,
   `QaGranderHomesGameTests.onlyTheNearestHallsVillageBringsTheTownhouse`.
+- B640: `B640GameTests.b640TheTerracesFrontPanesJoinTheirNeighbours` (a builder puts the Terrace up: each front pane
+  of the bays and dormers joins both sides, and every pane, fence and wall in it is joined as the game joins it) and
+  `B640GameTests.b640TheFrontPanesJoinAfterASaveAndReloadMidWindows` (the same, saved and loaded while the front glass
+  goes in); both failed on the old drawing.
 - Showcase scenes: `grand_houses`.

@@ -1229,7 +1229,15 @@ TERRACE_ROOF = DARK_OAK
 
 def terrace_bay(b, x, flowers):
     """A box bay window two wide (x, x + 1) standing out a block from the front (z 0) on a stone footing: a brick
-    sill wall, two panes high of glass, a brick slab roof (top slabs); pots of flowers on the sill inside it."""
+    sill wall, two panes high of glass, a brick slab roof (top slabs); pots of flowers on the sill inside it. B640: a
+    stone pier closes each side (x - 1, x + 2) up to the roof, so the glass has a jamb to join on both ends; with air
+    there the panes stopped at the middle of their blocks and stood as thin strips with gaps beside them. A pier takes
+    the place of a door hood's bracket beside it, and two bays side by side share one."""
+    for cx in (x - 1, x + 2):
+        for y in range(0, 4):
+            b.set(cx, y, 0, TERRACE_TRIM)
+        if b.blocks.get((cx, 4, 0), ("minecraft:air",))[0] in ("minecraft:air", "minecraft:cave_air"):
+            slab(b, cx, 4, 0, BRICK, top=True)
     for i, cx in enumerate((x, x + 1)):
         b.set(cx, 0, 0, TERRACE_TRIM)
         b.set(cx, 1, 0, TERRACE_WALL.at(cx, 1, 0))

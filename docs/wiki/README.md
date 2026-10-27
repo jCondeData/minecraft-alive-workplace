@@ -26,6 +26,8 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Gifts](gifts.md): Gift Wrap, the Gift, what villagers think of it, name days and taste files (31.6).
 - [Heart events and life stories](heart-events.md): what villagers tell their friends at 2 to 10 hearts, their
   keepsakes, the life story page and event files (31.7, 31.8).
+- [Quests](quests.md): the quest journal, handing in, tracking, `/workplace quests`, quest places and maps, quest
+  files (31.2, 31.3).
 - [Personal requests](personal-requests.md): a villager's own ask, [I'll help] and [Not now], the six requests,
   deadlines and request files (31.9).
 - [Reputation and titles](reputation.md): standing in each village, what earns and costs it, Friend, Hero and Lord,

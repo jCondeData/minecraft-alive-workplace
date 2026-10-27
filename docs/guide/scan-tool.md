@@ -33,5 +33,8 @@ Sneak-right-click a block to start over.
 
 - **Shared.** What you save goes into the [Blueprint Table](blueprint-table.md)'s library for everyone on the server.
 - **Builders build it** like any other blueprint, from the chests round their table.
+- **Frames, paintings and armor stands come along**, empty: the builder hangs each one up again with an item frame,
+  painting or armor stand from the chests, but never copies what a frame holds or a stand wears. Villagers, animals,
+  dropped items and minecarts aren't scanned.
 
 More in [The Builder and blueprints](builder.md).

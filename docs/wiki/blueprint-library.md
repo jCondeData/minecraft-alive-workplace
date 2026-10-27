@@ -166,12 +166,13 @@ with the switch off. `TableJobsGameTests` (5, 36.6a): `TableJobsGameTests.shared
 "Jobs: Fisherman (1), Butcher/Chef/Rancher (3)", "Beds: 2"), `TableJobsGameTests.bedsOnlyAndNeither`,
 `TableJobsGameTests.aSwitchedOffJobIsLeftOut` (config tailors off), `TableJobsGameTests.theTableSendsAShippedBuildsJobsAndBeds`
 (the Fishers' Hut and the Starter Cottage through `TableServer.details` and over the wire), `TableJobsGameTests.theLinesAreInEnglish`.
-QA's `QaTableJobsGameTests` (5): `QaTableJobsGameTests.everyListedBuildShowsItsOwnJobsAndBeds` (all 141 listed builds and
+QA's `QaTableJobsGameTests` (6): `QaTableJobsGameTests.everyListedBuildShowsItsOwnJobsAndBeds` (all 141 listed builds and
 their 777 styles: each count matches the job blocks and beds counted in its own template, in the exact format, every job's
 name in English), `QaTableJobsGameTests.theStarterCottageShowsTheOwnersExample` ("Jobs: Fisherman (1), Carpenter (1)",
 "Beds: 1"), `QaTableJobsGameTests.aScannedBuildShowsTheJobsAndBedsOfItsBlocks` (two Scan Tool scans, one with neither line),
 `QaTableJobsGameTests.aJobWhoseModIsMissingIsLeftOut` (no Cobblemon), `QaTableJobsGameTests.theLinesReadInThePlayersLanguage`
-(another language's words and names, three beds).
+(another language's words and names, three beds), `QaTableJobsGameTests.aSwitchFlippedAfterTheListingReachesTheListingToo`
+(B570: config physicians turned off and on again after the Table listed every build; the listing's jobs stay the details').
 `TableSearchGameTests` (6, 36.10): `TableSearchGameTests.searchFindsABuildByNameWithItsLevelsUnderIt` ("inn" with Inn
 II and III right under the Inn, "INN" the same, "iii" bringing each build with its third level),
 `TableSearchGameTests.searchFindsABuildById`, `TableSearchGameTests.searchFindsBuildsByTheJobsTheyBring` ("Fisherman"

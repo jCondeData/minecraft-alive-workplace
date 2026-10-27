@@ -5,7 +5,9 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Sentences with a number in them (ROADMAP 24.5: "1 parcel", "2 parcels", never "parcel(s)"). A counted message has
@@ -116,6 +118,17 @@ public final class Words {
 		ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
 		String key = "plural.aliveworkplace." + id.getNamespace() + "." + id.getPath();
 		return Language.getInstance().has(key) ? Component.translatable(key) : name;
+	}
+
+	/**
+	 * A creature's plural for a count above one (B568: "Defeat 2 Zombies"), {@code plural.aliveworkplace.entity.<namespace>.<path>},
+	 * or null when the lang has none (a modded creature): the caller then writes "Defeat Grub ×2" instead of guessing.
+	 */
+	@Nullable
+	public static Component entityPlural(EntityType<?> type) {
+		ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(type);
+		String key = "plural.aliveworkplace.entity." + id.getNamespace() + "." + id.getPath();
+		return Language.getInstance().has(key) ? Component.translatable(key) : null;
 	}
 
 	private Words() {

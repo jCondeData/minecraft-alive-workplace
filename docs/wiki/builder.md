@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21
 
 ## 1. What a player sees
 
@@ -38,6 +38,11 @@ stay plain (`scans/<player>/jesse_s_caf`); the name is kept by id in the world's
 uploaded file such as `Zoë's Hut.litematic` keeps its name the same way; a plain `zoe_hut.nbt` is still "Zoe Hut", as
 before. Builds saved before this keep the names made from their ids. Shape Planner builds are named by the mod, never
 typed, so they're unchanged.
+A scan keeps the box's item frames, glow item frames, paintings and armor stands (B441), saved empty
+(`BlueprintEntities.keepBuildable`): no framed item, no armor or held items on a stand, and nothing else that moves, so a
+villager, a mob, a dropped item or a minecart with its load is never copied. The builder puts them up last, as it does a
+starter build's frames, each paid with its item from the chests; one with no item there is left out. Scans saved before
+this have none and load as before.
 
 ## 2. How it works
 
@@ -76,7 +81,7 @@ down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing 
 needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
 other carried; B519: a helper at the chests puts back what its stretch no longer needs, such as the walls' last
 planks once the crew is on the lanterns), and empties the bag at the chests when it finishes or
-stops helping. A build placed mirrored (the mirror button, or a Steward's street mirroring its houses) keeps its double chests whole: each half swaps left and right with the mirror, whichever way the chest faces (B438). The mod's own facing blocks turn and mirror with the build as vanilla's do: a Storehouse built turned a quarter has its Storehouse block facing the way the building faces, and the same goes for the Village Hall, Mailbox, Shop Counter and Grave blocks (B448). One built facing the old way, in a turned build from before, still counts as built: it is never broken or repaired, so what it holds stays. Item frames, glow item frames, paintings and armor stands are put up turned and mirrored with the build too: each hangs on the wall the blueprint hangs it on and faces the way the turned, mirrored blueprint faces it, so a Guildhall placed mirrored and turned a quarter gets its item frame, a two-wide painting hangs where it was drawn, and an armor stand faces the way it was scanned (B439). Builders never copy what is inside containers, nor what a block holds in its look (B429, B434, B449): a scanned lava or powder snow cauldron is built as an empty cauldron (it asks only a cauldron), a ready composter at level 0, a full beehive or bee nest with no honey, a charged respawn anchor uncharged, a chiseled bookshelf or brewing stand showing no books or bottles, and a grave empty (never the dead villager it held). Crops are planted, never built ripe: wheat and other crops, stems, nether wart, a sweet berry bush and cocoa go in at age 0, cave vines without glow berries; a lectern or jukebox shows no book or disc, a Mailbox shows no mail and gives no comparator signal (B536), a furnace, smoker or blast furnace is built cold (a campfire stays lit as drawn), and a bee nest or hive holds no bees (B493-B496). A crop that grew, a furnace lit or a Mailbox given mail since still counts as built. A water cauldron is still built full, as the shipped blueprints have it (water is free in vanilla). One filled by a player since still counts as built. The blueprint's tooltip and a Book and Quill list what
+stops helping. A build placed mirrored (the mirror button, or a Steward's street mirroring its houses) keeps its double chests whole: each half swaps left and right with the mirror, whichever way the chest faces (B438). The mod's own facing blocks turn and mirror with the build as vanilla's do: a Storehouse built turned a quarter has its Storehouse block facing the way the building faces, and the same goes for the Village Hall, Mailbox, Shop Counter and Grave blocks (B448). One built facing the old way, in a turned build from before, still counts as built: it is never broken or repaired, so what it holds stays. Item frames, glow item frames, paintings and armor stands are put up turned and mirrored with the build too: each hangs on the wall the blueprint hangs it on and faces the way the turned, mirrored blueprint faces it, so a Guildhall placed mirrored and turned a quarter gets its item frame, a two-wide painting hangs where it was drawn, and an armor stand faces the way it was scanned (B439). Builders never copy what is inside containers, nor what a block holds in its look (B429, B434, B449): a scanned lava or powder snow cauldron is built as an empty cauldron (it asks only a cauldron), a ready composter at level 0, a full beehive or bee nest with no honey, a charged respawn anchor uncharged, a chiseled bookshelf or brewing stand showing no books or bottles, and a grave empty (never the dead villager it held). A fluid a block keeps in its data is never copied either (B486): a scanned Create fluid tank, spout, basin or item drain holding lava, honey, chocolate or a potion, or any mod's tank, is built empty, keeping its size and windows as drawn. Crops are planted, never built ripe: wheat and other crops, stems, nether wart, a sweet berry bush and cocoa go in at age 0, a pitcher crop one block tall as a planted pod (B560), cave vines without glow berries; a lectern or jukebox shows no book or disc, a Mailbox shows no mail and gives no comparator signal (B536), a furnace, smoker or blast furnace is built cold (a campfire stays lit as drawn), and a bee nest or hive holds no bees (B493-B496). A crop that grew, a furnace lit or a Mailbox given mail since still counts as built. A water cauldron is still built full, as the shipped blueprints have it (water is free in vanilla). One filled by a player since still counts as built. The blueprint's tooltip and a Book and Quill list what
 is still missing (the blueprint and the book in either hand, B365). A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
 repair counts them (`BuildPlan.supplyExclude`, B261): the building stands, so a Storehouse Shed being repaired, or a
 shed the bench's chests stand in, hands the Builder what its chests hold.
@@ -316,7 +321,9 @@ claims and trip counts.
 
 - **How far a build may be (36.20, the owner's "village-wide").** Anywhere in the village the builder's table stands in
   is in reach, however big the village: within the Village Hall's radius (`villageHallRadius`) or in a cell painted into
-  one of the City Plan's zones. Outside the village, a build's middle must be within `maxSiteDistance` (128) of the
+  one of the City Plan's zones, the table itself standing in either (a table in a zone painted in the plan's corner,
+  past the radius, reaches the whole village too; B550, B557; QA's `QaReachZoneCornerGameTests` and
+  `QaVillageReachBugTests`). Outside the village, a build's middle must be within `maxSiteDistance` (128) of the
   table. A spot past it is refused with its distance rounded up, so one just past the reach reads past it, and naming the
   village when the table stands in one: "That spot is outside Mapleridge and 140 blocks from the builder's Blueprint
   Table — keep it within 128." (`assign.too_far_village`; with no village round the table, `assign.too_far`: "That spot
@@ -337,8 +344,6 @@ claims and trip counts.
   more builds than fit, the last ones are counted under "more" rather than shown.
 - A site in unloaded chunks, queued, or without a Builder is not watched for stalls.
 - The table preview leaves out fluids (water and lava have no block model) and draws blocks at full brightness.
-- With Create, the fluid in a scanned fluid tank or spout is still copied, so each copy holds it for free (B486); a
-  depot's, deployer's or basin's item is not.
 - Not tested here: the pack-server soak result of the last run (see the soak scene's pass or fail on the showcase).
 
 ## 8. Proof
@@ -358,7 +363,11 @@ the page for another to finish.
 
 Compat tests (QA, lane E, from "Builders never copy what is inside containers"): `QaPastureCopyCompatTests` (a scanned
 Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),
-`QaCreateItemsHeldCompatTests` (a scanned Create depot, deployer and basin each holding a diamond are built empty).
+`QaCreateItemsHeldCompatTests` (a scanned Create depot, deployer and basin each holding a diamond are built empty),
+`QaCreateFluidsCompatTests`, `QaCreateDrainFluidsCompatTests` and `QaCreateSchematicFluidsCompatTests` (B486: a Create
+fluid tank, spout, basin and item drain each holding a bucket of lava, scanned or uploaded as a schematic, are built from
+exactly their material list holding no lava). `BuiltEmptyGameTests.aFluidHeldInBlockDataIsNotCopied` (B486, without
+Create: Create's, Forge's and Fabric's saved fluids are dropped, the tank's size and capacity kept).
 
 GameTests (`src/gametest/java/.../test/`): `BlueprintsStayGameTests.everyBlueprintKeepsItsLampsPathsAndBeds` (B537-B539: in every shipped blueprint no standing lantern, candle or torch is on a top that can't hold it, no dirt path or farmland under a solid block, no half bed; with QaWonderDesignsGameTests' qaWonderStagesStand and qaWonderBedsWhole now run for the Great Library, the Hanging Gardens and the Observatory too), `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
 `BuilderChaosGameTests` (5 seeds, stuck recovery), `QaBuilderStuckGameTests` (6, 23.2: a 3-deep hole, an iron-door room, a deep well of water, a lava moat, a fence pen with a shut gate, and the hole through a restart, each three times: out within 600 ticks, nothing placed or of the trap broken, the build whole), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
@@ -485,7 +494,12 @@ hanging lantern, an upside-down stair and a ladder, scanned with real clicks and
 block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`). `QaScanPotGameTests`
 (1: a decorated pot of four pottery sherds on a stone, scanned with real clicks and built from a chest holding one plain pot,
 shatters into no sherd when broken with a pickaxe, while the scanned pot itself gives its four,
-`aScannedSherdPotGivesNoFreeSherds`).
+`aScannedSherdPotGivesNoFreeSherds`). `ScanEntitiesGameTests` (2, B441: a room scanned
+with real clicks holding a framed diamond, a painting, an armor stand in a helmet, a cow, a villager, a dropped diamond
+and a loaded chest minecart keeps only the frame, painting and stand, empty; built again a quarter turned from a chest it
+gets an empty frame facing the turned way and the painting, both paid, and no stand with none in the chest; with one, a
+bare stand, the helmet left in the chest) and `QaScanFramesGameTests` (1, QA from B441: a scanned room's item frame and
+armor stand are built again).
 
 Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes),
 `refresh_old_house` (36.21: a Stone House of its first drawing, the Refresh button with what changes, the house after), `builders` (three builders, three starter builds), `soak` (10 builders,

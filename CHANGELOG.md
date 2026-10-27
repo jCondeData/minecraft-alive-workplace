@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Server config: a whole number too big to count in ("maxSiteDistance": 3000000000) is now clamped to the most allowed value instead of wrapping round to the least (or any value), for every whole-number option and price; and a config file that is valid JSON but not a {...} object (a list, a bare word, a number) is now kept as aliveworkplace.json.bad before the defaults are written over it (B477).
 - Lairs and bounties: a captain who is a zombie of some kind (the Pirate Captain, a drowned) now always has just his own extra health over his mob's; before, on hard difficulty in a long-played spot vanilla now and then made him a "leader zombie" as well, and a Pirate Captain could come with about 180 health instead of 60 (B579).
 - Realms: a full realm's refusal now starts with a capital, "The Barony of Ashvale already holds 2 villages, as many as a realm may."; before, it began "the Barony of ...".
 - Village Hall: with `villageGrowthCap` 0 the People icon's growth line says "Villages don't grow on this server"; before, it said "The village is full (0 villagers)" right under the census.

@@ -3421,7 +3421,7 @@ write their own stories; nothing waits forever on a player.
     the open postern, and Pell joining after); the tribute takes a third of the treasury; the ending pays;
   - showcase scene `bandit_king` (GIF: the three banners, the fort rising a stage a day, the storm with allies, the
     King falling).
-- [x] **31.17** (approved 2026-10-12) **The Sickness, I: eight far herbs.** Eight new plant blocks with their items, drawn with the
+- [x] **31.17** (approved 2026-10-12) (verified 2026-10-27: QaSicknessGameTests: herb biome tags hold every spec biome and stay open to datapacks, patches on snowy ground; QaLostCaravanGameTests: trail out of order/twice, action-bar directions, marks at 96 not 97 and never over player blocks, trail save/reload; 31.18 and 31.20 wait on B617, B618, B624-B626) **The Sickness, I: eight far herbs.** Eight new plant blocks with their items, drawn with the
   pixel-art skill like vanilla's flowers. They never generate in the world: only an arc plants them, so no world
   changes. Each grows in its biomes (a biome tag of ours, `aliveworkplace:herb_biomes/<herb>`, so datapacks and biome
   mods can add to it):
@@ -3471,7 +3471,7 @@ write their own stories; nothing waits forever on a player.
     Physician, else Doctor Wren); the herb choice with a stubbed locator (forced biome answers); the brew and the cure
     round; the failure path;
   - showcase scene `sickness` (GIF: the coughing village, a herb patch, the cure going round).
-- [x] **31.19** (approved 2026-10-12) **The Lost Caravan, I: the wreck and the trail.** Builds with the minecraft-architect skill
+- [x] **31.19** (approved 2026-10-12) (verified 2026-10-27: QaSicknessGameTests: herb biome tags hold every spec biome and stay open to datapacks, patches on snowy ground; QaLostCaravanGameTests: trail out of order/twice, action-bar directions, marks at 96 not 97 and never over player blocks, trail save/reload; 31.18 and 31.20 wait on B617, B618, B624-B626) **The Lost Caravan, I: the wreck and the trail.** Builds with the minecraft-architect skill
   (`STYLE.md`, rendered): `story/caravan_wreck` (the settlers' covered wagon on its side, a broken wheel, spilled
   crates and barrels, a lantern in the grass); `story/raiders_stockade` (a small pillager stockade: a palisade, a
   tent, a campfire, a loot chest and a cage of iron bars with a gate for a captive); and five trail marks,

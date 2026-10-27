@@ -319,12 +319,12 @@ public final class Pacts {
 		String key = !ENABLED || alliance && !ALLIANCES ? "off"
 			: !Realms.mayRule(server, from, player) ? "not_yours"
 			: owner == null || !strangers(server, from, to) ? "not_stranger"
-			: hall.distSqr(target) > (double) Caravans.RANGE * Caravans.RANGE ? "too_far"
+			: hall.distSqr(target) > (double) range(level, hall) * range(level, hall) ? "too_far"
 			: Feuds.feuding(server, from, to) ? "feud"
 			: data.pact(from, to) != null && (!alliance || data.pact(from, to).alliance()) ? "already"
 			: data.offer(from, to) != null ? "offered" : null;
 		if (key != null) {
-			return new Result(false, Component.translatable("message.aliveworkplace.pact.refused_" + key, them, Caravans.RANGE).withStyle(ChatFormatting.RED));
+			return new Result(false, Component.translatable("message.aliveworkplace.pact.refused_" + key, them, blocks(level, hall)).withStyle(ChatFormatting.RED));
 		}
 		data.offers.add(new Offer(from, to, alliance, owner, now(server)));
 		data.setDirty();
@@ -340,6 +340,19 @@ public final class Pacts {
 		return new Result(true, Component.translatable("message.aliveworkplace.pact.offered_" + kind, them, ownerName, LAPSE / 24000).withStyle(ChatFormatting.GREEN));
 	}
 
+	/**
+	 * How far the village at {@code hall} deals: its caravan range, the same the tab lists neighbors by (twice as far with
+	 * the Lighthouse, 35.12; B595).
+	 */
+	static int range(ServerLevel level, BlockPos hall) {
+		return io.github.jcondedata.aliveworkplace.wonder.LighthousePowers.caravanRange(level, hall);
+	}
+
+	/** {@link #range} as a player reads it: "2,048". */
+	static String blocks(ServerLevel level, BlockPos hall) {
+		return String.format(java.util.Locale.ROOT, "%,d", range(level, hall));
+	}
+
 	/** {@code player} accepts, for the village at {@code hall}, the offer from {@code from}. */
 	public static Result accept(ServerLevel level, BlockPos hall, GlobalPos from, ServerPlayer player) {
 		MinecraftServer server = level.getServer();
@@ -351,7 +364,7 @@ public final class Pacts {
 		String key = !ENABLED ? "off" : offer == null || now(server) - offer.sent() > LAPSE ? "no_offer"
 			: !Realms.mayRule(server, at, player) ? "not_yours" : offer.alliance() && !ALLIANCES ? "off" : null;
 		if (key != null) {
-			return new Result(false, Component.translatable("message.aliveworkplace.pact.refused_" + key, them, Caravans.RANGE).withStyle(ChatFormatting.RED));
+			return new Result(false, Component.translatable("message.aliveworkplace.pact.refused_" + key, them, blocks(level, hall)).withStyle(ChatFormatting.RED));
 		}
 		data.removeOffers(from, at);
 		data.put(new Pact(from, at, offer.alliance(), now(server), -1, false, false));
@@ -372,7 +385,7 @@ public final class Pacts {
 		Component us = Realms.name(server, at);
 		String key = offer == null ? "no_offer" : !Realms.mayRule(server, at, player) ? "not_yours" : null;
 		if (key != null) {
-			return new Result(false, Component.translatable("message.aliveworkplace.pact.refused_" + key, them, Caravans.RANGE).withStyle(ChatFormatting.RED));
+			return new Result(false, Component.translatable("message.aliveworkplace.pact.refused_" + key, them, blocks(level, hall)).withStyle(ChatFormatting.RED));
 		}
 		data.offers.remove(offer);
 		data.setDirty();
@@ -394,7 +407,7 @@ public final class Pacts {
 		Component us = Realms.name(server, at);
 		String key = pact == null ? "no_pact" : !Realms.mayRule(server, at, player) ? "not_yours" : pact.endsAt() >= 0 ? "ending" : null;
 		if (key != null) {
-			return new Result(false, Component.translatable("message.aliveworkplace.pact.refused_" + key, them, Caravans.RANGE).withStyle(ChatFormatting.RED));
+			return new Result(false, Component.translatable("message.aliveworkplace.pact.refused_" + key, them, blocks(level, hall)).withStyle(ChatFormatting.RED));
 		}
 		UUID owner = Realms.ownerOf(server, other);
 		String kind = pact.alliance() ? "alliance" : "pact";
@@ -545,16 +558,24 @@ public final class Pacts {
 				if (Feuds.ENABLED && !Feuds.feuding(server, at, other)) {
 					Feuds.declareButton(menu, slot++, level, hall, v, again);
 				}
-				if (!ENABLED || shown.contains(other) || Data.get(server).offer(at, other) != null || slot + 1 >= ChoiceMenu.SIZE) {
+				if (!ENABLED || Data.get(server).offer(at, other) != null || slot + 1 >= ChoiceMenu.SIZE) {
+					continue;
+				}
+				// B582: a trade-pact partner (listed above) can still be offered an alliance; accepting turns the pact into one
+				Pact pact = Data.get(server).pact(at, other);
+				boolean partner = pact != null && !pact.alliance() && to(server, at).stream().noneMatch(o -> o.from().equals(other));
+				if (shown.contains(other) && !partner) {
 					continue;
 				}
 				Component owner = Component.literal(Realms.ownerName(server, other));
-				menu.button(slot++, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.pact.offer_pact", v.name()), ChatFormatting.WHITE,
-					VillageHallScreen.line(Component.translatable("screen.aliveworkplace.pact.owner", owner), ChatFormatting.GRAY)), p -> {
-						Chat.actionBar(p, offer(level, hall, v.hall(), false, p).message());
-						again.run();
-					});
-				if (ALLIANCES) {
+				if (!partner) {
+					menu.button(slot++, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.pact.offer_pact", v.name()), ChatFormatting.WHITE,
+						VillageHallScreen.line(Component.translatable("screen.aliveworkplace.pact.owner", owner), ChatFormatting.GRAY)), p -> {
+							Chat.actionBar(p, offer(level, hall, v.hall(), false, p).message());
+							again.run();
+						});
+				}
+				if (ALLIANCES && slot < ChoiceMenu.SIZE) {
 					menu.button(slot++, VillageHallScreen.icon(Items.SHIELD, Component.translatable("screen.aliveworkplace.pact.offer_alliance", v.name()), ChatFormatting.WHITE,
 						VillageHallScreen.line(Component.translatable("screen.aliveworkplace.pact.owner", owner), ChatFormatting.GRAY)), p -> {
 							Chat.actionBar(p, offer(level, hall, v.hall(), true, p).message());
@@ -564,7 +585,7 @@ public final class Pacts {
 			}
 			if (slot == VillageHallScreen.FIRST_ROW) {
 				menu.button(slot, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.pact.none"), ChatFormatting.GRAY,
-					VillageHallScreen.line(Component.translatable("screen.aliveworkplace.pact.none_hint", Caravans.RANGE), ChatFormatting.DARK_GRAY)), null);
+					VillageHallScreen.line(Component.translatable("screen.aliveworkplace.pact.none_hint", blocks(level, hall)), ChatFormatting.DARK_GRAY)), null);
 			}
 		}
 	}

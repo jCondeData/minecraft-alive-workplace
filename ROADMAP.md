@@ -1995,7 +1995,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: GameTests: the bout is the same for the same seed; the chart is sane (Water on Fire 2×, Normal on Ghost
   0×); a bout between two trainers ends with a winner and every Pokémon entity gone; a themed team follows the theme; a
   delegate's banked XP reaches the real Leader on load; showcase scene `cup_bout` with its GIF.
-- [x] **28.19** (approved 2026-10-11) **Cup day.** The Cup is the host's festival, from morning to the final:
+- [x] **28.19** (approved 2026-10-11) (verified 2026-10-27: lane D QA 2026-10-27: QaCupDayGameTests [4: delegates at 999/1000, fair = market + 2, south delegate from the south, no job or bed, entity save, stands 5999/6000, festivalCup off mid-day; walkover at 2 min pays 100,000, City half again, sentences] and QaCupChampionGameTests [4: a player champion's village gets banner and pride, no XP, exact chronicle line; a two-Cup holder keeps its banner; the banner never replaces a block; an old holder away takes it down at its round]; 28.20 waits for B563 [[Watch]], 28.22 for B565 [clauses] and B566 [Workers' banner color]) **Cup day.** The Cup is the host's festival, from morning to the final:
   - Delegates: from 1000 the far villages' entrants arrive, each a visiting villager with its Leader's name, a Trainer
     Leader's outfit and "of <village>", walking in from the village edge on the side its home lies, to the Arena
     (attachment `CUP_DELEGATE`: home hall, the Leader's UUID, tier; never takes a job or a bed; leaves at dawn out of
@@ -2037,7 +2037,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   doubles theme, at the theme's level; a win moves them on and pays; an absent player loses by walkover after two
   minutes; fleeing counts as a loss; a bout between two players starts with both teams; showcase scene `cup_match`
   (the battle at the ring, the stands behind).
-- [x] **28.21** (approved 2026-10-11) **Champions.** When the final ends:
+- [x] **28.21** (approved 2026-10-11) (verified 2026-10-27: lane D QA 2026-10-27: QaCupDayGameTests [4: delegates at 999/1000, fair = market + 2, south delegate from the south, no job or bed, entity save, stands 5999/6000, festivalCup off mid-day; walkover at 2 min pays 100,000, City half again, sentences] and QaCupChampionGameTests [4: a player champion's village gets banner and pride, no XP, exact chronicle line; a two-Cup holder keeps its banner; the banner never replaces a block; an old holder away takes it down at its round]; 28.20 waits for B563 [[Watch]], 28.22 for B565 [clauses] and B566 [Workers' banner color]) **Champions.** When the final ends:
   - The champion's village holds the Cup until the host's next Cup: its name goes on the roll of champions (Cup page),
     in every circuit village's chronicle, on its hall's name tooltip, in other halls' trade-route lists and on the
     Village Map's legend ("holders of the Thornholm Cup").

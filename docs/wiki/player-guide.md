@@ -87,5 +87,12 @@ The questbook: `QuestbookCompatTests` (every item, entity, block and advancement
 and unique, dependencies ours, emeralds-only rewards) and `QuestbookInstallGameTests` (copies once, never overwrites,
 waits for expansions and mods). `VillageMomentGameTests` (7): each of 36.2's moments granted by its event (and
 not by a refused edict, an empty treasury, an Artisan's rise or a fall), never twice, and a village that already
-qualifies caught up by the hall's round. `generate.py` checks that every quest in its `MOMENT_QUESTS` has that
+qualifies caught up by the hall's round. `QaVillageMomentsGameTests` (9, from the spec): the eight advancements and
+their titles; each moment for a player at the village and not one 128 blocks away; a couple's baby through
+`Families.born`, and none with no hall; research jumping past 3 and 7 at once; an edict and a realm edict (for the
+capital's village), a refused one granting nothing; refused foundings (a Village, a stranger) granting nothing; the
+takings needing a whole emerald, refused for a stranger, and granted to the collector away from the village; and a
+village saved with a baby and a Noble household (no Burgher) catching up Born here, Burghers and Nobles at dawn, and a
+capital its realm and realm edict. The takings are not caught up at dawn: they tick off at the next collection.
+`generate.py` checks that every quest in its `MOMENT_QUESTS` has that
 moment's advancement as its only task and says it completes by itself. `python3 tools/questbook/generate.py --check` says whether the chapters are up to date.

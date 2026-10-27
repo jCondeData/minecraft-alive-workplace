@@ -406,6 +406,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatFixesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatRepairGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageMomentGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageMomentsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReadingFocusGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SignpostGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HiredBandGameTests",

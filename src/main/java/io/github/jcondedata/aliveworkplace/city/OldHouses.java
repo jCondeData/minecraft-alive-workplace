@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.people.Homes;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -31,6 +32,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 /**
@@ -59,8 +61,13 @@ public final class OldHouses {
 	public static final float VILLAGE_SHARE = 0.85f;
 	/** A finished survey is done again after this long (a day). */
 	public static final long RESURVEY_TICKS = 24000L;
-	/** The most blocks one block of the fill reads: its 6 neighbours, and for a log among them, that log's 6 (natural leaves?). */
-	private static final int MOST_READS_PER_BLOCK = 6 + 6 * 6;
+	/** The tallest trunk a tree check climbs: a log column taller than a house can be is a tree's. */
+	private static final int MOST_TRUNK = MAX_Y;
+	/**
+	 * The most blocks one neighbour of the fill reads: itself, and for a log, the logs above it up to {@link #MOST_TRUNK},
+	 * the block over the column and the 4 round its top (B517).
+	 */
+	private static final int MOST_READS_PER_NEIGHBOUR = 1 + MOST_TRUNK + 1 + 4;
 
 	/** What a measured house is. */
 	public enum Verdict {
@@ -207,6 +214,11 @@ public final class OldHouses {
 		/** Blocks the fill has decided on (in the house or not); the read cache also holds blocks only looked at round a log. */
 		private final LongSet visited = new LongOpenHashSet();
 		private final LongArrayFIFOQueue queue = new LongArrayFIFOQueue();
+		/** Logs already judged: true for a natural tree's (B517). */
+		private final Long2BooleanOpenHashMap trees = new Long2BooleanOpenHashMap();
+		/** The block whose neighbours the fill is going through, and the next direction (6: take the next from the queue). */
+		private long current;
+		private int direction = 6;
 		private int minX, minY, minZ, maxX, maxY, maxZ;
 		private int village;
 		private boolean container;
@@ -223,7 +235,7 @@ public final class OldHouses {
 		}
 
 		public boolean done() {
-			return started && (stopped != null || queue.isEmpty());
+			return started && (stopped != null || queue.isEmpty() && direction >= 6);
 		}
 
 		/** Blocks read so far. */
@@ -254,43 +266,102 @@ public final class OldHouses {
 				}
 			}
 			BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
-			while (stopped == null && !queue.isEmpty() && budget - (reads - before) >= MOST_READS_PER_BLOCK) {
-				long pos = queue.dequeueLong();
-				for (Direction d : Direction.values()) {
-					at.set(pos).move(d);
-					long n = at.asLong();
-					if (!visited.add(n)) {
-						continue;
-					}
-					BlockState state = read(at);
-					if (state == null) {
-						stopped = Verdict.UNLOADED;
+			Direction[] directions = Direction.values();
+			// a neighbour at a time, so a log's tree check never takes the reads of a whole block's six
+			while (stopped == null && budget - (reads - before) >= MOST_READS_PER_NEIGHBOUR) {
+				if (direction >= 6) {
+					if (queue.isEmpty()) {
 						break;
 					}
-					if (natural(state) || state.is(BlockTags.LOGS) && naturalTree(at)) {
-						continue;
-					}
-					accept(n, state);
-					if (stopped != null) {
-						break;
-					}
+					current = queue.dequeueLong();
+					direction = 0;
 				}
+				at.set(current).move(directions[direction++]);
+				long n = at.asLong();
+				if (!visited.add(n)) {
+					continue;
+				}
+				BlockState state = read(at);
+				if (state == null) {
+					stopped = Verdict.UNLOADED;
+					break;
+				}
+				if (natural(state) || state.is(BlockTags.LOGS) && naturalTree(at.immutable(), state)) {
+					continue;
+				}
+				accept(n, state);
 			}
 			return reads - before;
 		}
 
-		/** A log touching leaves that grew is a natural tree's. */
-		private boolean naturalTree(BlockPos log) {
-			BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+		private static boolean naturalLeaves(BlockState state) {
+			return state != null && state.getBlock() instanceof LeavesBlock && state.hasProperty(LeavesBlock.PERSISTENT)
+				&& !state.getValue(LeavesBlock.PERSISTENT);
+		}
+
+		/**
+		 * Whether a log is a natural tree's (B517). A standing log is judged by its trunk, the column of standing logs it is
+		 * in: a tree's when the column is taller than a house can be, when grown leaves sit on its top, or when nothing built
+		 * is on its top and grown leaves touch it there. A house's posts carry its roof, so leaves that grew against a post
+		 * never take it out of the house, and a trunk against the wall stays out from its root up. A lying log (a beam, a
+		 * branch) is a tree's when grown leaves touch it and nothing built but logs does.
+		 */
+		private boolean naturalTree(BlockPos log, BlockState state) {
+			long key = log.asLong();
+			if (trees.containsKey(key)) {
+				return trees.get(key);
+			}
+			if (!state.hasProperty(BlockStateProperties.AXIS) || state.getValue(BlockStateProperties.AXIS) == Direction.Axis.Y) {
+				List<Long> column = new ArrayList<>();
+				column.add(key);
+				BlockPos.MutableBlockPos at = log.mutable();
+				BlockState above;
+				boolean tree;
+				while (true) {
+					at.move(Direction.UP);
+					above = read(at);
+					if (above == null || !standingLog(above) || column.size() > MOST_TRUNK) {
+						break;
+					}
+					column.add(at.asLong());
+				}
+				if (above == null) {
+					tree = false; // unloaded above: the fill stops at it anyway
+				} else if (column.size() > MOST_TRUNK || naturalLeaves(above)) {
+					tree = true;
+				} else if (natural(above)) {
+					BlockPos top = at.below();
+					tree = false;
+					for (Direction d : Direction.Plane.HORIZONTAL) {
+						if (naturalLeaves(read(top.relative(d)))) {
+							tree = true;
+							break;
+						}
+					}
+				} else {
+					tree = false;
+				}
+				for (long l : column) {
+					trees.put(l, tree);
+				}
+				return tree;
+			}
+			boolean leaves = false;
 			for (Direction d : Direction.values()) {
-				at.setWithOffset(log, d);
-				BlockState state = read(at);
-				if (state != null && state.getBlock() instanceof LeavesBlock && state.hasProperty(LeavesBlock.PERSISTENT)
-					&& !state.getValue(LeavesBlock.PERSISTENT)) {
-					return true;
+				BlockState n = read(log.relative(d));
+				if (naturalLeaves(n)) {
+					leaves = true;
+				} else if (n != null && !natural(n) && !n.is(BlockTags.LOGS)) {
+					trees.put(key, false);
+					return false;
 				}
 			}
-			return false;
+			trees.put(key, leaves);
+			return leaves;
+		}
+
+		private static boolean standingLog(BlockState state) {
+			return state.is(BlockTags.LOGS) && (!state.hasProperty(BlockStateProperties.AXIS) || state.getValue(BlockStateProperties.AXIS) == Direction.Axis.Y);
 		}
 
 		private BlockState read(BlockPos pos) {

@@ -326,18 +326,19 @@ public class MinerGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** The marker's choices: pits, a strip mine here, then strip mines down a shaft; strip mines may be longer. */
+	/** The marker's choices: pits (the deeper ones too, 36.22), a strip mine here, then strip mines down a shaft; strip mines may be longer. */
 	//$ gametest 'net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE)
 	public void quarryMarkerOffersStripMinesDownAShaft(GameTestHelper helper) {
 		QuarryData data = new QuarryData(java.util.Optional.of(helper.getLevel().dimension().location()), java.util.Optional.of(new BlockPos(0, 70, 0)),
 			java.util.Optional.of(new BlockPos(40, 68, 9)), 64);
 		java.util.List<String> seen = new java.util.ArrayList<>();
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 8; i++) {
 			data = data.next();
 			seen.add(data.depth() + data.stripLevel().map(l -> "@" + l).orElse(""));
 		}
-		helper.assertTrue(seen.equals(java.util.List.of("2", "2@16", "2@-16", "2@-53", "4")), "the marker cycles " + seen);
+		// 36.22: the deeper pits (96, 128, down to bedrock: -1) come after 64, before the strip mines
+		helper.assertTrue(seen.equals(java.util.List.of("96", "128", "-1", "2", "2@16", "2@-16", "2@-53", "4")), "the marker cycles " + seen);
 		QuarryData diamonds = data.withDepth(QuarryData.STRIP_MINE).next().next().next();
 		helper.assertTrue(diamonds.stripLevel().equals(java.util.Optional.of(-53)), "expected diamonds, got " + diamonds);
 		BoundingBox box = diamonds.area(-59).orElseThrow();

@@ -16,6 +16,12 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- Miners dig deeper as they level up: the Quarry Marker now also offers 96 blocks (Journeyman miners and up), 128
+  (Expert and up) and down to just above bedrock (Master). A miner handed a deeper marker than their level allows
+  digs to their own depth, says which level the rest needs, and keeps going down if they level up before they finish;
+  the spiral stair goes all the way down (36.22).
+
 ### Fixed
 - The Village Hall's golem list says "...and 1 more golem" with one golem over the shown seven (B629).
 - Old houses measure right beside a tall dead trunk: a bare log column taller than a house can be, standing against the wall, is now judged from its root and left out wherever the measuring reaches it, so renewing the house no longer takes the trunk's upper part down with it (B599).

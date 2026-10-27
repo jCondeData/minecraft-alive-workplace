@@ -21,6 +21,8 @@ asks for the steps, `latest.log` and any crash report).
 - Class chatter: villagers now talk of wanting wine or new clothes when their class asks for them and they haven't had any lately, of the Gazette the week they read it, and of the tavern near their home (three lines each); before, only a household's rise and fall had lines.
 - Village-wide reach: a worker whose block stands in a City Plan zone painted in the plan's corner, past the Village Hall's radius, now reaches the whole village, as everywhere else in it; before, a field or site across the village was refused as if the worker were in no village.
 - Mourning: a villager who dies inside the village but far from the hall up a hill is now mourned like any other (her family grieves, players in the village are told, the chronicle gives her job and age, the family book dates her death); before, only deaths within the hall's radius in a straight line counted. Players are told when they stand anywhere in the village.
+- Builders now plant a scanned ripe pitcher crop as a young one-block crop, the way you plant a pitcher pod; before, it came out full grown and broke into a free pitcher plant.
+- The Village Hall's Classes tab and page now count only the households inside the village's circle; villagers out in the corners beyond it were counted too.
 - The Village Hall's What next? tip for a plain diet said "Keep 3 kinds of meal in the store", the varied diet's number; it now says 2.
 
 ## 0.150.0 — 2026-10-26

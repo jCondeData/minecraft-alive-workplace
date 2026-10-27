@@ -541,6 +541,8 @@
 			"io.github.jcondedata.aliveworkplace.test.GiftedBornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGiftedLaneCGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendGuestsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendGuestsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendGuestsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.MasterArchitectGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PathfinderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MerchantPrinceGameTests",

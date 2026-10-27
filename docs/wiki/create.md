@@ -480,7 +480,9 @@ tested (the GameTests use the table as the server does).
   deployer and a basin, each holding a diamond, scanned into a blueprint and built from exactly its material list, are
   built holding nothing. `QaCreateFluidsCompatTests`, `QaCreateDrainFluidsCompatTests` and
   `QaCreateSchematicFluidsCompatTests` (B486): a fluid tank, spout, basin and item drain holding lava, scanned or
-  uploaded as a schematic, are built empty.
+  uploaded as a schematic, are built empty. QA's `QaBuilderFixes1027CompatTests` (1, B486): a two-block-tall tank
+  holding two buckets of Create's honey and a spout holding a bucket of water, scanned and built turned a quarter and
+  mirrored from exactly the material list, go up whole and empty.
   `QaCreateStoresHeldCompatTests` (lane E's QA): the same for a millstone (holding wheat), a chute, an item vault, a
   mechanical crafter and a toolbox.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)

@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Habitat Keeper (with Cobblemon): a Field Marker spot just over 32 blocks from her pasture on a diagonal (say 32 east and 5 south) is now refused with the "lure spots go within 32" line; before, she took it and then never set a snack out there.
+- Wonders: when a Wonder's lead dies or is retrained mid-stage, the builder who takes the part over is named as the lead on the Foundation Stone and the hall at once, and the old lead stops counting on the crew; before, the stone showed "?" (or the retrained farmer's name) until the next stage.
 - Steward: a lane he lays from a finished house's door, and his half of a road to another village, no longer run through a spot where a player placed or broke blocks; only a road you drew on the City Plan yourself may cross one.
 - Old houses: a tree that grew next to an old village house no longer changes the house. A trunk against its wall is left out (before, the house measured a block too tall and a renewal could take the trunk down), and leaves touching the house's own log posts no longer drop those posts out of it (a renewal could leave one standing).
 - Defense: Palisade II's fighting step is now a row of battle stations for your archers, as many as the Palisade's walkway had; before, upgrading a Palisade took every archer's station off the wall. The step is now a full timber along the walkway (stand on it to shoot over the low points), not a row of slabs.

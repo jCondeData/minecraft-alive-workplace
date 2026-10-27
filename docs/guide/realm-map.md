@@ -19,7 +19,7 @@ The Realm Map is your whole realm on one sheet: every member, every road between
 
 On the Realm tab of any member's [Village Hall](village-hall.md) (behind the minecart), click **Draw the Realm Map** (a
 filled map) with an empty map in your inventory. It becomes **Map of the County of Thornholm**, named for your
-[realm](realms.md).
+[realm](realms.md). Without an empty map nothing is drawn, and a village that isn't in a realm has no button.
 
 ## What's on it
 

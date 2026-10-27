@@ -91,7 +91,9 @@ else the builder it was handed to; each next stage goes to the highest-level bui
   block's materials to half of the crew), plus a little of the stages after it (the decoration's lanterns and doors), so
   nobody walks down from a dome to the chests for every block.
 - If the lead dies, its part goes to the highest-level member of its crew (else to the builder the next stage would get,
-  else to the first to join); what it carried drops where it fell, as for any builder.
+  else to the first to join); what it carried drops where it fell, as for any builder. The same goes for a lead
+  retrained to another job. Whoever takes the part over leads the Wonder from then on: the stone and the hall name them
+  at once, and the old lead no longer counts on the crew (B467).
 
 **What next?** names the Wonder closest to ready once the village is a Town with room for one: "The Great Cathedral can
 be begun", or the first line it lacks ("The Great Cathedral is nearly in reach: Finished Chapel: 2 of 3").
@@ -886,6 +888,8 @@ member, the crew back together and the folly finished as drawn; `wonderCrew 3` h
 Wonders off, and a member lost mid-job is replaced; a builder with its own build queued joins only once every builder is
 called, a stranger can't call, the stone names the crew and offers the call, the highest-level builder leads; the
 lead killed mid-part hands the part to a living member, who leads it, and the crew finishes the folly as drawn.
+`QaWonderCrewBugTests` (B467): a lead who dies or is retrained mid-stage is no longer named on the stone or the hall's
+card; a living member of the crew who took the part over is.
 Showcase scene `wonder_crew` (group Wonders): ten builders on the folly.
 
 GameTests in `WonderGoodsGameTests` (35.7): the folly's stage II (three lines) waits through one line, two, a line one

@@ -159,6 +159,15 @@ public final class WonderManager extends SavedData {
 		}
 	}
 
+	/** Forgets a site's lead (B467: the lead died or was retrained and nobody took their part over yet). */
+	public void clearBuilder(UUID id) {
+		WonderSite site = sites.get(id);
+		if (site != null && site.builder().isPresent()) {
+			sites.put(id, site.withoutBuilder());
+			changed();
+		}
+	}
+
 	/** Records whether every builder of the village was called to the Wonder's crew (35.5). */
 	public void setCalled(UUID id, boolean called) {
 		WonderSite site = sites.get(id);

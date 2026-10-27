@@ -4,7 +4,7 @@ Rare named villagers with powers, who come to a village that has earned them. Al
 thirty with a rare gift. Part of 1.3 (Legends): switched on in 1.0 with every other expansion.
 
 Roadmap items: 29.2, 29.3, 29.4, 29.5, 29.6, 29.7, 29.8, 29.9, 29.10, 29.11, 29.12, 29.13, 29.14, 29.15, 29.16, 29.17, 29.18,
-29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136, B345, B589
+29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136, B345, B589, B622, B623
 
 ## What a player sees
 
@@ -241,7 +241,9 @@ from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 `QaPokemonLegendsCompatTests` (10, QA, 29.21 and 29.22: the census at 24 and 25 Pokémon and at 9 and 10 types, a released
 species kept in the Pokédex once, the IV words at every boundary, natures and hidden abilities as read, the hints by a
 real right-click, the Alpha stand-in at level 49 and 50, the 96- and 64-block reaches from both sides, every banned
-kind refused, no befriending into a full pasture, one Alpha calmed of two),
+kind refused, no befriending into a full pasture, one Alpha calmed of two), `QaPokemonLegendsBugCompatTests` (2, QA:
+a wild Pokémon arriving after the day's first empty look is still befriended that day, B622; an Alpha on the hall's
+floor exactly 96 blocks away is within 96 and not within 95, B623),
 `RealmLegendsGameTests` (5, 33.23); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
 `QaLegendSitesGameTests` (9, 29.9): the 5-second check on the real tick, the 1500-block reach from both sides, the
 nearest hall, friends one way only, 29.3's slots and conditions at a site, a slot filled before the morning, only a

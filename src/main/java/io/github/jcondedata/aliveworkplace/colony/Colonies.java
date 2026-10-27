@@ -180,7 +180,7 @@ public final class Colonies {
 	/** Days the village at {@code hall} waits between colonies: {@link #COOLDOWN_DAYS}, half as long with the Founder (33.23). */
 	public static int cooldownDays(ServerLevel level, BlockPos hall) {
 		java.util.Optional<LeadColoniesPower> lead = LeadColoniesPower.of(level, hall);
-		int days = lead.isEmpty() ? COOLDOWN_DAYS : Math.max(lead.get().cooldown() > 0 ? 1 : 0, (COOLDOWN_DAYS * lead.get().cooldown() + 50) / 100); // 7 days: 4
+		int days = lead.isEmpty() ? COOLDOWN_DAYS : Math.max(COOLDOWN_DAYS > 0 && lead.get().cooldown() > 0 ? 1 : 0, (COOLDOWN_DAYS * lead.get().cooldown() + 50) / 100); // 7 days: 4; 0 stays 0 (B589)
 		return io.github.jcondedata.aliveworkplace.realm.RealmEdicts.colonyCooldown(level, hall, days); // the Royal Charter: half as long (33.22)
 	}
 

@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Founder: on a server with `colonyCooldownDays` set to 0, his village no longer waits a day between colonies while every other village may send the next one at once; half of no wait is no wait (B589).
 - The Pacts tab: a village you have a trade pact with now gets **Offer X an alliance**, so a pact can become an alliance without ending it and stopping its routes (B582). With the Lighthouse, an offer to a village the tab lists 3,000 blocks off is no longer refused as beyond caravan range: offers use the village's own range, the one the tab lists by, and the refusal writes it as "2,048" or "4,096" (B595).
 - The Settler's Wagon camp's chest of supplies opens again: it moved out from under the wagon's wool cover onto its open tailboard (the cover sat right on the chest and kept its lid shut, so clicking it did nothing); a melon takes its old place. Camps already set up keep their old chest; break the wool block above it to open it (B590).
 - Hauler Golems: in a village with no Drop Box, a golem whose only Storehouse is walled in (or across water) no longer stands holding the goods it fetched; it puts them back into the worker's chest they came from (or the nearest worker's chest with room) and is free again (B593).

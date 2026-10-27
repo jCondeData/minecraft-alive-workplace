@@ -4,7 +4,7 @@ Rare named villagers with powers, who come to a village that has earned them. Al
 thirty with a rare gift. Part of 1.3 (Legends): switched on in 1.0 with every other expansion.
 
 Roadmap items: 29.2, 29.3, 29.4, 29.5, 29.6, 29.7, 29.8, 29.9, 29.10, 29.11, 29.12, 29.13, 29.14, 29.15, 29.16, 29.17, 29.18,
-29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136, B345
+29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136, B345, B589
 
 ## What a player sees
 
@@ -211,7 +211,7 @@ Two Legends gain a power each with 1.7's colonies and trade:
 
 - **The Founder** (`lead_colonies`: `rank` town, `settlers` 4, `cooldown` 50): the village he lives in may found
   colonies from Town rank instead of City, sends four settlers instead of two (more jobless first, then workers it has
-  three or more of; never a guard, a Legend or a child) and waits half as long between colonies (4 days of 7, rounded).
+  three or more of; never a guard, a Legend or a child) and waits half as long between colonies (4 days of 7, rounded; on a server with no wait, still none).
   An order given while he lives there carries his blessing: the colony's chronicle reads "Founded on day 12 with the
   Founder's blessing, by settlers from Thornholm", the mother's "…, with the Founder's blessing", and his statue (M29's
   build) goes up beside the colony's camp when the settlers arrive.

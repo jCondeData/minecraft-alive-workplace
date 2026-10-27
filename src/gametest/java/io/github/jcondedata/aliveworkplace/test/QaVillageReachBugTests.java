@@ -38,8 +38,8 @@ public class QaVillageReachBugTests {
 	 * Both are in the village, so the field is in reach. Today the composter counts as in no village: refused with
 	 * "That field is 129 blocks from the Composter the farmer works at — keep it within 128." (no village named).
 	 */
-	//$ gametest_ticks_batch AREA '200' '"qaReachZoneBench"'
-	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaReachZoneBench")
+	//$ gametest_ticks_batch AREA '1200' '"qaReachZoneBench"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qaReachZoneBench")
 	public void aWorkBlockInAZonePastTheRadiusReachesTheWholeVillage(GameTestHelper helper) {
 		QaVillageReachGameTests.setUp(helper);
 		QaVillageReachGameTests.radius(64);
@@ -47,7 +47,8 @@ public class QaVillageReachBugTests {
 		BlockPos hall = helper.absolutePos(HALL);
 		BlockPos composter = hall.offset(56, 0, 56);
 		// the composter stands 79 blocks off, outside the test area: its chunk is kept loaded so the farmer can be clicked
-		// (in a run with only this class nothing else may load it, and a villager there can't be clicked until its entities load)
+		// (in a run with only this class nothing else may load it, and a villager there can't be clicked until its entities load;
+		// B581: under CI load the forced chunk took more than 200 ticks to tick entities, so the wait has 1200)
 		net.minecraft.world.level.ChunkPos chunk = new net.minecraft.world.level.ChunkPos(composter);
 		boolean wasForced = level.getForcedChunks().contains(chunk.toLong());
 		level.setChunkForced(chunk.x, chunk.z, true);

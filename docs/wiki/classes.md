@@ -22,10 +22,14 @@ At the Village Hall:
 - the **Classes** tab says how many households of each class there are in the village (its circle, not the corners
   beyond it). Its page has a button per class: each need
   and want with how many households have it ("A varied diet: 2 of 4"), what the class gives, and the households
-  closest to rising with what they lack;
-- the people list says each villager's class and ticks the needs of their class and of the next one;
-- the food icon lists the luxuries in store;
-- "What next?" gives up to three class tips ("2 Peasant households want A varied diet to rise to Artisan"), each
+  closest to rising with what they lack (fewest lacks first; up to three named, then "and 1 more"); a class with no
+  households says "No Artisan households yet";
+- the people list says each villager's class and household ("Burgher · married to Pia"; a couple counts once, under
+  the higher class), and ticks the needs of their class and of the next one;
+- the food icon lists the luxuries in store, the most first ("Luxuries in store: Fine Trinket ×5, ..."), or "No
+  luxuries in store";
+- "What next?" gives up to three class tips, most households first and the lower class first on a tie ("2 Peasant
+  households want A varied diet to rise to Artisan"), each
   with how to meet it ("Keep 3 kinds of meal in the store"; 2 for a plain diet).
 
 | Class | Needs | Wants | Gives |
@@ -260,6 +264,9 @@ zombie villager never sent a look, nothing on tracking with `classOutfits` off, 
 `ClassChatterGameTests` (5, B551 and B552: wine and clothes talked of when the class lacks them and not once had, the
 Gazette the week it's read, the tavern where it reaches home, every new line, the plain diet tip's 2 kinds) and
 `QaClassHallRetirementBugTests` (three lines each for wine, clothes, the Gazette and the tavern).
+QA: `QaHallClasses1027GameTests` (7, 34.6 with its fixes: one household in the singular and none as "0 of 0", the
+closest-to-rising list, a mixed couple as one household, three tips on a tie, the rise's moods ending on day 3, the
+food icon's luxuries, the Job list's first slot).
 
 Showcase scenes: `classes` (a household rises, and the Classes page), `class_switch_on` (the hall before and after the
 switch), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`,

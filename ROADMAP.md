@@ -4161,7 +4161,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   Done when: renders of both (front and back, five styles) are in a review package; GameTests place each with free
   materials and check that a colony uses the camp and that the Royal Hall raises the cap; showcase scene
   `realm_builds` shows both.
-- [x] **33.15** (approved 2026-10-12) **Shared research.** Realm villages share what their scholars know: for each topic of the research
+- [x] **33.15** (approved 2026-10-12) (verified 2026-10-27: 16 QA tests [QaRealmResearchGameTests, QaRealmMapBoardGameTests]: prerequisites refused one level short, realm treasury one cent short, shared max[own, capital] without rank change and lost on leaving, idle member scholars at half pace, help cap, save/reload and real /reload, every effect stops at the realm's edge, Ferry Charter floor, Charters at a member, Granaries at 16 vs 15 from the fullest store; leaderboard week boundary to the second, custom day/hour, top three and ties, greatest realm; Realm Map without a map and outside a realm; 5 planted mutants caught) **Shared research.** Realm villages share what their scholars know: for each topic of the research
   tree a member uses the higher of its own level and the capital's (through `Research.at`), and its research screen
   says "from the capital"; shared levels don't count toward a village's rank. A member's scholars with nothing chosen
   at home work on the capital's current topic instead, at half pace. The capital's research screen gets a **Realm**
@@ -4173,7 +4173,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     scholar adds points to the capital's topic; a realm topic from a test datapack can be chosen, is paid from the
     realm treasury and finishes; `/reload` keeps it;
   - showcase scene `realm_research` (the capital's research screen with the Realm row).
-- [x] **33.16** (approved 2026-10-12) **The realm's research topics.** Eight data files, each with its effect wired in (costs to start with:
+- [x] **33.16** (approved 2026-10-12) (verified 2026-10-27: 16 QA tests [QaRealmResearchGameTests, QaRealmMapBoardGameTests]: prerequisites refused one level short, realm treasury one cent short, shared max[own, capital] without rank change and lost on leaving, idle member scholars at half pace, help cap, save/reload and real /reload, every effect stops at the realm's edge, Ferry Charter floor, Charters at a member, Granaries at 16 vs 15 from the fullest store; leaderboard week boundary to the second, custom day/hour, top three and ties, greatest realm; Realm Map without a map and outside a realm; 5 planted mutants caught) **The realm's research topics.** Eight data files, each with its effect wired in (costs to start with:
   16 paper, 2 books a level after the first, and 8 emeralds a level from the realm treasury):
   - **Royal Roads** (2 levels): caravans between realm villages arrive 25% sooner a level.
   - **Common Coin** (2; after Royal Roads I): the board's spread 3 points narrower a level in realm villages.
@@ -4218,7 +4218,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     cargo is paid for; a declined or lapsed offer changes nothing; a route saved before this item loads as a pact; an
     ally's raid brings relief; ending an alliance takes a day;
   - showcase scene `pacts` (the letter, the tab with an offer).
-- [x] **33.19** (approved 2026-10-12) **The weekly leaderboard.** Once a week (owner's call: a real week, or every 7 in-game days; meanwhile
+- [x] **33.19** (approved 2026-10-12) (verified 2026-10-27: 16 QA tests [QaRealmResearchGameTests, QaRealmMapBoardGameTests]: prerequisites refused one level short, realm treasury one cent short, shared max[own, capital] without rank change and lost on leaving, idle member scholars at half pace, help cap, save/reload and real /reload, every effect stops at the realm's edge, Ferry Charter floor, Charters at a member, Granaries at 16 vs 15 from the fullest store; leaderboard week boundary to the second, custom day/hour, top three and ties, greatest realm; Realm Map without a map and outside a realm; 5 planted mutants caught) **The weekly leaderboard.** Once a week (owner's call: a real week, or every 7 in-game days; meanwhile
   Sunday 19:00 server time, `leaderboardDay`, `leaderboardHour`) everyone online is told in chat how the villages did:
   **Biggest** (villagers), **Richest** (emeralds earned that week: takings, board trades and caravan sales),
   **Happiest** (average wellbeing over the week, from the hall's rounds), **Most Legends** (M29's Legends; Masters
@@ -4247,7 +4247,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     goes for the enemy owner but not a neutral player; the enemy owner can hurt a guard but not a villager, a block or
     a chest of a protected village; the war ends after 3 days;
   - showcase scene `feud` (the tab and the letter; with PvP on, a guard fighting the rival owner).
-- [x] **33.21** (approved 2026-10-12) **The Realm Map.** At any member's hall the Realm tab draws the realm on an empty map (the drawing of
+- [x] **33.21** (approved 2026-10-12) (verified 2026-10-27: 16 QA tests [QaRealmResearchGameTests, QaRealmMapBoardGameTests]: prerequisites refused one level short, realm treasury one cent short, shared max[own, capital] without rank change and lost on leaving, idle member scholars at half pace, help cap, save/reload and real /reload, every effect stops at the realm's edge, Ferry Charter floor, Charters at a member, Granaries at 16 vs 15 from the fullest store; leaderboard week boundary to the second, custom day/hour, top three and ties, greatest realm; Realm Map without a map and outside a realm; 5 planted mutants caught) **The Realm Map.** At any member's hall the Realm tab draws the realm on an empty map (the drawing of
   33.8's charter map, on a vanilla map item): scaled so every member fits (vanilla scales 2 to 4), the land the server
   has loaded drawn as on a vanilla map and the rest as plain parchment, a banner for every member in the realm's
   colour (the capital's named "Thornholm (capital)"), colonies, allies and rivals in their own colours, caravan routes
@@ -5045,7 +5045,7 @@ Depends on: nothing open.
   shares a cell with a ground-floor block; a build without a basement sends the same preview as before (the existing
   tests pass unchanged); scene `table_basement` (Starter Cottage IV, then the Storehouse, turning) in the harness and
   `tools/showcase/scenes.py`.
-- [x] **36.2** (approved auto 2026-10-17) **Village moments complete their quests.** Eight questbook quests end with "Click the checkmark above
+- [x] **36.2** (approved auto 2026-10-17) (verified 2026-10-27: 9 QA tests [QaVillageMomentsGameTests]: all eight moments' advancements and titles, the couple's baby at and 128 out, no hall, research 0->8 and no regrant, edict and realm edict [refused repeat grants nothing, capital's dawn catches up], realm founding refused grants nothing, treasury 0/99/100 cents and the far collector, dawn catch-up from a save; 90/90 in 10x repeats; planted reach mutant caught by 5; questbook drift filed as B573) **Village moments complete their quests.** Eight questbook quests end with "Click the checkmark above
   once ..." for things the mod already knows (`tools/questbook/chapters.py`: born here, research 3 and 7, an edict, a
   Burgher and a Noble household, a realm, the takings). Add eight moments to `MOMENTS` in
   `tools/questbook/generate.py` (`first_baby`, `research_3`, `research_7`, `edict`, `burghers`, `nobles`, `realm`,

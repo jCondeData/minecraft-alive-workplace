@@ -62,9 +62,8 @@ public class PathWork extends Behavior<Villager> {
 			return;
 		}
 		BlockPos next = path.get(0);
-		BlockState ground = level.getBlockState(next);
-		if (!Paths.convertible(ground)) {
-			pop(villager, path); // someone built there, or it's already path
+		if (!Paths.mayPave(level, next)) {
+			pop(villager, path); // someone built there, it's already path, or a player has built in that section since
 			return;
 		}
 		if (!walker.reach(level, villager, next, REACH) && !walker.noSpot()) {

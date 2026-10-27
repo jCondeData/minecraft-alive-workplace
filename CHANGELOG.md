@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Build names: a name cut at 128 characters through an emoji now loses the whole emoji, so players see the same name the server keeps; before, it ended in "?".
+- Questbook: the Bandstand and Schoolhouse quests say "gray" again after the questbook is regenerated, and the 14 newer blueprints (Sawmill, Windmill, Clock Tower and others) get their hidden built advancements.
 - Habitat Keeper (with Cobblemon): a Field Marker spot just over 32 blocks from her pasture on a diagonal (say 32 east and 5 south) is now refused with the "lure spots go within 32" line; before, she took it and then never set a snack out there.
 - Wonders: when a Wonder's lead dies or is retrained mid-stage, the builder who takes the part over is named as the lead on the Foundation Stone and the hall at once, and the old lead stops counting on the crew; before, the stone showed "?" (or the retrained farmer's name) until the next stage.
 - Steward: a lane he lays from a finished house's door, and his half of a road to another village, no longer run through a spot where a player placed or broke blocks; only a road you drew on the City Plan yourself may cross one.

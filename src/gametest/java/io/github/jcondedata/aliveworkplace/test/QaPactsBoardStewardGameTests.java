@@ -386,7 +386,7 @@ public class QaPactsBoardStewardGameTests implements FabricGameTest {
 			"the alliance ended a tick early");
 		ChoiceMenu menu = pactsTab(land, 0, land.owner());
 		int shown = find(menu, "Alliance with " + land.name(1));
-		helper.assertTrue(shown >= 0 && RealmGameTests.lore(menu.icon(shown)).stream().anyMatch(l -> l.startsWith("Ends in")), "the tab doesn't say it's ending");
+		helper.assertTrue(shown >= 0 && RealmGameTests.lore(menu.icon(shown)).contains("Ends within the hour"), "the tab doesn't say it's ending (B596: within the hour, not \"Ends in 0 hours\")");
 		data.put(new Pacts.Pact(land.at(0), land.at(1), true, 0, now, false, false));
 		Pacts.settle(server);
 		helper.assertTrue(data.pact(land.at(0), land.at(1)) == null && Pacts.allies(server, land.at(0)).isEmpty(), "the alliance outlived its notice");

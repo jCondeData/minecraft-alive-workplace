@@ -12,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.people.Luxuries;
 import io.github.jcondedata.aliveworkplace.people.SocialClasses;
 import io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -230,8 +231,8 @@ public final class ClassesPage {
 		SocialClass below = SocialClasses.step(c, -1);
 		if (!row.counts().isEmpty()) {
 			int of = row.counts().get(0).of();
-			lore.add(VillageHallScreen.line(below == null ? Component.translatable("screen.aliveworkplace.classes.counted_own", of)
-				: Component.translatable("screen.aliveworkplace.classes.counted", of, c.name(), below.name()), ChatFormatting.GRAY));
+			lore.add(VillageHallScreen.line(below == null ? Words.counted("screen.aliveworkplace.classes.counted_own", of, of)
+				: Words.counted("screen.aliveworkplace.classes.counted", of, of, c.name(), below.name()), ChatFormatting.GRAY));
 		}
 		boolean wantsHeader = false;
 		if (row.counts().stream().anyMatch(n -> !n.want())) {

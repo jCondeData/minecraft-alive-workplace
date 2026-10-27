@@ -67,7 +67,9 @@ free block. When a scholar has nothing to research he picks the next topic by wh
 
 **Safe by design (27.19).** Everything he builds passes one check: only inside his own village, never in Keep Clear,
 never in a protected village of another owner, never through a place where a player placed or broke blocks unless the
-owner approved that one by hand (Keep Clear refuses even that). A player placing or breaking a block inside a hall's
+owner approved that one by hand (Keep Clear refuses even that). A road the owner drew on the City Plan counts as
+approved by hand; a lane the Steward lays from a finished house's door and his half of a road to another village do
+not, so a stretch of them that would run through a player's section waits instead (B520). A player placing or breaking a block inside a hall's
 area marks its 16×16×16 section, and only that one. His sites clear only natural blocks. Waiting builds share one
 shopping list, the 8 most needed added up over all of them, on the desk, the Storehouse's requests board and in the
 caravans' wants; the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
@@ -128,6 +130,9 @@ Roads and walls have their own switches: see [Roads and walls](roads-and-walls.m
 - Design note `docs/design/M27.md`: a Steward is appointed with the plan; nobody takes the hall by himself. A new
   Steward starts in Ask me first.
 - 27.19: the Steward never builds over what a player built; the ledger of player-built places is what he checks.
+- B520 (bug lane, 2026-10-27): only roads the owner drew by hand may cross the ledger; the Steward's own lanes and
+  caravan halves are held back by it like his other builds. A stretch held back stays unbuilt until the section is
+  forgotten or the plan changes.
 - 27.6: rules are data, one file each; a file with an unknown condition or a bad field is skipped with a warning
   that names the file and the field.
 
@@ -144,7 +149,7 @@ Roads and walls have their own switches: see [Roads and walls](roads-and-walls.m
 
 GameTests: `StewardGameTests` (12), `StewardRulesGameTests` (19), `StewardHomesRulesGameTests` (12),
 `StewardCivicRulesGameTests` (20), `StewardDeskGameTests` (7), `StewardJobsGameTests` (11),
-`StewardSafetyGameTests` (7), `StewardRoundsQaGameTests` (2), `CityPlanGameTests` (7), `CityPlanScreenGameTests` (3),
+`StewardSafetyGameTests` (8), `QaLaneLedgerBugTests` (1, B520: his own lane waits at a player's section), `StewardRoundsQaGameTests` (2), `CityPlanGameTests` (7), `CityPlanScreenGameTests` (3),
 `OldHousesGameTests` (7), `RenewalGameTests` (9), `DoorJamGameTests` (1), `AtticBedGameTests` (1), `CountWordsGameTests`
 (2, B377: the workplace reason and the Storehouse stock line with one and with two), `QaStewardCivicBoundariesGameTests` (3, 27.12: a death 29 days back counts for the Graveyard and 30 days back not, 7
 villagers are too few; a raid 6 days ago is within 7 and 7 days ago not; 2 children get no Schoolhouse), `QaStewardHomesBoundariesGameTests` (2, 27.10: no Inn for a Town 3 beds short or a Village 4 short;

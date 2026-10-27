@@ -155,4 +155,10 @@ every objective's.
   from 49, joining at Journeyman with standing, Wayfinder and friendship in both villages, the arc's data saved and read
   back (`eachChapterMovesOnAndTobinComesHome`); the delivery (`theDeliveryQuestPays`); the failure path
   (`afterSevenDaysHeFindsHisOwnWay`).
+- QA (`QaLostCaravanGameTests`, 16 tests): the 300/301-block road edge, `lostCaravanChance` 0, 1 and its clamps, an arc in
+  either village keeping the caravan on the road, both halls told and only the sender's map, the trail out of order
+  and twice, the action bar's directions, marks placed at 96 blocks and not 97 and never over a player's blocks,
+  Tobin's catch-up past 32 and wait past 64, Journeyman with and without a free workstation, save and reload of Tobin
+  and the trail, the chest holding exactly what left the store, the delivery paying once and only at the receiving
+  hall, only helpers thanked, and the day-7 failure (nothing on day 6).
 - Showcase scenes: `caravan_trail`, `lost_caravan`.

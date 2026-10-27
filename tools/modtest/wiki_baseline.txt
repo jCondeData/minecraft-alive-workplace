@@ -27,7 +27,6 @@ B5 B6 B19
 28.1 28.7 28.7a 28.13
 
 # Milestone 29: more research trees
-29.11
 
 # Milestone 30: the civic items (Work Horn, Cradle, Village Banner, Harvest Idol, tonics)
 

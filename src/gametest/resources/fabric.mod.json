@@ -13,6 +13,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BuilderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTakeDownGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTakeDownBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaContraptionLinesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LanternCageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BasementGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CellarGameTests",
@@ -613,6 +614,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLaneLedgerBugTests",
 			"io.github.jcondedata.aliveworkplace.test.PathLedgerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLedgerFramesHaulGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanUnlockedGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaOldHouseTreesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanEmptyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesBugTests",
@@ -765,7 +769,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcCommandBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFixEdges1027GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSageSeerGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSageSeerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaResearchTreesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMasterArchitectGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPathfinderGameTests"
 		]
 	},
 	"depends": {

@@ -1772,7 +1772,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     full); a jobless villager left by a machine for 2400 ticks doesn't take it;
   - a builder builds both tiers (GameTest), and the renders are in the package;
   - showcase scene `pokemon_center` (stills of both tiers, a GIF of the healing).
-  - [x] **28.7a** (approved 2026-10-06) Change from the owner (2026-10-05): Approved, but add more Pokémon Center variants later (more looks for the tiers).
+  - [x] **28.7a** (approved 2026-10-06) (verified 2026-10-27: no new tests: the variants exist [plaza and lodge looks for both tiers, five village styles, modded]; PokemonCenterGameTests checks the looks' names and that an upgrade keeps its look, BuilderGameTests builds pokemon_center_2) Change from the owner (2026-10-05): Approved, but add more Pokémon Center variants later (more looks for the tiers).
 - [x] **28.8** (approved 2026-10-05) (verified 2026-10-27: 5 new compat tests [QaCampCookCompatTests]: no snack without honey, reload with the lid shut, shipped menu always/asked/order, campCooks key, trades by level; on top of 14 existing) **The Camp Cook.** Stand a villager by a Campfire Pot (Cobblemon's campfire with a pot on it; POI when
   Cobblemon registers `cobblemon:campfire`) and sneak-right-click them with Hearty Grains. Never taken by a jobless
   villager. Config `campCooks` (true).

@@ -2387,7 +2387,7 @@ MarketDays) and research/.
   Outfit: a hooded travel cloak, a pack and a lantern. Done when: GameTests: they are found only for a village with an
   Expert explorer; an expedition to a staged target leads, waits and catches up; Home brings both back; a logout
   cancels it; the loot table rolls; showcase scene `legend_pathfinder` (GIF: leading the player through a forest).
-- [x] **29.14** (approved 2026-10-05) **The Old Sage (Rare).** Comes: found in a hermit's hut once the village has finished 5 research
+- [x] **29.14** (approved 2026-10-05) (verified 2026-10-27: 7 QA tests [QaOldSageGameTests]: hint on 2nd miss not 1st and reset by an answer, stack and off-hand answers, quest through save, rumor to owner only with direction, no hut with Legends off, riddle draws, Iron Pact 5-day round and cap 15/16, Warding I; mutation caught; wiki checked) **The Old Sage (Rare).** Comes: found in a hermit's hut once the village has finished 5 research
   levels; born to a Scholar (29.7). The hut (`legend/hermit_hut` through the architect skill: mossy cobblestone and
   spruce, a lectern, bookshelves, a cauldron and an herb garden) is placed 150-250 blocks from the hall on dry, flat,
   loaded ground (as `BanditCamps.site` picks), and the village's players hear a rumour of it with its direction.

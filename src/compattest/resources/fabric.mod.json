@@ -88,6 +88,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateItemsHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateStoresHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFluidsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateTankKeptCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMachineGoneSaveCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateDrainFluidsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicFluidsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelCounterCompatTests",

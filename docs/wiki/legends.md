@@ -68,6 +68,20 @@ existing villager already has theirs and nothing is migrated: Prodigy (learns th
 panics), Silver Tongue (trades 20% cheaper), Night Owl (works at night, builders and miners too, once they have a trade), Lucky, Hardy (never ill, twice the health),
 Beloved (neighbors are happier), Born Leader (workers of their trade nearby 10% faster).
 
+- Prodigy with the Clever trait still learns three times as fast, not more.
+- Silver Tongue's 20% shows on the trade screen with any player (on top of Hero of the Village), at least 1 emerald
+  off and never below 1: a 10-emerald trade costs 8, a 2-emerald one 1, a 1-emerald one stays 1. It comes back after a
+  restock.
+- Night Owl: grown workers only (not the jobless, nitwits or children), builders and miners included; they work from
+  dusk to dawn and sleep from mid-morning to mid-afternoon. The schedule is set again after a save and reload.
+- Hardy: exactly twice a villager's health, never ill. Beloved: +5 mood, "a beloved neighbor, <name>", to everyone
+  whose bed is within 16 blocks of theirs (17 is too far). Born Leader: workers of their own trade within 16 blocks
+  work 10% faster, held under `maxWorkPace` and the Legends' own cap.
+- Born Gifted (29.7): only a child of two schooled Masters can grow up a Legend (1 in 20) or else Gifted (1 in 4),
+  rolled once when they grow up; the chronicle says "Wren, child of Dara and Tom, has grown up Gifted: Prodigy". The
+  inn's travelers are Gifted 1 in 10, shown on the hire screen ("Gifted: twice the usual price") at twice the price.
+  With `giftedChance` 0 nobody grows up or is hired Gifted.
+
 ## Switches
 
 | Key | Default | What it does |

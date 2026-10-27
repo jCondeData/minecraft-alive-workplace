@@ -213,10 +213,10 @@ finishes a quest gets its reward in emeralds (CobbleDollars with CobbleDollars i
 
 **The quest journal** (1.5). The Quests page is a journal with four tabs along the top: **Village** (the hall's daily
 quests), **Personal** (requests from villagers who are your friends), **Story** (the tale the village is living
-through) and **Bounties** (wanted outlaws); a tab whose part isn't in the game yet says so in grey. Each quest shows
+through) and **Bounties** (wanted outlaws); a tab whose part isn't in the game yet says so in gray. Each quest shows
 who asked, a line per step with its progress, the reward and the days left. Click a quest to hand in what it asks
 for, or to **track** it when there's nothing to hand in; shift-click always tracks or untracks. A tracked quest (one
-at a time) is a bar at the top of your screen, for you only: "Slay 6 monsters (2/6)", filling as you go and gone
+at a time) is a bar at the top of your screen, for you only: "Clear out 6 monsters (2/6)", filling as you go and gone
 when the quest ends or you untrack it. `/workplace quests` lists your quests in chat with a clickable **[Track]** or
 **[Untrack]**, and the Village Ledger opens the journal from anywhere. Some quests send you somewhere (a village, a
 biome, a spot marked by the village's story); the place is found once, when the quest goes up, and a quest may pay a
@@ -575,7 +575,7 @@ specific as each other, the kinder one). A data pack replaces one of our files b
 
 At **2, 4, 6, 8 and 10 hearts** a villager has something to tell you. The next time you're within 8 blocks while
 they're off work, they walk up, face you and tell it: three to five lines over their head, one every 3 seconds, each
-also in your chat in grey so you can read it again. Walk away halfway and they start again next time. Each is told
+also in your chat in gray so you can read it again. Walk away halfway and they start again next time. Each is told
 once per player, adds 20 friendship and goes into the village's chronicle ("Dara told Jesse about growing up in
 Thornholm").
 

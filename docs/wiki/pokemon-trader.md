@@ -22,6 +22,8 @@ as a vanilla villager does at its trade screen, so he can't walk out of reach an
   special request for one particular evolution line. The screen shows up to four cards, the most a trader ever has.
 - A Pokémon fits when it is tradeable, of the wanted type (or evolution line) and at the wanted level or higher.
 - Each player makes one trade per trader per in-game day. The trader gains 6 experience per trade.
+- A pick waiting for its second click is dropped if that Pokémon leaves your party first, or if the day turns and the
+  offers change; clicking again and again trades only once.
 - A held item comes back to you. If your party is full afterwards, the new Pokémon goes to your PC.
 - The screen closes if you walk more than 8 blocks away, or the trader dies or falls asleep. It won't open during a
   battle.
@@ -54,4 +56,7 @@ The Trade Board (workstation), the Pokémon Trader profession.
 
 GameTests: `PokemonTradeScreenCompatTests` (opens from a right-click and trades, refuses what the player can't pay,
 remembers the day's trade after a save and load, `tradeScreenHoldsTheTrader` keeps him by the player), `CobblemonCompatTests.traderSwapsPokemonOnceADay`,
-`traderOffersChangeDaily`, `expertTradersMakeASpecialRequest`. Showcase scene `trader`.
+`traderOffersChangeDaily`, `expertTradersMakeASpecialRequest`. QA: `QaPokemonTradeScreenCompatTests` (the cards match the
+real offers with name, level, ball, shiny mark and cost; the level boundary from both sides and the held item coming back;
+a Pokémon leaving the party between the clicks; click spam and the used-up screen; yesterday's offer refused after the day
+turns; walking away and a dead trader closing the screen; every sentence through en_us.json). Showcase scene `trader`.

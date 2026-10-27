@@ -318,6 +318,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaEdictsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEdictEffectsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPaceAndBookGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPace1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTooFarWordsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCivicItemsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTonicsGuildsGameTests",

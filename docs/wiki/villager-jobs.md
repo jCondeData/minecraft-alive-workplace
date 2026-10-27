@@ -170,8 +170,12 @@ chunk that isn't loaded, or gone): it is shared as its owner's (the player who p
 a village one), so a Builder with no chests by its bench builds from the Storehouse's chests (B226).
 
 **Pace.** Every job's speed goes through one rule: the worker's level, then every bonus (partners, a well-kept
-village, research, traits, mood, edicts, guilds, tonics) up to the cap `maxWorkPace`, then penalties (illness, a bad
-mood). The Builder's page has the level table.
+village, research, traits, mood, edicts, guilds, tonics) up to the cap `maxWorkPace`, then penalties (illness, an unhappy
+mood, the Lazy trait, a badly kept village), which multiply after the cap, so an ill worker at the cap works at exactly
+half the capped pace. The level is applied outside the cap: a capped Master is still 2.5 times a capped Novice. The
+worker's status line (sneak-right-click) and the hall's People details say the total and its sources ("Works 62%
+faster (...)", "100% faster: at the cap (...)", "37% slower (... held back by being ill ...)"); a worker at the usual
+pace gets no pace line. The Builder's page has the level table.
 
 **Requests.** What workers are waiting for (materials, a pickaxe, seeds) is posted on the Storehouse's board, where
 players can hand things over; the Village Hall lists it too. The board is drawn like the Blueprint Table (26.12): the
@@ -393,7 +397,9 @@ refuse, save and reload, the switch off), `HallPeopleJobGameTests` (10, 40.3: th
 `HandOffGameTests` (5, B220: a fisherman handed a rod and a builder handed a blueprint are at work within 10 ticks,
 mid-shift and late in it; before the shift and at night they say when they start, and a night's hire stays in bed),
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,
-save and reload), `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
+save and reload), `PaceGameTests`, `QaPace1027GameTests` (10, the QA lane's for 30.2: each cap
+at 100 to 400 and the config's clamps, ill and lazy after the cap, a bonus under the cap kept, two partners counted
+once, every job family's pace and the level outside the cap), `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with
 their jobs), `JobPlateGameTests` (3, B221: a level-3 fisherman reads "Fisherman, Journeyman", a Builder and a
 Master Farmer, a named fisherman "Dara — Fisherman, Journeyman" with her saved name untouched, a jobless villager, a

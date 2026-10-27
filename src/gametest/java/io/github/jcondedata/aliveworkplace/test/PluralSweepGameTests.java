@@ -108,4 +108,21 @@ public class PluralSweepGameTests implements FabricGameTest {
 		helper.assertTrue(wrong.isEmpty(), String.join("; ", wrong));
 		helper.succeed();
 	}
+	/** B568: a kill step reads right for one and for several, and a creature with no plural in the lang is counted with ×. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void killLinesCountTheirCreatures(GameTestHelper helper) {
+		List<String> wrong = new ArrayList<>();
+		check(wrong, new Objectives.Kill("minecraft:zombie", 1, false).line().getString(), "Defeat 1 Zombie");
+		check(wrong, new Objectives.Kill("minecraft:zombie", 2, false).line().getString(), "Defeat 2 Zombies");
+		check(wrong, new Objectives.Kill("minecraft:vindicator", 6, false).line().getString(), "Defeat 6 Vindicators");
+		check(wrong, new Objectives.Kill("minecraft:witch", 3, false).line().getString(), "Defeat 3 Witches");
+		check(wrong, new Objectives.Kill("minecraft:drowned", 4, false).line().getString(), "Defeat 4 Drowned");
+		// no plural in the lang (a modded creature, here one we left out on purpose): the count goes after the name
+		check(wrong, new Objectives.Kill("minecraft:allay", 2, false).line().getString(), "Defeat Allay ×2");
+		check(wrong, new Objectives.Kill("minecraft:allay", 1, false).line().getString(), "Defeat 1 Allay");
+		check(wrong, new Objectives.Bring("minecraft:apple", 5, "hall", Optional.empty()).line().getString(), "Bring 5 Apples");
+		helper.assertTrue(wrong.isEmpty(), String.join("; ", wrong));
+		helper.succeed();
+	}
 }

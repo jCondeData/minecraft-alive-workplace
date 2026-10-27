@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Quests: a step that asks you to defeat several of a creature now reads in the plural ("Defeat 2 Zombies", "Defeat 6 Vindicators") in the quest journal, the tracking bar and `/workplace quests`; before, it read "Defeat 2 Zombie". A modded creature with no plural reads "Defeat Grub ×2". `/workplace quests` now says "That quest isn't open anymore." in American English.
 - Blueprint Table: after a job's config switch changes in a running game (physicians, well keepers, firewardens, jewelers and the like, or disasters and village fires turned on or off), the Table's list, its job search and a build's Jobs line all follow the new setting at once; before, the list kept the old jobs until a restart and could disagree with the Jobs line under the build.
 - Cobblemon: the Chef no longer churns EXP Candies or breaks them down. He cooks EXP Candies XS from sculk and honeycomb and keeps 16 in the chests by his stove, instead of cooking the store's XS into bigger candies and splitting them back again, and he never breaks a player's EXP Candy XL into smaller candies. A recipe that also wants other makings still uses it: four Kelpsy Berries, four Honeycombs and an XL make three Mighty Candies.
 - Spruce style: with Carved Wood installed, a builder now puts up the two spruce lanterns on the flower boxes by a cottage's door; before, he set them before the flower boxes they stand on, couldn't, and finished the cottage without them.

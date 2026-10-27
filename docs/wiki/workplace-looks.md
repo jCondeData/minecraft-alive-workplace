@@ -108,7 +108,7 @@ trade. The Ferry House kept its plot size so the shore rule and its tests stay a
 - Builds already standing keep their old look until their owner asks: since 36.21 the Village Hall's Repairs page
   shows **Refresh to the latest look** on every finished build whose blueprint was redrawn since, and a Builder brings
   it up to the new drawing (the old drawing's leftovers away, the new pieces in; chests, beds in use, job blocks and a
-  player's own blocks stay; builder.md). Only the older drawings the mod ships are recognized (those changed since
+  player's own blocks stay; nothing doubled, a furnished build's old pieces included; builder.md). Only the older drawings the mod ships are recognized (those changed since
   1.0). A workplace half built when the update arrives is finished from the new drawing over what the old one put up.
 - Village houses already grown keep the old look; new chunks grow the new ones. The larger houses fit a village's
   street a little less often than the old small one. Measured (36.8, 50 villages of each type): villages stay as

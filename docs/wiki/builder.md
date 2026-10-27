@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642
 
 ## 1. What a player sees
 
@@ -341,7 +341,10 @@ claims and trip counts.
 - A refresh (36.21) knows only the older drawings the mod ships (`data/aliveworkplace/blueprint_history/`, written by
   `tools/blueprints/history.py`: every earlier version of the blueprints changed since 1.0, and every version of the
   Stone House line). A build of an older drawing not shipped, an imported or uploaded build, and a modded-furniture
-  variant drawn only in the `modded/` files show no button. The Repairs page lists refreshes after the repairs, so with
+  variant drawn only in the `modded/` files show no button. A furnished build (37.3) is matched as it was furnished:
+  its saved pieces stand where the spots file of its day put them, so they are the Builder's and come away; today's
+  spots keep a piece only where one of the same kind already stands, and the others are furnished as a new build is
+  (B642). The refreshed build's furniture is saved by today's spots. The Repairs page lists refreshes after the repairs, so with
   more builds than fit, the last ones are counted under "more" rather than shown.
 - A site in unloaded chunks, queued, or without a Builder is not watched for stalls.
 - The table preview leaves out fluids (water and lava have no block model) and draws blocks at full brightness.
@@ -355,6 +358,11 @@ after); a small build's refresh keeping a chest and its diamonds, a bed and its 
 owner's own blocks, the leftovers' items in the store; no free Builder (it waits, the first one free takes it up);
 short of planks (the leftovers away, then the Builder waits and says what's missing, as for a repair); a build of the
 latest drawing (no button); saved and reloaded mid-way (it finishes).
+`RefreshMatchesFreshBuildGameTests` (B642, through the same page): a Stone House built from each shipped older drawing,
+plain, turned, mirrored, and furnished by the spots file before B260 (saved and loaded back as an old save has it), ends
+equal to a fresh build of the current drawing block for block (chests and job blocks aside); a Builder working a
+furnished, turned and mirrored one through leaves no second refresh. `RefreshFurnishedCompatTests` (B642, with
+Handcrafted): the same with Handcrafted's table and chairs, and as many tables as a fresh build.
 `QaRefreshOldHouseGameTests` (36.21, the tester's, through the same page): the preview's exact counts by kind and every
 sentence of the feature; the nearer of two free Builders gets it; two hall screens pressing the button start one
 refresh; a player who doesn't own the build can't start one; every leftover's item reaches the store exactly once (also

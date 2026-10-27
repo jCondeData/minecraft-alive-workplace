@@ -47,6 +47,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.CarvedStylesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnitureSeatsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaFurnitureUseCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.RefreshFurnishedCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TrainersRoomCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PastureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaGuardPartnersCompatTests",

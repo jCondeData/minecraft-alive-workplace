@@ -326,6 +326,52 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 				placed.cells().forEach((at, state) -> swap.put(placed.pos().offset(at), state));
 			}
 		});
+		return swapped(base, swap);
+	}
+
+	/**
+	 * B642: {@code base} (an older drawing of the build) with every saved piece where it was put, whatever today's spots
+	 * file says. The choice is saved by spot index and place against the spots file of the day the build was furnished,
+	 * and a redrawn blueprint's file moves, adds and drops spots, so {@link #apply(Blueprint, List)} against today's file
+	 * would leave the older drawing unfurnished and the pieces standing in the build would read as a player's.
+	 */
+	public Blueprint applyAsBuilt(Blueprint base) {
+		if (spots.isEmpty()) {
+			return base;
+		}
+		Map<BlockPos, BlockState> swap = new HashMap<>();
+		spots.values().forEach(placed -> placed.cells().forEach((at, state) -> swap.put(placed.pos().offset(at), state)));
+		return swapped(base, swap);
+	}
+
+	/**
+	 * B642: this choice brought to {@code today}'s spots (a redrawn blueprint's file): a spot of today's file where a
+	 * piece of this choice stands (same place, same kind) keeps it; any other spot takes {@code fresh}'s piece for it (or
+	 * stays vanilla). A vanilla build stays vanilla. The library ({@link #modded}) is kept.
+	 */
+	public FurnitureChoice refreshedFor(List<FurnitureSpot> today, FurnitureChoice fresh) {
+		if (spots.isEmpty()) {
+			return this;
+		}
+		Map<Integer, Placed> out = new LinkedHashMap<>();
+		for (int i = 0; i < today.size(); i++) {
+			FurnitureSpot spot = today.get(i);
+			Placed kept = null;
+			for (Placed placed : spots.values()) {
+				if (placed.pos().equals(spot.pos()) && placed.kind() == spot.kind()) {
+					kept = placed;
+					break;
+				}
+			}
+			Placed piece = kept != null ? kept : fresh.spots().get(i);
+			if (piece != null) {
+				out.put(i, piece);
+			}
+		}
+		return out.isEmpty() && !modded ? VANILLA : new FurnitureChoice(Collections.unmodifiableMap(out), modded);
+	}
+
+	private static Blueprint swapped(Blueprint base, Map<BlockPos, BlockState> swap) {
 		if (swap.isEmpty()) {
 			return base;
 		}

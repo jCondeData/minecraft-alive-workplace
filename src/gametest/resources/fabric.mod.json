@@ -194,6 +194,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintUnlocksBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildReachGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanFramesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ScanEntitiesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMirroredManorBallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTurnedFramesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTurnedModBlocksGameTests",

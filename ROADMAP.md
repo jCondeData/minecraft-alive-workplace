@@ -2099,7 +2099,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   day of helping and never twice a day; `langcheck.py` is clean; showcase scene `cup_themes` (each theme's Cup page and
   fair).
 
-- [x] **28.23** (approved 2026-10-11) **A custom screen for Pokémon trades (owner, 2026-10-05).** The Pokémon Trader's offers use vanilla's
+- [x] **28.23** (approved 2026-10-11) (verified 2026-10-27: lane D QA 2026-10-27: QaPokemonTradeScreenCompatTests [8: cards match the real offers incl. shiny mark and ball, exact level boundary, pick dropped when the Pokemon leaves or the day turns, spam clicks trade once, walking away and a dead trader, every sentence through lang]; 'no offers today' unreachable while Cobblemon has species [wiki Known limits]; wiki updated) **A custom screen for Pokémon trades (owner, 2026-10-05).** The Pokémon Trader's offers use vanilla's
   plain trading screen. Give them a screen of their own, like the Village Hall's (30.4a): the Trader's offers as cards
   showing the Pokémon (name, level, ball, shiny mark) next to what it costs, the player's party on the other side so
   a trade can be picked from it, and a plain "no offers today" state. Same look as the other workstation screens

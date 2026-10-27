@@ -770,7 +770,14 @@ public final class Objectives {
 				return Component.translatable("quest.aliveworkplace.slay", count);
 			}
 			EntityType<?> type = Lookup.value(BuiltInRegistries.ENTITY_TYPE, ResourceLocation.parse(entity));
-			return Component.translatable("quest.aliveworkplace.kill", count, type.getDescription());
+			if (count == 1) {
+				return Component.translatable("quest.aliveworkplace.kill", count, type.getDescription());
+			}
+			// B568: "Defeat 2 Zombies", or "Defeat Grub ×2" for a creature the lang has no plural for
+			Component plural = io.github.jcondedata.aliveworkplace.work.Words.entityPlural(type);
+			return plural != null
+				? Component.translatable("quest.aliveworkplace.kill", count, plural)
+				: Component.translatable("quest.aliveworkplace.kill_times", count, type.getDescription());
 		}
 
 		@Override

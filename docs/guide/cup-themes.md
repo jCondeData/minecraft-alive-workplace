@@ -33,6 +33,11 @@ the next one instead, until sign-up closes.
 The bouts run from noon to midnight, except the Lantern Cup's, from dusk until dawn (its delegates stay until then
 too). Every Pokémon battles at the theme's level, whatever its own.
 
+A Pokémon with two types may come if either is one of the Cup's: a Charizard (Fire and Flying) goes to the Sun Cup, a
+Zubat (Poison and Flying) stays home from the Blossom Cup. In the Little Cup a Pokémon that has already evolved once
+stays home, even from a baby (a Pikachu, after Pichu), and so does one that never evolves (Ditto). Each Pokémon that
+stays home is named with the reason, such as "Zubat: not one of the Cup's types".
+
 ## The Workers' Cup
 
 Only Pokémon that have **helped a villager at work on 3 days or more** may come. Each day one of your pastured Pokémon

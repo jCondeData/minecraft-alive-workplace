@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Hauler Golems: in a village with no Drop Box, a golem whose only Storehouse is walled in (or across water) no longer stands holding the goods it fetched; it puts them back into the worker's chest they came from (or the nearest worker's chest with room) and is free again (B593).
 - Legend guests: a guest no longer claims a workstation (it stayed taken for good, so no jobless villager could use it); a guest who is killed no longer keeps other Legends away for about four days; a guest settles in the village that hosted them, not the one whose hall is nearest; and a Legendary already visiting one village no longer visits a second and settles in both (B584, B585, B586, B587).
 - The Realm tab: an invitation in its last hour has "less than an hour left" instead of "0 days and 0 hours left" (B597).
 - Counted and articled sentences read right: a Legend born to a trade starting with a vowel is "Born to an Armorer"; a Wonder's goods quest asks for "2 Emerald Brooches", "Gold Circlets" and "Illuminated Books" (our luxuries and tonics now have plurals); the Classes page counts "over the 1 household"; the Pacts tab reads "1 pact, 1 offer waiting" and "1 feud"; in its last hour an alliance "Ends within the hour" and an offer has "less than an hour left"; and a Legend guest kept past their stay no longer names a day already gone ("My stay is over", "I leave once no one is near") (B583, B588, B592, B594, B596).

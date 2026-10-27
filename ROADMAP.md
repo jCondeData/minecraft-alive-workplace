@@ -2338,7 +2338,7 @@ MarketDays) and research/.
   three materials are on the board; success makes the Masterwork (name, lore) and the Legend; failure sulks a week and
   blocks moods for 10 days; a mood survives a save and reload halfway; showcase scene `strange_mood` (GIF: the claim,
   the chest filled, the Masterwork).
-- [x] **29.11** (approved 2026-10-05) **More research trees, as data.** For the Old Sage (29.14) and the Pokémon Professor (29.21).
+- [x] **29.11** (approved 2026-10-05) (verified 2026-10-27: 6 QA tests [QaResearchTreesGameTests]: lectern 8 vs 9 blocks, needs/top/busy refusals on the screen, two-item level cost whole or nothing, exclusive reversed and after reload, unlock past its number, tab gone with the Legend, strike keeps points, every refusal sentence; full suite 4516/4516; wiki page written [legends.md]) **More research trees, as data.** For the Old Sage (29.14) and the Pokémon Professor (29.21).
   `research/ResearchTrees` loads `data/aliveworkplace/research_trees/<tree>.json`: the Legend who researches it, an
   icon, and its topics, each with levels, a cost per level (items), research points, the topics it needs, an optional
   `unlock` (a named village counter at a number, such as species in the village Pokédex), an optional `exclusive`

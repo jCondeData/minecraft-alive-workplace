@@ -890,6 +890,9 @@ called, a stranger can't call, the stone names the crew and offers the call, the
 lead killed mid-part hands the part to a living member, who leads it, and the crew finishes the folly as drawn.
 `QaWonderCrewBugTests` (B467): a lead who dies or is retrained mid-stage is no longer named on the stone or the hall's
 card; a living member of the crew who took the part over is.
+`QaBuilderFixes1027cGameTests` (B467): `aLeadWhoDiesTwiceIsHandedOnAgainAndSurvivesARestart` (the new lead dies too,
+the last member is named on the stone and the card, and still after the Wonders are read back from their save),
+`aCrewOfOneWhoseBuilderDiesIsLedByTheNextBuilderToCome` (no lead left, then the next builder takes the part and is named).
 Showcase scene `wonder_crew` (group Wonders): ten builders on the folly.
 
 GameTests in `WonderGoodsGameTests` (35.7): the folly's stage II (three lines) waits through one line, two, a line one

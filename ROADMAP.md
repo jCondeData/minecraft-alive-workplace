@@ -704,6 +704,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B588** Legend guests (29.8), text: a guest kept past their stay by a nearby player still reads 'I leave on the evening of day 3' on day 4 in their terms screen. Expected: the line matches the stay (e.g. leaving this evening once no one is near). Test: QaLegendGuestsBugTests.qaTermsOfAGuestPastTheirStayAreNotStale on tests/legend-guests-1027 (found by qa-lane-d-1027-0710, 2026-10-27)
 - [ ] **B589** Founder: with colonyCooldownDays set to 0, a village where the Founder lives still waits 1 day between colonies (Colonies.cooldownDays floors his halved wait at 1); expected 0, since half of no wait is no wait (33.23); Test: QaRealmLegendsBuildsBugTests.theFounderNeverLengthensANoWaitServer on tests/founder-cooldown (found by lane-c-1027-0654, 2026-10-27)
 - [ ] **B590** Player-visible: the Settler's Wagon camp's chest of supplies still can't be opened after B424's fix: it now sits at the wagon's tail where a standing player can aim at it, but the wagon's white wool cover sits directly on top of it, and vanilla refuses to open a chest with a solid block above (the click does nothing). Expected: the chest opens and shows the Village Hall and blueprints (e.g. no full block on top of it, or a barrel, which opens regardless). The Colony camp's barrels are unaffected. Test: QaBuilderFixes1027cGameTests.theCampChestOpensForAPlayerAndHoldsTheSupplies on tests/camp-chest-open-1027 (found by qa-lane-b-1027-0638, 2026-10-27)
+- [ ] **B591** Test-only flake (32.9 desert sand ramps): QaRaiderCulturesBugTests.aRampStillRisesOverAPlayersRowOfSandAtTheWallsFoot failed once in a local full build on main + lane D's QA tests (2026-10-27 08:56Z): 'no ramp in time: piled [14,2,17 .. 14,5,16], the husk at (14.0, 2.0, 20.9)' (the husk backed off to z 21 after piling to y 5); the same code passed it in the build 25 min earlier and in CI. Expected: passes every run (fixed RandomSource or a longer timeout if the stall is the husk's pathing, or a real fix if a ramp can stall for players) (found by qa-lane-d-1027-0710, 2026-10-27)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4155,7 +4156,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     can give but not take; the movements are listed right;
   - it survives save and reload;
   - showcase scene `realm_treasury` (the icon and its tooltip).
-- [x] **33.14** (approved 2026-10-12) **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
+- [x] **33.14** (approved 2026-10-12) (verified 2026-10-27: 6 new tests [QaRealmLegendsBuildsGameTests]: Royal Hall cap at 32 vs 33 blocks and diagonal, I+II don't stack [x3 not x6], unfinished/member's/other-dimension hall gives nothing, taking it down returns the cap, every style is a hall on the map; Colony Camp use covered by ColonyArrivalGameTests; a hall broken by hand [not taken down] still counts, per the wiki) **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
   generator, checked against `STYLE.md` in renders, in all five styles:
   - **Colony Camp** (`camp/colony_camp`, about 15 x 6 x 13, placed at once like the settlers' camp): two covered
     wagons, a Village Hall under a canvas awning on a timber platform, a Blueprint Table with a lamp, a stack of

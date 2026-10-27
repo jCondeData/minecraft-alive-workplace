@@ -765,6 +765,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStewardSameRangeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FarSiteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReachZoneCornerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaZoneRepairsPageBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReachEdgeUpkeepBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageCircleBugTests",

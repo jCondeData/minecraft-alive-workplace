@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Builder keeps up every build he was allowed to place: a build at the far edge of his reach, whose corner lay past it, is now repaired and refreshed like the rest; placing, upkeep, refreshes and repair questions all measure from the build's middle (B615).
+- The Village Hall's Repairs page now lists the buildings in City Plan zones painted past the hall's radius, so a repair question held there can be answered and an old house there gets its Refresh button; the hall's list of builds going up counts them too (B616).
 - The Steward keeps off more of what players built: a stripped log, stripped wood or oak wood a player puts in a running site's way now stays and its step is skipped, like any other player's block (B601); a Keep Clear cell inside a planned building now refuses it at every hall radius, also below 64 where cells are under 4 blocks (B602); and a bed or door placed across a 16-block section edge marks both halves' sections as player-built (B603).
 - A little less server lag in busy villages: a villager's pathfinding reads each block once for its trapdoor and small-block checks instead of twice, and builders no longer rebuild a research name on every tick (B412).
 - The Mechanic: a big Create build that stands within 32 blocks of the toolbox now gets its missing shafts, gears and belts mended even when its blueprint's corner lies farther off; the reach is measured to the build's nearest block, not its corner (B598).

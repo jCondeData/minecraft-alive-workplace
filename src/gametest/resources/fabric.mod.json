@@ -521,6 +521,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CupMatchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCupGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCupDayGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCupBannerColoursBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCupChampionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCupThemesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaArenaGameTests",

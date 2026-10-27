@@ -136,6 +136,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCupMatchCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CupThemesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCupThemesCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCupClausesCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCupWatchCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonTradeScreenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ProfessorCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ThesisCompatTests",

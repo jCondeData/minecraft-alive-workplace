@@ -19,6 +19,8 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - Sieges: dead bushes, grass, ferns or snow at a wall's foot no longer stop the raiders. The desert husks' sand ramp buries them and rises to the top, and the warband climber's ladder goes up through them. The buried plants are gone after the raid (nothing drops); your flowers, saplings and blocks at a wall's foot still turn ladders and ramps away.
 - Class chatter: villagers now talk of wanting wine or new clothes when their class asks for them and they haven't had any lately, of the Gazette the week they read it, and of the tavern near their home (three lines each); before, only a household's rise and fall had lines.
+- Builders now plant a scanned ripe pitcher crop as a young one-block crop, the way you plant a pitcher pod; before, it came out full grown and broke into a free pitcher plant.
+- The Village Hall's Classes tab and page now count only the households inside the village's circle; villagers out in the corners beyond it were counted too.
 - The Village Hall's What next? tip for a plain diet said "Keep 3 kinds of meal in the store", the varied diet's number; it now says 2.
 
 ## 0.150.0 — 2026-10-26

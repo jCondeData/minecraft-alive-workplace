@@ -19,7 +19,8 @@ lately ("Look at these rags. I need something new to wear."); of the Gazette the
 of the tavern when it reaches their home.
 
 At the Village Hall:
-- the **Classes** tab says how many households of each class there are. Its page has a button per class: each need
+- the **Classes** tab says how many households of each class there are in the village (its circle, not the corners
+  beyond it). Its page has a button per class: each need
   and want with how many households have it ("A varied diet: 2 of 4"), what the class gives, and the households
   closest to rising with what they lack;
 - the people list says each villager's class and ticks the needs of their class and of the next one;

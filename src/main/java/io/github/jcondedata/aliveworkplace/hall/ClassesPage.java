@@ -75,7 +75,7 @@ public final class ClassesPage {
 
 	/** The village's grown households with a class (those not seeded yet are left out), in a fixed order. */
 	public static List<Placed> households(ServerLevel level, BlockPos hall) {
-		List<Villager> people = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		List<Villager> people = VillageHalls.villagers(level, hall); // the circle, not the square round it (B561)
 		List<Placed> out = new ArrayList<>();
 		for (Households.Household h : Households.of(people)) {
 			SocialClass best = null;

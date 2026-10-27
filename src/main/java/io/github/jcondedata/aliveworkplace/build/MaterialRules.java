@@ -181,7 +181,16 @@ public final class MaterialRules {
 			|| b instanceof CandleBlock || b instanceof SnowLayerBlock || b instanceof FlowerPotBlock || b instanceof TrapDoorBlock
 			|| b instanceof TripWireHookBlock || b instanceof TripWireBlock || b instanceof CocoaBlock || b instanceof AbstractSkullBlock
 			|| b instanceof AmethystClusterBlock || b instanceof PointedDripstoneBlock || b instanceof MultifaceBlock
-			|| b instanceof BellBlock || b instanceof CakeBlock;
+			|| b instanceof BellBlock || b instanceof CakeBlock || modLantern(b);
+	}
+
+	/**
+	 * B433: a modded lantern (Carved Wood's wooden lanterns) stands on or hangs from its neighbour as vanilla's does, so it
+	 * goes up with the decoration, after the trapdoor or post it stands on. Found by its boolean {@code hanging}
+	 * property (vanilla's lantern has the same), so no mod class is needed.
+	 */
+	private static boolean modLantern(Block b) {
+		return b.getStateDefinition().getProperty("hanging") instanceof net.minecraft.world.level.block.state.properties.BooleanProperty;
 	}
 
 	/** Upper door half, bed head, top of a tall flower: placed together with their other half. */
@@ -221,9 +230,15 @@ public final class MaterialRules {
 		return v.isPresent() ? (BlockState) state.setValue(part, v.get()) : state;
 	}
 
+	/** The age a pitcher crop grows its upper half at (vanilla's private PitcherCropBlock.DOUBLE_PLANT_AGE_INTERSECTION). */
+	private static final int PITCHER_DOUBLE_AGE = 3;
+
 	/** Where the other half of a two-block block goes, or null for normal blocks. */
 	@Nullable
 	public static BlockPos secondaryPos(BlockPos pos, BlockState state) {
+		if (state.getBlock() instanceof net.minecraft.world.level.block.PitcherCropBlock && state.getValue(BlockStateProperties.AGE_4) < PITCHER_DOUBLE_AGE) {
+			return null; // B560: a young pitcher crop is one block tall (vanilla's PitcherCropBlock grows its top at age 3)
+		}
 		if (state.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF) && state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER) {
 			return pos.above();
 		}
@@ -339,6 +354,11 @@ public final class MaterialRules {
 				state = emptyValue(state, property);
 			}
 		}
+		if (state.getBlock() instanceof net.minecraft.world.level.block.PitcherCropBlock && state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER) {
+			// B560: a pitcher crop is planted as vanilla plants a pod, one block tall (age 0); its top grows by itself, so
+			// a ripe crop's upper half is no block of its own (not placed, not charged)
+			return Blocks.AIR.defaultBlockState();
+		}
 		if (state.getBlock() instanceof net.minecraft.world.level.block.AbstractFurnaceBlock && state.hasProperty(BlockStateProperties.LIT)) {
 			// B495: a furnace, smoker or blast furnace scanned while burning is built cold (it has no fuel); campfires keep
 			// their lit, as blueprints place them lit on purpose
@@ -350,9 +370,11 @@ public final class MaterialRules {
 	/**
 	 * B493: a crop is planted, never built ripe: wheat and other crops, melon and pumpkin stems, nether wart, a sweet berry
 	 * bush and cocoa go in at age 0 (one seed grows; it is no free harvest). Growth is no part of whether it is built.
+	 * B560: a pitcher crop too (a double plant, not a CropBlock), one block tall as vanilla plants it.
 	 */
 	private static boolean plantedFresh(Block block) {
 		return block instanceof net.minecraft.world.level.block.CropBlock || block instanceof net.minecraft.world.level.block.StemBlock
+			|| block instanceof net.minecraft.world.level.block.PitcherCropBlock
 			|| block instanceof net.minecraft.world.level.block.NetherWartBlock || block instanceof net.minecraft.world.level.block.SweetBerryBushBlock
 			|| block instanceof net.minecraft.world.level.block.CocoaBlock;
 	}

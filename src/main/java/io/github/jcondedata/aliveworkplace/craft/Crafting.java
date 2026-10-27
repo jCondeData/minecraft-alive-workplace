@@ -849,6 +849,7 @@ public final class Crafting {
 			scans++;
 			byResult = new HashMap<>();
 			List<RecipeHolder<?>> all = new ArrayList<>();
+			Set<Item> kept = kind == Kind.KITCHEN ? Chefs.keptDishes(manager, registries) : null;
 			switch (kind) {
 				case CRAFTING -> all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
 				case STONECUTTING -> all.addAll(Recipes.all(manager, RecipeType.STONECUTTING));
@@ -902,6 +903,9 @@ public final class Crafting {
 					continue;
 				}
 				ItemStack out = Recipes.result(holder.value(), registries);
+				if (kind == Kind.KITCHEN && kept != null && kept.contains(out.getItem()) && onlyDishes(holder.value(), kept)) {
+					continue; // B435, B459: one kept dish cooked up or broken down into another (EXP Candies, XS to XL and back)
+				}
 				if (!out.isEmpty()) {
 					byResult.computeIfAbsent(out.getItem(), k -> new ArrayList<>()).add(holder);
 				}
@@ -909,6 +913,27 @@ public final class Crafting {
 			index.byResult().put(kind, byResult);
 			return byResult;
 		}
+	}
+
+	/** Whether every making of {@code recipe} is one of {@code dishes} (each of its ingredient's items is one). */
+	private static boolean onlyDishes(Recipe<?> recipe, Set<Item> dishes) {
+		boolean any = false;
+		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
+			if (ingredient.isEmpty()) {
+				continue;
+			}
+			ItemStack[] options = Recipes.options(ingredient);
+			if (options.length == 0) {
+				return false;
+			}
+			for (ItemStack option : options) {
+				if (!dishes.contains(option.getItem())) {
+					return false;
+				}
+			}
+			any = true;
+		}
+		return any;
 	}
 
 	/** Whether a recipe melts down something with durability (iron tools into nuggets): the tinkerer leaves those alone. */

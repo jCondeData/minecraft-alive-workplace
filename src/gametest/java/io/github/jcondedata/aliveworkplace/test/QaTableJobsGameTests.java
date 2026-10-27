@@ -211,9 +211,12 @@ public class QaTableJobsGameTests implements FabricGameTest {
 		List<String> wrong = new ArrayList<>();
 		int[] done = {0, 0, 0, 0}; // builds, styled, with jobs, with beds
 		Map<ResourceLocation, TablePayloads.Entry> entries = new HashMap<>();
-		TableServer.listing(level, null).forEach(e -> entries.put(e.id(), e));
 		helper.onEachTick(() -> {
 			BlueprintUnlocks.ENABLED = false;
+			// The listing of this tick, so it and the details below are of the same switches (B570: a test that flips one
+			// between ticks, such as physicians, changes both).
+			entries.clear();
+			TableServer.listing(level, null).forEach(e -> entries.put(e.id(), e));
 			for (int n = 0; n < 3 && !queue.isEmpty(); n++) {
 				ResourceLocation id = queue.poll();
 				boolean styled = BlueprintStyles.parse(id).isPresent();
@@ -265,6 +268,47 @@ public class QaTableJobsGameTests implements FabricGameTest {
 				throw new GameTestAssertException(wrong.size() + " builds show the wrong line, first: " + wrong.get(0));
 			}
 		});
+	}
+
+	/**
+	 * B570: a job's config switch flipped after the Table listed a build (a reload turning physicians off, then on) reaches
+	 * the listing as it does the details: for every listed build, the listing's jobs are the details' jobs after each flip.
+	 */
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '200' '"qaTableJobsFlip"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 200, batch = "qaTableJobsFlip")
+	public void aSwitchFlippedAfterTheListingReachesTheListingToo(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		boolean unlocks = BlueprintUnlocks.ENABLED;
+		boolean physicians = io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED;
+		Leftovers.after(helper, () -> {
+			BlueprintUnlocks.ENABLED = unlocks;
+			io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = physicians;
+		});
+		BlueprintUnlocks.ENABLED = false;
+		int[] physicianBuilds = new int[2];
+		for (boolean on : new boolean[] {true, false, true}) {
+			io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = on;
+			int with = 0;
+			for (TablePayloads.Entry entry : TableServer.listing(level, null)) {
+				if (BlueprintStyles.parse(entry.id()).isPresent()) {
+					continue;
+				}
+				Optional<TablePayloads.Details> details = TableServer.details(level, null, entry.id());
+				if (details.isEmpty()) {
+					continue;
+				}
+				List<ResourceLocation> flat = details.get().jobs().stream().flatMap(b -> b.jobs().stream()).distinct().toList();
+				helper.assertTrue(entry.jobs().equals(flat), "physicians " + (on ? "on" : "off") + ": " + entry.id() + " is listed with " + entry.jobs()
+					+ " but its details name " + flat);
+				with += entry.jobs().contains(id(ModVillagers.PHYSICIAN)) ? 1 : 0;
+			}
+			physicianBuilds[on ? 0 : 1] = with;
+		}
+		boolean live = io.github.jcondedata.aliveworkplace.threat.Disasters.live();
+		helper.assertTrue(physicianBuilds[1] == 0 && (!live || physicianBuilds[0] > 0),
+			"builds listed with the Physician (on, off): " + java.util.Arrays.toString(physicianBuilds) + ", disasters live " + live);
+		LOGGER.info("QA table jobs: with physicians on {} builds list the Physician, off {}", physicianBuilds[0], physicianBuilds[1]);
+		helper.succeed();
 	}
 
 	/**

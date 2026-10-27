@@ -16,6 +16,19 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- Blueprint Table: after a job's config switch changes in a running game (physicians, well keepers, firewardens, jewelers and the like, or disasters and village fires turned on or off), the Table's list, its job search and a build's Jobs line all follow the new setting at once; before, the list kept the old jobs until a restart and could disagree with the Jobs line under the build.
+- Cobblemon: the Chef no longer churns EXP Candies or breaks them down. He cooks EXP Candies XS from sculk and honeycomb and keeps 16 in the chests by his stove, instead of cooking the store's XS into bigger candies and splitting them back again, and he never breaks a player's EXP Candy XL into smaller candies. A recipe that also wants other makings still uses it: four Kelpsy Berries, four Honeycombs and an XL make three Mighty Candies.
+- Spruce style: with Carved Wood installed, a builder now puts up the two spruce lanterns on the flower boxes by a cottage's door; before, he set them before the flower boxes they stand on, couldn't, and finished the cottage without them.
+- Noble's Ball: in a village whose Manor I or II was placed mirrored (the style screen's mirror button, or a Steward's mirrored street), the guests now gather in the Manor's hall; before, they gathered on open ground about a Manor's width outside it.
+- Sieges: dead bushes, grass, ferns or snow at a wall's foot no longer stop the raiders. The desert husks' sand ramp buries them and rises to the top, and the warband climber's ladder goes up through them. The buried plants are gone after the raid (nothing drops); your flowers, saplings and blocks at a wall's foot still turn ladders and ramps away.
+- Class chatter: villagers now talk of wanting wine or new clothes when their class asks for them and they haven't had any lately, of the Gazette the week they read it, and of the tavern near their home (three lines each); before, only a household's rise and fall had lines.
+- Village-wide reach: a worker whose block stands in a City Plan zone painted in the plan's corner, past the Village Hall's radius, now reaches the whole village, as everywhere else in it; before, a field or site across the village was refused as if the worker were in no village.
+- Mourning: a villager who dies inside the village but far from the hall up a hill is now mourned like any other (her family grieves, players in the village are told, the chronicle gives her job and age, the family book dates her death); before, only deaths within the hall's radius in a straight line counted. Players are told when they stand anywhere in the village.
+- Builders now plant a scanned ripe pitcher crop as a young one-block crop, the way you plant a pitcher pod; before, it came out full grown and broke into a free pitcher plant.
+- The Village Hall's Classes tab and page now count only the households inside the village's circle; villagers out in the corners beyond it were counted too.
+- The Village Hall's What next? tip for a plain diet said "Keep 3 kinds of meal in the store", the varied diet's number; it now says 2.
+
 ## 0.150.0 — 2026-10-26
 
 ### Added

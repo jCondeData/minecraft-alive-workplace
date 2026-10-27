@@ -86,7 +86,8 @@ public final class NobleBalls {
 			if (best == null) {
 				net.minecraft.core.Vec3i size = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, f.structure())
 					.map(b -> b.size()).orElse(net.minecraft.core.Vec3i.ZERO);
-				best = f.placement().origin().offset(new BlockPos(size.getX() / 2, 1, size.getZ() / 2).rotate(f.placement().rotation()));
+				// Turned and mirrored the way the builder places the blueprint's blocks (a mirrored Manor's middle is not its turned middle).
+				best = at(f.placement(), new BlockPos(size.getX() / 2, 1, size.getZ() / 2));
 			}
 		}
 		return best != null ? best : hall;
@@ -94,9 +95,14 @@ public final class NobleBalls {
 
 	/** The middle of the ballroom of a Manor III built at {@code placement}. */
 	public static BlockPos ballroom(io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement placement) {
+		return at(placement, BALLROOM);
+	}
+
+	/** The world position of the blueprint's {@code local} spot in a build at {@code placement}, turned and mirrored with it. */
+	private static BlockPos at(io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement placement, BlockPos local) {
 		net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings settings =
 			new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(placement.rotation()).setMirror(placement.mirror());
-		return placement.origin().offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.calculateRelativePosition(settings, BALLROOM));
+		return placement.origin().offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.calculateRelativePosition(settings, local));
 	}
 
 	/** True if {@code villager}'s last festival was a ball (the day they came is the hall's ball day). */

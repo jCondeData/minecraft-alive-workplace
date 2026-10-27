@@ -330,6 +330,7 @@
 			"io.github.jcondedata.aliveworkplace.test.HallUiGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformStoryGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReformStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBoxSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaAttachmentSavesGameTests",

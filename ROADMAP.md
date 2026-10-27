@@ -4526,7 +4526,7 @@ on a real world.
   the people who live there. Done when: renders of I-III from the front, the back and above, in all five styles, are
   in the review package; a builder builds each in a GameTest (`huge_area`); the ball gathers in the ballroom when
   there is one; scene `grand_houses` adds the Manor.
-- [x] **34.17** (approved 2026-10-11) **Dressed by class: the pick round.** A class layer worn over the job's outfit
+- [x] **34.17** (approved 2026-10-11) (verified 2026-10-27: QaClassLayerRulesGameTests [5] on the shipped textures: nothing on the head or hat, the level badge [vanilla's five badges' pixels] clear, the back painted, at most half the jacket front covered, the elder's a face layer only; a painted head pixel and a badge pixel in burgher.png both caught; lint.py OK on all four) **Dressed by class: the pick round.** A class layer worn over the job's outfit
   (`textures/entity/villager/class/<class>.png`, recipes in `tools/textures/art/classes.py`, pixel-art skill): never
   on the head (the job's hat stays), nothing under the level badge, the back painted, the job still readable under
   it. Peasants keep their job's outfit as it is today (the owner-approved look). Three versions of each, every one a
@@ -4542,7 +4542,7 @@ on a real world.
   Each previewed on the villager model in every biome, over six different jobs. Until the owner picks, v1 of each is
   the default. Done when: all twelve pass `lint.py`; the page is up with a pick and a note per row; v1 of each is
   wired in as the textures.
-  - [x] **34.17a** (approved 2026-10-12) Change from the owner (2026-10-11): owner picked Artisan version 1, Burgher version 2, Noble version 1, Elder version 1; ship only these four and drop the other versions
+  - [x] **34.17a** (approved 2026-10-12) (verified 2026-10-27: QaClassLayerRulesGameTests [5] on the shipped textures: nothing on the head or hat, the level badge [vanilla's five badges' pixels] clear, the back painted, at most half the jacket front covered, the elder's a face layer only; a painted head pixel and a badge pixel in burgher.png both caught; lint.py OK on all four) Change from the owner (2026-10-11): owner picked Artisan version 1, Burgher version 2, Noble version 1, Elder version 1; ship only these four and drop the other versions
 - [x] **34.18** (approved 2026-10-12) (verified 2026-10-27: 27 new tests [QaClassHallRetirementGameTests, QaLuxuryWorkshopsGameTests]: class-look packet for a child, never a zombie villager, none with classOutfits off; successor choice and class gating, levels, held work, assignments carried, retired elder reloaded, elderRetirement off; every workshop tier's one job block, no barrel/lectern, village pieces in five styles with their worker, the Journeyman's blueprint, each Steward rule, names in American English; 5 mutants killed; 3x repeats clean; full build green) **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
   and one draws the elder look, on grown villagers and children alike, never on zombie villagers. The client learns a
   villager's class and life stage from a small packet, sent when a player starts tracking the villager (a new

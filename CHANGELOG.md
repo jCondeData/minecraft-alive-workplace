@@ -23,6 +23,9 @@ asks for the steps, `latest.log` and any crash report).
   the spiral stair goes all the way down (36.22).
 
 ### Fixed
+- The Terrace's bay windows are whole: each bay stands between two stone piers and its glass fills the opening, where
+  the panes stood as thin strips with gaps beside them. A Terrace already built gets them with Refresh to the latest
+  look (B640).
 - Refresh to the latest look no longer leaves a furnished old house in a mess: a house furnished before its drawing was
   redrawn now has its old table, chairs, clock and beds taken away where they stand (their items to the store), and
   today's spots are furnished once, so there is no second table and no leftover clock; afterwards the house matches a

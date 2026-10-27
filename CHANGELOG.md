@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Spruce style: with Carved Wood installed, a builder now puts up the two spruce lanterns on the flower boxes by a cottage's door; before, he set them before the flower boxes they stand on, couldn't, and finished the cottage without them.
+- Noble's Ball: in a village whose Manor I or II was placed mirrored (the style screen's mirror button, or a Steward's mirrored street), the guests now gather in the Manor's hall; before, they gathered on open ground about a Manor's width outside it.
 - Sieges: dead bushes, grass, ferns or snow at a wall's foot no longer stop the raiders. The desert husks' sand ramp buries them and rises to the top, and the warband climber's ladder goes up through them. The buried plants are gone after the raid (nothing drops); your flowers, saplings and blocks at a wall's foot still turn ladders and ramps away.
 - Class chatter: villagers now talk of wanting wine or new clothes when their class asks for them and they haven't had any lately, of the Gazette the week they read it, and of the tavern near their home (three lines each); before, only a household's rise and fall had lines.
 - Village-wide reach: a worker whose block stands in a City Plan zone painted in the plan's corner, past the Village Hall's radius, now reaches the whole village, as everywhere else in it; before, a field or site across the village was refused as if the worker were in no village.

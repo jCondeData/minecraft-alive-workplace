@@ -38,6 +38,11 @@ stay plain (`scans/<player>/jesse_s_caf`); the name is kept by id in the world's
 uploaded file such as `Zoë's Hut.litematic` keeps its name the same way; a plain `zoe_hut.nbt` is still "Zoe Hut", as
 before. Builds saved before this keep the names made from their ids. Shape Planner builds are named by the mod, never
 typed, so they're unchanged.
+A scan keeps the box's item frames, glow item frames, paintings and armor stands (B441), saved empty
+(`BlueprintEntities.keepBuildable`): no framed item, no armor or held items on a stand, and nothing else that moves, so a
+villager, a mob, a dropped item or a minecart with its load is never copied. The builder puts them up last, as it does a
+starter build's frames, each paid with its item from the chests; one with no item there is left out. Scans saved before
+this have none and load as before.
 
 ## 2. How it works
 
@@ -489,7 +494,12 @@ hanging lantern, an upside-down stair and a ladder, scanned with real clicks and
 block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`). `QaScanPotGameTests`
 (1: a decorated pot of four pottery sherds on a stone, scanned with real clicks and built from a chest holding one plain pot,
 shatters into no sherd when broken with a pickaxe, while the scanned pot itself gives its four,
-`aScannedSherdPotGivesNoFreeSherds`).
+`aScannedSherdPotGivesNoFreeSherds`). `ScanEntitiesGameTests` (2, B441: a room scanned
+with real clicks holding a framed diamond, a painting, an armor stand in a helmet, a cow, a villager, a dropped diamond
+and a loaded chest minecart keeps only the frame, painting and stand, empty; built again a quarter turned from a chest it
+gets an empty frame facing the turned way and the painting, both paid, and no stand with none in the chest; with one, a
+bare stand, the helmet left in the chest) and `QaScanFramesGameTests` (1, QA from B441: a scanned room's item frame and
+armor stand are built again).
 
 Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes),
 `refresh_old_house` (36.21: a Stone House of its first drawing, the Refresh button with what changes, the house after), `builders` (three builders, three starter builds), `soak` (10 builders,

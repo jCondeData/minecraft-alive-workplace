@@ -719,6 +719,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLairEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinRaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinIncursionGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatSurvivors1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatsM32GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisastersGameTests",

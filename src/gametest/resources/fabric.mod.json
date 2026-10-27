@@ -752,7 +752,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcCommandBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsBugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFixEdges1027GameTests"
 		]
 	},
 	"depends": {

@@ -17,7 +17,7 @@ of the file is still read (B457). A value of the wrong kind (a switch written 0,
 default alone, with a warning in the log naming it, and every other value in the file is kept and written back
 (B411, `QaConfigFileBugTests`). A file that can't be read at all (empty, cut short, not a `{...}` object) gives the
 defaults and is written over with them, but is first kept beside it as aliveworkplace.json.bad, so a hand edit is
-never lost (a list, a bare word or a number instead of `{...}` too: B477, `QaConfigHandEditsBugTests`); nothing in the file stops the game from starting. In the lists and maps an
+never lost (a list, a bare word or a number instead of `{...}` too: B477, `QaConfigHandEditsBugTests`; an empty file, spaces, null or true too, and 2147483648 or -2147483649 clamp like any number past the range: `QaFixEdges1027GameTests`); nothing in the file stops the game from starting. In the lists and maps an
 empty entry takes its default (a Wonder cap, a disaster or raider culture switch: on) and a cap past its range is
 clamped (`QaConfigOddFilesGameTests`). A bad list or map costs only that option; comments and a byte-order mark are read as meant, while a
 trailing comma makes the file unreadable (the defaults, the file kept aside); a second start reads exactly what the first wrote (`QaConfigHandEditsGameTests`).

@@ -436,6 +436,33 @@ public class MachineWorkCompatTests implements FabricGameTest {
 		mixerAt(helper, 30, true);
 	}
 
+	/**
+	 * QA lane E, 2026-10-27 (nightly survivor MachineWork:572): a trip set off to fetch for the mill, and the store filled
+	 * up before the fetch (a player's cobblestone in every other slot): the farmer ends the trip and takes none of the
+	 * wheat, as a full store pauses the mill.
+	 */
+	//$ gametest_ticks_batch AREA '600' '"qa_machine_fetch_full"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa_machine_fetch_full")
+	public void aTripWhoseStoreFilledUpBeforeTheFetchTakesNothing(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		villageWorkshop(helper);
+		Container chest = chest(helper, new ItemStack(Kind.MILL.input(), 20));
+		for (int i = 1; i < chest.getContainerSize(); i++) {
+			chest.setItem(i, new ItemStack(Items.COBBLESTONE, 64));
+		}
+		BlockPos mill = rig(helper, Kind.MILL, true);
+		Villager farmer = worker(helper, Kind.MILL);
+		ModAttachments.MACHINE_JOB.set(farmer, new MachineJob(helper.absolutePos(mill), file(Kind.MILL).id(), MachineJob.Stage.FETCH, List.of()));
+		helper.runAfterDelay(300, () -> {
+			helper.assertTrue(count(chest, Kind.MILL.input()) == 20, "the store is full but the farmer fetched wheat for the mill: "
+				+ count(chest, Kind.MILL.input()) + " left, trip " + ModAttachments.MACHINE_JOB.get(farmer));
+			helper.assertTrue(!MachineWork.busy(farmer), "the trip to fetch for a full store didn't end: " + ModAttachments.MACHINE_JOB.get(farmer));
+			clearMachines(helper);
+			helper.succeed();
+		});
+	}
+
 	private static void mixerAt(GameTestHelper helper, int rpm, boolean fed) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		clearMachines(helper);

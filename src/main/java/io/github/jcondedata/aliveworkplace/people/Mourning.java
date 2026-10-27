@@ -119,14 +119,14 @@ public final class Mourning {
 		if (!ENABLED || !mourned(villager)) {
 			return cause;
 		}
-		Optional<BlockPos> hall = VillageHalls.nearest(level, villager.blockPosition());
+		// B562: the village is its circle and height, not a ball round the hall (a death on its rim up a hill is its own)
+		Optional<BlockPos> hall = VillageHalls.containing(level, villager.blockPosition());
 		if (hall.isEmpty()) {
 			return cause;
 		}
 		long day = Chronicle.day(level);
 		Component told = told(villager, day).copy().withStyle(ChatFormatting.GRAY);
-		double r2 = (double) VillageHalls.RADIUS * VillageHalls.RADIUS;
-		for (ServerPlayer p : level.getPlayers(p -> p.blockPosition().distSqr(hall.get()) <= r2)) {
+		for (ServerPlayer p : level.getPlayers(p -> VillageHalls.contains(hall.get(), p.blockPosition()))) {
 			Chat.chat(p, told);
 		}
 		Component name = villager.getDisplayName().copy();

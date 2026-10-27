@@ -225,14 +225,16 @@ def dripstone_stake(b, x, z):
 
 def palisade_2():
     """Upgrade of the Palisade (same origin and front): a fighting step — the walkway made solid planks on log legs at
-    the ends, with a step of slabs along it high enough to shoot over the low stakes' points — and in front, outside,
-    a ditch of pointed dripstone stakes in an earthen bed, two rows staggered. 7 x 6 x 4."""
+    the ends, with a squared timber step along it high enough to shoot over the low stakes' points — and in front,
+    outside, a ditch of pointed dripstone stakes in an earthen bed, two rows staggered. 7 x 6 x 4."""
     b = palisade().grow(7, 6, 4)
     for x in range(7):
         if x == 3:
             continue
         b.set(x, 2, 0, "spruce_planks")
-        slab(b, x, 3, 0, SPRUCE)  # the fighting step: stand at 3.5, eyes over the low points
+        # the fighting step: a full timber, so it's a floor (B432: a bottom slab's top isn't one, and wasn't a battle
+        # station); stand at 4, eyes at 5.6, over the low points (5) and under the tall ones (6)
+        log(b, x, 3, 0, "stripped_spruce_log", axis="x")
     for x in (0, 6):
         for y in (0, 1):
             log(b, x, y, 0, "stripped_spruce_log")

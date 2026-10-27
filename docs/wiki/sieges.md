@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
 
 ## What a player sees
 
@@ -21,7 +21,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
 - **The defense upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
-  adds only what's new. **Palisade II** gets a fighting step (stand high enough to shoot over the low points) and a
+  adds only what's new. **Palisade II** gets a fighting step (a timber along the walkway to stand on, high enough to shoot over the low
+  points, and a row of archers' battle stations, as many as the Palisade's walkway) and a
   ditch of pointed dripstone stakes in front; **Stone Wall II** timber hoardings over the battlements (a roofed walkway,
   a gallery out over the wall's foot with murder holes); **Wall Tower II** a roofed top with an archers' gallery, two
   stations a side; **Gatehouse II** a barbican in front with a second gate and portcullis and murder holes over the
@@ -45,7 +46,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381
   still shut.
 - **A guard on the walkway throws a ladder down** when he is within 2 blocks of its top: the whole ladder breaks away
   at once, whoever is on it falls, and the raiders need 10 seconds before they raise it again.
-- **Ladders go on any wall, yours too, but only into air**, and never against a gate. When the raid is over every
+- **Ladders go on any wall, yours too, but only into air**, and never against a gate. Grass, ferns, dead bushes and
+  snow at the wall's foot count as air: the ladder goes up through them, and they are gone afterward (no seeds or
+  grass drop). Your flowers, saplings and blocks there still turn a ladder away. When the raid is over every
   ladder is taken away; nothing else of the wall is touched and no ladder item is left behind.
 - **No raider appears inside the walls**: a siege gathers beyond the outermost finished wall on the side it comes from.
 - **Guards take battle stations** (32.6) when a siege begins, instead of rallying at the bell. Archers go up to the
@@ -104,7 +107,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381
   - A climber asks for its path to the hall (to within 5 blocks). If the path gets there, there is no wall in its way
     and it needs no ladder. If not, the wall is looked for from where the path ends, straight toward the hall: the
     first thing at least two blocks high. A ladder already within 8 blocks of that spot is used; otherwise a new one is
-    begun there, or up to 3 blocks to either side, wherever every rung goes into air. At most 3 ladders a siege.
+    begun there, or up to 3 blocks to either side, wherever every rung goes into air or a wild plant it buries (`threat/Buriable`: vanilla's `#minecraft:replaceable`
+    blocks without fluids, fire, vines, glow lichen, hanging roots, light and structure void). At most 3 ladders a siege.
   - The ladder reaches to where the wall's column leaves two blocks free, at most 10 rungs: over a Stone Wall's
     crenel that is 5 rungs, over a merlon 6. One rung is set every 10 ticks while a climber stands within 3 blocks of
     the foot.
@@ -315,8 +319,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   `bothPortcullisesOfGatehouseIIAreDrawnUpAtDawn` (a raid's own start drops all twelve bars and shuts both gates; after
   the raid they stay down until the first dawn after, then both portcullises go up, all six gates open and the Defense
   page reads as before) and `theBarbicansGateIsTheFirstBreach` (the first block the rams break is the barbican's gate,
-  with the inner gate and both portcullises standing and no other block of the build touched). Known open: Palisade II's
-  fighting step is not a battle station (a failing test on the branch tests/defence-upgrades-1025).
+  with the inner gate and both portcullises standing and no other block of the build touched). `QaDefenceUpgradeBugTests`
+  (B432): Palisade II's fighting step has at least as many battle stations as the Palisade's walkway.
 - GameTests: `LadderGameTests` (32.5): a pillager climber is over a Stone Wall within 600 ticks by a ladder of 5
   rungs set one at a time on its outer face, and a vindicator follows up the same ladder; a guard on the walkway
   throws the ladder down with the climber on it, no raider ladder is left within 3 blocks of him and the climber is

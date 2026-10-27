@@ -334,6 +334,30 @@ public final class VillageHalls {
 		return dx * dx + dz * dz <= (long) RADIUS * RADIUS && Math.abs(pos.getY() - hall.getY()) <= HEIGHT;
 	}
 
+	/**
+	 * The hall whose village holds {@code pos} ({@link #contains}: within {@link #RADIUS} across and {@link #HEIGHT} up or
+	 * down), the nearest across if two do. Unlike {@link #nearest}, a ball of {@link #RADIUS}, it finds the hall of a spot
+	 * on the village's rim up a hill (B562: 60 out and 25 up is in the village but 65 blocks off in a straight line).
+	 */
+	public static Optional<BlockPos> containing(ServerLevel level, BlockPos pos) {
+		Optional<BlockPos> near = nearest(level, pos);
+		if (near.isPresent() && contains(near.get(), pos)) {
+			return near;
+		}
+		int reach = (int) Math.ceil(Math.sqrt((double) RADIUS * RADIUS + (double) HEIGHT * HEIGHT));
+		return level.getPoiManager().getInRange(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, reach, PoiManager.Occupancy.ANY)
+			.map(net.minecraft.world.entity.ai.village.poi.PoiRecord::getPos)
+			.filter(h -> contains(h, pos))
+			.min(Comparator.comparingLong(h -> across(h, pos)));
+	}
+
+	/** The square of the distance from {@code a} to {@code b} across (east-west and north-south only). */
+	public static long across(BlockPos a, BlockPos b) {
+		long dx = a.getX() - b.getX();
+		long dz = a.getZ() - b.getZ();
+		return dx * dx + dz * dz;
+	}
+
 	/** The living villagers in the village round {@code hall} ({@link #contains}). */
 	public static List<Villager> villagers(ServerLevel level, BlockPos hall) {
 		return villagers(level, hall, v -> true);

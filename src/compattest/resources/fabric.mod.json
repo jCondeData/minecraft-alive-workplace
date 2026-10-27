@@ -67,6 +67,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCuisineCandyBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCampfirePotMenuCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCampfirePotStockCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCampfirePotRecipesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateTrainCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainHallGoneCompatTests",

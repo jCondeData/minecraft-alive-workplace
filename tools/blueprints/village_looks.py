@@ -575,10 +575,10 @@ def clinic(b, P):
         flat_top(b, P, 1, 2, 7, 8, 5)
     else:
         def ward(t):
-            gable_roof(t, 0, 12, 7, 12, 4, P.roof, axis="x", gable=P.wall, gable_at=(1, 11), eave_trim=P.wood)
+            gable_roof(t, 0, 12, 7, 12, 4, P.roof, axis="x", gable=P.wall, gable_at=(1, 11), eave_trim=P.wood, closed=True)
 
         def pav(t):
-            gable_roof(t, 0, 8, 1, 9, 5, P.roof, axis="z", gable=P.wall, gable_at=(2, 8), eave_trim=P.wood)
+            gable_roof(t, 0, 8, 1, 9, 5, P.roof, axis="z", gable=P.wall, gable_at=(2, 8), eave_trim=P.wood, closed=True)
         roofs(b, ward, pav)
     # the cross window over the door: a stone mullion and transom
     for y in (5, 6, 7):
@@ -597,12 +597,9 @@ def clinic(b, P):
         win(b, P, x, 2, 11, "south", h=2, shut=False)
     win(b, P, 11, 2, 10, "east", h=2, shut=False)
     win(b, P, 9, 2, 8, "north", shut=False)
-    # cots in the ward
+    # the ward's beds: white, heads to the back wall (B639: they were cots of slab and carpet, read as broken beds)
     for x in (8, 10):
-        slab(b, x, 1, 10, P.wood)
-        slab(b, x, 1, 9, P.wood)
-        b.set(x, 2, 10, "white_carpet")
-        b.set(x, 2, 9, "white_carpet")
+        b.bed(x, 1, 9, "white", facing="south")
     tie(b, P, 5)
     tie(b, P, 4, x0=2, x1=10, z=10, lamps=(9,))
 

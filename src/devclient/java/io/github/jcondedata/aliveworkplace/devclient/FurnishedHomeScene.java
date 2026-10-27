@@ -16,7 +16,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BedPart;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -27,7 +29,9 @@ import net.minecraft.world.phys.Vec3;
  * vanilla cottage beside it. Checks every furniture spot holds the piece the server chose, and that pieces of at least
  * two furniture mods stand in it. Then (B260) the owner's Stone House, furnished the same way: the way in from its door,
  * clear to the ladder, and its attic bedroom (the bed's head to the gable, a nightstand, a chest at its foot, a lamp
- * hung from the ridge); checks nothing stands in the door's way and every piece has what it stands on.
+ * hung from the ridge); checks nothing stands in the door's way and every piece has what it stands on. And (B639) the
+ * Clinic: its ward of four white beds, heads to the back wall, and its ceiling closed where the roof's stairs meet at the
+ * ridge; checks the beds are whole and nothing is open under either ridge.
  */
 final class FurnishedHomeScene {
 	private static final ResourceLocation COTTAGE = StarterBlueprints.STARTER_COTTAGE_2.id();
@@ -37,6 +41,8 @@ final class FurnishedHomeScene {
 	private static final BlockPos STONE = new BlockPos(48, -60, 0);
 	private static final ResourceLocation TERRACE = AliveWorkplace.id("terrace");
 	private static final BlockPos TERRACE_AT = new BlockPos(72, -60, 0);
+	private static final ResourceLocation CLINIC = StarterBlueprints.CLINIC.id();
+	private static final BlockPos CLINIC_AT = new BlockPos(96, -60, 0);
 
 	/** The stills: a name, where the camera is and what it looks at (relative to a cottage's origin), which cottage. */
 	private record View(String name, Vec3 eye, Vec3 at, BlockPos cottage) {
@@ -52,7 +58,9 @@ final class FurnishedHomeScene {
 		new View("07_stone_doorway", new Vec3(6.5, 3.4, 5.5), new Vec3(5.5, 1.2, 1.5), STONE),
 		new View("08_stone_attic", new Vec3(7.5, 7.7, 4.5), new Vec3(2.5, 6.4, 4.5), STONE),
 		new View("09_terrace_west", new Vec3(2.6, 3.2, 2.3), new Vec3(4.5, 1.4, 5.5), TERRACE_AT),
-		new View("10_terrace_east", new Vec3(10.4, 3.2, 2.3), new Vec3(7.5, 1.4, 5.5), TERRACE_AT));
+		new View("10_terrace_east", new Vec3(10.4, 3.2, 2.3), new Vec3(7.5, 1.4, 5.5), TERRACE_AT),
+		new View("11_clinic_ward", new Vec3(6.5, 3.6, 3.2), new Vec3(6.5, 1.0, 9.0), CLINIC_AT),
+		new View("12_clinic_ceiling", new Vec3(2.5, 2.2, 7.5), new Vec3(10.5, 8.0, 8.5), CLINIC_AT));
 	private static final int FIRST = 80;
 	private static final int EACH = 50;
 
@@ -146,6 +154,36 @@ final class FurnishedHomeScene {
 		}
 	}
 
+	/**
+	 * The Clinic as a builder here would build it (B639): its ward's beds are whole beds (not cots of slab and carpet), and
+	 * no cell under its two roofs' ridges is open.
+	 */
+	private void placeClinic(ServerLevel level) {
+		Blueprint base = BlueprintLibrary.get(level, CLINIC).orElse(null);
+		if (base == null) {
+			wrong.add("no Clinic blueprint");
+			return;
+		}
+		FurnitureChoice choice = FurnitureChoice.forNewBuild(CLINIC);
+		for (Blueprint.Entry e : choice.apply(base, CLINIC).blocks()) {
+			level.setBlock(CLINIC_AT.offset(e.pos()), e.state(), 2 | 16);
+		}
+		long beds = base.blocks().stream().filter(e -> e.state().getBlock() instanceof BedBlock && e.state().getValue(BedBlock.PART) == BedPart.HEAD).count();
+		if (beds < 4) {
+			wrong.add("the Clinic's ward has " + beds + " beds");
+		}
+		for (int x = 1; x <= 11; x++) {
+			if (level.getBlockState(CLINIC_AT.offset(x, 8, 8)).isAir()) {
+				wrong.add("the Clinic's ward ceiling is open under the ridge at " + x + ",8,8");
+			}
+		}
+		for (int z = 2; z <= 6; z++) {
+			if (level.getBlockState(CLINIC_AT.offset(6, 9, z)).isAir()) {
+				wrong.add("the Clinic's front ceiling is open under the ridge at 6,9," + z);
+			}
+		}
+	}
+
 	/** The furnished cottage as a builder on this server would build it, and the vanilla one beside it. */
 	private void place(ServerLevel level) {
 		Blueprint base = BlueprintLibrary.get(level, COTTAGE).orElse(null);
@@ -162,6 +200,7 @@ final class FurnishedHomeScene {
 		}
 		placeStoneHouse(level);
 		placeTerrace(level);
+		placeClinic(level);
 		java.util.Set<String> mods = new java.util.TreeSet<>();
 		int pieces = 0;
 		for (FurnitureChoice.Placed placed : choice.spots().values()) {
@@ -183,7 +222,8 @@ final class FurnishedHomeScene {
 			wrong.add("the furniture mods aren't loaded: film this scene with -Pfurniture=true");
 		}
 		summary = modsHere ? "Starter Cottage II furnished room by room: " + pieces + " pieces of " + String.join(", ", mods)
-			+ " in its dining corner, bedrooms and sitting corner, every one where its spot is; the Stone House's way in clear and its attic a bedroom"
+			+ " in its dining corner, bedrooms and sitting corner, every one where its spot is; the Stone House's way in clear and its attic a bedroom; the Clinic's ward has "
+				+ "4 white beds and a closed ceiling"
 			: "no furniture mods loaded: the cottage is the vanilla build (run with -Pfurniture=true)";
 	}
 }

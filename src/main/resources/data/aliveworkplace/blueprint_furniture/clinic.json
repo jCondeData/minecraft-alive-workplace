@@ -1,3 +1,6 @@
 {"spots": [
+  {"kind": "bed", "pos": [2, 1, 8], "facing": "south", "wood": "birch", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:white_bed[facing=south,occupied=false,part=head]"}], "support": ["floor"]},
+  {"kind": "bed", "pos": [4, 1, 8], "facing": "south", "wood": "birch", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:white_bed[facing=south,occupied=false,part=head]"}], "support": ["floor"]},
+  {"kind": "bed", "pos": [8, 1, 8], "facing": "south", "wood": "birch", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:white_bed[facing=south,occupied=false,part=head]"}], "support": ["floor"]},
   {"kind": "bed", "pos": [10, 1, 8], "facing": "south", "wood": "birch", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:white_bed[facing=south,occupied=false,part=head]"}], "support": ["floor"]}
 ]}

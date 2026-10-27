@@ -26,6 +26,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Build and run in-game tests
         run: ./gradlew build --stacktrace
+      # The questbook and its built/ advancements are generated; this fails when chapters.py or a new blueprint
+      # changed without regenerating (B573).
+      - name: Check the questbook is regenerated
+        run: python3 tools/questbook/generate.py --check
       # One jar per Minecraft version node: versions/<mc>/build/libs/alive-workplace-<version>+<mc>.jar
       - name: Upload jar
         uses: actions/upload-artifact@v4

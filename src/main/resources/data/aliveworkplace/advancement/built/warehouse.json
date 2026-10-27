@@ -1,0 +1,22 @@
+{
+  "parent": "aliveworkplace:built/root",
+  "display": {
+    "icon": {
+      "id": "aliveworkplace:blueprint"
+    },
+    "title": {
+      "translate": "blueprint.aliveworkplace.warehouse"
+    },
+    "description": {
+      "translate": "advancements.aliveworkplace.built.description"
+    },
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "built": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

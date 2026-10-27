@@ -32,6 +32,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B46GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B46OldSaveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderChaosGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderStuckGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PlacingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildersShareSpareGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CraftersShareSpareGameTests",
@@ -712,6 +713,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaModGoneVillagersGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaModGoneRehireGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuildStagesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSuppliesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHeightFreeUploadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuildsPerRankGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcsGameTests"
 		]

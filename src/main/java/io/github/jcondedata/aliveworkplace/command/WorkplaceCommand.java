@@ -252,6 +252,10 @@ public final class WorkplaceCommand {
 					source.sendFailure(Component.translatable("command.aliveworkplace.story.unknown", arcName));
 					return 0;
 				}
+				if (io.github.jcondedata.aliveworkplace.story.Arcs.disabled(arc.get().id())) {
+					source.sendFailure(Component.translatable("command.aliveworkplace.story.disabled", arc.get().name()));
+					return 0;
+				}
 				if (!arc.get().side() && now != null) {
 					source.sendFailure(Component.translatable("command.aliveworkplace.story.running", village, storyName(now)));
 					return 0;

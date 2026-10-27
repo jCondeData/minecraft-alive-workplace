@@ -40,8 +40,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -732,13 +730,8 @@ public final class Lairs {
 				mob.setDropChance(EquipmentSlot.HEAD, 0f);
 				mob.setDropChance(EquipmentSlot.CHEST, 0f);
 			}
-			var health = mob.getAttribute(Attributes.MAX_HEALTH);
-			double extra = chief.map(Culture.Captain::health).orElse(CAPTAIN_HEALTH);
-			if (health != null && extra > 0) {
-				// (the modifier keeps the bandit chief's id: a chief saved before 32.3 has it)
-				health.addPermanentModifier(new AttributeModifier(AliveWorkplace.id("bandit_chief"), extra, AttributeModifier.Operation.ADD_VALUE));
-				mob.setHealth(mob.getMaxHealth());
-			}
+			// (the modifier keeps the bandit chief's id: a chief saved before 32.3 has it)
+			Threats.captainHealth(mob, AliveWorkplace.id("bandit_chief"), chief.map(Culture.Captain::health).orElse(CAPTAIN_HEALTH));
 		} else {
 			Optional<String> name = culture.flatMap(Culture::name);
 			if (name.isPresent()) {

@@ -268,7 +268,7 @@ or an operator; anyone in a village nobody owns), and is checked again on the cl
 | Key | Default | What it does |
 |---|---|---|
 | `villageHallRadius` | 64 (16 to 160) | How far from a hall its village reaches |
-| `villageGrowthCap` | 40 (0 to 500) | The village stops having babies at this many villagers; 0: no growth |
+| `villageGrowthCap` | 40 (0 to 500) | The village stops having babies at this many villagers; 0: no growth (the hall says "Villages don't grow on this server") |
 | `villageTreasury` | on | Villages put by takings every morning |
 | `treasuryPerWorker` | 20 (0 to 500) | Hundredths of an emerald a worker a day |
 | `villageProtection` | on | Owners may protect their village; off: nobody can, on the whole server |

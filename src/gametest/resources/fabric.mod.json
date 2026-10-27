@@ -709,6 +709,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaOneEmeraldBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPersonalRequestsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PluralSweepGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaQuestJournalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestJournalBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassHallGameTests",

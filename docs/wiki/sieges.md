@@ -45,7 +45,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381
   still shut.
 - **A guard on the walkway throws a ladder down** when he is within 2 blocks of its top: the whole ladder breaks away
   at once, whoever is on it falls, and the raiders need 10 seconds before they raise it again.
-- **Ladders go on any wall, yours too, but only into air**, and never against a gate. When the raid is over every
+- **Ladders go on any wall, yours too, but only into air**, and never against a gate. Grass, ferns, dead bushes and
+  snow at the wall's foot count as air: the ladder goes up through them, and they are gone afterward (no seeds or
+  grass drop). Your flowers, saplings and blocks there still turn a ladder away. When the raid is over every
   ladder is taken away; nothing else of the wall is touched and no ladder item is left behind.
 - **No raider appears inside the walls**: a siege gathers beyond the outermost finished wall on the side it comes from.
 - **Guards take battle stations** (32.6) when a siege begins, instead of rallying at the bell. Archers go up to the
@@ -104,7 +106,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381
   - A climber asks for its path to the hall (to within 5 blocks). If the path gets there, there is no wall in its way
     and it needs no ladder. If not, the wall is looked for from where the path ends, straight toward the hall: the
     first thing at least two blocks high. A ladder already within 8 blocks of that spot is used; otherwise a new one is
-    begun there, or up to 3 blocks to either side, wherever every rung goes into air. At most 3 ladders a siege.
+    begun there, or up to 3 blocks to either side, wherever every rung goes into air or a wild plant it buries (`threat/Buriable`: vanilla's `#minecraft:replaceable`
+    blocks without fluids, fire, vines, glow lichen, hanging roots, light and structure void). At most 3 ladders a siege.
   - The ladder reaches to where the wall's column leaves two blocks free, at most 10 rungs: over a Stone Wall's
     crenel that is 5 rungs, over a merlon 6. One rung is set every 10 ticks while a climber stands within 3 blocks of
     the foot.

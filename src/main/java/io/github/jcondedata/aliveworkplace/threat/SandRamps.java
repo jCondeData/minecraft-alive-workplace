@@ -309,7 +309,7 @@ public final class SandRamps {
 			BlockPos at = next;
 			Mob builder = raiders.stream().filter(m -> storm.assigned.get(m.getUUID()) == site && Threats.role(m) == Culture.Role.CLIMBER
 				&& m.position().distanceToSqr(Vec3.atCenterOf(at)) <= PILE_REACH * PILE_REACH).findFirst().orElse(null);
-			if (builder == null || !level.getBlockState(next).isAir() || !blocked(level, next.below())
+			if (builder == null || !Buriable.room(level.getBlockState(next)) || !blocked(level, next.below())
 				|| !level.getEntitiesOfClass(Mob.class, new net.minecraft.world.phys.AABB(next)).isEmpty()) {
 				continue;
 			}
@@ -359,9 +359,12 @@ public final class SandRamps {
 		return !level.getBlockState(pos).getCollisionShape(level, pos).isEmpty();
 	}
 
-	/** Whether a block of a ramp may stand at {@code pos}: air, or sand, the siege's or any already there (B382), counted as piled. */
+	/**
+	 * Whether a block of a ramp may stand at {@code pos}: air or a plant the sand buries ({@link Buriable}, B553: dead
+	 * bushes at a desert wall's foot), or sand, the siege's or any already there (B382), counted as piled.
+	 */
 	private static boolean ours(ServerLevel level, ThreatData.Siege siege, BlockPos pos) {
-		return level.getBlockState(pos).isAir() || level.getBlockState(pos).is(Blocks.SAND);
+		return Buriable.room(level.getBlockState(pos)) || level.getBlockState(pos).is(Blocks.SAND);
 	}
 
 	private static boolean sandy(ServerLevel level, BlockPos pos) {
@@ -371,7 +374,7 @@ public final class SandRamps {
 	/**
 	 * How high a ramp at {@code foot} must be to reach the top of the wall beside it, or -1 when it can't be piled here:
 	 * the wall is higher than {@link #MAX_HEIGHT} or a gate, a block of the ramp would go where something stands that
-	 * isn't air or sand, a column has nothing solid under it, or there is no room on top.
+	 * isn't air, a buriable plant or sand, a column has nothing solid under it, or there is no room on top.
 	 */
 	private static int height(ServerLevel level, ThreatData.Siege siege, BlockPos foot, Direction into) {
 		BlockPos wall = foot.relative(into);

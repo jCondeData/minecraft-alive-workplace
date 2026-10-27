@@ -24,7 +24,8 @@ Roadmap items: 32.9, B382
 - **Sand ramps.** Where pillagers set ladders, the plain husks pile sand against the wall: a block every half second,
   one up for one out, so the ramp rises step by step against the wall until it is level with the top. Then the
   raiders walk up it and drop inside. Chat says so ("Sand is piled against the walls of Thornholm!"). When the raid is
-  over every block of the ramp is gone; nothing else is touched and nothing drops.
+  over every block of the ramp is gone; nothing else is touched and nothing drops. The ramp buries dead bushes, grass
+  and snow at the wall's foot (they are gone after the raid), but never your flowers or blocks.
 - **Until noon.** Husks don't burn, so a desert siege doesn't end at dawn: the raiders stay, and the siege goes on, until
   noon.
 - **The sarcophagus** (`aliveworkplace:chests/pharaohs_tomb`): gold, emeralds, a golden apple, gold nuggets, bones,
@@ -40,8 +41,8 @@ Roadmap items: 32.9, B382
   dying within the radius of a living one is brought back after the delay as the same mob (its gear, its raid, its
   role), tagged `aliveworkplace_risen` so it never rises twice.
 - **Sand ramps** (`threat/SandRamps`, tactic `sand_ramps`): a raider with the role `climber` whose path to the hall
-  ends at a wall (two to 8 blocks high, not a gate) starts a ramp there. Every block of the ramp goes only into air,
-  on solid ground; the blocks go on in stages (each stage a whole ramp one higher than the last), every 10 ticks while
+  ends at a wall (two to 8 blocks high, not a gate) starts a ramp there. Every block of the ramp goes only into air
+  or a wild plant it buries (the same rule as ladders, `threat/Buriable`), or sand already there, on solid ground; the blocks go on in stages (each stage a whole ramp one higher than the last), every 10 ticks while
   the climber is near. At most 2 ramps a siege. Once the ramp stands, the raiders go up it and over.
   A raider is let go to fight once it is down inside on its feet, no higher than a step above the ramp's foot (a
   slab or a stair's lower step one up counts as down inside; B330).

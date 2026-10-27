@@ -16,6 +16,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- Sieges: dead bushes, grass, ferns or snow at a wall's foot no longer stop the raiders. The desert husks' sand ramp buries them and rises to the top, and the warband climber's ladder goes up through them. The buried plants are gone after the raid (nothing drops); your flowers, saplings and blocks at a wall's foot still turn ladders and ramps away.
+
 ## 0.150.0 — 2026-10-26
 
 ### Added

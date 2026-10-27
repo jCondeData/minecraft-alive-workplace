@@ -481,7 +481,13 @@ public class QaGiftedGameTests implements FabricGameTest {
 	}
 
 	private static String line(JsonObject lang, VillageHallBlockEntity hall, String name) {
-		return hall.chronicle().stream().map(e -> render(lang, e.text())).filter(s -> s.startsWith(name)).reduce((a, b) -> b).orElse(null);
+		// Her growing-up line: a grown child may also take up the family trade in the same round ("Wren took up the family
+		// trade: Fisherman", when a free workstation of a parent's trade is near, as other tests' leftovers can be).
+		return grownUp(lang, hall, name).reduce((a, b) -> b).orElse(null);
+	}
+
+	private static java.util.stream.Stream<String> grownUp(JsonObject lang, VillageHallBlockEntity hall, String name) {
+		return hall.chronicle().stream().map(e -> render(lang, e.text())).filter(s -> s.startsWith(name + ", child of ") && s.contains(" has grown up"));
 	}
 
 	/**
@@ -537,10 +543,9 @@ public class QaGiftedGameTests implements FabricGameTest {
 			Families.round(level, hall, cal, RandomSource.create(2));
 			helper.assertTrue(Gifted.of(cal) == null, "staging: seed 2 made Cal Gifted");
 			helper.assertTrue("Cal, child of Dara and Tom, has grown up".equals(line(lang, entity, "Cal")), "Cal's line: " + line(lang, entity, "Cal"));
-			int lines = entity.chronicle().size();
 			Families.round(level, hall, cal, RandomSource.create(1));
 			helper.assertTrue(Gifted.of(cal) == null, "a grown child was rolled for again in a later round");
-			helper.assertTrue(entity.chronicle().size() == lines, "a later round wrote another chronicle line");
+			helper.assertTrue(grownUp(lang, entity, "Cal").count() == 1, "a later round wrote another growing-up line: " + grownUp(lang, entity, "Cal").toList());
 			helper.succeed();
 		});
 	}

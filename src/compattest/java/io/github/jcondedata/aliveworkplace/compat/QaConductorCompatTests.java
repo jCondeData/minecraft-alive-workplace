@@ -263,6 +263,89 @@ public class QaConductorCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * QA lane E, 2026-10-27, from the wiki's Create page: the Conductor calls the stop "in the chat of players within 24
+	 * blocks of the station": a player 24 blocks from the arrival station reads "<name>: Now arriving at <village>! All
+	 * change, mind the gap.", word for word; one 26.5 blocks off reads nothing of it.
+	 */
+	//$ gametest_ticks_batch HUGE '2400' '"qa_conductor_call_reach"'
+	@GameTest(template = HUGE, timeoutTicks = 2400, batch = "qa_conductor_call_reach")
+	public void theStopIsCalledToPlayersWithinTwentyFourBlocksOnly(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		line(helper);
+		Villages v = villages(helper);
+		boolean west = CaravanTrains.first(v.a(), v.b());
+		BlockPos home = west ? STATION_A : STATION_B;
+		BlockPos b = helper.absolutePos(west ? STATION_B : STATION_A);
+		Villager conductor = EntityType.VILLAGER.spawn(level, helper.absolutePos(home.offset(west ? 4 : -4, 0, 5)), MobSpawnType.COMMAND);
+		conductor.setNoAi(true);
+		Stations.assign(level, conductor, helper.absolutePos(home), ModVillagers.CONDUCTOR);
+		String name = conductor.getDisplayName().getString();
+		List<String> nearHeard = new java.util.concurrent.CopyOnWriteArrayList<>();
+		List<String> farHeard = new java.util.concurrent.CopyOnWriteArrayList<>();
+		net.minecraft.server.level.ServerPlayer near = listener(helper, nearHeard, b.offset(0, 0, 24));
+		net.minecraft.server.level.ServerPlayer far = listener(helper, farHeard, b.offset(0, 0, -27));
+		CaravanTrains.lastCall = null;
+		UUID owner = CaravanTrains.railwayId(v.a(), v.b());
+		java.util.regex.Pattern expected = java.util.regex.Pattern.compile(java.util.regex.Pattern.quote(name + ": Now arriving at ")
+			+ "[^!]+" + java.util.regex.Pattern.quote("! All change, mind the gap."));
+		int[] tick = {0};
+		helper.onEachTick(() -> {
+			tick[0]++;
+			if (tick[0] % 10 != 0) {
+				return;
+			}
+			near.teleportTo(b.getX() + 0.5, b.getY(), b.getZ() + 24.5);
+			far.teleportTo(b.getX() + 0.5, b.getY(), b.getZ() - 26.5);
+			buildTrain(level, v);
+			CaravanTrains.serve(level, v.a(), hall(level, v.a()));
+			CaravanTrains.serve(level, v.b(), hall(level, v.b()));
+			boolean atB = CaravanTrains.RAILWAY.call(r -> r.at(level, owner, b), false);
+			if (!(atB && CaravanTrains.lastCall != null) && tick[0] < 2300) {
+				return;
+			}
+			try {
+				helper.assertTrue(atB && CaravanTrains.lastCall != null,
+					"the train didn't come in at the other station with a call: " + CaravanTrains.RAILWAY.call(r -> r.status(level, owner), "-"));
+				helper.assertTrue(nearHeard.stream().anyMatch(s -> expected.matcher(s).matches()), "a player 24 blocks from the station didn't read the call word for word ("
+					+ expected + "): " + nearHeard);
+				helper.assertTrue(farHeard.stream().noneMatch(s -> s.contains("Now arriving")), "a player 26.5 blocks off read the call: " + farHeard);
+			} finally {
+				CaravanTrains.RAILWAY.call(r -> {
+					r.scrap(level, owner);
+					return true;
+				}, false);
+				tidy(level, v);
+				level.getServer().getPlayerList().remove(near);
+				level.getServer().getPlayerList().remove(far);
+			}
+			helper.succeed();
+		});
+	}
+
+	/** A player who writes down every line shown to them, standing (flying, so nothing moves them) at {@code at}. */
+	private static net.minecraft.server.level.ServerPlayer listener(GameTestHelper helper, List<String> seen, BlockPos at) {
+		ServerLevel level = helper.getLevel();
+		var cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(
+			new com.mojang.authlib.GameProfile(UUID.randomUUID(), "qa-ear-" + seen.hashCode() % 1000), false);
+		net.minecraft.server.level.ServerPlayer player = new net.minecraft.server.level.ServerPlayer(level.getServer(), level, cookie.gameProfile(),
+			cookie.clientInformation()) {
+			@Override
+			public void displayClientMessage(Component message, boolean overlay) {
+				seen.add(message.getString());
+				super.displayClientMessage(message, overlay);
+			}
+		};
+		net.minecraft.network.Connection connection = new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND);
+		new io.netty.channel.embedded.EmbeddedChannel(connection);
+		level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
+		player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+		player.getAbilities().flying = true;
+		player.setNoGravity(true);
+		player.teleportTo(level, at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0f, 0f);
+		return player;
+	}
+
 	// ---- the two villages (as ConductorCompatTests sets them up) -----------------------------------------------------
 
 	private static void line(GameTestHelper helper) {

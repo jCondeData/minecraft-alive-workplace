@@ -288,6 +288,13 @@ at 16; Runes of Warding I a fifth fewer raids. `QaGolemSmithGameTests` (5): a st
 takes nothing; one golem for 9 villagers and a second at 10; a cost spread over two chests by the table taken exactly,
 a stone hoe no iron hoe; a Wall Sentry with twice a golem's health and its name over its head; the forge's choice
 through a save; the sneak-click's line in English, and no choice with an item in hand or without sneaking.
+`QaGolemSmithEdgesGameTests` (8, QA, 29.15): each recipe one piece short (no shield, 3 iron blocks, a plain pumpkin)
+builds nothing, takes nothing and starts no wait, and the whole cost takes exactly the cost; the 2-day wait still
+holds at the last tick of the next day and ends at the first tick of the day after; a golem forged in a roofed house
+stands on its floor beside the Smith; the Hauler's and Farmhand's names over their heads; a plain iron golem hauls
+nothing; a farmhand picks and replants ripe wheat, carrots and nether wart and leaves unripe wheat, a melon and a
+poppy alone; a Wall Sentry kills a foe 4 blocks off its post within its leash and leaves one 7 blocks off alone, and
+one without a Patrol Map goes after a zombie 10 blocks away like any golem.
 `QaSeerGameTests` (4): a Seer on strike or with Legends off foretells nothing; the blessing's mood on day 7 and gone on
 day 8, through a save, and the early baby once; the dawn's lines in English ("in 2 days", "tomorrow", the raiders'
 side, no guest); the foretelling through a save, an empty one writing nothing.

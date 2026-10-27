@@ -56,7 +56,7 @@ public final class RealmInvites {
 				case NO_HALL -> Component.translatable("message.aliveworkplace.realm.hall_gone", them);
 				case TOO_FAR -> Component.translatable("message.aliveworkplace.realm.too_far", them, Realms.RANGE);
 				case TAKEN -> Component.translatable("message.aliveworkplace.realm.taken", them, Realms.title(server, data.realmOf(target)));
-				case FULL -> Component.translatable("message.aliveworkplace.realm.full", Realms.title(server, realm), Realms.MAX_MEMBERS);
+				case FULL -> Component.translatable("message.aliveworkplace.realm.full", Realms.titleStart(server, realm), Realms.MAX_MEMBERS);
 				case INVITED -> Component.translatable("message.aliveworkplace.realm.already_invited", them);
 				default -> Realms.common(refusal, them);
 			});
@@ -109,7 +109,7 @@ public final class RealmInvites {
 				case NOT_YOURS -> Component.translatable("message.aliveworkplace.realm.answer_not_yours", Realms.ownerName(server, at), village);
 				case LAPSED -> Component.translatable("message.aliveworkplace.realm.lapsed", Realms.title(server, realm), village);
 				case TAKEN -> Component.translatable("message.aliveworkplace.realm.in_realm", village, Realms.title(server, data.realmOf(at)));
-				case FULL -> Component.translatable("message.aliveworkplace.realm.full", Realms.title(server, realm), Realms.MAX_MEMBERS);
+				case FULL -> Component.translatable("message.aliveworkplace.realm.full", Realms.titleStart(server, realm), Realms.MAX_MEMBERS);
 				case TOO_FAR -> Component.translatable("message.aliveworkplace.realm.too_far", village, Realms.RANGE);
 				default -> Realms.common(refusal, village);
 			});

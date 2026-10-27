@@ -100,6 +100,11 @@ public final class Realms {
 			return Component.translatable("realm.aliveworkplace.title." + id(), place);
 		}
 
+		/** "The Barony of Thornholm", for the start of a sentence (B577). */
+		public Component titleStart(Component place) {
+			return Component.translatable("realm.aliveworkplace.title_start." + id(), place);
+		}
+
 		static Rank parse(String id) {
 			for (Rank r : values()) {
 				if (r.id().equals(id)) {
@@ -281,6 +286,11 @@ public final class Realms {
 	/** "the Barony of Thornholm". */
 	public static Component title(MinecraftServer server, RealmData.Realm realm) {
 		return Rank.parse(realm.rank()).title(place(server, realm));
+	}
+
+	/** {@link #title} capitalized, for a sentence that starts with it. */
+	public static Component titleStart(MinecraftServer server, RealmData.Realm realm) {
+		return Rank.parse(realm.rank()).titleStart(place(server, realm));
 	}
 
 	/** The realm's villages' halls, the capital first (M35's Wonders, 33.13 on). */
@@ -494,7 +504,7 @@ public final class Realms {
 				case TOO_FAR -> Component.translatable("message.aliveworkplace.realm.too_far", them, RANGE);
 				case TAKEN -> Component.translatable("message.aliveworkplace.realm.taken", them, title(server, data.realmOf(target)));
 				case STRANGER -> Component.translatable("message.aliveworkplace.realm.stranger", them);
-				case FULL -> Component.translatable("message.aliveworkplace.realm.full", title(server, realm), MAX_MEMBERS);
+				case FULL -> Component.translatable("message.aliveworkplace.realm.full", titleStart(server, realm), MAX_MEMBERS);
 				default -> common(refusal, village);
 			});
 		}

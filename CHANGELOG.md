@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Realms: a full realm's refusal now starts with a capital, "The Barony of Ashvale already holds 2 villages, as many as a realm may."; before, it began "the Barony of ...".
+- Village Hall: with `villageGrowthCap` 0 the People icon's growth line says "Villages don't grow on this server"; before, it said "The village is full (0 villagers)" right under the census.
+- Stories: `/workplace story start` of an arc listed in `disabledArcs` now refuses with "<arc> is switched off on this server (disabledArcs in the config)."; before, it said the arc begins, though it ended at once and restarted the village's arc cooldown.
 - Habitat Keeper (with Cobblemon): a Field Marker spot just over 32 blocks from her pasture on a diagonal (say 32 east and 5 south) is now refused with the "lure spots go within 32" line; before, she took it and then never set a snack out there.
 - Wonders: when a Wonder's lead dies or is retrained mid-stage, the builder who takes the part over is named as the lead on the Foundation Stone and the hall at once, and the old lead stops counting on the crew; before, the stone showed "?" (or the retrained farmer's name) until the next stage.
 - Steward: a lane he lays from a finished house's door, and his half of a road to another village, no longer run through a spot where a player placed or broke blocks; only a road you drew on the City Plan yourself may cross one.

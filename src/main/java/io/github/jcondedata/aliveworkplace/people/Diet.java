@@ -22,6 +22,8 @@ public final class Diet {
 	public static final int REMEMBERED = 5;
 	/** Kinds among the remembered meals that make a varied diet. */
 	public static final int VARIED_KINDS = 3;
+	/** Kinds among the remembered meals that make a plain diet (fewer than {@link #VARIED_KINDS}). */
+	public static final int PLAIN_KINDS = 2;
 	/** Meals remembered before the diet counts one way or the other. */
 	static final int ENOUGH = 3;
 
@@ -63,7 +65,17 @@ public final class Diet {
 		java.util.Set<Object> seen = new HashSet<>();
 		recent.forEach(id -> seen.add(kind(id)));
 		int kinds = seen.size();
-		return kinds >= VARIED_KINDS ? Kind.VARIED : kinds == 1 ? Kind.SAME : Kind.PLAIN;
+		return kinds >= VARIED_KINDS ? Kind.VARIED : kinds >= PLAIN_KINDS ? Kind.PLAIN : Kind.SAME;
+	}
+
+	/** How many kinds of meal a diet of {@code kind} takes: 3 for varied, 2 for plain (1 for the same food, 0 unknown). */
+	public static int kinds(Kind kind) {
+		return switch (kind) {
+			case VARIED -> VARIED_KINDS;
+			case PLAIN -> PLAIN_KINDS;
+			case SAME -> 1;
+			case UNKNOWN -> 0;
+		};
 	}
 
 	private Diet() {

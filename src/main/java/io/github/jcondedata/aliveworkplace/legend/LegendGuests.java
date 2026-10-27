@@ -620,9 +620,14 @@ public final class LegendGuests {
 		menu.button(WANTS_SLOT, icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.legend_terms.wants")
 			.withStyle(ChatFormatting.AQUA), wants), null);
 		long left = daysLeft(level, shown);
-		menu.button(DAYS_SLOT, icon(Items.CLOCK, Component.translatable(left == 1 ? "screen.aliveworkplace.legend_terms.last_day"
-				: "screen.aliveworkplace.legend_terms.days_left", left).withStyle(ChatFormatting.LIGHT_PURPLE),
-			List.of(Component.translatable("screen.aliveworkplace.legend_terms.leaves", shown.lastDay()).withStyle(ChatFormatting.GRAY))), null);
+		// B588: from their last evening on (kept by a player nearby) the terms don't name a day already gone
+		boolean over = stayOver(level, shown);
+		Component days = Chronicle.day(level) > shown.lastDay() ? Component.translatable("screen.aliveworkplace.legend_terms.stay_over")
+			: Component.translatable(left == 1 ? "screen.aliveworkplace.legend_terms.last_day" : "screen.aliveworkplace.legend_terms.days_left", left);
+		Component leaves = over ? Component.translatable("screen.aliveworkplace.legend_terms.leaves_unwatched")
+			: Component.translatable("screen.aliveworkplace.legend_terms.leaves", shown.lastDay());
+		menu.button(DAYS_SLOT, icon(Items.CLOCK, days.copy().withStyle(ChatFormatting.LIGHT_PURPLE),
+			List.of(leaves.copy().withStyle(ChatFormatting.GRAY))), null);
 	}
 
 	private static ItemStack icon(net.minecraft.world.item.Item item, Component name, List<Component> lore) {

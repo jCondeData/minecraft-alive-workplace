@@ -351,4 +351,42 @@ public class QaLegendGuestsGameTests implements net.fabricmc.fabric.api.gametest
 			helper.succeed();
 		}));
 	}
+
+	/**
+	 * B588: a guest kept past their last evening by a player nearby doesn't say they leave on a day already gone. On day 3
+	 * before the evening the terms name the day; that evening they leave once no one is near; on day 4 their stay is over.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaLegendGuestOverstay"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaLegendGuestOverstay")
+	public void qaTermsOfAGuestPastTheirStayAreNotStale(GameTestHelper helper) {
+		List<BlueprintData.Placement> recorded = new ArrayList<>();
+		setUp(helper, recorded);
+		Legend plain = rare("qa_overstay_mason", "", "");
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Leftovers.after(helper, () -> helper.getLevel().getServer().getPlayerList().remove(player));
+		helper.runAfterDelay(2, () -> staged(helper, List.of(plain), () -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			at(level, 1, 1000);
+			Villager guest = LegendGuests.come(level, hall, plain, "hall", hall, RandomSource.create(44L));
+			player.teleportTo(guest.getX() + 2, guest.getY(), guest.getZ());
+			at(level, 3, 1000);
+			ChoiceMenu morning = LegendGuests.termsMenuForTest(player, guest);
+			helper.assertTrue(name(morning, LegendGuests.DAYS_SLOT).equals("My last day here")
+				&& lore(morning, LegendGuests.DAYS_SLOT).equals(List.of("I leave on the evening of day 3")),
+				"day 3 morning: " + name(morning, LegendGuests.DAYS_SLOT) + " / " + lore(morning, LegendGuests.DAYS_SLOT));
+			at(level, 3, 13000);
+			LegendGuests.tend(level, hall);
+			helper.assertTrue(guest.isAlive(), "left in sight of a player");
+			ChoiceMenu evening = LegendGuests.termsMenuForTest(player, guest);
+			helper.assertTrue(name(evening, LegendGuests.DAYS_SLOT).equals("My last day here")
+				&& lore(evening, LegendGuests.DAYS_SLOT).equals(List.of("I leave once no one is near")),
+				"day 3 evening: " + name(evening, LegendGuests.DAYS_SLOT) + " / " + lore(evening, LegendGuests.DAYS_SLOT));
+			at(level, 4, 1000);
+			ChoiceMenu menu = LegendGuests.termsMenuForTest(player, guest);
+			helper.assertTrue(name(menu, LegendGuests.DAYS_SLOT).equals("My stay is over"), "day 4 title: " + name(menu, LegendGuests.DAYS_SLOT));
+			helper.assertTrue(lore(menu, LegendGuests.DAYS_SLOT).equals(List.of("I leave once no one is near")), "day 4 terms: " + lore(menu, LegendGuests.DAYS_SLOT));
+			helper.succeed();
+		}));
+	}
 }

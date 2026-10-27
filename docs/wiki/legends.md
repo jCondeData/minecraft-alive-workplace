@@ -229,7 +229,7 @@ after a fight, B329; `GolemHaulerRouteGameTests`, 2: a hauler whose nearest Stor
 10 seconds without headway and takes its load to the next nearest, B450, and one whose nearest Drop Box is walled in
 fetches from the next, B456; `QaHaulerGiveUpGameTests`, 4 (QA): a given-up Storehouse, and a given-up Drop Box, is left alone for the
 2,400-tick wait even once the way is open and used again after it, a hauler saved and loaded right after giving up keeps its whole load and
-gets it home, and one whose only Storehouse is walled in puts its load back into the Drop Box and is free again, B463; `QaLedgerFramesHaulGameTests.aHaulerWhoseStorehouseIsBrokenMidTripPutsItsLoadBackInTheDropBox`: the same when the player breaks the only Storehouse while the golem carries a Drop Box's 3 stacks; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
+gets it home, and one whose only Storehouse is walled in puts its load back into the Drop Box and is free again, B463; `QaHaulerNoDropBoxGameTests`, 2 (QA): with no Drop Box, a hauler whose only Storehouse is walled in puts a lumberjack's 128 logs back in the chests they came from, and one loaded from a save carrying 64 logs puts them in a worker's chest, B593; `QaLedgerFramesHaulGameTests.aHaulerWhoseStorehouseIsBrokenMidTripPutsItsLoadBackInTheDropBox`: the same when the player breaks the only Storehouse while the golem carries a Drop Box's 3 stacks; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
 and walks back to it, a Nether route is refused and a blank map takes the post, each with its line, a foe 10 blocks
 from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
@@ -266,6 +266,18 @@ leaving line in English; every need met that evening settles them instead; the 7
 no, day 12 yes for a day-5 visit); a way's chance of 0 never and 1 always (over 1 read as 1); a Legendary settled in
 another village keeps them away while a Rare there doesn't; the terms screen's lines in English ("2 days left of my
 stay", "My last day here", a Legend with no powers).
+QA (lane d, 29.14 to 29.16): `QaOldSageGameTests` (7): the hint on the second miss and not the first, a right answer
+starting the count again; one answer taken from a stack, the off hand's answer taken and a wrong off-hand item kept; a
+wet sponge is a sponge; the quest half done through a save and reload; the rumor told once to the owner with the
+distance and direction ("south-east") and never to another player; no hut with Legends off; every draw three different
+riddles of the eight; the Iron Pact's golem only on a day that is a multiple of 5, one for 15 villagers and a second
+at 16; Runes of Warding I a fifth fewer raids. `QaGolemSmithGameTests` (5): a strike or Legends off builds nothing and
+takes nothing; one golem for 9 villagers and a second at 10; a cost spread over two chests by the table taken exactly,
+a stone hoe no iron hoe; a Wall Sentry with twice a golem's health and its name over its head; the forge's choice
+through a save; the sneak-click's line in English, and no choice with an item in hand or without sneaking.
+`QaSeerGameTests` (4): a Seer on strike or with Legends off foretells nothing; the blessing's mood on day 7 and gone on
+day 8, through a save, and the early baby once; the dawn's lines in English ("in 2 days", "tomorrow", the raiders'
+side, no guest); the foretelling through a save, an empty one writing nothing.
 `QaGiftedGameTests` (7): `giftedChance` 1 gifts everyone and 10 about one in ten, keeping everyone Gifted at 30; a
 malformed gift file fails; a `gifted` attachment of "none" or a removed gift makes nobody Gifted; the hall's gold line
 for each of the four; Silver Tongue on 5, 20 and 64 emeralds (4, 16, 52) and gone with `giftedChance` 0; the Night

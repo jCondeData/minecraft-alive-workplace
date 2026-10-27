@@ -476,9 +476,10 @@ public final class Pacts {
 			GlobalPos at = GlobalPos.of(level.dimension(), hall);
 			int pacts = of(level.getServer(), at).size();
 			int offers = to(level.getServer(), at).size();
+			int feuds = Feuds.of(level.getServer(), at).size();
 			return VillageHallScreen.icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.pact.tab"), ChatFormatting.GOLD,
-				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.pact.tab_count", pacts, offers), ChatFormatting.GRAY),
-				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.tab_count", Feuds.of(level.getServer(), at).size()), ChatFormatting.GRAY));
+				VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.pact.tab_count", pacts, offers, pacts, offers), ChatFormatting.GRAY),
+				VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.feud.tab_count", feuds, feuds), ChatFormatting.GRAY));
 		}
 
 		static void fill(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable ServerPlayer viewer, Runnable again) {
@@ -495,7 +496,8 @@ public final class Pacts {
 				Component them = Realms.name(server, offer.from());
 				String kind = offer.alliance() ? "alliance" : "pact";
 				long left = Math.max(0, LAPSE - (now(server) - offer.sent()));
-				Component wait = io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.pact.waiting", left / 24000, left % 24000 / 1000, left / 24000, left % 24000 / 1000);
+				Component wait = left < 1000 ? Component.translatable("screen.aliveworkplace.pact.waiting.within_hour") // B596: not "0 days and 0 hours"
+					: io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.pact.waiting", left / 24000, left % 24000 / 1000, left / 24000, left % 24000 / 1000);
 				menu.button(slot++, VillageHallScreen.icon(Items.LIME_DYE, Component.translatable("screen.aliveworkplace.pact.accept_" + kind, them), ChatFormatting.GREEN,
 					VillageHallScreen.line(Component.translatable("screen.aliveworkplace.pact.from", Realms.ownerName(server, offer.from())), ChatFormatting.GRAY),
 					VillageHallScreen.line(wait, ChatFormatting.DARK_GRAY)), p -> {
@@ -520,7 +522,8 @@ public final class Pacts {
 					pact.gives(at) ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.GRAY));
 				if (pact.endsAt() >= 0) {
 					long left = Math.max(0, pact.endsAt() - now(server));
-					lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.pact.ending", left / 1000, left / 1000), ChatFormatting.YELLOW));
+					lore.add(VillageHallScreen.line(left < 1000 ? Component.translatable("screen.aliveworkplace.pact.ending.within_hour") // B596: not "Ends in 0 hours"
+						: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.pact.ending", left / 1000, left / 1000), ChatFormatting.YELLOW));
 				}
 				menu.button(slot++, VillageHallScreen.icon(pact.alliance() ? Items.SHIELD : Items.EMERALD, Component.translatable("screen.aliveworkplace.pact." + kind, them),
 					ChatFormatting.AQUA, lore.toArray(Component[]::new)), p -> {

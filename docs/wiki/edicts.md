@@ -150,7 +150,10 @@ GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, ran
 clicks, the last day before lifting, the cap at 100 and 400), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `CivicTalkGameTests` (7),
 `PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`, `ReformStoryGameTests` (10: each of the eight stories from
 the ask through M30's three steps to its ending and the edict reformed in that village only; `storyArcs` off; side
-arcs and `arcsAtOnce`). Showcase scene `reform_story`.
+arcs and `arcsAtOnce`), `QaReformStoryGameTests` (11: the QA lane's for 31.22: the fallback askers (any smith, a
+Scholar, anyone), no Guard leaving M30's step on the quest page, `storyArcs` off through the real quest page, a side arc
+beside a main arc in its cooldown, the blueprints only to the finisher, a reload with the asker dead, the bell only on
+natural ground, the ledger's seven days, every sentence). Showcase scene `reform_story`.
 
 A season under the edicts (30.22): `SEASON=true tools/packtest/run.sh` lays out a City of 35 with six farms, a kitchen
 and a store on the real pack server and runs it 4 days under Long Shifts, Free Bread, Large Families and Festival

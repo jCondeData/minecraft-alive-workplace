@@ -45,7 +45,8 @@ hides Job ▾.
 so a village takes only so many fishermen: 1, plus 1 more for every 10 villagers within the village radius (48 blocks)
 of the barrel. Once a village has its fishermen, a jobless villager passes free barrels by and takes another free
 workstation instead (or stays jobless if there is none). A fisherman the village already has keeps his job when it is
-over the cap, across a restart too, and a job given by order (the hall's job menu) isn't held back.
+over the cap, across a restart too, and a job given by order (the hall's job menu) isn't held back. Only living
+fishermen within the radius count: when one dies, or stands farther from the barrel, the barrel is free for the next.
 
 **Built-in workstations (B168).** A workstation built in under solid blocks, like the Kitchen's smoker in the mouth of
 its brick oven, is still taken: a villager who picks it walks to the open floor beside it (the side it faces first), not
@@ -397,7 +398,8 @@ refuse, save and reload, the switch off), `HallPeopleJobGameTests` (10, 40.3: th
 `HandOffGameTests` (5, B220: a fisherman handed a rod and a builder handed a blueprint are at work within 10 ticks,
 mid-shift and late in it; before the shift and at night they say when they start, and a night's hire stays in bed),
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,
-save and reload), `PaceGameTests`, `QaPace1027GameTests` (10, the QA lane's for 30.2: each cap
+save and reload), `QaFishermanCapGameTests` (2, the QA lane's for 26.13: a dead fisherman and one outside the radius
+free the barrel), `PaceGameTests`, `QaPace1027GameTests` (10, the QA lane's for 30.2: each cap
 at 100 to 400 and the config's clamps, ill and lazy after the cap, a bonus under the cap kept, two partners counted
 once, every job family's pace and the level outside the cap), `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with

@@ -990,7 +990,7 @@ chests.
 **Bone meal.** Put bone meal in the chests and, whenever there's no grown tree to fell, the lumberjack gives it to the
 saplings on their tree farm and the ones they replanted, until they grow (an azalea bush only grows with bone meal).
 
-**Tree farms.** Mark an area with a **Field Marker** (the farmer's marker, up to 32 × 32 and within 48 blocks of the
+**Tree farms.** Mark an area with a **Field Marker** (the farmer's marker, up to 32 × 32, anywhere in the village or within 128 blocks of the
 fletching table) and give it to the lumberjack. They keep it planted with saplings from the chests, in a grid three
 blocks apart (dark oak in 2 × 2 squares four apart), and fell what grows there, even if it's further out than the
 16 blocks they'd look on their own. Sneak-right-click them with an empty hand to see the farm or stop it.
@@ -1005,7 +1005,7 @@ is ripe: **sweet berries**, **glow berries**, **cocoa pods** and — with Cobble
 plants**. The plants are picked, not broken, so they grow again. The harvest goes into the chests within 8 blocks of
 the composter. They reach up into trees with a picking pole and never step into a berry bush.
 
-**Planting an orchard.** Mark an area with a **Field Marker** (within 48 blocks of the composter) and give it to the
+**Planting an orchard.** Mark an area with a **Field Marker** (anywhere in the village, or within 128 blocks of the composter) and give it to the
 keeper. They plant it from the chests: sweet berries as bushes two blocks apart on grass or dirt, and with Cobblemon
 berries (on farmland — put a **hoe** in the chests and they till grass and dirt for them) and apricorn seeds (on grass
 or dirt, three apart), then pick what grows there too. **Glow berries** are hung from the underside of any solid
@@ -1872,7 +1872,8 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | Option | Default | What it does |
 | --- | --- | --- |
 | `supplyRadius` | 8 | chests and barrels this close to a workstation are its supply chests |
-| `maxSiteDistance` | 48 | how far from their Blueprint Table a builder takes a build |
+| `maxSiteDistance` | 128 | how far from their Blueprint Table a builder takes a build outside the village (anywhere in the village is in reach) |
+| `quarryReach`, `fieldReach`, `treeFarmReach`, `orchardAreaReach`, `berryPlotReach` | 128 | the same for a miner's quarry, a farmer's field, a tree farm, an orchard and a berry plot |
 | `guardRadius` | 24 | how far from their grindstone guards patrol and fight |
 | `lumberjackRadius`, `orchardRadius`, `fisherRadius` | 16 | how far lumberjacks cut, orchard keepers pick and fishers look for water |
 | `partnerRadius` | 16 | how close to a workstation pastured Pokémon must be to help |

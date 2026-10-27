@@ -746,7 +746,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCupPurseGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaItemComponentsSaveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRealmLegendsBuildsBugTests"
 		]
 	},
 	"depends": {

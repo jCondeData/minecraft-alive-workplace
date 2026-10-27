@@ -623,6 +623,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScanEmptyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStewardSafetyOldHouses1027GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStewardSafety1027BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.DoorwayHeadroomGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShutTrapdoorGameTests",

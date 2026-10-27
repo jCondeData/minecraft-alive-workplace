@@ -278,8 +278,10 @@ public final class SandRamps {
 			// To the ramp: on top of it once it stands, else beside its outer end while the sand goes up.
 			boolean up = standing(level, siege, site);
 			BlockPos to = up ? site.top() : site.foot.relative(site.into, -(site.height + 1));
+			// B591: a climber that stopped within two of its spot but on a block still to be piled (the next stage's outer end)
+			// held the sand back for good, and itself with it: it is sent on to its spot.
 			if (!crossing(mob, site) && paths < MAX_PATHS && (mob.getNavigation().isDone() || now - storm.sentAt.getOrDefault(id, 0L) > 60)
-				&& mob.blockPosition().distSqr(to) > (up ? 0 : 4)) {
+				&& (mob.blockPosition().distSqr(to) > (up ? 0 : 4) || !up && inTheWay(level, mob, site))) {
 				storm.sentAt.put(id, now);
 				mob.getNavigation().moveTo(mob.getNavigation().createPath(to, 0, 64), 1.0);
 				paths++;
@@ -331,6 +333,20 @@ public final class SandRamps {
 		if (storm.assigned.remove(id) != null) {
 			CLIMBS.remove(id);
 		}
+	}
+
+	/**
+	 * Whether {@code mob} (or what it rides) stands where a block of {@code site}'s ramp is still to go: no sand is piled
+	 * onto a raider, so one waiting there would hold the ramp back for good (B591).
+	 */
+	private static boolean inTheWay(ServerLevel level, Mob mob, Site site) {
+		net.minecraft.world.phys.AABB box = mob.getRootVehicle().getBoundingBox();
+		for (BlockPos pos : site.blocks()) {
+			if (!sandy(level, pos) && box.intersects(new net.minecraft.world.phys.AABB(pos))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static Storm restore(ThreatData.Siege siege) {

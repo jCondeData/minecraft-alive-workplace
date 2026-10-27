@@ -154,7 +154,10 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCobblemonThreatsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCuisineCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMegaShrineGapsCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaMachineGoneCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaMachineGoneCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCupPurseCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaJobBuildsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaGemGrowerPartnerCompatTests"
 		]
 	},
 	"depends": {

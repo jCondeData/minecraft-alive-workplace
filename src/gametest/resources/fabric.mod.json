@@ -344,6 +344,7 @@
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ArticleGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWagonNameBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStationSentencesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaAmericanSpellingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileGameTests",

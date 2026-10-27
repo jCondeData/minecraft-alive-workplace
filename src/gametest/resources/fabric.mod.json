@@ -707,6 +707,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaTinkererShortGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatsLateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDefenceUpgradeGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDefenceUpgradeBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatFixesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaAnsweringHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignpostGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTableJobsGameTests",

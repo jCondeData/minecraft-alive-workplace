@@ -1842,7 +1842,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   - compat GameTests: a snack set on a marked spot and set out again after it's used up; a Saccharine log slathered; a
     shiny wild Pokémon placed nearby is announced and written in the chronicle once, not every minute;
   - showcase scene `habitat_keeper` (a snack spot, the slathered log, the sighting in chat).
-- [x] **28.11** (approved 2026-10-05) **The Gem Grower.** Stand a villager by a stonecutter and sneak-right-click them with an amethyst shard
+- [x] **28.11** (approved 2026-10-05) (verified 2026-10-27: 4 new tests: hired through the real sneak-click [and told so], a plain click hires nobody, no stonecutter near says which block, a Mason's stonecutter not taken by a shard [QaGemGrowerHireGameTests]; Rock/Steel partner types and a Geodude tapping the ripe cluster loose, budding block kept [QaGemGrowerPartnerCompatTests]. Full build green.) **The Gem Grower.** Stand a villager by a stonecutter and sneak-right-click them with an amethyst shard
   (masons keep the stonecutter's own job). Works without Cobblemon too. Config `gemGrowers` (true).
   - Gem beds are data: `data/aliveworkplace/gem_beds/<name>.json` holds what's planted (an item, or nothing), what it
     must touch (a block or tag), which blocks grow and which state is ripe, and the harvest (the block's own loot). Beds

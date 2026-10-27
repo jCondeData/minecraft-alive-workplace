@@ -529,4 +529,56 @@ public class QaRefreshOldHouseGameTests implements FabricGameTest {
 			helper.assertFalse(ModAttachments.BUILDER_JOB.has(second[0]), "still at it");
 		});
 	}
+
+	/**
+	 * QA lane E (saves, 2026-10-27): a world saved mid-refresh opens with a jar that no longer ships the older drawing
+	 * the refresh started from (the site keeps its key, "refresh_from"). Nothing is lost and nothing gets stuck: the
+	 * loaded site carries on as an ordinary repair to the latest look (BuildSite: a key it can't find plans a repair),
+	 * the build's chest keeps its emeralds, the latest drawing's new pieces go in, and the builder comes free.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"qa_refresh_history_gone"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qa_refresh_history_gone")
+	public void aSiteSavedMidRefreshLoadsWhenItsOlderDrawingIsNoLongerShipped(GameTestHelper helper) {
+		Stage s = stage(helper, true);
+		Villager[] builder = {builder(helper, s.owner(), new BlockPos(3, 2, 3), BENCH)};
+		boolean[] reloaded = {false};
+		helper.runAfterDelay(2, () -> pressRefresh(helper, openView(helper, s.owner()), s.owner()));
+		helper.onEachTick(() -> {
+			BuildSite site = Refreshes.siteOf(s.level(), s.placement());
+			if (reloaded[0] || site == null || !s.level().getBlockState(helper.absolutePos(ROW.offset(1, 1, 0))).isAir()) {
+				return;
+			}
+			reloaded[0] = true;
+			BuildSiteManager manager = BuildSiteManager.get(s.level());
+			CompoundTag saved = manager.save(new CompoundTag(), s.level().registryAccess());
+			Refreshes.removeHistory(s.id()); // the new jar: the older drawing isn't shipped any more
+			BuildSiteManager loaded = BuildSiteManager.load(saved, s.level().registryAccess());
+			helper.assertTrue(loaded.get(site.id()) != null, "the site saved mid-refresh didn't load");
+			s.level().getDataStorage().set(BuildSiteManager.NAME, loaded);
+			Villager old = builder[0];
+			CompoundTag tag = new CompoundTag();
+			helper.assertTrue(old.save(tag), "the builder wasn't saved");
+			old.discard();
+			Entity entity = EntityType.loadEntityRecursive(tag, s.level(), e -> e);
+			helper.assertTrue(entity instanceof Villager, "the builder didn't load: " + entity);
+			s.level().addFreshEntity(entity);
+			builder[0] = (Villager) entity;
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(reloaded[0], "never reloaded mid-way");
+			helper.assertTrue(Refreshes.siteOf(s.level(), s.placement()) == null && sites(s) == 0,
+				"the site whose older drawing is gone never finished: " + BuildSiteManager.get(s.level()).all().stream()
+					.filter(site -> site.placement().equals(s.placement())).map(site -> site.stage() + " " + site.status()).toList());
+			helper.assertFalse(ModAttachments.BUILDER_JOB.has(builder[0]), "the builder is still at it");
+			helper.assertBlockPresent(Blocks.OAK_PLANKS, ROW);
+			helper.assertBlockPresent(Blocks.OAK_PLANKS, ROW.offset(6, 0, 0));
+			helper.assertBlockPresent(Blocks.TORCH, ROW.offset(6, 1, 0));
+			assertChestKept(helper);
+			// nothing duplicated: a leftover taken down (before the save or after) comes back at most once
+			for (Item item : List.of(Items.STONE_BRICKS, Items.COBBLESTONE)) {
+				int n = count(helper, s, item, builder[0]);
+				helper.assertTrue(n <= 1, item + ": " + n + " counted, more than the one block the older drawing had");
+			}
+		});
+	}
 }

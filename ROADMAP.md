@@ -4413,7 +4413,7 @@ on a real world.
   and stops at 8, keeps to its level, waits for an aged input (the day moved on in the test), asks for missing
   makings on the board, fills a stock order first, and a datapack recipe adds a new good with no code. Nothing to see
   yet: `--no-review`.
-- [x] **34.6** (approved 2026-10-11) **Classes at the Village Hall.** What the player sees:
+- [x] **34.6** (approved 2026-10-11) (verified 2026-10-27: with B551/B552/B561/B594's fixes: QaHallClasses1027GameTests [7] through the hall's clicks: 1 household singular, 0 of 0, closest-to-rising [3 named + 'and 1 more'], a Burgher-Peasant couple as one household, three tips on a tie lower class first with how lines, rise moods +10/+5 gone on day 3, food icon luxuries; HallJobs:312 survivor killed; full build 4618 + 807 compat green; wiki classes.md updated) **Classes at the Village Hall.** What the player sees:
   - a **Classes** button on the hall's screen (its tooltip: how many households of each class); its page has a button
     per class listing each need and want with how many households have it ("Fine Clothes: 2 of 5"), what the class
     gives, and the households closest to rising with what they lack;

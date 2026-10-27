@@ -363,4 +363,67 @@ public class QaFarSiteGameTests {
 			helper.succeed();
 		});
 	}
+
+	// --- upkeep uses the same rule -----------------------------------------------------------------------------------------
+
+	/**
+	 * "Upkeep ... use the same rule": a wall the builder finished 150 blocks from his table, with a plank knocked out, is
+	 * not his to repair while the village is small (it lies outside it and past 128), and is once the village (radius 160)
+	 * holds it.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaFarSiteUpkeep"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaFarSiteUpkeep")
+	public void aFarBuildingAcrossABigVillageIsRepaired(GameTestHelper helper) {
+		setUp(helper);
+		ServerLevel level = helper.getLevel();
+		boolean was = io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED;
+		boolean asks = io.github.jcondedata.aliveworkplace.build.Upkeep.ASK;
+		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = true;
+		io.github.jcondedata.aliveworkplace.build.Upkeep.ASK = false;
+		Leftovers.after(helper, () -> {
+			io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = was;
+			io.github.jcondedata.aliveworkplace.build.Upkeep.ASK = asks;
+		});
+		helper.setBlock(WORK, ModBlocks.BUILDERS_BENCH);
+		BlockPos bench = helper.absolutePos(WORK);
+		Villager builder = helper.spawn(EntityType.VILLAGER, AT);
+		builder.setNoAi(true);
+		Builders.employ(level, builder, bench);
+		BlockPos wallAt = bench.east(150);
+		for (int x = 0; x < 4; x++) {
+			level.setBlockAndUpdate(wallAt.east(x), Blocks.OAK_PLANKS.defaultBlockState());
+		}
+		net.minecraft.resources.ResourceLocation wall = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test",
+			"qa_far_upkeep_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(wall).fillFromWorld(level, wallAt, new net.minecraft.core.Vec3i(4, 1, 1), false, Blocks.STRUCTURE_VOID);
+		level.setBlockAndUpdate(wallAt.east(1), Blocks.AIR.defaultBlockState()); // knocked out
+		var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), wallAt,
+			net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+		io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		sites.recordFinished(wall, placement, builder.getUUID());
+		Leftovers.after(helper, () -> {
+			for (io.github.jcondedata.aliveworkplace.build.BuildSite s : List.copyOf(sites.all())) {
+				if (s.placement().equals(placement)) {
+					sites.remove(s.id());
+				}
+			}
+			sites.forgetFinished(placement);
+			for (int x = 0; x < 4; x++) {
+				level.setBlockAndUpdate(wallAt.east(x), Blocks.AIR.defaultBlockState());
+			}
+		});
+
+		radius(16);
+		io.github.jcondedata.aliveworkplace.build.BuildSite none = io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder);
+		helper.assertTrue(none == null || !none.placement().equals(placement), "the builder repairs a wall 150 blocks off, outside a village of radius 16");
+		if (none != null) {
+			sites.remove(none.id());
+			ModAttachments.BUILDER_JOB.remove(builder);
+		}
+		radius(160);
+		io.github.jcondedata.aliveworkplace.build.BuildSite repair = io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder);
+		helper.assertTrue(repair != null && repair.isRepair() && repair.placement().equals(placement),
+			"the builder doesn't repair the wall 150 blocks off inside a village of radius 160: " + (repair == null ? "nothing" : repair.placement()));
+		helper.succeed();
+	}
 }

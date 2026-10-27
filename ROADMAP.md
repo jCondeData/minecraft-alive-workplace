@@ -4472,7 +4472,7 @@ on a real world.
   Luxury files `amethyst_ring`, `emerald_brooch`, `gold_circlet`. Done when: `JewellerGameTests` (picked with an
   amethyst shard at a stonecutter, each piece made, a Burgher-only job per 34.8) pass; both outfits pass `lint.py`;
   scene `jeweller` passes; a README section and job-table row.
-- [x] **34.13** (approved 2026-10-11) **The Winery and the Tailor's Shop.** Blueprints in the Blueprint Table, drawn with the architect
+- [x] **34.13** (approved 2026-10-11) (verified 2026-10-27: 27 new tests [QaClassHallRetirementGameTests, QaLuxuryWorkshopsGameTests]: class-look packet for a child, never a zombie villager, none with classOutfits off; successor choice and class gating, levels, held work, assignments carried, retired elder reloaded, elderRetirement off; every workshop tier's one job block, no barrel/lectern, village pieces in five styles with their worker, the Journeyman's blueprint, each Steward rule, names in American English; 5 mutants killed; 3x repeats clean; full build green) **The Winery and the Tailor's Shop.** Blueprints in the Blueprint Table, drawn with the architect
   skill in `tools/blueprints/workshops.py` (STYLE.md, renders): the **Winery** (a stone press house over a half-sunk
   cellar, the cauldron vat by the door, racks of casks made of spruce log ends and a cellar of chests; no barrels,
   since a barrel is the fisherman's job block; **II** a terraced berry garden with a pergola of glow berries and a
@@ -4484,7 +4484,7 @@ on a real world.
   Tailor's Shop); before that, nothing. Done when: renders of each, front and back and its II, are in the review
   package; a builder builds each in a GameTest; both village pieces generate with their worker (`VillageGameTests`);
   scene `luxury_workshops` passes.
-- [x] **34.14** (approved 2026-10-11) **The Print Shop and the Jeweller's Workshop.** The **Print Shop** (brick and timber, the cartography
+- [x] **34.14** (approved 2026-10-11) (verified 2026-10-27: 27 new tests [QaClassHallRetirementGameTests, QaLuxuryWorkshopsGameTests]: class-look packet for a child, never a zombie villager, none with classOutfits off; successor choice and class gating, levels, held work, assignments carried, retired elder reloaded, elderRetirement off; every workshop tier's one job block, no barrel/lectern, village pieces in five styles with their worker, the Journeyman's blueprint, each Steward rule, names in American English; 5 mutants killed; 3x repeats clean; full build green) **The Print Shop and the Jeweller's Workshop.** The **Print Shop** (brick and timber, the cartography
   table as the press under a skylight, paper and ink on shelves, a counter for buyers; no lectern, which would take a
   librarian; **II** a bindery and reading room lined with bookshelves) and the **Jeweller's Workshop** (a small stone
   shop, the stonecutter at a bench under a lantern, an amethyst cluster in a glass case, an iron door; **II** a
@@ -4530,7 +4530,7 @@ on a real world.
   the default. Done when: all twelve pass `lint.py`; the page is up with a pick and a note per row; v1 of each is
   wired in as the textures.
   - [x] **34.17a** (approved 2026-10-12) Change from the owner (2026-10-11): owner picked Artisan version 1, Burgher version 2, Noble version 1, Elder version 1; ship only these four and drop the other versions
-- [x] **34.18** (approved 2026-10-12) **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
+- [x] **34.18** (approved 2026-10-12) (verified 2026-10-27: 27 new tests [QaClassHallRetirementGameTests, QaLuxuryWorkshopsGameTests]: class-look packet for a child, never a zombie villager, none with classOutfits off; successor choice and class gating, levels, held work, assignments carried, retired elder reloaded, elderRetirement off; every workshop tier's one job block, no barrel/lectern, village pieces in five styles with their worker, the Journeyman's blueprint, each Steward rule, names in American English; 5 mutants killed; 3x repeats clean; full build green) **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
   and one draws the elder look, on grown villagers and children alike, never on zombie villagers. The client learns a
   villager's class and life stage from a small packet, sent when a player starts tracking the villager (a new
   `Platform` event) and whenever either changes; `classOutfits` in the config turns the layers off. The owner's picks
@@ -4557,7 +4557,7 @@ on a real world.
   it is used up. Config `agelessElders` (true). With `elderPassing` off nobody needs one. Done when: GameTests
   (accepted for each good trait, refused for a plain elder and for a non-elder, the charm used up, ageless surviving
   40+ elder days and a reload, the passing of a non-ageless elder with a grave) pass; scene `ageless_elder` passes.
-- [x] **34.20** (approved 2026-10-12) **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
+- [x] **34.20** (approved 2026-10-12) (verified 2026-10-27: 27 new tests [QaClassHallRetirementGameTests, QaLuxuryWorkshopsGameTests]: class-look packet for a child, never a zombie villager, none with classOutfits off; successor choice and class gating, levels, held work, assignments carried, retired elder reloaded, elderRetirement off; every workshop tier's one job block, no barrel/lectern, village pieces in five styles with their worker, the Journeyman's blueprint, each Steward rule, names in American English; 5 mutants killed; 3x repeats clean; full build green) **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
   villager a village every 3 days:
   - the successor is their own grown child without a job, else any jobless grown villager of a class the job allows
     (34.8); with nobody, the elder keeps working and the hall says "Bram would like to retire: the village needs a

@@ -446,6 +446,17 @@ public class QaRaiderCulturesGameTests implements FabricGameTest {
 		BlockPos base = helper.absolutePos(BlockPos.ZERO);
 		mob.moveTo(base.getX() + x, base.getY() + 2, base.getZ() + z, 180f, 0f);
 		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.EVENT, null);
+		// The same raider every run (as DesertRaiderGameTests, B372, B591): finalizeSpawn rolls a baby or a chicken jockey
+		// on the level's random, and the mob's own random drives its wandering and pathing.
+		if (mob instanceof net.minecraft.world.entity.monster.Zombie zombie) {
+			zombie.setBaby(false);
+		}
+		if (mob.getVehicle() != null) {
+			net.minecraft.world.entity.Entity vehicle = mob.getVehicle();
+			mob.stopRiding();
+			vehicle.discard();
+		}
+		mob.getRandom().setSeed(1L);
 		Threats.outfit(level, mob, yard.culture(), member);
 		mob.setTarget(yard.villager());
 		level.addFreshEntityWithPassengers(mob);
@@ -579,6 +590,57 @@ public class QaRaiderCulturesGameTests implements FabricGameTest {
 					helper.assertTrue(changed.isEmpty(), "blocks changed after the siege: " + changed);
 					helper.succeed();
 				});
+			}
+		});
+	}
+
+	/**
+	 * B591: the husk stopped within two blocks of its spot beside the ramp's outer end, but on the block the ramp's last
+	 * stage begins with; no sand is piled onto a raider, so the ramp stood one short of the top for good. Here it is put
+	 * there just as the stage before the last is done: it should step aside and the ramp reach the top.
+	 */
+	//$ gametest_ticks_batch AREA '900' '"qaHuskOnTheNextBlock"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "qaHuskOnTheNextBlock")
+	public void aHuskStandingWhereTheRampsNextBlockGoesStepsAside(GameTestHelper helper) {
+		Yard yard = yard(helper, pilers(helper));
+		ServerLevel level = yard.level();
+		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 23.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
+		BlockPos[] put = {null};
+		helper.onEachTick(() -> {
+			Optional<ThreatData.Siege> found = Sieges.siege(level, yard.hall());
+			if (found.isEmpty()) {
+				return;
+			}
+			ThreatData.Siege siege = found.get();
+			if (siege.ramped) {
+				helper.assertTrue(put[0] != null, "ramped before the husk was put in the way");
+				helper.succeed();
+				return;
+			}
+			if (helper.getTick() > 850) {
+				helper.fail("no ramp in time: put at " + (put[0] == null ? "nowhere" : put[0].toShortString()) + ", sand " + siege.sand.size()
+					+ ", the husk at " + climber.position() + (climber.isAlive() ? "" : " (dead)"));
+			}
+			if (put[0] != null || siege.rampFeet.isEmpty()) {
+				return;
+			}
+			BlockPos foot = siege.rampFeet.get(0);
+			net.minecraft.core.Direction into = net.minecraft.core.Direction.from3DDataValue(siege.rampDirs.get(0));
+			BlockPos wall = foot.relative(into);
+			int h = 0;
+			while (h <= SandRamps.MAX_HEIGHT && (!level.getBlockState(wall.above(h)).getCollisionShape(level, wall.above(h)).isEmpty()
+				|| !level.getBlockState(wall.above(h + 1)).getCollisionShape(level, wall.above(h + 1)).isEmpty())) {
+				h++;
+			}
+			helper.assertTrue(h >= 3, "the wall is only " + h + " high");
+			if (siege.sand.size() == (h - 1) * h / 2) {
+				// The last stage's outer end: two from where the husk waits (foot - (h + 1)).
+				BlockPos at = foot.relative(into, -(h - 1));
+				helper.assertTrue(level.getBlockState(at).isAir(), "the last stage's first block is already " + level.getBlockState(at));
+				climber.getNavigation().stop();
+				climber.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+				put[0] = at.subtract(helper.absolutePos(BlockPos.ZERO));
 			}
 		});
 	}

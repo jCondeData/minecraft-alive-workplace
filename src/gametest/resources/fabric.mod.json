@@ -711,7 +711,9 @@
 			"io.github.jcondedata.aliveworkplace.test.FarSiteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaModGoneVillagersGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaModGoneRehireGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaModGoneRehireGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGuildsPerRankGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcsGameTests"
 		]
 	},
 	"depends": {

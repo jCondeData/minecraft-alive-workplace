@@ -2447,7 +2447,7 @@ MarketDays) and research/.
   it is an ordinary golem. A farmhand tends the fields of farmers within 48 blocks (Field Marker or adopted farms),
   picks only crops and nether wart, and carries up to 9 stacks to the chests by that farmer's composter. A new golem
   stands on solid ground beside the Smith (never on a roof). The hall's line for each golem is on the guards button.
-- [x] **29.16** (approved 2026-10-06) **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
+- [x] **29.16** (approved 2026-10-06) (verified 2026-10-27: 4 QA tests [QaSeerGameTests]: strike/Legends off foretell nothing, blessing mood day 7 yes day 8 no through save and baby once, dawn lines in English, foretelling state through save; mutation caught; wiki checked) **The Seer (Rare).** Comes: a guest at the village's finished Chapel at midnight under a full moon, 1
   time in 2 (29.8); born to a Cleric (29.7). Trade: `aliveworkplace:legend`; by day they keep to the Chapel. Likes:
   jewels. Powers:
   - **foretelling** (`foretell`), each dawn, to the village's players in chat and on the hall's "What next?": whether

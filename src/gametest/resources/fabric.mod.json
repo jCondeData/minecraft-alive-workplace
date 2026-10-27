@@ -739,7 +739,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGemGrowerHireGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobBuildsGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaCupPurseGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaCupPurseGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderLeftOutGameTests"
 		]
 	},
 	"depends": {

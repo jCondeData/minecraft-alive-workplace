@@ -1,0 +1,73 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "handcrafted:wood_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:white_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:orange_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:magenta_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:light_blue_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:yellow_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:lime_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:pink_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:gray_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:light_gray_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:cyan_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:purple_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:blue_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:brown_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:green_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:red_crockery_combo",
+      "required": false
+    },
+    {
+      "id": "handcrafted:black_crockery_combo",
+      "required": false
+    }
+  ]
+}

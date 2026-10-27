@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.BasePressurePlateBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -44,8 +46,17 @@ public final class Resting {
 	private Resting() {
 	}
 
+	/**
+	 * B641: other mods' small things that rest on the block under them (Handcrafted's crockery, which the modded library
+	 * sets on every table), by block id in {@code data/aliveworkplace/tags/block/rests_on_floor.json}.
+	 */
+	public static final TagKey<Block> RESTS_ON_FLOOR = TagKey.create(Registries.BLOCK, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("rests_on_floor"));
+
 	/** Whether {@code state} is a small thing that rests on the block under it (not one hanging or on a wall). */
 	public static boolean standsOnFloor(BlockState state) {
+		if (state.is(RESTS_ON_FLOOR)) {
+			return true;
+		}
 		Block block = state.getBlock();
 		if (block instanceof LanternBlock) {
 			return !state.getValue(LanternBlock.HANGING);

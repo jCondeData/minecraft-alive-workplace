@@ -151,14 +151,29 @@ class Template:
         return any(self.solid((x, yy, z)) for yy in range(y + 2, min(self.size[1], y + reach)))
 
 
-def spot_cells(name):
-    """Every cell of the build's furniture spots (37.2): left exactly as drawn, so its spots file still matches."""
+def basement_depth(t, spots):
+    """How far up the file draws the build (B641): a build with a basement (26.15) is drawn with the basement at the
+    bottom of its file, while its spots file counts y from the ground floor as the game does (StarterBlueprints
+    moves the basement under the ground); the depth at which every spot's blocks are found in the file."""
+    for d in range(0, 9):
+        if all(t.name((s["pos"][0] + b["at"][0], s["pos"][1] + b["at"][1] + d, s["pos"][2] + b["at"][2])) == b["state"].split("[")[0]
+               for s in spots for b in s["blocks"]):
+            return d
+    return 0
+
+
+def spot_cells(name, t):
+    """Every cell of the build's furniture spots (37.2), in the file's own coordinates: left exactly as drawn, so its
+    spots file still matches; and over each table, where its crockery goes."""
     path = os.path.join(SPOTS, name + ".json")
     cells, tables = set(), []
     if os.path.exists(path):
         with open(path) as f:
-            for s in json.load(f)["spots"]:
+            spots = json.load(f)["spots"]
+            depth = basement_depth(t, spots)
+            for s in spots:
                 x, y, z = s["pos"]
+                y += depth
                 top = 0
                 for b in s["blocks"]:
                     ax, ay, az = b["at"]
@@ -212,7 +227,7 @@ def infill(t, p):
 
 def beautify(name, src, out):
     t = Template(src)
-    keep, tables = spot_cells(name)
+    keep, tables = spot_cells(name, t)
     wood = main_wood(t)
     changed = {}
 

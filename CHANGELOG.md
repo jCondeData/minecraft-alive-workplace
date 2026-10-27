@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Both homes of the Terrace get the furniture mods' pieces again: a home planned before its drawing gained a spot (the east kitchen's table against the party wall, B281) kept its chair, beds and table as vanilla stand-ins, because the saved pieces were matched to spots by number, and the numbers had shifted. Pieces are now matched by where they stand, so every build keeps every piece it chose; refreshing a furnished building also furnishes any spots its drawing gained since. Handcrafted's crockery no longer hangs in the air: it sits down on the furniture mod's table, isn't set over a table left as a fence and plate, and in builds with a cellar it's on the table instead of in mid-air in the cellar (B641).
 - The Village Hall's golem list says "...and 1 more golem" with one golem over the shown seven (B629).
 - Old houses measure right beside a tall dead trunk: a bare log column taller than a house can be, standing against the wall, is now judged from its root and left out wherever the measuring reaches it, so renewing the house no longer takes the trunk's upper part down with it (B599).
 - A finished Wonder gets its festival that evening even when another festival was already planned for a later day; the later one still comes after it (B605)

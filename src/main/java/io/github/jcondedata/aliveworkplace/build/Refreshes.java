@@ -124,10 +124,21 @@ public final class Refreshes {
 
 	// ---- what changes ------------------------------------------------------------------------------------------------
 
-	/** The building's latest drawing as it would be built (its furniture as it was built with). */
+	/** The building's latest drawing as it would be built (its furniture as it was built with, and pieces for the spots the drawing gained). */
 	private static Optional<Blueprint> current(ServerLevel level, BuildSiteManager.Finished f) {
-		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = BuildSiteManager.get(level).furniture(f.placement());
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = furniture(level, f.structure(), f.placement());
 		return BlueprintLibrary.get(level, f.structure()).map(b -> furniture.apply(b, f.structure()));
+	}
+
+	/**
+	 * The furniture a refresh builds with (B641): the pieces the building was built with, and for a furnished building a
+	 * piece chosen now for each furniture spot its drawing gained since (the Terrace's east table, found in B281, stayed
+	 * a fence and plate in Terraces built before).
+	 */
+	static io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture(ServerLevel level, ResourceLocation structure, BlueprintData.Placement placement) {
+		return BuildSiteManager.get(level).furniture(placement).withNewSpots(
+			io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture.of(structure),
+			io.github.jcondedata.aliveworkplace.furnish.Furnishings.MODS, io.github.jcondedata.aliveworkplace.furnish.Furnishings.ENABLED);
 	}
 
 	/** What stays whatever the drawings say: a container (and what's in it), a bed someone sleeps in, a job block, a builder's bench. */
@@ -145,7 +156,8 @@ public final class Refreshes {
 		if (old.isEmpty()) {
 			return BuildPlan.repair(current, placement, level, BuildSiteManager.get(level).gaveUp(placement));
 		}
-		Blueprint was = furniture == null ? old.get().drawing() : furniture.apply(old.get().drawing(), structure);
+		// What stands: the older drawing with the pieces the building was built with (B641: not the pieces the refresh adds)
+		Blueprint was = furniture == null ? old.get().drawing() : BuildSiteManager.get(level).furniture(placement).apply(old.get().drawing(), structure);
 		return BuildPlan.refresh(current, was, placement, level, (pos, state) -> kept(level, pos, state));
 	}
 
@@ -355,7 +367,7 @@ public final class Refreshes {
 		}
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(f.owner());
 		BuildSite site = manager.create(f.owner(), owner != null ? owner.getGameProfile().getName() : "", f.structure(), f.placement());
-		site.setFurniture(manager.furniture(f.placement()));
+		site.setFurniture(furniture(level, f.structure(), f.placement()));
 		site.setRefresh(change.get().from());
 		site.setBuilder(builder.getUUID());
 		site.setBench(bench);

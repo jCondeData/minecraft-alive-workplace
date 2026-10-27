@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641
 
 ## 1. What a player sees
 
@@ -160,7 +160,10 @@ mods as above, so a modded cottage has Handcrafted chairs and beds too. A new bu
 when `moddedLibrary` and `furnishedBuilds` are on and every block of its copy is installed (so the pack uses it); if any
 of those mods is missing, or a switch is off, it is the vanilla build, furnished as before. The choice is made when the
 build is planned and saved with it, so a config change or a removed mod never changes a build going up or standing
-(a copy whose blocks are gone later is built as the vanilla build). The Blueprint Table, the preview and the materials
+(a copy whose blocks are gone later is built as the vanilla build). Each saved piece belongs to the spot at its own
+place in the build, so a build keeps every piece it chose when its drawing later gains a furniture spot (B641: the
+Terrace's east table, first seen in B281); refreshing a furnished building furnishes those new spots too. The crockery
+sits on the furniture mod's table; over a table left as a fence and plate there is none. The Blueprint Table, the preview and the materials
 list show the library this server would build. Job blocks (lecterns, barrels, beehives, crafting tables) and doors are
 never swapped, and nothing a copy adds holds items, so every job finds exactly the storage of the vanilla build.
 

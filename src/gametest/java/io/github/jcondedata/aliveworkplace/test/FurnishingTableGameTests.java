@@ -180,7 +180,9 @@ public class FurnishingTableGameTests implements FabricGameTest {
 
 	/**
 	 * A saved choice whose spot no longer matches the blueprint's spots file (a data pack took spots away, or moved or
-	 * changed one) builds that spot vanilla, and a spot past the end of the file is passed over too, never a crash.
+	 * changed one) builds that spot vanilla, and a spot past the end of the file where the file has none is passed over
+	 * too, never a crash. B641: a piece is matched to its spot by place and kind, not by its saved number, so a piece
+	 * whose number is past the end of the file (spots were added before it since) but whose spot is still there gets it.
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
@@ -190,7 +192,7 @@ public class FurnishingTableGameTests implements FabricGameTest {
 		Map<BlockPos, BlockState> plank = Map.of(BlockPos.ZERO, Blocks.SPRUCE_PLANKS.defaultBlockState());
 		Blueprint vanilla = BlueprintLibrary.get(helper.getLevel(), COTTAGE).orElseThrow();
 		Map<String, FurnitureChoice> gone = Map.of(
-			"a spot past the end of the file", new FurnitureChoice(Map.of(spots.size(), new FurnitureChoice.Placed(table.pos(), table.kind(), TEST_TABLE, plank))),
+			"a spot past the end of the file", new FurnitureChoice(Map.of(spots.size(), new FurnitureChoice.Placed(table.pos().above(), table.kind(), TEST_TABLE, plank))),
 			"a spot that moved", new FurnitureChoice(Map.of(spots.indexOf(table), new FurnitureChoice.Placed(table.pos().above(), table.kind(), TEST_TABLE, plank))),
 			"a spot of another kind", new FurnitureChoice(Map.of(spots.indexOf(table), new FurnitureChoice.Placed(table.pos(), FurnitureSpot.Kind.BED, TEST_TABLE, plank))));
 		gone.forEach((what, choice) -> {
@@ -202,6 +204,11 @@ public class FurnishingTableGameTests implements FabricGameTest {
 			.apply(vanilla, spots);
 		helper.assertTrue(furnished.blocks().stream().anyMatch(e -> e.pos().equals(table.pos()) && e.state().is(Blocks.SPRUCE_PLANKS)),
 			"the matching spot didn't get its piece");
+		// B641: saved under a number the file has since shifted (past its end here), the piece still goes to its spot
+		Blueprint shifted = new FurnitureChoice(Map.of(spots.size(), new FurnitureChoice.Placed(table.pos(), table.kind(), TEST_TABLE, plank)))
+			.apply(vanilla, spots);
+		helper.assertTrue(shifted.blocks().stream().anyMatch(e -> e.pos().equals(table.pos()) && e.state().is(Blocks.SPRUCE_PLANKS)),
+			"a piece saved under a shifted number didn't get its spot");
 		helper.succeed();
 	}
 

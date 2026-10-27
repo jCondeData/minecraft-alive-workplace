@@ -36,7 +36,8 @@ public final class FurnitureStock {
 			|| !(wanted instanceof BlockItem block) || FurnitureEquivalents.of(block.getBlock()).isEmpty()) {
 			return false;
 		}
-		FurnitureChoice current = site.furniture();
+		List<io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot> spots = BlueprintFurniture.of(site.structure());
+		FurnitureChoice current = site.furniture().matched(spots); // B641: keyed by today's spots file
 		if (current.spots().isEmpty()) {
 			return false;
 		}
@@ -46,7 +47,7 @@ public final class FurnitureStock {
 				stock.merge(stack.getItem(), (long) stack.getCount(), Long::sum);
 			}
 		}
-		FurnitureChoice next = current.restocked(BlueprintFurniture.of(site.structure()), Furnishings.MODS,
+		FurnitureChoice next = current.restocked(spots, Furnishings.MODS,
 			i -> started(level, site.placement(), current.spots().get(i)), stock);
 		if (next == current) {
 			return false;

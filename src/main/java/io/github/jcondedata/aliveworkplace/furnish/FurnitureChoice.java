@@ -61,6 +61,73 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 	}
 
 	/**
+	 * B641: this choice keyed by where each piece is in {@code spotsOfBase}, the blueprint's spots file as it is now. A
+	 * choice is saved by spot index, but a spots file grows when the generator learns to see more furniture (B281 added
+	 * the Terrace's table against the party wall between its west chair and the east one): every later index shifted,
+	 * so a Terrace planned before (or refreshed after) kept the furniture mod's pieces in its west home and got vanilla
+	 * stand-ins in the east one. Each piece goes to the spot at its own position with its own kind (its saved index
+	 * first, when that still matches); a piece whose spot is gone is dropped. Returns this choice when nothing moves.
+	 */
+	public FurnitureChoice matched(List<FurnitureSpot> spotsOfBase) {
+		if (spots.isEmpty()) {
+			return this;
+		}
+		Map<Integer, Placed> out = new LinkedHashMap<>();
+		boolean changed = false;
+		for (Map.Entry<Integer, Placed> e : spots.entrySet()) {
+			int i = e.getKey();
+			Placed placed = e.getValue();
+			int at = i >= 0 && i < spotsOfBase.size() && matches(spotsOfBase.get(i), placed) ? i : -1;
+			for (int j = 0; j < spotsOfBase.size() && at < 0; j++) {
+				if (matches(spotsOfBase.get(j), placed)) {
+					at = j;
+				}
+			}
+			if (at < 0 || out.containsKey(at)) {
+				changed = true;
+				continue;
+			}
+			changed |= at != i;
+			out.put(at, placed);
+		}
+		if (!changed) {
+			return this;
+		}
+		return out.isEmpty() && !modded ? VANILLA : new FurnitureChoice(Collections.unmodifiableMap(out), modded);
+	}
+
+	private static boolean matches(FurnitureSpot spot, Placed placed) {
+		return spot.pos().equals(placed.pos()) && spot.kind() == placed.kind();
+	}
+
+	/**
+	 * B641: a furnished build's choice (one with any piece) with a piece chosen now, as for a new build, for every spot of
+	 * {@code spotsOfBase} it has none for: the spots its drawing gained since it was planned (the Terrace's east table,
+	 * B281). A refresh brings a standing build up to its latest drawing, furniture too. A vanilla choice (no furniture
+	 * mod then, or furnished builds off) stays vanilla; off ({@code enabled} false), this choice.
+	 */
+	public FurnitureChoice withNewSpots(List<FurnitureSpot> spotsOfBase, List<String> mods, boolean enabled) {
+		FurnitureChoice here = matched(spotsOfBase);
+		if (!enabled || here.spots.isEmpty()) {
+			return here;
+		}
+		List<FurnitureSpot> open = new ArrayList<>();
+		List<Integer> index = new ArrayList<>();
+		for (int i = 0; i < spotsOfBase.size(); i++) {
+			if (!here.spots.containsKey(i)) {
+				open.add(spotsOfBase.get(i));
+				index.add(i);
+			}
+		}
+		if (open.isEmpty()) {
+			return here;
+		}
+		Map<Integer, Placed> out = new LinkedHashMap<>(here.spots);
+		choose(open, mods, true).spots.forEach((j, placed) -> out.put(index.get(j), placed));
+		return out.size() == here.spots.size() ? here : new FurnitureChoice(Collections.unmodifiableMap(out), modded);
+	}
+
+	/**
 	 * The choice for a new build of these spots: each spot becomes the piece of the first mod in {@code mods} whose table
 	 * has a piece for it that the registry knows and that fits; none, and it stays vanilla. Off ({@code enabled} false): vanilla.
 	 */
@@ -321,7 +388,7 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 			return base;
 		}
 		Map<BlockPos, BlockState> swap = new HashMap<>();
-		spots.forEach((i, placed) -> {
+		matched(spotsOfBase).spots.forEach((i, placed) -> { // B641: by position, not by an index the file may have shifted
 			if (i < spotsOfBase.size() && spotsOfBase.get(i).pos().equals(placed.pos()) && spotsOfBase.get(i).kind() == placed.kind()) {
 				placed.cells().forEach((at, state) -> swap.put(placed.pos().offset(at), state));
 			}
@@ -346,7 +413,54 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 	public Blueprint apply(Blueprint base, ResourceLocation blueprint) {
 		// 37.12: the modded library's copy has the vanilla build's shape and furniture spots, so the pieces go in the same places
 		Blueprint built = modded ? io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.copy(blueprint).orElse(base) : base;
-		return spots.isEmpty() ? built : apply(built, BlueprintFurniture.of(blueprint));
+		List<FurnitureSpot> spotsOfBase = BlueprintFurniture.of(blueprint);
+		if (built != base) {
+			built = undressed(built, base, spotsOfBase, matched(spotsOfBase).spots.keySet());
+		}
+		return spots.isEmpty() ? built : apply(built, spotsOfBase);
+	}
+
+	/**
+	 * B641: the modded copy {@code copy} with what it set over a furniture spot (the crockery on every table, which comes
+	 * down onto the furniture mod's one-block table: {@link Resting#reseat}) taken back to the vanilla drawing's block
+	 * over every spot not in {@code swapped}: a fence-and-plate table left vanilla has no top to hold it, and the
+	 * crockery stood a block over the plate in the air (the owner's Terrace kitchen).
+	 */
+	static Blueprint undressed(Blueprint copy, Blueprint base, List<FurnitureSpot> spotsOfBase, java.util.Set<Integer> swapped) {
+		java.util.Set<BlockPos> over = new java.util.HashSet<>();
+		for (int i = 0; i < spotsOfBase.size(); i++) {
+			if (swapped.contains(i)) {
+				continue;
+			}
+			FurnitureSpot spot = spotsOfBase.get(i);
+			java.util.Set<BlockPos> cells = new java.util.HashSet<>();
+			spot.blocks().forEach(c -> cells.add(spot.pos().offset(c.at())));
+			for (BlockPos cell : cells) {
+				if (!cells.contains(cell.above())) {
+					over.add(cell.above());
+				}
+			}
+		}
+		if (over.isEmpty()) {
+			return copy;
+		}
+		Map<BlockPos, Blueprint.Entry> drawn = new HashMap<>();
+		base.blocks().forEach(e -> drawn.put(e.pos(), e));
+		List<Blueprint.Entry> entries = new ArrayList<>(copy.blocks().size());
+		boolean changed = false;
+		for (Blueprint.Entry e : copy.blocks()) {
+			if (over.contains(e.pos()) && Resting.standsOnFloor(e.state())) {
+				Blueprint.Entry was = drawn.get(e.pos());
+				BlockState vanilla = was == null ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : was.state();
+				if (!vanilla.is(e.state().getBlock())) {
+					entries.add(was == null ? new Blueprint.Entry(e.pos(), vanilla, null) : was);
+					changed = true;
+					continue;
+				}
+			}
+			entries.add(e);
+		}
+		return changed ? new Blueprint(copy.id(), copy.size(), List.copyOf(entries), copy.entities()) : copy;
 	}
 
 	public ListTag save() {

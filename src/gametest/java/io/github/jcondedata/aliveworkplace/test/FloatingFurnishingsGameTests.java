@@ -89,6 +89,73 @@ public class FloatingFurnishingsGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B641 (the owner, 2026-10-27: the Terrace's west kitchen kept spruce stand-ins and crockery in the air while the east
+	 * one was furnished): both halves of every multi-home build, the Terrace and Terrace II, are furnished and have
+	 * nothing floating, for a new build, for one planned with the spots file of before B281 (its pieces saved by an index
+	 * that has shifted since) and for that one refreshed; and however it is placed (four turns, mirrored either way),
+	 * every home's kitchen table is the furniture table's piece.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void bothHalvesOfATerraceAreFurnishedWithNothingFloating(GameTestHelper helper) {
+		List<String> mods = List.of(FurnishingTableGameTests.TEST_TABLE);
+		BlockPos origin = helper.absolutePos(new BlockPos(0, 1, 0));
+		for (Map.Entry<String, Integer> terrace : Map.of("terrace", 2, "terrace_2", 3).entrySet()) {
+			ResourceLocation id = AliveWorkplace.id(terrace.getKey());
+			Blueprint base = BlueprintLibrary.get(helper.getLevel(), id).orElseThrow();
+			List<FurnitureSpot> spots = BlueprintFurniture.of(id);
+			List<FurnitureSpot> older = spots.stream().filter(s -> s.kind() != FurnitureSpot.Kind.TABLE || !joined(s.blocks().get(0).state())).toList();
+			helper.assertTrue(older.size() < spots.size(), id.getPath() + " has no table against a wall");
+			FurnitureChoice planned = FurnitureChoice.load(FurnitureChoice.choose(older, mods, true).save());
+			Map<String, FurnitureChoice> choices = new java.util.LinkedHashMap<>();
+			choices.put("new", FurnitureChoice.choose(spots, mods, true));
+			choices.put("pre-B281", planned);
+			choices.put("refreshed", planned.withNewSpots(spots, mods, true));
+			for (Map.Entry<String, FurnitureChoice> c : choices.entrySet()) {
+				String what = c.getKey() + " " + id.getPath();
+				Blueprint built = c.getValue().apply(base, spots);
+				List<String> floating = floating(built);
+				helper.assertTrue(floating.isEmpty(), what + " floats: " + floating);
+				Map<BlockPos, BlockState> at = new HashMap<>();
+				built.blocks().forEach(e -> at.put(e.pos(), e.state()));
+				for (FurnitureChoice.Placed placed : c.getValue().spots().values()) { // every piece chosen is built, in every home
+					placed.cells().forEach((cell, state) -> helper.assertTrue(state.isAir() || state.equals(at.get(placed.pos().offset(cell))),
+						what + ": the " + placed.kind().id() + " at " + placed.pos().toShortString() + " isn't built as chosen: "
+						+ at.get(placed.pos().offset(cell)) + ", not " + state));
+				}
+				if (c.getKey().equals("pre-B281")) {
+					continue; // its new spots wait for a refresh
+				}
+				for (Rotation rotation : Rotation.values()) {
+					for (Mirror mirror : Mirror.values()) {
+						Map<BlockPos, BlockState> targets = BuildPlan.create(built, new BlueprintData.Placement(helper.getLevel().dimension().location(),
+							origin, rotation, mirror)).targets();
+						for (int home = 0; home < terrace.getValue(); home++) {
+							int x0 = 1 + 5 * home;
+							long tables = spots.stream().filter(s -> s.kind() == FurnitureSpot.Kind.TABLE && s.pos().getY() == 1
+								&& s.pos().getX() > x0 && s.pos().getX() < x0 + 5).filter(s -> {
+									BlockState there = targets.get(origin.offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
+										.transform(s.pos(), mirror, rotation, BlockPos.ZERO)));
+									return there != null && there.is(Blocks.SPRUCE_PLANKS);
+								}).count();
+							helper.assertTrue(tables == 1, what + " " + rotation + " " + mirror + ": home " + (home + 1) + "'s kitchen has " + tables
+								+ " furnished tables");
+						}
+					}
+				}
+			}
+		}
+		helper.succeed();
+	}
+
+	/** A fence post joined to something beside it: a table pushed against a wall (B281 taught the generator to see those). */
+	private static boolean joined(BlockState state) {
+		return state.getBlock() instanceof net.minecraft.world.level.block.FenceBlock
+			&& (state.getValue(net.minecraft.world.level.block.FenceBlock.NORTH) || state.getValue(net.minecraft.world.level.block.FenceBlock.EAST)
+			|| state.getValue(net.minecraft.world.level.block.FenceBlock.SOUTH) || state.getValue(net.minecraft.world.level.block.FenceBlock.WEST));
+	}
+
+	/**
 	 * The cause the owner met: a fence-and-plate table with a pot on it, and a furniture mod whose table is one block
 	 * (the test pack's planks): the plate's cell goes, and the pot comes down onto the new table, not left in the air.
 	 */

@@ -11,7 +11,7 @@ Nothing new to look at: villages with many lumberjacks and builders simply don't
 lumberjack in a wood full of log pillars or log cabins looks a few trunks over at a time, so it may take a moment
 longer to pick its tree there. A tree farm's saplings are found without going over every block of the farm. A
 builder waiting for materials no longer recounts every other build of the village block by block each time. A
-builder levelling up no longer makes the server stutter in a big modpack.
+builder leveling up no longer makes the server stutter in a big modpack.
 
 ## How it works
 

@@ -1253,12 +1253,14 @@ SCENES = [
     # B260: and the owner's Stone House, its way in clear and its attic a bedroom
     # B281: and the Terrace's two kitchens. Four stills on the card (the selftest's 2-4, B272): the owner's B260 and B281
     # rooms; the harness still films the cottage's 02_dining, 03_bedroom, 05_sitting and 06_vanilla_dining
-    S("furnished_home", "Build families", "Furnished homes: the Stone House's doorway and attic bedroom, and the Terrace's two lit kitchens (Handcrafted, Beautify, CobbleFurnies)",
-      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats; both Terrace kitchens hold modded pieces",
-      100, [("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
+    S("furnished_home", "Build families", "Furnished homes: the Stone House's doorway and attic bedroom, the Terrace's two lit kitchens and the Clinic's ward (Handcrafted, Beautify, CobbleFurnies)",
+      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats; both Terrace kitchens hold modded pieces; the Clinic's ward has four whole beds and nothing open under its ridges",
+      110, [("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
            ("08_stone_attic", "The Stone House attic: the bed's head to the gable, a nightstand, a chest at its foot, a lamp hung from the ridge"),
            ("09_terrace_west", "The Terrace's west kitchen: the mods' table and chair, a lantern hung from the bedroom floor"),
-           ("10_terrace_east", "The Terrace's east kitchen: its own mods' table (against the party wall) and chair, and its own lantern")],
+           ("10_terrace_east", "The Terrace's east kitchen: its own mods' table (against the party wall) and chair, and its own lantern"),
+           ("11_clinic_ward", "The Clinic's ward: four white beds, heads to the back wall (B639: no more cots of slab and carpet)"),
+           ("12_clinic_ceiling", "The Clinic's ward ceiling: closed where the two stair runs meet at the ridge (B639)")],
       cobblemon=True, furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",

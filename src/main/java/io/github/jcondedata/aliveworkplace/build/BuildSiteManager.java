@@ -200,6 +200,35 @@ public final class BuildSiteManager extends SavedData {
 		return out;
 	}
 
+	/**
+	 * The finished buildings in {@code level} that reach within {@code radius} blocks of {@code pos}: measured to the
+	 * nearest block of the building's outline (its origin when its blueprint is gone), so a big building standing by
+	 * {@code pos} counts though its corner lies farther (B598).
+	 */
+	public List<Finished> finishedReaching(ServerLevel level, net.minecraft.core.BlockPos pos, int radius) {
+		List<Finished> out = new java.util.ArrayList<>();
+		ResourceLocation dimension = Ids.of(level.dimension());
+		double max = (double) radius * radius;
+		for (Finished f : finished) {
+			if (!f.placement().dimension().equals(dimension)) {
+				continue;
+			}
+			net.minecraft.core.BlockPos nearest = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, f.structure())
+				.map(b -> {
+					net.minecraft.world.level.levelgen.structure.BoundingBox box = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(), b.size());
+					return new net.minecraft.core.BlockPos(
+						Math.clamp(pos.getX(), box.minX(), box.maxX()),
+						Math.clamp(pos.getY(), box.minY(), box.maxY()),
+						Math.clamp(pos.getZ(), box.minZ(), box.maxZ()));
+				})
+				.orElse(f.placement().origin());
+			if (nearest.distSqr(pos) <= max) {
+				out.add(f);
+			}
+		}
+		return out;
+	}
+
 	/** Every finished building in {@code level}. */
 	public List<Finished> finishedIn(ServerLevel level) {
 		List<Finished> out = new java.util.ArrayList<>();

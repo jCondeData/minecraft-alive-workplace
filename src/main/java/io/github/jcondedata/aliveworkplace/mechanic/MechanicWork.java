@@ -173,14 +173,15 @@ public class MechanicWork extends Behavior<Villager> {
 	// ---- mending ----------------------------------------------------------------------------------------------------
 
 	/**
-	 * The drive-train parts gone from the finished builds near {@code post}, in the order they go back: shafts and
+	 * The drive-train parts gone from the finished builds reaching within {@link #REACH} of {@code post} (to the build's
+	 * nearest block, not its corner: B598), in the order they go back: shafts and
 	 * gearboxes, then cogwheels, then belts (a belt's controller segment first), lowest first. A build that has a build
 	 * site open (a builder's repair) is left out.
 	 */
 	public static List<Part> missingParts(ServerLevel level, BlockPos post) {
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		List<Part> out = new ArrayList<>();
-		for (BuildSiteManager.Finished f : manager.finishedNear(level, post, REACH)) {
+		for (BuildSiteManager.Finished f : manager.finishedReaching(level, post, REACH)) {
 			if (manager.all().stream().anyMatch(s -> s.placement().equals(f.placement()))) {
 				continue; // a builder is on it
 			}

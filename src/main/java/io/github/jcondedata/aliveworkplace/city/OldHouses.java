@@ -64,10 +64,10 @@ public final class OldHouses {
 	/** The tallest trunk a tree check climbs: a log column taller than a house can be is a tree's. */
 	private static final int MOST_TRUNK = MAX_Y;
 	/**
-	 * The most blocks one neighbour of the fill reads: itself, and for a log, the logs above it up to {@link #MOST_TRUNK},
-	 * the block over the column and the 4 round its top (B517).
+	 * The most blocks one neighbour of the fill reads: itself, and for a log, the rest of its column up to
+	 * {@link #MOST_TRUNK} logs, the block under the column and the one over it, and the 4 round its top (B517, B599).
 	 */
-	private static final int MOST_READS_PER_NEIGHBOUR = 1 + MOST_TRUNK + 1 + 4;
+	private static final int MOST_READS_PER_NEIGHBOUR = 1 + MOST_TRUNK + 2 + 4;
 
 	/** What a measured house is. */
 	public enum Verdict {
@@ -314,7 +314,17 @@ public final class OldHouses {
 			if (!state.hasProperty(BlockStateProperties.AXIS) || state.getValue(BlockStateProperties.AXIS) == Direction.Axis.Y) {
 				List<Long> column = new ArrayList<>();
 				column.add(key);
+				// the whole column from its root, not only upward from the log the fill reaches (B599)
 				BlockPos.MutableBlockPos at = log.mutable();
+				while (column.size() <= MOST_TRUNK) {
+					at.move(Direction.DOWN);
+					BlockState below = read(at);
+					if (below == null || !standingLog(below)) {
+						break;
+					}
+					column.add(at.asLong());
+				}
+				at.set(log);
 				BlockState above;
 				boolean tree;
 				while (true) {

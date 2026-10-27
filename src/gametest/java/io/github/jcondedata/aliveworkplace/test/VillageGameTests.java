@@ -589,13 +589,30 @@ public class VillageGameTests implements FabricGameTest {
 		List<Villager> villagers = level.getEntitiesOfClass(Villager.class, net.minecraft.world.phys.AABB.of(box));
 		helper.assertTrue(villagers.size() == 1, villagers.size() + " villagers placed, expected the house's one");
 		Villager villager = villagers.get(0);
+		// Where it lands is judged the tick it first touches ground (B545): later it may walk through the corridor's
+		// doors into the yard, whose template leaves 1-block holes at house y 0 (vanilla's own planting holes). The
+		// template's villager is saved with OnGround set, so it has landed once it is on the ground below where it came.
+		double spawnY = villager.getY();
+		double[] landed = new double[4];
+		helper.onEachTick(() -> {
+			if (landed[3] == 0 && villager.onGround() && villager.getY() <= spawnY - 0.25) {
+				landed[0] = villager.getX() - origin.getX();
+				landed[1] = villager.getY() - origin.getY();
+				landed[2] = villager.getZ() - origin.getZ();
+				landed[3] = villager.isInWall() ? 2 : 1;
+			}
+		});
 		helper.runAfterDelay(80, () -> {
-			helper.assertTrue(villager.isAlive(), "the villager died");
-			helper.assertFalse(villager.isInWall(), String.format("the villager is stuck in a wall at %.2f %.2f %.2f",
+			helper.assertTrue(landed[3] != 0, String.format("the villager never came down from where the template put it; it is at house %.2f %.2f %.2f",
 				villager.getX() - origin.getX(), villager.getY() - origin.getY(), villager.getZ() - origin.getZ()));
-			helper.assertTrue(villager.getHealth() == villager.getMaxHealth(), "the villager was hurt: " + villager.getHealth());
-			helper.assertTrue(villager.getBlockY() == origin.getY() + 1, String.format("the villager is at house y %.2f, not on the corridor floor (1)",
-				villager.getY() - origin.getY()));
+			helper.assertTrue(landed[3] == 1, String.format("the villager landed in a wall at house %.2f %.2f %.2f", landed[0], landed[1], landed[2]));
+			helper.assertTrue(Math.floor(landed[1]) == 1 && Math.floor(landed[0]) == 5 && Math.floor(landed[2]) == 3, String.format(
+				"the villager landed at house %.2f %.2f %.2f, not on the corridor floor (5, 1, 3)", landed[0], landed[1], landed[2]));
+			helper.assertTrue(villager.isAlive(), "the villager died");
+			helper.assertFalse(villager.isInWall(), String.format("the villager is stuck in a wall at house %.2f %.2f %.2f",
+				villager.getX() - origin.getX(), villager.getY() - origin.getY(), villager.getZ() - origin.getZ()));
+			helper.assertTrue(villager.getHealth() == villager.getMaxHealth(), String.format("the villager was hurt (%.1f) and is at house %.2f %.2f %.2f",
+				villager.getHealth(), villager.getX() - origin.getX(), villager.getY() - origin.getY(), villager.getZ() - origin.getZ()));
 			helper.succeed();
 		});
 	}

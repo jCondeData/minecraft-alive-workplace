@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Defense: Palisade II's fighting step is now a row of battle stations for your archers, as many as the Palisade's walkway had; before, upgrading a Palisade took every archer's station off the wall. The step is now a full timber along the walkway (stand on it to shoot over the low points), not a row of slabs.
+- Sieges: the desert raiders' sand ramp now rises over red sand at a wall's foot (the badlands' ground, or a row you put there) the same as over plain sand; before, the husks piled a block elsewhere and stood about. Your red sand stays after the raid.
 - Quests: a step that asks you to defeat several of a creature now reads in the plural ("Defeat 2 Zombies", "Defeat 6 Vindicators") in the quest journal, the tracking bar and `/workplace quests`; before, it read "Defeat 2 Zombie". A modded creature with no plural reads "Defeat Grub ×2". `/workplace quests` now says "That quest isn't open anymore." in American English.
 - Festival Cup: [Watch] on a player bout (the Cup page, the Arena's notice board or `/workplace cup watch`) now puts you in Cobblemon's spectator view of the battle; before, it always answered "You can't watch that bout right now."
 - Festival Cup: the Grand Cup's Species and Item Clause now hold for every team that goes. Your second Pokémon of one species, or a second one holding the same item, stays home and the Cup page says which clause keeps it there; a delegate's or host trainer's Expert or Master team no longer has two Pokémon holding the same item.

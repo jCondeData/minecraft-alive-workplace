@@ -5,7 +5,7 @@ ROADMAP 32.9. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is an old tomb, and who get over
 walls with sand where pillagers use ladders (see [Drowned pirates](pirates.md) for the culture before it).
 
-Roadmap items: 32.9, B382
+Roadmap items: 32.9, B382, B437
 
 ## What a player sees
 
@@ -25,7 +25,8 @@ Roadmap items: 32.9, B382
   one up for one out, so the ramp rises step by step against the wall until it is level with the top. Then the
   raiders walk up it and drop inside. Chat says so ("Sand is piled against the walls of Thornholm!"). When the raid is
   over every block of the ramp is gone; nothing else is touched and nothing drops. The ramp buries dead bushes, grass
-  and snow at the wall's foot (they are gone after the raid), but never your flowers or blocks.
+  and snow at the wall's foot (they are gone after the raid), but never your flowers or blocks. Sand you put there
+  yourself, plain or red (the badlands' ground), is no obstacle: the ramp starts in it, and it stays after the raid.
 - **Until noon.** Husks don't burn, so a desert siege doesn't end at dawn: the raiders stay, and the siege goes on, until
   noon.
 - **The sarcophagus** (`aliveworkplace:chests/pharaohs_tomb`): gold, emeralds, a golden apple, gold nuggets, bones,
@@ -42,7 +43,7 @@ Roadmap items: 32.9, B382
   role), tagged `aliveworkplace_risen` so it never rises twice.
 - **Sand ramps** (`threat/SandRamps`, tactic `sand_ramps`): a raider with the role `climber` whose path to the hall
   ends at a wall (two to 8 blocks high, not a gate) starts a ramp there. Every block of the ramp goes only into air
-  or a wild plant it buries (the same rule as ladders, `threat/Buriable`), or sand already there, on solid ground; the blocks go on in stages (each stage a whole ramp one higher than the last), every 10 ticks while
+  or a wild plant it buries (the same rule as ladders, `threat/Buriable`), or sand already there (any sand, the `minecraft:sand` block tag: plain, red or suspicious, B437), on solid ground; the blocks go on in stages (each stage a whole ramp one higher than the last), every 10 ticks while
   the climber is near. At most 2 ramps a siege. Once the ramp stands, the raiders go up it and over.
   A raider is let go to fight once it is down inside on its feet, no higher than a step above the ramp's foot (a
   slab or a stair's lower step one up counts as down inside; B330).

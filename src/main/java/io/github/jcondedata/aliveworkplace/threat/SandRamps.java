@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -298,7 +299,7 @@ public final class SandRamps {
 			}
 			BlockPos next = null;
 			for (BlockPos pos : site.blocks()) {
-				if (!level.getBlockState(pos).is(Blocks.SAND)) {
+				if (!sandy(level, pos)) {
 					next = pos;
 					break;
 				}
@@ -340,13 +341,13 @@ public final class SandRamps {
 		return storm;
 	}
 
-	/** Whether every block of {@code site}'s ramp is sand (this siege's, or sand that stood there before, B382), up to the wall's top. */
+	/** Whether every block of {@code site}'s ramp is sand (this siege's, or sand of any kind that stood there before, B382, B437), up to the wall's top. */
 	private static boolean standing(ServerLevel level, ThreatData.Siege siege, Site site) {
 		if (site.height < 2) {
 			return false;
 		}
 		for (BlockPos pos : site.blocks()) {
-			if (!level.getBlockState(pos).is(Blocks.SAND)) {
+			if (!sandy(level, pos)) {
 				return false;
 			}
 		}
@@ -364,11 +365,12 @@ public final class SandRamps {
 	 * bushes at a desert wall's foot), or sand, the siege's or any already there (B382), counted as piled.
 	 */
 	private static boolean ours(ServerLevel level, ThreatData.Siege siege, BlockPos pos) {
-		return Buriable.room(level.getBlockState(pos)) || level.getBlockState(pos).is(Blocks.SAND);
+		return Buriable.room(level.getBlockState(pos)) || sandy(level, pos);
 	}
 
+	/** Whether {@code pos} holds sand of any kind: plain, red (B437: the badlands' ground, desert raiders come there too) or suspicious. */
 	private static boolean sandy(ServerLevel level, BlockPos pos) {
-		return level.getBlockState(pos).is(Blocks.SAND);
+		return level.getBlockState(pos).is(BlockTags.SAND);
 	}
 
 	/**

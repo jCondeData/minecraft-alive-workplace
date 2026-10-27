@@ -17,7 +17,8 @@ related: festival-cup.md, arena-build.md, cup-bouts.md, moods.md, village-map.md
 ```
 
 When the final of a [Festival Cup](festival-cup.md) ends, the champion's village **holds the Cup**. A player who wins
-stands for a village, and that village holds it; the player gets the purse.
+stands for a village, and that village holds it, banner and pride included; the player gets the purse and no
+trainer experience.
 
 ## The title
 
@@ -37,7 +38,8 @@ A banner with a trophy on it, in the theme's colors (gold on red for the Grand C
 faces of its [Arena III](arena-build.md)'s champion's pole if it has one, otherwise on top of its
 [Village Hall](village-hall.md). It comes down when the title passes. A far village that wins gets its banner the next
 time it's loaded. You can't make one on a loom: the banner belongs to the village. Break it, and it goes back up at the
-hall's next round.
+hall's next round. A block on top of the hall is never replaced: the banner stands on the roof over it instead. A
+village that holds two hosts' Cups flies one banner, and keeps it (and its pride) until it holds none.
 
 ![The banner over the new holder's hall](https://jcondedata.github.io/minecraft-alive-workplace/cup_champions/still-2.jpg)
 

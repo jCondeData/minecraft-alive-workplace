@@ -2230,7 +2230,7 @@ MarketDays) and research/.
   builder places blocks at midnight and sleeps at noon); the roll over 3,000 fixed UUIDs gives about 1 in 30 and the
   same answer twice; with `giftedChance` 0 nobody is Gifted; showcase scene `gifted` (the hall's list, a Night Owl
   building by moonlight).
-- [x] **29.7** (approved 2026-10-05) **Gifted villagers (2), and Legends born.** Four more traits:
+- [x] **29.7** (approved 2026-10-05) (verified 2026-10-27: QaGiftedLaneCGameTests [11; 29.6 also verified by lane D]: Hardy exactly twice, Beloved and Born Leader at 16 not 17 and under maxWorkPace and the Legends' cap, born rolls need two schooled Masters and roll once, giftedChance 0, the chronicle lines from en_us.json; wiki legends.md updated) **Gifted villagers (2), and Legends born.** Four more traits:
   - **Lucky**: luck +3 on every loot roll their work makes, on top of the level luck `Explorers` and `Netherworkers`
     already give (explorer finds, Netherworker trips, sifting, fishing) (`loot_luck`; our sifting tables get `quality`
     weights for it);

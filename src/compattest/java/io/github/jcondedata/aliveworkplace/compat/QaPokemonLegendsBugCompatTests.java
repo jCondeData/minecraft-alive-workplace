@@ -91,7 +91,8 @@ public class QaPokemonLegendsBugCompatTests implements FabricGameTest {
 
 	/**
 	 * "Within 96 blocks" from the edge: an Alpha standing on the hall's own floor exactly 96 blocks east is within 96
-	 * blocks. The reach is measured from the hall block's center (half a block above the floor), so it misses by 0.0013.
+	 * blocks, and not within 95. The reach was measured from the hall block's center (half a block above the floor), so it
+	 * missed by 0.0013.
 	 */
 	//$ gametest_ticks_batch AREA '300' '"qa_legends_bug_edge"'
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "qa_legends_bug_edge")
@@ -107,15 +108,35 @@ public class QaPokemonLegendsBugCompatTests implements FabricGameTest {
 				level.setChunkForced(abs.getX() >> 4, abs.getZ() >> 4, false);
 			}
 		});
-		PokemonEntity alpha = PokemonProperties.Companion.parse("machamp level=60", " ", "=").createEntity(level);
-		alpha.setPos(helper.absoluteVec(new Vec3(at.getX() + 0.5, at.getY(), at.getZ() + 0.5)));
-		alpha.setNoAi(true);
-		level.addFreshEntity(alpha);
-		helper.runAfterDelay(10, () -> {
-			helper.assertTrue(alpha.isAlive(), "the Machamp didn't spawn");
-			helper.assertTrue(!io.github.jcondedata.aliveworkplace.legend.WildPokemon.alphasNear(level, helper.absolutePos(HALL), 96).isEmpty(),
-				"an Alpha standing exactly 96 blocks from the hall, on its floor, isn't within 96 blocks");
-			helper.succeed();
+		// setChunkForced only queues the load, and an entity added before its chunk's entities have loaded stays hidden from
+		// every search (the first fix of B623 failed on this, not on the distance): the Machamp is added once they have
+		whenEntitiesLoaded(helper, level, abs, () -> {
+			PokemonEntity alpha = PokemonProperties.Companion.parse("machamp level=60", " ", "=").createEntity(level);
+			alpha.setPos(helper.absoluteVec(new Vec3(at.getX() + 0.5, at.getY(), at.getZ() + 0.5)));
+			alpha.setNoAi(true);
+			level.addFreshEntity(alpha);
+			helper.runAfterDelay(10, () -> {
+				helper.assertTrue(alpha.isAlive() && level.getEntity(alpha.getUUID()) == alpha, "the Machamp didn't spawn");
+				helper.assertTrue(!io.github.jcondedata.aliveworkplace.legend.WildPokemon.alphasNear(level, helper.absolutePos(HALL), 96).isEmpty(),
+					"an Alpha standing exactly 96 blocks from the hall, on its floor, isn't within 96 blocks");
+				helper.assertTrue(io.github.jcondedata.aliveworkplace.legend.WildPokemon.alphasNear(level, helper.absolutePos(HALL), 95).isEmpty(),
+					"an Alpha standing 96 blocks from the hall counts as within 95 blocks");
+				helper.succeed();
+			});
 		});
+	}
+
+	/** Runs {@code then} once the entities of the chunk at {@code pos} have loaded (checked each tick, for up to 200). */
+	private static void whenEntitiesLoaded(GameTestHelper helper, ServerLevel level, BlockPos pos, Runnable then) {
+		whenEntitiesLoaded(helper, level, pos, then, 0);
+	}
+
+	private static void whenEntitiesLoaded(GameTestHelper helper, ServerLevel level, BlockPos pos, Runnable then, int waited) {
+		if (level.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong(pos))) {
+			then.run();
+		} else {
+			helper.assertTrue(waited < 200, "the chunk 96 blocks east never loaded its entities");
+			helper.runAfterDelay(1, () -> whenEntitiesLoaded(helper, level, pos, then, waited + 1));
+		}
 	}
 }

@@ -94,6 +94,15 @@ they stay home ("it has helped a villager at work on 2 days, and this Cup asks f
   page says so.
 - **The theme** (28.17): the next one in order after the last Cup's. The host's owner (anyone while nobody owns the
   hall) may click through to another on the Cup page until sign-up closes, not after.
+- **Cup day** (28.19): the far villages' delegates arrive at 1000 (not before), one per far entrant, from the side
+  their home lies; they never keep a job site or a bed, are saved with the villager, and leave at dawn out of sight (at
+  once if `festivalCup` is switched off that day). The fair is a market day's traders and two more. The stands open at
+  noon (6000; not at 5999) and close at the theme's end time.
+- **Players' bouts** (28.20): the call gives two minutes (2,400 ticks) to click [I'm ready] inside the Arena; a tick
+  before, nothing is decided. A player who isn't ready loses by walkover, and the winner of a walkover is paid like any
+  win: 100,000 a bout and 600,000 for the final (the bout and 500,000 more), half again (150,000 and 900,000) only at a
+  City host (a Town pays the plain purse); without CobbleDollars in emeralds at `dollarsPerEmerald`. A player with no
+  eligible Pokémon loses the bout without a battle and isn't paid.
 - **The title** (28.21): the newest champion on a host's roll holds that host's Cup. A player who wins stands for a
   village, and that village holds the Cup. The player gets the purse only.
 - **The banner** (28.21): put up when the champion is crowned, if the holder's hall is loaded, or else at its hall's
@@ -158,13 +167,15 @@ Later additions:
 - A Cup banner broken by hand goes back up at the holder's next hall round.
 - Found by QA (2026-10-25), not fixed yet (B491): the Sign up button works before sign-up has opened, while the card
   still says "Sign-up opens after the festival on day N".
+- Found by QA (2026-10-27), not fixed yet (B563): [Watch] never puts a player in the spectator view; it answers "You
+  can't watch that bout right now." (its failing test is on branch `tests/cup-day-1027`).
 - Operators picking the theme of an owned host isn't tested (the test server gives operators no permission level).
 
 ## Proof
 
 - GameTests: `CupChampionGameTests` (the banner on the pole and its colors, passing to a hall, the pride, the chronicle
   in every circuit hall, the name lines, the win bonuses, seeding, saving, `festivalCup` off, a far champion's banner
-  when it loads), `CupThemesCompatTests` (each theme's team, player filter and fair; the Workers' counter), plus `CupGameTests`, `CupBoutGameTests`, `CupDayGameTests` and `CupMatchGameTests`.
+  when it loads), `CupThemesCompatTests` (each theme's team, player filter and fair; the Workers' counter), plus `CupGameTests`, `CupBoutGameTests`, `CupDayGameTests` and `CupMatchGameTests`; QA: `QaCupDayGameTests` (the day's numbers from both sides, the walkover purse, a City's purse, the players' sentences) and `QaCupMatchCompatTests` (no eligible Pokémon, a players' bout's purse).
 - The Arena: `ArenaGameTests` (a builder finishes each tier, `Arenas.find` in every rotation and mirrored, "What
   next?"), `ArenaCompatTests` (the Expert Trainer Leader's trade, Arena III's Healing Machines),
   `QaArenaGameTests.everyArenaHasAFifteenByNineRingAndTheFirstFits`.

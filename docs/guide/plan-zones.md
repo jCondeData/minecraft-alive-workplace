@@ -48,7 +48,7 @@ village grows compact, trying the blueprint's four turns and its mirror image. A
 - a builder's [Blueprint Table](blueprint-table.md) stands in the village (then any spot in the zones will do), or the
   spot is within the **Build Distance** of one.
 
-He never puts the same building the same way round within 24 blocks of itself, so a street isn't one house repeated:
+He never puts the same building the same way round within 24 blocks of itself, center to center (turned still counts), so a street isn't one house repeated:
 he mirrors it, or picks the next building on his list. On his desk, **Another spot** asks for the next one that fits
 and **Another style** for the same building in the next style that suits the spot.
 

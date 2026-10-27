@@ -505,7 +505,13 @@ public final class WorkplaceConfig {
 		Path file = configDir.resolve(FILE);
 		if (Files.exists(file)) {
 			try {
-				return parse(Files.readString(file));
+				com.google.gson.JsonElement tree = com.google.gson.JsonParser.parseString(Files.readString(file));
+				if (!tree.isJsonObject()) {
+					// A list, a bare word, a number or nothing at all is valid JSON but holds no settings (B477): kept
+					// aside like a file that isn't JSON, never written over unseen.
+					throw new JsonParseException("not a {...} object");
+				}
+				return parse(tree);
 			} catch (IOException | JsonParseException e) {
 				AliveWorkplace.LOG.warn("Couldn't read {}, using the defaults: {}", file, e.getMessage());
 			} catch (RuntimeException e) {
@@ -546,7 +552,10 @@ public final class WorkplaceConfig {
 
 	/** The config in {@code json} (missing values and values that can't be read take their default), clamped to sensible ranges. */
 	public static WorkplaceConfig parse(String json) {
-		com.google.gson.JsonElement tree = com.google.gson.JsonParser.parseString(json);
+		return parse(com.google.gson.JsonParser.parseString(json));
+	}
+
+	private static WorkplaceConfig parse(com.google.gson.JsonElement tree) {
 		com.google.gson.JsonObject object = tree.isJsonObject() ? tree.getAsJsonObject() : new com.google.gson.JsonObject();
 		// The format number and the open expansions are no options: read here by hand, so an empty or odd value in them
 		// (null, text, a list where a number goes) is a missing one and never costs the rest of the file (B457).
@@ -558,6 +567,7 @@ public final class WorkplaceConfig {
 		// whole object: each one is tried alone first, and one that can't be read is dropped, so it takes its default and
 		// every other value in the file is kept (B411).
 		for (String key : new java.util.ArrayList<>(options.keySet())) {
+			options.add(key, wholeNumbersInRange(key, options.get(key)));
 			com.google.gson.JsonObject single = new com.google.gson.JsonObject();
 			single.add(key, options.get(key));
 			try {
@@ -615,6 +625,53 @@ public final class WorkplaceConfig {
 		config.expansionsOpen = Expansions.open();
 		config.clamp();
 		return config;
+	}
+
+	/**
+	 * {@code value} with every whole number of a whole-number option ({@code int} or a list of them) past what an
+	 * {@code int} holds put at the nearest end of it, so it's clamped to the option's range as meant (B477): Gson casts
+	 * such a number round ({@code 3000000000} became {@code -1294967296}, so the least allowed value). Anything else is
+	 * left as it is.
+	 */
+	private static com.google.gson.JsonElement wholeNumbersInRange(String key, com.google.gson.JsonElement value) {
+		java.lang.reflect.Field field;
+		try {
+			field = WorkplaceConfig.class.getField(key);
+		} catch (NoSuchFieldException e) {
+			return value;
+		}
+		if (field.getType() == int.class) {
+			return intInRange(value);
+		}
+		if (List.class.isAssignableFrom(field.getType()) && field.getGenericType() instanceof java.lang.reflect.ParameterizedType type
+			&& type.getActualTypeArguments()[0] == Integer.class && value instanceof com.google.gson.JsonArray array) {
+			com.google.gson.JsonArray fixed = new com.google.gson.JsonArray();
+			array.forEach(e -> fixed.add(intInRange(e)));
+			return fixed;
+		}
+		return value;
+	}
+
+	private static com.google.gson.JsonElement intInRange(com.google.gson.JsonElement value) {
+		if (value == null || !value.isJsonPrimitive() || value.getAsJsonPrimitive().isBoolean()) {
+			return value;
+		}
+		java.math.BigDecimal number;
+		try {
+			number = new java.math.BigDecimal(value.getAsString().trim());
+		} catch (NumberFormatException e) {
+			return value;
+		}
+		if (number.signum() != 0 && number.stripTrailingZeros().scale() > 0) {
+			return value; // not a whole number: read (or refused) as before
+		}
+		if (number.compareTo(java.math.BigDecimal.valueOf(Integer.MAX_VALUE)) > 0) {
+			return new com.google.gson.JsonPrimitive(Integer.MAX_VALUE);
+		}
+		if (number.compareTo(java.math.BigDecimal.valueOf(Integer.MIN_VALUE)) < 0) {
+			return new com.google.gson.JsonPrimitive(Integer.MIN_VALUE);
+		}
+		return value;
 	}
 
 	/**

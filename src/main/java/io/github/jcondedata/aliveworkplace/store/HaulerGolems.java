@@ -34,8 +34,9 @@ import org.jetbrains.annotations.Nullable;
  * {@link GolemRoleGoal}. A Storehouse the golem can't get to (walled in, across water) is left alone for a while
  * after {@link #GIVE_UP} ticks without headway, and the next nearest one takes the load (B450); a Drop Box or worker's
  * chest it can't get to is skipped the same way, and the next one with goods is fetched from (B456). With no
- * Storehouse left to try, the load goes back into the nearest Drop Box and the golem is free (B463). Nothing of that
- * is saved, so after a reload the golem simply tries the nearest again.
+ * Storehouse left to try, the load goes back into the nearest Drop Box and the golem is free (B463); with no Drop Box,
+ * it goes back into the worker's chest it came from (or, after a reload, the nearest worker's chest with room) (B593).
+ * Nothing of that is saved, so after a reload the golem simply tries the nearest again.
  */
 public final class HaulerGolems {
 	public static final int STACKS = PorterWork.BASE_STACKS;
@@ -47,6 +48,8 @@ public final class HaulerGolems {
 	public static final int SKIP_FOR = 2400;
 	/** Storehouses and pickup chests each golem has given up on, with the game time it tries them again (in memory only). */
 	private static final Map<IronGolem, Map<BlockPos, Long>> UNREACHABLE = Collections.synchronizedMap(new WeakHashMap<>());
+	/** The worker's chests each golem's load was last fetched from (in memory only; B593). */
+	private static final Map<IronGolem, List<BlockPos>> FETCHED_FROM = Collections.synchronizedMap(new WeakHashMap<>());
 
 	public static final Codec<Map<Item, Integer>> LOAD_CODEC = Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT);
 
@@ -82,7 +85,9 @@ public final class HaulerGolems {
 		}
 		BlockPos pickup = stash.chests().get(0);
 		if (GolemRoleGoal.walkTo(golem, pickup, REACH)) {
-			collect(level, golem, stash, Math.min(STACKS, SupplyContainers.freeSlots(level, store)));
+			if (collect(level, golem, stash, Math.min(STACKS, SupplyContainers.freeSlots(level, store))) > 0) {
+				FETCHED_FROM.put(golem, List.copyOf(stash.chests()));
+			}
 		} else {
 			giveUpIfStill(level, golem, pickup);
 		}
@@ -91,13 +96,17 @@ public final class HaulerGolems {
 	/**
 	 * With a load and no Storehouse it can get to (B463), the golem puts the load back into the nearest Drop Box with
 	 * room, so the goods aren't stuck on it and it is free to haul again; a Drop Box it can't get to is skipped the same
-	 * way as a Storehouse. With no Drop Box at all it keeps the load until a Storehouse can be reached.
+	 * way as a Storehouse. With no Drop Box it can use (B593), the load goes back into the worker's chest it came from,
+	 * or, when that isn't known (after a reload) or has no room, the nearest village worker's chest with room.
 	 */
 	private static void putBack(ServerLevel level, IronGolem golem, Map<Item, Integer> load) {
 		Map<BlockPos, Long> skip = skipped(level, golem);
 		BlockPos box = level.getPoiManager().findClosest(h -> h.is(ModVillagers.DROP_BOX_POI),
 			p -> !skip.containsKey(p) && SupplyContainers.freeSlots(level, List.of(p)) > 0, golem.blockPosition(), STOREHOUSE_RANGE,
 			PoiManager.Occupancy.ANY).orElse(null);
+		if (box == null) {
+			box = workerChest(level, golem, skip);
+		}
 		if (box == null) {
 			return;
 		}
@@ -106,6 +115,43 @@ public final class HaulerGolems {
 		} else {
 			giveUpIfStill(level, golem, box);
 		}
+	}
+
+	/**
+	 * Where a load goes back to with no Drop Box (B593): the chest it was fetched from, else the nearest village worker's
+	 * chest with room (never a Storehouse's), skipping ones the golem has lately given up on; null when none.
+	 */
+	@Nullable
+	private static BlockPos workerChest(ServerLevel level, IronGolem golem, Map<BlockPos, Long> skip) {
+		for (BlockPos from : FETCHED_FROM.getOrDefault(golem, List.of())) {
+			if (!skip.containsKey(from) && SupplyContainers.freeSlots(level, List.of(from)) > 0) {
+				return from;
+			}
+		}
+		BlockPos center = storehouse(level, golem.blockPosition()).orElse(golem.blockPosition());
+		java.util.Set<BlockPos> stores = new java.util.HashSet<>();
+		level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, golem.blockPosition(), STOREHOUSE_RANGE,
+			PoiManager.Occupancy.ANY).forEach(sh -> stores.addAll(SupplyContainers.find(level, sh, null)));
+		Villager context = level.getEntitiesOfClass(Villager.class, new AABB(center).inflate(Village.RADIUS), v -> v.isAlive() && Village.takesPart(v))
+			.stream().findFirst().orElse(null);
+		if (context == null) {
+			return null;
+		}
+		BlockPos best = null;
+		double bestDist = Double.MAX_VALUE;
+		for (Village.Stash stash : Village.stashes(level, context, center, null)) {
+			for (BlockPos c : stash.chests()) {
+				if (stores.contains(c) || skip.containsKey(c) || SupplyContainers.freeSlots(level, List.of(c)) == 0) {
+					continue;
+				}
+				double d = c.distSqr(golem.blockPosition());
+				if (d < bestDist) {
+					bestDist = d;
+					best = c;
+				}
+			}
+		}
+		return best;
 	}
 
 	/** After {@link #GIVE_UP} ticks without headway, leaves {@code target} alone for {@link #SKIP_FOR} ticks. */

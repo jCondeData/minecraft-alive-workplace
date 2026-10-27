@@ -566,6 +566,7 @@
 			"io.github.jcondedata.aliveworkplace.test.GolemHaulerFightGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GolemHaulerRouteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerGiveUpGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHaulerNoDropBoxGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StrangeMoodGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStrangeMoodGameTests",
@@ -617,6 +618,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLaneLedgerBugTests",
 			"io.github.jcondedata.aliveworkplace.test.PathLedgerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLedgerFramesHaulGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanUnlockedGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaOldHouseTreesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanEmptyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesBugTests",
@@ -765,13 +769,19 @@
 			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallBugTests",
+			"io.github.jcondedata.aliveworkplace.test.CountedWords1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcCommandBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFixEdges1027GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSageSeerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchTreesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMasterArchitectGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaPathfinderGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaPathfinderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaOldSageGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGolemSmithGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSeerGameTests"
 		]
 	},
 	"depends": {

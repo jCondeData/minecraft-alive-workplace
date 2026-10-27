@@ -526,6 +526,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWonderCrew1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderCrewBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderBuild1026GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWonders1027GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWonders1027BugTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderFindsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderGardensGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SkyChartGameTests",

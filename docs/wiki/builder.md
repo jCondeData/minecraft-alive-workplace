@@ -34,7 +34,7 @@ marks it and the block stays shut and unflipped (B335), from the off hand too wh
 A Scan Tool renamed in an anvil names the build exactly as typed, apostrophes and accents too: "Jesse's Café" is
 called that in the saved line, on the blueprint, at the Blueprint Table and in every message (B458). Its id and file
 stay plain (`scans/<player>/jesse_s_caf`); the name is kept by id in the world's `aliveworkplace_blueprint_names` data
-(`blueprint/BlueprintNames`) and sent to players as they join. A second build of the same name is "Jesse's Café 2". An
+(`blueprint/BlueprintNames`) and sent to players as they join. A second build of the same name is "Jesse's Café 2". A name is kept to 128 characters, cut between letters and never through an emoji, so players read the name the server keeps (B578, `QaFixEdges1027GameTests`). An
 uploaded file such as `Zoë's Hut.litematic` keeps its name the same way; a plain `zoe_hut.nbt` is still "Zoe Hut", as
 before. Builds saved before this keep the names made from their ids. Shape Planner builds are named by the mod, never
 typed, so they're unchanged.

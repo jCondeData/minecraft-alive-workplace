@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Village Hall lists a free crafting table as a Carpenter's block (a built Carpenter's Workshop's table too), and a jukebox and a Mailbox as the Bard's and the Postman's: they show on the Free job blocks page and in Job ▾ ("Carpenter · 1 free Crafting Table"), so any villager can be made a Carpenter from the hall (B635).
 - The Village Hall's golem list says "...and 1 more golem" with one golem over the shown seven (B629).
 - Old houses measure right beside a tall dead trunk: a bare log column taller than a house can be, standing against the wall, is now judged from its root and left out wherever the measuring reaches it, so renewing the house no longer takes the trunk's upper part down with it (B599).
 - A finished Wonder gets its festival that evening even when another festival was already planned for a later day; the later one still comes after it (B605)

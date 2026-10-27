@@ -185,6 +185,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B226GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B290GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B303GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B635GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B297GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderStockGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderStockBugTests",

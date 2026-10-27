@@ -135,18 +135,39 @@ public final class VillageHalls {
 	public record FreeStation(BlockPos pos, VillagerProfession profession, net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> poi) {
 	}
 
-	/** The village's free workstations, nearest the hall first. */
+	/**
+	 * The village's free workstations, nearest the hall first: every block a jobless villager takes by themselves (the
+	 * game's acquirable_job_site tag) and every block of ours a job is given at by an item or the hall (B635: a crafting
+	 * table, a jukebox, a Mailbox are left out of that tag on purpose, so nobody takes them by themselves, and so the hall
+	 * never listed the Carpenter's Workshop's table and nobody could be made a Carpenter from it).
+	 */
 	public static List<FreeStation> freeStations(ServerLevel level, BlockPos hall) {
 		List<FreeStation> out = new ArrayList<>();
 		// The job a kind of workstation gives, found once per kind rather than once per workstation (B103).
 		java.util.Map<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>, Optional<VillagerProfession>> jobs = new java.util.HashMap<>();
-		level.getPoiManager().getInRange(h -> h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE), hall, RADIUS, PoiManager.Occupancy.HAS_SPACE)
-			.forEach(record -> jobs.computeIfAbsent(record.getPoiType(), poi -> net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.stream()
-					.filter(p -> p != VillagerProfession.NONE && p != VillagerProfession.NITWIT && p.acquirableJobSite().test(poi))
-					.findFirst())
+		level.getPoiManager().getInRange(VillageHalls::jobBlock, hall, RADIUS, PoiManager.Occupancy.HAS_SPACE)
+			.forEach(record -> jobs.computeIfAbsent(record.getPoiType(), VillageHalls::firstJob)
 				.ifPresent(p -> out.add(new FreeStation(record.getPos().immutable(), p, record.getPoiType()))));
 		out.sort(Comparator.comparingDouble(f -> f.pos().distSqr(hall)));
 		return out;
+	}
+
+	/** Whether {@code poi} is a kind of block the hall lists when free (as {@link #freeStations}). */
+	private static boolean jobBlock(net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> poi) {
+		return poi.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE)
+			|| io.github.jcondedata.aliveworkplace.work.Stations.ALL.stream().anyMatch(s -> !s.byItself() && s.poi().test(poi));
+	}
+
+	/**
+	 * The job {@code poi} is listed under: the first job in the registry that takes it; for a block only an item gives a
+	 * job at (B635), the first one this game has (its config on).
+	 */
+	private static Optional<VillagerProfession> firstJob(net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> poi) {
+		boolean tagged = poi.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE);
+		return net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.stream()
+			.filter(p -> p != VillagerProfession.NONE && p != VillagerProfession.NITWIT && p.acquirableJobSite().test(poi))
+			.filter(p -> tagged || io.github.jcondedata.aliveworkplace.work.Stations.available(p))
+			.findFirst();
 	}
 
 	/**

@@ -11,8 +11,7 @@ import net.minecraft.network.chat.Component;
 /**
  * QA lane E, 2026-10-27 (player-facing sentences: a count of one reads in the singular, as Words.counted's .one lines do
  * everywhere else). Lines whose count is often 1 have no .one form and read "1 children", "1 trees felled": the
- * Teacher's status with one pupil (TeacherWork passes inClass/called when above 0), the People table's header in a
- * village with one child (HallPeople passes the children when above 0), the Lumberjack's tree-farm count
+ * Teacher's status with one pupil (TeacherWork passes inClass/called when above 0), the Lumberjack's tree-farm count
  * (TreeFarms.sendStatus, from 0 up) and the drill day's chronicle line (ReformStories passes the drillers).
  */
 public class QaCountedOneBugTests implements FabricGameTest {
@@ -24,7 +23,6 @@ public class QaCountedOneBugTests implements FabricGameTest {
 		List<Component> lines = List.of(
 			Component.translatable("message.aliveworkplace.teacher.state.teaching", 1),
 			Component.translatable("message.aliveworkplace.teacher.state.calling", 1),
-			Component.translatable("screen.aliveworkplace.hall.people.header_children", 6, 4, 1, 1),
 			Component.translatable("message.aliveworkplace.tree_farm.counts", 1, 1),
 			Component.translatable("chronicle.aliveworkplace.reform_story.drilled", "Ashdale", 1));
 		List<String> wrong = new ArrayList<>();

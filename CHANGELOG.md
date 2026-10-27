@@ -27,6 +27,8 @@ asks for the steps, `latest.log` and any crash report).
   redrawn now has its old table, chairs, clock and beds taken away where they stand (their items to the store), and
   today's spots are furnished once, so there is no second table and no leftover clock; afterwards the house matches a
   newly built one, turned or mirrored too (B642).
+- A Builder short of something later in his build now has it listed on the Storehouse's requests board (and fetched or made by the village's Porter, Carpenter, Mason and Lumberjack) the moment his site is short, while he builds on with what he has, and again after a restart; before, it showed only once he stood waiting at the block that needed it (B636).
+- The Village Hall lists a free crafting table as a Carpenter's block (a built Carpenter's Workshop's table too), and a jukebox and a Mailbox as the Bard's and the Postman's: they show on the Free job blocks page and in Job ▾ ("Carpenter · 1 free Crafting Table"), so any villager can be made a Carpenter from the hall (B635).
 - The Village Hall's golem list says "...and 1 more golem" with one golem over the shown seven (B629).
 - Old houses measure right beside a tall dead trunk: a bare log column taller than a house can be, standing against the wall, is now judged from its root and left out wherever the measuring reaches it, so renewing the house no longer takes the trunk's upper part down with it (B599).
 - A finished Wonder gets its festival that evening even when another festival was already planned for a later day; the later one still comes after it (B605)

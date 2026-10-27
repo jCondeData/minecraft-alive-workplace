@@ -615,7 +615,8 @@ public class CrafterWork extends Behavior<Villager> {
 		builders.sort((a, b) -> Double.compare(a.distanceToSqr(villager), b.distanceToSqr(villager)));
 		for (Villager builder : builders) {
 			BuildSite site = Builders.activeSite(level, builder);
-			if (site == null || site.status() != BuildSite.Status.WAITING_FOR_MATERIALS || site.missing().isEmpty()) {
+			// B636: a builder short of something is served while he builds on, not only once he stands waiting
+			if (site == null || site.isDone() || site.isDeconstruction() || site.missing().isEmpty()) {
 				continue;
 			}
 			BuildPlan plan = site.plan(level);

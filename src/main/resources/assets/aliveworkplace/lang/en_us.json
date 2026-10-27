@@ -3936,6 +3936,7 @@
   "message.aliveworkplace.sentry.taken": "%s has no post now",
   "screen.aliveworkplace.hall.golem_line": "%s: %s",
   "screen.aliveworkplace.hall.golems_more": "...and %s more golems",
+  "screen.aliveworkplace.hall.golems_more.one": "...and %s more golem",
   "screen.aliveworkplace.hall.golem.fighting": "fighting",
   "screen.aliveworkplace.hall.golem.hauling": "carrying %s items to the Storehouse",
   "screen.aliveworkplace.hall.golem.hauling.one": "carrying %s item to the Storehouse",

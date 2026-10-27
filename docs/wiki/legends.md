@@ -201,7 +201,8 @@ From the design note `docs/design/M29.md`, section 7 (the owner may change any):
 
 - Legends never leave, even on strike, so a Legendary one stays in the first village that earned them.
 - The found way needs a player to walk into the right kind of structure; nothing is searched while nobody is online.
-- The Pokémon Professor and Ranger don't exist without Cobblemon; Alphas need Cobblemon 1.8.
+- The Pokémon Professor and Ranger don't exist without Cobblemon. Alpha-marked Pokémon need Cobblemon 1.8, but with any
+  version a wild Pokémon of level 50 or more counts as an Alpha (49 doesn't), so the Ranger comes with the pack's 1.7.3.
 - The Pathfinder's file asked for a Cartographer of level 3 (Journeyman) until B96; it now asks for an Expert
   (level 4), as roadmap 29.13 says. A Pathfinder who has already come stays.
 
@@ -237,6 +238,10 @@ and walks back to it, a Nether route is refused and a blank map takes the post, 
 from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
 `PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
+`QaPokemonLegendsCompatTests` (10, QA, 29.21 and 29.22: the census at 24 and 25 Pokémon and at 9 and 10 types, a released
+species kept in the Pokédex once, the IV words at every boundary, natures and hidden abilities as read, the hints by a
+real right-click, the Alpha stand-in at level 49 and 50, the 96- and 64-block reaches from both sides, every banned
+kind refused, no befriending into a full pasture, one Alpha calmed of two),
 `RealmLegendsGameTests` (5, 33.23); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
 `QaLegendSitesGameTests` (9, 29.9): the 5-second check on the real tick, the 1500-block reach from both sides, the
 nearest hall, friends one way only, 29.3's slots and conditions at a site, a slot filled before the morning, only a
@@ -255,6 +260,13 @@ QA (29.4): `QaLegendsHallGameTests` (7): conditions one short, exactly met and o
 "1 of 1"), the "What next?" tip at one missing but not two or none, "lives in" only for a Legendary taken elsewhere,
 every way a Legend comes in English, a need unmet 1 day crossed and 0 days ticked with two Legends first on the hall's
 list, and all six Legend chatter lines with names filled in.
+`QaLegendsHallEdgesGameTests` (6, QA, 29.4): "Kinds of meal in the store" at 0, 7, exactly 8 and 9 of 8 (a cross, a
+cross, a tick and ready, a tick), with the "What next?" tip at 0 and 7 and gone at 8; the Mythic line as a Hamlet,
+Village, Town and City (0, 0, 1, 2), a Mythic of another village not counted and one in their grave still counted, no
+"ready" and no tip for a Mythic a full Town has no room for; "Wren lives in the wilds", a Legendary in the Nether named
+by that village, and an open gold card again once the place is freed; the hall's list with a Legendary, a Mythic and a
+guest ahead of everyone in gold and a Gifted Legend's gift in gold below their traits; the tip gone with Legends off;
+and every card and tip of the shipped roster with no untranslated key, format argument or raw id.
 QA (lane d, 29.11 to 29.13): `QaResearchTreesGameTests` (6): the lectern at 8 blocks from home and not 9; needs, the
 top level and a busy Legend refused on the screen, a second level's two-item cost taken only whole; an exclusive group
 the other way round and after a reload; an unlock past its number; the tab gone when the Legend leaves; a strike
@@ -283,6 +295,13 @@ at 16; Runes of Warding I a fifth fewer raids. `QaGolemSmithGameTests` (5): a st
 takes nothing; one golem for 9 villagers and a second at 10; a cost spread over two chests by the table taken exactly,
 a stone hoe no iron hoe; a Wall Sentry with twice a golem's health and its name over its head; the forge's choice
 through a save; the sneak-click's line in English, and no choice with an item in hand or without sneaking.
+`QaGolemSmithEdgesGameTests` (8, QA, 29.15): each recipe one piece short (no shield, 3 iron blocks, a plain pumpkin)
+builds nothing, takes nothing and starts no wait, and the whole cost takes exactly the cost; the 2-day wait still
+holds at the last tick of the next day and ends at the first tick of the day after; a golem forged in a roofed house
+stands on its floor beside the Smith; the Hauler's and Farmhand's names over their heads; a plain iron golem hauls
+nothing; a farmhand picks and replants ripe wheat, carrots and nether wart and leaves unripe wheat, a melon and a
+poppy alone; a Wall Sentry kills a foe 4 blocks off its post within its leash and leaves one 7 blocks off alone, and
+one without a Patrol Map goes after a zombie 10 blocks away like any golem.
 `QaSeerGameTests` (4): a Seer on strike or with Legends off foretells nothing; the blessing's mood on day 7 and gone on
 day 8, through a save, and the early baby once; the dawn's lines in English ("in 2 days", "tomorrow", the raiders'
 side, no guest); the foretelling through a save, an empty one writing nothing.

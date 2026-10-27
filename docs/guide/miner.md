@@ -7,7 +7,7 @@ caption: A miner digging out a quarry
 Workstation: Blast Furnace
 Pick it with: a pickaxe
 Works at: a quarry you mark with a **Quarry Marker** (a stick, red dye and paper), within 64 blocks of the furnace
-Quarry size: up to 32 by 32, 16 deep unless you change it
+Quarry size: up to 32 by 32, 16 deep unless you change it; up to 64 for every miner, deeper as they level up
 Strip mine: tunnels up to 64 long and 32 wide
 Needs: a pickaxe (or cobblestone and sticks to make one), torches (and ladders for a strip mine down a shaft)
 Makes: stone, ore, dirt and whatever else the ground holds
@@ -30,7 +30,8 @@ pickaxes and torches come out of them, and everything they dig goes into them.
 1. Craft a **Quarry Marker** from a stick, red dye and paper (or buy one from a miner for an emerald).
 2. Right-click one corner block, then the opposite one. Each side can be up to 32 blocks.
 3. Sneak-right-click the air to change how deep they dig (16 to start with), or to switch to a **strip mine**.
-   Sneak-right-click a block to start over.
+   Sneak-right-click a block to start over. Every miner digs 4 to 64 deep; the deeper choices need a seasoned miner
+   (see below).
 4. Hand the marker to the miner. They tell you what to put in the chests.
 
 The quarry has to be within 64 blocks of their blast furnace, and it can't swallow the furnace itself.
@@ -47,6 +48,23 @@ dug and how many they left (next to water or lava, or too hard for their pickaxe
 
 Over their head you see the quarry's size and how far along it is. Sneak-right-click them with an empty hand for the
 full status and a **[Stop this quarry]** button: they stop and give the marker back, and what was dug stays dug.
+
+## Digging deeper
+
+Miners dig deeper as they level up. Every miner digs up to 64 blocks down; the marker also offers:
+
+| Depth | Who digs it |
+|---|---|
+| 96 blocks | Journeyman miners and up |
+| 128 blocks | Expert miners and up |
+| Down to just above bedrock | Master miners |
+
+Hand a deeper marker to a miner who isn't there yet and they still take it, but they stop at their own depth (64 for
+a Novice), and tell you which level the full depth needs. If they level up before they finish, they keep going down
+to their new depth. If they finish first, hand them the marker again once they've leveled up. The spiral stair goes
+all the way to the bottom, and they still leave the blocks next to water and lava standing.
+
+![A Master miner at the bottom of a pit 96 blocks deep](https://jcondedata.github.io/minecraft-alive-workplace/deep_quarry/still-3.jpg)
 
 ## When the pickaxe wears out
 

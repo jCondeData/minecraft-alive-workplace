@@ -584,9 +584,9 @@ public class QaStageFourGameTests implements net.fabricmc.fabric.api.gametest.v1
 	// --- Limits from the README, reached by clicking ---------------------------------------------------------------
 
 	/**
-	 * README, Quarry Marker: "Sneak-right-click the air to choose the depth (4, 8, 16, 32 or 64) or a strip mine". Ten
-	 * sneak-clicks on the air (the marker in the off hand, the main hand empty) go through every depth and the strip
-	 * mine, and never to a depth outside the five.
+	 * README, Quarry Marker: "Sneak-right-click the air to choose the depth (4, 8, 16, 32 or 64) or a strip mine", and
+	 * since 36.22 the deeper 96, 128 and down to bedrock. Thirteen sneak-clicks on the air (the marker in the off hand,
+	 * the main hand empty) go through every depth and the strip mine, and never to a depth outside the eight.
 	 */
 	//$ gametest_batch AREA '"qa4QuarryDepth"'
 	@GameTest(template = AREA, batch = "qa4QuarryDepth")
@@ -598,7 +598,7 @@ public class QaStageFourGameTests implements net.fabricmc.fabric.api.gametest.v1
 		player.setShiftKeyDown(true);
 		java.util.Set<Integer> depths = new java.util.TreeSet<>();
 		boolean strip = false;
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 13; i++) { // 36.22: 96, 128 and down to bedrock (-1) joined the choices
 			pressAir(helper, player);
 			QuarryData data = QuarryMarkerItem.data(player.getOffhandItem());
 			if (data.isStripMine()) {
@@ -607,9 +607,10 @@ public class QaStageFourGameTests implements net.fabricmc.fabric.api.gametest.v1
 				depths.add(data.depth());
 			}
 		}
-		helper.assertTrue(depths.equals(new java.util.TreeSet<>(List.of(4, 8, 16, 32, 64))), "depths chosen: " + depths + ", saw " + keys(seen));
-		helper.assertTrue(strip, "never a strip mine in ten clicks: " + keys(seen));
-		helper.assertTrue(saw(seen, "message.aliveworkplace.quarry.depth") && saw(seen, "message.aliveworkplace.quarry.strip_mine"),
+		helper.assertTrue(depths.equals(new java.util.TreeSet<>(List.of(QuarryData.BEDROCK, 4, 8, 16, 32, 64, 96, 128))), "depths chosen: " + depths + ", saw " + keys(seen));
+		helper.assertTrue(strip, "never a strip mine in thirteen clicks: " + keys(seen));
+		helper.assertTrue(saw(seen, "message.aliveworkplace.quarry.depth") && saw(seen, "message.aliveworkplace.quarry.strip_mine")
+			&& saw(seen, "message.aliveworkplace.quarry.depth_level") && saw(seen, "message.aliveworkplace.quarry.depth_bedrock"),
 			"the choices weren't said: " + keys(seen));
 		helper.succeed();
 	}

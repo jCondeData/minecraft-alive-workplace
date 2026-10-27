@@ -16,6 +16,12 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- Miners dig deeper as they level up: the Quarry Marker now also offers 96 blocks (Journeyman miners and up), 128
+  (Expert and up) and down to just above bedrock (Master). A miner handed a deeper marker than their level allows
+  digs to their own depth, says which level the rest needs, and keeps going down if they level up before they finish;
+  the spiral stair goes all the way down (36.22).
+
 ### Fixed
 - A Builder short of something later in his build now has it listed on the Storehouse's requests board (and fetched or made by the village's Porter, Carpenter, Mason and Lumberjack) the moment his site is short, while he builds on with what he has, and again after a restart; before, it showed only once he stood waiting at the block that needed it (B636).
 - The Village Hall lists a free crafting table as a Carpenter's block (a built Carpenter's Workshop's table too), and a jukebox and a Mailbox as the Bard's and the Postman's: they show on the Free job blocks page and in Job ▾ ("Carpenter · 1 free Crafting Table"), so any villager can be made a Carpenter from the hall (B635).

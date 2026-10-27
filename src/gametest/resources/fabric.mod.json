@@ -78,6 +78,7 @@
 			"io.github.jcondedata.aliveworkplace.test.HallSpecGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CheckBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MinerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.DeepQuarryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MinerPickaxeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuarryBuildGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuarryBuildGameTests",
@@ -803,6 +804,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRealmLegendsBuildsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaColonyWaitEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CountedWords1027GameTests",
@@ -816,6 +818,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPathfinderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldSageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGolemSmithGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGolemSmithEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSeerGameTests"
 		]
 	},

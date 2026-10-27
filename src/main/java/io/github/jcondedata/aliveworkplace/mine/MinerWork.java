@@ -108,6 +108,7 @@ public class MinerWork extends Behavior<Villager> {
 		if (site == null) {
 			return;
 		}
+		Miners.deepen(level, villager, site); // leveled up: deeper, if the marker asked for it (36.22)
 		BlockPos bench = site.bench();
 		if (bench == null) {
 			return;

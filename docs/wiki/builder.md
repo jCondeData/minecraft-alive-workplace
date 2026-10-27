@@ -307,7 +307,9 @@ claims and trip counts.
 
 - **How far a build may be (36.20, the owner's "village-wide").** Anywhere in the village the builder's table stands in
   is in reach, however big the village: within the Village Hall's radius (`villageHallRadius`) or in a cell painted into
-  one of the City Plan's zones. Outside the village, a build's middle must be within `maxSiteDistance` (128) of the
+  one of the City Plan's zones, the table itself standing in either (a table in a zone painted in the plan's corner,
+  past the radius, reaches the whole village too; B550, B557; QA's `QaReachZoneCornerGameTests` and
+  `QaVillageReachBugTests`). Outside the village, a build's middle must be within `maxSiteDistance` (128) of the
   table. A spot past it is refused with its distance rounded up, so one just past the reach reads past it, and naming the
   village when the table stands in one: "That spot is outside Mapleridge and 140 blocks from the builder's Blueprint
   Table — keep it within 128." (`assign.too_far_village`; with no village round the table, `assign.too_far`: "That spot

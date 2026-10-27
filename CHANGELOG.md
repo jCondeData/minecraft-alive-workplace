@@ -19,6 +19,8 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - Sieges: dead bushes, grass, ferns or snow at a wall's foot no longer stop the raiders. The desert husks' sand ramp buries them and rises to the top, and the warband climber's ladder goes up through them. The buried plants are gone after the raid (nothing drops); your flowers, saplings and blocks at a wall's foot still turn ladders and ramps away.
 - Class chatter: villagers now talk of wanting wine or new clothes when their class asks for them and they haven't had any lately, of the Gazette the week they read it, and of the tavern near their home (three lines each); before, only a household's rise and fall had lines.
+- Village-wide reach: a worker whose block stands in a City Plan zone painted in the plan's corner, past the Village Hall's radius, now reaches the whole village, as everywhere else in it; before, a field or site across the village was refused as if the worker were in no village.
+- Mourning: a villager who dies inside the village but far from the hall up a hill is now mourned like any other (her family grieves, players in the village are told, the chronicle gives her job and age, the family book dates her death); before, only deaths within the hall's radius in a straight line counted. Players are told when they stand anywhere in the village.
 - The Village Hall's What next? tip for a plain diet said "Keep 3 kinds of meal in the store", the varied diet's number; it now says 2.
 
 ## 0.150.0 — 2026-10-26

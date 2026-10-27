@@ -1,11 +1,16 @@
 package io.github.jcondedata.aliveworkplace.work;
 
+import io.github.jcondedata.aliveworkplace.city.CityPlan;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import java.util.Comparator;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.ai.village.poi.PoiRecord;
 
 /**
  * How far a worker's job may be from the block they work at (36.20, the owner's "village-wide"): a spot is in reach when
@@ -19,9 +24,22 @@ public final class Reach {
 	private Reach() {
 	}
 
-	/** The hall whose village {@code workBlock} stands in, if any. */
+	/**
+	 * The hall whose village {@code workBlock} stands in ({@link #claims}), if any; the nearest across if two claim it.
+	 * B550/B557: the City Plan's grid is a square, so a zone painted in its corner lies past the hall's radius, where
+	 * {@link VillageHalls#nearest} (a search within the radius) doesn't find the hall; the halls are looked up in a square
+	 * column as wide as the grid, at any height.
+	 */
 	public static Optional<BlockPos> village(ServerLevel level, BlockPos workBlock) {
-		return VillageHalls.nearest(level, workBlock).filter(hall -> claims(level, hall, workBlock));
+		Optional<BlockPos> near = VillageHalls.nearest(level, workBlock);
+		if (near.isPresent() && claims(level, near.get(), workBlock)) {
+			return near;
+		}
+		int reach = Math.max(VillageHalls.RADIUS, CityPlan.half()) + 1;
+		return level.getPoiManager().getInSquare(h -> h.is(ModVillagers.VILLAGE_HALL_POI), workBlock, reach, PoiManager.Occupancy.ANY)
+			.map(PoiRecord::getPos)
+			.filter(hall -> claims(level, hall, workBlock))
+			.min(Comparator.comparingLong(hall -> VillageHalls.across(hall, workBlock)));
 	}
 
 	/** True if {@code pos} is in the claimed area of the village round {@code hall} (any height). */

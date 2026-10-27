@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Old houses: a tree that grew next to an old village house no longer changes the house. A trunk against its wall is left out (before, the house measured a block too tall and a renewal could take the trunk down), and leaves touching the house's own log posts no longer drop those posts out of it (a renewal could leave one standing).
 - Quests: a step that asks you to defeat several of a creature now reads in the plural ("Defeat 2 Zombies", "Defeat 6 Vindicators") in the quest journal, the tracking bar and `/workplace quests`; before, it read "Defeat 2 Zombie". A modded creature with no plural reads "Defeat Grub ×2". `/workplace quests` now says "That quest isn't open anymore." in American English.
 - Festival Cup: [Watch] on a player bout (the Cup page, the Arena's notice board or `/workplace cup watch`) now puts you in Cobblemon's spectator view of the battle; before, it always answered "You can't watch that bout right now."
 - Festival Cup: the Grand Cup's Species and Item Clause now hold for every team that goes. Your second Pokémon of one species, or a second one holding the same item, stays home and the Cup page says which clause keeps it there; a delegate's or host trainer's Expert or Master team no longer has two Pokémon holding the same item.

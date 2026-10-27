@@ -77,7 +77,8 @@ less, isn't enough) he proposes nothing new and the desk says so.
 beds and job blocks), never one with a chest, never one a player changed, never one inside a finished build. A house
 counts when 85% or more of its blocks are village blocks (mossy, cracked and cobwebbed ones too) and it is at most
 2000 blocks and 20×16×20; beds, bells, signs, banners, campfires and job blocks may stay in it, any other container
-(a furnace, a hopper) rules it out. The desk says "Old houses: 2, 1 can be renewed". One at a time, at most one every 2 days,
+(a furnace, a hopper) rules it out. Trees that grew against a house are not part of it: a trunk by the wall and the
+leaves round the house's posts are left standing, and the house measures as its own blocks. The desk says "Old houses: 2, 1 can be renewed". One at a time, at most one every 2 days,
 he proposes to renew one in the zone's style: builders take the old house down (its blocks go to the store) and
 build the new one on the plot, the first building on the list that fits the old footprint plus 3, its front where
 the old door was. A renewal list file that is broken, or a building it names that doesn't exist, is skipped. The sleepers get the new beds and the worker keeps the job. Two of them coming home

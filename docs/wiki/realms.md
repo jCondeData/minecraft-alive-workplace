@@ -520,4 +520,6 @@ with it. Effect types (`caravan_carry` (named apart from the guilds' `carry`), `
   `savedAndMovedWithTheCapital` (save and reload, an older file, a new capital keeps them), `switchedOff` (`realms` and
   `villageEdicts` off).
 
+- QA: `QaPactsRealmEdictsGameTests` (33.22, 33.22a): `aRealmEdictStandsThreeDaysNotTwo` (the Book refuses on day 2, lifts on day 3), `onlyTheCapitalsRulersProclaimAndOnlyOnce` (another member's owner refused, the capital owner's friend may, not at a member, not twice), `aDuchyHasTwoSlotsAndTheRoyalHallIIAddsOne` (2 slots, a third with the II, the newest lapsing when it comes down, a Kingdom with the II holding four), `theHighwaysUpkeepIsAnEmeraldARouteAndExactMoneyPays` (each way counts once, a non-member route not at all; exactly enough pays, one hundredth short lapses and takes nothing), `aReformOutlivesLiftingAndAnUnreformedCountStartsAgain`, `aRealmEdictReachesAJoinerAndLeavesWithALeaver`, `theCommonMarketsAverageAndItsPeople` (the average leaving out a member without a price, another member's owner and a friend at the board's price, a stranger and outsiders 10% more, lifted back), `theLevysDuesGoAsFarAsTheMoneyAndTheRoom`, `theCrownsPeaceReaches128BlocksNotOneMore`, `everyPactAndRealmEdictSentenceIsTranslatedInAmericanEnglish`.
+
 Showcase scenes: `realm`, `realm_invite`, `realm_treasury`, `realm_research`, `realm_edicts`

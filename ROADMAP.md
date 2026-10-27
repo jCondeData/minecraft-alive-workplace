@@ -3245,7 +3245,7 @@ write their own stories; nothing waits forever on a player.
     objective and pays every helper; a missed deadline costs 30 and stops asking for 3 days; one open request per
     villager;
   - showcase scene `personal_request` (GIF: the ask, the accept, the hand-in, the thanks).
-- [x] **31.10** (approved 2026-10-11) **Personal requests: six more.** Each with its new objective:
+- [x] **31.10** (approved 2026-10-11) (verified 2026-10-27: QaPersonalRequestsGameTests [12] green in this run's full builds with B407 and B423 fixed: the 10-block cat both sides, wrong child/building, another grave, giver dying or unloaded, save midway, singular/plural) **Personal requests: six more.** Each with its new objective:
   1. **A letter to family** (`deliver`): offered when another village with a hall is within caravan range; the giver
      names a relative there (a villager of that village, picked and remembered). You get a sealed letter (paper with a
      name, lore and a quest mark, so no new art; lost, the giver writes you another). Right-click the relative with it

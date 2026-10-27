@@ -62,9 +62,16 @@ dead with no grave they fall 7 days later and the slot is free again.
   is used once.
 - *Born* (29.7): when the child of two schooled Masters grows up, one time in 20 they are a Rare Legend of a
   parent's trade; otherwise one time in 4 they are Gifted.
-- *Strange mood* (29.10): once a day in a happy village a Master may be seized (one time in 8). They stand at
-  their workstation and ask for three rare materials within 3 days. Bring them and they make a Masterwork and become
-  the Legend; fail and they sulk for 7 days.
+- *Strange mood* (29.10): once a day in a happy village a Master may be seized (one time in 8). Only a Master:
+  a Novice to an Expert never is. Never during a raid or a festival, and never two at once in one village. They claim
+  their workstation ("Taken by a strange mood" in purple over their head) and ask for three rare materials, one of
+  each, in a chest by it within 3 days; the village's players are told and the materials go on the requests board.
+  All three in on the last day still counts; two of the three never does, however many of each. Bring them and they
+  make a Masterwork (a made-up name, lore naming the maker, the village, the day and the materials) and become the
+  Legend. It goes to the player who brought the most, or into the chest when nobody did or their pack is full. A
+  Masterwork in an item frame in the village is worth 3 beauty; in a chest, none. Fail and they sulk for 7 days
+  ("Sulking": 30 less mood, half pace), a material that comes late makes nothing, and the village has no strange
+  mood for 10 days.
 
 **Needs and strikes (29.5).** A settled Legend needs a home of their own (their bed in a finished tier III
 building), their luxury once every 7 days, and a happy village (average mood 60 or more). A need unmet 2 days
@@ -101,7 +108,7 @@ Beloved (neighbors are happier), Born Leader (workers of their trade nearby 10% 
 | `legends` | on from 1.0 | Off: none come; settled Legends stay as ordinary Masters and come back when it is on again |
 | `legendNeeds` | on from 1.0 | Off: no needs and no strikes |
 | `legendSites` | on from 1.0 | Off: no Legends found at ruins, outposts or shipwrecks |
-| `strangeMoods` | on from 1.0 | Off: no strange moods |
+| `strangeMoods` | on from 1.0 | Off: no strange moods, and a mood already on is called off |
 | `giftedChance` | 30 (0 to 1000) | One villager in this many is Gifted; 0: nobody is, and nothing is erased |
 | `mythicLegendCap` | 0, 0, 1, 2 | Mythic Legends by rank (Hamlet, Village, Town, City); in the file only |
 

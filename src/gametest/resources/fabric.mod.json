@@ -557,6 +557,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerGiveUpGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StrangeMoodGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStrangeMoodGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ScribeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OptionalModsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OutfitGameTests",

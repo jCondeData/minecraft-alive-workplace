@@ -1249,7 +1249,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   - the note is on `main` with every section above;
   - the package is sent, and his answers, when they come, are recorded with `sessions.py reply`.
   - [x] **27.1a** (approved 2026-10-05) Change from the owner (2026-10-05): A Steward must be a villager who has been an architect/builder for a certain amount of time (decide the amount and write it in the design note; default meanwhile: Builder at a level or for N days). Also make the City Plan's recipe harder: Map and Blank Blueprint plus something hard to get, such as a Heart of the Sea (or similar).
-- [x] **27.2** (approved 2026-10-05) **The plan and the City Plan item.** A village's plan, saved on the Village Hall
+- [x] **27.2** (approved 2026-10-05) (verified 2026-10-27: on main e5f4bdd59: QaCityPlan1027GameTests [5: raid window 7 days both sides + the proposal's sentence, Town replaces an approved palisade with stone + stranger's approve refused, zone names 1/32/33 and every/unknown/padded/upper-case style through the packet handler [B503], a stranger's 7 plan packets refused with the denied line, the edit packet's wire round trip] 20/20 over 4 runs; existing CityPlan/QaCityPlan/Wall/QaWall tests cover the rest; full build 4207/4207 + 742/742) **The plan and the City Plan item.** A village's plan, saved on the Village Hall
   (`VillageHallBlockEntity`, new tag `plan`, empty by default) and kept on the hall item when the hall is broken (as
   its name is; put down again, the plan is centred on the new spot):
   - a grid of 32×32 cells centred on the hall, a cell 4×4 blocks at the default `villageHallRadius` of 64 (8×8 at
@@ -1278,7 +1278,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     `CityPlans` (the checked edit packet), the City Plan item (binds, names its village, says which zone you stand in;
     recipe, recipe-book unlock, icon via the pixel-art recipes, in the items scene). CityPlanGameTests (7) pass. Left:
     film `SCENE=items` with the new icon, hand in the package and tick (`done 27.2 --review`).
-- [x] **27.3** (approved 2026-10-05) **Painting the plan.** Right-click the air with a bound City Plan to open the plan screen (a client
+- [x] **27.3** (approved 2026-10-05) (verified 2026-10-27: on main e5f4bdd59: QaCityPlan1027GameTests [5: raid window 7 days both sides + the proposal's sentence, Town replaces an approved palisade with stone + stranger's approve refused, zone names 1/32/33 and every/unknown/padded/upper-case style through the packet handler [B503], a stranger's 7 plan packets refused with the denied line, the edit packet's wire round trip] 20/20 over 4 runs; existing CityPlan/QaCityPlan/Wall/QaWall tests cover the rest; full build 4207/4207 + 742/742) **Painting the plan.** Right-click the air with a bound City Plan to open the plan screen (a client
   screen, like the Blueprint Table's): the village map as it is today (`VillageMaps.colors`, a block a pixel, north up,
   the hall and every finished building's banner on it), the grid over it, each zone tinted in its colour with its name,
   Keep Clear hatched, build sites going up and the Steward's proposals as outlines. A side panel: the zones (new,
@@ -1532,7 +1532,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     builds 256 blocks and a milestone naming it; an unloaded chunk pauses the planning without an error, and it goes
     on when loaded; a finished road shortens the caravan's trip;
   - showcase scene `caravan_road`: a GIF along the road from one village to the other.
-- [x] **27.18** (approved 2026-10-06) **Walls along the wall line.** Once the village has been raided in the last 7 days, or a bandit camp
+- [x] **27.18** (approved 2026-10-06) (verified 2026-10-27: on main e5f4bdd59: QaCityPlan1027GameTests [5: raid window 7 days both sides + the proposal's sentence, Town replaces an approved palisade with stone + stranger's approve refused, zone names 1/32/33 and every/unknown/padded/upper-case style through the packet handler [B503], a stranger's 7 plan packets refused with the denied line, the edit packet's wire round trip] 20/20 over 4 runs; existing CityPlan/QaCityPlan/Wall/QaWall tests cover the rest; full build 4207/4207 + 742/742) **Walls along the wall line.** Once the village has been raided in the last 7 days, or a bandit camp
   is near, the Steward proposes its wall: along the plan's wall line, or, when none is drawn, a line of his own (round
   the zones, 4 blocks out), shown on the plan for approval. Walls are kits, as data:
   `data/aliveworkplace/wall_kits/<name>.json` holds one kit: a segment, a corner tower, a gate and the rank it needs.

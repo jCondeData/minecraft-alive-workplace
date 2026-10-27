@@ -937,8 +937,8 @@ storehouse*) gathers what everyone makes in one place.
 Place a **blast furnace**, stand a villager by it and sneak-right-click them with a **pickaxe**: they become a
 **Miner**. Then:
 1. Craft a **Quarry Marker** (stick + red dye + paper). Right-click one corner block, then the opposite corner
-   (up to 32 × 32). Sneak-right-click the air to choose the depth (4, 8, 16, 32 or 64) or a **strip mine** (here or
-   down a shaft); a red
+   (up to 32 × 32). Sneak-right-click the air to choose the depth (4, 8, 16, 32 or 64; 96 for Journeyman miners, 128
+   for Experts, down to just above bedrock for Masters) or a **strip mine** (here or down a shaft); a red
    outline shows the area.
 2. Put **pickaxes** (and some torches) in a chest within 8 blocks of the blast furnace.
 3. Give the marker to the miner. They dig the area out from the top down, bring everything back to the chests, and

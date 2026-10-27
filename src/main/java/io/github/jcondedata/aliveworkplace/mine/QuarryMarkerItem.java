@@ -66,6 +66,10 @@ public class QuarryMarkerItem extends Item {
 			message = Component.translatable("message.aliveworkplace.quarry.marked_strip_level", w, d, done.stripLevel().get());
 		} else if (data.isStripMine()) {
 			message = Component.translatable("message.aliveworkplace.quarry.marked_strip", w, d);
+		} else if (data.toBedrock()) {
+			message = Component.translatable("message.aliveworkplace.quarry.marked_bedrock", w, d, levelName(QuarryData.BEDROCK));
+		} else if (QuarryData.levelFor(data.depth()) > 1) {
+			message = Component.translatable("message.aliveworkplace.quarry.marked_level", w, d, data.depth(), levelName(data.depth()));
 		} else {
 			message = Component.translatable("message.aliveworkplace.quarry.marked", w, d, data.depth());
 		}
@@ -89,7 +93,7 @@ public class QuarryMarkerItem extends Item {
 			} else if (next.isStripMine()) {
 				message = Component.translatable("message.aliveworkplace.quarry.strip_mine");
 			} else {
-				message = Component.translatable("message.aliveworkplace.quarry.depth", next.depth());
+				message = depthChoice(next.depth(), "message.aliveworkplace.quarry.depth");
 			}
 			Chat.actionBar(player, message);
 			if (next.isComplete()) {
@@ -112,6 +116,9 @@ public class QuarryMarkerItem extends Item {
 			if (shaft.isPresent()) {
 				tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.strip_shaft_area", box.getXSpan(), box.getZSpan(), box.minY(),
 					box.minX(), shaft.getAsInt(), box.minZ()).withStyle(ChatFormatting.AQUA));
+			} else if (data.toBedrock()) {
+				tooltip.add(Component.translatable("tooltip.aliveworkplace.quarry.area_bedrock", box.getXSpan(), box.getZSpan(), box.minX(), box.maxY(),
+					box.minZ()).withStyle(ChatFormatting.AQUA));
 			} else {
 				tooltip.add(Component.translatable(data.isStripMine() ? "tooltip.aliveworkplace.quarry.strip_area" : "tooltip.aliveworkplace.quarry.area",
 					box.getXSpan(), box.getZSpan(), box.getYSpan(), box.minX(), box.maxY(), box.minZ()).withStyle(ChatFormatting.AQUA));
@@ -128,9 +135,28 @@ public class QuarryMarkerItem extends Item {
 		} else if (data.isStripMine()) {
 			mode = Component.translatable("tooltip.aliveworkplace.quarry.strip_mine");
 		} else {
-			mode = Component.translatable("tooltip.aliveworkplace.quarry.depth", data.depth());
+			mode = depthChoice(data.depth(), "tooltip.aliveworkplace.quarry.depth");
 		}
 		tooltip.add(mode.copy().withStyle(ChatFormatting.DARK_GRAY));
+	}
+
+	/**
+	 * A pit's depth as the marker says it ({@code key}, or its {@code _level} and {@code _bedrock} forms): the deeper
+	 * choices name the miner level they need (36.22).
+	 */
+	public static Component depthChoice(int depth, String key) {
+		if (depth == QuarryData.BEDROCK) {
+			return Component.translatable(key + "_bedrock", levelName(depth));
+		}
+		if (QuarryData.levelFor(depth) > 1) {
+			return Component.translatable(key + "_level", depth, levelName(depth));
+		}
+		return Component.translatable(key, depth);
+	}
+
+	/** The miner level a pit that deep needs ("Expert"). */
+	private static Component levelName(int depth) {
+		return io.github.jcondedata.aliveworkplace.build.BuilderLevels.levelName(QuarryData.levelFor(depth));
 	}
 
 	/** What's worth digging for at that height ("diamonds"). */

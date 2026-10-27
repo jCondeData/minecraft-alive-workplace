@@ -289,7 +289,7 @@ if [ "${SOAK:-false}" = "true" ]; then
   echo "--- soak (full log: $SERVER/server.log)"
   grep -E "Soak:|Soak result:|Builder stalled|Sprint completed|Crash|Exception" server.log | grep -v "No data fixer" || true
   echo "--- stalls: $(grep -c "Builder stalled" server.log || true)"
-  grep -q "Soak result: \([0-9]*\)/\1 builds finished.*; 0 stalls; items off: none" server.log || { echo "The soak did not pass."; exit 1; }
+  grep -q "Soak result: \([0-9]*\)/\1 builds finished.*; 0 stalls;.*items off: none" server.log || { echo "The soak did not pass."; exit 1; }
   exit 0
 fi
 

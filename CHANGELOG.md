@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Counted and articled sentences read right: a Legend born to a trade starting with a vowel is "Born to an Armorer"; a Wonder's goods quest asks for "2 Emerald Brooches", "Gold Circlets" and "Illuminated Books" (our luxuries and tonics now have plurals); the Classes page counts "over the 1 household"; the Pacts tab reads "1 pact, 1 offer waiting" and "1 feud"; in its last hour an alliance "Ends within the hour" and an offer has "less than an hour left"; and a Legend guest kept past their stay no longer names a day already gone ("My stay is over", "I leave once no one is near") (B583, B588, B592, B594, B596).
 - Desert raiders: a husk piling a sand ramp against a wall no longer stands for good on the very spot where the ramp's next block goes, leaving the ramp one short of the top for the rest of the siege; it now steps aside and the ramp reaches the top (B591).
 - Performance: a builder levelling up no longer stalls the server for up to half a second in a big modpack; the blueprint library's list of every structure is now kept until the data packs reload or a structure is saved in the world, instead of read again from every mod jar on each level-up (B412).
 - Builders: the dirt path a builder lays from a finished building to the bell or hall now leaves alone any spot where a player placed or broke blocks (the same 16-block sections the Steward keeps out of), and still paves the rest of the way; before, it could turn the grass in a player's own build to path.

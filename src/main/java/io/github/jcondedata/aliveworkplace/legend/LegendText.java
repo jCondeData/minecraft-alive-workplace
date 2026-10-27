@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.legend;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -171,7 +172,7 @@ public final class LegendText {
 				yield SITES.contains(name) ? Component.translatable("legend.aliveworkplace.way.found." + name)
 					: Component.translatable("legend.aliveworkplace.way.found.other");
 			}
-			case "born" -> Component.translatable("legend.aliveworkplace.way.born", trades(ids(way)));
+			case "born" -> Words.articled("legend.aliveworkplace.way.born", 0, trades(ids(way)));
 			case "inspired" -> way.has("founder") && way.get("founder").getAsBoolean()
 				? Component.translatable("legend.aliveworkplace.way.inspired.founder")
 				: Component.translatable("legend.aliveworkplace.way.inspired", trades(ids(way)));

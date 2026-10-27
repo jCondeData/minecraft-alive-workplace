@@ -70,10 +70,13 @@ public final class StewardSafety {
 		CityPlan plan = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.plan() : CityPlan.EMPTY;
 		UUID owner = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.owner() : null;
 		int y = box.minY();
-		for (BlockPos p : points(box, y)) {
+		// every plan cell the footprint touches: at a small hall radius a cell is under STEP blocks wide (B602)
+		for (BlockPos p : points(box, y, Math.min(STEP, CityPlan.cellSize()))) {
 			if (plan.zoneAt(hall, p).map(z -> KEEP_CLEAR.equals(z.kind())).orElse(false)) {
 				return Optional.of(Refusal.KEEP_CLEAR);
 			}
+		}
+		for (BlockPos p : points(box, y, STEP)) {
 			// in that village: nearer its hall than his (where both protected areas overlap, the nearer hall's village)
 			if (VillageProtection.foreignKeeper(level, owner, p).filter(h -> !h.equals(hall) && h.distSqr(p) < hall.distSqr(p)).isPresent()) {
 				return Optional.of(Refusal.PROTECTED);
@@ -96,19 +99,36 @@ public final class StewardSafety {
 			new BlockPos(box.maxX(), y, box.maxZ()), new BlockPos((box.minX() + box.maxX()) / 2, y, (box.minZ() + box.maxZ()) / 2));
 	}
 
-	private static List<BlockPos> points(BoundingBox box, int y) {
+	/** The middle and every {@code step} blocks along the footprint, its last row and column included. */
+	private static List<BlockPos> points(BoundingBox box, int y, int step) {
 		List<BlockPos> out = new ArrayList<>(corners(box, y));
-		for (int x = box.minX(); x <= box.maxX(); x += STEP) {
-			for (int z = box.minZ(); z <= box.maxZ(); z += STEP) {
+		for (int x = box.minX(); ; x = Math.min(x + step, box.maxX())) {
+			for (int z = box.minZ(); ; z = Math.min(z + step, box.maxZ())) {
 				out.add(new BlockPos(x, y, z));
+				if (z >= box.maxZ()) {
+					break;
+				}
+			}
+			if (x >= box.maxX()) {
+				break;
 			}
 		}
 		return out;
 	}
 
-	/** Natural growth and ground: what the Steward's sites clear without a second thought (logs too: trees on a plot). */
+	/**
+	 * Natural growth and ground: what the Steward's sites clear without a second thought (logs too: trees on a plot). Only
+	 * the logs trees grow: stripped logs and wood (bark on all six sides) never grow in the wild, so they are a player's
+	 * (B601).
+	 */
 	public static boolean natural(BlockState state) {
-		return Plots.clearable(state) || Plots.ground(state) || Trees.isLog(state);
+		return Plots.clearable(state) || Plots.ground(state) || Trees.isLog(state) && grows(state);
+	}
+
+	/** Whether this log is a kind trees grow: not stripped, not wood or hyphae. */
+	private static boolean grows(BlockState state) {
+		String path = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
+		return !path.contains("stripped") && !path.endsWith("_wood") && !path.endsWith("_hyphae");
 	}
 
 	/**

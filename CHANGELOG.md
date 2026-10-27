@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Steward keeps off more of what players built: a stripped log, stripped wood or oak wood a player puts in a running site's way now stays and its step is skipped, like any other player's block (B601); a Keep Clear cell inside a planned building now refuses it at every hall radius, also below 64 where cells are under 4 blocks (B602); and a bed or door placed across a 16-block section edge marks both halves' sections as player-built (B603).
 - A little less server lag in busy villages: a villager's pathfinding reads each block once for its trapdoor and small-block checks instead of twice, and builders no longer rebuild a research name on every tick (B412).
 - The Mechanic: a big Create build that stands within 32 blocks of the toolbox now gets its missing shafts, gears and belts mended even when its blueprint's corner lies farther off; the reach is measured to the build's nearest block, not its corner (B598).
 - The Founder: on a server with `colonyCooldownDays` set to 0, his village no longer waits a day between colonies while every other village may send the next one at once; half of no wait is no wait (B589).

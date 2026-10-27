@@ -598,6 +598,8 @@
 			"io.github.jcondedata.aliveworkplace.test.BanditFortGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CaravanTrailGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LostCaravanGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanBugTests",
 			"io.github.jcondedata.aliveworkplace.test.ProfessorsThesisGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BanditKingStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SicknessStoryGameTests",

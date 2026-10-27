@@ -86,6 +86,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateBuildsTurnedCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicFilesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicLimitsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaPlayersTrainCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateItemsHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateStoresHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFluidsCompatTests",

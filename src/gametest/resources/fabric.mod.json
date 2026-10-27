@@ -712,7 +712,10 @@
 			"io.github.jcondedata.aliveworkplace.test.FarSiteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaModGoneVillagersGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaModGoneRehireGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaModGoneRehireGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuildStagesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSuppliesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHeightFreeUploadGameTests"
 		]
 	},
 	"depends": {

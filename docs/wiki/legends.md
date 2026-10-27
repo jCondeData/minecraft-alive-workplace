@@ -54,7 +54,9 @@ dead with no grave they fall 7 days later and the slot is free again.
 
 **Four ways to come.**
 - *Visit* (29.8): once a day a village with no guest may get one, at the inn, the market, a festival, the Chapel or
-  the hall, one time in four by default. A guest stays up to 3 days; the same Legend doesn't visit again for 7.
+  the hall, one time in four by default. A guest stays up to 3 days and leaves on the evening of the third, once no
+  player is within 24 blocks (a guest whose needs are all met that evening settles instead). The same Legend doesn't
+  visit again until 7 days after the day they came.
 - *Found* (29.9): at a ruined portal, a pillager outpost or a shipwreck, for a player who owns (or is a friend of
   the owner of) a qualifying hall within 1500 blocks. A small camp is set down with the Legend in it; each structure
   is used once.
@@ -201,6 +203,11 @@ QA (29.4): `QaLegendsHallGameTests` (7): conditions one short, exactly met and o
 "1 of 1"), the "What next?" tip at one missing but not two or none, "lives in" only for a Legendary taken elsewhere,
 every way a Legend comes in English, a need unmet 1 day crossed and 0 days ticked with two Legends first on the hall's
 list, and all six Legend chatter lines with names filled in.
+QA (29.8): `QaLegendGuestsGameTests` (6): a guest still there a tick before the third evening and gone at it, with the
+leaving line in English; every need met that evening settles them instead; the 7 days from the day they came (day 11
+no, day 12 yes for a day-5 visit); a way's chance of 0 never and 1 always (over 1 read as 1); a Legendary settled in
+another village keeps them away while a Rare there doesn't; the terms screen's lines in English ("2 days left of my
+stay", "My last day here", a Legend with no powers).
 `QaGiftedGameTests` (7): `giftedChance` 1 gifts everyone and 10 about one in ten, keeping everyone Gifted at 30; a
 malformed gift file fails; a `gifted` attachment of "none" or a removed gift makes nobody Gifted; the hall's gold line
 for each of the four; Silver Tongue on 5, 20 and 64 emeralds (4, 16, 52) and gone with `giftedChance` 0; the Night

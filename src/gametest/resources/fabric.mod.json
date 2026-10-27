@@ -340,6 +340,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigHandEditsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigHandEditsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageMachinesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigOddFilesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWorldSavesGameTests",

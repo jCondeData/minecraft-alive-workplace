@@ -87,6 +87,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.HallFurnicrafterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaFurnicrafterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MachineWorkCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMachineFetchCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateBuildsTurnedCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicFilesCompatTests",

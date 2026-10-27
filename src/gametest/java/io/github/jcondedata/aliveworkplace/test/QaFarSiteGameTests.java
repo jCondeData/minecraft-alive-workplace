@@ -426,4 +426,52 @@ public class QaFarSiteGameTests {
 			"the builder doesn't repair the wall 150 blocks off inside a village of radius 160: " + (repair == null ? "nothing" : repair.placement()));
 		helper.succeed();
 	}
+
+	/** A quarry 150 blocks off across a big village is still the miner's after the quarries and the miner are saved and loaded. */
+	//$ gametest_ticks_batch AREA '200' '"qaFarSiteQuarryReload"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaFarSiteQuarryReload")
+	public void aFarQuarryInABigVillageSurvivesASaveAndReload(GameTestHelper helper) {
+		setUp(helper);
+		ServerLevel level = helper.getLevel();
+		radius(160);
+		Villager miner = worker(helper, ModBlocks.MINERS_BENCH, ModVillagers.MINERS_BENCH_POI, ModVillagers.MINER);
+		List<Component> seen = new ArrayList<>();
+		ServerPlayer p = QaStageFourGameTests.player(helper, seen, GameType.SURVIVAL);
+		BlockPos centre = helper.absolutePos(WORK).east(150);
+		ItemStack marker = new ItemStack(ModItems.QUARRY_MARKER);
+		marker.set(ModComponents.QUARRY, new QuarryData(Optional.of(level.dimension().location()), Optional.of(centre.offset(-2, 0, -2)), Optional.of(centre.offset(2, 0, 2)), 4));
+		p.setItemInHand(InteractionHand.MAIN_HAND, marker);
+		QaStageSixGameTests.clickVillager(p, miner, seen);
+		QuarrySite site = Miners.activeSite(level, miner);
+		helper.assertTrue(site != null, "the far quarry in the village was refused: " + texts(seen));
+		BoundingBox box = site.box();
+		java.util.UUID id = site.id();
+
+		io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager quarries = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(level);
+		QuarrySite reread = QuarrySite.load(site.save());
+		helper.assertTrue(reread != null, "the quarry didn't read back");
+		quarries.remove(id);
+		quarries.restore(reread);
+		CompoundTag tag = new CompoundTag();
+		helper.assertTrue(miner.save(tag), "the miner wasn't saved");
+		miner.discard();
+		Entity back = EntityType.loadEntityRecursive(tag, level, e -> e);
+		helper.assertTrue(back instanceof Villager, "the miner didn't load");
+		level.addFreshEntity(back);
+		Villager again = (Villager) back;
+		again.setNoAi(true);
+		Leftovers.after(helper, () -> {
+			QuarrySite left = Miners.activeSite(level, again);
+			if (left != null) {
+				Miners.cancel(level, left);
+			}
+			quarries.remove(id);
+			again.discard();
+		});
+		helper.runAfterDelay(40, () -> {
+			QuarrySite after = Miners.activeSite(level, again);
+			helper.assertTrue(after != null && after.id().equals(id) && after.box().equals(box), "the far quarry was lost after a reload: " + after);
+			helper.succeed();
+		});
+	}
 }

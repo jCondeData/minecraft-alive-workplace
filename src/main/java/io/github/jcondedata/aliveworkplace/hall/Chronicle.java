@@ -76,6 +76,19 @@ public final class Chronicle {
 		return level.getDayTime() / VillageNeeds.DAY + 1;
 	}
 
+	/**
+	 * Who did it, for the first word of a chronicle line (B611): {@code who}'s name, or "A villager" when they aren't
+	 * loaded ({@code steward.aliveworkplace.jobs.someone}, "a villager", is for mid-sentence use).
+	 */
+	public static Component lineStarter(@org.jetbrains.annotations.Nullable net.minecraft.world.entity.Entity who) {
+		return who != null ? who.getDisplayName() : Component.translatable("chronicle.aliveworkplace.a_villager");
+	}
+
+	/** The other village's name mid-sentence ("A caravan came from Ashdale"), or "another village" when it's unknown (B611). */
+	public static Component otherVillage(@org.jetbrains.annotations.Nullable Component name) {
+		return name != null ? name : Component.translatable("chronicle.aliveworkplace.another_village");
+	}
+
 	/** Writes {@code text} into the chronicle of the village {@code where} is in (if it has a hall). */
 	public static void record(ServerLevel level, BlockPos where, Kind kind, Component text) {
 		VillageHalls.nearest(level, where).ifPresent(hall -> record(level, hall, kind, text, true));

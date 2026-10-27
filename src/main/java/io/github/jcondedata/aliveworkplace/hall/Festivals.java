@@ -117,6 +117,7 @@ public final class Festivals {
 
 	/** The day of the village's next festival (today if it's still to come or on). */
 	public static long nextDay(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		settle(level, entity);
 		long today = Chronicle.day(level);
 		boolean over = timeOfDay(level) >= Curfew.festivalEnd(entity);
 		if (entity.festivalDay() > today || entity.festivalDay() == today && !over) {
@@ -129,6 +130,7 @@ public final class Festivals {
 
 	/** The hall's round: a festival due today is planned; while one is on, the feast and the heroes. */
 	public static void round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, int villagers) {
+		settle(level, entity);
 		long today = Chronicle.day(level);
 		if (ENABLED && entity.festivalDay() < today && entity.festivalMissed() < today && villagers >= MIN_VILLAGERS
 			&& Math.floorMod(today - offset(level, hall), every(entity)) == 0 && timeOfDay(level) < START) {
@@ -187,6 +189,39 @@ public final class Festivals {
 			return;
 		}
 		plan(level, hall, entity, day);
+	}
+
+	/**
+	 * A festival on {@code day} that must not wait for one already planned later (a finished Wonder's, 35.8): it's
+	 * planned for {@code day} and told to the players about, and the later one is kept and comes after it (as a ball if
+	 * it was to be one). Nothing if one is already set for {@code day}; one planned before it goes on as {@link #schedule}.
+	 */
+	public static void before(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long day) {
+		if (entity.festivalDay() <= day) {
+			schedule(level, hall, entity, day);
+			return;
+		}
+		entity.setFestivalAfter(Math.max(entity.festivalAfter(), entity.festivalDay()));
+		entity.setFestivalDay(day);
+		Component name = VillageHalls.name(level, hall);
+		Component message = Component.translatable(day == Chronicle.day(level) ? "message.aliveworkplace.festival.today" : "message.aliveworkplace.festival.tomorrow", name);
+		for (ServerPlayer player : nearby(level, hall)) {
+			Chat.chat(player, message.copy().withStyle(ChatFormatting.GOLD));
+		}
+	}
+
+	/** Once a festival brought in before a later one ({@link #before}) is over, the later one is the next again. */
+	static void settle(ServerLevel level, VillageHallBlockEntity entity) {
+		if (entity.festivalAfter() < 0) {
+			return;
+		}
+		long today = Chronicle.day(level);
+		if (entity.festivalAfter() <= entity.festivalDay()) {
+			entity.setFestivalAfter(-1);
+		} else if (entity.festivalDay() < today || entity.festivalDay() == today && timeOfDay(level) >= Curfew.festivalEnd(entity)) {
+			entity.setFestivalDay(entity.festivalAfter());
+			entity.setFestivalAfter(-1);
+		}
 	}
 
 	/** Sets the festival for {@code day} and tells the players about. */
@@ -251,6 +286,7 @@ public final class Festivals {
 		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			return Component.empty();
 		}
+		settle(level, entity);
 		long today = Chronicle.day(level);
 		long t = timeOfDay(level);
 		if (entity.festivalDay() > today || entity.festivalDay() == today && t < Curfew.festivalEnd(entity)) {

@@ -52,6 +52,23 @@ public final class Builders {
 	 * ({@code maxSiteDistance}); in the village the bench stands in, anywhere in it will do (36.20, {@link Reach}).
 	 */
 	public static int MAX_SITE_DISTANCE = 128;
+
+	/**
+	 * The spot a build is measured from, for the builder's reach and for which village it is in: the centre of its
+	 * outline, as placing it measures (B615: upkeep, refreshes and repair asks measured from the origin corner, so a build
+	 * accepted at the reach's edge was never kept up). A build whose blueprint is gone is measured from its origin.
+	 */
+	public static BlockPos spot(ServerLevel level, net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
+		return BlueprintLibrary.get(level, structure)
+			.map(b -> BlueprintOutline.bounds(placement, b.size()).getCenter())
+			.orElse(placement.origin());
+	}
+
+	/** True if the build of {@code structure} at {@code placement} is in reach of the bench at {@code bench} (the one rule placing uses). */
+	public static boolean inReach(ServerLevel level, BlockPos bench, net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
+		return Reach.inReach(level, bench, spot(level, structure, placement), MAX_SITE_DISTANCE);
+	}
+
 	/** How many blueprints a builder accepts on top of the one they are building. */
 	public static final int MAX_QUEUE = 5;
 	/** How many idle builders can help one site at a time. */
@@ -268,7 +285,7 @@ public final class Builders {
 		}
 		BoundingBox box = BlueprintOutline.bounds(placement.get(), blueprint.get().size());
 		double distance = Math.sqrt(box.getCenter().distSqr(bench.get()));
-		if (!Reach.inReach(level, bench.get(), box.getCenter(), MAX_SITE_DISTANCE)) {
+		if (!inReach(level, bench.get(), data.get().structure(), placement.get())) {
 			// B378: rounded up, so a refused spot never reads as within the reach (48.5 blocks: 49)
 			tell(player, Reach.refusal(level, bench.get(), "message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_SITE_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;

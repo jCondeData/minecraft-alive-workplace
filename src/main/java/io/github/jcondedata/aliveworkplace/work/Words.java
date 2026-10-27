@@ -92,6 +92,9 @@ public final class Words {
 			return false;
 		}
 		char c = w.charAt(0);
+		if (Character.isDigit(c)) {
+			return numberStartsWithVowelSound(w);
+		}
 		if (c == 'e') {
 			return !w.startsWith("eu") && !w.startsWith("ewe");
 		}
@@ -100,6 +103,27 @@ public final class Words {
 				|| w.startsWith("uro") || w.startsWith("ubi"));
 		}
 		return c == 'a' || c == 'i' || c == 'o';
+	}
+
+	/**
+	 * B607: a number said with a vowel sound takes "an": eight, eighty, eight hundred (any number that starts with 8),
+	 * and eleven or eighteen when said whole or as thousands ("an 11 × 11", "an 18,000"), never "a 110" or "a 12".
+	 */
+	private static boolean numberStartsWithVowelSound(String w) {
+		StringBuilder digits = new StringBuilder();
+		for (int i = 0; i < w.length(); i++) {
+			char d = w.charAt(i);
+			if (Character.isDigit(d)) {
+				digits.append(d);
+			} else if (d != ',') {
+				break;
+			}
+		}
+		String n = digits.toString();
+		if (n.startsWith("8")) {
+			return true;
+		}
+		return (n.startsWith("11") || n.startsWith("18")) && n.length() % 3 == 2;
 	}
 
 	private static String text(Object arg) {

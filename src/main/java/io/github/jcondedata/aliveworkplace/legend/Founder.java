@@ -621,7 +621,7 @@ public final class Founder {
 			for (int i = 0; i < chest.getContainerSize(); i++) {
 				ItemStack stack = chest.getItem(i);
 				if (stack.is(ModBlocks.VILLAGE_HALL.asItem())) {
-					stack.set(DataComponents.CUSTOM_NAME, newName(village));
+					stack.set(DataComponents.CUSTOM_NAME, newName(village, box.getCenter()));
 					hall = true;
 				} else {
 					Optional<BlueprintData> data = BlueprintItem.data(stack);
@@ -632,7 +632,7 @@ public final class Founder {
 			}
 			if (!hall) {
 				ItemStack named = new ItemStack(ModBlocks.VILLAGE_HALL);
-				named.set(DataComponents.CUSTOM_NAME, newName(village));
+				named.set(DataComponents.CUSTOM_NAME, newName(village, box.getCenter()));
 				for (int i = 0; i < chest.getContainerSize() && !named.isEmpty(); i++) {
 					if (chest.getItem(i).isEmpty()) {
 						chest.setItem(i, named);
@@ -646,9 +646,11 @@ public final class Founder {
 	}
 
 	/** "New Oakbrook" (no italics: it's the hall's name once placed). */
-	public static Component newName(String village) {
-		String name = Component.translatable("item.aliveworkplace.founders_wagon.new_village", village.isEmpty()
-			? Component.translatable("message.aliveworkplace.legend.the_wilds") : Component.literal(village)).getString();
+	public static Component newName(String village, BlockPos camp) {
+		// B613: a wagon from no village (the creative menu, a command) founds a village with a name of its own, made
+		// up from where it camps the way every unnamed village's is, instead of "New the wilds"
+		String name = village.isEmpty() ? VillageHalls.madeUpName(camp).getString()
+			: Component.translatable("item.aliveworkplace.founders_wagon.new_village", Component.literal(village)).getString();
 		return Component.literal(name).withStyle(s -> s.withItalic(false));
 	}
 

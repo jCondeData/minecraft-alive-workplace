@@ -21,7 +21,6 @@ import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -35,7 +34,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.Blocks;
 
 /**
  * SCENE=elders (ROADMAP 34.19): Bram, a farmer one day short of 1200 grown days, and Tom, a young one, by a Village
@@ -197,12 +195,11 @@ final class EldersScene {
 		level.setBlockAndUpdate(HALL, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.SOUTH));
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(HALL);
 		hall.setOwner(player.getUUID(), player.getGameProfile().getName());
-		level.setBlockAndUpdate(BED, Blocks.RED_BED.defaultBlockState());
 		long today = Chronicle.day(level);
 		bram = villager(level, "Bram", -1.5);
 		LifeStages.setAdultSince(bram, today - LifeStages.ELDER_DAYS + 1);
 		ModAttachments.LAST_MEAL.set(bram, level.getGameTime());
-		bram.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), BED));
+		ScreenshotHarness.homeBed(level, BED, Direction.NORTH, bram); // a real two-half bed: a lone foot half houses nobody (B451)
 		tom = villager(level, "Tom", 2.5);
 		LifeStages.setAdultSince(tom, today - 30);
 		ModAttachments.LAST_MEAL.set(tom, level.getGameTime());

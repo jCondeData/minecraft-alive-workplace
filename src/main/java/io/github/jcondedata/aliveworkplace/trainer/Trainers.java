@@ -161,7 +161,7 @@ public final class Trainers {
 			LeaderBracelets.beaten((ServerLevel) trainer.level(), trainer, player); // every Leader of a realm: a Mega Bracelet (38.6)
 		}
 		if (tier(trainer) > tierBefore) {
-			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.ranked_up", trainer.getDisplayName(),
+			player.sendSystemMessage(io.github.jcondedata.aliveworkplace.work.Words.articled("message.aliveworkplace.trainer.ranked_up", 1, trainer.getDisplayName(),
 				io.github.jcondedata.aliveworkplace.build.BuilderLevels.levelName(tier(trainer))).withStyle(ChatFormatting.GOLD));
 		}
 	}

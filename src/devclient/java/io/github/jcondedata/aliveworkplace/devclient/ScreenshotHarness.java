@@ -2329,6 +2329,28 @@ public class ScreenshotHarness implements ClientModInitializer {
 			.map(net.minecraft.world.level.block.Block::defaultBlockState).orElse(null);
 	}
 
+	/**
+	 * Gives the villagers a home the way the game does: a real two-half red bed with its head at {@code head} (the foot
+	 * on the {@code facing.getOpposite()} side), its point of interest claimed, and their HOME memory on the head. Since
+	 * B362 a HOME memory with no bed (or a lone bed half) behind it houses nobody, so a scene that needs a housed
+	 * villager stages one this way (B451, B452; as the GameTests' {@code Beds.home}).
+	 */
+	static void homeBed(ServerLevel level, BlockPos head, Direction facing, Villager... villagers) {
+		BlockState bed = Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, facing);
+		level.setBlockAndUpdate(head.relative(facing.getOpposite()),
+			bed.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+		level.setBlockAndUpdate(head, bed.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+		var pois = level.getPoiManager();
+		// The level registers a new bed's point of interest a moment later; register it now (the later add is a no-op).
+		if (!pois.existsAtPosition(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME, head)) {
+			net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(level.getBlockState(head)).ifPresent(type -> pois.add(head, type));
+		}
+		pois.take(h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), (h, p) -> p.equals(head), head, 1);
+		for (Villager v : villagers) {
+			v.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME, net.minecraft.core.GlobalPos.of(level.dimension(), head));
+		}
+	}
+
 	static <T extends Comparable<T>> BlockState with(BlockState state, String property, T value) {
 		for (var p : state.getProperties()) {
 			if (p.getName().equals(property)) {

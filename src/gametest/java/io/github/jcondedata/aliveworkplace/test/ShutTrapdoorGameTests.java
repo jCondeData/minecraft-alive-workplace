@@ -156,4 +156,39 @@ public class ShutTrapdoorGameTests implements net.fabricmc.fabric.api.gametest.v
 				+ "), job site " + printer.getBrain().getMemory(MemoryModuleType.JOB_SITE) + ", picked "
 				+ printer.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE)));
 	}
+
+	/**
+	 * B412: the path finder's check reads each of the body's cells once for both rules (this one and B339's small blocks
+	 * a mod calls passable). It says exactly what the two rules said apart, for every pair of blocks at the feet and head
+	 * among trapdoors shut and open, both halves, and the small blocks, steps and doors a village has.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void thePathCheckReadOnceSaysWhatBothRulesSay(GameTestHelper helper) {
+		Villager villager = helper.spawnWithNoFreeWill(EntityType.VILLAGER, new BlockPos(2, 2, 2));
+		BlockState[] blocks = {Blocks.AIR.defaultBlockState(), trapdoor(Half.TOP), trapdoor(Half.BOTTOM),
+			trapdoor(Half.TOP).setValue(TrapDoorBlock.OPEN, true), Blocks.LANTERN.defaultBlockState(), Blocks.CHAIN.defaultBlockState(),
+			Blocks.END_ROD.defaultBlockState(), Blocks.WHITE_CARPET.defaultBlockState(), Blocks.COBBLESTONE_WALL.defaultBlockState(),
+			Blocks.OAK_FENCE.defaultBlockState(), Blocks.OAK_SLAB.defaultBlockState(), Blocks.BREWING_STAND.defaultBlockState(),
+			Blocks.FLOWER_POT.defaultBlockState(), Blocks.CAKE.defaultBlockState(), Blocks.SCAFFOLDING.defaultBlockState(),
+			Blocks.STONE_BRICKS.defaultBlockState(), Blocks.OAK_FENCE_GATE.defaultBlockState(), Blocks.HOPPER.defaultBlockState()};
+		BlockPos feet = new BlockPos(8, 2, 8);
+		BlockPos abs = helper.absolutePos(feet);
+		ServerLevel level = helper.getLevel();
+		int shut = 0;
+		for (BlockState low : blocks) {
+			for (BlockState high : blocks) {
+				helper.setBlock(feet, low);
+				helper.setBlock(feet.above(), high);
+				helper.setBlock(feet.above(2), Blocks.AIR);
+				boolean apart = io.github.jcondedata.aliveworkplace.work.ShutTrapdoors.inTheWay(level, villager, abs.getX(), abs.getY(), abs.getZ())
+					|| io.github.jcondedata.aliveworkplace.work.PathObstacles.inTheWay(level, villager, abs.getX(), abs.getY(), abs.getZ());
+				boolean once = io.github.jcondedata.aliveworkplace.work.PathObstacles.blocksVillager(level, villager, abs.getX(), abs.getY(), abs.getZ());
+				helper.assertTrue(apart == once, "feet " + low + ", head " + high + ": the two rules say " + apart + ", the one pass " + once);
+				shut += once ? 1 : 0;
+			}
+		}
+		helper.assertTrue(shut > 0, "no pair was in the way: the check never saw a shut trapdoor at head height");
+		helper.succeed();
+	}
 }

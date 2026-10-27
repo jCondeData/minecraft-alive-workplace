@@ -86,7 +86,7 @@ public final class Tutors {
 		ModAttachments.TUTOR_LESSONS.set(tutor, ModAttachments.TUTOR_LESSONS.getOrElse(tutor, 0) + 1);
 		BuilderLevels.addXp((ServerLevel) tutor.level(), tutor, 2 + grade, null);
 		if (tier(tutor) > tierBefore) {
-			player.sendSystemMessage(Component.translatable("message.aliveworkplace.tutor.ranked_up", tutor.getDisplayName(),
+			player.sendSystemMessage(io.github.jcondedata.aliveworkplace.work.Words.articled("message.aliveworkplace.tutor.ranked_up", 1, tutor.getDisplayName(),
 				BuilderLevels.levelName(tier(tutor))).withStyle(ChatFormatting.GOLD));
 		}
 	}

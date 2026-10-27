@@ -76,6 +76,7 @@ public final class Research {
 		/** The levels above {@link #maxLevel} that need the Great Library (35.14): Swift Hands IV and V, all of a second-tier topic's. */
 		public final int libraryLevels;
 		public final Item icon;
+		private final String key;
 
 		Topic(int maxLevel, Item icon) {
 			this(maxLevel, 0, icon);
@@ -85,6 +86,7 @@ public final class Research {
 			this.maxLevel = maxLevel;
 			this.libraryLevels = libraryLevels;
 			this.icon = icon;
+			this.key = name().toLowerCase(); // B412: asked for on every bonus lookup (a builder's every tick, every pace)
 		}
 
 		/** The topic's top level with the second tier open. */
@@ -108,7 +110,7 @@ public final class Research {
 		}
 
 		public String key() {
-			return name().toLowerCase();
+			return key;
 		}
 
 		public Component title() {

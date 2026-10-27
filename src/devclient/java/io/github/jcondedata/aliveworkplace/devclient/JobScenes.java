@@ -8429,10 +8429,8 @@ final class JobScenes {
 					new io.github.jcondedata.aliveworkplace.people.Couples.Partner(pia.getUUID(), pia.getDisplayName(), 1, true));
 				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARTNER.set(pia,
 					new io.github.jcondedata.aliveworkplace.people.Couples.Partner(odo.getUUID(), odo.getDisplayName(), 1, true));
-				for (Villager v : List.of(odo, pia)) {
-					v.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME,
-						net.minecraft.core.GlobalPos.of(level.dimension(), sky.offset(2, 1, 2)));
-				}
+				// Their bed in the cottage: a HOME memory with no bed behind it houses nobody, so no home grade (B452).
+				ScreenshotHarness.homeBed(level, sky.offset(2, 1, 2), Direction.NORTH, odo, pia);
 				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
 			},
 			List.of(new Step("01_class_switch_on_before", -2, 6, (level, player) -> {

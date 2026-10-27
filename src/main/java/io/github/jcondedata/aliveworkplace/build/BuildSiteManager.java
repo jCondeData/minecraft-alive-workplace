@@ -230,6 +230,22 @@ public final class BuildSiteManager extends SavedData {
 	}
 
 	/** Every finished building in {@code level}. */
+	/**
+	 * The finished buildings in the village round {@code hall}: its claimed area (36.20's rule, {@link
+	 * io.github.jcondedata.aliveworkplace.work.Reach#claims}: the hall's radius or a painted City Plan zone), each measured
+	 * from the spot the builder's reach is ({@link Builders#spot}). B616: the Repairs page listed only those within the
+	 * radius, so a build kept up in a zone past it never showed there.
+	 */
+	public List<Finished> finishedInVillage(ServerLevel level, net.minecraft.core.BlockPos hall) {
+		List<Finished> out = new java.util.ArrayList<>();
+		for (Finished f : finishedIn(level)) {
+			if (io.github.jcondedata.aliveworkplace.work.Reach.claims(level, hall, Builders.spot(level, f.structure(), f.placement()))) {
+				out.add(f);
+			}
+		}
+		return out;
+	}
+
 	public List<Finished> finishedIn(ServerLevel level) {
 		List<Finished> out = new java.util.ArrayList<>();
 		ResourceLocation dimension = Ids.of(level.dimension());

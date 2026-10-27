@@ -792,7 +792,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPathfinderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldSageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGolemSmithGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSeerGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSeerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReachEdgeUpkeepBugTests"
 		]
 	},
 	"depends": {

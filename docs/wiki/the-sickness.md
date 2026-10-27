@@ -131,4 +131,9 @@ Roadmap items: 31.18, B135, B343
   rounds waiting, the Remedy in hand stowed, the round), `aPhysiciansRemedyOnlyEasesTheGreyCough` (their visit and a
   player's hand; a kept-well villager doesn't catch it; a Nurse comes first), `physiciansSwitchedOffWrenComes`,
   `thePhysicianHealerSurvivesAReload` (two save-and-reloads mid-arc).
+- QA (`QaSicknessGameTests`, 14 tests): the trigger at Village rank and 12 villagers (not 11, not a Hamlet, not with
+  illness off), the pass-on at 8 blocks and not 9 and by bed and workstation, the cap in a village of 13, the cough
+  and an old-style illness through a save, the hand-in taking only 3 of each named herb, the tonic only for the
+  coughing, every gatherer thanked and no bystander, the Nurse killed or the stand broken mid-brew, Doctor Wren
+  brewing by the hall and leaving, every sentence a player reads, and the herb biome tags open to datapacks.
 - Showcase scenes: `sickness` (the coughing village, a herb patch, the brew, the cure going round).

@@ -137,7 +137,9 @@ themselves, as before 36.15. After a build, it can lay a dirt path to the villag
 
 **Safe at height.** A Builder with a build (lead or helper) takes no fall damage: he stands on the build's own
 upper rows (a palisade's stake tops, a tower's platform before its parapet) and can step, jump or be shoved off them.
-Any other harm still hurts him, and a Builder with no build falls like any villager (B120).
+Any other harm still hurts him, and a Builder with no build falls like any villager (B120). The build keeps him safe
+at night (off shift, his build still on) and after a restart, and a Builder standing inside a build's footprint when
+it is handed over finishes it round himself unhurt.
 
 **Table preview (26.9).** Selecting a library entry sends `table_request_details`; the server answers with the
 materials and a `table_preview` packet (`TableServer.preview`): a palette of block-state ids and x, y, z, palette
@@ -306,7 +308,8 @@ claims and trip counts.
   works a villager's path out again whenever a block on it changes shape (a door opening or shutting), and aimed the
   new path at the last spot the villager had worked any path out for, which was often a bed, bell or workstation it had
   only looked at; the villager then turned round, shut the door behind it and walked off round the building. A path
-  worked out again now goes where the villager is walking (B203).
+  worked out again now goes where the villager is walking (B203), also for two villagers going in by the same shut
+  door together and for one coming round from the far side of the building.
 
 - Builders ask before repairing a house, and a repair can be stopped, paused or put aside for another job (owner,
   2026-10-19, 36.15). Defense repairs after a threat (32.16a) stay automatic, as the owner hadn't objected to them: a
@@ -380,6 +383,17 @@ bells, `DoorwayHeadroomGameTests.aVillagerOpensTheHealingCentersShutFrontDoorAnd
 `DoorwayHeadroomGameTests.aVillagerOpensTheManorsShutFrontDoorAndClimbsItsStair`, and a jobless villager opens the
 Healing Center's door and takes its brewing stand as a cleric,
 `DoorwayHeadroomGameTests.aJoblessVillagerOpensTheHealingCentersShutDoorAndTakesItsBrewingStand`).
+
+`B120GameTests` (4, B120: a Builder alone, a crew of three and a crew on top of another tower build the Palisade Tower
+unhurt; fall damage spared only at work) and `QaBuilderBugsGameTests` (10, QA): a player hands a Builder standing in the
+middle of the Palisade Tower's footprint its blueprint and he builds it round himself unhurt,
+`aBuilderStandingInsideThePalisadeTowersFootprintBuildsItUnhurt`; a Builder with a build dropped ten blocks lands
+unhurt at night, `aBuilderWithABuildFallsUnhurtAtNight`, and after being saved and loaded,
+`aBuilderSavedAndLoadedMidBuildStillFallsUnhurt`; B203 with the doors shut as built: two villagers go into the Healing
+Center and the Manor together, `twoVillagersWalkInByTheHealingCentersShutDoorTogether`,
+`twoVillagersWalkInByTheManorsShutDoorTogether`, and one comes round from the far corner while working out paths to a
+spot it can never reach, `aVillagerFromTheSideWalksInByTheHealingCentersShutDoor`,
+`aVillagerFromTheSideWalksInByTheManorsShutDoor`; and three B220 hand-offs (see [Villager jobs](villager-jobs.md)).
 
 `B261GameTests` (8, B261: a Storehouse Shed missing its hay bale and bottom ladder is repaired from its own chest,
 `aStorehouseShedIsRepairedFromItsOwnChests`; a shed repaired from the chest, barrel, double chest (its second half),

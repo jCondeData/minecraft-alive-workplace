@@ -132,7 +132,7 @@ villager show a plate when it's the crosshair's target (vanilla only does that f
 plate's way.
 
 **A fresh hire starts at once (B220).** A Fisherman handed a rod or a Builder handed a blueprint during their work day
-is at it within a tick or two. A villager taking our longer hours (a hired Fisherman, a job picked with an item) gets a
+is at it within a tick or two, from the shift's first tick (1000) to late in it, and with no word about waiting. A villager taking our longer hours (a hired Fisherman, a job picked with an item) gets a
 new brain, and vanilla's own brain setup has just looked at vanilla's hours; a brain looks at its schedule at most once
 a second, so it used to keep vanilla's activity (late in the day, gossiping) for a second. `VillagerMixin` now lets the
 new hours apply at once (`BrainAccessor`). Outside their hours the hand-off is taken as before, the villager keeps their
@@ -392,6 +392,11 @@ refuse, save and reload, the switch off), `HallPeopleJobGameTests` (10, 40.3: th
 [The Village Hall](village-hall.md)), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
 `HandOffGameTests` (5, B220: a fisherman handed a rod and a builder handed a blueprint are at work within 10 ticks,
 mid-shift and late in it; before the shift and at night they say when they start, and a night's hire stays in bed),
+`QaBuilderBugsGameTests` (3 of its 10, QA for B220 through the right-click: a Builder who has stood by his bench a
+while handed a blueprint at 10500, `aSettledBuilderHandedABlueprintLateInTheShiftStartsAtOnce`, and at 1000, the
+shift's first tick, `aBuilderHandedABlueprintAsTheShiftBeginsStartsAtOnce`, is at work within 10 ticks and told nothing
+about waiting; at 11100, just after the shift, he is told "starts work when their work day begins, in about 12
+minutes." and doesn't work, `aBuilderHandedABlueprintJustAfterTheShiftIsToldWhenHeStarts`),
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,
 save and reload), `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with

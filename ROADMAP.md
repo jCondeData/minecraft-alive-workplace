@@ -1890,7 +1890,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
     nature; an incompatible pair never does; with Cobbreeding a Cobbreeding egg item is given; the keeper's death sends
     both to their PCs;
   - showcase scene `daycare_keeper` (the screen, collecting).
-- [x] **28.13** (approved 2026-10-05) **Builds for the new jobs.** Five builds with an upgrade each (architect skill, STYLE.md, renders), in
+- [x] **28.13** (approved 2026-10-05) (verified 2026-10-27: 4 new tests: each job's Journeyman [Camp Cook, Berry Breeder, Habitat Keeper, Daycare Keeper, Gem Grower] sells their build's blueprint, a Novice/Apprentice doesn't; in all ten builds as drawn the job block takes a villager sneak-clicked with the job's item, at that block [QaJobBuildsGameTests, QaJobBuildsCompatTests].) **Builds for the new jobs.** Five builds with an upgrade each (architect skill, STYLE.md, renders), in
   the Blueprint Table (the Cobblemon ones only with Cobblemon) and sold by their job's Journeyman, each with its job
   block taking a villager with the item:
   - **Camp Kitchen**: an open timber shelter round a Campfire Pot, a grain store and benches; **II**: a Hearty Grain

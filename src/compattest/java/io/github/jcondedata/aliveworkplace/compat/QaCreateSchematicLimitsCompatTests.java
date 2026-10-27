@@ -44,7 +44,7 @@ public class QaCreateSchematicLimitsCompatTests implements FabricGameTest {
 	private static final BlockPos TABLE = new BlockPos(1, 1, 1);
 
 	/** 18 new uploads: the first opening of the table imports 16 and says so 16 times, the next the last 2, a third nothing. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qa_schematic_cap"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qa_schematic_cap")
 	public void eighteenUploadsComeSixteenAtOneOpeningAndTheRestAtTheNext(GameTestHelper helper) {
 		MinecraftServer server = helper.getLevel().getServer();
@@ -78,7 +78,7 @@ public class QaCreateSchematicLimitsCompatTests implements FabricGameTest {
 	}
 
 	/** The cap counts imports, not files: exactly 16 new uploads all come at one opening, each with its own line. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qa_schematic_cap16"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qa_schematic_cap16")
 	public void sixteenUploadsAllComeAtOneOpening(GameTestHelper helper) {
 		MinecraftServer server = helper.getLevel().getServer();
@@ -107,7 +107,7 @@ public class QaCreateSchematicLimitsCompatTests implements FabricGameTest {
 	 * blueprint and isn't tried again at the next opening; a written Schematic naming it is refused the same way. One
 	 * of exactly 8 MB isn't refused for its size (it's read, and as it's no build file, refused for that).
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qa_schematic_big"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qa_schematic_big")
 	public void anUploadOverEightMegabytesIsRefusedBeforeItsRead(GameTestHelper helper) {
 		MinecraftServer server = helper.getLevel().getServer();

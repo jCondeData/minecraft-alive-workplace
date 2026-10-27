@@ -1264,7 +1264,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   and village hall UI can use alot of work, i like the look of the blueprint table"). Done when: both screens use the
   Blueprint Table's layout and drawing (panel, list, detail pane, the same sprites and fonts), every number and
   action they show today is still there, screenshots of both in a showcase scene, GameTests for any changed packets.
-- [x] **26.13** (approved auto 2026-10-17) **Cap fishermen per village** (owner, 2026-10-16, chosen over "barrels only hire near water" and "swap
+- [x] **26.13** (approved auto 2026-10-17) (verified 2026-10-27: 2 new tests [QaFishermanCapGameTests]: a dead fisherman and one outside the village radius free the barrel, one just inside holds it; on top of FishermanCapGameTests' 5. Full build green [4677 + 812]; wiki line added) **Cap fishermen per village** (owner, 2026-10-16, chosen over "barrels only hire near water" and "swap
   storage barrels": storage barrels in builds make most villagers fishermen). Done when: a village takes at most 1
   fisherman, plus 1 more per 10 villagers (a config switch sets it); a jobless villager skips a barrel when the cap is
   reached and looks for another workstation; an existing fisherman over the cap keeps his job (no save breaks).

@@ -58,8 +58,13 @@ dead with no grave they fall 7 days later and the slot is free again.
   player is within 24 blocks (a guest whose needs are all met that evening settles instead). The same Legend doesn't
   visit again until 7 days after the day they came.
 - *Found* (29.9): at a ruined portal, a pillager outpost or a shipwreck, for a player who owns (or is a friend of
-  the owner of) a qualifying hall within 1500 blocks. A small camp is set down with the Legend in it; each structure
-  is used once.
+  the owner of) a qualifying hall within 1500 blocks, with the Legend's slot free and their conditions met (checked
+  every 5 seconds for each player; the sites are the structure tags `#aliveworkplace:legend_sites/ruined_portal`,
+  `/outpost` and `/shipwreck`, so packs can add their own variants). A small camp is set down with the Legend in it;
+  each structure is used once. A traveler by a portal is freed by talking to them, a prisoner caged at an outpost by
+  breaking the cage's bars, and a castaway on the beach near a wreck by handing them a cooked meal. Freed, they thank
+  you, walk off, and come to the village's hall the next morning as a guest; if the slot was filled meanwhile, they
+  don't come, and can be found again later.
 - *Born* (29.7): when the child of two schooled Masters grows up, one time in 20 they are a Rare Legend of a
   parent's trade; otherwise one time in 4 they are Gifted.
 - *Strange mood* (29.10): once a day in a happy village a Master may be seized (one time in 8). Only a Master:
@@ -197,6 +202,10 @@ from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
 `PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
 `RealmLegendsGameTests` (5, 33.23); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
+`QaLegendSitesGameTests` (9, 29.9): the 5-second check on the real tick, the 1500-block reach from both sides, the
+nearest hall, friends one way only, 29.3's slots and conditions at a site, a slot filled before the morning, only a
+cage's own bars freeing its prisoner, a Legend who walked off arriving the next morning, the `legendSites` switch, the
+site tags, and every camp sentence in English.
 QA (lane d): `QaLegendRecordGameTests` (12, 29.3 and 29.5): a Rare per kind per village, a Legendary per world
 (any dimension), the Mythic caps at every rank from both sides, a fallen Legend's slot free on day 7 not day 6 and the
 line written once, the record's save and old-save defaults, many rounds on one day counting one unmet day, the 3 days'

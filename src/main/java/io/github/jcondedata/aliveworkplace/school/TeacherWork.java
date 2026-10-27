@@ -115,8 +115,8 @@ public class TeacherWork extends Behavior<Villager> {
 
 	private void status(Villager villager) {
 		Component title = Words.countedFirst("message.aliveworkplace.teacher.title", ModAttachments.PUPILS_TAUGHT.getOrElse(villager, 0));
-		Component line = inClass > 0 ? Component.translatable("message.aliveworkplace.teacher.state.teaching", inClass)
-			: called > 0 ? Component.translatable("message.aliveworkplace.teacher.state.calling", called)
+		Component line = inClass > 0 ? Words.counted("message.aliveworkplace.teacher.state.teaching", inClass, inClass)
+			: called > 0 ? Words.counted("message.aliveworkplace.teacher.state.calling", called, called)
 			: Component.translatable("message.aliveworkplace.teacher.state.none");
 		WorkerStatus.set(villager, title, -1f, line.copy().withStyle(ChatFormatting.GRAY));
 	}

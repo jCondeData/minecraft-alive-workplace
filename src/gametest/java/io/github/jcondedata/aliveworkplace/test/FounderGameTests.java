@@ -192,7 +192,7 @@ public class FounderGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 			check(helper, Component.translatable("chronicle.aliveworkplace.founder.statue", "Aldric", "Bob"), "Aldric asked for a statue by the hall, and Bob began it");
 			check(helper, Component.translatable("chronicle.aliveworkplace.founder.wagon", "Aldric", "Jesse"), "Aldric sent a Founder's Wagon with Jesse");
 			check(helper, Component.translatable("tooltip.aliveworkplace.founders_wagon.from", "Oakbrook"), "From Oakbrook");
-			helper.assertTrue(Founder.newName("Oakbrook").getString().equals("New Oakbrook"), Founder.newName("Oakbrook").getString());
+			helper.assertTrue(Founder.newName("Oakbrook", net.minecraft.core.BlockPos.ZERO).getString().equals("New Oakbrook"), Founder.newName("Oakbrook", net.minecraft.core.BlockPos.ZERO).getString());
 			check(helper, Component.translatable("book.aliveworkplace.charter.entry", 3, "The village was founded"), "Day 3: The village was founded");
 			check(helper, Component.translatable("book.aliveworkplace.charter.signed", "Aldric", "Oakbrook", 40),
 				"So it was, and so it shall be told.\n\nSigned, Aldric,\nFounder of Oakbrook,\non day 40.");

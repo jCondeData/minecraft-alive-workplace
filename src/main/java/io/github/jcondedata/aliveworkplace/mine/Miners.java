@@ -149,7 +149,7 @@ public final class Miners {
 		}
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
 		if (site.hasShaft()) {
-			tell(player, Component.translatable("message.aliveworkplace.quarry.started_shaft", villager.getDisplayName(), box.minY(), box.getXSpan(),
+			tell(player, io.github.jcondedata.aliveworkplace.work.Words.articled("message.aliveworkplace.quarry.started_shaft", 2, villager.getDisplayName(), box.minY(), box.getXSpan(),
 				box.getZSpan(), site.shaftLength() + 2, SupplyContainers.RADIUS), ChatFormatting.GREEN);
 		} else {
 			tell(player, Component.translatable("message.aliveworkplace.quarry.started", villager.getDisplayName(), box.getXSpan(), box.getZSpan(),

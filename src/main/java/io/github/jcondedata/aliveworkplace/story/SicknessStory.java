@@ -805,7 +805,7 @@ public final class SicknessStory {
 				}
 			}
 		}
-		Component names = gatherers.isEmpty() ? Component.translatable("chronicle.aliveworkplace.someone") : list(gatherers);
+		Component names = gatherers.isEmpty() ? Component.translatable("chronicle.aliveworkplace.someone_mid") : list(gatherers); // mid-sentence (B611)
 		tell(level, hall, "cured", ChatFormatting.GREEN, caught(s).size());
 		chronicle(level, hall, "cured", caught(s).size(), names);
 	}

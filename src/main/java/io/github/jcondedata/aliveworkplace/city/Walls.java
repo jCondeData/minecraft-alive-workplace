@@ -444,7 +444,7 @@ public final class Walls {
 		}
 		entity.setPlan(next);
 		Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.wall_started",
-			steward != null ? steward.getDisplayName() : Component.translatable("steward.aliveworkplace.jobs.someone"), kit.title()));
+			io.github.jcondedata.aliveworkplace.hall.Chronicle.lineStarter(steward), kit.title()));
 		return true;
 	}
 
@@ -711,7 +711,7 @@ public final class Walls {
 		if (!finished(level, hall.get())) {
 			return;
 		}
-		Component who = builder != null ? builder.getDisplayName() : Component.translatable("steward.aliveworkplace.jobs.someone");
+		Component who = io.github.jcondedata.aliveworkplace.hall.Chronicle.lineStarter(builder);
 		kitFor(level, hall.get()).ifPresent(kit -> Chronicle.record(level, hall.get(), Chronicle.Kind.PLANS,
 			Component.translatable("chronicle.aliveworkplace.wall_built", who, kit.title())));
 	}

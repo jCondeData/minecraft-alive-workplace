@@ -65,7 +65,7 @@ Robes. The vanilla stand-ins stay, so a village without 1.8's luxury trades stil
 
 **The Gifted (29.6, 29.7).** One villager in `giftedChance` (30) has a gift, decided by who they are, so every
 existing villager already has theirs and nothing is migrated: Prodigy (learns three times as fast), Iron Will (never
-panics), Silver Tongue (trades 20% cheaper), Night Owl (works at night), Lucky, Hardy (never ill, twice the health),
+panics), Silver Tongue (trades 20% cheaper), Night Owl (works at night, builders and miners too, once they have a trade), Lucky, Hardy (never ill, twice the health),
 Beloved (neighbors are happier), Born Leader (workers of their trade nearby 10% faster).
 
 ## Switches
@@ -168,6 +168,16 @@ QA (lane d): `QaLegendRecordGameTests` (12, 29.3 and 29.5): a Rare per kind per 
 (any dimension), the Mythic caps at every rank from both sides, a fallen Legend's slot free on day 7 not day 6 and the
 line written once, the record's save and old-save defaults, many rounds on one day counting one unmet day, the 3 days'
 grace, a strike partly met going on, the `legendNeeds` and Legends switches, every record and strike sentence.
+QA (lane d, 29.2, 29.4, 29.6): `QaLegendEngineGameTests` (6): a malformed Legend file fails alone (no rarity, an
+unknown rarity, job, way or luxury, a pace below 1, a typo in a way's conditions) while a minimal one loads; the Old
+Sage keeps the Legend job as a Master where a jobless farmer is reset; a pace power reaches a builder exactly 8 blocks
+away but not 9, and never a farmer; a dead Legend's aura is gone by the next 200-tick refresh; condition numbers one
+short and exactly met, and a guest Legend never counts as settled; the Legends page's Mythic line at each rank.
+`QaGiftedGameTests` (7): `giftedChance` 1 gifts everyone and 10 about one in ten, keeping everyone Gifted at 30; a
+malformed gift file fails; a `gifted` attachment of "none" or a removed gift makes nobody Gifted; the hall's gold line
+for each of the four; Silver Tongue on 5, 20 and 64 emeralds (4, 16, 52) and gone with `giftedChance` 0; the Night
+Owl's hours at every edge; the night schedule for a miner, never for a child, a nitwit or the jobless, kept through a
+save and dropped when the gift goes.
 
 Showcase scenes: `legend`, `legend_announce`, `legends_hall`, `legend_guest`, `legend_sites`, `legend_strike`,
 `strange_mood`, `gifted`, `gifted_born`, `research_trees`, `legend_architect`, `legend_pathfinder`, `legend_sage`,

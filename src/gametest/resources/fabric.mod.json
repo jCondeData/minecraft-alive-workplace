@@ -518,6 +518,8 @@
 			"io.github.jcondedata.aliveworkplace.test.PieceLooksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendNeedsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendRecordGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendEngineGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGiftedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftedBornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendGuestsGameTests",

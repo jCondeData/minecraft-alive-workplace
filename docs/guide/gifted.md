@@ -22,8 +22,8 @@ on the [Village Hall](village-hall.md)'s list.
 |---|---|
 | Prodigy | learns three times as fast |
 | Iron Will | never panics, and keeps working through raids and the bell |
-| Silver Tongue | every trade with them is 20% cheaper |
-| Night Owl | works from dusk to dawn, sleeps from mid-morning to mid-afternoon |
+| Silver Tongue | every trade with them is 20% cheaper (5 emeralds become 4, 20 become 16) |
+| Night Owl | works from dusk to dawn, sleeps from mid-morning to mid-afternoon (builders and miners too; a child or a villager without a trade keeps everyone's hours) |
 | Lucky | luck +3 on every find their work makes |
 | Hardy | never falls ill, and has twice a villager's health |
 | Beloved | everyone whose bed is within 16 blocks of theirs is happier |

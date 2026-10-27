@@ -56,10 +56,7 @@ dead with no grave they fall 7 days later and the slot is free again.
 - *Visit* (29.8): once a day a village with no guest may get one, at the inn, the market, a festival, the Chapel or
   the hall, one time in four by default. A guest stays up to 3 days and leaves on the evening of the third, once no
   player is within 24 blocks (a guest whose needs are all met that evening settles instead). The same Legend doesn't
-  visit again until 7 days after the day they came. A guest takes no job and leaves every workstation free until they
-  settle, and settles in the village that hosted them. A guest who is killed frees the village for another the next
-  morning. A Legendary who is a guest in one village doesn't visit a second, and never settles where their one slot in
-  the world is already taken.
+  visit again until 7 days after the day they came.
 - *Found* (29.9): at a ruined portal, a pillager outpost or a shipwreck, for a player who owns (or is a friend of
   the owner of) a qualifying hall within 1500 blocks, with the Legend's slot free and their conditions met (checked
   every 5 seconds for each player; the sites are the structure tags `#aliveworkplace:legend_sites/ruined_portal`,
@@ -269,10 +266,6 @@ leaving line in English; every need met that evening settles them instead; the 7
 no, day 12 yes for a day-5 visit); a way's chance of 0 never and 1 always (over 1 read as 1); a Legendary settled in
 another village keeps them away while a Rare there doesn't; the terms screen's lines in English ("2 days left of my
 stay", "My last day here", a Legend with no powers).
-`QaLegendGuestsBugTests` (4): a stonecutter beside a guest stays free for 200 ticks and is theirs when they settle as
-a Master (B584); a killed guest's village gets the next Legend the following morning (B585); a guest standing nearer
-another hall settles in, and takes the slot of, the village that hosted them (B586); one Legendary with two willing
-villages settles in at most one (B587).
 `QaGiftedGameTests` (7): `giftedChance` 1 gifts everyone and 10 about one in ten, keeping everyone Gifted at 30; a
 malformed gift file fails; a `gifted` attachment of "none" or a removed gift makes nobody Gifted; the hall's gold line
 for each of the four; Silver Tongue on 5, 20 and 64 emeralds (4, 16, 52) and gone with `giftedChance` 0; the Night

@@ -5275,7 +5275,6 @@
   "screen.aliveworkplace.realm.invite_left.one": "Waiting for an answer: %1$s day and %2$s hours left",
   "screen.aliveworkplace.realm.invite_left.rest_one": "Waiting for an answer: %1$s days and %2$s hour left",
   "screen.aliveworkplace.realm.invite_left.one.rest_one": "Waiting for an answer: %1$s day and %2$s hour left",
-  "screen.aliveworkplace.realm.invite_left.within_hour": "Waiting for an answer: less than an hour left",
   "screen.aliveworkplace.realm.accept": "Join %s",
   "screen.aliveworkplace.realm.invite_from": "%1$s invites you, from %2$s, the capital",
   "screen.aliveworkplace.realm.accept_how": "Click to accept: this village joins the realm",

@@ -129,10 +129,6 @@ public final class LegendSlots {
 
 	/** A Legend died (a villager, or a zombie villager): their grave keeps their slot; with none, its clock starts. */
 	public static void onDeath(ServerLevel level, LivingEntity entity, @Nullable BlockPos grave) {
-		LegendData guest = entity.isRemoved() ? null : ModAttachments.LEGEND.get(entity);
-		if (guest != null && guest.guest()) {
-			LegendGuests.died(level, guest.hall(), entity.getUUID()); // B585: the village is free for another guest
-		}
 		if (entity.isRemoved() || !ModAttachments.LEGEND.has(entity)) {
 			return; // turned into a zombie villager (onConversion has them), or not a Legend
 		}

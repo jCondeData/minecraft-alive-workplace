@@ -222,8 +222,8 @@ public final class LegendGuests {
 			for (Condition c : legend.conditions()) {
 				met &= c.met(level, hall);
 			}
-			if (met && LegendSlots.whyNot(level, hall, legend, null).isEmpty() && !(legend.rarity() == Rarity.LEGENDARY && guestAnywhere(level, legend))) {
-				out.add(legend); // B587: a Legendary (one per world) already a guest in another village doesn't come to a second
+			if (met && LegendSlots.whyNot(level, hall, legend, null).isEmpty()) {
+				out.add(legend);
 			}
 		}
 		return out;
@@ -315,24 +315,6 @@ public final class LegendGuests {
 		return out;
 	}
 
-	/** Whether {@code legend} is a guest in some village now (a loaded villager, in any dimension). */
-	static boolean guestAnywhere(ServerLevel level, Legend legend) {
-		for (ServerLevel l : level.getServer().getAllLevels()) {
-			if (!l.getEntities(EntityType.VILLAGER, v -> v.isAlive() && isGuest(v) && legend.id().equals(ModAttachments.LEGEND.get(v).id())).isEmpty()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/** A guest died (B585): the village round {@code hall} has no guest any more, so another may come the next morning. */
-	public static void died(ServerLevel level, Optional<BlockPos> hall, UUID villager) {
-		VillageHallBlockEntity entity = hall.map(h -> hall(level, h)).orElse(null);
-		if (entity != null && entity.legendGuests().guest().map(g -> g.villager().equals(villager)).orElse(false)) {
-			entity.setLegendGuests(entity.legendGuests().withGuest(Optional.empty()));
-		}
-	}
-
 	/** Whether a guest is staying (one who is gone, unloaded past their last day or no longer a guest, is let go). */
 	static boolean staying(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long today) {
 		Optional<Guest> g = entity.legendGuests().guest();
@@ -368,8 +350,6 @@ public final class LegendGuests {
 			VillagerType.JUNGLE, VillagerType.SWAMP};
 		// A guest takes no job: a nitwit until they settle (then a Master of the Legend's trade).
 		guest.setVillagerData(guest.getVillagerData().setType(types[random.nextInt(types.length)]).setProfession(VillagerProfession.NITWIT));
-		// B584: the brain was built for a jobless villager, who looks for a workstation; rebuilt as a nitwit's, it never claims one
-		guest.refreshBrain(level);
 		String name = legend.names().isEmpty() ? "" : legend.names().get(random.nextInt(legend.names().size()));
 		guest.setCustomName(name.isEmpty() ? legend.titleText() : Component.translatable(name));
 		guest.setPersistenceRequired();
@@ -456,10 +436,9 @@ public final class LegendGuests {
 		if (data == null) {
 			return;
 		}
-		if (data.unmet().isEmpty() && settle(level, hall, guest)) {
-			return;
-		}
-		if (stayOver(level, data) && level.getNearestPlayer(guest, OUT_OF_SIGHT) == null) {
+		if (data.unmet().isEmpty()) {
+			settle(level, hall, guest);
+		} else if (stayOver(level, data) && level.getNearestPlayer(guest, OUT_OF_SIGHT) == null) {
 			leave(level, hall, guest);
 		}
 	}
@@ -552,12 +531,9 @@ public final class LegendGuests {
 		if (legend == null || !data.guest() || bed.isEmpty()) {
 			return false;
 		}
-		if (LegendSlots.whyNot(level, hall, legend, guest.getUUID()).isPresent()) {
-			return false; // B587: the slot was taken while they stayed (a Legendary settled elsewhere): they don't settle, and leave in time
-		}
 		level.getPoiManager().take(h -> h.is(PoiTypes.HOME), (h, p) -> p.equals(bed.get()), bed.get(), 1);
 		guest.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), bed.get()));
-		Legends.make(level, guest, legend, "visit", Optional.of(hall)); // B586: in the village that hosted them, not the nearest hall
+		Legends.make(level, guest, legend, "visit");
 		LegendData settled = ModAttachments.LEGEND.get(guest);
 		ModAttachments.LEGEND.set(guest, new LegendData(settled.id(), data.name(), false, Optional.of(hall), settled.since(), -1, Map.of(), -1, -1,
 			data.way()));

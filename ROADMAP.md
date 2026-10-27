@@ -1212,7 +1212,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   uploaded builds too, with no image files to keep), that turns slowly and can be dragged to look round. Large builds
   scale to fit. Done when: the preview in the table's screen in a scene `table_preview` with stills of a small house, a
   large build and an imported one; it costs nothing on the server; the guide's Blueprint Table page says so.
-- [x] **26.10** (approved 2026-10-18) **The Blueprint Table is a collection** (owner's playtest, 2026-10-15: builders sell blueprints the Table
+- [x] **26.10** (approved 2026-10-18) (verified 2026-10-27: on main fa1177333: QaScanUnlockedGameTests [a player's Scan Tool scan is unlocked on a village Table with unlocks on and Get Blueprint hands it out; kills a mutant locking scans] with BlueprintUnlocksGameTests 7 and QaBlueprintUnlocksGameTests 7 green in the full build; blueprint-library.md and the guide's Blueprint Table page say scans are always unlocked. B517 stays open: B599) **The Blueprint Table is a collection** (owner's playtest, 2026-10-15: builders sell blueprints the Table
   already gives away, so buying them is pointless). Each village (its Village Hall) keeps the builds its Table has
   unlocked. The basics start unlocked (about 15 to 20: the Starter Cottage, the first tier of each home, one tier-I
   workplace per basic job; a data list, `blueprint_unlocks/starting.json`); everything else starts locked and shows

@@ -116,7 +116,7 @@ once.
 - **Walking up**: they walk to within about 2 blocks, looking at the player, and stay by them to the end. If they
   can't get within 3.5 blocks in 5 seconds (a fence, a river), they tell it from where they stand.
 - **Stopping**: the player more than 8 blocks away, dead or in spectator; the villager asleep, at work (a work line,
-  or their work, panic or hide activity), dead; `heartEvents` or `friendship` switched off. Nothing of a half-told
+  or their work, panic or hide activity), dead or gone (unloaded); `heartEvents` or `friendship` switched off. Nothing of a half-told
   event is kept, and a telling isn't saved: after a restart they start again.
 - **Which event**: the lowest heart level the player has reached and hasn't been told an event of. One event per
   level and player: of the events for that level whose conditions hold, the one with the most conditions (the story
@@ -269,5 +269,7 @@ days ago but not 6, illness of self, child, parent and partner) and which comes 
 names and the wedding day; each dream for its facts (level, job, home tier, rank, mood); each family's keepsake with
 its item, name, enchantment and lore, and the recipe book's pages; once per player through a save, a data pack's new
 10-heart event, a full inventory and the switch off; the shipped set, every sentence's text, the families against the
-taste files, and the new conditions. `KeepsakeCompatTests` (with Cobblemon): the Premier Ball. Showcase scene
+taste files, and the new conditions. `QaHeartsGiftsGameTests` (QA, 3 heart-event tests): a telling cut by the villager dying or unloading, or the listener
+turning spectator, counts nothing and starts again from the first line; a villager already at ten hearts tells every
+level's event in turn, lowest first, then gives her keepsake once. `KeepsakeCompatTests` (with Cobblemon): the Premier Ball. Showcase scene
 `heart_events_work` (a villager of each family beginning their work story).

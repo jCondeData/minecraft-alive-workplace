@@ -28,7 +28,7 @@ with a line and stays in your hand. A villager without a name shakes their head.
   its kitchens and Storehouses); else the villager's own pockets; and only if those are full too, the ground at
   their feet. The wrapping is used up.
 - **Bottle o' Enchanting**: liked unless a taste file says otherwise, and a villager with a trade learns from it
-  (15 XP, the bottle used up). Someone without a trade just keeps it.
+  (15 XP, the bottle used up). Someone without a trade (the jobless, nitwits and children) just keeps it.
 - **Who takes gifts**: named villagers in a village with a hall (the ones that keep friendships). Others shake
   their head and the Gift stays in your hand. In creative the Gift isn't used up.
 - **The recipe** is a special one, like vanilla's map cloning: exactly one Gift Wrap and one other item (not Gift
@@ -109,4 +109,6 @@ Items `aliveworkplace:gift_wrap` and `aliveworkplace:gift`; recipes `aliveworkpl
 `GiftGameTests` (12 tests): the recipes and the kept item, the tooltip, each band's points through a real
 right-click, the limits and their lines with a save and reload, the name day, where the item goes, the Bottle o'
 Enchanting, unnamed villagers, `friendship` off, the most-specific rule, a data pack's files, and the whole first
-set. Showcase scene `gifts`.
+set. `QaHeartsGiftsGameTests` (QA, 3 gift tests): the name day tripling every band (disliked −60 and hated −120
+too) and only on that day, a worker's bottle on hers; the day and week limits kept per player and per villager, a
+refused gift staying in hand with its line; a nitwit's and a child's tastes, and no XP for a child. Showcase scene `gifts`.

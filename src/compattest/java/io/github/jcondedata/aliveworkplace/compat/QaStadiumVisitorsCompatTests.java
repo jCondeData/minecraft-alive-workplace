@@ -111,6 +111,7 @@ public class QaStadiumVisitorsCompatTests implements FabricGameTest {
 		long day = today % 2 == 0 ? today : today + 1;
 		StadiumDays.Spots spots = StadiumDays.spots(level, site).orElseThrow();
 		StadiumDays.tick(level, day, StadiumDays.AFTERNOON);
+		boolean loadedByIt = level.isLoaded(far);
 		List<Villager> visitors = StadiumDays.visitors(level, site, spots);
 		helper.assertTrue(visitors.size() >= 2 && visitors.size() <= 4, "visitors: " + visitors.size());
 		List<Villager> fromRiverton = visitors.stream().filter(v -> StadiumDays.visitor(v).home().equals(Optional.of(far))).toList();
@@ -126,7 +127,7 @@ public class QaStadiumVisitorsCompatTests implements FabricGameTest {
 					"the rest aren't travellers of Journeyman to Master: " + names);
 			}
 		}
-		// (B644: today the Stadium Day loads the far partner's chunk to name its visitor; tests/stadium-far-chunk checks it)
+		helper.assertFalse(loadedByIt, "the Stadium Day loaded the far partner's chunk (1,200 blocks off) to name its visitor"); // B644
 		StadiumDays.tick(level, day, StadiumDays.DUSK);
 		helper.succeed();
 	}

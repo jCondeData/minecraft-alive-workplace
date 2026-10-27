@@ -4155,7 +4155,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     can give but not take; the movements are listed right;
   - it survives save and reload;
   - showcase scene `realm_treasury` (the icon and its tooltip).
-- [x] **33.14** (approved 2026-10-12) **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
+- [x] **33.14** (approved 2026-10-12) (verified 2026-10-27: 6 new tests [QaRealmLegendsBuildsGameTests]: Royal Hall cap at 32 vs 33 blocks and diagonal, I+II don't stack [x3 not x6], unfinished/member's/other-dimension hall gives nothing, taking it down returns the cap, every style is a hall on the map; Colony Camp use covered by ColonyArrivalGameTests; a hall broken by hand [not taken down] still counts, per the wiki) **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
   generator, checked against `STYLE.md` in renders, in all five styles:
   - **Colony Camp** (`camp/colony_camp`, about 15 x 6 x 13, placed at once like the settlers' camp): two covered
     wagons, a Village Hall under a canvas awning on a timber platform, a Blueprint Table with a lamp, a stack of

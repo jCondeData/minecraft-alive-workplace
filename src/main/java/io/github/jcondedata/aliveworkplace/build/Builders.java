@@ -848,7 +848,8 @@ public final class Builders {
 			io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.onTakenDown(level, site.structure(), site.placement()); // 28.14
 		} else {
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
-			BuildSiteManager.get(level).setFurniture(site.placement(), site.furniture()); // 37.3: upkeep keeps what was built
+			BuildSiteManager.get(level).setFurniture(site.placement(), site.isRefresh() // 37.3: upkeep keeps what was built
+				? Refreshes.refreshedFurniture(level, site.structure(), site.furniture()) : site.furniture()); // B642: a refresh's, by today's spots
 			io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, site.structure(), site.placement(), villager); // 39.4: start a windmill
 			io.github.jcondedata.aliveworkplace.mechanic.Contraptions.finished(level, site, plan, villager); // 39.5: does it turn?
 			io.github.jcondedata.aliveworkplace.city.Signposts.finished(level, site.structure(), site.placement()); // a Signpost's boards (36.4)

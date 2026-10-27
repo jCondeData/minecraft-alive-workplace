@@ -23,6 +23,10 @@ asks for the steps, `latest.log` and any crash report).
   the spiral stair goes all the way down (36.22).
 
 ### Fixed
+- Refresh to the latest look no longer leaves a furnished old house in a mess: a house furnished before its drawing was
+  redrawn now has its old table, chairs, clock and beds taken away where they stand (their items to the store), and
+  today's spots are furnished once, so there is no second table and no leftover clock; afterwards the house matches a
+  newly built one, turned or mirrored too (B642).
 - The Village Hall's golem list says "...and 1 more golem" with one golem over the shown seven (B629).
 - Old houses measure right beside a tall dead trunk: a bare log column taller than a house can be, standing against the wall, is now judged from its root and left out wherever the measuring reaches it, so renewing the house no longer takes the trunk's upper part down with it (B599).
 - A finished Wonder gets its festival that evening even when another festival was already planned for a later day; the later one still comes after it (B605)

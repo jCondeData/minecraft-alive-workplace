@@ -126,8 +126,42 @@ public final class Refreshes {
 
 	/** The building's latest drawing as it would be built (its furniture as it was built with). */
 	private static Optional<Blueprint> current(ServerLevel level, BuildSiteManager.Finished f) {
-		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = BuildSiteManager.get(level).furniture(f.placement());
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = refreshedFurniture(level, f.structure(),
+			BuildSiteManager.get(level).furniture(f.placement()));
 		return BlueprintLibrary.get(level, f.structure()).map(b -> furniture.apply(b, f.structure()));
+	}
+
+	/**
+	 * B642: the furniture {@code asBuilt} (the build's saved choice, by the spots file of the day it was furnished)
+	 * brought to the blueprint's spots today: the pieces standing on a spot that is still one kept, every other spot of
+	 * today's file furnished as a new build would be. A vanilla build stays vanilla.
+	 */
+	public static io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice refreshedFurniture(ServerLevel level, ResourceLocation structure,
+																								io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice asBuilt) {
+		if (asBuilt.spots().isEmpty()) {
+			return asBuilt;
+		}
+		List<io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot> today = io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture.of(structure);
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice fresh = io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.choose(today,
+			io.github.jcondedata.aliveworkplace.furnish.Furnishings.MODS, io.github.jcondedata.aliveworkplace.furnish.Furnishings.ENABLED, false,
+			io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.hasPokeBallDesks(structure));
+		return asBuilt.refreshedFor(today, fresh);
+	}
+
+	/**
+	 * B642: an older drawing as the build was built from it: its own blocks (from the modded library's older copy for a
+	 * modded build, never today's copy), with the pieces it was furnished with where they were put.
+	 */
+	private static Optional<Blueprint> asBuilt(ServerLevel level, ResourceLocation structure, String key,
+											   io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		return history(level.getServer(), historyId(structure, furniture)).stream().filter(o -> o.key().equals(key)).findFirst()
+			.map(o -> furniture.applyAsBuilt(o.drawing()));
+	}
+
+	/** Whose older drawings a build's are: the blueprint's own, or (37.12) its modded library copy's ({@code modded/<path>}). */
+	private static ResourceLocation historyId(ResourceLocation structure, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		return furniture.modded() ? ResourceLocation.fromNamespaceAndPath(structure.getNamespace(),
+			io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.PREFIX + structure.getPath()) : structure;
 	}
 
 	/** What stays whatever the drawings say: a container (and what's in it), a bed someone sleeps in, a job block, a builder's bench. */
@@ -138,15 +172,19 @@ public final class Refreshes {
 			|| PoiTypes.forState(world).map(h -> h.is(PoiTypeTags.ACQUIRABLE_JOB_SITE)).orElse(false);
 	}
 
-	/** The refresh's work from the older drawing {@code from} (an ordinary repair if that drawing is gone). */
-	static BuildPlan plan(ServerLevel level, Blueprint current, ResourceLocation structure, String from, BlueprintData.Placement placement,
+	/**
+	 * The refresh's work from the older drawing {@code from} (an ordinary repair if that drawing is gone). {@code drawn} is
+	 * the blueprint as drawn today (unfurnished); {@code furniture} the build's saved choice, as it was built.
+	 */
+	static BuildPlan plan(ServerLevel level, Blueprint drawn, ResourceLocation structure, String from, BlueprintData.Placement placement,
 						  @Nullable io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
-		Optional<Old> old = history(level.getServer(), structure).stream().filter(o -> o.key().equals(from)).findFirst();
-		if (old.isEmpty()) {
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice built = furniture == null ? io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.VANILLA : furniture;
+		Blueprint current = refreshedFurniture(level, structure, built).apply(drawn, structure);
+		Optional<Blueprint> was = asBuilt(level, structure, from, built);
+		if (was.isEmpty()) {
 			return BuildPlan.repair(current, placement, level, BuildSiteManager.get(level).gaveUp(placement));
 		}
-		Blueprint was = furniture == null ? old.get().drawing() : furniture.apply(old.get().drawing(), structure);
-		return BuildPlan.refresh(current, was, placement, level, (pos, state) -> kept(level, pos, state));
+		return BuildPlan.refresh(current, was.get(), placement, level, (pos, state) -> kept(level, pos, state));
 	}
 
 	/**
@@ -159,16 +197,17 @@ public final class Refreshes {
 		if (current.isEmpty()) {
 			return Optional.empty();
 		}
-		List<Old> olds = history(level.getServer(), f.structure());
-		if (olds.isEmpty()) {
-			return Optional.empty();
-		}
 		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = BuildSiteManager.get(level).furniture(f.placement());
+		List<Old> olds = history(level.getServer(), historyId(f.structure(), furniture));
+		if (olds.isEmpty()) {
+			return Optional.empty(); // (a modded library build: its copy's older drawings aren't shipped yet)
+		}
 		Map<BlockPos, BlockState> now = BuildPlan.create(current.get(), f.placement()).targets();
 		Old best = null;
 		int bestScore = 0;
 		for (Old old : olds) {
-			Map<BlockPos, BlockState> was = BuildPlan.create(furniture.apply(old.drawing(), f.structure()), f.placement()).targets();
+			// B642: as it was built, its pieces where they were put (the spots of their day), not as today's spots would furnish it
+			Map<BlockPos, BlockState> was = BuildPlan.create(furniture.applyAsBuilt(old.drawing()), f.placement()).targets();
 			int score = score(level, was, now);
 			if (score > bestScore) {
 				best = old;
@@ -178,7 +217,7 @@ public final class Refreshes {
 		if (best == null) {
 			return Optional.empty();
 		}
-		BuildPlan plan = plan(level, current.get(), f.structure(), best.key(), f.placement(), furniture);
+		BuildPlan plan = plan(level, BlueprintLibrary.get(level, f.structure()).orElseThrow(), f.structure(), best.key(), f.placement(), furniture);
 		int[] added = new int[3];
 		int[] removed = new int[3];
 		for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {

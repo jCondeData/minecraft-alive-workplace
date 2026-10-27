@@ -5321,10 +5321,10 @@ final class JobScenes {
 					}
 				}, 40)),
 			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
-		// Bring an old house up to its latest look (ROADMAP 36.21): a Stone House built from its first drawing stands north of
+		// Bring an old house up to its latest look (ROADMAP 36.21, B642): a Stone House built from its drawing before B260 stands north of
 		// the hall; the Repairs page offers "Refresh to the latest look", a click shows what changes, the button sends Bram,
 		// and the last still shows the house once he's done.
-		SCREENS.put("refresh_old_house", new Screen("a Stone House built from its first drawing was offered a refresh on the hall's Repairs page, "
+		SCREENS.put("refresh_old_house", new Screen("a Stone House built from its drawing before B260 was offered a refresh on the hall's Repairs page, "
 			+ "showed what changes, and Bram brought it up to its latest look",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
@@ -5334,8 +5334,9 @@ final class JobScenes {
 				net.minecraft.resources.ResourceLocation house = StarterBlueprints.STONE_HOUSE.id();
 				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin,
 					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
-				var first = io.github.jcondedata.aliveworkplace.build.Refreshes.olderDrawing(level.getServer(), house, "25c521dcd");
-				Showcase.check(first.isPresent(), "the Stone House's first drawing is shipped");
+				// B642: the drawing before B260, the one the owner's live Stone House was built from
+				var first = io.github.jcondedata.aliveworkplace.build.Refreshes.olderDrawing(level.getServer(), house, "aec09cb26");
+				Showcase.check(first.isPresent(), "the Stone House's drawing before B260 is shipped");
 				if (first.isEmpty()) {
 					return;
 				}

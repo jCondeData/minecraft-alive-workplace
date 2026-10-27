@@ -284,6 +284,7 @@ public final class BuildSite {
 					: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(structure, level, placement.origin()); // 37.4: a partner's Trainer's room
 				onChange.run();
 			}
+			Blueprint drawn = blueprint.get();
 			blueprint = Optional.of(furniture.apply(blueprint.get(), structure));
 			if (cellarOnly) {
 				blueprint = Optional.of(Cellars.cellarOnly(blueprint.get())); // 36.7: the cellar and the way down, nothing above
@@ -291,7 +292,7 @@ public final class BuildSite {
 			int depth = foundation && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
 			int margin = levelGround && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
-				: repair && refresh != null ? Refreshes.plan(level, blueprint.get(), structure, refresh, placement, furniture)
+				: repair && refresh != null ? Refreshes.plan(level, drawn, structure, refresh, placement, furniture) // B642: furnished as built, and anew
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level, BuildSiteManager.get(level).gaveUp(placement))
 				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
 			if (kineticOrder && !deconstruct && !repair) {

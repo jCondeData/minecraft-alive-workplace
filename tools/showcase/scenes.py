@@ -514,9 +514,10 @@ SCENES = [
     # Bring an old house up to its latest look (ROADMAP 36.21): a Stone House built from its first drawing, the hall's Refresh
     # button with what changes, then the house once Bram has refreshed it
     S("refresh_old_house", "Village Hall", "Refresh an old house to its latest look",
-      "A Stone House built from its first drawing was offered Refresh to the latest look on the hall's Repairs page; a click "
-      "showed what changes, the button sent Bram, and he took the old leftovers away and put the new pieces in", 230,
-      [("01_old_house", "Before: the Stone House as its first drawing built it"), ("02_repairs_page", "The Repairs page: the house, to refresh"),
+      "A Stone House built from its drawing before B260 (as on the live server) was offered Refresh to the latest look on the "
+      "hall's Repairs page; a click showed what changes, the button sent Bram, and he took the old leftovers away and put the "
+      "new pieces in, nothing doubled", 230,
+      [("01_old_house", "Before: the Stone House as its drawing before B260 built it"), ("02_repairs_page", "The Repairs page: the house, to refresh"),
        ("03_what_changes", "What changes, and the Refresh to the latest look button"), ("04_after", "After: the house in its latest look")]),
     # Upgrade a built home from the Village Hall (ROADMAP 36.14): the Upgrades page, a blocked row, and a click sending a Builder
     S("hall_upgrade", "Village Hall", "Upgrading a built home from the hall",

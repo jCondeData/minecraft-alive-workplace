@@ -2574,7 +2574,7 @@ MarketDays) and research/.
   and is replaced 2 days after it dies; a foal's stats are at least its best parent's and never over vanilla's
   highest; cavalry picks the bred horses; showcase scene `legend_beastmaster` (GIF: a guard and a war dog against
   zombies).
-- [x] **29.21** (approved 2026-10-06) **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
+- [x] **29.21** (approved 2026-10-06) (verified 2026-10-27: QaPokemonLegends1027CompatTests [5, all pass on runCompatGameTest, 833 green]: sent-out Pokemon never befriended, offline owner's befriended Pokemon waits in their PC with its chronicle line, a pasture outside the village not counted, an unpaid stone costs nothing and stays one a day [800 CobbleDollars], hints show only the clicker's party; wiki legends.md gains the two Pokemon Legends' powers. Last nightly mutation: no survivor in their code.) **The Pokémon Professor (Legendary, with Cobblemon).** Comes: a guest at the inn once the village's
   Pasture Blocks hold 25 Pokémon of 10 types (the condition `pastured_pokemon`, through a new extension point
   `legend/PokemonCensus` filled in `compat/cobblemon/`; without Cobblemon the file doesn't load). Trade:
   `aliveworkplace:legend`, at a lectern. Likes: books. Powers:
@@ -2591,7 +2591,7 @@ MarketDays) and research/.
   Outfit: a white lab coat. Done when: compat GameTests (`runCompatGameTest`): the census; hints that match the
   Pokémon's real IVs, nature, ability and EVs; each species logged once; every topic's unlock and effect; without
   Cobblemon nothing loads or errors; showcase scene `legend_professor` (Cobblemon: the hints, the Pokédex tab).
-- [x] **29.22** (approved 2026-10-06) **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
+- [x] **29.22** (approved 2026-10-06) (verified 2026-10-27: QaPokemonLegends1027CompatTests [5, all pass on runCompatGameTest, 833 green]: sent-out Pokemon never befriended, offline owner's befriended Pokemon waits in their PC with its chronicle line, a pasture outside the village not counted, an unpaid stone costs nothing and stays one a day [800 CobbleDollars], hints show only the clicker's party; wiki legends.md gains the two Pokemon Legends' powers. Last nightly mutation: no survivor in their code.) **The Pokémon Ranger (Rare, with Cobblemon).** Comes: a guest at the Village Hall, 1 time in 3 a
   morning, while an Alpha Pokémon is within 96 blocks of the hall (Cobblemon's own Alpha mark if the installed version
   has one, checked with the engineer skill's `api.py`; otherwise a wild Pokémon of level 50 or more): the condition
   `alpha_near`, through a new extension point `legend/WildPokemon` filled in `compat/cobblemon/`. Trade:

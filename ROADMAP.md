@@ -2289,7 +2289,7 @@ MarketDays) and research/.
   - the terms screen's lines match the needs; a guest survives a save and reload mid-stay;
   - showcase scene `legend_guest` (GIF: a test Legend arrives at the inn, the terms screen, they settle once a home is
     ready).
-- [x] **29.9** (approved 2026-10-05) **Legends found in the world.** The second way. Every 5 seconds per player,
+- [x] **29.9** (approved 2026-10-05) (verified 2026-10-27: lane D QA 2026-10-27: QaLegendSitesGameTests [9: 5-second check and its 3 lookups, 1500-block reach both sides and diagonal, 29.3 slot rules at a site, slot filled before arrival, only the cage's own bars free, every camp sentence, legendSites switch, next-morning arrival through a save, site tags]; legends.md updated; full build green 4423 + 793) **Legends found in the world.** The second way. Every 5 seconds per player,
   `StructureManager.getStructureWithPieceAt` asks whether they stand in a structure of a site tag (three cheap lookups
   and no area scans; tags, so packs can add their own variants, such as Repurposed Structures'):
   - `#aliveworkplace:legend_sites/ruined_portal` (vanilla's ruined portals): a traveller's camp beside the portal (a
@@ -2311,7 +2311,7 @@ MarketDays) and research/.
     lookups run with nobody online;
   - renders of the three camps in the review package; showcase scene `legend_sites` (the three camps, and a GIF of the
     cage opened).
-- [x] **29.10** (approved 2026-10-05) **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
+- [x] **29.10** (approved 2026-10-05) (verified 2026-10-27: lane D QA 2026-10-27: QaStrangeMoodGameTests [7: only a Master, the daily round's blocks and never two moods, materials on the last day, two of three never, the Masterwork to whoever brought most or the chest, 3 beauty in a frame and 0 in a chest, a broken workstation, sulk days in English]; legends.md updated; full build green) **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
   (29.5's test) with no mood already on, a Master whose trade a Legend's `inspired` way names may be seized by a
   strange mood, 1 time in 8, if the village meets that Legend's conditions and its slot is free (never during a raid
   or a festival; config `strangeMoods`). The villager (attachment `STRANGE_MOOD`):

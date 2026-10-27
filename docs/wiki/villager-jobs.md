@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22
 
 ## What a player sees
 
@@ -197,6 +197,23 @@ it is there, so a Miner saved and loaded mid-way simply starts it again. Without
 ("needs a pickaxe"), and the Storehouse board asks for what they lack, the cobblestone first and then the sticks,
 beside "A pickaxe" (which the Toolsmith may still make): handed over, it goes into their chests and they make it.
 
+**Miners dig deeper as they level up (36.22).** The Quarry Marker's depths go 4, 8, 16, 32, 64 (every miner), then
+96 (Journeyman and up), 128 (Expert and up) and "down to just above bedrock" (Master only: the world's floor plus 5,
+so Y=-59 in the Overworld), then the strip mines. The deeper choices say the level they need when cycled ("Dig 128
+blocks deep (Expert Miners and up).") and in the tooltip. Handed to a miner whose level doesn't reach that far, the
+quarry is started anyway but cut off at their depth (64 for a Novice or Apprentice, counted from the marked top), and
+the player reads "Dara is at Novice level, so they'll stop 64 blocks down for now. Digging all 128 blocks needs Expert
+level; if they get there before they finish, they'll keep going down." Nothing below that is dug. A miner who levels
+up while the quarry is open (every work tick `Miners.deepen` checks) takes the floor down as far as the new level
+reaches, and the owner reads "Dara reached Expert level and will keep digging, down to 128 blocks deep." The pit is
+dug top-down, so deepening only adds layers at the end: the blocks already visited keep their place and the spiral
+stair carries on down to the new floor. A quarry finished short of the marker's depth says so ("...stopped 64 blocks
+down: digging all 128 blocks needs Expert level. Hand them the marker again once they get there."), and the marker
+comes back with its depth. The level is checked against the real pit (a 128 marker cut off by the world's floor at
+90 deep only needs a Journeyman). A deep pit (more than 64) counts its distance to the bench from the middle of its
+top, where the miner starts down. The safety rules hold all the way down: blocks next to water or lava and blocks too
+hard for the pickaxe are left standing.
+
 **Working with nobody near.** While anyone is online, every worker's workstation chunk stays loaded, so villages
 keep working when no player is near (`keepVillagesWorking`). Builds and quarries follow the game rule
 `workplaceKeepWorkLoaded`.
@@ -308,7 +325,10 @@ the villager (`registry/ModAttachments`), each absent or zero by default: the jo
 `miner_job`, `farm_field`, `tree_farm`, `orchard`, `courier_routes`, `patrol_route`), who hired them
 (`builder_employer`), and a counter per job that the hall shows (`trees_felled`, `fish_caught`, `mail_delivered`
 and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill_build` (the build's origin),
-`last_growth`, `grown` and `grown_since_pass` (36.12); all absent in older saves and marked-out quarries. Status lines and the requests board are not saved: workers post again after a restart.
+`last_growth`, `grown` and `grown_since_pass` (36.12); all absent in older saves and marked-out quarries. A quarry
+cut off above its marker's depth by the miner's level saves `wanted_bottom`, the floor the marker asked for (36.22);
+absent, the box's own floor (every quarry saved before, and every one dug to its full depth). The marker saves a
+"down to bedrock" depth as `depth: -1`. Status lines and the requests board are not saved: workers post again after a restart.
 
 ## Items, blocks, jobs, commands
 

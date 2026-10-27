@@ -783,6 +783,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendsHallEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRealmLegendsBuildsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.CountedWords1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesBugTests",

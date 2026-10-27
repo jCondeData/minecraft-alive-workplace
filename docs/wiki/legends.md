@@ -260,6 +260,13 @@ QA (29.4): `QaLegendsHallGameTests` (7): conditions one short, exactly met and o
 "1 of 1"), the "What next?" tip at one missing but not two or none, "lives in" only for a Legendary taken elsewhere,
 every way a Legend comes in English, a need unmet 1 day crossed and 0 days ticked with two Legends first on the hall's
 list, and all six Legend chatter lines with names filled in.
+`QaLegendsHallEdgesGameTests` (6, QA, 29.4): "Kinds of meal in the store" at 0, 7, exactly 8 and 9 of 8 (a cross, a
+cross, a tick and ready, a tick), with the "What next?" tip at 0 and 7 and gone at 8; the Mythic line as a Hamlet,
+Village, Town and City (0, 0, 1, 2), a Mythic of another village not counted and one in their grave still counted, no
+"ready" and no tip for a Mythic a full Town has no room for; "Wren lives in the wilds", a Legendary in the Nether named
+by that village, and an open gold card again once the place is freed; the hall's list with a Legendary, a Mythic and a
+guest ahead of everyone in gold and a Gifted Legend's gift in gold below their traits; the tip gone with Legends off;
+and every card and tip of the shipped roster with no untranslated key, format argument or raw id.
 QA (lane d, 29.11 to 29.13): `QaResearchTreesGameTests` (6): the lectern at 8 blocks from home and not 9; needs, the
 top level and a busy Legend refused on the screen, a second level's two-item cost taken only whole; an exclusive group
 the other way round and after a reload; an unlock past its number; the tab gone when the Legend leaves; a strike

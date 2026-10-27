@@ -53,7 +53,9 @@ name and today's date ("Spring, day 3 · Year 1") at the top, then ten buttons, 
 Click a button and its things fill the right side as a list, each with its picture, its name and a line about it. A
 section with nothing in it says so in plain words ("No guards yet."), and its buttons stay there for you to use. The
 hall remembers the section you opened last until you leave the game. With nothing under the mouse, the pane on the
-right shows what the village needs next on the Overview, and what a section is for on the others.
+right shows what the village needs next on the Overview, and what a section is for on the others. Walk more than 8
+blocks away from the hall (or break it) and the screen closes. Friends can have the hall open at the same time: each
+of you gets your own screen and keeps your own section.
 
 **People is a table** of everyone who lives in the village: their name, job, level and mood, with the count on top
 ("8 · 6 working · 2 jobless"). Scroll it with the mouse wheel in a big village. The mood is one word: Happy, Content,
@@ -174,7 +176,8 @@ It's off until you turn it on.
 ## The Village Ledger
 
 Craft a **[Village Ledger](village-ledger.md)** (a book and an emerald) and right-click your hall with it. From then on, right-click the air
-anywhere nearby to open the hall's screen without walking back.
+anywhere nearby to open the hall's screen without walking back. It stays open however far you are, as long as the
+hall stands.
 
 ## Needs
 

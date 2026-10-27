@@ -496,6 +496,15 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 			BlockPos corner = helper.absolutePos(BlockPos.ZERO);
 			base = new BlockPos(corner.getX(), level.getMaxBuildHeight() - 64, corner.getZ());
 			box = box(footprint, p -> true);
+			// B559: an empty-structure test loads only the chunks round its own small area, and a Wonder is far wider. A
+			// block placed in an unloaded chunk loads that chunk alone, so the Stadium's carved pumpkin (its golem check
+			// reads the blocks round it) read a neighbour in a chunk not loaded and threw, once the batch layout put the
+			// test by a chunk edge. Load every chunk the Wonder (and a margin) stands in first.
+			for (int cx = (base.getX() + box[0] - 3) >> 4; cx <= (base.getX() + box[3] + 3) >> 4; cx++) {
+				for (int cz = (base.getZ() + box[2] - 3) >> 4; cz <= (base.getZ() + box[5] + 3) >> 4; cz++) {
+					level.getChunk(cx, cz);
+				}
+			}
 			for (int x = box[0]; x <= box[3]; x++) {
 				for (int z = box[2]; z <= box[5]; z++) {
 					set(new BlockPos(x, -1, z), Blocks.STONE.defaultBlockState());

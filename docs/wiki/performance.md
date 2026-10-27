@@ -3,14 +3,15 @@
 How the mod keeps a server with many working villagers running smoothly: the benchmark that measures it, and the
 limits on the mod's own heavier jobs (milestone 25).
 
-Roadmap items: 25.1, 25.3, 25.4
+Roadmap items: 25.1, 25.3, 25.4, B412
 
 ## What a player sees
 
 Nothing new to look at: villages with many lumberjacks and builders simply don't make the server stutter. A
 lumberjack in a wood full of log pillars or log cabins looks a few trunks over at a time, so it may take a moment
 longer to pick its tree there. A tree farm's saplings are found without going over every block of the farm. A
-builder waiting for materials no longer recounts every other build of the village block by block each time.
+builder waiting for materials no longer recounts every other build of the village block by block each time. A
+builder levelling up no longer makes the server stutter in a big modpack.
 
 ## How it works
 
@@ -35,6 +36,13 @@ builder waiting for materials no longer recounts every other build of the villag
   fetching from a store with many builds queued at it could recount all of them in one tick. Now the recounts read at
   most 4,096 blocks a level a tick between them; past that, a build's last count stands a little longer, and a build
   never counted yet keeps its whole remaining plan back (more than it needs, never less) until a later tick counts it.
+- **The blueprint library's list kept (B412).** A builder's level-up works out which builds it unlocks from the
+  library's list, and listing every structure reads through every data pack and mod jar (in a modpack, thousands of
+  files): in the 40-plot benchmark one builder's tick took over 100 ms. The template manager's list is now kept until
+  the data packs load again (`/reload`) or the world's `generated` folder changes (a Structure Block save, an import,
+  an upload), which is quick to look at, so a structure saved a moment ago is still listed at once. The library's
+  filters also test the cheap "is it one of ours or saved in this world" first, so other mods' pieces are turned away
+  before the slower tests.
 - **The hour-long soak (25.4).** `PERF=true VILLAGES=3 PLOTS=25 SOAK_MINUTES=60 tools/packtest/run.sh` keeps the
   benchmark running for an hour and reads the heap after a full GC every 10 minutes; `tools/packtest/soakheap.py`
   fails the run only if the heap grows more than 5% from minute 10 (a falling heap is not a leak).

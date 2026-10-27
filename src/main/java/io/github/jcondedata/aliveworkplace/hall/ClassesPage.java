@@ -75,7 +75,7 @@ public final class ClassesPage {
 
 	/** The village's grown households with a class (those not seeded yet are left out), in a fixed order. */
 	public static List<Placed> households(ServerLevel level, BlockPos hall) {
-		List<Villager> people = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		List<Villager> people = VillageHalls.villagers(level, hall); // the circle, not the square round it (B561)
 		List<Placed> out = new ArrayList<>();
 		for (Households.Household h : Households.of(people)) {
 			SocialClass best = null;
@@ -526,7 +526,7 @@ public final class ClassesPage {
 		return switch (need) {
 			case ClassNeeds.Home h -> Component.translatable("advice.aliveworkplace.rise.home", Component.translatable("enchantment.level." + h.grade()));
 			case ClassNeeds.FedDays f -> Component.translatable("advice.aliveworkplace.rise.fed_days", f.days());
-			case ClassNeeds.DietNeed d -> Component.translatable("advice.aliveworkplace.rise.diet", io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS);
+			case ClassNeeds.DietNeed d -> Component.translatable("advice.aliveworkplace.rise.diet", io.github.jcondedata.aliveworkplace.people.Diet.kinds(d.kind())); // the need's own diet (B552)
 			case ClassNeeds.Beauty b -> Component.translatable("advice.aliveworkplace.rise.beauty", b.points());
 			case ClassNeeds.Building b -> io.github.jcondedata.aliveworkplace.work.Words.articled("advice.aliveworkplace.rise.building", 0, Blueprints.displayName(b.blueprint()));
 			case ClassNeeds.VillageRank r -> Component.translatable("advice.aliveworkplace.rise.village_rank", r.rank().title());

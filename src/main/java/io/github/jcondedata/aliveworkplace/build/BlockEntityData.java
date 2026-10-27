@@ -12,13 +12,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Decides which block-entity data from a blueprint a builder copies onto a block it places. Looks
  * (sign text, banner patterns, a way sign's arms, a blackboard drawing) are copied; anything that would
  * hand out free items or mobs is not — chest contents, a jar's cookies, an item shelf's sword, a caged
- * mob, a safe's owner. Works for blocks from any mod, not just vanilla.
+ * mob, a safe's owner, the lava in a Create tank. Works for blocks from any mod, not just vanilla.
  */
 public final class BlockEntityData {
 	/** Keys that hold items, loot, mobs or ownership in vanilla and common mods. */
@@ -57,7 +58,11 @@ public final class BlockEntityData {
 		for (String key : STRIP_KEYS) {
 			tag.remove(key);
 		}
-		stripStacksAndEntities(tag);
+		if (stripStacksAndEntities(tag)) {
+			// B486: a block that held a fluid caches the light that fluid gave (Create's tank keeps "Luminosity"); built
+			// empty, it starts dark, as it does when placed fresh
+			tag.remove("Luminosity");
+		}
 		return tag;
 	}
 
@@ -73,38 +78,72 @@ public final class BlockEntityData {
 	}
 
 	/**
-	 * Removes every nested compound that is an item stack or an entity (anything with an item/entity "id", or an entity
-	 * saved without one).
+	 * Removes every nested compound that is an item stack, an entity (anything with an item/entity "id", or an entity
+	 * saved without one) or a fluid stack. True if a fluid was removed.
 	 */
-	static void stripStacksAndEntities(CompoundTag tag) {
+	static boolean stripStacksAndEntities(CompoundTag tag) {
+		boolean fluid = false;
 		for (String key : Nbt.keys(tag).toArray(String[]::new)) {
 			Tag child = tag.get(key);
 			if (child instanceof CompoundTag compound) {
-				if (isStackOrEntity(compound)) {
+				if (isFluid(compound)) {
+					// B486: the fluid a block holds in its data (Create's tank, spout, basin and drain, any mod's tank) is
+					// never copied. The tank around it stays (its size, its controller), so it reads back as empty; an amount
+					// kept beside the fluid, as Fabric's storages save it, goes with it
+					tag.remove(key);
+					tag.remove("amount");
+					tag.remove("Amount");
+					fluid = true;
+				} else if (isStackOrEntity(compound)) {
 					tag.remove(key);
 				} else {
-					stripStacksAndEntities(compound);
+					fluid |= stripStacksAndEntities(compound);
 				}
 			} else if (child instanceof ListTag list) {
-				stripList(list);
+				fluid |= stripList(list);
 			}
 		}
+		return fluid;
 	}
 
-	private static void stripList(ListTag list) {
+	private static boolean stripList(ListTag list) {
+		boolean fluid = false;
 		for (int i = list.size() - 1; i >= 0; i--) {
 			Tag element = list.get(i);
 			if (element instanceof CompoundTag compound) {
-				if (isStackOrEntity(compound)) {
+				if (isFluid(compound)) {
+					list.remove(i);
+					fluid = true;
+				} else if (isStackOrEntity(compound)) {
 					list.remove(i);
 				} else {
-					stripStacksAndEntities(compound);
+					fluid |= stripStacksAndEntities(compound);
 				}
 			} else if (element instanceof ListTag inner) {
-				stripList(inner);
+				fluid |= stripList(inner);
 			}
 		}
+		return fluid;
 	}
+
+	/**
+	 * A saved fluid stack: a compound naming a fluid other than {@code minecraft:empty} under one of the keys mods save it
+	 * by: "id" (NeoForge's and Porting Lib's FluidStack, which Create uses: {@code {id, amount}}), "FluidName" (the older
+	 * Forge FluidStack) or "fluid" (Fabric's FluidVariant). By registry, so it covers every mod's fluids.
+	 */
+	static boolean isFluid(CompoundTag compound) {
+		for (String key : FLUID_KEYS) {
+			if (Nbt.has(compound, key, Tag.TAG_STRING)) {
+				ResourceLocation id = ResourceLocation.tryParse(Nbt.getString(compound, key));
+				if (id != null && BuiltInRegistries.FLUID.containsKey(id) && BuiltInRegistries.FLUID.get(id) != Fluids.EMPTY) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static final String[] FLUID_KEYS = {"id", "FluidName", "fluid"};
 
 	private static boolean isStackOrEntity(CompoundTag compound) {
 		if (Nbt.hasUuid(compound, "UUID") && Nbt.has(compound, "Pos", Tag.TAG_LIST)) {

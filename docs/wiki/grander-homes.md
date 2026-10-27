@@ -96,7 +96,8 @@ traveling class trader on market days (34.7) can also bring the Townhouse or the
 
 **The ball's venue** (`NobleBalls.venue`): the first finished Manor III (any style) within the hall's reach, at the
 middle of its ballroom floor (`NobleBalls.BALLROOM`, 20, 1, 11 from the blueprint's origin, turned and mirrored with
-the build); else the middle of a finished Manor I or II; else the hall.
+the build); else the middle of a finished Manor I or II (also turned and mirrored with the build, B440: it was once only
+turned, so a mirrored Manor's guests gathered about a Manor's width outside it); else the hall.
 
 **The Steward** (27.6) has a new condition, `households_want_grade {grade, at_least}`: at least that many households
 want a home of that grade or higher and sleep in a lower one; it counts the same households as the tips. Three new
@@ -178,6 +179,8 @@ worked out from the finished buildings already saved.
 - `ManorGameTests.theManorIsGradeIIIAndItsGardenCountsThreeBeauty`, `ManorGameTests.aHomeFileCanGiveItsGardenBeauty`,
   `ManorGameTests.buildersSellTheManorOnceTheVillageHasBurghers`, `ManorGameTests.theBallGathersInTheBallroomWhenThereIsOne`,
   `ManorGameTests.theManorIsSoldNotInTheTable`.
+- B440: `QaMirroredManorBallGameTests.theBallGathersInsideAManorPlacedAnyWay` (every Manor tier, every turn, mirrored
+  and not: the venue is inside the Manor), failing before the fix.
 - `BuilderGameTests.buildsArtisansHouse`, `BuilderGameTests.buildsArtisansHouseII`, `BuilderGameTests.buildsTownhouse`,
   `BuilderGameTests.buildsTownhouseII`, `BuilderGameTests.buildsTownhouseIII`, `BuilderGameTests.buildsManor`,
   `BuilderGameTests.buildsManorII`, `BuilderGameTests.buildsManorIII` (in the huge area): a builder builds each tier from bare

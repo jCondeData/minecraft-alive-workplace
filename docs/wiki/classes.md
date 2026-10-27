@@ -13,13 +13,20 @@ needs two dawns running rises: golden sparkles and a chime at their door, a chat
 line in the chronicle, and "rose in the world" (+10 mood for 2 days). One that lacks a need of its own class three
 dawns running comes down in the world (-10). Children take the class of the grown-ups they live with.
 
+Villagers talk of it (three lines each): of their rise or their fall while the mood lasts; of wine or new clothes
+when their class (its needs and wants) or the next one's needs ask for a wine or a clothes luxury they haven't had
+lately ("Look at these rags. I need something new to wear."); of the Gazette the week their household reads one; and
+of the tavern when it reaches their home.
+
 At the Village Hall:
-- the **Classes** tab says how many households of each class there are. Its page has a button per class: each need
+- the **Classes** tab says how many households of each class there are in the village (its circle, not the corners
+  beyond it). Its page has a button per class: each need
   and want with how many households have it ("A varied diet: 2 of 4"), what the class gives, and the households
   closest to rising with what they lack;
 - the people list says each villager's class and ticks the needs of their class and of the next one;
 - the food icon lists the luxuries in store;
-- "What next?" gives up to three class tips ("2 Peasant households want A varied diet to rise to Artisan").
+- "What next?" gives up to three class tips ("2 Peasant households want A varied diet to rise to Artisan"), each
+  with how to meet it ("Keep 3 kinds of meal in the store"; 2 for a plain diet).
 
 | Class | Needs | Wants | Gives |
 |---|---|---|---|
@@ -250,6 +257,9 @@ QA: `QaClassHallRetirementGameTests` (34.6 and 34.18 part: a want counted over f
 5" under the wants; the three biggest of five class tips, most households first; -10 for two needs lacking and -15
 for three; the rise's chat line read 31 blocks off and not 33 off; a child sent their class and CHILD on tracking, a
 zombie villager never sent a look, nothing on tracking with `classOutfits` off, the look surviving the wire).
+`ClassChatterGameTests` (5, B551 and B552: wine and clothes talked of when the class lacks them and not once had, the
+Gazette the week it's read, the tavern where it reaches home, every new line, the plain diet tip's 2 kinds) and
+`QaClassHallRetirementBugTests` (three lines each for wine, clothes, the Gazette and the tavern).
 
 Showcase scenes: `classes` (a household rises, and the Classes page), `class_switch_on` (the hall before and after the
 switch), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`,

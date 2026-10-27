@@ -355,7 +355,7 @@ public final class FamilyBook {
 		if (!ENABLED || passing(villager)) {
 			return;
 		}
-		VillageHalls.nearest(level, villager.blockPosition()).ifPresent(hall -> {
+		VillageHalls.containing(level, villager.blockPosition()).ifPresent(hall -> {
 			if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
 				long today = Chronicle.day(level);
 				Book book = entity.families();

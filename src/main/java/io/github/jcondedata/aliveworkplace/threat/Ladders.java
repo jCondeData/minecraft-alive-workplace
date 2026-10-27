@@ -359,7 +359,7 @@ public final class Ladders {
 			Mob builder = raiders.stream().filter(m -> storm.assigned.get(m.getUUID()) == site && Threats.role(m) == Culture.Role.CLIMBER
 				&& m.position().distanceToSqr(foot) <= 9).findFirst().orElse(null);
 			BlockPos pos = site.foot.above(site.rungs);
-			if (builder == null || !level.getBlockState(pos).isAir()) {
+			if (builder == null || !Buriable.room(level.getBlockState(pos))) {
 				continue;
 			}
 			level.setBlock(pos, Blocks.LADDER.defaultBlockState().setValue(LadderBlock.FACING, site.into.getOpposite()), 3);
@@ -418,7 +418,8 @@ public final class Ladders {
 	/**
 	 * How many rungs a ladder at {@code foot} needs to get over the wall beside it: up to the first height at which the
 	 * wall's column leaves two blocks free (0: no wall here any more). -1 when there is no getting over here: the wall is higher than
-	 * {@link #MAX_HEIGHT}, a rung would replace something that isn't air (or a rung of this siege), it would lean on a
+	 * {@link #MAX_HEIGHT}, a rung would replace something that isn't air, a plant it buries ({@link Buriable}, B558: grass at a plains
+	 * wall's foot) or a rung of this siege, it would lean on a
 	 * gate, or there is no room over the ladder.
 	 */
 	private static int height(ServerLevel level, ThreatData.Siege siege, BlockPos foot, Direction into) {
@@ -433,7 +434,7 @@ public final class Ladders {
 			}
 			BlockPos rung = foot.above(h);
 			BlockState there = level.getBlockState(rung);
-			if (!there.isAir() && !(there.is(Blocks.LADDER) && siege.ladders.contains(rung))) {
+			if (!Buriable.room(there) && !(there.is(Blocks.LADDER) && siege.ladders.contains(rung))) {
 				return -1;
 			}
 			if (Sieges.isGate(level.getBlockState(w))) {

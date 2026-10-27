@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
 import io.github.jcondedata.aliveworkplace.farm.FieldData;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import java.util.List;
@@ -13,6 +14,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -161,7 +164,11 @@ public class ScanToolItem extends Item {
 		ResourceLocation id = BlueprintImporter.uniqueId(manager, folder, fileName);
 		Vec3i size = new Vec3i(box.getXSpan(), box.getYSpan(), box.getZSpan());
 		StructureTemplate template = manager.getOrCreate(id);
-		template.fillFromWorld(level, new BlockPos(box.minX(), box.minY(), box.minZ()), size, false, Blocks.STRUCTURE_VOID);
+		// B441: with its entities, then only the frames, paintings and armor stands, emptied (BlueprintEntities)
+		template.fillFromWorld(level, new BlockPos(box.minX(), box.minY(), box.minZ()), size, true, Blocks.STRUCTURE_VOID);
+		CompoundTag saved = template.save(new CompoundTag());
+		BlueprintEntities.keepBuildable(saved);
+		template.load(Lookup.lookup(BuiltInRegistries.BLOCK), saved);
 		template.setAuthor(player.getGameProfile().getName());
 		if (!manager.save(id)) {
 			manager.remove(id);

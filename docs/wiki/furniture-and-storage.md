@@ -141,6 +141,9 @@ desk and through the lantern standing on it, and the villager stood on the desk'
 small block a villager's body can't pass above the height it steps up (such as a mod's lantern) is a wall
 to its path, as vanilla's lantern is; carpets, beds and other blocks it steps onto, ladders and open doors stay
 walkable (`work/PathObstacles`, from the path finder's `WalkNodeEvaluatorMixin`, beside B156's shut trapdoors).
+A Carved Wood lantern goes up with the decoration, after the trapdoor or post it stands on, as vanilla's lantern does
+(B433: it once went up with the walls, before the flower-box trapdoors by a cottage's door, couldn't stand on air and
+was skipped). The builder knows it by its `hanging` property, which vanilla's lantern has too (`MaterialRules`).
 Carved Wood's chests and barrels of every wood are supply chests, porters' chests and Storehouse chests (they are
 vanilla chests and barrels underneath).
 
@@ -446,6 +449,8 @@ rides, which can't be summoned.
 
 ## 8. Proof
 
+B433 (compat): `QaSpruceCottageBugTests.theSpruceCottageIsBuiltWholeWithItsLanterns` (the Spruce Starter Cottage
+built from its exact materials, nothing skipped), failing before the fix.
 B304: `TerraceSleepGameTests.aVillagerOfTheWestHomeClimbsItsLadderNotTheEastOnesAndSleeps` (his bed in the west
 home, he stands by the east home's ladder at bedtime), `TerraceSleepGameTests.aVillagerWithoutABedTakesAFreeOneNextDoorAndSleeps`
 (the east home's beds someone else's: he claims a west one and sleeps in it), both failing before the fix; with

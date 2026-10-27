@@ -110,10 +110,23 @@ public final class CobblemonCupMatches implements CupBattles {
 		return new BattleFormat(base.getMod(), base.getBattleType(), rules, base.getGen(), theme.level());
 	}
 
-	// The party's Pokémon that may go, in party order, up to the theme's count; and why each other one stays home.
+	// Showdown's names of the two clauses a theme may list (the Grand Cup lists both).
+	public static final String SPECIES_CLAUSE = "Species Clause";
+	public static final String ITEM_CLAUSE = "Item Clause";
+
+	// Whether the theme lists this Showdown rule (any case).
+	public static boolean hasRule(CupThemes.Theme theme, String rule) {
+		return theme.rules().stream().anyMatch(rule::equalsIgnoreCase);
+	}
+
+	// The party's Pokémon that may go, in party order, up to the theme's count; and why each other one stays home. With
+	// Species or Item Clause (B565: Showdown doesn't check the teams we hand it), a second of one species, or a second
+	// holding one item, stays home.
 	public static List<Pokemon> eligible(PartyStore party, CupThemes.Theme theme, List<Component> leftOut) {
 		Set<String> types = new HashSet<>();
 		theme.types().forEach(t -> types.add(t.toLowerCase(Locale.ROOT)));
+		boolean speciesClause = hasRule(theme, SPECIES_CLAUSE);
+		boolean itemClause = hasRule(theme, ITEM_CLAUSE);
 		List<Pokemon> out = new ArrayList<>();
 		for (int i = 0; i < party.size(); i++) {
 			Pokemon p = party.get(i);
@@ -121,6 +134,12 @@ public final class CobblemonCupMatches implements CupBattles {
 				continue;
 			}
 			Component why = whyNot(p, theme, types);
+			if (why == null && speciesClause && out.stream().anyMatch(o -> o.getSpecies().getNationalPokedexNumber() == p.getSpecies().getNationalPokedexNumber())) {
+				why = Component.translatable("message.aliveworkplace.cup.why_species_clause", p.getSpecies().getTranslatedName());
+			}
+			if (why == null && itemClause && !p.heldItem().isEmpty() && out.stream().anyMatch(o -> !o.heldItem().isEmpty() && o.heldItem().getItem() == p.heldItem().getItem())) {
+				why = Component.translatable("message.aliveworkplace.cup.why_item_clause", p.heldItem().getHoverName());
+			}
 			if (why == null && out.size() >= theme.bring()) {
 				why = Component.translatable("message.aliveworkplace.cup.why_count", theme.bring());
 			}
@@ -251,7 +270,8 @@ public final class CobblemonCupMatches implements CupBattles {
 			return false;
 		}
 		for (ServerPlayer target : b.getPlayers()) {
-			SpectateBattleHandler.INSTANCE.spectateBattle(spectator, target);
+			// Cobblemon's order is (target, player): the player in the battle first, the spectator second (B563)
+			SpectateBattleHandler.INSTANCE.spectateBattle(target, spectator);
 			return b.getSpectators().contains(spectator.getUUID());
 		}
 		return false;

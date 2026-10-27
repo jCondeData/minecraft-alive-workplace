@@ -36,9 +36,13 @@ public final class Chefs {
 	 * the stews, and with Cobblemon its Poké Bait, Poké Snacks, Poké Cakes, candied apples and Aprijuice.
 	 */
 	public static List<Item> menu(ServerLevel level) {
+		return new ArrayList<>(menu(Recipes.manager(level), level.registryAccess()));
+	}
+
+	private static Set<Item> menu(net.minecraft.world.item.crafting.RecipeManager manager, net.minecraft.core.HolderLookup.Provider registries) {
 		Set<Item> out = new LinkedHashSet<>();
-		for (RecipeHolder<?> holder : Recipes.all(Recipes.manager(level), RecipeType.SMOKING)) {
-			ItemStack result = Recipes.result(holder.value(), level.registryAccess());
+		for (RecipeHolder<?> holder : Recipes.all(manager, RecipeType.SMOKING)) {
+			ItemStack result = Recipes.result(holder.value(), registries);
 			if (!result.isEmpty() && result.getComponentsPatch().isEmpty()) {
 				out.add(result.getItem());
 			}
@@ -47,7 +51,28 @@ public final class Chefs {
 		for (String dish : POT_DISHES) {
 			BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("cobblemon", dish)).ifPresent(out::add);
 		}
-		return new ArrayList<>(out);
+		return out;
+	}
+
+	/**
+	 * Every dish a kitchen keeps a stock of: {@link #menu(ServerLevel)}'s and every Campfire Pot recipe's result, whether or
+	 * not {@code cuisineDishes} is on. {@link Crafting}'s kitchen recipes leave out a recipe that only turns some of these
+	 * into another of them (B435, B459: Cobblemon's EXP Candies, six XS into an S in the pot and an S back into six XS on
+	 * the crafting table, all the way up to XL), so a chef cooks his dishes from their makings and never cooks one kept dish
+	 * up or breaks it down into another (the store's 15 XS into an M, a player's XL into L, M, S and XS). A recipe with any
+	 * other making still takes a dish (Mighty Candy, an EXP Candy XL with berries and honeycomb).
+	 */
+	static Set<Item> keptDishes(net.minecraft.world.item.crafting.RecipeManager manager, net.minecraft.core.HolderLookup.Provider registries) {
+		Set<Item> out = menu(manager, registries);
+		for (RecipeHolder<?> holder : Recipes.all(manager)) {
+			if (Crafting.isCookingPot(holder.value().getType())) {
+				ItemStack result = Recipes.result(holder.value(), registries);
+				if (!result.isEmpty() && result.getComponentsPatch().isEmpty()) {
+					out.add(result.getItem());
+				}
+			}
+		}
+		return out;
 	}
 
 	/**

@@ -469,4 +469,29 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 			AliveWorkplace.LOG.info("[chaos] steward safety seed {}: {} player blocks kept, {} steps skipped", seed, placed.size(), site.skipped());
 		});
 	}
+
+	/**
+	 * B520: only a road drawn or approved by hand may cross the ledger; a lane the Steward joined a door with and the half of
+	 * a road he planned to another village (27.17) may not, also as an older save loads them (no new field).
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void onlyARoadDrawnByHandCrossesTheLedger(GameTestHelper helper) {
+		List<BlockPos> line = List.of(new BlockPos(0, 0, 0), new BlockPos(16, 0, 0));
+		CityPlan.Road drawn = new CityPlan.Road(line, CityPlan.Road.STREET, "stonework", true);
+		CityPlan.Road lane = new CityPlan.Road(line, CityPlan.Road.LANE, "stonework", true, List.of(), false, List.of(), true);
+		CityPlan.Road caravan = new CityPlan.Road(line, CityPlan.Road.STREET, "", true, List.of(), false, List.of(), false, 0, 0,
+			Optional.of(new BlockPos(200, 0, 0)));
+		helper.assertTrue(drawn.byHand(), "a road the owner drew counts as approved by hand");
+		helper.assertTrue(!lane.byHand(), "the Steward's own lane counts as approved by hand");
+		helper.assertTrue(!caravan.byHand(), "the Steward's own caravan half counts as approved by hand");
+		net.minecraft.nbt.CompoundTag old = new net.minecraft.nbt.CompoundTag();
+		old.put("points", BlockPos.CODEC.listOf().encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, line).getOrThrow());
+		old.putInt("width", CityPlan.Road.LANE);
+		old.putBoolean("approved", true);
+		old.putBoolean("lane", true);
+		CityPlan.Road loaded = CityPlan.Road.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, old).getOrThrow();
+		helper.assertTrue(loaded.lane() && !loaded.byHand(), "a lane from an older save counts as approved by hand: " + loaded);
+		helper.succeed();
+	}
 }

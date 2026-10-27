@@ -92,9 +92,10 @@ default 16-day seasons an elder is about 36 and passes at about 43). An old save
 and counts it against the new span, so an elder of the old 120 days is a grown villager again, noted an elder anew
 when they reach 1200.
 
-When a grown villager of a village with a hall dies, of anything:
+When a grown villager of a village with a hall dies, of anything, anywhere in the village (within the hall's radius
+across and 32 blocks up or down, so a death on its rim up a hill counts too; B562):
 
-- every player near the village reads "Mira, the village's Farmer, has died aged 31. The village mourns." (an unnamed
+- every player in the village reads "Mira, the village's Farmer, has died aged 31. The village mourns." (an unnamed
   one: "The village's Mason has died ..."; one whose days nobody counted: "at an age nobody had counted");
 - the chronicle's line of the death gives the cause, then the same: "Mira was slain by Zombie: the village's Farmer,
   aged 31";
@@ -347,7 +348,9 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
   the word to a player near and the chronicle's line, a son grieving, a husband mourning, no kin not, the mood reason,
   the pace, a reload, and both ending (`aDeathIsMournedAndTheMourningEnds`); the words of an unnamed, a jobless and an
   uncounted death and outside a village (`theWordsOfADeath`); `villageMourning` off (`mourningSwitchedOff`); the
-  Undertaker's funeral and the grave's saved flag, an old grave without one (`theUndertakerLeadsAFuneral`).
+  Undertaker's funeral and the grave's saved flag, an old grave without one (`theUndertakerLeadsAFuneral`);
+  QA's `QaVillageCircleBugTests.aDeathOnTheVillagesRimUpAHillIsMourned` (B562: a death 14 out and 10 up in a 16-block
+  village is mourned: the son by the hall grieves, a player by the hall is told, the chronicle line has job and age).
 - Showcase scene: `village_mourns` (Mira dies, Tom and Pip mourn, Ulric the undertaker leads her funeral).
 - Showcase scene: `ageless_elder` (a refusal, the charm taken, the night after 45 elder days, the badge).
 - GameTests: `RetirementGameTests`: the full hand-over in order, the own child chosen over another, two days of

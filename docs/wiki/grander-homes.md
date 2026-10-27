@@ -167,7 +167,7 @@ worked out from the finished buildings already saved.
   joined only each other and stopped half way across their outer blocks, thin strips of glass with open gaps beside
   them. Each bay now stands between two stone piers (one shared by the two bays, one in place of the door hood's bracket
   beside it), and the glass fills the opening. The Builder already shapes every pane, fence and wall it puts down
-  against its real neighbours, as the game does; a test now holds it to that. Terraces already standing get the new
+  against its real neighbors, as the game does; a test now holds it to that. Terraces already standing get the new
   bays with the hall's **Refresh to the latest look** (36.21: the old drawing ships for it).
 
 ## Known limits

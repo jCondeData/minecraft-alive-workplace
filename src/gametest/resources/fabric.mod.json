@@ -291,6 +291,8 @@
 			"io.github.jcondedata.aliveworkplace.test.ClassJobGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassHallRetirementGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClassHallRetirementBugTests",
+			"io.github.jcondedata.aliveworkplace.test.ClassChatterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryWorkGameTests",

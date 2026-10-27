@@ -526,7 +526,7 @@ public final class ClassesPage {
 		return switch (need) {
 			case ClassNeeds.Home h -> Component.translatable("advice.aliveworkplace.rise.home", Component.translatable("enchantment.level." + h.grade()));
 			case ClassNeeds.FedDays f -> Component.translatable("advice.aliveworkplace.rise.fed_days", f.days());
-			case ClassNeeds.DietNeed d -> Component.translatable("advice.aliveworkplace.rise.diet", io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS);
+			case ClassNeeds.DietNeed d -> Component.translatable("advice.aliveworkplace.rise.diet", io.github.jcondedata.aliveworkplace.people.Diet.kinds(d.kind())); // the need's own diet (B552)
 			case ClassNeeds.Beauty b -> Component.translatable("advice.aliveworkplace.rise.beauty", b.points());
 			case ClassNeeds.Building b -> io.github.jcondedata.aliveworkplace.work.Words.articled("advice.aliveworkplace.rise.building", 0, Blueprints.displayName(b.blueprint()));
 			case ClassNeeds.VillageRank r -> Component.translatable("advice.aliveworkplace.rise.village_rank", r.rank().title());

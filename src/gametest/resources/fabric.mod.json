@@ -763,6 +763,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWaystonesGoneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardSameRangeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FarSiteGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFarSiteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReachZoneCornerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachBugTests",

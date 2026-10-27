@@ -2289,7 +2289,7 @@ MarketDays) and research/.
   - the terms screen's lines match the needs; a guest survives a save and reload mid-stay;
   - showcase scene `legend_guest` (GIF: a test Legend arrives at the inn, the terms screen, they settle once a home is
     ready).
-- [x] **29.9** (approved 2026-10-05) **Legends found in the world.** The second way. Every 5 seconds per player,
+- [x] **29.9** (approved 2026-10-05) (verified 2026-10-27: lane D QA 2026-10-27: QaLegendSitesGameTests [9: 5-second check and its 3 lookups, 1500-block reach both sides and diagonal, 29.3 slot rules at a site, slot filled before arrival, only the cage's own bars free, every camp sentence, legendSites switch, next-morning arrival through a save, site tags]; legends.md updated; full build green 4423 + 793) **Legends found in the world.** The second way. Every 5 seconds per player,
   `StructureManager.getStructureWithPieceAt` asks whether they stand in a structure of a site tag (three cheap lookups
   and no area scans; tags, so packs can add their own variants, such as Repurposed Structures'):
   - `#aliveworkplace:legend_sites/ruined_portal` (vanilla's ruined portals): a traveller's camp beside the portal (a

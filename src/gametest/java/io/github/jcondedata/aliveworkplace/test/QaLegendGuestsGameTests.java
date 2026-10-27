@@ -104,8 +104,10 @@ public class QaLegendGuestsGameTests implements net.fabricmc.fabric.api.gametest
 			Map<ResourceLocation, Legend> map = new LinkedHashMap<>();
 			legends.forEach(l -> map.put(l.id(), l));
 			Legends.setForTest(map);
+			forgetRecorded(level, map.keySet()); // settled in an earlier run of the same world (a Legendary would be refused)
 			body.run();
 		} finally {
+			forgetRecorded(level, legends.stream().map(Legend::id).toList());
 			Moods.ENABLED = moods;
 			LegendNeeds.ENABLED = needs;
 			level.setDayTime(time);
@@ -113,6 +115,17 @@ public class QaLegendGuestsGameTests implements net.fabricmc.fabric.api.gametest
 			Legends.reload(level.getServer().getResourceManager());
 			LegendPowers.forget();
 		}
+	}
+
+	/**
+	 * Forgets the world's record of the test's own Legends. Leftovers.after's sweep of the area's villagers can't do it on a
+	 * pass: GameTestInfo.succeed discards the test's entities before the listeners run, so a Legend settled by the test
+	 * stayed in the saved LegendRecord, and the next run in the same world (a full build after the class alone, a repeat
+	 * copy) refused that Legendary as "already lives in this world" (B587's test).
+	 */
+	static void forgetRecorded(ServerLevel level, java.util.Collection<ResourceLocation> ids) {
+		LegendRecord record = LegendRecord.get(level);
+		record.entries().stream().filter(e -> ids.contains(e.id())).map(LegendRecord.Entry::villager).toList().forEach(record::forget);
 	}
 
 	static VillageHallBlockEntity hall(GameTestHelper helper, BlockPos at) {

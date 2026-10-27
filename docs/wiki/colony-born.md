@@ -4,7 +4,7 @@ ROADMAP 33.10 (part of 1.7, "From village to realm"; switched on in 1.0 with eve
 the settlers [sent with the charter](colony-settlers.md) reach the spot, make camp, raise a Village Hall and a Travel
 Post, and their builder starts the colony's first two buildings.
 
-Roadmap items: 33.10, 33.14, B424
+Roadmap items: 33.10, 33.14, B424, B590
 
 ## What a player sees
 
@@ -15,8 +15,9 @@ three bedrolls and a flagpole with a white banner), turned to face the mother vi
 stands on the platform under the awning and the **Travel Post** at the front right by its lantern (template spots
 (7, 1, 7) and (10, 0, 3), `ColonyArrival.HALL_IN_CAMP`/`POST_IN_CAMP`). Without the Colony Camp's template (a data pack
 removed it) the settlers fall back on the Settler's Wagon's camp with the hall and post two blocks in front of it.
-Every chest and barrel in either camp opens where it stands (B424): the Settler's Wagon's supply chest sits at its
-wagon's open tail, and each Colony Camp wagon's barrel at its tail, with two steps up to the wagon's bed.
+Every chest and barrel in either camp opens where it stands (B424): the Settler's Wagon's supply chest sits on its
+wagon's open tailboard, past the wool cover so nothing on top keeps its lid shut (B590), and each Colony Camp wagon's
+barrel at its tail, with two steps up to the wagon's bed.
 Renders, as drawn and in the five styles: `docs/media/colony-camp-front.png`, `-back.png`.
 
 - The hall carries the name the charter was given in an anvil (or a made-up one), belongs to the mother village's
@@ -107,7 +108,9 @@ it and the owner hears it in chat. No colony is counted, so no wait before the n
 - `QaCampReachGameTests` (3, B424): `theCampsChestOfSuppliesCanBeOpened` (the game's own ray pick from every spot a
   player fits within 5 blocks), `everyChestAndBarrelInTheColonyCampCanBeOpened`, `theSettlersCampTurnedRoundStillOpens`;
   `QaBuildReachGameTests` walks to both camps' containers too.
-- `QaBuilderFixes1027cGameTests` (2, B424): `theColonyCampTurnedClockwiseStillOpens`,
-  `theColonyCampTurnedCounterClockwiseStillOpens` (every chest and barrel of the Colony camp turned a quarter either way).
+- `QaBuilderFixes1027cGameTests` (3, B424, B590): `theCampChestOpensForAPlayerAndHoldsTheSupplies` (a player's click
+  opens the chest's menu with the Village Hall and two blueprints; nothing on the chest blocks its lid),
+  `theColonyCampTurnedClockwiseStillOpens`, `theColonyCampTurnedCounterClockwiseStillOpens` (every chest and barrel of
+  the Colony camp turned a quarter either way).
 
 Showcase scenes: `colony`

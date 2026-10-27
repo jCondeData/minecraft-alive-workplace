@@ -4,7 +4,7 @@ ROADMAP 33.18 (part of 1.7, "From village to realm"; switched on in 1.0 with eve
 through offers: a **trade pact** lets caravans run between them, paid for at board prices; an **alliance** is a pact
 whose villages also ride to each other's raids.
 
-Roadmap items: 33.18
+Roadmap items: 33.18, B582, B595
 
 ## What a player sees
 
@@ -14,8 +14,12 @@ has **Pacts** (a book and quill) between Prices and Realm. The tab lists, in thi
 - each offer waiting for this village: **Accept a trade pact with X** (or an alliance) and **Decline the offer from X**,
   with who offered it and how long is left;
 - each pact and alliance: a click on it turns **gifts** on or off for your side, and **End** next to it ends it;
-- every other player's village within caravan range (2,048 blocks) that has no pact yet: **Offer X a trade pact** and
-  **Offer X an alliance**.
+- every other player's village within caravan range (2,048 blocks, 4,096 with the [Lighthouse](wonders.md)) that has
+  no pact yet: **Offer X a trade pact** and **Offer X an alliance**; a village you have a trade pact with gets **Offer X
+  an alliance** (B582).
+
+The tab lists only what pressing will accept: an offer is refused as "beyond caravan range" only past the same range
+the tab lists by, the offering village's own, written as "2,048" or "4,096" (B595).
 
 **Offers.** An offer reaches the other owner as a letter (in their mailbox, their hands, or waiting at the post office)
 and as the Accept and Decline line on their village's Pacts tab. It lapses after 3 days; the one who offered hears of a
@@ -66,12 +70,12 @@ None new: the Pacts tab on the Trade page, letters through the post.
 - Allies' riders cost nothing: neither their own village's treasury nor a realm treasury pays for them; the raided
   village's own realm pays for its own bands as in 33.17.
 - Offering an alliance to a trade-pact partner is allowed: accepting turns the pact into an alliance.
+- Caravan range for pacts is the offering village's own caravan range, twice as far with the Lighthouse (35.12), the
+  same range its Routes tab and Pacts tab list neighbors by (B595).
 
 ## Known limits
 
 - The tab shows up to 36 lines; with many neighbors some offers to make are left off.
-- The tab has no "Offer X an alliance" for a village you already have a trade pact with (it lists offers only for
-  villages with no pact), so for now a pact becomes an alliance only by ending it and offering an alliance.
 
 ## Proof
 
@@ -85,5 +89,9 @@ gifts buttons, the Routes tab's refusal without a pact, gifts on one side only, 
 and booked by the seller, crossed offers, a lapse told, caravan range and the allies' 1,024 blocks from both sides
 (`anAllyRidesExactly1024BlocksAndNotABlockMore`), the switches off and back on, the old routes made pacts only between
 strangers and only once.
+
+`PactOfferFixesGameTests`: `aTradePactPartnerCanBeOfferedAnAllianceOnThePactsTab` (B582: the tab's alliance offer to a
+pact partner, accepted without stopping its routes) and `anOfferButtonTheTabShowsWithTheLighthouseIsntRefusedAsTooFar`
+(B595: with the Lighthouse a village 3,000 blocks off is listed and its offer made; "2,048" and "4,096" in the refusals).
 
 Showcase scene `pacts`.

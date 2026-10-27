@@ -95,6 +95,8 @@ public class QaDisabledArcsGameTests implements FabricGameTest {
 		helper.assertTrue(s != null && s.id.equals(THREE.toString()), "taken off the list it didn't start: " + s);
 		helper.succeed();
 	}
+
+	//$ gametest_ticks_batch AREA '40' '"qaDisabledLostCaravan"'
 	@GameTest(template = AREA, timeoutTicks = 40, batch = "qaDisabledLostCaravan")
 	public void qaADisabledLostCaravanNeverGoesMissing(GameTestHelper helper) {
 		Leftovers.clear(helper);

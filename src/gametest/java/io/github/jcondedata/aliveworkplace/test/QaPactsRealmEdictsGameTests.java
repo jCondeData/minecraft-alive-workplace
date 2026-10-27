@@ -359,7 +359,7 @@ public class QaPactsRealmEdictsGameTests implements FabricGameTest {
 		land.data().putKnown(new RealmData.Known(GlobalPos.of(level.dimension(), beyond), Component.literal("Farhold"), Optional.of(two.them().getUUID()), "qa-neighbour", "village", 5, 50, now));
 		helper.assertTrue(Pacts.offer(level, land.hall(0), edge, false, land.owner()).ok(), "a village exactly " + range + " blocks off was out of range");
 		Pacts.Result far = Pacts.offer(level, land.hall(0), beyond, false, land.owner());
-		helper.assertTrue(!far.ok() && far.message().getString().equals("Farhold is more than " + range + " blocks away, beyond caravan range."), "one block beyond: " + far.message().getString());
+		helper.assertTrue(!far.ok() && far.message().getString().equals("Farhold is more than " + String.format(java.util.Locale.ROOT, "%,d", range) + " blocks away, beyond caravan range."), "one block beyond: " + far.message().getString());
 		helper.assertTrue(Pacts.to(server, GlobalPos.of(level.dimension(), beyond)).isEmpty(), "an offer waits beyond range");
 		helper.succeed();
 	}

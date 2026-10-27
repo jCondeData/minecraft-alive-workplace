@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598
 
 ## What a player sees
 
@@ -17,7 +17,8 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
 - **The Mechanic** (39.2). A jobless villager next to a Create Toolbox (any of its sixteen colors) becomes the
   village's Mechanic, in a gray canvas work apron with a cogwheel stitched on it, brass goggles pushed up on the brow
   and a brass-headed wrench at the belt. When a shaft, gearbox, cogwheel or belt goes missing from a finished build
-  within 32 blocks of the toolbox, the Mechanic fetches the part from the chest by the toolbox, carries it over and
+  within 32 blocks of the toolbox (measured to the build's nearest block, so a big build next to the toolbox counts
+  however far off its corner lies, B598), the Mechanic fetches the part from the chest by the toolbox, carries it over and
   puts it back as the blueprint has it (the same axis and facing): shafts first, then the cogwheels on them, then
   belts. Without the part in the chest the hole waits, and the status over the Mechanic says what's needed ("needs
   Shaft to mend the Drive Line"). Between repairs the Mechanic walks a round of the village's millstones: what's been

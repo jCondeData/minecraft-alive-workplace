@@ -158,6 +158,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.ProfessorCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ThesisCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RangerCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaPokemonLegendsBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RogueCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TradeGoodsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.BoardTradeCompatTests",

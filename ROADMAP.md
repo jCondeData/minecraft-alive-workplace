@@ -2192,7 +2192,7 @@ MarketDays) and research/.
   - a `pace` power makes a builder within its radius faster and one outside it not, never past the shared cap; a
     `mood` power shows as a reason in the villager's mood;
   - with `legends` off no Legend loads, nothing ticks and the command says so.
-- [x] **29.3** (approved 2026-10-05) **Rarities, caps and the server's record of Legends.** `legend/LegendRecord`, saved data on the
+- [x] **29.3** (approved 2026-10-05) (verified 2026-10-27: 7 new tests [QaLegendCapsVisitsGameTests 5: inn bed and morning, festival crowd one short then enough, chapel full moon and finished chapel, legends switch off, Mythic guest rank cap and heard 5000 blocks away; QaLegendGuestSlotBugTests 2: a Legendary guest never settles in two villages, a Rare never twice in one village; B609 found, already fixed by e3a01bac8]; 4 mutants killed; wiki legends.md fixed) **Rarities, caps and the server's record of Legends.** `legend/LegendRecord`, saved data on the
   overworld (`aliveworkplace_legends`), lists every Legend that has settled anywhere on the server: id, villager UUID,
   dimension, hall, rarity, the day they settled and the day they fell. `Legends.canCome(level, hall, legend)` is asked
   before any arrival:
@@ -2291,7 +2291,7 @@ MarketDays) and research/.
   Gifted, neither, and a taken slot falling back to Gifted); an old `parents` record loads with the new fields false;
   a Gifted traveller's price; showcase scene `gifted_born` (a child of two Masters grows up Gifted, with the chronicle
   line).
-- [x] **29.8** (approved 2026-10-05) **Legends who visit (Terraria-style guests).** The first way Legends come. Once a day, at the way's own
+- [x] **29.8** (approved 2026-10-05) (verified 2026-10-27: 7 new tests [QaLegendCapsVisitsGameTests 5: inn bed and morning, festival crowd one short then enough, chapel full moon and finished chapel, legends switch off, Mythic guest rank cap and heard 5000 blocks away; QaLegendGuestSlotBugTests 2: a Legendary guest never settles in two villages, a Rare never twice in one village; B609 found, already fixed by e3a01bac8]; 4 mutants killed; wiki legends.md fixed) **Legends who visit (Terraria-style guests).** The first way Legends come. Once a day, at the way's own
   time, a village with no Legend guest may get one: a Legend whose `visit` way's conditions the village meets, whose
   slot is free (29.3) and who hasn't visited it in 7 days comes with the way's chance (default 1 in 4; a hook
   `Legends.visitFactor(hall)` for M30's Open Gates edict) to the way's place:

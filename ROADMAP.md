@@ -5045,7 +5045,7 @@ Depends on: nothing open.
   shares a cell with a ground-floor block; a build without a basement sends the same preview as before (the existing
   tests pass unchanged); scene `table_basement` (Starter Cottage IV, then the Storehouse, turning) in the harness and
   `tools/showcase/scenes.py`.
-- [x] **36.2** (approved auto 2026-10-17) **Village moments complete their quests.** Eight questbook quests end with "Click the checkmark above
+- [x] **36.2** (approved auto 2026-10-17) (verified 2026-10-27: 9 QA tests [QaVillageMomentsGameTests]: all eight moments' advancements and titles, the couple's baby at and 128 out, no hall, research 0->8 and no regrant, edict and realm edict [refused repeat grants nothing, capital's dawn catches up], realm founding refused grants nothing, treasury 0/99/100 cents and the far collector, dawn catch-up from a save; 90/90 in 10x repeats; planted reach mutant caught by 5; questbook drift filed as B573) **Village moments complete their quests.** Eight questbook quests end with "Click the checkmark above
   once ..." for things the mod already knows (`tools/questbook/chapters.py`: born here, research 3 and 7, an edict, a
   Burgher and a Noble household, a realm, the takings). Add eight moments to `MOMENTS` in
   `tools/questbook/generate.py` (`first_baby`, `research_3`, `research_7`, `edict`, `burghers`, `nobles`, `realm`,

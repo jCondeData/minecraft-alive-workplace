@@ -24,6 +24,9 @@ public record Chance(float chance) implements Condition {
 
 	@Override
 	public Progress progress(ServerLevel level, BlockPos hall) {
-		return Progress.of(type(), level.random.nextFloat() < chance ? 1 : 0, 1, Math.round(chance * 100));
+		int have = level.random.nextFloat() < chance ? 1 : 0;
+		int percent = Math.round(chance * 100);
+		// "an 80% chance" (B607): the line's "a" follows the percent's sound
+		return new Progress(have, 1, io.github.jcondedata.aliveworkplace.work.Words.articled("rule.aliveworkplace." + type(), 2, have, 1, percent));
 	}
 }

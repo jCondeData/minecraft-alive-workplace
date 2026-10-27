@@ -261,7 +261,7 @@ public final class Refreshes {
 	public static List<Entry> entries(ServerLevel level, BlockPos hall) {
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		List<Entry> out = new ArrayList<>();
-		for (BuildSiteManager.Finished f : manager.finishedNear(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : manager.finishedInVillage(level, hall)) { // B616: the village's claimed area
 			BuildSite site = siteOf(level, f.placement());
 			if (site != null) {
 				out.add(new Entry(f, null, site, false));
@@ -311,11 +311,11 @@ public final class Refreshes {
 			return said(player, f.get(), Outcome.NOTHING);
 		}
 		BuildSiteManager.get(level).setRefreshAsked(f.get().placement(), true);
-		BlockPos origin = f.get().placement().origin();
+		BlockPos origin = Builders.spot(level, f.get().structure(), f.get().placement()); // B615: measured as placing measures
 		List<Villager> builders = new ArrayList<>(level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
 			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && !ModAttachments.BUILDER_JOB.has(v)
 				&& Builders.activeSite(level, v) == null && !Builders.isHelping(v) && Upkeep.looksAfter(level, v, f.get().owner())
-				&& io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).get(), origin, Builders.MAX_SITE_DISTANCE)));
+				&& Builders.inReach(level, Builders.benchPos(v).get(), f.get().structure(), f.get().placement())));
 		builders.sort(Comparator.comparingDouble(v -> v.distanceToSqr(origin.getX(), origin.getY(), origin.getZ())));
 		for (Villager v : builders) {
 			if (start(level, v, f.get()) != null) {
@@ -331,7 +331,7 @@ public final class Refreshes {
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		for (BuildSiteManager.Finished f : manager.finishedIn(level)) {
 			if (manager.refreshAsked(f.placement()) && Upkeep.looksAfter(level, builder, f.owner())
-				&& io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, bench, f.placement().origin(), Builders.MAX_SITE_DISTANCE)
+				&& Builders.inReach(level, bench, f.structure(), f.placement())
 				&& manager.all().stream().noneMatch(s -> s.placement().equals(f.placement()))) {
 				BuildSite site = start(level, builder, f);
 				if (site != null) {

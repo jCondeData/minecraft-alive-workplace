@@ -115,7 +115,7 @@ public final class RepairsPage {
 			BuildPlan plan = site.plan(level);
 			int percent = plan == null ? 0 : Math.round(site.progress(plan) * 100);
 			Component builder = site.builder() != null && level.getEntity(site.builder()) instanceof Villager v ? v.getDisplayName()
-				: Component.translatable("screen.aliveworkplace.piece_looks.a_builder");
+				: Component.translatable("screen.aliveworkplace.repairs.a_builder"); // "by a builder" (B608)
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.repairs.repairing", builder, percent), ChatFormatting.AQUA));
 			if (entry.ask() == null) {
 				lore.add(VillageHallScreen.line("screen.aliveworkplace.repairs.threat", ChatFormatting.DARK_GRAY));

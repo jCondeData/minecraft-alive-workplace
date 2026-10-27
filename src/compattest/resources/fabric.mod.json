@@ -90,6 +90,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaPlayersTrainCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicReachCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicReachBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMechanicReachEdgeCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateItemsHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateStoresHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFluidsCompatTests",

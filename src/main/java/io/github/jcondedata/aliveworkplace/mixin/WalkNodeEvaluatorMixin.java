@@ -1,7 +1,6 @@
 package io.github.jcondedata.aliveworkplace.mixin;
 
 import io.github.jcondedata.aliveworkplace.work.PathObstacles;
-import io.github.jcondedata.aliveworkplace.work.ShutTrapdoors;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.PathfindingContext;
@@ -21,8 +20,7 @@ abstract class WalkNodeEvaluatorMixin {
 	@Inject(method = "getPathTypeOfMob(Lnet/minecraft/world/level/pathfinder/PathfindingContext;IIILnet/minecraft/world/entity/Mob;)Lnet/minecraft/world/level/pathfinder/PathType;",
 		at = @At("RETURN"), cancellable = true)
 	private void aliveworkplace$shutTrapdoors(PathfindingContext context, int x, int y, int z, Mob mob, CallbackInfoReturnable<PathType> cir) {
-		if (mob.getPathfindingMalus(cir.getReturnValue()) >= 0.0F && (ShutTrapdoors.inTheWay(context.level(), mob, x, y, z)
-			|| PathObstacles.inTheWay(context.level(), mob, x, y, z))) {
+		if (mob.getPathfindingMalus(cir.getReturnValue()) >= 0.0F && PathObstacles.blocksVillager(context.level(), mob, x, y, z)) {
 			cir.setReturnValue(PathType.BLOCKED);
 		}
 	}

@@ -99,6 +99,7 @@ public final class BuilderEvents {
 				// The village mourns (36.16): told who it was, their family grieving, the grave waiting for its funeral.
 				net.minecraft.network.chat.Component died = io.github.jcondedata.aliveworkplace.people.Mourning.onDeath(level, villager, source.getLocalizedDeathMessage(villager), grave);
 				io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, villager.blockPosition(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.DEATH, died);
+				io.github.jcondedata.aliveworkplace.story.SicknessStory.onDeath(level, villager); // a killed Doctor Wren isn't put back: another is sent for (B618)
 			} else if (entity.level() instanceof ServerLevel level) {
 				io.github.jcondedata.aliveworkplace.legend.LegendSlots.onDeath(level, entity, null); // a Legend as a zombie villager
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);

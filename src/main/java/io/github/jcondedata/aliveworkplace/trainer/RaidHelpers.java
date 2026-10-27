@@ -312,13 +312,21 @@ public final class RaidHelpers {
 		return share;
 	}
 
+	/**
+	 * The chronicle's "Ash and Trainer Mira's band beat the tier 3 Fire raid den", or "Ash and the village's trainers
+	 * beat ..." when none of the helpers is found (B608: never "trainers's band").
+	 */
+	public static Component wonLine(Component who, @org.jetbrains.annotations.Nullable Component leader, int tier, Component type) {
+		return leader == null ? Component.translatable("chronicle.aliveworkplace.raid_helpers.won_no_band", who, tier, type)
+			: Component.translatable("chronicle.aliveworkplace.raid_helpers.won", who, leader, tier, type);
+	}
+
 	/** The raid was won: the chronicle tells it, the helpers get their battle XP and walk home. */
 	public static void won(ServerLevel level, Hire hire) {
 		List<Villager> helpers = helpers(level, hire);
 		ServerPlayer player = level.getServer().getPlayerList().getPlayer(hire.player);
 		Component who = player != null ? player.getDisplayName() : Component.translatable("message.aliveworkplace.raid_helpers.a_player");
-		Component band = helpers.isEmpty() ? Component.translatable("message.aliveworkplace.raid_helpers.the_band") : Trainers.title(helpers.get(0));
-		Chronicle.atHall(level, hire.hall, Chronicle.Kind.CUP, Component.translatable("chronicle.aliveworkplace.raid_helpers.won", who, band, hire.tier,
+		Chronicle.atHall(level, hire.hall, Chronicle.Kind.CUP, wonLine(who, helpers.isEmpty() ? null : Trainers.title(helpers.get(0)), hire.tier,
 			RaidDens.typeName(hire.type)));
 		for (Villager helper : helpers) {
 			ModAttachments.TRAINER_BATTLES.set(helper, ModAttachments.TRAINER_BATTLES.getOrElse(helper, 0) + 1);

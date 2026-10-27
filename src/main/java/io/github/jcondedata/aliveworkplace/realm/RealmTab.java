@@ -256,7 +256,7 @@ final class RealmTab {
 			RealmData.Realm realm = RealmData.get(server).realm(invite.realm());
 			Component title = Realms.title(server, realm);
 			long left = Math.max(0, RealmInvites.LAPSE - (now - invite.sent()));
-			Component lapses = io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.realm.invite_left", left / 24000, (left % 24000) / 1000, left / 24000, (left % 24000) / 1000);
+			Component lapses = inviteLeft(left);
 			ItemStack shown = realm.arms().map(VillageBanners.Colours::banner).orElseGet(() -> new ItemStack(Items.WHITE_BANNER));
 			menu.button(slot, VillageHallScreen.icon(shown, Component.translatable("screen.aliveworkplace.realm.accept", title), ChatFormatting.GREEN,
 				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.invite_from", Realms.ownerName(server, realm.capital()),
@@ -292,6 +292,12 @@ final class RealmTab {
 		return out;
 	}
 
+	/** How long an invitation has left ({@code left} ticks): days and hours, or in its last hour "less than an hour left" (B597). */
+	static Component inviteLeft(long left) {
+		return left < 1000 ? Component.translatable("screen.aliveworkplace.realm.invite_left.within_hour")
+			: io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.realm.invite_left", left / 24000, (left % 24000) / 1000, left / 24000, (left % 24000) / 1000);
+	}
+
 	/** A village to invite: a book and quill, where it is, its rank and owner; or, invited, how long the invitation has left. */
 	static ItemStack invitable(MinecraftServer server, BlockPos hall, GlobalPos other, @Nullable RealmData.Invite sent) {
 		VillageRanks.Rank rank = Realms.rankOf(server, other);
@@ -302,7 +308,7 @@ final class RealmTab {
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.member_where", VillageHallScreen.where(hall, other.pos())), ChatFormatting.GRAY),
 			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.member_owner", Realms.ownerName(server, other)), ChatFormatting.GRAY),
 			VillageHallScreen.line(sent == null ? Component.translatable("screen.aliveworkplace.realm.invite_how")
-				: io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.realm.invite_left", left / 24000, (left % 24000) / 1000, left / 24000, (left % 24000) / 1000), sent == null ? ChatFormatting.DARK_GRAY : ChatFormatting.YELLOW));
+				: inviteLeft(left), sent == null ? ChatFormatting.DARK_GRAY : ChatFormatting.YELLOW));
 	}
 
 	/** Not in a realm: the button that founds one, with what it takes and why not. */

@@ -611,6 +611,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStewardSafetyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneLedgerBugTests",
 			"io.github.jcondedata.aliveworkplace.test.PathLedgerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLedgerFramesHaulGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHousesBugTests",

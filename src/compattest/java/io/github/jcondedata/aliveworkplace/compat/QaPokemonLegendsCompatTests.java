@@ -118,6 +118,17 @@ public class QaPokemonLegendsCompatTests implements FabricGameTest {
 		return e;
 	}
 
+	/**
+	 * Held where it was put: the reach spots lie outside this test's area, over other tests' areas, where a Pokémon
+	 * could fall into a hole (and so stand farther off than the distance under test) or choke in a leftover block.
+	 */
+	private static PokemonEntity pinned(PokemonEntity e) {
+		e.setNoGravity(true);
+		e.setInvulnerable(true);
+		e.setDeltaMovement(Vec3.ZERO);
+		return e;
+	}
+
 	private static ServerPlayer owner(GameTestHelper helper) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
@@ -399,22 +410,42 @@ public class QaPokemonLegendsCompatTests implements FabricGameTest {
 		BlockPos at63 = HALL.offset(0, 0, 63);
 		BlockPos at66 = HALL.offset(0, 0, 66);
 		forceChunks(helper, at95, at97, at63, at66);
-		PokemonEntity near = wild(helper, "machamp level=60", at95);
+		// A newly forced chunk takes a few ticks to take entities; until then addFreshEntity drops them unseen.
+		whenReady(helper, 0, () -> reach(helper, hall, at95, at97, at63, at66), at95, at97, at63, at66);
+	}
+
+	private static void whenReady(GameTestHelper helper, int waited, Runnable then, BlockPos... relative) {
+		for (BlockPos p : relative) {
+			if (!helper.getLevel().isPositionEntityTicking(helper.absolutePos(p))) {
+				helper.assertTrue(waited < 200, "the chunk at " + p + " never took entities");
+				helper.runAfterDelay(1, () -> whenReady(helper, waited + 1, then, relative));
+				return;
+			}
+		}
+		then.run();
+	}
+
+	private static void reach(GameTestHelper helper, BlockPos hall, BlockPos at95, BlockPos at97, BlockPos at63, BlockPos at66) {
+		ServerLevel level = helper.getLevel();
+		PokemonEntity near = pinned(wild(helper, "machamp level=60", at95));
+		helper.assertTrue(level.getEntity(near.getUUID()) == near, "the Machamp 95 blocks out didn't spawn");
+		helper.assertTrue(new AlphaNear(96).met(level, hall), "an Alpha 95 blocks from the hall isn't within 96 (it is "
+			+ String.format("%.2f", Math.sqrt(near.distanceToSqr(hall.getCenter()))) + " away)");
+		near.discard();
+		PokemonEntity far = pinned(wild(helper, "machamp level=60", at97));
+		PokemonEntity in = pinned(wild(helper, "rattata level=5", at63));
+		PokemonEntity out = pinned(wild(helper, "meowth level=5", at66));
+		for (PokemonEntity e : List.of(far, in, out)) {
+			helper.assertTrue(level.getEntity(e.getUUID()) == e, e.getPokemon().getSpecies().getName() + " didn't spawn");
+		}
 		helper.runAfterDelay(10, () -> {
-			helper.assertTrue(near.isAlive() && near.level() == level, "the Machamp 95 blocks out didn't spawn");
-			helper.assertTrue(new AlphaNear(96).met(level, hall), "an Alpha 95 blocks from the hall isn't within 96");
-			near.discard();
-			PokemonEntity far = wild(helper, "machamp level=60", at97);
-			PokemonEntity in = wild(helper, "rattata level=5", at63);
-			PokemonEntity out = wild(helper, "meowth level=5", at66);
-			helper.runAfterDelay(10, () -> {
-				helper.assertTrue(far.isAlive(), "the Machamp 97 blocks out didn't spawn");
-				helper.assertTrue(!new AlphaNear(96).met(level, hall), "an Alpha 97 blocks from the hall counted");
-				List<net.minecraft.world.entity.Entity> befriendable = new CobblemonRanger().befriendable(level, hall, PokemonRanger.BEFRIEND_RADIUS);
-				helper.assertTrue(befriendable.contains(in), "a wild Rattata 63 blocks away can't be befriended: " + befriendable);
-				helper.assertTrue(!befriendable.contains(out), "a wild Meowth 66 blocks away can be befriended");
-				helper.succeed();
-			});
+			helper.assertTrue(far.isAlive() && in.isAlive() && out.isAlive(), "a Pokémon at the edge of reach died");
+			helper.assertTrue(!new AlphaNear(96).met(level, hall), "an Alpha 97 blocks from the hall counted");
+			List<net.minecraft.world.entity.Entity> befriendable = new CobblemonRanger().befriendable(level, hall, PokemonRanger.BEFRIEND_RADIUS);
+			helper.assertTrue(befriendable.contains(in), "a wild Rattata 63 blocks away can't be befriended: " + befriendable + " (it is "
+				+ String.format("%.2f", Math.sqrt(in.distanceToSqr(hall.getCenter()))) + " away)");
+			helper.assertTrue(!befriendable.contains(out), "a wild Meowth 66 blocks away can be befriended");
+			helper.succeed();
 		});
 	}
 

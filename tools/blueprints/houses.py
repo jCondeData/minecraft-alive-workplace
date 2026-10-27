@@ -455,6 +455,10 @@ def artisans_house_2():
     b.clear(0, 0, 11, 8, 14, 11)  # the old back overhang
     b.set(4, 1, 10, "air")
     b.set(4, 2, 10, "air")
+    # The workroom's back windows either side of the new doorway are walled up (B648: their glass ended in the doorway)
+    for x in (3, 5):
+        for y in (2, 3):
+            b.set(x, y, 10, STONE_MIX.at(x, y, 10))
     b.blocks.pop((4, 0, 11), None)
     # The wing: walls x 2-6, z 10-16 (the house's back wall is its front), stone with brick quoins
     plinth(b, 2, 10, 6, 16, STONE_MIX, floor="spruce_planks")
@@ -545,10 +549,12 @@ def townhouse_body(b):
     walls(b, 1, 1, 9, 10, 13, 13, TOWNHOUSE_TRIM)  # the cornice
     for y in (6, 10):
         for x in (2, 5, 8):
-            if y == 6:  # tall windows, each with a little balcony: a slab on the jetty's edge behind iron railings
+            if y == 6:  # tall windows, each with a little balcony: a slab on the jetty's edge behind an iron railing
                 window(b, x, y, 1, "north", height=2, lintel=STONE_BRICK)
                 slab(b, x, 5, 0, STONE_BRICK, top=True)
-                b.set(x, 6, 0, "iron_bars", north=False, south=False, east=False, west=False, waterlogged=False)
+                # the railing: an iron panel along the slab's front edge (B648: it was one iron bar, which joined only
+                # the window behind it and stood as a stub ending in the air)
+                trapdoor(b, x, 6, 0, "iron_trapdoor", "south", open_=True)
             else:
                 window(b, x, y, 1, "north", height=2, shutters="dark_oak_trapdoor", sill=STONE_BRICK)
         for x in (2, 8):
@@ -719,6 +725,8 @@ def townhouse_3():
     # A doorway from the first-floor bedroom into the tower
     for y in (6, 7):
         b.set(9, y, 3, "air")
+        # the bedroom's east window beside it now looks into the tower: walled up (B648: its glass ended in the doorway)
+        b.set(9, y, 2, TOWNHOUSE_INFILL)
     # Windows: arrow slits below, wider ones up top for the study
     for y in (2, 6, 10):
         window(b, 11, y, 1, "north", height=2, sill=STONE_BRICK)

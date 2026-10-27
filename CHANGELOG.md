@@ -29,6 +29,12 @@ asks for the steps, `latest.log` and any crash report).
   broken beds (four in the builder's Clinic and its modded copy, two in the village Clinics), and its ceilings no longer
   have an open block under the ridge where the roof's two stair runs meet. Existing Clinics get both with Refresh to
   the latest look (B639).
+- Windows and railings in 20-odd other buildings no longer end in a thin strip of glass or a stub of bars with a gap
+  beside it: the Townhouse's balconies have iron railings across their fronts, the vaults' and cells' bars meet stone
+  posts by their way in, the Jeweler's and the village Gem Grotto's glass cases close round their corners, windows
+  that a doorway or a newer wing cut into are walled up, the Daycare's and the Town Hall's back windows sit back in
+  their bays, the Mortuary's railing ends at a post, and the Great Cathedral's apse and the Stadium's concourse
+  windows meet stone on both sides. Buildings already built get them with Refresh to the latest look (B648).
 - The Terrace's bay windows are whole: each bay stands between two stone piers and its glass fills the opening, where
   the panes stood as thin strips with gaps beside them. A Terrace already built gets them with Refresh to the latest
   look (B640).

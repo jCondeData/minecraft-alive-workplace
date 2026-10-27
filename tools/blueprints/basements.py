@@ -203,6 +203,9 @@ def armoury(b, x0, z0, x1, z1, ladder):
         for y in (LOW, MID, TOP):
             if z != iz0 + 1 or y == TOP:
                 b.set(ix0 + 2, y, z, "iron_bars", waterlogged=False)
+    for z in (iz0, iz0 + 2):  # stone posts either side of the cell's door, so the bars meet them (B648), not the air
+        for y in (LOW, MID, TOP):
+            b.set(ix0 + 2, y, z, "stone_bricks")
     b.set(ix0, LOW, iz1, "hay_block", axis="y")
     b.set(ix0 + 1, LOW, iz0, "spruce_trapdoor", facing="north", half="bottom", open=False, powered=False, waterlogged=False)
     # The armoury
@@ -349,8 +352,8 @@ def cold_larder(b, x0, z0, x1, z1, ladder):
 
 
 def vault(b, x0, z0, x1, z1, ladder):
-    """The Storehouse's vault (walls x0..x1, z0..z1): stone-brick walls, chests two high round it, an iron-barred gate
-    to the strongroom corner, a lantern."""
+    """The Storehouse's vault (walls x0..x1, z0..z1): stone-brick walls, chests two high round it, a stone pier by
+    the strongroom corner, a lantern."""
     cellar(b, x0, z0, x1, z1, wall=MOSSY_BRICK_MIX, floor="polished_andesite", ladder=ladder, beam="spruce_log")
     ix0, iz0, ix1, iz1 = x0 + 1, z0 + 1, x1 - 1, z1 - 1
     for z in range(iz0, iz1 + 1):
@@ -359,10 +362,10 @@ def vault(b, x0, z0, x1, z1, ladder):
     for x in range(ix0 + 1, ix1):
         for y in (LOW, MID):
             chest(b, x, y, iz1, "north")
-    # The strongroom: the corner by the chests barred off, gold and iron behind the bars
-    b.set(ix1 - 1, LOW, iz0, "iron_bars", waterlogged=False)
-    b.set(ix1 - 1, MID, iz0, "iron_bars", waterlogged=False)
-    b.set(ix1 - 1, TOP, iz0, "iron_bars", waterlogged=False)
+    # The strongroom corner by the chests, behind a stone pier (B648: it was one column of bars standing out from the
+    # wall with nothing to join on its other side, a thin strip ending in the air)
+    for y in (LOW, MID, TOP):
+        b.set(ix1 - 1, y, iz0, "polished_andesite")
     hang_light(b, (ix0 + ix1) // 2, (iz0 + iz1) // 2)
 
 

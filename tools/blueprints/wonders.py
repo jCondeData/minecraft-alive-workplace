@@ -650,8 +650,12 @@ def choir(b, roof):
     wall = apse_wall()
     for x, z in wall:
         column(b, x, z, 1, 23, STONE)
+    # the windows go where the glass meets the curved wall's stone on two sides (B648: at 18 and 162 degrees they
+    # stood where the wall turned, joined on one side only and ending in the air on the other)
+    ws = set(wall)
+    framed = [c for c in wall if sum((c[0] + dx, c[1] + dz) in ws for dx, dz in DIRS.values()) >= 2]
     for angle in (18, 54, 90, 126, 162):
-        x, z = min(wall, key=lambda c: abs(math.degrees(math.atan2(c[1] - APSE[1], c[0] - APSE[0])) - angle))
+        x, z = min(framed, key=lambda c: abs(math.degrees(math.atan2(c[1] - APSE[1], c[0] - APSE[0])) - angle))
         for y in range(5, 19):
             pane(b, x, y, z, GLASS)
     # the half-cone roof over the apse, matching the nave's pitch where they meet
@@ -4723,6 +4727,16 @@ def s_back_wall(b):
                 lantern(b, x, top + 2, z)
         else:
             wall_block(b, x, top + 1, z, "stone_brick_wall")
+    # B648: where a window bay meets an arch with no pilaster between, its last bars would end in the arch's opening;
+    # the wall's stone stands there instead, a jamb for the bars beside it
+    walls_round = set(order)
+    for x, z in order:
+        for y in range(1, 20):
+            here = b.get(x, y, z)
+            if here and here[0] == "minecraft:iron_bars" and any(
+                    (x + dx, z + dz) in walls_round and b.get(x + dx, y, z + dz) is None
+                    for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                b.set(x, y, z, S_BODY)
     lantern(b, SCX, 8, 1, hanging=True)  # in the gateway
 
 

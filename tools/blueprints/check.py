@@ -7,7 +7,8 @@ backs to the table, and upper floors no stairs or ladder lead up to; and since B
 Since B537-B539: beds missing their other half (or with it on the wrong side), lanterns, candles and torches standing
 on a block whose top can't hold them (a lectern, a chest, a bottom slab...), and dirt paths or farmland under a block
 the game counts as solid (a fence, a wall, a slab...), which it turns to dirt. Since B639: "cots" of a carpet on a
-bottom slab, two in a row, where a bed belongs (the owner saw them as broken beds no one can sleep in).
+bottom slab, two in a row, where a bed belongs (the owner saw them as broken beds no one can sleep in). Since B648:
+glass panes and iron bars whose run ends in the air (joined on one side only), the Terrace's broken windows (B640).
 """
 
 AIR = {"minecraft:air", "minecraft:cave_air", "minecraft:structure_void", "minecraft:jigsaw"}
@@ -150,6 +151,7 @@ def check(b, only=None, whole=None):
         if bad:
             problems.append(f"{short}@{x},{y},{z} {bad}")
     problems += cot_problems(blocks, only)
+    problems += pane_end_problems(blocks, only, getattr(b, "open_panes", {}))
     problems += chair_problems(blocks, only)
     problems += doorway_problems(blocks, only)
     problems += headroom_problems(blocks, b.w, b.h, b.d, deep, drawn, only)
@@ -181,6 +183,33 @@ def cot_problems(blocks, only=None):
             if _cot_half(blocks, q) and blocks[q][0] == blocks[p][0]:
                 problems.append(f"{_short(blocks[p])}@{x},{y},{z} lies on a slab beside another (to {q[0]},{q[1]},{q[2]}):"
                                 " a cot of slab and carpet where a bed belongs")
+    return problems
+
+
+# --- Window glass ending in air (B640, B648) -------------------------------------------------------------------------
+def is_pane(block):
+    return block is not None and (_short(block).endswith("glass_pane") or _short(block) == "iron_bars")
+
+
+def pane_end_problems(blocks, only=None, allowed=None):
+    """A glass pane or iron bars joined on one side only, with air on the other: the run of glass stops half way across
+    its last block, a thin strip with a gap beside it (B640: the Terrace's bay windows). A window's glass meets a jamb (a
+    block it joins) at both ends. Its stored connections are kit.finish's, what the game works out as it is placed.
+    {@code allowed}: the build's open_panes, ends meant to stand free (a lamp's arm), each with its reason; the same
+    list is in B648GameTests.ALLOWED."""
+    problems = []
+    for p in sorted(blocks):
+        if (only is not None and p not in only) or not is_pane(blocks[p]) or p in (allowed or {}):
+            continue
+        props = blocks[p][1]
+        joined = [d for d in FACING if str(props.get(d, "false")).lower() == "true"]
+        if len(joined) != 1:
+            continue
+        dx, _, dz = FACING[OPPOSITE[joined[0]]]
+        x, y, z = p
+        if (x + dx, y, z + dz) not in blocks:
+            problems.append(f"{_short(blocks[p])}@{x},{y},{z} joins only to the {joined[0]}, with air to the "
+                            f"{OPPOSITE[joined[0]]}: the glass ends half way, give it a jamb")
     return problems
 
 

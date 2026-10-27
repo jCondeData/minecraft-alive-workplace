@@ -2311,7 +2311,7 @@ MarketDays) and research/.
     lookups run with nobody online;
   - renders of the three camps in the review package; showcase scene `legend_sites` (the three camps, and a GIF of the
     cage opened).
-- [x] **29.10** (approved 2026-10-05) **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
+- [x] **29.10** (approved 2026-10-05) (verified 2026-10-27: lane D QA 2026-10-27: QaStrangeMoodGameTests [7: only a Master, the daily round's blocks and never two moods, materials on the last day, two of three never, the Masterwork to whoever brought most or the chest, 3 beauty in a frame and 0 in a chest, a broken workstation, sulk days in English]; legends.md updated; full build green) **Strange moods and Masterworks.** The fourth way (Dwarf Fortress). Once a day, in a happy village
   (29.5's test) with no mood already on, a Master whose trade a Legend's `inspired` way names may be seized by a
   strange mood, 1 time in 8, if the village meets that Legend's conditions and its slot is free (never during a raid
   or a festival; config `strangeMoods`). The villager (attachment `STRANGE_MOOD`):

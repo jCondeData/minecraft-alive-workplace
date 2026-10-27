@@ -4,7 +4,7 @@ ROADMAP 33.10 (part of 1.7, "From village to realm"; switched on in 1.0 with eve
 the settlers [sent with the charter](colony-settlers.md) reach the spot, make camp, raise a Village Hall and a Travel
 Post, and their builder starts the colony's first two buildings.
 
-Roadmap items: 33.10, 33.14, B424
+Roadmap items: 33.10, 33.14, B424, B590
 
 ## What a player sees
 

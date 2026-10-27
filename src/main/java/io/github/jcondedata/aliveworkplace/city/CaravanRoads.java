@@ -195,7 +195,7 @@ public final class CaravanRoads {
 	/** The other village's name, as the caravans' list has it. */
 	static Component nameOf(ServerLevel level, BlockPos other) {
 		Caravans.Village v = Caravans.Data.get(level).village(other);
-		return v == null ? Component.translatable("chronicle.aliveworkplace.someone") : v.name();
+		return io.github.jcondedata.aliveworkplace.hall.Chronicle.otherVillage(v == null ? null : v.name());
 	}
 
 	/**

@@ -118,7 +118,8 @@ public final class VillageHalls {
 		List<Build> out = new ArrayList<>();
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
 			if (site.isDone() || site.isQueued() || !site.placement().dimension().equals(Ids.of(level.dimension()))
-				|| site.placement().origin().distSqr(hall) > (double) RADIUS * RADIUS) {
+				|| !io.github.jcondedata.aliveworkplace.work.Reach.claims(level, hall,
+					io.github.jcondedata.aliveworkplace.build.Builders.spot(level, site.structure(), site.placement()))) { // B616: the claimed area
 				continue;
 			}
 			BuildPlan plan = site.plan(level);

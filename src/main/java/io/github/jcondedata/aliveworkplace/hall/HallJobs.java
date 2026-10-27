@@ -259,7 +259,7 @@ public final class HallJobs {
 			boolean chosen = picked == VillagerProfession.NONE;
 			List<Component> tip = new ArrayList<>();
 			tip.add(Component.translatable("screen.aliveworkplace.hall.jobs.no_job_about").withStyle(ChatFormatting.GRAY));
-			tip.add(Component.translatable(chosen ? "screen.aliveworkplace.hall.jobs.no_job_pay" : "screen.aliveworkplace.hall.jobs.no_job_pick", who,
+			tip.add(Words.articled(chosen ? "screen.aliveworkplace.hall.jobs.no_job_pay" : "screen.aliveworkplace.hall.jobs.no_job_pick", 1, who,
 				Stations.name(villager.getVillagerData().getProfession())).withStyle(ChatFormatting.GREEN));
 			out.add(line(Items.BARRIER, Component.translatable("screen.aliveworkplace.hall.jobs.no_job"), chosen ? State.NO_JOB_PICKED : State.NO_JOB,
 				BuiltInRegistries.VILLAGER_PROFESSION.getId(VillagerProfession.NONE), tip));

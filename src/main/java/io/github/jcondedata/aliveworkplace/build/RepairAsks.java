@@ -105,7 +105,7 @@ public final class RepairAsks {
 	private static void tellAsked(ServerLevel level, BuildSiteManager.Finished f, int missing, Villager builder) {
 		ServerPlayer to = level.getServer().getPlayerList().getPlayer(f.owner());
 		if (to == null) {
-			to = io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, f.placement().origin())
+			to = io.github.jcondedata.aliveworkplace.work.Reach.village(level, Builders.spot(level, f.structure(), f.placement())) // B616: a zone past the radius too
 				.map(hall -> level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity e && e.owner() != null
 					? level.getServer().getPlayerList().getPlayer(e.owner()) : null).orElse(null);
 		}
@@ -141,7 +141,7 @@ public final class RepairAsks {
 		if (player.hasPermissions(2) || Friends.get(level.getServer()).mayDirect(f.owner(), player.getUUID())) {
 			return true;
 		}
-		return io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, f.placement().origin())
+		return io.github.jcondedata.aliveworkplace.work.Reach.village(level, Builders.spot(level, f.structure(), f.placement())) // B616
 			.map(hall -> level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity e
 				&& e.owner() != null && Friends.get(level.getServer()).mayDirect(e.owner(), player.getUUID()))
 			.orElse(false);
@@ -224,11 +224,11 @@ public final class RepairAsks {
 
 	/** After a yes: the nearest free builder who looks after {@code f} looks at once (instead of at their next round). */
 	private static void startNow(ServerLevel level, BuildSiteManager.Finished f) {
-		BlockPos origin = f.placement().origin();
+		BlockPos origin = Builders.spot(level, f.structure(), f.placement()); // B615: measured as placing measures
 		List<Villager> builders = new ArrayList<>(level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
 			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && !ModAttachments.BUILDER_JOB.has(v)
 				&& Upkeep.looksAfter(level, v, f.owner())
-				&& io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).get(), origin, Builders.MAX_SITE_DISTANCE)));
+				&& Builders.inReach(level, Builders.benchPos(v).get(), f.structure(), f.placement())));
 		builders.sort(Comparator.comparingDouble(v -> v.distanceToSqr(origin.getX(), origin.getY(), origin.getZ())));
 		for (Villager v : builders) {
 			if (Builders.activeSite(level, v) == null && !ModAttachments.BUILDER_JOB.has(v)) {
@@ -261,7 +261,7 @@ public final class RepairAsks {
 	public static List<Entry> entries(ServerLevel level, BlockPos hall) {
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		List<Entry> out = new ArrayList<>();
-		for (BuildSiteManager.Finished f : manager.finishedNear(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : manager.finishedInVillage(level, hall)) { // B616: the village's claimed area
 			Ask ask = manager.repairAsk(f.placement());
 			BuildSite site = repairOf(level, f.placement());
 			if (ask != null || site != null) {

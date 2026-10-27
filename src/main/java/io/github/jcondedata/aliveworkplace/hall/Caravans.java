@@ -1077,7 +1077,7 @@ public final class Caravans {
 			for (BlockPos from : data.walkTheRest(hall, level.getGameTime(), s -> trip(level, s.from(), s.to(), data) / 4)) {
 				Village them = data.village(from);
 				Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.train_walked",
-					them == null ? Component.translatable("chronicle.aliveworkplace.someone") : them.name()), true);
+					Chronicle.otherVillage(them == null ? null : them.name())), true);
 			}
 		}
 		// 41.3: a caravan by waystone that finds a stone broken when it steps out walks the road instead
@@ -1085,7 +1085,7 @@ public final class Caravans {
 			s -> trip(level, s.from(), s.to(), data))) {
 			Village them = data.village(from);
 			Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.waystone_walked",
-				them == null ? Component.translatable("chronicle.aliveworkplace.someone") : them.name()), true);
+				Chronicle.otherVillage(them == null ? null : them.name())), true);
 		}
 		unload(level, hall, data);
 		io.github.jcondedata.aliveworkplace.trade.CaravanTrade.book(level, hall, data); // 33.6: what our caravans sold
@@ -1249,7 +1249,7 @@ public final class Caravans {
 				if (left.size() < s.goods().size() || left.stream().mapToInt(ItemStack::getCount).sum() < s.goods().stream().mapToInt(ItemStack::getCount).sum()) {
 					Village from = data.village(s.from());
 					Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_unsold",
-						from == null ? Component.translatable("chronicle.aliveworkplace.someone") : from.name(), describe(s.goods())), true);
+						Chronicle.otherVillage(from == null ? null : from.name()), describe(s.goods())), true);
 					level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1.2f);
 				}
 				continue;
@@ -1258,7 +1258,7 @@ public final class Caravans {
 				Village from = data.village(s.from());
 				Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable(s.byTrain() ? "chronicle.aliveworkplace.train_came"
 					: s.byWaystone() ? "chronicle.aliveworkplace.waystone_came" : "chronicle.aliveworkplace.caravan_came",
-					from == null ? Component.translatable("chronicle.aliveworkplace.someone") : from.name(), describe(s.goods())), true);
+					Chronicle.otherVillage(from == null ? null : from.name()), describe(s.goods())), true);
 				level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1.2f);
 			}
 		}
@@ -1307,7 +1307,7 @@ public final class Caravans {
 		if (total > 0) {
 			Village seller = data.village(from);
 			Chronicle.atHall(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.pact.paid",
-				seller == null ? Component.translatable("chronicle.aliveworkplace.someone") : seller.name(), io.github.jcondedata.aliveworkplace.trade.TradePage.money(total)));
+				Chronicle.otherVillage(seller == null ? null : seller.name()), io.github.jcondedata.aliveworkplace.trade.TradePage.money(total)));
 		}
 		return total;
 	}

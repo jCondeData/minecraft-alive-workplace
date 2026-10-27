@@ -32,7 +32,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 /**
  * A Wonder finished (35.8): every player on the server is told; the village holds a festival that evening
- * ({@link Festivals#schedule}; the next evening when this one's is over) whose fireworks are a bigger show, rockets going
+ * ({@link Festivals#before}; the next evening when this one's is over) whose fireworks are a bigger show, rockets going
  * up round the square and from the Wonder itself ({@link #show}); the chronicles of the village and of every village
  * linked to it ({@link Wonders#linked}: its realm, or its caravan partners) record it; and the Village Map marks it with
  * a gold banner ({@code hall/VillageMaps}). Its powers come on with it ({@link Wonders#power}).
@@ -62,7 +62,7 @@ public final class WonderCelebration {
 		if (level.getBlockEntity(site.hall()) instanceof VillageHallBlockEntity entity) {
 			long timeOfDay = level.getDayTime() % VillageNeeds.DAY;
 			long evening = timeOfDay < Curfew.festivalEnd(entity) ? day : day + 1; // this one's over: tomorrow evening's
-			Festivals.schedule(level, site.hall(), entity, evening);
+			Festivals.before(level, site.hall(), entity, evening); // that evening, even with a later festival planned (B605)
 			festival = entity.festivalDay() == evening ? evening : entity.festivalDay();
 		}
 		WonderManager.get(level).setKept(site.id(), new WonderSite.Kept(100, day, false, festival));

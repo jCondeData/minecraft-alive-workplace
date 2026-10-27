@@ -342,7 +342,7 @@ public final class GolemSmith {
 		List<Component> out = new ArrayList<>();
 		for (IronGolem golem : golems) {
 			if (out.size() == HALL_LINES) {
-				out.add(Component.translatable("screen.aliveworkplace.hall.golems_more", golems.size() - HALL_LINES));
+				out.add(Words.counted("screen.aliveworkplace.hall.golems_more", golems.size() - HALL_LINES, golems.size() - HALL_LINES));
 				break;
 			}
 			out.add(Component.translatable("screen.aliveworkplace.hall.golem_line", role(golem).title(), doing(golem)));

@@ -79,7 +79,7 @@ public final class PokemonTraders {
 		int tierBefore = tier(trader);
 		BuilderLevels.addXp((ServerLevel) trader.level(), trader, XP_PER_TRADE, null);
 		if (tier(trader) > tierBefore) {
-			player.sendSystemMessage(Component.translatable("message.aliveworkplace.pokemon_trader.ranked_up", trader.getDisplayName(),
+			player.sendSystemMessage(io.github.jcondedata.aliveworkplace.work.Words.articled("message.aliveworkplace.pokemon_trader.ranked_up", 1, trader.getDisplayName(),
 				BuilderLevels.levelName(tier(trader))).withStyle(ChatFormatting.GOLD));
 		}
 	}

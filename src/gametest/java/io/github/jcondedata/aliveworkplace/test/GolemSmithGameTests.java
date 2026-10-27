@@ -369,4 +369,29 @@ public class GolemSmithGameTests implements net.fabricmc.fabric.api.gametest.v1.
 			restore();
 		}
 	}
+
+	/**
+	 * B629 (QA, qa-lane-d-1027-1612): 7 forged golems, the hall shows 6 lines and "...and 1 more golem" (not "1 more
+	 * golems"); with 8, "...and 2 more golems".
+	 */
+	//$ gametest_ticks_batch AREA '100' '"golemSmithMore"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "golemSmithMore")
+	public void theHallsOverflowLineCountsOneGolem(GameTestHelper helper) {
+		setUp(helper);
+		ServerLevel level = helper.getLevel();
+		for (int i = 0; i < 8; i++) {
+			IronGolem g = GolemSmith.build(level, helper.absolutePos(new BlockPos(5 + 3 * (i % 7), 1, 20 + 3 * (i / 7))), GolemSmith.Role.HAULER);
+			helper.assertTrue(g != null, "no golem " + i);
+			g.setNoAi(true);
+			if (i == 6) {
+				List<Component> lines = GolemSmith.hallLines(level, helper.absolutePos(HALL));
+				helper.assertTrue(lines.size() == 7, "the hall's lines: " + lines.stream().map(Component::getString).toList());
+				helper.assertTrue(lines.get(6).getString().equals("...and 1 more golem"), "the last line: " + lines.get(6).getString());
+			}
+		}
+		List<Component> lines = GolemSmith.hallLines(level, helper.absolutePos(HALL));
+		helper.assertTrue(lines.size() == 7 && lines.get(6).getString().equals("...and 2 more golems"),
+			"the hall's lines with 8: " + lines.stream().map(Component::getString).toList());
+		helper.succeed();
+	}
 }

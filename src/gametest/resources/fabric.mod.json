@@ -79,6 +79,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CheckBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MinerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DeepQuarryGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDeepQuarryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MinerPickaxeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuarryBuildGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuarryBuildGameTests",

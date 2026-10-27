@@ -99,3 +99,7 @@ ribbon on the name icon, the command, nothing announced twice, the ribbon gone a
 `aVillageLeftOffIsntListed` (the Trade page toggle, a stranger refused, an unowned village not listed),
 `aTieGoesToTheBiggerVillage` (and the takings counted), `aMissedWeekIsAnnouncedOnce`,
 `theWeeksNumbersSurviveSaveAndReload`, `theSwitchOff`. Showcase scenes: `leaderboard`.
+QA: `QaRealmMapBoardGameTests`: `qaWeekBoundaryToTheSecond` (18:59:59 nothing, 19:00:00 read out, nothing more until
+the next Sunday 19:00:00), `qaTheDayAndHourSettings` (Wednesday 08:00, the command's line), `qaTopThreeAndTiesGoToTheBigger`
+(a fourth village not read out; a three-way tie in the bigger villages' order whichever was counted first),
+`qaGreatestRealmByMembersThenVillagers`.

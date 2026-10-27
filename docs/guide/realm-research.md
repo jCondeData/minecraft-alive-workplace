@@ -22,16 +22,18 @@ A member's research screen (sneak-right-click a Scholar) shows each topic at the
 capital's. Where the capital knows more, the tooltip says "From the capital: Drill Journeyman", and every bonus that
 topic gives works in the member too: its guards hit harder with the capital's Drill, its market gets the capital's
 Commerce. A topic the capital knows fully can't be taken up again. The member's own levels are unchanged, and only they
-count toward its rank.
+count toward its rank. A village that leaves the realm keeps only its own levels.
 
-A member's scholars with nothing chosen at home help the capital, at half pace.
+A member's scholars with nothing chosen at home help the capital at half pace: on the capital's own topic, or on the
+realm's topic while the capital has none.
 
 ## The realm topics
 
 The capital's research screen has a **Realm** tab (a gold helmet). Its ruler picks a topic there, and the capital's
 scholars take it up when they have nothing of their own. Every level costs 16 paper and 8 emeralds from the
 [realm treasury](realm-treasury.md), and every level after a topic's first takes 2 books as well. While the treasury is
-short, they wait.
+short, they wait. A topic can't be chosen before the ones in its Needs column. Its effect reaches the realm's villages
+only: a village outside the realm gets none of it, even one with the same owner.
 
 | Topic | Levels | Each level | Needs |
 |---|---|---|---|

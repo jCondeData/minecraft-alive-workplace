@@ -122,6 +122,9 @@ public final class WonderCrews {
 					// a part whose lead died with nobody on its crew (handOn): the first builder to come leads it
 					best.setBuilder(villager.getUUID());
 					ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(best.id(), false));
+					if (wonder.builder().isEmpty()) {
+						WonderManager.get(level).setBuilder(wonder.id(), villager.getUUID()); // B467: the Wonder's lead too
+					}
 					return best;
 				}
 				ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(best.id(), true));
@@ -182,6 +185,7 @@ public final class WonderCrews {
 			part.setBuilder(best);
 			part.setQueued(false);
 			ModAttachments.BUILDER_JOB.set(v, new BuilderJob(part.id(), false));
+			succeed(level, part, dead, best);
 			return;
 		}
 		UUID next = part.wonder() == null ? null : WonderManager.get(level).site(part.wonder())
@@ -189,9 +193,31 @@ public final class WonderCrews {
 		if (next != null && !next.equals(dead.getUUID())) {
 			part.setBuilder(next);
 			part.setQueued(true); // in their queue: picked up when they finish what they're on
+			succeed(level, part, dead, next);
 		} else {
 			part.setBuilder(null);
 			part.setQueued(false);
+			succeed(level, part, dead, null);
+		}
+	}
+
+	/**
+	 * B467: when {@code gone} was the Wonder's own lead, whoever took {@code part} over leads it now (named on the stone
+	 * and the hall, and the one counted on its crew); with nobody yet, it has no lead until the next builder joins.
+	 */
+	private static void succeed(ServerLevel level, BuildSite part, Villager gone, @Nullable UUID successor) {
+		if (part.wonder() == null) {
+			return;
+		}
+		WonderManager manager = WonderManager.get(level);
+		Optional<WonderSite> wonder = manager.site(part.wonder());
+		if (wonder.isEmpty() || !wonder.get().builder().equals(Optional.of(gone.getUUID()))) {
+			return;
+		}
+		if (successor != null) {
+			manager.setBuilder(part.wonder(), successor);
+		} else {
+			manager.clearBuilder(part.wonder());
 		}
 	}
 

@@ -4,7 +4,7 @@ The twelve workplaces the Steward asks a builder for each have their own buildin
 from the street, and so does every job's house that villages grow by themselves, the Weaver's Cottage and the Inn.
 Before, all of them were the same timber house with a different room inside (the owner's playtest, 2026-10-16).
 
-Roadmap items: 26.11, 36.8, B170, 36.21
+Roadmap items: 26.11, 36.8, B170, 36.21, B639
 
 ## 1. What a player sees
 
@@ -19,7 +19,8 @@ Roadmap items: 26.11, 36.8, B170, 36.21
 - **Guard House**: a squat stone blockhouse with barred arrow slits, a corbelled battlement round a flat roof and a
   timber watch hut on it; a ladder inside leads up.
 - **Clinic**: a white pavilion with its gable to the street and a stone-mullioned cross window over the door, and a ward
-  across the back with cross windows and cots.
+  across the back with cross windows and four white beds, heads to the back wall, for the ill. Its ceilings are closed
+  up to the ridge.
 - **Ferry House**: a boathouse under a gambrel roof, a landing stage of planks at the front with a light on a mast.
 - **Trainer's House** (Cobblemon): a long low dojo with a deep veranda, before it a fenced sand sparring ring with
   targets.
@@ -41,7 +42,7 @@ calcite and spruce in the snow; spruce and mossy cobblestone in the taiga):
 - **Kitchen**: a hipped cookhouse with a domed brick oven and a tall flue on its side, herb beds before it.
 - **Post Office**: a stone ground floor, a timber upper floor jettied over the street, a dovecote on the ridge.
 - **Guard House**: a stone blockhouse with arrow slits, a battlement and a watch hut on the roof.
-- **Clinic**: a pavilion with a stone cross window over the door and a long ward across the back.
+- **Clinic**: a pavilion with a stone cross window over the door and a long ward across the back with two white beds.
 - **Ferry House**: a boathouse under a gambrel roof, a signal mast with two lamps, an upturned boat on trestles.
 - **Storehouse**: a tall granary, stone below and boards above, a hoist beam with a hay bale on its chain, a lean-to.
 - **Orchard House**: a low hipped cottage beside a fenced orchard of blossoming fruit trees.

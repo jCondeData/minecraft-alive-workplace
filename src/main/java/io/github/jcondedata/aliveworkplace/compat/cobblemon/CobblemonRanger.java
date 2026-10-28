@@ -67,19 +67,24 @@ public final class CobblemonRanger implements WildPokemon {
 		return entity instanceof PokemonEntity e && e.getPokemon().getSpecies().getLabels().stream().anyMatch(BANNED::contains);
 	}
 
+	/** Where a reach is measured from: the floor at the block's middle (B623: 96 blocks away on the hall's floor is within 96, not 96.001). */
+	private static net.minecraft.world.phys.Vec3 floor(BlockPos center) {
+		return net.minecraft.world.phys.Vec3.atBottomCenterOf(center);
+	}
+
 	@Override
 	public List<Entity> alphas(ServerLevel level, BlockPos center, int radius) {
 		double r2 = (double) radius * radius;
 		return new ArrayList<>(level.getEntitiesOfClass(PokemonEntity.class, box(center, radius),
-			e -> isWild(e) && isAlpha(e.getPokemon()) && e.distanceToSqr(center.getCenter()) <= r2));
+			e -> isWild(e) && isAlpha(e.getPokemon()) && e.distanceToSqr(floor(center)) <= r2));
 	}
 
 	@Override
 	public List<Entity> befriendable(ServerLevel level, BlockPos center, int radius) {
 		double r2 = (double) radius * radius;
 		List<Entity> out = new ArrayList<>(level.getEntitiesOfClass(PokemonEntity.class, box(center, radius),
-			e -> isWild(e) && !banned(e) && !e.isBusy() && !e.isUncatchable() && e.distanceToSqr(center.getCenter()) <= r2));
-		out.sort(Comparator.comparingDouble(e -> e.distanceToSqr(center.getCenter())));
+			e -> isWild(e) && !banned(e) && !e.isBusy() && !e.isUncatchable() && e.distanceToSqr(floor(center)) <= r2));
+		out.sort(Comparator.comparingDouble(e -> e.distanceToSqr(floor(center))));
 		return out;
 	}
 

@@ -828,6 +828,8 @@ def supply_shop_3():
     for y in (1, 2):
         b.set(9, y, 6, "air")  # through from the shop, between the east windows
     b.set(9, 2, 6, "air")
+    # The east window's other pane, left between the doorway and the corner, is walled up (B648: it ended in the doorway)
+    b.set(9, 2, 7, SHOP_PLASTER.at(9, 2, 7))
     door(b, 13, 1, 3, "spruce_door", "south")
     stairs(b, 13, 0, 2, STONE_BRICK, "south")
     window(b, 10, 2, 3, "north", sill=SPRUCE)
@@ -1229,7 +1231,15 @@ TERRACE_ROOF = DARK_OAK
 
 def terrace_bay(b, x, flowers):
     """A box bay window two wide (x, x + 1) standing out a block from the front (z 0) on a stone footing: a brick
-    sill wall, two panes high of glass, a brick slab roof (top slabs); pots of flowers on the sill inside it."""
+    sill wall, two panes high of glass, a brick slab roof (top slabs); pots of flowers on the sill inside it. B640: a
+    stone pier closes each side (x - 1, x + 2) up to the roof, so the glass has a jamb to join on both ends; with air
+    there the panes stopped at the middle of their blocks and stood as thin strips with gaps beside them. A pier takes
+    the place of a door hood's bracket beside it, and two bays side by side share one."""
+    for cx in (x - 1, x + 2):
+        for y in range(0, 4):
+            b.set(cx, y, 0, TERRACE_TRIM)
+        if b.blocks.get((cx, 4, 0), ("minecraft:air",))[0] in ("minecraft:air", "minecraft:cave_air"):
+            slab(b, cx, 4, 0, BRICK, top=True)
     for i, cx in enumerate((x, x + 1)):
         b.set(cx, 0, 0, TERRACE_TRIM)
         b.set(cx, 1, 0, TERRACE_WALL.at(cx, 1, 0))
@@ -1597,7 +1607,9 @@ def town_hall():
         window(b, 11, 2, z, "east", height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
     for x in (3, 9):
         window(b, x, 2, 3, "north", height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
-    window(b, 4, 3, 11, "south", width=5, height=2, sill=STONE_BRICK)
+    # a window looking south runs west from its x: x 8-4, the middle of the back wall (B648: from x 4 it ran out over
+    # the corner post and its glass ended in the air beyond)
+    window(b, 8, 3, 11, "south", width=5, height=2, sill=STONE_BRICK)
     beam_ring(b, 1, 3, 11, 11, 6, HALL_FRAME)
     for z in (6, 9):  # tie beams for the lamps
         for x in range(2, 11):

@@ -459,6 +459,8 @@ def gem_grotto_room(b, style):
             pane(b, x, y, 5)
     b.set(4, 1, 6, "polished_blackstone")
     pane(b, 4, 2, 6)
+    for y in (1, 2):  # the case's corner, so its glass meets round it (B648: both runs ended in the air there)
+        pane(b, 4, y, 5)
     b.set(1, 1, 3, "stonecutter", facing="east")
     loot_chest(b, 1, 1, 2, "village_gem_grotto")
 

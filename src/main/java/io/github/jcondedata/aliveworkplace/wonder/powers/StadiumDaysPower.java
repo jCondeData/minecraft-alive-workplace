@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.wonder.powers;
 
 import com.google.gson.JsonObject;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -43,7 +44,8 @@ public record StadiumDaysPower(int everyDays, int minVisitors, int maxVisitors) 
 			: Component.translatable("wonder.aliveworkplace.power.stadium_days_every", everyDays);
 		Component who = minVisitors == maxVisitors ? Component.literal(String.valueOf(minVisitors))
 			: Component.translatable("wonder.aliveworkplace.power.stadium_days_range", minVisitors, maxVisitors);
-		return Component.translatable("wonder.aliveworkplace.power.stadium_days", when, who);
+		long count = minVisitors == maxVisitors ? minVisitors : maxVisitors; // a range reads plural ("1 to 2 visiting trainers")
+		return Words.counted("wonder.aliveworkplace.power.stadium_days", count, when, who);
 	}
 
 	/** Whether {@code day} (as the chronicle counts them) is a Stadium Day. */

@@ -356,8 +356,8 @@ public final class ProfessorsThesis {
 		v.addTag(Arcs.TAG);
 		v.addTag(ArcEffects.arcTag(s.id));
 		v.addTag(THESSALY_TAG);
+		Nbt.putUuid(s.extra, THESSALY, v.getUUID()); // before she joins the level, so onLoad knows her
 		level.addFreshEntity(v);
-		Nbt.putUuid(s.extra, THESSALY, v.getUUID());
 		Stories.Data.get(level).setDirty();
 		return v;
 	}
@@ -374,6 +374,25 @@ public final class ProfessorsThesis {
 			level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, v.getX(), v.getY() + 1, v.getZ(), 12, 0.3, 0.5, 0.3, 0.02);
 			v.discard();
 		}
+	}
+
+	/**
+	 * A Thessaly loads whom no running arc remembers (B663: her thesis ended while she was away, or in a world saved
+	 * before the arc's end sent her off): she's gone. True when she was.
+	 */
+	static boolean onLoad(ServerLevel level, Entity entity) {
+		if (!entity.getTags().contains(THESSALY_TAG)) {
+			return false;
+		}
+		for (Stories.Entry e : Stories.Data.get(level).halls.values()) {
+			for (ArcState s : Arcs.running(e)) {
+				if (Nbt.hasUuid(s.extra, THESSALY) && Nbt.getUuid(s.extra, THESSALY).equals(entity.getUUID())) {
+					return false;
+				}
+			}
+		}
+		entity.discard();
+		return true;
 	}
 
 	// ---- catches ---------------------------------------------------------------------------------------------------

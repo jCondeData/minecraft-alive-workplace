@@ -28,8 +28,8 @@ public class StationsQaGameTests implements FabricGameTest {
 	 * one's chunk unloads (saved and removed, as an unload does); the first is given a farm job by the player; the
 	 * second comes back. The lectern must still be the second's: its POI ticket taken, not free for a third villager.
 	 */
-	//$ gametest_ticks_batch AREA '100' '"qaB8SecondWorkerUnloaded"'
-	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaB8SecondWorkerUnloaded")
+	//$ gametest_ticks_batch AREA '100' '"qaStationsUnloadedOwner"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaStationsUnloadedOwner")
 	public void qaReassigningKeepsTheBlockOfAnUnloadedOwnerTaken(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();

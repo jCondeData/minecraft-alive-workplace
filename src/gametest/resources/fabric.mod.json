@@ -588,6 +588,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLegendCapsVisitsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendGuestsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendGuestSlotBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendGuestFixes1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.MasterArchitectGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PathfinderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MerchantPrinceGameTests",

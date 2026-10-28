@@ -189,7 +189,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaMachineGoneCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCupPurseCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaJobBuildsCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaGemGrowerPartnerCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaGemGrowerPartnerCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCobbleWaystoneFixes1028CompatTests"
 		]
 	},
 	"depends": {

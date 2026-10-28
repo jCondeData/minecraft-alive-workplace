@@ -261,4 +261,32 @@ public class ThesisCompatTests implements FabricGameTest {
 		helper.assertTrue(((VillageHallBlockEntity) level.getBlockEntity(hall)).research().totalLevels() == levels + 1, "no free research level");
 		helper.succeed();
 	}
+
+	/**
+	 * B663: a Thessaly no running thesis remembers (one left by the hall in a world saved before an ended thesis sent
+	 * her off) is gone as soon as she loads; the running thesis' own Thessaly stays.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"thesis_stray"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "thesis_stray")
+	public void aStrayThessalyGoesWhenSheLoads(GameTestHelper helper) {
+		ArcState s = start(helper, "cold");
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		ServerPlayer player = player(helper);
+		helper.assertTrue(caught(helper, player, info(helper, mon("snorunt"), Biomes.SNOWY_TAIGA, 70, 1000, 0)), "the Ice catch didn't count");
+		helper.assertTrue(caught(helper, player, info(helper, mon("squirtle"), Biomes.FROZEN_OCEAN, 62, 1000, 0)), "the Water catch didn't count");
+		helper.assertTrue(caught(helper, player, info(helper, mon("pidgey"), Biomes.FROZEN_PEAKS, 180, 1000, 0)), "the high catch didn't count");
+		Arcs.next(level, hall);
+		Villager thessaly = ProfessorsThesis.thessaly(level, s);
+		helper.assertTrue(s.chapter == 2 && thessaly != null && thessaly.isAlive(), "the running thesis' Thessaly didn't come or didn't stay");
+		Villager stray = EntityType.VILLAGER.create(level);
+		BlockPos at = helper.absolutePos(new BlockPos(7, 2, 7));
+		stray.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0, 0);
+		stray.addTag(ProfessorsThesis.THESSALY_TAG);
+		PartnerShowsCompatTests.after(helper, stray::discard);
+		level.addFreshEntity(stray);
+		helper.assertTrue(stray.isRemoved(), "a Thessaly no thesis remembers stayed when she loaded");
+		helper.assertTrue(thessaly.isAlive(), "the running thesis' own Thessaly went too");
+		helper.succeed();
+	}
 }

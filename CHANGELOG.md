@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Thessaly leaves the hall whenever the Professor's Thesis ends, not only when it's published: after
+  `/workplace story stop` or with the thesis switched off, she used to stay for good as a Master trainer anyone could
+  beat for the prize every day. One left behind in an existing world goes the next time her chunk loads (B663).
+- A Stadium Days power with one visitor reads "1 visiting trainer", and its chat line says one trainer stands in the
+  boxes (B664).
 - The Bandit King's boss bar goes away when you go to the Nether or the End, or log out, die or walk more than 32
   blocks off; before, a player who left his dimension kept the bar on screen (B659).
 - Old Clinics can be refreshed to real ward beds: a Clinic built before its ward got real beds (one bed and three
@@ -25,6 +30,17 @@ asks for the steps, `latest.log` and any crash report).
 - Builders who help another builder now put what they carried back in that builder's chests when the build finishes
   or is canceled; before, a helper still carrying blocks at that moment took them home to its own chest, where the
   other builder's next build couldn't find them (B670).
+- The Village Hall's Job ▾ offers a free beehive to the Beekeeper ("Beekeeper · 1 free Beehive", one click), and the
+  Free job blocks page and the Steward count it; before, a beehive was never counted as free, so the list said to place
+  one while one stood unused (B657).
+- Job ▾ names the free block itself: "Carpenter · 1 free Carpenter's Bench" rather than a Crafting Table that isn't
+  there, the same for a Music Stand, a Postal Desk and an Apiary, and both kinds when both are free (B658).
+- Villagers gossiping about a Legend on strike or a Legend guest close the title with a comma: "Ada Stonewright,
+  Master Architect, has downed tools." (B631).
+- No more lone glass posts in three drawings: the Pokemon Center's Sunny Plaza look (I and II) closes its two arched
+  front windows with a chiseled keystone instead of a pane the arch's stairs couldn't join, and the Lighthouse's lower
+  windows have their glass in the tower face, both panes in one column between the wall, over a stone ledge, instead of
+  the lower one standing a block out on the sill. Built ones get it with Refresh to the latest look (B656).
 
 ## 0.151.0 — 2026-10-27
 

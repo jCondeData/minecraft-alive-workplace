@@ -342,7 +342,10 @@ public final class Chatter {
 		return null;
 	}
 
-	/** Who a Legend topic is about: "Ada, Master Architect" (the speaker's own title for {@code legend_self}). */
+	/**
+	 * Who a Legend topic is about: "Ada, Master Architect" (the speaker's own title for {@code legend_self}). Always with
+	 * the title, so a line that goes on after it closes it with a comma: "%s, has downed tools." (B631).
+	 */
 	static Component legendArg(ServerLevel level, Villager villager, BlockPos hall, String topic) {
 		if (topic.equals("legend_self")) {
 			return io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).map(l -> l.titleText()).orElse(Component.empty());

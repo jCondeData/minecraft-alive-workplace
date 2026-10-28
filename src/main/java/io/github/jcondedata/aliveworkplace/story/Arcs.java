@@ -679,6 +679,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 	static void end(ServerLevel level, BlockPos hall, Stories.Entry e, ArcState s, @Nullable String how) {
 		takeDown(level, e, s, true);
 		ArcEffects.dismiss(level, s);
+		ProfessorsThesis.dismissThessaly(level, s); // (B663) stopped or switched off, not only published
 		boolean main = e.arc == s;
 		if (main) {
 			e.arc = null;

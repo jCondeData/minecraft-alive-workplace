@@ -34,8 +34,8 @@ its owner still placed, and another builder carries on from there. The Village H
 [The Village Hall](village-hall.md)) retrains a worker to any free job block in the village, or the Builder, for the
 same price, with no need to bring them to the block: the job and the block's claim are set on the paying click, and one
 who can't walk there within about a minute is moved beside it. Since 40.3 the same is in the hall's People table:
-**Job ▾** on a villager's row lists every job, those with a free block in the village saying how many ("Mason · 1
-free Stonecutter"), the rest grayed with the block to place ("Mason · place a Stonecutter first"), the Builder among
+**Job ▾** on a villager's row lists every job, those with a free block in the village saying how many and which
+("Mason · 1 free Stonecutter", "Bard · 1 free Music Stand"; a beehive nobody works at counts for the Beekeeper), the rest grayed with the block to place ("Mason · place a Stonecutter first"), the Builder among
 them and **No job** last (free, two clicks: their trades and level go and their block is left free). The price by
 their level is on top before anything is paid, a first click shows the offer and a second pays. A jobless villager is
 given a free block for nothing, in one click. Children, nitwits and Legends can't; game rule `workplaceRetraining` off

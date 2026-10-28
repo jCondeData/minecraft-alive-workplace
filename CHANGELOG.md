@@ -19,6 +19,9 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - The Bandit King's boss bar goes away when you go to the Nether or the End, or log out, die or walk more than 32
   blocks off; before, a player who left his dimension kept the bar on screen (B659).
+- Old Clinics can be refreshed to real ward beds: a Clinic built before its ward got real beds (one bed and three
+  slab-and-carpet cots) is now offered "Refresh to the latest look" on the Village Hall's Repairs page, as is every
+  building redrawn since 0.151.0 (B661, B662).
 
 ## 0.151.0 — 2026-10-27
 

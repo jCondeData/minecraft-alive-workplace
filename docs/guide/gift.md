@@ -7,7 +7,7 @@ image: https://jcondedata.github.io/minecraft-alive-workplace/gifts/still-2.jpg
 caption: Dara unwraps it: her line, bits of carrot, hearts
 Recipe: one [Gift Wrap](gift-wrap.md) and any one item on the crafting grid
 Use: right-click a named villager
-Limit: one a day and two a week per villager
+Limit: one a day and two a week to each villager, for each player
 Name day: every 28 days, when a gift counts three times
 categories: Items, Village life
 related: gift-wrap.md, friendship.md, heart-events.md
@@ -42,7 +42,7 @@ amethyst and gold, a farmer golden carrots and honeycomb, a scholar enchanted an
 crossbows, a bard music discs. Traits count too: a Glutton loves any food, a Frugal villager emeralds (and dislikes
 cake), a Clever one books and clocks.
 
-A **Bottle o' Enchanting** is liked, and a villager with a trade learns from it.
+A **Bottle o' Enchanting** is liked, and a villager with a trade learns from it (a child or a nitwit just keeps it).
 
 ![The hall: when her name day is](https://jcondedata.github.io/minecraft-alive-workplace/gifts/still-4.jpg)
 

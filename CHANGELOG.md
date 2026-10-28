@@ -47,6 +47,10 @@ asks for the steps, `latest.log` and any crash report).
 - A Builder short of something later in his build now has it listed on the Storehouse's requests board (and fetched or made by the village's Porter, Carpenter, Mason and Lumberjack) the moment his site is short, while he builds on with what he has, and again after a restart; before, it showed only once he stood waiting at the block that needed it (B636).
 - The Village Hall lists a free crafting table as a Carpenter's block (a built Carpenter's Workshop's table too), and a jukebox and a Mailbox as the Bard's and the Postman's: they show on the Free job blocks page and in Job ▾ ("Carpenter · 1 free Crafting Table"), so any villager can be made a Carpenter from the hall (B635).
 - The Village Hall's golem list says "...and 1 more golem" with one golem over the shown seven (B629).
+- Both kitchens of a Terrace get the furniture mods' pieces: a Terrace furnished before the east kitchen's table was
+  found had spruce stand-ins in one kitchen and its beds' pieces misread; it now shows Refresh to the latest look on the
+  Village Hall's Repairs page, which swaps in the mods' table and chair. The modded library's crockery sits on the
+  table instead of hanging a block above it (B641).
 - The Pokémon Ranger's daily befriending is no longer used up by an empty look: when no wild Pokémon is near yet (or the
   hall has no owner, or the pastures are full), one that wanders in later the same day is still befriended (B622).
 - An Alpha Pokémon exactly 96 blocks from the Village Hall, on the hall's floor level, now counts as within 96 blocks:

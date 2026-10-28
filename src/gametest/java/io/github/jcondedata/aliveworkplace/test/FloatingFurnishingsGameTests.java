@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 /**
  * B300: no furnishing floats. Every furnished blueprint, vanilla and with a furniture table whose pieces are lower than
@@ -206,6 +207,111 @@ public class FloatingFurnishingsGameTests implements FabricGameTest {
 		helper.assertTrue(!helper.getLevel().getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(torch).inflate(2),
 			i -> i.getItem().is(Items.TORCH)).isEmpty(), "the wall torch wasn't dropped as an item");
 		helper.assertTrue(helper.getLevel().getBlockState(hanging).is(Blocks.POTTED_DANDELION), "no Blocks.POTTED_DANDELION at " + hanging.toShortString());
+		helper.succeed();
+	}
+
+	/** The test pack's one-block tables and upside-down stair chairs, and its two-block beds. */
+	private static final List<String> LOWER = List.of(FurnishingTableGameTests.TEST_TABLE, "aliveworkplace_test_beds");
+
+	/**
+	 * B641 (the owner, 2026-10-27: one Terrace kitchen furnished, the other with spruce stand-ins and crockery in the
+	 * air): every home of the Terrace and Terrace II, put up as drawn, turned and mirrored, with pieces lower than the
+	 * vanilla ones, has its table and chair swapped and nothing resting on nothing, in both halves (and the third home).
+	 */
+	//$ gametest_batch HUGE_AREA '"floatingTerrace"'
+	@GameTest(template = HUGE_AREA, batch = "floatingTerrace")
+	public void everyHalfOfTheTerracesHasItsPiecesAndNothingFloating(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		List<String> problems = new ArrayList<>();
+		int halves = 0;
+		for (String name : List.of("terrace", "terrace_2")) {
+			ResourceLocation id = AliveWorkplace.id(name);
+			Blueprint base = BlueprintLibrary.get(helper.getLevel(), id).orElseThrow();
+			List<FurnitureSpot> spots = BlueprintFurniture.of(id);
+			Blueprint built = FurnitureChoice.choose(spots, LOWER, true).apply(base, spots);
+			for (Rotation rotation : List.of(Rotation.NONE, Rotation.CLOCKWISE_90, Rotation.CLOCKWISE_180)) {
+				for (Mirror mirror : List.of(Mirror.NONE, Mirror.LEFT_RIGHT, Mirror.FRONT_BACK)) {
+					BlueprintData.Placement placement = new BlueprintData.Placement(helper.getLevel().dimension().location(),
+						helper.absolutePos(new BlockPos(6, 1, 6)), rotation, mirror);
+					BuildPlan plan = BuildPlan.create(built, placement, helper.getLevel(), 0);
+					List<BuildPlan.Step> steps = new ArrayList<>(plan.steps(BuildPlan.Stage.FOUNDATION));
+					steps.addAll(plan.steps(BuildPlan.Stage.STRUCTURE));
+					steps.addAll(plan.steps(BuildPlan.Stage.DECORATION));
+					for (BuildPlan.Step st : steps) {
+						helper.getLevel().setBlock(st.pos(), st.state(), Block.UPDATE_CLIENTS);
+					}
+					String where = name + " " + rotation + "/" + mirror + ": ";
+					for (FurnitureSpot spot : spots) {
+						BlockPos at = placement.origin().offset(StructureTemplate.transform(spot.pos(), mirror, rotation, BlockPos.ZERO));
+						BlockState world = helper.getLevel().getBlockState(at);
+						if (spot.kind() == FurnitureSpot.Kind.TABLE) {
+							halves++;
+							if (!world.is(Blocks.SPRUCE_PLANKS)) {
+								problems.add(where + "the table at " + spot.pos().toShortString() + " is " + world);
+							}
+						} else if (spot.kind() == FurnitureSpot.Kind.CHAIR && !(world.getBlock() instanceof net.minecraft.world.level.block.StairBlock
+							&& world.getValue(net.minecraft.world.level.block.StairBlock.HALF) == net.minecraft.world.level.block.state.properties.Half.TOP)) {
+							problems.add(where + "the chair at " + spot.pos().toShortString() + " is " + world);
+						}
+					}
+					for (BuildPlan.Step st : steps) {
+						BlockState world = helper.getLevel().getBlockState(st.pos());
+						if (Resting.unsupported(helper.getLevel(), st.pos(), world)) {
+							problems.add(where + world.getBlock().getDescriptionId() + " rests on nothing at " + helper.relativePos(st.pos()).toShortString());
+						}
+					}
+					int fixed = Resting.settle(helper.getLevel(), plan);
+					if (fixed != 0) {
+						problems.add(where + "the builder's last look moved " + fixed + " piece(s)");
+					}
+					for (BuildPlan.Step st : steps) {
+						helper.getLevel().setBlock(st.pos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+					}
+				}
+			}
+		}
+		helper.assertTrue(halves == 9 * 5, "kitchens checked: " + halves);
+		helper.assertTrue(problems.isEmpty(), problems.size() + " problem(s): " + problems.subList(0, Math.min(8, problems.size())));
+		helper.succeed();
+	}
+
+	/**
+	 * B641's cause: a Terrace furnished by the spots file before B281 (no east kitchen table and chair, so its pieces are
+	 * saved under the indices of that file). Against today's file its four beds keep their pieces (their indices moved by
+	 * two); it is known to be stale, and brought to today's spots both kitchens are furnished, as a refresh builds it.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aTerraceFurnishedBeforeB281KeepsItsBedsAndIsBroughtToBothKitchens(GameTestHelper helper) {
+		ResourceLocation id = AliveWorkplace.id("terrace");
+		Blueprint base = BlueprintLibrary.get(helper.getLevel(), id).orElseThrow();
+		List<FurnitureSpot> today = BlueprintFurniture.of(id);
+		List<FurnitureSpot> before = today.stream().filter(s -> !(s.pos().getY() == 1 && s.pos().getX() >= 7)).toList();
+		// (its beds the test pack's, lime: told apart from the drawing's red and blue ones)
+		Map<Integer, FurnitureChoice.Placed> saved = new HashMap<>();
+		FurnitureChoice.choose(before, LOWER, true).spots().forEach((i, p) -> {
+			Map<BlockPos, BlockState> cells = new HashMap<>();
+			p.cells().forEach((c, state) -> cells.put(c, state.getBlock() instanceof net.minecraft.world.level.block.BedBlock
+				? Blocks.LIME_BED.withPropertiesOf(state) : state));
+			saved.put(i, new FurnitureChoice.Placed(p.pos(), p.kind(), p.mod(), cells));
+		});
+		FurnitureChoice old = FurnitureChoice.load(new FurnitureChoice(saved).save());
+		helper.assertTrue(old.staleFor(today), "the pre-B281 choice isn't seen as stale");
+		helper.assertTrue(!FurnitureChoice.choose(today, LOWER, true).staleFor(today), "a choice of today's file is seen as stale");
+		Map<BlockPos, BlockState> at = new HashMap<>();
+		old.apply(base, today).blocks().forEach(b -> at.put(b.pos(), b.state()));
+		for (FurnitureSpot spot : today) {
+			if (spot.kind() == FurnitureSpot.Kind.BED) {
+				helper.assertTrue(at.get(spot.pos()).is(Blocks.LIME_BED), "the bed at " + spot.pos().toShortString() + " lost its piece: " + at.get(spot.pos()));
+			}
+		}
+		helper.assertTrue(at.get(new BlockPos(4, 1, 4)).is(Blocks.SPRUCE_PLANKS), "the west table lost its piece: " + at.get(new BlockPos(4, 1, 4)));
+		helper.assertTrue(at.get(new BlockPos(7, 1, 4)).is(Blocks.SPRUCE_FENCE), "the east table wasn't furnished then: " + at.get(new BlockPos(7, 1, 4)));
+		Map<BlockPos, BlockState> brought = new HashMap<>();
+		old.refreshedFor(today, FurnitureChoice.choose(today, LOWER, true)).apply(base, today).blocks().forEach(b -> brought.put(b.pos(), b.state()));
+		for (BlockPos table : List.of(new BlockPos(4, 1, 4), new BlockPos(7, 1, 4))) {
+			helper.assertTrue(brought.get(table).is(Blocks.SPRUCE_PLANKS), "brought to today's spots, the table at " + table.toShortString() + " is " + brought.get(table));
+		}
 		helper.succeed();
 	}
 }

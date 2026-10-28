@@ -15,7 +15,17 @@ left a list: the page tabs, then everyone who lives within 64 blocks, each as th
 their level) with their name and job. The pane on the right reads out whatever is under the mouse, every line of it;
 with nothing there it shows the village's numbers "at a glance". Click a villager and they glow for ten seconds so you
 can find them, and stay in the pane (the wheel scrolls a long one; × or Esc puts them away). Click a jobless villager
-to see the free workstations and give them one. Every page of the hall opens in the same screen.
+to see the free workstations and give them one. Every page of the hall opens in the same screen. (Since Milestone 40
+the left side is the sidebar and the villagers are the People table; see below.)
+
+**The screen's rules (30.4a, tested in `QaHallCustomScreenGameTests`).** Every button of every section, and every page
+it opens (quests, the bank, the Book of Edicts, the chronicle, ...), stays on the hall's own menu type, never a chest.
+Only a plain click or a shift-click presses a button: swapping with a hotbar key, throwing, middle-click cloning,
+double-click collecting and dragging do nothing, clicks on the player's own slots or outside the window move nothing,
+and the sidebar ignores numbers no section has. The screen opened by hand closes when the player is more than 8 blocks
+from the hall's center or the hall is broken (clicks a stale screen still sends then do nothing). The Village Ledger's
+screen works from any distance while the hall stands and closes when it's broken. Two players can have the hall open
+at once: each has their own screen and page, and each one's last section is their own.
 
 **The sidebar (40.1).** Since 40.1 the screen has a sidebar on the left: the village's name and the date
 ("Spring, day 1 · Year 1") over ten labeled buttons, Overview, People, Homes & Food, Buildings, Defense, Quests,

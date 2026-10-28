@@ -351,7 +351,8 @@ claims and trip counts.
   variant drawn only in the `modded/` files show no button. A furnished build (37.3) is matched as it was furnished:
   its saved pieces stand where the spots file of its day put them, so they are the Builder's and come away; today's
   spots keep a piece only where one of the same kind already stands, and the others are furnished as a new build is
-  (B642). The refreshed build's furniture is saved by today's spots. A bed a villager has claimed stays where the old drawing put it, so a new
+  (B642). A furnished build whose spots file has gained spots since it was furnished (the Terraces before B281) is
+  offered a refresh of today's drawing itself, furnished anew where it lacked a piece (B641). The refreshed build's furniture is saved by today's spots. A bed a villager has claimed stays where the old drawing put it, so a new
   piece whose place it takes (a chest, the new bed beside it) isn't put in. The Repairs page lists refreshes after the repairs, so with
   more builds than fit, the last ones are counted under "more" rather than shown.
 - A site in unloaded chunks, queued, or without a Builder is not watched for stalls.

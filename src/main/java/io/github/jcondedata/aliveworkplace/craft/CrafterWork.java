@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.MaterialFamilies;
+import io.github.jcondedata.aliveworkplace.build.MaterialLedger;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -345,7 +346,7 @@ public class CrafterWork extends Behavior<Villager> {
 			walker.reset();
 			return;
 		}
-		extra.forEach(stack -> Block.popResource(level, station.above(), stack));
+		extra.forEach(stack -> drop(level, station.above(), stack));
 		step++;
 		save(villager);
 	}
@@ -363,15 +364,17 @@ public class CrafterWork extends Behavior<Villager> {
 		}
 		List<ItemStack> extra = new ArrayList<>();
 		step.in().forEach((item, n) -> {
-			bag.remove(item, n * step.times());
+			MaterialLedger.craftUsed(item, bag.remove(item, n * step.times())); // a soak's count (B655); nothing when off
 			Item rest = item.getCraftingRemainingItem();
 			if (rest != null) {
+				MaterialLedger.craftMade(rest, n * step.times());
 				int over = bag.addAll(rest, n * step.times());
 				if (over > 0) {
 					extra.add(new ItemStack(rest, over));
 				}
 			}
 		});
+		MaterialLedger.craftMade(step.out().getItem(), step.out().getCount() * step.times());
 		int over = bag.addAll(step.out().getItem(), step.out().getCount() * step.times());
 		if (over > 0) {
 			extra.add(new ItemStack(step.out().getItem(), over));
@@ -379,11 +382,17 @@ public class CrafterWork extends Behavior<Villager> {
 		return extra;
 	}
 
+	/** Drops {@code stack} on the ground (nowhere to put it), told to a soak's ledger (B655). */
+	private static void drop(ServerLevel level, BlockPos pos, ItemStack stack) {
+		MaterialLedger.dropped(stack);
+		Block.popResource(level, pos, stack);
+	}
+
 	/** What a plan takes that none of its steps uses (the coal a kiln or a blast furnace burns) is used up at the end. */
 	private static void burnFuel(BuilderBag bag, Crafting.Plan plan) {
 		plan.takes().forEach((item, n) -> {
 			if (plan.steps().stream().noneMatch(s -> s.in().containsKey(item))) {
-				bag.remove(item, Math.min(n, bag.count(item)));
+				MaterialLedger.craftUsed(item, bag.remove(item, Math.min(n, bag.count(item))));
 			}
 		});
 	}
@@ -495,7 +504,7 @@ public class CrafterWork extends Behavior<Villager> {
 	private void finishCraft(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag, int crafts) {
 		List<ItemStack> extra = apply(bag, job.plan());
 		if (extra != null) {
-			extra.forEach(stack -> Block.popResource(level, station.above(), stack));
+			extra.forEach(stack -> drop(level, station.above(), stack));
 			ModAttachments.ITEMS_CRAFTED.set(villager, ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0) + job.plan().count());
 			BuilderLevels.addXp(level, villager, Math.max(1, crafts / 2), null);
 		}
@@ -515,9 +524,10 @@ public class CrafterWork extends Behavior<Villager> {
 				return null;
 			}
 		}
-		plan.takes().forEach(bag::remove);
+		plan.takes().forEach((item, n) -> MaterialLedger.craftUsed(item, bag.remove(item, n))); // a soak's count (B655)
 		List<ItemStack> extra = new ArrayList<>();
 		plan.makes().forEach((item, n) -> {
+			MaterialLedger.craftMade(item, n);
 			int over = bag.addAll(item, n);
 			if (over > 0) {
 				extra.add(new ItemStack(item, over));
@@ -527,6 +537,7 @@ public class CrafterWork extends Behavior<Villager> {
 		plan.takes().forEach((item, n) -> {
 			Item rest = item.getCraftingRemainingItem();
 			if (rest != null) {
+				MaterialLedger.craftMade(rest, n);
 				int over = bag.addAll(rest, n);
 				if (over > 0) {
 					extra.add(new ItemStack(rest, over));
@@ -560,7 +571,7 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 			ItemStack rest = SupplyContainers.insert(level, chests, finished(level, stack));
 			if (!rest.isEmpty()) {
-				Block.popResource(level, chests.get(0).above(), rest);
+				drop(level, chests.get(0).above(), rest);
 			}
 		}
 		villager.swing(InteractionHand.MAIN_HAND);
@@ -593,7 +604,7 @@ public class CrafterWork extends Behavior<Villager> {
 		for (ItemStack stack : bag.takeAll()) {
 			ItemStack rest = chests.isEmpty() ? stack : SupplyContainers.insert(level, chests, stack);
 			if (!rest.isEmpty()) {
-				Block.popResource(level, station.above(), rest);
+				drop(level, station.above(), rest);
 			}
 		}
 		walker.reset();
@@ -913,7 +924,7 @@ public class CrafterWork extends Behavior<Villager> {
 		for (ItemStack stack : bag.takeAll()) {
 			ItemStack rest = chests.isEmpty() ? stack : SupplyContainers.insert(level, chests, stack);
 			if (!rest.isEmpty()) {
-				Block.popResource(level, villager.blockPosition(), rest);
+				drop(level, villager.blockPosition(), rest);
 			}
 		}
 	}

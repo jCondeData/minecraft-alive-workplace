@@ -585,12 +585,15 @@ public class QaLostCaravanGameTests implements FabricGameTest {
 			me.discard();
 		});
 		me.teleportTo(a.getX() + 0.5, a.getY() + 40, a.getZ() + 0.5); // (out of his way)
-		// a glass pen in the village round him, so he doesn't stroll off past the workstation (or to one an earlier test left)
+		// a glass pen in the village round him, so he doesn't stroll off past the workstation (or to one an earlier test left).
+		// Three tall (B652): with two, the table set down in its corner was a step up onto the wall, and a stroll took him
+		// over it and out, where he found no way back in.
 		for (int x = 13; x <= 17; x++) {
 			for (int z = 13; z <= 17; z++) {
 				if (x == 13 || x == 17 || z == 13 || z == 17) {
-					helper.setBlock(new BlockPos(x, 2, z), Blocks.GLASS);
-					helper.setBlock(new BlockPos(x, 3, z), Blocks.GLASS);
+					for (int y = 2; y <= 4; y++) {
+						helper.setBlock(new BlockPos(x, y, z), Blocks.GLASS);
+					}
 				}
 			}
 		}

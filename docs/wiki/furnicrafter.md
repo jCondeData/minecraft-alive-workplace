@@ -30,7 +30,7 @@ store". She trades too: planks and wool bought, chairs, lamps, tables, a cabinet
   recipes do, so each recipe's file is read again from the data packs (the top pack's, so a data pack's change counts):
   its materials (an item and how many) and the piece it makes. Read once per recipe load; `/reload` reads them again.
 - **What she makes.** She works like the Carpenter (the same crafter's shift): first a builder near her Furni Crafter
-  whose build is short of a CobbleFurnies piece (since B636 while he builds on, not only once he stands waiting); then a storehouse within 48 blocks with a stock
+  whose build is short of materials (waiting, or still building: B636) and whose missing list has a CobbleFurnies piece; then a storehouse within 48 blocks with a stock
   order for one that its store is short of. Materials come from what the builder's chests and the village's stashes
   (the store among them) can spare; never what the rest of that build still needs, and never what the storehouse's
   other orders keep.

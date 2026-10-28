@@ -852,6 +852,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWordsVillage1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClinicTerrace1028BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderShortageBoard1028GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallBeehives1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefreshHistory1028GameTests"
 		]
 	},

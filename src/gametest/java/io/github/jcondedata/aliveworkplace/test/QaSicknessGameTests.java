@@ -355,6 +355,49 @@ public class QaSicknessGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * The healer never catches it (B646): the village's Nurse works right beside two coughing villagers, yet over 60
+	 * nights the pass-on goes only to the others round her (each one who catches it is made well again, so half the
+	 * village is never reached and the pass-on goes on every night), as the outbreak passes the healer over too.
+	 */
+	//$ gametest_ticks_batch TALL '100' '"qaSickHealerWell"'
+	@GameTest(template = TALL, timeoutTicks = 100, batch = "qaSickHealerWell")
+	public void theHealerNeverCatchesIt(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		settings(helper);
+		Leftovers.players(helper);
+		ServerLevel level = helper.getLevel();
+		hall(helper);
+		BlockPos hall = helper.absolutePos(HALL);
+		List<Villager> people = village(helper, 10);
+		Villager nurse = nurse(helper, new BlockPos(20, 2, 20));
+		setDay(level, Chronicle.day(level) + 1, 1000);
+		ArcState s = Arcs.start(level, hall, arc(helper));
+		helper.assertTrue(s != null && SicknessStory.healer(level, s) == nurse, "the Nurse isn't the healer");
+		helper.assertFalse(Sickness.isIll(nurse), "the outbreak reached the healer");
+		for (Villager v : people) {
+			Sickness.recover(level, v);
+		}
+		Villager left = people.get(7); // (20, 15): 5 blocks from the Nurse
+		Villager right = people.get(9); // (14, 18): 6 blocks from her bench
+		helper.assertTrue(Sickness.greyCough(level, left) && Sickness.greyCough(level, right), "the two didn't catch it");
+		RandomSource random = RandomSource.create(646);
+		int others = 0;
+		for (int night = 0; night < 60; night++) {
+			SicknessStory.spread(level, hall, s, random);
+			helper.assertFalse(Sickness.isIll(nurse), "the healer caught it on night " + (night + 1));
+			for (Villager v : people) {
+				if (v != left && v != right && Sickness.isGrey(v)) {
+					others++;
+					Sickness.recover(level, v);
+				}
+			}
+		}
+		helper.assertTrue(others >= 20, "the pass-on hardly went on: " + others + " in 60 nights");
+		helper.assertFalse(SicknessStory.caught(s).contains(nurse.getUUID()), "the healer is counted among the ill");
+		helper.succeed();
+	}
+
 	// ---- 31.18: saves ----------------------------------------------------------------------------------------------
 
 	/**

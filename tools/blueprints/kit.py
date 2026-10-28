@@ -86,6 +86,7 @@ class Build:
         b.nbt = dict(getattr(self, "nbt", {}))
         b.cellars = list(self.cellars)
         b.spots = [dict(s) for s in getattr(self, "spots", [])]
+        b.open_panes = dict(getattr(self, "open_panes", {}))  # B648: pane ends left free on purpose, with their reason
         return b
 
     def clear(self, x0, y0, z0, x1, y1, z1):
@@ -446,7 +447,7 @@ def _swap(axis, u, v):
 
 
 def gable_roof(b, x0, x1, z0, z1, y, fam, axis="x", gable=None, gable_at=None, ridge=None, steep=False, eave_trim=None,
-               fill_under=None):
+               fill_under=None, closed=False):
     """A gable roof over the rectangle (x0, z0)-(x1, z1) (overhang included), its lowest row at {@code y}.
     axis: which way the ridge runs. The two slopes are stairs of {@code fam}; the top is a ridge of {@code ridge}
     (a Family: its slabs on an odd span, else a cap of stairs), or the slab of {@code fam}.
@@ -454,6 +455,8 @@ def gable_roof(b, x0, x1, z0, z1, y, fam, axis="x", gable=None, gable_at=None, r
     where the end walls are; default one in from each end, under the overhang). steep: two blocks up per step in (a
     stair over a full block), for a tall medieval roof. eave_trim: upside-down stairs under the lowest row (a family).
     fill_under: fill the roof's inside down to its lowest row (a solid attic floor look) with this block.
+    closed: on an odd span, a full block under the ridge slab, so the ceiling seen from inside has no open block at the
+    top where the two stair runs meet (B639).
     Returns the y of the ridge."""
     if axis == "x":
         u0, u1, v0, v1 = x0, x1, z0, z1
@@ -474,6 +477,8 @@ def gable_roof(b, x0, x1, z0, z1, y, fam, axis="x", gable=None, gable_at=None, r
                 x, z = _swap(axis, u, lo)
                 r = ridge or fam
                 slab(b, x, yy, z, r)
+                if closed and not steep:
+                    b.set(x, yy - 1, z, fam.full)
                 if steep:
                     x, z = _swap(axis, u, lo)
                     b.set(x, yy - 1, z, (ridge or fam).full)
@@ -590,6 +595,14 @@ def seal_slots(b):
         slots = scan((b.w, b.h, b.d), cells, only_slots=True)
         if not slots:
             return
+        filling = {(x, z): (down, up) for (x, _, z), _, down, up in slots if (x, z) not in keep_open}
+
+        def walled(x, yy, z):
+            """Whether (x, yy, z) holds a block, or will once this pass fills its slot."""
+            if b.blocks.get((x, yy, z), ("minecraft:air",))[0] not in ("minecraft:air", "minecraft:cave_air"):
+                return True
+            span = filling.get((x, z))
+            return span is not None and span[0] < yy < span[1]
         for (x, y, z), (dx, dz), down, up in slots:
             if (x, z) in keep_open:
                 continue
@@ -606,7 +619,12 @@ def seal_slots(b):
             # order depends on PYTHONHASHSEED, so ties once came out differently run to run, e.g. ranch_2's gable)
             fallback = max(dict.fromkeys(plain or usable), key=(plain or usable).count)
             for yy, w in zip(column, wall):
-                b.blocks[(x, yy, z)] = w if w in usable else fallback
+                # A window's glass is carried out only between blocks: a pane or bars with air beside it in the slot
+                # joins the window behind it and nothing else, a thin strip ending in the air (B648), so the wall's
+                # plain block closes the slot there instead
+                loose = w is not None and any(t in w[0] for t in ("pane", "_bars")) \
+                    and not (walled(x + dz, yy, z + dx) and walled(x - dz, yy, z - dx))
+                b.blocks[(x, yy, z)] = w if w in usable and not loose else fallback
 
 
 def full_of(block_id):

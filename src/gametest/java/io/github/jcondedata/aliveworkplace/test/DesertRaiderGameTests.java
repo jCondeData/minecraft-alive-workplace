@@ -318,7 +318,9 @@ public class DesertRaiderGameTests implements FabricGameTest {
 			level.addFreshEntity(chicken);
 			Leftovers.after(helper, chicken::discard);
 			((Zombie) climber).setBaby(true);
-			helper.assertTrue(climber.startRiding(chicken), "the husk didn't mount the chicken");
+			// Forced (B529): when finalizeSpawn rolled a jockey of its own, raider() took the husk off that chicken, and a
+			// dismount leaves a 60-tick boarding cooldown that refuses an ordinary startRiding in the same tick.
+			helper.assertTrue(climber.startRiding(chicken, true), "the husk didn't mount the chicken");
 		}
 		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
 		ThreatData.Siege first = yard.siege(helper);

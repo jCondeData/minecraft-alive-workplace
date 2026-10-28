@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648
 
 ## 1. What a player sees
 
@@ -302,6 +302,13 @@ claims and trip counts.
   game turns it to dirt (the Hanging Gardens' paths, B539). The blueprint kit draws grass or coarse dirt there by
   itself, `tools/blueprints/check.py` flags all three, and `BlueprintsStayGameTests` reads every shipped blueprint for
   them with the game's own rules.
+- Every window's glass meets a block at both ends: a glass pane or iron bars joined on one side only, with air on the
+  other, stops half way across its block, a thin strip with a gap beside it (the Terrace's bay windows, B640). So
+  windows stand between jambs (piers, posts, the wall), a cage's bars meet a stone post by its way in, and glass cases
+  close round their corners; where a lower roof meets a wall, a window's glass is carried out to the eaves only with a
+  block on both sides of it. `tools/blueprints/check.py` flags any pane or bars run that ends in the air (a lamp's arm,
+  meant to end over its lantern, is listed with its reason in the build's `open_panes`), and `B648GameTests` reads
+  every shipped structure, modded copies, village houses and Wonder parts included, for them (B648).
 - No villager is left standing inside a block in a growing village. A baby fits in nooks a grown villager doesn't
   (under a roof's stair being laid, beside a lantern on a fence post), and when it grows up vanilla finds no room for
   the bigger body there; a villager standing still in a doorway can have the door shut on it by a neighbor walking

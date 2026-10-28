@@ -87,6 +87,13 @@ def farmstead_3():
     return b
 
 
+def cage_jamb(b, x, z):
+    """A stone post at the side of a cage's way in (x, z), from the floor to the bars over the way in: the bars beside
+    the opening join it, not the air (B648: the last bars stood as a thin strip ending in the doorway)."""
+    for y in (LOW, MID, TOP):
+        b.set(x, y, z, "stone_bricks")
+
+
 def strongroom(b, x0, z0, x1, z1, ladder):
     """A guild's strongroom (walls x0..x1, z0..z1): its treasure caged behind iron bars at the north end (gold, emerald,
     lapis, chests of the guild's dues), a counting table with a candle and chairs, the ledgers' chests two high along
@@ -98,6 +105,7 @@ def strongroom(b, x0, z0, x1, z1, ladder):
         for y in (LOW, MID, TOP):
             b.set(x, y, cage, "iron_bars", waterlogged=False)
     b.set(ix0, TOP, cage, "iron_bars", waterlogged=False)  # over the cage's way in, by the west wall
+    cage_jamb(b, ix0 + 1, cage)
     for x, (low, mid) in zip(range(ix0 + 1, ix1 + 1), (("gold_block", None), ("emerald_block", "gold_block"),
                                                         ("lapis_block", None), ("chest", "chest"), ("chest", None))):
         for y, what in ((LOW, low), (MID, mid)):
@@ -196,6 +204,7 @@ def jewel_vault(b, x0, z0, x1, z1, ladder):
         for y in (LOW, MID, TOP):
             b.set(x, y, iz1 - 1, "iron_bars", waterlogged=False)
     b.set(ix0, TOP, iz1 - 1, "iron_bars", waterlogged=False)  # over the way into the cage, by the west wall
+    cage_jamb(b, ix0 + 1, iz1 - 1)
     for z in range(iz0 + 1, iz1 - 1):
         chest(b, ix1, LOW, z, "west")
     tx, tz = ix0 + 2, iz0 + 1

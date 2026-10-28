@@ -132,7 +132,9 @@ and walk over to it. So an empty Storehouse or a lectern left in a finished home
 leading anyone into the house. Blocks of one kind in one building share a line with a count ("Fisherman ×4", "In the
 Storehouse Shed"); a click takes the nearest. A block several jobs share (a composter, a lectern, a Shop Counter...)
 says how many jobs it offers ("Composter: 4 jobs") and lists them; its click opens a page with a line per job, and a
-job's click lists who could take the block as that job (B303). A villager who already works isn't listed; they change job from their own page (36.18, below) or
+job's click lists who could take the block as that job (B303). Blocks a villager never takes by themselves are listed
+too: a crafting table (the Carpenter's, as in a Carpenter's Workshop), a jukebox (the Bard's) and a Mailbox (the
+Postman's), so the hall can give those jobs without an item (B635). A villager who already works isn't listed; they change job from their own page (36.18, below) or
 at the block itself (26.6, see [Villager jobs](villager-jobs.md)), for a price.
 
 **Change job (36.18).** A plain click on a worker in the residents list only makes them glow, as before; a right-click opens their page (back,
@@ -234,7 +236,10 @@ hall's area. Anyone may still walk in, open doors, trade and ring the bell.
 others when the row is full, newest first.
 
 **Free job blocks (36.9).** The page is read when it's drawn: the village's points of interest that give a job and
-have room (the same list a jobless villager's own page shows), each matched to the building whose outline holds it
+have room (the same list a jobless villager's own page shows and Job ▾ counts): the kinds in the game's
+`acquirable_job_site` tag, plus the shared stations a job is given at only by an item (`work/Stations`, not
+`byItself()`: crafting table, jukebox, Mailbox and Cobblemon's machines, under their first job this game has;
+B635: the tag alone left the Carpenter's table out), each matched to the building whose outline holds it
 (finished builds, and builds going up). Who could take a block: a grown villager in the village without a job, not a
 nitwit or a Legend. One who has never worked takes any block; one who still has an old job's trades but lost the block
 is offered only a block of that same job, because changing job is paid retraining (26.6). A job above a villager's

@@ -501,6 +501,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWindowsAndWards1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWindowsAndWards1028BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilders1028GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilders1028bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishingTableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureAnyModGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedHomesGameTests",
@@ -846,6 +847,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaClinicTerrace1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWordsVillage1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClinicTerrace1028BugTests"
 		]
 	},

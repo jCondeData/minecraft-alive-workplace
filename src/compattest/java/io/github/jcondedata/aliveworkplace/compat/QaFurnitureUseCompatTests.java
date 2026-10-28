@@ -136,6 +136,7 @@ public class QaFurnitureUseCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '900' '"qa_furniture_seat_broken"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 900, batch = "qa_furniture_seat_broken")
 	public void aVillagerStandsUpWhenTheChairIsBrokenUnderThem(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
 		BlockPos chair = chair(helper, CHAIR);
 		Villager v = helper.spawn(EntityType.VILLAGER, CHAIR.south());
 		sitThen(helper, v, () -> helper.setBlock(CHAIR, Blocks.AIR), () -> {
@@ -147,6 +148,7 @@ public class QaFurnitureUseCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '900' '"qa_furniture_seat_bedtime"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 900, batch = "qa_furniture_seat_bedtime")
 	public void aSeatedVillagerStandsUpAtBedtime(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
 		BlockPos chair = chair(helper, CHAIR);
 		Villager v = helper.spawn(EntityType.VILLAGER, CHAIR.south());
 		sitThen(helper, v, () -> setTime(helper.getLevel(), FurnitureSeats.BEDTIME), () -> {
@@ -158,6 +160,7 @@ public class QaFurnitureUseCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '900' '"qa_furniture_seat_hostile"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 900, batch = "qa_furniture_seat_hostile")
 	public void aSeatedVillagerStandsUpWhenAZombieComesNear(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
 		chair(helper, CHAIR);
 		Villager v = helper.spawn(EntityType.VILLAGER, CHAIR.south());
 		Zombie[] zombie = {null};
@@ -173,6 +176,7 @@ public class QaFurnitureUseCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '300' '"qa_furniture_seat_occupied"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 300, batch = "qa_furniture_seat_occupied")
 	public void aChairWithSomeoneInItIsntSatOn(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos chair = chair(helper, CHAIR);
 		ArmorStand stand = helper.spawn(EntityType.ARMOR_STAND, CHAIR);
@@ -195,6 +199,10 @@ public class QaFurnitureUseCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '1200' '"qa_furniture_two_chairs"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 1200, batch = "qa_furniture_two_chairs")
 	public void twoChairsSeatTwoVillagersOneEach(GameTestHelper helper) {
+		// B676: alone in its batch, so clear what earlier batches left round this spot first. A leftover villager just
+		// outside the area walking to the first chair keeps it taken (a seat another villager is walking to isn't
+		// taken twice), and a leftover hostile keeps a villager from sitting at all.
+		PartnerShowsCompatTests.clearLeftovers(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos a = chair(helper, CHAIR);
 		BlockPos b = chair(helper, CHAIR.east(3));
@@ -218,6 +226,7 @@ public class QaFurnitureUseCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '300' '"qa_furniture_stair_chair"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 300, batch = "qa_furniture_stair_chair")
 	public void aVanillaStairChairIsNoSeat(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
 		ServerLevel level = helper.getLevel();
 		helper.assertFalse(Blocks.SPRUCE_STAIRS.defaultBlockState().is(FurnitureSeats.SEATS), "vanilla spruce stairs are a villager seat");
 		helper.setBlock(CHAIR, Blocks.SPRUCE_STAIRS);
@@ -236,6 +245,7 @@ public class QaFurnitureUseCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '2400' '"qa_furniture_fancy_bed_broken"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 2400, batch = "qa_furniture_fancy_bed_broken")
 	public void aBrokenFancyBedIsGivenUp(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
 		ServerLevel level = helper.getLevel();
 		Block fancy = block("handcrafted:oak_fancy_bed");
 		BlockPos foot = new BlockPos(5, 2, 6);

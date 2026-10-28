@@ -417,6 +417,11 @@ screen is open; scene `hall_people`). `HallPeopleJobGameTests` (40.3, every case
 through Bed ▾'s clicks: `aFreeBed` (where the free beds are, the census, the old bed freed), `aSwap`, `noBedsAtAll`,
 `theChosenBedBrokenBeforeNight`, `aBedAnotherVillagerClaimsFirst`, `theChoiceSurvivesASaveAndReload` with every new
 sentence, `theySleepThereAtNight`; scene `hall_people_bed`).
+`B635GameTests` (the builder's Carpenter's Workshop: its crafting table is a free Carpenter block, "Carpenter · 1 free
+Crafting Table", a jobless and a working villager made the Carpenter from Job ▾; a claimed table isn't offered) and
+`QaBuilders1028GameTests` (B635, QA: a table broken while Job ▾ is open makes no Carpenter and the line then says to
+place one; an older save's table with no workstation record is offered once its chunk loads; tables 8 blocks from
+the hall are offered, 9 aren't).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end

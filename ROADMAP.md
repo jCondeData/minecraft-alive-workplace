@@ -2254,7 +2254,7 @@ MarketDays) and research/.
     the Legend again; a slot frees 7 days after a death with no grave; the record survives a reload;
   - a Mythic announcement reaches a player 5,000 blocks away and a Rare one doesn't; showcase scene `legend_announce`
     (the message in chat, the chronicle line).
-- [x] **29.4** (approved 2026-10-05) **Legends on the hall, and how they look.**
+- [x] **29.4** (approved 2026-10-05) (verified 2026-10-28: QaLegendsHall1027GameTests [3, pass in the full 4795 suite]: the look follows the legends switch and a save, every shipped Legend has its outfit texture [Pokemon ones by name], Legend text in American English; earlier classes already cover the cards, tip both sides, lives-in, Mythic line, LegendLook packet.) **Legends on the hall, and how they look.**
   - The hall's list (`VillageHallScreen`) puts Legends first: name and title in gold ("Ada Stonewright, Master
     Architect"), rarity, each power on a line, each need with a tick or a cross, a strike in red. A Gifted villager's
     trait shows in gold under their traits.

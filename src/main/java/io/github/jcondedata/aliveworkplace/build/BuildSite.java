@@ -76,6 +76,8 @@ public final class BuildSite {
 	private BuildPlan plan;
 	private Status status = Status.STARTING;
 	private Map<Item, Integer> missing = Map.of();
+	/** B636: {@link #missing} predates materials the crew has taken since (not saved). */
+	private boolean shortfallStale;
 	/** Supply runs finished (materials taken, or the bag emptied at the chests): progress for the stall watch (B40). */
 	private int trips;
 	@Nullable
@@ -851,6 +853,19 @@ public final class BuildSite {
 
 	public void setMissing(Map<Item, Integer> missing) {
 		this.missing = missing;
+	}
+
+	/**
+	 * B636: someone of the crew took materials from a chest (true), so {@link #missing()} may count as short what is now
+	 * in a bag and the requests board would ask for it again; false once the lead has worked the whole list out afresh.
+	 * Not saved: the lead works the list out afresh after a load anyway.
+	 */
+	public void setShortfallStale(boolean stale) {
+		shortfallStale = stale;
+	}
+
+	public boolean shortfallStale() {
+		return shortfallStale;
 	}
 
 	void setOnChange(Runnable onChange) {

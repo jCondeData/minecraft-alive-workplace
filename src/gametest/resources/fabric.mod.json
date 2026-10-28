@@ -835,6 +835,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaColonyWaitEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CountedWords1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.TravelPostWords1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.PathfinderWords1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcCommandBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsBugTests",

@@ -330,6 +330,13 @@ side, no guest); the foretelling through a save, an empty one writing nothing.
 a Master (B584); a killed guest's village gets the next Legend the following morning (B585); a guest standing nearer
 another hall settles in, and takes the slot of, the village that hosted them (B586); one Legendary with two willing
 villages settles in at most one (B587).
+`QaLegendGuestFixes1028GameTests` (9): "Born to" names the mod's own trades with "an" before a vowel (B583); a guest
+saved and loaded takes no stonecutter, while a jobless villager does (B584); a killed Legend stays away until day 8,
+and a guest only out of loaded land still holds the village (B585); a guest of the far hall standing nearer this one
+settles in the far village after a reload (B586); a Legendary guest is no candidate elsewhere until gone, a Rare one
+still is, a guest refused by a taken slot leaves on the third evening, and a Mythic guest follows its rank's cap
+(B587, B609); a later arrival's terms count from its own day through a reload (B588); Legends switched off mid-stay
+keeps the one guest.
 `QaGiftedGameTests` (7): `giftedChance` 1 gifts everyone and 10 about one in ten, keeping everyone Gifted at 30; a
 malformed gift file fails; a `gifted` attachment of "none" or a removed gift makes nobody Gifted; the hall's gold line
 for each of the four; Silver Tongue on 5, 20 and 64 emeralds (4, 16, 52) and gone with `giftedChance` 0; the Night

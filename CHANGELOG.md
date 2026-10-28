@@ -19,6 +19,8 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - The Pathfinder's chronicle lines read "led Steve to an Ancient City" and "turned back from an expedition to an Ancient
   City" (it said "a Ancient City"), and asked with one ration in the chest they say "(there is 1)", not "(there are 1)".
+- In its last in-game hour a feud on the Pacts tab reads "At war: less than an hour left" or "Fades in less than an
+  hour without a war", instead of "0 days and 0 hours" (B637, B672).
 - Thessaly leaves the hall whenever the Professor's Thesis ends, not only when it's published: after
   `/workplace story stop` or with the thesis switched off, she used to stay for good as a Master trainer anyone could
   beat for the prize every day. One left behind in an existing world goes the next time her chunk loads (B663).

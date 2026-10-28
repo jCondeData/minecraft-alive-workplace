@@ -234,6 +234,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1027bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1027cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderKeepsContainers1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1026BugTests",
 			"io.github.jcondedata.aliveworkplace.test.TakeDownCancelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintHandlingGameTests",

@@ -1084,15 +1084,21 @@ def tower_floor(b, y):
 
 
 def windows(b, y):
+    """A window two tall through the tower wall on each of its four sides, its glass in the wall's outer cell of the
+    upper row and a sill of an upside-down stair in front of it. B656: where the tower narrows past a whole block
+    between the two rows (y 9, 26), the lower row's outer cell is a lone nub a block out from the face; the lower pane
+    stood in it joined to nothing, with the window's cell behind it open. The glass now stands in one column between the
+    wall's cells either side and the nub in front of it is cleared, so the nub below it is a stone ledge before the
+    glass, the sill's stair still at its edge (where it was: a Wonder part keeps its place, so a stage half built on a
+    server lines up with the redrawn part)."""
     for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        x, z = ray(y + 1, d)[0]
         for yy in (y, y + 1):
-            cells = ray(yy, d)
-            pane(b, cells[0][0], yy, cells[0][1])
-            for c in cells[1:]:
+            for c in ray(yy, d):
                 b.clear(c[0], yy, c[1], c[0], yy, c[1])
-        x, z = ray(y - 1, d)[0]
-        ox, oz = x + d[0], z + d[1]
-        stairs(b, ox, y - 1, oz, STONE_BRICK, toward(d[0], d[1]), top=True)
+            pane(b, x, yy, z)
+        sx, sz = ray(y - 1, d)[0]
+        stairs(b, sx + d[0], y - 1, sz + d[1], STONE_BRICK, toward(d[0], d[1]), top=True)
 
 
 def tower_door(b):

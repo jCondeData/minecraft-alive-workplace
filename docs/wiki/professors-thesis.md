@@ -35,6 +35,8 @@ Roadmap items: 31.21
   nearest that has one, as its hall last saw it). The quest names the village ("Beat the Trainer Leader of
   Thornfield"). With none, the rival scholar **Thessaly** comes to the hall: a named Master trainer (tier 5) who
   battles through the trainer engine like any village trainer; beaten, she says the thesis stands and leaves in a puff.
+  She also leaves whenever the thesis ends some other way (stopped with `/workplace story stop`, or switched off
+  with `disabledArcs`); a Thessaly no running thesis remembers vanishes when her chunk loads.
   The thesis' own village's Leader doesn't count.
 - **The ending**: every helper gets the thesis, a written book named "Professor Alder: Life in the Cold": a cover page
   (topic, author, co-author), a page per catch (species, biome, coordinates, day, catcher) and a closing page; 3 Rare

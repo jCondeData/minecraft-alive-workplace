@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656
 
 ## 1. What a player sees
 
@@ -314,7 +314,10 @@ claims and trip counts.
   close round their corners; where a lower roof meets a wall, a window's glass is carried out to the eaves only with a
   block on both sides of it. `tools/blueprints/check.py` flags any pane or bars run that ends in the air (a lamp's arm,
   meant to end over its lantern, is listed with its reason in the build's `open_panes`), and `B648GameTests` reads
-  every shipped structure, modded copies, village houses and Wonder parts included, for them (B648).
+  every shipped structure, modded copies, village houses and Wonder parts included, for them (B648). Glass joined to
+  nothing with air beside it is a lone thin post and is flagged too (between two stairs whose backs face away, or
+  standing out from a wall: the Sunny Plaza's arches and the Lighthouse's lower windows, B656);
+  `QaWindowsAndWards1028BugTests` joins every shipped pane as the game joins it, Wonders judged whole.
 - No villager is left standing inside a block in a growing village. A baby fits in nooks a grown villager doesn't
   (under a roof's stair being laid, beside a lantern on a fence post), and when it grows up vanilla finds no room for
   the bigger body there; a villager standing still in a doorway can have the door shut on it by a neighbor walking
@@ -488,6 +491,11 @@ fix).
 `QaWallTowerGameTests` (7, QA from B283: hall rounds open nothing on a Palisade Tower half way up, two towers decorating
 or a finished one; a tower saved and loaded mid-decoration stays one tower and is finished where it stands; its ladders
 balance when its builder is killed holding three and every second of a real build).
+`QaBuilders1028GameTests` (QA: B197, check.py's headroom numbers are the game's own (a villager's 1.95, a carpet's
+1/16, a bed's 9/16, a top slab's and a shut hatch's undersides, a hanging lantern's); B648, every shipped structure's
+glass joined as the game joins it, not as the kit stored it, ends at a jamb (Wonder stage parts aside); B229, a
+Miner with no chests saved and loaded twice with finds in the bag, and one beside its own hall, puts every block dug
+in the Storehouse; B166, a saved bed spot loads only with a bed villagers sleep in).
 `QaScanNameBugTests.aScanNamedWithAnApostropheAndAnAccentKeepsItsName` (B458, QA: a Scan Tool named "Jesse's Café" in an anvil saves a build called that), `BlueprintNamesGameTests` (3, B458: two scans of one accented name are "…" and "… 2" on the blueprint, the saved line and after the saved names are written and read back; an unnamed scan is still "<Player>s Build"; an upload `Zoë's Hut.litematic` is "Zoë's Hut" and a plain `zoe_hut` file "Zoe Hut"). QA's `QaBuilderFixes1027GameTests` (7 of its 9 here, scanned with the Scan Tool's clicks and built by a builder turned a quarter and mirrored, a restart mid-build: a room's east-facing double chest and west-facing trapped double chest stay joined and are built empty, B438; its Storehouse, Mailbox, Shop Counter and Grave face their drawn facing mirrored and turned, nothing skipped, and only those five data blocks, with the Village Hall, count as built facing any way (a wrong-facing furnace or stairs doesn't), B448; a room's glow item frame, item frame, painting and armor stand are on its material list without what they held, and built again empty, once each, facing the mirrored, turned way and paid from the chest, B441; a Scan Tool named "日本の家" or "cozy den" names its build exactly that, also after the saved names are read back, B458). `QaBuilderVerifyScan1026bBugTests.aScannedMailboxWithMailIsBuiltEmptyAndShowsNoMail` (B536, QA: a Mailbox scanned holding mail is built with has_mail false). `QaBlueprintLootGameTests` (1, QA: a scanned build of a lectern with a book, a jukebox with a disc, a chiseled bookshelf
 with a book, a decorated pot of diamonds, a campfire cooking beef, a sign and a named chest of gold, built by a Builder:
 every block comes out empty, the sign keeps its words and the chest its name,

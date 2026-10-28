@@ -104,8 +104,8 @@ Vanilla scaffolding (`minecraft:scaffolding`). No new items, blocks or commands.
 - Not in the landscaping stage.
 - With `workplaceFreeMaterials` on, scaffolding is put up and taken down for nothing (none taken from or added to the
   chests).
-- A carpenter only crafts for a builder that is waiting for materials, so it doesn't make scaffolding for a build that
-  skipped its step without it; put scaffolding in the chests to have such steps built.
+- A carpenter only crafts what a running build is short of (since B636 while the builder builds on, not only once he
+  stands waiting), so it doesn't make scaffolding for a build that skipped its step without it; put scaffolding in the chests to have such steps built.
 - Not tested here: a carpenter crafting it end to end (the recipe and the missing list are tested separately).
 
 ## 8. Proof

@@ -136,20 +136,27 @@ public class QaPokemonLegendsCompatTests implements FabricGameTest {
 		return player;
 	}
 
-	/** Keeps the chunks at {@code relative} spots loaded and ticking for this test (far points of the reach checks). */
+	/** This class's own chunk ticket: a chunk another test forces and lets go of stays loaded for this one (B647). */
+	private static final net.minecraft.server.level.TicketType<net.minecraft.world.level.ChunkPos> TICKET =
+		net.minecraft.server.level.TicketType.create("aliveworkplace_qa_legends_test", java.util.Comparator.comparingLong(net.minecraft.world.level.ChunkPos::toLong));
+
+	/**
+	 * Keeps the chunks at {@code relative} spots loaded and ticking for this test (far points of the reach checks). B647:
+	 * with the "forced" flag, a chunk another test had already forced wasn't this test's, and that test's unforcing it
+	 * mid-way left the far spot unloaded ("the chunk ... never took entities"); a ticket of its own can't be taken away.
+	 */
 	private static void forceChunks(GameTestHelper helper, BlockPos... relative) {
 		ServerLevel level = helper.getLevel();
-		List<long[]> forced = new ArrayList<>();
+		List<net.minecraft.world.level.ChunkPos> held = new ArrayList<>();
 		for (BlockPos p : relative) {
-			BlockPos abs = helper.absolutePos(p);
-			int cx = abs.getX() >> 4;
-			int cz = abs.getZ() >> 4;
-			if (level.setChunkForced(cx, cz, true)) {
-				forced.add(new long[] {cx, cz});
+			net.minecraft.world.level.ChunkPos pos = new net.minecraft.world.level.ChunkPos(helper.absolutePos(p));
+			if (!held.contains(pos)) {
+				level.getChunkSource().addRegionTicket(TICKET, pos, 2, pos);
+				held.add(pos);
 			}
-			level.getChunk(cx, cz);
+			level.getChunk(pos.x, pos.z);
 		}
-		PartnerShowsCompatTests.after(helper, () -> forced.forEach(c -> level.setChunkForced((int) c[0], (int) c[1], false)));
+		PartnerShowsCompatTests.after(helper, () -> held.forEach(pos -> level.getChunkSource().removeRegionTicket(TICKET, pos, 2, pos)));
 	}
 
 	private static String key(Component c) {

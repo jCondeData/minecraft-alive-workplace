@@ -833,7 +833,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGolemSmithGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGolemSmithEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGolemSmith1027GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSeerGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSeerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallSharedStationsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClinicTerrace1028GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028GameTests"
 		]
 	},
 	"depends": {

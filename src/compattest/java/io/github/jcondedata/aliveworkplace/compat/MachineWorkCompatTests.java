@@ -441,8 +441,10 @@ public class MachineWorkCompatTests implements FabricGameTest {
 	 * up before the fetch (a player's cobblestone in every other slot): the farmer ends the trip and takes none of the
 	 * wheat, as a full store pauses the mill.
 	 */
-	//$ gametest_ticks_batch AREA '600' '"qa_machine_fetch_full"'
-	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa_machine_fetch_full")
+	// Its own batch (B653): it clears every entity and Create block around it, so a neighbour in its batch (once
+	// QaMachineFetchCompatTests' test, under the same name) lost its farmer and millstone.
+	//$ gametest_ticks_batch AREA '600' '"machine_work_fetch_full_store"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "machine_work_fetch_full_store")
 	public void aTripWhoseStoreFilledUpBeforeTheFetchTakesNothing(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		clearMachines(helper);

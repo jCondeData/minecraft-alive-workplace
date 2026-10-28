@@ -875,6 +875,9 @@ public final class ArcEffects {
 		if (LostCaravanStory.onLoad(level, entity)) {
 			return; // (31.20)
 		}
+		if (ProfessorsThesis.onLoad(level, entity)) {
+			return; // (31.21, B663)
+		}
 		if (!entity.getTags().contains(Arcs.MOB_TAG)) {
 			return;
 		}

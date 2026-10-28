@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Thessaly leaves the hall whenever the Professor's Thesis ends, not only when it's published: after
+  `/workplace story stop` or with the thesis switched off, she used to stay for good as a Master trainer anyone could
+  beat for the prize every day. One left behind in an existing world goes the next time her chunk loads (B663).
+- A Stadium Days power with one visitor reads "1 visiting trainer", and its chat line says one trainer stands in the
+  boxes (B664).
 - The Bandit King's boss bar goes away when you go to the Nether or the End, or log out, die or walk more than 32
   blocks off; before, a player who left his dimension kept the bar on screen (B659).
 - Old Clinics can be refreshed to real ward beds: a Clinic built before its ward got real beds (one bed and three

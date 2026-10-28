@@ -141,4 +141,9 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
 - CI logs are readable without a token: `curl -sL https://api.github.com/repos/jCondeData/minecraft-alive-workplace/actions/jobs/<job id>/logs`
   (job ids from `.../actions/runs/<run id>/jobs`).
 - If Maven Central answers **429**, wait ~20 s and retry; it is rate limiting, not a real failure.
+- If Gradle can't download at all in a cloud container (429 on every Central path, maven.fabricmc.net at a few KB/s,
+  `mercury-0.4.3.jar` never finishing): `python3 tools/agent/mavenrelay.py --install`, start the relay
+  (`nohup python3 tools/agent/mavenrelay.py > /tmp/mavenrelay.log 2>&1 &`) and run Gradle as usual. It routes every
+  repository through a local relay that fetches with curl from Central's Google mirror and, for fabricmc jars,
+  SpongePowered's proxy (only when the sha1 matches fabricmc's). First run ~10 minutes. Container-only.
 

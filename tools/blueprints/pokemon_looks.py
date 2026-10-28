@@ -285,13 +285,15 @@ def pz_parapet(b, x0, z0, x1, z1, y, piers):
 
 
 def pz_arch(b, x0, z, y0=1):
-    """A glass bay three wide and three high with an arched head (upside-down stairs in its top corners)."""
+    """A glass bay three wide and two high under an arched head: upside-down stairs in its top corners either side of a
+    chiseled keystone. B656: the keystone was a pane between the two stairs, which glass can't join (their backs face
+    out), so it stood as a lone thin post with gaps either side; the glass below runs from pilaster to pilaster."""
     for x in range(x0, x0 + 3):
-        for y in range(y0, y0 + 3):
+        for y in range(y0, y0 + 2):
             pane(b, x, y, z)
     stairs(b, x0, y0 + 2, z, SMOOTH_SANDSTONE, "west", top=True)
     stairs(b, x0 + 2, y0 + 2, z, SMOOTH_SANDSTONE, "east", top=True)
-    b.set(x0 + 1, y0 + 3, z, "chiseled_sandstone")
+    b.set(x0 + 1, y0 + 2, z, "chiseled_sandstone")
 
 
 def pz_hall(b):

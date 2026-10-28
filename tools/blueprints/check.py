@@ -8,7 +8,9 @@ Since B537-B539: beds missing their other half (or with it on the wrong side), l
 on a block whose top can't hold them (a lectern, a chest, a bottom slab...), and dirt paths or farmland under a block
 the game counts as solid (a fence, a wall, a slab...), which it turns to dirt. Since B639: "cots" of a carpet on a
 bottom slab, two in a row, where a bed belongs (the owner saw them as broken beds no one can sleep in). Since B648:
-glass panes and iron bars whose run ends in the air (joined on one side only), the Terrace's broken windows (B640).
+glass panes and iron bars whose run ends in the air (joined on one side only), the Terrace's broken windows (B640). Since B656:
+glass joined to nothing with air beside it, a lone thin post (between two stairs it can't join, or a block out from
+a wall).
 """
 
 AIR = {"minecraft:air", "minecraft:cave_air", "minecraft:structure_void", "minecraft:jigsaw"}
@@ -191,6 +193,22 @@ def is_pane(block):
     return block is not None and (_short(block).endswith("glass_pane") or _short(block) == "iron_bars")
 
 
+def _may_join(block, side):
+    """Whether glass may join {@code block} on its {@code side} (the way from the glass to the block), as the game does
+    (IronBarsBlock.attachsTo: glass, a wall, or a face that is sturdy). Generous where unsure: not air, not a slab or a
+    carpet, not a stair whose back (its facing side, full in both halves) is turned away from the glass."""
+    if block is None:
+        return False
+    s = _short(block)
+    props = block[1]
+    if s.endswith("_stairs"):
+        return props.get("facing") == OPPOSITE[side]
+    if s.endswith("_slab"):
+        return props.get("type") == "double"
+    return not s.endswith(("_carpet", "_pressure_plate", "lantern", "_button", "torch", "_sign", "_banner", "flower_pot",
+                            "chain", "_rod", "ladder", "_door", "_trapdoor"))
+
+
 def pane_end_problems(blocks, only=None, allowed=None):
     """A glass pane or iron bars joined on one side only, with air on the other: the run of glass stops half way across
     its last block, a thin strip with a gap beside it (B640: the Terrace's bay windows). A window's glass meets a jamb (a
@@ -203,10 +221,20 @@ def pane_end_problems(blocks, only=None, allowed=None):
             continue
         props = blocks[p][1]
         joined = [d for d in FACING if str(props.get(d, "false")).lower() == "true"]
+        x, y, z = p
+        if not joined:
+            # B656: joined to nothing (between two stairs it can't join, or standing out from a wall), with air beside
+            # it: a lone thin post, the glass meets no jamb at all. The stored connections are kit.finish's guess, which
+            # misses some blocks the game joins (a stair's back, a quartz pillar), so a lone post is only one that has
+            # nothing beside it the game could join (_may_join).
+            open_sides = [d for d, (dx, _, dz) in FACING.items() if (x + dx, y, z + dz) not in blocks]
+            if open_sides and not any(_may_join(blocks.get((x + dx, y, z + dz)), d) for d, (dx, _, dz) in FACING.items()):
+                problems.append(f"{_short(blocks[p])}@{x},{y},{z} joins nothing, with air to the {open_sides[0]}: a "
+                                f"lone post, give it a jamb at both ends")
+            continue
         if len(joined) != 1:
             continue
         dx, _, dz = FACING[OPPOSITE[joined[0]]]
-        x, y, z = p
         if (x + dx, y, z + dz) not in blocks:
             problems.append(f"{_short(blocks[p])}@{x},{y},{z} joins only to the {joined[0]}, with air to the "
                             f"{OPPOSITE[joined[0]]}: the glass ends half way, give it a jamb")

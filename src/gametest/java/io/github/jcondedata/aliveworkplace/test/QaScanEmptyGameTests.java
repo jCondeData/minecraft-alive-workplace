@@ -23,8 +23,8 @@ public class QaScanEmptyGameTests implements net.fabricmc.fabric.api.gametest.v1
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final Logger LOGGER = LoggerFactory.getLogger("aliveworkplace-qa");
 
-	//$ gametest_ticks_batch AREA '60' '"qaScanEmpty"'
-	@GameTest(template = AREA, timeoutTicks = 60, batch = "qaScanEmpty")
+	//$ gametest_ticks_batch AREA '60' '"qaScanEmptySays"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "qaScanEmptySays")
 	public void scanningAnEmptyBoxSaysSoAndKeepsTheBlank(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		List<Component> seen = new ArrayList<>();

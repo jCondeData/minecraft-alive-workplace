@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.guard;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.bounty.Bounties;
 import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,14 +163,24 @@ public final class BanditKing {
 			BossEvent.BossBarOverlay.NOTCHED_10));
 		bar.setName(king.getDisplayName());
 		bar.setProgress(Math.max(0f, Math.min(1f, king.getHealth() / king.getMaxHealth())));
-		for (ServerPlayer player : level.players()) {
-			boolean in = player.distanceToSqr(king) <= (double) BAR_RANGE * BAR_RANGE;
-			if (in && !bar.getPlayers().contains(player)) {
-				bar.addPlayer(player);
-			} else if (!in && bar.getPlayers().contains(player)) {
+		// The bar's own list first: a player who went to another dimension, logged out or died is no longer in
+		// level.players(), so walking only those would leave him the bar for good (B659).
+		for (ServerPlayer player : new ArrayList<>(bar.getPlayers())) {
+			if (!seesBar(level, king, player)) {
 				bar.removePlayer(player);
 			}
 		}
+		for (ServerPlayer player : level.players()) {
+			if (seesBar(level, king, player) && !bar.getPlayers().contains(player)) {
+				bar.addPlayer(player);
+			}
+		}
+	}
+
+	/** Whether {@code player} sees the King's bar: alive, online, in his dimension and within {@link #BAR_RANGE}. */
+	private static boolean seesBar(ServerLevel level, Mob king, ServerPlayer player) {
+		return !player.isRemoved() && !player.hasDisconnected() && player.isAlive() && player.level() == level
+			&& player.distanceToSqr(king) <= (double) BAR_RANGE * BAR_RANGE;
 	}
 
 	/** The King's boss bar, or null with none (tests). */
@@ -186,10 +197,17 @@ public final class BanditKing {
 		}
 	}
 
-	/** With no King loaded in {@code level}, no bar of one is left showing there. */
+	/** No bar is left showing for a King who isn't loaded in any dimension, wherever its players went (B659). */
 	static void dropStaleBars(ServerLevel level) {
+		if (BARS.isEmpty()) {
+			return;
+		}
 		BARS.entrySet().removeIf(e -> {
-			if (level.getEntity(e.getKey()) == null && e.getValue().getPlayers().stream().allMatch(p -> p.level() == level)) {
+			boolean loaded = false;
+			for (ServerLevel l : level.getServer().getAllLevels()) {
+				loaded |= l.getEntity(e.getKey()) != null;
+			}
+			if (!loaded) {
 				e.getValue().removeAllPlayers();
 				return true;
 			}

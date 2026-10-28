@@ -236,13 +236,12 @@ public final class Requests {
 		}
 		out.addAll(io.github.jcondedata.aliveworkplace.legend.StrangeMoods.requests(level, worker)); // a strange mood's materials (29.10)
 		BuildSite site = Builders.activeSite(level, worker);
-		if (site != null && site.status() == BuildSite.Status.WAITING_FOR_MATERIALS) {
+		if (site != null && !site.isDone() && !site.isDeconstruction()) {
+			// B636: what the build is short of is asked for while the builder works on with what he has (BuilderWork keeps
+			// the list fresh), not only once he stands waiting at the block that needs it. B499's scaffolding is on it too.
 			site.missing().entrySet().stream()
 				.sorted(Map.Entry.<Item, Integer>comparingByValue().reversed())
 				.forEach(e -> out.add(forItem(worker, station, e.getKey(), e.getValue())));
-		} else if (site != null && site.missing().getOrDefault(Items.SCAFFOLDING, 0) > 0) {
-			// B499: a build never waits on scaffolding (35.6), so its shortfall is asked for while the builder works on
-			out.add(forItem(worker, station, Items.SCAFFOLDING, site.missing().get(Items.SCAFFOLDING)));
 		}
 		QuarrySite quarry = Miners.activeSite(level, worker);
 		if (quarry != null && quarry.status() == QuarrySite.Status.NEEDS_PICKAXE) {

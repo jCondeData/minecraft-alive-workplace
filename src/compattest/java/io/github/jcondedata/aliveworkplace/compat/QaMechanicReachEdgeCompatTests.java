@@ -31,8 +31,8 @@ public class QaMechanicReachEdgeCompatTests implements FabricGameTest {
 	private static final BlockPos TOOLBOX = new BlockPos(1, 2, 1);
 	private static final AtomicInteger IDS = new AtomicInteger();
 
-	//$ gametest_batch HUGE '"qa_mechanic_reach_edge"'
-	@GameTest(template = HUGE, batch = "qa_mechanic_reach_edge")
+	//$ gametest_batch HUGE '"qa_mechanic_reach_edge_32"'
+	@GameTest(template = HUGE, batch = "qa_mechanic_reach_edge_32")
 	public void aBuildThirtyTwoBlocksOffIsMendedAndThirtyThreeIsNot(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		forgetOthers(helper);

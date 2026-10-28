@@ -49,6 +49,9 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 public class QaGolemSmith1027GameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
 	private static final BlockPos HALL = new BlockPos(3, 2, 3);
+	/** Keeps the chunks at the farmhand's reach loaded (distance 2: entity ticking) while the range test counts. */
+	private static final net.minecraft.server.level.TicketType<net.minecraft.world.level.ChunkPos> EDGE_TICKET =
+		net.minecraft.server.level.TicketType.create("aliveworkplace_qa_farmhand_edge", java.util.Comparator.comparingLong(net.minecraft.world.level.ChunkPos::toLong));
 
 	private static final List<String> BRITISH = List.of("colour", "defence", "armour", "grey", "cancelled", "harbour", "favour", "neighbour", "centre", "metre");
 
@@ -295,10 +298,41 @@ public class QaGolemSmith1027GameTests implements net.fabricmc.fabric.api.gamete
 	/**
 	 * "A farmhand tends the fields of farmers within 48 blocks": a farmer with a field 48 blocks east (and west) of the
 	 * golem counts, one 49 blocks off doesn't.
+	 * B654: 48 and 49 blocks east of the golem lie 33 blocks past the test area, in chunks nothing else may load; a
+	 * farmer teleported into a chunk whose entities aren't loaded is hidden from every entity search, so the field at 48
+	 * read as 0 fields in a full run whose layout left that chunk unloaded. The four spots' chunks are force-loaded and
+	 * the test waits until their entities tick (B581, B623) before it counts.
 	 */
-	//$ gametest_ticks_batch AREA '100' '"qa1027FarmhandRange"'
-	@GameTest(template = AREA, timeoutTicks = 100, batch = "qa1027FarmhandRange")
+	//$ gametest_ticks_batch AREA '1200' '"qa1027FarmhandRange"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qa1027FarmhandRange")
 	public void aFarmersFieldCountsAt48BlocksAndNotAt49(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos golemAt = helper.absolutePos(new BlockPos(15, 2, 15));
+		Set<net.minecraft.world.level.ChunkPos> chunks = new HashSet<>();
+		for (int dx : new int[] {48, 49, -48, -49}) {
+			chunks.add(new net.minecraft.world.level.ChunkPos(golemAt.offset(dx, 0, 0)));
+		}
+		// a ticket of the test's own, not setChunkForced: the next batch's structure may stand in one of these chunks, and
+		// the framework force-loads its chunks with setChunkForced, so un-forcing them here at the end would unload it
+		// under that test, which then never starts
+		for (net.minecraft.world.level.ChunkPos chunk : chunks) {
+			level.getChunkSource().addRegionTicket(EDGE_TICKET, chunk, 2, chunk);
+			Leftovers.after(helper, () -> level.getChunkSource().removeRegionTicket(EDGE_TICKET, chunk, 2, chunk));
+		}
+		helper.startSequence()
+			.thenWaitUntil(() -> {
+				for (net.minecraft.world.level.ChunkPos chunk : chunks) {
+					helper.assertTrue(level.areEntitiesLoaded(chunk.toLong()) && level.isPositionEntityTicking(chunk.getMiddleBlockPosition(golemAt.getY())),
+						"the chunk " + chunk + " 48 blocks from the golem isn't loaded yet");
+				}
+			})
+			.thenExecute(() -> countFieldsAtTheEdge(helper))
+			.thenSucceed();
+	}
+
+	private static void countFieldsAtTheEdge(GameTestHelper helper) {
+		// the chunks that just loaded may hold an earlier batch's villagers within the reach
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos composter = new BlockPos(14, 2, 20);
@@ -323,10 +357,10 @@ public class QaGolemSmith1027GameTests implements net.fabricmc.fabric.api.gamete
 			int found = FarmhandGolems.fields(level, golem).size();
 			boolean want = Math.abs(dx) <= 48;
 			if ((found == 1) != want) {
-				wrong.add(dx + " blocks: " + found + " fields");
+				wrong.add(dx + " blocks: " + found + " fields (farmer at " + farmer.blockPosition() + ", alive " + farmer.isAlive()
+					+ ", entities loaded there " + level.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong(farmer.blockPosition())) + ")");
 			}
 		}
 		helper.assertTrue(wrong.isEmpty(), "the farmer's field at the reach's edge: " + wrong);
-		helper.succeed();
 	}
 }

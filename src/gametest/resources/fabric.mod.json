@@ -248,6 +248,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScanFreeGoodsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanFreeGoodsBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B261GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B636GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B251GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B224GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B208GameTests",
@@ -498,6 +499,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FurnishedRoomsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClinicWardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWindowsAndWards1028GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilders1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishingTableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureAnyModGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedHomesGameTests",
@@ -506,6 +508,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FurnishedPackTestGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ModdedLibraryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobChainGameTests",
+			"io.github.jcondedata.aliveworkplace.test.B655GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterFurnitureGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterWorkbenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterFurnitureBugTests",
@@ -630,6 +633,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ProfessorsThesisGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BanditKingStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBanditKing1028GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBanditKingBugTests",
 			"io.github.jcondedata.aliveworkplace.test.SicknessStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SicknessPhysicianGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestJournalGameTests",
@@ -839,7 +843,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaClinicTerrace1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaWordsVillage1028GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaWordsVillage1028GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClinicTerrace1028BugTests"
 		]
 	},
 	"depends": {

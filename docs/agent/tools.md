@@ -146,4 +146,5 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   (`nohup python3 tools/agent/mavenrelay.py > /tmp/mavenrelay.log 2>&1 &`) and run Gradle as usual. It routes every
   repository through a local relay that fetches with curl from Central's Google mirror and, for fabricmc jars,
   SpongePowered's proxy (only when the sha1 matches fabricmc's). First run ~10 minutes. Container-only.
+  `tools/agent/slowmaven/` (lane D, same day) does the same with parallel range requests straight from fabricmc.
 

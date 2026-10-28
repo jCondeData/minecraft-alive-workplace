@@ -84,6 +84,8 @@ def main():
         for name in missing:
             print(f"missing: {name} has no copy of its {release} drawing in {OUT.relative_to(ROOT)}")
         print(f"{len(missing)} blueprints changed since {release} lack that drawing")
+        if missing:
+            print("Fix: run python3 tools/blueprints/history.py and commit what it writes under blueprint_history")
         sys.exit(1 if missing else 0)
     print(f"{written} older drawings in {OUT.relative_to(ROOT)}")
 

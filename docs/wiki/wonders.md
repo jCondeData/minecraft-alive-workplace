@@ -571,9 +571,11 @@ one keeps the name Stadium.
   quarter more with the Trainers' Guild), the visitor's trainer at home too (banked on its village's caravans' entry
   when that village isn't loaded); the result goes to the players at the Stadium or in the village and into the
   chronicle ("At the Stadium, (winner) beat (loser)"). The villagers off work walk to the seats (the carpets on the
-  tiers) and sit down, and those who watched are 5 happier ("watched a Stadium Day") until the next Stadium Day. At
+  tiers) and sit down (as on a Cup day the afternoon is a holiday, so those at work go too; not those resting), and those who watched are 5 happier ("watched a Stadium Day") until the next Stadium Day. At
   dusk the visitors leave: gone where no player is within 32 blocks, else walking out of the gate. A visitor never
-  takes a job or a bed. The visitors come once a day, a restart in the afternoon too.
+  takes a job or a bed. The visitors come once a day, a restart in the afternoon too. A Stadium damaged during a
+  Stadium Day (or Wonders switched off) sends its visitors off at once and holds no more bouts; repaired the same
+  afternoon, no second set comes that day.
 - **The tournament** (`tournament_host`): M28's Festival Cup exists, so it is wired. `Arenas.find` gives the village's
   Stadium first, as an Arena of tier 3: its field's center the ring, its two boxes, its seats, the road in front of
   the gate for the fair and the notice board (no champion's pole). So a Town with a Stadium and no Arena can host a
@@ -966,6 +968,16 @@ a seat sits down 5 happier ("watched a Stadium Day"); the drawing's own posts, f
 over 300 seats and the gate. Showcase scene `wonder_stadium` (group Wonders, with Cobblemon): the Stadium's
 time-lapse, then a Stadium Day with the visitors in the boxes, the stands full, a bout in the chronicle and the
 player's battle against a visitor.
+
+QA compat GameTests in `QaStadium1028CompatTests` (35.24): the clock's edges from both sides (5999 nobody, 6000 the
+visitors, 11999 still there, 12000 gone, the odd day after nobody, the next even day that day's own count); the chat
+a player at the Stadium reads ("Stadium Day at (village): (n) visiting trainers stand in the boxes until dusk.
+Challenge them!" with n the visitors, then "At the Stadium: (winner) beats (loser)"); the Stadium damaged mid-day
+(visitors gone, no bout, none back once repaired); a visitor killed mid-day (no replacement, the rest still fight one
+an hour); a visitor and the day's record through a save; two visitors beaten the same day pay once each, in
+CobbleDollars only; a resting villager stays out of the stands, the +5 lasts until the next Stadium Day; the power's
+line in each form. A failing test on the tests/stadium-thesis-1028 branch (until fixed): a file
+with one visitor reads "1 visiting trainers".
 
 GameTests in `ColossusPowerGameTests` (35.22): a villager at home 12 happier with "proud of the Colossus", one in a
 village off its routes not at all, then with a caravan route 8 happier with "the realm's Colossus", its 8 beauty;

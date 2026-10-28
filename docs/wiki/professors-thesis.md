@@ -90,7 +90,9 @@ Roadmap items: 31.21
 - 31.21: the trigger needs the patron to exist (`thesis_patron`: the Professor or an Expert Scholar), not just any
   Scholar, since a lower Scholar couldn't be the patron. A Scholar away from the desk still counts.
 - 31.21: Thessaly is the trainer job at Master (not a Leader, so the home village's Leader doesn't take her
-  challenges); she leaves only when beaten (a loss can be retried) or when the arc ends.
+  challenges); she leaves when beaten (a loss can be retried) or when the thesis is published. Today a thesis
+  stopped (`/workplace story stop`) or switched off (`disabledArcs`) during Peer Review leaves her standing by the
+  hall (a bug; failing tests on the tests/stadium-thesis-1028 branch).
 - 31.21: every helper gets a copy of the book and the rewards; one who is offline gets them dropped on the hall.
 - 31.21: a reward item Cobblemon lacks is paid as 4 emeralds.
 - 31.21: the free research level is the topic in progress, else the first open one in the tree's order.
@@ -112,4 +114,13 @@ Roadmap items: 31.21
 - GameTests, `ProfessorsThesisGameTests`: without Cobblemon the arc isn't loaded and a catch counts nothing
   (`withoutCobblemonTheArcNeverStarts`); the objectives read and write back, the fossil and badlands rules, emeralds
   for missing rewards (`theObjectivesReadAndMatch`).
+- QA compat GameTests, `QaThesis1028CompatTests`: the patron and the trigger from both sides (a Journeyman Scholar
+  isn't the patron, an Expert is, a Master beats an Expert, a Village doesn't meet the trigger, 6% a day; the request
+  and the chronicle line) (`thePatronAndTheTriggerFromBothSides`); the Forest's Web, Sea and Shore and Living Fossils
+  with their near misses (`theForestTheSeaAndTheFossils`); y=151 and y=-1 count, y=150 and y=0 don't, night from 13000
+  to 23000 on any day, the full moon only at night, Fire and Stone's places (`heightAndTimeEdgesFromBothSides`); every
+  sentence the co-author reads, a loss leaving Thessaly there, +150 reputation (`everySentenceTheCoAuthorReads`); the
+  book's pages word for word (`theBooksPagesNameSpeciesPlaceAndDay`); the thesis and Thessaly through a save
+  (`theThesisAndThessalySurviveASave`). Failing tests on the tests/stadium-thesis-1028 branch
+  (until fixed): Thessaly stays when the thesis is stopped or switched off.
 - Showcase scene `professors_thesis` (Cobblemon): the request, a catch counting, the published book.

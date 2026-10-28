@@ -120,7 +120,7 @@ horn) in their own entity data.
 - The camps, Pell and the fort are built or come only once a player is within 96 blocks, as every arc place.
 - With no fit ground within 16 blocks of the arc's column the fort isn't built (the arc logs it and its place is
   skipped).
-- Open bugs found by QA on 2026-10-28 (failing tests in `QaBanditKingBugTests` on the `tests/bandit-king-1028` branch): about 1 fort site in 40 lies up to
+- Open bugs found by QA on 2026-10-28 (failing tests on the tests/bandit-king-1028 branch): about 1 fort site in 40 lies up to
   half a block outside 110 to 150 blocks (`BanditFort.site` rounds each axis on its own, as the camps' ring did before
   B205); and a player who goes to another dimension while near the King keeps seeing his boss bar.
 

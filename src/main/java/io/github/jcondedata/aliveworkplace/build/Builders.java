@@ -42,6 +42,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.AABB;
 import io.github.jcondedata.aliveworkplace.work.Reach;
 import org.jetbrains.annotations.Nullable;
 
@@ -198,6 +199,25 @@ public final class Builders {
 			: io.github.jcondedata.aliveworkplace.wonder.WonderCrews.stockpile(level, villager).orElseGet(() -> benchPos(villager).orElse(villager.blockPosition()));
 		emptyBag(level, villager, bench, SupplyContainers.find(level, bench, null));
 		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+	}
+
+	/**
+	 * B670: a build is over (finished or canceled): its helpers stop now, while the site still names the lead's bench, so
+	 * what they carry goes back to the lead's chests. A helper that only noticed later, once the site was gone, emptied
+	 * its bag at its own bench, out of the lead's reach (the soak's builder stuck for good waiting on lanterns that lay in
+	 * another builder's chest). A Wonder's crew keeps its own way back to the stockpile (35.5).
+	 */
+	static void sendHelpersBack(ServerLevel level, BuildSite site) {
+		if (site.wonder() != null || site.bench() == null) {
+			return;
+		}
+		AABB around = new AABB(site.bench()).inflate(MAX_SITE_DISTANCE);
+		for (Villager helper : level.getEntitiesOfClass(Villager.class, around, v -> {
+			BuilderJob job = ModAttachments.BUILDER_JOB.get(v);
+			return job != null && job.helper() && job.siteId().equals(site.id());
+		})) {
+			stopHelping(level, helper);
+		}
 	}
 
 	/** Sites waiting for this builder, in the order they were handed over. */
@@ -758,6 +778,7 @@ public final class Builders {
 
 	/** A site's last step done: hands back what's left, tells the owner, records it. Also used by tests (27.21). */
 	public static void finish(ServerLevel level, Villager villager, BuildSite site) {
+		sendHelpersBack(level, site);
 		BlockPos bench = (site.wonder() != null ? siteBench(level, villager, site) : benchPos(villager)).orElse(villager.blockPosition());
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
 		emptyBag(level, villager, bench, supplies);
@@ -918,6 +939,7 @@ public final class Builders {
 			BuildSiteManager.get(level).remove(site.id());
 			return;
 		}
+		sendHelpersBack(level, site);
 		BlockPos bench = villager != null ? benchPos(villager).orElse(villager.blockPosition()) : site.placement().origin();
 		List<BlockPos> supplies = villager != null ? SupplyContainers.find(level, bench, null) : List.of();
 		if (villager != null) {

@@ -4,7 +4,7 @@ The Bandit King's fort rises a stage a dawn out beyond a village, and the King w
 ROADMAP 31.15; the story that brings him, `arcs/bandit_king.json`, is 31.16. Builds on the arc engine's `place`
 (31.4), bandit camps (`BanditCamps`, 32.3's lairs) and the bounty captains' names (31.13). Part of the 1.5 expansion.
 
-Roadmap items: 31.15, 31.16
+Roadmap items: 31.15, 31.16, B659
 
 ## What a player sees
 
@@ -19,7 +19,8 @@ Roadmap items: 31.15, 31.16
      treasure chest, and a postern door in the palisade behind it (placed shut, or open when the story says so).
 - **The King**: a vindicator named "Grimwald, the Bandit King" (a first name from the bounty captains' list), crowned
   with a golden helmet, in an iron chestplate, leggings and boots, with a diamond axe and 150 health. Players within 32
-  blocks see his red boss bar. At half health he blows a goat horn and four bandits come out of the keep, once.
+  blocks, in his dimension, see his red boss bar; it goes away when they walk off, go to another dimension, log out or
+  die. At half health he blows a goat horn and four bandits come out of the keep, once.
 - **His men keep to the fort**: none wanders past the palisade much, even after the area unloads and loads again.
 - **The treasure chest** (`aliveworkplace:chests/bandit_king`): 16 to 32 emeralds, 4 to 8 gold ingots, 1 to 3
   diamonds, an enchanted iron sword or crossbow, and always **the King's Crown** (the golden helmet, Protection III and
@@ -61,7 +62,9 @@ Roadmap items: 31.15, 31.16
   middle, 17 blocks; a tower man his platform, 2 blocks) is in a tag, so a leash lost to a reload is put back.
 - `guard/BanditKing` makes the King, his crown (`BanditKing.crown`) and his name (the lang key
   `entity.aliveworkplace.bandit_king`, from `bounties/captains.json`'s `first_names`). Every 10 ticks `BanditFort.tick`
-  looks over the fort's loaded men: leashes, the King's boss bar (players within 32 blocks) and his horn (at half health,
+  looks over the fort's loaded men: leashes, the King's boss bar (players within 32 blocks; each update first walks the
+  bar's own players and takes off any who left his level, logged out, died or are out of range, B659; a bar whose King
+  isn't loaded in any dimension is dropped) and his horn (at half health,
   once: the tag `aliveworkplace_bandit_king_horn`; the four called bandits come out at the keep's door and go for whoever
   last hurt him).
 
@@ -135,4 +138,6 @@ horn) in their own entity data.
   32-block edge and its health, the horn at exactly half health and not again after a reload, war banners broken by a
   player (a plain banner and one far from the camps don't count; a camp counts once), the Town rank of the trigger,
   the fort resumed from a save mid-arc, every sentence a player reads, and the chest's one enchanted weapon.
+- GameTests: `QaBanditKingBugTests`: the bar leaves a player who goes to the Nether
+  (`qaKingsBarLeavesAPlayerWhoGoesToTheNether`, B659).
 - Showcase scenes `bandit_fort` and `bandit_king`.

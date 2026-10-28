@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662
 
 ## 1. What a player sees
 
@@ -29,6 +29,12 @@ Bench) becomes the material list of the rest of it (B279; held in either hand, B
 frames included, with what the bench's chests, the crew's bags and the village (a storehouse, other workers' spare
 stock) hold ticked off. A sneak-right-click with an empty hand shows the status and then the whole list in chat. With
 nothing left to place, no build, or a building being taken down, the Builder says so and the book stays as it was.
+What that list is short of goes on the Storehouse's requests board straight away, while the Builder builds on with what
+he has (B636): the Porter, Carpenter, Mason and Lumberjack fetch or make it during the build, not only once he reaches
+the block that needs it and stands waiting. The shortfall is worked out again every 5 seconds and on the first tick
+after a restart (it isn't saved), and is off the board once the chests hold enough. It is worked out again the moment the
+crew takes anything from a chest too, so what is already in a bag is never asked for twice (the Lumberjack once stripped
+every log in his chest for a Builder who had just collected the three he needed).
 The Scan Tool marks whatever block it right-clicks as a corner, a chest, furnace, trapdoor or bench included: the click
 marks it and the block stays shut and unflipped (B335), from the off hand too when the main hand is empty (B374).
 A Scan Tool renamed in an anvil names the build exactly as typed, apostrophes and accents too: "Jesse's Café" is
@@ -347,7 +353,10 @@ claims and trip counts.
 - The question in chat goes only to a player who is online when the Builder asks; otherwise it waits on the Repairs page.
 - A refresh (36.21) knows only the older drawings the mod ships (`data/aliveworkplace/blueprint_history/`, written by
   `tools/blueprints/history.py`: every earlier version of the blueprints changed since 1.0, and every version of the
-  Stone House line). A build of an older drawing not shipped, an imported or uploaded build, and a modded-furniture
+  Stone House line), and always the drawing of the latest release (its `v*` tag), so a build players put up from the
+  release before a redraw is always known (B661/B662: the Clinic before its real ward beds, B639, was missing, so an old
+  Clinic with slab-and-carpet cots was offered no refresh; `history.py --check` lists any release drawing missing). A
+  build of an older drawing not shipped, an imported or uploaded build, and a modded-furniture
   variant drawn only in the `modded/` files show no button. A furnished build (37.3) is matched as it was furnished:
   its saved pieces stand where the spots file of its day put them, so they are the Builder's and come away; today's
   spots keep a piece only where one of the same kind already stands, and the others are furnished as a new build is
@@ -361,6 +370,9 @@ claims and trip counts.
 
 ## 8. Proof
 
+`B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not
+waiting); a click there hands one over and it's off the board; after a save and reload it's listed again while he builds
+on, and a torch put in the chest takes it off before the hut is done.
 `RefreshGameTests` (36.21, through the Village Hall's Repairs page): a Stone House built from its first shipped drawing
 refreshed to the current one (every leftover gone or turned into the new piece, every new piece there, no button
 after); a small build's refresh keeping a chest and its diamonds, a bed and its sleeper's claim, a composter and the
@@ -383,6 +395,8 @@ each furnished by the spots file of its older drawing's day and turned or mirror
 current drawing with nothing floating; a Builder refreshing a furnished, turned Stone House of before B260 across a save
 and reload keeps a player's block on an old piece's spot and one where a new piece goes, leaves nothing floating and
 no second refresh on the page.
+`QaClinicTerrace1028BugTests` (B661/B662, the tester's): a Clinic built from 0.151.0's drawing (one bed and three
+slab-and-carpet cots) is offered the refresh to real ward beds from the drawings the mod ships.
 
 Compat tests (QA, lane E, from "Builders never copy what is inside containers"): `QaPastureCopyCompatTests` (a scanned
 Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),

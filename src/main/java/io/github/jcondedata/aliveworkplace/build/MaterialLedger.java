@@ -9,7 +9,8 @@ import net.minecraft.world.item.ItemStack;
  * Counts every item builders take out of the world's stock or add to it, so the builder soak test (23.1) can prove no
  * item was duplicated or lost: what was stocked, plus what builders gained (drops from clearing, items given back by
  * taking a block down, a finished build's blueprint), minus what they built in and what they dropped on the ground,
- * must equal what is left in chests and bags. Off (and free) unless a soak switched it on.
+ * must equal what is left in chests and bags. Village jobs that craft for builders (a Carpenter's ladders, a Mason's kiln)
+ * report their conversions too ({@link #craftUsed}, {@link #craftMade}; B655). Off (and free) unless a soak switched it on.
  */
 public final class MaterialLedger {
 	private static boolean on;
@@ -63,8 +64,21 @@ public final class MaterialLedger {
 		add(GAINED, to, count);
 	}
 
-	/** Items a builder dropped on the ground (nowhere to put them). */
-	static void dropped(ItemStack stack) {
+	/**
+	 * Items a crafting job took out of its bag to make something (B655: a Carpenter's planks and sticks for a builder's
+	 * ladders), or burnt as a kiln's fuel. Counted as used, so a fair conversion isn't items off.
+	 */
+	public static void craftUsed(Item item, int count) {
+		add(USED, item, count);
+	}
+
+	/** Items a crafting job made (its output, and the bucket or bottle an ingredient leaves), counted as gained (B655). */
+	public static void craftMade(Item item, int count) {
+		add(GAINED, item, count);
+	}
+
+	/** Items a builder or a crafting job dropped on the ground (nowhere to put them). */
+	public static void dropped(ItemStack stack) {
 		add(DROPPED, stack.getItem(), stack.getCount());
 	}
 

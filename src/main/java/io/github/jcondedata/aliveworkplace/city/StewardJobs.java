@@ -274,7 +274,7 @@ public final class StewardJobs {
 		for (Job job : jobs) {
 			Optional<VillagerProfession> profession = job.job();
 			if (profession.isEmpty() || !(level.getEntity(job.villager()) instanceof Villager villager) || !wantsJob(villager)
-				|| level.getPoiManager().getType(job.station()).isEmpty() || level.getPoiManager().getFreeTickets(job.station()) <= 0
+				|| !Stations.freeAt(level, job.station())
 				|| !profession.get().acquirableJobSite().test(level.getPoiManager().getType(job.station()).get())
 				|| WorkerLimits.full(level, GlobalPos.of(level.dimension(), job.station()), false)) {
 				continue;

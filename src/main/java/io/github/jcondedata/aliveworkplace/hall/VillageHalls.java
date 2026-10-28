@@ -145,7 +145,9 @@ public final class VillageHalls {
 		List<FreeStation> out = new ArrayList<>();
 		// The job a kind of workstation gives, found once per kind rather than once per workstation (B103).
 		java.util.Map<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>, Optional<VillagerProfession>> jobs = new java.util.HashMap<>();
-		level.getPoiManager().getInRange(VillageHalls::jobBlock, hall, RADIUS, PoiManager.Occupancy.HAS_SPACE)
+		// A block with a free place, or a beehive nobody works at (B657: a beehive keeps no places, so it never had one).
+		level.getPoiManager().getInRange(VillageHalls::jobBlock, hall, RADIUS, PoiManager.Occupancy.ANY)
+			.filter(record -> record.hasSpace() || io.github.jcondedata.aliveworkplace.work.Stations.freeAt(level, record.getPos()))
 			.forEach(record -> jobs.computeIfAbsent(record.getPoiType(), VillageHalls::firstJob)
 				.ifPresent(p -> out.add(new FreeStation(record.getPos().immutable(), p, record.getPoiType()))));
 		out.sort(Comparator.comparingDouble(f -> f.pos().distSqr(hall)));
@@ -208,7 +210,10 @@ public final class VillageHalls {
 			return false;
 		}
 		// The offered block first: if someone took it meanwhile, nothing changes and they keep their own block (bug B27).
-		boolean taken = level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent();
+		// A beehive keeps no places (B657): it's theirs if nobody works there yet.
+		boolean taken = io.github.jcondedata.aliveworkplace.work.Stations.keepsNoCount(station.poi())
+			? io.github.jcondedata.aliveworkplace.work.Stations.freeAt(level, station.pos())
+			: level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent();
 		if (!taken) {
 			return false;
 		}

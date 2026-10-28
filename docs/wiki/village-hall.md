@@ -73,8 +73,9 @@ scrolling over it. On top: "A new job for Dara", then the price by their level (
 Novice", before anything is paid; a jobless villager's list says a free block is theirs for nothing instead. Then one
 line per job a villager takes at a work block (every registered job with a block, behind its config switch: not the
 Steward, Legends, the Trainer Leader, nitwits): those with a free block in the village first, "Mason · 1 free
-Stonecutter" (counted over every free block, a shared block such as a lectern counting for each of its jobs), then the
-rest grayed: "Mason · place a Stonecutter first", a job above their class with the class it needs (34.8), "Librarian ·
+Stonecutter" (counted over every free block, a shared block such as a lectern counting for each of its jobs, and
+named by the free blocks themselves, nearest kind first: "Carpenter · 1 free Carpenter's Bench, 1 free Crafting
+Table", B658), then the rest grayed: "Mason · place a Stonecutter first", a job above their class with the class it needs (34.8), "Librarian ·
 their job now". The Builder is one of them ("Builder · 1 free Blueprint Table"). Last, for a villager with a job, **No
 job**. Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
 click on a job sends the offer to chat and marks the line ("Click again to pay 20 emeralds: Dara becomes a Mason"); a
@@ -239,7 +240,8 @@ others when the row is full, newest first.
 have room (the same list a jobless villager's own page shows and Job ▾ counts): the kinds in the game's
 `acquirable_job_site` tag, plus the shared stations a job is given at only by an item (`work/Stations`, not
 `byItself()`: crafting table, jukebox, Mailbox and Cobblemon's machines, under their first job this game has;
-B635: the tag alone left the Carpenter's table out), each matched to the building whose outline holds it
+B635: the tag alone left the Carpenter's table out), and a beehive or bee nest nobody works at (B657: they keep no
+places, so "have room" never counted them; `Stations.freeAt`), each matched to the building whose outline holds it
 (finished builds, and builds going up). Who could take a block: a grown villager in the village without a job, not a
 nitwit or a Legend. One who has never worked takes any block; one who still has an old job's trades but lost the block
 is offered only a block of that same job, because changing job is paid retraining (26.6). A job above a villager's

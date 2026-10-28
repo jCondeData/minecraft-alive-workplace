@@ -22,6 +22,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -239,8 +240,22 @@ public final class HallJobs {
 				out.add(line(item, Component.translatable("screen.aliveworkplace.hall.jobs.class", job, need == null ? Component.empty() : need.name()),
 					State.CLASS, id, tip));
 			} else {
-				int n = option.free().size();
-				Component label = Component.translatable("screen.aliveworkplace.hall.jobs.free", job, n, Words.itemName(item, n));
+				// Named by the free blocks themselves, the nearest kind first (B658: not the job's first block, which may not be there).
+				Map<Block, Integer> kinds = new LinkedHashMap<>();
+				for (VillageHalls.FreeStation free : option.free()) {
+					kinds.merge(level.getBlockState(free.pos()).getBlock(), 1, Integer::sum);
+				}
+				MutableComponent label = null;
+				for (Map.Entry<Block, Integer> kind : kinds.entrySet()) {
+					Item kindItem = kind.getKey().asItem() == Items.AIR ? item : kind.getKey().asItem();
+					Component name = kind.getKey().asItem() == Items.AIR ? kind.getKey().getName() : Words.itemName(kindItem, kind.getValue());
+					if (label == null) {
+						item = kindItem; // the line's icon: the nearest free block
+						label = Component.translatable("screen.aliveworkplace.hall.jobs.free", job, kind.getValue(), name);
+					} else {
+						label.append(Component.translatable("screen.aliveworkplace.hall.jobs.free_more", kind.getValue(), name));
+					}
+				}
 				tip.add(Component.translatable("screen.aliveworkplace.hall.jobs.nearest", VillageHallScreen.where(hall, option.free().get(0).pos()))
 					.withStyle(ChatFormatting.GRAY));
 				boolean chosen = option.job() == picked;

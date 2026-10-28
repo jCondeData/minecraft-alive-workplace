@@ -839,6 +839,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGolemSmith1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSeerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallSharedStationsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallSharedStationsBugTests",
+			"io.github.jcondedata.aliveworkplace.test.B658GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClinicTerrace1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028bGameTests",

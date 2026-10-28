@@ -356,6 +356,21 @@ public final class Stations {
 	}
 
 	/**
+	 * Whether the work block at {@code pos} is free: it has a free place, or it keeps no count of its workers (a beehive
+	 * or a bee nest: bees don't take them) and no villager works there (B657: the hall listed only blocks with a place).
+	 */
+	public static boolean freeAt(ServerLevel level, BlockPos pos) {
+		PoiManager poi = level.getPoiManager();
+		Optional<Holder<PoiType>> type = poi.getType(pos);
+		return type.isPresent() && (poi.getFreeTickets(pos) > 0 || (keepsNoCount(type.get()) && !worked(level, pos)));
+	}
+
+	/** Whether blocks of {@code poi}'s kind keep no count of their workers (a beehive, a bee nest). */
+	public static boolean keepsNoCount(Holder<PoiType> poi) {
+		return poi.value().maxTickets() == 0;
+	}
+
+	/**
 	 * Whether a villager works at {@code pos}: any loaded one, however far off (a beekeeper asleep across the village
 	 * still has their hive). Only for blocks that keep no count of their workers (beehives).
 	 */

@@ -25,6 +25,13 @@ asks for the steps, `latest.log` and any crash report).
 - Builders who help another builder now put what they carried back in that builder's chests when the build finishes
   or is canceled; before, a helper still carrying blocks at that moment took them home to its own chest, where the
   other builder's next build couldn't find them (B670).
+- The Village Hall's Job ▾ offers a free beehive to the Beekeeper ("Beekeeper · 1 free Beehive", one click), and the
+  Free job blocks page and the Steward count it; before, a beehive was never counted as free, so the list said to place
+  one while one stood unused (B657).
+- Job ▾ names the free block itself: "Carpenter · 1 free Carpenter's Bench" rather than a Crafting Table that isn't
+  there, the same for a Music Stand, a Postal Desk and an Apiary, and both kinds when both are free (B658).
+- Villagers gossiping about a Legend on strike or a Legend guest close the title with a comma: "Ada Stonewright,
+  Master Architect, has downed tools." (B631).
 
 ## 0.151.0 — 2026-10-27
 

@@ -310,6 +310,48 @@ public class LegendsHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		});
 	}
 
+	/**
+	 * B631: the Legend's name and title open the strike and guest lines, so the title is closed with a comma: "Ada,
+	 * hall_bard, has downed tools." (before, "Ada, hall_bard has downed tools.").
+	 */
+	//$ gametest_ticks_batch AREA '200' '"legendsHallChatterCommas"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "legendsHallChatterCommas")
+	public void legendChatterClosesTheTitleWithAComma(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		cleanUp(helper, new ArrayList<>());
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.runAfterDelay(2, () -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall)).forEach(Villager::discard);
+			Legends.setForTest(roster());
+			Villager bo = villager(helper, new BlockPos(14, 2, 14), "Bo");
+			Villager ada = villager(helper, new BlockPos(16, 2, 16), "Ada");
+			Legends.make(level, ada, Legends.get(id("hall_bard")).orElseThrow(), "test");
+			LegendData data = ModAttachments.LEGEND.get(ada);
+			ModAttachments.LEGEND.set(ada, new LegendData(data.id(), data.name(), false, data.hall(), data.since(), data.lastDay(), Map.of("happy", 2), 6,
+				data.lastLuxury(), data.way()));
+			Villager gil = villager(helper, new BlockPos(18, 2, 16), "Gil");
+			ModAttachments.LEGEND.set(gil, new LegendData(id("hall_chef"), "", true, Optional.empty(), 1, 9, Map.of(), -1, -1, "visit"));
+			ServerPlayer player = helper.makeMockServerPlayerInLevel();
+			Map<String, String> said = new LinkedHashMap<>();
+			for (int i = 0; i < 3000 && said.size() < 2; i++) {
+				Component line = Chatter.line(level, bo, hall, player);
+				if (line != null && line.getContents() instanceof TranslatableContents t
+					&& (t.getKey().equals("chatter.aliveworkplace.legend_strike.0") || t.getKey().equals("chatter.aliveworkplace.legend_guest.0"))) {
+					said.putIfAbsent(t.getKey(), line.getString());
+				}
+			}
+			String strike = "Ada, hall_bard, has downed tools. They won't work till they get what they want.";
+			String guest = "Gil, hall_chef, is staying with us! Do you think they'll settle?";
+			helper.assertTrue(strike.equals(said.get("chatter.aliveworkplace.legend_strike.0")),
+				"the strike line: \"" + said.get("chatter.aliveworkplace.legend_strike.0") + "\", wanted \"" + strike + "\"");
+			helper.assertTrue(guest.equals(said.get("chatter.aliveworkplace.legend_guest.0")),
+				"the guest line: \"" + said.get("chatter.aliveworkplace.legend_guest.0") + "\", wanted \"" + guest + "\"");
+			helper.succeed();
+		});
+	}
+
 	/** Chatter about the Legend living here, a guest and a strike, the Legend about themself; the look packet. */
 	//$ gametest_ticks_batch AREA '200' '"legendsHallChatter"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "legendsHallChatter")

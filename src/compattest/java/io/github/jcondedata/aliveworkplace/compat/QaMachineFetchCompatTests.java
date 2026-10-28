@@ -50,8 +50,8 @@ public class QaMachineFetchCompatTests implements FabricGameTest {
 		return c.countItem(Items.WHEAT);
 	}
 
-	//$ gametest_ticks_batch AREA '600' '"qa_machine_fetch_full"'
-	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa_machine_fetch_full")
+	//$ gametest_ticks_batch AREA '600' '"qa_machine_fetch_full_store"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa_machine_fetch_full_store")
 	public void aStoreFilledWhileTheWorkerWalksToFetchIsLeftAlone(GameTestHelper helper) {
 		Container[] store = {null};
 		Villager villager = onTheWay(helper, store);

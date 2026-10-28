@@ -32,6 +32,10 @@ asks for the steps, `latest.log` and any crash report).
   there, the same for a Music Stand, a Postal Desk and an Apiary, and both kinds when both are free (B658).
 - Villagers gossiping about a Legend on strike or a Legend guest close the title with a comma: "Ada Stonewright,
   Master Architect, has downed tools." (B631).
+- No more lone glass posts in three drawings: the Pokemon Center's Sunny Plaza look (I and II) closes its two arched
+  front windows with a chiseled keystone instead of a pane the arch's stairs couldn't join, and the Lighthouse's lower
+  windows have their glass in the tower face, both panes in one column between the wall, over a stone ledge, instead of
+  the lower one standing a block out on the sill. Built ones get it with Refresh to the latest look (B656).
 
 ## 0.151.0 — 2026-10-27
 

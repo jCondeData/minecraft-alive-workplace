@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656
 
 ## 1. What a player sees
 
@@ -314,7 +314,10 @@ claims and trip counts.
   close round their corners; where a lower roof meets a wall, a window's glass is carried out to the eaves only with a
   block on both sides of it. `tools/blueprints/check.py` flags any pane or bars run that ends in the air (a lamp's arm,
   meant to end over its lantern, is listed with its reason in the build's `open_panes`), and `B648GameTests` reads
-  every shipped structure, modded copies, village houses and Wonder parts included, for them (B648).
+  every shipped structure, modded copies, village houses and Wonder parts included, for them (B648). Glass joined to
+  nothing with air beside it is a lone thin post and is flagged too (between two stairs whose backs face away, or
+  standing out from a wall: the Sunny Plaza's arches and the Lighthouse's lower windows, B656);
+  `QaWindowsAndWards1028BugTests` joins every shipped pane as the game joins it, Wonders judged whole.
 - No villager is left standing inside a block in a growing village. A baby fits in nooks a grown villager doesn't
   (under a roof's stair being laid, beside a lantern on a fence post), and when it grows up vanilla finds no room for
   the bigger body there; a villager standing still in a doorway can have the door shut on it by a neighbor walking

@@ -51,7 +51,8 @@ Roadmap items: 31.15, 31.16
   section a player built in, `PlayerBuilt`), `BanditFort.site` (fit, loaded ground 110 to 150 blocks out) and
   `BanditFort.place` (stage 0 clears the grass and bushes and fills the ground under it as `Lairs.found` does; later
   stages are set down over it).
-- **In an arc**: a `place` effect with `"stages"` set to the three blueprints and the rule `"fort": [110, 150]`.
+- **In an arc**: a `place` effect with `"stages"` set to the three blueprints and the rule `"fort": true` (110 to 150
+  blocks, `BanditFort.NEAR` and `FAR`; `"fort": [near, far]` sets another ring).
   `ArcEffects.spot` takes fit ground there if it's loaded now, else a column in that ring; `ArcEffects.build` builds the
   first stage on the first column round it (out to 16 blocks) where `BanditFort.fits`, once a player is within 96
   blocks, then the next stage at each next dawn (as every staged `place`). After each stage `BanditFort.placed` brings
@@ -119,6 +120,9 @@ horn) in their own entity data.
 - The camps, Pell and the fort are built or come only once a player is within 96 blocks, as every arc place.
 - With no fit ground within 16 blocks of the arc's column the fort isn't built (the arc logs it and its place is
   skipped).
+- Open bugs found by QA on 2026-10-28 (failing tests in `QaBanditKingBugTests` on the `tests/bandit-king-1028` branch): about 1 fort site in 40 lies up to
+  half a block outside 110 to 150 blocks (`BanditFort.site` rounds each axis on its own, as the camps' ring did before
+  B205); and a player who goes to another dimension while near the King keeps seeing his boss bar.
 
 ## Proof
 
@@ -127,4 +131,8 @@ horn) in their own entity data.
   (`theHornCallsFourBanditsOnce`), the chest (`theTreasureChestAlwaysHasTheCrown`).
 - GameTests: `BanditKingStoryGameTests`: the arc walked from the banners to the King's fall with all three allies
   (`banditKingStoryWalk`), the tribute (`banditKingTribute`), the trigger and the saved count (`banditKingTrigger`).
+- GameTests: `QaBanditKing1028GameTests` (QA, from the spec): the fort rule's ring on unloaded ground, the boss bar's
+  32-block edge and its health, the horn at exactly half health and not again after a reload, war banners broken by a
+  player (a plain banner and one far from the camps don't count; a camp counts once), the Town rank of the trigger,
+  the fort resumed from a save mid-arc, every sentence a player reads, and the chest's one enchanted weapon.
 - Showcase scenes `bandit_fort` and `bandit_king`.

@@ -4,7 +4,7 @@ Rare named villagers with powers, who come to a village that has earned them. Al
 thirty with a rare gift. Part of 1.3 (Legends): switched on in 1.0 with every other expansion.
 
 Roadmap items: 29.2, 29.3, 29.4, 29.5, 29.6, 29.7, 29.8, 29.9, 29.10, 29.11, 29.12, 29.13, 29.14, 29.15, 29.16, 29.17, 29.18,
-29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136, B345, B589
+29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136, B345, B589, B622, B623
 
 ## What a player sees
 
@@ -206,6 +206,19 @@ From the design note `docs/design/M29.md`, section 7 (the owner may change any):
 - The Pathfinder's file asked for a Cartographer of level 3 (Journeyman) until B96; it now asks for an Expert
   (level 4), as roadmap 29.13 says. A Pathfinder who has already come stays.
 
+## The Pokémon Legends (29.21, 29.22)
+
+Both need Cobblemon. **The Pokémon Professor** counts only the Pasture Blocks inside the village (a pasture outside
+the hall's reach adds nothing to the census or the village Pokédex). Right-clicking them shows the clicking player's
+own party, never another player's, with each Pokémon's IVs in words, its nature, its hidden ability and its EVs
+(exact numbers with Regional Survey). With Evolution Studies they sell one evolution stone a day, to whoever buys it
+first, for 8 emeralds (800 CobbleDollars when CobbleDollars is installed); a player who can't pay is told the price
+and loses nothing, and the stone stays for sale until someone buys it.
+
+**The Pokémon Ranger** befriends only wild Pokémon: a Pokémon a player has sent out is never chosen, even when it's
+the only one near. A befriended Pokémon becomes the hall owner's; when the owner is offline it waits in their PC and
+the chronicle says so ("befriended a wild Eevee; it waits in Alex's PC").
+
 ## Legends of the realm (33.23)
 
 Two Legends gain a power each with 1.7's colonies and trade:
@@ -235,13 +248,20 @@ fetches from the next, B456; `QaHaulerGiveUpGameTests`, 4 (QA): a given-up Store
 2,400-tick wait even once the way is open and used again after it, a hauler saved and loaded right after giving up keeps its whole load and
 gets it home, and one whose only Storehouse is walled in puts its load back into the Drop Box and is free again, B463; `QaHaulerNoDropBoxGameTests`, 2 (QA): with no Drop Box, a hauler whose only Storehouse is walled in puts a lumberjack's 128 logs back in the chests they came from, and one loaded from a save carrying 64 logs puts them in a worker's chest, B593; `QaLedgerFramesHaulGameTests.aHaulerWhoseStorehouseIsBrokenMidTripPutsItsLoadBackInTheDropBox`: the same when the player breaks the only Storehouse while the golem carries a Drop Box's 3 stacks; `QaSentryGameTests`, 3: a Wall Sentry keeps its post and 200 health through a save and load
 and walks back to it, a Nether route is refused and a blank map takes the post, each with its line, a foe 10 blocks
-from the post is left alone), `SeerGameTests`, `MerchantPrinceGameTests`,
+from the post is left alone; `QaGolemSmith1027GameTests`, 5 (QA): the Smith mends a golem every 10 ticks to a Tinkerer's 20, a stranger's
+sneak-click in a protected village chooses nothing, every golem line on the hall reads in English, a farmhand leaves ripe crops outside
+the fields alone, and a farmer's fields count at 48 blocks and not at 49), `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
 `PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
 `QaPokemonLegendsCompatTests` (10, QA, 29.21 and 29.22: the census at 24 and 25 Pokémon and at 9 and 10 types, a released
 species kept in the Pokédex once, the IV words at every boundary, natures and hidden abilities as read, the hints by a
 real right-click, the Alpha stand-in at level 49 and 50, the 96- and 64-block reaches from both sides, every banned
-kind refused, no befriending into a full pasture, one Alpha calmed of two),
+kind refused, no befriending into a full pasture, one Alpha calmed of two), `QaPokemonLegendsBugCompatTests` (2, QA:
+a wild Pokémon arriving after the day's first empty look is still befriended that day, B622; an Alpha on the hall's
+floor exactly 96 blocks away is within 96 and not within 95, B623),
+`QaPokemonLegends1027CompatTests` (5, QA, 29.21 and 29.22: a player's sent-out Pokémon never befriended, a Pokémon
+befriended while the owner is offline waits in their PC, a pasture outside the village not counted, a stone nobody
+can pay for costs nothing and stays one a day, the hints show only the clicking player's party),
 `RealmLegendsGameTests` (5, 33.23); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
 `QaLegendSitesGameTests` (9, 29.9): the 5-second check on the real tick, the 1500-block reach from both sides, the
 nearest hall, friends one way only, 29.3's slots and conditions at a site, a slot filled before the morning, only a

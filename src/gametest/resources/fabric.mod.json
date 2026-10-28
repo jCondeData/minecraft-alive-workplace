@@ -190,6 +190,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B226GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B290GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B303GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B635GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B297GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderStockGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderStockBugTests",
@@ -254,6 +255,8 @@
 			"io.github.jcondedata.aliveworkplace.test.M38MutantGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B211GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B132GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B640GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B648GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B132BenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SelfHealingSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildReserveGameTests",
@@ -490,6 +493,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FurnishingConfigGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureSpotGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedRoomsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ClinicWardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishingTableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureAnyModGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedHomesGameTests",
@@ -823,6 +827,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaOldSageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGolemSmithGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGolemSmithEdgesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGolemSmith1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSeerGameTests"
 		]
 	},

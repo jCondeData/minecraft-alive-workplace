@@ -1404,6 +1404,7 @@ def jewellers_shop(b):
     b.set(6, 1, 2, "polished_andesite")
     b.set(6, 2, 2, "amethyst_cluster", facing="up", waterlogged=False)
     pane(b, 5, 2, 2)
+    pane(b, 5, 2, 3)  # the case's corner (B648: without it both sides of glass ended in the air)
     pane(b, 6, 2, 3)
     slab(b, 6, 3, 2, "smooth_stone_slab")
     b.set(2, 1, 6, "chest", facing="east", type="single", waterlogged=False)

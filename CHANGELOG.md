@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- The Bandit King's boss bar goes away when you go to the Nether or the End, or log out, die or walk more than 32
+  blocks off; before, a player who left his dimension kept the bar on screen (B659).
+
 ## 0.151.0 — 2026-10-27
 
 ### Added

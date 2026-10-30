@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.1 — 2026-10-30
+
 ### Fixed
 - Thessaly leaves the hall whenever the Professor's Thesis ends, not only when it's published: after
   `/workplace story stop` or with the thesis switched off, she used to stay for good as a Master trainer anyone could

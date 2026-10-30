@@ -542,6 +542,16 @@ final class JobScenes {
 				conscriptsStruck.add(v);
 			}
 		});
+		// B543: the guard and the first conscripts sometimes finished all three raiders before the last conscript reached
+		// one (2 of 3 struck, though the edict worked). While a conscript has yet to strike, a raider takes no killing
+		// blow except from such a conscript, so one is left for him; his own blow still has to land to count.
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
+			if (!conscriptionRaiders.contains(entity) || amount < entity.getHealth()
+				|| conscripts.stream().allMatch(conscriptsStruck::contains)) {
+				return true;
+			}
+			return source.getEntity() instanceof Villager v && conscripts.contains(v) && !conscriptsStruck.contains(v);
+		});
 	}
 	/** smith_orders: the slot where the Poké Ball turned up (found on the server). */
 	private static volatile int pickedSlot = -1;

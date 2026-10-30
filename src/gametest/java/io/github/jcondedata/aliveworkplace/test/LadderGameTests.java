@@ -710,6 +710,79 @@ public class LadderGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * QA (lane D, 2026-10-30), B558's Expected names snow layers: a snowy plains village's wall with fallen snow (one
+	 * layer, as snowfall leaves it) along its whole outer foot is still laddered within 600 ticks; only the snow a rung
+	 * stands in goes, and nothing drops (no snowballs). Snow two layers deep isn't fallen snow (snowfall stacks one) and
+	 * isn't buried: no ladder rose through it in this test, as with any block a player put there.
+	 */
+	//$ gametest_ticks_batch AREA '700' '"qaLadderInSnow1030"'
+	@GameTest(template = AREA, timeoutTicks = 700, batch = "qaLadderInSnow1030")
+	public void qaALadderGoesUpThroughSnowAtTheWallsFoot(GameTestHelper helper) {
+		Yard yard = yard(helper);
+		ServerLevel level = yard.level();
+		BlockState snow = Blocks.SNOW.defaultBlockState().setValue(net.minecraft.world.level.block.SnowLayerBlock.LAYERS, 1);
+		for (int x = WEST + 1; x < EAST; x++) {
+			helper.setBlock(new BlockPos(x, 1, FRONT + 1), Blocks.GRASS_BLOCK);
+			helper.setBlock(new BlockPos(x, 2, FRONT + 1), snow);
+		}
+		Map<BlockPos, BlockState> before = blocks(helper);
+		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 21.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
+		yard.siege(helper);
+		int[] most = {0};
+		helper.onEachTick(() -> {
+			most[0] = Math.max(most[0], Ladders.rungs(level, yard.hall()).size());
+			if (inside(helper, climber)) {
+				List<String> changed = changes(helper, before);
+				changed.removeIf(c -> c.contains("-> Block{minecraft:ladder}")
+					|| c.contains(": Block{minecraft:snow}") && c.endsWith("-> Block{minecraft:air}")
+					// the grass block under a snow layer is drawn snowy; with the layer gone it may turn back
+					|| c.contains(": Block{minecraft:grass_block}") && c.contains("-> Block{minecraft:grass_block}"));
+				helper.assertTrue(changed.isEmpty(), "something other than ladders and snow changed: " + changed);
+				List<net.minecraft.world.entity.item.ItemEntity> drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+					new AABB(helper.absolutePos(new BlockPos(WEST, 0, FRONT - 2))).inflate(20));
+				helper.assertTrue(drops.isEmpty(), "the buried snow dropped " + drops);
+				helper.succeed();
+			} else if (helper.getTick() > 600) {
+				helper.fail("not over the wall within 600 ticks with snow at its foot: the climber is at " + climber.position() + ", most rungs " + most[0]);
+			}
+		});
+	}
+
+	/**
+	 * QA (lane D, 2026-10-30), B558's "not a player's flowers": poppies planted all along the wall's outer foot are never
+	 * buried by a rung, whatever the climber does in 500 ticks of siege, and none is dropped as an item.
+	 */
+	//$ gametest_ticks_batch AREA '600' '"qaLadderPoppies1030"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qaLadderPoppies1030")
+	public void qaALadderNeverBuriesThePlayersFlowers(GameTestHelper helper) {
+		Yard yard = yard(helper);
+		ServerLevel level = yard.level();
+		List<BlockPos> flowers = new ArrayList<>();
+		for (int x = WEST + 1; x < EAST; x++) {
+			helper.setBlock(new BlockPos(x, 1, FRONT + 1), Blocks.GRASS_BLOCK);
+			helper.setBlock(new BlockPos(x, 2, FRONT + 1), Blocks.POPPY);
+			flowers.add(new BlockPos(x, 2, FRONT + 1));
+		}
+		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 21.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
+		yard.siege(helper);
+		helper.onEachTick(() -> {
+			for (BlockPos at : flowers) {
+				if (!helper.getBlockState(at).is(Blocks.POPPY)) {
+					helper.fail("the poppy at " + at.toShortString() + " is now " + helper.getBlockState(at) + " (tick " + helper.getTick() + ")");
+				}
+			}
+			if (helper.getTick() >= 500) {
+				List<net.minecraft.world.entity.item.ItemEntity> drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+					new AABB(helper.absolutePos(new BlockPos(WEST, 0, FRONT - 2))).inflate(20), e -> e.getItem().is(net.minecraft.world.item.Items.POPPY));
+				helper.assertTrue(drops.isEmpty(), "a poppy lies dropped: " + drops);
+				helper.succeed();
+			}
+		});
+	}
+
+	/**
 	 * B553/B558's shared rule ({@code Buriable}): the wild ground's plants a rung or ramp may bury count as room; a
 	 * player's flowers, saplings and blocks, water and vines never do.
 	 */

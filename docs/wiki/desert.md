@@ -81,7 +81,8 @@ Roadmap items: 32.9, B382, B437
 - Strength 10, +2 a day, at most 16, and weight 30: the roadmap gives no numbers; as the warband.
 - The plain husks are the climbers who pile sand; the armored husks and the archers follow up the ramp.
 - A ramp needs flat-enough ground: every column of it must stand on something solid (no sand is poured into a hole),
-  and a dead bush or grass in the way moves it along the wall, so no block but air is ever replaced.
+  and a flower or any block a player put in the way moves it along the wall; the wild ground's dead bushes, grass and
+  fallen snow are buried and gone after the raid (B553), and nothing else is ever replaced.
 - The gold armor drops as the game decides for raiders (as the warband's iron).
 
 ## Known limits

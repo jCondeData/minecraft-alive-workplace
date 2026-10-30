@@ -856,7 +856,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderShortageBoard1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallBeehives1028GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaRefreshHistory1028GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaRefreshHistory1028GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaKingBar1030GameTests"
 		]
 	},
 	"depends": {

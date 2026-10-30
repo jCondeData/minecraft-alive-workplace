@@ -47,8 +47,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
 - **A guard on the walkway throws a ladder down** when he is within 2 blocks of its top: the whole ladder breaks away
   at once, whoever is on it falls, and the raiders need 10 seconds before they raise it again.
 - **Ladders go on any wall, yours too, but only into air**, and never against a gate. Grass, ferns, dead bushes and
-  snow at the wall's foot count as air: the ladder goes up through them, and they are gone afterward (no seeds or
-  grass drop). Your flowers, saplings and blocks there still turn a ladder away. When the raid is over every
+  fallen snow (one layer) at the wall's foot count as air: the ladder goes up through them, and they are gone afterward
+  (no seeds, grass or snowballs drop). Your flowers, saplings, blocks and snow piled deeper there still turn a ladder
+  away. When the raid is over every
   ladder is taken away; nothing else of the wall is touched and no ladder item is left behind.
 - **No raider appears inside the walls**: a siege gathers beyond the outermost finished wall on the side it comes from.
 - **Guards take battle stations** (32.6) when a siege begins, instead of rallying at the bell. Archers go up to the

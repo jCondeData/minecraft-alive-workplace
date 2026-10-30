@@ -94,14 +94,16 @@ public class QaPokemonLegendsBugCompatTests implements FabricGameTest {
 	 * blocks, and not within 95. The reach was measured from the hall block's center (half a block above the floor), so it
 	 * missed by 0.0013.
 	 */
-	//$ gametest_ticks_batch AREA '300' '"qa_legends_bug_edge"'
-	@GameTest(template = AREA, timeoutTicks = 300, batch = "qa_legends_bug_edge")
+	//$ gametest_ticks_batch AREA '1300' '"qa_legends_bug_edge"'
+	@GameTest(template = AREA, timeoutTicks = 1300, batch = "qa_legends_bug_edge")
 	public void anAlphaExactly96BlocksAwayCounts(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		level.getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(110)).forEach(e -> e.discard());
 		BlockPos at = HALL.offset(96, 0, 0);
 		BlockPos abs = helper.absolutePos(at);
 		boolean forced = level.setChunkForced(abs.getX() >> 4, abs.getZ() >> 4, true);
+		// B682: load (generate) the chunk now rather than leave it queued; its entities still load a little later
+		level.getChunk(abs.getX() >> 4, abs.getZ() >> 4);
 		PartnerShowsCompatTests.after(helper, () -> {
 			level.getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(110)).forEach(e -> e.discard());
 			if (forced) {
@@ -126,7 +128,7 @@ public class QaPokemonLegendsBugCompatTests implements FabricGameTest {
 		});
 	}
 
-	/** Runs {@code then} once the entities of the chunk at {@code pos} have loaded (checked each tick, for up to 200). */
+	/** Runs {@code then} once the entities of the chunk at {@code pos} have loaded (checked each tick, for up to 1200: B682, a busy CI server took more than 200). */
 	private static void whenEntitiesLoaded(GameTestHelper helper, ServerLevel level, BlockPos pos, Runnable then) {
 		whenEntitiesLoaded(helper, level, pos, then, 0);
 	}
@@ -135,7 +137,7 @@ public class QaPokemonLegendsBugCompatTests implements FabricGameTest {
 		if (level.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong(pos))) {
 			then.run();
 		} else {
-			helper.assertTrue(waited < 200, "the chunk 96 blocks east never loaded its entities");
+			helper.assertTrue(waited < 1200, "the chunk 96 blocks east never loaded its entities");
 			helper.runAfterDelay(1, () -> whenEntitiesLoaded(helper, level, pos, then, waited + 1));
 		}
 	}

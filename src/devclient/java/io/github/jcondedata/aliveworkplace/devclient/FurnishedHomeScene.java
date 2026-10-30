@@ -206,7 +206,9 @@ final class FurnishedHomeScene {
 		for (FurnitureChoice.Placed placed : choice.spots().values()) {
 			for (Map.Entry<BlockPos, BlockState> cell : placed.cells().entrySet()) {
 				BlockState there = level.getBlockState(FURNISHED.offset(placed.pos()).offset(cell.getKey()));
-				if (!there.is(cell.getValue().getBlock())) {
+				// B683: a cell a swapped one-block table leaves empty is where B641 sets the library's crockery down (Resting.reseat)
+				boolean setDown = cell.getValue().isAir() && io.github.jcondedata.aliveworkplace.furnish.Resting.libraryPiece(there);
+				if (!there.is(cell.getValue().getBlock()) && !setDown) {
 					wrong.add(placed.kind() + " at " + placed.pos().offset(cell.getKey()).toShortString() + " is "
 						+ BuiltInRegistries.BLOCK.getKey(there.getBlock()) + ", not " + BuiltInRegistries.BLOCK.getKey(cell.getValue().getBlock()));
 				}

@@ -69,19 +69,25 @@ public class CitySoakGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 		helper.assertTrue(!StewardCost.recording(), "already recording");
 		helper.assertTrue(StewardCost.start() == StewardCost.OFF, "counts while not recording");
 		StewardCost.begin();
+		// B651: the ceiling is the outer call's own measured length, not a fixed 50 ms a stalled machine can pass; counted
+		// twice (nested), the tick would read about twice that
+		long spanStart = 0;
+		long span = Long.MAX_VALUE;
 		try {
+			spanStart = System.nanoTime();
 			long outer = StewardCost.start();
 			long inner = StewardCost.start();
 			busy(2_000_000L);
 			StewardCost.stop(inner);
 			StewardCost.stop(outer);
+			span = System.nanoTime() - spanStart;
 			StewardCost.endTick();
 			StewardCost.endTick(); // a tick with nothing of his
 			helper.assertTrue(StewardCost.worstCall().startsWith("other "), "slowest call: " + StewardCost.worstCall());
 		} finally {
 			long[] ticks = StewardCost.finish();
 			helper.assertTrue(ticks.length == 2, "ticks: " + ticks.length);
-			helper.assertTrue(ticks[0] >= 2_000_000L && ticks[0] < 50_000_000L, "first tick counted " + ticks[0] + " ns (nested twice?)");
+			helper.assertTrue(ticks[0] >= 2_000_000L && ticks[0] <= span, "first tick counted " + ticks[0] + " ns of a " + span + " ns call (nested twice?)");
 			helper.assertTrue(ticks[1] == 0L, "the empty tick counted " + ticks[1]);
 		}
 		helper.assertTrue(!StewardCost.recording(), "still recording");

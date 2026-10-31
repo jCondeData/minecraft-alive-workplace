@@ -16,8 +16,10 @@ block's own job comes back with its own item (wheat for a Farmer, coal for an Ar
 A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it.
 Hold Shift over a workstation in your inventory to see its jobs and their items. A job whose switch is off (or that
 needs Cobblemon, without it) isn't listed. Such a job can't be picked by its item either (B688): without Cobblemon a gold block by a
-Training Post does nothing, and a book makes a Teacher if a lectern is near, or says the Teacher needs a Lectern. A
-villager who already had one of these jobs in a saved world keeps it.
+Training Post does nothing, and a book makes a Teacher if a lectern is near, or says the Teacher needs a Lectern. Nor
+does a jobless villager take such a job by himself (B697): without Cobblemon a Training Post, Leader's Podium, Tutor's
+Desk, Trade Board, Ball Workbench or Fossil Lab stays free. A villager who already had one of these jobs in a saved world
+keeps it.
 
 **Look at a villager to see its job and level (B221).** Point your crosshair at any working villager, from up to
 about 3 blocks away, and a name plate over its head reads "Fisherman, Journeyman". One with a name of its own reads

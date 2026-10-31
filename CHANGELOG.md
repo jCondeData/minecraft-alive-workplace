@@ -17,6 +17,20 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Caravan routes to another player's village from before 1.7 keep their free cargo when they become trade pacts:
+  each sending village starts with gifts on, as planned (B700).
+- A trade pact that becomes an alliance keeps each side's gifts and its start date; gifts no longer switch off on
+  their own (B701).
+- The Steward's shopping list (his daily message, the desk and the Storehouse's board) now names things in the
+  plural: "12 Oak Logs, 10 Torches", and still "1 Oak Log" for one (B698).
+- Without Cobblemon, a jobless villager standing by a Training Post no longer becomes a Trainer by himself (a job with
+  nothing to do); the same goes for the Leader's Podium, Tutor's Desk, Trade Board, Ball Workbench and Fossil Lab, which
+  now stay free. Villagers who already have one of these jobs keep it, and with Cobblemon nothing changes (B697).
+- The Gray Cough and the Bandit King no longer start in a village set At peace, at threat level 0 or on Peaceful;
+  other stories still start there, and these two can come again once the village is no longer at peace.
+- A Carpenter no longer crafts away materials another open build still needs: with two builds sharing a chest or the
+  Storehouse, the logs stocked for one stay its own instead of becoming planks for the other, so the first no longer
+  waits forever for a log that's gone (B696).
 - A builder taking up a Wonder part from their queue no longer announces its raw name ("Builder is starting on Stage 1
   0 next."): the owner reads the Wonder and its stage, as in "Ann is starting on a part of stage 1 of the Lighthouse
   (its stage's name) next." (B678).

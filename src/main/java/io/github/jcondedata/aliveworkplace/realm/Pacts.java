@@ -229,19 +229,30 @@ public final class Pacts {
 		}
 	}
 
-	/** Every caravan route between villages of different owners (not friends) becomes a trade pact: saved before 1.7, nothing stops. */
+	/**
+	 * Every caravan route between villages of different owners (not friends) becomes a trade pact: saved before 1.7,
+	 * nothing stops. Each sending side gets gifts on, so cargo that went free stays free (M33 design; B700): a route both
+	 * ways makes one pact with gifts on for both. A pact that was there before the migration is left as it is.
+	 */
 	public static int migrate(MinecraftServer server) {
 		Data data = Data.get(server);
 		int made = 0;
+		java.util.Set<Pact> before = new java.util.HashSet<>(data.pacts);
 		for (ServerLevel level : server.getAllLevels()) {
 			Caravans.Data caravans = Caravans.Data.get(level);
 			for (Caravans.Village v : caravans.villages()) {
 				for (BlockPos to : caravans.routesFrom(v.hall())) {
 					GlobalPos a = GlobalPos.of(level.dimension(), v.hall());
 					GlobalPos b = GlobalPos.of(level.dimension(), to);
-					if (strangers(server, a, b) && data.pact(a, b) == null) {
-						data.put(new Pact(a, b, false, now(server), -1, false, false));
+					if (!strangers(server, a, b)) {
+						continue;
+					}
+					Pact pact = data.pact(a, b);
+					if (pact == null) {
+						data.put(new Pact(a, b, false, now(server), -1, true, false));
 						made++;
+					} else if (!before.contains(pact) && !pact.gives(a)) { // the route back: its sender gives too
+						data.put(new Pact(pact.a(), pact.b(), false, pact.since(), -1, pact.giftsA() || pact.a().equals(a), pact.giftsB() || pact.b().equals(a)));
 					}
 				}
 			}
@@ -367,7 +378,10 @@ public final class Pacts {
 			return new Result(false, Component.translatable("message.aliveworkplace.pact.refused_" + key, them, blocks(level, hall)).withStyle(ChatFormatting.RED));
 		}
 		data.removeOffers(from, at);
-		data.put(new Pact(from, at, offer.alliance(), now(server), -1, false, false));
+		// a trade pact becoming an alliance keeps its start date and each side's gifts (B701)
+		Pact old = data.pact(from, at);
+		data.put(old == null ? new Pact(from, at, offer.alliance(), now(server), -1, false, false)
+			: new Pact(from, at, offer.alliance() || old.alliance(), old.since(), -1, old.gives(from), old.gives(at)));
 		String kind = offer.alliance() ? "alliance" : "pact";
 		chronicle(server, from, Component.translatable("chronicle.aliveworkplace.pact.made_" + kind, us));
 		chronicle(server, at, Component.translatable("chronicle.aliveworkplace.pact.made_" + kind, them));

@@ -40,6 +40,10 @@ Roadmap items: 31.2, 31.3
 - The hall's daily round posts quests in the morning and counts their steps; kills and places are counted as they
   happen.
 - A broken hall's quests go with it: a hand-in returns nothing and a kill counts for nothing.
+- A `money` reward is times the village's rank factor: 4 emeralds pay 4 in a Hamlet, 5 in a Village, 6 in a Town and
+  7 in a City; a file with `rank_factor: false` pays the same at every rank. A `bring` for the hall goes into the
+  village's store, one for a worker's station into that station's chests. A `kill` "in the village" counts only near
+  its hall. A file with `repeatable: false` is done once per player (another player can still take it).
 
 ## Switches
 
@@ -74,4 +78,5 @@ GameTests: `QuestEngineGameTests`, `QuestJournalGameTests`, `QaQuestJournalGameT
 Ledger, hand-ins to the goal and once, the boundaries of days, ticks and radius, save and reload, two players, the hall
 broken, the command, the switch off, broken files, places and maps, every sentence) and `QaRealmLegendsJournal1031GameTests`
 (one tracked quest per player, the bar following each step in order, a hand-in through the hall moving the bar, the
-command from afar, the journal's lines).
+command from afar, the journal's lines) and `QaStoryEngine1031GameTests` (each condition on both sides of its edge, the rank factor, the due
+tick with the switch off, where a bring goes, once per player or repeatable, kills near the hall).

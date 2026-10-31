@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696
 
 ## 1. What a player sees
 
@@ -18,6 +18,10 @@ brick stairs the same way (fired, laid, cut, a coal burnt for every eight fired)
 the Tinkerer the metal ones (raw iron fired into ingots, then bars or a lantern), the Toolsmith tools, the dyer dyed
 wool and concrete, and, with CobbleFurnies, the Furnicrafter its furniture (the planks and sticks first, then the
 piece). A big order is made a bagful at a time until there's enough.
+
+A job only crafts from what no open build needs. When two builds share a chest or the village Storehouse, the logs
+stocked for one are never turned into planks for the other: the Carpenter uses only what's left over once every other
+build's remaining list is counted, so neither build ends up waiting for a log that went into the other's planks (B696).
 
 When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
 under "Short of": "Can't be made yet: short of 4 Oak Logs to make 3 Barrels" (items named in the plural after a count above one, B426). When no job in the village makes a crafted
@@ -158,6 +162,10 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   the build (B353).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
+- `QaStewardMaterials1031GameTests.aCarpenterNeverCraftsAwayLogsAnotherOpenBuildNeeds`: two builds sharing a chest,
+  the logs there all B's: the Carpenter leaves them, and B finishes (B696);
+  `aCarpenterStillCraftsFromALogNoOpenBuildNeeds`: one log more than B needs is crafted into A's planks, and both
+  finish.
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.
 - `JobChainGameTests.theCarpenterMakesTheSlabsTheBuilderNeeds`, `theCarpenterFetchesTheOneLogItNeeds`,
   `oneCarpenterServesTwoBuilders`: one step, exactly one log, two askers.

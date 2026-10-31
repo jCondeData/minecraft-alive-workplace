@@ -3071,7 +3071,7 @@ Bandit King, The Sickness, The Lost Caravan and The Professor's Thesis. It build
 `hall/Caravans` and `people/Sickness`. Everything a player can be asked to do is a data file, so server owners can
 write their own stories; nothing waits forever on a player.
 
-- [x] **31.1** (approved auto 2026-10-05) **Design note.** `docs/design/M31.md`: what the player sees (hearts on a villager, wrapping and giving
+- [x] **31.1** (approved auto 2026-10-05) (verified 2026-10-31: docs/design/M31.md checked against WorkplaceConfig and the saved data: every M31 config key and default right; saved-field rows rewritten from the code [arc, hall-entry and standing fields; bandit_camps_broken; bounty day in aliveworkplace_bounties]) **Design note.** `docs/design/M31.md`: what the player sees (hearts on a villager, wrapping and giving
   a gift, a heart event, a personal request asked and done, the journal and its tracker bar, a title in chat, the
   bounty board, one arc chapter by chapter); every data format below with one example file each (`quests/`, `arcs/`,
   `villager_tastes/`, `heart_events/`, `bounties/`); every config key with its default; every new saved field with its

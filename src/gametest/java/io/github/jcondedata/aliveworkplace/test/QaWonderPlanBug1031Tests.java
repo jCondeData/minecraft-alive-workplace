@@ -57,6 +57,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public class QaWonderPlanBug1031Tests {
 	private static final String SMALL = "aliveworkplace_test:build_area";
+	private static final String HUGE = "aliveworkplace_test:huge_area";
 	private static final ResourceLocation FOLLY = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly");
 	private static final BlockPos HALL = new BlockPos(8, 2, 8);
 
@@ -156,4 +157,52 @@ public class QaWonderPlanBug1031Tests {
 		helper.succeed();
 	}
 
+	/**
+	 * The same hole from a builder's side: a house blueprint placed inside a Wonder that is laid out but waiting for its
+	 * goods is taken by a builder (the overlap check in Builders looks only at build sites), so he would build the house
+	 * where the Wonder's stage I goes up. Expected: refused, as over any build in progress ("That spot overlaps another
+	 * build in progress (Test Folly)").
+	 */
+	//$ gametest_ticks_batch HUGE '60' '"qaWonderHouseOverWaiting1031"'
+	@GameTest(template = HUGE, timeoutTicks = 60, batch = "qaWonderHouseOverWaiting1031")
+	public void qaABuilderRefusesAHouseInsideAWonderWaitingForItsGoods(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		boolean protection = io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED;
+		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = false;
+		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = protection);
+		BlockPos hallAt = new BlockPos(24, 2, 24);
+		helper.setBlock(hallAt, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(hallAt);
+		Leftovers.wonderGround(helper, hall);
+		folly(helper);
+		BlockPos origin = helper.absolutePos(new BlockPos(2, 2, 2));
+		WonderManager manager = WonderManager.get(level);
+		WonderSite waiting = manager.begin(FOLLY, hall, null, "", 1);
+		Leftovers.after(helper, () -> manager.remove(waiting.id()));
+		manager.place(waiting.id(), new BlueprintData.Placement(Ids.of(level.dimension()), origin, Rotation.NONE, Mirror.NONE), origin.offset(-1, 0, -1));
+		helper.assertTrue(manager.site(waiting.id()).map(s -> s.goingUp() && !s.started() && s.parts().isEmpty()).orElse(false), "set-up: a waiting Wonder");
+
+		BlockPos benchAt = new BlockPos(26, 2, 4);
+		helper.setBlock(benchAt, ModBlocks.BLUEPRINT_TABLE);
+		Villager builder = helper.spawn(net.minecraft.world.entity.EntityType.VILLAGER, benchAt.south());
+		builder.setNoAi(true);
+		io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, helper.absolutePos(benchAt));
+		ResourceLocation hut = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
+		Vec3i size = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, hut).orElseThrow().size();
+		ItemStack blueprint = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.create(hut, size);
+		BlueprintData.Placement inside = new BlueprintData.Placement(level.dimension().location(), origin.offset(2, 0, 2), Rotation.NONE, Mirror.NONE);
+		blueprint.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT,
+			BlueprintItem.data(blueprint).orElseThrow().withPlacement(Optional.of(inside)));
+		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, net.minecraft.world.level.GameType.SURVIVAL, QaStageSixGameTests.name("qaWH"));
+		c.player().setItemInHand(InteractionHand.MAIN_HAND, blueprint);
+		QaStageSixGameTests.clickVillager(c.player(), builder, c.seen());
+		io.github.jcondedata.aliveworkplace.build.BuildSite taken = io.github.jcondedata.aliveworkplace.build.Builders.activeSite(level, builder);
+		if (taken != null) {
+			Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).remove(taken.id()));
+		}
+		helper.assertTrue(taken == null, "the builder took a house inside the waiting Test Folly's footprint; he said: "
+			+ c.seen().stream().map(Component::getString).toList());
+		helper.succeed();
+	}
 }

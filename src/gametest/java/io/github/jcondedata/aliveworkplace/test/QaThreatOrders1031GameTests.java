@@ -44,6 +44,12 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 	private static final BlockPos HALL = new BlockPos(1, 2, 1);
 	private static final long DAY = 24000;
+	/**
+	 * B712: a config applied in a test sets VillageHalls.RADIUS from {@code villageHallRadius} (64 by default), undoing
+	 * village()'s 16; the raiders then gathered about 38 blocks out, partly beyond the loaded chunks round the test area,
+	 * and those spawns were refused ('found nowhere to gather' when all were). Every config here keeps the radius at 16.
+	 */
+	private static final String RADIUS_16 = "\"villageHallRadius\": 16";
 
 	static void at(ServerLevel level, long day, long time) {
 		level.setDayTime((day - 1) * DAY + time);
@@ -157,7 +163,8 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 		helper.runAfterDelay(2, () -> {
 			at(level, 90, 15000);
 			CommandSourceStack op = op(level, hall, said);
-			WorkplaceConfig.parse("{\"villageRaids\": false, \"banditCamps\": false, \"raiderCultures\": {\"pillager_warband\": false}}").apply();
+			WorkplaceConfig.parse("{\"villageRaids\": false, \"banditCamps\": false, \"raiderCultures\": {\"pillager_warband\": false}, " + RADIUS_16 + "}").apply();
+			helper.assertTrue(VillageHalls.RADIUS == 16, "setup: the village radius is " + VillageHalls.RADIUS + ", not 16 (B712)");
 			helper.assertTrue(!VillageRaids.ENABLED && !BanditCamps.ENABLED && !Threats.enabled(AliveWorkplace.id("pillager_warband")),
 				"setup: the switches didn't go off");
 			ordered(helper, hall, op, said, "workplace threat start monsters", Threats.MONSTERS, "villageRaids off");
@@ -182,12 +189,13 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 			helper.assertTrue(entity != null, "no hall");
 			at(level, 91, 15000);
 			CommandSourceStack op = op(level, hall, said);
-			WorkplaceConfig.parse("{\"threatLevel\": 0}").apply();
+			WorkplaceConfig.parse("{\"threatLevel\": 0, " + RADIUS_16 + "}").apply();
+			helper.assertTrue(VillageHalls.RADIUS == 16, "setup: the village radius is " + VillageHalls.RADIUS + ", not 16 (B712)");
 			helper.assertTrue(Threats.quiet(level, hall), "setup: not quiet at threat level 0");
 			ordered(helper, hall, op, said, "workplace threat start bandits", Threats.BANDITS, "threat level 0");
 			ordered(helper, hall, op, said, "workplace threat start monsters", Threats.MONSTERS, "threat level 0");
 
-			new WorkplaceConfig().apply();
+			WorkplaceConfig.parse("{" + RADIUS_16 + "}").apply();
 			entity.setAtPeace(true, Chronicle.day(level));
 			helper.assertTrue(Threats.quiet(level, hall), "setup: not quiet At peace");
 			ordered(helper, hall, op, said, "workplace threat start bandits", Threats.BANDITS, "At peace");

@@ -468,6 +468,16 @@ public class QaDisastersGameTests implements FabricGameTest {
 		Villager ill = villager(helper, 6.5, 7.5);
 		BlockPos bed = helper.absolutePos(new BlockPos(6, 2, 8));
 		Beds.home(ill, bed);
+		// "by day": level.isDay() reads the sky's darkness, worked out once a tick, so it's the clock village() set only
+		// after a tick, and rain or thunder left by an earlier batch darkens it (lane E, 2026-10-31: failed after the threat
+		// tests with the clock at night): clear skies, then the test a tick later.
+		v.level().setRainLevel(0);
+		v.level().setThunderLevel(0);
+		helper.runAfterDelay(1, () -> plagueBed(helper, v, ill, bed));
+	}
+
+	private static void plagueBed(GameTestHelper helper, Village v, Villager ill, BlockPos bed) {
+		helper.assertTrue(v.level().isDay(), "test setup: not day a tick after the clock was set to morning");
 		v.start(v.plague());
 		helper.assertTrue(Sickness.isPlagueIll(ill) && Plague.underway(v.level(), v.hall()), "the only villager isn't the plague's first case (test setup)");
 		long now = v.level().getGameTime();

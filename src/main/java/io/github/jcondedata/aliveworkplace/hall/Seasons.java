@@ -154,7 +154,7 @@ public final class Seasons {
 
 	static ItemStack header(ServerLevel level, BlockPos hall) {
 		return VillageHallScreen.icon(Items.CLOCK, Component.translatable("screen.aliveworkplace.calendar.title", VillageHalls.name(level, hall)),
-			ChatFormatting.GOLD, VillageHallScreen.line(Component.translatable("screen.aliveworkplace.calendar.about", DAYS), ChatFormatting.GRAY));
+			ChatFormatting.GOLD, VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.calendar.about", DAYS, DAYS), ChatFormatting.GRAY));
 	}
 
 	/** The calendar page: the four seasons, today's highlighted, each with its days and festival. */
@@ -173,7 +173,7 @@ public final class Seasons {
 					: Component.translatable("screen.aliveworkplace.calendar.starts_in", days);
 			}
 			ItemStack icon = VillageHallScreen.icon(season.icon, season.title().copy(), now ? ChatFormatting.GREEN : ChatFormatting.WHITE,
-				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.calendar.days", first, first + today.length() - 1), ChatFormatting.GRAY),
+				VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.calendar.days", today.length(), first, first + today.length() - 1), ChatFormatting.GRAY),
 				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.calendar.festival", season.festival(), festival), ChatFormatting.LIGHT_PURPLE),
 				VillageHallScreen.line(when, now ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 			if (now) {

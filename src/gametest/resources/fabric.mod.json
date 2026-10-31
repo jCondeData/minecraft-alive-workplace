@@ -952,7 +952,11 @@
 			"io.github.jcondedata.aliveworkplace.test.B728GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeWarnings1031dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampBedsUpgrade1031GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaVillageGuards1031GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaVillageGuards1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaOldHouseShownOne1031BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCalendarOneDay1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaColonyWaitOneDay1031BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGrowthOffRankLine1031BugTests"
 		]
 	},
 	"depends": {

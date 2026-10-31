@@ -230,7 +230,7 @@ emerald), half in a badly kept village, half again in a well kept one, a quarter
 collects it. It holds up to a stack of emeralds a rank and counts at most 3 missed days.
 
 **Calendar.** Four seasons of `seasonDays` days each (16), the same for the whole world, counted from the overworld's
-day. Each season has a festival on its middle day. Festivals also come every 8 days where at least 6 villagers live.
+day. Each season has a festival on its middle day. At `seasonDays` 1 the calendar reads "Four seasons of 1 day" and "Day 3 of the year" (B727). Festivals also come every 8 days where at least 6 villagers live.
 
 **Protection.** The hall's owner (whoever placed it) can switch protection on by shift-clicking the hall's name
 icon. Then only the owner, their friends and operators may break or place blocks, open chests or hurt villagers in the
@@ -292,7 +292,7 @@ or an operator; anyone in a village nobody owns), and is checked again on the cl
 | Key | Default | What it does |
 |---|---|---|
 | `villageHallRadius` | 64 (16 to 160) | How far from a hall its village reaches |
-| `villageGrowthCap` | 40 (0 to 500) | The village stops having babies at this many villagers; 0: no growth (the hall says "Villages don't grow on this server") |
+| `villageGrowthCap` | 40 (0 to 500) | The village stops having babies at this many villagers; 0: no growth (the hall says "Villages don't grow on this server", and the rank's perks end "no growth on this server", never "grows to 0", B734) |
 | `villageTreasury` | on | Villages put by takings every morning |
 | `treasuryPerWorker` | 20 (0 to 500) | Hundredths of an emerald a worker a day |
 | `villageProtection` | on | Owners may protect their village; off: nobody can, on the whole server |

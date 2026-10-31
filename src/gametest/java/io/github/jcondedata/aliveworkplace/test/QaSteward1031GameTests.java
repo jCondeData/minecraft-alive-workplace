@@ -412,4 +412,28 @@ public class QaSteward1031GameTests implements FabricGameTest {
 	private static List<Component> shoppingLines(List<Component> seen) {
 		return seen.stream().filter(c -> c.getContents() instanceof TranslatableContents t && t.getKey().equals("message.aliveworkplace.steward.shopping")).toList();
 	}
+	/**
+	 * 27.19, "his sites clear only natural blocks": a player's block is one that is not natural AND stands in a section
+	 * a player built in. Grass or dirt in a marked section is still natural (cleared), and the village's own planks in an
+	 * unmarked section aren't a player's (an upgrade may take them); only planks in a marked section are kept.
+	 */
+	//$ gametest_ticks_batch AREA '40' '"qa1031PlayersBlock"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "qa1031PlayersBlock")
+	public void onlyANonNaturalBlockInAMarkedSectionIsAPlayersBlock(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		PlayerBuilt ledger = PlayerBuilt.get(level);
+		BlockPos marked = helper.absolutePos(new BlockPos(20, 2, 20));
+		BlockPos unmarked = marked.offset(0, 0, -4096);
+		helper.assertTrue(!ledger.marked(unmarked), "setup: the far section is already marked");
+		ledger.mark(marked);
+		helper.assertTrue(StewardSafety.playersBlock(level, marked, Blocks.OAK_PLANKS.defaultBlockState()),
+			"planks in a section a player built in aren't a player's block");
+		helper.assertTrue(!StewardSafety.playersBlock(level, marked, Blocks.GRASS_BLOCK.defaultBlockState()),
+			"grass in a marked section counts as a player's block: the site would leave natural ground");
+		helper.assertTrue(!StewardSafety.playersBlock(level, marked, Blocks.SHORT_GRASS.defaultBlockState()),
+			"short grass in a marked section counts as a player's block");
+		helper.assertTrue(!StewardSafety.playersBlock(level, unmarked, Blocks.OAK_PLANKS.defaultBlockState()),
+			"planks in a section no player built in count as a player's block");
+		helper.succeed();
+	}
 }

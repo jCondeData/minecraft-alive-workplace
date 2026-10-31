@@ -32,7 +32,9 @@ hall's owner, their friends and operators may. Before that, a click says what's 
   the air to pick it up again or, not placed, open the style screen, where it can only be mirrored (each Wonder keeps
   its own blocks);
 - it goes down only with its center within the hall's reach (64 blocks), every corner within 96 blocks of the hall, and
-  not over a finished building or another Wonder; otherwise it says why ("It would stand over the finished Chapel");
+  not over a finished building or another Wonder; otherwise it says why ("It would stand over the finished Chapel").
+  Another Wonder counts from the moment its Foundation Stone is set, even while it waits for a stage's goods and
+  nothing stands there yet, and a builder won't take a house inside its ground either;
 - a Book and Quill in the other hand writes the whole Wonder's material list.
 
 **The Foundation Stone** (35.4): right-click a builder of the village (their bench within 64 blocks of the hall) with

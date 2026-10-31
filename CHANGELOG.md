@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Without Cobblemon, a jobless villager standing by a Training Post no longer becomes a Trainer by himself (a job with
+  nothing to do); the same goes for the Leader's Podium, Tutor's Desk, Trade Board, Ball Workbench and Fossil Lab, which
+  now stay free. Villagers who already have one of these jobs keep it, and with Cobblemon nothing changes (B697).
 - The Grey Cough and the Bandit King no longer start in a village set At peace, at threat level 0 or on Peaceful;
   other stories still start there, and these two can come again once the village is no longer at peace.
 - A Carpenter no longer crafts away materials another open build still needs: with two builds sharing a chest or the

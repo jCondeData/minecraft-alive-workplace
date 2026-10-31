@@ -372,7 +372,9 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
   within 128 blocks of the block, each job's own config key: `quarryReach`, `fieldReach`, `treeFarmReach`,
   `orchardAreaReach`, `berryPlotReach` (16 to 256). Past it, the refusal names the village: "That spot is outside
   Mapleridge and 140 blocks from the Miner's Bench the miner works at — keep it within 128." (`<kind>.too_far_village`).
-  A worker with no village round their block has only the 128. The worker walks out to a far area in legs
+  A worker with no village round their block has only the 128. The distance is the one across the ground, from the
+  block to the area's middle (B665: up and down never count, so a quarry is in reach at any depth; `work/Reach.across`;
+  `ReachAcrossGameTests`, QA's `QaFarReach1028BugTests`). The worker walks out to a far area in legs
   (`workerPathRange`) and waits there while its chunks aren't loaded.
 - B453: a Field Marker or Quarry Marker area too far from the worker is refused in that worker's own words, naming the
   block they work at: "That field is 143 blocks from the Composter the farmer works at — keep it within 128."

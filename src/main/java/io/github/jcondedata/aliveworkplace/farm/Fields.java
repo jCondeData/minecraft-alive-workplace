@@ -112,7 +112,7 @@ public final class Fields {
 			return InteractionResult.CONSUME;
 		}
 		BoundingBox box = area.get();
-		double distance = Math.sqrt(box.getCenter().distSqr(composter.get()));
+		double distance = io.github.jcondedata.aliveworkplace.work.Reach.across(composter.get(), box.getCenter());
 		if (!io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, composter.get(), box.getCenter(), MAX_DISTANCE)) {
 			tell(player, io.github.jcondedata.aliveworkplace.work.Reach.refusal(level, composter.get(), "message.aliveworkplace.field.too_far", (int) Math.ceil(distance),
 				AreaJobs.workBlock(level, composter.get()), MAX_DISTANCE), ChatFormatting.RED);

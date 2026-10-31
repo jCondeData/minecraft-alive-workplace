@@ -131,11 +131,8 @@ public final class Miners {
 		BoundingBox box = data.isStripMine() ? full : withinLevel(full, BuilderLevels.level(villager), data.depth());
 		java.util.OptionalInt shaft = data.shaftTop(floor);
 		BlockPos center = box.getCenter();
-		// Down a shaft, the way there is straight down: only the distance across counts. A deep pit (36.22) is measured
-		// to the middle of its top, where the miner starts down it.
-		double distance = Math.sqrt(shaft.isPresent() ? new BlockPos(center.getX(), bench.get().getY(), center.getZ()).distSqr(bench.get())
-			: full.getYSpan() > QuarryData.ANY_LEVEL_DEPTH ? new BlockPos(center.getX(), full.maxY(), center.getZ()).distSqr(bench.get())
-			: center.distSqr(bench.get()));
+		// B665: only the distance across the ground counts (work/Reach), whatever the pit's depth or a shaft's
+		double distance = io.github.jcondedata.aliveworkplace.work.Reach.across(bench.get(), center);
 		if (distance > MAX_DISTANCE && !io.github.jcondedata.aliveworkplace.work.Reach.inSameVillage(level, bench.get(), center)) {
 			tell(player, io.github.jcondedata.aliveworkplace.work.Reach.refusal(level, bench.get(), "message.aliveworkplace.quarry.too_far", (int) Math.ceil(distance),
 				io.github.jcondedata.aliveworkplace.work.AreaJobs.workBlock(level, bench.get()), MAX_DISTANCE), ChatFormatting.RED);

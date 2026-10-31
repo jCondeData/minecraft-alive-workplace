@@ -35,7 +35,8 @@ Sneak-right-click a block to start over.
 - **The miner** digs it out from the top down, leaves a spiral stair in the pit wall so you can climb out, and keeps it
   dry by leaving blocks next to water and lava.
 - **Anywhere in the village, or far outside it.** The quarry may be anywhere in the village the blast furnace stands in,
-  or outside the village within 128 blocks of it (Quarry Distance in the [Settings](settings-reach-and-range.md)), so
+  or outside the village within 128 blocks of it across the ground, however deep it goes (Quarry Distance in the
+  [Settings](settings-reach-and-range.md)), so
   you needn't dig a hole among the houses. The miner walks out to it; while nobody is near enough to keep its land
   loaded, the miner waits there.
 - **Never their own workstation.** A quarry laid over the miner's own block is refused: mark it somewhere else.

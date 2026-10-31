@@ -94,7 +94,7 @@ public final class AreaJobs {
 			return InteractionResult.CONSUME;
 		}
 		BoundingBox box = area.get();
-		double distance = Math.sqrt(box.getCenter().distSqr(station.get()));
+		double distance = Reach.across(station.get(), box.getCenter());
 		int reach = reach(kind);
 		if (!Reach.inReach(level, station.get(), box.getCenter(), reach)) {
 			tell(player, Reach.refusal(level, station.get(), "message.aliveworkplace." + kind + ".too_far", (int) Math.ceil(distance),

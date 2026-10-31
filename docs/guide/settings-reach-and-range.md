@@ -36,6 +36,7 @@ nearest allowed one. See [Settings](settings.md) for where to change them.
 - **Quarry, Field, Tree Farm, Orchard and Berry Plot Distance** (normally 128 each): the same for the areas you mark for
   a miner, a farmer, a lumberjack, an orchard keeper and a berry breeder. Anywhere in the village is in reach; outside
   it, keep the area within this distance of the worker's block. So you can dig your quarry well away from the houses.
+  Every distance here is measured across the ground: how deep a quarry goes or how tall a build is never counts.
   A spot too far is refused with what to do: "That spot is outside Mapleridge and 140 blocks from the Miner's Bench the
   miner works at — keep it within 128."
 

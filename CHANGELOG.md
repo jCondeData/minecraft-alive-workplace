@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- How far a quarry or a build is from its worker is now measured across the ground, so depth and height never count.
+  Before, a normal 64-deep quarry 125 blocks from the Miner's Bench was refused as "129 blocks" away (the same spot
+  marked deeper was fine), and a tall build centered 128 blocks from the Blueprint Table was refused too. Fields, tree
+  farms, orchards and berry plots are measured the same way.
 - A Hauler Golem now empties every worker's chest into the Storehouse. Before, one worker's chest was always
   left full (with three lumberjacks, it hauled two and then stood idle), and a Golem Smith by the Storehouse didn't
   count when it chose whose chests to haul.

@@ -343,7 +343,8 @@ claims and trip counts.
   one of the City Plan's zones, the table itself standing in either (a table in a zone painted in the plan's corner,
   past the radius, reaches the whole village too; B550, B557; QA's `QaReachZoneCornerGameTests` and
   `QaVillageReachBugTests`). Outside the village, a build's middle must be within `maxSiteDistance` (128) of the
-  table. A spot past it is refused with its distance rounded up, so one just past the reach reads past it, and naming the
+  table, measured across the ground (B668: a tall build's height never counts; `ReachAcrossGameTests`, QA's
+  `QaFarReach1028bBugTests`). A spot past it is refused with its distance rounded up, so one just past the reach reads past it, and naming the
   village when the table stands in one: "That spot is outside Mapleridge and 140 blocks from the builder's Blueprint
   Table — keep it within 128." (`assign.too_far_village`; with no village round the table, `assign.too_far`: "That spot
   is 140 blocks from the builder's Blueprint Table — keep it within 128."; B378). Farmers', Miners' and other area jobs'

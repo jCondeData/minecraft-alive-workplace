@@ -308,7 +308,8 @@ public final class Builders {
 			return InteractionResult.CONSUME;
 		}
 		BoundingBox box = BlueprintOutline.bounds(placement.get(), blueprint.get().size());
-		double distance = Math.sqrt(box.getCenter().distSqr(bench.get()));
+		// B668: across the ground, the distance Reach measures (a tall build's height never counts)
+		double distance = Reach.across(bench.get(), box.getCenter());
 		if (!inReach(level, bench.get(), data.get().structure(), placement.get())) {
 			// B378: rounded up, so a refused spot never reads as within the reach (48.5 blocks: 49)
 			tell(player, Reach.refusal(level, bench.get(), "message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_SITE_DISTANCE), ChatFormatting.RED);

@@ -19,7 +19,8 @@ import net.minecraft.world.item.trading.MerchantOffers;
 
 /**
  * Player-run shops: a Shopkeeper sells what the chests near their Shop Counter hold, at the prices on the
- * counter's price list, and puts the payment in those chests. Offers are rebuilt from the stock every time
+ * counter's price list, and puts the payment in those chests. A chest nearer another player's Shop Counter is that
+ * shop's, never this one's ({@link #stock}, B716). Offers are rebuilt from the stock every time
  * someone talks to the shopkeeper, so what's for sale is always what's there.
  */
 public final class Shops {
@@ -44,7 +45,7 @@ public final class Shops {
 		if (counter == null) {
 			return;
 		}
-		List<BlockPos> stock = SupplyContainers.find(level, counter.getBlockPos(), null);
+		List<BlockPos> stock = stock(level, counter);
 		for (int column = 0; column < ShopCounterBlockEntity.COLUMNS; column++) {
 			ItemStack goods = counter.goods(column);
 			ItemStack price = counter.price(column);
@@ -67,6 +68,88 @@ public final class Shops {
 			}
 			offers.add(new MerchantOffer(new ItemCost(price.getItem(), price.getCount()), goods.copy(), uses, 1, 0f));
 		}
+	}
+
+	/**
+	 * B716: the shop's own chests, nearest first: the stores within reach of its counter ({@link SupplyContainers#find}),
+	 * less any that belongs to another player's shop, that is, stands nearer a Shop Counter with a different owner that
+	 * reaches it too. At an even distance the counter that comes first by position (lowest y, then z, then x) keeps the
+	 * chest, so two shops never both sell from it nor both pay into it. One owner's counters share the chests between
+	 * them, as before. A double chest counts from whichever of its halves is nearer.
+	 */
+	public static List<BlockPos> stock(ServerLevel level, ShopCounterBlockEntity counter) {
+		BlockPos at = counter.getBlockPos();
+		List<BlockPos> found = SupplyContainers.find(level, at, null);
+		if (found.isEmpty()) {
+			return found;
+		}
+		List<BlockPos> rivals = otherOwnersCounters(level, counter);
+		if (rivals.isEmpty()) {
+			return found;
+		}
+		List<BlockPos> own = new java.util.ArrayList<>(found.size());
+		for (BlockPos chest : found) {
+			if (!claimedByRival(level, chest, at, rivals)) {
+				own.add(chest);
+			}
+		}
+		return own;
+	}
+
+	private static boolean claimedByRival(ServerLevel level, BlockPos chest, BlockPos at, List<BlockPos> rivals) {
+		BlockPos other = otherHalf(level, chest);
+		double mine = distance(chest, other, at);
+		for (BlockPos rival : rivals) {
+			if (!SupplyContainers.inReach(rival, chest) && (other == null || !SupplyContainers.inReach(rival, other))) {
+				continue; // that shop doesn't reach it: it can't be that shop's chest
+			}
+			double theirs = distance(chest, other, rival);
+			if (theirs < mine || theirs == mine && rival.compareTo(at) < 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static double distance(BlockPos chest, @org.jetbrains.annotations.Nullable BlockPos otherHalf, BlockPos counter) {
+		double d = chest.distSqr(counter);
+		return otherHalf == null ? d : Math.min(d, otherHalf.distSqr(counter));
+	}
+
+	@org.jetbrains.annotations.Nullable
+	private static BlockPos otherHalf(ServerLevel level, BlockPos chest) {
+		net.minecraft.world.level.block.state.BlockState state = level.getBlockState(chest);
+		if (!(state.getBlock() instanceof net.minecraft.world.level.block.ChestBlock)
+			|| !state.hasProperty(net.minecraft.world.level.block.ChestBlock.TYPE)
+			|| state.getValue(net.minecraft.world.level.block.ChestBlock.TYPE) == net.minecraft.world.level.block.state.properties.ChestType.SINGLE) {
+			return null;
+		}
+		return chest.relative(net.minecraft.world.level.block.ChestBlock.getConnectedDirection(state));
+	}
+
+	/** Shop Counters of other owners close enough to reach a chest this counter reaches (loaded chunks only). */
+	private static List<BlockPos> otherOwnersCounters(ServerLevel level, ShopCounterBlockEntity counter) {
+		BlockPos at = counter.getBlockPos();
+		java.util.UUID owner = counter.owner();
+		int reach = 2 * SupplyContainers.RADIUS + 1; // + 1: the far half of a double chest
+		List<BlockPos> rivals = new java.util.ArrayList<>();
+		for (int cx = net.minecraft.core.SectionPos.blockToSectionCoord(at.getX() - reach); cx <= net.minecraft.core.SectionPos.blockToSectionCoord(at.getX() + reach); cx++) {
+			for (int cz = net.minecraft.core.SectionPos.blockToSectionCoord(at.getZ() - reach); cz <= net.minecraft.core.SectionPos.blockToSectionCoord(at.getZ() + reach); cz++) {
+				net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+				if (chunk == null) {
+					continue;
+				}
+				for (net.minecraft.world.level.block.entity.BlockEntity be : chunk.getBlockEntities().values()) {
+					BlockPos p = be.getBlockPos();
+					if (be instanceof ShopCounterBlockEntity other && !p.equals(at)
+						&& Math.abs(p.getX() - at.getX()) <= reach && Math.abs(p.getZ() - at.getZ()) <= reach && Math.abs(p.getY() - at.getY()) <= reach
+						&& !(owner != null && owner.equals(other.owner()))) {
+						rivals.add(p.immutable());
+					}
+				}
+			}
+		}
+		return rivals;
 	}
 
 	/** Emeralds in an emerald block. */
@@ -122,7 +205,7 @@ public final class Shops {
 		if (counter == null) {
 			return false;
 		}
-		return SupplyContainers.countMatching(level, SupplyContainers.find(level, counter.getBlockPos(), null), goods) >= goods.getCount();
+		return SupplyContainers.countMatching(level, stock(level, counter), goods) >= goods.getCount();
 	}
 
 	/**
@@ -148,7 +231,7 @@ public final class Shops {
 			return;
 		}
 		BlockPos at = counter.getBlockPos();
-		List<BlockPos> chests = SupplyContainers.find(level, at, null);
+		List<BlockPos> chests = stock(level, counter);
 		ItemStack goods = offer.getResult();
 		SupplyContainers.extractMatching(level, chests, goods, goods.getCount());
 		store(level, chests, at, offer.getCostA().copy());
@@ -211,7 +294,7 @@ public final class Shops {
 		if (counter == null) {
 			return;
 		}
-		List<BlockPos> stock = SupplyContainers.find(level, counter.getBlockPos(), null);
+		List<BlockPos> stock = stock(level, counter);
 		int shown = 0;
 		for (int column = 0; column < ShopCounterBlockEntity.COLUMNS; column++) {
 			ItemStack goods = counter.goods(column);
@@ -333,7 +416,7 @@ public final class Shops {
 			return false;
 		}
 		BlockPos at = counter.getBlockPos();
-		List<BlockPos> chests = SupplyContainers.find(level, at, null);
+		List<BlockPos> chests = stock(level, counter);
 		if (SupplyContainers.countMatching(level, chests, goods) < goods.getCount()) {
 			Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.sold_out", goods.getHoverName())
 				.withStyle(net.minecraft.ChatFormatting.YELLOW));

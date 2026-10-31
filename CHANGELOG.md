@@ -17,6 +17,21 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A stranger can no longer have his own Builder, Miner or Farmer work inside your protected village from just outside
+  it: a blueprint, Quarry Marker or Field Marker whose area reaches into the village is refused, and he's told whose
+  village it is (before, only the clicked spot was checked, and clearing the site broke the owner's blocks). You, your
+  friends and operators hand over work there as before (B718).
+- In a protected village, a stranger's Delivery Note can't mark the owner's chests any more (they're told whose
+  village it is), and a postman's courier route that a stranger set up doesn't carry anything out of the village, routes
+  already saved included. The owner, their friends and operators set up routes there as before (B717).
+- A Shop Counter sells only from, and pays only into, its own chests: on a market street, a chest nearer another
+  player's Shop Counter is that shop's, so your shopkeeper no longer sells your neighbor's goods or drops your takings
+  in their chest. A chest exactly between two players' counters belongs to one of them, always the same one; your own
+  counters still share their chests (B716).
+- A brown or green bed in your own house is no longer taken for a settlers' wagon bedroll just because a campfire and a
+  hay bale stand nearby: the villager living there keeps it as their home, and the Village Hall counts it again (only
+  a real camp's bedrolls, with the camp's Blueprint Table, are wagon beds). Beds already mistaken in a saved world are
+  given back the first time the hall looks (B715).
 - A story arc's "Talk to ..." or "Defeat ..." step counts only the villager or foe that arc picked in that village:
   right-clicking (or defeating) someone another village's story cast in a part of the same name no longer finishes it
   (B711).

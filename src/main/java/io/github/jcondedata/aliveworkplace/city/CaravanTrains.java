@@ -1162,7 +1162,7 @@ public final class CaravanTrains {
 			// the village train's blocks are up (39.7b): the hall's next look at its trains glues and assembles it
 			for (BlockPos hall : Roads.hallsOf(level, site)) {
 				if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity) {
-					Component who = builder != null ? builder.getDisplayName() : Component.translatable("steward.aliveworkplace.jobs.someone");
+					Component who = io.github.jcondedata.aliveworkplace.hall.Chronicle.lineStarter(builder);
 					Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.train_built", who));
 				}
 			}
@@ -1193,7 +1193,7 @@ public final class CaravanTrains {
 						spur(level, station, way(hall, road), plan(way(hall, road), p -> free(level, p)));
 					}
 				}
-				Component who = builder != null ? builder.getDisplayName() : Component.translatable("steward.aliveworkplace.jobs.someone");
+				Component who = io.github.jcondedata.aliveworkplace.hall.Chronicle.lineStarter(builder);
 				Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.train_track_laid", who,
 					CaravanRoads.nameOf(level, other)));
 				if (data.tracked(other, hall)) {

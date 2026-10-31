@@ -175,7 +175,7 @@ public final class TableServer {
 	private record CachedStyles(Blueprint blueprint, List<TablePayloads.StyleChoice> styles) {
 	}
 	private static final Map<ResourceLocation, CachedStyles> STYLES = java.util.Collections.synchronizedMap(new HashMap<>());
-	private record CachedMaterials(Blueprint blueprint, List<TablePayloads.Material> materials, BuildJobs.Summary jobs) {
+	private record CachedMaterials(Blueprint blueprint, java.util.BitSet jobsOn, List<TablePayloads.Material> materials, BuildJobs.Summary jobs) {
 	}
 	private static final Map<ResourceLocation, CachedMaterials> MATERIALS = java.util.Collections.synchronizedMap(
 		new java.util.LinkedHashMap<>(16, 0.75f, true) {
@@ -219,7 +219,23 @@ public final class TableServer {
 		return styled.isEmpty() || styles(server, styled.get().base()).stream().anyMatch(s -> s.name().equals(styled.get().style()));
 	}
 
-	private record CachedJobs(Blueprint blueprint, List<ResourceLocation> jobs) {
+	private record CachedJobs(Blueprint blueprint, java.util.BitSet jobsOn, List<ResourceLocation> jobs) {
+	}
+
+	/**
+	 * Which jobs can be had in this game right now ({@link io.github.jcondedata.aliveworkplace.work.Stations#available}),
+	 * by registry id: the job lists below are kept only while this stays the same, so a config switch flipped by a
+	 * reload (physicians, tailors...) reaches the listing and the details alike (bug B570: a listing kept from before
+	 * the flip left the Physician out while the details named it).
+	 */
+	private static java.util.BitSet jobsOn() {
+		java.util.BitSet on = new java.util.BitSet();
+		for (net.minecraft.world.entity.npc.VillagerProfession p : BuiltInRegistries.VILLAGER_PROFESSION) {
+			if (io.github.jcondedata.aliveworkplace.work.Stations.available(p)) {
+				on.set(BuiltInRegistries.VILLAGER_PROFESSION.getId(p));
+			}
+		}
+		return on;
 	}
 	/** Every listed build's jobs (36.10), small enough to keep them all. */
 	private static final Map<ResourceLocation, CachedJobs> JOBS = java.util.Collections.synchronizedMap(new HashMap<>());
@@ -229,24 +245,26 @@ public final class TableServer {
 	 * search matches "fisherman" or "smith" against. Worked out once per build and kept.
 	 */
 	public static List<ResourceLocation> listedJobs(ResourceLocation id, Blueprint blueprint) {
+		java.util.BitSet on = jobsOn();
 		CachedJobs cached = JOBS.get(id);
-		if (cached != null && cached.blueprint() == blueprint) {
+		if (cached != null && cached.blueprint() == blueprint && cached.jobsOn().equals(on)) {
 			return cached.jobs();
 		}
 		CachedMaterials materials = MATERIALS.get(id);
-		BuildJobs.Summary summary = materials != null && materials.blueprint() == blueprint ? materials.jobs() : BuildJobs.of(blueprint);
+		BuildJobs.Summary summary = materials != null && materials.blueprint() == blueprint && materials.jobsOn().equals(on) ? materials.jobs() : BuildJobs.of(blueprint);
 		List<ResourceLocation> jobs = summary.jobs().stream().flatMap(b -> b.jobs().stream()).distinct().toList();
-		JOBS.put(id, new CachedJobs(blueprint, jobs));
+		JOBS.put(id, new CachedJobs(blueprint, on, jobs));
 		return jobs;
 	}
 
 	/** A build's materials and its job blocks and beds (36.6a), worked out once per build. */
 	private static CachedMaterials cachedMaterials(ResourceLocation id, Blueprint blueprint) {
+		java.util.BitSet on = jobsOn();
 		CachedMaterials cached = MATERIALS.get(id);
-		if (cached != null && cached.blueprint() == blueprint) {
+		if (cached != null && cached.blueprint() == blueprint && cached.jobsOn().equals(on)) {
 			return cached;
 		}
-		cached = new CachedMaterials(blueprint, List.copyOf(materials(blueprint)), BuildJobs.of(blueprint));
+		cached = new CachedMaterials(blueprint, on, List.copyOf(materials(blueprint)), BuildJobs.of(blueprint));
 		MATERIALS.put(id, cached);
 		return cached;
 	}

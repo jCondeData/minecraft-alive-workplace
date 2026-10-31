@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.BasePressurePlateBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -25,6 +27,7 @@ import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.TorchBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 /**
  * B300: no furnishing floats. The small things a room is dressed with (a flower pot, a candle, a lantern standing on a
@@ -59,10 +62,34 @@ public final class Resting {
 	}
 
 	/**
+	 * B641: a small piece the modded library (37.12) sets on a table, as Handcrafted's crockery: a block of another mod
+	 * (not Minecraft's), not a full block and not hanging. The library puts it over the table's top cell as drawn (the
+	 * pressure plate or carpet of a fence table), so it floats once that table is swapped for a one-block modded table,
+	 * or over the thin plate when the vanilla table stays.
+	 */
+	public static boolean libraryPiece(BlockState state) {
+		if (state.isAir() || BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace().equals("minecraft")) {
+			return false;
+		}
+		if (state.hasProperty(BlockStateProperties.HANGING) && state.getValue(BlockStateProperties.HANGING)) {
+			return false;
+		}
+		return !state.isCollisionShapeFullBlock(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
+	}
+
+	/**
 	 * {@code blueprint} with every small thing ({@link #standsOnFloor}) that stood on one of the {@code emptied} cells
 	 * (cells a furniture swap made air) set down onto whatever is under it now. A pot hanging from a chain is left.
 	 */
 	public static Blueprint reseat(Blueprint blueprint, Set<BlockPos> emptied) {
+		return reseat(blueprint, emptied, true);
+	}
+
+	/**
+	 * {@link #reseat(Blueprint, Set)}; {@code library} false leaves the modded library's pieces ({@link #libraryPiece})
+	 * where they are, as builds furnished before B641 had them (a refresh's record of what such a build stands as).
+	 */
+	public static Blueprint reseat(Blueprint blueprint, Set<BlockPos> emptied, boolean library) {
 		if (emptied.isEmpty()) {
 			return blueprint;
 		}
@@ -83,7 +110,7 @@ public final class Resting {
 				continue;
 			}
 			Blueprint.Entry thing = entries.get(at);
-			if (!standsOnFloor(thing.state()) || hangs(entries, index, from)) {
+			if (!(standsOnFloor(thing.state()) || library && libraryPiece(thing.state())) || hangs(entries, index, from)) {
 				continue;
 			}
 			BlockPos seat = from;
@@ -103,6 +130,39 @@ public final class Resting {
 				entries.add(moved);
 			}
 			changed = true;
+		}
+		return changed ? new Blueprint(blueprint.id(), blueprint.size(), List.copyOf(entries), blueprint.entities()) : blueprint;
+	}
+
+	/**
+	 * B641: {@code blueprint} without the modded library's pieces ({@link #libraryPiece}) that stand over a table whose
+	 * top is still a thin pressure plate or carpet (a spot left vanilla): the piece's cell is over the plate's, so it hung
+	 * a block over the table (the owner's "crockery on a shelf with nothing under it"). The table stays bare.
+	 */
+	public static Blueprint offThinTops(Blueprint blueprint, List<FurnitureSpot> spots) {
+		Map<BlockPos, Integer> index = new HashMap<>();
+		List<Blueprint.Entry> entries = new ArrayList<>(blueprint.blocks());
+		for (int i = 0; i < entries.size(); i++) {
+			index.put(entries.get(i).pos(), i);
+		}
+		boolean changed = false;
+		for (FurnitureSpot spot : spots) {
+			if (spot.kind() != FurnitureSpot.Kind.TABLE) {
+				continue;
+			}
+			for (FurnitureSpot.Cell cell : spot.blocks()) {
+				BlockPos at = spot.pos().offset(cell.at());
+				Integer top = index.get(at);
+				Integer over = index.get(at.above());
+				if (top == null || over == null) {
+					continue;
+				}
+				BlockState thin = entries.get(top).state();
+				if ((thin.getBlock() instanceof BasePressurePlateBlock || thin.getBlock() instanceof CarpetBlock) && libraryPiece(entries.get(over).state())) {
+					entries.set(over, new Blueprint.Entry(at.above(), Blocks.AIR.defaultBlockState(), null));
+					changed = true;
+				}
+			}
 		}
 		return changed ? new Blueprint(blueprint.id(), blueprint.size(), List.copyOf(entries), blueprint.entities()) : blueprint;
 	}

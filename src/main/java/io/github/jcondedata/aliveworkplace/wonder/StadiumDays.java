@@ -21,6 +21,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.trainer.Trainers;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.wonder.powers.StadiumDaysPower;
 import io.github.jcondedata.aliveworkplace.wonder.powers.TournamentHostPower;
 import java.util.ArrayList;
@@ -364,7 +365,7 @@ public final class StadiumDays {
 			level.addFreshEntity(v);
 			out.add(v);
 		}
-		tell(level, site.hall(), spots, Component.translatable("message.aliveworkplace.stadium.day", VillageHalls.name(level, site.hall()), out.size())
+		tell(level, site.hall(), spots, Words.counted("message.aliveworkplace.stadium.day", out.size(), VillageHalls.name(level, site.hall()), out.size())
 			.withStyle(ChatFormatting.GOLD));
 		return out;
 	}

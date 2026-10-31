@@ -280,7 +280,7 @@ public final class FamilyBook {
 		if (!ENABLED) {
 			return;
 		}
-		List<Villager> village = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), FamilyBook::staying);
+		List<Villager> village = VillageHalls.villagers(level, hall, FamilyBook::staying);
 		Book book = entity.families();
 		long today = Chronicle.day(level);
 		boolean changed = false;
@@ -355,7 +355,7 @@ public final class FamilyBook {
 		if (!ENABLED || passing(villager)) {
 			return;
 		}
-		VillageHalls.nearest(level, villager.blockPosition()).ifPresent(hall -> {
+		VillageHalls.containing(level, villager.blockPosition()).ifPresent(hall -> {
 			if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
 				long today = Chronicle.day(level);
 				Book book = entity.families();

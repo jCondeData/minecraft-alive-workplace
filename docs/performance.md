@@ -42,6 +42,18 @@ One row per run, newest first. Ticks are milliseconds.
 None of our Create code (Mechanic, machine work, kinetics) shows in either profile; the share over 15% and the long
 BuilderWork ticks are this container's B412, with or without Create.
 
+**The village hall's radius at its top (lane E QA, 2026-10-26):** `villageHallRadius` 160 (the config's top; every
+village check, the 36.20 reach included, searches that far for a hall) against the default 64, back to back on this
+container with Create on the pack (main e84f78a, `PERF=true PLOTS=40`, 80 workers, Fabric Loader 0.19.3). No cost
+seen:
+
+| villageHallRadius | Idle p50 / p95 | Busy p50 / p95 (p99), first then second window | Heap after GC | Our share | Ticks with over 50 ms of ours |
+|---|---|---|---|---|---|
+| 64 | 0.9 / 1.5 | 11.9 / 26.3 (231.5), then 4.4 / 11.8 (21.0) | 1437 MB | 25.5% of 830 samples | 9 (3 on the CPU) |
+| 160 | 0.8 / 2.9 | 13.3 / 37.1 (185.4), then 4.5 / 13.0 (24.1) | 1512 MB | 21.3% of 798 samples | 9 (4 on the CPU) |
+
+Our code a tick (the mod's timer): p50 1.3 then 0.8 ms at 64, 1.2 then 0.8 ms at 160.
+
 ## A season under the edicts (30.22)
 
 `SEASON=true tools/packtest/run.sh`: a City of 35 villagers (16 with jobs) on the pack server, 8 in-game days at full

@@ -28,12 +28,16 @@ Counter picks the [Innkeeper](innkeeper.md), a Poké Ball the [Pokémon Trader](
 
 Open the counter to set your prices. It has nine columns: the top slot of each is what one sale hands over (the item and
 how many), the slot under it is what that costs. Put the goods in chests by the counter. Other players buy by trading
-with the shopkeeper, and the payment lands in your chests. What's for sale is always what's in the chests: the offers are
-rebuilt each time someone talks to the shopkeeper. The counter keeps a log of the last 20 sales.
+with the shopkeeper, and the payment lands in your chests. Every buyer pays exactly your price (no Hero of the Village,
+Silver Tongue or trade fair discount comes off it). What's for sale is always what's in the chests: the offers are
+rebuilt each time someone talks to the shopkeeper. The counter keeps a log of the last 20 sales; a sneak-right-click shows the latest 10.
 
 **With CobbleDollars**, the shop gets its own screen with prices in CobbleDollars, and a **Price Tag** sets a price
 directly: right-click the tag to set its price with buttons (or rename it in an anvil to a number) and put it in a price
-slot. Without CobbleDollars a tag's price is paid in emeralds at the server's rate. Money a shop takes while you're
+slot. Without CobbleDollars a tag's price is paid in emeralds at the server's rate, over the trade screen's two slots: a
+10,000 tag asks a stack of emeralds and 36 more, and past two stacks it asks emerald blocks and the emeralds left over.
+A tag over 584 emeralds (58,400 at 100 per emerald) is too dear for the trade screen: it isn't offered, and the tag
+says so. Money a shop takes while you're
 offline is paid to you, with a note, the next time you join. If CobbleDollars is gone from the server by then, it's paid
 in emeralds at the server's rate (1,234 CobbleDollars: 12 emeralds), and what doesn't make a whole emerald stays owed.
 Emeralds that don't fit in your inventory land at your feet, and a fortune is paid at most an inventory's worth

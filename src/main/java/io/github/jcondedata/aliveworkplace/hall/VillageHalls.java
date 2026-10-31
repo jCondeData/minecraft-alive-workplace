@@ -118,12 +118,13 @@ public final class VillageHalls {
 		List<Build> out = new ArrayList<>();
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
 			if (site.isDone() || site.isQueued() || !site.placement().dimension().equals(Ids.of(level.dimension()))
-				|| site.placement().origin().distSqr(hall) > (double) RADIUS * RADIUS) {
+				|| !io.github.jcondedata.aliveworkplace.work.Reach.claims(level, hall,
+					io.github.jcondedata.aliveworkplace.build.Builders.spot(level, site.structure(), site.placement()))) { // B616: the claimed area
 				continue;
 			}
 			BuildPlan plan = site.plan(level);
 			Villager builder = site.builder() != null && level.getEntity(site.builder()) instanceof Villager v ? v : null;
-			out.add(new Build(site, io.github.jcondedata.aliveworkplace.blueprint.Blueprints.displayName(site.structure()),
+			out.add(new Build(site, io.github.jcondedata.aliveworkplace.blueprint.Blueprints.siteName(level, site),
 				plan == null ? 0f : site.progress(plan), builder));
 		}
 		out.sort(Comparator.comparingDouble(b -> b.site().placement().origin().distSqr(hall)));
@@ -134,18 +135,41 @@ public final class VillageHalls {
 	public record FreeStation(BlockPos pos, VillagerProfession profession, net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> poi) {
 	}
 
-	/** The village's free workstations, nearest the hall first. */
+	/**
+	 * The village's free workstations, nearest the hall first: every block a jobless villager takes by themselves (the
+	 * game's acquirable_job_site tag) and every block of ours a job is given at by an item or the hall (B635: a crafting
+	 * table, a jukebox, a Mailbox are left out of that tag on purpose, so nobody takes them by themselves, and so the hall
+	 * never listed the Carpenter's Workshop's table and nobody could be made a Carpenter from it).
+	 */
 	public static List<FreeStation> freeStations(ServerLevel level, BlockPos hall) {
 		List<FreeStation> out = new ArrayList<>();
 		// The job a kind of workstation gives, found once per kind rather than once per workstation (B103).
 		java.util.Map<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>, Optional<VillagerProfession>> jobs = new java.util.HashMap<>();
-		level.getPoiManager().getInRange(h -> h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE), hall, RADIUS, PoiManager.Occupancy.HAS_SPACE)
-			.forEach(record -> jobs.computeIfAbsent(record.getPoiType(), poi -> net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.stream()
-					.filter(p -> p != VillagerProfession.NONE && p != VillagerProfession.NITWIT && p.acquirableJobSite().test(poi))
-					.findFirst())
+		// A block with a free place, or a beehive nobody works at (B657: a beehive keeps no places, so it never had one).
+		level.getPoiManager().getInRange(VillageHalls::jobBlock, hall, RADIUS, PoiManager.Occupancy.ANY)
+			.filter(record -> record.hasSpace() || io.github.jcondedata.aliveworkplace.work.Stations.freeAt(level, record.getPos()))
+			.forEach(record -> jobs.computeIfAbsent(record.getPoiType(), VillageHalls::firstJob)
 				.ifPresent(p -> out.add(new FreeStation(record.getPos().immutable(), p, record.getPoiType()))));
 		out.sort(Comparator.comparingDouble(f -> f.pos().distSqr(hall)));
 		return out;
+	}
+
+	/** Whether {@code poi} is a kind of block the hall lists when free (as {@link #freeStations}). */
+	private static boolean jobBlock(net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> poi) {
+		return poi.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE)
+			|| io.github.jcondedata.aliveworkplace.work.Stations.ALL.stream().anyMatch(s -> !s.byItself() && s.poi().test(poi));
+	}
+
+	/**
+	 * The job {@code poi} is listed under: the first job in the registry that takes it; for a block only an item gives a
+	 * job at (B635), the first one this game has (its config on).
+	 */
+	private static Optional<VillagerProfession> firstJob(net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> poi) {
+		boolean tagged = poi.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE);
+		return net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.stream()
+			.filter(p -> p != VillagerProfession.NONE && p != VillagerProfession.NITWIT && p.acquirableJobSite().test(poi))
+			.filter(p -> tagged || io.github.jcondedata.aliveworkplace.work.Stations.available(p))
+			.findFirst();
 	}
 
 	/**
@@ -186,7 +210,10 @@ public final class VillageHalls {
 			return false;
 		}
 		// The offered block first: if someone took it meanwhile, nothing changes and they keep their own block (bug B27).
-		boolean taken = level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent();
+		// A beehive keeps no places (B657): it's theirs if nobody works there yet.
+		boolean taken = io.github.jcondedata.aliveworkplace.work.Stations.keepsNoCount(station.poi())
+			? io.github.jcondedata.aliveworkplace.work.Stations.freeAt(level, station.pos())
+			: level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent();
 		if (!taken) {
 			return false;
 		}
@@ -334,9 +361,41 @@ public final class VillageHalls {
 		return dx * dx + dz * dz <= (long) RADIUS * RADIUS && Math.abs(pos.getY() - hall.getY()) <= HEIGHT;
 	}
 
+	/**
+	 * The hall whose village holds {@code pos} ({@link #contains}: within {@link #RADIUS} across and {@link #HEIGHT} up or
+	 * down), the nearest across if two do. Unlike {@link #nearest}, a ball of {@link #RADIUS}, it finds the hall of a spot
+	 * on the village's rim up a hill (B562: 60 out and 25 up is in the village but 65 blocks off in a straight line).
+	 */
+	public static Optional<BlockPos> containing(ServerLevel level, BlockPos pos) {
+		Optional<BlockPos> near = nearest(level, pos);
+		if (near.isPresent() && contains(near.get(), pos)) {
+			return near;
+		}
+		int reach = (int) Math.ceil(Math.sqrt((double) RADIUS * RADIUS + (double) HEIGHT * HEIGHT));
+		return level.getPoiManager().getInRange(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, reach, PoiManager.Occupancy.ANY)
+			.map(net.minecraft.world.entity.ai.village.poi.PoiRecord::getPos)
+			.filter(h -> contains(h, pos))
+			.min(Comparator.comparingLong(h -> across(h, pos)));
+	}
+
+	/** The square of the distance from {@code a} to {@code b} across (east-west and north-south only). */
+	public static long across(BlockPos a, BlockPos b) {
+		long dx = a.getX() - b.getX();
+		long dz = a.getZ() - b.getZ();
+		return dx * dx + dz * dz;
+	}
+
 	/** The living villagers in the village round {@code hall} ({@link #contains}). */
 	public static List<Villager> villagers(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(Villager.class, area(hall), v -> v.isAlive() && contains(hall, v.blockPosition()));
+		return villagers(level, hall, v -> true);
+	}
+
+	/**
+	 * The living villagers in the village round {@code hall} ({@link #contains}) that pass {@code filter}. The village is
+	 * the circle, not the square {@link #area} round it (B548, B549: a villager in the square's corner is in no village).
+	 */
+	public static List<Villager> villagers(ServerLevel level, BlockPos hall, java.util.function.Predicate<Villager> filter) {
+		return level.getEntitiesOfClass(Villager.class, area(hall), v -> v.isAlive() && contains(hall, v.blockPosition()) && filter.test(v));
 	}
 
 	/** The beds (home points of interest, taken or not) in the village round {@code hall} ({@link #contains}). */

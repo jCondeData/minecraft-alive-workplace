@@ -154,7 +154,7 @@ public class QaRealmFoundingGameTests implements FabricGameTest {
 		helper.assertTrue(land.data().realm(id).members().size() == 12, "not 12: " + land.data().realm(id).members().size());
 		GlobalPos thirteenth = known(helper, land, -1300, -1400, "Thirteenth", land.owner().getUUID());
 		Realms.Result result = Realms.add(land.level(), land.hall(0), thirteenth, land.owner());
-		String title = "the County of " + land.name(0);
+		String title = "The County of " + land.name(0);
 		helper.assertTrue(result.refusal() == Realms.Refusal.FULL && result.message().getString().equals(title + " already holds 12 villages, as many as a realm may."),
 			"the 13th: " + result.refusal() + " " + result.message().getString());
 		// the neighbour answers the invitation sent while there was room
@@ -294,9 +294,10 @@ public class QaRealmFoundingGameTests implements FabricGameTest {
 		RealmGameTests.found(helper, land);
 		UUID id = realmOf(land, 0).id();
 		helper.assertTrue(RealmInvites.invite(land.level(), land.hall(0), land.at(1), land.owner()).ok(), "inviting");
-		long[][] cases = {{24000 + 1000, 1, 1}, {2 * 24000 + 1000, 2, 1}, {24000 + 5000, 1, 5}, {23000, 0, 23}};
+		long[][] cases = {{24000 + 1000, 1, 1}, {2 * 24000 + 1000, 2, 1}, {24000 + 5000, 1, 5}, {23000, 0, 23}, {500, 0, 0}};
 		String[] expected = {"Waiting for an answer: 1 day and 1 hour left", "Waiting for an answer: 2 days and 1 hour left",
-			"Waiting for an answer: 1 day and 5 hours left", "Waiting for an answer: 0 days and 23 hours left"};
+			"Waiting for an answer: 1 day and 5 hours left", "Waiting for an answer: 0 days and 23 hours left",
+			"Waiting for an answer: less than an hour left"}; // B597: the last hour, not "0 days and 0 hours"
 		for (int i = 0; i < cases.length; i++) {
 			land.data().putInvite(new RealmData.Invite(id, land.at(1), them.getUUID(), now(server) - (RealmInvites.LAPSE - cases[i][0])));
 			List<String> join = RealmGameTests.lore(RealmGameTests.realmTab(helper, land, 1, them).icon(Realms.INVITES));

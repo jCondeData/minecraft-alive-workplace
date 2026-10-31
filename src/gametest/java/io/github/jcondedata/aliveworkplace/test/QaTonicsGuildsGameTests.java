@@ -116,8 +116,8 @@ public class QaTonicsGuildsGameTests implements FabricGameTest {
 	 * A Rancher and a Ball Smith drink by the player's right-click; a creative player keeps the bottle; the sentence a
 	 * player reads; the tonic still works on its last tick and is gone on the tick it ends.
 	 */
-	//$ gametest_ticks_batch AREA '100' '"qaTonicLastTick"'
-	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaTonicLastTick")
+	//$ gametest_ticks_batch AREA '100' '"qaTonicGuildsLastTick"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaTonicGuildsLastTick")
 	public void theRarerJobsDrinkAndTheTonicEndsOnItsLastTick(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		quiet(helper);

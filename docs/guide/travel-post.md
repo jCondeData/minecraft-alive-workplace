@@ -27,7 +27,7 @@ villages already have a ferry house with one.
 
 **Right-click a Travel Post** to add it to the posts you know; you're told how many others you know. A villager
 without a job nearby takes the post by themselves and becomes its **Ferryman**. Right-click the ferryman, pick any
-other post you know and pay the fare (an emerald for every 256 blocks) for a [Travel Ticket](travel-ticket.md). Use the ticket within
+other post you know and pay the fare (an emerald for every 256 blocks, 16 at most; 8 to another dimension) for a [Travel Ticket](travel-ticket.md). Use the ticket within
 16 blocks of any Travel Post and you arrive at the ticket's post.
 
 ## How it fits in

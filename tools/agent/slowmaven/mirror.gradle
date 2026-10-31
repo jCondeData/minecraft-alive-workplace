@@ -1,0 +1,15 @@
+def g = 'https://maven-central.storage-download.googleapis.com/maven2'
+def fix = { repos, n ->
+  repos.removeAll { it instanceof MavenArtifactRepository && it.url.toString().contains('repo.maven.apache.org') }
+  repos.withType(MavenArtifactRepository).each { r ->
+    def u = r.url.toString()
+    ['maven.fabricmc.net', 'maven.kikugie.dev'].each { h ->
+      if (u.startsWith("https://$h")) { r.url = "http://127.0.0.1:8765/h/" + u.substring(8); r.allowInsecureProtocol = true }
+    }
+  }
+  if (!repos.findByName(n)) { def r = repos.maven { url g; name n }; repos.remove(r); repos.add(0, r) }
+}
+settingsEvaluated { s -> fix(s.pluginManagement.repositories, 'gcsCentral') }
+gradle.beforeProject { p -> fix(p.buildscript.repositories, 'gcsCentralB') }
+gradle.afterProject { p -> fix(p.repositories, 'gcsCentralP'); fix(p.buildscript.repositories, 'gcsCentralB') }
+gradle.projectsEvaluated { gr -> gr.allprojects { p -> fix(p.repositories, 'gcsCentralP') } }

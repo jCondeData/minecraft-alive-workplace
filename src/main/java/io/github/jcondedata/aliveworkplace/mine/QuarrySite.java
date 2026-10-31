@@ -30,8 +30,11 @@ public final class QuarrySite {
 	private final UUID owner;
 	private final String ownerName;
 	private final ResourceLocation dimension;
-	private final BoundingBox box;
+	/** The pit; its floor goes down as the miner levels up, when the marker asked for more than they could dig (36.22). */
+	private BoundingBox box;
 	private final int depth;
+	/** The floor the marker asked for (36.22): below the box's while the miner's level holds them above it. */
+	private int wantedBottom;
 	private long cursor;
 	private int mined;
 	private int skipped;
@@ -74,6 +77,7 @@ public final class QuarrySite {
 		this.dimension = dimension;
 		this.box = box;
 		this.depth = depth;
+		this.wantedBottom = box.minY();
 	}
 
 	/** Every step: the shaft (if any), each block of the quarry, and the two ladders at the foot of the shaft. */
@@ -201,6 +205,39 @@ public final class QuarrySite {
 			skipped++;
 		}
 		onChange.run();
+	}
+
+	// --- deeper with levels (36.22) ------------------------------------------------------------
+
+	/** Where the marker wanted the pit to go down to (the box's floor, unless the miner's level held them above it). */
+	public int wantedBottom() {
+		return wantedBottom;
+	}
+
+	/** The marker asked for a floor at {@code y}, below this box's (a miner whose level doesn't reach that far yet). */
+	public void setWantedBottom(int y) {
+		wantedBottom = Math.min(y, box.minY());
+		onChange.run();
+	}
+
+	/** Whether the marker asked for more than the miner may dig yet. */
+	public boolean wantsDeeper() {
+		return wantedBottom < box.minY();
+	}
+
+	/**
+	 * Takes the pit's floor down to {@code y} (never below the floor the marker asked for). The layers are dug top-down,
+	 * so the blocks already visited keep their place in the order and the stairs carry on down. Only open pits deepen.
+	 * Returns whether it went deeper.
+	 */
+	public boolean deepenTo(int y) {
+		int floor = Math.max(y, wantedBottom);
+		if (floor >= box.minY() || stripMine || hasShaft()) {
+			return false;
+		}
+		box = new BoundingBox(box.minX(), floor, box.minZ(), box.maxX(), box.maxY(), box.maxZ());
+		onChange.run();
+		return true;
 	}
 
 	// --- stairs ------------------------------------------------------------------------------
@@ -375,6 +412,11 @@ public final class QuarrySite {
 		onChange.run();
 	}
 
+	/** How far along the digging order the miner is (see {@link #at}). */
+	public long cursor() {
+		return cursor;
+	}
+
 	public float progress() {
 		return total() == 0 ? 1f : Math.min(1f, cursor / (float) total());
 	}
@@ -476,6 +518,9 @@ public final class QuarrySite {
 		if (shaftTop != NO_SHAFT) {
 			tag.putInt("shaft_top", shaftTop);
 		}
+		if (wantsDeeper()) {
+			tag.putInt("wanted_bottom", wantedBottom); // 36.22
+		}
 		if (refillBuild != null) {
 			tag.putLong("refill_build", refillBuild.asLong());
 			if (lastGrowth != NEVER) {
@@ -511,6 +556,8 @@ public final class QuarrySite {
 		site.lastGrowth = Nbt.has(tag, "last_growth", Tag.TAG_LONG) ? Nbt.getLong(tag, "last_growth") : NEVER;
 		site.grownTotal = Nbt.getInt(tag, "grown");
 		site.grownSincePass = Nbt.getInt(tag, "grown_since_pass");
+		// 36.22: absent in quarries saved before, and when the miner could dig the marker's whole depth
+		site.wantedBottom = Nbt.has(tag, "wanted_bottom", Tag.TAG_INT) ? Math.min(Nbt.getInt(tag, "wanted_bottom"), site.box.minY()) : site.box.minY();
 		return site;
 	}
 }

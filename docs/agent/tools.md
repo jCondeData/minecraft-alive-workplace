@@ -136,9 +136,20 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   every gate open (`REHEARSAL=new`, `-Daliveworkplace.shots=true`), times the class seeding (`Rehearsal seeding:`) and
   runs `DAYS=2`; `rehearsal.py` compares the JSON reports (`world/rehearsal/`) and writes `docs/owner/rehearsal-1.8.md`
   with the log audit. About 20 minutes; Gradle needs `JAVA_HOME` on JDK 25, the server runs on the system's Java 21.
+  `tools/packtest/standing.py <world>` (B690) compares every finished build in a saved world with its drawing
+  (holes and other blocks, basements found by trying it lower; no dependencies, 2 s); the soak prints it after the
+  stalls. The soak's `skipped` counts are steps given up at the time, not holes: this is the check for holes.
+  To try the pack with every gate open, or with Create: `JAVA_TOOL_OPTIONS="$JAVA_TOOL_OPTIONS -Daliveworkplace.shots=true"`,
+  and `cp libs/create-fabric-*.jar build/packtest/server/mods/` with `LOADER=0.19.3` (on a fresh server folder).
 - Tests that grow trees with a vanilla feature pass a fixed `RandomSource` (see `LumberjackGameTests.shapes()`): with
   the level's random, a huge fungus grows twice as tall one time in twelve and CI failed on a shape nobody had seen.
 - CI logs are readable without a token: `curl -sL https://api.github.com/repos/jCondeData/minecraft-alive-workplace/actions/jobs/<job id>/logs`
   (job ids from `.../actions/runs/<run id>/jobs`).
 - If Maven Central answers **429**, wait ~20 s and retry; it is rate limiting, not a real failure.
+- If Gradle can't download at all in a cloud container (429 on every Central path, maven.fabricmc.net at a few KB/s,
+  `mercury-0.4.3.jar` never finishing): `python3 tools/agent/mavenrelay.py --install`, start the relay
+  (`nohup python3 tools/agent/mavenrelay.py > /tmp/mavenrelay.log 2>&1 &`) and run Gradle as usual. It routes every
+  repository through a local relay that fetches with curl from Central's Google mirror and, for fabricmc jars,
+  SpongePowered's proxy (only when the sha1 matches fabricmc's). First run ~10 minutes. Container-only.
+  `tools/agent/slowmaven/` (lane D, same day) does the same with parallel range requests straight from fabricmc.
 

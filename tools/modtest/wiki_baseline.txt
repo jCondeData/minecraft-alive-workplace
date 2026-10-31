@@ -4,7 +4,7 @@
 # its "Roadmap items:" line and runs `python3 tools/modtest/wikicheck.py --prune`. Never add an id here.
 
 # Bugs fixed in sight of players
-B5 B6 B19
+B19
 
 # Milestone 21: the texture rebuild and the item icons
 21.1 21.1b
@@ -27,12 +27,11 @@ B5 B6 B19
 28.1 28.7 28.7a 28.13
 
 # Milestone 29: more research trees
-29.11
 
 # Milestone 30: the civic items (Work Horn, Cradle, Village Banner, Harvest Idol, tonics)
 
 # Milestone 31: the quest journal, story arcs, friendship
-31.3 31.4 31.5
+31.5
 
 # Design notes of milestones 32 and 33
 32.1 33.1

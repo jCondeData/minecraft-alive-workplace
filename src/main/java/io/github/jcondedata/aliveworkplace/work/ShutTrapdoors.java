@@ -35,19 +35,23 @@ public final class ShutTrapdoors {
 		int cells = Mth.floor(height + 1.0F); // the cells the path finder checks for this mob (NodeEvaluator.prepare)
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		for (int j = 0; j < cells; j++) {
-			BlockState state = level.getBlockState(pos.set(x, y + j, z));
-			if (!(state.getBlock() instanceof TrapDoorBlock) || state.getValue(TrapDoorBlock.OPEN)) {
-				continue;
-			}
-			VoxelShape shape = state.getCollisionShape(level, pos);
-			if (shape.isEmpty()) {
-				continue;
-			}
-			double underside = j + shape.min(Direction.Axis.Y);
-			if (underside > 0 && underside < height) {
+			if (shutInTheWay(level, pos.set(x, y + j, z), level.getBlockState(pos), j, height)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/** Whether {@code state}, in the body's {@code j}-th cell at {@code pos}, is a shut trapdoor in a body {@code height} tall. */
+	static boolean shutInTheWay(BlockGetter level, BlockPos pos, BlockState state, int j, float height) {
+		if (!(state.getBlock() instanceof TrapDoorBlock) || state.getValue(TrapDoorBlock.OPEN)) {
+			return false;
+		}
+		VoxelShape shape = state.getCollisionShape(level, pos);
+		if (shape.isEmpty()) {
+			return false;
+		}
+		double underside = j + shape.min(Direction.Axis.Y);
+		return underside > 0 && underside < height;
 	}
 }

@@ -586,6 +586,20 @@ tasks {
     named("check") { dependsOn(checkLayers) }
 
     /**
+     * Refresh to the latest look keeps working across a redraw (ROADMAP 36.21, B661/B662): tools/blueprints/history.py
+     * --check fails when a blueprint redrawn since the latest release (newest v* tag) doesn't ship that release's drawing
+     * in blueprint_history, so a house players built from it couldn't be refreshed. Fix: run
+     * `python3 tools/blueprints/history.py` and commit what it writes. About a second; passes when no tag is fetched.
+     */
+    val checkHistory by registering(Exec::class) {
+        group = "verification"
+        description = "Fails if a blueprint redrawn since the last release doesn't ship that release's drawing in blueprint_history"
+        workingDir = rootProject.projectDir
+        commandLine("python3", "tools/blueprints/history.py", "--check")
+    }
+    named("check") { dependsOn(checkHistory) }
+
+    /**
      * The wiki stays true (ROADMAP 22.9): tools/modtest/wikicheck.py fails when a page in docs/wiki/ names a config key,
      * id, lang key, test or scene that no longer exists, or a ticked player-visible roadmap item has no page. It reads
      * only checked-in files and takes under a second, so it always runs. Needs python3 (GitHub's runners have it).

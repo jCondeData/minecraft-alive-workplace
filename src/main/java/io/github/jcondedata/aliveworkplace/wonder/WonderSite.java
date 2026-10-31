@@ -130,6 +130,10 @@ public record WonderSite(UUID id, ResourceLocation wonder, BlockPos hall, Option
 		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, Optional.of(who), called, dedicated, delivered, kept);
 	}
 
+	WonderSite withoutBuilder() {
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, Optional.empty(), called, dedicated, delivered, kept);
+	}
+
 	WonderSite withCalled(boolean call) {
 		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, call, dedicated, delivered, kept);
 	}

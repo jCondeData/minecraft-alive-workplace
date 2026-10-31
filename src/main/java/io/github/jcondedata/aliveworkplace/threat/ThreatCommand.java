@@ -1,12 +1,17 @@
 package io.github.jcondedata.aliveworkplace.threat;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -15,13 +20,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Difficulty;
 
 /**
  * {@code /workplace threat start <culture> | lair <culture> | disaster <id> | end | clear} (operators, ROADMAP 32.21), at
  * the nearest Village Hall, for events and testing: starts a raid by a culture now, sets a culture's lair down by the
  * village, starts a disaster, ends the raid and the disaster under way, or clears the village of every threat (the raid,
  * the disaster, the lair and the attacks on the clock). It is an operator's order: it holds whatever the switches, the
- * threat level or At peace say (a lair by a quiet village still leaves at the next dawn).
+ * threat level or At peace say (a lair by a quiet village still leaves at the next dawn), but not Peaceful, where
+ * hostile mobs can't exist: it says so instead.
  * A culture or disaster of ours may be named by its path ({@code bandits}).
  */
 public final class ThreatCommand {
@@ -30,18 +37,32 @@ public final class ThreatCommand {
 			.requires(s -> s.hasPermission(2))
 			.then(Commands.literal("start")
 				.then(Commands.argument("culture", ResourceLocationArgument.id())
-					.suggests((ctx, b) -> SharedSuggestionProvider.suggestResource(Threats.all().stream().map(Culture::id), b))
+					.suggests((ctx, b) -> suggest(Threats.all().stream().map(Culture::id), b))
 					.executes(ctx -> start(ctx.getSource(), ResourceLocationArgument.getId(ctx, "culture")))))
 			.then(Commands.literal("lair")
 				.then(Commands.argument("culture", ResourceLocationArgument.id())
-					.suggests((ctx, b) -> SharedSuggestionProvider.suggestResource(Threats.all().stream().filter(Culture::needsLair).map(Culture::id), b))
+					.suggests((ctx, b) -> suggest(Threats.all().stream().filter(Culture::needsLair).map(Culture::id), b))
 					.executes(ctx -> lair(ctx.getSource(), ResourceLocationArgument.getId(ctx, "culture")))))
 			.then(Commands.literal("disaster")
 				.then(Commands.argument("id", ResourceLocationArgument.id())
-					.suggests((ctx, b) -> SharedSuggestionProvider.suggestResource(Disasters.all().stream().map(Disaster::id), b))
+					.suggests((ctx, b) -> suggest(Disasters.all().stream().map(Disaster::id), b))
 					.executes(ctx -> disaster(ctx.getSource(), ResourceLocationArgument.getId(ctx, "id")))))
 			.then(Commands.literal("end").executes(ctx -> end(ctx.getSource())))
 			.then(Commands.literal("clear").executes(ctx -> clear(ctx.getSource())));
+	}
+
+	/**
+	 * Suggests the ids that fit what is typed, by the whole id or by its path (B705): vanilla's suggestions match a bare
+	 * path only in the minecraft namespace, so {@code pill} suggested nothing though {@code pillager_warband} is accepted.
+	 */
+	static CompletableFuture<Suggestions> suggest(Stream<ResourceLocation> ids, SuggestionsBuilder builder) {
+		String typed = builder.getRemaining().toLowerCase(Locale.ROOT);
+		ids.forEach(id -> {
+			if (SharedSuggestionProvider.matchesSubStr(typed, id.toString()) || SharedSuggestionProvider.matchesSubStr(typed, id.getPath())) {
+				builder.suggest(id.toString());
+			}
+		});
+		return builder.buildFuture();
 	}
 
 	/** Ours by its path: {@code bandits} reads as {@code minecraft:bandits}, which is {@code aliveworkplace:bandits} when no pack has it. */
@@ -79,7 +100,10 @@ public final class ThreatCommand {
 		Optional<ThreatData.Under> raid = ThreatData.get(level).raid(hall);
 		Component name = Lairs.cultureName(culture.get().id());
 		if (raid.isEmpty()) {
-			source.sendFailure(Component.translatable("command.aliveworkplace.threat.start_failed", name, village));
+			// On Peaceful the game refuses hostile mobs (HostileSpawns), so that's why none came (B704), not the ground.
+			source.sendFailure(level.getDifficulty() == Difficulty.PEACEFUL
+				? Component.translatable("command.aliveworkplace.threat.peaceful_raid", name, village)
+				: Component.translatable("command.aliveworkplace.threat.start_failed", name, village));
 			return 0;
 		}
 		source.sendSuccess(() -> Component.translatable("command.aliveworkplace.threat.started", name, village, raid.get().raiders()), true);
@@ -104,6 +128,12 @@ public final class ThreatCommand {
 		}
 		BlockPos hall = at.get();
 		Component village = VillageHalls.name(level, hall);
+		if (level.getDifficulty() == Difficulty.PEACEFUL) {
+			// Its captain and band can't exist on Peaceful (HostileSpawns), and a lair by a quiet village leaves at the
+			// next dawn anyway: say so rather than "nowhere to make camp" (B704).
+			source.sendFailure(Component.translatable("command.aliveworkplace.threat.peaceful_lair", name, village));
+			return 0;
+		}
 		Optional<Lairs.Lair> standing = Lairs.near(level, hall);
 		if (standing.isPresent()) {
 			source.sendFailure(Component.translatable("command.aliveworkplace.threat.lair_standing", village, Lairs.lairName(standing.get().culture())));

@@ -30,6 +30,65 @@ public final class PathObstacles {
 	}
 
 	/**
+	 * Whether a villager's path must not go through cell ({@code x}, {@code y}, {@code z}): {@link #inTheWay} or
+	 * {@link ShutTrapdoors#inTheWay}, with each of the body's cells read once for both (B412: the path finder asks for
+	 * every cell it looks at, and reading them twice made these checks a share of every villager's pathfinding).
+	 */
+	public static boolean blocksVillager(BlockGetter level, Mob mob, int x, int y, int z) {
+		if (!(mob instanceof Villager)) {
+			return false;
+		}
+		float height = mob.getBbHeight();
+		int cells = Mth.floor(height + 1.0F); // the cells the path finder checks for this mob (NodeEvaluator.prepare)
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		VoxelShape body = null;
+		boolean bodyFits = true;
+		for (int j = 0; j < cells; j++) {
+			BlockState state = level.getBlockState(pos.set(x, y + j, z));
+			if (state.isAir()) {
+				continue;
+			}
+			if (ShutTrapdoors.shutInTheWay(level, pos, state, j, height)) {
+				return true;
+			}
+			if (!bodyFits || !obstacle(state)) {
+				continue;
+			}
+			VoxelShape shape = state.getCollisionShape(level, pos);
+			if (shape.isEmpty()) {
+				continue;
+			}
+			if (body == null) {
+				body = body(mob, height);
+				if (body == null) {
+					bodyFits = false; // nothing is in the way of such a body, but a shut trapdoor still is
+					continue;
+				}
+			}
+			if (Shapes.joinIsNotEmpty(shape.move(0, j, 0), body, BooleanOp.AND)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** A block this check judges: not air, not one with vanilla's own rules, and passable by the game's word. */
+	private static boolean obstacle(BlockState state) {
+		return !state.isAir() && !(state.getBlock() instanceof DoorBlock) && !(state.getBlock() instanceof TrapDoorBlock)
+			&& !(state.getBlock() instanceof FenceGateBlock) && state.isPathfindable(PathComputationType.LAND);
+	}
+
+	/** The part of the body above what it steps over, in its cell; null for a body wholly within that. */
+	private static VoxelShape body(Mob mob, float height) {
+		double half = Math.min(mob.getBbWidth() / 2.0, 0.5);
+		double step = Math.max(mob.maxUpStep(), 0.0);
+		if (step >= height || half <= 0) {
+			return null; // a body (a sleeping or very small one) wholly within what it steps over
+		}
+		return Shapes.box(0.5 - half, step, 0.5 - half, 0.5 + half, height, 0.5 + half);
+	}
+
+	/**
 	 * Whether {@code mob} (a villager), standing in cell ({@code x}, {@code y}, {@code z}), would have inside its body a
 	 * block the game calls passable for a land path.
 	 */
@@ -38,22 +97,22 @@ public final class PathObstacles {
 			return false;
 		}
 		float height = mob.getBbHeight();
-		double half = Math.min(mob.getBbWidth() / 2.0, 0.5);
-		double step = Math.max(mob.maxUpStep(), 0.0);
-		if (step >= height || half <= 0) {
-			return false; // a body (a sleeping or very small one) wholly within what it steps over
-		}
-		VoxelShape body = Shapes.box(0.5 - half, step, 0.5 - half, 0.5 + half, height, 0.5 + half);
 		int cells = Mth.floor(height + 1.0F); // the cells the path finder checks for this mob (NodeEvaluator.prepare)
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		VoxelShape body = null; // B412: made only once a cell holds a block that could be in the way
 		for (int j = 0; j < cells; j++) {
 			BlockState state = level.getBlockState(pos.set(x, y + j, z));
-			if (state.isAir() || state.getBlock() instanceof DoorBlock || state.getBlock() instanceof TrapDoorBlock
-				|| state.getBlock() instanceof FenceGateBlock || !state.isPathfindable(PathComputationType.LAND)) {
+			if (!obstacle(state)) {
 				continue;
 			}
 			VoxelShape shape = state.getCollisionShape(level, pos);
-			if (!shape.isEmpty() && Shapes.joinIsNotEmpty(shape.move(0, j, 0), body, BooleanOp.AND)) {
+			if (shape.isEmpty()) {
+				continue;
+			}
+			if (body == null && (body = body(mob, height)) == null) {
+				return false;
+			}
+			if (Shapes.joinIsNotEmpty(shape.move(0, j, 0), body, BooleanOp.AND)) {
 				return true;
 			}
 		}

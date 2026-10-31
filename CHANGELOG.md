@@ -16,6 +16,185 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A Golem Smith with no room on the ground beside him (a roof too low for a golem all round) builds nothing and takes
+  nothing until there is, instead of putting the golem on top of the roof (B628).
+- The Legends page's tab and header count only the Legends who live in the village: a guest no longer shows as
+  "Legends living here: 1" (B630).
+- A player's shop asks its owner's price from every buyer: Hero of the Village, a Silver Tongue shopkeeper and a
+  trade fair no longer take a discount off it, out of the owner's takings (B706, B710).
+- A Wonder's or quest's trade requirement now reads "Fishermen at Apprentice or above", "Postmen" and "Ferrymen"
+  instead of "Fishermans": every trade has its own plural (B707).
+- A lair whose captain can't come (a mob blocklist with `forceThreatSpawns` off, or Peaceful) no longer leaves its
+  tents, fire and chests standing for good: the captain is put in the world first, and without him nothing is built
+  (B709).
+- On Peaceful, each player near a village whose camps and raids can't come is told why once a day, even when a
+  refusal at a village nobody was at came first that day (B708).
+- `/workplace threat start` and `lair` on Peaceful say the world is Peaceful and raids and camps need a higher
+  difficulty, instead of "found nowhere to gather" (and no half-built camp is left); the guide no longer promises a
+  raid on Peaceful (B704).
+- `/workplace threat` suggests raider cultures and disasters as their name is typed (`pill`, `witch`, `dro`), not only
+  after `aliveworkplace:` (B705).
+- A Wonder's part goes by its Wonder's name while it's built: the builder's status, the words over his head, the
+  Village Hall's list of buildings going up and the waiting-for-materials line say "Stage 1 part of the Test Folly",
+  never "Stage 1 0" (B703).
+- Caravan routes to another player's village from before 1.7 keep their free cargo when they become trade pacts:
+  each sending village starts with gifts on, as planned (B700).
+- A trade pact that becomes an alliance keeps each side's gifts and its start date; gifts no longer switch off on
+  their own (B701).
+- The Steward's shopping list (his daily message, the desk and the Storehouse's board) now names things in the
+  plural: "12 Oak Logs, 10 Torches", and still "1 Oak Log" for one (B698).
+- Without Cobblemon, a jobless villager standing by a Training Post no longer becomes a Trainer by himself (a job with
+  nothing to do); the same goes for the Leader's Podium, Tutor's Desk, Trade Board, Ball Workbench and Fossil Lab, which
+  now stay free. Villagers who already have one of these jobs keep it, and with Cobblemon nothing changes (B697).
+- The Gray Cough and the Bandit King no longer start in a village set At peace, at threat level 0 or on Peaceful;
+  other stories still start there, and these two can come again once the village is no longer at peace.
+- A Carpenter no longer crafts away materials another open build still needs: with two builds sharing a chest or the
+  Storehouse, the logs stocked for one stay its own instead of becoming planks for the other, so the first no longer
+  waits forever for a log that's gone (B696).
+- A builder taking up a Wonder part from their queue no longer announces its raw name ("Builder is starting on Stage 1
+  0 next."): the owner reads the Wonder and its stage, as in "Ann is starting on a part of stage 1 of the Lighthouse
+  (its stage's name) next." (B678).
+- The "down to just above bedrock" Quarry Marker now needs the Master Miner it names, however deep the pit turns out: a
+  lower-level miner stops short of the bottom and is told all of it needs Master level, instead of naming a lower
+  level or digging to bedrock with no word (B649).
+- Without CobbleDollars a Price Tag over 6,400 is paid in full at the server's rate, not 64 emeralds: a 10,000 tag asks
+  a stack of emeralds and 36 more on the trade screen, bigger prices ask emerald blocks and the rest, and a tag over 584
+  emeralds isn't offered (its tooltip says it's too dear). The sales log keeps the whole sum (B692).
+- A child standing exactly 5 blocks from the Teacher's lectern has lessons: the class is measured on the lectern's
+  floor, not half a block up (B689).
+- A Travel Post counts the other posts you know in the singular when there's one: "You know 1 other post", not
+  "1 other posts" (B691).
+- The Stadium's goods quest asks for "2 Great Balls" and "2 Ultra Balls", not "2 Great Ball" (B675).
+- A hall's Steward keeps his place while he's away where nothing is loaded (a far stop of his rounds): the City Plan
+  no longer appoints a second Steward to the same hall in the meantime (B687).
+- Without Cobblemon, the Pokémon jobs can't be picked by their item any more: a book by a Training Post used to make
+  a Move Tutor and a gold block a Trainer Leader, jobs with nothing to do. A book still makes a Teacher by a lectern.
+  Villagers who already have one of these jobs keep it (B688).
+- The Pathfinder's chronicle lines read "led Steve to an Ancient City" and "turned back from an expedition to an Ancient
+  City" (it said "a Ancient City"), and asked with one ration in the chest they say "(there is 1)", not "(there are 1)".
+- In its last in-game hour a feud on the Pacts tab reads "At war: less than an hour left" or "Fades in less than an
+  hour without a war", instead of "0 days and 0 hours" (B637, B672).
+
+## 0.151.1 — 2026-10-30
+
+### Fixed
+- Thessaly leaves the hall whenever the Professor's Thesis ends, not only when it's published: after
+  `/workplace story stop` or with the thesis switched off, she used to stay for good as a Master trainer anyone could
+  beat for the prize every day. One left behind in an existing world goes the next time her chunk loads (B663).
+- A Stadium Days power with one visitor reads "1 visiting trainer", and its chat line says one trainer stands in the
+  boxes (B664).
+- The Bandit King's boss bar goes away when you go to the Nether or the End, or log out, die or walk more than 32
+  blocks off; before, a player who left his dimension kept the bar on screen (B659).
+- Old Clinics can be refreshed to real ward beds: a Clinic built before its ward got real beds (one bed and three
+  slab-and-carpet cots) is now offered "Refresh to the latest look" on the Village Hall's Repairs page, as is every
+  building redrawn since 0.151.0 (B661, B662).
+- Builders who help another builder now put what they carried back in that builder's chests when the build finishes
+  or is canceled; before, a helper still carrying blocks at that moment took them home to its own chest, where the
+  other builder's next build couldn't find them (B670).
+- The Village Hall's Job ▾ offers a free beehive to the Beekeeper ("Beekeeper · 1 free Beehive", one click), and the
+  Free job blocks page and the Steward count it; before, a beehive was never counted as free, so the list said to place
+  one while one stood unused (B657).
+- Job ▾ names the free block itself: "Carpenter · 1 free Carpenter's Bench" rather than a Crafting Table that isn't
+  there, the same for a Music Stand, a Postal Desk and an Apiary, and both kinds when both are free (B658).
+- Villagers gossiping about a Legend on strike or a Legend guest close the title with a comma: "Ada Stonewright,
+  Master Architect, has downed tools." (B631).
+- No more lone glass posts in three drawings: the Pokemon Center's Sunny Plaza look (I and II) closes its two arched
+  front windows with a chiseled keystone instead of a pane the arch's stairs couldn't join, and the Lighthouse's lower
+  windows have their glass in the tower face, both panes in one column between the wall, over a stone ledge, instead of
+  the lower one standing a block out on the sill. Built ones get it with Refresh to the latest look (B656).
+
+## 0.151.0 — 2026-10-27
+
+### Added
+- Miners dig deeper as they level up: the Quarry Marker now also offers 96 blocks (Journeyman miners and up), 128
+  (Expert and up) and down to just above bedrock (Master). A miner handed a deeper marker than their level allows
+  digs to their own depth, says which level the rest needs, and keeps going down if they level up before they finish;
+  the spiral stair goes all the way down (36.22).
+
+### Fixed
+- The Sickness: the village's healer no longer catches the Grey Cough from the coughing villagers they work beside,
+  so the one brewing the cure is never counted among the ill (B646).
+- The Clinic's ward has real white beds, heads to the back wall, in place of the slab-and-carpet cots that looked like
+  broken beds (four in the builder's Clinic and its modded copy, two in the village Clinics), and its ceilings no longer
+  have an open block under the ridge where the roof's two stair runs meet. Existing Clinics get both with Refresh to
+  the latest look (B639).
+- Windows and railings in 20-odd other buildings no longer end in a thin strip of glass or a stub of bars with a gap
+  beside it: the Townhouse's balconies have iron railings across their fronts, the vaults' and cells' bars meet stone
+  posts by their way in, the Jeweler's and the village Gem Grotto's glass cases close round their corners, windows
+  that a doorway or a newer wing cut into are walled up, the Daycare's and the Town Hall's back windows sit back in
+  their bays, the Mortuary's railing ends at a post, and the Great Cathedral's apse and the Stadium's concourse
+  windows meet stone on both sides. Buildings already built get them with Refresh to the latest look (B648).
+- The Terrace's bay windows are whole: each bay stands between two stone piers and its glass fills the opening, where
+  the panes stood as thin strips with gaps beside them. A Terrace already built gets them with Refresh to the latest
+  look (B640).
+- Refresh to the latest look no longer leaves a furnished old house in a mess: a house furnished before its drawing was
+  redrawn now has its old table, chairs, clock and beds taken away where they stand (their items to the store), and
+  today's spots are furnished once, so there is no second table and no leftover clock; afterwards the house matches a
+  newly built one, turned or mirrored too (B642).
+- A Builder short of something later in his build now has it listed on the Storehouse's requests board (and fetched or made by the village's Porter, Carpenter, Mason and Lumberjack) the moment his site is short, while he builds on with what he has, and again after a restart; before, it showed only once he stood waiting at the block that needed it (B636).
+- The Village Hall lists a free crafting table as a Carpenter's block (a built Carpenter's Workshop's table too), and a jukebox and a Mailbox as the Bard's and the Postman's: they show on the Free job blocks page and in Job ▾ ("Carpenter · 1 free Crafting Table"), so any villager can be made a Carpenter from the hall (B635).
+- The Village Hall's golem list says "...and 1 more golem" with one golem over the shown seven (B629).
+- Both kitchens of a Terrace get the furniture mods' pieces: a Terrace furnished before the east kitchen's table was
+  found had spruce stand-ins in one kitchen and its beds' pieces misread; it now shows Refresh to the latest look on the
+  Village Hall's Repairs page, which swaps in the mods' table and chair. The modded library's crockery sits on the
+  table instead of hanging a block above it (B641).
+- The Pokémon Ranger's daily befriending is no longer used up by an empty look: when no wild Pokémon is near yet (or the
+  hall has no owner, or the pastures are full), one that wanders in later the same day is still befriended (B622).
+- An Alpha Pokémon exactly 96 blocks from the Village Hall, on the hall's floor level, now counts as within 96 blocks:
+  it can bring the Pokémon Ranger and gets calmed (B623).
+- Old houses measure right beside a tall dead trunk: a bare log column taller than a house can be, standing against the wall, is now judged from its root and left out wherever the measuring reaches it, so renewing the house no longer takes the trunk's upper part down with it (B599).
+- A finished Wonder gets its festival that evening even when another festival was already planned for a later day; the later one still comes after it (B605)
+- The Sickness: when only one or two far herbs grow within reach, the healer's chat, the chronicle and the thanks say one or two, not three (B617)
+- The Sickness: if Doctor Wren is killed while the tonic brews, another healer is sent for and the cure still goes round, instead of the village coughing to the end (B618)
+- Smoother English in more lines: 'an' before a vowel sound in the rank-up messages, the Ball Smith's locked balls, the People table's give-up tip, the road chronicle and before numbers like 8, 11, 18 and 80 ('an 8 × 8 strip mine', 'an 80% chance'); 'by a builder' on the Repairs page; 'another village' and 'someone' mid-sentence and 'A villager' at a line's start in the chronicle; '1 child', '1 tree felled', '1 villager sparred'; a road with no style is just 'a road', a raid won without helpers no longer reads 'trainers's band', and a Founder's Wagon from nowhere names its new village with a real village name instead of 'New the wilds' (B606, B607, B608, B611, B612, B613).
+- The Steward keeps off more of what players built: a stripped log, stripped wood or oak wood a player puts in a running site's way now stays and its step is skipped, like any other player's block (B601); a Keep Clear cell inside a planned building now refuses it at every hall radius, also below 64 where cells are under 4 blocks (B602); and a bed or door placed across a 16-block section edge marks both halves' sections as player-built (B603).
+- The Builder keeps up every build he was allowed to place: a build at the far edge of his reach, whose corner lay past it, is now repaired and refreshed like the rest; placing, upkeep, refreshes and repair questions all measure from the build's middle (B615).
+- The Village Hall's Repairs page now lists the buildings in City Plan zones painted past the hall's radius, so a repair question held there can be answered and an old house there gets its Refresh button; the hall's list of builds going up counts them too (B616).
+- A little less server lag in busy villages: a villager's pathfinding reads each block once for its trapdoor and small-block checks instead of twice, and builders no longer rebuild a research name on every tick (B412).
+- The Mechanic: a big Create build that stands within 32 blocks of the toolbox now gets its missing shafts, gears and belts mended even when its blueprint's corner lies farther off; the reach is measured to the build's nearest block, not its corner (B598).
+- The Founder: on a server with `colonyCooldownDays` set to 0, his village no longer waits a day between colonies while every other village may send the next one at once; half of no wait is no wait (B589).
+- The Pacts tab: a village you have a trade pact with now gets **Offer X an alliance**, so a pact can become an alliance without ending it and stopping its routes (B582). With the Lighthouse, an offer to a village the tab lists 3,000 blocks off is no longer refused as beyond caravan range: offers use the village's own range, the one the tab lists by, and the refusal writes it as "2,048" or "4,096" (B595).
+- The Settler's Wagon camp's chest of supplies opens again: it moved out from under the wagon's wool cover onto its open tailboard (the cover sat right on the chest and kept its lid shut, so clicking it did nothing); a melon takes its old place. Camps already set up keep their old chest; break the wool block above it to open it (B590).
+- Hauler Golems: in a village with no Drop Box, a golem whose only Storehouse is walled in (or across water) no longer stands holding the goods it fetched; it puts them back into the worker's chest they came from (or the nearest worker's chest with room) and is free again (B593).
+- Legend guests: a guest no longer claims a workstation (it stayed taken for good, so no jobless villager could use it); a guest who is killed no longer keeps other Legends away for about four days; a guest settles in the village that hosted them, not the one whose hall is nearest; and a Legendary already visiting one village no longer visits a second and settles in both (B584, B585, B586, B587).
+- The Realm tab: an invitation in its last hour has "less than an hour left" instead of "0 days and 0 hours left" (B597).
+- Counted and articled sentences read right: a Legend born to a trade starting with a vowel is "Born to an Armorer"; a Wonder's goods quest asks for "2 Emerald Brooches", "Gold Circlets" and "Illuminated Books" (our luxuries and tonics now have plurals); the Classes page counts "over the 1 household"; the Pacts tab reads "1 pact, 1 offer waiting" and "1 feud"; in its last hour an alliance "Ends within the hour" and an offer has "less than an hour left"; and a Legend guest kept past their stay no longer names a day already gone ("My stay is over", "I leave once no one is near") (B583, B588, B592, B594, B596).
+- Desert raiders: a husk piling a sand ramp against a wall no longer stands for good on the very spot where the ramp's next block goes, leaving the ramp one short of the top for the rest of the siege; it now steps aside and the ramp reaches the top (B591).
+- Performance: a builder levelling up no longer stalls the server for up to half a second in a big modpack; the blueprint library's list of every structure is now kept until the data packs reload or a structure is saved in the world, instead of read again from every mod jar on each level-up (B412).
+- Builders: the dirt path a builder lays from a finished building to the bell or hall now leaves alone any spot where a player placed or broke blocks (the same 16-block sections the Steward keeps out of), and still paves the rest of the way; before, it could turn the grass in a player's own build to path.
+- Server config: a whole number too big to count in ("maxSiteDistance": 3000000000) is now clamped to the most allowed value instead of wrapping round to the least (or any value), for every whole-number option and price; and a config file that is valid JSON but not a {...} object (a list, a bare word, a number) is now kept as aliveworkplace.json.bad before the defaults are written over it (B477).
+- Lairs and bounties: a captain who is a zombie of some kind (the Pirate Captain, a drowned) now always has just his own extra health over his mob's; before, on hard difficulty in a long-played spot vanilla now and then made him a "leader zombie" as well, and a Pirate Captain could come with about 180 health instead of 60 (B579).
+- Realms: a full realm's refusal now starts with a capital, "The Barony of Ashvale already holds 2 villages, as many as a realm may."; before, it began "the Barony of ...".
+- Village Hall: with `villageGrowthCap` 0 the People icon's growth line says "Villages don't grow on this server"; before, it said "The village is full (0 villagers)" right under the census.
+- Stories: `/workplace story start` of an arc listed in `disabledArcs` now refuses with "<arc> is switched off on this server (disabledArcs in the config)."; before, it said the arc begins, though it ended at once and restarted the village's arc cooldown.
+- Build names: a name cut at 128 characters through an emoji now loses the whole emoji, so players see the same name the server keeps; before, it ended in "?".
+- Questbook: the Bandstand and Schoolhouse quests say "gray" again after the questbook is regenerated, and the 14 newer blueprints (Sawmill, Windmill, Clock Tower and others) get their hidden built advancements.
+- Habitat Keeper (with Cobblemon): a Field Marker spot just over 32 blocks from her pasture on a diagonal (say 32 east and 5 south) is now refused with the "lure spots go within 32" line; before, she took it and then never set a snack out there.
+- Wonders: when a Wonder's lead dies or is retrained mid-stage, the builder who takes the part over is named as the lead on the Foundation Stone and the hall at once, and the old lead stops counting on the crew; before, the stone showed "?" (or the retrained farmer's name) until the next stage.
+- Steward: a lane he lays from a finished house's door, and his half of a road to another village, no longer run through a spot where a player placed or broke blocks; only a road you drew on the City Plan yourself may cross one.
+- Old houses: a tree that grew next to an old village house no longer changes the house. A trunk against its wall is left out (before, the house measured a block too tall and a renewal could take the trunk down), and leaves touching the house's own log posts no longer drop those posts out of it (a renewal could leave one standing).
+- Defense: Palisade II's fighting step is now a row of battle stations for your archers, as many as the Palisade's walkway had; before, upgrading a Palisade took every archer's station off the wall. The step is now a full timber along the walkway (stand on it to shoot over the low points), not a row of slabs.
+- Sieges: the desert raiders' sand ramp now rises over red sand at a wall's foot (the badlands' ground, or a row you put there) the same as over plain sand; before, the husks piled a block elsewhere and stood about. Your red sand stays after the raid.
+- Builders (with Create): a scanned or uploaded Create fluid tank, spout or item drain is now built empty, as the blocks are placed fresh; before, each copy came out holding the scanned block's fluid (a bucket of lava, honey, chocolate or a potion) for free. Other mods' tanks are built empty too.
+- Scan Tool: a scanned build keeps its item frames, glow item frames, paintings and armor stands. The builder puts them up again empty, each paid with its item from the chests (one with no item there is left out), as he does a starter build's frames; what a frame holds or a stand wears is never copied, and villagers, animals, dropped items and minecarts aren't scanned. Before, a scanned room was built again bare (B441).
+- Quests: a step that asks you to defeat several of a creature now reads in the plural ("Defeat 2 Zombies", "Defeat 6 Vindicators") in the quest journal, the tracking bar and `/workplace quests`; before, it read "Defeat 2 Zombie". A modded creature with no plural reads "Defeat Grub ×2". `/workplace quests` now says "That quest isn't open anymore." in American English.
+- Festival Cup: [Watch] on a player bout (the Cup page, the Arena's notice board or `/workplace cup watch`) now puts you in Cobblemon's spectator view of the battle; before, it always answered "You can't watch that bout right now."
+- Festival Cup: the Grand Cup's Species and Item Clause now hold for every team that goes. Your second Pokémon of one species, or a second one holding the same item, stays home and the Cup page says which clause keeps it there; a delegate's or host trainer's Expert or Master team no longer has two Pokémon holding the same item.
+- Festival Cup: the Workers' Cup banner now flies a gold cup on brown, its theme's colors; before, it flew gold on red, the same as the Grand Cup's.
+- Waystones: a village whose Waystone Plaza is gone (demolished or forgotten) now leaves the waystone network at its hall's next round, even when another village's plaza stands nearby; before, a neighbor's plaza kept it on every hall's Map for good as "its waystone is broken".
+- Blueprint Table: after a job's config switch changes in a running game (physicians, well keepers, firewardens, jewelers and the like, or disasters and village fires turned on or off), the Table's list, its job search and a build's Jobs line all follow the new setting at once; before, the list kept the old jobs until a restart and could disagree with the Jobs line under the build.
+- Cobblemon: the Chef no longer churns EXP Candies or breaks them down. He cooks EXP Candies XS from sculk and honeycomb and keeps 16 in the chests by his stove, instead of cooking the store's XS into bigger candies and splitting them back again, and he never breaks a player's EXP Candy XL into smaller candies. A recipe that also wants other makings still uses it: four Kelpsy Berries, four Honeycombs and an XL make three Mighty Candies.
+- Spruce style: with Carved Wood installed, a builder now puts up the two spruce lanterns on the flower boxes by a cottage's door; before, he set them before the flower boxes they stand on, couldn't, and finished the cottage without them.
+- Noble's Ball: in a village whose Manor I or II was placed mirrored (the style screen's mirror button, or a Steward's mirrored street), the guests now gather in the Manor's hall; before, they gathered on open ground about a Manor's width outside it.
+- Sieges: dead bushes, grass, ferns or snow at a wall's foot no longer stop the raiders. The desert husks' sand ramp buries them and rises to the top, and the warband climber's ladder goes up through them. The buried plants are gone after the raid (nothing drops); your flowers, saplings and blocks at a wall's foot still turn ladders and ramps away.
+- Class chatter: villagers now talk of wanting wine or new clothes when their class asks for them and they haven't had any lately, of the Gazette the week they read it, and of the tavern near their home (three lines each); before, only a household's rise and fall had lines.
+- Village-wide reach: a worker whose block stands in a City Plan zone painted in the plan's corner, past the Village Hall's radius, now reaches the whole village, as everywhere else in it; before, a field or site across the village was refused as if the worker were in no village.
+- Mourning: a villager who dies inside the village but far from the hall up a hill is now mourned like any other (her family grieves, players in the village are told, the chronicle gives her job and age, the family book dates her death); before, only deaths within the hall's radius in a straight line counted. Players are told when they stand anywhere in the village.
+- Builders now plant a scanned ripe pitcher crop as a young one-block crop, the way you plant a pitcher pod; before, it came out full grown and broke into a free pitcher plant.
+- The Village Hall's Classes tab and page now count only the households inside the village's circle; villagers out in the corners beyond it were counted too.
+- The Village Hall's What next? tip for a plain diet said "Keep 3 kinds of meal in the store", the varied diet's number; it now says 2.
+
 ## 0.150.0 — 2026-10-26
 
 ### Added
@@ -32,10 +211,14 @@ asks for the steps, `latest.log` and any crash report).
 - Text: every sentence a player reads is now in American English: Smith's Draught is now Smith's Draft, the den-helpers and bean-farm settings say Defense and color, and the questbook, guide and wiki say gray, armor, Jeweler, canceled, traveler, leveled, curb and story (a floor). Item and block ids, saved data and lang keys are unchanged, so worlds and data packs keep working.
 
 ### Fixed
+- City Plan: the server now refuses a zone whose name is blank, over 32 letters or formatted, or whose style isn't one the plan lists (a modified game could save anything); a zone saved earlier with a style that no longer exists is built as drawn and can still be renamed.
+- Colony Charter: a spot just past the ring is refused with a number on the refused side ("at most 1024 blocks ... (this is 1025)", "at least 256 blocks ... (this is 255)"), never the edge itself; the cap reads "has founded the 1 colony a village may" with `coloniesPerVillage` 1, and at 0 says the server lets no village found colonies (B447).
+- Create: a worker whose machine is broken while they walk to it turns back with what they carry and shows "the Millstone is gone: bringing the load back to the store", and a Mechanic says "the Millstone is gone"; before, they said "working the Air", "bringing what the Air made to the store" and "seeing to the Air" (B506).
 - Wonders: `/workplace cancel` now ends a Wonder whose stage is waiting for its goods, giving back the plan and the goods handed in for that stage. The Foundation Stone's screen has an **[Abandon this Wonder]** link that puts the command with the Wonder's id in the chat (before, only a part's id worked, and a stage waiting for its goods has no parts yet, so the answer was "No build with that id.").
 - Camp Cook (Cobblemon): she stops at the 16 Poké Snacks (and every other dish's count) her menu keeps. A dish out of the pot carries what it was cooked with and only plain ones were counted, so from 15 she cooked on to 18 until the makings ran out (B465).
 - Gem Grower (Cobblemon 1.8): she ends on 8 Blank TMs at most. Cobblemon's recipe makes 2, so from 7 she crafted once more and held 9; now she crafts only while one more craft still fits under the 8 (B490).
 - Classes: switching classes on in an old village now seeds, counts and tells only the villagers and players inside the village's circle (the hall's radius), as the census does; before, a villager or player in the square's corners, outside the village, was given a class by that hall, counted in its "found their places" line, and sent the chat line (B548).
+- Villages: couples, the Book of Families, mourning and the dawn class check now go by the village's circle (the hall's radius), as the census does; before, a villager in the corners of the square round the hall, outside the village, could be paired as its couple, counted as courting, written into its family book, grieve its deaths and be counted at its dawns (B549).
 - Villagers: a Mechanic, Conductor or Furnicrafter in a world Create (or CobbleFurnies) was taken off now loads as a jobless Novice who doesn't trade, keeping her name and clothes; before, she kept her old job's trades and level (B542).
 - Wonders: the Observatory's purple bed in the Seer's lodging is a whole bed now, its head against the south wall (its halves were swapped, so no one could sleep in it) (B537). The Great Library's map room lantern no longer stands on the lectern, where it popped off as soon as a book went on; it stands on the reading table beside it (B538). The Hanging Gardens' paths no longer run under fence posts and the ramps' sandstone walls, which the game turned to dirt patches; those cells are grass or coarse dirt now (B539).
 - Builds: no lantern, candle or torch stands where the game drops it, and no dirt path lies under a block that turns it to dirt. The Map Room's two lanterns are off its chests (on the cartography table and a bookshelf), the Smithy II's lantern is on its coal bin, the coven hut's candles on a bookshelf beside the loot chest, the prisoner cage's lantern on a corner log of its lid, and the plains, savanna, snowy and taiga Trade Halls' roof lantern hangs under its little roof. The paths under tents, beds, fences and crates in the bandit camps and forts, the war camp, the raiders' stockade, the caravan wreck, the hermit's hut, the traveler's camp and the Farmsteads are coarse dirt or grass. The modded-library copies of the Healing Center III and IV now carry B487's door fix too (their old sill stair over the path was left in them). The blueprint check catches all three kinds of mistake from now on (B537, B538, B539).

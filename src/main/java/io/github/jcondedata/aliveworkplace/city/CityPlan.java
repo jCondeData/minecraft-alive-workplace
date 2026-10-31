@@ -161,6 +161,15 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 			return toward.isPresent();
 		}
 
+		/**
+		 * Whether a player drew this road (or approved it) by hand: not a lane the Steward joined a door with by himself,
+		 * nor the half of a road to another village he planned from a caravan route. Only such a road may be built through
+		 * the ledger of what players built (B520).
+		 */
+		public boolean byHand() {
+			return !lane && !caravan();
+		}
+
 		/** How many segments the route is cut into. */
 		public int segments() {
 			return (route.size() + Roads.SEGMENT - 1) / Roads.SEGMENT;

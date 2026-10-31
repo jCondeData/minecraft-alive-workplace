@@ -5,7 +5,9 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Sentences with a number in them (ROADMAP 24.5: "1 parcel", "2 parcels", never "parcel(s)"). A counted message has
@@ -90,6 +92,9 @@ public final class Words {
 			return false;
 		}
 		char c = w.charAt(0);
+		if (Character.isDigit(c)) {
+			return numberStartsWithVowelSound(w);
+		}
 		if (c == 'e') {
 			return !w.startsWith("eu") && !w.startsWith("ewe");
 		}
@@ -98,6 +103,27 @@ public final class Words {
 				|| w.startsWith("uro") || w.startsWith("ubi"));
 		}
 		return c == 'a' || c == 'i' || c == 'o';
+	}
+
+	/**
+	 * B607: a number said with a vowel sound takes "an": eight, eighty, eight hundred (any number that starts with 8),
+	 * and eleven or eighteen when said whole or as thousands ("an 11 × 11", "an 18,000"), never "a 110" or "a 12".
+	 */
+	private static boolean numberStartsWithVowelSound(String w) {
+		StringBuilder digits = new StringBuilder();
+		for (int i = 0; i < w.length(); i++) {
+			char d = w.charAt(i);
+			if (Character.isDigit(d)) {
+				digits.append(d);
+			} else if (d != ',') {
+				break;
+			}
+		}
+		String n = digits.toString();
+		if (n.startsWith("8")) {
+			return true;
+		}
+		return (n.startsWith("11") || n.startsWith("18")) && n.length() % 3 == 2;
 	}
 
 	private static String text(Object arg) {
@@ -116,6 +142,28 @@ public final class Words {
 		ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
 		String key = "plural.aliveworkplace." + id.getNamespace() + "." + id.getPath();
 		return Language.getInstance().has(key) ? Component.translatable(key) : name;
+	}
+
+	/**
+	 * A creature's plural for a count above one (B568: "Defeat 2 Zombies"), {@code plural.aliveworkplace.entity.<namespace>.<path>},
+	 * or null when the lang has none (a modded creature): the caller then writes "Defeat Grub ×2" instead of guessing.
+	 */
+	@Nullable
+	public static Component entityPlural(EntityType<?> type) {
+		ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(type);
+		String key = "plural.aliveworkplace.entity." + id.getNamespace() + "." + id.getPath();
+		return Language.getInstance().has(key) ? Component.translatable(key) : null;
+	}
+
+	/**
+	 * A trade's plural for a count of villagers (B707: "Fishermen at Apprentice or above"),
+	 * {@code plural.aliveworkplace.profession.<namespace>.<path>}, or null when the lang has none (another mod's trade): the
+	 * caller then names the trade in the singular instead of guessing ("Fishermans").
+	 */
+	@Nullable
+	public static Component professionPlural(ResourceLocation job) {
+		String key = "plural.aliveworkplace.profession." + job.getNamespace() + "." + job.getPath();
+		return Language.getInstance().has(key) ? Component.translatable(key) : null;
 	}
 
 	private Words() {

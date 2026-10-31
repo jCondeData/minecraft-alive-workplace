@@ -80,9 +80,9 @@ public class StationsGameTests implements FabricGameTest {
 			new Row(Blocks.JUKEBOX, Items.MUSIC_DISC_CAT, ModVillagers.BARD),
 			new Row(ModBlocks.MAILBOX, Items.PAPER, ModVillagers.POSTMAN),
 			new Row(ModBlocks.SHOP_COUNTER, Items.RED_BED, ModVillagers.INNKEEPER),
-			new Row(ModBlocks.SHOP_COUNTER, Items.EMERALD, ModVillagers.SHOPKEEPER),
-			new Row(ModBlocks.TRAINING_POST, Items.GOLD_BLOCK, ModVillagers.TRAINER_LEADER),
-			new Row(ModBlocks.TRAINING_POST, Items.BOOK, ModVillagers.TUTOR));
+			new Row(ModBlocks.SHOP_COUNTER, Items.EMERALD, ModVillagers.SHOPKEEPER));
+		// The Training Post's Trainer Leader (a gold block) and Move Tutor (a book) need Cobblemon (B688): picked there in
+		// StationsCompatTests, refused without it in B688GameTests.
 	}
 
 	private static ServerPlayer player(GameTestHelper helper) {

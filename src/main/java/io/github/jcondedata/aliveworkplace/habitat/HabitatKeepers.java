@@ -438,8 +438,8 @@ public final class HabitatKeepers {
 		}
 		BoundingBox box = area.get();
 		BlockPos spot = new BlockPos(box.getCenter().getX(), box.maxY() + 1, box.getCenter().getZ());
-		int distance = (int) Math.sqrt(spot.distSqr(station));
-		if (distance > RANGE) {
+		if (!inRange(spot, station)) {
+			int distance = (int) Math.ceil(Math.sqrt(spot.distSqr(station)));
 			Chat.chat(player, Component.translatable("message.aliveworkplace.habitat_keeper.spot_too_far", distance, RANGE).withStyle(ChatFormatting.RED));
 			return InteractionResult.CONSUME;
 		}
@@ -467,8 +467,16 @@ public final class HabitatKeepers {
 
 	/** Where she sets snacks out: her marked spots within range, or with none marked, spots on grass 16 to 32 blocks out. */
 	public static List<BlockPos> lureSpots(ServerLevel level, Villager keeper, BlockPos pasture) {
-		List<BlockPos> marked = spots(keeper).stream().filter(p -> p.distSqr(pasture) <= (double) RANGE * RANGE).toList();
+		List<BlockPos> marked = spots(keeper).stream().filter(p -> inRange(p, pasture)).toList();
 		return marked.isEmpty() ? grassSpots(level, pasture) : marked;
+	}
+
+	/**
+	 * Whether a lure spot is within {@link #RANGE} of the pasture, measured exactly (B464): the one rule for taking a marked
+	 * spot and for using it, so a spot 32.4 blocks out is refused rather than taken and then never used.
+	 */
+	public static boolean inRange(BlockPos spot, BlockPos pasture) {
+		return spot.distSqr(pasture) <= (double) RANGE * RANGE;
 	}
 
 	/** Up to three spots on grass, a third of a turn apart round the pasture, the nearest to it from 16 to 32 blocks out. */

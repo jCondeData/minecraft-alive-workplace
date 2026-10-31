@@ -420,6 +420,85 @@ public class MachineWorkCompatTests implements FabricGameTest {
 		reload(helper, Kind.MIXER);
 	}
 
+	/**
+	 * QA lane E, 2026-10-27, the wiki's "the speed that counts as turning (min_speed ... 30 for the mixer)", from both
+	 * sides: a mixer turned at 29 RPM is fed nothing in 800 ticks; one at 30 RPM gets the Chef's flour.
+	 */
+	//$ gametest_ticks_batch AREA '1000' '"qa_mixer_29_rpm"'
+	@GameTest(template = AREA, timeoutTicks = 1000, batch = "qa_mixer_29_rpm")
+	public void aMixerTurnedAtTwentyNineRpmIsFedNothing(GameTestHelper helper) {
+		mixerAt(helper, 29, false);
+	}
+
+	//$ gametest_ticks_batch AREA '2400' '"qa_mixer_30_rpm"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qa_mixer_30_rpm")
+	public void aMixerTurnedAtThirtyRpmIsFed(GameTestHelper helper) {
+		mixerAt(helper, 30, true);
+	}
+
+	/**
+	 * QA lane E, 2026-10-27 (nightly survivor MachineWork:572): a trip set off to fetch for the mill, and the store filled
+	 * up before the fetch (a player's cobblestone in every other slot): the farmer ends the trip and takes none of the
+	 * wheat, as a full store pauses the mill.
+	 */
+	// Its own batch (B653): it clears every entity and Create block around it, so a neighbour in its batch (once
+	// QaMachineFetchCompatTests' test, under the same name) lost its farmer and millstone.
+	//$ gametest_ticks_batch AREA '600' '"machine_work_fetch_full_store"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "machine_work_fetch_full_store")
+	public void aTripWhoseStoreFilledUpBeforeTheFetchTakesNothing(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		villageWorkshop(helper);
+		Container chest = chest(helper, new ItemStack(Kind.MILL.input(), 20));
+		for (int i = 1; i < chest.getContainerSize(); i++) {
+			chest.setItem(i, new ItemStack(Items.COBBLESTONE, 64));
+		}
+		BlockPos mill = rig(helper, Kind.MILL, true);
+		Villager farmer = worker(helper, Kind.MILL);
+		ModAttachments.MACHINE_JOB.set(farmer, new MachineJob(helper.absolutePos(mill), file(Kind.MILL).id(), MachineJob.Stage.FETCH, List.of()));
+		helper.runAfterDelay(300, () -> {
+			helper.assertTrue(count(chest, Kind.MILL.input()) == 20, "the store is full but the farmer fetched wheat for the mill: "
+				+ count(chest, Kind.MILL.input()) + " left, trip " + ModAttachments.MACHINE_JOB.get(farmer));
+			helper.assertTrue(!MachineWork.busy(farmer), "the trip to fetch for a full store didn't end: " + ModAttachments.MACHINE_JOB.get(farmer));
+			clearMachines(helper);
+			helper.succeed();
+		});
+	}
+
+	private static void mixerAt(GameTestHelper helper, int rpm, boolean fed) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		villageWorkshop(helper);
+		Container chest = chest(helper, new ItemStack(Kind.MIXER.input(), 20));
+		BlockPos mixer = new BlockPos(6, 4, 2);
+		BlockPos cog = mixer.east();
+		helper.setBlock(cog.above(), MechanicCompatTests.with(create("creative_motor").defaultBlockState(), "facing", "down"));
+		motorSpeed(helper, cog.above(), rpm);
+		helper.setBlock(cog, MechanicCompatTests.with(create("cogwheel").defaultBlockState(), "axis", "y"));
+		helper.setBlock(mixer.below(2), create("basin").defaultBlockState());
+		helper.setBlock(mixer, create("mechanical_mixer").defaultBlockState());
+		Villager chef = worker(helper, Kind.MIXER);
+		helper.runAfterDelay(40, () -> {
+			float speed = io.github.jcondedata.aliveworkplace.mc.Nbt.getFloat(helper.getBlockEntity(mixer).saveWithoutMetadata(helper.getLevel().registryAccess()), "Speed");
+			helper.assertTrue(Math.abs(speed) == rpm, "setup: the mixer turns at " + speed + " RPM, not " + rpm);
+		});
+		if (fed) {
+			helper.succeedWhen(() -> {
+				helper.assertTrue(count(chest, Kind.MIXER.input()) < 20 || MachineWork.busy(chef),
+					"a mixer at " + rpm + " RPM (the file's min_speed is " + file(Kind.MIXER).minSpeed() + ") got no flour");
+				clearMachines(helper);
+			});
+		} else {
+			helper.runAfterDelay(800, () -> {
+				helper.assertTrue(count(chest, Kind.MIXER.input()) == 20 && !MachineWork.busy(chef), "a mixer at " + rpm
+					+ " RPM (under the file's min_speed " + file(Kind.MIXER).minSpeed() + ") was fed: " + count(chest, Kind.MIXER.input())
+					+ " flour left, trip " + ModAttachments.MACHINE_JOB.get(chef));
+				clearMachines(helper);
+				helper.succeed();
+			});
+		}
+	}
+
 	//$ gametest_ticks_batch AREA '2400' '"machine_crusher_works"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "machine_crusher_works")
 	public void minerCrushesOre(GameTestHelper helper) {

@@ -521,8 +521,8 @@ public final class ReformStories {
 				} else {
 					e.drillDone = true;
 					data.setDirty();
-					line(level, hall, Chronicle.Kind.STORY, Component.translatable("chronicle.aliveworkplace.reform_story.drilled", VillageHalls.name(level, hall),
-						e.drillers.size()));
+					line(level, hall, Chronicle.Kind.STORY, io.github.jcondedata.aliveworkplace.work.Words.counted("chronicle.aliveworkplace.reform_story.drilled", e.drillers.size(),
+						VillageHalls.name(level, hall), e.drillers.size()));
 					e.drillers.clear();
 				}
 			}

@@ -113,7 +113,7 @@ public final class SiteList {
 			return Component.translatable("message.aliveworkplace.site_list.taking_down", who);
 		}
 		if (list.lines().isEmpty()) {
-			return Component.translatable("message.aliveworkplace.site_list.all_built", Blueprints.displayName(site.structure()));
+			return Component.translatable("message.aliveworkplace.site_list.all_built", Blueprints.siteName(level, site));
 		}
 		return null;
 	}
@@ -130,7 +130,7 @@ public final class SiteList {
 			Chat.actionBar(player, nothing.copy().withStyle(ChatFormatting.YELLOW));
 			return false;
 		}
-		Component name = Blueprints.displayName(site.structure());
+		Component name = Blueprints.siteName(level, site);
 		ItemStack book = MaterialList.book(name, list, intro(level, site), player.getName().getString());
 		ItemStack quill = player.getItemInHand(bookHand);
 		if (quill.getCount() == 1) {
@@ -154,7 +154,7 @@ public final class SiteList {
 		if (nothing != null) {
 			return nothing.copy().withStyle(ChatFormatting.GREEN);
 		}
-		Component name = Blueprints.displayName(site.structure());
+		Component name = Blueprints.siteName(level, site);
 		MutableComponent text = Component.empty();
 		List<BlueprintSupplies.Line> toBring = list.lines().stream().filter(l -> l.toBring() > 0).toList();
 		text.append(toBring.isEmpty()

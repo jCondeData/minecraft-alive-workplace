@@ -11,6 +11,9 @@ Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.
 it. Right-click the air to open the plan: the village map under a grid of 32 by 32 cells. You paint up to 16 zones,
 each with a kind, a name, a building style and a "renew old houses" switch. Holding the plan shows the zone edges,
 roads and wall line on the ground around you as colored dust that only you see.
+A zone's name is 1 to 32 letters and its style is one the plan lists (or as drawn); the server refuses anything
+else a changed game sends. A zone saved earlier with a style that no longer exists keeps its name and cells and is
+built as drawn until you pick a style again.
 
 | Zone | What goes there |
 |---|---|
@@ -52,7 +55,8 @@ blueprint's four turns and its mirror image. A spot is good only if the front fa
 footprint and a 2-block margin lie inside the zone and off the roads, the ground varies by at most 4 blocks, nothing
 stands there but natural ground, trees and the plants of the `steward_clearable` tag (a carved pumpkin is not one), and a builder's bench stands in the village (anywhere in it then reaches, 36.20) or is within `maxSiteDistance` of the spot. At most a tenth of
 the footprint may be over water and none of it over lava, it stays 2 blocks clear of every build site and finished
-building, and the same blueprint with the same mirroring is never put within 24 blocks of another, center to center.
+building, and the same blueprint with the same mirroring is never put within 24 blocks of another, center to center (exactly 24 counts
+as within; a turned twin counts, a mirrored one doesn't).
 
 **Open builds.** His level sets how many of his builds may be open at once (1, 2, 2, 3, 4 from Novice to Master),
 never more than the village's rank allows (Hamlet 1 to City 4) nor more than `stewardMaxOpenBuilds`. An approved
@@ -64,17 +68,20 @@ free block. When a scholar has nothing to research he picks the next topic by wh
 
 **Safe by design (27.19).** Everything he builds passes one check: only inside his own village, never in Keep Clear,
 never in a protected village of another owner, never through a place where a player placed or broke blocks unless the
-owner approved that one by hand (Keep Clear refuses even that). A player placing or breaking a block inside a hall's
-area marks its 16×16×16 section, and only that one. His sites clear only natural blocks. Waiting builds share one
+owner approved that one by hand (Keep Clear refuses even that). A road the owner drew on the City Plan counts as
+approved by hand; a lane the Steward lays from a finished house's door and his half of a road to another village do
+not, so a stretch of them that would run through a player's section waits instead (B520). A player placing or breaking a block inside a hall's
+area marks its 16×16×16 section, and only that one. His sites clear only natural blocks. His waiting builds (not a player's own) share one
 shopping list, the 8 most needed added up over all of them, on the desk, the Storehouse's requests board and in the
-caravans' wants; the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
+caravans' wants ("30 Glass, 12 Oak Logs, 1 Torch"); the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
 less, isn't enough) he proposes nothing new and the desk says so.
 
 **Old houses (27.20, 27.21).** In zones with "renew old houses" on he finds the houses no builder built (by their
 beds and job blocks), never one with a chest, never one a player changed, never one inside a finished build. A house
 counts when 85% or more of its blocks are village blocks (mossy, cracked and cobwebbed ones too) and it is at most
 2000 blocks and 20×16×20; beds, bells, signs, banners, campfires and job blocks may stay in it, any other container
-(a furnace, a hopper) rules it out. The desk says "Old houses: 2, 1 can be renewed". One at a time, at most one every 2 days,
+(a furnace, a hopper) rules it out. Trees that grew against a house are not part of it: a trunk by the wall and the
+leaves round the house's posts are left standing, and the house measures as its own blocks. The desk says "Old houses: 2, 1 can be renewed". One at a time, at most one every 2 days,
 he proposes to renew one in the zone's style: builders take the old house down (its blocks go to the store) and
 build the new one on the plot, the first building on the list that fits the old footprint plus 3, its front where
 the old door was. A renewal list file that is broken, or a building it names that doesn't exist, is skipped. The sleepers get the new beds and the worker keeps the job. Two of them coming home
@@ -125,6 +132,9 @@ Roads and walls have their own switches: see [Roads and walls](roads-and-walls.m
 - Design note `docs/design/M27.md`: a Steward is appointed with the plan; nobody takes the hall by himself. A new
   Steward starts in Ask me first.
 - 27.19: the Steward never builds over what a player built; the ledger of player-built places is what he checks.
+- B520 (bug lane, 2026-10-27): only roads the owner drew by hand may cross the ledger; the Steward's own lanes and
+  caravan halves are held back by it like his other builds. A stretch held back stays unbuilt until the section is
+  forgotten or the plan changes.
 - 27.6: rules are data, one file each; a file with an unknown condition or a bad field is skipped with a warning
   that names the file and the field.
 
@@ -141,7 +151,7 @@ Roads and walls have their own switches: see [Roads and walls](roads-and-walls.m
 
 GameTests: `StewardGameTests` (12), `StewardRulesGameTests` (19), `StewardHomesRulesGameTests` (12),
 `StewardCivicRulesGameTests` (20), `StewardDeskGameTests` (7), `StewardJobsGameTests` (11),
-`StewardSafetyGameTests` (7), `StewardRoundsQaGameTests` (2), `CityPlanGameTests` (7), `CityPlanScreenGameTests` (3),
+`StewardSafetyGameTests` (8), `QaLaneLedgerBugTests` (1, B520: his own lane waits at a player's section), `QaLaneLedger1031GameTests` (6, B520: a lane with only its tip in a player's section waits and one whose tip is a block short of it opens, the owner drawing the same line by hand builds through it, the lane still waits after save and reload, a caravan half waits too, even where it runs nearer the other village), `StewardRoundsQaGameTests` (2), `CityPlanGameTests` (7), `CityPlanScreenGameTests` (3),
 `OldHousesGameTests` (7), `RenewalGameTests` (9), `DoorJamGameTests` (1), `AtticBedGameTests` (1), `CountWordsGameTests`
 (2, B377: the workplace reason and the Storehouse stock line with one and with two), `QaStewardCivicBoundariesGameTests` (3, 27.12: a death 29 days back counts for the Graveyard and 30 days back not, 7
 villagers are too few; a raid 6 days ago is within 7 and 7 days ago not; 2 children get no Schoolhouse), `QaStewardHomesBoundariesGameTests` (2, 27.10: no Inn for a Town 3 beds short or a Village 4 short;
@@ -154,13 +164,18 @@ first painter's claim is saved, a block's zone comes from the nearest hall, an 8
 `QaStewardRulesDataGameTests` (2, 27.6), `QaStewardPlotFitGameTests` (2, 27.7: the front faces the nearer road;
 clearable plants), `QaStewardDeskModesGameTests` (10, 27.8: mode buttons, operator and friend approvals, approving
 twice, Steward or hall gone, Run's morning line, save and reload, the desk's sentences, the Ledger, Show me's 30
-seconds), `QaWorkplaceCopiesGameTests` (4, 27.11), `QaStewardSafetyGameTests` (10, 27.19: a broken block marks its section,
+seconds), `QaWorkplaceCopiesGameTests` (4, 27.11), `QaSteward1031GameTests` (10, 27.1a and 27.19: one XP short of Journeyman refused and the next XP let in, Expert and Master
+qualify, a Steward moves halls, the recipe in any slots and with a lookalike, the half-way line to another hall, a stranger's
+protected village by hand, negative ledger sections saved, exactly 8 kinds listed, only his builds pause or are told), `QaStewardSafetyGameTests` (10, 27.19: a broken block marks its section,
 nothing outside a hall's area, one section only, per dimension, Keep Clear over the owner's approval, the 8 most
 needed, caravans, once a day, the pause's day from both sides, the sentences), `QaOldHousesGameTests` (12, 27.20: 85%
 from both sides, abandoned blocks, allowed block entities, containers, 2000 blocks and 20×16×20 from both sides, a
 finished build, placed leaves, the ledger, the desk line) and `QaRenewalGameTests` (9, 27.21: the switch, two days
 from both sides, a Fletcher's Lodge facing the old door, the sentences, a tight zone, broken lists, a building too big
-passed over, a zone not renewed).
+passed over, a zone not renewed), `QaStewardSameRangeGameTests` (1, B470: Wells 25 and 24.04 blocks apart are not within
+24) and `QaBuilderFixes1027bGameTests` (B470's two: 24 blocks off refused on all four sides and 25 not, diagonals 23.35
+and 23.77 refused and 24.04 not, a turned twin still counts and a mirrored one doesn't; the even Market Stall and the
+Hay Cart turned against an unturned one, half a block off on both axes, measured the same way).
 
 Showcase scenes: `steward` (the morning rounds), `steward_rules`, `steward_desk`, `steward_safety`, `steward_jobs`,
 `steward_homes`, `steward_civic`, `old_houses`, `renewal`, `city_plan`, `city_plan_ground`, `city_timelapse` (a

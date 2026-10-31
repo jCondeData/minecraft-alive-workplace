@@ -70,7 +70,10 @@ fireworks and Cup banner take its colors.
 
 Delegates and host trainers field teams that follow the theme; in the Workers' Cup they bring Pokémon of the types that
 help villagers at work. A player's team is their party's first eligible Pokémon; the others are named with the reason
-they stay home ("it has helped a villager at work on 2 days, and this Cup asks for 3").
+they stay home ("it has helped a villager at work on 2 days, and this Cup asks for 3"). In the Grand Cup, Species and
+Item Clause hold for every team: a player's second of one species ("Species Clause: one Gastly is going already") or a
+second Pokémon holding one item ("Item Clause: a Pokémon already going holds Leftovers") stays home, and a trainer's
+team never has two of one species or two holding one item.
 
 ## How it works
 
@@ -94,14 +97,23 @@ they stay home ("it has helped a villager at work on 2 days, and this Cup asks f
   page says so.
 - **The theme** (28.17): the next one in order after the last Cup's. The host's owner (anyone while nobody owns the
   hall) may click through to another on the Cup page until sign-up closes, not after.
+- **Cup day** (28.19): the far villages' delegates arrive at 1000 (not before), one per far entrant, from the side
+  their home lies; they never keep a job site or a bed, are saved with the villager, and leave at dawn out of sight (at
+  once if `festivalCup` is switched off that day). The fair is a market day's traders and two more. The stands open at
+  noon (6000; not at 5999) and close at the theme's end time.
+- **Players' bouts** (28.20): the call gives two minutes (2,400 ticks) to click [I'm ready] inside the Arena; a tick
+  before, nothing is decided. A player who isn't ready loses by walkover, and the winner of a walkover is paid like any
+  win: 100,000 a bout and 600,000 for the final (the bout and 500,000 more), half again (150,000 and 900,000) only at a
+  City host (a Town pays the plain purse); without CobbleDollars in emeralds at `dollarsPerEmerald`. A player with no
+  eligible Pokémon loses the bout without a battle and isn't paid.
 - **The title** (28.21): the newest champion on a host's roll holds that host's Cup. A player who wins stands for a
   village, and that village holds the Cup. The player gets the purse only.
 - **The banner** (28.21): put up when the champion is crowned, if the holder's hall is loaded, or else at its hall's
   next round (the hall's round, once a day as it loads). The same goes for taking it down at the old holder. On the pole
   it hangs as two wall banners where the space is free. Elsewhere it is a standing banner on the hall block, if the two
   blocks above it are free, or on the roof over the hall (up to 24 blocks up). Only an Arena whose nearest hall is the
-  holder's counts, so a neighbor's Arena is never used. The colors are the theme's firework colors as the nearest
-  dyes: the cup in the first, the field in the second (white, or black under a white cup, if the theme has only one).
+  holder's counts, so a neighbor's Arena is never used. The colors are the theme's firework colors as the dyes whose
+  own color is nearest (the Workers' Cup flies a gold cup on brown): the cup in the first, the field in the second (white, or black under a white cup, if the theme has only one).
 - **Themes** (28.22): one file each in `data/aliveworkplace/cups/` (a datapack can add or replace them). Two fields
   are new: `partner_days` (a player's Pokémon must have helped at work on that many days; 0 by default) and
   `worker_types` (villager trainers draw from every type some job's partners are, `Partners.allTypes`; false by
@@ -152,6 +164,8 @@ Later additions:
 - 28.22: the Lantern Cup's bouts run from dusk (12000) to dawn (24000), when the delegates leave too.
 - 28.22: only the Grand Cup has Showdown clauses; the others name none, as the spec lists none.
 - 28.21: "on top of its Village Hall" means the hall block, or the roof over it when the hall stands indoors.
+- 28.21: a village that holds several hosts' Cups flies one banner and keeps it, with its
+  pride, until it holds none. A block on the hall is never replaced: the banner goes on the highest block over it.
 
 ## Known limits
 
@@ -164,10 +178,13 @@ Later additions:
 
 - GameTests: `CupChampionGameTests` (the banner on the pole and its colors, passing to a hall, the pride, the chronicle
   in every circuit hall, the name lines, the win bonuses, seeding, saving, `festivalCup` off, a far champion's banner
-  when it loads), `CupThemesCompatTests` (each theme's team, player filter and fair; the Workers' counter), plus `CupGameTests`, `CupBoutGameTests`, `CupDayGameTests` and `CupMatchGameTests`.
+  when it loads), `CupThemesCompatTests` (each theme's team, player filter and fair; the Workers' counter; the Grand Cup's clauses and their reasons), plus `CupGameTests`, `CupBoutGameTests`, `CupDayGameTests` and `CupMatchGameTests`; QA: `QaCupChampionGameTests` (a player champion's village flies the banner and the player gets no trainer XP, the chronicle line word for word, a village holding two Cups, a Cup that isn't held keeping the holder, a block on the hall never replaced, an old holder away when the title passes), `QaCupThemesGameTests` (the eight shipped files against the spec: rules, wares, dish, vanilla disc, banner colors, Cup page rules), `QaCupThemesCompatTests` (each theme's types from both sides with two-type Pokémon, the Little Cup's stage, the Workers' reasons at 0 and 1 days, the Grand Cup's bans and their reasons), QA: `QaCupDayGameTests` (the day's numbers from both sides, the walkover purse, a City's purse, the players' sentences) and `QaCupMatchCompatTests` (no eligible Pokémon, a players' bout's purse), `QaCupWatchCompatTests` ([Watch] on a players' bout), `QaCupClausesCompatTests` (the Grand Cup's clauses on delegates' and players' teams) and `QaCupBannerColoursBugGameTests` (the Workers' Cup banner gold on brown).
 - The Arena: `ArenaGameTests` (a builder finishes each tier, `Arenas.find` in every rotation and mirrored, "What
   next?"), `ArenaCompatTests` (the Expert Trainer Leader's trade, Arena III's Healing Machines),
   `QaArenaGameTests.everyArenaHasAFifteenByNineRingAndTheFirstFits`.
+- QA (28.1a): `QaCupPurseGameTests` (a Cup at every festival out of the box; a final won by walkover pays 600,000 in
+  emeralds and the purse line says so), `QaCupPurseCompatTests` (the same final pays 600,000 CobbleDollars: "The Cup's
+  purse for your win: 600,000 CobbleDollars").
 - QA (28.17): `QaCupGameTests` (sign-up opening a tick either side of the festival's end and who's told, the next Cup
   rolling over when the bouts end, sign-up from every circuit village but an eighth, the bracket's limits and one over,
   `festivalCup` off, the theme only until sign-up closes, the bracket line with 3 byes, and with one: "A bracket of 8,

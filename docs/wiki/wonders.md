@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B270, B308, B326, B461
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461, B707
 
 ## What a player sees
 
@@ -53,6 +53,12 @@ room for the stone.
   finished a part of the Test Folly: 1 of 2 parts of stage 1 (The Ground Story) stand."; the stage's last part, "Odo
   finished stage 1 of 3 of the Test Folly: The Ground Story."; the Wonder's very last part says nothing itself, as
   everyone hears the Wonder is finished. No blueprint comes back for a part.
+- **The builder tells the owner when he takes a part up** (B678): "Odo is starting on a part of stage 1 of the Test
+  Folly (The Ground Story) next.", never the part's file name ("Stage 1 0"). With the owner logged off nobody is told,
+  and a part whose Wonder is not on a stage (not started, or past its last) gets no line.
+- **A part goes by its Wonder's name** (B703): everywhere a building's name would show (the builder's status when you
+  sneak-right-click him, the words over his head, the Village Hall's list of buildings going up, the waiting-for-materials
+  line and his material list), a part reads "Stage 1 part of the Test Folly", never "Stage 1 0".
 - **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` with the Wonder's id (the stone's screen
   has an **[Abandon this Wonder]** link that puts it in the chat; works at any stage, also while it waits for its goods,
   B462) or a part's id to abandon the Wonder: what's built stays, the goods handed in for a stage not yet dedicated
@@ -91,7 +97,9 @@ else the builder it was handed to; each next stage goes to the highest-level bui
   block's materials to half of the crew), plus a little of the stages after it (the decoration's lanterns and doors), so
   nobody walks down from a dome to the chests for every block.
 - If the lead dies, its part goes to the highest-level member of its crew (else to the builder the next stage would get,
-  else to the first to join); what it carried drops where it fell, as for any builder.
+  else to the first to join); what it carried drops where it fell, as for any builder. The same goes for a lead
+  retrained to another job. Whoever takes the part over leads the Wonder from then on: the stone and the hall name them
+  at once, and the old lead no longer counts on the crew (B467).
 
 **What next?** names the Wonder closest to ready once the village is a Town with room for one: "The Great Cathedral can
 be begun", or the first line it lacks ("The Great Cathedral is nearly in reach: Finished Chapel: 2 of 3").
@@ -569,9 +577,11 @@ one keeps the name Stadium.
   quarter more with the Trainers' Guild), the visitor's trainer at home too (banked on its village's caravans' entry
   when that village isn't loaded); the result goes to the players at the Stadium or in the village and into the
   chronicle ("At the Stadium, (winner) beat (loser)"). The villagers off work walk to the seats (the carpets on the
-  tiers) and sit down, and those who watched are 5 happier ("watched a Stadium Day") until the next Stadium Day. At
+  tiers) and sit down (as on a Cup day the afternoon is a holiday, so those at work go too; not those resting), and those who watched are 5 happier ("watched a Stadium Day") until the next Stadium Day. At
   dusk the visitors leave: gone where no player is within 32 blocks, else walking out of the gate. A visitor never
-  takes a job or a bed. The visitors come once a day, a restart in the afternoon too.
+  takes a job or a bed. The visitors come once a day, a restart in the afternoon too. A Stadium damaged during a
+  Stadium Day (or Wonders switched off) sends its visitors off at once and holds no more bouts; repaired the same
+  afternoon, no second set comes that day.
 - **The tournament** (`tournament_host`): M28's Festival Cup exists, so it is wired. `Arenas.find` gives the village's
   Stadium first, as an Arena of tier 3: its field's center the ring, its two boxes, its seats, the road in front of
   the gate for the fair and the notice board (no champion's pole). So a Town with a Stadium and no Arena can host a
@@ -610,6 +620,11 @@ in 35.2:
 - `coastal`: an ocean or beach within 48 blocks of the hall. It is the same coast check the drowned pirates use, looked
   at once a day per hall, so both agree on what a coast is.
 - `mod_loaded` (`mod`): that mod is installed.
+
+A `job_level` line names the trade in its plural ("Fishermen at Apprentice or above: 0 of 2", "Postmen", "Ferrymen";
+B707), from the lang's `plural.aliveworkplace.profession.<namespace>.<job>` keys, which cover every vanilla trade and
+every one of the mod's own. Another mod's trade has no plural there, so its line reads "Villagers working as <trade>
+at Apprentice or above" rather than guessing an "s".
 
 `legend` gained an optional `stand_in`, a list of conditions: while Legends are off, `wonderLegends` is off, or that
 Legend's file isn't loaded, the stand-in list must hold instead (all of it). A `legend` without one reads as before.
@@ -886,6 +901,11 @@ member, the crew back together and the folly finished as drawn; `wonderCrew 3` h
 Wonders off, and a member lost mid-job is replaced; a builder with its own build queued joins only once every builder is
 called, a stranger can't call, the stone names the crew and offers the call, the highest-level builder leads; the
 lead killed mid-part hands the part to a living member, who leads it, and the crew finishes the folly as drawn.
+`QaWonderCrewBugTests` (B467): a lead who dies or is retrained mid-stage is no longer named on the stone or the hall's
+card; a living member of the crew who took the part over is.
+`QaBuilderFixes1027cGameTests` (B467): `aLeadWhoDiesTwiceIsHandedOnAgainAndSurvivesARestart` (the new lead dies too,
+the last member is named on the stone and the card, and still after the Wonders are read back from their save),
+`aCrewOfOneWhoseBuilderDiesIsLedByTheNextBuilderToCome` (no lead left, then the next builder takes the part and is named).
 Showcase scene `wonder_crew` (group Wonders): ten builders on the folly.
 
 GameTests in `WonderGoodsGameTests` (35.7): the folly's stage II (three lines) waits through one line, two, a line one
@@ -960,6 +980,16 @@ over 300 seats and the gate. Showcase scene `wonder_stadium` (group Wonders, wit
 time-lapse, then a Stadium Day with the visitors in the boxes, the stands full, a bout in the chronicle and the
 player's battle against a visitor.
 
+QA compat GameTests in `QaStadium1028CompatTests` (35.24): the clock's edges from both sides (5999 nobody, 6000 the
+visitors, 11999 still there, 12000 gone, the odd day after nobody, the next even day that day's own count); the chat
+a player at the Stadium reads ("Stadium Day at (village): (n) visiting trainers stand in the boxes until dusk.
+Challenge them!" with n the visitors, then "At the Stadium: (winner) beats (loser)"); the Stadium damaged mid-day
+(visitors gone, no bout, none back once repaired); a visitor killed mid-day (no replacement, the rest still fight one
+an hour); a visitor and the day's record through a save; two visitors beaten the same day pay once each, in
+CobbleDollars only; a resting villager stays out of the stands, the +5 lasts until the next Stadium Day; the power's
+line in each form. A failing test on the tests/stadium-thesis-1028 branch (until fixed): a file
+with one visitor reads "1 visiting trainers".
+
 GameTests in `ColossusPowerGameTests` (35.22): a villager at home 12 happier with "proud of the Colossus", one in a
 village off its routes not at all, then with a caravan route 8 happier with "the realm's Colossus", its 8 beauty;
 damaged all back as before, repaired on again, Wonders off off; the inn one traveler a morning and two at most
@@ -1017,3 +1047,9 @@ their own village's only; the Lighthouse's routes reach 4,096 blocks and not 4,0
 a partner's caravans neither reach further nor go faster, and fares are halved for a post at the village's edge both
 ways but not a block beyond it nor in the partner village; each turns off damaged or with Wonders off and comes back
 repaired, and the Gardens' and Lighthouse's powers come back from a save (one saved damaged loads powerless).
+
+GameTests for `/workplace cancel` on a Wonder waiting for its goods (B462): `WonderCancelGameTests` (3: with goods in,
+a stranger refused and the stone's [Abandon this Wonder] link; with none in; after a save and reload) and QA's
+`QaBuilderFixes1027bGameTests` (3: a stack of 64 candles offered twice comes back as exactly 64 and one plan, and a
+second cancel gives nothing more; an operator who isn't the owner ends it and the goods and plan go to the owner, not
+the operator; a wrong id leaves the Wonder and its handed-in goods alone).

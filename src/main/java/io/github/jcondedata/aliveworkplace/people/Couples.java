@@ -130,8 +130,8 @@ public final class Couples {
 			return;
 		}
 		// (a caravan's carter is passing through, 33.7: nobody courts him)
-		List<Villager> village = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> v.isAlive() && !io.github.jcondedata.aliveworkplace.hall.CaravanSights.isParty(v));
+		List<Villager> village = VillageHalls.villagers(level, hall,
+			v -> !io.github.jcondedata.aliveworkplace.hall.CaravanSights.isParty(v));
 		long today = Chronicle.day(level);
 		long time = level.getDayTime() % VillageNeeds.DAY;
 		for (Villager villager : village) {
@@ -178,7 +178,7 @@ public final class Couples {
 		ModAttachments.PARTNER.set(a, new Partner(b.getUUID(), b.getDisplayName(), today, true));
 		ModAttachments.PARTNER.set(b, new Partner(a.getUUID(), a.getDisplayName(), today, true));
 		BlockPos square = venue(level, hall);
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
+		for (Villager v : VillageHalls.villagers(level, hall)) {
 			ModAttachments.FESTIVAL_DAY.set(v, today);
 		}
 		for (Villager v : List.of(a, b)) {
@@ -236,13 +236,13 @@ public final class Couples {
 
 	/** Couples courting (not married yet) in the village round {@code hall}: one for every two villagers courting, rounded up. */
 	public static long courting(ServerLevel level, BlockPos hall) {
-		long courting = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && partner(v) != null && !partner(v).married()).size();
+		long courting = VillageHalls.villagers(level, hall, v -> partner(v) != null && !partner(v).married()).size();
 		return (courting + 1) / 2;
 	}
 
 	/** The married couple (both in the village) nearest {@code at}, or empty: the first to have a baby. */
 	public static List<Villager> coupleNear(ServerLevel level, BlockPos hall, BlockPos at) {
-		List<Villager> village = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby() && !v.isSleeping());
+		List<Villager> village = VillageHalls.villagers(level, hall, v -> !v.isBaby() && !v.isSleeping());
 		return village.stream()
 			.filter(v -> partner(v) != null && partner(v).married())
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(at.getCenter())))

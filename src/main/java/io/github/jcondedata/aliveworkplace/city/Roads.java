@@ -618,11 +618,12 @@ public final class Roads {
 				if (segment.isEmpty()) {
 					continue;
 				}
-				// 27.19: never in Keep Clear or a protected village not the owner's; a road on the plan was drawn or
-				// approved by hand, so the ledger of what players built doesn't hold it back; a caravan road's far half
-				// runs towards the other village by design
-				Optional<StewardSafety.Refusal> refusal = StewardSafety.check(level, hall, segment.get().box(), true);
-				if (refusal.isPresent() && !(road.caravan() && refusal.get() == StewardSafety.Refusal.OTHER_VILLAGE)) {
+				// 27.19: never in Keep Clear or a protected village not the owner's; a road drawn or approved by hand isn't
+				// held back by the ledger of what players built, but one the Steward made himself (a lane, a caravan half)
+				// is (B520); a caravan road's far half runs towards the other village by design
+				Optional<StewardSafety.Refusal> refusal = StewardSafety.check(level, hall, segment.get().box(), road.byHand());
+				if (refusal.isPresent() && !(road.caravan() && refusal.get() == StewardSafety.Refusal.OTHER_VILLAGE
+					&& !PlayerBuilt.get(level).marked(segment.get().box()))) {
 					continue;
 				}
 				Villager builder = builderFor(level, hall, segment.get().box(), road.caravan());
@@ -1010,6 +1011,17 @@ public final class Roads {
 	}
 
 	/**
+	 * The chronicle's "Bram finished a Stonework road, 40 blocks long" (B606): "an Apricorn road" before a vowel, and a
+	 * road drawn without a style is just "a road".
+	 */
+	public static Component builtLine(Component who, int length, RoadStyles.Style style) {
+		if (RoadStyles.AS_DRAWN.equals(style.name())) {
+			return Component.translatable("chronicle.aliveworkplace.road_built_plain", who, length);
+		}
+		return io.github.jcondedata.aliveworkplace.work.Words.articled("chronicle.aliveworkplace.road_built", 2, who, length, RoadStyles.title(style));
+	}
+
+	/**
 	 * A builder finished a road segment: it's marked built on its road (the plan, not the finished buildings' list), and
 	 * the chronicle notes a road finished.
 	 */
@@ -1043,9 +1055,8 @@ public final class Roads {
 				if (done.caravan()) {
 					CaravanRoads.segmentBuilt(level, hall, done); // the caravans' list and both chronicles (27.17)
 				} else if (done.finished() && !road.finished() && !done.lane()) {
-					Component who = builder != null ? builder.getDisplayName() : Component.translatable("steward.aliveworkplace.jobs.someone");
-					Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.road_built", who,
-						done.route().size(), RoadStyles.title(RoadStyles.forBlueprintStyle(done.style()))));
+					Chronicle.record(level, hall, Chronicle.Kind.PLANS, builtLine(Chronicle.lineStarter(builder), done.route().size(),
+						RoadStyles.forBlueprintStyle(done.style())));
 				}
 				return;
 			}

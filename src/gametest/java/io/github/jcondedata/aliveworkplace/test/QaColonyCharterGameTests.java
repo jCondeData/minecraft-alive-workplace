@@ -725,7 +725,11 @@ public class QaColonyCharterGameTests implements FabricGameTest {
 			helper.assertTrue(v.realms().orders().isEmpty() && v.realms().foundedBy(v.mother()).size() == 1, "not founded yet: " + v.realms().orders());
 			BlockPos hall = v.realms().foundedBy(v.mother()).get(0).hall().pos();
 			String name = VillageHalls.name(v.level(), hall).getString();
-			helper.assertTrue(!name.isBlank() && !name.equals("a new village") && !name.equals("Thornholm") && !name.contains("aliveworkplace"), "the colony's name: " + name);
+			// B521: the made-up name comes from the colony hall's spot, which moves with the test's place in the batch, and
+			// one spot in 400 (20 first halves by 20 second) is itself "Thornholm"; the colony must carry its own spot's made-up name, never the mother's.
+			String madeUp = VillageHalls.madeUpName(hall).getString();
+			helper.assertTrue(!name.isBlank() && !name.equals("a new village") && !name.contains("aliveworkplace") && name.equals(madeUp),
+				"the colony's name: " + name + " (its spot's made-up name: " + madeUp + ")");
 			helper.assertTrue(v.player().getUUID().equals(((VillageHallBlockEntity) v.level().getBlockEntity(hall)).owner()), "the colony isn't the owner's");
 			TravelNetwork.Post post = null;
 			for (BlockPos p : BlockPos.betweenClosed(hall.offset(-10, -3, -10), hall.offset(10, 3, 10))) {

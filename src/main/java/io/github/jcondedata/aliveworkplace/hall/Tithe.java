@@ -37,6 +37,11 @@ public final class Tithe {
 		}
 	}
 
+	/** Emeralds in a cost: an emerald block (a big Price Tag's price, B692) is nine. */
+	private static int emeralds(net.minecraft.world.item.ItemStack cost) {
+		return cost.is(Items.EMERALD) ? cost.getCount() : cost.is(Items.EMERALD_BLOCK) ? 9 * cost.getCount() : 0;
+	}
+
 	/** A player bought {@code offer} from {@code villager}: the village's tithe of the emeralds paid goes to the treasury. */
 	public static void paid(Villager villager, MerchantOffer offer) {
 		if (villager.getTradingPlayer() == null) {
@@ -46,8 +51,7 @@ public final class Tithe {
 		if (percent <= 0) {
 			return;
 		}
-		int emeralds = (offer.getCostA().is(Items.EMERALD) ? offer.getCostA().getCount() : 0)
-			+ (offer.getCostB().is(Items.EMERALD) ? offer.getCostB().getCount() : 0);
+		int emeralds = emeralds(offer.getCostA()) + emeralds(offer.getCostB());
 		VillageHallBlockEntity hall = CivicEffects.hallOf(villager);
 		if (emeralds > 0 && hall != null) {
 			put(hall, emeralds * percent);

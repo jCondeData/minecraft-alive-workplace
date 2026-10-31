@@ -90,7 +90,7 @@ public final class ClassMigration {
 	 * as the census counts them, not the square box round it (B548: a villager in the box's corner is in no village).
 	 */
 	static List<Villager> residents(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> resident(v) && VillageHalls.contains(hall, v.blockPosition()));
+		return VillageHalls.villagers(level, hall, ClassMigration::resident);
 	}
 
 	/** Lives here: not a mercenary, an inn's guest or a caravan's party passing through. */

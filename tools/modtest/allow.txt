@@ -35,6 +35,8 @@ Skipping home grade aliveworkplace:homes/broken.json
 Skipping service aliveworkplace_test:broken
 # QuestEngineGameTests feeds the quest file loader a broken file to prove it is skipped with one line naming it.
 Skipping quest file aliveworkplace_test:quests/test/broken
+# QaQuestJournalGameTests feeds the loader six broken quest files to prove each is skipped with one line naming it.
+Skipping quest file aliveworkplace_test:quests/qa/
 # GiftGameTests feeds the taste reader broken files, as a data pack might ship, to prove each is skipped and named.
 Skipping villager tastes mypack:
 # StoryArcGameTests' pack has an arc with an unknown effect type, to prove it is skipped with one line naming it.

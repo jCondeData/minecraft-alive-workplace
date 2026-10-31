@@ -450,6 +450,16 @@ with it. Effect types (`caravan_carry` (named apart from the guilds' `carry`), `
   `leviesCountRiders` (I and II, realms off), `chartersCheapenColonies` (32, 24, 16; the treasury's share; the
   settlers' load), `concordRaisesWellbeing` (I and II, the 25% pace top), `granariesFeedTheHungry` (not without it,
   32 by caravan from the fullest store, no route taken, not to a member with enough).
+- QA: `QaRealmResearchGameTests` (11, 33.15-33.16): every topic refused before what it needs (and from a member's
+  hall), then open once it's known; 2.99 of 3 emeralds in the realm treasury refused with nothing taken, exactly 3
+  paid, the villages' own treasuries never touched; a member keeps its own higher level, gets the capital's higher one,
+  its rank unchanged, and loses the shared levels (and, within 5 seconds, the realm topics' effects) on leaving; an idle
+  member scholar at half pace on the realm topic, not with a topic of its own; a member's help fills the capital's topic
+  to its last point without finishing it; a topic part-way through a save; a real `/reload` keeping the levels, the
+  chosen topic and its effects; every topic's effect missing in a village of the same owner outside the realm (caravans,
+  the board, the noon post through the post office, tickets, relief riders, wellbeing, charters); the ticket floor (10,
+  2, 1 emeralds); a member's charter cheaper too; Granaries at exactly 16 meals (nothing) and 15 (32 from the fullest
+  store, not the capital's smaller one).
 - `ReliefGameTests` (3, 33.17): `aRaidBringsTheRealmsRiders` (two bands after exactly 600 ticks, 3 emeralds paid,
   mounted, named, the realm's arms, the home's side, saved and loaded, a zombie killed by a rider, gone with their horses after the
   raid, the hall line and both chronicles), `noRealmNoSwitchNoMoney` (no realm, `realmRelief` off, an empty treasury
@@ -509,5 +519,7 @@ with it. Effect types (`caravan_carry` (named apart from the guilds' `carry`), `
   refused without the realm's 32 emeralds, paid with it, two colonies at Village rank, nothing after),
   `savedAndMovedWithTheCapital` (save and reload, an older file, a new capital keeps them), `switchedOff` (`realms` and
   `villageEdicts` off).
+
+- QA: `QaPactsRealmEdictsGameTests` (33.22, 33.22a): `aRealmEdictStandsThreeDaysNotTwo` (the Book refuses on day 2, lifts on day 3), `onlyTheCapitalsRulersProclaimAndOnlyOnce` (another member's owner refused, the capital owner's friend may, not at a member, not twice), `aDuchyHasTwoSlotsAndTheRoyalHallIIAddsOne` (2 slots, a third with the II, the newest lapsing when it comes down, a Kingdom with the II holding four), `theHighwaysUpkeepIsAnEmeraldARouteAndExactMoneyPays` (each way counts once, a non-member route not at all; exactly enough pays, one hundredth short lapses and takes nothing), `aReformOutlivesLiftingAndAnUnreformedCountStartsAgain`, `aRealmEdictReachesAJoinerAndLeavesWithALeaver`, `theCommonMarketsAverageAndItsPeople` (the average leaving out a member without a price, another member's owner and a friend at the board's price, a stranger and outsiders 10% more, lifted back), `theLevysDuesGoAsFarAsTheMoneyAndTheRoom`, `theCrownsPeaceReaches128BlocksNotOneMore`, `everyPactAndRealmEdictSentenceIsTranslatedInAmericanEnglish`.
 
 Showcase scenes: `realm`, `realm_invite`, `realm_treasury`, `realm_research`, `realm_edicts`

@@ -391,7 +391,9 @@ public final class Arcs implements ResourceManagerReloadListener {
 			if (arc.side() ? e.sideArcs.stream().anyMatch(s -> s.id.equals(arc.id().toString())) : !mainFree) {
 				continue;
 			}
-			// A threat arc would also wait for a village set At peace or at threat level 0 (ROADMAP 32.21, not landed yet).
+			if (arc.threat() && io.github.jcondedata.aliveworkplace.threat.Threats.quiet(level, hall)) {
+				continue; // a threat arc waits while the village is At peace, at threat level 0 or on Peaceful (31.4, 32.21, B699)
+			}
 			if (!arc.conditions().stream().allMatch(c -> c.met(level, hall))) {
 				continue;
 			}
@@ -415,7 +417,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 			return null;
 		}
 		for (Arc arc : arcs.values()) {
-			if (arc.event().equals(event) && !disabled(arc.id()) && arc.conditions().stream().allMatch(c -> c.met(level, hall))) {
+			if (arc.event().equals(event) && !disabled(arc.id()) && !(arc.threat() && io.github.jcondedata.aliveworkplace.threat.Threats.quiet(level, hall)) && arc.conditions().stream().allMatch(c -> c.met(level, hall))) {
 				return start(level, hall, arc);
 			}
 		}
@@ -424,11 +426,14 @@ public final class Arcs implements ResourceManagerReloadListener {
 
 	/**
 	 * Starts {@code arc} in the village round {@code hall} now, whatever its trigger (the operators' command, events,
-	 * tests): its roles are cast and its first chapter begins. Null when the village already runs one of its kind, or a
-	 * role can't be cast.
+	 * tests): its roles are cast and its first chapter begins. Null when the arc is in {@code disabledArcs}, the village
+	 * already runs one of its kind, or a role can't be cast.
 	 */
 	@Nullable
 	public static ArcState start(ServerLevel level, BlockPos hall, Arc arc) {
+		if (disabled(arc.id())) {
+			return null; // (B574: it would be cast and counted, then end at once and restart the village's cooldown)
+		}
 		Stories.Data data = Stories.Data.get(level);
 		Stories.Entry e = data.entry(hall);
 		if (arc.side() ? e.sideArcs.stream().anyMatch(s -> s.id.equals(arc.id().toString())) : e.arc != null) {
@@ -676,6 +681,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 	static void end(ServerLevel level, BlockPos hall, Stories.Entry e, ArcState s, @Nullable String how) {
 		takeDown(level, e, s, true);
 		ArcEffects.dismiss(level, s);
+		ProfessorsThesis.dismissThessaly(level, s); // (B663) stopped or switched off, not only published
 		boolean main = e.arc == s;
 		if (main) {
 			e.arc = null;

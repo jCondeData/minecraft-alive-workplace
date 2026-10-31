@@ -44,7 +44,6 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.levelgen.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -240,7 +239,11 @@ public final class GolemSmith {
 				return null;
 			}
 		}
-		IronGolem golem = build(level, smith.blockPosition(), role);
+		BlockPos spot = spot(level, smith.blockPosition());
+		if (spot == null) {
+			return null; // no room on the ground beside the smith: never on a roof (B628), and nothing is taken
+		}
+		IronGolem golem = build(level, role, spot);
 		if (golem == null) {
 			return null; // (refused by another mod with forceVillageSpawns off, B211: nothing is taken)
 		}
@@ -284,14 +287,23 @@ public final class GolemSmith {
 		return found.stream().min((a, b) -> Double.compare(a.distSqr(bench), b.distSqr(bench))).orElse(null);
 	}
 
-	/** An iron golem with {@code role}, its name over its head, beside {@code near}. */
+	/**
+	 * An iron golem with {@code role}, its name over its head, beside {@code near} (at {@code near} itself when no spot
+	 * beside it fits: the Wall's sentries stand at their post; the smith checks {@link #spot} first, B628).
+	 */
 	@Nullable
 	public static IronGolem build(ServerLevel level, BlockPos near, Role role) {
+		BlockPos spot = spot(level, near);
+		return build(level, role, spot != null ? spot : near);
+	}
+
+	/** An iron golem with {@code role} standing at {@code spot}. */
+	@Nullable
+	static IronGolem build(ServerLevel level, Role role, BlockPos spot) {
 		IronGolem golem = EntityType.IRON_GOLEM.create(level);
 		if (golem == null) {
 			return null;
 		}
-		BlockPos spot = spot(level, golem, near);
 		golem.moveTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5, level.random.nextFloat() * 360f, 0f);
 		golem.finalizeSpawn(level, level.getCurrentDifficultyAt(spot), MobSpawnType.MOB_SUMMONED, null);
 		golem.setPlayerCreated(true);
@@ -316,10 +328,11 @@ public final class GolemSmith {
 
 	/**
 	 * Where a new golem stands: the nearest spot round {@code near} (beside the smith, at their feet's height or a step up
-	 * or down) with solid ground under it and room for a golem; the open sky above {@code near} only if there is none
-	 * (never on a roof when the smith works indoors).
+	 * or down) with solid ground under it and room for a golem, or {@code null} when none fits (never the top of the
+	 * column, which is a roof when the smith works indoors, B628).
 	 */
-	static BlockPos spot(ServerLevel level, IronGolem golem, BlockPos near) {
+	@Nullable
+	static BlockPos spot(ServerLevel level, BlockPos near) {
 		BlockPos best = null;
 		double bestDistance = Double.MAX_VALUE;
 		for (BlockPos p : BlockPos.betweenClosed(near.offset(-3, -2, -3), near.offset(3, 2, 3))) {
@@ -327,12 +340,12 @@ public final class GolemSmith {
 			if (d >= bestDistance || !level.getBlockState(p.below()).isFaceSturdy(level, p.below(), net.minecraft.core.Direction.UP)) {
 				continue;
 			}
-			if (level.noCollision(golem, golem.getType().getDimensions().makeBoundingBox(p.getX() + 0.5, p.getY(), p.getZ() + 0.5))) {
+			if (level.noCollision(EntityType.IRON_GOLEM.getDimensions().makeBoundingBox(p.getX() + 0.5, p.getY(), p.getZ() + 0.5))) {
 				best = p.immutable();
 				bestDistance = d;
 			}
 		}
-		return best != null ? best : level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, near.offset(1, 0, 1));
+		return best;
 	}
 
 	/** The hall's lines for the village's forged golems: each one's name and what it is doing. */
@@ -342,7 +355,7 @@ public final class GolemSmith {
 		List<Component> out = new ArrayList<>();
 		for (IronGolem golem : golems) {
 			if (out.size() == HALL_LINES) {
-				out.add(Component.translatable("screen.aliveworkplace.hall.golems_more", golems.size() - HALL_LINES));
+				out.add(Words.counted("screen.aliveworkplace.hall.golems_more", golems.size() - HALL_LINES, golems.size() - HALL_LINES));
 				break;
 			}
 			out.add(Component.translatable("screen.aliveworkplace.hall.golem_line", role(golem).title(), doing(golem)));

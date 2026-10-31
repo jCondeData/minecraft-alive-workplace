@@ -79,10 +79,9 @@ public class QaCampReachGameTests implements net.fabricmc.fabric.api.gametest.v1
 			BlockPos from = null;
 			for (BlockPos feet : BlockPos.betweenClosed(chest.offset(-5, -3, -5), chest.offset(5, 3, 5))) {
 				if (fits(level, feet)) {
-					spots++;
-					if (canClick(level, player, feet, chest)) {
+					spots++; // every spot counted, not only those before the first that works (B590 moved the chest)
+					if (from == null && canClick(level, player, feet, chest)) {
 						from = feet.immutable();
-						break;
 					}
 				}
 			}

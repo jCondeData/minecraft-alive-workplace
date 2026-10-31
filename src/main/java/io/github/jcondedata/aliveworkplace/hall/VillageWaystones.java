@@ -175,8 +175,10 @@ public final class VillageWaystones {
 		for (BlockPos stone : stones(level, hall)) {
 			raise(level, stone, hall);
 		}
-		if (plazas(level, hall).isEmpty()) {
-			Data.get(level).forget(hall); // the plaza is gone, not only its stone: the village is off the network (41.2)
+		if (ownPlazas(level, hall).isEmpty()) {
+			// the village's own plaza is gone, not only its stone: the village is off the network (41.2). A neighbor's
+			// plaza within the hall radius doesn't keep it on (B528).
+			Data.get(level).forget(hall);
 		}
 	}
 
@@ -194,14 +196,11 @@ public final class VillageWaystones {
 	public static List<BlockPos> stones(ServerLevel level, BlockPos hall) {
 		List<BlockPos> out = new ArrayList<>();
 		List<io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement> seen = new ArrayList<>();
-		for (Plaza plaza : plazas(level, hall)) {
+		for (Plaza plaza : ownPlazas(level, hall)) {
 			if (seen.contains(plaza.placement()) || !level.isLoaded(plaza.placement().origin())) {
 				continue;
 			}
 			seen.add(plaza.placement());
-			if (!VillageHalls.nearest(level, plaza.placement().origin()).map(hall::equals).orElse(false)) {
-				continue;
-			}
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(level, plaza.structure());
 			if (blueprint.isEmpty()) {
 				continue;
@@ -213,6 +212,20 @@ public final class VillageWaystones {
 						out.add(step.pos());
 					}
 				}
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * The village's own plazas: those round {@code hall}, finished or going up, loaded or not, whose nearest hall is
+	 * {@code hall} (a neighbor village's plaza within the radius is the neighbor's, B528).
+	 */
+	private static List<Plaza> ownPlazas(ServerLevel level, BlockPos hall) {
+		List<Plaza> out = new ArrayList<>();
+		for (Plaza plaza : plazas(level, hall)) {
+			if (VillageHalls.nearest(level, plaza.placement().origin()).map(hall::equals).orElse(false)) {
+				out.add(plaza);
 			}
 		}
 		return out;

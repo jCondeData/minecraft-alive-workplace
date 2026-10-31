@@ -650,8 +650,12 @@ def choir(b, roof):
     wall = apse_wall()
     for x, z in wall:
         column(b, x, z, 1, 23, STONE)
+    # the windows go where the glass meets the curved wall's stone on two sides (B648: at 18 and 162 degrees they
+    # stood where the wall turned, joined on one side only and ending in the air on the other)
+    ws = set(wall)
+    framed = [c for c in wall if sum((c[0] + dx, c[1] + dz) in ws for dx, dz in DIRS.values()) >= 2]
     for angle in (18, 54, 90, 126, 162):
-        x, z = min(wall, key=lambda c: abs(math.degrees(math.atan2(c[1] - APSE[1], c[0] - APSE[0])) - angle))
+        x, z = min(framed, key=lambda c: abs(math.degrees(math.atan2(c[1] - APSE[1], c[0] - APSE[0])) - angle))
         for y in range(5, 19):
             pane(b, x, y, z, GLASS)
     # the half-cone roof over the apse, matching the nave's pitch where they meet
@@ -1080,15 +1084,21 @@ def tower_floor(b, y):
 
 
 def windows(b, y):
+    """A window two tall through the tower wall on each of its four sides, its glass in the wall's outer cell of the
+    upper row and a sill of an upside-down stair in front of it. B656: where the tower narrows past a whole block
+    between the two rows (y 9, 26), the lower row's outer cell is a lone nub a block out from the face; the lower pane
+    stood in it joined to nothing, with the window's cell behind it open. The glass now stands in one column between the
+    wall's cells either side and the nub in front of it is cleared, so the nub below it is a stone ledge before the
+    glass, the sill's stair still at its edge (where it was: a Wonder part keeps its place, so a stage half built on a
+    server lines up with the redrawn part)."""
     for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        x, z = ray(y + 1, d)[0]
         for yy in (y, y + 1):
-            cells = ray(yy, d)
-            pane(b, cells[0][0], yy, cells[0][1])
-            for c in cells[1:]:
+            for c in ray(yy, d):
                 b.clear(c[0], yy, c[1], c[0], yy, c[1])
-        x, z = ray(y - 1, d)[0]
-        ox, oz = x + d[0], z + d[1]
-        stairs(b, ox, y - 1, oz, STONE_BRICK, toward(d[0], d[1]), top=True)
+            pane(b, x, yy, z)
+        sx, sz = ray(y - 1, d)[0]
+        stairs(b, sx + d[0], y - 1, sz + d[1], STONE_BRICK, toward(d[0], d[1]), top=True)
 
 
 def tower_door(b):
@@ -4723,6 +4733,16 @@ def s_back_wall(b):
                 lantern(b, x, top + 2, z)
         else:
             wall_block(b, x, top + 1, z, "stone_brick_wall")
+    # B648: where a window bay meets an arch with no pilaster between, its last bars would end in the arch's opening;
+    # the wall's stone stands there instead, a jamb for the bars beside it
+    walls_round = set(order)
+    for x, z in order:
+        for y in range(1, 20):
+            here = b.get(x, y, z)
+            if here and here[0] == "minecraft:iron_bars" and any(
+                    (x + dx, z + dz) in walls_round and b.get(x + dx, y, z + dz) is None
+                    for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                b.set(x, y, z, S_BODY)
     lantern(b, SCX, 8, 1, hanging=True)  # in the gateway
 
 

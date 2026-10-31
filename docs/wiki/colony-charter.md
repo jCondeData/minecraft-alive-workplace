@@ -46,7 +46,8 @@ limit) gets the tip "Found a colony".
   the buyer can't pay the rest, nothing is taken from anyone.
 - **What stops the sale**, each with its own sentence: the village is below the colony rank (a City, see the
   switches); it has a colony on the road; it founded one less than `colonyCooldownDays` days ago; it has founded
-  `coloniesPerVillage` already.
+  `coloniesPerVillage` already ("has founded the 1 colony a village may" at 1; at 0 the sentence says the server lets
+  no village found colonies).
 - **A good spot** is 256 to 1,024 blocks from the hall (measured flat, so the ring is round), in the hall's own
   dimension, and at least 128 blocks from every other village's hall. "Every other village" is every hall the
   caravans know, which is every hall that has had its first round (about half a minute after it is placed).
@@ -103,7 +104,9 @@ All 33.8, lane a, 2026-10-10 (also in ROADMAP's Notes):
 - The charter can't be re-bound by right-clicking another hall, unlike the Ledger: it was paid for by one village.
   Right-clicking a hall with it is left for 33.9 (sending the settlers).
 - The spot can be changed as often as you like until the settlers are sent.
-- The ring's edges (exactly 256 and 1,024 blocks, exactly 128 from another hall) count as allowed.
+- The ring's edges (exactly 256 and 1,024 blocks, exactly 128 from another hall) count as allowed. A refused spot's
+  distance in "(this is N)" rounds toward the refused side, so a spot just past the edge reads 255 or 1025, never the
+  edge itself (B447).
 - In GameTests colonies are off unless a test turns them on, like caravan sights: other tests count the Trade
   page's tabs and the "What next?" tips.
 

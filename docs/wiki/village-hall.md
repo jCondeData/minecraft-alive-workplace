@@ -15,7 +15,17 @@ left a list: the page tabs, then everyone who lives within 64 blocks, each as th
 their level) with their name and job. The pane on the right reads out whatever is under the mouse, every line of it;
 with nothing there it shows the village's numbers "at a glance". Click a villager and they glow for ten seconds so you
 can find them, and stay in the pane (the wheel scrolls a long one; × or Esc puts them away). Click a jobless villager
-to see the free workstations and give them one. Every page of the hall opens in the same screen.
+to see the free workstations and give them one. Every page of the hall opens in the same screen. (Since Milestone 40
+the left side is the sidebar and the villagers are the People table; see below.)
+
+**The screen's rules (30.4a, tested in `QaHallCustomScreenGameTests`).** Every button of every section, and every page
+it opens (quests, the bank, the Book of Edicts, the chronicle, ...), stays on the hall's own menu type, never a chest.
+Only a plain click or a shift-click presses a button: swapping with a hotbar key, throwing, middle-click cloning,
+double-click collecting and dragging do nothing, clicks on the player's own slots or outside the window move nothing,
+and the sidebar ignores numbers no section has. The screen opened by hand closes when the player is more than 8 blocks
+from the hall's center or the hall is broken (clicks a stale screen still sends then do nothing). The Village Ledger's
+screen works from any distance while the hall stands and closes when it's broken. Two players can have the hall open
+at once: each has their own screen and page, and each one's last section is their own.
 
 **The sidebar (40.1).** Since 40.1 the screen has a sidebar on the left: the village's name and the date
 ("Spring, day 1 · Year 1") over ten labeled buttons, Overview, People, Homes & Food, Buildings, Defense, Quests,
@@ -63,8 +73,9 @@ scrolling over it. On top: "A new job for Dara", then the price by their level (
 Novice", before anything is paid; a jobless villager's list says a free block is theirs for nothing instead. Then one
 line per job a villager takes at a work block (every registered job with a block, behind its config switch: not the
 Steward, Legends, the Trainer Leader, nitwits): those with a free block in the village first, "Mason · 1 free
-Stonecutter" (counted over every free block, a shared block such as a lectern counting for each of its jobs), then the
-rest grayed: "Mason · place a Stonecutter first", a job above their class with the class it needs (34.8), "Librarian ·
+Stonecutter" (counted over every free block, a shared block such as a lectern counting for each of its jobs, and
+named by the free blocks themselves, nearest kind first: "Carpenter · 1 free Carpenter's Bench, 1 free Crafting
+Table", B658), then the rest grayed: "Mason · place a Stonecutter first", a job above their class with the class it needs (34.8), "Librarian ·
 their job now". The Builder is one of them ("Builder · 1 free Blueprint Table"). Last, for a villager with a job, **No
 job**. Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
 click on a job sends the offer to chat and marks the line ("Click again to pay 20 emeralds: Dara becomes a Mason"); a
@@ -122,7 +133,9 @@ and walk over to it. So an empty Storehouse or a lectern left in a finished home
 leading anyone into the house. Blocks of one kind in one building share a line with a count ("Fisherman ×4", "In the
 Storehouse Shed"); a click takes the nearest. A block several jobs share (a composter, a lectern, a Shop Counter...)
 says how many jobs it offers ("Composter: 4 jobs") and lists them; its click opens a page with a line per job, and a
-job's click lists who could take the block as that job (B303). A villager who already works isn't listed; they change job from their own page (36.18, below) or
+job's click lists who could take the block as that job (B303). Blocks a villager never takes by themselves are listed
+too: a crafting table (the Carpenter's, as in a Carpenter's Workshop), a jukebox (the Bard's) and a Mailbox (the
+Postman's), so the hall can give those jobs without an item (B635). A villager who already works isn't listed; they change job from their own page (36.18, below) or
 at the block itself (26.6, see [Villager jobs](villager-jobs.md)), for a price.
 
 **Change job (36.18).** A plain click on a worker in the residents list only makes them glow, as before; a right-click opens their page (back,
@@ -224,7 +237,11 @@ hall's area. Anyone may still walk in, open doors, trade and ring the bell.
 others when the row is full, newest first.
 
 **Free job blocks (36.9).** The page is read when it's drawn: the village's points of interest that give a job and
-have room (the same list a jobless villager's own page shows), each matched to the building whose outline holds it
+have room (the same list a jobless villager's own page shows and Job ▾ counts): the kinds in the game's
+`acquirable_job_site` tag, plus the shared stations a job is given at only by an item (`work/Stations`, not
+`byItself()`: crafting table, jukebox, Mailbox and Cobblemon's machines, under their first job this game has;
+B635: the tag alone left the Carpenter's table out), and a beehive or bee nest nobody works at (B657: they keep no
+places, so "have room" never counted them; `Stations.freeAt`), each matched to the building whose outline holds it
 (finished builds, and builds going up). Who could take a block: a grown villager in the village without a job, not a
 nitwit or a Legend. One who has never worked takes any block; one who still has an old job's trades but lost the block
 is offered only a block of that same job, because changing job is paid retraining (26.6). A job above a villager's
@@ -268,7 +285,7 @@ or an operator; anyone in a village nobody owns), and is checked again on the cl
 | Key | Default | What it does |
 |---|---|---|
 | `villageHallRadius` | 64 (16 to 160) | How far from a hall its village reaches |
-| `villageGrowthCap` | 40 (0 to 500) | The village stops having babies at this many villagers; 0: no growth |
+| `villageGrowthCap` | 40 (0 to 500) | The village stops having babies at this many villagers; 0: no growth (the hall says "Villages don't grow on this server") |
 | `villageTreasury` | on | Villages put by takings every morning |
 | `treasuryPerWorker` | 20 (0 to 500) | Hundredths of an emerald a worker a day |
 | `villageProtection` | on | Owners may protect their village; off: nobody can, on the whole server |
@@ -400,6 +417,11 @@ screen is open; scene `hall_people`). `HallPeopleJobGameTests` (40.3, every case
 through Bed ▾'s clicks: `aFreeBed` (where the free beds are, the census, the old bed freed), `aSwap`, `noBedsAtAll`,
 `theChosenBedBrokenBeforeNight`, `aBedAnotherVillagerClaimsFirst`, `theChoiceSurvivesASaveAndReload` with every new
 sentence, `theySleepThereAtNight`; scene `hall_people_bed`).
+`B635GameTests` (the builder's Carpenter's Workshop: its crafting table is a free Carpenter block, "Carpenter · 1 free
+Crafting Table", a jobless and a working villager made the Carpenter from Job ▾; a claimed table isn't offered) and
+`QaBuilders1028GameTests` (B635, QA: a table broken while Job ▾ is open makes no Carpenter and the line then says to
+place one; an older save's table with no workstation record is offered once its chunk loads; tables 8 blocks from
+the hall are offered, 9 aren't).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end

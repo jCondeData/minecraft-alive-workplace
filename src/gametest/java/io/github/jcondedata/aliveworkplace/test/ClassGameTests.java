@@ -692,4 +692,28 @@ public class ClassGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 			}
 		}
 	}
+
+	/** B549: a Peasant in the square's corner round the hall, outside the village's circle, isn't counted by its dawns; one inside rises. */
+	//$ gametest_batch AREA '"classCorner"'
+	@GameTest(template = AREA, batch = "classCorner")
+	public void theDawnsLeaveOutTheSquaresCorner(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		VillageHallBlockEntity hall = village(helper);
+		String plain = "{\"type\": \"diet\", \"kind\": \"plain\"}";
+		testLadder(plain, plain, plain);
+		BlockPos at = helper.absolutePos(HALL);
+		Villager uma = villager(helper, new BlockPos(4, 2, 4), "Uma");
+		Villager far = FamilyTreeGameTests.outsideVillage(helper, at, 1, 1, "Far");
+		for (Villager v : List.of(uma, far)) {
+			SocialClasses.seed(v, cls("peasant"));
+			eats(v, "bread", "carrot", "apple");
+		}
+		wholeDay(level, at, hall, 101);
+		wholeDay(level, at, hall, 102);
+		helper.assertTrue(id(uma).equals("artisan"), "Uma, in the village, didn't rise: " + id(uma) + " " + SocialClasses.progress(uma));
+		helper.assertTrue(id(far).equals("peasant") && SocialClasses.progress(far).day() == 0,
+			"a villager outside the village's circle was counted at its dawns: " + id(far) + " " + SocialClasses.progress(far));
+		List.of(uma, far).forEach(Villager::discard);
+		helper.succeed();
+	}
 }

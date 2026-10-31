@@ -83,11 +83,16 @@ public final class TreeFarms {
 		AreaJobs.onDeath(level, villager, ModAttachments.TREE_FARM);
 	}
 
+	/** "3 trees felled, 1 sapling planted": each count in the singular when it's one (B612). */
+	public static Component countsLine(int felled, int planted) {
+		return io.github.jcondedata.aliveworkplace.work.Words.countedTwo("message.aliveworkplace.tree_farm.counts", felled, planted, felled, planted);
+	}
+
 	public static void sendStatus(Player player, Villager villager) {
 		BoundingBox box = farm(villager);
 		if (box != null) {
-			AreaJobs.sendStatus(player, villager, box, "tree_farm", Component.translatable("message.aliveworkplace.tree_farm.counts",
-				ModAttachments.TREES_FELLED.getOrElse(villager, 0), ModAttachments.SAPLINGS_PLANTED.getOrElse(villager, 0)));
+			AreaJobs.sendStatus(player, villager, box, "tree_farm", countsLine(ModAttachments.TREES_FELLED.getOrElse(villager, 0),
+				ModAttachments.SAPLINGS_PLANTED.getOrElse(villager, 0)));
 		}
 	}
 

@@ -60,6 +60,9 @@ public final class Chatter {
 		Map.entry("rush", 2), Map.entry("tonic", 2), Map.entry("guild", 2), Map.entry("colours", 2),
 		// A household's rise or fall (34.6), from the mood reason
 		Map.entry("class_rose", 3), Map.entry("class_fell", 3),
+		// What a class wants and enjoys (34.6, B551): wine and new clothes their class asks for and hasn't had lately,
+		// the Gazette they read this week, the tavern near home
+		Map.entry("class_wants_wine", 3), Map.entry("class_wants_clothes", 3), Map.entry("gazette_news", 3), Map.entry("tavern_glad", 3),
 		// An elder's own lines (34.19)
 		Map.entry("elder", 4),
 		// The village's trade (33.4): a good that sells well elsewhere, a glut at home, something dear
@@ -187,6 +190,7 @@ public final class Chatter {
 		}
 		topics.addAll(news);
 		topics.addAll(news);
+		topics.addAll(classTopics(level, villager, hall));
 		Moods.Mood mood = Moods.of(villager);
 		if (mood != null) {
 			for (Component reason : mood.bad()) {
@@ -257,6 +261,72 @@ public final class Chatter {
 		return out;
 	}
 
+	/**
+	 * Talk of class life (34.6, B551), with classes on: wine or new clothes their class (its needs and wants) or the next
+	 * one's needs ask for and they haven't had lately ({@code luxury/wine} and {@code luxury/clothes} luxuries), this
+	 * week's Gazette they read (the Gazette luxury had within its days), and the tavern when it reaches their home.
+	 */
+	public static List<String> classTopics(ServerLevel level, Villager villager, BlockPos hall) {
+		List<String> out = new ArrayList<>();
+		if (!SocialClasses.ENABLED || villager.isBaby()) {
+			return out;
+		}
+		long today = Chronicle.day(level);
+		SocialClasses.SocialClass own = SocialClasses.of(villager);
+		if (own != null) {
+			if (wantsLuxury(villager, own, "wine", today)) {
+				out.add("class_wants_wine");
+			}
+			if (wantsLuxury(villager, own, "clothes", today)) {
+				out.add("class_wants_clothes");
+			}
+		}
+		if (readGazette(villager, today)) {
+			out.add("gazette_news");
+		}
+		if (ClassNeeds.services.reaching(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageNeeds.bed(level, villager)).contains(TAVERN)) {
+			out.add("tavern_glad");
+		}
+		return out;
+	}
+
+	/** The tavern service ({@code services/tavern.json}). */
+	static final net.minecraft.resources.ResourceLocation TAVERN = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("tavern");
+
+	/** Whether {@code own}'s needs and wants, or the next class's needs, ask for a luxury of {@code kind} that's due for {@code villager}. */
+	static boolean wantsLuxury(Villager villager, SocialClasses.SocialClass own, String kind, long today) {
+		net.minecraft.tags.TagKey<net.minecraft.world.item.Item> tag = io.github.jcondedata.aliveworkplace.legend.LegendNeeds.luxuryTag(kind);
+		SocialClasses.SocialClass next = SocialClasses.step(own, 1);
+		List<List<ClassNeeds.Need>> asked = next == null ? List.of(own.needs(), own.wants()) : List.of(own.needs(), own.wants(), next.needs());
+		for (List<ClassNeeds.Need> needs : asked) {
+			for (ClassNeeds.Need need : needs) {
+				if (need instanceof ClassNeeds.Luxury l) {
+					Luxuries.Luxury luxury = Luxuries.get(l.id());
+					if (luxury != null && isKind(luxury, tag) && Luxuries.due(List.of(villager), luxury, today)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean isKind(Luxuries.Luxury luxury, net.minecraft.tags.TagKey<net.minecraft.world.item.Item> tag) {
+		return luxury.tag().map(tag::equals).orElse(false) || luxury.item()
+			.map(id -> new net.minecraft.world.item.ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id)).is(tag)).orElse(false);
+	}
+
+	/** Whether {@code villager}'s household had a Gazette (a luxury the Gazette counts as) within that luxury's days. */
+	static boolean readGazette(Villager villager, long today) {
+		net.minecraft.world.item.ItemStack paper = new net.minecraft.world.item.ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.GAZETTE);
+		for (Luxuries.Luxury luxury : Luxuries.all().values()) {
+			if (luxury.matches(paper) && !Luxuries.due(List.of(villager), luxury, today)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/** The founded guild of the village that gathers {@code villager}'s trade, or null. */
 	@Nullable
 	static io.github.jcondedata.aliveworkplace.hall.Guilds.Guild guildOf(ServerLevel level, Villager villager, VillageHallBlockEntity entity) {
@@ -272,7 +342,10 @@ public final class Chatter {
 		return null;
 	}
 
-	/** Who a Legend topic is about: "Ada, Master Architect" (the speaker's own title for {@code legend_self}). */
+	/**
+	 * Who a Legend topic is about: "Ada, Master Architect" (the speaker's own title for {@code legend_self}). Always with
+	 * the title, so a line that goes on after it closes it with a comma: "%s, has downed tools." (B631).
+	 */
 	static Component legendArg(ServerLevel level, Villager villager, BlockPos hall, String topic) {
 		if (topic.equals("legend_self")) {
 			return io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).map(l -> l.titleText()).orElse(Component.empty());

@@ -456,6 +456,42 @@ public final class WonderStages {
 	}
 
 	/**
+	 * What the owner reads when {@code who} takes up a Wonder part from their queue (B678): the Wonder and its stage,
+	 * "Ann is starting on a part of stage 1 of the Test Folly (Foundations) next.", never the part's raw structure name.
+	 * Empty when {@code part} isn't a Wonder's or its Wonder can't be found.
+	 */
+	public static Optional<Component> partNextLine(ServerLevel level, BuildSite part, Component who) {
+		if (part.wonder() == null) {
+			return Optional.empty();
+		}
+		Optional<WonderSite> site = WonderManager.get(level).site(part.wonder());
+		Wonder wonder = site.map(s -> Wonders.loaded().get(s.wonder())).orElse(null);
+		if (wonder == null || site.get().stage() < 1 || site.get().stage() > wonder.stages().size()) {
+			return Optional.empty();
+		}
+		int stage = site.get().stage();
+		return Optional.of(Component.translatable("message.aliveworkplace.wonder.part_next", who, stage, wonder.nameText(),
+			wonder.stages().get(stage - 1).nameText()));
+	}
+
+	/**
+	 * How a player reads a Wonder part's name wherever a building's name would go (B703): "Stage 1 part of the Test
+	 * Folly", never its raw structure name ("Stage 1 0"). Empty when {@code part} isn't a Wonder's or its Wonder can't
+	 * be found.
+	 */
+	public static Optional<Component> partName(ServerLevel level, BuildSite part) {
+		if (part.wonder() == null) {
+			return Optional.empty();
+		}
+		Optional<WonderSite> site = WonderManager.get(level).site(part.wonder());
+		Wonder wonder = site.map(s -> Wonders.loaded().get(s.wonder())).orElse(null);
+		if (wonder == null || site.get().stage() < 1 || site.get().stage() > wonder.stages().size()) {
+			return Optional.empty();
+		}
+		return Optional.of(Component.translatable("message.aliveworkplace.wonder.part_name", site.get().stage(), wonder.nameText()));
+	}
+
+	/**
 	 * What the owner is told when {@code who} finishes {@code part}, a part of a Wonder still going up (B138): with other
 	 * parts of its stage still open, how many of the stage's parts stand; the stage's last part, that the stage is
 	 * finished (the stone then says which stage is next). Empty for the last part of the last stage, whose finish is

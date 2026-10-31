@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641
 
 ## 1. What a player sees
 
@@ -51,7 +51,8 @@ whatever the order (the owner's answer); the rest of the house follows the order
 
 Rooms that read as rooms (B260): nothing stands in a door's way (two blocks in and out of every door), every bed has
 its head against a wall (or a window in it) and faces into the room, a lantern hangs or stands on a table or post,
-never on the bare floor, and a chest stands against a wall or at the foot of a bed. Each spot records what it stands
+never on the bare floor of a room (the Schoolhouse's open belfry and the Library's tower lookout keep a lantern standing
+on theirs: neither is a furnished room), and a chest stands against a wall or at the foot of a bed. Each spot records what it stands
 on or against in the drawing (floor, wall, ceiling), and a modded piece goes only where what it needs is there: a
 Beautify picture frame stands on a table, so a picture on a wall stays a banner; a Handcrafted shelf stands on the
 floor, so a shelf on a wall stays a slab; a two-block-tall piece (a `half=lower|upper` block) is placed with its top
@@ -90,6 +91,15 @@ ladder: a villager without a bed takes a free one there, even next door to where
 by that home's door and climbs that home's ladder. Before, a villager could only claim a bed he could walk to, so the
 Terrace's beds stood free while villagers spent the night standing about its rooms (on a chest, say), and a villager
 coming in by the other home's door climbed the wrong ladder and gave his bed up.
+
+Every home of a multi-home build is furnished alike (B641): a Terrace or Terrace II furnished before B281 (its spots
+file then had no table and chair for the east kitchen, whose table stands against the party wall) kept spruce stand-ins
+in that kitchen, and because those two spots were added before the beds, every bed's saved piece pointed at the wrong
+spot. A saved piece now finds its spot by place and kind when the file has moved it, and such a build shows **Refresh
+to the latest look** on the Village Hall's Repairs page (from the vanilla or the modded library): a Builder swaps the
+stand-ins for the mods' table and chair and leaves the rest as it stands. The modded library's crockery on a table now
+sits on the furniture mod's table (it used to hang a block above it, where the vanilla table's pressure plate had been),
+and over a table left vanilla it is left out rather than hanging over the thin plate.
 
 When it is finished, a server with Handcrafted gets Handcrafted chairs round a Handcrafted table, fancy beds with nightstands and
 shelves of crockery in its homes; Cozy Home adds sofas, clocks and lamps, CobbleFurnies Poké Ball chairs, Beautify
@@ -141,6 +151,9 @@ desk and through the lantern standing on it, and the villager stood on the desk'
 small block a villager's body can't pass above the height it steps up (such as a mod's lantern) is a wall
 to its path, as vanilla's lantern is; carpets, beds and other blocks it steps onto, ladders and open doors stay
 walkable (`work/PathObstacles`, from the path finder's `WalkNodeEvaluatorMixin`, beside B156's shut trapdoors).
+A Carved Wood lantern goes up with the decoration, after the trapdoor or post it stands on, as vanilla's lantern does
+(B433: it once went up with the walls, before the flower-box trapdoors by a cottage's door, couldn't stand on air and
+was skipped). The builder knows it by its `hanging` property, which vanilla's lantern has too (`MaterialRules`).
 Carved Wood's chests and barrels of every wood are supply chests, porters' chests and Storehouse chests (they are
 vanilla chests and barrels underneath).
 
@@ -446,6 +459,8 @@ rides, which can't be summoned.
 
 ## 8. Proof
 
+B433 (compat): `QaSpruceCottageBugTests.theSpruceCottageIsBuiltWholeWithItsLanterns` (the Spruce Starter Cottage
+built from its exact materials, nothing skipped), failing before the fix.
 B304: `TerraceSleepGameTests.aVillagerOfTheWestHomeClimbsItsLadderNotTheEastOnesAndSleeps` (his bed in the west
 home, he stands by the east home's ladder at bedtime), `TerraceSleepGameTests.aVillagerWithoutABedTakesAFreeOneNextDoorAndSleeps`
 (the east home's beds someone else's: he claims a west one and sleeps in it), both failing before the fix; with

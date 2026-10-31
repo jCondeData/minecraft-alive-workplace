@@ -55,11 +55,58 @@ public final class Shops {
 			if (available < 1) {
 				continue;
 			}
-			// A Price Tag can't be handed over: the vanilla trade screen asks for the same price in emeralds.
-			ItemCost cost = PriceTagItem.dollars(price) > 0 ? new ItemCost(net.minecraft.world.item.Items.EMERALD, emeraldPrice(price))
-				: new ItemCost(price.getItem(), price.getCount());
-			offers.add(new MerchantOffer(cost, goods.copy(), (int) Math.min(available, MAX_USES), 1, 0f));
+			int uses = (int) Math.min(available, MAX_USES);
+			if (PriceTagItem.dollars(price) > 0) {
+				// A Price Tag can't be handed over: the vanilla trade screen asks for the same price in emeralds, in its
+				// two cost slots (B692). A price too dear for them isn't offered at all, rather than sold cheap.
+				ItemCost[] costs = emeraldCosts(emeraldPrice(price));
+				if (costs != null) {
+					offers.add(new MerchantOffer(costs[0], Optional.ofNullable(costs[1]), goods.copy(), uses, 1, 0f));
+				}
+				continue;
+			}
+			offers.add(new MerchantOffer(new ItemCost(price.getItem(), price.getCount()), goods.copy(), uses, 1, 0f));
 		}
+	}
+
+	/** Emeralds in an emerald block. */
+	private static final int BLOCK = 9;
+	/** The most emeralds the trade screen's two cost slots can ask: a stack of emerald blocks and 8 emeralds. */
+	public static final int MAX_TRADE_EMERALDS = 64 * BLOCK + BLOCK - 1;
+
+	/**
+	 * An emerald price as the trade screen's two cost slots (B692), exactly the price: up to 64 in emeralds; up to 128
+	 * as a stack of emeralds and the rest; more as emerald blocks and the emeralds left over. The second cost is null
+	 * when one slot is enough, and the whole answer null when the price is over {@link #MAX_TRADE_EMERALDS}.
+	 */
+	public static ItemCost[] emeraldCosts(int emeralds) {
+		net.minecraft.world.item.Item emerald = net.minecraft.world.item.Items.EMERALD;
+		int stack = emerald.getDefaultMaxStackSize();
+		if (emeralds <= stack) {
+			return new ItemCost[] {new ItemCost(emerald, Math.max(1, emeralds)), null};
+		}
+		if (emeralds <= 2 * stack) {
+			return new ItemCost[] {new ItemCost(emerald, stack), new ItemCost(emerald, emeralds - stack)};
+		}
+		if (emeralds > MAX_TRADE_EMERALDS) {
+			return null;
+		}
+		int rest = emeralds % BLOCK;
+		return new ItemCost[] {new ItemCost(net.minecraft.world.item.Items.EMERALD_BLOCK, emeralds / BLOCK), rest > 0 ? new ItemCost(emerald, rest) : null};
+	}
+
+	/** What a trade was paid with, for the sales log: an emerald price split over both slots is logged as one sum. */
+	private static ItemStack paidWith(MerchantOffer offer) {
+		ItemStack a = offer.getCostA();
+		ItemStack b = offer.getCostB();
+		if (b.isEmpty()) {
+			return a.copy();
+		}
+		if (b.is(net.minecraft.world.item.Items.EMERALD) && (a.is(net.minecraft.world.item.Items.EMERALD) || a.is(net.minecraft.world.item.Items.EMERALD_BLOCK))) {
+			int emeralds = (a.is(net.minecraft.world.item.Items.EMERALD_BLOCK) ? BLOCK : 1) * a.getCount() + b.getCount();
+			return new ItemStack(net.minecraft.world.item.Items.EMERALD, emeralds);
+		}
+		return a.copy();
 	}
 
 	/**
@@ -109,7 +156,7 @@ public final class Shops {
 		ModAttachments.SHOP_SALES.set(villager, ModAttachments.SHOP_SALES.getOrElse(villager, 0) + 1);
 		net.minecraft.world.entity.player.Player buyer = villager.getTradingPlayer();
 		counter.logSale(new ShopCounterBlockEntity.Sale(level.getDayTime() / 24000L, buyer == null ? "?" : buyer.getGameProfile().getName(),
-			goods.copy(), 0, offer.getCostA().copy()));
+			goods.copy(), 0, paidWith(offer)));
 	}
 
 	// --- paying in CobbleDollars ------------------------------------------------------------------
@@ -368,8 +415,9 @@ public final class Shops {
 
 	private static void store(ServerLevel level, List<BlockPos> chests, BlockPos near, ItemStack stack) {
 		ItemStack rest = SupplyContainers.insert(level, chests, stack);
-		if (!rest.isEmpty()) {
-			ItemEntity item = new ItemEntity(level, near.getX() + 0.5, near.getY() + 1.1, near.getZ() + 0.5, rest);
+		// what doesn't fit lands on the counter in whole stacks (a tag's price can be more than one, B692)
+		while (!rest.isEmpty()) {
+			ItemEntity item = new ItemEntity(level, near.getX() + 0.5, near.getY() + 1.1, near.getZ() + 0.5, rest.split(rest.getMaxStackSize()));
 			item.setDefaultPickUpDelay();
 			level.addFreshEntity(item);
 		}

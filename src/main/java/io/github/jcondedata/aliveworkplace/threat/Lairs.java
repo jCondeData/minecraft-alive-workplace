@@ -40,8 +40,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -599,6 +597,18 @@ public final class Lairs {
 			return null;
 		}
 		boolean camp = structure.equals(BANDIT_CAMP);
+		// A quarter more when the threat level is hard (32.21): a raid comes from the band, so the band is bigger (B383).
+		int strength = Threats.more(spec.map(Culture.Lair::strength).orElse(DEFAULT_STRENGTH));
+		Lair lair = new Lair(ground.immutable(), hall.immutable(), new UUID(0, 0), Chronicle.day(level), culture, strength, Chronicle.day(level), 0, 0,
+			level.random.nextInt(NAMES));
+		// The captain first, before a block is touched: no camp without its captain (B208), and one he couldn't come to
+		// (Peaceful, a mob blocklist with forceThreatSpawns off) left its tents, fire and chests standing for good, with no
+		// record for any cleanup to take down (B709). He is moved to his spot once the lair stands.
+		Mob captain = spawn(level, ground, lair, true, 0);
+		if (captain == null) {
+			AliveWorkplace.LOG.warn("{} made no camp near the village hall at {}: its captain could not spawn", culture, hall);
+			return null;
+		}
 		Optional<Culture.Sea> sea = spec.flatMap(Culture.Lair::sea);
 		Rotation rotation;
 		BlockPos origin;
@@ -633,19 +643,13 @@ public final class Lairs {
 		// floor he stands on, a ship's deck).
 		BlockPos middle = origin.offset(StructureTemplate.calculateRelativePosition(settings,
 			camp ? FIRE : new BlockPos(template.getSize().getX() / 2, captainSpot.map(BlockPos::getY).orElse(1), template.getSize().getZ() / 2)));
-		// A quarter more when the threat level is hard (32.21): a raid comes from the band, so the band is bigger (B383).
-		int strength = Threats.more(spec.map(Culture.Lair::strength).orElse(DEFAULT_STRENGTH));
-		Lair lair = new Lair(middle, hall.immutable(), new UUID(0, 0), Chronicle.day(level), culture, strength, Chronicle.day(level), 0, 0,
-			level.random.nextInt(NAMES));
 		BlockPos captainAt = camp ? standOn(level, origin.offset(StructureTemplate.calculateRelativePosition(settings, CHIEF_SPOT)))
 			: captainSpot.map(spot -> origin.offset(StructureTemplate.calculateRelativePosition(settings, spot))).orElseGet(() -> standNear(level, middle, 0));
-		Mob captain = spawn(level, captainAt, lair, true, 0);
-		if (captain == null) {
-			// No camp without its captain: one recorded without him was "broken up" at the next round, by nobody (B208).
-			AliveWorkplace.LOG.warn("{} made no camp near the village hall at {}: its captain could not spawn", culture, hall);
-			return null;
+		lair = new Lair(middle, lair.hall(), captain.getUUID(), lair.day(), culture, strength, lair.grown(), 0, 0, lair.name());
+		captain.teleportTo(captainAt.getX() + 0.5, captainAt.getY(), captainAt.getZ() + 0.5);
+		if (captain instanceof PathfinderMob pathfinder) {
+			pathfinder.restrictTo(middle, KEEP);
 		}
-		lair = new Lair(lair.pos(), lair.hall(), captain.getUUID(), lair.day(), culture, strength, lair.grown(), 0, 0, lair.name());
 		int band = live() ? Math.min(strength, spec.map(Culture.Lair::homeMax).orElse(8)) : 3 + level.random.nextInt(2);
 		for (int i = 0; i < band; i++) {
 			BlockPos at = camp && i < BAND_SPOTS.size() ? standOn(level, origin.offset(StructureTemplate.calculateRelativePosition(settings, BAND_SPOTS.get(i))))
@@ -732,13 +736,8 @@ public final class Lairs {
 				mob.setDropChance(EquipmentSlot.HEAD, 0f);
 				mob.setDropChance(EquipmentSlot.CHEST, 0f);
 			}
-			var health = mob.getAttribute(Attributes.MAX_HEALTH);
-			double extra = chief.map(Culture.Captain::health).orElse(CAPTAIN_HEALTH);
-			if (health != null && extra > 0) {
-				// (the modifier keeps the bandit chief's id: a chief saved before 32.3 has it)
-				health.addPermanentModifier(new AttributeModifier(AliveWorkplace.id("bandit_chief"), extra, AttributeModifier.Operation.ADD_VALUE));
-				mob.setHealth(mob.getMaxHealth());
-			}
+			// (the modifier keeps the bandit chief's id: a chief saved before 32.3 has it)
+			Threats.captainHealth(mob, AliveWorkplace.id("bandit_chief"), chief.map(Culture.Captain::health).orElse(CAPTAIN_HEALTH));
 		} else {
 			Optional<String> name = culture.flatMap(Culture::name);
 			if (name.isPresent()) {

@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598
 
 ## What a player sees
 
@@ -17,7 +17,8 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
 - **The Mechanic** (39.2). A jobless villager next to a Create Toolbox (any of its sixteen colors) becomes the
   village's Mechanic, in a gray canvas work apron with a cogwheel stitched on it, brass goggles pushed up on the brow
   and a brass-headed wrench at the belt. When a shaft, gearbox, cogwheel or belt goes missing from a finished build
-  within 32 blocks of the toolbox, the Mechanic fetches the part from the chest by the toolbox, carries it over and
+  within 32 blocks of the toolbox (measured to the build's nearest block, so a big build next to the toolbox counts
+  however far off its corner lies, B598), the Mechanic fetches the part from the chest by the toolbox, carries it over and
   puts it back as the blueprint has it (the same axis and facing): shafts first, then the cogwheels on them, then
   belts. Without the part in the chest the hole waits, and the status over the Mechanic says what's needed ("needs
   Shaft to mend the Drive Line"). Between repairs the Mechanic walks a round of the village's millstones: what's been
@@ -251,7 +252,10 @@ worker (`MachineWork.tickTrip`, B244): machine work switched off (`machineWork` 
 or the worker no longer in the file's job (their workstation broken at Novice, or another job taken). What they
 carried goes straight into the village's store by their workstation (or by where they stand, when it's gone); what
 doesn't fit, or finds no store, drops at their feet. A broken machine, or a file gone, still runs the trip, which
-brings the load back on foot, and a worker killed mid-trip drops it where they fell. The chef's water is poured straight into the basin's tank (a bucket's
+brings the load back on foot: a worker whose machine is broken on the way turns back at once and shows "the Millstone
+is gone: bringing the load back to the store" (the machine is named from its file, never from what now stands at its
+spot, B506), and a Mechanic whose machine is broken while she walks to it says "the Millstone is gone" and goes on
+with her round, and a worker killed mid-trip drops it where they fell. The chef's water is poured straight into the basin's tank (a bucket's
 worth, 1000 mB), the way villages draw water anywhere; no bucket is used up. Items go in and out through Fabric's item
 and fluid transfer, which Create's port exposes; a depot, basin or crusher is never anyone's supply chest. The
 Mechanic's round uses the same files and the same work done on the spot.
@@ -475,7 +479,17 @@ tested (the GameTests use the table as the server does).
   naming it, and makes no blueprint. `QaMechanicMendSaysCompatTests` (39.2): "Mechanic: fetching Shaft for the ..."
   and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back. `QaCreateItemsHeldCompatTests` (lane E's QA): a depot, a
   deployer and a basin, each holding a diamond, scanned into a blueprint and built from exactly its material list, are
-  built holding nothing (a fluid in a tank or spout is still copied: B486).
+  built holding nothing. `QaCreateFluidsCompatTests`, `QaCreateDrainFluidsCompatTests` and
+  `QaCreateSchematicFluidsCompatTests` (B486): a fluid tank, spout, basin and item drain holding lava, scanned or
+  uploaded as a schematic, are built empty. `QaCreateTankKeptCompatTests` (lane E's QA of B486): a two-tall tank of lava
+  is built empty but still one tall tank (it takes more than one tank block holds), and a player's bucket of lava in a
+  built tank stays when the same blueprint is built over it again. `QaMachineGoneSaveCompatTests` (lane E's QA of
+  B506): a trip saved on the farmer and loaded again (a restart) keeps its machine, file, stage and load, and when the
+  millstone is then broken reads "the Millstone is gone: bringing the load back to the store" and returns all 8 wheat;
+  a Mechanic says "the Millstone is gone".
+  QA's `QaBuilderFixes1027CompatTests` (1, B486): a two-block-tall tank
+  holding two buckets of Create's honey and a spout holding a bucket of water, scanned and built turned a quarter and
+  mirrored from exactly the material list, go up whole and empty.
   `QaCreateStoresHeldCompatTests` (lane E's QA): the same for a millstone (holding wheat), a chute, an item vault, a
   mechanical crafter and a toolbox.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)

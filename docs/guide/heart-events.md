@@ -26,7 +26,7 @@ of their **life story**.
 ## The five stories
 
 - **2 hearts, Where I come from.** Born in the village, they name both parents; hired at an inn, they tell of the road;
-  brought back from a grave, what they remember of it.
+  here since before the hall, the village before it had a name; brought back from a grave, what they remember of it.
 - **4 hearts, My work.** One for each kind of work: the first wall a builder raised, the day a miner's lamp went out,
   the year the harvest failed, a guard's first raid. Someone without a trade asks what you think they should do, and
   names the free workstation nearest the hall.

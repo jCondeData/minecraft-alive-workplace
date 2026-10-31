@@ -90,9 +90,11 @@ makings, the switch off, a broken stonecutter, the orders screen, malformed bed 
 `QaGemGrowerGameTests` (16 blocks out kept and 17 not; clusters on all six faces), `QaGemGrowerOrdersGameTests` (large
 and medium buds left; a bed without makings doesn't hold up the others; orders through the real click and screen, then
 unpicked; a save and reload; the Novice shards and no empty trade without Cobblemon), `JewellerGameTests` (the shard,
-the clay ball and the nugget at one stonecutter). With Cobblemon: `GemGrowerCompatTests` (a tumblestone on magma, a
+the clay ball and the nugget at one stonecutter), `QaGemGrowerHireGameTests` (hired through the real sneak-click and
+told so, a plain click hiring nobody, no stonecutter near, a Mason's stonecutter not taken from him). With Cobblemon: `GemGrowerCompatTests` (a tumblestone on magma, a
 Fire Gem Block on a core with its cluster picked and Blank TMs, the beds loading), `QaGemGrowerCompatTests` (planted
 against lava, never stone; 4 plantings round a magma block and no fifth; Blank TMs up to 8 on 1.8.1; tumblestones from
-the Apprentice and Type Gems from the Expert).
+the Apprentice and Type Gems from the Expert), `QaGemGrowerPartnerCompatTests` (Rock and Steel partners; a Geodude
+taps the ripe cluster loose as she picks it).
 
 Showcase scene: `gem_grower`.

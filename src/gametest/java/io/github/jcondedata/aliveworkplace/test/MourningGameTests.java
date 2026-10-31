@@ -326,4 +326,28 @@ public class MourningGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 	private static List<String> chronicle(VillageHallBlockEntity hall) {
 		return hall.chronicle().stream().map(e -> e.text().getString()).toList();
 	}
+
+	/** B549: a dead villager's son standing in the square's corner round the hall, outside the village's circle, doesn't grieve; her son inside does. */
+	//$ gametest_ticks_batch AREA '100' '"mourningCorner"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "mourningCorner")
+	public void kinOutsideTheVillageDontGrieve(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		village(helper);
+		Villager mira = villager(helper, new BlockPos(5, 2, 6), "Mira", VillagerProfession.FARMER);
+		Villager pip = villager(helper, new BlockPos(9, 2, 6), "Pip", VillagerProfession.FLETCHER);
+		helper.runAfterDelay(5, () -> {
+			ServerLevel level = helper.getLevel();
+			ready(helper);
+			long today = Chronicle.day(level);
+			Villager rob = FamilyTreeGameTests.outsideVillage(helper, helper.absolutePos(HALL), 1, 1, "Rob");
+			for (Villager son : List.of(pip, rob)) {
+				ModAttachments.PARENTS.set(son, new Families.Parents(Component.literal("Mira"), Component.literal("Tom"), "", "", true));
+			}
+			Mourning.onDeath(level, mira, Component.literal("Mira fell"), null);
+			helper.assertTrue(Mourning.grieving(pip, today), "Pip, in the village, doesn't grieve");
+			helper.assertTrue(!Mourning.grieving(rob, today) && !ModAttachments.GRIEF.has(rob), "Rob, outside the village's circle, grieves");
+			List.of(mira, pip, rob).forEach(Villager::discard);
+			helper.succeed();
+		});
+	}
 }

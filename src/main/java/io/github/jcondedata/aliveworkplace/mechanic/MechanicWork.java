@@ -115,6 +115,8 @@ public class MechanicWork extends Behavior<Villager> {
 		BlockPos store;
 		@Nullable
 		BlockPos machine;
+		@Nullable
+		Component machineName;
 		long nextLook;
 		long nextMachine;
 		long busyUntil;
@@ -171,14 +173,15 @@ public class MechanicWork extends Behavior<Villager> {
 	// ---- mending ----------------------------------------------------------------------------------------------------
 
 	/**
-	 * The drive-train parts gone from the finished builds near {@code post}, in the order they go back: shafts and
+	 * The drive-train parts gone from the finished builds reaching within {@link #REACH} of {@code post} (to the build's
+	 * nearest block, not its corner: B598), in the order they go back: shafts and
 	 * gearboxes, then cogwheels, then belts (a belt's controller segment first), lowest first. A build that has a build
 	 * site open (a builder's repair) is left out.
 	 */
 	public static List<Part> missingParts(ServerLevel level, BlockPos post) {
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		List<Part> out = new ArrayList<>();
-		for (BuildSiteManager.Finished f : manager.finishedNear(level, post, REACH)) {
+		for (BuildSiteManager.Finished f : manager.finishedReaching(level, post, REACH)) {
 			if (manager.all().stream().anyMatch(s -> s.placement().equals(f.placement()))) {
 				continue; // a builder is on it
 			}
@@ -438,6 +441,7 @@ public class MechanicWork extends Behavior<Villager> {
 			MechanicRound round = round(level, villager, post);
 			if (round.current() != null) {
 				state.machine = round.current();
+				state.machineName = level.getBlockState(round.current()).getBlock().getName();
 				state.task = Task.MACHINE;
 				return true;
 			}
@@ -528,7 +532,13 @@ public class MechanicWork extends Behavior<Villager> {
 		if (machine == null) {
 			return;
 		}
-		Component name = level.getBlockState(machine).getBlock().getName();
+		// the name it had when the round picked it: the spot may hold something else by now (B506: "seeing to the Air")
+		Component name = state.machineName != null ? state.machineName : level.getBlockState(machine).getBlock().getName();
+		if (level.isLoaded(machine) && !Kinetics.isMachine(level.getBlockState(machine))) {
+			status(villager, Component.translatable("message.aliveworkplace.mechanic.state.gone", name));
+			giveUp(state, gameTime); // the round finds the machines again next time, without this one
+			return;
+		}
 		status(villager, Component.translatable("message.aliveworkplace.mechanic.state.machine", name));
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(machine));
 		if (state.walker.reach(level, villager, machine, 3.0) || state.walker.noSpot()) {

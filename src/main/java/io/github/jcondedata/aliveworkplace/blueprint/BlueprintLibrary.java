@@ -2,13 +2,21 @@ package io.github.jcondedata.aliveworkplace.blueprint;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.lang.ref.WeakReference;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -27,6 +35,9 @@ import net.minecraft.world.level.storage.LevelResource;
  */
 public final class BlueprintLibrary {
 	private static final Map<StructureTemplate, Blueprint> CACHE = Collections.synchronizedMap(new WeakHashMap<>());
+	/** The template manager's last full list (B412), and how many times it was read. */
+	private static volatile Listing listing;
+	private static final AtomicInteger rescans = new AtomicInteger();
 
 	public static Optional<Blueprint> get(ServerLevel level, ResourceLocation id) {
 		return get(level.getServer(), id);
@@ -66,8 +77,11 @@ public final class BlueprintLibrary {
 	 * {@code everything} they are included (for operators' commands).
 	 */
 	public static List<ResourceLocation> list(MinecraftServer server, boolean everything) {
-		Path generated = server.getWorldPath(LevelResource.GENERATED_DIR);
-		return server.getStructureManager().listTemplates()
+		Set<ResourceLocation> generated = generatedIds(server);
+		return templates(server, generated).stream()
+			// B412: the one test that turns away almost every structure of a modpack goes first, so the others (each a
+			// look through a list of builds) run on the mod's own builds only, not on thousands of other mods' pieces
+			.filter(id -> everything || id.getNamespace().equals(AliveWorkplace.MOD_ID) && !isWorldgenPiece(id) || generated.contains(id))
 			.filter(id -> everything || cobblemonOk(id))
 			.filter(id -> everything || megaOk(id)) // the Mega Shrine: Mega Showdown's blocks (38.7)
 			.filter(id -> everything || io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.listed(id)) // Create's builds (39.4)
@@ -75,10 +89,68 @@ public final class BlueprintLibrary {
 			.filter(id -> everything || !soldOnly(id)) // sold by villagers only (34.15a, 34.15b)
 			.filter(id -> everything || StarterBlueprints.offered(id)) // an expansion's build, only once it's open (B119)
 			.filter(id -> everything || !io.github.jcondedata.aliveworkplace.city.Roads.isSegment(id)) // a Steward's road segments (27.15)
-			.filter(id -> everything || id.getNamespace().equals(AliveWorkplace.MOD_ID) && !isWorldgenPiece(id)
-				|| Files.isRegularFile(generated.resolve(id.getNamespace()).resolve("structures").resolve(id.getPath() + ".nbt")))
 			.sorted()
 			.toList();
+	}
+
+	/**
+	 * Every structure the template manager knows. B412: listing them reads through every data pack and mod jar (in a
+	 * modpack, thousands of files), and a builder's level-up lists the library ({@link
+	 * io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks#nextForLevelUp}), so in the 40-plot benchmark a single
+	 * builder's tick took over 100 ms. The list is kept until the data packs load again (a new resource manager) or the
+	 * world's {@code generated} folder (Structure Block saves, imports, uploads) changes, which is cheap to look at.
+	 */
+	private static List<ResourceLocation> templates(MinecraftServer server, Set<ResourceLocation> generated) {
+		Listing cached = listing;
+		if (cached != null && cached.server.get() == server && cached.resources.get() == server.getResourceManager()
+			&& cached.generated.equals(generated)) {
+			return cached.ids;
+		}
+		rescans.incrementAndGet();
+		List<ResourceLocation> ids = server.getStructureManager().listTemplates().toList();
+		listing = new Listing(new WeakReference<>(server), new WeakReference<>(server.getResourceManager()), Set.copyOf(generated), ids);
+		return ids;
+	}
+
+	/** How many times the template manager's whole list was read (B412's test: not once a level-up). */
+	public static int rescans() {
+		return rescans.get();
+	}
+
+	/**
+	 * The structures saved in the world's {@code generated} folder ({@code <ns>/structures/<path>.nbt}), found the way
+	 * the template manager finds them.
+	 */
+	private static Set<ResourceLocation> generatedIds(MinecraftServer server) {
+		Path generated = server.getWorldPath(LevelResource.GENERATED_DIR);
+		if (!Files.isDirectory(generated)) {
+			return Set.of();
+		}
+		Set<ResourceLocation> out = new HashSet<>();
+		try (DirectoryStream<Path> namespaces = Files.newDirectoryStream(generated, Files::isDirectory)) {
+			for (Path namespace : namespaces) {
+				Path folder = namespace.resolve("structures");
+				if (!Files.isDirectory(folder)) {
+					continue;
+				}
+				try (Stream<Path> files = Files.find(folder, Integer.MAX_VALUE, (p, a) -> a.isRegularFile() && p.toString().endsWith(".nbt"))) {
+					files.forEach(p -> {
+						String path = folder.relativize(p).toString().replace(p.getFileSystem().getSeparator(), "/");
+						ResourceLocation id = ResourceLocation.tryBuild(namespace.getFileName().toString(), path.substring(0, path.length() - ".nbt".length()));
+						if (id != null) {
+							out.add(id);
+						}
+					});
+				}
+			}
+		} catch (IOException | UncheckedIOException e) {
+			AliveWorkplace.LOG.warn("Could not list the generated structures in {}: {}", generated, e.toString());
+		}
+		return out;
+	}
+
+	private record Listing(WeakReference<MinecraftServer> server, WeakReference<Object> resources, Set<ResourceLocation> generated,
+		List<ResourceLocation> ids) {
 	}
 
 	/** Blueprints made of Cobblemon's blocks or for its jobs ({@link StarterBlueprints#COBBLEMON_ONLY}, {@link StarterBlueprints#COBBLEMON_WORKPLACES}) are listed only with Cobblemon. */

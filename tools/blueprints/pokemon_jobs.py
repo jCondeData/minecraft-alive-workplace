@@ -381,7 +381,9 @@ def barn(b):
             log(b, x, 3, z, BEAM, axis="x")
     for x in (3, 10):  # a window in each side bay of the front, and of the back
         window(b, x, 2, 1, "north", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
-        window(b, x, 2, 7, "south", width=2, sill=SPRUCE)
+        # a window looking south runs west from its x, so it starts a block on to fill the same bay (B648: from x it
+        # took the post's place and its glass ended in the doorway)
+        window(b, x + 1, 2, 7, "south", width=2, sill=SPRUCE)
     window(b, 2, 2, 3, "west", shutters="spruce_trapdoor", sill=SPRUCE)
     window(b, 12, 2, 5, "east", shutters="spruce_trapdoor", sill=SPRUCE)
     for x in range(3, 12):

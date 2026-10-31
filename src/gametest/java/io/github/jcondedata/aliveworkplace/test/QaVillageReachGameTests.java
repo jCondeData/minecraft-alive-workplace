@@ -369,7 +369,28 @@ public class QaVillageReachGameTests {
 		refused(helper, kit, seen, atHall, "a spot in the village 140 blocks from a composter outside it",
 			l -> l.equals("That field is 141 blocks from the Composter the farmer works at — keep it within 128."),
 			"\"That field is 141 blocks from the Composter the farmer works at — keep it within 128.\"");
+		// Halls left standing by earlier batches' test areas (GameTest never clears a passed test's structure) can be
+		// nearer the composter than this test's own, 140 blocks off, once the radius is 160; then that hall's village
+		// would hold the composter and this test would fail by where it happened to be laid out. This test runs in its
+		// own batch, so every other hall in range belongs to a finished test: take them away first.
+		// B559: a hall's point of interest can outlive its block (left by an earlier batch with no hall standing there),
+		// and breaking a block that is already gone doesn't take the point away; then the village search still found it.
+		// So the point goes too, and the test checks the composter's village is this test's own before it goes on.
+		net.minecraft.world.entity.ai.village.poi.PoiManager pois = level.getPoiManager();
+		pois.findAll(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> !p.equals(hall), work, 170,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.toList().forEach(other -> {
+				level.setBlockAndUpdate(other, Blocks.AIR.defaultBlockState());
+				if (pois.getType(other).isPresent()) {
+					pois.remove(other);
+				}
+			});
 		radius(160);
+		Optional<BlockPos> village = io.github.jcondedata.aliveworkplace.work.Reach.village(level, work);
+		helper.assertTrue(village.equals(Optional.of(hall)), "the composter's village isn't this test's hall at " + hall.toShortString() + " but " + village
+			+ "; halls by the composter: " + pois.findAll(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> true, work, 200,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).map(p -> p.toShortString() + " (" + (int) Math.sqrt(p.distSqr(work))
+				+ " blocks, " + level.getBlockState(p).getBlock() + ")").toList());
 		taken(helper, kit, seen, atHall, "a spot 141 blocks off in the village that now holds the composter");
 		helper.succeed();
 	}

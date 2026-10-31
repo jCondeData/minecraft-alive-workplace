@@ -482,4 +482,75 @@ public class FamilyTreeGameTests implements FabricGameTest {
 	private static List<String> chronicle(VillageHallBlockEntity hall) {
 		return hall.chronicle().stream().map(e -> e.text().getString()).toList();
 	}
+
+	// --- B549: the village is the circle ------------------------------------------------------------------------
+
+	/**
+	 * A villager (no AI) standing in a corner of the square box round {@code hall} ({@link VillageHalls#area}), one block
+	 * in from its edge on both axes ({@code sx} and {@code sz} pick the corner): outside the village's circle.
+	 */
+	static Villager outsideVillage(GameTestHelper helper, BlockPos hall, int sx, int sz, String name) {
+		BlockPos corner = hall.offset(sx * (VillageHalls.RADIUS - 1), 0, sz * (VillageHalls.RADIUS - 1));
+		helper.assertTrue(VillageHalls.area(hall).contains(corner.getCenter()) && !VillageHalls.contains(hall, corner), "the corner isn't outside the circle");
+		Villager v = EntityType.VILLAGER.create(helper.getLevel());
+		v.moveTo(corner.getX() + 0.5, corner.getY(), corner.getZ() + 0.5, 0, 0);
+		v.setNoAi(true);
+		v.setCustomName(Component.literal(name));
+		helper.getLevel().addFreshEntity(v);
+		return v;
+	}
+
+	/** B549: a villager in the square's corner, outside the village's circle, isn't written into its hall's family book. */
+	//$ gametest_ticks_batch AREA '100' '"familyCorner"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "familyCorner")
+	public void theFamilyBookLeavesOutTheSquaresCorner(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		village(helper);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		Villager ada = villager(helper, new BlockPos(9, 2, 4), "Ada");
+		BlockPos hall = helper.absolutePos(HALL);
+		Villager far = outsideVillage(helper, hall, 1, 1, "Far");
+		VillageHallBlockEntity entity = ready(helper);
+		FamilyBook.round(helper.getLevel(), hall, entity);
+		helper.assertTrue(entity.families().get(ada.getUUID()) != null, "Ada, in the village, isn't in the book");
+		helper.assertTrue(entity.families().get(far.getUUID()) == null && FamilyBook.family(far) == 0,
+			"a villager outside the village's circle was written into its book");
+		far.discard();
+		ada.discard();
+		helper.succeed();
+	}
+
+	/**
+	 * B549: a married villager whose partner stands in the square's corner, outside the village's circle, isn't the
+	 * village's couple (the next couple is), and a courting pair out in the corners isn't counted as courting.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"coupleCorner"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "coupleCorner")
+	public void couplesLeaveOutTheSquaresCorners(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		village(helper);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		long today = Chronicle.day(level);
+		Villager ada = villager(helper, new BlockPos(9, 2, 4), "Ada");
+		Villager bo = outsideVillage(helper, hall, 1, 1, "Bo");
+		Villager cy = villager(helper, new BlockPos(12, 2, 8), "Cy");
+		Villager di = villager(helper, new BlockPos(14, 2, 8), "Di");
+		Villager eli = villager(helper, new BlockPos(6, 2, 10), "Eli");
+		Villager fay = villager(helper, new BlockPos(6, 2, 12), "Fay");
+		Villager gus = outsideVillage(helper, hall, -1, 1, "Gus");
+		Villager hal = outsideVillage(helper, hall, 1, -1, "Hal");
+		for (Villager[] pair : List.of(new Villager[] {ada, bo}, new Villager[] {cy, di}, new Villager[] {eli, fay}, new Villager[] {gus, hal})) {
+			boolean married = pair[0] != eli && pair[0] != gus;
+			ModAttachments.PARTNER.set(pair[0], new Couples.Partner(pair[1].getUUID(), pair[1].getDisplayName(), today, married));
+			ModAttachments.PARTNER.set(pair[1], new Couples.Partner(pair[0].getUUID(), pair[0].getDisplayName(), today, married));
+		}
+		List<Villager> couple = Couples.coupleNear(level, hall, ada.blockPosition());
+		helper.assertTrue(couple.size() == 2 && couple.containsAll(List.of(cy, di)),
+			"the couple nearest Ada isn't Cy and Di (Bo is outside the village): " + couple.stream().map(v -> v.getName().getString()).toList());
+		helper.assertTrue(Couples.courting(level, hall) == 1, "courting couples in the village: " + Couples.courting(level, hall) + ", not 1");
+		List.of(ada, bo, cy, di, eli, fay, gus, hal).forEach(Villager::discard);
+		helper.succeed();
+	}
 }

@@ -29,7 +29,8 @@ on each board, with the village, its owner and the number.
 - **Most Legends:** its Legends.
 - **Greatest realm:** the [realm](realms.md) with the most member villages, then the most villagers.
 
-A board nobody is on reads "no village yet".
+A tie goes to the bigger village (for realms: the one with more villagers). A board nobody is on reads "no village
+yet".
 
 ## The winners
 

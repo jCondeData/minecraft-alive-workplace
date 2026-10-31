@@ -216,12 +216,15 @@ public final class CupChampions {
 		return new Colours(field, cup);
 	}
 
-	/** The dye whose firework colour is nearest {@code rgb}. */
+	/**
+	 * The dye whose own colour (the one its banners and wool show) is nearest {@code rgb}. The themes write their colours as
+	 * the dyes' texture colours (brown is #835432), so matching the firework colours instead made brown come out red (B566).
+	 */
 	public static DyeColor nearest(int rgb) {
 		DyeColor best = DyeColor.WHITE;
 		long bestD = Long.MAX_VALUE;
 		for (DyeColor dye : DyeColor.values()) {
-			int c = dye.getFireworkColor();
+			int c = dye.getTextureDiffuseColor() & 0xFFFFFF;
 			long dr = ((c >> 16) & 0xFF) - ((rgb >> 16) & 0xFF);
 			long dg = ((c >> 8) & 0xFF) - ((rgb >> 8) & 0xFF);
 			long db = (c & 0xFF) - (rgb & 0xFF);

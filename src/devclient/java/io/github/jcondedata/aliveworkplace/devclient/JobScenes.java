@@ -542,6 +542,16 @@ final class JobScenes {
 				conscriptsStruck.add(v);
 			}
 		});
+		// B543: the guard and the first conscripts sometimes finished all three raiders before the last conscript reached
+		// one (2 of 3 struck, though the edict worked). While a conscript has yet to strike, a raider takes no killing
+		// blow except from such a conscript, so one is left for him; his own blow still has to land to count.
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
+			if (!conscriptionRaiders.contains(entity) || amount < entity.getHealth()
+				|| conscripts.stream().allMatch(conscriptsStruck::contains)) {
+				return true;
+			}
+			return source.getEntity() instanceof Villager v && conscripts.contains(v) && !conscriptsStruck.contains(v);
+		});
 	}
 	/** smith_orders: the slot where the Poké Ball turned up (found on the server). */
 	private static volatile int pickedSlot = -1;
@@ -3096,6 +3106,74 @@ final class JobScenes {
 				return there[0] && site != null && (now == null || now.mined() >= 9);
 			};
 		}, null));
+		// Miners dig deeper as they level up (36.22): a Master handed a "down to bedrock" marker on a hill of rock 96 high,
+		// the upper layers dug already with the spiral stair left in the wall, digs the last layers, 90 and more blocks
+		// down, behind a glass window cut into the pit's south wall for the camera.
+		SCENES.put("deep_quarry", new Job("a Master miner took a quarry down to bedrock, 96 blocks deep, and dug its bottom layers far past the 64 every miner digs, keeping the spiral stair",
+			3600, new Vec3(3.5, -55.2, -2.5), new Vec3(0, -57, -10), (level, player) -> {
+			int top = 36; // the world's floor is Y=-64, so a bedrock pit goes down to Y=-59: 96 deep from here
+			BlockPos min = new BlockPos(-2, top, -12);
+			BlockPos max = new BlockPos(2, top, -8);
+			// the hill: rock round the pit from the ground up to its top; a window of glass in the south wall at the bottom
+			for (BlockPos p : BlockPos.betweenClosed(-4, -60, -14, 4, top, -6)) {
+				boolean pit = p.getX() >= -2 && p.getX() <= 2 && p.getZ() >= -12 && p.getZ() <= -8;
+				BlockState state;
+				if (pit) {
+					state = Blocks.AIR.defaultBlockState(); // dug already; the rock and the steps go in below
+				} else if (p.getZ() == -7 && p.getX() >= -2 && p.getX() <= 2 && p.getY() >= -59 && p.getY() <= -52) {
+					state = Blocks.GLASS.defaultBlockState();
+				} else if (p.getZ() == -6 && p.getY() <= -52) {
+					state = Blocks.AIR.defaultBlockState(); // the cut the window looks out of
+				} else {
+					state = (p.getY() < 0 ? Blocks.DEEPSLATE : Blocks.STONE).defaultBlockState();
+				}
+				level.setBlock(p, state, 2);
+			}
+			level.setBlockAndUpdate(STATION, Blocks.BLAST_FURNACE.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+			chest(level, chestPos(), new ItemStack(Items.TORCH, 16));
+			Villager m = EntityType.VILLAGER.spawn(level, new BlockPos(0, -53, -10), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Brokk"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, STATION);
+			m.setVillagerData(m.getVillagerData().setLevel(5));
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_PICKAXE));
+			// handed over as the player does: the marker's deepest choice, down to just above bedrock
+			ItemStack marker = new ItemStack(ModItems.QUARRY_MARKER);
+			marker.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.QUARRY, new io.github.jcondedata.aliveworkplace.mine.QuarryData(
+				java.util.Optional.of(level.dimension().location()), java.util.Optional.of(min), java.util.Optional.of(max),
+				io.github.jcondedata.aliveworkplace.mine.QuarryData.BEDROCK));
+			io.github.jcondedata.aliveworkplace.mine.Miners.assign(player, m, marker);
+			var site = io.github.jcondedata.aliveworkplace.mine.Miners.activeSite(level, m);
+			Showcase.check(site != null && site.box().getYSpan() == 96 && site.box().minY() == -59 && !site.wantsDeeper(),
+				"the Master took the whole quarry, 96 blocks deep down to just above bedrock");
+			if (site == null) {
+				return l -> false;
+			}
+			// what's left: the bottom six layers of rock with ores in them; above, the steps the miner left on the way down
+			net.minecraft.util.RandomSource ores = net.minecraft.util.RandomSource.create(3622);
+			for (BlockPos p : BlockPos.betweenClosed(-2, -59, -12, 2, top, -8)) {
+				if (p.getY() <= -54) {
+					float r = ores.nextFloat();
+					Block rock = r < 0.06f ? Blocks.DEEPSLATE_DIAMOND_ORE : r < 0.14f ? Blocks.DEEPSLATE_IRON_ORE : r < 0.2f ? Blocks.DEEPSLATE_REDSTONE_ORE : Blocks.DEEPSLATE;
+					level.setBlock(p, rock.defaultBlockState(), 2);
+				} else if (site.isStep(p)) {
+					level.setBlock(p, (p.getY() < 0 ? Blocks.COBBLED_DEEPSLATE : Blocks.COBBLESTONE).defaultBlockState(), 2);
+				}
+			}
+			int deepest = top - io.github.jcondedata.aliveworkplace.mine.QuarryData.ANY_LEVEL_DEPTH; // below this, only a seasoned miner digs
+			return l -> {
+				var now = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).get(site.id());
+				int dug = 0;
+				for (BlockPos p : BlockPos.betweenClosed(-2, -59, -12, 2, -54, -8)) {
+					dug += l.getBlockState(p).isAir() ? 1 : 0;
+				}
+				boolean deep = now == null || now.current() == null || now.current().getY() < deepest;
+				if (dug >= 40 && deep) {
+					Showcase.check(true, "the Master dug " + dug + " blocks 90 and more blocks down, past the 64 every miner digs");
+					return true;
+				}
+				return false;
+			};
+		}, null));
 		SCENES.put("weaponsmith", job("the weaponsmith mended the worn pickaxe", 1800, (level, player) -> {
 			Villager w = worker(level, STATION, Blocks.GRINDSTONE.defaultBlockState()
 				.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR)
@@ -5254,10 +5332,10 @@ final class JobScenes {
 					}
 				}, 40)),
 			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
-		// Bring an old house up to its latest look (ROADMAP 36.21): a Stone House built from its first drawing stands north of
+		// Bring an old house up to its latest look (ROADMAP 36.21, B642): a Stone House built from its drawing before B260 stands north of
 		// the hall; the Repairs page offers "Refresh to the latest look", a click shows what changes, the button sends Bram,
 		// and the last still shows the house once he's done.
-		SCREENS.put("refresh_old_house", new Screen("a Stone House built from its first drawing was offered a refresh on the hall's Repairs page, "
+		SCREENS.put("refresh_old_house", new Screen("a Stone House built from its drawing before B260 was offered a refresh on the hall's Repairs page, "
 			+ "showed what changes, and Bram brought it up to its latest look",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
@@ -5267,8 +5345,9 @@ final class JobScenes {
 				net.minecraft.resources.ResourceLocation house = StarterBlueprints.STONE_HOUSE.id();
 				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin,
 					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
-				var first = io.github.jcondedata.aliveworkplace.build.Refreshes.olderDrawing(level.getServer(), house, "25c521dcd");
-				Showcase.check(first.isPresent(), "the Stone House's first drawing is shipped");
+				// B642: the drawing before B260, the one the owner's live Stone House was built from
+				var first = io.github.jcondedata.aliveworkplace.build.Refreshes.olderDrawing(level.getServer(), house, "aec09cb26");
+				Showcase.check(first.isPresent(), "the Stone House's drawing before B260 is shipped");
 				if (first.isEmpty()) {
 					return;
 				}
@@ -8430,10 +8509,8 @@ final class JobScenes {
 					new io.github.jcondedata.aliveworkplace.people.Couples.Partner(pia.getUUID(), pia.getDisplayName(), 1, true));
 				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARTNER.set(pia,
 					new io.github.jcondedata.aliveworkplace.people.Couples.Partner(odo.getUUID(), odo.getDisplayName(), 1, true));
-				for (Villager v : List.of(odo, pia)) {
-					v.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME,
-						net.minecraft.core.GlobalPos.of(level.dimension(), sky.offset(2, 1, 2)));
-				}
+				// Their bed in the cottage: a HOME memory with no bed behind it houses nobody, so no home grade (B452).
+				ScreenshotHarness.homeBed(level, sky.offset(2, 1, 2), Direction.NORTH, odo, pia);
 				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
 			},
 			List.of(new Step("01_class_switch_on_before", -2, 6, (level, player) -> {

@@ -26,9 +26,11 @@ creative tab too.
 ## Running a shop
 
 Place it and the shop is yours; a villager without a job nearby takes it by themselves and becomes its
-**Shopkeeper**. Open the counter to set your prices: the top slot of each column is what one sale hands over, the slot
-below it the price. Put the goods in chests within 8 blocks. Other players buy by trading with the shopkeeper, and the
-payment lands in those chests. **Sneak-right-click** the counter to see your sales, whatever
+**Shopkeeper** (or, with `randomStationJobs` on, sometimes the counter's other job, the Innkeeper; hand them an
+emerald to make them the Shopkeeper). Open the counter to set your prices: the top slot of each column is what one sale hands over, the slot
+below it the price. Put the goods in chests within 8 blocks (and no more than 4 above or below it). Other players buy by trading with the shopkeeper, and the
+payment lands in those chests. Every buyer pays exactly your price: no discount comes off it, not Hero of the Village,
+not a Silver Tongue shopkeeper, not a trade fair. **Sneak-right-click** the counter to see your sales, whatever
 you have in your hand.
 
 With CobbleDollars installed, emerald prices are paid in CobbleDollars (100 per emerald) straight to you, and a

@@ -231,7 +231,8 @@ public final class PokemonRanger {
 			state = state.calmedOn(today);
 		}
 		if (state.befriendDay() != today && has(ranger, BefriendPower.class)) {
-			state = state.befriendedOn(today);
+			// the day counts as used only when a befriending walk starts (B622): with no owner, no pasture with room or no
+			// wild Pokémon near yet, the Ranger looks again each second, so one that wanders in later that day is befriended
 			Optional<UUID> owner = owner(level, hall);
 			if (owner.isEmpty()) {
 				return state;
@@ -243,7 +244,7 @@ public final class PokemonRanger {
 			List<Entity> wild = WildPokemon.EXTENSION.call(w -> w.befriendable(level, ranger.blockPosition(), BEFRIEND_RADIUS), List.<Entity>of());
 			wild = wild.stream().filter(e -> e.blockPosition().closerThan(hall, BEFRIEND_RADIUS + 0.5)).toList();
 			if (!wild.isEmpty()) {
-				return state.doing(FETCH, wild.get(0).getUUID(), pasture, level.getGameTime());
+				return state.befriendedOn(today).doing(FETCH, wild.get(0).getUUID(), pasture, level.getGameTime());
 			}
 		}
 		return state;

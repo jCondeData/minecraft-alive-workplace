@@ -32,7 +32,8 @@ Roadmap items: 31.18, B135, B343
 
 - **The trigger** (`data/aliveworkplace/arcs/the_sickness.json`, an arc marked `threat`): a village of Village rank or
   more with 12 villagers or more, with illness on, at 6% a day. The conditions are `rank_at_least`, `villagers` and the
-  new `villager_sickness` (illness switched on).
+  new `villager_sickness` (illness switched on). Being a threat arc, it doesn't start in a village set At peace, at
+  threat level 0 or on Peaceful ([peace](peace.md), B699).
 - **The illness** is a kind of illness (`grey_cough`, saved beside the day the villager fell ill), like a coven's hex.
   While a Sickness story runs in the village, the hall's round keeps the slowness on (unless eased) and the cough
   going; it never passes with time. Once no Sickness story runs there (it ended, or was switched off), the cough lifts
@@ -68,6 +69,8 @@ Roadmap items: 31.18, B135, B343
   the story ends.
 - **Running its course**: 15 days after the story began, without the cure, the cough runs its course: each coughing
   villager is well 1 to 3 days later, the village's mood is 15 lower for 5 days, and the story ends as failed.
+  While it runs its course nobody new catches it, the healer takes no more herbs, and nobody is thanked: a player who
+  handed in some herbs gets no standing, honor or friendship from it.
 - Every step is kept in the arc's saved state (its flags and roles), so the story carries on after a restart.
 
 ## Switches
@@ -131,4 +134,14 @@ Roadmap items: 31.18, B135, B343
   rounds waiting, the Remedy in hand stowed, the round), `aPhysiciansRemedyOnlyEasesTheGreyCough` (their visit and a
   player's hand; a kept-well villager doesn't catch it; a Nurse comes first), `physiciansSwitchedOffWrenComes`,
   `thePhysicianHealerSurvivesAReload` (two save-and-reloads mid-arc).
+- QA (`QaSicknessGameTests`, 14 tests): the trigger at Village rank and 12 villagers (not 11, not a Hamlet, not with
+  illness off), the pass-on at 8 blocks and not 9 and by bed and workstation, the cap in a village of 13, the cough
+  and an old-style illness through a save, the hand-in taking only 3 of each named herb, the tonic only for the
+  coughing, every gatherer thanked and no bystander, the Nurse killed or the stand broken mid-brew, Doctor Wren
+  brewing by the hall and leaving, every sentence a player reads, and the herb biome tags open to datapacks.
+- QA (`QaHeartsSickness1031GameTests`, 6 sickness tests): no start while the village is At peace or at threat level
+  0 (B699 holds), a remedy easing for exactly one day, the brew done at half a day and not a tick before ("Brewing the
+  cure" at 40% over the healer's head), an even village of 12 reaching exactly 6 coughing and never 7, nobody catching
+  it or being thanked while it runs its course, and the ending's +100 friendship exactly from each villager who was ill
+  and none from the rest.
 - Showcase scenes: `sickness` (the coughing village, a herb patch, the brew, the cure going round).

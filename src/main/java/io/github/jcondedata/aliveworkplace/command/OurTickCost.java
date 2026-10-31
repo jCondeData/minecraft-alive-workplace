@@ -165,7 +165,11 @@ public final class OurTickCost {
 			return;
 		}
 		long tick = thisTick;
-		String what = biggestWhat == null ? "none" : name(biggestWhat) + " " + ms(biggestCall);
+		// B412: written out only for a tick that is logged or is the window's worst so far; formatting it every tick put
+		// the benchmark's own String.format in our share of the profile
+		String what = tick > windowWorst || tick / 1_000_000.0 > LONG_MS
+			? biggestWhat == null ? "none" : name(biggestWhat) + " " + ms(biggestCall)
+			: null;
 		thisTick = 0L;
 		biggestCall = 0L;
 		biggestWhat = null;

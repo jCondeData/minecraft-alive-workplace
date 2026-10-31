@@ -4,7 +4,7 @@ Each player has a standing in each village, earned by deeds and lost by harm, an
 Hero, Lord. ROADMAP 31.11; builds on the quest engine (31.2), story arcs (31.4), friendship and gifts (31.5, 31.6),
 personal requests (31.9) and lairs (32.3). Part of the 1.5 expansion: switched on when Milestone 31 is complete.
 
-Roadmap items: 31.11, 31.12
+Roadmap items: 31.11, 31.12, B706, B710
 
 ## What a player sees
 
@@ -37,7 +37,8 @@ Co-author. They are kept for good and listed with your standing.
 - **Cheaper trades.** A villager you are friends with sells for less: 5% off at 4 hearts and 5% more for each heart
   after, 30% at most. Your title in their village adds 5% (Friend), 10% (Hero) or 15% (Lord), 40% at most in all.
   It comes on top of vanilla's own discounts (gossip, Hero of the Village); no price goes under 1 emerald, and a
-  player's shop keeps its own prices.
+  player's shop keeps its own prices: a shopkeeper asks the owner's price from every buyer, with no discount at all
+  (not vanilla's gossip or Hero of the Village, not Silver Tongue, a trade fair or the Tithe; B706, B710).
 - **Festival gifts.** At a festival, each villager with 6 hearts or more with you brings you one gift, dropped at
   your feet with a line in chat ("Dara brings you a festival gift: Apple (6)."). What they bring goes by their job's
   family: building and crafting 16 stone bricks, mining and smithing 4 iron ingots, the land 6 apples, animals and

@@ -121,23 +121,30 @@ public final class Miners {
 			tell(player, QuarryMarkerItem.tooBig(area.get().getXSpan(), area.get().getZSpan(), data.isStripMine()), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
-		BoundingBox box = clampToWorld(level, area.get());
+		BoundingBox full = clampToWorld(level, area.get());
+		// 36.22: as deep as the miner's level lets them for now (deeper as they level up, see deepen)
+		BoundingBox box = data.isStripMine() ? full : withinLevel(full, BuilderLevels.level(villager), data.depth());
 		java.util.OptionalInt shaft = data.shaftTop(floor);
 		BlockPos center = box.getCenter();
-		// Down a shaft, the way there is straight down: only the distance across counts.
+		// Down a shaft, the way there is straight down: only the distance across counts. A deep pit (36.22) is measured
+		// to the middle of its top, where the miner starts down it.
 		double distance = Math.sqrt(shaft.isPresent() ? new BlockPos(center.getX(), bench.get().getY(), center.getZ()).distSqr(bench.get())
+			: full.getYSpan() > QuarryData.ANY_LEVEL_DEPTH ? new BlockPos(center.getX(), full.maxY(), center.getZ()).distSqr(bench.get())
 			: center.distSqr(bench.get()));
 		if (distance > MAX_DISTANCE && !io.github.jcondedata.aliveworkplace.work.Reach.inSameVillage(level, bench.get(), center)) {
 			tell(player, io.github.jcondedata.aliveworkplace.work.Reach.refusal(level, bench.get(), "message.aliveworkplace.quarry.too_far", (int) Math.ceil(distance),
 				io.github.jcondedata.aliveworkplace.work.AreaJobs.workBlock(level, bench.get()), MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
-		if (box.isInside(bench.get())) {
+		if (full.isInside(bench.get())) {
 			tell(player, Component.translatable("message.aliveworkplace.quarry.over_bench"), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
 		Friends.hire(player, villager);
 		QuarrySite site = start(level, villager, player, box, data.depth());
+		if (full.minY() < box.minY()) {
+			site.setWantedBottom(full.minY());
+		}
 		if (data.isStripMine()) {
 			site.setStripMine(true);
 		}
@@ -149,13 +156,47 @@ public final class Miners {
 		}
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
 		if (site.hasShaft()) {
-			tell(player, Component.translatable("message.aliveworkplace.quarry.started_shaft", villager.getDisplayName(), box.minY(), box.getXSpan(),
+			tell(player, io.github.jcondedata.aliveworkplace.work.Words.articled("message.aliveworkplace.quarry.started_shaft", 2, villager.getDisplayName(), box.minY(), box.getXSpan(),
 				box.getZSpan(), site.shaftLength() + 2, SupplyContainers.RADIUS), ChatFormatting.GREEN);
 		} else {
 			tell(player, Component.translatable("message.aliveworkplace.quarry.started", villager.getDisplayName(), box.getXSpan(), box.getZSpan(),
 				box.getYSpan(), SupplyContainers.RADIUS), ChatFormatting.GREEN);
 		}
+		if (site.wantsDeeper()) {
+			tell(player, Component.translatable("message.aliveworkplace.quarry.too_deep", villager.getDisplayName(),
+				BuilderLevels.levelName(BuilderLevels.level(villager)), box.getYSpan(), full.getYSpan(),
+				BuilderLevels.levelName(QuarryData.levelFor(data.depth(), full.getYSpan()))), ChatFormatting.YELLOW);
+		}
 		return InteractionResult.SUCCESS;
+	}
+
+	/** {@code box} cut off at the lowest layer a miner at villager level {@code villagerLevel} digs (36.22). */
+	public static BoundingBox withinLevel(BoundingBox box, int villagerLevel) {
+		return withinLevel(box, villagerLevel, box.getYSpan());
+	}
+
+	/** {@code box}, marked with the depth choice {@code choice}, cut off for a miner at {@code villagerLevel} (B649: a bedrock pit is a Master's). */
+	public static BoundingBox withinLevel(BoundingBox box, int villagerLevel, int choice) {
+		int lowest = QuarryData.lowestFor(villagerLevel, box.maxY(), box.minY(), choice);
+		return lowest <= box.minY() ? box : new BoundingBox(box.minX(), lowest, box.minZ(), box.maxX(), box.maxY(), box.maxZ());
+	}
+
+	/**
+	 * A miner who leveled up digs on down (36.22): when the marker asked for a deeper pit than their level let them
+	 * dig, the pit goes down as far as their new level reaches, and the owner hears of it. Called every work tick.
+	 */
+	static void deepen(ServerLevel level, Villager villager, QuarrySite site) {
+		if (!site.wantsDeeper()) {
+			return;
+		}
+		int lvl = BuilderLevels.level(villager);
+		if (site.deepenTo(QuarryData.lowestFor(lvl, site.box().maxY(), site.wantedBottom(), site.depth()))) {
+			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+			if (owner != null) {
+				tell(owner, Component.translatable("message.aliveworkplace.quarry.deeper", villager.getDisplayName(), BuilderLevels.levelName(lvl),
+					site.box().getYSpan()), ChatFormatting.GREEN);
+			}
+		}
 	}
 
 	/**
@@ -286,6 +327,11 @@ public final class Miners {
 		if (owner != null) {
 			tell(owner, Component.translatable("message.aliveworkplace.quarry.finished", villager.getDisplayName(), site.mined(), site.skipped()),
 				ChatFormatting.GREEN);
+			if (site.wantsDeeper()) {
+				int wanted = site.box().maxY() - site.wantedBottom() + 1;
+				tell(owner, Component.translatable("message.aliveworkplace.quarry.stopped_short", villager.getDisplayName(), site.box().getYSpan(), wanted,
+					BuilderLevels.levelName(QuarryData.levelFor(site.depth(), wanted))), ChatFormatting.YELLOW);
+			}
 		}
 		BuilderLevels.addXp(level, villager, 10, site.owner());
 		end(level, villager, site);

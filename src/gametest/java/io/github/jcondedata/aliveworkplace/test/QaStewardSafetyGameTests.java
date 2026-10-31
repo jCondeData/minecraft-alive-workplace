@@ -300,7 +300,7 @@ public class QaStewardSafetyGameTests implements FabricGameTest {
 		List<Map.Entry<Item, Integer>> expected = List.of(Map.entry(Items.GLASS, 30), Map.entry(Items.OAK_PLANKS, 20), Map.entry(Items.STONE_BRICKS, 15),
 			Map.entry(Items.OAK_LOG, 12), Map.entry(Items.TORCH, 10), Map.entry(Items.BRICKS, 9), Map.entry(Items.COBBLESTONE, 7), Map.entry(Items.WHITE_WOOL, 5));
 		helper.assertTrue(list.equals(expected), "the shopping list is " + list + ", not " + expected);
-		String line = "Shopping list: 30 Glass, 20 Oak Planks, 15 Stone Bricks, 12 Oak Log, 10 Torch, 9 Bricks, 7 Cobblestone, 5 White Wool";
+		String line = "Shopping list: 30 Glass, 20 Oak Planks, 15 Stone Bricks, 12 Oak Logs, 10 Torches, 9 Bricks, 7 Cobblestone, 5 White Wool";
 		List<String> desk = deskLines(v);
 		helper.assertTrue(desk.contains(line), "the desk doesn't read \"" + line + "\": " + desk);
 		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
@@ -308,8 +308,27 @@ public class QaStewardSafetyGameTests implements FabricGameTest {
 		ItemStack icon = board.icon(StorehouseBoard.SHOPPING_SLOT);
 		List<String> lines = loreLines(icon);
 		helper.assertTrue(icon.getHoverName().getString().equals("The Steward's shopping list"), "the board's title: " + icon.getHoverName().getString());
-		helper.assertTrue(lines.equals(List.of("30 Glass", "20 Oak Planks", "15 Stone Bricks", "12 Oak Log", "10 Torch", "9 Bricks", "7 Cobblestone", "5 White Wool")),
+		helper.assertTrue(lines.equals(List.of("30 Glass", "20 Oak Planks", "15 Stone Bricks", "12 Oak Logs", "10 Torches", "9 Bricks", "7 Cobblestone", "5 White Wool")),
 			"the Storehouse's board lists " + lines);
+		helper.succeed();
+	}
+
+	/**
+	 * B698: the list counts in the plural ("2 Torches") but names one in the singular ("1 Oak Log", not "1 Oak Logs"),
+	 * and an item the lang has no plural for keeps its own name ("3 Glass"), on the desk and the Storehouse's board.
+	 */
+	//$ gametest_ticks_batch AREA '40' '"qaSafetyPlural"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "qaSafetyPlural")
+	public void theShoppingListCountsInThePlural(GameTestHelper helper) {
+		Village v = village(helper);
+		waitingSites(helper, v, List.of(Map.of(Items.GLASS, 3, Items.TORCH, 2, Items.OAK_LOG, 1)));
+		String line = "Shopping list: 3 Glass, 2 Torches, 1 Oak Log";
+		List<String> desk = deskLines(v);
+		helper.assertTrue(desk.contains(line), "the desk doesn't read \"" + line + "\": " + desk);
+		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
+		ChoiceMenu board = StorehouseBoard.boardForTest(v.owner(), helper.absolutePos(STOREHOUSE));
+		List<String> lines = loreLines(board.icon(StorehouseBoard.SHOPPING_SLOT));
+		helper.assertTrue(lines.equals(List.of("3 Glass", "2 Torches", "1 Oak Log")), "the Storehouse's board lists " + lines);
 		helper.succeed();
 	}
 
@@ -358,13 +377,13 @@ public class QaStewardSafetyGameTests implements FabricGameTest {
 		});
 		v.entity().setOwner(owner.getUUID(), owner.getGameProfile().getName());
 		level.setDayTime(StewardWishes.day(level) * 24000L + 1000L);
-		waitingSites(helper, v, List.of(Map.of(Items.GLASS, 40), Map.of(Items.OAK_PLANKS, 12)));
+		waitingSites(helper, v, List.of(Map.of(Items.GLASS, 40), Map.of(Items.OAK_PLANKS, 12, Items.TORCH, 10, Items.OAK_LOG, 1)));
 		StewardDesk.plan(level, v.steward(), v.hall());
 		StewardDesk.plan(level, v.steward(), v.hall());
 		List<Component> told = shoppingLines(seen);
 		helper.assertTrue(told.size() == 1, "told " + told.size() + " times the same day: " + told);
 		String expected = v.steward().getDisplayName().getString() + " of " + VillageHalls.name(level, v.hall()).getString()
-			+ " needs these for his builds: 40 Glass, 12 Oak Planks";
+			+ " needs these for his builds: 40 Glass, 12 Oak Planks, 10 Torches, 1 Oak Log";
 		helper.assertTrue(told.get(0).getString().equals(expected), "the owner read \"" + told.get(0).getString() + "\", not \"" + expected + "\"");
 		level.setDayTime(level.getDayTime() + 24000L);
 		StewardDesk.plan(level, v.steward(), v.hall());
@@ -419,6 +438,8 @@ public class QaStewardSafetyGameTests implements FabricGameTest {
 		want.put(StewardSafety.describe(list.subList(0, 1)).getString(), "40 Glass");
 		want.put(StewardSafety.describe(list).getString(), "40 Glass, 12 Oak Planks, 5 Stone Bricks");
 		want.put(StewardSafety.describe(List.of()).getString(), "");
+		want.put(StewardSafety.describe(List.of(Map.entry(Items.TORCH, 1), Map.entry(Items.TORCH, 2), Map.entry(Items.GLASS, 1))).getString(),
+			"1 Torch, 2 Torches, 1 Glass");
 		want.put(Component.translatable("screen.aliveworkplace.desk.shopping", StewardSafety.describe(list.subList(0, 2))).getString(),
 			"Shopping list: 40 Glass, 12 Oak Planks");
 		want.put(Component.translatable("message.aliveworkplace.steward.shopping", "Ada", "Oakham", StewardSafety.describe(list.subList(0, 2))).getString(),

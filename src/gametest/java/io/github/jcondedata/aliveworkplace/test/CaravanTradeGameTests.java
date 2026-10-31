@@ -606,7 +606,7 @@ public class CaravanTradeGameTests implements FabricGameTest {
 			Caravans.round(two.level(), two.a(), null);
 			helper.assertTrue(two.ours().countItem(Items.OAK_LOG) == 48 && two.hallA().treasury() == 0 && two.priceA(TIMBER).equals(new Market.Price(100, 100, 0)),
 				"the timber should be home, unsold: " + two.ours().countItem(Items.OAK_LOG) + " logs, A " + two.hallA().treasury() + ", " + two.priceA(TIMBER));
-			helper.assertTrue(chronicle(two.hallA()).contains("Our caravan came home from Someone with 32 × Oak Log unsold"), "A's chronicle: " + chronicle(two.hallA()));
+			helper.assertTrue(chronicle(two.hallA()).contains("Our caravan came home from another village with 32 × Oak Log unsold"), "A's chronicle: " + chronicle(two.hallA()));
 			helper.succeed();
 		});
 	}

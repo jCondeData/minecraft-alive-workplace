@@ -181,6 +181,9 @@ public class FurnishingTableGameTests implements FabricGameTest {
 	/**
 	 * A saved choice whose spot no longer matches the blueprint's spots file (a data pack took spots away, or moved or
 	 * changed one) builds that spot vanilla, and a spot past the end of the file is passed over too, never a crash.
+	 * B641: a piece finds its spot by place and kind when its index moved (a redrawn file inserted spots before it), so
+	 * "gone" means no spot of the file has its place and kind: the past-the-end piece stands where no spot is; and a
+	 * piece whose index is past the end but whose place and kind are a spot's is built on that spot.
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
@@ -190,7 +193,7 @@ public class FurnishingTableGameTests implements FabricGameTest {
 		Map<BlockPos, BlockState> plank = Map.of(BlockPos.ZERO, Blocks.SPRUCE_PLANKS.defaultBlockState());
 		Blueprint vanilla = BlueprintLibrary.get(helper.getLevel(), COTTAGE).orElseThrow();
 		Map<String, FurnitureChoice> gone = Map.of(
-			"a spot past the end of the file", new FurnitureChoice(Map.of(spots.size(), new FurnitureChoice.Placed(table.pos(), table.kind(), TEST_TABLE, plank))),
+			"a spot past the end of the file", new FurnitureChoice(Map.of(spots.size(), new FurnitureChoice.Placed(table.pos().offset(100, 0, 0), table.kind(), TEST_TABLE, plank))),
 			"a spot that moved", new FurnitureChoice(Map.of(spots.indexOf(table), new FurnitureChoice.Placed(table.pos().above(), table.kind(), TEST_TABLE, plank))),
 			"a spot of another kind", new FurnitureChoice(Map.of(spots.indexOf(table), new FurnitureChoice.Placed(table.pos(), FurnitureSpot.Kind.BED, TEST_TABLE, plank))));
 		gone.forEach((what, choice) -> {
@@ -202,6 +205,10 @@ public class FurnishingTableGameTests implements FabricGameTest {
 			.apply(vanilla, spots);
 		helper.assertTrue(furnished.blocks().stream().anyMatch(e -> e.pos().equals(table.pos()) && e.state().is(Blocks.SPRUCE_PLANKS)),
 			"the matching spot didn't get its piece");
+		// B641: a stale index (past the end) with the spot's place and kind lands on that spot, and only there
+		Blueprint moved = new FurnitureChoice(Map.of(spots.size(), new FurnitureChoice.Placed(table.pos(), table.kind(), TEST_TABLE, plank)))
+			.apply(vanilla, spots);
+		helper.assertTrue(moved.blocks().equals(furnished.blocks()), "a piece whose index moved didn't land on its spot as the indexed one does");
 		helper.succeed();
 	}
 

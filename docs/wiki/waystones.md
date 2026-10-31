@@ -67,8 +67,9 @@ states are then put back (same block, so the block entity and its waystone stay)
 
 The network (41.2): each time a stone is raised (`raise` returns true), the hall's position and the stone's are kept in
 `VillageWaystones.Data` (saved data `aliveworkplace_village_waystones`, one per dimension: `halls` and `stones`, two
-long arrays), so villages whose chunks aren't loaded are listed too; a hall round that finds no plaza round the hall at
-all (finished or going up) takes the village off. `network(level, hall, viewer)` takes the villages of the hall's owner
+long arrays), so villages whose chunks aren't loaded are listed too; a hall round that finds none of the village's own plazas
+(finished or going up, whose nearest hall is this one; a neighbor's plaza within the radius doesn't count, B528)
+takes the village off. `network(level, hall, viewer)` takes the villages of the hall's owner
 from the realm's record of villages seen (`RealmData.Known`, kept by every hall round; the viewer's own when the hall
 has no owner), plus this one, and keeps those with a kept stone; `VillageWaystones.mapLines` makes the Map's lore. `stoneOf(level, hall)`
 and `standing(level, hall)` are there for 41.3 too. Two calls were added to the extension: `standing(level, pos)` (a

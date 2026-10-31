@@ -73,9 +73,13 @@ public final class Stations {
 			return blockRef.get();
 		}
 
-		/** The job at this station that {@code stack} picks. */
+		/**
+		 * The job at this station that {@code stack} picks, if it can be had in this game ({@link #available(Job)}): the
+		 * one place a job's item is matched, so an item never picks a job the tooltip leaves out (B688: a book by a
+		 * Training Post made a Move Tutor without Cobblemon, a gold block a Trainer Leader).
+		 */
 		public Optional<Job> jobFor(ItemStack stack) {
-			return jobs.stream().filter(j -> j.item().test(stack)).findFirst();
+			return jobs.stream().filter(j -> j.item().test(stack) && available(j)).findFirst();
 		}
 
 		public boolean has(VillagerProfession profession) {
@@ -356,6 +360,21 @@ public final class Stations {
 	}
 
 	/**
+	 * Whether the work block at {@code pos} is free: it has a free place, or it keeps no count of its workers (a beehive
+	 * or a bee nest: bees don't take them) and no villager works there (B657: the hall listed only blocks with a place).
+	 */
+	public static boolean freeAt(ServerLevel level, BlockPos pos) {
+		PoiManager poi = level.getPoiManager();
+		Optional<Holder<PoiType>> type = poi.getType(pos);
+		return type.isPresent() && (poi.getFreeTickets(pos) > 0 || (keepsNoCount(type.get()) && !worked(level, pos)));
+	}
+
+	/** Whether blocks of {@code poi}'s kind keep no count of their workers (a beehive, a bee nest). */
+	public static boolean keepsNoCount(Holder<PoiType> poi) {
+		return poi.value().maxTickets() == 0;
+	}
+
+	/**
 	 * Whether a villager works at {@code pos}: any loaded one, however far off (a beekeeper asleep across the village
 	 * still has their hive). Only for blocks that keep no count of their workers (beehives).
 	 */
@@ -564,6 +583,21 @@ public final class Stations {
 		}
 		ResourceLocation id = BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession);
 		return !COBBLEMON_JOBS.contains(id.getPath()) || io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon");
+	}
+
+	/** The job vanilla gives a jobless villager at each kind of block (the first job that holds it), found once per kind. */
+	private static final java.util.Map<Holder<PoiType>, Optional<VillagerProfession>> VANILLA_JOB = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/**
+	 * Whether a jobless villager may take a block of kind {@code poi} by themselves (B697): only when the job the game
+	 * would give them there ({@link #available}) can be had in this game. Without Cobblemon a Training Post, a Leader's
+	 * Podium, a Tutor's Desk, a Trade Board, a Ball Workbench and a Fossil Lab stay free; a villager who already has the
+	 * job keeps it. Called by the jobless villager's search for a workstation (mixin/VillagerGoalPackagesMixin).
+	 */
+	public static boolean takenByItself(Holder<PoiType> poi) {
+		return VANILLA_JOB.computeIfAbsent(poi, h -> BuiltInRegistries.VILLAGER_PROFESSION.stream()
+			.filter(p -> p != VillagerProfession.NONE && p.heldJobSite().test(h)).findFirst())
+			.map(Stations::available).orElse(true);
 	}
 
 	/**

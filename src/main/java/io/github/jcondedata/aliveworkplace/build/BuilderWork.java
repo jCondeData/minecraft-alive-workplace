@@ -109,6 +109,13 @@ public class BuilderWork extends Behavior<Villager> {
 	@Nullable
 	private BuilderBag bagNow;
 	private int waitTimer;
+	/** B636: when the site's shortfall was last worked out while building (-1: not yet, as after a load). */
+	private long shortCheckedAt = -1;
+	/** This builder and its bench, this tick (B636: a take from a chest works the shortfall out again there and then). */
+	@Nullable
+	private Villager villagerNow;
+	@Nullable
+	private BlockPos benchNow;
 	private int blockedAttempts;
 	private int stuckTimer;
 	private int reachTicks;
@@ -245,6 +252,17 @@ public class BuilderWork extends Behavior<Villager> {
 		bag.setSlots(engineeringSlots(villager)); // 9 more stacks a level of Engineering while the Great Library stands (35.14)
 		bagNow = bag;
 		boolean free = Rules.on(level, ModGameRules.FREE_MATERIALS);
+
+		villagerNow = villager;
+		benchNow = bench;
+
+		// B636: what the rest of the build is short of goes on the Storehouse's board (and to the jobs that make things)
+		// while he works on with what he has, not only once he stands waiting. The list isn't saved: the first tick after
+		// a load works it out again. A helper's take from a chest marks it stale: worked out again at once.
+		if (!helping && !free && site.status() != BuildSite.Status.WAITING_FOR_MATERIALS
+			&& (site.shortfallStale() || shortCheckedAt < 0 || gameTime - shortCheckedAt >= WAIT_RECHECK || gameTime < shortCheckedAt)) {
+			refreshShortfall(level, villager, site, plan, bag, bench);
+		}
 
 		// 0. Getting out of its own way.
 		if (stepAsideSpot != null) {
@@ -1463,6 +1481,13 @@ public class BuilderWork extends Behavior<Villager> {
 		if (tookAny) {
 			site.supplied();
 			level.playSound(null, source, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
+			// B636: the board kept asking for what was just taken (worked out before it reached the chest, maybe while he
+			// waited), so the Lumberjack stripped the rest of his logs for a builder who had his. Worked out again now: the
+			// lead at once, a helper's take on the lead's next tick.
+			site.setShortfallStale(true);
+			if (!helping && villagerNow != null && benchNow != null) {
+				refreshShortfall(level, villagerNow, site, plan, bag, benchNow);
+			}
 		}
 	}
 
@@ -1773,6 +1798,26 @@ public class BuilderWork extends Behavior<Villager> {
 		return false;
 	}
 
+	/**
+	 * B636: works out what the rest of the build is short of, for the requests board and the jobs that make things,
+	 * keeping B499's scaffolding count. The lead only, while it builds on (waiting keeps its own list).
+	 */
+	private void refreshShortfall(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench) {
+		if (helping || site.isDeconstruction() || site.isDone() || Rules.on(level, ModGameRules.FREE_MATERIALS)) {
+			return;
+		}
+		shortCheckedAt = level.getGameTime();
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
+		Map<Item, Integer> missing = new LinkedHashMap<>(
+			Builders.computeMissing(level, site, plan, bag, supplies, spareElsewhere(level, villager, site, plan, bench)));
+		Integer scaffolding = site.missing().get(net.minecraft.world.item.Items.SCAFFOLDING);
+		if (scaffolding != null) {
+			missing.merge(net.minecraft.world.item.Items.SCAFFOLDING, scaffolding, Math::max); // B499 keeps its own count
+		}
+		site.setMissing(missing);
+		site.setShortfallStale(false);
+	}
+
 	private void waitForMaterials(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench,
 								  List<BlockPos> supplies) {
 		if (helping) {
@@ -1792,6 +1837,7 @@ public class BuilderWork extends Behavior<Villager> {
 			// What the whole village has counts: it isn't missing if another worker's chests hold it.
 			site.setMissing(scaffolds.addMissing(level, Builders.computeMissing(level, site, plan, bag, supplies, spareElsewhere(level, villager, site, plan, bench)),
 				bag, supplies)); // 35.6: and the scaffolding it's short of, for the requests board
+			site.setShortfallStale(false);
 			if (firstTick && !helping) {
 				Builders.notifyWaiting(level, villager, site);
 			}

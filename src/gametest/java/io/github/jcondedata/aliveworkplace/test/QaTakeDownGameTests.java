@@ -224,7 +224,7 @@ public class QaTakeDownGameTests {
 		BlockPos campRel = new BlockPos(4, 2, 4); // x 4-14, y 2-6, z 4-12
 		BlueprintData.Placement placement = stand(helper, CAMP, campRel, Rotation.NONE, Mirror.NONE);
 		BlockPos tableRel = campRel.offset(9, 0, 3);
-		BlockPos campChestRel = campRel.offset(7, 2, 4);
+		BlockPos campChestRel = campRel.offset(8, 2, 4); // on the wagon's tailboard (B590)
 		helper.assertBlockPresent(ModBlocks.BLUEPRINT_TABLE, tableRel);
 		helper.assertBlockPresent(Blocks.CHEST, campChestRel);
 		Container campChest = helper.getBlockEntity(campChestRel);

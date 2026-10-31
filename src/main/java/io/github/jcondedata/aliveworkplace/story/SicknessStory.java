@@ -293,11 +293,12 @@ public final class SicknessStory {
 
 	/**
 	 * A night's pass-on: each coughing villager passes it to one villager who worked or slept within {@link #NEAR} blocks
-	 * of them, at {@link #CHANCE}, never past half the village. Returns how many caught it.
+	 * of them (never the healer), at {@link #CHANCE}, never past half the village. Returns how many caught it.
 	 */
 	public static int spread(ServerLevel level, BlockPos hall, ArcState s, RandomSource random) {
 		List<Villager> all = villagers(level, hall);
 		int cap = all.size() / 2;
+		Villager healer = healer(level, s); // the healer never catches it, as at the outbreak (B646)
 		List<Villager> coughing = all.stream().filter(Sickness::isGrey).toList();
 		int ill = coughing.size();
 		int caught = 0;
@@ -308,7 +309,7 @@ public final class SicknessStory {
 			if (random.nextFloat() >= CHANCE) {
 				continue;
 			}
-			List<Villager> near = all.stream().filter(v -> v != c && !Sickness.isIll(v)
+			List<Villager> near = all.stream().filter(v -> v != c && v != healer && !Sickness.isIll(v)
 				&& !io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(v) && near(level, c, v)).toList();
 			if (near.isEmpty()) {
 				continue;
@@ -357,9 +358,19 @@ public final class SicknessStory {
 		return found instanceof Villager v && v.isAlive() ? v : null;
 	}
 
-	/** Whether Doctor Wren is the healer (or coming). */
+	/**
+	 * A villager died: when it's Doctor Wren (B618), his part in the arc is over (as for any arc mob that dies, so he isn't
+	 * silently put back at the hall); the story's next round sends for someone to take the healer's part.
+	 */
+	public static void onDeath(ServerLevel level, Villager villager) {
+		if (villager.getTags().contains(Arcs.MOB_TAG) && villager.getTags().contains(ArcEffects.roleTag(HEALER))) {
+			Arcs.onDeath(level, villager);
+		}
+	}
+
+	/** Whether Doctor Wren is the healer (or coming); a Wren who was killed isn't (B618: another is sent for). */
 	static boolean wren(ArcState s) {
-		return s.mobs.stream().anyMatch(m -> m.key.equals(WREN)) || stamp(s, WREN_DUE) >= 0;
+		return s.mobs.stream().anyMatch(m -> m.key.equals(WREN) && !m.dead) || stamp(s, WREN_DUE) >= 0;
 	}
 
 	/**
@@ -537,12 +548,20 @@ public final class SicknessStory {
 			return;
 		}
 		Component names = list(herbs.stream().map(h -> (Component) h.getName()).toList());
-		tell(level, hall, "herbs", ChatFormatting.YELLOW, who, names, EACH);
-		chronicle(level, hall, "herbs", who, names);
+		tell(level, hall, "herbs" + howMany(herbs.size()), ChatFormatting.YELLOW, who, names, EACH); // B617: the words say how many
+		chronicle(level, hall, "herbs" + howMany(herbs.size()), who, names);
 		for (ServerPlayer player : ArcEffects.audience(level, hall)) {
 			giveMaps(level, s, player);
 		}
 		Stories.Data.get(level).setDirty();
+	}
+
+	/**
+	 * The key suffix for a sentence that says how many far herbs were named (B617): none for three, {@code .two} or
+	 * {@code .one} when fewer biomes were within reach.
+	 */
+	static String howMany(int herbs) {
+		return herbs == 1 ? ".one" : herbs == 2 ? ".two" : "";
 	}
 
 	static Component roleName(ArcState s) {
@@ -660,7 +679,7 @@ public final class SicknessStory {
 			says(player, healer, "thanks_more", list(took), EACH, list(wanted));
 			return;
 		}
-		says(player, healer, "thanks_all");
+		says(player, healer, "thanks_all" + howMany(herbs(s).size()));
 		s.flags.put(HERBS_GIVEN, ArcState.FOREVER);
 		Arcs.advance(level, r.hall(), r.entry(), s); // the brew begins
 	}
@@ -805,7 +824,7 @@ public final class SicknessStory {
 				}
 			}
 		}
-		Component names = gatherers.isEmpty() ? Component.translatable("chronicle.aliveworkplace.someone") : list(gatherers);
+		Component names = gatherers.isEmpty() ? Component.translatable("chronicle.aliveworkplace.someone_mid") : list(gatherers); // mid-sentence (B611)
 		tell(level, hall, "cured", ChatFormatting.GREEN, caught(s).size());
 		chronicle(level, hall, "cured", caught(s).size(), names);
 	}

@@ -1,3 +1,5 @@
 {"spots": [
-  {"kind": "bed", "pos": [6, 1, 6], "facing": "south", "wood": "spruce", "colour": "red", "blocks": [{"at": [0, 0, 0], "state": "minecraft:red_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:red_bed[facing=south,occupied=false,part=head]"}], "support": ["floor"]}
+  {"kind": "bed", "pos": [6, 1, 6], "facing": "south", "wood": "spruce", "colour": "red", "blocks": [{"at": [0, 0, 0], "state": "minecraft:red_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:red_bed[facing=south,occupied=false,part=head]"}], "support": ["floor"]},
+  {"kind": "bed", "pos": [8, 1, 9], "facing": "south", "wood": "spruce", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:white_bed[facing=south,occupied=false,part=head]"}], "support": ["floor", "wall"]},
+  {"kind": "bed", "pos": [10, 1, 9], "facing": "south", "wood": "spruce", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:white_bed[facing=south,occupied=false,part=head]"}], "support": ["floor", "wall"]}
 ]}

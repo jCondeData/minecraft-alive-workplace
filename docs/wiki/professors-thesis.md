@@ -35,6 +35,8 @@ Roadmap items: 31.21
   nearest that has one, as its hall last saw it). The quest names the village ("Beat the Trainer Leader of
   Thornfield"). With none, the rival scholar **Thessaly** comes to the hall: a named Master trainer (tier 5) who
   battles through the trainer engine like any village trainer; beaten, she says the thesis stands and leaves in a puff.
+  She also leaves whenever the thesis ends some other way (stopped with `/workplace story stop`, or switched off
+  with `disabledArcs`); a Thessaly no running thesis remembers vanishes when her chunk loads.
   The thesis' own village's Leader doesn't count.
 - **The ending**: every helper gets the thesis, a written book named "Professor Alder: Life in the Cold": a cover page
   (topic, author, co-author), a page per catch (species, biome, coordinates, day, catcher) and a closing page; 3 Rare
@@ -90,7 +92,8 @@ Roadmap items: 31.21
 - 31.21: the trigger needs the patron to exist (`thesis_patron`: the Professor or an Expert Scholar), not just any
   Scholar, since a lower Scholar couldn't be the patron. A Scholar away from the desk still counts.
 - 31.21: Thessaly is the trainer job at Master (not a Leader, so the home village's Leader doesn't take her
-  challenges); she leaves only when beaten (a loss can be retried) or when the arc ends.
+  challenges); she leaves when beaten (a loss can be retried), when the thesis is published, and when it ends any
+  other way (stopped with `/workplace story stop`, or switched off with `disabledArcs`; B663).
 - 31.21: every helper gets a copy of the book and the rewards; one who is offline gets them dropped on the hall.
 - 31.21: a reward item Cobblemon lacks is paid as 4 emeralds.
 - 31.21: the free research level is the topic in progress, else the first open one in the tree's order.
@@ -112,4 +115,17 @@ Roadmap items: 31.21
 - GameTests, `ProfessorsThesisGameTests`: without Cobblemon the arc isn't loaded and a catch counts nothing
   (`withoutCobblemonTheArcNeverStarts`); the objectives read and write back, the fossil and badlands rules, emeralds
   for missing rewards (`theObjectivesReadAndMatch`).
+- QA compat GameTests, `QaThesis1028CompatTests`: the patron and the trigger from both sides (a Journeyman Scholar
+  isn't the patron, an Expert is, a Master beats an Expert, a Village doesn't meet the trigger, 6% a day; the request
+  and the chronicle line) (`thePatronAndTheTriggerFromBothSides`); the Forest's Web, Sea and Shore and Living Fossils
+  with their near misses (`theForestTheSeaAndTheFossils`); y=151 and y=-1 count, y=150 and y=0 don't, night from 13000
+  to 23000 on any day, the full moon only at night, Fire and Stone's places (`heightAndTimeEdgesFromBothSides`); every
+  sentence the co-author reads, a loss leaving Thessaly there, +150 reputation (`everySentenceTheCoAuthorReads`); the
+  book's pages word for word (`theBooksPagesNameSpeciesPlaceAndDay`); the thesis and Thessaly through a save
+  (`theThesisAndThessalySurviveASave`). `QaStadiumThesisBugCompatTests` (B663): Thessaly leaves when the thesis is
+  stopped (`thessalyLeavesWhenTheThesisIsStopped`) or switched off (`thessalyLeavesWhenTheThesisIsSwitchedOff`).
+- QA compat GameTests, `QaThesisPeerReview1031CompatTests`: caravan range from both sides (a Leader's village exactly
+  2048 blocks away is picked, 2049 isn't, a village whose known trainer is no Leader is passed over)
+  (`aLeaderAtCaravanRangeIsPickedAndOneBlockPastItIsNot`); with only a Leader past the range, Thessaly comes
+  (`withOnlyALeaderPastCaravanRangeThessalyComes`).
 - Showcase scene `professors_thesis` (Cobblemon): the request, a catch counting, the published book.

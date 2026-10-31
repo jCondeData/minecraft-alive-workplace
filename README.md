@@ -213,10 +213,10 @@ finishes a quest gets its reward in emeralds (CobbleDollars with CobbleDollars i
 
 **The quest journal** (1.5). The Quests page is a journal with four tabs along the top: **Village** (the hall's daily
 quests), **Personal** (requests from villagers who are your friends), **Story** (the tale the village is living
-through) and **Bounties** (wanted outlaws); a tab whose part isn't in the game yet says so in grey. Each quest shows
+through) and **Bounties** (wanted outlaws); a tab whose part isn't in the game yet says so in gray. Each quest shows
 who asked, a line per step with its progress, the reward and the days left. Click a quest to hand in what it asks
 for, or to **track** it when there's nothing to hand in; shift-click always tracks or untracks. A tracked quest (one
-at a time) is a bar at the top of your screen, for you only: "Slay 6 monsters (2/6)", filling as you go and gone
+at a time) is a bar at the top of your screen, for you only: "Clear out 6 monsters (2/6)", filling as you go and gone
 when the quest ends or you untrack it. `/workplace quests` lists your quests in chat with a clickable **[Track]** or
 **[Untrack]**, and the Village Ledger opens the journal from anywhere. Some quests send you somewhere (a village, a
 biome, a spot marked by the village's story); the place is found once, when the quest goes up, and a quest may pay a
@@ -575,7 +575,7 @@ specific as each other, the kinder one). A data pack replaces one of our files b
 
 At **2, 4, 6, 8 and 10 hearts** a villager has something to tell you. The next time you're within 8 blocks while
 they're off work, they walk up, face you and tell it: three to five lines over their head, one every 3 seconds, each
-also in your chat in grey so you can read it again. Walk away halfway and they start again next time. Each is told
+also in your chat in gray so you can read it again. Walk away halfway and they start again next time. Each is told
 once per player, adds 20 friendship and goes into the village's chronicle ("Dara told Jesse about growing up in
 Thornholm").
 
@@ -937,8 +937,8 @@ storehouse*) gathers what everyone makes in one place.
 Place a **blast furnace**, stand a villager by it and sneak-right-click them with a **pickaxe**: they become a
 **Miner**. Then:
 1. Craft a **Quarry Marker** (stick + red dye + paper). Right-click one corner block, then the opposite corner
-   (up to 32 × 32). Sneak-right-click the air to choose the depth (4, 8, 16, 32 or 64) or a **strip mine** (here or
-   down a shaft); a red
+   (up to 32 × 32). Sneak-right-click the air to choose the depth (4, 8, 16, 32 or 64; 96 for Journeyman miners, 128
+   for Experts, down to just above bedrock for Masters) or a **strip mine** (here or down a shaft); a red
    outline shows the area.
 2. Put **pickaxes** (and some torches) in a chest within 8 blocks of the blast furnace.
 3. Give the marker to the miner. They dig the area out from the top down, bring everything back to the chests, and
@@ -990,7 +990,7 @@ chests.
 **Bone meal.** Put bone meal in the chests and, whenever there's no grown tree to fell, the lumberjack gives it to the
 saplings on their tree farm and the ones they replanted, until they grow (an azalea bush only grows with bone meal).
 
-**Tree farms.** Mark an area with a **Field Marker** (the farmer's marker, up to 32 × 32 and within 48 blocks of the
+**Tree farms.** Mark an area with a **Field Marker** (the farmer's marker, up to 32 × 32, anywhere in the village or within 128 blocks of the
 fletching table) and give it to the lumberjack. They keep it planted with saplings from the chests, in a grid three
 blocks apart (dark oak in 2 × 2 squares four apart), and fell what grows there, even if it's further out than the
 16 blocks they'd look on their own. Sneak-right-click them with an empty hand to see the farm or stop it.
@@ -1005,7 +1005,7 @@ is ripe: **sweet berries**, **glow berries**, **cocoa pods** and — with Cobble
 plants**. The plants are picked, not broken, so they grow again. The harvest goes into the chests within 8 blocks of
 the composter. They reach up into trees with a picking pole and never step into a berry bush.
 
-**Planting an orchard.** Mark an area with a **Field Marker** (within 48 blocks of the composter) and give it to the
+**Planting an orchard.** Mark an area with a **Field Marker** (anywhere in the village, or within 128 blocks of the composter) and give it to the
 keeper. They plant it from the chests: sweet berries as bushes two blocks apart on grass or dirt, and with Cobblemon
 berries (on farmland — put a **hoe** in the chests and they till grass and dirt for them) and apricorn seeds (on grass
 or dirt, three apart), then pick what grows there too. **Glow berries** are hung from the underside of any solid
@@ -1872,7 +1872,8 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | Option | Default | What it does |
 | --- | --- | --- |
 | `supplyRadius` | 8 | chests and barrels this close to a workstation are its supply chests |
-| `maxSiteDistance` | 48 | how far from their Blueprint Table a builder takes a build |
+| `maxSiteDistance` | 128 | how far from their Blueprint Table a builder takes a build outside the village (anywhere in the village is in reach) |
+| `quarryReach`, `fieldReach`, `treeFarmReach`, `orchardAreaReach`, `berryPlotReach` | 128 | the same for a miner's quarry, a farmer's field, a tree farm, an orchard and a berry plot |
 | `guardRadius` | 24 | how far from their grindstone guards patrol and fight |
 | `lumberjackRadius`, `orchardRadius`, `fisherRadius` | 16 | how far lumberjacks cut, orchard keepers pick and fishers look for water |
 | `partnerRadius` | 16 | how close to a workstation pastured Pokémon must be to help |

@@ -4,7 +4,7 @@ How much trouble comes to villages, server-wide and village by village: the `thr
 the Defense page's **At peace**, and the operators' `/workplace threat` command. Part of Milestone 32 (1.6); the
 threat level and the command work with today's raids and bandit camps too.
 
-Roadmap items: 32.21, B134, B383
+Roadmap items: 32.21, B134, B383, B704, B705
 
 ## What a player sees
 
@@ -21,7 +21,9 @@ Roadmap items: 32.21, B134, B383
 - **No new bounties** in a quiet village (At peace, threat level 0 or Peaceful): no captain is posted on its Bounty
   Board; ones already up stay until they are paid or run out (B134, [bounties](bounties.md)).
 - **`/workplace threat`** (operators): starts a raid by any culture, sets a lair down, starts a disaster, ends what is
-  under way or clears the village, at the nearest Village Hall, for events and testing.
+  under way or clears the village, at the nearest Village Hall, for events and testing. On Peaceful no raid or lair
+  can come (hostile mobs can't exist), so `start` and `lair` say the world is Peaceful instead (B704). Its names are
+  suggested as their path is typed (`pill` suggests `aliveworkplace:pillager_warband`, B705).
 
 ## How it works
 
@@ -40,6 +42,9 @@ Roadmap items: 32.21, B134, B383
     captain gone still breaks it up, B364);
   - a disaster under way ends at once, as when it is switched off; covens hex nobody;
   - no bounty is posted (`Bounties.mayPost` and the hall's bounty round ask `Threats.quiet`); open ones stay (B134).
+  - no story arc marked `threat` starts (the Sickness's Gray Cough, the Bandit King): `Arcs.tryStart` and
+    `Arcs.onEvent` pass it by, while other stories still start; it isn't used up, so it can start again once the village
+    is no longer quiet. An operator's `/workplace story start` still starts it (B699).
   A raid already under way when the village turns quiet runs its course.
 - **The threat level multiplies the chances** (`Threats.often`): 0, ×0.5, ×1, ×1.5, on top of each system's own
   factors (Curfew, research, a lair near). Hard multiplies the raid's size by 1.25, rounded up, after the usual cap of 16
@@ -120,7 +125,9 @@ Roadmap items: 32.21, B134, B383
   `ThreatLevelGameTests.aDisasterSwitchedOffNeverStarts`, `ThreatLevelGameTests.atPeaceTheLairLeavesAtDawnAndNoneComes`,
   `ThreatLevelGameTests.atPeaceNoRaidComes`, `ThreatLevelGameTests.atPeaceIsSavedWithTheHall`,
   `ThreatLevelGameTests.theCommandStartsAndEndsEachRaidAndDisaster`, `ThreatLevelGameTests.theCommandClearsTheVillage`,
-  `ThreatLevelGameTests.everyNewSentenceHasWords`.
+  `ThreatLevelGameTests.everyNewSentenceHasWords`, `ThreatLevelGameTests.theCommandSaysPeacefulOnPeaceful` (B704).
+- `QaThreatOrdersBugTests.anOrderOnPeacefulComesOrSaysItsPeaceful` (B704),
+  `QaThreatOrdersBugTests.typingAPathsFirstLettersStillSuggestsIt` (B705).
 - `QaQuietLairGameTests.aLairStandingWhenTheThreatLevelGoesToZeroLeavesByTheNextDawn`: a bandit camp standing when the
   threat level goes to 0 has packed up and left in peace by the next dawn (not counted as broken up), and no lair comes
   on the four days after.

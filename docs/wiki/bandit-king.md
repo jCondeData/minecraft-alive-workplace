@@ -4,7 +4,7 @@ The Bandit King's fort rises a stage a dawn out beyond a village, and the King w
 ROADMAP 31.15; the story that brings him, `arcs/bandit_king.json`, is 31.16. Builds on the arc engine's `place`
 (31.4), bandit camps (`BanditCamps`, 32.3's lairs) and the bounty captains' names (31.13). Part of the 1.5 expansion.
 
-Roadmap items: 31.15, 31.16
+Roadmap items: 31.15, 31.16, B659
 
 ## What a player sees
 
@@ -19,7 +19,8 @@ Roadmap items: 31.15, 31.16
      treasure chest, and a postern door in the palisade behind it (placed shut, or open when the story says so).
 - **The King**: a vindicator named "Grimwald, the Bandit King" (a first name from the bounty captains' list), crowned
   with a golden helmet, in an iron chestplate, leggings and boots, with a diamond axe and 150 health. Players within 32
-  blocks see his red boss bar. At half health he blows a goat horn and four bandits come out of the keep, once.
+  blocks, in his dimension, see his red boss bar; it goes away when they walk off, go to another dimension, log out or
+  die. At half health he blows a goat horn and four bandits come out of the keep, once.
 - **His men keep to the fort**: none wanders past the palisade much, even after the area unloads and loads again.
 - **The treasure chest** (`aliveworkplace:chests/bandit_king`): 16 to 32 emeralds, 4 to 8 gold ingots, 1 to 3
   diamonds, an enchanted iron sword or crossbow, and always **the King's Crown** (the golden helmet, Protection III and
@@ -51,7 +52,8 @@ Roadmap items: 31.15, 31.16
   section a player built in, `PlayerBuilt`), `BanditFort.site` (fit, loaded ground 110 to 150 blocks out) and
   `BanditFort.place` (stage 0 clears the grass and bushes and fills the ground under it as `Lairs.found` does; later
   stages are set down over it).
-- **In an arc**: a `place` effect with `"stages"` set to the three blueprints and the rule `"fort": [110, 150]`.
+- **In an arc**: a `place` effect with `"stages"` set to the three blueprints and the rule `"fort": true` (110 to 150
+  blocks, `BanditFort.NEAR` and `FAR`; `"fort": [near, far]` sets another ring).
   `ArcEffects.spot` takes fit ground there if it's loaded now, else a column in that ring; `ArcEffects.build` builds the
   first stage on the first column round it (out to 16 blocks) where `BanditFort.fits`, once a player is within 96
   blocks, then the next stage at each next dawn (as every staged `place`). After each stage `BanditFort.placed` brings
@@ -60,7 +62,9 @@ Roadmap items: 31.15, 31.16
   middle, 17 blocks; a tower man his platform, 2 blocks) is in a tag, so a leash lost to a reload is put back.
 - `guard/BanditKing` makes the King, his crown (`BanditKing.crown`) and his name (the lang key
   `entity.aliveworkplace.bandit_king`, from `bounties/captains.json`'s `first_names`). Every 10 ticks `BanditFort.tick`
-  looks over the fort's loaded men: leashes, the King's boss bar (players within 32 blocks) and his horn (at half health,
+  looks over the fort's loaded men: leashes, the King's boss bar (players within 32 blocks; each update first walks the
+  bar's own players and takes off any who left his level, logged out, died or are out of range, B659; a bar whose King
+  isn't loaded in any dimension is dropped) and his horn (at half health,
   once: the tag `aliveworkplace_bandit_king_horn`; the four called bandits come out at the keep's door and go for whoever
   last hurt him).
 
@@ -116,9 +120,14 @@ horn) in their own entity data.
 
 ## Known limits
 
+- An arc marked `threat` should not start in a village set At peace or at threat level 0 (31.4), but today it
+  still does (B699; failing tests on the tests/threat-arcs-peace-1031 branch).
 - The camps, Pell and the fort are built or come only once a player is within 96 blocks, as every arc place.
 - With no fit ground within 16 blocks of the arc's column the fort isn't built (the arc logs it and its place is
   skipped).
+- Open bugs found by QA on 2026-10-28 (failing tests on the tests/bandit-king-1028 branch): about 1 fort site in 40 lies up to
+  half a block outside 110 to 150 blocks (`BanditFort.site` rounds each axis on its own, as the camps' ring did before
+  B205); and a player who goes to another dimension while near the King keeps seeing his boss bar.
 
 ## Proof
 
@@ -127,4 +136,10 @@ horn) in their own entity data.
   (`theHornCallsFourBanditsOnce`), the chest (`theTreasureChestAlwaysHasTheCrown`).
 - GameTests: `BanditKingStoryGameTests`: the arc walked from the banners to the King's fall with all three allies
   (`banditKingStoryWalk`), the tribute (`banditKingTribute`), the trigger and the saved count (`banditKingTrigger`).
+- GameTests: `QaBanditKing1028GameTests` (QA, from the spec): the fort rule's ring on unloaded ground, the boss bar's
+  32-block edge and its health, the horn at exactly half health and not again after a reload, war banners broken by a
+  player (a plain banner and one far from the camps don't count; a camp counts once), the Town rank of the trigger,
+  the fort resumed from a save mid-arc, every sentence a player reads, and the chest's one enchanted weapon.
+- GameTests: `QaBanditKingBugTests`: the bar leaves a player who goes to the Nether
+  (`qaKingsBarLeavesAPlayerWhoGoesToTheNether`, B659).
 - Showcase scenes `bandit_fort` and `bandit_king`.

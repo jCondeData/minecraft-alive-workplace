@@ -333,7 +333,8 @@ public class QaClassesGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		ladder(VARIED, CITY, CITY);
 		List<Villager> people = new ArrayList<>();
 		for (int i = 0; i < 20; i++) {
-			Villager v = villager(helper, new BlockPos(2 + (i % 5) * 2, 2, 2 + (i / 5) * 2), "S" + i, "peasant");
+			// (3, 3) not (2, 2): the corner villager stood 17 blocks diagonal from the 16-block hall, outside the village (B549)
+			Villager v = villager(helper, new BlockPos(3 + (i % 5) * 2, 2, 3 + (i / 5) * 2), "S" + i, "peasant");
 			varied(v);
 			people.add(v);
 		}

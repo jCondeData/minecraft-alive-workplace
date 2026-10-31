@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -277,8 +278,10 @@ public final class SandRamps {
 			// To the ramp: on top of it once it stands, else beside its outer end while the sand goes up.
 			boolean up = standing(level, siege, site);
 			BlockPos to = up ? site.top() : site.foot.relative(site.into, -(site.height + 1));
+			// B591: a climber that stopped within two of its spot but on a block still to be piled (the next stage's outer end)
+			// held the sand back for good, and itself with it: it is sent on to its spot.
 			if (!crossing(mob, site) && paths < MAX_PATHS && (mob.getNavigation().isDone() || now - storm.sentAt.getOrDefault(id, 0L) > 60)
-				&& mob.blockPosition().distSqr(to) > (up ? 0 : 4)) {
+				&& (mob.blockPosition().distSqr(to) > (up ? 0 : 4) || !up && inTheWay(level, mob, site))) {
 				storm.sentAt.put(id, now);
 				mob.getNavigation().moveTo(mob.getNavigation().createPath(to, 0, 64), 1.0);
 				paths++;
@@ -298,7 +301,7 @@ public final class SandRamps {
 			}
 			BlockPos next = null;
 			for (BlockPos pos : site.blocks()) {
-				if (!level.getBlockState(pos).is(Blocks.SAND)) {
+				if (!sandy(level, pos)) {
 					next = pos;
 					break;
 				}
@@ -309,7 +312,7 @@ public final class SandRamps {
 			BlockPos at = next;
 			Mob builder = raiders.stream().filter(m -> storm.assigned.get(m.getUUID()) == site && Threats.role(m) == Culture.Role.CLIMBER
 				&& m.position().distanceToSqr(Vec3.atCenterOf(at)) <= PILE_REACH * PILE_REACH).findFirst().orElse(null);
-			if (builder == null || !level.getBlockState(next).isAir() || !blocked(level, next.below())
+			if (builder == null || !Buriable.room(level.getBlockState(next)) || !blocked(level, next.below())
 				|| !level.getEntitiesOfClass(Mob.class, new net.minecraft.world.phys.AABB(next)).isEmpty()) {
 				continue;
 			}
@@ -332,6 +335,20 @@ public final class SandRamps {
 		}
 	}
 
+	/**
+	 * Whether {@code mob} (or what it rides) stands where a block of {@code site}'s ramp is still to go: no sand is piled
+	 * onto a raider, so one waiting there would hold the ramp back for good (B591).
+	 */
+	private static boolean inTheWay(ServerLevel level, Mob mob, Site site) {
+		net.minecraft.world.phys.AABB box = mob.getRootVehicle().getBoundingBox();
+		for (BlockPos pos : site.blocks()) {
+			if (!sandy(level, pos) && box.intersects(new net.minecraft.world.phys.AABB(pos))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private static Storm restore(ThreatData.Siege siege) {
 		Storm storm = new Storm();
 		for (int i = 0; i < siege.rampFeet.size(); i++) {
@@ -340,13 +357,13 @@ public final class SandRamps {
 		return storm;
 	}
 
-	/** Whether every block of {@code site}'s ramp is sand (this siege's, or sand that stood there before, B382), up to the wall's top. */
+	/** Whether every block of {@code site}'s ramp is sand (this siege's, or sand of any kind that stood there before, B382, B437), up to the wall's top. */
 	private static boolean standing(ServerLevel level, ThreatData.Siege siege, Site site) {
 		if (site.height < 2) {
 			return false;
 		}
 		for (BlockPos pos : site.blocks()) {
-			if (!level.getBlockState(pos).is(Blocks.SAND)) {
+			if (!sandy(level, pos)) {
 				return false;
 			}
 		}
@@ -359,19 +376,23 @@ public final class SandRamps {
 		return !level.getBlockState(pos).getCollisionShape(level, pos).isEmpty();
 	}
 
-	/** Whether a block of a ramp may stand at {@code pos}: air, or sand, the siege's or any already there (B382), counted as piled. */
+	/**
+	 * Whether a block of a ramp may stand at {@code pos}: air or a plant the sand buries ({@link Buriable}, B553: dead
+	 * bushes at a desert wall's foot), or sand, the siege's or any already there (B382), counted as piled.
+	 */
 	private static boolean ours(ServerLevel level, ThreatData.Siege siege, BlockPos pos) {
-		return level.getBlockState(pos).isAir() || level.getBlockState(pos).is(Blocks.SAND);
+		return Buriable.room(level.getBlockState(pos)) || sandy(level, pos);
 	}
 
+	/** Whether {@code pos} holds sand of any kind: plain, red (B437: the badlands' ground, desert raiders come there too) or suspicious. */
 	private static boolean sandy(ServerLevel level, BlockPos pos) {
-		return level.getBlockState(pos).is(Blocks.SAND);
+		return level.getBlockState(pos).is(BlockTags.SAND);
 	}
 
 	/**
 	 * How high a ramp at {@code foot} must be to reach the top of the wall beside it, or -1 when it can't be piled here:
 	 * the wall is higher than {@link #MAX_HEIGHT} or a gate, a block of the ramp would go where something stands that
-	 * isn't air or sand, a column has nothing solid under it, or there is no room on top.
+	 * isn't air, a buriable plant or sand, a column has nothing solid under it, or there is no room on top.
 	 */
 	private static int height(ServerLevel level, ThreatData.Siege siege, BlockPos foot, Direction into) {
 		BlockPos wall = foot.relative(into);

@@ -12,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.people.Luxuries;
 import io.github.jcondedata.aliveworkplace.people.SocialClasses;
 import io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -75,7 +76,7 @@ public final class ClassesPage {
 
 	/** The village's grown households with a class (those not seeded yet are left out), in a fixed order. */
 	public static List<Placed> households(ServerLevel level, BlockPos hall) {
-		List<Villager> people = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		List<Villager> people = VillageHalls.villagers(level, hall); // the circle, not the square round it (B561)
 		List<Placed> out = new ArrayList<>();
 		for (Households.Household h : Households.of(people)) {
 			SocialClass best = null;
@@ -230,8 +231,8 @@ public final class ClassesPage {
 		SocialClass below = SocialClasses.step(c, -1);
 		if (!row.counts().isEmpty()) {
 			int of = row.counts().get(0).of();
-			lore.add(VillageHallScreen.line(below == null ? Component.translatable("screen.aliveworkplace.classes.counted_own", of)
-				: Component.translatable("screen.aliveworkplace.classes.counted", of, c.name(), below.name()), ChatFormatting.GRAY));
+			lore.add(VillageHallScreen.line(below == null ? Words.counted("screen.aliveworkplace.classes.counted_own", of, of)
+				: Words.counted("screen.aliveworkplace.classes.counted", of, of, c.name(), below.name()), ChatFormatting.GRAY));
 		}
 		boolean wantsHeader = false;
 		if (row.counts().stream().anyMatch(n -> !n.want())) {
@@ -526,7 +527,7 @@ public final class ClassesPage {
 		return switch (need) {
 			case ClassNeeds.Home h -> Component.translatable("advice.aliveworkplace.rise.home", Component.translatable("enchantment.level." + h.grade()));
 			case ClassNeeds.FedDays f -> Component.translatable("advice.aliveworkplace.rise.fed_days", f.days());
-			case ClassNeeds.DietNeed d -> Component.translatable("advice.aliveworkplace.rise.diet", io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS);
+			case ClassNeeds.DietNeed d -> Component.translatable("advice.aliveworkplace.rise.diet", io.github.jcondedata.aliveworkplace.people.Diet.kinds(d.kind())); // the need's own diet (B552)
 			case ClassNeeds.Beauty b -> Component.translatable("advice.aliveworkplace.rise.beauty", b.points());
 			case ClassNeeds.Building b -> io.github.jcondedata.aliveworkplace.work.Words.articled("advice.aliveworkplace.rise.building", 0, Blueprints.displayName(b.blueprint()));
 			case ClassNeeds.VillageRank r -> Component.translatable("advice.aliveworkplace.rise.village_rank", r.rank().title());

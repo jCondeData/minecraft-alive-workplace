@@ -102,7 +102,7 @@ public final class BallSmiths {
 			lore.add(Component.translatable(on ? "screen.aliveworkplace.ball_smith.on" : "screen.aliveworkplace.ball_smith.off")
 				.withStyle(style -> style.withItalic(false).withColor(on ? ChatFormatting.GREEN : ChatFormatting.GRAY)));
 			if (recipe.tier() > tier) {
-				lore.add(Component.translatable("screen.aliveworkplace.ball_smith.needs_level",
+				lore.add(io.github.jcondedata.aliveworkplace.work.Words.articled("screen.aliveworkplace.ball_smith.needs_level", 0,
 					Component.translatable("merchant.level." + recipe.tier())).withStyle(style -> style.withItalic(false).withColor(ChatFormatting.YELLOW)));
 			}
 			icon.set(DataComponents.LORE, new ItemLore(lore));

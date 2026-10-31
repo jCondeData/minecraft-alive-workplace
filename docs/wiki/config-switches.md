@@ -8,7 +8,7 @@ Roadmap items: 25.5, B76, B119, B131, B161, 36.15, 36.20
 ## What a player sees
 
 **The config file.** `config/aliveworkplace.json` is written with the defaults the first time the game starts. Edit
-it and restart. A value out of range is clamped to the nearest allowed one, a missing value takes its default, and
+it and restart. A value out of range is clamped to the nearest allowed one, however large (3000000000 gives the most allowed, B477), a missing value takes its default, and
 the file is written back complete, so every option is always listed. A number or a switch written in quotes ("1",
 "false") is read as meant, and an empty value (null) takes its default (`QaConfigFileGameTests`). The same holds for
 the two keys the mod keeps for itself: an empty or odd file format number ("configVersion": null, words, a list) is
@@ -17,7 +17,7 @@ of the file is still read (B457). A value of the wrong kind (a switch written 0,
 default alone, with a warning in the log naming it, and every other value in the file is kept and written back
 (B411, `QaConfigFileBugTests`). A file that can't be read at all (empty, cut short, not a `{...}` object) gives the
 defaults and is written over with them, but is first kept beside it as aliveworkplace.json.bad, so a hand edit is
-never lost; nothing in the file stops the game from starting. In the lists and maps an
+never lost (a list, a bare word or a number instead of `{...}` too: B477, `QaConfigHandEditsBugTests`; an empty file, spaces, null or true too, and 2147483648 or -2147483649 clamp like any number past the range: `QaFixEdges1027GameTests`); nothing in the file stops the game from starting. In the lists and maps an
 empty entry takes its default (a Wonder cap, a disaster or raider culture switch: on) and a cap past its range is
 clamped (`QaConfigOddFilesGameTests`). A bad list or map costs only that option; comments and a byte-order mark are read as meant, while a
 trailing comma makes the file unreadable (the defaults, the file kept aside); a second start reads exactly what the first wrote (`QaConfigHandEditsGameTests`).
@@ -96,7 +96,7 @@ range is in brackets.
 | `villageHallRadius` | 64 (16 to 160) |  | How far from a Village Hall its village reaches. |
 | `keepVillagesWorking` | on |  | Villages keep working while no player is near them (their chunks stay loaded while anyone is online). |
 | `builderPaths` | on |  | Whether builders lay a dirt path from each finished building to the village's bell or hall. |
-| `villageGrowthCap` | 40 (0 to 500) |  | A village with a hall stops having babies at this many villagers (0: villages don't grow). |
+| `villageGrowthCap` | 40 (0 to 500) |  | A village with a hall stops having babies at this many villagers (0: villages don't grow, and the hall says so). |
 | `villagerNames` | on |  | Villagers in a village with a Village Hall get names. |
 | `villagerTraits` | on |  | Villagers have traits (diligent, lazy, nimble...). |
 | `villagerSickness` | on |  | Villagers in a village with a Village Hall fall ill now and then (a Nurse cures them). |
@@ -142,7 +142,7 @@ range is in brackets.
 | `arcCooldownDays` | 8 (0 to 60) | 1.5 | Days between two story arcs in one village (also before a village's first). |
 | `arcsAtOnce` | 3 (0 to 20) | 1.5 | Story arcs running at once on the whole server (side arcs not counted); 0: none. |
 | `lostCaravanChance` | 20 (0 to 1000) | 1.5 | One caravan in this many on a road over 300 blocks goes missing and starts the Lost Caravan; 0: none. |
-| `disabledArcs` | empty |  | Story arc ids that never start; a running one ends at its next round. In the file only. |
+| `disabledArcs` | empty |  | Story arc ids that never start, not even by `/workplace story start` (it says the arc is switched off); a running one ends at its next round. In the file only. |
 | `villageProtection` | on |  | A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). |
 | `partnerShows` | on | 1.2 | Pokémon pastured by a workstation are seen helping at work (with Cobblemon): they carry, water, spark... |
 | `nurseHealingMachine` | on | 1.2 | A nurse at Cobblemon's Healing Machine heals your team in it, and keeps it charged while on shift. |

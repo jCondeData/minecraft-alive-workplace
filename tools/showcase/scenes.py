@@ -132,6 +132,9 @@ SCENES = [
     job("far_site", "Miner", "A quarry far outside the village",
         "the miner took a quarry marked 110 blocks out, far outside the village, walked out to it and dug it", 240,
         extra=[("04_far_site_arrived", "Arrived at the far quarry")]),
+    # Miners dig deeper as they level up (ROADMAP 36.22): a Master's quarry down to bedrock, 96 deep, filmed through a window at the bottom
+    job("deep_quarry", "Miner", "A Master digs down to bedrock",
+        "a Master miner took a quarry down to bedrock, 96 blocks deep, and dug its bottom layers far past the 64 every miner digs, keeping the spiral stair", 240),
     # Lumberjack
     S("forest", "Lumberjack", "Felling and replanting four trees", "the lumberjack felled all four trees", 240,
       [("frame_*@first", "Start"), ("frame_*@middle", "Felling"), ("50_forest_done", "Felled and replanted")]),
@@ -511,9 +514,10 @@ SCENES = [
     # Bring an old house up to its latest look (ROADMAP 36.21): a Stone House built from its first drawing, the hall's Refresh
     # button with what changes, then the house once Bram has refreshed it
     S("refresh_old_house", "Village Hall", "Refresh an old house to its latest look",
-      "A Stone House built from its first drawing was offered Refresh to the latest look on the hall's Repairs page; a click "
-      "showed what changes, the button sent Bram, and he took the old leftovers away and put the new pieces in", 230,
-      [("01_old_house", "Before: the Stone House as its first drawing built it"), ("02_repairs_page", "The Repairs page: the house, to refresh"),
+      "A Stone House built from its drawing before B260 (as on the live server) was offered Refresh to the latest look on the "
+      "hall's Repairs page; a click showed what changes, the button sent Bram, and he took the old leftovers away and put the "
+      "new pieces in, nothing doubled", 230,
+      [("01_old_house", "Before: the Stone House as its drawing before B260 built it"), ("02_repairs_page", "The Repairs page: the house, to refresh"),
        ("03_what_changes", "What changes, and the Refresh to the latest look button"), ("04_after", "After: the house in its latest look")]),
     # Upgrade a built home from the Village Hall (ROADMAP 36.14): the Upgrades page, a blocked row, and a click sending a Builder
     S("hall_upgrade", "Village Hall", "Upgrading a built home from the hall",
@@ -1249,12 +1253,13 @@ SCENES = [
     # B260: and the owner's Stone House, its way in clear and its attic a bedroom
     # B281: and the Terrace's two kitchens. Four stills on the card (the selftest's 2-4, B272): the owner's B260 and B281
     # rooms; the harness still films the cottage's 02_dining, 03_bedroom, 05_sitting and 06_vanilla_dining
-    S("furnished_home", "Build families", "Furnished homes: the Stone House's doorway and attic bedroom, and the Terrace's two lit kitchens (Handcrafted, Beautify, CobbleFurnies)",
-      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats; both Terrace kitchens hold modded pieces",
-      100, [("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
-           ("08_stone_attic", "The Stone House attic: the bed's head to the gable, a nightstand, a chest at its foot, a lamp hung from the ridge"),
-           ("09_terrace_west", "The Terrace's west kitchen: the mods' table and chair, a lantern hung from the bedroom floor"),
-           ("10_terrace_east", "The Terrace's east kitchen: its own mods' table (against the party wall) and chair, and its own lantern")],
+    # B679: the card shows four stills (the selftest's limit); the harness still films 08_stone_attic and 09_terrace_west
+    S("furnished_home", "Build families", "Furnished homes: the Stone House's doorway and attic bedroom, the Terrace's two lit kitchens and the Clinic's ward (Handcrafted, Beautify, CobbleFurnies)",
+      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats; both Terrace kitchens hold modded pieces; the Clinic's ward has four whole beds and nothing open under its ridges",
+      110, [("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
+           ("10_terrace_east", "The Terrace's east kitchen: its own mods' table (against the party wall) and chair, and its own lantern"),
+           ("11_clinic_ward", "The Clinic's ward: four white beds, heads to the back wall (B639: no more cots of slab and carpet)"),
+           ("12_clinic_ceiling", "The Clinic's ward ceiling: closed where the two stair runs meet at the ridge (B639)")],
       cobblemon=True, furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",

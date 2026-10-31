@@ -43,6 +43,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
@@ -519,7 +520,7 @@ public class MachineWork extends Behavior<Villager> {
 					continue;
 				}
 				if (full) {
-					status(villager, Component.translatable("message.aliveworkplace.machine_work.full", level.getBlockState(machine).getBlock().getName()));
+					status(villager, Component.translatable("message.aliveworkplace.machine_work.full", file.machine().getName()));
 					return false;
 				}
 				List<Recipe<?>> recipes = recipes(level, file);
@@ -528,7 +529,7 @@ public class MachineWork extends Behavior<Villager> {
 					return true;
 				}
 				if (!turning(level, machine, file.minSpeed())) {
-					status(villager, Component.translatable("message.aliveworkplace.machine_work.stopped", level.getBlockState(machine).getBlock().getName()));
+					status(villager, Component.translatable("message.aliveworkplace.machine_work.stopped", file.machine().getName()));
 					continue;
 				}
 				if (!holdsInput(level, file, machine, recipes) && !plan(level, file, chests, recipes).isEmpty()) {
@@ -558,12 +559,17 @@ public class MachineWork extends Behavior<Villager> {
 		if (file == null && job.stage() != MachineJob.Stage.RETURN) {
 			job = save(villager, job.with(MachineJob.Stage.RETURN, job.carried())); // its file is gone: bring back what's carried
 		}
-		Component name = level.getBlockState(job.machine()).getBlock().getName();
+		Component name = machineName(level, file, job.machine());
+		boolean gone = gone(level, file, job.machine());
+		if (gone && job.stage() == MachineJob.Stage.FEED) {
+			job = save(villager, job.with(MachineJob.Stage.RETURN, job.carried())); // broken on the way: bring the load back (B506)
+			state.walker.reset();
+		}
 		switch (job.stage()) {
 			case FETCH -> {
 				List<Recipe<?>> recipes = recipes(level, file);
 				List<ItemStack> planned = plan(level, file, chests, recipes);
-				if (planned.isEmpty() || SupplyContainers.freeSlots(level, chests) <= 0 || !VillageMachines.village(level, job.machine())) {
+				if (gone || planned.isEmpty() || SupplyContainers.freeSlots(level, chests) <= 0 || !VillageMachines.village(level, job.machine())) {
 					done(villager, state);
 					return;
 				}
@@ -612,7 +618,7 @@ public class MachineWork extends Behavior<Villager> {
 			}
 			case RETURN -> {
 				BlockPos store = chests.isEmpty() ? post : chests.get(0);
-				status(villager, Component.translatable("message.aliveworkplace.machine_work.return", name));
+				status(villager, Component.translatable(gone ? "message.aliveworkplace.machine_work.gone" : "message.aliveworkplace.machine_work.return", name));
 				villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(store));
 				if (state.walker.reach(level, villager, store, 3.0) || state.walker.noSpot()) {
 					state.walker.reset();
@@ -621,6 +627,24 @@ public class MachineWork extends Behavior<Villager> {
 				}
 			}
 		}
+	}
+
+	/**
+	 * The name of the machine a trip goes to: its file's machine block, read from the file and not from the spot, which
+	 * may hold something else by now (B506: "working the Air" when the millstone was broken on the way). With its file
+	 * gone, the block at the spot if it is still a machine, else just "machine".
+	 */
+	static Component machineName(ServerLevel level, @Nullable MachineWorkFiles.Machine file, BlockPos machine) {
+		if (file != null) {
+			return file.machine().getName();
+		}
+		BlockState there = level.getBlockState(machine);
+		return MachineWorkFiles.forMachine(there) != null ? there.getBlock().getName() : Component.translatable("message.aliveworkplace.machine_work.machine");
+	}
+
+	/** Whether the machine of {@code file} at {@code machine} was broken (or replaced) since the trip began. */
+	static boolean gone(ServerLevel level, @Nullable MachineWorkFiles.Machine file, BlockPos machine) {
+		return file != null && level.isLoaded(machine) && !level.getBlockState(machine).is(file.machine());
 	}
 
 	private static MachineJob save(Villager villager, MachineJob job) {

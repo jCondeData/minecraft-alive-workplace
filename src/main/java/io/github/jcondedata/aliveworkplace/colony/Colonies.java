@@ -180,7 +180,7 @@ public final class Colonies {
 	/** Days the village at {@code hall} waits between colonies: {@link #COOLDOWN_DAYS}, half as long with the Founder (33.23). */
 	public static int cooldownDays(ServerLevel level, BlockPos hall) {
 		java.util.Optional<LeadColoniesPower> lead = LeadColoniesPower.of(level, hall);
-		int days = lead.isEmpty() ? COOLDOWN_DAYS : Math.max(lead.get().cooldown() > 0 ? 1 : 0, (COOLDOWN_DAYS * lead.get().cooldown() + 50) / 100); // 7 days: 4
+		int days = lead.isEmpty() ? COOLDOWN_DAYS : Math.max(COOLDOWN_DAYS > 0 && lead.get().cooldown() > 0 ? 1 : 0, (COOLDOWN_DAYS * lead.get().cooldown() + 50) / 100); // 7 days: 4; 0 stays 0 (B589)
 		return io.github.jcondedata.aliveworkplace.realm.RealmEdicts.colonyCooldown(level, hall, days); // the Royal Charter: half as long (33.22)
 	}
 
@@ -300,7 +300,9 @@ public final class Colonies {
 				entity == null ? VillageRanks.Rank.HAMLET.title() : entity.rank().title());
 			case ON_ROAD -> Component.translatable("message.aliveworkplace.colony.on_road", village);
 			case COOLDOWN -> io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.colony.cooldown", cooldownLeft(level, hall), village, cooldownLeft(level, hall));
-			case CAP -> Component.translatable("message.aliveworkplace.colony.cap", village, PER_VILLAGE);
+			// B447: "all 1 colonies" and "all 0 colonies" read wrong; 1 takes the singular, 0 (none allowed) its own sentence.
+			case CAP -> PER_VILLAGE <= 0 ? Component.translatable("message.aliveworkplace.colony.cap.none", village)
+				: io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.colony.cap", PER_VILLAGE, village, PER_VILLAGE);
 			case REALM_MONEY -> Component.translatable("message.aliveworkplace.colony.realm_money", money(io.github.jcondedata.aliveworkplace.realm.RealmEdicts.colonyCost(level, hall)));
 			case MONEY -> {
 				int fromTreasury = entity == null ? 0 : treasuryShare(entity);
@@ -374,10 +376,12 @@ public final class Colonies {
 		ColonyMap.Verdict verdict = ColonyMap.verdict(hall, x, z, halls);
 		if (verdict != ColonyMap.Verdict.OK) {
 			Component why = switch (verdict) {
+				// B447: rounded to the nearest block, a spot just past a limit read as on it ("at most 1024 ... (this is
+				// 1024)"); a too-near distance rounds down and a too-far one up, so the number is on the refused side.
 				case TOO_NEAR -> Component.translatable("message.aliveworkplace.colony.too_near", charter.name(), ColonyMap.MIN,
-					(int) Math.round(ColonyMap.distance(hall, x, z)));
+					(int) Math.floor(ColonyMap.distance(hall, x, z)));
 				case TOO_FAR -> Component.translatable("message.aliveworkplace.colony.too_far", charter.name(), ColonyMap.MAX,
-					(int) Math.round(ColonyMap.distance(hall, x, z)));
+					(int) Math.ceil(ColonyMap.distance(hall, x, z)));
 				default -> {
 					BlockPos near = ColonyMap.hallTooNear(x, z, halls);
 					Component name = others.stream().filter(m -> m.hall().equals(near)).map(Mark::name).findFirst().orElse(Component.empty());

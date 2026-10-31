@@ -42,6 +42,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.AABB;
 import io.github.jcondedata.aliveworkplace.work.Reach;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,6 +53,23 @@ public final class Builders {
 	 * ({@code maxSiteDistance}); in the village the bench stands in, anywhere in it will do (36.20, {@link Reach}).
 	 */
 	public static int MAX_SITE_DISTANCE = 128;
+
+	/**
+	 * The spot a build is measured from, for the builder's reach and for which village it is in: the centre of its
+	 * outline, as placing it measures (B615: upkeep, refreshes and repair asks measured from the origin corner, so a build
+	 * accepted at the reach's edge was never kept up). A build whose blueprint is gone is measured from its origin.
+	 */
+	public static BlockPos spot(ServerLevel level, net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
+		return BlueprintLibrary.get(level, structure)
+			.map(b -> BlueprintOutline.bounds(placement, b.size()).getCenter())
+			.orElse(placement.origin());
+	}
+
+	/** True if the build of {@code structure} at {@code placement} is in reach of the bench at {@code bench} (the one rule placing uses). */
+	public static boolean inReach(ServerLevel level, BlockPos bench, net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
+		return Reach.inReach(level, bench, spot(level, structure, placement), MAX_SITE_DISTANCE);
+	}
+
 	/** How many blueprints a builder accepts on top of the one they are building. */
 	public static final int MAX_QUEUE = 5;
 	/** How many idle builders can help one site at a time. */
@@ -183,6 +201,25 @@ public final class Builders {
 		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 	}
 
+	/**
+	 * B670: a build is over (finished or canceled): its helpers stop now, while the site still names the lead's bench, so
+	 * what they carry goes back to the lead's chests. A helper that only noticed later, once the site was gone, emptied
+	 * its bag at its own bench, out of the lead's reach (the soak's builder stuck for good waiting on lanterns that lay in
+	 * another builder's chest). A Wonder's crew keeps its own way back to the stockpile (35.5).
+	 */
+	static void sendHelpersBack(ServerLevel level, BuildSite site) {
+		if (site.wonder() != null || site.bench() == null) {
+			return;
+		}
+		AABB around = new AABB(site.bench()).inflate(MAX_SITE_DISTANCE);
+		for (Villager helper : level.getEntitiesOfClass(Villager.class, around, v -> {
+			BuilderJob job = ModAttachments.BUILDER_JOB.get(v);
+			return job != null && job.helper() && job.siteId().equals(site.id());
+		})) {
+			stopHelping(level, helper);
+		}
+	}
+
 	/** Sites waiting for this builder, in the order they were handed over. */
 	public static List<BuildSite> queue(ServerLevel level, Villager villager) {
 		List<BuildSite> out = new java.util.ArrayList<>();
@@ -204,7 +241,11 @@ public final class Builders {
 		next.setQueued(false);
 		ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(next.id()));
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(next.owner());
-		if (owner != null) {
+		if (owner != null && next.wonder() != null) {
+			// a Wonder part's structure is named like "Stage 1 0": the owner reads the Wonder and its stage (B678)
+			io.github.jcondedata.aliveworkplace.wonder.WonderStages.partNextLine(level, next, villager.getDisplayName())
+				.ifPresent(line -> tell(owner, line, ChatFormatting.GREEN));
+		} else if (owner != null) {
 			tell(owner, Component.translatable("message.aliveworkplace.queue.next", villager.getDisplayName(),
 				Blueprints.displayName(next.structure())), ChatFormatting.GREEN);
 		}
@@ -268,7 +309,7 @@ public final class Builders {
 		}
 		BoundingBox box = BlueprintOutline.bounds(placement.get(), blueprint.get().size());
 		double distance = Math.sqrt(box.getCenter().distSqr(bench.get()));
-		if (!Reach.inReach(level, bench.get(), box.getCenter(), MAX_SITE_DISTANCE)) {
+		if (!inReach(level, bench.get(), data.get().structure(), placement.get())) {
 			// B378: rounded up, so a refused spot never reads as within the reach (48.5 blocks: 49)
 			tell(player, Reach.refusal(level, bench.get(), "message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_SITE_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
@@ -392,13 +433,13 @@ public final class Builders {
 		}
 		if (site.isQueued()) {
 			BuildSite current = villager != null ? activeSite(level, villager) : null;
-			text.append(Component.translatable("message.aliveworkplace.status.queued", who, Blueprints.displayName(site.structure()),
-				current != null ? Blueprints.displayName(current.structure()) : Component.literal("?")).withStyle(ChatFormatting.GOLD));
+			text.append(Component.translatable("message.aliveworkplace.status.queued", who, Blueprints.siteName(level, site),
+				current != null ? Blueprints.siteName(level, current) : Component.literal("?")).withStyle(ChatFormatting.GOLD));
 			appendCancel(text, site);
 			return text;
 		}
 		int percent = Math.round(site.progress(plan) * 100);
-		text.append(Component.translatable("message.aliveworkplace.status.header", who, Blueprints.displayName(site.structure()), percent)
+		text.append(Component.translatable("message.aliveworkplace.status.header", who, Blueprints.siteName(level, site), percent)
 			.withStyle(ChatFormatting.GOLD));
 		text.append(Component.literal("\n  "));
 		text.append(Component.translatable("message.aliveworkplace.status.stage." + site.stage().name().toLowerCase()).withStyle(ChatFormatting.GRAY));
@@ -451,7 +492,7 @@ public final class Builders {
 					if (i > 0) {
 						names.append(", ");
 					}
-					names.append(Blueprints.displayName(queue.get(i).structure()));
+					names.append(Blueprints.siteName(level, queue.get(i)));
 				}
 				text.append(Component.literal("\n  "));
 				text.append(Component.translatable("message.aliveworkplace.status.next", names).withStyle(ChatFormatting.GRAY));
@@ -580,6 +621,35 @@ public final class Builders {
 					}
 				}
 			}
+		}
+		return out;
+	}
+
+	/**
+	 * What the open builds other than {@code except} keep back in {@code chests}, by family key: the {@link #reservedAt}
+	 * of every bench those chests are within a builder's reach of (B696: a Carpenter turned the logs stocked for one build
+	 * into planks for another that shared the chest, and the first waited for ever).
+	 */
+	public static Map<Item, Integer> reservedIn(ServerLevel level, List<BlockPos> chests, @Nullable BuildSite except) {
+		Map<Item, Integer> out = new java.util.HashMap<>();
+		if (chests.isEmpty()) {
+			return out;
+		}
+		Set<BlockPos> benches = new java.util.HashSet<>();
+		for (BuildSite other : BuildSiteManager.get(level).all()) {
+			BlockPos bench = other.bench();
+			if (other == except || bench == null || other.isDone() || other.isDeconstruction() || benches.contains(bench)) {
+				continue;
+			}
+			for (BlockPos chest : chests) {
+				if (SupplyContainers.inReach(bench, chest)) {
+					benches.add(bench);
+					break;
+				}
+			}
+		}
+		for (BlockPos bench : benches) {
+			reservedAt(level, bench, except).forEach((item, n) -> out.merge(item, n, Integer::sum));
 		}
 		return out;
 	}
@@ -733,7 +803,7 @@ public final class Builders {
 		// At most once a minute per build: waiting often comes and goes while a crew passes materials around.
 		if (owner != null && !site.missing().isEmpty() && site.shouldNotify(level.getGameTime(), 1200)) {
 			tell(owner, Component.translatable("message.aliveworkplace.waiting", villager.getDisplayName(),
-				Blueprints.displayName(site.structure()), formatMissing(site, 5)), ChatFormatting.YELLOW);
+				Blueprints.siteName(level, site), formatMissing(site, 5)), ChatFormatting.YELLOW);
 		}
 	}
 
@@ -741,6 +811,7 @@ public final class Builders {
 
 	/** A site's last step done: hands back what's left, tells the owner, records it. Also used by tests (27.21). */
 	public static void finish(ServerLevel level, Villager villager, BuildSite site) {
+		sendHelpersBack(level, site);
 		BlockPos bench = (site.wonder() != null ? siteBench(level, villager, site) : benchPos(villager)).orElse(villager.blockPosition());
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
 		emptyBag(level, villager, bench, supplies);
@@ -833,7 +904,8 @@ public final class Builders {
 			// (B143: a Wonder's part is no building of its own: no "X was built" line with the part's name, nothing on the
 			// books, no upgrade, no lane; the Wonder's own begun, dedicated and finished lines tell it, 35.4/35.7/35.8)
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
-			BuildSiteManager.get(level).setFurniture(site.placement(), site.furniture()); // 37.3: upkeep keeps what was built
+			BuildSiteManager.get(level).setFurniture(site.placement(), site.isRefresh() // 37.3: upkeep keeps what was built
+				? Refreshes.refreshedFurniture(level, site.structure(), site.furniture()) : site.furniture()); // B642: a refresh's, by today's spots
 			io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, site.structure(), site.placement(), villager); // 39.4: start a windmill
 			io.github.jcondedata.aliveworkplace.mechanic.Contraptions.finished(level, site, plan, villager); // 39.5: does it turn?
 			io.github.jcondedata.aliveworkplace.city.Signposts.finished(level, site.structure(), site.placement()); // a Signpost's boards (36.4)
@@ -902,6 +974,7 @@ public final class Builders {
 			BuildSiteManager.get(level).remove(site.id());
 			return;
 		}
+		sendHelpersBack(level, site);
 		BlockPos bench = villager != null ? benchPos(villager).orElse(villager.blockPosition()) : site.placement().origin();
 		List<BlockPos> supplies = villager != null ? SupplyContainers.find(level, bench, null) : List.of();
 		if (villager != null) {
@@ -990,7 +1063,7 @@ public final class Builders {
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 			if (owner != null) {
 				BlockPos p = villager.blockPosition();
-				tell(owner, Component.translatable("message.aliveworkplace.builder_died", Blueprints.displayName(site.structure()), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
+				tell(owner, Component.translatable("message.aliveworkplace.builder_died", Blueprints.siteName(level, site), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
 			}
 			ModAttachments.BUILDER_JOB.remove(villager);
 			if (keptForTheNext(site)) {

@@ -8,7 +8,7 @@ Roadmap items: 33.21
 ## What a player sees
 
 On the hall's Trade page, the **Realm** tab (see [Founding a realm](realms.md)) has **Draw the Realm Map** (a filled
-map) in its last slot, at the capital and at every member. With an empty map in your inventory (none in creative), a
+map) in its last slot, at the capital and at every member (a village outside a realm has no button). With an empty map in your inventory (none in creative), a
 click turns it into **Map of the County of Thornholm**:
 
 - a **banner for every member** in the realm's color (the base color of its arms; white without arms), named after
@@ -70,3 +70,6 @@ color and name with the capital's, the ally, rival and colony, a far member, the
 halls, the colony's cross, the legend, parchment wherever no chunk is loaded, save and reload of the map and the item),
 `realmMapScalesToFitEveryMember` (scale 3 for members 900 blocks apart, both on the map; scales 2, 3, 4 and the cap),
 `realmMapSwitchOff` (no button, nothing drawn, the empty map kept; nothing outside a realm). Showcase scene `realm_map`.
+QA: `QaRealmMapBoardGameTests.qaRealmMapRefusesOutsidersAndNoMap` (no empty map: "Bring an empty map to draw the realm
+on." and nothing given; a village of the same owner outside the realm: no button, "There's no realm map to draw here.",
+the empty map kept; at a member's hall it's drawn).

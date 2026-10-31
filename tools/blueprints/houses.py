@@ -250,8 +250,8 @@ def stone_house_3():
 
 # --- The settlers' camp: what a Settler's Wagon sets up ------------------------------------------------------------
 def settlers_camp():
-    """11 x 5 x 9: a settlers' camp in the wild — a covered wagon on four wheels with the supply chest at its tail (steps
-    up to it), a
+    """11 x 5 x 9: a settlers' camp in the wild — a covered wagon on four wheels with the supply chest on its open
+    tailboard (steps up to it), a
     Blueprint Table beside it with a lamp (the first settler becomes its builder), a campfire with log seats in front
     and two bedrolls. Placed at once by the Settler's Wagon (not built): {@code camp/} blueprints aren't in the
     Blueprint Table."""
@@ -279,13 +279,15 @@ def settlers_camp():
     # The tongue out of the front
     fence(b, 1, 1, 4, "dark_oak_fence")
     fence(b, 0, 1, 4, "dark_oak_fence")
-    # The load: two hay bales and a pumpkin, the supply chest (a loot table fills it) at the open tail end, its lid to
-    # the tail (B424: in the middle, between the hay and the pumpkin, no player could open it where it stood)
+    # The load: two hay bales, a pumpkin and a melon under the cover, the supply chest (a loot table fills it) on the
+    # open tailboard past the canvas, its lid to the tail (B424: in the middle, between the hay and the pumpkin, no
+    # player could reach it; B590: under the cover's last arch, the wool on top kept its lid shut)
     b.set(4, 2, 4, "hay_block", axis="x")
     b.set(5, 2, 4, "hay_block", axis="x")
     b.set(6, 2, 4, "pumpkin")
-    b.set_nbt(7, 2, 4, Compound({"LootTable": String("aliveworkplace:chests/settlers_wagon"), "id": String("minecraft:chest")}))
-    b.set(7, 2, 4, "chest", facing="east", type="single", waterlogged=False)
+    b.set(7, 2, 4, "melon")
+    b.set_nbt(8, 2, 4, Compound({"LootTable": String("aliveworkplace:chests/settlers_wagon"), "id": String("minecraft:chest")}))
+    b.set(8, 2, 4, "chest", facing="east", type="single", waterlogged=False)
     # Steps up to the tail: a crate with a stair on it and a stair before it, ending level with the wagon's bed
     b.set(9, 0, 4, "stripped_spruce_wood", axis="y")
     stairs(b, 9, 1, 4, SPRUCE, "west")
@@ -453,6 +455,10 @@ def artisans_house_2():
     b.clear(0, 0, 11, 8, 14, 11)  # the old back overhang
     b.set(4, 1, 10, "air")
     b.set(4, 2, 10, "air")
+    # The workroom's back windows either side of the new doorway are walled up (B648: their glass ended in the doorway)
+    for x in (3, 5):
+        for y in (2, 3):
+            b.set(x, y, 10, STONE_MIX.at(x, y, 10))
     b.blocks.pop((4, 0, 11), None)
     # The wing: walls x 2-6, z 10-16 (the house's back wall is its front), stone with brick quoins
     plinth(b, 2, 10, 6, 16, STONE_MIX, floor="spruce_planks")
@@ -543,10 +549,12 @@ def townhouse_body(b):
     walls(b, 1, 1, 9, 10, 13, 13, TOWNHOUSE_TRIM)  # the cornice
     for y in (6, 10):
         for x in (2, 5, 8):
-            if y == 6:  # tall windows, each with a little balcony: a slab on the jetty's edge behind iron railings
+            if y == 6:  # tall windows, each with a little balcony: a slab on the jetty's edge behind an iron railing
                 window(b, x, y, 1, "north", height=2, lintel=STONE_BRICK)
                 slab(b, x, 5, 0, STONE_BRICK, top=True)
-                b.set(x, 6, 0, "iron_bars", north=False, south=False, east=False, west=False, waterlogged=False)
+                # the railing: an iron panel along the slab's front edge (B648: it was one iron bar, which joined only
+                # the window behind it and stood as a stub ending in the air)
+                trapdoor(b, x, 6, 0, "iron_trapdoor", "south", open_=True)
             else:
                 window(b, x, y, 1, "north", height=2, shutters="dark_oak_trapdoor", sill=STONE_BRICK)
         for x in (2, 8):
@@ -717,6 +725,8 @@ def townhouse_3():
     # A doorway from the first-floor bedroom into the tower
     for y in (6, 7):
         b.set(9, y, 3, "air")
+        # the bedroom's east window beside it now looks into the tower: walled up (B648: its glass ended in the doorway)
+        b.set(9, y, 2, TOWNHOUSE_INFILL)
     # Windows: arrow slits below, wider ones up top for the study
     for y in (2, 6, 10):
         window(b, 11, y, 1, "north", height=2, sill=STONE_BRICK)

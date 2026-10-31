@@ -64,8 +64,9 @@ Most quests tick themselves off:
   a raid survived, the first hall quest finished, a Steward appointed, a colony founded, a Wonder finished, a baby
   born in the village, 3 and 7 levels of research, an edict proclaimed, the first Burgher and Noble households, a
   realm founded and the takings collected. These go to the village's owner and to every player in the village at the
-  time (and to the player who did it). A village that got there before you had the quest ticks it off at its next
-  dawn.
+  time (and to the player who did it, wherever they stand). A village that got there before you had the quest (a
+  baby on record, its levels of research, an edict in force, a Burgher or Noble household, a realm it's the capital
+  of) ticks it off at its next dawn; the takings tick off the next time you collect at least an emerald.
 - **Breaking a raiders' camp:** "Take the fight to them" ticks off for the player who strikes the last blow and
   everyone leading guards in the war party.
 

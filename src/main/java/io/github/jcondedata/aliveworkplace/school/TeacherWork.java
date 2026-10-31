@@ -83,7 +83,9 @@ public class TeacherWork extends Behavior<Villager> {
 			return;
 		}
 		timer = EVERY;
-		Vec3 middle = Vec3.atCenterOf(desk);
+		// measured on the floor the desk stands on, so a child exactly CLASS blocks away is in class (B689: from the
+		// desk's middle, half a block up, a child 5 blocks off on the same floor was about 5.02 away)
+		Vec3 middle = Vec3.atBottomCenterOf(desk);
 		List<Villager> children = level.getEntitiesOfClass(Villager.class, new AABB(desk).inflate(RADIUS, 8, RADIUS),
 			v -> v.isAlive() && v.isBaby() && !Schools.isSchooled(v));
 		inClass = 0;
@@ -115,8 +117,8 @@ public class TeacherWork extends Behavior<Villager> {
 
 	private void status(Villager villager) {
 		Component title = Words.countedFirst("message.aliveworkplace.teacher.title", ModAttachments.PUPILS_TAUGHT.getOrElse(villager, 0));
-		Component line = inClass > 0 ? Component.translatable("message.aliveworkplace.teacher.state.teaching", inClass)
-			: called > 0 ? Component.translatable("message.aliveworkplace.teacher.state.calling", called)
+		Component line = inClass > 0 ? Words.counted("message.aliveworkplace.teacher.state.teaching", inClass, inClass)
+			: called > 0 ? Words.counted("message.aliveworkplace.teacher.state.calling", called, called)
 			: Component.translatable("message.aliveworkplace.teacher.state.none");
 		WorkerStatus.set(villager, title, -1f, line.copy().withStyle(ChatFormatting.GRAY));
 	}

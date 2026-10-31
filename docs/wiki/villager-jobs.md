@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688
 
 ## What a player sees
 
@@ -15,7 +15,11 @@ block's own job comes back with its own item (wheat for a Farmer, coal for an Ar
 ("Dara took the Miner job at the Blast Furnace."), or what is missing (no such block near, or every one taken).
 A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it.
 Hold Shift over a workstation in your inventory to see its jobs and their items. A job whose switch is off (or that
-needs Cobblemon, without it) isn't listed.
+needs Cobblemon, without it) isn't listed. Such a job can't be picked by its item either (B688): without Cobblemon a gold block by a
+Training Post does nothing, and a book makes a Teacher if a lectern is near, or says the Teacher needs a Lectern. Nor
+does a jobless villager take such a job by himself (B697): without Cobblemon a Training Post, Leader's Podium, Tutor's
+Desk, Trade Board, Ball Workbench or Fossil Lab stays free. A villager who already had one of these jobs in a saved world
+keeps it.
 
 **Look at a villager to see its job and level (B221).** Point your crosshair at any working villager, from up to
 about 3 blocks away, and a name plate over its head reads "Fisherman, Journeyman". One with a name of its own reads
@@ -34,8 +38,8 @@ its owner still placed, and another builder carries on from there. The Village H
 [The Village Hall](village-hall.md)) retrains a worker to any free job block in the village, or the Builder, for the
 same price, with no need to bring them to the block: the job and the block's claim are set on the paying click, and one
 who can't walk there within about a minute is moved beside it. Since 40.3 the same is in the hall's People table:
-**Job ▾** on a villager's row lists every job, those with a free block in the village saying how many ("Mason · 1
-free Stonecutter"), the rest grayed with the block to place ("Mason · place a Stonecutter first"), the Builder among
+**Job ▾** on a villager's row lists every job, those with a free block in the village saying how many and which
+("Mason · 1 free Stonecutter", "Bard · 1 free Music Stand"; a beehive nobody works at counts for the Beekeeper), the rest grayed with the block to place ("Mason · place a Stonecutter first"), the Builder among
 them and **No job** last (free, two clicks: their trades and level go and their block is left free). The price by
 their level is on top before anything is paid, a first click shows the offer and a second pays. A jobless villager is
 given a free block for nothing, in one click. Children, nitwits and Legends can't; game rule `workplaceRetraining` off
@@ -45,7 +49,8 @@ hides Job ▾.
 so a village takes only so many fishermen: 1, plus 1 more for every 10 villagers within the village radius (48 blocks)
 of the barrel. Once a village has its fishermen, a jobless villager passes free barrels by and takes another free
 workstation instead (or stays jobless if there is none). A fisherman the village already has keeps his job when it is
-over the cap, across a restart too, and a job given by order (the hall's job menu) isn't held back.
+over the cap, across a restart too, and a job given by order (the hall's job menu) isn't held back. Only living
+fishermen within the radius count: when one dies, or stands farther from the barrel, the barrel is free for the next.
 
 **Built-in workstations (B168).** A workstation built in under solid blocks, like the Kitchen's smoker in the mouth of
 its brick oven, is still taken: a villager who picks it walks to the open floor beside it (the side it faces first), not
@@ -170,8 +175,12 @@ chunk that isn't loaded, or gone): it is shared as its owner's (the player who p
 a village one), so a Builder with no chests by its bench builds from the Storehouse's chests (B226).
 
 **Pace.** Every job's speed goes through one rule: the worker's level, then every bonus (partners, a well-kept
-village, research, traits, mood, edicts, guilds, tonics) up to the cap `maxWorkPace`, then penalties (illness, a bad
-mood). The Builder's page has the level table.
+village, research, traits, mood, edicts, guilds, tonics) up to the cap `maxWorkPace`, then penalties (illness, an unhappy
+mood, the Lazy trait, a badly kept village), which multiply after the cap, so an ill worker at the cap works at exactly
+half the capped pace. The level is applied outside the cap: a capped Master is still 2.5 times a capped Novice. The
+worker's status line (sneak-right-click) and the hall's People details say the total and its sources ("Works 62%
+faster (...)", "100% faster: at the cap (...)", "37% slower (... held back by being ill ...)"); a worker at the usual
+pace gets no pace line. The Builder's page has the level table.
 
 **Requests.** What workers are waiting for (materials, a pickaxe, seeds) is posted on the Storehouse's board, where
 players can hand things over; the Village Hall lists it too. The board is drawn like the Blueprint Table (26.12): the
@@ -191,6 +200,25 @@ owner reads "Dara made a new Stone Pickaxe at their workstation from what they m
 it is there, so a Miner saved and loaded mid-way simply starts it again. Without the materials they wait as before
 ("needs a pickaxe"), and the Storehouse board asks for what they lack, the cobblestone first and then the sticks,
 beside "A pickaxe" (which the Toolsmith may still make): handed over, it goes into their chests and they make it.
+
+**Miners dig deeper as they level up (36.22).** The Quarry Marker's depths go 4, 8, 16, 32, 64 (every miner), then
+96 (Journeyman and up), 128 (Expert and up) and "down to just above bedrock" (Master only: the world's floor plus 5,
+so Y=-59 in the Overworld), then the strip mines. The deeper choices say the level they need when cycled ("Dig 128
+blocks deep (Expert Miners and up).") and in the tooltip. Handed to a miner whose level doesn't reach that far, the
+quarry is started anyway but cut off at their depth (64 for a Novice or Apprentice, counted from the marked top), and
+the player reads "Dara is at Novice level, so they'll stop 64 blocks down for now. Digging all 128 blocks needs Expert
+level; if they get there before they finish, they'll keep going down." Nothing below that is dug. A bedrock pit always needs a Master, however deep the ground turns out (B649): below Master the miner stops at their
+own depth and always above the pit's last layer, so an Expert handed a 123-block bedrock pit stops 122 down and the
+player reads "...Digging all 123 blocks needs Master level...", the level the marker named. A miner who levels
+up while the quarry is open (every work tick `Miners.deepen` checks) takes the floor down as far as the new level
+reaches, and the owner reads "Dara reached Expert level and will keep digging, down to 128 blocks deep." The pit is
+dug top-down, so deepening only adds layers at the end: the blocks already visited keep their place and the spiral
+stair carries on down to the new floor. A quarry finished short of the marker's depth says so ("...stopped 64 blocks
+down: digging all 128 blocks needs Expert level. Hand them the marker again once they get there."), and the marker
+comes back with its depth. The level is checked against the real pit (a 128 marker cut off by the world's floor at
+90 deep only needs a Journeyman). A deep pit (more than 64) counts its distance to the bench from the middle of its
+top, where the miner starts down. The safety rules hold all the way down: blocks next to water or lava and blocks too
+hard for the pickaxe are left standing.
 
 **Working with nobody near.** While anyone is online, every worker's workstation chunk stays loaded, so villages
 keep working when no player is near (`keepVillagesWorking`). Builds and quarries follow the game rule
@@ -303,7 +331,10 @@ the villager (`registry/ModAttachments`), each absent or zero by default: the jo
 `miner_job`, `farm_field`, `tree_farm`, `orchard`, `courier_routes`, `patrol_route`), who hired them
 (`builder_employer`), and a counter per job that the hall shows (`trees_felled`, `fish_caught`, `mail_delivered`
 and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill_build` (the build's origin),
-`last_growth`, `grown` and `grown_since_pass` (36.12); all absent in older saves and marked-out quarries. Status lines and the requests board are not saved: workers post again after a restart.
+`last_growth`, `grown` and `grown_since_pass` (36.12); all absent in older saves and marked-out quarries. A quarry
+cut off above its marker's depth by the miner's level saves `wanted_bottom`, the floor the marker asked for (36.22);
+absent, the box's own floor (every quarry saved before, and every one dug to its full depth). The marker saves a
+"down to bedrock" depth as `depth: -1`. Status lines and the requests board are not saved: workers post again after a restart.
 
 ## Items, blocks, jobs, commands
 
@@ -389,11 +420,14 @@ same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTes
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits
 refuse, save and reload, the switch off), `HallPeopleJobGameTests` (10, 40.3: the hall's Job ▾, see
-[The Village Hall](village-hall.md)), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
+[The Village Hall](village-hall.md)), `StationsCompatTests` (11, the Pokémon jobs), `B688GameTests` (4: without Cobblemon a book or a gold block by a Training Post gives no job and leaves the post free, a book by a Training Post and a lectern makes a Teacher, a pickaxe still makes a Miner), `OutfitGameTests`, `ConfigGameTests`,
 `HandOffGameTests` (5, B220: a fisherman handed a rod and a builder handed a blueprint are at work within 10 ticks,
 mid-shift and late in it; before the shift and at night they say when they start, and a night's hire stays in bed),
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,
-save and reload), `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
+save and reload), `QaFishermanCapGameTests` (2, the QA lane's for 26.13: a dead fisherman and one outside the radius
+free the barrel), `PaceGameTests`, `QaPace1027GameTests` (10, the QA lane's for 30.2: each cap
+at 100 to 400 and the config's clamps, ill and lazy after the cap, a bonus under the cap kept, two partners counted
+once, every job family's pace and the level outside the cap), `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with
 their jobs), `JobPlateGameTests` (3, B221: a level-3 fisherman reads "Fisherman, Journeyman", a Builder and a
 Master Farmer, a named fisherman "Dara — Fisherman, Journeyman" with her saved name untouched, a jobless villager, a

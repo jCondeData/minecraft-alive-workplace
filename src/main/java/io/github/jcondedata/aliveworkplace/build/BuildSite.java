@@ -76,6 +76,8 @@ public final class BuildSite {
 	private BuildPlan plan;
 	private Status status = Status.STARTING;
 	private Map<Item, Integer> missing = Map.of();
+	/** B636: {@link #missing} predates materials the crew has taken since (not saved). */
+	private boolean shortfallStale;
 	/** Supply runs finished (materials taken, or the bag emptied at the chests): progress for the stall watch (B40). */
 	private int trips;
 	@Nullable
@@ -284,6 +286,7 @@ public final class BuildSite {
 					: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(structure, level, placement.origin()); // 37.4: a partner's Trainer's room
 				onChange.run();
 			}
+			Blueprint drawn = blueprint.get();
 			blueprint = Optional.of(furniture.apply(blueprint.get(), structure));
 			if (cellarOnly) {
 				blueprint = Optional.of(Cellars.cellarOnly(blueprint.get())); // 36.7: the cellar and the way down, nothing above
@@ -291,7 +294,7 @@ public final class BuildSite {
 			int depth = foundation && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
 			int margin = levelGround && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
-				: repair && refresh != null ? Refreshes.plan(level, blueprint.get(), structure, refresh, placement, furniture)
+				: repair && refresh != null ? Refreshes.plan(level, drawn, structure, refresh, placement, furniture) // B642: furnished as built, and anew
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level, BuildSiteManager.get(level).gaveUp(placement))
 				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
 			if (kineticOrder && !deconstruct && !repair) {
@@ -850,6 +853,19 @@ public final class BuildSite {
 
 	public void setMissing(Map<Item, Integer> missing) {
 		this.missing = missing;
+	}
+
+	/**
+	 * B636: someone of the crew took materials from a chest (true), so {@link #missing()} may count as short what is now
+	 * in a bag and the requests board would ask for it again; false once the lead has worked the whole list out afresh.
+	 * Not saved: the lead works the list out afresh after a load anyway.
+	 */
+	public void setShortfallStale(boolean stale) {
+		shortfallStale = stale;
+	}
+
+	public boolean shortfallStale() {
+		return shortfallStale;
 	}
 
 	void setOnChange(Runnable onChange) {

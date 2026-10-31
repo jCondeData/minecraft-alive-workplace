@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Shop Counter sells only from, and pays only into, its own chests: on a market street, a chest nearer another
+  player's Shop Counter is that shop's, so your shopkeeper no longer sells your neighbor's goods or drops your takings
+  in their chest. A chest exactly between two players' counters belongs to one of them, always the same one; your own
+  counters still share their chests (B716).
 - A brown or green bed in your own house is no longer taken for a settlers' wagon bedroll just because a campfire and a
   hay bale stand nearby: the villager living there keeps it as their home, and the Village Hall counts it again (only
   a real camp's bedrolls, with the camp's Blueprint Table, are wagon beds). Beds already mistaken in a saved world are

@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.2 — 2026-10-31
+
 ### Fixed
 - `/workplace threat start` by a village whose camp has its whole band out now says the camp has nobody left to
   send, instead of "found nowhere to gather".

@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A builder taking up a Wonder part from their queue no longer announces its raw name ("Builder is starting on Stage 1
+  0 next."): the owner reads the Wonder and its stage, as in "Ann is starting on a part of stage 1 of the Lighthouse
+  (its stage's name) next." (B678).
+- The "down to just above bedrock" Quarry Marker now needs the Master Miner it names, however deep the pit turns out: a
+  lower-level miner stops short of the bottom and is told all of it needs Master level, instead of naming a lower
+  level or digging to bedrock with no word (B649).
 - Without CobbleDollars a Price Tag over 6,400 is paid in full at the server's rate, not 64 emeralds: a 10,000 tag asks
   a stack of emeralds and 36 more on the trade screen, bigger prices ask emerald blocks and the rest, and a tag over 584
   emeralds isn't offered (its tooltip says it's too dear). The sales log keeps the whole sum (B692).

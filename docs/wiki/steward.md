@@ -151,7 +151,7 @@ Roads and walls have their own switches: see [Roads and walls](roads-and-walls.m
 
 GameTests: `StewardGameTests` (12), `StewardRulesGameTests` (19), `StewardHomesRulesGameTests` (12),
 `StewardCivicRulesGameTests` (20), `StewardDeskGameTests` (7), `StewardJobsGameTests` (11),
-`StewardSafetyGameTests` (8), `QaLaneLedgerBugTests` (1, B520: his own lane waits at a player's section), `StewardRoundsQaGameTests` (2), `CityPlanGameTests` (7), `CityPlanScreenGameTests` (3),
+`StewardSafetyGameTests` (8), `QaLaneLedgerBugTests` (1, B520: his own lane waits at a player's section), `QaLaneLedger1031GameTests` (6, B520: a lane with only its tip in a player's section waits and one whose tip is a block short of it opens, the owner drawing the same line by hand builds through it, the lane still waits after save and reload, a caravan half waits too, even where it runs nearer the other village), `StewardRoundsQaGameTests` (2), `CityPlanGameTests` (7), `CityPlanScreenGameTests` (3),
 `OldHousesGameTests` (7), `RenewalGameTests` (9), `DoorJamGameTests` (1), `AtticBedGameTests` (1), `CountWordsGameTests`
 (2, B377: the workplace reason and the Storehouse stock line with one and with two), `QaStewardCivicBoundariesGameTests` (3, 27.12: a death 29 days back counts for the Graveyard and 30 days back not, 7
 villagers are too few; a raid 6 days ago is within 7 and 7 days ago not; 2 children get no Schoolhouse), `QaStewardHomesBoundariesGameTests` (2, 27.10: no Inn for a Town 3 beds short or a Village 4 short;

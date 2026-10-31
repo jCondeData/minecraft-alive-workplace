@@ -921,7 +921,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaNoCobblemonNearbyJob1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopTithe1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopHeroBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillage1031VerifyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopHeroPriceBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1031dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatOrders1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTurnCheckSaves1031GameTests",
@@ -931,7 +933,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRefusedCampBlocksBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoryEngine1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoryEngineBug1031Tests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugs1031GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugs1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatLevels1031dGameTests"
 		]
 	},
 	"depends": {

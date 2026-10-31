@@ -127,7 +127,9 @@ They hand over a map, lead, wait for a player more than 24 blocks behind, catch 
 going for either of them (one after nobody, and animals, are left alone). At the place a banner; right-click them for
 Home, and after 5 seconds standing still both are by the hall. Not on strike; one a day; only the player on it can ask
 for Home; a logout or a death cancels it and they are home the next morning; a new one may start the next day. An
-expedition under way survives a save and reload.
+expedition under way survives a save and reload. The chronicle reads "Sorrel led Steve to an Ancient City, 33 blocks
+south-east of the village" (or "turned back from an expedition to a Stronghold"); short of food they say how much is
+there ("there is 1", "there are 2").
 
 **Research trees (29.11).** A Legend with a tree of their own (the Old Sage, the Pokémon Professor) gets a tab on the
 hall's research screen while they live in the village; it goes when they leave. Trees are data

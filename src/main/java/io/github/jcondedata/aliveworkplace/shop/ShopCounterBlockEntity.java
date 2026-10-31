@@ -156,10 +156,16 @@ public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements 
 			CompoundTag sale = Nbt.compoundAt(log, i);
 			sales.addLast(new Sale(Nbt.getLong(sale, "day"), Nbt.getString(sale, "buyer"),
 				ItemStack.parseOptional(registries, Nbt.getCompound(sale, "goods")), Nbt.getLong(sale, "dollars"),
-				ItemStack.parseOptional(registries, Nbt.getCompound(sale, "paid"))));
+				paid(registries, sale)));
 		}
 		totalSales = Nbt.getInt(tag, "totalSales");
 		totalDollars = Nbt.getLong(tag, "totalDollars");
+	}
+
+	private static ItemStack paid(HolderLookup.Provider registries, CompoundTag sale) {
+		ItemStack paid = ItemStack.parseOptional(registries, Nbt.getCompound(sale, "paid"));
+		int count = Nbt.getInt(sale, "paidCount");
+		return count > paid.getCount() && !paid.isEmpty() ? paid.copyWithCount(count) : paid;
 	}
 
 	@Override
@@ -177,7 +183,12 @@ public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements 
 			entry.putString("buyer", sale.buyer());
 			entry.put("goods", sale.goods().saveOptional(registries));
 			entry.putLong("dollars", sale.dollars());
-			entry.put("paid", sale.paid().saveOptional(registries));
+			// a stack saves at most 99 items: a bigger payment (a Price Tag paid in emeralds, B692) keeps its count beside it
+			ItemStack paid = sale.paid();
+			entry.put("paid", paid.copyWithCount(Math.min(paid.getCount(), 99)).saveOptional(registries));
+			if (paid.getCount() > 99) {
+				entry.putInt("paidCount", paid.getCount());
+			}
 			log.add(entry);
 		}
 		tag.put("sales", log);

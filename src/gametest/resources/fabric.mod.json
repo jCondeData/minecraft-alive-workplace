@@ -890,7 +890,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStewardMaterials1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopPaymentSaves1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaThreatOrders1031GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaThreatOrders1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugs1031GameTests"
 		]
 	},
 	"depends": {

@@ -406,9 +406,59 @@ public class QaStewardPlotsGameTests implements net.fabricmc.fabric.api.gametest
 		Villager second = StewardGameTests.seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.south(2)));
 		helper.runAfterDelay(150, () -> {
 			helper.assertTrue(stewardAt(helper, loaded, HALL_A), "dismissed after reload: " + loaded.getVillagerData());
-			helper.assertTrue(Stewards.appoint(player, second, plan) == InteractionResult.CONSUME
-				&& second.getVillagerData().getProfession() == ModVillagers.BUILDER, "a second Steward took the reloaded one's hall");
+			String before = "loaded alive " + loaded.isAlive() + " removed " + loaded.getRemovalReason() + " at " + loaded.blockPosition()
+				+ ", second " + second.getVillagerData() + " alive " + second.isAlive() + " at " + second.blockPosition()
+				+ ", free places " + level.getPoiManager().getFreeTickets(helper.absolutePos(HALL_A)) + ", time " + level.getDayTime();
+			InteractionResult result = Stewards.appoint(player, second, plan);
+			helper.assertTrue(result == InteractionResult.CONSUME && second.getVillagerData().getProfession() == ModVillagers.BUILDER,
+				"a second Steward took the reloaded one's hall: " + result + ", before: " + before);
 			helper.assertTrue(Stewards.stewardOf(level, helper.absolutePos(HALL_A)) == loaded, "the hall's Steward isn't the reloaded one");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B687: a Steward who is somewhere nothing is loaded (a far stop of his rounds, a hop that put him in a chunk that then
+	 * unloaded) still holds his hall. Neither the hall's first tick nor an appointment may give his place to someone else
+	 * because he can't be seen: when he comes back there would be two Stewards of one hall.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaStewardAway"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaStewardAway")
+	public void aStewardAwayInAnUnloadedChunkKeepsHisHall(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		otherHalls(helper, HALL_A);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL_A);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ItemStack plan = planFor(helper, player, HALL_A);
+		Villager steward = StewardGameTests.seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.east(2)));
+		steward.setNoAi(true);
+		helper.assertTrue(Stewards.appoint(player, steward, plan) == InteractionResult.SUCCESS, "not appointed");
+		// Somewhere within the hall's reach whose chunk isn't loaded (the GameTest server loads only the test areas).
+		BlockPos away = null;
+		for (int[] d : new int[][] {{100, 100}, {-100, 100}, {100, -100}, {-100, -100}, {110, 0}, {-110, 0}, {0, 110}, {0, -110}}) {
+			BlockPos p = hall.offset(d[0], 0, d[1]);
+			if (!level.isLoaded(p)) {
+				away = p;
+				break;
+			}
+		}
+		helper.assertTrue(away != null, "no unloaded chunk near the test area");
+		steward.teleportTo(away.getX() + 0.5, away.getY(), away.getZ() + 0.5);
+		helper.assertTrue(Stewards.stewardOf(level, hall) == null, "the Steward away at " + away + " is still seen: the test proves nothing");
+		helper.runAfterDelay(5, () -> {
+			// the hall has ticked (its first tick checks its Steward's place) with him away
+			helper.assertTrue(level.getPoiManager().getFreeTickets(hall) == 0, "the hall's place came free while its Steward was away");
+			Villager second = StewardGameTests.seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.south(2)));
+			second.setNoAi(true);
+			InteractionResult result = Stewards.appoint(player, second, plan);
+			helper.assertTrue(result == InteractionResult.CONSUME && second.getVillagerData().getProfession() == ModVillagers.BUILDER
+				&& level.getPoiManager().getFreeTickets(hall) == 0, "a second Steward took the hall of one who is away: " + result);
+			// He comes back: still the hall's one Steward.
+			steward.teleportTo(helper.absolutePos(HALL_A.east(2)).getX() + 0.5, hall.getY(), hall.getZ() + 0.5);
+			helper.assertTrue(Stewards.stewardOf(level, hall) == steward && stewardAt(helper, steward, HALL_A), "the Steward back from away isn't the hall's");
+			steward.discard();
 			helper.succeed();
 		});
 	}

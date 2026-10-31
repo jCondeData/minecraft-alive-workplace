@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A hall's Steward keeps his place while he's away where nothing is loaded (a far stop of his rounds): the City Plan
+  no longer appoints a second Steward to the same hall in the meantime (B687).
+
 ## 0.151.1 — 2026-10-30
 
 ### Fixed

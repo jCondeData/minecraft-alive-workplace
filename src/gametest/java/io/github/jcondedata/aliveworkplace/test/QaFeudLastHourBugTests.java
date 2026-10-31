@@ -169,7 +169,7 @@ public class QaFeudLastHourBugTests {
 		List<String> wrong = new ArrayList<>();
 		for (long left : new long[]{500, 1}) {
 			long now = server.overworld().getGameTime();
-			Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now - 100, now + left, false, 0, 0, 0));
+			Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now, now + left, false, 0, 0, 0));
 			List<String> lore = feudLore(land);
 			boolean says = lore.stream().anyMatch(l -> l.startsWith("At war"));
 			if (!says || lore.stream().anyMatch(l -> l.contains("0 days and 0 hours"))) {
@@ -194,11 +194,12 @@ public class QaFeudLastHourBugTests {
 		MinecraftServer server = land.level().getServer();
 		feudsOn(helper, server);
 		long now = server.overworld().getGameTime();
-		Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now - 100, now + 999, false, 0, 0, 0));
+		// wars begin this tick: a start below 0 means no war, and a test run first sees a game time under 100
+		Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now, now + 999, false, 0, 0, 0));
 		List<String> war = feudLore(land);
 		helper.assertTrue(war.contains("At war: less than an hour left"), "999 ticks of war left: " + war);
 		Feuds.Data.get(server).clear();
-		Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now - 100, now + 1000, false, 0, 0, 0));
+		Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now, now + 1000, false, 0, 0, 0));
 		war = feudLore(land);
 		helper.assertTrue(war.contains("At war: 0 days and 1 hour left"), "1000 ticks of war left: " + war);
 		Feuds.Data.get(server).clear();
@@ -211,11 +212,11 @@ public class QaFeudLastHourBugTests {
 		helper.assertTrue(fade.contains("Fades in 0 days and 1 hour without a war"), "1000 ticks before it fades: " + fade);
 		// the day's edges: a tick short of a day and exactly one day
 		Feuds.Data.get(server).clear();
-		Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now - 100, now + 23999, false, 0, 0, 0));
+		Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now, now + 23999, false, 0, 0, 0));
 		war = feudLore(land);
 		helper.assertTrue(war.contains("At war: 0 days and 23 hours left"), "23999 ticks of war left: " + war);
 		Feuds.Data.get(server).clear();
-		Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now - 100, now + 24000, false, 0, 0, 0));
+		Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now, now + 24000, false, 0, 0, 0));
 		war = feudLore(land);
 		helper.assertTrue(war.contains("At war: 1 day and 0 hours left"), "24000 ticks of war left: " + war);
 		Feuds.Data.get(server).clear();

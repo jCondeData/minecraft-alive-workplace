@@ -162,11 +162,16 @@ public final class StewardSafety {
 		Component out = Component.empty();
 		boolean first = true;
 		for (Map.Entry<Item, Integer> e : list) {
-			Component one = Component.translatable("screen.aliveworkplace.shopping.item", e.getValue(), e.getKey().getDescription());
+			Component one = item(e.getKey(), e.getValue());
 			out = first ? one : Component.translatable("screen.aliveworkplace.shopping.and", out, one);
 			first = false;
 		}
 		return out;
+	}
+
+	/** One entry of the list, its name in the plural for any count but one (B698: "12 Oak Logs", "1 Oak Log"). */
+	public static Component item(Item item, int count) {
+		return Component.translatable("screen.aliveworkplace.shopping.item", count, io.github.jcondedata.aliveworkplace.work.Words.itemName(item, count));
 	}
 
 	/** Notes when each open build began waiting for materials, and forgets it once he's back at work (every second). */

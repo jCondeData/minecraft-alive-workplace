@@ -253,7 +253,7 @@ public class QaTradePactsGameTests implements FabricGameTest {
 	/**
 	 * A world from before 1.7 really loads: the caravans' saved data (a route each way to the neighbour) reloaded and no
 	 * pacts file at all. Within a second or two, with no manual settle, the routes are a trade pact, nothing stopped and
-	 * the cargo is paid for; saved and reloaded again, the migration doesn't run a second time.
+	 * the cargo stays free (gifts on for each sender, B700); saved and reloaded again, the migration doesn't run a second time.
 	 */
 	//$ gametest_ticks_batch HUGE '160' '"qaTpReload"'
 	@GameTest(template = HUGE, timeoutTicks = 160, batch = "qaTpReload")
@@ -277,7 +277,7 @@ public class QaTradePactsGameTests implements FabricGameTest {
 			TradeGoods.Good good = TradeGoods.all().get(0);
 			land.entity(1).setTreasury(100_000);
 			int paid = Caravans.payPact(level, land.hall(1), land.hall(0), List.of(new ItemStack(good.icon(), good.bundle())), caravans);
-			helper.assertTrue(paid > 0, "the migrated pact's cargo wasn't paid for");
+			helper.assertTrue(paid == 0, "M33 design: a migrated route's cargo stays free (gifts on for the sender), but the receiver paid " + paid); // B700
 			// saved and reloaded once more: the pact stays, and the migration's mark too
 			Pacts.Data back = Pacts.Data.load(Pacts.Data.get(server).save(new CompoundTag(), registries), registries);
 			helper.assertTrue(back.pacts().equals(Pacts.Data.get(server).pacts()), "the pact didn't survive a save: " + back.pacts());

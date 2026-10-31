@@ -33,6 +33,12 @@ public final class SupplyContainers {
 	 * Storage positions near {@code bench}, nearest first, skipping any inside {@code exclude}. Furnaces are not
 	 * storage (anything could end up in their input slot); miners tend them on purpose, see {@link #furnaces}.
 	 */
+	/** Whether a store at {@code pos} is close enough to {@code bench} for {@link #find} to list it (B696). */
+	public static boolean inReach(BlockPos bench, BlockPos pos) {
+		return Math.abs(pos.getX() - bench.getX()) <= RADIUS && Math.abs(pos.getZ() - bench.getZ()) <= RADIUS
+			&& Math.abs(pos.getY() - bench.getY()) <= VERTICAL;
+	}
+
 	public static List<BlockPos> find(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude) {
 		List<BlockPos> found = stores(level, bench, exclude);
 		return isStorehouseWithNetworks(level, bench) ? folded(level, bench, found, exclude).stores() : found;

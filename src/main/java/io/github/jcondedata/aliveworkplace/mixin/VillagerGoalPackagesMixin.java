@@ -11,6 +11,7 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /** Gives the Builder profession its own WORK activity (see {@link BuilderPackages}). */
@@ -117,6 +118,19 @@ abstract class VillagerGoalPackagesMixin {
 			// villagers work Create's machines (39.3) as their machine-work files say, around their own work
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.mechanic.MachineWork.packages(profession, cir.getReturnValue()));
 		}
+	}
+
+	/**
+	 * A jobless villager only goes for a workstation whose job can be had in this game (B697: without Cobblemon a
+	 * jobless villager by a Training Post became a Trainer by himself). Only the jobless villager's search (vanilla's
+	 * {@link VillagerProfession#ALL_ACQUIRABLE_JOBS}) is narrowed; a villager with a job keeps his and his block.
+	 */
+	@ModifyArg(method = "getCorePackage", at = @At(value = "INVOKE",
+		target = "Lnet/minecraft/world/entity/ai/behavior/AcquirePoi;create(Ljava/util/function/Predicate;Lnet/minecraft/world/entity/ai/memory/MemoryModuleType;Lnet/minecraft/world/entity/ai/memory/MemoryModuleType;ZLjava/util/Optional;)Lnet/minecraft/world/entity/ai/behavior/BehaviorControl;"),
+		index = 0)
+	private static java.util.function.Predicate<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>> aliveworkplace$onlyJobsInThisGame(
+			java.util.function.Predicate<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>> sites) {
+		return sites == VillagerProfession.ALL_ACQUIRABLE_JOBS ? sites.and(io.github.jcondedata.aliveworkplace.work.Stations::takenByItself) : sites;
 	}
 
 	/** In a pillager raid guards don't hide: they keep patrolling (and fight, from CORE). */

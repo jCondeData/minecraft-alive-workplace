@@ -585,6 +585,21 @@ public final class Stations {
 		return !COBBLEMON_JOBS.contains(id.getPath()) || io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon");
 	}
 
+	/** The job vanilla gives a jobless villager at each kind of block (the first job that holds it), found once per kind. */
+	private static final java.util.Map<Holder<PoiType>, Optional<VillagerProfession>> VANILLA_JOB = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/**
+	 * Whether a jobless villager may take a block of kind {@code poi} by themselves (B697): only when the job the game
+	 * would give them there ({@link #available}) can be had in this game. Without Cobblemon a Training Post, a Leader's
+	 * Podium, a Tutor's Desk, a Trade Board, a Ball Workbench and a Fossil Lab stay free; a villager who already has the
+	 * job keeps it. Called by the jobless villager's search for a workstation (mixin/VillagerGoalPackagesMixin).
+	 */
+	public static boolean takenByItself(Holder<PoiType> poi) {
+		return VANILLA_JOB.computeIfAbsent(poi, h -> BuiltInRegistries.VILLAGER_PROFESSION.stream()
+			.filter(p -> p != VillagerProfession.NONE && p.heldJobSite().test(h)).findFirst())
+			.map(Stations::available).orElse(true);
+	}
+
 	/**
 	 * The lines a workstation's tooltip adds (21.1a): "hold Shift for its jobs", or with {@code shift} the job it takes by
 	 * itself and the item that picks each of the others. None for an item that isn't a station, or that is only a menu's

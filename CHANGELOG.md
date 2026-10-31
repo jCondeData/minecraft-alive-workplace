@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Caravan routes to another player's village from before 1.7 keep their free cargo when they become trade pacts:
+  each sending village starts with gifts on, as planned (B700).
+- A trade pact that becomes an alliance keeps each side's gifts and its start date; gifts no longer switch off on
+  their own (B701).
 - The Steward's shopping list (his daily message, the desk and the Storehouse's board) now names things in the
   plural: "12 Oak Logs, 10 Torches", and still "1 Oak Log" for one (B698).
 - Without Cobblemon, a jobless villager standing by a Training Post no longer becomes a Trainer by himself (a job with

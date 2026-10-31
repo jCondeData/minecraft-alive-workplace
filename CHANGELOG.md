@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Carpenter no longer crafts away materials another open build still needs: with two builds sharing a chest or the
+  Storehouse, the logs stocked for one stay its own instead of becoming planks for the other, so the first no longer
+  waits forever for a log that's gone (B696).
 - A builder taking up a Wonder part from their queue no longer announces its raw name ("Builder is starting on Stage 1
   0 next."): the owner reads the Wonder and its stage, as in "Ann is starting on a part of stage 1 of the Lighthouse
   (its stage's name) next." (B678).

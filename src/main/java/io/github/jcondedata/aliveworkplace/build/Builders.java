@@ -323,6 +323,14 @@ public final class Builders {
 				return InteractionResult.CONSUME;
 			}
 		}
+		// B714: a Wonder begun but waiting for a stage's goods has no build sites yet; its saved layout still counts
+		Optional<io.github.jcondedata.aliveworkplace.wonder.WonderSite> wonder = io.github.jcondedata.aliveworkplace.wonder.WonderPlans
+			.wonderOver(level, placement.get().dimension(), box);
+		if (wonder.isPresent() && wonder.get().goingUp()) {
+			tell(player, Component.translatable("message.aliveworkplace.assign.overlaps",
+				io.github.jcondedata.aliveworkplace.wonder.Wonders.name(wonder.get().wonder())), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
 		// B718: a build (or take-down) reaching into a protected village the player may not change is refused, wherever
 		// its click lies; he's told whose village it is
 		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(level, player, box)) {

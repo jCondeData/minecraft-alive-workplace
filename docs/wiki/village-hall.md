@@ -238,8 +238,8 @@ day. Each season has a festival on its middle day. At `seasonDays` 1 the calenda
 icon. Then only the owner, their friends and operators may break or place blocks, open chests or hurt villagers in the
 hall's area, or empty or fill buckets there (judged where the bucket pours or scoops, so a stranger standing just
 outside can't pour lava in, B719). Anyone may still walk in, open doors, trade and ring the bell. A build, quarry or field that anyone else
-hands a Builder, Miner or Farmer is refused wherever its footprint reaches into the area, even when it was clicked
-outside it (B718).
+hands a Builder, Miner or Farmer, or a tree farm, orchard or berry plot handed to a Lumberjack, Orchard Keeper or Berry
+Breeder, is refused wherever its footprint reaches into the area, even when it was clicked outside it (B718, B731).
 
 **Page tabs (22.5).** The third row holds 9 tabs. Any feature adds a page with one registration call
 (`docs/agent/layout.md`); the mod's own later pages (Classes, Wonders, Free job blocks) give way to pages added by
@@ -420,6 +420,7 @@ the wagon-bed list and its save, an older list lets a cabin's bed go and keeps t
 `ProtectionSpecGameTests`, `HallProtectHintGameTests`, `QaProtectedBuildBug1031Tests`, `QaProtectedQuarryBug1031Tests`,
 `ProtectedHandOverGameTests` (B718: a stranger's build and quarry reaching in refused, his field refused with whose
 village it is; the owner's build and field reaching in, a build just outside and a quarry with protection off taken),
+`QaVillageGuardsBug1031Tests` (B731: a stranger's tree farm, orchard and berry plot reaching in refused with whose village it is),
 `QaProtectedBucketBug1031Tests` and `BucketProtectionGameTests` (B719: a stranger outside can't pour lava in or scoop
 water out and is told whose village it is; the owner, a friend and an operator pour in from outside; a stranger pours
 outside the village from either side of its edge), `ReadingFocusGameTests` (36.5: hovered, held on the way into

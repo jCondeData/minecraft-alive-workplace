@@ -24,7 +24,8 @@ difficulty but Peaceful: there hostile mobs can't exist, so no raid or camp can 
 | `/workplace threat clear` | clears the village of everything: the raid, the camp and the attacks it was due |
 
 You're told how it went: how many raiders came, where the camp stands, or why it couldn't (a raid already under way, a
-camp already standing, no hall nearby, a Peaceful world).
+camp already standing, no hall nearby, a Peaceful world, or a camp whose whole band is out or lost, so it has nobody
+left to send until they come home).
 
 ## How it interacts
 

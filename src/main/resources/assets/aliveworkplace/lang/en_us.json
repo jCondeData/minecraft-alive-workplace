@@ -2850,6 +2850,7 @@
   "command.aliveworkplace.threat.unknown_culture": "No raider culture %s is loaded.",
   "command.aliveworkplace.threat.unknown_disaster": "No disaster %s is loaded.",
   "command.aliveworkplace.threat.raid_under_way": "A raid is already under way at %s: /workplace threat end first.",
+  "command.aliveworkplace.threat.lair_empty": "%1$s have nobody left at their camp by %2$s to send: the whole band is out or lost.",
   "command.aliveworkplace.threat.start_failed": "%1$s found nowhere to gather by %2$s.",
   "command.aliveworkplace.threat.peaceful_raid": "%1$s can't come to %2$s: the world is on Peaceful, where hostile mobs can't exist. Raise the difficulty for raids.",
   "command.aliveworkplace.threat.peaceful_lair": "%1$s can't make camp by %2$s: the world is on Peaceful, where hostile mobs can't exist. Raise the difficulty for camps.",

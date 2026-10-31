@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- `/workplace threat start` by a village whose camp has its whole band out now says the camp has nobody left to
+  send, instead of "found nowhere to gather".
 - A Wonder Plan can no longer be placed over another Wonder that is begun but waiting for a stage's goods, and a
   builder no longer takes a house inside such a Wonder's ground.
 - A quiet village (threat level 0, At peace or Peaceful) no longer loses caravans to bandits (the Lost Caravan

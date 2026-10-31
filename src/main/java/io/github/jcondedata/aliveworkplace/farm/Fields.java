@@ -118,6 +118,11 @@ public final class Fields {
 				AreaJobs.workBlock(level, composter.get()), MAX_DISTANCE), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
+		// B718: a field reaching into a protected village the player may not change is refused (its corners may lie
+		// outside it); he's told whose village it is
+		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(level, player, box)) {
+			return InteractionResult.CONSUME;
+		}
 		FieldJob old = ModAttachments.FARM_FIELD.get(villager);
 		if (old != null && !old.adopted() && !player.getAbilities().instabuild) {
 			give(player, markerFor(level, old)); // swapping fields: the old marker comes back

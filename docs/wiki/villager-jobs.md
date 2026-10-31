@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716
 
 ## What a player sees
 
@@ -251,6 +251,12 @@ the goods don't appear for your payment, a click on them takes nothing, your eme
 shows as sold out. Talk to the shopkeeper again once the shop is restocked. Every sale still takes its goods out of
 the chests and puts the payment in.
 
+**A shop sells only from its own chests (B716).** On a market street, a chest that stands nearer another player's
+Shop Counter (one that reaches it too) belongs to that shop: your shopkeeper never sells its goods and never puts your
+takings in it. A chest exactly as far from two players' counters goes to the counter that comes first by position
+(lower, then further north, then further west), the same one whichever shop asks. Your own counters share their
+chests as before, and a lone shop's stock is still every chest within 8 blocks of it (4 up or down).
+
 **Hoppers stay out of the price list (B349).** A hopper under a Shop Counter pulls nothing out of it, and a hopper,
 dropper or pipe pointed at it pushes nothing in, so nobody can empty or change someone's prices with automation. Only
 the counter's own screen changes them, and only the owner, friends and operators open it. The chests next to the
@@ -346,7 +352,10 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 - Markers: Quarry Marker (`aliveworkplace:quarry_marker`), Field Marker (`aliveworkplace:field_marker`), Delivery
   Note (`aliveworkplace:delivery_note`), Patrol Map (`aliveworkplace:patrol_map`). A Delivery Note marks the chest,
   barrel or Pasture Block it right-clicks without opening it (B333), and a note already carrying 9 kinds answers a
-  10th with `message.aliveworkplace.route.filter_full` and stays as it is (B334).
+  10th with `message.aliveworkplace.route.filter_full` and stays as it is (B334). In a protected village only the
+  owner, friends and operators may mark a container (anyone else gets `message.aliveworkplace.protection.denied`); the
+  note keeps who marked its source, and a postman doesn't take from a protected village that keeps that player (or,
+  for a route from before, the postman's employer) out (B717).
 - Texts: `message.aliveworkplace.job.chosen`, `message.aliveworkplace.job.needs_station`,
   `message.aliveworkplace.job.station_taken`, `message.aliveworkplace.job.class_needed`,
   `tooltip.aliveworkplace.station.hint`, `message.aliveworkplace.retrain.offer`, `.confirm`, `.short`, `.done`,
@@ -439,7 +448,7 @@ pit, regrowth bottom up at the set rate with a player's block kept and nothing o
 day's worth, the weighted mix, save and reload of the site and mid-dig, the switch off, the Quarry Marker still works,
 the new sentences), `QaStageThreeBugTests` (B333: a survival player's right-click marks a chest, then a barrel, and
 neither opens; B334: a tenth kind on a full note), `QaStageThreeGameTests` (a sneak-click clears the note, a non-container
-is refused, up to 9 kinds). `ShopStockGameTests` (5, B348: the chest emptied while the trades are open sells
+is refused, up to 9 kinds). `ShopNeighboursGameTests` (4, B716: a lone shop sells and is paid into its own chest; with a stocked neighbor shop 6 blocks off, a sale on the trade screen and on the shop screen takes and pays only the shop's own chest; a chest midway between two players' counters is exactly one shop's, Frank's, every time; one owner's two counters share a chest until a stranger owns the other), `QaShopNeighboursBug1031Tests` (1, B716, QA: Frank's empty shop never sells Bob's cobblestone from the chest by Bob's counter). `ShopStockGameTests` (5, B348: the chest emptied while the trades are open sells
 nothing and shows sold out, emptied after the payment is in hands over nothing and keeps the emerald, less than a lot
 left isn't sold, a restocked shop sells again, a normal sale takes the goods from the chest), `ShopCounterHopperGameTests` (3,
 B349: a hopper under the counter pulls nothing out while one under a chest beside it does, a hopper on top pushes

@@ -25,6 +25,22 @@ abstract class VillagerMixin {
 		}
 	}
 
+	/**
+	 * A player's shop asks its owner's price from everyone (B706, B710): no special prices at all on a shopkeeper's
+	 * offers, so neither vanilla's reputation and Hero of the Village discounts nor the mod's own (Silver Tongue, trade
+	 * fair, friendship) or the Tithe's rise, which run at this method's tail, change what the owner set.
+	 */
+	@Inject(method = "updateSpecialPrices", at = @At("HEAD"), cancellable = true)
+	private void aliveworkplace$shopOwnersPrice(net.minecraft.world.entity.player.Player player, CallbackInfo ci) {
+		Villager self = (Villager) (Object) this;
+		if (io.github.jcondedata.aliveworkplace.shop.Shops.isShopkeeper(self)) {
+			for (net.minecraft.world.item.trading.MerchantOffer offer : self.getOffers()) {
+				offer.resetSpecialPriceDiff();
+			}
+			ci.cancel();
+		}
+	}
+
 	/** The Tithe edict's higher emerald prices, after vanilla's reputation and Hero discounts (30.8, {@code hall/Tithe}). */
 	@Inject(method = "updateSpecialPrices", at = @At("TAIL"))
 	private void aliveworkplace$tithePrices(net.minecraft.world.entity.player.Player player, CallbackInfo ci) {

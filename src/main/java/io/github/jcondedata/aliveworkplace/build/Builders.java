@@ -241,7 +241,11 @@ public final class Builders {
 		next.setQueued(false);
 		ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(next.id()));
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(next.owner());
-		if (owner != null) {
+		if (owner != null && next.wonder() != null) {
+			// a Wonder part's structure is named like "Stage 1 0": the owner reads the Wonder and its stage (B678)
+			io.github.jcondedata.aliveworkplace.wonder.WonderStages.partNextLine(level, next, villager.getDisplayName())
+				.ifPresent(line -> tell(owner, line, ChatFormatting.GREEN));
+		} else if (owner != null) {
 			tell(owner, Component.translatable("message.aliveworkplace.queue.next", villager.getDisplayName(),
 				Blueprints.displayName(next.structure())), ChatFormatting.GREEN);
 		}

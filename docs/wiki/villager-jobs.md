@@ -205,7 +205,9 @@ so Y=-59 in the Overworld), then the strip mines. The deeper choices say the lev
 blocks deep (Expert Miners and up).") and in the tooltip. Handed to a miner whose level doesn't reach that far, the
 quarry is started anyway but cut off at their depth (64 for a Novice or Apprentice, counted from the marked top), and
 the player reads "Dara is at Novice level, so they'll stop 64 blocks down for now. Digging all 128 blocks needs Expert
-level; if they get there before they finish, they'll keep going down." Nothing below that is dug. A miner who levels
+level; if they get there before they finish, they'll keep going down." Nothing below that is dug. A bedrock pit always needs a Master, however deep the ground turns out (B649): below Master the miner stops at their
+own depth and always above the pit's last layer, so an Expert handed a 123-block bedrock pit stops 122 down and the
+player reads "...Digging all 123 blocks needs Master level...", the level the marker named. A miner who levels
 up while the quarry is open (every work tick `Miners.deepen` checks) takes the floor down as far as the new level
 reaches, and the owner reads "Dara reached Expert level and will keep digging, down to 128 blocks deep." The pit is
 dug top-down, so deepening only adds layers at the end: the blocks already visited keep their place and the spiral

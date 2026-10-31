@@ -83,6 +83,28 @@ public record QuarryData(Optional<ResourceLocation> dimension, Optional<BlockPos
 		return depth > JOURNEYMAN_DEPTH ? 4 : depth > ANY_LEVEL_DEPTH ? 3 : 1;
 	}
 
+	/**
+	 * The villager level a miner needs to dig all of a pit {@code span} blocks deep that was marked with the depth choice
+	 * {@code choice}: a {@link #BEDROCK} marker's pit always needs a Master, the level the marker names, however deep the
+	 * ground turns out to be (36.22, B649); other pits go by their depth ({@link #levelFor(int)}).
+	 */
+	public static int levelFor(int choice, int span) {
+		return choice == BEDROCK ? 5 : levelFor(span);
+	}
+
+	/**
+	 * The lowest layer a miner at villager level {@code level} digs in a pit from {@code top} down to {@code bottom},
+	 * marked with the depth choice {@code choice}. Below Master, a {@link #BEDROCK} pit stops at the miner's own depth,
+	 * and always above its last layer: the layers just above bedrock are a Master's (B649).
+	 */
+	public static int lowestFor(int level, int top, int bottom, int choice) {
+		int lowest = lowestFor(level, top);
+		if (choice == BEDROCK && level < 5 && lowest <= bottom && top > bottom) {
+			return bottom + 1;
+		}
+		return lowest;
+	}
+
 	/** How many blocks deep a miner at villager level {@code level} digs (a Master: all the way, {@link Integer#MAX_VALUE}). */
 	public static int maxDepth(int level) {
 		return level >= 5 ? Integer.MAX_VALUE : level == 4 ? EXPERT_DEPTH : level == 3 ? JOURNEYMAN_DEPTH : ANY_LEVEL_DEPTH;

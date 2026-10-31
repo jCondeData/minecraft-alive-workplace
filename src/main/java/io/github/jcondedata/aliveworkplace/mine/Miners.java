@@ -102,6 +102,11 @@ public final class Miners {
 			tell(player, Component.translatable("message.aliveworkplace.assign.wrong_dimension"), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
+		// B718: a quarry whose rectangle runs into a protected village the player may not change is refused (both corners
+		// may lie outside it); he's told whose village it is
+		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(level, player, area.get())) {
+			return InteractionResult.CONSUME;
+		}
 		QuarrySite existing = activeSite(level, villager);
 		if (existing != null && existing.refills()) {
 			// 36.12: the Quarry build's pit waits while they dig the marked area; they go back to it after

@@ -347,7 +347,8 @@ claims and trip counts.
   village when the table stands in one: "That spot is outside Mapleridge and 140 blocks from the builder's Blueprint
   Table — keep it within 128." (`assign.too_far_village`; with no village round the table, `assign.too_far`: "That spot
   is 140 blocks from the builder's Blueprint Table — keep it within 128."; B378). Farmers', Miners' and other area jobs'
-  spots follow the same rule and say it the same way. A far site in chunks nobody has loaded waits until someone does:
+  spots follow the same rule, and their refusal names the worker's own block instead of the table ("That field is 129
+  blocks from the Composter the farmer works at — keep it within 128."; B453). A far site in chunks nobody has loaded waits until someone does:
   nothing loads chunks for it. A world from before keeps its sites, and a config file holding the old default 48 moves to
   128 (format 5); any other number stays.
 - Blocks on the never-placed list (spawners, portals, bedrock, command blocks...) are skipped, not substituted.

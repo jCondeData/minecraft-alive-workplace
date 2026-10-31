@@ -322,6 +322,11 @@ public final class Builders {
 				return InteractionResult.CONSUME;
 			}
 		}
+		// B718: a build (or take-down) reaching into a protected village the player may not change is refused, wherever
+		// its click lies; he's told whose village it is
+		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(level, player, box)) {
+			return InteractionResult.CONSUME;
+		}
 
 		Friends.hire(player, villager);
 		if (existing != null && existing.isRepair() && existing.wonder() == null && RepairAsks.agreed(level, existing.placement())) {

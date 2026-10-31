@@ -29,7 +29,8 @@ Place it and the shop is yours; a villager without a job nearby takes it by them
 **Shopkeeper** (or, with `randomStationJobs` on, sometimes the counter's other job, the Innkeeper; hand them an
 emerald to make them the Shopkeeper). Open the counter to set your prices: the top slot of each column is what one sale hands over, the slot
 below it the price. Put the goods in chests within 8 blocks (and no more than 4 above or below it). Other players buy by trading with the shopkeeper, and the
-payment lands in those chests. Every buyer pays exactly your price: no discount comes off it, not Hero of the Village,
+payment lands in those chests. A chest nearer another player's Shop Counter is that shop's, not yours, so neighbors on a
+market street never sell each other's goods; your own counters share their chests. Every buyer pays exactly your price: no discount comes off it, not Hero of the Village,
 not a Silver Tongue shopkeeper, not a trade fair. **Sneak-right-click** the counter to see your sales, whatever
 you have in your hand.
 

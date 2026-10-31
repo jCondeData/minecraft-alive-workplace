@@ -69,6 +69,8 @@ Roadmap items: 31.18, B135, B343
   the story ends.
 - **Running its course**: 15 days after the story began, without the cure, the cough runs its course: each coughing
   villager is well 1 to 3 days later, the village's mood is 15 lower for 5 days, and the story ends as failed.
+  While it runs its course nobody new catches it, the healer takes no more herbs, and nobody is thanked: a player who
+  handed in some herbs gets no standing, honor or friendship from it.
 - Every step is kept in the arc's saved state (its flags and roles), so the story carries on after a restart.
 
 ## Switches
@@ -116,8 +118,6 @@ Roadmap items: 31.18, B135, B343
 
 ## Known limits
 
-- An arc marked `threat` should not start in a village set At peace or at threat level 0 (31.4), but today it
-  still does (B699; failing tests on the tests/threat-arcs-peace-1031 branch).
 - Friendship at the end goes only to the ill villagers who are loaded then (in practice, the village the players are
   in).
 - Doctor Wren trades as a cleric if someone sneaks and right-clicks him.
@@ -139,4 +139,9 @@ Roadmap items: 31.18, B135, B343
   and an old-style illness through a save, the hand-in taking only 3 of each named herb, the tonic only for the
   coughing, every gatherer thanked and no bystander, the Nurse killed or the stand broken mid-brew, Doctor Wren
   brewing by the hall and leaving, every sentence a player reads, and the herb biome tags open to datapacks.
+- QA (`QaHeartsSickness1031GameTests`, 6 sickness tests): no start while the village is At peace or at threat level
+  0 (B699 holds), a remedy easing for exactly one day, the brew done at half a day and not a tick before ("Brewing the
+  cure" at 40% over the healer's head), an even village of 12 reaching exactly 6 coughing and never 7, nobody catching
+  it or being thanked while it runs its course, and the ending's +100 friendship exactly from each villager who was ill
+  and none from the rest.
 - Showcase scenes: `sickness` (the coughing village, a herb patch, the brew, the cure going round).

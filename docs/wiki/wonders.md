@@ -58,7 +58,9 @@ room for the stone.
   and a part whose Wonder is not on a stage (not started, or past its last) gets no line.
 - **A part goes by its Wonder's name** (B703): everywhere a building's name would show (the builder's status when you
   sneak-right-click him, the words over his head, the Village Hall's list of buildings going up, the waiting-for-materials
-  line and his material list), a part reads "Stage 1 part of the Test Folly", never "Stage 1 0".
+  line and his material list, the owner's `/workplace sites`, and the "Next up" and "waiting until ... is finished" lines
+  of a part waiting behind another build), a part reads "Stage 1 part of the Test Folly", never "Stage 1 0". A part's
+  builder who dies drops no blueprint and sends no "Your builder died" line; the part stays for the next builder.
 - **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` with the Wonder's id (the stone's screen
   has an **[Abandon this Wonder]** link that puts it in the chat; works at any stage, also while it waits for its goods,
   B462) or a part's id to abandon the Wonder: what's built stays, the goods handed in for a stage not yet dedicated
@@ -875,6 +877,11 @@ resources only), broken files are skipped with their reasons, a Wonder from a da
 every requirement type holds and fails, `legend` falls back to its stand-in, the caps (a Town with one can't start a
 second and a City can, the same kind twice, one going up, `wonderServerLimit 1`, disabled, off), `/workplace wonders`,
 the switches and the gate, and the saved sites.
+
+`QaWonderPartLines1031GameTests` (3, B703 and B138): `theOwnersSiteListNamesAPartByItsWonder` (/workplace sites
+reads "Builder — Stage 1 part of the Test Folly — 0%"), `aPartWaitingBehindAnotherBuildIsNamedByItsWonder` ("Next up:
+Stage 1 part of the Test Folly" and "... waiting until Test Hut is finished"), `aPartsBuilderDyingDropsAndTellsNoBlueprint`
+(no builder_died line, no blueprint on the ground, the part's site kept).
 
 GameTests in `WonderPlanGameTests` (35.3): the folly's three parts merge into the tower as drawn (compared block by
 block with the drawing), no part sets air over an earlier stage's block, parts are at most 48 a side, the whole

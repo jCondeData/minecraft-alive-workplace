@@ -27,7 +27,8 @@ They watch the builders nearby. When one is waiting for something a crafting tab
 fences, torches, glass panes and so on), the carpenter works out how to make it from what the village has, fetches the
 ingredients, crafts it at their table and carries it to the builder's chests. They can go up to two steps down: fences
 from sticks and planks, the planks from logs. They only use what the rest of that build doesn't need (planks for
-stairs, but never the planks the walls still want). Because they use the game's own recipes, other mods' recipes count
+stairs, but never the planks the walls still want), and never what another build going up nearby still needs, in a
+chest the builders share or in the Storehouse. Because they use the game's own recipes, other mods' recipes count
 too.
 
 **Stock orders.** Between the builders' jobs they also keep the storehouse in whatever you ordered on the Storehouse's

@@ -39,7 +39,7 @@ public class DeliveryNoteItem extends Item {
 	 * B333: a chest's or barrel's own right-click (opening it) runs before an item's {@link #useOn}, so a note held
 	 * on a container or Pasture Block marks it here first, from the use-block event, and the container stays shut.
 	 * Sneaking skips the block's own right-click anyway (the note's clearing click), and a private container still
-	 * opens as before.
+	 * opens as before. In a protected village a stranger's note marks nothing ({@link #useOn} tells them whose it is).
 	 */
 	public static InteractionResult beforeBlock(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
 		ItemStack stack = player.getItemInHand(hand);
@@ -78,11 +78,16 @@ public class DeliveryNoteItem extends Item {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.route.not_container").withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.FAIL;
 		}
+		// B717: a container in a protected village is as good as opened by a note that names it; a stranger is told whose
+		// village it is (and, from the use-block event, the click ends there: the chest stays shut)
+		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(context.getLevel(), player, pos)) {
+			return InteractionResult.FAIL;
+		}
 		if (data.from().isEmpty() || data.isComplete()) {
-			stack.set(ModComponents.ROUTE, new RouteData(Optional.of(pos), Optional.empty(), data.filter()));
+			stack.set(ModComponents.ROUTE, new RouteData(Optional.of(pos), Optional.empty(), data.filter(), Optional.of(player.getUUID())));
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.route.from", pos.getX(), pos.getY(), pos.getZ()));
 		} else {
-			stack.set(ModComponents.ROUTE, new RouteData(data.from(), Optional.of(pos), data.filter()));
+			stack.set(ModComponents.ROUTE, new RouteData(data.from(), Optional.of(pos), data.filter(), data.by()));
 			Chat.chat(player, Component.translatable("message.aliveworkplace.route.to", pos.getX(), pos.getY(), pos.getZ()));
 		}
 		return InteractionResult.SUCCESS;

@@ -160,6 +160,23 @@ public final class VillageProtection {
 			.findFirst();
 	}
 
+	/**
+	 * The protected hall whose area takes in {@code pos} and that keeps the player {@code id} out, if any, for when that
+	 * player needn't be online (B717: a courier route they set): like {@link #keeper}, with operators and the owner's
+	 * friends let in and nothing kept when protection is off on the server.
+	 */
+	public static Optional<BlockPos> keeper(ServerLevel level, UUID id, BlockPos pos) {
+		if (!ENABLED || PROTECTED.isEmpty()) {
+			return Optional.empty();
+		}
+		ServerPlayer online = level.getServer().getPlayerList().getPlayer(id);
+		if (online != null ? online.hasPermissions(2)
+			: level.getServer().getProfilePermissions(new com.mojang.authlib.GameProfile(id, "")) >= 2) {
+			return Optional.empty();
+		}
+		return foreignKeeper(level, id, pos);
+	}
+
 	/** Keeps the list of loaded protected halls up to date (from the hall's block entity). */
 	static void mark(Level level, BlockPos hall, boolean on) {
 		if (level.isClientSide()) {

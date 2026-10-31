@@ -352,7 +352,10 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 - Markers: Quarry Marker (`aliveworkplace:quarry_marker`), Field Marker (`aliveworkplace:field_marker`), Delivery
   Note (`aliveworkplace:delivery_note`), Patrol Map (`aliveworkplace:patrol_map`). A Delivery Note marks the chest,
   barrel or Pasture Block it right-clicks without opening it (B333), and a note already carrying 9 kinds answers a
-  10th with `message.aliveworkplace.route.filter_full` and stays as it is (B334).
+  10th with `message.aliveworkplace.route.filter_full` and stays as it is (B334). In a protected village only the
+  owner, friends and operators may mark a container (anyone else gets `message.aliveworkplace.protection.denied`); the
+  note keeps who marked its source, and a postman doesn't take from a protected village that keeps that player (or,
+  for a route from before, the postman's employer) out (B717).
 - Texts: `message.aliveworkplace.job.chosen`, `message.aliveworkplace.job.needs_station`,
   `message.aliveworkplace.job.station_taken`, `message.aliveworkplace.job.class_needed`,
   `tooltip.aliveworkplace.station.hint`, `message.aliveworkplace.retrain.offer`, `.confirm`, `.short`, `.done`,

@@ -30,7 +30,8 @@ Inside the hall's area, as far as its reach goes across the map and at any heigh
 [friends](command-friend.md) and operators may:
 
 - break or place blocks, or empty buckets;
-- open chests and other blocks with a screen;
+- open chests and other blocks with a screen, or mark them on a [Delivery Note](delivery-note.md) (a postman never
+  carries a stranger's route out of the village);
 - hurt the villagers, golems, animals, armor stands and item frames, by hand or with arrows, tridents and potions;
 - open the hall's screen with a Village Ledger.
 

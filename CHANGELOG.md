@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- In a protected village, a stranger's Delivery Note can't mark the owner's chests any more (they're told whose
+  village it is), and a postman's courier route that a stranger set up doesn't carry anything out of the village, routes
+  already saved included. The owner, their friends and operators set up routes there as before (B717).
 - A Shop Counter sells only from, and pays only into, its own chests: on a market street, a chest nearer another
   player's Shop Counter is that shop's, so your shopkeeper no longer sells your neighbor's goods or drops your takings
   in their chest. A chest exactly between two players' counters belongs to one of them, always the same one; your own

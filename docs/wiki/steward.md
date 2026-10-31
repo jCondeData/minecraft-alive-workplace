@@ -71,7 +71,7 @@ never in a protected village of another owner, never through a place where a pla
 owner approved that one by hand (Keep Clear refuses even that). A road the owner drew on the City Plan counts as
 approved by hand; a lane the Steward lays from a finished house's door and his half of a road to another village do
 not, so a stretch of them that would run through a player's section waits instead (B520). A player placing or breaking a block inside a hall's
-area marks its 16×16×16 section, and only that one. His sites clear only natural blocks. Waiting builds share one
+area marks its 16×16×16 section, and only that one. His sites clear only natural blocks. His waiting builds (not a player's own) share one
 shopping list, the 8 most needed added up over all of them, on the desk, the Storehouse's requests board and in the
 caravans' wants; the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
 less, isn't enough) he proposes nothing new and the desk says so.
@@ -164,7 +164,9 @@ first painter's claim is saved, a block's zone comes from the nearest hall, an 8
 `QaStewardRulesDataGameTests` (2, 27.6), `QaStewardPlotFitGameTests` (2, 27.7: the front faces the nearer road;
 clearable plants), `QaStewardDeskModesGameTests` (10, 27.8: mode buttons, operator and friend approvals, approving
 twice, Steward or hall gone, Run's morning line, save and reload, the desk's sentences, the Ledger, Show me's 30
-seconds), `QaWorkplaceCopiesGameTests` (4, 27.11), `QaStewardSafetyGameTests` (10, 27.19: a broken block marks its section,
+seconds), `QaWorkplaceCopiesGameTests` (4, 27.11), `QaSteward1031GameTests` (10, 27.1a and 27.19: one XP short of Journeyman refused and the next XP let in, Expert and Master
+qualify, a Steward moves halls, the recipe in any slots and with a lookalike, the half-way line to another hall, a stranger's
+protected village by hand, negative ledger sections saved, exactly 8 kinds listed, only his builds pause or are told), `QaStewardSafetyGameTests` (10, 27.19: a broken block marks its section,
 nothing outside a hall's area, one section only, per dimension, Keep Clear over the owner's approval, the 8 most
 needed, caravans, once a day, the pause's day from both sides, the sentences), `QaOldHousesGameTests` (12, 27.20: 85%
 from both sides, abandoned blocks, allowed block entities, containers, 2000 blocks and 20×16×20 from both sides, a

@@ -156,6 +156,10 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   made or broken up, no raid begins, and the log says why; on Peaceful nothing spawns and a player near is told once.
 - `QaRefusedCampBlocksBugTests` (B709): a camp whose chief is refused changes no block round it.
   `QaPeacefulToldBugTests` (B708): a Peaceful refusal 500 blocks from everyone, then one by a player: he is told once.
+  `QaThreatFixes1031GameTests`: a camp refused then allowed on the same ground stands with its chief alive and out of
+  every wall, and only one (B709); each of two players is told once a day, within 96 blocks and not at 97, and again
+  the next day (B708); on Peaceful the lair and start orders say so and leave nothing, then work on Normal (B704); the names
+  are suggested by path or whole id and nothing else, the lair order never the monsters (B705).
 - `QaRefusedThreatsGameTests`: with the world refusing every hostile mob, `/workplace threat start` brings each of the
   seven cultures' raiders into the world, persistent, and ending the raid takes them away; a war camp, tomb camp, Blackstone
   Outpost and Coven Hut each have their captain and band in the world, still there 100 ticks on and not broken up.

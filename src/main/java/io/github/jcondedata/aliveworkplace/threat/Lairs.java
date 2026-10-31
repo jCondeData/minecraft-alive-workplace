@@ -253,8 +253,9 @@ public final class Lairs {
 				}
 			}
 			if (quiet) {
-				// Nothing comes to a quiet village (32.21): a lair standing by it leaves at the next dawn.
-				if (Chronicle.day(level) > quietSince(level, hall)) {
+				// Nothing comes to a quiet village (32.21): a lair standing by it leaves at the next dawn, after both the day
+				// the village went quiet and the day the lair came (one an operator set down later stands that day, B728).
+				if (Chronicle.day(level) > Math.max(quietSince(level, hall), lair.day())) {
 					leave(level, lair);
 					return;
 				}

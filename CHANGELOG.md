@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A camp an operator sets down with `/workplace threat lair` by a village that went quiet on an earlier day (At peace,
+  or threat level 0) now stands until the next dawn, as the command says. Before, it packed up at the hall's next
+  round, about half a minute later.
 - How far a quarry or a build is from its worker is now measured across the ground, so depth and height never count.
   Before, a normal 64-deep quarry 125 blocks from the Miner's Bench was refused as "129 blocks" away (the same spot
   marked deeper was fine), and a tall build centered 128 blocks from the Blueprint Table was refused too. Fields, tree

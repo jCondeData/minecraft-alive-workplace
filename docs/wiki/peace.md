@@ -58,7 +58,9 @@ Roadmap items: 32.21, B134, B383, B704, B705
 - **At peace is set like protection**: the hall's owner or an operator; a hall nobody owns becomes the clicker's. The
   chronicle notes who set it and who lifted it. The setting is on the hall, so it survives restarts.
 - **The dawn**: "next dawn" is the day turning over (`Chronicle.day`). At peace keeps the day it was set; for level 0
-  and Peaceful the hall's round remembers the first day it saw the village quiet (in memory).
+  and Peaceful the hall's round remembers the first day it saw the village quiet (in memory). A lair leaves at the first
+  dawn after both that day and the day it came (its saved `day`), so one set down by a village quiet since an earlier
+  day stands until the day turns over (B728).
 - **The command is an order**: it ignores the switches, the threat level and At peace (a lair set down by a quiet
   village still leaves at the next dawn). `start` refuses while a raid is under way, `lair` while a lair stands and for a
   culture without one, `disaster` while one is under way. `end` calls the raid off (the raiders go, the band's own back

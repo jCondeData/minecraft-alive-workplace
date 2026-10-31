@@ -7,6 +7,14 @@ import net.minecraft.resources.ResourceLocation;
 /** Small naming helpers for blueprints. */
 public final class Blueprints {
 	/**
+	 * Human name for what a build site is raising: a Wonder's part by its Wonder and stage ("Stage 1 part of the
+	 * Test Folly", B703), anything else by its structure's {@link #displayName(ResourceLocation)}.
+	 */
+	public static Component siteName(net.minecraft.server.level.ServerLevel level, io.github.jcondedata.aliveworkplace.build.BuildSite site) {
+		return io.github.jcondedata.aliveworkplace.wonder.WonderStages.partName(level, site).orElseGet(() -> displayName(site.structure()));
+	}
+
+	/**
 	 * Human name for a structure id. Uses the lang key {@code blueprint.<namespace>.<path>} when one
 	 * exists, otherwise turns {@code houses/big_barn} into "Big Barn".
 	 */

@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Wonder's part goes by its Wonder's name while it's built: the builder's status, the words over his head, the
+  Village Hall's list of buildings going up and the waiting-for-materials line say "Stage 1 part of the Test Folly",
+  never "Stage 1 0" (B703).
 - Caravan routes to another player's village from before 1.7 keep their free cargo when they become trade pacts:
   each sending village starts with gifts on, as planned (B700).
 - A trade pact that becomes an alliance keeps each side's gifts and its start date; gifts no longer switch off on

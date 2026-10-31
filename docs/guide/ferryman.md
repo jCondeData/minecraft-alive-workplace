@@ -25,7 +25,7 @@ villager without a job takes it by themselves and becomes its Ferryman. Many vil
 ## Traveling
 
 Right-click travel posts to add them to the ones you know. A ferryman sells a **Travel Ticket** to every other post you
-know, an emerald for every 256 blocks. With CobbleDollars installed, right-click the ferryman with an empty hand for
+know, an emerald for every 256 blocks (16 at most; 8 to another dimension). With CobbleDollars installed, right-click the ferryman with an empty hand for
 tickets paid in CobbleDollars (sneak for the usual trades).
 
 Use a ticket within 16 blocks of any travel post: you sit in a boat, rowed off by the post's ferryman if they're close

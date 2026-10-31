@@ -29,7 +29,7 @@ Counter picks the [Innkeeper](innkeeper.md), a Poké Ball the [Pokémon Trader](
 Open the counter to set your prices. It has nine columns: the top slot of each is what one sale hands over (the item and
 how many), the slot under it is what that costs. Put the goods in chests by the counter. Other players buy by trading
 with the shopkeeper, and the payment lands in your chests. What's for sale is always what's in the chests: the offers are
-rebuilt each time someone talks to the shopkeeper. The counter keeps a log of the last 20 sales.
+rebuilt each time someone talks to the shopkeeper. The counter keeps a log of the last 20 sales; a sneak-right-click shows the latest 10.
 
 **With CobbleDollars**, the shop gets its own screen with prices in CobbleDollars, and a **Price Tag** sets a price
 directly: right-click the tag to set its price with buttons (or rename it in an anvil to a number) and put it in a price

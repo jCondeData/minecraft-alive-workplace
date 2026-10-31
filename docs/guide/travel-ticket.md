@@ -18,7 +18,7 @@ A ticket to one Travel Post, sold by the ferrymen.
 ## Getting one
 
 Right-click a Ferryman (the villager at a [Travel Post](travel-post.md)), pick any other post you know and pay the
-fare: an emerald for every 256 blocks. The ticket is named for where it goes ("Ticket to Riverside"), and its tooltip
+fare: an emerald for every 256 blocks (16 at most; 8 to another dimension). The ticket is named for where it goes ("Ticket to Riverside"), and its tooltip
 says where that post stands.
 
 ## Using it

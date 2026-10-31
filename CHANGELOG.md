@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.2 — 2026-10-31
+
 ### Fixed
 - In a new world, a cabin's brown or green bed by a campfire and a hay bale is no longer taken for a settlers' wagon
   bedroll when the village's own builder's Blueprint Table stands nearby: only beds a camp placed are wagon beds, so

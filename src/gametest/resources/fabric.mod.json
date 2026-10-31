@@ -555,6 +555,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartNameBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedRooms1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartWords1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaProtectedBucketBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.BucketProtectionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopNeighboursBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaProtectedNoteBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaProtectedBuildBug1031Tests",

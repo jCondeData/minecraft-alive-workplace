@@ -23,6 +23,9 @@ import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.ButtonBlock;
@@ -33,6 +36,9 @@ import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * A protected village (the Village Hall's setting, off unless its owner turns it on): inside the hall's area —
@@ -69,7 +75,7 @@ public final class VillageProtection {
 			return mayChange(level, player, hit.getBlockPos()) ? InteractionResult.PASS : InteractionResult.FAIL;
 		});
 		Platform.get().allowUseItem((player, level, hand) ->
-			!(player.getItemInHand(hand).getItem() instanceof BucketItem) || mayChange(level, player, player.blockPosition()));
+			!(player.getItemInHand(hand).getItem() instanceof BucketItem) || mayUseBucket(level, player, player.getItemInHand(hand)));
 		Platform.get().allowAttackEntity((player, level, entity) -> mayHurt(level, player, entity));
 		// Arrows, tridents, thrown potions and the like: the player who threw or shot them (their hits in melee are above)
 		Platform.get().allowDamage((entity, source, amount) -> !(source.getEntity() instanceof Player player) || source.getDirectEntity() == player
@@ -77,6 +83,24 @@ public final class VillageProtection {
 		Platform.get().onUseEntity((player, level, hand, entity, hit) ->
 			(entity instanceof HangingEntity || entity instanceof ArmorStand) && !mayChange(level, player, entity.blockPosition())
 				? InteractionResult.FAIL : InteractionResult.PASS);
+	}
+
+	/**
+	 * B719: whether {@code player} may use the bucket {@code stack} where it would act, not where they stand: the block its
+	 * own raycast hits (scooping, or a waterlogged block filled) and the one beside the face it hits (where it pours, also
+	 * where it falls back to when the hit block can't take the fluid). A stranger outside can't pour into a village or scoop
+	 * out of it; one inside may pour outside it. If not, they're told whose village it is.
+	 */
+	static boolean mayUseBucket(Level level, Player player, ItemStack stack) {
+		boolean empty = stack.is(Items.BUCKET);
+		Vec3 eye = player.getEyePosition();
+		Vec3 end = eye.add(player.getViewVector(1.0f).scale(player.blockInteractionRange()));
+		BlockHitResult hit = level.clip(new ClipContext(eye, end, ClipContext.Block.OUTLINE,
+			empty ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE, player));
+		if (hit.getType() != HitResult.Type.BLOCK) {
+			return true; // the bucket does nothing either
+		}
+		return mayChange(level, player, hit.getBlockPos()) && mayChange(level, player, hit.getBlockPos().relative(hit.getDirection()));
 	}
 
 	/** Blocks anyone may use in a protected village. */

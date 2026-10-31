@@ -135,6 +135,20 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	 * before it had one get it on their first tick. Saved, so a hall whose Steward holds the place isn't checked again.
 	 */
 	private boolean stewardPlaceChecked;
+
+	/**
+	 * Gives a hall saved before it had a Steward's place its place ({@code Stewards.fixTicket}), once in its life: on its
+	 * first tick, or at an appointment if that comes first. Never again after, because a place taken then is a Steward's,
+	 * who may be away where nothing is loaded (B687: freeing it then made two Stewards of one hall).
+	 */
+	public void checkStewardPlace(net.minecraft.server.level.ServerLevel server) {
+		if (stewardPlaceChecked) {
+			return;
+		}
+		io.github.jcondedata.aliveworkplace.city.Stewards.fixTicket(server, worldPosition);
+		stewardPlaceChecked = true;
+		setChanged();
+	}
 	/** The Steward's wishes for the day and what each of his rules has done (27.6); empty in halls saved before. */
 	private io.github.jcondedata.aliveworkplace.city.StewardWishes.State stewardWishes = io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY;
 
@@ -169,10 +183,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		if (hall.rushUntil > 0 && level instanceof net.minecraft.server.level.ServerLevel server) {
 			WorkHorn.tick(server, pos, hall);
 		}
-		if (!hall.stewardPlaceChecked && level instanceof net.minecraft.server.level.ServerLevel server) {
-			io.github.jcondedata.aliveworkplace.city.Stewards.fixTicket(server, pos);
-			hall.stewardPlaceChecked = true;
-			hall.setChanged();
+		if (level instanceof net.minecraft.server.level.ServerLevel server) {
+			hall.checkStewardPlace(server);
 		}
 		if (level instanceof net.minecraft.server.level.ServerLevel server) {
 			io.github.jcondedata.aliveworkplace.wonder.ObservatoryPowers.tick(server, pos, hall); // the Sky Chart's search (35.18)

@@ -905,6 +905,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaShopHeroPriceBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatOrders1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatOrderLairOut1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatOrdersBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPeacefulToldBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefusedCampBlocksBugTests",

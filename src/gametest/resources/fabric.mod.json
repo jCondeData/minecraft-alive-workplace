@@ -562,6 +562,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaProtectedBuildBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaProtectedQuarryBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.ProtectedHandOverGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaProtectedHandOver1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.DeliveryNoteProtectionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShopNeighboursGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPlan1031GameTests",

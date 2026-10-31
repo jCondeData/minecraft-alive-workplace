@@ -173,7 +173,7 @@ public final class Seasons {
 					: Component.translatable("screen.aliveworkplace.calendar.starts_in", days);
 			}
 			ItemStack icon = VillageHallScreen.icon(season.icon, season.title().copy(), now ? ChatFormatting.GREEN : ChatFormatting.WHITE,
-				VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.calendar.days", today.length(), first, first + today.length() - 1), ChatFormatting.GRAY),
+				VillageHallScreen.line(today.length() == 1 ? Component.translatable("screen.aliveworkplace.calendar.day", first) : Component.translatable("screen.aliveworkplace.calendar.days", first, first + today.length() - 1), ChatFormatting.GRAY),
 				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.calendar.festival", season.festival(), festival), ChatFormatting.LIGHT_PURPLE),
 				VillageHallScreen.line(when, now ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 			if (now) {

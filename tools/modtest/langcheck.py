@@ -37,7 +37,6 @@ CHECKED_PAIRS = {
     "advice.aliveworkplace.homes.how": "VillageAdvice passes one list of four values to both; the title uses the first two",
     "advice.aliveworkplace.rank.how": "VillageAdvice passes one list of four values to both; .how picks %2$s-%4$s by position",
     "screen.aliveworkplace.daycare.levels": "CobblemonDaycare fills the levels line with its own two values",
-    "screen.aliveworkplace.calendar.days.one": "Seasons passes the first and last day to both; .one (a one-day season) reads only the first, they're the same",
     "screen.aliveworkplace.hall.rank_perks.no_growth": "VillageHallScreen passes the same four values to both; .no_growth (villageGrowthCap 0) leaves the cap, 0, out",
 }
 

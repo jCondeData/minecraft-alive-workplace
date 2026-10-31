@@ -3593,7 +3593,7 @@
   "screen.aliveworkplace.calendar.about": "Four seasons of %s days, the same for every village, each with a festival on its middle day",
   "screen.aliveworkplace.calendar.about.one": "Four seasons of %s day, the same for every village, each with a festival on its middle day",
   "screen.aliveworkplace.calendar.days": "Days %s to %s of the year",
-  "screen.aliveworkplace.calendar.days.one": "Day %1$s of the year",
+  "screen.aliveworkplace.calendar.day": "Day %s of the year",
   "screen.aliveworkplace.calendar.festival": "Festival on day %2$s: %1$s",
   "screen.aliveworkplace.calendar.now": "Now: day %s of %s",
   "screen.aliveworkplace.calendar.starts_in": "Begins in %s days",

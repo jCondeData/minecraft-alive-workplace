@@ -952,6 +952,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B728GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeWarnings1031dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampBedsUpgrade1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBlockWordsAtOne1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageGuards1031GameTests"
 		]
 	},

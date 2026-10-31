@@ -756,6 +756,7 @@
 			"io.github.jcondedata.aliveworkplace.test.PluralSweepGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestJournalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestJournalBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRealmLegendsJournal1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallClasses1027GameTests",

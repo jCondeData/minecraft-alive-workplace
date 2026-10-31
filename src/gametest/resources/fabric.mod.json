@@ -658,6 +658,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QuestJournalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StoryArcGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoryArcEngine1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoryArcEngineBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.StoryArcCastGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWardingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsB8UnloadedGameTests",

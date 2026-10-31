@@ -311,6 +311,7 @@ public final class Stories {
 			for (Quest q : List.copyOf(en.getValue().quests)) {
 				int i = q.current();
 				if (i >= 0 && q.objectives.get(i) instanceof Objectives.Kill kill && (here || kill.anywhere() || kill.role() != null) && kill.matches(killed)
+					&& (kill.role() == null || ArcEffects.plays(en.getValue(), q, kill.role(), killed)) // B711: this arc's own foe
 					&& level.getBlockEntity(en.getKey()) instanceof VillageHallBlockEntity entity && mayHelp(level, en.getKey(), q, player)) {
 					progress(level, en.getKey(), entity, q, i, 1, player);
 					break;

@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A story arc's "Talk to ..." or "Defeat ..." step counts only the villager or foe that arc picked in that village:
+  right-clicking (or defeating) someone another village's story cast in a part of the same name no longer finishes it
+  (B711).
 - Loot spilled from a broken bandit camp's chests no longer sinks half into the ground when the land comes back: an
   item lying across the edge of a block of land that returns is set on top of it, like one lying right on it (B702).
 - A Golem Smith with no room on the ground beside him (a roof too low for a golem all round) builds nothing and takes

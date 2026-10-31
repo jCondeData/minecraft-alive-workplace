@@ -116,6 +116,8 @@ Roadmap items: 31.18, B135, B343
 
 ## Known limits
 
+- An arc marked `threat` should not start in a village set At peace or at threat level 0 (31.4), but today it
+  still does (B699; failing tests on the tests/threat-arcs-peace-1031 branch).
 - Friendship at the end goes only to the ill villagers who are loaded then (in practice, the village the players are
   in).
 - Doctor Wren trades as a cleric if someone sneaks and right-clicks him.

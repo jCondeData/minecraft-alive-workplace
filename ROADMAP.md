@@ -800,6 +800,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B684** Showcase-only (lane: c): scene colony_departure failed in showcase run 41040625331 (main fcc0a69, 0.151.0, 2026-10-30): 'the Storehouse gave every supply (missing: LOGS=64, PLANKS=64, COBBLESTONE=64, BREAD=32, TORCHES=16, GLASS_PANES=12, BEDS=3)', so the settlers never set out; same family as B253/B284. Expected: the scene stocks every supply and passes. (found by digest-1030-2253, 2026-10-30)
 - [ ] **B685** Showcase-only (lane: c): scene city_timelapse failed in showcase run 41040625331 (main fcc0a69, 2026-10-30): 59 of 60 Steward builds finished; palisade_tower at 609,-58,659 stuck WAITING_FOR_MATERIALS (8 spruce_log, store 0, 55 of 63 steps done). Expected: every started build finishes, or the scene stocks the logs. (found by digest-1030-2253, 2026-10-30)
 - [ ] **B686** Showcase-only (lane: d): scenes conscription (B543 again) failed in showcase run 41040625331: 'the conscripts struck the raiders: 2 of 3'. Still failing 4 nights after B543 was filed; look at it. (found by digest-1030-2253, 2026-10-30)
+- [ ] **B687** Red main (CI build 2409 on 563deeac, 2026-10-31 00:12Z, the only failure of 4968): QaStewardPlotsGameTests.aStewardSurvivesSaveAndReload failed '(x, -60, z) a second Steward took the reloaded one's hall'; the next build (2410) passed. Expected: after a save and reload the same Steward keeps the hall and no second one claims it. Test: QaStewardPlotsGameTests, repeated (found by lane-a-1031-0023, 2026-10-31)
 
 ## Milestone 21: Finish 0.138.0
 

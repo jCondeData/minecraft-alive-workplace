@@ -3185,7 +3185,7 @@ write their own stories; nothing waits forever on a player.
   - screenshots of the action bar and the hall tooltip; showcase scene `friendship` (a trade, a quest done, the hearts
     going up);
   - `friendship` off: no points, no hearts shown, nothing else changes.
-- [x] **31.6** (approved 2026-10-11) **Gifts.** Two new items, drawn with the pixel-art skill the way vanilla draws its kind: **Gift Wrap**
+- [x] **31.6** (approved 2026-10-11) (verified 2026-10-31: QaHeartStories1031GameTests [18, pass, with the full suite 5170 green]: shipped tastes' most-specific rule where files disagree, tooltip hides contents with F3+H, gift lands whole, full chest to store, 1000 cap and 0 floor, unnamed refusal uses no day, 2-heart edge through gifts, told once and keepsake once after a dip, life story per viewer, camp nearby is the raids worry, all 16 dyes, name day x3 on hall and page, creative held to one a day; mutants 8/10 killed [2 survivors equivalent or caught by GiftGameTests]; American English scan clean) **Gifts.** Two new items, drawn with the pixel-art skill the way vanilla draws its kind: **Gift Wrap**
   (paper, string and any dye make 4) and the wrapped **Gift** (Gift Wrap and any one item in the crafting grid: a
   special recipe like vanilla's map cloning; the item is kept inside as a data component, and the tooltip says "From
   Jesse" and not what's inside). Right-click a named villager with a Gift: they unwrap it (the item's particles, a
@@ -3255,7 +3255,7 @@ write their own stories; nothing waits forever on a player.
     off and coming back starts it again; the chronicle line and the life-story page; a broken event file is skipped
     with a log line;
   - showcase scene `heart_event` (GIF: Dara walks up and tells her story).
-- [x] **31.8** (approved 2026-10-11) **Heart events: the full set.** The other four events, every variant written out in `en_us.json` (three
+- [x] **31.8** (approved 2026-10-11) (verified 2026-10-31: QaHeartStories1031GameTests [18, pass, with the full suite 5170 green]: shipped tastes' most-specific rule where files disagree, tooltip hides contents with F3+H, gift lands whole, full chest to store, 1000 cap and 0 floor, unnamed refusal uses no day, 2-heart edge through gifts, told once and keepsake once after a dip, life story per viewer, camp nearby is the raids worry, all 16 dyes, name day x3 on hall and page, creative held to one a day; mutants 8/10 killed [2 survivors equivalent or caught by GiftGameTests]; American English scan clean) **Heart events: the full set.** The other four events, every variant written out in `en_us.json` (three
   to five lines each, read in context):
   - **4 hearts, My work**, one per job family: building and crafting (the first wall they raised, and the one that
     fell); mining and smithing (the day their lamp went out underground); the land (the year the harvest failed);

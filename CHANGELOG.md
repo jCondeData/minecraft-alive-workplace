@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Loot spilled from a broken bandit camp's chests no longer sinks half into the ground when the land comes back: an
+  item lying across the edge of a block of land that returns is set on top of it, like one lying right on it (B702).
 - A Golem Smith with no room on the ground beside him (a roof too low for a golem all round) builds nothing and takes
   nothing until there is, instead of putting the golem on top of the roof (B628).
 - The Legends page's tab and header count only the Legends who live in the village: a guest no longer shows as

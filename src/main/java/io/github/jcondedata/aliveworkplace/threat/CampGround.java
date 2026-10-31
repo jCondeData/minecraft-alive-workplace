@@ -132,7 +132,7 @@ public record CampGround(BlockPos min, int sizeX, int sizeY, int sizeZ, int rota
 	 * by where they went; {@code keep}: columns left alone, a ruined camp's standing ones). Anyone inside ground that came
 	 * back is lifted onto it.
 	 */
-	void restore(ServerLevel level, Map<BlockPos, BlockState> camp, java.util.Set<Long> keep) {
+	public void restore(ServerLevel level, Map<BlockPos, BlockState> camp, java.util.Set<Long> keep) {
 		int floor = floor();
 		for (int y = 0; y < sizeY; y++) {
 			for (int z = 0; z < sizeZ; z++) {
@@ -269,16 +269,36 @@ public record CampGround(BlockPos min, int sizeX, int sizeY, int sizeZ, int rota
 		return BlockPos.asLong(p.getX(), 0, p.getZ());
 	}
 
-	/** Anyone (or any item) inside ground that came back is set on top of it. */
+	/**
+	 * Anyone (or any item) inside ground that came back is set on top of it: any whose box the ground now overlaps, not
+	 * only those whose feet are in it (B702: a diamond lying across a column's edge, half in a block that came back, was
+	 * left there, and vanilla's push out of blocks let it sink into the ground under it).
+	 */
 	private static void lift(ServerLevel level, BoundingBox box) {
 		AABB area = new AABB(box.minX(), box.minY(), box.minZ(), box.maxX() + 1, box.maxY() + 1, box.maxZ() + 1);
 		for (Entity e : level.getEntitiesOfClass(Entity.class, area)) {
-			BlockPos at = e.blockPosition();
-			if (!level.getBlockState(at).isCollisionShapeFullBlock(level, at)) {
+			AABB b = e.getBoundingBox();
+			if (!buried(level, e, b)) {
 				continue;
 			}
-			BlockPos top = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at);
-			e.teleportTo(e.getX(), top.getY(), e.getZ());
+			int top = level.getMinBuildHeight();
+			for (int x = (int) Math.floor(b.minX); x <= (int) Math.floor(b.maxX); x++) {
+				for (int z = (int) Math.floor(b.minZ); z <= (int) Math.floor(b.maxZ); z++) {
+					top = Math.max(top, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z));
+				}
+			}
+			// The first block height up where it is free, at most the land's top over every column it covers.
+			double y = Math.floor(e.getY()) + 1;
+			while (y < top && buried(level, e, b.move(0, y - e.getY(), 0))) {
+				y++;
+			}
+			e.teleportTo(e.getX(), Math.min(y, top), e.getZ());
+			e.setDeltaMovement(e.getDeltaMovement().multiply(1, 0, 1));
 		}
+	}
+
+	/** Whether blocks overlap {@code box} (touching them is not overlapping, as vanilla's own push out of blocks). */
+	private static boolean buried(ServerLevel level, Entity e, AABB box) {
+		return level.getBlockCollisions(e, box.deflate(1.0E-7)).iterator().hasNext();
 	}
 }

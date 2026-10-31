@@ -138,10 +138,11 @@ public class PathfinderGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		return false;
 	}
 
+	/** Whether the hall's chronicle has the line {@code key}, in its "a" or its "an" form ({@code key.an}, B673). */
 	private static boolean chronicleHas(GameTestHelper helper, String key) {
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) helper.getBlockEntity(HALL);
 		for (Chronicle.Entry e : hall.chronicle()) {
-			if (e.text().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t && t.getKey().equals(key)) {
+			if (e.text().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t && (t.getKey().equals(key) || t.getKey().equals(key + ".an"))) {
 				return true;
 			}
 		}

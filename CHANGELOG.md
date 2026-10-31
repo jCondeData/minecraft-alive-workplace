@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Without CobbleDollars a Price Tag over 6,400 is paid in full at the server's rate, not 64 emeralds: a 10,000 tag asks
+  a stack of emeralds and 36 more on the trade screen, bigger prices ask emerald blocks and the rest, and a tag over 584
+  emeralds isn't offered (its tooltip says it's too dear). The sales log keeps the whole sum (B692).
+- A child standing exactly 5 blocks from the Teacher's lectern has lessons: the class is measured on the lectern's
+  floor, not half a block up (B689).
 - A Travel Post counts the other posts you know in the singular when there's one: "You know 1 other post", not
   "1 other posts" (B691).
 - The Stadium's goods quest asks for "2 Great Balls" and "2 Ultra Balls", not "2 Great Ball" (B675).
@@ -25,6 +30,10 @@ asks for the steps, `latest.log` and any crash report).
 - Without Cobblemon, the Pokémon jobs can't be picked by their item any more: a book by a Training Post used to make
   a Move Tutor and a gold block a Trainer Leader, jobs with nothing to do. A book still makes a Teacher by a lectern.
   Villagers who already have one of these jobs keep it (B688).
+- The Pathfinder's chronicle lines read "led Steve to an Ancient City" and "turned back from an expedition to an Ancient
+  City" (it said "a Ancient City"), and asked with one ration in the chest they say "(there is 1)", not "(there are 1)".
+- In its last in-game hour a feud on the Pacts tab reads "At war: less than an hour left" or "Fades in less than an
+  hour without a war", instead of "0 days and 0 hours" (B637, B672).
 
 ## 0.151.1 — 2026-10-30
 

@@ -882,6 +882,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLonePanes1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.PriceTagRateAndClassEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopPaymentSaves1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaShopHeroBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests"
 		]
 	},

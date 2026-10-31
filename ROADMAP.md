@@ -1381,7 +1381,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
   don't wait for his reply. Done when:
   - the note is on `main` with every section above;
   - the package is sent, and his answers, when they come, are recorded with `sessions.py reply`.
-  - [x] **27.1a** (approved 2026-10-05) Change from the owner (2026-10-05): A Steward must be a villager who has been an architect/builder for a certain amount of time (decide the amount and write it in the design note; default meanwhile: Builder at a level or for N days). Also make the City Plan's recipe harder: Map and Blank Blueprint plus something hard to get, such as a Heart of the Sea (or similar).
+  - [x] **27.1a** (approved 2026-10-05) (verified 2026-10-31: lane-c-1031-0353: QaSteward1031GameTests [27.1a thresholds, Expert/Master, moving halls, City Plan recipe exact; 27.19 gaps, killed StewardSafety:139 survivor], QaRealmLegendsJournal1031GameTests [33.23 Founder/Prince boundaries, killed/off; 31.3 tracking, bar order, expiry, hand-in, command, journal lines]; full build green 5080 tests) Change from the owner (2026-10-05): A Steward must be a villager who has been an architect/builder for a certain amount of time (decide the amount and write it in the design note; default meanwhile: Builder at a level or for N days). Also make the City Plan's recipe harder: Map and Blank Blueprint plus something hard to get, such as a Heart of the Sea (or similar).
 - [x] **27.2** (approved 2026-10-05) (verified 2026-10-27: on main e5f4bdd59: QaCityPlan1027GameTests [5: raid window 7 days both sides + the proposal's sentence, Town replaces an approved palisade with stone + stranger's approve refused, zone names 1/32/33 and every/unknown/padded/upper-case style through the packet handler [B503], a stranger's 7 plan packets refused with the denied line, the edit packet's wire round trip] 20/20 over 4 runs; existing CityPlan/QaCityPlan/Wall/QaWall tests cover the rest; full build 4207/4207 + 742/742) **The plan and the City Plan item.** A village's plan, saved on the Village Hall
   (`VillageHallBlockEntity`, new tag `plan`, empty by default) and kept on the hall item when the hall is broken (as
   its name is; put down again, the plan is centred on the new spot):
@@ -3105,7 +3105,7 @@ write their own stories; nothing waits forever on a player.
   - a quest file in the gametest datapack is posted and completes; a broken file is skipped with one log line naming
     it (added to `allow.txt`); `/reload` picks up a changed file;
   - `villageQuests` off: no new quests, and nothing else changes.
-- [x] **31.3** (approved 2026-10-06) **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
+- [x] **31.3** (approved 2026-10-06) (verified 2026-10-31: lane-c-1031-0353: QaSteward1031GameTests [27.1a thresholds, Expert/Master, moving halls, City Plan recipe exact; 27.19 gaps, killed StewardSafety:139 survivor], QaRealmLegendsJournal1031GameTests [33.23 Founder/Prince boundaries, killed/off; 31.3 tracking, bar order, expiry, hand-in, command, journal lines]; full build green 5080 tests) **The quest journal, tracking and quest maps.** The hall's Quests page becomes a journal with four tabs
   along the top: **Village** (the daily quests), **Personal** (requests from villagers who are your friends, 31.9),
   **Story** (the village's arc, 31.4) and **Bounties** (31.13); a tab whose item hasn't landed yet says so in grey.
   Each quest shows who asked, one line per objective with its progress, the reward and the days left, and has two
@@ -4402,7 +4402,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   Done when: a GameTest for each edict (boost on, cost on; the reform turns the cost off and keeps the boost); the
   capital's book shows the realm slots; showcase scene `realm_edicts`.
   - [x] **33.22a** (approved 2026-10-13) Change from the owner (2026-10-13): keep the Common Market as built, the realm's own people buy at the board's price and strangers still pay the 10 percent; wrap the Royal Highway tooltip so it fits on screen
-- [x] **33.23** (approved 2026-10-12) **Legends of the realm** (needs M29's The Founder and Merchant Prince):
+- [x] **33.23** (approved 2026-10-12) (verified 2026-10-31: lane-c-1031-0353: QaSteward1031GameTests [27.1a thresholds, Expert/Master, moving halls, City Plan recipe exact; 27.19 gaps, killed StewardSafety:139 survivor], QaRealmLegendsJournal1031GameTests [33.23 Founder/Prince boundaries, killed/off; 31.3 tracking, bar order, expiry, hand-in, command, journal lines]; full build green 5080 tests) **Legends of the realm** (needs M29's The Founder and Merchant Prince):
   - **The Founder**: a village he lives in can found colonies from Town rank, sends four settlers instead of two and
     waits half as long between colonies; its colonies are "founded with the Founder's blessing" in both chronicles,
     and his statue (M29's build) goes up beside the colony's camp.

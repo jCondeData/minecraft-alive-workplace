@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
  * <li>Still refused (the switch off, or the entity manager refuses it too): the mob is gone, the call returns false, and
  * the log says so plainly once per mob type, so the caller neither counts it nor treats its camp as defeated.</li>
  * <li>On Peaceful difficulty hostile mobs can't exist (the game discards them every tick): nothing is spawned, the log
- * says why, and players near are told once a day.</li>
+ * says why, and each player near is told once a day.</li>
  * <li>The village's own animals and golems (B211) go the same way through {@link #addVillage}: the Golem Smith's and the
  * Iron Pact's iron golems, relief riders' horses, the Beastmaster's foals and wolf pups, a caravan's pack llamas. The
  * same blocklist names iron golems, wolves, horses, cats and llamas; while {@link #FORCE_VILLAGE}
@@ -169,15 +169,18 @@ public final class HostileSpawns {
 		};
 		log(why + "|" + type, String.format("Could not spawn %s for the %s at %s: %s.", type, what, mob.blockPosition().toShortString(), reason));
 		if (why == Refusal.PEACEFUL) {
+			// Each player near is told once a day: the day is marked per player, so a refusal at a village nobody is at
+			// doesn't use up the word for a player by his own (B708).
 			long day = level.getGameTime() / 24000L;
-			String key = level.dimension().location().toString();
-			Long told = PEACEFUL_TOLD.get(key);
-			if (told == null || told < day) {
-				PEACEFUL_TOLD.put(key, day);
-				for (ServerPlayer player : level.players()) {
-					if (player.distanceToSqr(mob) <= TELL_RADIUS * TELL_RADIUS) {
-						Chat.chat(player, Component.translatable("message.aliveworkplace.threat.peaceful").withStyle(ChatFormatting.YELLOW));
-					}
+			for (ServerPlayer player : level.players()) {
+				if (player.distanceToSqr(mob) > TELL_RADIUS * TELL_RADIUS) {
+					continue;
+				}
+				String key = level.dimension().location() + "|" + player.getUUID();
+				Long told = PEACEFUL_TOLD.get(key);
+				if (told == null || told < day) {
+					PEACEFUL_TOLD.put(key, day);
+					Chat.chat(player, Component.translatable("message.aliveworkplace.threat.peaceful").withStyle(ChatFormatting.YELLOW));
 				}
 			}
 		}

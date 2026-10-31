@@ -124,7 +124,7 @@ public final class VillageHalls {
 			}
 			BuildPlan plan = site.plan(level);
 			Villager builder = site.builder() != null && level.getEntity(site.builder()) instanceof Villager v ? v : null;
-			out.add(new Build(site, io.github.jcondedata.aliveworkplace.blueprint.Blueprints.displayName(site.structure()),
+			out.add(new Build(site, io.github.jcondedata.aliveworkplace.blueprint.Blueprints.siteName(level, site),
 				plan == null ? 0f : site.progress(plan), builder));
 		}
 		out.sort(Comparator.comparingDouble(b -> b.site().placement().origin().distSqr(hall)));

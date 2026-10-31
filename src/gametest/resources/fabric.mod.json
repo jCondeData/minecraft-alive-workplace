@@ -866,6 +866,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampBuries1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBanditKingAllies1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaServiceJobs1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBanditKingLoot1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCampCleanup1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopFerry1031GameTests"
 		]
 	},

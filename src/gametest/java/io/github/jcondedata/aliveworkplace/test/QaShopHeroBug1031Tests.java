@@ -60,4 +60,29 @@ public class QaShopHeroBug1031Tests implements FabricGameTest {
 			+ bigAsked + " (" + value + " emeralds) for one on a 13,000 tag (130 emeralds)");
 		helper.succeed();
 	}
+
+	/**
+	 * The same for the shopkeeper's own gift: a Silver Tongue shopkeeper (29.6, "every trade with a player is cheaper")
+	 * still asks the owner's 10 emeralds; his discount would come out of the owner's takings too.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaShopSilverTongue"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaShopSilverTongue")
+	public void aSilverTongueShopkeeperAsksTheOwnersPrice(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		QaShopPaymentSaves1031GameTests.shop(helper, new ItemStack(Items.EMERALD, 10));
+		Villager keeper = QaShopPaymentSaves1031GameTests.keeper(helper);
+		io.github.jcondedata.aliveworkplace.legend.Gifted.set(keeper,
+			net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace", "silver_tongue"));
+		QaStageFiveGameTests.Client buyer = QaStageSixGameTests.client(helper, GameType.SURVIVAL, QaStageSixGameTests.name("qaSilverBuyer"));
+		ServerPlayer p = buyer.player();
+		p.setShiftKeyDown(Money.cobbleDollars());
+		QaStageFourGameTests.pressOn(p, keeper, buyer.seen());
+		helper.assertTrue(p.containerMenu instanceof MerchantMenu, "the trade screen didn't open: " + p.containerMenu);
+		ItemStack cost = keeper.getOffers().get(0).getCostA();
+		String asked = cost.toString();
+		boolean ten = cost.getCount() == 10 && cost.is(Items.EMERALD);
+		p.closeContainer();
+		helper.assertTrue(ten, "a Silver Tongue shopkeeper asks " + asked + " for a diamond block his owner priced at 10 emeralds");
+		helper.succeed();
+	}
 }

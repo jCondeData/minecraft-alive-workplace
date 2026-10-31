@@ -124,7 +124,10 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 		said.clear();
 		int sent = run(level, op, command);
 		helper.assertTrue(sent > 0 && ThreatData.get(level).raid(hall).map(r -> r.culture().equals(culture)).orElse(false),
-			when + ": '/" + command + "' started no raid by " + culture + " (returned " + sent + "): " + said);
+			when + ": '/" + command + "' started no raid by " + culture + " (returned " + sent + "): " + said
+				// B712: what else could have stopped it (a camp by the hall, a spawn refused, the difficulty)
+				+ "; lair " + Lairs.near(level, hall).map(l -> l.culture() + " home " + l.home()).orElse("none")
+				+ "; difficulty " + level.getDifficulty() + "; last spawn warning: " + io.github.jcondedata.aliveworkplace.threat.HostileSpawns.lastWarning());
 		helper.assertTrue(!VillageRaids.raiders(level, hall).isEmpty(), when + ": the ordered raid has no raiders in the world: " + said);
 		helper.assertTrue(said.stream().anyMatch(s -> s.contains(" are raiding ") && s.endsWith(sent + " of them.")), when + ": what the command said: " + said);
 		for (int round = 0; round < 2; round++) {

@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- In a new world, a cabin's brown or green bed by a campfire and a hay bale is no longer taken for a settlers' wagon
+  bedroll when the village's own builder's Blueprint Table stands nearby: only beds a camp placed are wagon beds, so
+  its residents keep their homes and the hall counts it. Older saves still know camps from before the wagon-bed list
+  by their look (B730, B732).
 - Counts of one read in the singular: the Steward's desk says "Showing 1 old house", the calendar with one-day seasons
   says "Four seasons of 1 day" and "Day 3 of the year", and the Colonies tab says "A village waits 1 day between
   colonies". With `villageGrowthCap` 0 the hall's rank perks end "no growth on this server" instead of "grows to 0"

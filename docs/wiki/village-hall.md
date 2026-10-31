@@ -220,7 +220,9 @@ are listed when the camp is placed (`aliveworkplace_camp_beds`, per dimension); 
 look (a brown or green bed with a campfire and a hay bale within 10 blocks and the camp's Blueprint Table, or an old
 camp's Builder's Bench, within 12) and listed once seen. A player's brown bed by a campfire and hay, with no camp's table,
 stays a home (B715); a list saved before that fix has its beds looked at once more, and a bed without the camp's look is
-let go. At each round the
+let go. The look is only for a save that may hold camps placed before the list: in a world started with this version
+(its list saved as `complete`), only beds a camp placed are wagon beds, so a cabin's bed by a campfire, hay and the
+village's own builder's Blueprint Table stays a home (B730, B732). At each round the
 hall moves out anyone homed in one (they wake and forget it, then find a bed in a house) and holds every wagon bed for
 nobody, so it is never claimed again. The census leaves them out of Beds and Free, and the Beds button says how many
 it left out ("Not counted: 2 wagon beds"). Before a hall stands, the settlers sleep in the wagon as before.

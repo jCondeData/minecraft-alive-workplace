@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.camp;
 
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -43,12 +44,20 @@ import org.jetbrains.annotations.Nullable;
  * farmhouse's hay went on the list for good. Beds a list saved before then ({@code version} absent) were all listed that
  * way, placed camps' and mistaken ones alike, so each is looked at once more ({@link Data#unverified}): kept if it has the
  * camp's look, a home again if not.
+ *
+ * <p>B730, B732: a village's own builder works at a Blueprint Table too, so the look took a cabin's bed by a campfire and
+ * hay near the builder's workshop for a bedroll. The look is now only for a save that may hold camps placed before the
+ * list: a dimension whose list began with the world ({@link Data#complete}, a world started with this version) has every
+ * camp's beds on it, and any other bed there is a home. A list saved before then, or a world first opened with this
+ * version after it began (no list yet, its clock already running), may hold such camps and keeps the look.
  */
 public final class CampBeds {
 	/** How close the camp's campfire and hay bale are to its bedrolls in an older camp (both camps: within 10 blocks). */
 	static final int LOOK = 10;
 	/** How close the camp's Blueprint Table (or Builder's Bench) is to its bedrolls, across (the Colony Camp's: 11 blocks). */
 	static final int TABLE = 12;
+	/** A dimension with no list yet whose clock is at most this many ticks old is a new world: its list is complete. */
+	static final long NEW_WORLD = 100;
 
 	private CampBeds() {
 	}
@@ -61,9 +70,30 @@ public final class CampBeds {
 		final LongOpenHashSet beds = new LongOpenHashSet();
 		/** Beds an older list holds, not yet looked at again (B715): each is kept or let go the first time it is asked about. */
 		final LongOpenHashSet unverified = new LongOpenHashSet();
+		/**
+		 * Whether the list holds every camp this dimension ever had (B730, B732): true for a world started with the list
+		 * (saved as {@code complete}); false, the default, for a save that may hold camps placed before it, whose beds are
+		 * known by their look.
+		 */
+		boolean complete;
 
 		public static Data get(ServerLevel level) {
-			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
+			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(() -> fresh(level), Data::load, null), NAME);
+		}
+
+		/** A dimension's first list: complete in a new world (saved at once, so it stays so), else an older save's. */
+		private static Data fresh(ServerLevel level) {
+			Data data = new Data();
+			if (level.getGameTime() <= NEW_WORLD) {
+				data.complete = true;
+				data.setDirty();
+			}
+			return data;
+		}
+
+		/** Whether the list holds every camp this dimension ever had, so a bed off it is a home (B730, B732). */
+		public boolean complete() {
+			return complete;
 		}
 
 		void add(BlockPos pos) {
@@ -100,6 +130,9 @@ public final class CampBeds {
 		@Override
 		public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
 			tag.putInt("version", VERSION);
+			if (complete) {
+				tag.putBoolean("complete", true);
+			}
 			tag.putLongArray("beds", beds.toLongArray());
 			if (!unverified.isEmpty()) {
 				tag.putLongArray("unverified", unverified.toLongArray());
@@ -109,6 +142,7 @@ public final class CampBeds {
 
 		public static Data load(CompoundTag tag, HolderLookup.Provider registries) {
 			Data data = new Data();
+			data.complete = Nbt.getBoolean(tag, "complete"); // absent: a list from before B730, which may predate camps' lists
 			boolean old = Nbt.getInt(tag, "version") < VERSION; // a list from before B715: its beds are looked at again
 			for (long pos : Nbt.getLongArray(tag, "beds")) {
 				(old ? data.unverified : data.beds).add(pos);
@@ -120,6 +154,18 @@ public final class CampBeds {
 			}
 			return data;
 		}
+	}
+
+	/**
+	 * Starts each dimension's list on its first ticks, so a new world's list is known complete (B730, B732) before anything
+	 * asks about a bed.
+	 */
+	public static void init() {
+		Platform.get().onLevelTick(level -> {
+			if (level.getGameTime() <= NEW_WORLD) {
+				Data.get(level);
+			}
+		});
 	}
 
 	/** Puts the beds (their heads, where a bed's place in the village is) of the camp just placed in {@code box} on the list. */
@@ -151,8 +197,9 @@ public final class CampBeds {
 	private static long seenTick = -1;
 
 	/**
-	 * Whether the bed at {@code pos} is a settlers' wagon bed: on the list, or one of an older camp's bedrolls. Either way
-	 * it is a camp's brown or green bedroll (another bed put where one stood is a bed like any other).
+	 * Whether the bed at {@code pos} is a settlers' wagon bed: on the list, or, in a save that may hold camps placed before
+	 * the list, one of an older camp's bedrolls. Either way it is a camp's brown or green bedroll (another bed put where one
+	 * stood is a bed like any other). In a complete list's dimension a bed off the list is a home (B730, B732).
 	 */
 	public static boolean isWagonBed(ServerLevel level, BlockPos pos) {
 		if (!level.isLoaded(pos) || !isBedroll(level.getBlockState(pos))) {
@@ -161,6 +208,9 @@ public final class CampBeds {
 		Data data = Data.get(level);
 		if (data.has(pos)) {
 			return true;
+		}
+		if (data.complete && !data.unverified(pos)) {
+			return false; // no camp placed it
 		}
 		if (!level.getServer().isSameThread()) {
 			return looksLikeCamp(level, pos);

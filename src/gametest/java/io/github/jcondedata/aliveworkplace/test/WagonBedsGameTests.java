@@ -62,6 +62,19 @@ public class WagonBedsGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		Leftovers.after(helper, () -> CampBeds.Data.get(helper.getLevel()).forget(box));
 	}
 
+	/**
+	 * This test plays an older save (B730, B732): the dimension's list is one saved before camps' lists were known
+	 * complete, so an unlisted camp's bedroll is known by its look. The live list comes back afterwards.
+	 */
+	private static void olderSave(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		CampBeds.Data live = CampBeds.Data.get(level);
+		Leftovers.after(helper, () -> level.getDataStorage().set(CampBeds.Data.NAME, live));
+		CampBeds.Data old = CampBeds.Data.load(new CompoundTag(), level.registryAccess());
+		helper.assertTrue(!old.complete(), "setup: an older save's list is taken for complete");
+		level.getDataStorage().set(CampBeds.Data.NAME, old);
+	}
+
 	/** A bed (foot at {@code foot}, head south of it) of {@code bed}'s colour; its head, absolute. */
 	private static BlockPos bed(GameTestHelper helper, BlockPos foot, net.minecraft.world.level.block.Block bed) {
 		helper.setBlock(foot, bed.defaultBlockState().setValue(BedBlock.FACING, Direction.SOUTH).setValue(BedBlock.PART, BedPart.FOOT));
@@ -145,6 +158,7 @@ public class WagonBedsGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 	public void anOldCampsBedrollIsNoHomeOnceTheHallStands(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		radius(helper, 18);
+		olderSave(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos roll = bed(helper, new BlockPos(6, 2, 7), Blocks.BROWN_BED);
 		helper.setBlock(new BlockPos(10, 2, 6), Blocks.CAMPFIRE);
@@ -282,6 +296,7 @@ public class WagonBedsGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		Innkeepers.RADIUS = 14;
 		Leftovers.after(helper, () -> Innkeepers.RADIUS = innRadius);
 		forgetCamps(helper);
+		olderSave(helper); // the bedroll is an old camp's, known by its look
 		helper.setDayTime(1000);
 		ServerLevel level = helper.getLevel();
 		BlockPos counter = new BlockPos(15, 2, 15);
@@ -342,6 +357,7 @@ public class WagonBedsGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		helper.assertTrue(!CampBeds.isWagonBed(level, head), "a red bed where the bedroll was is a wagon bed");
 		CampBeds.Data reloaded = CampBeds.Data.load(data.save(new CompoundTag(), level.registryAccess()), level.registryAccess());
 		helper.assertTrue(reloaded.has(head) && !reloaded.has(outside), "lost in a reload");
+		helper.assertTrue(data.complete() && reloaded.complete(), "a new world's list isn't complete (B730): " + data.complete() + ", after a reload " + reloaded.complete());
 		helper.succeed();
 	}
 }

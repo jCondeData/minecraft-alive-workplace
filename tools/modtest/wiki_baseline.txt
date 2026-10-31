@@ -4,7 +4,6 @@
 # its "Roadmap items:" line and runs `python3 tools/modtest/wikicheck.py --prune`. Never add an id here.
 
 # Bugs fixed in sight of players
-B19
 
 # Milestone 21: the texture rebuild and the item icons
 21.1 21.1b

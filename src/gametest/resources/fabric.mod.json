@@ -666,6 +666,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CaravanTrailGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LostCaravanGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanThreats1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.ProfessorsThesisGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BanditKingStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBanditKing1028GameTests",
@@ -948,7 +949,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatLevels1031dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatLevelsBug1031dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B728GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSiegeWarnings1031dGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeWarnings1031dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCampBedsUpgrade1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageGuards1031GameTests"
 		]
 	},
 	"depends": {

@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A brown or green bed in your own house is no longer taken for a settlers' wagon bedroll just because a campfire and a
+  hay bale stand nearby: the villager living there keeps it as their home, and the Village Hall counts it again (only
+  a real camp's bedrolls, with the camp's Blueprint Table, are wagon beds). Beds already mistaken in a saved world are
+  given back the first time the hall looks (B715).
 - A story arc's "Talk to ..." or "Defeat ..." step counts only the villager or foe that arc picked in that village:
   right-clicking (or defeating) someone another village's story cast in a part of the same name no longer finishes it
   (B711).

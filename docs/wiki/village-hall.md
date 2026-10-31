@@ -216,7 +216,10 @@ moves in until a bed is free**.
 
 **Wagon beds are no homes** (B206, B207, `camp/CampBeds`). The bedrolls of a Settler's Wagon's camp or a Colony Camp
 are listed when the camp is placed (`aliveworkplace_camp_beds`, per dimension); an older camp's are known by their
-look (a brown or green bed with a campfire and a hay bale within 10 blocks) and listed once seen. At each round the
+look (a brown or green bed with a campfire and a hay bale within 10 blocks and the camp's Blueprint Table, or an old
+camp's Builder's Bench, within 12) and listed once seen. A player's brown bed by a campfire and hay, with no camp's table,
+stays a home (B715); a list saved before that fix has its beds looked at once more, and a bed without the camp's look is
+let go. At each round the
 hall moves out anyone homed in one (they wake and forget it, then find a bed in a house) and holds every wagon bed for
 nobody, so it is never claimed again. The census leaves them out of Beds and Free, and the Beds button says how many
 it left out ("Not counted: 2 wagon beds"). Before a hall stands, the settlers sleep in the wagon as before.
@@ -397,7 +400,8 @@ GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating fr
 words, a stuck quest swapped after a save and reload, MobsBeGone's file read), compat `WildFoesCompatTests`,
 `WagonBedsGameTests` (B206, B207: settlers leave the wagon once the hall stands, an older camp's bedroll is mended,
 two free beds take in two newcomers and the hall says it's full, the inn takes a traveler only into a free house bed,
-the wagon-bed list and its save),
+the wagon-bed list and its save, an older list lets a cabin's bed go and keeps the camp's), `QaWagonBedsBug1031Tests`
+(B715: a cabin's brown bed by a campfire and hay is still a home),
 `HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
 `ProtectionSpecGameTests`, `HallProtectHintGameTests`, `ReadingFocusGameTests` (36.5: hovered, held on the way into
 the pane, let go outside the panel for the pinned button; unpinning and page changes; the wheel and Shift),

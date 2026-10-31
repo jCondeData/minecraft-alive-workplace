@@ -136,8 +136,8 @@ public class WagonBedsGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 	}
 
 	/**
-	 * B207, an older save: a camp placed before the wagon beds were listed (a brown bedroll by its campfire and hay bale),
-	 * a villager homed in it. The hall's round knows the bedroll by its look, puts it on the list and moves the villager
+	 * B207, an older save: a camp placed before the wagon beds were listed (a brown bedroll by its campfire, hay bale and
+	 * the camp's Blueprint Table), a villager homed in it. The hall's round knows the bedroll by its look, puts it on the list and moves the villager
 	 * out; a red bed in a house beside it stays a home. The list survives a save and reload.
 	 */
 	//$ gametest_ticks_batch AREA '200' '"anOldCampsBedrollIsNoHomeOnceTheHallStands"'
@@ -149,6 +149,7 @@ public class WagonBedsGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		BlockPos roll = bed(helper, new BlockPos(6, 2, 7), Blocks.BROWN_BED);
 		helper.setBlock(new BlockPos(10, 2, 6), Blocks.CAMPFIRE);
 		helper.setBlock(new BlockPos(12, 2, 9), Blocks.HAY_BLOCK);
+		helper.setBlock(new BlockPos(12, 2, 4), ModBlocks.BLUEPRINT_TABLE); // every camp brings its builder's table (B715)
 		BlockPos house = bed(helper, new BlockPos(20, 2, 22), Blocks.RED_BED);
 		Villager settler = helper.spawn(EntityType.VILLAGER, new BlockPos(7, 2, 10));
 		settler.setNoAi(true);
@@ -166,6 +167,53 @@ public class WagonBedsGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 				helper.assertTrue(reloaded.has(roll) && !reloaded.has(house), "after a reload: bedroll " + reloaded.has(roll) + ", house " + reloaded.has(house));
 				VillageHalls.Census census = VillageHalls.census(level, helper.absolutePos(HALL));
 				helper.assertTrue(census.beds() == 1 && census.wagonBeds() == 1, "beds " + census.beds() + ", wagon " + census.wagonBeds());
+			});
+		});
+	}
+
+	/**
+	 * B715, a list saved before the fix: the old look had listed a cabin's brown bed (a campfire and a hay bale by it, no
+	 * camp's table) along with an old camp's green bedroll (its campfire, hay and Blueprint Table). At the hall's round the
+	 * cabin's bed is let go and stays its resident's home and a counted bed; the bedroll stays a wagon bed. The list says
+	 * so after a save and reload.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"anOlderListLetsACabinsBedGoAndKeepsTheCamps"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "anOlderListLetsACabinsBedGoAndKeepsTheCamps")
+	public void anOlderListLetsACabinsBedGoAndKeepsTheCamps(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		radius(helper, 18);
+		ServerLevel level = helper.getLevel();
+		CampBeds.Data live = CampBeds.Data.get(level);
+		Leftovers.after(helper, () -> level.getDataStorage().set(CampBeds.Data.NAME, live));
+		BlockPos cabin = bed(helper, new BlockPos(6, 2, 10), Blocks.BROWN_BED);
+		helper.setBlock(new BlockPos(12, 2, 10), Blocks.CAMPFIRE); // the cabin's cooking fire
+		helper.setBlock(new BlockPos(0, 2, 10), Blocks.HAY_BLOCK);
+		BlockPos roll = bed(helper, new BlockPos(22, 2, 6), Blocks.GREEN_BED);
+		helper.setBlock(new BlockPos(24, 2, 3), Blocks.CAMPFIRE);
+		helper.setBlock(new BlockPos(26, 2, 8), Blocks.HAY_BLOCK);
+		helper.setBlock(new BlockPos(27, 2, 4), ModBlocks.BLUEPRINT_TABLE);
+		CompoundTag before = new CompoundTag(); // the list as a save from before B715 has it: no version, both beds on it
+		before.putLongArray("beds", new long[] {cabin.asLong(), roll.asLong()});
+		CampBeds.Data old = CampBeds.Data.load(before, level.registryAccess());
+		helper.assertTrue(old.unverified(cabin) && old.unverified(roll) && !old.has(cabin), "an older list's beds aren't looked at again");
+		level.getDataStorage().set(CampBeds.Data.NAME, old);
+		Villager resident = helper.spawn(EntityType.VILLAGER, new BlockPos(7, 2, 8));
+		resident.setNoAi(true);
+		helper.runAfterDelay(3, () -> {
+			helper.assertTrue(CampBeds.claim(level, resident, cabin), "setup: the resident couldn't take the cabin's bed");
+			helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+			helper.runAfterDelay(60, () -> {
+				CampBeds.Data data = CampBeds.Data.get(level);
+				helper.assertTrue(!CampBeds.isWagonBed(level, cabin) && !data.has(cabin) && !data.unverified(cabin), "the cabin's bed is still listed");
+				helper.assertTrue(cabin.equals(home(resident)), "the cabin's resident lost his home: " + home(resident));
+				helper.assertTrue(CampBeds.isWagonBed(level, roll) && data.has(roll), "the old camp's bedroll was let go");
+				helper.assertTrue(level.getPoiManager().getFreeTickets(roll) == 0, "the bedroll is free to claim");
+				CampBeds.Data reloaded = CampBeds.Data.load(data.save(new CompoundTag(), level.registryAccess()), level.registryAccess());
+				helper.assertTrue(reloaded.has(roll) && !reloaded.unverified(roll) && !reloaded.has(cabin) && !reloaded.unverified(cabin),
+					"after a reload: bedroll " + reloaded.has(roll) + ", cabin " + reloaded.has(cabin) + "/" + reloaded.unverified(cabin));
+				VillageHalls.Census census = VillageHalls.census(level, helper.absolutePos(HALL));
+				helper.assertTrue(census.beds() == 1 && census.wagonBeds() == 1, "beds " + census.beds() + ", wagon " + census.wagonBeds());
+				helper.succeed();
 			});
 		});
 	}
@@ -244,6 +292,7 @@ public class WagonBedsGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		BlockPos roll = bed(helper, new BlockPos(8, 2, 8), Blocks.GREEN_BED);
 		helper.setBlock(new BlockPos(11, 2, 8), Blocks.CAMPFIRE);
 		helper.setBlock(new BlockPos(12, 2, 11), Blocks.HAY_BLOCK);
+		helper.setBlock(new BlockPos(4, 2, 4), ModBlocks.BLUEPRINT_TABLE); // the old camp's builder's table (B715)
 		helper.runAfterDelay(3, () -> {
 			BlockPos at = helper.absolutePos(counter);
 			helper.assertTrue(CampBeds.isWagonBed(level, roll), "the bedroll isn't known for one");

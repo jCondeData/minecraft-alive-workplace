@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.camp;
 
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayList;
@@ -34,42 +35,62 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>The beds of every camp placed since are on a list ({@code aliveworkplace_camp_beds}, per dimension); a camp placed
  * before the list (an older save) is known by its look ({@link #looksLikeCamp}): a brown or green bedroll with the camp's
- * campfire and hay bale close by. Such a bed goes on the list once seen, so it stays a wagon bed when the campfire goes.
- * Both camps' bedrolls are brown or green, and only such a bed is ever a wagon bed.
+ * campfire and hay bale close by and the camp's own Blueprint Table (or an old camp's Builder's Bench) beside its wagon.
+ * Such a bed goes on the list once seen, so it stays a wagon bed when the campfire goes. Both camps' bedrolls are brown or
+ * green, and only such a bed is ever a wagon bed.
+ *
+ * <p>B715: the look once asked only for the campfire and the hay bale, so a player's brown bed in a rustic cabin or by a
+ * farmhouse's hay went on the list for good. Beds a list saved before then ({@code version} absent) were all listed that
+ * way, placed camps' and mistaken ones alike, so each is looked at once more ({@link Data#unverified}): kept if it has the
+ * camp's look, a home again if not.
  */
 public final class CampBeds {
 	/** How close the camp's campfire and hay bale are to its bedrolls in an older camp (both camps: within 10 blocks). */
 	static final int LOOK = 10;
+	/** How close the camp's Blueprint Table (or Builder's Bench) is to its bedrolls, across (the Colony Camp's: 11 blocks). */
+	static final int TABLE = 12;
 
 	private CampBeds() {
 	}
 
 	/** The wagon beds in one dimension. */
 	public static final class Data extends SavedData {
-		private static final String NAME = "aliveworkplace_camp_beds";
+		public static final String NAME = "aliveworkplace_camp_beds";
+		/** The list's save format: 2 since B715 (before it, {@code beds} held every bed the old look ever took). */
+		private static final int VERSION = 2;
 		final LongOpenHashSet beds = new LongOpenHashSet();
+		/** Beds an older list holds, not yet looked at again (B715): each is kept or let go the first time it is asked about. */
+		final LongOpenHashSet unverified = new LongOpenHashSet();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
 		}
 
 		void add(BlockPos pos) {
-			if (beds.add(pos.asLong())) {
+			boolean changed = unverified.remove(pos.asLong());
+			if (beds.add(pos.asLong()) || changed) {
 				setDirty();
 			}
 		}
 
 		void remove(BlockPos pos) {
-			if (beds.remove(pos.asLong())) {
+			boolean listed = beds.remove(pos.asLong());
+			if (unverified.remove(pos.asLong()) || listed) {
 				setDirty();
 			}
 		}
 
 		/** Takes every listed bed in {@code box} off the list (tests clean up after themselves). */
 		public void forget(BoundingBox box) {
-			if (beds.removeIf(l -> box.isInside(BlockPos.of(l)))) {
+			boolean listed = beds.removeIf(l -> box.isInside(BlockPos.of(l)));
+			if (unverified.removeIf(l -> box.isInside(BlockPos.of(l))) || listed) {
 				setDirty();
 			}
+		}
+
+		/** Whether an older list holds {@code pos} and it hasn't been looked at again yet (B715). */
+		public boolean unverified(BlockPos pos) {
+			return unverified.contains(pos.asLong());
 		}
 
 		public boolean has(BlockPos pos) {
@@ -78,14 +99,24 @@ public final class CampBeds {
 
 		@Override
 		public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+			tag.putInt("version", VERSION);
 			tag.putLongArray("beds", beds.toLongArray());
+			if (!unverified.isEmpty()) {
+				tag.putLongArray("unverified", unverified.toLongArray());
+			}
 			return tag;
 		}
 
 		public static Data load(CompoundTag tag, HolderLookup.Provider registries) {
 			Data data = new Data();
+			boolean old = Nbt.getInt(tag, "version") < VERSION; // a list from before B715: its beds are looked at again
 			for (long pos : Nbt.getLongArray(tag, "beds")) {
-				data.beds.add(pos);
+				(old ? data.unverified : data.beds).add(pos);
+			}
+			for (long pos : Nbt.getLongArray(tag, "unverified")) {
+				if (!data.beds.contains(pos)) {
+					data.unverified.add(pos);
+				}
 			}
 			return data;
 		}
@@ -147,13 +178,17 @@ public final class CampBeds {
 		SEEN.put(key, camp);
 		if (camp) {
 			data.add(pos.immutable()); // known from now on, whatever becomes of the campfire
+		} else if (data.unverified(pos)) {
+			data.remove(pos); // an older list's mistake (B715): a bed no camp placed is a home again
 		}
 		return camp;
 	}
 
 	/**
 	 * Whether the bed at {@code pos} looks like a camp's bedroll (a camp placed before the list): a brown or green bed with
-	 * a campfire and a hay bale within {@link #LOOK} blocks, as both camps have them.
+	 * a campfire and a hay bale within {@link #LOOK} blocks and the camp's Blueprint Table (or an old camp's Builder's
+	 * Bench) within {@link #TABLE}, as every version of both camps has them. A campfire and a hay bale alone are any rustic
+	 * house's (B715).
 	 */
 	static boolean looksLikeCamp(ServerLevel level, BlockPos pos) {
 		if (!level.isLoaded(pos)) {
@@ -164,14 +199,18 @@ public final class CampBeds {
 		}
 		boolean campfire = false;
 		boolean hay = false;
-		for (BlockPos p : BlockPos.betweenClosed(pos.offset(-LOOK, -2, -LOOK), pos.offset(LOOK, 3, LOOK))) {
+		boolean table = false;
+		for (BlockPos p : BlockPos.betweenClosed(pos.offset(-TABLE, -2, -TABLE), pos.offset(TABLE, 3, TABLE))) {
 			if (!level.isLoaded(p)) {
 				continue;
 			}
 			BlockState state = level.getBlockState(p);
-			campfire |= state.is(BlockTags.CAMPFIRES);
-			hay |= state.is(Blocks.HAY_BLOCK);
-			if (campfire && hay) {
+			table |= state.is(ModBlocks.BLUEPRINT_TABLE) || state.is(ModBlocks.BUILDERS_BENCH);
+			if (Math.abs(p.getX() - pos.getX()) <= LOOK && Math.abs(p.getZ() - pos.getZ()) <= LOOK) {
+				campfire |= state.is(BlockTags.CAMPFIRES);
+				hay |= state.is(Blocks.HAY_BLOCK);
+			}
+			if (campfire && hay && table) {
 				return true;
 			}
 		}
@@ -246,12 +285,14 @@ public final class CampBeds {
 	/** Takes listed beds round the hall that are no longer beds (broken, or never placed) off the list. */
 	private static void forgetGone(ServerLevel level, BlockPos hall) {
 		Data data = Data.get(level);
-		if (data.beds.isEmpty()) {
+		if (data.beds.isEmpty() && data.unverified.isEmpty()) {
 			return;
 		}
 		List<BlockPos> gone = new ArrayList<>();
 		long r = VillageHalls.RADIUS;
-		for (long l : data.beds) {
+		LongOpenHashSet listed = new LongOpenHashSet(data.beds);
+		listed.addAll(data.unverified);
+		for (long l : listed) {
 			BlockPos p = BlockPos.of(l);
 			if (p.distSqr(hall) <= r * r && level.isLoaded(p) && !(isBedHead(level.getBlockState(p)) && isBedroll(level.getBlockState(p)))) {
 				gone.add(p);

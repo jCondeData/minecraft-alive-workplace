@@ -33,7 +33,7 @@ the chests by the smithing table near their workstation: **4 iron blocks, a carv
 golem's role. Sneak-right-click them with an empty hand to choose which comes next:
 
 - **Hauler Golem** (a chest): carries goods to the nearest [Storehouse](storehouse.md). If it can't get there
-  (walled in, across water), it gives up after about 10 seconds and takes the load to the next nearest Storehouse,
+  (walled in, or up on a ledge), it gives up after about 10 seconds and takes the load to the next nearest Storehouse,
   trying the first one again a couple of minutes later. If no Storehouse can be reached, it puts the load back into
   the nearest Drop Box instead of standing around with it. A Drop Box or worker's chest it can't get to is skipped the
   same way, and it fetches from the next one.

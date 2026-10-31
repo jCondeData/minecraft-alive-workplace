@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461, B707
 
 ## What a player sees
 
@@ -620,6 +620,11 @@ in 35.2:
 - `coastal`: an ocean or beach within 48 blocks of the hall. It is the same coast check the drowned pirates use, looked
   at once a day per hall, so both agree on what a coast is.
 - `mod_loaded` (`mod`): that mod is installed.
+
+A `job_level` line names the trade in its plural ("Fishermen at Apprentice or above: 0 of 2", "Postmen", "Ferrymen";
+B707), from the lang's `plural.aliveworkplace.profession.<namespace>.<job>` keys, which cover every vanilla trade and
+every one of the mod's own. Another mod's trade has no plural there, so its line reads "Villagers working as <trade>
+at Apprentice or above" rather than guessing an "s".
 
 `legend` gained an optional `stand_in`, a list of conditions: while Legends are off, `wonderLegends` is off, or that
 Legend's file isn't loaded, the stand-in list must hold instead (all of it). A `legend` without one reads as before.

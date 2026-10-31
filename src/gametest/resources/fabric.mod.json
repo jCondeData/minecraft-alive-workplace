@@ -836,6 +836,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaColonyWaitEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CountedWords1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.TravelPostWords1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.PathfinderWords1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigExtremesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcCommandBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSyncPayloadsBugTests",
@@ -869,7 +870,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaServiceJobs1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBanditKingLoot1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampCleanup1031GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaShopFerry1031GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaShopFerry1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.PriceTagRateAndClassEdgeGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests"
 		]
 	},
 	"depends": {

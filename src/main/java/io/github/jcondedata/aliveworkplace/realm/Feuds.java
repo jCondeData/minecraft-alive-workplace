@@ -560,13 +560,15 @@ public final class Feuds {
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.board"), ChatFormatting.GRAY));
 			if (fighting(server, f)) {
 				long left = f.warEnds() - now;
-				lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.feud.at_war", left / 24000, left % 24000 / 1000, left / 24000, left % 24000 / 1000), ChatFormatting.DARK_RED));
+				lore.add(VillageHallScreen.line(left < 1000 ? Component.translatable("screen.aliveworkplace.feud.at_war.within_hour") // B637/B672: not "0 days and 0 hours"
+					: io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.feud.at_war", left / 24000, left % 24000 / 1000, left / 24000, left % 24000 / 1000), ChatFormatting.DARK_RED));
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.lost", ours ? f.lostBy() : f.lostOn(), ours ? f.lostOn() : f.lostBy()), ChatFormatting.GRAY));
 			} else if (f.warRaised() && !f.warDone() && now < f.warStarts()) {
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.war_at_dawn"), ChatFormatting.RED));
 			} else if (!f.warRaised() || f.warDone()) {
 				long left = Math.max(0, FADE - (now - (f.warDone() ? f.warEnds() : f.since())));
-				lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.feud.fades", left / 24000, left % 24000 / 1000, left / 24000, left % 24000 / 1000), ChatFormatting.DARK_GRAY));
+				lore.add(VillageHallScreen.line(left < 1000 ? Component.translatable("screen.aliveworkplace.feud.fades.within_hour") // B637/B672: not "0 days and 0 hours"
+					: io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.feud.fades", left / 24000, left % 24000 / 1000, left / 24000, left % 24000 / 1000), ChatFormatting.DARK_GRAY));
 			}
 			menu.button(slot++, VillageHallScreen.icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.feud.feud", them), ChatFormatting.RED,
 				lore.toArray(Component[]::new)), null);

@@ -881,7 +881,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRefusedArcMobs1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLonePanes1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.PriceTagRateAndClassEdgeGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatOrders1031GameTests"
 		]
 	},
 	"depends": {

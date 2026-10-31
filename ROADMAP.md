@@ -3436,7 +3436,7 @@ write their own stories; nothing waits forever on a player.
   - compat GameTests (`runCompatGameTest`): the species, level and name for its biome and rank; a win and a capture
     each pay once; plain GameTest: never posted without Cobblemon;
   - showcase scene `bounty_rogue` (Cobblemon: the poster, the rogue, the claim).
-- [x] **31.15** (approved 2026-10-12) **The Bandit King, I: the fort and the King.** Three builds with the minecraft-architect skill
+- [x] **31.15** (approved 2026-10-12) (verified 2026-10-31: lane D QA: QaBanditKingLoot1031GameTests [400 fixed rolls: emeralds 16-32, gold 4-8, diamonds 1-3 in range reaching both ends; crown every time with exactly Protection III + Unbreaking III, named The King's Crown; kills a planted Unbreaking II], with QaBanditKing1028GameTests [fort ring 110-150, bar at 32 blocks, horn at exactly half once and after reload, weapon] and QaKingBar1030; full build 5029 green) **The Bandit King, I: the fort and the King.** Three builds with the minecraft-architect skill
   (`STYLE.md`, rendered), each standing on the one before like a blueprint upgrade: `story/bandit_fort` (a palisade of
   sharpened logs round a yard, a gate, a fire and tents), `story/bandit_fort_2` (two corner watchtowers with ladders,
   and a stable) and `story/bandit_fort_3` (the King's keep: a timber-and-cobblestone hall with a throne, his banner

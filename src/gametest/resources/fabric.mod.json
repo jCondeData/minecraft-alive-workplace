@@ -913,6 +913,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaNoCobblemonNearbyJob1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopTithe1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopHeroBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillage1031VerifyBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopHeroPriceBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatOrders1031GameTests",

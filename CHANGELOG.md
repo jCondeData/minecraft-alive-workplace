@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Without CobbleDollars a Price Tag over 6,400 is paid in full at the server's rate, not 64 emeralds: a 10,000 tag asks
+  a stack of emeralds and 36 more on the trade screen, bigger prices ask emerald blocks and the rest, and a tag over 584
+  emeralds isn't offered (its tooltip says it's too dear). The sales log keeps the whole sum (B692).
+- A child standing exactly 5 blocks from the Teacher's lectern has lessons: the class is measured on the lectern's
+  floor, not half a block up (B689).
 - A Travel Post counts the other posts you know in the singular when there's one: "You know 1 other post", not
   "1 other posts" (B691).
 - The Stadium's goods quest asks for "2 Great Balls" and "2 Ultra Balls", not "2 Great Ball" (B675).

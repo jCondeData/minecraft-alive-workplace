@@ -25,7 +25,10 @@ Right-click it to set a price in CobbleDollars, or rename it in an anvil to a nu
 
 ## How it fits in
 
-- **Made for CobbleDollars.** Without CobbleDollars installed, the price is paid in emeralds.
+- **Made for CobbleDollars.** Without CobbleDollars installed, the price is paid in emeralds at the server's rate (100
+  per emerald, rounded up): 10,000 is a stack of emeralds and 36 more, and over two stacks it's emerald blocks and the
+  emeralds left over. Over 584 emeralds the trade screen can't ask it, so the shopkeeper doesn't offer it and the tag
+  says it's too dear.
 - **Your takings** go where all the shop's takings go: the chests round the counter, or with CobbleDollars straight to
   you.
 

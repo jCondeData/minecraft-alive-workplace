@@ -3449,7 +3449,7 @@ write their own stories; nothing waits forever on a player.
     touched; the King's gear, health and boss bar; the horn calls 4 bandits once; the chest always has the crown;
   - renders of the three stages, front and back, in the review package; showcase scene `bandit_fort` (the three stages
     placed one after another).
-- [x] **31.16** (approved 2026-10-12) **The Bandit King, II: the story.** `arcs/bandit_king.json`, an arc marked `threat`. It starts in a
+- [x] **31.16** (approved 2026-10-12) (verified 2026-10-31: lane D QA: QaBanditKingAllies1031GameTests [7: swords for hire 23/24 emeralds via the Story tab, 6 mercenaries; no allies without paying; Pell 15/16 bread; Rally Banner 48/49 blocks from the fort; raids every second night, band 7 vs 5; tribute a third rounded down at day 10 vs 11; no camps for 10 days]; mutants of RALLY_RANGE, the second-night rule and the third killed; full build green) **The Bandit King, II: the story.** `arcs/bandit_king.json`, an arc marked `threat`. It starts in a
   Town or bigger that has broken up at least 2 bandit camps (a count kept in `aliveworkplace_stories` from this item
   on; `BanditCamps.breakUp`, or 32.3's lair breaking once that has landed, adds to it), 8% a day, with `banditCamps`
   on. Its camps are the arc's own (`place` and `spawn`), not `BanditCamps`' camp or 32.3's one lair a village, so they

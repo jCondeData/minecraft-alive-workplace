@@ -69,7 +69,7 @@ limit) gets the tip "Found a colony".
 |---|---|---|
 | `colonies` | on from 1.0 | Off: no Colonies tab, no charters sold, a charter chooses no spot, and "What next?" never suggests a colony. |
 | `colonyRank` | `city` | The rank a village needs to buy a charter: `hamlet`, `village`, `town` or `city`. In the file only (not on the settings screen). Anything else reads as `city`. |
-| `colonyCooldownDays` | 7 (0 to 60) | Days a village waits after founding a colony before the next. |
+| `colonyCooldownDays` | 7 (0 to 60) | Days a village waits after founding a colony before the next (the Colonies tab reads "waits 1 day" for one, B733). |
 | `coloniesPerVillage` | 3 (0 to 16) | Colonies one village may found in all. |
 
 ## Saved data

@@ -192,7 +192,7 @@ public final class StewardDeskPage {
 			houses.size(), renewable), renewable > 0 ? ChatFormatting.YELLOW : ChatFormatting.GRAY, lore.toArray(Component[]::new)), houses.isEmpty() ? null : p -> {
 			int shown = StewardDesk.showOldHouses(level, hall, p);
 			if (shown > 0) {
-				Chat.actionBar(p, Component.translatable("message.aliveworkplace.steward.desk.old_houses_shown", shown, StewardDesk.SHOW_TICKS / 20)
+				Chat.actionBar(p, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.steward.desk.old_houses_shown", shown, shown, StewardDesk.SHOW_TICKS / 20)
 					.withStyle(ChatFormatting.AQUA));
 				p.closeContainer();
 			}

@@ -148,7 +148,8 @@ public final class VillageHallScreen {
 		VillageRanks.Rank next = rank.next();
 		List<Component> nameLore = new ArrayList<>();
 		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank", rank.title()), ChatFormatting.AQUA));
-		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank_perks", Math.round((VillageRanks.questRewardFactor(rank) - 1) * 100),
+		nameLore.add(line(Component.translatable(VillageRanks.growthCap(rank) > 0 ? "screen.aliveworkplace.hall.rank_perks"
+			: "screen.aliveworkplace.hall.rank_perks.no_growth", Math.round((VillageRanks.questRewardFactor(rank) - 1) * 100),
 			VillageRanks.caravanRoutes(rank), VillageRanks.marketTraders(rank), VillageRanks.growthCap(rank)), ChatFormatting.GRAY));
 		if (next != null) {
 			nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank_next", next.title(), next.villagers, score.villagers(), next.buildings,

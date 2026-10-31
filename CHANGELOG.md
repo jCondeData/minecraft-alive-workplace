@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A quiet village (threat level 0, At peace or Peaceful) no longer loses caravans to bandits (the Lost Caravan
+  story), and the Bandit King's storm brings no raid there; his raids come again once the village isn't quiet.
 - A stranger's tree farm, orchard or berry plot reaching into a protected village is now refused, saying whose
   village it is, as a stranger's field already was.
 - Handing a Field Marker to a lumberjack or orchard keeper now names the block they really work at (a Chopping Block

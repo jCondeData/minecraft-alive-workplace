@@ -500,7 +500,10 @@ public final class BanditKingStory {
 		ArcState s = r.state();
 		long today = Chronicle.day(level);
 		if ((today - s.chapterDay) % 2 != 0 || level.getDayTime() % 24000 < VillageRaids.DUSK || s.flag(RAID_NIGHT, today)
-			|| !VillageRaids.ENABLED || VillageRaids.active(r.hall()).isPresent()) {
+			|| !VillageRaids.ENABLED || VillageRaids.active(r.hall()).isPresent()
+			// A quiet village (threat level 0, At peace, Peaceful) gets no raiders, even from a storm already running
+			// (B738); the night isn't spent, so the raids come again once the village stops being quiet.
+			|| Threats.quiet(level, r.hall())) {
 			return;
 		}
 		s.flags.put(RAID_NIGHT, today);

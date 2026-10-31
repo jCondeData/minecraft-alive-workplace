@@ -38,7 +38,8 @@ Roadmap items: 31.15, 31.16, B659
      camp; bring him 16 bread and he tells of the postern, which the keep leaves open, and joins the village after).
   3. **The storm**, once the keep stands: the allies come to the hall; raise a Rally Banner within 48 blocks of the fort
      and they follow it with your guards. His raiders (the village's bandit raid, half again as big) come every second
-     night until he falls. If he stands after 10 days, **the King's tribute**: he takes a third of the treasury and
+     night until he falls, except while the village is quiet (threat level 0, At peace or Peaceful): then nobody
+     comes, and the raids return once it isn't quiet (B738). If he stands after 10 days, **the King's tribute**: he takes a third of the treasury and
      rides off with his band, the fort is left a ruin, moods drop 10 for 3 days, and the story ends badly.
   - **Ending**: his band leaves the fort (the treasure chest is yours), a festival the next evening, +150 reputation
     and the honor **Kingslayer** to everyone who fought in the storm, Pell joins the village (no job), the allies go

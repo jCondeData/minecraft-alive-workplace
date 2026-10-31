@@ -939,7 +939,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugs1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuarry1031VerifyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatLevels1031dGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSiegeWarnings1031dGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeWarnings1031dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageGuards1031GameTests"
 		]
 	},
 	"depends": {

@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B270, B308, B326, B461
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461
 
 ## What a player sees
 
@@ -56,6 +56,9 @@ room for the stone.
 - **The builder tells the owner when he takes a part up** (B678): "Odo is starting on a part of stage 1 of the Test
   Folly (The Ground Story) next.", never the part's file name ("Stage 1 0"). With the owner logged off nobody is told,
   and a part whose Wonder is not on a stage (not started, or past its last) gets no line.
+- **A part goes by its Wonder's name** (B703): everywhere a building's name would show (the builder's status when you
+  sneak-right-click him, the words over his head, the Village Hall's list of buildings going up, the waiting-for-materials
+  line and his material list), a part reads "Stage 1 part of the Test Folly", never "Stage 1 0".
 - **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` with the Wonder's id (the stone's screen
   has an **[Abandon this Wonder]** link that puts it in the chat; works at any stage, also while it waits for its goods,
   B462) or a part's id to abandon the Wonder: what's built stays, the goods handed in for a stage not yet dedicated

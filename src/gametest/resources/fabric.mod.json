@@ -403,6 +403,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartsGiftsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHeartStories1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallHomesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEconomyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallJobsShopsGameTests",
@@ -553,6 +554,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartNameBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedRooms1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartWords1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWonderPartWordsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.LighthousePowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LibraryPowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ColossusPowerGameTests",
@@ -891,6 +893,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaShopPaymentSaves1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatOrders1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatOrdersBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPeacefulToldBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRefusedCampBlocksBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoryEngine1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugs1031GameTests"
 		]
 	},

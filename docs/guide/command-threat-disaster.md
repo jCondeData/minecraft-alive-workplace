@@ -26,12 +26,12 @@ for a server event, or to see whether your walls really hold before the warband 
 | `/workplace threat clear` | clears the village of everything: the raid, the disaster, the lair and the attacks it was due |
 
 The command suggests the names as you type. You're told how it went, or why it couldn't: a raid or a disaster already
-under way, a lair already standing, no hall nearby.
+under way, a lair already standing, no hall nearby, a Peaceful world.
 
 ## How it fits in
 
-- It's an order, so a raid starts whatever the [Threat Level](threat-level.md), the village's **At peace** or the
-  difficulty say. In a village that's quiet that way, though, a lair still packs up at the next dawn and a disaster
+- It's an order, so a raid starts whatever the [Threat Level](threat-level.md) or the village's **At peace** say, on
+  any difficulty but Peaceful: there hostile mobs can't exist, so no raid or lair can come, and the command says so. In a village that's quiet that way, though, a lair still packs up at the next dawn and a disaster
   ends almost at once.
 - What follows plays out as it would by chance: see [Sieges](sieges.md), [Disasters](disasters.md) and the raiders'
   own pages, such as the [pillager warband](pillager-warband.md) or the [witch coven](witch-coven.md).

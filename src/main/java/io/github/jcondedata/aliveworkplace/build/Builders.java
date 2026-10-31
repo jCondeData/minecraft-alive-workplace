@@ -433,13 +433,13 @@ public final class Builders {
 		}
 		if (site.isQueued()) {
 			BuildSite current = villager != null ? activeSite(level, villager) : null;
-			text.append(Component.translatable("message.aliveworkplace.status.queued", who, Blueprints.displayName(site.structure()),
-				current != null ? Blueprints.displayName(current.structure()) : Component.literal("?")).withStyle(ChatFormatting.GOLD));
+			text.append(Component.translatable("message.aliveworkplace.status.queued", who, Blueprints.siteName(level, site),
+				current != null ? Blueprints.siteName(level, current) : Component.literal("?")).withStyle(ChatFormatting.GOLD));
 			appendCancel(text, site);
 			return text;
 		}
 		int percent = Math.round(site.progress(plan) * 100);
-		text.append(Component.translatable("message.aliveworkplace.status.header", who, Blueprints.displayName(site.structure()), percent)
+		text.append(Component.translatable("message.aliveworkplace.status.header", who, Blueprints.siteName(level, site), percent)
 			.withStyle(ChatFormatting.GOLD));
 		text.append(Component.literal("\n  "));
 		text.append(Component.translatable("message.aliveworkplace.status.stage." + site.stage().name().toLowerCase()).withStyle(ChatFormatting.GRAY));
@@ -492,7 +492,7 @@ public final class Builders {
 					if (i > 0) {
 						names.append(", ");
 					}
-					names.append(Blueprints.displayName(queue.get(i).structure()));
+					names.append(Blueprints.siteName(level, queue.get(i)));
 				}
 				text.append(Component.literal("\n  "));
 				text.append(Component.translatable("message.aliveworkplace.status.next", names).withStyle(ChatFormatting.GRAY));
@@ -803,7 +803,7 @@ public final class Builders {
 		// At most once a minute per build: waiting often comes and goes while a crew passes materials around.
 		if (owner != null && !site.missing().isEmpty() && site.shouldNotify(level.getGameTime(), 1200)) {
 			tell(owner, Component.translatable("message.aliveworkplace.waiting", villager.getDisplayName(),
-				Blueprints.displayName(site.structure()), formatMissing(site, 5)), ChatFormatting.YELLOW);
+				Blueprints.siteName(level, site), formatMissing(site, 5)), ChatFormatting.YELLOW);
 		}
 	}
 
@@ -1061,7 +1061,7 @@ public final class Builders {
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 			if (owner != null) {
 				BlockPos p = villager.blockPosition();
-				tell(owner, Component.translatable("message.aliveworkplace.builder_died", Blueprints.displayName(site.structure()), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
+				tell(owner, Component.translatable("message.aliveworkplace.builder_died", Blueprints.siteName(level, site), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
 			}
 			ModAttachments.BUILDER_JOB.remove(villager);
 			if (keptForTheNext(site)) {

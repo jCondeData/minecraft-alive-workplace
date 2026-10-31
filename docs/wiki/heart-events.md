@@ -273,3 +273,7 @@ taste files, and the new conditions. `QaHeartsGiftsGameTests` (QA, 3 heart-event
 turning spectator, counts nothing and starts again from the first line; a villager already at ten hearts tells every
 level's event in turn, lowest first, then gives her keepsake once. `KeepsakeCompatTests` (with Cobblemon): the Premier Ball. Showcase scene
 `heart_events_work` (a villager of each family beginning their work story).
+
+`QaHeartsSickness1031GameTests` (QA, 2 heart-event tests): each line reaches only the listener's chat, in gray, as
+"Cora: line", and a bystander just as near gets none; a listener exactly 8 blocks off is still told the next line, at
+8.5 it stops with nothing kept, and coming back starts over from the first line.

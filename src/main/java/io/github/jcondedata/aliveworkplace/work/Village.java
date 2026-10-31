@@ -207,12 +207,47 @@ public final class Village {
 	 * too (near their own workstation) or inside {@code exclude} (a build site).
 	 */
 	public static List<Stash> stashes(ServerLevel level, Villager villager, BlockPos station, @Nullable BoundingBox exclude) {
-		Set<BlockPos> seen = new HashSet<>();
-		for (BlockPos own : SupplyContainers.find(level, station, exclude)) {
-			seen.add(own);
-			seen.addAll(io.github.jcondedata.aliveworkplace.store.StorageNetworks.members(level, own));
+		Set<BlockPos> own = new HashSet<>();
+		for (BlockPos chest : SupplyContainers.find(level, station, exclude)) {
+			own.add(chest);
+			own.addAll(io.github.jcondedata.aliveworkplace.store.StorageNetworks.members(level, chest));
 		}
-		List<Mate> mates = mates(level, villager, station);
+		return stashesOf(level, mates(level, villager, station), own, exclude);
+	}
+
+	/**
+	 * B627: the stashes of every worker taking part whose workstation is within {@link #RADIUS} of {@code station} (a
+	 * Hauler Golem's Storehouse, or where it stands) and who answers to {@code side}'s people, nearest first. Unlike
+	 * {@link #stashes}, nobody is left out: the list isn't seen from one worker's side, so no worker's own chest drops
+	 * out of it. Every Storehouse about, the one at {@code station} too, is listed as well, whoever owns it, as a
+	 * porter's stash ({@link ModVillagers#PORTER}), so its chests are never counted as a worker's.
+	 */
+	public static List<Stash> workerStashes(ServerLevel level, BlockPos station, @Nullable Employer side, @Nullable BoundingBox exclude) {
+		List<Mate> out = new ArrayList<>();
+		if (RADIUS > 0) {
+			double radiusSqr = (double) RADIUS * RADIUS;
+			Set<BlockPos> seen = new HashSet<>();
+			for (Villager other : level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(2 * RADIUS + 16),
+				v -> v.isAlive() && takesPart(v))) {
+				BlockPos theirs = Builders.benchPos(other).orElse(null);
+				if (theirs != null && !theirs.equals(station) && theirs.distSqr(station) <= radiusSqr
+					&& sameSide(level, side, ModAttachments.BUILDER_EMPLOYER.get(other)) && seen.add(theirs)) {
+					out.add(new Mate(theirs.immutable(), other.getVillagerData().getProfession()));
+				}
+			}
+			for (BlockPos storehouse : level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, station, RADIUS,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+				if (seen.add(storehouse.immutable()) && level.isLoaded(storehouse)) {
+					out.add(new Mate(storehouse.immutable(), ModVillagers.PORTER));
+				}
+			}
+			out.sort(Comparator.comparingDouble(m -> m.station().distSqr(station)));
+		}
+		return stashesOf(level, out, new HashSet<>(), exclude);
+	}
+
+	/** The stashes of {@code mates} (nearest first), without the chests in {@code seen} or inside {@code exclude}. */
+	private static List<Stash> stashesOf(ServerLevel level, List<Mate> mates, Set<BlockPos> seen, @Nullable BoundingBox exclude) {
 		// B297/B298: a Storehouse's chests are the Storehouse's, even when another worker's bench stands nearer by them (the
 		// Storehouse's own Blueprint Table, one block from its chests, with a builder at it): listed nearest-first they
 		// were that builder's, kept back for his builds and never the village's store, so a builder at the Builder's

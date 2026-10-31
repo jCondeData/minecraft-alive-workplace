@@ -32,8 +32,9 @@ Every 2 days, while the village has fewer than one forged golem per 5 villagers,
 the chests by the smithing table near their workstation: **4 iron blocks, a carved pumpkin and one more thing** for the
 golem's role. Sneak-right-click them with an empty hand to choose which comes next:
 
-- **Hauler Golem** (a chest): carries goods to the nearest [Storehouse](storehouse.md). If it can't get there
-  (walled in, or up on a ledge), it gives up after about 10 seconds and takes the load to the next nearest Storehouse,
+- **Hauler Golem** (a chest): carries goods from every worker's chest in the village to the nearest
+  [Storehouse](storehouse.md) (with a Golem Smith about, from the workers who answer to the Smith's people). If it
+  can't get there (walled in, or up on a ledge), it gives up after about 10 seconds and takes the load to the next nearest Storehouse,
   trying the first one again a couple of minutes later. If no Storehouse can be reached, it puts the load back into
   the nearest Drop Box instead of standing around with it. A Drop Box or worker's chest it can't get to is skipped the
   same way, and it fetches from the next one.

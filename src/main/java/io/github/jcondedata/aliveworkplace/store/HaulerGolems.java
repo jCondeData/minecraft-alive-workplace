@@ -132,14 +132,13 @@ public final class HaulerGolems {
 		java.util.Set<BlockPos> stores = new java.util.HashSet<>();
 		level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, golem.blockPosition(), STOREHOUSE_RANGE,
 			PoiManager.Occupancy.ANY).forEach(sh -> stores.addAll(SupplyContainers.find(level, sh, null)));
-		Villager context = level.getEntitiesOfClass(Villager.class, new AABB(center).inflate(Village.RADIUS), v -> v.isAlive() && Village.takesPart(v))
-			.stream().findFirst().orElse(null);
+		Villager context = sideOf(level, center);
 		if (context == null) {
 			return null;
 		}
 		BlockPos best = null;
 		double bestDist = Double.MAX_VALUE;
-		for (Village.Stash stash : Village.stashes(level, context, center, null)) {
+		for (Village.Stash stash : Village.workerStashes(level, center, ModAttachments.BUILDER_EMPLOYER.get(context), null)) {
 			for (BlockPos c : stash.chests()) {
 				if (stores.contains(c) || skip.containsKey(c) || SupplyContainers.freeSlots(level, List.of(c)) == 0) {
 					continue;
@@ -195,8 +194,8 @@ public final class HaulerGolems {
 	}
 
 	/**
-	 * The nearest stash with a trip's worth of goods, from a village worker's side (a Golem Smith's, or anyone's), but
-	 * none whose chest the golem has lately given up on.
+	 * The nearest stash with a trip's worth of goods, of any village worker on {@link #sideOf}'s side (every one of them,
+	 * B627), but none whose chest the golem has lately given up on.
 	 */
 	@Nullable
 	static Village.Stash choose(ServerLevel level, IronGolem golem, BlockPos storehouse) {
@@ -205,19 +204,29 @@ public final class HaulerGolems {
 		if (box != null && total(PorterWork.goods(level, box)) >= PorterWork.MIN_LOAD) {
 			return box;
 		}
-		Villager context = level.getEntitiesOfClass(Villager.class, new AABB(storehouse).inflate(Village.RADIUS), v -> v.isAlive() && Village.takesPart(v))
-			.stream().filter(GolemSmith::isSmith).findFirst()
-			.orElseGet(() -> level.getEntitiesOfClass(Villager.class, new AABB(storehouse).inflate(Village.RADIUS), v -> v.isAlive() && Village.takesPart(v))
-				.stream().findFirst().orElse(null));
+		Villager context = sideOf(level, storehouse);
 		if (context == null) {
 			return null;
 		}
-		for (Village.Stash stash : Village.stashes(level, context, storehouse, null)) {
-			if (!skip.containsKey(stash.chests().get(0)) && total(PorterWork.goods(level, stash)) >= PorterWork.MIN_LOAD) {
+		for (Village.Stash stash : Village.workerStashes(level, storehouse, ModAttachments.BUILDER_EMPLOYER.get(context), null)) {
+			if (stash.job() != ModVillagers.PORTER // a Storehouse's chests: the store, not a worker's
+				&& !skip.containsKey(stash.chests().get(0)) && total(PorterWork.goods(level, stash)) >= PorterWork.MIN_LOAD) {
 				return stash;
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Whose workers a hauler by {@code center} works for (B627): a settled Golem Smith about (whose job needn't be one
+	 * that takes part), else the first village worker found; null when nobody is about. Only the side is taken from it:
+	 * every worker answering to the same people is hauled from, this one included.
+	 */
+	@Nullable
+	public static Villager sideOf(ServerLevel level, BlockPos center) {
+		AABB near = new AABB(center).inflate(Village.RADIUS);
+		return level.getEntitiesOfClass(Villager.class, near, v -> v.isAlive() && !v.isBaby() && GolemSmith.isSmith(v)).stream().findFirst()
+			.orElseGet(() -> level.getEntitiesOfClass(Villager.class, near, v -> v.isAlive() && Village.takesPart(v)).stream().findFirst().orElse(null));
 	}
 
 	private static long total(Map<Item, Long> goods) {

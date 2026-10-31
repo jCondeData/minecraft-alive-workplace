@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Hauler Golem now empties every worker's chest into the Storehouse. Before, one worker's chest was always
+  left full (with three lumberjacks, it hauled two and then stood idle), and a Golem Smith by the Storehouse didn't
+  count when it chose whose chests to haul.
 - A stranger standing just outside your protected village can't pour lava or water into it any more, or scoop
   water out of it: a bucket is now checked where it empties or fills, not where he stands, and he's told whose village
   it is. You, your friends and operators use buckets there as before, and anyone may still pour outside the village (B719).

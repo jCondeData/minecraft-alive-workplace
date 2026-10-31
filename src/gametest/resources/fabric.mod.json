@@ -471,6 +471,7 @@
 			"io.github.jcondedata.aliveworkplace.test.StationsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsSpecGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B688GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigWiringGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RetrainingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SavedDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildSiteSaveGameTests",
@@ -878,6 +879,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBanditKingLoot1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampCleanup1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopFerry1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoryArcsPeace1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRefusedArcMobs1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLonePanes1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.PriceTagRateAndClassEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests"

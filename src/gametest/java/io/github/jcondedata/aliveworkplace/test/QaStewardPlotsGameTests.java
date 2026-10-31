@@ -412,7 +412,11 @@ public class QaStewardPlotsGameTests implements net.fabricmc.fabric.api.gametest
 			InteractionResult result = Stewards.appoint(player, second, plan);
 			helper.assertTrue(result == InteractionResult.CONSUME && second.getVillagerData().getProfession() == ModVillagers.BUILDER,
 				"a second Steward took the reloaded one's hall: " + result + ", before: " + before);
-			helper.assertTrue(Stewards.stewardOf(level, helper.absolutePos(HALL_A)) == loaded, "the hall's Steward isn't the reloaded one");
+			Villager found = Stewards.stewardOf(level, helper.absolutePos(HALL_A));
+			// B695: says who the hall's Steward is instead (a leftover from an earlier batch at this spot, or the second)
+			helper.assertTrue(found == loaded, "the hall's Steward isn't the reloaded one: "
+				+ (found == null ? "none" : (found == second ? "the second" : "another") + " at " + found.blockPosition() + ", age " + found.tickCount)
+				+ "; the reloaded at " + loaded.blockPosition());
 			helper.succeed();
 		});
 	}

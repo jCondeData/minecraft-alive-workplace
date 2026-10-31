@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19
 
 ## What a player sees
 
@@ -13,7 +13,8 @@ and rank, villagers, beds, food in store, guards, wellbeing, requests, buildings
 (map, the Book of Edicts, the bell, mercenaries, the Chronicle, a festival, trade, "What next?", the bank). On the
 left a list: the page tabs, then everyone who lives within 64 blocks, each as their workstation (stacked as high as
 their level) with their name and job. The pane on the right reads out whatever is under the mouse, every line of it;
-with nothing there it shows the village's numbers "at a glance". Click a villager and they glow for ten seconds so you
+with nothing there it shows the village's numbers "at a glance". A button only ever reads its own lines: the item drawn on it (the iron sword on the Mercenaries and
+Guards buttons) never adds its attack damage or other item lines (B19). Click a villager and they glow for ten seconds so you
 can find them, and stay in the pane (the wheel scrolls a long one; × or Esc puts them away). Click a jobless villager
 to see the free workstations and give them one. Every page of the hall opens in the same screen. (Since Milestone 40
 the left side is the sidebar and the villagers are the People table; see below.)

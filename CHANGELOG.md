@@ -19,6 +19,9 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - A hall's Steward keeps his place while he's away where nothing is loaded (a far stop of his rounds): the City Plan
   no longer appoints a second Steward to the same hall in the meantime (B687).
+- Without Cobblemon, the Pokémon jobs can't be picked by their item any more: a book by a Training Post used to make
+  a Move Tutor and a gold block a Trainer Leader, jobs with nothing to do. A book still makes a Teacher by a lectern.
+  Villagers who already have one of these jobs keep it (B688).
 
 ## 0.151.1 — 2026-10-30
 

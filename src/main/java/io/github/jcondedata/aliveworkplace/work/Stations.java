@@ -73,9 +73,13 @@ public final class Stations {
 			return blockRef.get();
 		}
 
-		/** The job at this station that {@code stack} picks. */
+		/**
+		 * The job at this station that {@code stack} picks, if it can be had in this game ({@link #available(Job)}): the
+		 * one place a job's item is matched, so an item never picks a job the tooltip leaves out (B688: a book by a
+		 * Training Post made a Move Tutor without Cobblemon, a gold block a Trainer Leader).
+		 */
 		public Optional<Job> jobFor(ItemStack stack) {
-			return jobs.stream().filter(j -> j.item().test(stack)).findFirst();
+			return jobs.stream().filter(j -> j.item().test(stack) && available(j)).findFirst();
 		}
 
 		public boolean has(VillagerProfession profession) {

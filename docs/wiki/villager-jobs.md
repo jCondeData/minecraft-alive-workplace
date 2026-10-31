@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688
 
 ## What a player sees
 
@@ -15,7 +15,9 @@ block's own job comes back with its own item (wheat for a Farmer, coal for an Ar
 ("Dara took the Miner job at the Blast Furnace."), or what is missing (no such block near, or every one taken).
 A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it.
 Hold Shift over a workstation in your inventory to see its jobs and their items. A job whose switch is off (or that
-needs Cobblemon, without it) isn't listed.
+needs Cobblemon, without it) isn't listed. Such a job can't be picked by its item either (B688): without Cobblemon a gold block by a
+Training Post does nothing, and a book makes a Teacher if a lectern is near, or says the Teacher needs a Lectern. A
+villager who already had one of these jobs in a saved world keeps it.
 
 **Look at a villager to see its job and level (B221).** Point your crosshair at any working villager, from up to
 about 3 blocks away, and a name plate over its head reads "Fisherman, Journeyman". One with a name of its own reads
@@ -414,7 +416,7 @@ same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTes
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits
 refuse, save and reload, the switch off), `HallPeopleJobGameTests` (10, 40.3: the hall's Job ▾, see
-[The Village Hall](village-hall.md)), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
+[The Village Hall](village-hall.md)), `StationsCompatTests` (11, the Pokémon jobs), `B688GameTests` (4: without Cobblemon a book or a gold block by a Training Post gives no job and leaves the post free, a book by a Training Post and a lectern makes a Teacher, a pickaxe still makes a Miner), `OutfitGameTests`, `ConfigGameTests`,
 `HandOffGameTests` (5, B220: a fisherman handed a rod and a builder handed a blueprint are at work within 10 ticks,
 mid-shift and late in it; before the shift and at night they say when they start, and a night's hire stays in bed),
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,

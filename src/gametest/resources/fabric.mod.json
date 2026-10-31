@@ -403,6 +403,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartsGiftsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHeartStories1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallHomesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEconomyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallJobsShopsGameTests",
@@ -881,7 +882,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRefusedArcMobs1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLonePanes1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.PriceTagRateAndClassEdgeGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoryEngine1031GameTests"
 		]
 	},
 	"depends": {

@@ -16,7 +16,7 @@ Roadmap items: B5, B6
 - With Cobblemon, the Pokémon jobs' houses as well: a Trainer's House (the commonest of all, so most villages have
   someone to battle), a Leader's Hall, a School, a Trade Hall, a Ball Workshop and a Fossil Lab, and the five of
   [Pokémon jobs' village houses](pokemon-village-houses.md). Without Cobblemon villages never grow these.
-- The luxury workshops (Winery, Tailor's Shop, Print Shop, Jeweller's Workshop) only while their job is switched on.
+- The luxury workshops (Winery, Tailor's Shop, Print Shop, Jeweler's Workshop) only while their job is switched on.
 - Repurposed Structures' villages (badlands, bamboo, birch, cherry, dark forest, giant taiga, jungle, mountains,
   mushroom, oak, swamp) grow them too, in the style that fits each best (desert for badlands, taiga for mountains...).
 - The ground in front of every door is the ground the house landed on: no strip of invisible holes to fall into
@@ -41,11 +41,11 @@ Roadmap items: B5, B6
   row of them in front of the door, at ground level: a trench a villager walking out fell into. The templates no
   longer contain any, and the ground strip in front of each door is checked for every template placed the way a
   village places it.
-- B6: vanilla's villager templates store their villager at x+0.72, z+0.63 of its block, off its centre, a block above
+- B6: vanilla's villager templates store their villager at x+0.72, z+0.63 of its block, off its center, a block above
   the floor. A villager is 0.6 wide, so its box reaches 0.02 into the next block; in a 1-wide gap (vanilla's
   desert_small_house_7 corridor) it fell onto the step beside the gap with its head in the ceiling slab and
-  suffocated. `StructureVillagers` centres every villager and zombie villager a structure template places in its
-  block, unless the centre is blocked and its own spot isn't (a fence post in the middle of the block).
+  suffocated. `StructureVillagers` centers every villager and zombie villager a structure template places in its
+  block, unless the center is blocked and its own spot isn't (a fence post in the middle of the block).
 - A house's outside can later be rebuilt in another village style around its room (23.10a, `VillagePieces`; see
   [Workplace looks](workplace-looks.md)).
 
@@ -57,7 +57,7 @@ Roadmap items: B5, B6
 | `vintners` | on | Off: no Winery in villages. |
 | `tailors` | on | Off: no Tailor's Shop in villages. |
 | `printers` | on | Off: no Print Shop in villages. |
-| `jewellers` | on | Off: no Jeweller's Workshop in villages. |
+| `jewellers` | on | Off: no Jeweler's Workshop in villages. |
 
 The weights have no switch. For screenshots only, the JVM properties `aliveworkplace.workshopWeight`,
 `aliveworkplace.houseWeight` and `aliveworkplace.pokemonHouseWeight` override them.

@@ -40,7 +40,7 @@ Roadmap items: 32.21, B134, B383
     captain gone still breaks it up, B364);
   - a disaster under way ends at once, as when it is switched off; covens hex nobody;
   - no bounty is posted (`Bounties.mayPost` and the hall's bounty round ask `Threats.quiet`); open ones stay (B134).
-  - no story arc marked `threat` starts (the Sickness's Grey Cough, the Bandit King): `Arcs.tryStart` and
+  - no story arc marked `threat` starts (the Sickness's Gray Cough, the Bandit King): `Arcs.tryStart` and
     `Arcs.onEvent` pass it by, while other stories still start; it isn't used up, so it can start again once the village
     is no longer quiet. An operator's `/workplace story start` still starts it (B699).
   A raid already under way when the village turns quiet runs its course.

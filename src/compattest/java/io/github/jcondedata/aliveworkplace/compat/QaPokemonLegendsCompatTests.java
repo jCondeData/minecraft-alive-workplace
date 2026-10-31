@@ -406,8 +406,8 @@ public class QaPokemonLegendsCompatTests implements FabricGameTest {
 	 * The reach from both sides, along one axis on the hall's floor: an Alpha 95 blocks from the hall counts, one 97
 	 * blocks away doesn't; and a wild Pokémon 63 blocks away may be befriended, one 66 away may not.
 	 */
-	//$ gametest_ticks_batch AREA '400' '"qa_legends_reach"'
-	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_legends_reach")
+	//$ gametest_ticks_batch AREA '900' '"qa_legends_reach"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "qa_legends_reach")
 	public void alphaReach96AndBefriendReach64(GameTestHelper helper) {
 		setUp(helper);
 		ServerLevel level = helper.getLevel();
@@ -418,14 +418,25 @@ public class QaPokemonLegendsCompatTests implements FabricGameTest {
 		BlockPos at66 = HALL.offset(0, 0, 66);
 		forceChunks(helper, at95, at97, at63, at66);
 		// A newly forced chunk takes a few ticks to take entities; until then addFreshEntity drops them unseen.
-		whenReady(helper, 0, () -> reach(helper, hall, at95, at97, at63, at66), at95, at97, at63, at66);
+		whenReady(helper, 0, System.nanoTime(), () -> reach(helper, hall, at95, at97, at63, at66), at95, at97, at63, at66);
 	}
 
-	private static void whenReady(GameTestHelper helper, int waited, Runnable then, BlockPos... relative) {
+	/**
+	 * Runs {@code then} once every spot's chunk ticks entities and has loaded its own (B713: on CI a far chunk once
+	 * wasn't ready within 200 ticks; its entities load off the server thread, so a busy runner gets up to 600, and the
+	 * failure says what the chunk was still missing).
+	 */
+	private static void whenReady(GameTestHelper helper, int waited, long started, Runnable then, BlockPos... relative) {
+		ServerLevel level = helper.getLevel();
 		for (BlockPos p : relative) {
-			if (!helper.getLevel().isPositionEntityTicking(helper.absolutePos(p))) {
-				helper.assertTrue(waited < 200, "the chunk at " + p + " never took entities");
-				helper.runAfterDelay(1, () -> whenReady(helper, waited + 1, then, relative));
+			BlockPos abs = helper.absolutePos(p);
+			boolean ticking = level.isPositionEntityTicking(abs);
+			boolean loaded = level.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong(abs));
+			if (!ticking || !loaded) {
+				helper.assertTrue(waited < 600, "the chunk at " + p + " never took entities (after " + waited + " ticks, "
+					+ (System.nanoTime() - started) / 1_000_000L + " ms: entity ticking " + ticking + ", entities loaded " + loaded
+					+ ", chunk present " + level.hasChunk(abs.getX() >> 4, abs.getZ() >> 4) + ")");
+				helper.runAfterDelay(1, () -> whenReady(helper, waited + 1, started, then, relative));
 				return;
 			}
 		}

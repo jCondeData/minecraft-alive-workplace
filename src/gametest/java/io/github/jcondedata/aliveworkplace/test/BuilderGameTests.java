@@ -1461,10 +1461,18 @@ public class BuilderGameTests implements FabricGameTest {
 
 	// --- permissions -------------------------------------------------------------------------
 
-	/** A builder takes orders from its employer and their friends only (operators aside). */
-	//$ gametest AREA
-	@GameTest(template = AREA)
+	/**
+	 * A builder takes orders from its employer and their friends only (operators aside). Alone in its batch, with every
+	 * Village Hall near it removed (B729): since B718 a build reaching into a protected village is refused, and another
+	 * test's protected hall (64 blocks across the map, its tests 5 blocks apart, its block kept after its batch) refused
+	 * the friend's hut, rightly, since the friend isn't that village's.
+	 */
+	//$ gametest_batch AREA '"buildersOnlyTakeOrdersFromTheirEmployerAndFriends"'
+	@GameTest(template = AREA, batch = "buildersOnlyTakeOrdersFromTheirEmployerAndFriends")
 	public void buildersOnlyTakeOrdersFromTheirEmployerAndFriends(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		Leftovers.buildSites(helper);
 		ServerLevel level = helper.getLevel();
 		level.getGameRules().getRule(ModGameRules.BUILDER_OWNERSHIP).set(true, level.getServer());
 		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);

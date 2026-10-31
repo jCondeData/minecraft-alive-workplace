@@ -641,9 +641,14 @@ public class CrafterWork extends Behavior<Villager> {
 			List<BlockPos> theirs = new ArrayList<>();
 			Map<BlockPos, Guard> guarded = new HashMap<>();
 			Map<Item, Long> stock = new HashMap<>();
+			// B696: what the other open builds need stays out of the builder's own chests and the village stores too.
+			Map<Item, Integer> kept = new HashMap<>();
 			for (Village.Stash stash : Village.stashes(level, builder, builderStation, area)) {
 				if (stash.job() != ModVillagers.BUILDER) {
 					sources.addAll(stash.chests());
+					if (stash.job() == ModVillagers.PORTER) {
+						Builders.reservedForOthers(level, stash.station(), site).forEach((item, n) -> kept.merge(item, n, Integer::sum));
+					}
 					continue;
 				}
 				Guard guard = new Guard(stash.station(), stash.chests(), site);
@@ -663,7 +668,19 @@ public class CrafterWork extends Behavior<Villager> {
 				}
 				theirs.addAll(stash.chests());
 			}
-			SupplyContainers.contents(level, sources).forEach((item, n) -> stock.merge(item, n, Long::sum));
+			Builders.reservedIn(level, sources, site).forEach((item, n) -> kept.merge(item, n, Integer::sum));
+			Map<Item, Long> pooled = SupplyContainers.contents(level, sources);
+			Map<Item, Long> spareByFamily = new HashMap<>();
+			pooled.forEach((item, n) -> spareByFamily.merge(MaterialFamilies.key(item), n, Long::sum));
+			kept.forEach((key, n) -> spareByFamily.computeIfPresent(key, (k, have) -> have - n));
+			pooled.forEach((item, n) -> {
+				Item key = MaterialFamilies.key(item);
+				long spare = Math.min(n, spareByFamily.get(key)); // shared out once among the family's members
+				if (spare > 0) {
+					stock.merge(item, spare, Long::sum);
+					spareByFamily.put(key, spareByFamily.get(key) - spare);
+				}
+			});
 			sources.addAll(theirs);
 			Map<Item, Integer> need = Builders.remainingNeed(level, site, plan);
 			Map<Item, Long> usable = new HashMap<>();

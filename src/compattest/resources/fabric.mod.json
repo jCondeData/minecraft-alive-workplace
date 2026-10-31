@@ -41,6 +41,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.FurnitureAnyModCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedHomesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TerraceFurnitureCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMultiHomeFurniture1031CompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaBuiltNetwork1031CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TerraceSleepCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedWorkplacesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ModdedLibraryCompatTests",

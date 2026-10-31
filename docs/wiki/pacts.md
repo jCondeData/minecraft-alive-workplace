@@ -27,7 +27,8 @@ decline or a lapse, and their chronicle notes it.
 
 **Routes.** From 1.7, a caravan route (Routes tab) to another player's village needs a pact: without one the village's
 line says so and a click does nothing. Your own and your friends' villages need none. Routes set up before 1.7 become
-trade pacts when the world loads, so nothing stops.
+trade pacts once, when the world loads, so nothing stops, with gifts on for each village that sent cargo, so cargo
+that went free stays free until its owner turns gifts off (B700).
 
 **Paying.** A pact caravan's cargo of what the other village waits for is paid for at the receiving village's board
 price (a bundle's price, part bundles in proportion), as far as its treasury goes; the seller books it like a caravan
@@ -69,7 +70,8 @@ None new: the Pacts tab on the Trade page, letters through the post.
 - Wanted items that are no trade good travel free even on a pact: they have no board price.
 - Allies' riders cost nothing: neither their own village's treasury nor a realm treasury pays for them; the raided
   village's own realm pays for its own bands as in 33.17.
-- Offering an alliance to a trade-pact partner is allowed: accepting turns the pact into an alliance.
+- Offering an alliance to a trade-pact partner is allowed: accepting turns the pact into an alliance. The alliance keeps
+  the pact's start date and each side's gifts (B701).
 - Caravan range for pacts is the offering village's own caravan range, twice as far with the Lighthouse (35.12), the
   same range its Routes tab and Pacts tab list neighbors by (B595).
 

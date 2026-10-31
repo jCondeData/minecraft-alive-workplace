@@ -626,6 +626,35 @@ public final class Builders {
 	}
 
 	/**
+	 * What the open builds other than {@code except} keep back in {@code chests}, by family key: the {@link #reservedAt}
+	 * of every bench those chests are within a builder's reach of (B696: a Carpenter turned the logs stocked for one build
+	 * into planks for another that shared the chest, and the first waited for ever).
+	 */
+	public static Map<Item, Integer> reservedIn(ServerLevel level, List<BlockPos> chests, @Nullable BuildSite except) {
+		Map<Item, Integer> out = new java.util.HashMap<>();
+		if (chests.isEmpty()) {
+			return out;
+		}
+		Set<BlockPos> benches = new java.util.HashSet<>();
+		for (BuildSite other : BuildSiteManager.get(level).all()) {
+			BlockPos bench = other.bench();
+			if (other == except || bench == null || other.isDone() || other.isDeconstruction() || benches.contains(bench)) {
+				continue;
+			}
+			for (BlockPos chest : chests) {
+				if (SupplyContainers.inReach(bench, chest)) {
+					benches.add(bench);
+					break;
+				}
+			}
+		}
+		for (BlockPos bench : benches) {
+			reservedAt(level, bench, except).forEach((item, n) -> out.merge(item, n, Integer::sum));
+		}
+		return out;
+	}
+
+	/**
 	 * What a village storehouse at {@code storehouse} keeps back for the other builders near it (23.5), by family key:
 	 * what each other bench within the village's reach of it still needs for its builds, beyond what its own chests and
 	 * its builders' bags hold. Without it a builder that could also reach another storehouse emptied this one of what

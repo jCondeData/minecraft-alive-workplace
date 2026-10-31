@@ -4,7 +4,7 @@ Rare named villagers with powers, who come to a village that has earned them. Al
 thirty with a rare gift. Part of 1.3 (Legends): switched on in 1.0 with every other expansion.
 
 Roadmap items: 29.2, 29.3, 29.4, 29.5, 29.6, 29.7, 29.8, 29.9, 29.10, 29.11, 29.12, 29.13, 29.14, 29.15, 29.16, 29.17, 29.18,
-29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136, B345, B589, B622, B623
+29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136, B345, B589, B622, B623, B628, B630
 
 ## What a player sees
 
@@ -17,7 +17,8 @@ far it has got ("Kinds of meal in the store: 5 of 8"), the luxury it likes and i
 Each thing has a tick when it is met (exactly met counts) and a cross when it isn't, and a card with every tick says
 "This village has all they need: they may come". A Legendary one already living in another village says who and
 where ("Wren lives in Thornholm"); a Rare one settled elsewhere can still come here, so its card doesn't. The page's
-header and every Mythic card show the Mythic line ("Mythic Legends: 0 of 1, as a Town").
+header and every Mythic card show the Mythic line ("Mythic Legends: 0 of 1, as a Town"). "Legends living here" on the
+tab and the header counts the village's own Legends only; a guest has a card but isn't counted.
 
 On the hall's list of villagers the village's Legends come first, name and title in gold, with their rarity, each
 power, and each need with a tick, or a cross once it has gone unmet a day, plus "On strike since day N" in red. When a
@@ -321,7 +322,9 @@ through a save; the sneak-click's line in English, and no choice with an item in
 `QaGolemSmithEdgesGameTests` (8, QA, 29.15): each recipe one piece short (no shield, 3 iron blocks, a plain pumpkin)
 builds nothing, takes nothing and starts no wait, and the whole cost takes exactly the cost; the 2-day wait still
 holds at the last tick of the next day and ends at the first tick of the day after; a golem forged in a roofed house
-stands on its floor beside the Smith; the Hauler's and Farmhand's names over their heads; a plain iron golem hauls
+stands on its floor beside the Smith; under a roof too low for a golem all round, nothing is built and nothing taken
+(never on the roof, B628, `QaGolemSmithBugGameTests`); a guest Legend isn't counted under "Legends living here" (B630,
+`QaLegendsHallEdgesBugTests`); the Hauler's and Farmhand's names over their heads; a plain iron golem hauls
 nothing; a farmhand picks and replants ripe wheat, carrots and nether wart and leaves unripe wheat, a melon and a
 poppy alone; a Wall Sentry kills a foe 4 blocks off its post within its leash and leaves one 7 blocks off alone, and
 one without a Patrol Map goes after a zombie 10 blocks away like any golem.

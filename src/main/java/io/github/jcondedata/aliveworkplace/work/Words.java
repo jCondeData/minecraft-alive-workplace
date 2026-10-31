@@ -155,6 +155,17 @@ public final class Words {
 		return Language.getInstance().has(key) ? Component.translatable(key) : null;
 	}
 
+	/**
+	 * A trade's plural for a count of villagers (B707: "Fishermen at Apprentice or above"),
+	 * {@code plural.aliveworkplace.profession.<namespace>.<path>}, or null when the lang has none (another mod's trade): the
+	 * caller then names the trade in the singular instead of guessing ("Fishermans").
+	 */
+	@Nullable
+	public static Component professionPlural(ResourceLocation job) {
+		String key = "plural.aliveworkplace.profession." + job.getNamespace() + "." + job.getPath();
+		return Language.getInstance().has(key) ? Component.translatable(key) : null;
+	}
+
 	private Words() {
 	}
 }

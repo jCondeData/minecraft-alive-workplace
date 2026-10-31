@@ -48,7 +48,7 @@ public final class LegendsPage {
 
 	/** The page row's tab: how many Legends live here. */
 	static ItemStack tab(ServerLevel level, BlockPos hall) {
-		int here = Legends.ENABLED ? own(level, hall).size() : 0;
+		int here = living(level, hall);
 		return VillageHallScreen.icon(Items.NETHER_STAR, Component.translatable("screen.aliveworkplace.legends.tab"), ChatFormatting.GOLD,
 			VillageHallScreen.line(Legends.ENABLED ? Component.translatable("screen.aliveworkplace.legends.here", here)
 				: Component.translatable("message.aliveworkplace.legend.off"), here > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY),
@@ -60,9 +60,16 @@ public final class LegendsPage {
 		return VillageHallScreen.icon(Items.NETHER_STAR, Component.translatable("screen.aliveworkplace.legends.title", VillageHalls.name(level, hall)),
 			ChatFormatting.GOLD,
 			VillageHallScreen.line("screen.aliveworkplace.legends.about", ChatFormatting.GRAY),
-			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.legends.here", Legends.ENABLED ? own(level, hall).size() : 0),
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.legends.here", living(level, hall)),
 				ChatFormatting.GRAY),
 			mythicLine(level, hall));
+	}
+
+	/**
+	 * How many Legends live here: the village's own on the record, not guests only visiting (B630), while Legends are on.
+	 */
+	static int living(ServerLevel level, BlockPos hall) {
+		return Legends.ENABLED ? (int) own(level, hall).stream().filter(o -> o.entry().isPresent()).count() : 0;
 	}
 
 	/** "Mythic Legends: 0 of 1, as a Town". */

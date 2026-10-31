@@ -4,7 +4,7 @@ How much trouble comes to villages, server-wide and village by village: the `thr
 the Defense page's **At peace**, and the operators' `/workplace threat` command. Part of Milestone 32 (1.6); the
 threat level and the command work with today's raids and bandit camps too.
 
-Roadmap items: 32.21, B134, B383
+Roadmap items: 32.21, B134, B383, B704, B705
 
 ## What a player sees
 

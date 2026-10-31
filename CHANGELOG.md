@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A lair whose captain can't come (a mob blocklist with `forceThreatSpawns` off, or Peaceful) no longer leaves its
+  tents, fire and chests standing for good: the captain is put in the world first, and without him nothing is built
+  (B709).
+- On Peaceful, each player near a village whose camps and raids can't come is told why once a day, even when a
+  refusal at a village nobody was at came first that day (B708).
 - `/workplace threat start` and `lair` on Peaceful say the world is Peaceful and raids and camps need a higher
   difficulty, instead of "found nowhere to gather" (and no half-built camp is left); the guide no longer promises a
   raid on Peaceful (B704).

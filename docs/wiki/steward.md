@@ -170,7 +170,7 @@ seconds), `QaWorkplaceCopiesGameTests` (4, 27.11), `QaSteward1031GameTests` (10,
 qualify, a Steward moves halls, the recipe in any slots and with a lookalike, the half-way line to another hall, a stranger's
 protected village by hand, negative ledger sections saved, exactly 8 kinds listed, only his builds pause or are told), `QaStewardSafetyGameTests` (10, 27.19: a broken block marks its section,
 nothing outside a hall's area, one section only, per dimension, Keep Clear over the owner's approval, the 8 most
-needed, caravans, once a day, the pause's day from both sides, the sentences), `QaOldHousesGameTests` (12, 27.20: 85%
+needed, caravans, once a day, the pause's day from both sides, the sentences), `QaShoppingPlurals1031GameTests` (2, B698: 1 Torch then 2 Torches on the daily message, desk and board, and plurals that aren't the name plus an s, 40 Hay Bales, 3 Bowls of Rabbit Stew, 1000 Lanterns), `QaOldHousesGameTests` (12, 27.20: 85%
 from both sides, abandoned blocks, allowed block entities, containers, 2000 blocks and 20×16×20 from both sides, a
 finished build, placed leaves, the ledger, the desk line) and `QaRenewalGameTests` (9, 27.21: the switch, two days
 from both sides, a Fletcher's Lodge facing the old door, the sentences, a tight zone, broken lists, a building too big

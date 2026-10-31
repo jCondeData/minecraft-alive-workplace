@@ -51,7 +51,8 @@ whatever the order (the owner's answer); the rest of the house follows the order
 
 Rooms that read as rooms (B260): nothing stands in a door's way (two blocks in and out of every door), every bed has
 its head against a wall (or a window in it) and faces into the room, a lantern hangs or stands on a table or post,
-never on the bare floor, and a chest stands against a wall or at the foot of a bed. Each spot records what it stands
+never on the bare floor of a room (the Schoolhouse's open belfry and the Library's tower lookout keep a lantern standing
+on theirs: neither is a furnished room), and a chest stands against a wall or at the foot of a bed. Each spot records what it stands
 on or against in the drawing (floor, wall, ceiling), and a modded piece goes only where what it needs is there: a
 Beautify picture frame stands on a table, so a picture on a wall stays a banner; a Handcrafted shelf stands on the
 floor, so a shelf on a wall stays a slab; a two-block-tall piece (a `half=lower|upper` block) is placed with its top

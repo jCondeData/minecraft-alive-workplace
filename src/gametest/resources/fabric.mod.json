@@ -411,6 +411,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPactsBoardStewardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactsRealmEdictsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPacts1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPacts1031BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTradeBoardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryJobsBugTests",

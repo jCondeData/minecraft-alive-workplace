@@ -655,6 +655,7 @@
 			"io.github.jcondedata.aliveworkplace.test.SicknessPhysicianGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestJournalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StoryArcGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoryArcEngine1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWardingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FerryLeaveQaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsB8UnloadedGameTests",

@@ -142,7 +142,9 @@ public final class Stewards {
 		if (!Friends.mayCommand(player, villager)) {
 			return Hiring.hire(player, villager, Component.empty()); // refuses, and says whose they are
 		}
-		fixTicket(level, hall);
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+			entity.checkStewardPlace(level); // only a hall never checked: a taken place may be an away Steward's (B687)
+		}
 		if (level.getPoiManager().getFreeTickets(hall) <= 0) {
 			Villager other = stewardOf(level, hall);
 			return refuse(player, Component.translatable("message.aliveworkplace.steward.taken", bound.name(),
@@ -175,8 +177,8 @@ public final class Stewards {
 
 	/**
 	 * A hall's record saved when the hall had no place for a Steward still has 0 free places: registers it again (with
-	 * the one place it has now), unless a loaded Steward holds it. Called once for each hall when it first ticks after
-	 * loading, and before an appointment.
+	 * the one place it has now), unless a loaded Steward holds it. Called once in each hall's life, through
+	 * {@link VillageHallBlockEntity#checkStewardPlace}: on its first tick or its first appointment, whichever comes first.
 	 */
 	public static void fixTicket(ServerLevel level, BlockPos hall) {
 		PoiManager poi = level.getPoiManager();

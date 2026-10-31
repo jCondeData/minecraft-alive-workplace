@@ -220,7 +220,9 @@ are listed when the camp is placed (`aliveworkplace_camp_beds`, per dimension); 
 look (a brown or green bed with a campfire and a hay bale within 10 blocks and the camp's Blueprint Table, or an old
 camp's Builder's Bench, within 12) and listed once seen. A player's brown bed by a campfire and hay, with no camp's table,
 stays a home (B715); a list saved before that fix has its beds looked at once more, and a bed without the camp's look is
-let go. At each round the
+let go. The look is only for a save that may hold camps placed before the list: in a world started with this version
+(its list saved as `complete`), only beds a camp placed are wagon beds, so a cabin's bed by a campfire, hay and the
+village's own builder's Blueprint Table stays a home (B730, B732). At each round the
 hall moves out anyone homed in one (they wake and forget it, then find a bed in a house) and holds every wagon bed for
 nobody, so it is never claimed again. The census leaves them out of Beds and Free, and the Beds button says how many
 it left out ("Not counted: 2 wagon beds"). Before a hall stands, the settlers sleep in the wagon as before.
@@ -230,7 +232,7 @@ emerald), half in a badly kept village, half again in a well kept one, a quarter
 collects it. It holds up to a stack of emeralds a rank and counts at most 3 missed days.
 
 **Calendar.** Four seasons of `seasonDays` days each (16), the same for the whole world, counted from the overworld's
-day. Each season has a festival on its middle day. Festivals also come every 8 days where at least 6 villagers live.
+day. Each season has a festival on its middle day. At `seasonDays` 1 the calendar reads "Four seasons of 1 day" and "Day 3 of the year" (B727). Festivals also come every 8 days where at least 6 villagers live.
 
 **Protection.** The hall's owner (whoever placed it) can switch protection on by shift-clicking the hall's name
 icon. Then only the owner, their friends and operators may break or place blocks, open chests or hurt villagers in the
@@ -292,7 +294,7 @@ or an operator; anyone in a village nobody owns), and is checked again on the cl
 | Key | Default | What it does |
 |---|---|---|
 | `villageHallRadius` | 64 (16 to 160) | How far from a hall its village reaches |
-| `villageGrowthCap` | 40 (0 to 500) | The village stops having babies at this many villagers; 0: no growth (the hall says "Villages don't grow on this server") |
+| `villageGrowthCap` | 40 (0 to 500) | The village stops having babies at this many villagers; 0: no growth (the hall says "Villages don't grow on this server", and the rank's perks end "no growth on this server", never "grows to 0", B734) |
 | `villageTreasury` | on | Villages put by takings every morning |
 | `treasuryPerWorker` | 20 (0 to 500) | Hundredths of an emerald a worker a day |
 | `villageProtection` | on | Owners may protect their village; off: nobody can, on the whole server |

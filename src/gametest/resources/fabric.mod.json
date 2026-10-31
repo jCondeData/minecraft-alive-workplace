@@ -433,6 +433,8 @@
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WagonBedsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsHome1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCabinBedWorkshop1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ThreatGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LairGameTests",
@@ -897,6 +899,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.ReachAcrossGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReachAcross1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWordsVillage1028GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClinicTerrace1028BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReleaseRefresh1028GameTests",
@@ -953,7 +956,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLegendsLairs1031dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeWarnings1031dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampBedsUpgrade1031GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaVillageGuards1031GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaVillageGuards1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaOldHouseShownOne1031BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCalendarOneDay1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaColonyWaitOneDay1031BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGrowthOffRankLine1031BugTests"
 		]
 	},
 	"depends": {

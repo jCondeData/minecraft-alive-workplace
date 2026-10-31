@@ -16,7 +16,17 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.2 — 2026-10-31
+
 ### Fixed
+- In a new world, a cabin's brown or green bed by a campfire and a hay bale is no longer taken for a settlers' wagon
+  bedroll when the village's own builder's Blueprint Table stands nearby: only beds a camp placed are wagon beds, so
+  its residents keep their homes and the hall counts it. Older saves still know camps from before the wagon-bed list
+  by their look (B730, B732).
+- Counts of one read in the singular: the Steward's desk says "Showing 1 old house", the calendar with one-day seasons
+  says "Four seasons of 1 day" and "Day 3 of the year", and the Colonies tab says "A village waits 1 day between
+  colonies". With `villageGrowthCap` 0 the hall's rank perks end "no growth on this server" instead of "grows to 0"
+  (B739, B727, B733, B734).
 - A camp an operator sets down with `/workplace threat lair` by a village that went quiet on an earlier day (At peace,
   or threat level 0) now stands until the next dawn, as the command says. Before, it packed up at the hall's next
   round, about half a minute later.

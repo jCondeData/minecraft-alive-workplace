@@ -11,7 +11,7 @@ Roadmap items: 31.2, 31.3
 
 - **The journal.** The hall's Quests button (or the Village Ledger, from anywhere) opens it, with four tabs: Village,
   Personal, Story and Bounties. Each quest says who asked ("Asked by Ana"), one line per step with its progress
-  ("Bring 2 Apple (0/2)"), the reward ("Reward: 3 emeralds") and the days left ("Up for 3 more days"; "Up for 1 more
+  ("Bring 2 Apples (0/2)"), the reward ("Reward: 3 emeralds") and the days left ("Up for 3 more days"; "Up for 1 more
   day" on its last day).
 - **Handing in.** A click hands in what a `bring` step still needs, up to what is still wanted: with 3 apples for a
   quest that wants 1 more, 1 is taken and the other 2 stay with you. The things go into the village's store. A quest is
@@ -66,10 +66,12 @@ Roadmap items: 31.2, 31.3
 
 ## Known limits
 
-- Step lines name a thing in the singular whatever the count ("Defeat 2 Zombie", "Bring 5 Apple"): B568.
+- None known. (Step lines name things in the plural for more than one since B568: "Defeat 2 Zombies", "Bring 5 Apples".)
 
 ## Proof
 
-GameTests: `QuestEngineGameTests`, `QuestJournalGameTests`, and `QaQuestJournalGameTests` (out of the suite until B572; the hall's Quests button and the
+GameTests: `QuestEngineGameTests`, `QuestJournalGameTests`, `QaQuestJournalGameTests` (the hall's Quests button and the
 Ledger, hand-ins to the goal and once, the boundaries of days, ticks and radius, save and reload, two players, the hall
-broken, the command, the switch off, broken files, places and maps, every sentence).
+broken, the command, the switch off, broken files, places and maps, every sentence) and `QaRealmLegendsJournal1031GameTests`
+(one tracked quest per player, the bar following each step in order, a hand-in through the hall moving the bar, the
+command from afar, the journal's lines).

@@ -92,9 +92,8 @@ Roadmap items: 31.21
 - 31.21: the trigger needs the patron to exist (`thesis_patron`: the Professor or an Expert Scholar), not just any
   Scholar, since a lower Scholar couldn't be the patron. A Scholar away from the desk still counts.
 - 31.21: Thessaly is the trainer job at Master (not a Leader, so the home village's Leader doesn't take her
-  challenges); she leaves when beaten (a loss can be retried) or when the thesis is published. Today a thesis
-  stopped (`/workplace story stop`) or switched off (`disabledArcs`) during Peer Review leaves her standing by the
-  hall (a bug; failing tests on the tests/stadium-thesis-1028 branch).
+  challenges); she leaves when beaten (a loss can be retried), when the thesis is published, and when it ends any
+  other way (stopped with `/workplace story stop`, or switched off with `disabledArcs`; B663).
 - 31.21: every helper gets a copy of the book and the rewards; one who is offline gets them dropped on the hall.
 - 31.21: a reward item Cobblemon lacks is paid as 4 emeralds.
 - 31.21: the free research level is the topic in progress, else the first open one in the tree's order.
@@ -123,6 +122,10 @@ Roadmap items: 31.21
   to 23000 on any day, the full moon only at night, Fire and Stone's places (`heightAndTimeEdgesFromBothSides`); every
   sentence the co-author reads, a loss leaving Thessaly there, +150 reputation (`everySentenceTheCoAuthorReads`); the
   book's pages word for word (`theBooksPagesNameSpeciesPlaceAndDay`); the thesis and Thessaly through a save
-  (`theThesisAndThessalySurviveASave`). Failing tests on the tests/stadium-thesis-1028 branch
-  (until fixed): Thessaly stays when the thesis is stopped or switched off.
+  (`theThesisAndThessalySurviveASave`). `QaStadiumThesisBugCompatTests` (B663): Thessaly leaves when the thesis is
+  stopped (`thessalyLeavesWhenTheThesisIsStopped`) or switched off (`thessalyLeavesWhenTheThesisIsSwitchedOff`).
+- QA compat GameTests, `QaThesisPeerReview1031CompatTests`: caravan range from both sides (a Leader's village exactly
+  2048 blocks away is picked, 2049 isn't, a village whose known trainer is no Leader is passed over)
+  (`aLeaderAtCaravanRangeIsPickedAndOneBlockPastItIsNot`); with only a Leader past the range, Thessaly comes
+  (`withOnlyALeaderPastCaravanRangeThessalyComes`).
 - Showcase scene `professors_thesis` (Cobblemon): the request, a catch counting, the published book.

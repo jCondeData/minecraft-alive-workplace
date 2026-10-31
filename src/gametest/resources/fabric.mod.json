@@ -842,6 +842,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHeightFreeUploadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuildsPerRankGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanQuiet1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGemGrowerHireGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCupPurseGameTests",

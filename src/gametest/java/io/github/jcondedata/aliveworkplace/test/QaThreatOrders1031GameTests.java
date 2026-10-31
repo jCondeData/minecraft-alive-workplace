@@ -65,6 +65,11 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos hall = helper.absolutePos(HALL);
 		ThreatData.get(level).forgetPast(hall);
+		// B712: tests elsewhere put halls at this same spot; a lair one of them left on record here (its band out, so
+		// it has nobody to send) or a spawn refusal left switched on made an order fail "nowhere to gather" once.
+		Lairs.forget(level);
+		io.github.jcondedata.aliveworkplace.threat.HostileSpawns.REFUSED_FOR_TESTS = null;
+		io.github.jcondedata.aliveworkplace.threat.HostileSpawns.FORCE = true;
 		Leftovers.after(helper, () -> {
 			level.getEntitiesOfClass(Mob.class, helper.getBounds().inflate(48),
 				m -> m.getTags().contains(Lairs.TAG) || m.getTags().contains(BanditCamps.TAG) || m.getTags().contains(VillageRaids.TAG)).forEach(Mob::discard);
@@ -130,10 +135,9 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 		said.clear();
 		int sent = run(level, op, command);
 		helper.assertTrue(sent > 0 && ThreatData.get(level).raid(hall).map(r -> r.culture().equals(culture)).orElse(false),
-			when + ": '/" + command + "' started no raid by " + culture + " (returned " + sent + "): " + said
-				// B712: what else could have stopped it (a camp by the hall, a spawn refused, the difficulty)
-				+ "; lair " + Lairs.near(level, hall).map(l -> l.culture() + " home " + l.home()).orElse("none")
-				+ "; difficulty " + level.getDifficulty() + "; last spawn warning: " + io.github.jcondedata.aliveworkplace.threat.HostileSpawns.lastWarning());
+			when + ": '/" + command + "' started no raid by " + culture + " (returned " + sent + "): " + said + " (lair here: "
+				+ Lairs.of(level, hall, culture) + "; last gathering point: " + VillageRaids.lastGathering + "; last spawn warning: "
+				+ io.github.jcondedata.aliveworkplace.threat.HostileSpawns.lastWarning() + "; difficulty " + level.getDifficulty() + ")");
 		helper.assertTrue(!VillageRaids.raiders(level, hall).isEmpty(), when + ": the ordered raid has no raiders in the world: " + said);
 		helper.assertTrue(said.stream().anyMatch(s -> s.contains(" are raiding ") && s.endsWith(sent + " of them.")), when + ": what the command said: " + said);
 		for (int round = 0; round < 2; round++) {

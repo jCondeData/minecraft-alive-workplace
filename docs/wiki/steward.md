@@ -3,7 +3,7 @@
 A seasoned Builder who runs a village from its City Plan: he decides what the village needs next, finds the plot and
 has the builders build it. Part of 1.1 (Villages that build themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B469, B471, B472, 36.20
+Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B468, B469, B471, B472, B503, 36.20
 
 ## What a player sees
 
@@ -158,7 +158,9 @@ villagers are too few; a raid 6 days ago is within 7 and 7 days ago not; 2 child
 the Storehouse grows at 22 of 27 slots, not 21, on to III and no further). `QaStewardDeskJobsGameTests` (16, 27.8 and 27.9: a decline and an unanswered proposal both end at exactly 3 days,
 9 proposals and never a 10th, strangers answer nothing while a friend of the owner can, Approve all, Rest and
 `stewardSelfRun` off, one morning line, guards only while short, a baby gets no job, the research order against the spec).
-`QaCityPlanPaintGameTests` (7, 27.2 and 27.3: a dragged rectangle is one stroke and one undo, a deleted zone comes back
+`QaCityPlanZoneChecks1031GameTests` (3, B468 and B503: every listed style goes on a new zone and an edited one; a
+refused 33-letter name or made-up style leaves the zone, its undo step and its saved copy as they were, each refusal
+read as the bad_zone sentence; a gone style stays only with the zone that had it), `QaCityPlanPaintGameTests` (7, 27.2 and 27.3: a dragged rectangle is one stroke and one undo, a deleted zone comes back
 with its cells, strokes that change nothing take no undo step, a stranger's eraser and side panel are refused, the
 first painter's claim is saved, a block's zone comes from the nearest hall, an 8x8 cell at radius 128),
 `QaStewardRulesDataGameTests` (2, 27.6), `QaStewardPlotFitGameTests` (2, 27.7: the front faces the nearer road;

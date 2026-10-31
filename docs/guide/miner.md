@@ -63,6 +63,7 @@ Hand a deeper marker to a miner who isn't there yet and they still take it, but 
 a Novice), and tell you which level the full depth needs. If they level up before they finish, they keep going down
 to their new depth. If they finish first, hand them the marker again once they've leveled up. The spiral stair goes
 all the way to the bottom, and they still leave the blocks next to water and lava standing.
+A bedrock marker always needs a Master, however deep the pit turns out: anyone below stops short of the bottom.
 
 ![A Master miner at the bottom of a pit 96 blocks deep](https://jcondedata.github.io/minecraft-alive-workplace/deep_quarry/still-3.jpg)
 

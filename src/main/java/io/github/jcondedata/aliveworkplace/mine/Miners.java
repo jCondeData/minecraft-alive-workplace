@@ -123,7 +123,7 @@ public final class Miners {
 		}
 		BoundingBox full = clampToWorld(level, area.get());
 		// 36.22: as deep as the miner's level lets them for now (deeper as they level up, see deepen)
-		BoundingBox box = data.isStripMine() ? full : withinLevel(full, BuilderLevels.level(villager));
+		BoundingBox box = data.isStripMine() ? full : withinLevel(full, BuilderLevels.level(villager), data.depth());
 		java.util.OptionalInt shaft = data.shaftTop(floor);
 		BlockPos center = box.getCenter();
 		// Down a shaft, the way there is straight down: only the distance across counts. A deep pit (36.22) is measured
@@ -165,14 +165,19 @@ public final class Miners {
 		if (site.wantsDeeper()) {
 			tell(player, Component.translatable("message.aliveworkplace.quarry.too_deep", villager.getDisplayName(),
 				BuilderLevels.levelName(BuilderLevels.level(villager)), box.getYSpan(), full.getYSpan(),
-				BuilderLevels.levelName(QuarryData.levelFor(full.getYSpan()))), ChatFormatting.YELLOW);
+				BuilderLevels.levelName(QuarryData.levelFor(data.depth(), full.getYSpan()))), ChatFormatting.YELLOW);
 		}
 		return InteractionResult.SUCCESS;
 	}
 
 	/** {@code box} cut off at the lowest layer a miner at villager level {@code villagerLevel} digs (36.22). */
 	public static BoundingBox withinLevel(BoundingBox box, int villagerLevel) {
-		int lowest = QuarryData.lowestFor(villagerLevel, box.maxY());
+		return withinLevel(box, villagerLevel, box.getYSpan());
+	}
+
+	/** {@code box}, marked with the depth choice {@code choice}, cut off for a miner at {@code villagerLevel} (B649: a bedrock pit is a Master's). */
+	public static BoundingBox withinLevel(BoundingBox box, int villagerLevel, int choice) {
+		int lowest = QuarryData.lowestFor(villagerLevel, box.maxY(), box.minY(), choice);
 		return lowest <= box.minY() ? box : new BoundingBox(box.minX(), lowest, box.minZ(), box.maxX(), box.maxY(), box.maxZ());
 	}
 
@@ -185,7 +190,7 @@ public final class Miners {
 			return;
 		}
 		int lvl = BuilderLevels.level(villager);
-		if (site.deepenTo(QuarryData.lowestFor(lvl, site.box().maxY()))) {
+		if (site.deepenTo(QuarryData.lowestFor(lvl, site.box().maxY(), site.wantedBottom(), site.depth()))) {
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 			if (owner != null) {
 				tell(owner, Component.translatable("message.aliveworkplace.quarry.deeper", villager.getDisplayName(), BuilderLevels.levelName(lvl),
@@ -325,7 +330,7 @@ public final class Miners {
 			if (site.wantsDeeper()) {
 				int wanted = site.box().maxY() - site.wantedBottom() + 1;
 				tell(owner, Component.translatable("message.aliveworkplace.quarry.stopped_short", villager.getDisplayName(), site.box().getYSpan(), wanted,
-					BuilderLevels.levelName(QuarryData.levelFor(wanted))), ChatFormatting.YELLOW);
+					BuilderLevels.levelName(QuarryData.levelFor(site.depth(), wanted))), ChatFormatting.YELLOW);
 			}
 		}
 		BuilderLevels.addXp(level, villager, 10, site.owner());

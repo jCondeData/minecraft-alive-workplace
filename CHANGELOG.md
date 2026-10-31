@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A stranger's tree farm, orchard or berry plot reaching into a protected village is now refused, saying whose
+  village it is, as a stranger's field already was.
+- Handing a Field Marker to a lumberjack or orchard keeper now names the block they really work at (a Chopping Block
+  or Fruit Basket), not always a fletching table or composter.
 - In a new world, a cabin's brown or green bed by a campfire and a hay bale is no longer taken for a settlers' wagon
   bedroll when the village's own builder's Blueprint Table stands nearby: only beds a camp placed are wagon beds, so
   its residents keep their homes and the hall counts it. Older saves still know camps from before the wagon-bed list

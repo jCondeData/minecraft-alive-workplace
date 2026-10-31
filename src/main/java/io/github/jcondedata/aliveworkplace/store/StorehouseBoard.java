@@ -145,7 +145,7 @@ public final class StorehouseBoard {
 		}
 		List<Component> lines = new java.util.ArrayList<>();
 		for (java.util.Map.Entry<net.minecraft.world.item.Item, Integer> e : list) {
-			lines.add(plain(Component.translatable("screen.aliveworkplace.shopping.item", e.getValue(), e.getKey().getDescription()), ChatFormatting.GRAY));
+			lines.add(plain(io.github.jcondedata.aliveworkplace.city.StewardSafety.item(e.getKey(), e.getValue()), ChatFormatting.GRAY));
 		}
 		ItemStack icon = new ItemStack(Items.PAPER);
 		icon.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.shopping"), ChatFormatting.YELLOW));

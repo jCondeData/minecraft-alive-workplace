@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Steward's shopping list (his daily message, the desk and the Storehouse's board) now names things in the
+  plural: "12 Oak Logs, 10 Torches", and still "1 Oak Log" for one (B698).
 - Without Cobblemon, a jobless villager standing by a Training Post no longer becomes a Trainer by himself (a job with
   nothing to do); the same goes for the Leader's Podium, Tutor's Desk, Trade Board, Ball Workbench and Fossil Lab, which
   now stay free. Villagers who already have one of these jobs keep it, and with Cobblemon nothing changes (B697).

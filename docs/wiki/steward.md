@@ -73,7 +73,7 @@ approved by hand; a lane the Steward lays from a finished house's door and his h
 not, so a stretch of them that would run through a player's section waits instead (B520). A player placing or breaking a block inside a hall's
 area marks its 16×16×16 section, and only that one. His sites clear only natural blocks. His waiting builds (not a player's own) share one
 shopping list, the 8 most needed added up over all of them, on the desk, the Storehouse's requests board and in the
-caravans' wants; the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
+caravans' wants ("30 Glass, 12 Oak Logs, 1 Torch"); the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
 less, isn't enough) he proposes nothing new and the desk says so.
 
 **Old houses (27.20, 27.21).** In zones with "renew old houses" on he finds the houses no builder built (by their

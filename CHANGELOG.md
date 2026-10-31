@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- `/workplace threat start` and `lair` on Peaceful say the world is Peaceful and raids and camps need a higher
+  difficulty, instead of "found nowhere to gather" (and no half-built camp is left); the guide no longer promises a
+  raid on Peaceful (B704).
+- `/workplace threat` suggests raider cultures and disasters as their name is typed (`pill`, `witch`, `dro`), not only
+  after `aliveworkplace:` (B705).
 - A Wonder's part goes by its Wonder's name while it's built: the builder's status, the words over his head, the
   Village Hall's list of buildings going up and the waiting-for-materials line say "Stage 1 part of the Test Folly",
   never "Stage 1 0" (B703).

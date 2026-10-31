@@ -2850,6 +2850,8 @@
   "command.aliveworkplace.threat.unknown_disaster": "No disaster %s is loaded.",
   "command.aliveworkplace.threat.raid_under_way": "A raid is already under way at %s: /workplace threat end first.",
   "command.aliveworkplace.threat.start_failed": "%1$s found nowhere to gather by %2$s.",
+  "command.aliveworkplace.threat.peaceful_raid": "%1$s can't come to %2$s: the world is on Peaceful, where hostile mobs can't exist. Raise the difficulty for raids.",
+  "command.aliveworkplace.threat.peaceful_lair": "%1$s can't make camp by %2$s: the world is on Peaceful, where hostile mobs can't exist. Raise the difficulty for camps.",
   "command.aliveworkplace.threat.started": "%1$s are raiding %2$s: %3$s of them.",
   "command.aliveworkplace.threat.no_lair": "%s have no lair: they come from nowhere in particular.",
   "command.aliveworkplace.threat.lair_standing": "%1$s already has a %2$s by it: /workplace threat clear first.",

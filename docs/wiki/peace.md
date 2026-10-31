@@ -21,7 +21,9 @@ Roadmap items: 32.21, B134, B383
 - **No new bounties** in a quiet village (At peace, threat level 0 or Peaceful): no captain is posted on its Bounty
   Board; ones already up stay until they are paid or run out (B134, [bounties](bounties.md)).
 - **`/workplace threat`** (operators): starts a raid by any culture, sets a lair down, starts a disaster, ends what is
-  under way or clears the village, at the nearest Village Hall, for events and testing.
+  under way or clears the village, at the nearest Village Hall, for events and testing. On Peaceful no raid or lair
+  can come (hostile mobs can't exist), so `start` and `lair` say the world is Peaceful instead (B704). Its names are
+  suggested as their path is typed (`pill` suggests `aliveworkplace:pillager_warband`, B705).
 
 ## How it works
 
@@ -123,7 +125,9 @@ Roadmap items: 32.21, B134, B383
   `ThreatLevelGameTests.aDisasterSwitchedOffNeverStarts`, `ThreatLevelGameTests.atPeaceTheLairLeavesAtDawnAndNoneComes`,
   `ThreatLevelGameTests.atPeaceNoRaidComes`, `ThreatLevelGameTests.atPeaceIsSavedWithTheHall`,
   `ThreatLevelGameTests.theCommandStartsAndEndsEachRaidAndDisaster`, `ThreatLevelGameTests.theCommandClearsTheVillage`,
-  `ThreatLevelGameTests.everyNewSentenceHasWords`.
+  `ThreatLevelGameTests.everyNewSentenceHasWords`, `ThreatLevelGameTests.theCommandSaysPeacefulOnPeaceful` (B704).
+- `QaThreatOrdersBugTests.anOrderOnPeacefulComesOrSaysItsPeaceful` (B704),
+  `QaThreatOrdersBugTests.typingAPathsFirstLettersStillSuggestsIt` (B705).
 - `QaQuietLairGameTests.aLairStandingWhenTheThreatLevelGoesToZeroLeavesByTheNextDawn`: a bandit camp standing when the
   threat level goes to 0 has packed up and left in peace by the next dawn (not counted as broken up), and no lair comes
   on the four days after.

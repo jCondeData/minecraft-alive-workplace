@@ -666,6 +666,7 @@
 			"io.github.jcondedata.aliveworkplace.test.StewardSafetyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardSafetyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneLedgerBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLaneLedger1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.PathLedgerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLedgerFramesHaulGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanUnlockedGameTests",
@@ -872,6 +873,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBanditKingLoot1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampCleanup1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopFerry1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLonePanes1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.PriceTagRateAndClassEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests"
 		]

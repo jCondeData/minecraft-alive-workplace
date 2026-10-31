@@ -33,7 +33,8 @@ import net.minecraft.world.phys.Vec3;
  * QA (lane-e-1031-2213, the sentences a player reads, counted sentences 24.5): every block of the mod, set down by a
  * small village (a hall, one villager), right-clicked by its owner with an empty hand and then sneaking, as a player
  * first meets it: what the click says in chat, and, when it opens one of our screens, every line of that screen and of
- * every page its buttons open. No line may say "1" followed by a plural ("1 days", "1 blocks").
+ * every page its buttons open; the same for a Novice of every profession, and every item of the mod (its tooltip and
+ * used in the air). No line may say "1" followed by a plural ("1 days", "1 blocks").
  */
 public class QaBlockWordsAtOne1031GameTests implements FabricGameTest {
 	private static final String BIG = "aliveworkplace_test:big_area";
@@ -165,6 +166,62 @@ public class QaBlockWordsAtOne1031GameTests implements FabricGameTest {
 			}
 			helper.assertTrue(jobs > 20 && heard > 0, "setup: " + jobs + " jobs, " + screens + " screens, " + heard + " chat lines");
 			helper.assertTrue(wrong.isEmpty(), jobs + " jobs, first clicks on a villager of each say: " + wrong);
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Every item of the mod, one of it: its tooltip, and used in the air (then sneaking) by the village's owner: what
+	 * that says in chat, and the lines of any screen of ours it opens.
+	 */
+	//$ gametest_ticks_batch BIG '300' '"qaItemWordsAtOne1031"'
+	@GameTest(template = BIG, timeoutTicks = 300, batch = "qaItemWordsAtOne1031")
+	public void noItemSaysOneWithAPluralWhenFirstUsed(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		QaStageFiveGameTests.Client client = QaStageFiveGameTests.client(helper, GameType.SURVIVAL);
+		ServerPlayer player = client.player();
+		helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 8));
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.runAfterDelay(5, () -> {
+			VillageHallBlockEntity entity = helper.getBlockEntity(HALL);
+			entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+			Map<String, String> wrong = new LinkedHashMap<>();
+			int items = 0;
+			int lines = 0;
+			int heard = 0;
+			for (net.minecraft.world.item.Item item : BuiltInRegistries.ITEM) {
+				String id = BuiltInRegistries.ITEM.getKey(item).toString();
+				if (!id.startsWith("aliveworkplace:")) {
+					continue;
+				}
+				items++;
+				ItemStack one = new ItemStack(item);
+				List<String> tip = one.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.of(helper.getLevel()), player,
+					net.minecraft.world.item.TooltipFlag.NORMAL).stream().map(Component::getString).toList();
+				lines += tip.size();
+				check(id + " tooltip", tip, wrong);
+				for (boolean sneak : new boolean[] {false, true}) {
+					player.moveTo(Vec3.atCenterOf(helper.absolutePos(SPOT)));
+					player.setShiftKeyDown(sneak);
+					player.closeContainer();
+					player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(item));
+					client.seen().clear();
+					player.gameMode.useItem(player, helper.getLevel(), player.getMainHandItem(), InteractionHand.MAIN_HAND);
+					List<String> said = said(client);
+					heard += said.size();
+					check(id + " used" + (sneak ? " sneaking" : ""), said, wrong);
+					if (player.containerMenu instanceof ChoiceMenu menu) {
+						check(id + " screen", read(menu), wrong);
+					}
+					player.stopUsingItem();
+					player.setShiftKeyDown(false);
+					player.closeContainer();
+					player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+				}
+			}
+			helper.assertTrue(items > 40 && lines > items && heard > 0, "setup: " + items + " items, " + lines + " tooltip lines, " + heard + " chat lines");
+			helper.assertTrue(wrong.isEmpty(), items + " items of the mod, one of each: " + wrong);
 			helper.succeed();
 		});
 	}

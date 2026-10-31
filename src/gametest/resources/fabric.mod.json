@@ -433,6 +433,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WagonBedsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsHome1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ThreatGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LairGameTests",

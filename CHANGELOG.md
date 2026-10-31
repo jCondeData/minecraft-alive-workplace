@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A stranger standing just outside your protected village can't pour lava or water into it any more, or scoop
+  water out of it: a bucket is now checked where it empties or fills, not where he stands, and he's told whose village
+  it is. You, your friends and operators use buckets there as before, and anyone may still pour outside the village (B719).
 - A stranger can no longer have his own Builder, Miner or Farmer work inside your protected village from just outside
   it: a blueprint, Quarry Marker or Field Marker whose area reaches into the village is refused, and he's told whose
   village it is (before, only the clicked spot was checked, and clearing the site broke the owner's blocks). You, your

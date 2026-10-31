@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Travel Post counts the other posts you know in the singular when there's one: "You know 1 other post", not
+  "1 other posts" (B691).
+- The Stadium's goods quest asks for "2 Great Balls" and "2 Ultra Balls", not "2 Great Ball" (B675).
 - A hall's Steward keeps his place while he's away where nothing is loaded (a far stop of his rounds): the City Plan
   no longer appoints a second Steward to the same hall in the meantime (B687).
 - Without Cobblemon, the Pokémon jobs can't be picked by their item any more: a book by a Training Post used to make

@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.travel;
 import com.mojang.serialization.MapCodec;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Interact;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -78,8 +79,9 @@ public class TravelPostBlock extends HorizontalDirectionalBlock {
 			}
 			boolean found = network.visit(serverPlayer.getUUID(), post);
 			int others = network.known(serverPlayer.getUUID(), post).size();
-			Chat.chat(player, Component.translatable(found ? "message.aliveworkplace.travel.found" : "message.aliveworkplace.travel.known",
-				post.name(), others).withStyle(found ? ChatFormatting.GREEN : ChatFormatting.GRAY));
+			// B691: "You know 1 other post", never "1 other posts".
+			Chat.chat(player, Words.counted(found ? "message.aliveworkplace.travel.found" : "message.aliveworkplace.travel.known",
+				others, post.name(), others).withStyle(found ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 		}
 		return Interact.success(level.isClientSide());
 	}

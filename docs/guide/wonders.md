@@ -95,6 +95,9 @@ Then, by day (at night it waits for the morning), the stage is **dedicated**: th
 gather at the stone, the Bard plays and the guards stand in line, the goods are taken and the chronicle says so. Abandon
 the Wonder before that and the goods you handed in for the stage come back.
 
+The builders then raise the stage, a part at a time. Ask one of them (sneak and right-click him) and he says he is
+building, for example, "Stage 1 part of the Great Cathedral".
+
 ## When it's finished
 
 ![The festival's fireworks over the folly](https://jcondedata.github.io/minecraft-alive-workplace/wonder_finished/still-4.jpg)

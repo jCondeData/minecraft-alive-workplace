@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A stranger can no longer have his own Builder, Miner or Farmer work inside your protected village from just outside
+  it: a blueprint, Quarry Marker or Field Marker whose area reaches into the village is refused, and he's told whose
+  village it is (before, only the clicked spot was checked, and clearing the site broke the owner's blocks). You, your
+  friends and operators hand over work there as before (B718).
 - In a protected village, a stranger's Delivery Note can't mark the owner's chests any more (they're told whose
   village it is), and a postman's courier route that a stranger set up doesn't carry anything out of the village, routes
   already saved included. The owner, their friends and operators set up routes there as before (B717).

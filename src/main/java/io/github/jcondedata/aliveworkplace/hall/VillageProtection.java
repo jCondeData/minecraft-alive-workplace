@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 /**
  * A protected village (the Village Hall's setting, off unless its owner turns it on): inside the hall's area —
@@ -111,14 +112,21 @@ public final class VillageProtection {
 		if (hall.isEmpty()) {
 			return true;
 		}
-		String owner = server.getBlockEntity(hall.get()) instanceof VillageHallBlockEntity entity ? entity.ownerName() : "";
-		Chat.actionBar(serverPlayer, Component.translatable("message.aliveworkplace.protection.denied", VillageHalls.name(server, hall.get()), owner)
-			.withStyle(ChatFormatting.RED));
+		Chat.actionBar(serverPlayer, denied(server, hall.get()));
 		return false;
 	}
 
 	/** The protected hall whose area {@code pos} is in and that keeps {@code player} out, if any. */
 	public static Optional<BlockPos> keeper(ServerLevel level, Player player, BlockPos pos) {
+		return keeper(level, player, new BoundingBox(pos));
+	}
+
+	/**
+	 * B718: the protected hall whose area takes in any column of {@code area} (its height doesn't matter) and that keeps
+	 * {@code player} out, if any: for work handed over as a whole (a blueprint, a quarry, a field), whose clicks may lie
+	 * outside a village its footprint reaches into.
+	 */
+	public static Optional<BlockPos> keeper(ServerLevel level, Player player, BoundingBox area) {
 		if (!ENABLED || player.hasPermissions(2)) {
 			return Optional.empty();
 		}
@@ -130,13 +138,36 @@ public final class VillageProtection {
 			.filter(g -> g.dimension() == level.dimension())
 			.map(GlobalPos::pos)
 			.filter(h -> {
-				long dx = h.getX() - pos.getX();
-				long dz = h.getZ() - pos.getZ();
+				// the area's column nearest the hall
+				long dx = h.getX() - Math.max(area.minX(), Math.min(area.maxX(), h.getX()));
+				long dz = h.getZ() - Math.max(area.minZ(), Math.min(area.maxZ(), h.getZ()));
 				return dx * dx + dz * dz <= radiusSqr;
 			})
 			.filter(h -> level.isLoaded(h) && level.getBlockEntity(h) instanceof VillageHallBlockEntity entity && entity.isProtected()
 				&& !mayBuild(level, entity, player))
 			.findFirst();
+	}
+
+	/**
+	 * B718: whether {@code player} may have work done over the whole of {@code area} (a build, quarry or field they hand a
+	 * villager); if not, they're told whose village it reaches into. On a client it's always yes.
+	 */
+	public static boolean mayChange(Level level, Player player, BoundingBox area) {
+		if (!(level instanceof ServerLevel server) || !(player instanceof ServerPlayer serverPlayer)) {
+			return true;
+		}
+		Optional<BlockPos> hall = keeper(server, player, area);
+		if (hall.isEmpty()) {
+			return true;
+		}
+		Chat.system(serverPlayer, denied(server, hall.get()));
+		return false;
+	}
+
+	/** "Thornholm is Jesse's village: only they and their friends can change things here", in red. */
+	static Component denied(ServerLevel level, BlockPos hall) {
+		String owner = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.ownerName() : "";
+		return Component.translatable("message.aliveworkplace.protection.denied", VillageHalls.name(level, hall), owner).withStyle(ChatFormatting.RED);
 	}
 
 	/**

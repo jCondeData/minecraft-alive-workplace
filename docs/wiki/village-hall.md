@@ -233,7 +233,9 @@ day. Each season has a festival on its middle day. Festivals also come every 8 d
 
 **Protection.** The hall's owner (whoever placed it) can switch protection on by shift-clicking the hall's name
 icon. Then only the owner, their friends and operators may break or place blocks, open chests or hurt villagers in the
-hall's area. Anyone may still walk in, open doors, trade and ring the bell.
+hall's area. Anyone may still walk in, open doors, trade and ring the bell. A build, quarry or field that anyone else
+hands a Builder, Miner or Farmer is refused wherever its footprint reaches into the area, even when it was clicked
+outside it (B718).
 
 **Page tabs (22.5).** The third row holds 9 tabs. Any feature adds a page with one registration call
 (`docs/agent/layout.md`); the mod's own later pages (Classes, Wonders, Free job blocks) give way to pages added by
@@ -376,6 +378,11 @@ point of interest, saved by Minecraft).
   before when it stood where the next level has air); a claimed bed where the next level puts a block is "in the way".
   The tab and rows use vanilla bricks, a barrier and scaffolding, no new art.
 - B37: the name icon's tooltip only offers "protect the village" to the player who may do it.
+- B718: a hand-over (blueprint, Quarry Marker, Field Marker) is checked against protection over its whole footprint
+  (`VillageProtection.keeper(level, player, BoundingBox)`: the box's column nearest each hall), at the hand-over only.
+  A build, quarry or field accepted before this keeps going: its owner may be a village's own builder (no player) and
+  a work-time check would also stop the Steward's and the village's own jobs. The landscaping ring round a build (natural
+  ground only) isn't counted.
 - Villages keep working with no player near (23.6, owner's call): see `keepVillagesWorking` on
   [Config switches](config-switches.md).
 
@@ -403,7 +410,9 @@ two free beds take in two newcomers and the hall says it's full, the inn takes a
 the wagon-bed list and its save, an older list lets a cabin's bed go and keeps the camp's), `QaWagonBedsBug1031Tests`
 (B715: a cabin's brown bed by a campfire and hay is still a home),
 `HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
-`ProtectionSpecGameTests`, `HallProtectHintGameTests`, `ReadingFocusGameTests` (36.5: hovered, held on the way into
+`ProtectionSpecGameTests`, `HallProtectHintGameTests`, `QaProtectedBuildBug1031Tests`, `QaProtectedQuarryBug1031Tests`,
+`ProtectedHandOverGameTests` (B718: a stranger's build and quarry reaching in refused, his field refused with whose
+village it is; the owner's build and field reaching in, a build just outside and a quarry with protection off taken), `ReadingFocusGameTests` (36.5: hovered, held on the way into
 the pane, let go outside the panel for the pinned button; unpinning and page changes; the wheel and Shift),
 `FreeJobsPageGameTests` (36.9: the listing with job, building and distance, `aPickTakesTheFreeBlock`, a block claimed
 meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockSurvivesAReload`),

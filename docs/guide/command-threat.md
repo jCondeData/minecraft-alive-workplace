@@ -10,8 +10,8 @@ related: raids.md, bandit-camps.md, threat-level.md, settings-threats.md
 ```
 
 An operator's tool for events and for testing your defenses: it starts or ends the trouble at the nearest
-[Village Hall](village-hall.md) right now. It's an order, so it works whatever the settings, the
-[Threat Level](threat-level.md) or the difficulty say.
+[Village Hall](village-hall.md) right now. It's an order, so it works whatever the settings or the [Threat Level](threat-level.md) say, on any
+difficulty but Peaceful: there hostile mobs can't exist, so no raid or camp can come, and the command tells you so.
 
 ## The commands
 
@@ -24,10 +24,10 @@ An operator's tool for events and for testing your defenses: it starts or ends t
 | `/workplace threat clear` | clears the village of everything: the raid, the camp and the attacks it was due |
 
 You're told how it went: how many raiders came, where the camp stands, or why it couldn't (a raid already under way, a
-camp already standing, no hall nearby).
+camp already standing, no hall nearby, a Peaceful world).
 
 ## How it interacts
 
-- A camp set down by a village where nothing comes (Threat Level 0, or a Peaceful world) leaves again at the next dawn.
+- A camp set down by a village where nothing comes (Threat Level 0) leaves again at the next dawn.
 - A raid you end with `end` isn't written into the village's list of past attacks.
 - See [Threat settings](settings-threats.md) to change how often trouble comes by itself.

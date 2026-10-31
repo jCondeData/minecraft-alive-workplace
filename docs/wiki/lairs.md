@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3, B208, B209, B211, B216, B225, B288
+Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709
 
 ## What a player sees
 
@@ -82,8 +82,10 @@ None. One new screen page (the Defense page).
   vindicators, zombies and nearly every vanilla mob in `config/mobsbegone-blacklist.json`, and discards them there) is
   logged once per mob type and, with the switch on, the mob is put in through the entity manager directly; off, or
   still refused, it's left out and logged. A lair whose captain can't spawn isn't made (before B208 it was recorded
-  with no captain and "broken up" at the next round, by nobody); a raid counts only the raiders in the world. On
-  Peaceful nothing hostile is spawned and players within 96 blocks are told once a day. A story arc's mobs go the same
+  with no captain and "broken up" at the next round, by nobody), and the land is left untouched: the captain is put in
+  the world before a block is placed (before B709 the tents, fire and chests stayed for good); a raid counts only the
+  raiders in the world. On Peaceful nothing hostile is spawned and each player within 96 blocks is told once a day (a
+  refusal where nobody is near no longer uses up the day's word, B708). A story arc's mobs go the same
   way (B211).
 - `forceVillageSpawns` (true, B211): the same blocklist names iron golems, wolves, horses, cats and llamas, so the
   village's own go in through `HostileSpawns.addVillage`: the Golem Smith's golems and the Iron Pact's golem, relief
@@ -152,6 +154,8 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - `B208GameTests`: with the world refusing hostile mobs as MobsBeGone does, a camp's chief and band of 6 and a night
   attack's raiders are in the world, persistent, and still there 100 ticks later; with `forceThreatSpawns` off no camp is
   made or broken up, no raid begins, and the log says why; on Peaceful nothing spawns and a player near is told once.
+- `QaRefusedCampBlocksBugTests` (B709): a camp whose chief is refused changes no block round it.
+  `QaPeacefulToldBugTests` (B708): a Peaceful refusal 500 blocks from everyone, then one by a player: he is told once.
 - `QaRefusedThreatsGameTests`: with the world refusing every hostile mob, `/workplace threat start` brings each of the
   seven cultures' raiders into the world, persistent, and ending the raid takes them away; a war camp, tomb camp, Blackstone
   Outpost and Coven Hut each have their captain and band in the world, still there 100 ticks on and not broken up.

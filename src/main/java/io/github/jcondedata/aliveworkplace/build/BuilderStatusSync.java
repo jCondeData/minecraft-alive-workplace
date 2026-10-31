@@ -144,7 +144,7 @@ public final class BuilderStatusSync {
 		}
 		float progress = site.progress(plan);
 		Component title = Component.translatable("message.aliveworkplace.overhead.title",
-			Blueprints.displayName(site.structure()), Math.round(progress * 100));
+			Blueprints.siteName(level, site), Math.round(progress * 100));
 		Component line;
 		if (site.detail() != null) {
 			line = site.detail().copy().withStyle(ChatFormatting.YELLOW);

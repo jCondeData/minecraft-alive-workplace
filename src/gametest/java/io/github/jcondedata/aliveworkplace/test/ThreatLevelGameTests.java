@@ -721,6 +721,36 @@ public class ThreatLevelGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * On Peaceful (B704) {@code lair} says the world is Peaceful and sets nothing down (its band can't exist there), and
+	 * a raid ordered there says the same instead of "found nowhere to gather".
+	 */
+	//$ gametest_ticks_batch AREA '60' '"threatCommandPeaceful"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "threatCommandPeaceful")
+	public void theCommandSaysPeacefulOnPeaceful(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		Difficulty before = level.getDifficulty();
+		Leftovers.after(helper, () -> level.getServer().setDifficulty(before, true));
+		List<String> said = new ArrayList<>();
+		helper.runAfterDelay(2, () -> {
+			at(level, 82, 15000);
+			CommandSourceStack op = op(level, hall, said);
+			String village = VillageHalls.name(level, hall).getString();
+			level.getServer().setDifficulty(Difficulty.PEACEFUL, true);
+			int lair = run(level, op, "workplace threat lair bandits");
+			int raid = run(level, op, "workplace threat start bandits");
+			level.getServer().setDifficulty(before, true);
+			helper.assertTrue(lair == 0 && Lairs.near(level, hall).isEmpty(), "a lair on Peaceful: " + lair + ", " + Lairs.near(level, hall));
+			helper.assertTrue(said.contains("Bandits can't make camp by " + village
+				+ ": the world is on Peaceful, where hostile mobs can't exist. Raise the difficulty for camps."), "the lair on Peaceful said: " + said);
+			helper.assertTrue(raid == 0 && ThreatData.get(level).raid(hall).isEmpty(), "a raid on Peaceful: " + raid);
+			helper.assertTrue(said.contains("Bandits can't come to " + village
+				+ ": the world is on Peaceful, where hostile mobs can't exist. Raise the difficulty for raids."), "the raid on Peaceful said: " + said);
+			helper.succeed();
+		});
+	}
+
+	/**
 	 * {@code lair} refuses a culture without one and a second lair; {@code clear} sends the lair away, ends the raid and
 	 * takes the clock's attacks off; far from any hall the command says there's none.
 	 */
@@ -772,7 +802,7 @@ public class ThreatLevelGameTests implements FabricGameTest {
 			"command.aliveworkplace.threat.started", "command.aliveworkplace.threat.no_lair", "command.aliveworkplace.threat.lair_standing",
 			"command.aliveworkplace.threat.lair_failed", "command.aliveworkplace.threat.lair_made", "command.aliveworkplace.threat.disaster_under_way",
 			"command.aliveworkplace.threat.disaster_started", "command.aliveworkplace.threat.nothing", "command.aliveworkplace.threat.ended",
-			"command.aliveworkplace.threat.cleared")) {
+			"command.aliveworkplace.threat.cleared", "command.aliveworkplace.threat.peaceful_raid", "command.aliveworkplace.threat.peaceful_lair")) {
 			helper.assertTrue(Language.getInstance().has(key), "no text for " + key);
 		}
 		helper.assertTrue(Component.translatable("message.aliveworkplace.peace.on_lair", "Oakvale", Lairs.lairName(Threats.BANDITS)).getString()

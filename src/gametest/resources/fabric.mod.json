@@ -876,6 +876,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBanditKingLoot1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampCleanup1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopFerry1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatArcsPeace1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoryArcsPeace1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLonePanes1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.PriceTagRateAndClassEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests",

@@ -32,7 +32,8 @@ Roadmap items: 31.18, B135, B343
 
 - **The trigger** (`data/aliveworkplace/arcs/the_sickness.json`, an arc marked `threat`): a village of Village rank or
   more with 12 villagers or more, with illness on, at 6% a day. The conditions are `rank_at_least`, `villagers` and the
-  new `villager_sickness` (illness switched on).
+  new `villager_sickness` (illness switched on). Being a threat arc, it doesn't start in a village set At peace, at
+  threat level 0 or on Peaceful ([peace](peace.md), B699).
 - **The illness** is a kind of illness (`grey_cough`, saved beside the day the villager fell ill), like a coven's hex.
   While a Sickness story runs in the village, the hall's round keeps the slowness on (unless eased) and the cough
   going; it never passes with time. Once no Sickness story runs there (it ended, or was switched off), the cough lifts

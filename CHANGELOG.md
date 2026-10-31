@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Grey Cough and the Bandit King no longer start in a village set At peace, at threat level 0 or on Peaceful;
+  other stories still start there, and these two can come again once the village is no longer at peace.
 - A Carpenter no longer crafts away materials another open build still needs: with two builds sharing a chest or the
   Storehouse, the logs stocked for one stay its own instead of becoming planks for the other, so the first no longer
   waits forever for a log that's gone (B696).

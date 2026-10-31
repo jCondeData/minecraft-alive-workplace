@@ -887,6 +887,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCampCleanup1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopFerry1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatArcsPeace1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatArcsVerify1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPokemonJobSitesVerify1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoryArcsPeace1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefusedArcMobs1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLonePanes1031GameTests",

@@ -422,7 +422,7 @@ public class QaWordsVillage1028GameTests implements FabricGameTest {
 		String[] warWant = {"At war: 3 days and 0 hours left", "At war: 1 day and 1 hour left", "At war: 0 days and 1 hour left"};
 		for (int i = 0; i < war.length; i++) {
 			long now = server.overworld().getGameTime();
-			Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now - 100, now + war[i], false, 0, 0, 0));
+			Feuds.Data.get(server).put(new Feuds.Feud(land.at(0), land.at(1), now - 2 * 24000L, now, now + war[i], false, 0, 0, 0));
 			List<String> lore = feudLore(land);
 			if (!lore.contains(warWant[i])) {
 				wrong.add("war, " + war[i] + " ticks: " + lore + " (want \"" + warWant[i] + "\")");

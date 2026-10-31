@@ -554,6 +554,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartNameBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedRooms1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartWords1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWonderPlan1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWonderPlanBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartWordsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.LighthousePowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LibraryPowerGameTests",

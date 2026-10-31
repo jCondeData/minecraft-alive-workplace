@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Wonder's or quest's trade requirement now reads "Fishermen at Apprentice or above", "Postmen" and "Ferrymen"
+  instead of "Fishermans": every trade has its own plural (B707).
 - A lair whose captain can't come (a mob blocklist with `forceThreatSpawns` off, or Peaceful) no longer leaves its
   tents, fire and chests standing for good: the captain is put in the world first, and without him nothing is built
   (B709).

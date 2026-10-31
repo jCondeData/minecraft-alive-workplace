@@ -30,7 +30,10 @@ public record JobLevel(ResourceLocation job, int level, int count) implements Co
 				n++;
 			}
 		}
-		return Progress.of(type(), n, count, profession(job), Component.translatable("merchant.level." + level));
+		// B707: the trade's own plural ("Fishermen"); another mod's trade reads "Villagers working as <trade>" instead.
+		Component plural = io.github.jcondedata.aliveworkplace.work.Words.professionPlural(job);
+		Component rank = Component.translatable("merchant.level." + level);
+		return plural != null ? Progress.of(type(), n, count, plural, rank) : Progress.of(type() + ".other", n, count, profession(job), rank);
 	}
 
 	/** A trade's name ("Builder"), as the villager's name shows it. */

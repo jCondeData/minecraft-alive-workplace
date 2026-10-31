@@ -896,7 +896,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatOrdersBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPeacefulToldBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefusedCampBlocksBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaStoryEngine1031GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaStoryEngine1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoryEngineBug1031Tests"
 		]
 	},
 	"depends": {

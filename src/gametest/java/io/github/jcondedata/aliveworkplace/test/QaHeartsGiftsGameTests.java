@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.story.Keepsakes;
 import io.github.jcondedata.aliveworkplace.story.Tastes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
@@ -48,23 +49,18 @@ public class QaHeartsGiftsGameTests implements FabricGameTest {
 		helper.assertTrue(Chronicle.day(helper.getLevel()) == day, "setup: the clock reads day " + Chronicle.day(helper.getLevel()) + ", not " + day);
 	}
 
-	/** The first day of a week (from day 8) from which, for ten days, it is none of the villagers' name day. */
+	/** The first day of a week (from day 8) from which, for ten days, it is none of the villagers' name day (B694: bounded). */
 	private static long quietWeek(Villager... villagers) {
-		for (long day = 8; ; day += Gifts.WEEK) {
-			boolean quiet = true;
-			for (Villager v : villagers) {
-				for (int i = 0; i < 10; i++) {
-					quiet &= Gifts.daysToNameDay(v.getUUID(), day + i) != 0;
-				}
-			}
-			if (quiet) {
-				return day;
-			}
-		}
+		return GiftGameTests.quietWeek(villagers);
 	}
 
 	private static Villager villager(GameTestHelper helper, BlockPos at, String name, VillagerProfession job) {
-		Villager v = HeartEventGameTests.villager(helper, at, name);
+		UUID id;
+		do {
+			id = UUID.randomUUID();
+		} while (!GiftGameTests.quietFromDay8(id) || helper.getLevel().getEntity(id) != null);
+		// A name day outside days 8-17, so quietWeek always finds a week (B694).
+		Villager v = HeartEventGameTests.villager(helper, at, name, id);
 		v.setVillagerData(v.getVillagerData().setProfession(job).setLevel(job == VillagerProfession.NONE || job == VillagerProfession.NITWIT ? 1 : 2));
 		return v;
 	}

@@ -102,7 +102,7 @@ public class GiftGameTests implements FabricGameTest {
 		java.util.Random random = new java.util.Random(316L + 7919L * uuids++);
 		for (int i = 0; i < 100_000; i++) {
 			UUID id = new UUID(random.nextLong(), random.nextLong());
-			if (Traits.of(id).equals(want) && level.getEntity(id) == null) {
+			if (Traits.of(id).equals(want) && quietFromDay8(id) && level.getEntity(id) == null) {
 				return id;
 			}
 		}
@@ -146,9 +146,27 @@ public class GiftGameTests implements FabricGameTest {
 		level.setDayTime((day - 1) * VillageNeeds.DAY + 1000);
 	}
 
-	/** The first day of a week from which, for ten days, it is none of the {@code villagers}' name day. */
-	private static long quietWeek(Villager... villagers) {
-		for (long day = 8; ; day += Gifts.WEEK) {
+	/**
+	 * Whether {@code id}'s name day falls outside days 8 to 17 (and every 28 days after): every test villager here gets
+	 * such a UUID, so {@link #quietWeek} always finds a week, however many villagers it is asked about (B694: weeks and
+	 * name days repeat together every 28 days, only four week starts exist, and two villagers could cover all four).
+	 */
+	static boolean quietFromDay8(UUID id) {
+		for (int i = 0; i < 10; i++) {
+			if (Gifts.daysToNameDay(id, 8 + i) == 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * The first day of a week from which, for ten days, it is none of the {@code villagers}' name day. Weeks and name
+	 * days repeat together every 28 days, so four week starts are all there are: none quiet fails the test instead of
+	 * looping for ever (B694).
+	 */
+	static long quietWeek(Villager... villagers) {
+		for (long day = 8; day < 8 + Gifts.NAME_DAY_EVERY; day += Gifts.WEEK) {
 			boolean quiet = true;
 			for (Villager v : villagers) {
 				for (int i = 0; i < 10; i++) {
@@ -159,6 +177,11 @@ public class GiftGameTests implements FabricGameTest {
 				return day;
 			}
 		}
+		StringBuilder days = new StringBuilder();
+		for (Villager v : villagers) {
+			days.append(' ').append(v.getName().getString()).append('=').append(Gifts.nameDay(v.getUUID()));
+		}
+		throw new net.minecraft.gametest.framework.GameTestAssertException("setup: no week with ten days free of a name day; name days" + days);
 	}
 
 	/** {@code player} holds a Gift of {@code item} and gives it to {@code villager}. */

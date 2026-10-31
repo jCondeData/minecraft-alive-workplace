@@ -99,8 +99,16 @@ public class HeartEventGameTests implements FabricGameTest {
 	}
 
 	static Villager villager(GameTestHelper helper, BlockPos at, String name) {
+		return villager(helper, at, name, null);
+	}
+
+	/** As {@link #villager(GameTestHelper, BlockPos, String)}, with {@code id} as the villager's UUID unless null. */
+	static Villager villager(GameTestHelper helper, BlockPos at, String name, UUID id) {
 		ServerLevel level = helper.getLevel();
 		Villager v = EntityType.VILLAGER.create(level);
+		if (id != null) {
+			v.setUUID(id);
+		}
 		Vec3 pos = helper.absoluteVec(Vec3.atBottomCenterOf(at));
 		v.moveTo(pos.x, pos.y, pos.z, 0, 0);
 		v.setNoAi(true);

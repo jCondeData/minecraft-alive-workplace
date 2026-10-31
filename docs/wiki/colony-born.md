@@ -112,5 +112,8 @@ it and the owner hears it in chat. No colony is counted, so no wait before the n
   opens the chest's menu with the Village Hall and two blueprints; nothing on the chest blocks its lid),
   `theColonyCampTurnedClockwiseStillOpens`, `theColonyCampTurnedCounterClockwiseStillOpens` (every chest and barrel of
   the Colony camp turned a quarter either way).
+- `QaSettlersCampFacing1031GameTests` (4, B424): the Settler's Wagon used on open ground facing north, east, south and
+  west: the camp goes up, the camp.made line reads as en_us.json says, the wagon is used up, and the chest opens from a
+  standing spot with the Village Hall and two blueprints in it.
 
 Showcase scenes: `colony`

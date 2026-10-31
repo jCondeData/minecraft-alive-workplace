@@ -105,9 +105,13 @@ public class PriceTagItem extends Item {
 		menu.button(DONE_SLOT, done, net.minecraft.server.level.ServerPlayer::closeContainer);
 	}
 
-	/** The same price in emeralds, for servers without CobbleDollars (and the vanilla trade screen). */
+	/**
+	 * The same price in emeralds, for servers without CobbleDollars (and the vanilla trade screen): converted at the
+	 * server's rate and rounded up, never capped (B692: a 10,000 tag used to sell for 64 emeralds, one stack).
+	 */
 	public static int emeralds(long dollars) {
-		return (int) Math.max(1, Math.min(64, (dollars + Money.DOLLARS_PER_EMERALD - 1) / Money.DOLLARS_PER_EMERALD));
+		long rate = Math.max(1, Money.DOLLARS_PER_EMERALD);
+		return (int) Math.max(1, Math.min(Integer.MAX_VALUE, (dollars + rate - 1) / rate));
 	}
 
 	@Override
@@ -116,6 +120,11 @@ public class PriceTagItem extends Item {
 		if (dollars > 0) {
 			tooltip.add(Component.translatable("tooltip.aliveworkplace.price_tag.price", Money.describe(dollars, emeralds(dollars)))
 				.withStyle(ChatFormatting.GREEN));
+			if (!Money.cobbleDollars() && emeralds(dollars) > Shops.MAX_TRADE_EMERALDS) {
+				// More than the trade screen's two slots can ask, even in emerald blocks (B692): the shop won't offer it.
+				tooltip.add(Component.translatable("tooltip.aliveworkplace.price_tag.too_dear", Shops.MAX_TRADE_EMERALDS)
+					.withStyle(ChatFormatting.RED));
+			}
 		} else {
 			tooltip.add(Component.translatable("tooltip.aliveworkplace.price_tag.how").withStyle(ChatFormatting.GRAY));
 		}

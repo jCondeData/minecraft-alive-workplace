@@ -23,8 +23,9 @@ whole realm is on your side.
 - Both chronicles note it (an iron sword line).
 
 **The tab's feud line.** Each feud shows as **Feud with X**, with how long it has left to fade, or the war's days and
-the guards each side has lost. Next to it: **Offer X peace** (a white banner), or **Accept peace with X** once they
-have offered, and for the side that declared, **Raise the feud with X to war**.
+the guards each side has lost. In the last hour these read "Fades in less than an hour without a war" and "At war: less
+than an hour left" (B637, B672), not "0 days and 0 hours". Next to it: **Offer X peace** (a white banner), or
+**Accept peace with X** once they have offered, and for the side that declared, **Raise the feud with X to war**.
 
 **Peace.** Either side offers peace; a letter goes to the other owner, who accepts on their tab. The feud (and any war)
 ends and both chronicles say so. A feud without a war **fades after 7 days** (7 days after its war, if it had one).
@@ -87,4 +88,4 @@ boards 125%/75% for the rival and not for a neutral player, the price tooltip, c
 off, the other side; then war from the next dawn and its letter), `aWarsGuardsFightTheEnemyOwnerOnly` (foe only in war,
 only the enemy owner, only in the village; the enemy's attack hurts a guard but not a farmer; no block broken, no chest
 opened; no relief riders; a fallen guard counted; PvP off mid-war; the war ends after 3 days with both chronicles and
-no treasury moved), `feudsSaveAndTheSwitches`. QA: `QaHoursLeftGameTests.theWarButtonsHoursLeftCountAPartHourAsAWholeOne` (the war button 500, 1500 and 1000 ticks short of a day: "1 hour", "2 hours", "1 hour" left). `QaFeudGameTests` (9, lane d): the war button and the Realm tab's vote line at 1, 999, 1000 and 1001 ticks left, who may feud whom (not your own or a friend's village; an ally's alliance ends), a feud on a realm's village is with the whole realm, peace offered and accepted once, a feud fading at exactly 7 days and a war ending on time, the tab's lines, the save round trip and every feud sentence. Showcase scene `feud`.
+no treasury moved), `feudsSaveAndTheSwitches`. QA: `QaFeudLastHourBugTests` (4: the war and fading lines at 500, 1, 999, 1000, 23999 and 24000 ticks left, B637/B672). `QaHoursLeftGameTests.theWarButtonsHoursLeftCountAPartHourAsAWholeOne` (the war button 500, 1500 and 1000 ticks short of a day: "1 hour", "2 hours", "1 hour" left). `QaFeudGameTests` (9, lane d): the war button and the Realm tab's vote line at 1, 999, 1000 and 1001 ticks left, who may feud whom (not your own or a friend's village; an ally's alliance ends), a feud on a realm's village is with the whole realm, peace offered and accepted once, a feud fading at exactly 7 days and a war ending on time, the tab's lines, the save round trip and every feud sentence. Showcase scene `feud`.

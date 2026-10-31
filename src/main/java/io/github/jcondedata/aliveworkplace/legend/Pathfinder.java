@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.mc.Damage;
 import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,7 +205,7 @@ public final class Pathfinder {
 		}
 		int food = food(level, villager);
 		if (food < power.get().food()) {
-			Chat.system(player, Component.translatable("message.aliveworkplace.pathfinder.food", villager.getDisplayName(), power.get().food(), food));
+			Chat.system(player, Words.counted("message.aliveworkplace.pathfinder.food", food, villager.getDisplayName(), power.get().food(), food)); // B674: "(there is 1)"
 			return;
 		}
 		OFFERS.put(player.getUUID(), new Offer(villager.getUUID(), level.getGameTime() + OFFER_TICKS));
@@ -431,7 +432,7 @@ public final class Pathfinder {
 		Chat.system(player, Component.translatable("message.aliveworkplace.pathfinder.arrived", villager.getDisplayName(), place));
 		level.playSound(null, banner, SoundEvents.PLAYER_LEVELUP, SoundSource.NEUTRAL, 0.6f, 1.2f);
 		BlockPos from = home(level, villager, state).orElse(state.start().orElse(villager.blockPosition()));
-		Chronicle.record(level, from, Chronicle.Kind.LEGEND, Component.translatable("chronicle.aliveworkplace.legend.expedition",
+		Chronicle.record(level, from, Chronicle.Kind.LEGEND, Words.articled("chronicle.aliveworkplace.legend.expedition", 2, // B673: "an Ancient City"
 			villager.getDisplayName(), player.getDisplayName(), place, distance(from, target), direction(from, target)));
 	}
 
@@ -493,7 +494,7 @@ public final class Pathfinder {
 		HOME.remove(villager);
 		save(villager, state.ended(Chronicle.day(level)));
 		Chronicle.record(level, home(level, villager, state).orElse(villager.blockPosition()), Chronicle.Kind.LEGEND,
-			Component.translatable("chronicle.aliveworkplace.legend.expedition_cancelled", villager.getDisplayName(),
+			Words.articled("chronicle.aliveworkplace.legend.expedition_cancelled", 1, villager.getDisplayName(), // B673
 				Component.translatable("expedition.aliveworkplace." + state.kind())));
 	}
 

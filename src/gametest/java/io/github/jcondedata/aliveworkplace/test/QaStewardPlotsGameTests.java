@@ -386,6 +386,9 @@ public class QaStewardPlotsGameTests implements net.fabricmc.fabric.api.gametest
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaStewardReload")
 	public void aStewardSurvivesSaveAndReload(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B695: an earlier batch's open build (or Storehouse) of a hall at this same spot is a stop of his rounds; he hopped
+		// to one in an unloaded chunk, unloaded with it, and the hall's Steward was "nobody" (B687's failure too)
+		Leftovers.stewardSites(helper);
 		otherHalls(helper, HALL_A);
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
@@ -412,7 +415,12 @@ public class QaStewardPlotsGameTests implements net.fabricmc.fabric.api.gametest
 			InteractionResult result = Stewards.appoint(player, second, plan);
 			helper.assertTrue(result == InteractionResult.CONSUME && second.getVillagerData().getProfession() == ModVillagers.BUILDER,
 				"a second Steward took the reloaded one's hall: " + result + ", before: " + before);
-			helper.assertTrue(Stewards.stewardOf(level, helper.absolutePos(HALL_A)) == loaded, "the hall's Steward isn't the reloaded one");
+			Villager found = Stewards.stewardOf(level, helper.absolutePos(HALL_A));
+			helper.assertTrue(found == loaded, "the hall's Steward isn't the reloaded one: found "
+				+ (found == null ? "nobody" : found.getUUID() + " " + found.getVillagerData() + " at " + found.blockPosition())
+				+ "; reloaded " + loaded.getUUID() + " alive " + loaded.isAlive() + " removed " + loaded.getRemovalReason()
+				+ " at " + loaded.blockPosition() + " (loaded " + level.isLoaded(loaded.blockPosition()) + ")"
+				+ ", hall at " + helper.absolutePos(HALL_A) + ", before: " + before);
 			helper.succeed();
 		});
 	}

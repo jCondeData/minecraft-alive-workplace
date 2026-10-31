@@ -856,6 +856,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHeightFreeUploadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuildsPerRankGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisabledArcsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaJobLevelData1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGemGrowerHireGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCupPurseGameTests",
@@ -944,7 +945,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStoryEngineBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugs1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuarry1031VerifyGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaThreatLevels1031dGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaThreatLevels1031dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeWarnings1031dGameTests"
 		]
 	},
 	"depends": {

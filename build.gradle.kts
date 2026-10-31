@@ -463,7 +463,9 @@ tasks {
     withType<ProcessResources>().configureEach {
         val props = resourceProps
         props.forEach { (k, v) -> inputs.property(k, v) }
-        filesMatching("fabric.mod.json") { expand(props) }
+        // Only a fabric.mod.json with ${...} placeholders is expanded: Groovy's template engine refuses a file over
+        // 64K characters, and the GameTest one (no placeholders, one line per test class) grew past that.
+        filesMatching("fabric.mod.json") { if (file.readText().contains("\${")) expand(props) }
         val variants = resourceVariants(if (name == "processResources") "main" else
             name.removePrefix("process").removeSuffix("Resources").replaceFirstChar { it.lowercase() })
         inputs.property("resourceVariants", variants.toString())

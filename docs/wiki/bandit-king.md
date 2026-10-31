@@ -120,6 +120,8 @@ horn) in their own entity data.
 
 ## Known limits
 
+- An arc marked `threat` should not start in a village set At peace or at threat level 0 (31.4), but today it
+  still does (B699; failing tests on the tests/threat-arcs-peace-1031 branch).
 - The camps, Pell and the fort are built or come only once a player is within 96 blocks, as every arc place.
 - With no fit ground within 16 blocks of the arc's column the fort isn't built (the arc logs it and its place is
   skipped).

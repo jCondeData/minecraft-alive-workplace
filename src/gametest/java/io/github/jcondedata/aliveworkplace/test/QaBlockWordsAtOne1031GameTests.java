@@ -226,6 +226,64 @@ public class QaBlockWordsAtOne1031GameTests implements FabricGameTest {
 		});
 	}
 
+	/** Words in a command path that change the world for good or for other tests: never run by the sweep. */
+	private static final Set<String> RISKY = Set.of("reload", "reset", "set", "stop", "delete", "clear", "remove", "disband", "kill", "wipe",
+		"forget", "start", "spawn", "give", "end", "abandon", "demolish", "tp", "teleport", "found", "on", "off", "toggle", "run", "skip",
+		"finish", "advance", "rename", "release", "dismiss", "move", "unlock", "grant", "pay", "raid", "war", "peace", "level", "rank");
+
+	/**
+	 * Every /workplace command that takes no argument (a path of words only), run by an operator standing in the
+	 * village (one villager, a hall he owns): what it answers. Paths with a word that changes the world for good are
+	 * left out ({@link #RISKY}).
+	 */
+	//$ gametest_ticks_batch BIG '300' '"qaCommandWordsAtOne1031"'
+	@GameTest(template = BIG, timeoutTicks = 300, batch = "qaCommandWordsAtOne1031")
+	public void noCommandSaysOneWithAPlural(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		QaStageFiveGameTests.Client client = QaStageFiveGameTests.client(helper, GameType.SURVIVAL);
+		ServerPlayer player = client.player();
+		helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 8));
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.runAfterDelay(5, () -> {
+			VillageHallBlockEntity entity = helper.getBlockEntity(HALL);
+			entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+			player.moveTo(Vec3.atCenterOf(helper.absolutePos(HALL).south(3)));
+			com.mojang.brigadier.CommandDispatcher<net.minecraft.commands.CommandSourceStack> dispatcher = helper.getLevel().getServer().getCommands().getDispatcher();
+			com.mojang.brigadier.tree.CommandNode<net.minecraft.commands.CommandSourceStack> root = dispatcher.getRoot().getChild("workplace");
+			helper.assertTrue(root != null, "no /workplace command");
+			List<String> paths = new ArrayList<>();
+			walk(root, "workplace", paths, 0);
+			Map<String, String> wrong = new LinkedHashMap<>();
+			int heard = 0;
+			for (String path : paths) {
+				client.seen().clear();
+				helper.getLevel().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack().withPermission(4)
+					.withSource(player), path);
+				List<String> said = said(client);
+				heard += said.size();
+				check("/" + path, said, wrong);
+			}
+			helper.assertTrue(paths.size() > 15 && heard > paths.size() / 2, "setup: " + paths.size() + " commands, " + heard + " lines answered");
+			helper.assertTrue(wrong.isEmpty(), paths.size() + " commands answer: " + wrong);
+			helper.succeed();
+		});
+	}
+
+	private static void walk(com.mojang.brigadier.tree.CommandNode<net.minecraft.commands.CommandSourceStack> node, String path, List<String> out, int depth) {
+		if (node.getCommand() != null && depth > 0) {
+			out.add(path);
+		}
+		if (depth >= 4) {
+			return;
+		}
+		for (com.mojang.brigadier.tree.CommandNode<net.minecraft.commands.CommandSourceStack> child : node.getChildren()) {
+			if (child instanceof com.mojang.brigadier.tree.LiteralCommandNode<?> literal && !RISKY.contains(literal.getLiteral())) {
+				walk(child, path + " " + literal.getLiteral(), out, depth + 1);
+			}
+		}
+	}
+
 	private static void talk(ServerPlayer player, net.minecraft.world.entity.npc.Villager villager) {
 		player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
 		net.minecraft.world.InteractionResult r = net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.invoker()

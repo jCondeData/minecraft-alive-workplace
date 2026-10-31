@@ -3071,7 +3071,7 @@ Bandit King, The Sickness, The Lost Caravan and The Professor's Thesis. It build
 `hall/Caravans` and `people/Sickness`. Everything a player can be asked to do is a data file, so server owners can
 write their own stories; nothing waits forever on a player.
 
-- [x] **31.1** (approved auto 2026-10-05) **Design note.** `docs/design/M31.md`: what the player sees (hearts on a villager, wrapping and giving
+- [x] **31.1** (approved auto 2026-10-05) (verified 2026-10-31: docs/design/M31.md checked against WorkplaceConfig and the saved data: every M31 config key and default right; saved-field rows rewritten from the code [arc, hall-entry and standing fields; bandit_camps_broken; bounty day in aliveworkplace_bounties]) **Design note.** `docs/design/M31.md`: what the player sees (hearts on a villager, wrapping and giving
   a gift, a heart event, a personal request asked and done, the journal and its tracker bar, a title in chat, the
   bounty board, one arc chapter by chapter); every data format below with one example file each (`quests/`, `arcs/`,
   `villager_tastes/`, `heart_events/`, `bounties/`); every config key with its default; every new saved field with its
@@ -3234,7 +3234,7 @@ write their own stories; nothing waits forever on a player.
     over ours;
   - both textures pass `lint.py`; the recipes are in the recipe book; a README section;
   - showcase scene `gifts` (GIF: wrapping, giving, the hearts).
-- [x] **31.7** (approved 2026-10-11) **Heart events and life stories.** At 2, 4, 6, 8 and 10 hearts a villager has something to tell you.
+- [x] **31.7** (approved 2026-10-11) (verified 2026-10-31: QaHeartsSickness1031GameTests [8, pass alone and in the full suite 5195 green]: told lines only in the listener's chat in gray, 8 blocks told / 8.5 stops with nothing kept, restart from line one; Grey Cough never starts At peace or threat 0, remedy eases exactly one day, brew done at half a day not a tick before [40% bar text], even village of 12 caps at 6, failure path: no spread, no herbs taken, nobody dies, no thanks for one herb; ending +100 only from the ill; wiki and guide pages fixed. Real 3000-block biome lookup not tested [stub only]) **Heart events and life stories.** At 2, 4, 6, 8 and 10 hearts a villager has something to tell you.
   The next time you're within 8 blocks while they're off work (`Chatter.offWork`), they walk up, face you and tell it
   in three to five lines over their head (`WorkerStatus`, one every 3 seconds), each also in your chat in grey so it
   can be read again; walk away halfway and they start again next time. Each event is told once per player, adds +20
@@ -3525,7 +3525,7 @@ write their own stories; nothing waits forever on a player.
     spreads; `herb_patch` plants only on fit ground;
   - all textures pass `lint.py`; a preview sheet in the review package; showcase scene `herbs` (all eight patches, and
     the tonic in hand).
-- [x] **31.18** (approved 2026-10-12) **The Sickness, II: the Grey Cough.** `arcs/the_sickness.json`, an arc marked `threat`. It starts in a
+- [x] **31.18** (approved 2026-10-12) (verified 2026-10-31: QaHeartsSickness1031GameTests [8, pass alone and in the full suite 5195 green]: told lines only in the listener's chat in gray, 8 blocks told / 8.5 stops with nothing kept, restart from line one; Grey Cough never starts At peace or threat 0, remedy eases exactly one day, brew done at half a day not a tick before [40% bar text], even village of 12 caps at 6, failure path: no spread, no herbs taken, nobody dies, no thanks for one herb; ending +100 only from the ill; wiki and guide pages fixed. Real 3000-block biome lookup not tested [stub only]) **The Sickness, II: the Grey Cough.** `arcs/the_sickness.json`, an arc marked `threat`. It starts in a
   village of Village rank or more with 12 villagers or more, `villagerSickness` on, 6% a day. A new illness, the
   **Grey Cough**, a kind in the illness-kind attachment beside `ILL_SINCE` (32.11 adds the same attachment for hexes;
   whichever item lands first adds it, ordinary when absent, so old saves are unchanged): it doesn't pass by itself, a

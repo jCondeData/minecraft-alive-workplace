@@ -186,7 +186,7 @@ public class PostmanWork extends Behavior<Villager> {
 			if (!route.isComplete() || !route.from().get().closerThan(desk, PostOffice.ROUND) || !route.to().get().closerThan(desk, PostOffice.ROUND)) {
 				continue;
 			}
-			if (io.github.jcondedata.aliveworkplace.work.Pastures.containers(level, route.from().get()).stream()
+			if (mayTake(level, villager, route) && io.github.jcondedata.aliveworkplace.work.Pastures.containers(level, route.from().get()).stream()
 				.anyMatch(c -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.hasMatching(level, c, route::carries))) {
 				nextRoute = (nextRoute + i + 1) % routes.size();
 				haul = route;
@@ -196,6 +196,17 @@ public class PostmanWork extends Behavior<Villager> {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * B717: whether the courier may take from the route's source: not out of a protected village whose owner doesn't let
+	 * the route's maker in (the player who marked the note, or for a route from before that, the postman's employer).
+	 */
+	public static boolean mayTake(ServerLevel level, Villager villager, RouteData route) {
+		io.github.jcondedata.aliveworkplace.build.Employer employer = ModAttachments.BUILDER_EMPLOYER.get(villager);
+		java.util.Optional<java.util.UUID> who = route.by().or(() -> java.util.Optional.ofNullable(employer).map(io.github.jcondedata.aliveworkplace.build.Employer::id));
+		return route.from().isEmpty() || who.isEmpty()
+			|| io.github.jcondedata.aliveworkplace.hall.VillageProtection.keeper(level, who.get(), route.from().get()).isEmpty();
 	}
 
 	private void haulTick(ServerLevel level, Villager villager) {
@@ -227,6 +238,10 @@ public class PostmanWork extends Behavior<Villager> {
 		villager.swing(InteractionHand.MAIN_HAND);
 		switch (haulPhase) {
 			case PICKUP -> {
+				if (!mayTake(level, villager, route)) {
+					haul = null;
+					return;
+				}
 				java.util.List<ItemStack> taken = new java.util.ArrayList<>();
 				for (BlockPos source : sources) {
 					int room = Math.max(1, bag.freeSlots() - 1) - taken.size();

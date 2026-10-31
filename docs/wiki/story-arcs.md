@@ -81,7 +81,9 @@ Roadmap items: 31.4
 
 ## Known limits
 
-None.
+- When the same arc runs in two villages, killing one village's spawned `role:` foe also counts for the other
+  village's `kill` step while that village's own foe hasn't spawned yet (B724, found by QA on 2026-10-31; its failing
+  test waits on the branch tests/village-verify-1031 for the fix).
 
 ## Proof
 
@@ -91,5 +93,6 @@ reload mid-chapter with its foe put back, a removed file, a far build waiting fo
 with a side arc not counted and shown on the Story tab, a foe waiting for a player and coming with the 40-tick check, a
 far build never over paving and once across a reload, who hears an announcement, the `any` and named-list chapter endings, the flag, festival, extra quest and chronicle effects, the commands' edges),
 `QaDisabledArcsGameTests`, `QaThreatArcsPeace1031GameTests`, `QaStoryArcsPeace1031GameTests`,
-`QaRefusedArcMobs1031GameTests`, `QaHallStoryGameTests`, `QaStoryArcEngineBug1031Tests` and `StoryArcCastGameTests`
-(a `talk` or `role:` kill counts only the one this arc cast in this village, across a reload). Showcase scene `story_arc`.
+`QaRefusedArcMobs1031GameTests`, `QaHallStoryGameTests`, `QaStoryArcEngineBug1031Tests`, `StoryArcCastGameTests`
+(a `talk` or `role:` kill counts only the one this arc cast in this village, across a reload) and
+`QaVillage1031VerifyGameTests` (a villager tagged by hand as the part is no stand-in). Showcase scene `story_arc`.

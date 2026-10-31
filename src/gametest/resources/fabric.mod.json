@@ -430,6 +430,7 @@
 			"io.github.jcondedata.aliveworkplace.test.TreasuryEdictGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WagonBedsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ThreatGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LairGameTests",
@@ -554,6 +555,13 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartNameBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedRooms1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartWords1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaShopNeighboursBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaProtectedNoteBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaProtectedBuildBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaProtectedQuarryBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.ProtectedHandOverGameTests",
+			"io.github.jcondedata.aliveworkplace.test.DeliveryNoteProtectionGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ShopNeighboursGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPlan1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactsUpgrade1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReservedReach1031GameTests",
@@ -914,6 +922,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaNoCobblemonNearbyJob1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopTithe1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopHeroBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillage1031VerifyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopHeroPriceBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1031dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFeudLastHourBugTests",
@@ -925,7 +934,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRefusedCampBlocksBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoryEngine1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoryEngineBug1031Tests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugs1031GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugs1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatLevels1031dGameTests"
 		]
 	},
 	"depends": {

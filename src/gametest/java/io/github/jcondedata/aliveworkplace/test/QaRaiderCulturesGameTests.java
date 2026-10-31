@@ -535,9 +535,18 @@ public class QaRaiderCulturesGameTests implements FabricGameTest {
 	 */
 	static void atTheWallsFoot(GameTestHelper helper, List<Integer> xs, net.minecraft.world.level.block.Block foot,
 		@org.jetbrains.annotations.Nullable net.minecraft.world.level.block.Block ground) {
+		atTheWallsFoot(helper, xs, foot, ground, foot == Blocks.SAND, false);
+	}
+
+	/**
+	 * As above, with {@code keep} saying whether {@code foot} must stay after the siege (a player's sand or flower) or may be
+	 * buried and gone (a wild plant), and {@code reload} putting the threats through a save and load once the ramp is up,
+	 * before the siege is lifted (lane D QA 2026-10-31). No item may drop in the yard.
+	 */
+	static void atTheWallsFoot(GameTestHelper helper, List<Integer> xs, net.minecraft.world.level.block.Block foot,
+		@org.jetbrains.annotations.Nullable net.minecraft.world.level.block.Block ground, boolean keep, boolean reload) {
 		Yard yard = yard(helper, pilers(helper));
 		ServerLevel level = yard.level();
-		boolean keep = foot == Blocks.SAND;
 		List<BlockPos> mine = new ArrayList<>();
 		if (ground != null) {
 			// the ground in front of the wall, out to where the husk comes from
@@ -574,10 +583,21 @@ public class QaRaiderCulturesGameTests implements FabricGameTest {
 				ramped[0] = true;
 				climber.discard();
 				VillageRaids.forget(yard.hall());
-				Sieges.lift(level, siege.get());
+				ThreatData.Siege lifted = siege.get();
+				if (reload) {
+					int piled = lifted.sand.size();
+					ThreatData.get(level).roundTrip(level.registryAccess());
+					lifted = Sieges.siege(level, yard.hall()).orElse(null);
+					helper.assertTrue(lifted != null, "the siege was lost in the save and load");
+					helper.assertTrue(lifted.sand.size() == piled, "the ramp's sand after the load: " + lifted.sand.size() + " of " + piled);
+				}
+				Sieges.lift(level, lifted);
 				helper.runAfterDelay(5, () -> {
+					List<net.minecraft.world.entity.item.ItemEntity> drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+						helper.getBounds().inflate(2));
+					helper.assertTrue(drops.isEmpty(), "dropped: " + drops.stream().map(e -> e.getItem().toString()).toList());
 					for (BlockPos p : mine) {
-						helper.assertTrue(!keep || level.getBlockState(p).is(Blocks.SAND), "the player's sand at " + p.subtract(base).toShortString() + " was taken away");
+						helper.assertTrue(!keep || level.getBlockState(p).is(foot), "the player's " + foot + " at " + p.subtract(base).toShortString() + " was taken away");
 						helper.assertTrue(!level.getBlockState(p).is(Blocks.SAND) || keep, "the raiders' sand left at " + p.subtract(base).toShortString());
 					}
 					helper.assertTrue(SandRamps.sand(level, yard.hall()).isEmpty(), "sand still recorded");

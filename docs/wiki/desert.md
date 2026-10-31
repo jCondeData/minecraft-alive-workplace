@@ -25,7 +25,9 @@ Roadmap items: 32.9, B382, B437
   one up for one out, so the ramp rises step by step against the wall until it is level with the top. Then the
   raiders walk up it and drop inside. Chat says so ("Sand is piled against the walls of Thornholm!"). When the raid is
   over every block of the ramp is gone; nothing else is touched and nothing drops. The ramp buries dead bushes, grass
-  and snow at the wall's foot (they are gone after the raid), but never your flowers or blocks. Sand you put there
+  and snow at the wall's foot (they are gone after the raid), but never your flowers or blocks: a flower in its way
+  moves the ramp along the wall, and the flower stays. A ramp standing when the world is saved and loaded again is
+  still taken away when the raid is over. Sand you put there
   yourself, plain or red (the badlands' ground), is no obstacle: the ramp starts in it, and it stays after the raid.
 - **Until noon.** Husks don't burn, so a desert siege doesn't end at dawn: the raiders stay, and the siege goes on, until
   noon.

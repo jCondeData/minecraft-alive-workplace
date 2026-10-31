@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Golem Smith with no room on the ground beside him (a roof too low for a golem all round) builds nothing and takes
+  nothing until there is, instead of putting the golem on top of the roof (B628).
+- The Legends page's tab and header count only the Legends who live in the village: a guest no longer shows as
+  "Legends living here: 1" (B630).
 - A player's shop asks its owner's price from every buyer: Hero of the Village, a Silver Tongue shopkeeper and a
   trade fair no longer take a discount off it, out of the owner's takings (B706, B710).
 - A Wonder's or quest's trade requirement now reads "Fishermen at Apprentice or above", "Postmen" and "Ferrymen"

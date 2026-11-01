@@ -97,4 +97,43 @@ public class QaMechanicOwnerBeside1101CompatTests implements net.fabricmc.fabric
 				+ " in the chest, " + shaftsAround(helper, mechanic, shaft) + " in hand or on the ground, " + after[0] + " ticks on");
 		});
 	}
+
+	/**
+	 * The shift ends (the meeting hour) while the Mechanic carries the store's shaft to the hole, the owner beside him all
+	 * evening: the one shaft is still somewhere, in the hole, the store, his hand or at the toolbox, never gone.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"qa_mechanic_owner_evening_1101"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qa_mechanic_owner_evening_1101")
+	public void qaAShaftCarriedAsTheShiftEndsOutlastsTheEvening(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		Item shaft = MechanicCompatTests.createItem("shaft");
+		List<BlockPos> line = MechanicCompatTests.finishedLine(helper);
+		Container chest = MechanicCompatTests.chest(helper, new ItemStack(shaft, 1));
+		Villager mechanic = MechanicCompatTests.mechanic(helper);
+		helper.setBlock(line.get(1), net.minecraft.world.level.block.Blocks.AIR);
+		helper.setDayTime(2000);
+		ownerBeside(helper, mechanic);
+		boolean[] evening = {false};
+		int[] after = {0};
+		helper.onEachTick(() -> {
+			if (!evening[0] && mechanic.getMainHandItem().is(shaft)) {
+				evening[0] = true;
+				helper.setDayTime(9500); // the shift ends with the shaft in his hand
+			}
+			if (!evening[0]) {
+				return;
+			}
+			after[0]++;
+			int all = MechanicCompatTests.count(chest, shaft) + shaftsAround(helper, mechanic, shaft)
+				+ (helper.getBlockState(line.get(1)).is(MechanicCompatTests.create("shaft")) ? 1 : 0);
+			if (all != 1) {
+				helper.fail("the store's one shaft is " + all + " after " + after[0] + " ticks of evening with the owner beside: chest "
+					+ MechanicCompatTests.count(chest, shaft) + ", hand " + mechanic.getMainHandItem() + ", hole "
+					+ helper.getBlockState(line.get(1)));
+			}
+			if (after[0] >= 1200) {
+				helper.succeed();
+			}
+		});
+	}
 }

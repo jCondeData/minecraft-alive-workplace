@@ -68,6 +68,9 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.people.Retirement.tick((Villager) (Object) this); // shadows and mentors (34.20)
 		io.github.jcondedata.aliveworkplace.furnish.FurnitureSeats.tick((Villager) (Object) this); // sitting on the furniture (37.6)
 		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.tickTrip((Villager) (Object) this); // a machine trip that can't go on (B244)
+		if (((Villager) (Object) this).tickCount % 20 == 0) {
+			io.github.jcondedata.aliveworkplace.people.LifeStages.pace((Villager) (Object) this); // an elder's slower walk (B771)
+		}
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();
 			return;

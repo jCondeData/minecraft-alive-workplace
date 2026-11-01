@@ -18,8 +18,8 @@ A villager who grew up in a village with a Village Hall counts their days. After
 first 120) they are an **elder**: their card on the hall's list says "Elder · grown 1211 days", and the chronicle notes the day ("Bram is an elder now").
 An elder:
 
-- **walks 15% slower** wherever their work takes them (a builder to the site, a miner to the quarry, a courier on the
-  round): beside a younger villager on the same path they fall behind;
+- **walks 15% slower** wherever they go (a builder to the site, a miner to the quarry, a courier on the round, and
+  the game's own strolls and trips to bed): beside a younger villager on the same path they fall behind;
 - has **"a quiet old age"** (+5) in their mood while they are fed and have a bed of their own; it is the first reason on
   their card ("Happy (80): a quiet old age, fed, a bed of their own, ..."). A hungry elder, or one with no bed, has none;
 - **talks like one**. Off work and near a player, an elder now and then says one of four lines of their own: "In my day
@@ -123,13 +123,17 @@ writes in only the villagers inside the circle, and only couples inside it court
 - **The chronicle's note.** The hall's round writes "Bram is an elder now" (kind `LIFE`) the first time it sees them
   as an elder, and marks them `elder_noted` so it is written once: on the day itself, or, if the village wasn't loaded
   that day, the next time it is. An elder an Evergreen Charm already wrote into the chronicle gets no second line.
-- **The walk.** `work/Walker` multiplies every walk it asks for by `LifeStages.walk`: 0.922 for an elder. A mob's pace
-  goes with the square of that number, so 0.922 is 15% less ground in the same time (0.85 would be 28% less). It slows
-  the walks our jobs ask for; a stroll the game itself decides on (wandering, going to bed) keeps vanilla's pace.
+- **The walk.** An elder's own movement speed is multiplied by `LifeStages.ELDER_WALK`, 0.922 (`LifeStages.pace`, a
+  modifier `aliveworkplace:elder_pace` that is never saved: the villager's tick, every second, and every walk `Walker`
+  asks for put it on or take it off). A mob's pace goes with the square of that number, so 0.922 is 15% less ground in
+  the same time (0.85 would be 28% less). Since it is on the villager, every walk has it, whoever asked for it: our
+  jobs, the game's own strolls, a path worked out again. Before (B771) only the walk targets Walker set were slower,
+  and any walk that went another way, a vanilla walk target or a path the game started at its own pace, went at full
+  speed: in the elders showcase Bram walked as fast as Tom.
   The game can still take a job's walk over: Walker also sets where the villager looks, and when its walk target is
   dropped for a moment (a path that failed), vanilla walks to that same block at its own pace (0.5). So when Walker finds
   its block already set at another pace, it sets it again at its own and changes the pace of the walk under way
-  (B99); before, the elder then walked the rest of the way at full speed, and a nimble villager lost the faster walk.
+  (B99); before, a nimble villager lost the faster walk that way.
   After a path that failed, a walk is asked again a second later (`Walker.RETRY_TICKS`), counted on the villager's own
   clock as well as by the caller, so a caller that keeps no counter (a successor following the elder, a mentor going to
   the hall) is never dropped for good (B187: vanilla keeps the "can't reach" note until a path gets there, so one failed
@@ -249,7 +253,8 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
 
 - 34.19 (owner, 2026-10-06): elders do pass in their sleep after 40 elder days and leave a grave. The design note
   `docs/design/M34.md` had this off by default; the owner turned it on.
-- 34.19: "15% slower" is measured over the ground, not in the walk target's number (see "The walk").
+- 34.19: "15% slower" is measured over the ground, not in the walk target's number (see "The walk"); the elders
+  scene compares the two while each is on his way, so a tick one stood waiting for a path doesn't count as age (B771).
 - 34.19: "a quiet old age" is listed first among the good reasons, since the card shows only four reasons.
 - 34.19: the chronicle's note is written once per villager for good: if `villagerElderDays` is raised and lowered again,
   nobody is announced twice.
@@ -304,7 +309,8 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
 ## Known limits
 
 - The elder look (gray brows and a short beard, under any hat) is drawn by the class layers (34.18, see [Classes](classes.md)); `classOutfits` off hides it.
-- Only the walks our jobs ask for are slower (through `Walker`); vanilla's own strolls are not.
+- A nimble villager's faster walk is still only in the walks our jobs ask for (through `Walker`); an elder's slower
+  walk is in every walk.
 - The successor's shadowing walk and the mentor's walk use the villager's own tick, so with the village far from
   every player nothing moves; the hand-over still happens in the hall's round.
 - A retired elder "sits by the hall": they walk there and stand; there is no seat to sit on yet.

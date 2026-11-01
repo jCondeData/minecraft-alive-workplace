@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
  * the realm's treasury when the village is in a realm with realms on, else by the hall's treasury, else by the player;
  * only the hall's owner, their friends and operators may, and only with the caps clear and every requirement met. A
  * placed plan's centre must be within the hall's reach ({@link VillageHalls#RADIUS}), all of it within {@link #REACH}
- * blocks of the hall, and it may not cover a finished building or another Wonder.
+ * blocks of the hall, and it may not cover a finished building, a build in progress or another Wonder.
  */
 public final class WonderPlans {
 	/** Emeralds the plans cost. */
@@ -125,7 +125,7 @@ public final class WonderPlans {
 	/**
 	 * Why {@code plan}'s Wonder, {@code size} big, may not go down at {@code placement}; empty when it may: its centre
 	 * within the hall's reach, every corner within {@link #REACH} blocks of the hall, over no finished building and no
-	 * other Wonder.
+	 * build in progress and no other Wonder.
 	 */
 	public static Optional<Component> placeRefusal(ServerLevel level, WonderPlanItem.Plan plan, BlueprintData.Placement placement, Vec3i size) {
 		Component village = plan.village();
@@ -162,11 +162,14 @@ public final class WonderPlans {
 					: Component.translatable("message.aliveworkplace.wonder_plan.over_building", Blueprints.displayName(f.structure())));
 			}
 		}
+		// B748: every build in progress counts, an ordinary house as well as a Wonder's part (the player's own blueprint
+		// is refused there too); once it's finished or canceled, the finished list above or nothing stands in the way
 		for (BuildSite site : sites.all()) {
-			if (isWonder(site.structure()) && site.placement().dimension().equals(placement.dimension())) {
+			if (site.placement().dimension().equals(placement.dimension())) {
 				Optional<BoundingBox> other = BlueprintLibrary.get(level, site.structure()).map(b -> BlueprintOutline.bounds(site.placement(), b.size()));
 				if (other.isPresent() && overlaps(box, other.get())) {
-					return Optional.of(Component.translatable("message.aliveworkplace.wonder_plan.over_wonder"));
+					return Optional.of(isWonder(site.structure()) ? Component.translatable("message.aliveworkplace.wonder_plan.over_wonder")
+						: Component.translatable("message.aliveworkplace.wonder_plan.over_site", Blueprints.displayName(site.structure())));
 				}
 			}
 		}
@@ -184,8 +187,17 @@ public final class WonderPlans {
 	 * stage's goods (no build sites yet, B714) as well as a finished one.
 	 */
 	public static Optional<WonderSite> wonderOver(ServerLevel level, ResourceLocation dimension, BoundingBox box) {
+		return wonderOver(level, dimension, box, site -> true);
+	}
+
+	/**
+	 * The first Wonder that {@code which} accepts with a part whose footprint shares a column with {@code box}; empty
+	 * when none. B750: callers that care only about some Wonders (one going up) pass that test here, so a finished
+	 * Wonder listed first never hides a waiting one beside it.
+	 */
+	public static Optional<WonderSite> wonderOver(ServerLevel level, ResourceLocation dimension, BoundingBox box, java.util.function.Predicate<WonderSite> which) {
 		for (WonderSite site : WonderManager.get(level).sites()) {
-			if (site.placement().isEmpty() || !site.placement().get().dimension().equals(dimension)) {
+			if (!which.test(site) || site.placement().isEmpty() || !site.placement().get().dimension().equals(dimension)) {
 				continue;
 			}
 			for (WonderUpkeep.Part part : WonderUpkeep.parts(level, site)) {

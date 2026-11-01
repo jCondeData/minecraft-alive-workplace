@@ -643,7 +643,17 @@ public class CrafterWork extends Behavior<Villager> {
 			Map<Item, Long> stock = new HashMap<>();
 			// B696: what the other open builds need stays out of the builder's own chests and the village stores too.
 			Map<Item, Integer> kept = new HashMap<>();
+			// B721: what we make goes where this builder looks for it: his own chests, or (with none by his table) the
+			// village's Storehouse, else another village-mate's chests he takes from; with none of those, nowhere he'd find it.
+			BlockPos deliverTo = sources.isEmpty() ? null : builderStation;
+			BlockPos mateStore = null;
 			for (Village.Stash stash : Village.stashes(level, builder, builderStation, area)) {
+				if (deliverTo == null && stash.job() == ModVillagers.PORTER) {
+					deliverTo = stash.station();
+				}
+				if (mateStore == null && stash.job() != ModVillagers.BUILDER && stash.job() != ModVillagers.PORTER) {
+					mateStore = stash.station();
+				}
 				if (stash.job() != ModVillagers.BUILDER) {
 					sources.addAll(stash.chests());
 					if (stash.job() == ModVillagers.PORTER) {
@@ -667,6 +677,12 @@ public class CrafterWork extends Behavior<Villager> {
 					guarded.put(chest, guard);
 				}
 				theirs.addAll(stash.chests());
+			}
+			if (deliverTo == null) {
+				deliverTo = mateStore;
+			}
+			if (deliverTo == null || SupplyContainers.find(level, deliverTo, area).isEmpty()) {
+				continue; // B721: nowhere this builder would find it; made anyway, it lay by our bench for ever
 			}
 			Builders.reservedIn(level, sources, site).forEach((item, n) -> kept.merge(item, n, Integer::sum));
 			Map<Item, Long> pooled = SupplyContainers.contents(level, sources);
@@ -721,7 +737,7 @@ public class CrafterWork extends Behavior<Villager> {
 				synchronized (CLAIMS) {
 					CLAIMS.put(claim, now + CLAIM_TICKS);
 				}
-				return new Job(builderStation, area, made, claim, sources, guarded);
+				return new Job(deliverTo, area, made, claim, sources, guarded);
 			}
 		}
 		return chooseOrder(level, villager, station);

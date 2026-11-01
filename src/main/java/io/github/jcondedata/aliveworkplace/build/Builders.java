@@ -325,8 +325,9 @@ public final class Builders {
 		}
 		// B714: a Wonder begun but waiting for a stage's goods has no build sites yet; its saved layout still counts
 		Optional<io.github.jcondedata.aliveworkplace.wonder.WonderSite> wonder = io.github.jcondedata.aliveworkplace.wonder.WonderPlans
-			.wonderOver(level, placement.get().dimension(), box);
-		if (wonder.isPresent() && wonder.get().goingUp()) {
+			.wonderOver(level, placement.get().dimension(), box, io.github.jcondedata.aliveworkplace.wonder.WonderSite::goingUp);
+		// B750: only Wonders going up are asked about, so a finished one beside a waiting one never hides it
+		if (wonder.isPresent()) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.overlaps",
 				io.github.jcondedata.aliveworkplace.wonder.Wonders.name(wonder.get().wonder())), ChatFormatting.RED);
 			return InteractionResult.CONSUME;

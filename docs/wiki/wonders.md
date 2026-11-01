@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461, B707
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461, B707, B748, B750
 
 ## What a player sees
 
@@ -1067,6 +1067,12 @@ QA GameTests for B714 in `QaVillageFixes1101GameTests` (3): a Wonder Plan sharin
 waiting for its goods is refused ("It would stand over another Wonder") and goes down one column clear; a house sharing
 that edge column is refused ("That spot overlaps another build in progress (Test Folly).") and one column clear is
 taken; a Wonder begun but not laid out yet (no Foundation Stone) stops no house.
+
+A Wonder Plan is refused over any build in progress, an ordinary house as well as a Wonder's part (B748: "It would
+stand over the Test Hut, a build in progress"), and the ground is free again once that build is canceled; finished, it
+counts as a finished building. A builder refuses a house over any Wonder going up, even when a finished Wonder lies
+under it as well (B750). GameTests: `WonderPlanOverSiteGameTests` (2) and QA's `QaWonderPlanOverSite1101BugTests` and
+`QaWonderHouseTwoWonders1101BugTests`.
 
 QA GameTests in `QaWonders1101GameTests` (16; 35.3 with the real designs, 35.9, 35.11, 35.13, 35.15, 35.17): for each
 of the five Wonders, its whole blueprint (`wonder/<id>`, the one its plan carries) holds exactly the blocks its stages

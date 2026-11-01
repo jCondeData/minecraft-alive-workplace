@@ -431,7 +431,10 @@ public final class EdictBook {
 				Math.abs(prices.percent()));
 		}
 		if (effect instanceof CivicEffects.WorkPace pace) {
-			return Component.translatable(pace.jobs().isEmpty() ? "screen.aliveworkplace.edicts.effect.pace" : "screen.aliveworkplace.edicts.effect.pace_jobs",
+			if (pace.jobs().isEmpty()) {
+				return Component.translatable("screen.aliveworkplace.edicts.effect.pace", pace.percent());
+			}
+			return Words.counted("screen.aliveworkplace.edicts.effect.pace_jobs", pace.jobs().size(),
 				pace.percent(), pace.jobs().size());
 		}
 		if (effect instanceof CivicEffects.Mood mood) {

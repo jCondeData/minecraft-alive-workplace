@@ -17,6 +17,17 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Carpenter crafting for a builder with no chest by his Blueprint Table brings what he makes to the village
+  Storehouse, where the builder fetches it, instead of dropping it by his own bench while the builder waits for ever.
+- The Village Hall's Chronicle button reads "(1 entry)" for a chronicle of one, and a work-pace effect naming one trade
+  reads "1 trade works 50% faster" instead of "1 trades work".
+- The Steward's shopping list names the building materials his blueprints use in the plural: "12 Spruce Logs,
+  6 Glass Panes, 4 Ladders, 2 Oak Doors" on the desk, the Storehouse board and the daily message.
+- A Wonder Plan can no longer go down over a house that is still being built; it says which build stands there
+  ("It would stand over the Test Hut, a build in progress"), and the ground is free again once that build is canceled.
+- A builder now refuses a house that reaches over a Wonder going up even when a finished Wonder lies under it too.
+- The Steward no longer plans a building where a laid-out Wonder waiting for its goods will stand, and keeps his plots
+  two blocks clear of a finished Wonder, as of any other building.
 - A piston set down just outside a protected village can no longer push its blocks in, pull them out (sticky) or
   put its head inside; pistons inside the village work as before.
 - A stranger standing outside a protected village can no longer place a block (such as TNT) or light a fire just inside

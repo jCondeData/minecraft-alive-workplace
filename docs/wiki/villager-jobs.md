@@ -216,8 +216,9 @@ dug top-down, so deepening only adds layers at the end: the blocks already visit
 stair carries on down to the new floor. A quarry finished short of the marker's depth says so ("...stopped 64 blocks
 down: digging all 128 blocks needs Expert level. Hand them the marker again once they get there."), and the marker
 comes back with its depth. The level is checked against the real pit (a 128 marker cut off by the world's floor at
-90 deep only needs a Journeyman). A deep pit (more than 64) counts its distance to the bench from the middle of its
-top, where the miner starts down. The safety rules hold all the way down: blocks next to water or lava and blocks too
+90 deep only needs a Journeyman; a 96 marker over ground only 65 deep stops a Novice at 64 and asks for a Journeyman).
+Strip mines aren't held back by level: a Novice digs a ladder shaft to Y=-53 however far down that is. A pit's
+distance to the bench counts only across the ground, whatever its depth (B665). The safety rules hold all the way down: blocks next to water or lava and blocks too
 hard for the pickaxe are left standing.
 
 **Working with nobody near.** While anyone is online, every worker's workstation chunk stays loaded, so villages

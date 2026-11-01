@@ -176,8 +176,9 @@ says so ("No Builder can take the ...: none has a bench near it and room in thei
 Builder gets it queued "after the current build", once however often it is clicked. In a village somebody owns, only
 the owner and their friends can order one. The tab says how many builds can go up a level ("1 build", "2 builds").
 
-The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day; "(1 entry)" on
-its button for a chronicle of one, B744), trade routes
+The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day, anywhere in the
+village: within its radius across and 32 blocks up or down, so a death on its rim up a hill is written too, B780;
+"(1 entry)" on its button for a chronicle of one, B744), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
 Book of Edicts, the calendar, Legends, the Festival Cup and Classes. The bell calls everyone home. A cake calls a
 festival. A named Name Tag used on the hall names the village (the tag isn't used up; like the City Plan, the Village Ledger and

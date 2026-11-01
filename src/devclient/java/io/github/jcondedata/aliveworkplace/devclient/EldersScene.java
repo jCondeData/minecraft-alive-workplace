@@ -27,6 +27,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -162,8 +163,10 @@ final class EldersScene {
 			server.execute(() -> {
 				bramFrom = bram.getX();
 				tomFrom = tom.getX();
-				float elder = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getSpeedModifier()).orElse(0f);
-				float young = tom.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getSpeedModifier()).orElse(0f);
+				// The pace each walks at: the walk target's speed times their own movement speed's multiplier (B771: an
+				// elder's slower walk is on his movement speed, so vanilla's walks have it too).
+				float elder = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getSpeedModifier()).orElse(0f) * pace(bram);
+				float young = tom.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getSpeedModifier()).orElse(0f) * pace(tom);
 				Showcase.check(young == 0.5f && Math.abs(elder - 0.5f * LifeStages.ELDER_WALK) < 0.001f, "the elder's walk is set slower: " + elder + " against " + young
 					+ (tom.getBrain().hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) ? " (Tom's last path failed)" : ""));
 			});
@@ -172,8 +175,12 @@ final class EldersScene {
 			server.execute(() -> {
 				double elder = bram.getX() - bramFrom;
 				double young = tom.getX() - tomFrom;
-				Showcase.check(young > 3 && elder < young * 0.92 && elder > young * 0.78,
-					"in the same 3 seconds Bram walked " + Math.round(100 * elder / young) + "% as far as Tom (" + elder + " and " + young + " blocks; of "
+				// Compared while walking (B771): a tick one stood waiting for a path while the other walked is no measure of
+				// age, so each one's ground is over the ticks he was on his way.
+				double elderPace = elder / Math.max(1, walkTicks - stood[0]);
+				double youngPace = young / Math.max(1, walkTicks - stood[1]);
+				Showcase.check(young > 3 && elderPace < youngPace * 0.92 && elderPace > youngPace * 0.78,
+					"in the same 3 seconds Bram walked " + Math.round(100 * elderPace / youngPace) + "% as fast as Tom (" + elder + " and " + young + " blocks; of "
 						+ walkTicks + " ticks Bram stood " + stood[0] + " and Tom " + stood[1] + ")");
 				walkTicks = -1;
 			});
@@ -182,6 +189,11 @@ final class EldersScene {
 		if (tick == WALK_FROM + 90) {
 			mc.stop();
 		}
+	}
+
+	/** What {@code v}'s movement speed is multiplied by (an elder's is slower). */
+	private static float pace(Villager v) {
+		return (float) (v.getAttributeValue(Attributes.MOVEMENT_SPEED) / v.getAttributeBaseValue(Attributes.MOVEMENT_SPEED));
 	}
 
 	private static ServerPlayer player(MinecraftServer server) {

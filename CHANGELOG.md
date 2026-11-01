@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Reform stories ask the right villager when the usual trade is missing: a village with no Bard has a Cheerful villager
+  ask for the Festival Fund, and one with no Nurse has a mother ask for the Midwives (anyone else only when there's
+  neither). The ask's quest and intro now name the villager who actually asks ("Talk to Ada about the curfew"), not a
+  Porter, Librarian, Nurse, Bard or Toolsmith who isn't there.
 - A ware a villager shows a player at the trade display (an emerald, bread, a painting, a rod) no longer becomes theirs
   when work starts or after a restart: Shepherds, Farmers, Fishers, Miners and other workers let it go instead of
   putting it in their bag or chest, so standing by no longer earns free emeralds or bread.

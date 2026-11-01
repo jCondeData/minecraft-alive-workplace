@@ -20,13 +20,21 @@
         "translate": "arc.aliveworkplace.fair_ledger.1"
       },
       "intro": [
-        "arc.aliveworkplace.fair_ledger.1.intro.1"
+        {
+          "translate": "arc.aliveworkplace.fair_ledger.1.intro.1",
+          "with": [
+            "@asker"
+          ]
+        }
       ],
       "quests": [
         {
           "id": "aliveworkplace:arc/fair_ledger/ask",
           "name": {
-            "translate": "arc.aliveworkplace.fair_ledger.ask"
+            "translate": "arc.aliveworkplace.fair_ledger.ask",
+            "with": [
+              "@asker"
+            ]
           },
           "objectives": [
             {

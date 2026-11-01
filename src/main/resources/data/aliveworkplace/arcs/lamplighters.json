@@ -20,13 +20,21 @@
         "translate": "arc.aliveworkplace.lamplighters.1"
       },
       "intro": [
-        "arc.aliveworkplace.lamplighters.1.intro.1"
+        {
+          "translate": "arc.aliveworkplace.lamplighters.1.intro.1",
+          "with": [
+            "@asker"
+          ]
+        }
       ],
       "quests": [
         {
           "id": "aliveworkplace:arc/lamplighters/ask",
           "name": {
-            "translate": "arc.aliveworkplace.lamplighters.ask"
+            "translate": "arc.aliveworkplace.lamplighters.ask",
+            "with": [
+              "@asker"
+            ]
           },
           "objectives": [
             {

@@ -4,7 +4,7 @@
 type: Story arc
 expansion: M30, M31
 Starts: while Festival Season is in force
-Asked by: the Bard (or anyone, without one)
+Asked by: the Bard (else a Cheerful villager, else anyone)
 Steps: 24 cakes, 256 firework rockets, 48 note blocks
 Ending: Festival Season reformed, and a grand festival
 Rewards: emeralds for each step, +60 standing
@@ -18,7 +18,7 @@ festival fund, and the next one will be grand."
 
 ## The story
 
-1. **The Ask.** Talk to the Bard about the festival fund.
+1. **The Ask.** Talk to the Bard (or whoever asks; the quest names them) about the festival fund.
 2. **The First Step.** Every festival needs cake: bring **24 cakes**.
 3. **The Second Step.** A day later: **256 firework rockets**, set by for the next one.
 4. **The Third Step.** A day later: **48 note blocks** for a band worth hearing.

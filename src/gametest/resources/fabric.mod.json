@@ -1052,7 +1052,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPactUnderway1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaToolsDisplayRestart1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactTrains1101GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaClicksShops1101GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaClicksShops1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWaresFisherMiner1101GameTests"
 		]
 	},
 	"depends": {

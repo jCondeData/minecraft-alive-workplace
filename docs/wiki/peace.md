@@ -138,4 +138,7 @@ Roadmap items: 32.21, B134, B383, B704, B705
   `QaPeacefulLairGameTests.aChiefGoneOutsidePeacefulStillBreaksTheCampUp` (B364): on Peaceful a standing camp leaves in
   peace (also after a save and load), a player's kill just before still counts as the chief falling, and a chief gone
   off Peaceful still breaks the camp up.
+- `QaThreatCobbleVerify1101GameTests` (3, QA, B364, through the hall's own round): Peaceful sends a standing camp away
+  in peace (no broken-up line, no rest days); at threat level 0 the camp still stands the same evening and leaves at the
+  next dawn, with no new camp for 3 days; back on Normal a chief a player kills still breaks the camp up.
 - Showcase scenes: `at_peace`.

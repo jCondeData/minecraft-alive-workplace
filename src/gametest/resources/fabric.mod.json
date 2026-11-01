@@ -571,6 +571,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuildReserve1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaProtectedBucketBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.BucketProtectionGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaProtectedPistons1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.PistonProtectionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShopNeighboursBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaProtectedNoteBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaProtectedBuildBug1031Tests",
@@ -578,6 +580,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ProtectedHandOverGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageGuardsBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageFixes1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsOldList1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.AreaJobWorkBlockGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DeliveryNoteProtectionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShopNeighboursGameTests",
@@ -980,7 +983,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCalendarOneDay1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWorkReach1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaColonyWaitOneDay1031BugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaGrowthOffRankLine1031BugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaGrowthOffRankLine1031BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1101GameTests"
 		]
 	},
 	"depends": {

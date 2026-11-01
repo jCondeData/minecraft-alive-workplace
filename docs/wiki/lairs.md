@@ -165,6 +165,9 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   are suggested by path or whole id and nothing else, the lair order never the monsters (B705).
 - `QaThreatOrderLairOut1031GameTests` (B720): a start order by a camp with nobody home is answered "nobody left at
   their camp", not "found nowhere to gather", and brings nothing; the same camp with its band home sends the raid.
+  `QaThreatFixes1101GameTests` (B720): one bandit home brings a raid of him alone; once he is out too the order reads
+  the whole "nobody left at their camp by <village> to send" line; `threat end` brings the band home and the next order
+  brings a raid again.
 - `QaRefusedThreatsGameTests`: with the world refusing every hostile mob, `/workplace threat start` brings each of the
   seven cultures' raiders into the world, persistent, and ending the raid takes them away; a war camp, tomb camp, Blackstone
   Outpost and Coven Hut each have their captain and band in the world, still there 100 ticks on and not broken up.

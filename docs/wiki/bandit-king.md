@@ -4,7 +4,7 @@ The Bandit King's fort rises a stage a dawn out beyond a village, and the King w
 ROADMAP 31.15; the story that brings him, `arcs/bandit_king.json`, is 31.16. Builds on the arc engine's `place`
 (31.4), bandit camps (`BanditCamps`, 32.3's lairs) and the bounty captains' names (31.13). Part of the 1.5 expansion.
 
-Roadmap items: 31.15, 31.16, B659
+Roadmap items: 31.15, 31.16, B659, B738
 
 ## What a player sees
 
@@ -121,8 +121,6 @@ horn) in their own entity data.
 
 ## Known limits
 
-- An arc marked `threat` should not start in a village set At peace or at threat level 0 (31.4), but today it
-  still does (B699; failing tests on the tests/threat-arcs-peace-1031 branch).
 - The camps, Pell and the fort are built or come only once a player is within 96 blocks, as every arc place.
 - With no fit ground within 16 blocks of the arc's column the fort isn't built (the arc logs it and its place is
   skipped).
@@ -143,4 +141,7 @@ horn) in their own entity data.
   the fort resumed from a save mid-arc, every sentence a player reads, and the chest's one enchanted weapon.
 - GameTests: `QaBanditKingBugTests`: the bar leaves a player who goes to the Nether
   (`qaKingsBarLeavesAPlayerWhoGoesToTheNether`, B659).
+- GameTests: `QaQuietVillageSweep1031GameTests` and `QaThreatFixes1101GameTests` (B738): a storm night brings no
+  raid At peace, at threat level 0 or on Peaceful; lifted the same night, the King's raid comes that night, as it does
+  on a later storm night.
 - Showcase scenes `bandit_fort` and `bandit_king`.

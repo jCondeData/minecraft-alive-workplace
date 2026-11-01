@@ -23,6 +23,7 @@
 		"CaravanPartyLootMixin",
 		"EntityAccessor",
 		"FarmlandTrampleMixin",
+		"PistonProtectionMixin",
 		"HangingHurtMixin",
 		"ExplosionMixin",
 		"FireBlockAccessor",

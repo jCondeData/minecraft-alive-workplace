@@ -106,6 +106,36 @@ public class QaProtectedFarmland1031Tests implements net.fabricmc.fabric.api.gam
 		helper.succeed();
 	}
 
+	/**
+	 * B742 follow-up: inside a protected village farmland still turns to dirt by itself (vanilla's turnToDirt with no
+	 * entity): under a solid block, through FarmBlock.tick and the placement update, and a dirt path under one too.
+	 */
+	//$ gametest_ticks_batch AREA '40' '"qaProtectedFarmland1031ByItself"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "qaProtectedFarmland1031ByItself")
+	public void qaFarmlandStillTurnsToDirtByItselfInsideTheVillage(GameTestHelper helper) {
+		ServerPlayer owner = ProtectionSpecGameTests.player(helper);
+		ProtectionSpecGameTests.protectedHall(helper, owner);
+		BlockPos ticked = new BlockPos(16, 1, 14);
+		BlockPos placed = new BlockPos(14, 1, 16);
+		BlockPos path = new BlockPos(13, 1, 13);
+		helper.setBlock(ticked, Blocks.FARMLAND);
+		helper.setBlock(placed, Blocks.FARMLAND);
+		helper.setBlock(path, Blocks.DIRT_PATH);
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(742);
+		// a block set above without updates, then the farmland's own tick (FarmBlock.tick: it can't survive, turnToDirt(null))
+		level.setBlock(helper.absolutePos(ticked.above()), Blocks.STONE.defaultBlockState(), 2);
+		level.getBlockState(helper.absolutePos(ticked)).tick(level, helper.absolutePos(ticked), random);
+		level.setBlock(helper.absolutePos(path.above()), Blocks.STONE.defaultBlockState(), 2);
+		level.getBlockState(helper.absolutePos(path)).tick(level, helper.absolutePos(path), random);
+		// a block placed on top with updates: the farmland schedules its tick
+		helper.setBlock(placed.above(), Blocks.STONE);
+		helper.assertTrue(helper.getBlockState(ticked).is(Blocks.DIRT), "farmland under a block should turn to dirt by itself: " + helper.getBlockState(ticked));
+		helper.assertTrue(helper.getBlockState(path).is(Blocks.DIRT), "a dirt path under a block should turn to dirt by itself: " + helper.getBlockState(path));
+		helper.succeedWhen(() -> helper.assertTrue(helper.getBlockState(placed).is(Blocks.DIRT),
+			"farmland with a block placed on it should turn to dirt by itself: " + helper.getBlockState(placed)));
+	}
+
 	private static void land(GameTestHelper helper, Entity player, BlockPos farmland) {
 		BlockPos at = helper.absolutePos(farmland);
 		Vec3 feet = Vec3.atBottomCenterOf(at.above());

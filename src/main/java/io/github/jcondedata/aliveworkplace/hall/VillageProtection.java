@@ -161,8 +161,13 @@ public final class VillageProtection {
 	/**
 	 * B742: whether {@code entity}'s landing may trample the farmland at {@code pos}: always, unless a player (or what a
 	 * player rides and steers) lands there who may not change things there; then they're told whose village it is.
+	 * {@code entity} is null when farmland turns to dirt by itself (it dries out, a block is put on it, a path under it
+	 * ticks): that always may.
 	 */
-	public static boolean mayTrample(Level level, Entity entity, BlockPos pos) {
+	public static boolean mayTrample(Level level, @org.jetbrains.annotations.Nullable Entity entity, BlockPos pos) {
+		if (entity == null) {
+			return true;
+		}
 		Entity who = entity.getControllingPassenger() instanceof Player rider ? rider : entity;
 		return !(who instanceof Player player) || mayChange(level, player, pos);
 	}

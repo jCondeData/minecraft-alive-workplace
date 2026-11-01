@@ -627,6 +627,14 @@ public final class ReformStories {
 					takings[i++] = d.getValue();
 				}
 				t.putLongArray("takings", takings);
+				// The villagers who drilled today, as (most, least) pairs: the chronicle counts them at the drill's end (B762).
+				long[] drillers = new long[e.drillers.size() * 2];
+				int k = 0;
+				for (UUID id : e.drillers) {
+					drillers[k++] = id.getMostSignificantBits();
+					drillers[k++] = id.getLeastSignificantBits();
+				}
+				t.putLongArray("drillers", drillers);
 				list.add(t);
 			}
 			tag.put("halls", list);
@@ -649,6 +657,11 @@ public final class ReformStories {
 				long[] takings = Nbt.getLongArray(t, "takings");
 				for (int j = 0; j + 1 < takings.length; j += 2) {
 					e.takings.put(takings[j], takings[j + 1]);
+				}
+				// Saves from before B762 have no "drillers": an empty array, so nobody has drilled yet.
+				long[] drillers = Nbt.getLongArray(t, "drillers");
+				for (int j = 0; j + 1 < drillers.length; j += 2) {
+					e.drillers.add(new UUID(drillers[j], drillers[j + 1]));
 				}
 			}
 			return data;

@@ -251,6 +251,16 @@ public final class Roads {
 				BlueprintLibrary.get(level, site.structure()).ifPresent(b -> out.add(BlueprintOutline.bounds(site.placement(), b.size()).inflatedBy(1)));
 			}
 		}
+		// B753: a Wonder waiting for a stage's goods has no build sites and a finished one's parts aren't finished
+		// buildings (B143): every laid-out Wonder's ground is read from its own record
+		int reach = VillageHalls.RADIUS + 32;
+		for (BoundingBox box : io.github.jcondedata.aliveworkplace.wonder.WonderPlans.footprints(level)) {
+			int dx = Math.max(0, Math.max(box.minX() - hall.getX(), hall.getX() - box.maxX()));
+			int dz = Math.max(0, Math.max(box.minZ() - hall.getZ(), hall.getZ() - box.maxZ()));
+			if ((long) dx * dx + (long) dz * dz <= (long) reach * reach) {
+				out.add(box.inflatedBy(1));
+			}
+		}
 		return out;
 	}
 

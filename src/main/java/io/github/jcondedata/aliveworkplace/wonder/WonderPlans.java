@@ -210,6 +210,40 @@ public final class WonderPlans {
 		return Optional.empty();
 	}
 
+	/** One level's Wonder footprints as last read, kept while no Wonder is laid out or forgotten and none is reloaded. */
+	private record Footprints(WonderManager manager, int layouts, java.util.Map<ResourceLocation, Wonder> loaded, List<BoundingBox> boxes) {
+	}
+
+	private static final java.util.Map<ServerLevel, Footprints> FOOTPRINTS = new java.util.WeakHashMap<>();
+
+	/**
+	 * The box of every part of every Wonder laid out in this level, finished or going up (B752, B753): a Wonder waiting
+	 * for a stage's goods has no build sites (B714) and a finished one's parts aren't finished buildings (B143), so the
+	 * Steward's walls and roads read them here, from each Wonder's saved placement. Cached on {@link
+	 * WonderManager#layouts()} and the loaded Wonders, as B747's plot search is.
+	 */
+	public static List<BoundingBox> footprints(ServerLevel level) {
+		WonderManager manager = WonderManager.get(level);
+		java.util.Map<ResourceLocation, Wonder> loaded = Wonders.loaded();
+		Footprints last = FOOTPRINTS.get(level);
+		if (last != null && last.manager() == manager && last.layouts() == manager.layouts() && last.loaded() == loaded) {
+			return last.boxes();
+		}
+		ResourceLocation dimension = Ids.of(level.dimension());
+		List<BoundingBox> boxes = new java.util.ArrayList<>();
+		for (WonderSite site : manager.sites()) {
+			if (site.placement().isEmpty() || !site.placement().get().dimension().equals(dimension)) {
+				continue;
+			}
+			for (WonderUpkeep.Part part : WonderUpkeep.parts(level, site)) {
+				BlueprintLibrary.get(level, part.plain()).ifPresent(b -> boxes.add(BlueprintOutline.bounds(part.placement(), b.size())));
+			}
+		}
+		List<BoundingBox> out = List.copyOf(boxes);
+		FOOTPRINTS.put(level, new Footprints(manager, manager.layouts(), loaded, out));
+		return out;
+	}
+
 	/** Whether a structure is a Wonder's part or whole blueprint. */
 	static boolean isWonder(ResourceLocation structure) {
 		return structure.getPath().startsWith(WonderBlueprints.FOLDER);

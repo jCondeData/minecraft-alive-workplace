@@ -580,6 +580,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuildReserve1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderRestart1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaToolsByTheTradeDisplay1101BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWares1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.TradeDisplayToolsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaProtectedBucketBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.BucketProtectionGameTests",
@@ -1026,6 +1027,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHostileSpawnsForced1101dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatCobbleVerify1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaToolsByTheTradeDisplay1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWares1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageHomesLife1101GameTests"
 		]
 	},

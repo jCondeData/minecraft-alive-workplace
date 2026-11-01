@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Wonder Plan can no longer go down over a house that is still being built; it says which build stands there
+  ("It would stand over the Test Hut, a build in progress"), and the ground is free again once that build is canceled.
+- A builder now refuses a house that reaches over a Wonder going up even when a finished Wonder lies under it too.
 - A piston set down just outside a protected village can no longer push its blocks in, pull them out (sticky) or
   put its head inside; pistons inside the village work as before.
 - A stranger standing outside a protected village can no longer place a block (such as TNT) or light a fire just inside

@@ -7367,6 +7367,7 @@
   "message.aliveworkplace.wonder_plan.too_far": "All of it must be within %s blocks of the hall of %s (a corner is %s away)",
   "message.aliveworkplace.wonder_plan.over_wonder": "It would stand over another Wonder",
   "message.aliveworkplace.wonder_plan.over_building": "It would stand over the finished %s",
+  "message.aliveworkplace.wonder_plan.over_site": "It would stand over the %s, a build in progress",
   "block.aliveworkplace.foundation_stone": "Foundation Stone",
   "message.aliveworkplace.wonder.not_your_builder": "%s works for someone else: hand the plan to one of your own builders",
   "message.aliveworkplace.wonder.not_placed": "Place the plan first: right-click the ground where the %s goes",

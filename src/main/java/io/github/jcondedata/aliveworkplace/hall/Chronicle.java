@@ -89,9 +89,12 @@ public final class Chronicle {
 		return name != null ? name : Component.translatable("chronicle.aliveworkplace.another_village");
 	}
 
-	/** Writes {@code text} into the chronicle of the village {@code where} is in (if it has a hall). */
+	/**
+	 * Writes {@code text} into the chronicle of the village {@code where} is in (if it has a hall): the village is its circle
+	 * and height ({@link VillageHalls#containing}), so a death on its rim up a hill is written too (B780).
+	 */
 	public static void record(ServerLevel level, BlockPos where, Kind kind, Component text) {
-		VillageHalls.nearest(level, where).ifPresent(hall -> record(level, hall, kind, text, true));
+		VillageHalls.containing(level, where).ifPresent(hall -> record(level, hall, kind, text, true));
 	}
 
 	/** Writes {@code text} into the chronicle of the hall at {@code hall}. */

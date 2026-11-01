@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.3 — 2026-11-01
+
 ### Fixed
 - Hauler Golems: a hauler in a pool or moat whose water lies a block below the banks (not filled to the brim) no
   longer floats by the bank for good with its load. It swims to the bank nearest where it is going and climbs out, and

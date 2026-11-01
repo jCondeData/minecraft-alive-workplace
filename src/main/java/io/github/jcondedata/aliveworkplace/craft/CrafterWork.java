@@ -591,9 +591,11 @@ public class CrafterWork extends Behavior<Villager> {
 		}
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, chests.get(0), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
-		if (!unplaced.isEmpty() && fullFor < FULL_WAIT_TICKS) {
+		if (!unplaced.isEmpty() && (fullFor < FULL_WAIT_TICKS || !roomAtHome(level, station, unplaced))) {
 			// B760: the chests filled up after we chose the job; dropped by them, the builder never found it. Hold on to
-			// it and try again, keeping the request ours so nobody makes it a second time.
+			// it and try again, keeping the request ours so nobody makes it a second time. B773: after the long wait it
+			// only goes home if our own chests can take it; with none (or full ones) tidy() dropped it by our bench while
+			// the builder still waited, so we keep carrying it and keep trying here instead.
 			for (ItemStack rest : unplaced) {
 				ItemStack over = bag.add(rest);
 				if (!over.isEmpty()) {
@@ -607,7 +609,7 @@ public class CrafterWork extends Behavior<Villager> {
 				claim(job.claim(), level.getGameTime());
 			}
 			deliverWait = FULL_RETRY_TICKS;
-			fullFor += FULL_RETRY_TICKS;
+			fullFor = Math.min(FULL_WAIT_TICKS, fullFor + FULL_RETRY_TICKS);
 			return;
 		}
 		// given up after a long wait: what's left goes home with tidy(), like a job whose chests are gone
@@ -630,6 +632,15 @@ public class CrafterWork extends Behavior<Villager> {
 		save(villager);
 		lookTimer = 20;
 		walker.reset();
+	}
+
+	/** Whether the chests by our workstation can take all of {@code stacks} (B773: with none, taking it home dropped it). */
+	private static boolean roomAtHome(ServerLevel level, BlockPos station, List<ItemStack> stacks) {
+		Map<Item, Integer> left = new LinkedHashMap<>();
+		for (ItemStack stack : stacks) {
+			left.merge(stack.getItem(), stack.getCount(), Integer::sum);
+		}
+		return roomFor(level, SupplyContainers.find(level, station, null), left);
 	}
 
 	/** {@code job} was carried to its chests with {@code made} of what it makes (a trade may count it off a request: 38.8a). */

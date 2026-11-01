@@ -352,6 +352,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBoxSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaAttachmentSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEverySavedValueGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaEveryRecordField1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaItemComponentSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPackToolsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FamilyEdictGameTests",

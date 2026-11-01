@@ -74,6 +74,9 @@ On the caravans' file (`aliveworkplace_caravans`, per dimension), all optional, 
 - `sales`: sales a village's caravans made while its hall wasn't loaded ({`seller`, `buyer`, `good`, `items`,
   `cents`, `day`}), booked at its next round.
 
+A saved village or sale that can't be read (a hand edit or a damaged file, such as one without its `name` or
+`buyer`) is skipped with a warning in the log, and every other village, route and shipment loads (B763).
+
 ## Items, blocks, jobs, commands
 
 None new. It uses the Village Hall, the Storehouse and its chests.

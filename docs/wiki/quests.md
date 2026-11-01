@@ -54,7 +54,9 @@ Roadmap items: 31.2, 31.3
 ## Saved data
 
 - With each dimension: `aliveworkplace_stories`, the open quests keyed by hall, with each step's progress, who helped,
-  the dates, who tracks them and the place found. Every field has a default.
+  the dates, who tracks them and the place found. Every field has a default. An entry that can't be read (an open
+  quest, a story arc, a mood boost, a tracked quest without its player) is skipped with a warning in the log, and the
+  rest of the file loads (B763).
 
 ## Items, blocks, jobs, commands
 

@@ -105,7 +105,8 @@ Roadmap items: 31.13, 31.14, B134
 `aliveworkplace_bounties` (per dimension, new): `bounties` (each: `id`, `hall`, `first`, `epithet`, `quirk`, `posted`,
 `reward`, `lair`, `captain`, `band`, `fallen`, `killer`, `takers`, and its `hideout`: `spot`, `placed`, `rotation`,
 `skipped`, `origin`; a rogue's also `rogue`, its species, and `rogue_level`), `last` (the day each village last posted), `claimed` (paid bounties) and `boards`. Every field has a
-default; a world without the file starts with none.
+default; a world without the file starts with none. A saved bounty, or a `claimed` id, that can't be read (a hand
+edit, a damaged file) is skipped with a warning in the log, and the rest of the file loads (B763).
 
 ## Decisions
 

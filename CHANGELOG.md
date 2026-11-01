@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Saves: one damaged entry in the bounties, caravans or stories file (a claimed bounty id, a caravan village without
+  its name, a sale without its buyer, a mood boost or a tracked quest that can't be read) no longer loses the whole
+  file. The bad entry is skipped with a warning in the log, and every other bounty, caravan village, route, shipment,
+  quest and arc loads (B763).
 - Undertakers: an Undertaker no longer carries graves out of the next village into his own Graveyard. A grave that
   lies in another village stays there; graves in his own village, and ones out in the wilds, are laid to rest as before.
 - Chronicle: a villager killed on the village's edge up a hill (inside the village, but far from the hall in a straight

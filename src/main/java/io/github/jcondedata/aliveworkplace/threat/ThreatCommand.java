@@ -95,10 +95,16 @@ public final class ThreatCommand {
 			source.sendFailure(Component.translatable("command.aliveworkplace.threat.raid_under_way", village));
 			return 0;
 		}
+		Component name = Lairs.cultureName(culture.get().id());
+		// A raid by a culture with a lair by the village comes from that lair's band (Lairs.raidSize): with the whole band
+		// out or lost there's nobody to send, and that's the reason to give, not the ground (B720).
+		if (Lairs.of(level, hall, culture.get().id()).filter(lair -> Lairs.raidSize(lair, 1) <= 0).isPresent()) {
+			source.sendFailure(Component.translatable("command.aliveworkplace.threat.lair_empty", name, village));
+			return 0;
+		}
 		VillageHalls.Census census = VillageHalls.census(level, hall);
 		VillageRaids.start(level, hall, census.villagers(), census.guards(), Double.NaN, culture.get(), level.random);
 		Optional<ThreatData.Under> raid = ThreatData.get(level).raid(hall);
-		Component name = Lairs.cultureName(culture.get().id());
 		if (raid.isEmpty()) {
 			// On Peaceful the game refuses hostile mobs (HostileSpawns), so that's why none came (B704), not the ground.
 			source.sendFailure(level.getDifficulty() == Difficulty.PEACEFUL

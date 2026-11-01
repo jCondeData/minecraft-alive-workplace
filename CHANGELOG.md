@@ -19,6 +19,16 @@ asks for the steps, `latest.log` and any crash report).
 ## 0.151.2 — 2026-10-31
 
 ### Fixed
+- `/workplace threat start` by a village whose camp has its whole band out now says the camp has nobody left to
+  send, instead of "found nowhere to gather".
+- A Wonder Plan can no longer be placed over another Wonder that is begun but waiting for a stage's goods, and a
+  builder no longer takes a house inside such a Wonder's ground.
+- A quiet village (threat level 0, At peace or Peaceful) no longer loses caravans to bandits (the Lost Caravan
+  story), and the Bandit King's storm brings no raid there; his raids come again once the village isn't quiet.
+- A stranger's tree farm, orchard or berry plot reaching into a protected village is now refused, saying whose
+  village it is, as a stranger's field already was.
+- Handing a Field Marker to a lumberjack or orchard keeper now names the block they really work at (a Chopping Block
+  or Fruit Basket), not always a fletching table or composter.
 - In a new world, a cabin's brown or green bed by a campfire and a hay bale is no longer taken for a settlers' wagon
   bedroll when the village's own builder's Blueprint Table stands nearby: only beds a camp placed are wagon beds, so
   its residents keep their homes and the hall counts it. Older saves still know camps from before the wagon-bed list

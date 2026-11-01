@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709
+Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720
 
 ## What a player sees
 
@@ -131,6 +131,9 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - 32.3: the named lines use their own keys (`camp_named`, …) rather than changing today's, so the bandit camp reads as
   it always did while Milestone 32 is closed.
 - 32.3: the lines avoid "he" and "his", so a culture's list may hold any name.
+- B720: an operator's `/workplace threat start` by a village whose lair has its whole band out (or lost) brings no
+  raid and says so ("nobody left at their camp"): an order doesn't conjure raiders the lair hasn't got, so its band
+  count stays true. Wait for the band to come home, or `threat clear` and set a new camp down.
 
 ## Known limits
 
@@ -160,6 +163,8 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   every wall, and only one (B709); each of two players is told once a day, within 96 blocks and not at 97, and again
   the next day (B708); on Peaceful the lair and start orders say so and leave nothing, then work on Normal (B704); the names
   are suggested by path or whole id and nothing else, the lair order never the monsters (B705).
+- `QaThreatOrderLairOut1031GameTests` (B720): a start order by a camp with nobody home is answered "nobody left at
+  their camp", not "found nowhere to gather", and brings nothing; the same camp with its band home sends the raid.
 - `QaRefusedThreatsGameTests`: with the world refusing every hostile mob, `/workplace threat start` brings each of the
   seven cultures' raiders into the world, persistent, and ending the raid takes them away; a war camp, tomb camp, Blackstone
   Outpost and Coven Hut each have their captain and band in the world, still there 100 ticks on and not broken up.

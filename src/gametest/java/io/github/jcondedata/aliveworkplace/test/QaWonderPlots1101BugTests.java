@@ -127,4 +127,34 @@ public class QaWonderPlots1101BugTests implements net.fabricmc.fabric.api.gamete
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * The same gap for a finished Wonder: its parts are no longer finished buildings (B143), so the plot rule's
+	 * {@code CLEAR} blocks round "every finished building" don't hold for it. With the folly finished on x -1..7 (its
+	 * record laid out there), the Well's spot at x 8..14 touches its east wall. Expected: refused (BUILD), as next to any
+	 * finished building.
+	 */
+	//$ gametest_ticks_batch AREA '40' '"qaWonderPlotsDone1101"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "qaWonderPlotsDone1101")
+	public void qaTheStewardKeepsHisPlotsClearOfAFinishedWonder(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = ground(helper);
+		helper.assertTrue(Wonders.loaded().get(FOLLY) != null, "the test folly isn't loaded: " + Wonders.problems());
+		CityPlan plan = homes(helper);
+		helper.runAfterDelay(2, () -> {
+			helper.assertTrue(atSpot(helper, plan).plot().isPresent(), "set-up: the Well doesn't fit on the open ground: " + atSpot(helper, plan));
+			WonderManager manager = WonderManager.get(level);
+			WonderSite site = manager.begin(FOLLY, hall, null, "", 1);
+			Leftovers.after(helper, () -> manager.remove(site.id()));
+			BlockPos origin = helper.absolutePos(new BlockPos(-1, 2, 9));
+			manager.place(site.id(), new BlueprintData.Placement(Ids.of(level.dimension()), origin, Rotation.NONE, Mirror.NONE), origin.offset(-1, 0, -1));
+			manager.finish(site.id(), 2);
+			helper.assertTrue(manager.site(site.id()).map(WonderSite::done).orElse(false), "set-up: the Wonder isn't finished");
+
+			Plots.Verdict touching = atSpot(helper, plan);
+			helper.assertTrue(touching.plot().isEmpty(), "the Steward's plot check takes the Well's spot against the finished Test Folly's wall "
+				+ "(no gap, CLEAR is " + Plots.CLEAR + "): " + touching.plot().map(p -> p.box().toString()).orElse("") + "; expected refused (BUILD)");
+			helper.succeed();
+		});
+	}
 }

@@ -1041,7 +1041,8 @@
 			"io.github.jcondedata.aliveworkplace.test.B768GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactUnderway1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaToolsDisplayRestart1101GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPactTrains1101GameTests"
 		]
 	},
 	"depends": {

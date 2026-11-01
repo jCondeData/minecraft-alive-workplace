@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Physicians: a Remedy the Physician shows a player standing by with emeralds is no longer a free cure. He used the
+  shown copy on an ill villager and the Remedy in the chest by his brewing stand never went down; now he puts it away
+  and cures with a real Remedy from the chest (or brews one), else asks for one on the requests board.
 - Elders: an elder now walks 15% slower on every walk, the game's own strolls and trips to bed included, not only on
   the walks a job asks for. Before, a walk the game set up or started again went at full speed, so an elder could
   keep pace with a younger villager beside him.

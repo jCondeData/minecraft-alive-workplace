@@ -181,6 +181,16 @@ def failed_tests(root, since_time):
     return list(dict.fromkeys(names))
 
 
+def reached_summary(root, since_time):
+    """Whether this run's server logs end their tests with a summary ("All N required tests passed" or "N required tests
+    failed"). A mutant that crashes the server (an exception out of a tick) leaves no summary and no failed test by name:
+    that's a kill, not a survivor, even when the real code has failing tests of its own."""
+    from results import SUMMARY_OK, SUMMARY_FAIL, read_text   # same folder
+    logs = [l for l in list(root.glob("versions/*/build/run/*/logs/latest.log")) + list(root.glob("build/run/*/logs/latest.log"))
+            if l.stat().st_mtime >= since_time]
+    return all(SUMMARY_OK.search(t) or SUMMARY_FAIL.search(t) for t in map(read_text, logs))   # no server log: can't tell
+
+
 def compat_run(a, root, f, orig, c, key, compat):
     """Run a main-suite survivor once with --compat-cmd: (status, seconds, killer)."""
     secs = 0.0
@@ -216,9 +226,10 @@ def compat_run(a, root, f, orig, c, key, compat):
         return "SURVIVED", secs, ""
     if status in ("KILLED", "TIMEOUT"):
         new_fail = [n for n in failed_tests(root, t0) if n not in bfail]
-        if status == "KILLED" and not new_fail and bstatus != "SURVIVED":
+        crashed = status == "KILLED" and not new_fail and not reached_summary(root, t0)
+        if status == "KILLED" and not new_fail and bstatus != "SURVIVED" and not crashed:
             return "SURVIVED", secs, ""      # only the compat tests that already failed on the real code
-        return status, secs, "(compat) " + (", ".join(new_fail)[:220] or ("(timed out)" if status == "TIMEOUT" else "failed"))
+        return status, secs, "(compat) " + (", ".join(new_fail)[:220] or ("(timed out)" if status == "TIMEOUT" else "(server crashed)" if crashed else "failed"))
     return "SURVIVED", secs, ""
 
 
@@ -319,9 +330,10 @@ def main():
         (logdir / f"m{i}.txt").write_text(f"{c['file']}:{c['line']} {c['op']}\n- {c['old']}\n+ {c['new']}\n\n{tail}")
         if status in ("KILLED", "TIMEOUT"):
             new_fail = [n for n in failed_tests(root, t0) if n not in base_fail]
-            if base_status != "SURVIVED" and not new_fail and status == "KILLED":
+            crashed = status == "KILLED" and not new_fail and not reached_summary(root, t0)
+            if base_status != "SURVIVED" and not new_fail and status == "KILLED" and not crashed:
                 status = "SURVIVED"          # only the tests that already failed on the real code failed
-            killer = ", ".join(new_fail)[:240] or ("(timed out)" if status == "TIMEOUT" else "")
+            killer = ", ".join(new_fail)[:240] or ("(timed out)" if status == "TIMEOUT" else "(server crashed)" if crashed else "")
         if status == "SURVIVED" and a.compat_cmd and compat["left"] > 0:
             compat["left"] -= 1
             status, more, killer = compat_run(a, root, f, orig, c, key, compat)

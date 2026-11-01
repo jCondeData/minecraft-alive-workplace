@@ -121,7 +121,7 @@ public class LumberjackWork extends Behavior<Villager> {
 			return;
 		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
-		ItemStack axe = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		ItemStack axe = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager);
 
 		// 1. Drop off logs after each tree (and whenever the bag fills up).
 		if (depositDue || bag.freeSlots() < 3) {

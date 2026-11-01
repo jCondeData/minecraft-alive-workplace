@@ -63,9 +63,9 @@ counts and pay, one a day; the villagers talk about it and the chronicle tells e
 |---|---|---|
 | The Shift Bell | the Toolsmith (else any smith) | a bell on two posts beside the hall, on natural ground, ringing at the start (tick 2000) and end (tick 9000) of the work day |
 | The Common Granary | a Farmer | a harvest supper at the hall the next evening: a festival's feast, no fireworks |
-| The Midwives | the Nurse (else anyone) | a midwife comes to stay, a Nurse at Journeyman |
+| The Midwives | the Nurse (else a mother, else anyone) | a midwife comes to stay, a Nurse at Journeyman |
 | The Watchful Gate | a Guard | an old soldier comes to stay, a Guard at Expert in iron armor with an iron sword |
-| The Festival Fund | the Bard (else anyone) | the next festival is grand: twice the fireworks, its good mood a day longer |
+| The Festival Fund | the Bard (else a Cheerful villager, else anyone) | the next festival is grand: twice the fireworks, its good mood a day longer |
 | The Fair Ledger | a Librarian or Scholar | "The Fair Ledger of <village>", a written book of the treasury's takings day by day for the last 7 days, for the hall's owner |
 | The Lamplighters | a Porter (else anyone) | two Street Lamp blueprints for whoever finished it, and a chronicle line on the first lamplit night |
 | The Militia Drill | a Guard | drill day: at noon the next day every grown villager spars at the village's Training Dummies (the guards alone with none), then a chronicle line |
@@ -129,8 +129,6 @@ the hall loads.
 ## Known limits
 
 - Reforms are per village: a second village reforms the same edict again.
-- 31.22: "else a mother" (the Midwives) and "else a Cheerful villager" (the Festival Fund) fall back to any grown
-  villager; the arc system casts roles by trade only.
 - 31.22: the Shift Bell needs a level 3 by 3 of natural ground 3 to 12 blocks from the hall; with none, the story
   still ends and the edict is reformed, without the bell.
 - The Tithe's price rise is rounded to whole emeralds, half an emerald up: trades under 5 emeralds don't change,

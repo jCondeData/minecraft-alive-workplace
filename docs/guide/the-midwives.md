@@ -4,7 +4,7 @@
 type: Story arc
 expansion: M30, M31
 Starts: while Large Families is in force
-Asked by: the Nurse (or anyone, without one)
+Asked by: the Nurse (else a mother, else anyone)
 Steps: 48 honey bottles, 192 white wool, 64 golden carrots
 Ending: Large Families reformed, and a midwife comes to stay
 Rewards: emeralds for each step, +60 standing
@@ -18,7 +18,7 @@ for a midwife."
 
 ## The story
 
-1. **The Ask.** Talk to the Nurse about the families.
+1. **The Ask.** Talk to the Nurse (or whoever asks; the quest names them) about the families.
 2. **The First Step.** Mothers need strength: bring **48 honey bottles**.
 3. **The Second Step.** A day later: babies need warm blankets, so **192 white wool**.
 4. **The Third Step.** A day later: **64 golden carrots** to keep the little ones healthy.

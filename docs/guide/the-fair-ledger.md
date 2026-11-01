@@ -18,7 +18,7 @@ without grumbling."
 
 ## The story
 
-1. **The Ask.** Ask the librarian about the tithe.
+1. **The Ask.** Ask the Librarian or Scholar who asks (the quest names them) about the tithe.
 2. **The First Step.** A ledger needs books to write in: bring **24 books and quills**.
 3. **The Second Step.** A day later: **192 gold ingots**, to show the treasury is good for it.
 4. **The Third Step.** A day later: a ledger needs a keeper who can stand up for it. Beat one of the village's

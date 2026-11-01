@@ -8,7 +8,7 @@
   },
   "roles": {
     "asker": {
-      "villager": "job:aliveworkplace:nurse|any",
+      "villager": "job:aliveworkplace:nurse|mother|any",
       "name": {
         "translate": "arc.aliveworkplace.midwives.asker"
       }
@@ -20,13 +20,21 @@
         "translate": "arc.aliveworkplace.midwives.1"
       },
       "intro": [
-        "arc.aliveworkplace.midwives.1.intro.1"
+        {
+          "translate": "arc.aliveworkplace.midwives.1.intro.1",
+          "with": [
+            "@asker"
+          ]
+        }
       ],
       "quests": [
         {
           "id": "aliveworkplace:arc/midwives/ask",
           "name": {
-            "translate": "arc.aliveworkplace.midwives.ask"
+            "translate": "arc.aliveworkplace.midwives.ask",
+            "with": [
+              "@asker"
+            ]
           },
           "objectives": [
             {

@@ -34,6 +34,10 @@ Roadmap items: 31.4
 - Arcs are data: `data/<namespace>/arcs/<id>.json`, one per file: a `trigger` (conditions, a chance a day, or an event),
   `roles` (villagers cast in parts), the `chapters` in order and an `ending`. A file that can't be read is skipped with a
   log line; the others load.
+- A role's `villager`: `new`, `any`, `job:<profession>`, `trait:<trait>` (such as `trait:cheerful`) or `mother` (a
+  villager named as the mother of someone in the village), alternatives split by `|`, the first someone can play. An
+  intro line or quest name written `{"translate": "...", "with": ["@asker"]}` names the villager cast as `asker`, so
+  a fallback asker is named, not the usual trade.
 - A chapter: `name`, `intro`, `on_start` effects, `quests` (ids or written inline), `complete` (`all`, `any` or a list
   of quest ids), `needs_flags`, `delay_days`, `time_limit_days` with `on_fail`, and `chatter`.
 - Effects: `announce`, `chronicle`, `place`, `spawn`, `give_map`, `village_mood`, `festival` (the next day, through the

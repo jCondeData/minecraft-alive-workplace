@@ -15,6 +15,9 @@ import io.github.jcondedata.aliveworkplace.herb.HerbBlock;
 import io.github.jcondedata.aliveworkplace.herb.Herbs;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.people.Families;
+import io.github.jcondedata.aliveworkplace.people.Traits;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -895,7 +898,11 @@ public final class ArcEffects {
 
 	// ---- roles and talk --------------------------------------------------------------------------------------------
 
-	/** Who plays the villager role {@code key}: a newcomer, any villager of the village, or one of a job. Null if nobody. */
+	/**
+	 * Who plays the villager role {@code key}: a newcomer, any villager of the village, one of a job, one with a trait
+	 * ({@code trait:cheerful}) or a mother ({@code mother}); alternatives split by {@code |}, the first someone can play.
+	 * Null if nobody.
+	 */
 	@Nullable
 	static Villager cast(ServerLevel level, BlockPos hall, Arcs.Arc arc, String key, Arcs.RoleSpec spec) {
 		Villager v;
@@ -922,6 +929,18 @@ public final class ArcEffects {
 			if (alt.startsWith("job:")) {
 				ResourceLocation job = ResourceLocation.tryParse(alt.substring(4));
 				all = everyone.stream().filter(x -> BuiltInRegistries.VILLAGER_PROFESSION.getKey(x.getVillagerData().getProfession()).equals(job)).toList();
+			} else if (alt.startsWith("trait:")) { // B632: "else a Cheerful villager"
+				Traits.Trait trait = Traits.Trait.valueOf(alt.substring(6).toUpperCase(java.util.Locale.ROOT));
+				all = everyone.stream().filter(x -> Traits.of(x).contains(trait)).toList();
+			} else if (alt.equals("mother")) { // B633: "else a mother", named as the mother of a villager of the village
+				Set<UUID> mothers = new java.util.HashSet<>();
+				for (Villager child : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Entity::isAlive)) {
+					Families.Parents parents = ModAttachments.PARENTS.get(child);
+					if (parents != null && parents.motherId() != null) {
+						mothers.add(parents.motherId());
+					}
+				}
+				all = everyone.stream().filter(x -> mothers.contains(x.getUUID())).toList();
 			}
 			if (!all.isEmpty()) {
 				break;

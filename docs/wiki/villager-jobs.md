@@ -65,7 +65,9 @@ sneak-right-clicking a worker with an empty hand shows their status, ending with
 **A worker's tool stays in their hand (B766).** A Farmer's hoe, a Shepherd's shears, a Fisher's rod, a Miner's pickaxe,
 a Lumberjack's axe or a conscript's sword is never taken from them by vanilla's trade display, the way villagers show
 their wares when a player stands by: the display only shows a ware in an empty hand, and only puts away the wares it
-showed itself.
+showed itself. The other way round too (B776): a ware on show is never the worker's. When work starts (or after a
+restart with a ware still in hand) the worker lets it go before picking up a tool, so a shown emerald, loaf or rod
+never ends up in their bag, their chest or on the ground, and is never used as a tool.
 
 | Job | Workstation and item | Class |
 |---|---|---|
@@ -375,6 +377,9 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 - 21.1c (owner, 2026-10-03): the Fossil Scientist works at Cobblemon's own Fossil Analyzer.
 - B766: the trade display marks each ware it shows (a tag in the stack's custom data) and touches only an empty hand or
   its own marked ware, one rule for every worker instead of a check per tool.
+- B776: workers read their hand through `TradeDisplay.workHand`, which clears a marked ware first, wherever they take,
+  bag, store or use what they hold (Shepherd, Farmer, Fisher, Miner, Lumberjack, Mechanic, fire brigade, conscripts,
+  the Gray Cough's healer). A ware is never cleared on load: the next worker step or display clears it.
 - B737: handing a Field Marker to a Lumberjack, Orchard Keeper or Berry Breeder names the block they really work at
   ("within 8 blocks of their Chopping Block", or Fletching Table, Fruit Basket, Composter), since the Lumberjack and
   Orchard Keeper may take either; the Berry Breeder's says "of her Composter". Tests: `AreaJobWorkBlockGameTests`,
@@ -440,7 +445,7 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 
 ## Proof
 
-GameTests: `TradeDisplayToolsGameTests` (2, B766: a Farmer keeps his hoe while a player holds the price of his trade; the display still shows its ware and puts it away), `QaToolsByTheTradeDisplay1101BugTests` and `QaToolsByTheTradeDisplay1101GameTests` (2 each: the Farmer's hoe, the Shepherd's shears, the Miner's pickaxe and the Lumberjack's axe outlast an evening with the owner beside them), `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
+GameTests: `QaTradeDisplayWares1101BugTests` (1, B776: a Shepherd's shown emerald never reaches her bag or chest), `QaTradeDisplayWares1101GameTests` (1: the display still shows and puts away its wares), `QaTradeDisplayWaresFarmer1101BugTests` (4, B776: the Farmer's shown bread and the Shepherd's shown painting stay out of bag and chest as the shift starts and after a restart), `TradeDisplayToolsGameTests` (2, B766: a Farmer keeps his hoe while a player holds the price of his trade; the display still shows its ware and puts it away), `QaToolsByTheTradeDisplay1101BugTests` and `QaToolsByTheTradeDisplay1101GameTests` (2 each: the Farmer's hoe, the Shepherd's shears, the Miner's pickaxe and the Lumberjack's axe outlast an evening with the owner beside them), `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits

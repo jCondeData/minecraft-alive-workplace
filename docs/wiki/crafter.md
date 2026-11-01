@@ -26,6 +26,9 @@ build's remaining list is counted, so neither build ends up waiting for a log th
 What a job makes for a builder goes where that builder looks for materials: the chests by his Blueprint Table, or,
 when there are none, the village Storehouse (else another village-mate's chests he takes from). A builder with no
 chest anywhere he looks isn't crafted for, so nothing made for him is left lying by the crafter's bench (B721).
+A builder who has a chest of his own still gets it there, never in the Storehouse, and two chestless builders each get
+theirs. Known issue: when the Storehouse is full, what's made is dropped on the ground by it and the crafter keeps
+making more (B760, open).
 
 When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
 under "Short of": "Can't be made yet: short of 4 Oak Logs to make 3 Barrels" (items named in the plural after a count above one, B426). When no job in the village makes a crafted
@@ -175,6 +178,13 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   `aCarpenterStillCraftsTheStorehousesSpareLog`: one log more there is crafted and brought to A's chest, and both finish.
 - `QaCarpenterChestlessBug1031Tests.aCarpentersPlanksForABuilderWithNoChestReachHim`: the same spare log for a builder
   with no chest by his table: the planks go into the Storehouse, never onto the ground, and his row is built (B721).
+- `QaCarpenterStorehouse1101GameTests`: the same case counted at every tick, a log as 4 planks, with nothing lost or
+  made twice (`aChestlessBuildersPlanksAddUpExactlyThroughTheStorehouse`); a builder with his own chest gets them in it,
+  never in the Storehouse (`aBuilderWithHisOwnChestStillGetsThePlanksInIt`); two chestless builders both build
+  (`twoChestlessBuildersBothGetTheirPlanks`); the Storehouse chest broken mid-delivery loses no plank
+  (`theStorehouseChestBrokenMidDeliveryLosesNoPlanks`); no Storehouse and only the Carpenter's own chest leaves nothing
+  lying (`noStorehouseAndNoChestMeansNoPlanksLeftLying`); a save and reload on the way still delivers to the Storehouse,
+  once (`reloadedOnTheWayToTheStorehouseDeliversOnce`) (B721).
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.
 - `JobChainGameTests.theCarpenterMakesTheSlabsTheBuilderNeeds`, `theCarpenterFetchesTheOneLogItNeeds`,
   `oneCarpenterServesTwoBuilders`: one step, exactly one log, two askers.

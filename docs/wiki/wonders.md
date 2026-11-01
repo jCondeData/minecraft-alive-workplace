@@ -305,7 +305,7 @@ Wine (Vintner).
 
 Each factor is kept between 1/16 and 16. Damaged (or with Wonders off) all four are off; nothing of them is saved.
 
-**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 15,000 blocks, on
+**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 14,600 blocks, on
 a square terrace of smooth stone with a garden in each corner (azalea hedges, flowers, a bench and a lamp) behind a
 diorite balustrade. A grand stair of three quartz steps climbs to a portico of six quartz columns (a wider bay before
 the door) under a low pediment with a round window. Behind it the rotunda, 19 across, rises above four wings of
@@ -1073,3 +1073,13 @@ stand over the Test Hut, a build in progress"), and the ground is free again onc
 counts as a finished building. A builder refuses a house over any Wonder going up, even when a finished Wonder lies
 under it as well (B750). GameTests: `WonderPlanOverSiteGameTests` (2) and QA's `QaWonderPlanOverSite1101BugTests` and
 `QaWonderHouseTwoWonders1101BugTests`.
+
+QA GameTests in `QaWonders1101GameTests` (16; 35.3 with the real designs, 35.9, 35.11, 35.13, 35.15, 35.17): for each
+of the five Wonders, its whole blueprint (`wonder/<id>`, the one its plan carries) holds exactly the blocks its stages
+leave standing, of the same kinds (Cathedral 14,252, Lighthouse 5,011, Library 14,574, Wall 12,338, Observatory 8,438)
+and its plan carries that size; its plan goes down centered on the hall in all four turns, mirrored or not, and is
+refused once its center is past the hall's 64 blocks ("Its center must be in Testville, within 64 blocks of the
+hall ..."); its file asks a Town, its Legend with the stand-in its item names and its other requirement, with the
+Master Architect added by the loader, in four stages titled as the items title them. Drawing up the plans with 31
+emeralds takes nothing and says "The plans cost 32 emeralds, and neither the treasury (0 emeralds) nor you have them";
+with exactly 32 the plan is the player's and no emerald is left.

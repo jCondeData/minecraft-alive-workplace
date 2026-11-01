@@ -240,7 +240,7 @@ public class QaEveryRecordField1101GameTests implements FabricGameTest {
 	}
 
 	/** Every class of the mod's own code (not compat, mixin or the client), loaded without running it. */
-	private static List<Class<?>> modClasses() {
+	static List<Class<?>> modClasses() {
 		List<Class<?>> found = new ArrayList<>();
 		try {
 			java.nio.file.Path root = java.nio.file.Path.of(io.github.jcondedata.aliveworkplace.AliveWorkplace.class.getProtectionDomain()
@@ -274,7 +274,7 @@ public class QaEveryRecordField1101GameTests implements FabricGameTest {
 
 	// ---- making values ---------------------------------------------------------------------------------------------
 
-	private static final class Unbuildable extends Exception {
+	static final class Unbuildable extends Exception {
 		Unbuildable(String message) {
 			super(message);
 		}
@@ -296,9 +296,9 @@ public class QaEveryRecordField1101GameTests implements FabricGameTest {
 	}
 
 	/** The world's registries, for the parts that are registry entries (a banner pattern). */
-	private net.minecraft.core.RegistryAccess registries;
+	net.minecraft.core.RegistryAccess registries;
 
-	private Object make(Type type, String path) throws Unbuildable {
+	Object make(Type type, String path) throws Unbuildable {
 		for (Map.Entry<String, Object> o : OVERRIDES.entrySet()) {
 			if (path.endsWith(o.getKey())) {
 				return o.getValue();
@@ -466,7 +466,7 @@ public class QaEveryRecordField1101GameTests implements FabricGameTest {
 	// ---- comparing -------------------------------------------------------------------------------------------------
 
 	/** Null when the two are the same in every part; else the first part that differs and how. */
-	private static String diff(Object wrote, Object read, String path) {
+	static String diff(Object wrote, Object read, String path) {
 		if (wrote == null || read == null) {
 			return wrote == read ? null : path + ": saved " + wrote + ", read " + read;
 		}

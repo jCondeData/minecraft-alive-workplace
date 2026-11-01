@@ -169,6 +169,7 @@ and the class run alone (baseline: the five classes, 48 tests, all pass). No new
   |---|---|---|---|---|---|
   | 0.147.0 | 4.0 ms | 32.6 / 11.9 ms | 1418 MB | 22.4% | 39 of 46 |
   | main 9ca9c84 | 3.6 ms | 35.0 / 10.9 ms | 1379 MB | 23.7% | 39 of 46 |
+  | main 8d24807d5 (2026-11-01, lane-e-1101-0712) | 2.0 ms | 32.4 / 9.8 ms | 1404 MB | 18.3% | 38 of 45 |
 
   The mean of the two queries is 22.3 ms (0.147.0) against 23.0 ms (main), 3% apart, which is within the run-to-run
   noise. An earlier 0.147.0 run with Gradle daemons still in memory gave 44.1 / 15.5 ms. Kill the daemons first

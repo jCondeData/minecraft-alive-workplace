@@ -830,6 +830,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallClasses1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTradePactsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PactOfferFixesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPacts1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.PluralClusterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWorkerTitlesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCountedLinesBugTests",
@@ -1007,7 +1008,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWorkReach1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaColonyWaitOneDay1031BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGrowthOffRankLine1031BugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1101GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaToolsByTheTradeDisplay1101GameTests"
 		]
 	},
 	"depends": {

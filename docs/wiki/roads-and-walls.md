@@ -134,7 +134,11 @@ starting from the end of the nearest street; both chronicle lines and the milest
 Steward's own line round the zones, on the plan and not built before approval; wall kit files refused whole when
 malformed and skipped without their mod; a gate for each crossing and none for a road inside; towers at least every
 28 blocks; each piece at its ground's height; at most 3 sites open; the desk and chronicle lines read as written). `QaStewardWalls1101Tests` (4, B752: no wall piece through a finished
-Well, a finished Wonder or one waiting for its goods, each opening the next piece instead; control on open ground).
+Well, a finished Wonder or one waiting for its goods, each opening the next piece instead; control on open ground). `QaWallsRoadsAroundBuildings1101GameTests` (8, B752 and
+B753: a Well sharing one corner column holds a piece and one column clear doesn't; six held pieces in a row skipped to
+the first free one; held pieces still skipped after a restart; a piece opens once its Well is gone and its Wonder
+canceled; a street between two Wells goes round a waiting Wonder, a turned finished Wonder, and a waiting Wonder read
+back from its save).
 
 Showcase scenes: `roads` (a street between two houses), `bridges`, `caravan_road`, `walls` (a palisade going up),
 `city_plan_ground` (the plan on the ground).

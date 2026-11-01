@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -41,6 +42,7 @@ import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.piston.PistonStructureResolver;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.BlockHitResult;
@@ -170,6 +172,49 @@ public final class VillageProtection {
 		}
 		Entity who = entity.getControllingPassenger() instanceof Player rider ? rider : entity;
 		return !(who instanceof Player player) || mayChange(level, player, pos);
+	}
+
+	/**
+	 * B745: whether the piston at {@code piston} may make the move vanilla's {@code resolver} worked out (already resolved):
+	 * not if it would put its head into, push or pull a block into, out of or within, or break a block in, the area of a
+	 * protected hall that the piston itself isn't in. Pistons inside a village work as before; one outside stops at its
+	 * edge, as land-claim mods do. Cheap when no protected hall is near (pistons fire a lot). Off with protection off.
+	 */
+	public static boolean mayPistonMove(Level level, BlockPos piston, PistonStructureResolver resolver, boolean extending) {
+		if (!ENABLED || PROTECTED.isEmpty() || !(level instanceof ServerLevel server)) {
+			return true;
+		}
+		long radius = VillageHalls.RADIUS;
+		long near = radius + PistonStructureResolver.MAX_PUSH_DEPTH + 2;
+		Direction push = resolver.getPushDirection();
+		for (GlobalPos g : PROTECTED) {
+			BlockPos h = g.pos();
+			if (g.dimension() != level.dimension() || !inColumns(h, piston, near) || inColumns(h, piston, radius)
+				|| !server.isLoaded(h) || !(server.getBlockEntity(h) instanceof VillageHallBlockEntity entity) || !entity.isProtected()) {
+				continue;
+			}
+			if (extending && inColumns(h, piston.relative(push), radius)) {
+				return false;
+			}
+			for (BlockPos moved : resolver.getToPush()) {
+				if (inColumns(h, moved, radius) || inColumns(h, moved.relative(push), radius)) {
+					return false;
+				}
+			}
+			for (BlockPos broken : resolver.getToDestroy()) {
+				if (inColumns(h, broken, radius)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/** Whether {@code pos}'s column is within {@code radius} blocks of the hall at {@code hall} (as {@link #keeper} counts). */
+	private static boolean inColumns(BlockPos hall, BlockPos pos, long radius) {
+		long dx = hall.getX() - pos.getX();
+		long dz = hall.getZ() - pos.getZ();
+		return dx * dx + dz * dz <= radius * radius;
 	}
 
 	/** What a protected village keeps others from hurting. */

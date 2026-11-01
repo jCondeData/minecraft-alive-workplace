@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745
 
 ## What a player sees
 
@@ -404,6 +404,11 @@ point of interest, saved by Minecraft).
 - B743: item frames and paintings aren't living, so Fabric's damage event never sees them; `HangingHurtMixin` (on
   `ItemFrame.hurt` and `BlockAttachedEntity.hurt`) asks `VillageProtection.mayBeHurt`, the same check the event uses:
   a hit a player threw or shot is refused where they may not hurt what it hits.
+- B745: `PistonProtectionMixin` wraps the `PistonStructureResolver.resolve()` call in `PistonBaseBlock.moveBlocks`
+  (after vanilla clears a retracting head) and asks `VillageProtection.mayPistonMove`: for each loaded protected hall
+  whose area the piston isn't in, the move fails if the head's cell (extending), any pushed block or its destination,
+  or any block it would break is in that area. An extending piston then stays put; a sticky one retracts without
+  pulling. Halls further than reach + 14 columns away are skipped first; protection off skips it all.
 - Villages keep working with no player near (23.6, owner's call): see `keepVillagesWorking` on
   [Config switches](config-switches.md).
 

@@ -32,6 +32,8 @@ Inside the hall's area, as far as its reach goes across the map and at any heigh
 - break or place blocks or light fires (what counts is where the block or fire would go, so a stranger can't click
   the inward face of a block just outside to put one inside), or empty or fill buckets (wherever the bucket's user stands: what counts is where the water
   or lava would go);
+- move blocks with pistons: a piston outside the village can't push blocks into it, pull them out of it or put its
+  head inside (pistons inside the village work as usual);
 - trample the fields: a stranger who jumps on the village's farmland (on foot or on a horse they ride) leaves it and
   its crops alone;
 - open chests and other blocks with a screen, or mark them on a [Delivery Note](delivery-note.md) (a postman never

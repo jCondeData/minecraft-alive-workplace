@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A piston set down just outside a protected village can no longer push its blocks in, pull them out (sticky) or
+  put its head inside; pistons inside the village work as before.
 - A stranger standing outside a protected village can no longer place a block (such as TNT) or light a fire just inside
   its edge by clicking the inward side of a block outside it; they're told whose village it is.
 - A stranger jumping on a protected village's fields (on foot or on horseback) no longer turns the farmland to dirt

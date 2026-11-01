@@ -234,13 +234,31 @@ public class StewardCivicRulesGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "civicDarkBeds")
 	public void darkBedsCountsBedsWithoutLight(GameTestHelper helper) {
 		BlockPos hall = hall(helper, VillageRanks.Rank.HAMLET);
+		Leftovers.beds(helper, hall); // the hall's reach goes past the area: no earlier batch's bed counts here (B775)
 		bed(helper, 3, 18);
 		bed(helper, 14, 18); // 13 blocks from the glowstone below: still dark
 		helper.runAfterDelay(3, () -> {
-			holds(helper, hall, "{\"dark_beds\": {\"at_least\": 2}}", true, 2);
+			darkBedsHold(helper, hall, true, 2);
 			helper.setBlock(new BlockPos(3, 2, 21), Blocks.GLOWSTONE);
-			helper.succeedWhen(() -> holds(helper, hall, "{\"dark_beds\": {\"at_least\": 2}}", false, 1)); // once the light has spread
+			helper.succeedWhen(() -> darkBedsHold(helper, hall, false, 1)); // once the light has spread
 		});
+	}
+
+	/** {@link #holds} for {@code dark_beds}, saying which beds it counted and how lit each one is when it fails (B775). */
+	private static void darkBedsHold(GameTestHelper helper, BlockPos hall, boolean held, long value) {
+		String json = "{\"dark_beds\": {\"at_least\": 2}}";
+		StewardConditions.Check c = check(helper, hall, json);
+		if (c.held() != held || c.value() != value) {
+			ServerLevel level = helper.getLevel();
+			BlockPos origin = helper.absolutePos(BlockPos.ZERO); // positions as the test gives them (1.21.1's relativePos turns them around)
+			List<String> seen = VillageAdvice.darkBeds(level, hall).stream()
+				.map(p -> p.subtract(origin).toShortString() + " light " + level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, p)).toList();
+			List<String> homes = level.getPoiManager().findAll(h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), p -> true, hall,
+					VillageHalls.RADIUS, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+				.map(p -> p.subtract(origin).toShortString() + " " + level.getBlockState(p).getBlock().getName().getString()).toList();
+			helper.fail(json + ": expected " + (held ? "held" : "not held") + " with " + value + ", got " + c.held() + " with " + c.value()
+				+ "; dark beds seen " + seen + ", every home in reach " + homes + ", radius " + VillageHalls.RADIUS);
+		}
 	}
 
 	//$ gametest_ticks_batch AREA '40' '"civicBeauty"'
@@ -391,6 +409,7 @@ public class StewardCivicRulesGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 60, batch = "civicLamps")
 	public void twoDarkBedsGetAStreetLampByTheDarkestBed(GameTestHelper helper) {
 		BlockPos hall = hall(helper, VillageRanks.Rank.HAMLET);
+		Leftovers.beds(helper, hall); // the hall's reach goes past the area: no earlier batch's bed counts here (B775)
 		BlockPos lit = bed(helper, 3, 17);
 		helper.setBlock(new BlockPos(3, 2, 19), Blocks.GLOWSTONE);
 		bed(helper, 12, 17); // far enough from the glowstone to stay dark

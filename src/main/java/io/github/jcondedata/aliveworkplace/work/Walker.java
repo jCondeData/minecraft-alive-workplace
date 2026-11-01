@@ -49,18 +49,19 @@ public final class Walker {
 	 * Asks vanilla's walking behaviour to take the villager to {@code pos}. It drops the target when it arrives or when it
 	 * finds no path; after a failed path the next try waits {@link #RETRY_TICKS} (instead of a fresh path search every
 	 * tick: pathfinding is most of what villagers cost), and getting unstuck is left to the hop. Returns the new wait.
-	 * The nimble get a faster walk, and elders one 15% slower over the ground ({@code LifeStages.walk}, 34.19).
+	 * The nimble get a faster walk target; elders walk 15% slower over the ground by their own movement speed
+	 * ({@code LifeStages.pace}, 34.19, B771), kept up to date here too, so the first step of a walk is already slower.
 	 */
 	public static int requestWalk(Villager villager, BlockPos pos, float speed, int closeEnough, int retryWait) {
 		var brain = villager.getBrain();
-		float pace = speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager)
-			* io.github.jcondedata.aliveworkplace.people.LifeStages.walk(villager);
+		io.github.jcondedata.aliveworkplace.people.LifeStages.pace(villager);
+		float pace = speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager);
 		var set = brain.getMemory(MemoryModuleType.WALK_TARGET).filter(t -> t.getTarget().currentBlockPosition().equals(pos));
 		if (set.isPresent()) {
 			if (Math.abs(set.get().getSpeedModifier() - pace) > 1.0e-4f) {
 				// Vanilla's idle behaviour (SetWalkTargetFromLookTarget) walks a villager to what he looks at, at its own 0.5,
-				// and we make him look at the goal: a target at our goal that isn't ours. It gets our pace (B95: an elder
-				// walked at full speed; B99), with no new path search, since the goal is the same, and a walk already under
+				// and we make him look at the goal: a target at our goal that isn't ours. It gets our pace (B95: a nimble
+				// villager walked at vanilla's speed; B99), with no new path search, since the goal is the same, and a walk already under
 				// way changes speed now.
 				brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, pace, closeEnough));
 				if (!villager.getNavigation().isDone()) {

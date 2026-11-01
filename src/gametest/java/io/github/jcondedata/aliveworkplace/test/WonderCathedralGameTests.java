@@ -150,6 +150,7 @@ public class WonderCathedralGameTests implements FabricGameTest {
 	private static void setUp(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
+		Leftovers.graves(helper); // graves an earlier batch left round this spot would count as the village's
 		Leftovers.players(helper);
 		Moods.forget();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);

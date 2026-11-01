@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A server stopped in the middle of a Militia Drill day now remembers who already drilled even when its last autosave
+  came before the drill: the chronicle's "villagers sparred" count is the same as without the restart.
+- When the Storehouse fills up while the Carpenter carries a chestless builder's planks and stays full, he keeps
+  carrying them and trying again instead of dropping them on the ground by his bench.
 - A bed you put straight back where a settlers' wagon bedroll stood is now a home at once: before the Village Hall's
   next round it was still taken for a wagon bed and its villager lost the home.
 - On a server upgraded from an older version of the mod, cabin beds by a campfire, hay and the builder's

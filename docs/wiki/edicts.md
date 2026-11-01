@@ -3,7 +3,7 @@
 Laws a village's owner proclaims at the Village Hall. Each gives the village a boost at a cost, and each has a reform
 that takes the cost away for good. Part of 1.4 (Edicts and civic items): switched on in 1.0 with every other expansion.
 
-Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327, B744
+Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327, B744, B772
 
 ## What a player sees
 
@@ -96,7 +96,7 @@ edict's progress and whether it is reformed; empty), `raidWorkUntil` (Conscripti
 `extraMeals` (Free Bread's part-meals carried over). The reform stories (31.22) keep `aliveworkplace_reform_stories`
 in the world's data: each village's Shift Bell, the days of a harvest supper, grand festival and drill, whether the
 first lamplit night is still to come, the last 7 days of treasury takings for the Fair Ledger, and the villagers who
-have drilled on a drill day (`drillers`, so a restart mid-drill keeps the chronicle's count; all empty by default). The summed effects are not saved; they are added up again when
+have drilled on a drill day (`drillers`, so a restart mid-drill keeps the chronicle's count; each new driller marks the file to be written, so a stop after the morning's autosave keeps them too (B772); all empty by default). The summed effects are not saved; they are added up again when
 the hall loads.
 
 ## Items, blocks, jobs, commands

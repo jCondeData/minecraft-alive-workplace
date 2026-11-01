@@ -517,7 +517,7 @@ public final class ReformStories {
 			}
 			if (e.drillDay == today && !e.drillDone && t >= DRILL_START) {
 				if (t < DRILL_END) {
-					drill(level, hall, e);
+					drill(level, hall, data, e);
 				} else {
 					e.drillDone = true;
 					data.setDirty();
@@ -541,7 +541,7 @@ public final class ReformStories {
 	}
 
 	/** One beat of the drill: every grown villager (the guards alone with no dummies) goes to a dummy and spars. */
-	static void drill(ServerLevel level, BlockPos hall, Entry e) {
+	static void drill(ServerLevel level, BlockPos hall, Data data, Entry e) {
 		if (e.dummies == null) {
 			e.dummies = dummies(level, hall);
 		}
@@ -559,6 +559,8 @@ public final class ReformStories {
 					level.playSound(null, target, SoundEvents.PLAYER_ATTACK_WEAK, SoundSource.NEUTRAL, 0.6f, 1f);
 				}
 				if (e.drillers.add(v.getUUID())) {
+					// A new driller is saved state: without this a stop mid-drill after the last autosave forgot them (B772).
+					data.setDirty();
 					DRILLED.incrementAndGet();
 				}
 			} else {

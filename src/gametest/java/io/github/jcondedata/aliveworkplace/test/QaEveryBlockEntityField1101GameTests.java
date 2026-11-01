@@ -244,7 +244,8 @@ public class QaEveryBlockEntityField1101GameTests implements FabricGameTest {
 	private static final Map<String, String> DATA_RECOUNTED = Map.of(
 		"Data.looks", "CampBeds.Data#looks: whether this session of an older save still looks at unlisted beds (B749)",
 		"PostOffice.lastNoon", "the last noon mail round, in memory (a second round after a restart finds nothing new)",
-		"BuildSiteManager.changes", "a count of changes this session, so a reader can tell the list hasn't changed (B85)");
+		"BuildSiteManager.changes", "a count of changes this session, so a reader can tell the list hasn't changed (B85)",
+		"WonderManager.layouts", "a count of Wonders laid out or forgotten this session, so footprint caches look again (B747); the sites themselves are saved (B758)");
 
 	/** As the record test's diff, with an anthem's notes compared note by note (a record of an array). */
 	private static String same(Object wrote, Object read, String name) {

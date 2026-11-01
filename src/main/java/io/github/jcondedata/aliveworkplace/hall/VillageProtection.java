@@ -14,6 +14,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Animal;
@@ -22,11 +23,16 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.FireChargeItem;
+import net.minecraft.world.item.FlintAndSteelItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.CraftingTableBlock;
@@ -72,7 +78,7 @@ public final class VillageProtection {
 				io.github.jcondedata.aliveworkplace.trade.TradePage.openForStranger(stranger, hit.getBlockPos());
 				return InteractionResult.SUCCESS;
 			}
-			return mayChange(level, player, hit.getBlockPos()) ? InteractionResult.PASS : InteractionResult.FAIL;
+			return mayChange(level, player, hit.getBlockPos()) && mayPlace(level, player, hand, hit) ? InteractionResult.PASS : InteractionResult.FAIL;
 		});
 		Platform.get().allowUseItem((player, level, hand) ->
 			!(player.getItemInHand(hand).getItem() instanceof BucketItem) || mayUseBucket(level, player, player.getItemInHand(hand)));
@@ -101,6 +107,30 @@ public final class VillageProtection {
 			return true; // the bucket does nothing either
 		}
 		return mayChange(level, player, hit.getBlockPos()) && mayChange(level, player, hit.getBlockPos().relative(hit.getDirection()));
+	}
+
+	/**
+	 * B741: whether {@code player} may put what they hold where a click on {@code hit} would put it, not only where they
+	 * clicked: a block goes in the cell beside the clicked face (or the clicked cell, when it can be replaced; a bed's head
+	 * one further on), and flint and steel or a fire charge lights the cell beside the face. A stranger outside can't place
+	 * a block or fire just inside a village by clicking the inward face of a block outside its edge; one inside may still
+	 * place outside it. If not, they're told whose village it is.
+	 */
+	static boolean mayPlace(Level level, Player player, InteractionHand hand, BlockHitResult hit) {
+		ItemStack stack = player.getItemInHand(hand);
+		if (stack.getItem() instanceof BlockItem blockItem) {
+			BlockPlaceContext context = blockItem.updatePlacementContext(new BlockPlaceContext(level, player, hand, stack, hit));
+			if (context == null) {
+				return true; // nothing would be placed
+			}
+			BlockPos at = context.getClickedPos();
+			return mayChange(level, player, at)
+				&& (!(blockItem.getBlock() instanceof BedBlock) || mayChange(level, player, at.relative(context.getHorizontalDirection())));
+		}
+		if (stack.getItem() instanceof FlintAndSteelItem || stack.getItem() instanceof FireChargeItem) {
+			return mayChange(level, player, hit.getBlockPos().relative(hit.getDirection()));
+		}
+		return true;
 	}
 
 	/** Blocks anyone may use in a protected village. */

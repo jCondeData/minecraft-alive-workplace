@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A stranger standing outside a protected village can no longer place a block (such as TNT) or light a fire just inside
+  its edge by clicking the inward side of a block outside it; they're told whose village it is.
+
 ## 0.151.2 — 2026-10-31
 
 ### Fixed

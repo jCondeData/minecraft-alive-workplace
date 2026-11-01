@@ -170,15 +170,28 @@ public final class WonderPlans {
 				}
 			}
 		}
-		// A finished Wonder's parts aren't among the village's buildings (B143): its own record says where it stands
-		for (WonderSite done : WonderManager.get(level).sites()) {
-			if (!done.done() || done.placement().isEmpty() || !done.placement().get().dimension().equals(placement.dimension())) {
+		// A finished Wonder's parts aren't among the village's buildings (B143), and a Wonder begun but waiting for a
+		// stage's goods has no build sites (B714): their own records say where they stand
+		if (wonderOver(level, placement.dimension(), box).isPresent()) {
+			return Optional.of(Component.translatable("message.aliveworkplace.wonder_plan.over_wonder"));
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * The Wonder, finished or going up, laid out in {@code dimension} with a part whose footprint shares a column with
+	 * {@code box}; empty when none. It reads each Wonder's saved placement, so it finds one begun but waiting for a
+	 * stage's goods (no build sites yet, B714) as well as a finished one.
+	 */
+	public static Optional<WonderSite> wonderOver(ServerLevel level, ResourceLocation dimension, BoundingBox box) {
+		for (WonderSite site : WonderManager.get(level).sites()) {
+			if (site.placement().isEmpty() || !site.placement().get().dimension().equals(dimension)) {
 				continue;
 			}
-			for (WonderUpkeep.Part part : WonderUpkeep.parts(level, done)) {
+			for (WonderUpkeep.Part part : WonderUpkeep.parts(level, site)) {
 				Optional<BoundingBox> other = BlueprintLibrary.get(level, part.plain()).map(b -> BlueprintOutline.bounds(part.placement(), b.size()));
 				if (other.isPresent() && overlaps(box, other.get())) {
-					return Optional.of(Component.translatable("message.aliveworkplace.wonder_plan.over_wonder"));
+					return Optional.of(site);
 				}
 			}
 		}

@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.people.Names;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.threat.Threats;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -139,11 +140,15 @@ public final class LostCaravanStory {
 	/**
 	 * A caravan from {@code from} to {@code to} with {@code goods} sets off: on a road longer than {@link #LONG_ROAD}
 	 * blocks, one in {@link #CHANCE} goes missing when neither village has an arc running (and the arc can start). True
-	 * when it did: the goods are the arc's now and the caravan isn't put on the road.
+	 * when it did: the goods are the arc's now and the caravan isn't put on the road. Never when either village is
+	 * {@link Threats#quiet}.
 	 */
 	public static boolean lose(ServerLevel level, BlockPos from, BlockPos to, List<ItemStack> goods, RandomSource random) {
 		if (CHANCE <= 0 || !Arcs.ENABLED || goods.isEmpty() || from.distSqr(to) <= (double) LONG_ROAD * LONG_ROAD
-			|| Arcs.running(level, from) != null || Arcs.running(level, to) != null || Arcs.runningCount(level.getServer()) >= Arcs.AT_ONCE) {
+			|| Arcs.running(level, from) != null || Arcs.running(level, to) != null || Arcs.runningCount(level.getServer()) >= Arcs.AT_ONCE
+			// Bandits take it, and a quiet village (threat level 0, At peace, Peaceful) at either end gets no raiders:
+			// the caravan just arrives (B725).
+			|| Threats.quiet(level, from) || Threats.quiet(level, to)) {
 			return false;
 		}
 		Arcs.Arc arc = Arcs.get(ARC).orElse(null);

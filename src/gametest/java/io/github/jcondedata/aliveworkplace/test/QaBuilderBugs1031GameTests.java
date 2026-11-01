@@ -231,36 +231,63 @@ public class QaBuilderBugs1031GameTests implements FabricGameTest {
 	}
 
 	/**
-	 * Stone put down on a villager whose nearest open ground is all lava pits: it is let out to safe ground further away,
-	 * never into the lava (the spec: "the nearest walkable spot", nothing harmful).
+	 * Stone put down on a villager whose nearest open spots are all lava: it is let out to safe ground further away, never
+	 * into the lava or over it (the spec: "the nearest walkable spot", nothing harmful).
+	 * <p>B751: the villager's feet are walled in with stone on every side, so vanilla's own escape (a hurt villager
+	 * panics, and a body inside a block can walk out of it) has nowhere to go; only the let-out can move it. Around its
+	 * head lies a five-by-five lava pool on that wall (rimmed at the edge) and the column is capped, so the nearest open
+	 * spots are in the lava (one block up) and over it (two up), and the first safe ground is the floor four blocks out,
+	 * past the rim.
 	 */
 	//$ gametest_ticks_batch AREA '300' '"qaB185Lava"'
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "qaB185Lava")
 	public void qaB185AVillagerIsNeverLetOutIntoLava(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
-		for (int dx = -2; dx <= 2; dx++) {
-			for (int dz = -2; dz <= 2; dz++) {
+		BlockPos cell = new BlockPos(8, 2, 8); // the middle of the area: safe ground four blocks out on every side
+		for (int dx = -3; dx <= 3; dx++) {
+			for (int dz = -3; dz <= 3; dz++) {
+				boolean rim = Math.abs(dx) == 3 || Math.abs(dz) == 3;
 				if (dx != 0 || dz != 0) {
-					helper.setBlock(CELL.offset(dx, -1, dz), Blocks.LAVA);
+					helper.setBlock(cell.offset(dx, 0, dz), Blocks.STONE); // the wall around its feet
+					helper.setBlock(cell.offset(dx, 1, dz), rim ? Blocks.STONE : Blocks.LAVA); // lava around its head
 				}
 			}
 		}
-		Villager villager = helper.spawn(EntityType.VILLAGER, CELL);
-		BlockPos abs = helper.absolutePos(CELL);
+		Villager villager = helper.spawn(EntityType.VILLAGER, cell);
+		BlockPos abs = helper.absolutePos(cell);
 		villager.moveTo(abs.getX() + 0.5, abs.getY(), abs.getZ() + 0.5, 0, 0);
-		helper.setBlock(CELL, Blocks.STONE);
-		helper.setBlock(CELL.above(), Blocks.STONE);
+		helper.setBlock(cell, Blocks.STONE);
+		helper.setBlock(cell.above(), Blocks.STONE);
+		helper.setBlock(cell.above(2), Blocks.STONE); // no room on top of the column: the nearest open spots are the lava's
 		boolean[] harmed = {false};
+		Vec3[] freedAt = {null};
+		String[] lavaBeside = {null};
 		helper.onEachTick(() -> {
-			if (villager.isAlive() && (villager.isInLava() || villager.isOnFire())) {
+			if (!villager.isAlive()) {
+				return;
+			}
+			if (villager.isInLava() || villager.isOnFire()) {
 				harmed[0] = true;
+			}
+			if (freedAt[0] == null && !stuck(level, villager)) {
+				freedAt[0] = villager.position(); // the let-out's spot: nothing else can move it out of the walled-in stone
+				AABB around = villager.getBoundingBox().inflate(1.0);
+				for (BlockPos p : BlockPos.betweenClosed(Mth.floor(around.minX), Mth.floor(around.minY), Mth.floor(around.minZ),
+						Mth.floor(around.maxX), Mth.floor(around.maxY), Mth.floor(around.maxZ))) {
+					if (level.getBlockState(p).is(Blocks.LAVA)) {
+						lavaBeside[0] = helper.relativePos(p.immutable()).toShortString();
+						break;
+					}
+				}
 			}
 		});
 		helper.runAfterDelay(LET_OUT_BY + 40, () -> {
-			helper.assertFalse(harmed[0], "B185: the villager was let out into the lava");
-			helper.assertTrue(villager.isAlive(), "B185: the villager died (" + villager.getLastDamageSource() + ")");
+			String where = freedAt[0] == null ? "never let out" : String.format("let out at %.2f %.2f %.2f", freedAt[0].x, freedAt[0].y, freedAt[0].z);
+			helper.assertFalse(harmed[0], "B185: the villager was let out into the lava (" + where + ")");
+			helper.assertTrue(villager.isAlive(), "B185: the villager died (" + villager.getLastDamageSource() + ", " + where + ")");
 			helper.assertFalse(stuck(level, villager), "B185: the villager is still inside the stone, at " + helper.relativePos(villager.blockPosition()).toShortString());
+			helper.assertTrue(lavaBeside[0] == null, "B185: the villager was let out right beside the lava at " + lavaBeside[0] + " (" + where + ")");
 			BlockPos below = villager.blockPosition().below();
 			helper.assertTrue(level.getBlockState(below).isFaceSturdy(level, below, Direction.UP) || villager.onGround(),
 				"B185: the villager was let out with no floor under it, at " + helper.relativePos(villager.blockPosition()).toShortString());

@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 /**
- * QA (2026-11-01), found by {@link QaCarpenterFullStore1101cGameTests} while verifying B773.
+ * QA (2026-11-01), found by {@link QaCarpenterHomePlanks1101GameTests} while verifying B773.
  * <p>
  * After B773: when the chests by the Carpenter's own bench have room, the Storehouse staying full past the 2400-tick wait
  * still sends a chestless builder's planks home into them. The Carpenter isn't a worker whose chests builders take from
@@ -25,16 +25,16 @@ public class QaCarpenterFullStore1101cBugTests implements net.fabricmc.fabric.ap
 	//$ gametest_ticks_batch BIG '7000' '"qaFull1101cHomeStranded"'
 	@GameTest(template = BIG, timeoutTicks = 7000, batch = "qaFull1101cHomeStranded")
 	public void planksTakenHomeStillReachTheBuilderWhoAsked(GameTestHelper helper) {
-		QaCarpenterFullStore1101cGameTests.Run run = QaCarpenterFullStore1101cGameTests.setUp(helper, "stranded", 1,
-			QaCarpenterStorehouse1101GameTests.ROW_A, 3, 1, QaCarpenterFullStore1101cGameTests.Home.ROOM);
+		QaCarpenterHomePlanks1101GameTests.Run run = QaCarpenterHomePlanks1101GameTests.setUp(helper, "stranded", 1,
+			QaCarpenterStorehouse1101GameTests.ROW_A, 3, 1, QaCarpenterHomePlanks1101GameTests.Home.ROOM);
 		Container store = helper.getBlockEntity(QaCarpenterStorehouse1101GameTests.STORE_CHEST);
 		AtomicInteger filledAt = new AtomicInteger(-1);
 		AtomicInteger homeAt = new AtomicInteger(-1);
 		AtomicInteger freedAt = new AtomicInteger(-1);
 		helper.onEachTick(() -> {
 			int tick = (int) run.tick();
-			QaCarpenterFullStore1101cGameTests.everyTick(helper, run, 4);
-			if (filledAt.get() < 0 && QaCarpenterFullStore1101cGameTests.carrying(run.carpenter()) > 0) {
+			QaCarpenterHomePlanks1101GameTests.everyTick(helper, run, 4);
+			if (filledAt.get() < 0 && QaCarpenterHomePlanks1101GameTests.carrying(run.carpenter()) > 0) {
 				QaVillageEconomySaves1101GameTests.fillEmpty(store);
 				filledAt.set(tick);
 			}

@@ -980,7 +980,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStorehouseBug1101Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardWallsRoads1101bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCarpenterHomePlanks1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSupplyReach1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageEconomySaves1101GameTests",
@@ -1041,7 +1041,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeace1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeaceBugs1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPacts1101BugTests",
-			"io.github.jcondedata.aliveworkplace.test.B768GameTests"
+			"io.github.jcondedata.aliveworkplace.test.B768GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101cGameTests"
 		]
 	},
 	"depends": {

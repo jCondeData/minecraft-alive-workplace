@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721
 
 ## 1. What a player sees
 
@@ -22,6 +22,10 @@ piece). A big order is made a bagful at a time until there's enough.
 A job only crafts from what no open build needs. When two builds share a chest or the village Storehouse, the logs
 stocked for one are never turned into planks for the other: the Carpenter uses only what's left over once every other
 build's remaining list is counted, so neither build ends up waiting for a log that went into the other's planks (B696).
+
+What a job makes for a builder goes where that builder looks for materials: the chests by his Blueprint Table, or,
+when there are none, the village Storehouse (else another village-mate's chests he takes from). A builder with no
+chest anywhere he looks isn't crafted for, so nothing made for him is left lying by the crafter's bench (B721).
 
 When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
 under "Short of": "Can't be made yet: short of 4 Oak Logs to make 3 Barrels" (items named in the plural after a count above one, B426). When no job in the village makes a crafted
@@ -169,6 +173,8 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `QaCarpenterReserve1031GameTests.aCarpenterLeavesTheStorehouseLogsAnotherBuildNeeds`: the same with B's logs in the
   village Storehouse, out of both benches' reach: the Carpenter leaves them and B finishes (B696);
   `aCarpenterStillCraftsTheStorehousesSpareLog`: one log more there is crafted and brought to A's chest, and both finish.
+- `QaCarpenterChestlessBug1031Tests.aCarpentersPlanksForABuilderWithNoChestReachHim`: the same spare log for a builder
+  with no chest by his table: the planks go into the Storehouse, never onto the ground, and his row is built (B721).
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.
 - `JobChainGameTests.theCarpenterMakesTheSlabsTheBuilderNeeds`, `theCarpenterFetchesTheOneLogItNeeds`,
   `oneCarpenterServesTwoBuilders`: one step, exactly one log, two askers.

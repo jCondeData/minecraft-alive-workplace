@@ -3,7 +3,7 @@
 Laws a village's owner proclaims at the Village Hall. Each gives the village a boost at a cost, and each has a reform
 that takes the cost away for good. Part of 1.4 (Edicts and civic items): switched on in 1.0 with every other expansion.
 
-Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327
+Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327, B744
 
 ## What a player sees
 
@@ -44,7 +44,8 @@ before it can be lifted. A village that drops a rank loses its newest edict.
 **One toolbox of effects.** Each effect has a type (`aliveworkplace:work_pace`, `aliveworkplace:mood`, and so on)
 and is read by exactly the system it changes: work speed by the pace rule, food by the hall's needs, births by
 village growth, raids by the raid code. The effects in force are added up per hall whenever its edicts change, so
-nothing is worked out every tick. Guilds, tonics and classes use the same toolbox.
+nothing is worked out every tick. Guilds, tonics and classes use the same toolbox. A pace for named trades reads
+"2 trades work 50% faster", or "1 trade works 50% faster" for one (B744).
 
 **Reforms.** Each step sits on the Quests page in the row below the daily quests (a book-and-quill icon), never
 expires and pays its emeralds as a quest does. The next step goes up the morning after the last one was done, so a

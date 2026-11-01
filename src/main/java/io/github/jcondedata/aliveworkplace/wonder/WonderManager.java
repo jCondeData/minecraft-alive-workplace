@@ -89,6 +89,14 @@ public final class WonderManager extends SavedData {
 	public record Located(ServerLevel level, WonderSite site) {
 	}
 
+	/** Not saved: counts the Wonders laid out or forgotten, so caches of their footprints know when to look again (B747). */
+	private int layouts;
+
+	/** A number that changes whenever a Wonder is laid out somewhere or forgotten (not saved). */
+	public int layouts() {
+		return layouts;
+	}
+
 	public List<WonderSite> sites() {
 		return List.copyOf(sites.values());
 	}
@@ -137,6 +145,7 @@ public final class WonderManager extends SavedData {
 		WonderSite site = sites.get(id);
 		if (site != null) {
 			sites.put(id, site.placedAt(placement, stone));
+			layouts++;
 			changed();
 		}
 	}
@@ -214,6 +223,7 @@ public final class WonderManager extends SavedData {
 	public void remove(UUID id) {
 		searches.remove(id);
 		if (sites.remove(id) != null) {
+			layouts++;
 			changed();
 		}
 	}

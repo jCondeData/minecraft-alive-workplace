@@ -166,6 +166,9 @@ public class QaWonders1101GameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos hall = helper.absolutePos(HALL);
+		// alone in its batch (the batch is the test's name): an earlier batch's finished building or Wonder site within
+		// the plan's reach refused it ('It would stand over the finished Qahfu ...', local build 2026-11-01), as in B125
+		Leftovers.wonderGround(helper, hall);
 		ItemStack stack = WonderPlanItem.of(level, hall, wonder(helper, id), Component.literal("Testville"));
 		WonderPlanItem.Plan plan = WonderPlanItem.plan(stack).orElseThrow();
 		Vec3i size = BlueprintItem.data(stack).flatMap(BlueprintData::size).orElseThrow();

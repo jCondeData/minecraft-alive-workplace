@@ -162,9 +162,19 @@ public class QaLostCaravanThreats1031GameTests implements FabricGameTest {
 		int atB = Reputation.points(level, b, me.getUUID());
 
 		// the two of them, 13 blocks apart, by Ashford's hall (320 blocks from Thornholm's), once its forced chunk is loaded
-		// for entities (as it is round a player who walked there)
+		// for entities (as it is round a player who walked there). Freed, Tobin is no longer kept in the cage and strolls
+		// like any villager; the cage is only 30 blocks from Thornholm's hall, so while Ashford loads he's held where he
+		// was freed: a stroll of 6 blocks toward the hall would bring him home to Thornholm (B759)
+		net.minecraft.world.phys.Vec3 held = tobin.position();
 		me.teleportTo(b.getX() + 3.5, b.getY(), b.getZ() + 3.5);
-		when(helper, () -> level.isPositionEntityTicking(b), 150, "setup: Ashford never loaded", () -> {
+		when(helper, () -> {
+			tobin.getNavigation().stop();
+			tobin.getBrain().eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET);
+			tobin.teleportTo(held.x, held.y, held.z);
+			return level.isPositionEntityTicking(b);
+		}, 150, "setup: Ashford never loaded", () -> {
+			helper.assertTrue(Arcs.running(level, a) != null, "setup: the story ended before Tobin got to Ashford, with him at " + tobin.blockPosition().subtract(a)
+				+ " from Thornholm's hall: " + line(level, a, "chronicle.aliveworkplace.lost_caravan.ending"));
 			tobin.teleportTo(b.getX() + 12.5, b.getY(), b.getZ() + 12.5);
 			helper.assertTrue(tobin.level() == level && tobin.isAlive(), "setup: Tobin didn't get to Ashford");
 			helper.runAfterDelay(5, () -> {

@@ -170,8 +170,11 @@ public class QaWonders1101GameTests implements FabricGameTest {
 		// the plan's reach refused it ('It would stand over the finished Qahfu ...', local build 2026-11-01), as in B125
 		Leftovers.wonderGround(helper, hall);
 		ItemStack stack = WonderPlanItem.of(level, hall, wonder(helper, id), Component.literal("Testville"));
-		WonderPlanItem.Plan plan = WonderPlanItem.plan(stack).orElseThrow();
-		Vec3i size = BlueprintItem.data(stack).flatMap(BlueprintData::size).orElseThrow();
+		Optional<WonderPlanItem.Plan> drawn = WonderPlanItem.plan(stack);
+		Optional<Vec3i> carried = BlueprintItem.data(stack).flatMap(BlueprintData::size);
+		helper.assertTrue(drawn.isPresent() && carried.isPresent(), id + ": the plan carries no Wonder (" + drawn + ") or no size (" + carried + ")");
+		WonderPlanItem.Plan plan = drawn.get();
+		Vec3i size = carried.get();
 		List<String> wrong = new ArrayList<>();
 		for (Rotation turn : Rotation.values()) {
 			for (Mirror mirror : new Mirror[] {Mirror.NONE, Mirror.FRONT_BACK}) {

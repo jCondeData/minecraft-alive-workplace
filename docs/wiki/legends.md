@@ -266,7 +266,7 @@ floor exactly 96 blocks away is within 96 and not within 95, B623),
 befriended while the owner is offline waits in their PC, a pasture outside the village not counted, a stone nobody
 can pay for costs nothing and stays one a day, the hints show only the clicking player's party),
 `QaLegendsHall1027GameTests` (3, QA, 29.4: a Legend's look follows the switch and survives a save, every shipped Legend
-has its outfit texture, the Legend text is in American English), `RealmLegendsGameTests` (5, 33.23), `QaRealmLegendsJournal1031GameTests` (33.23: only his own village, below Town, caravan range from both sides, killed, Legends off, three to spare); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345).
+has its outfit texture, the Legend text is in American English), `RealmLegendsGameTests` (5, 33.23), `QaRealmLegendsJournal1031GameTests` (33.23: only his own village, below Town, caravan range from both sides, killed, Legends off, three to spare); `QaStageSevenGameTests` (the camp clicks through real packets, both hands, B345); `QaThreatCobbleVerify1101GameTests` (4, QA, B345: a wrong item in the main hand wins over the off hand's meal or answer, a later riddle's answer in the off hand is an empty-handed click, stew from the off hand frees the castaway once, all three riddles answered from the off hand free the Sage and the empty bucket comes back).
 `QaLegendSitesGameTests` (9, 29.9): the 5-second check on the real tick, the 1500-block reach from both sides, the
 nearest hall, friends one way only, 29.3's slots and conditions at a site, a slot filled before the morning, only a
 cage's own bars freeing its prisoner, a Legend who walked off arriving the next morning, the `legendSites` switch, the

@@ -62,6 +62,11 @@ expeditions", in the singular at one, B444), and
 sneak-right-clicking a worker with an empty hand shows their status, ending with their level in their own job
 ("Apprentice Miner · 10/70 XP to the next level") and how fast that makes them.
 
+**A worker's tool stays in their hand (B766).** A Farmer's hoe, a Shepherd's shears, a Fisher's rod, a Miner's pickaxe,
+a Lumberjack's axe or a conscript's sword is never taken from them by vanilla's trade display, the way villagers show
+their wares when a player stands by: the display only shows a ware in an empty hand, and only puts away the wares it
+showed itself.
+
 | Job | Workstation and item | Class |
 |---|---|---|
 | Builder | Blueprint Table (+ a Blueprint or a Blank Blueprint to retrain a working villager) | any |
@@ -368,6 +373,8 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 - 21.1a (owner, 2026-09-30): not every villager needs a new custom table; items already in the game should give a
   villager their job. So jobs share vanilla blocks and are picked with an item.
 - 21.1c (owner, 2026-10-03): the Fossil Scientist works at Cobblemon's own Fossil Analyzer.
+- B766: the trade display marks each ware it shows (a tag in the stack's custom data) and touches only an empty hand or
+  its own marked ware, one rule for every worker instead of a check per tool.
 - B737: handing a Field Marker to a Lumberjack, Orchard Keeper or Berry Breeder names the block they really work at
   ("within 8 blocks of their Chopping Block", or Fletching Table, Fruit Basket, Composter), since the Lumberjack and
   Orchard Keeper may take either; the Berry Breeder's says "of her Composter". Tests: `AreaJobWorkBlockGameTests`,
@@ -428,10 +435,12 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
   under the crosshair, as close as vanilla's reach. Jade or WTHIT tooltips don't get it (no compat yet).
 - A Miner makes only pickaxes, never their ladders or torches; the board asks for one missing material at a time.
 - This page lists how each job starts, not what it does: jobs without a wiki page yet are in the README.
+- B766: a ware a villager was showing when the world was saved before this fix carries no mark, so it stays in his hand
+  until a worker's job swaps it out.
 
 ## Proof
 
-GameTests: `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
+GameTests: `TradeDisplayToolsGameTests` (2, B766: a Farmer keeps his hoe while a player holds the price of his trade; the display still shows its ware and puts it away), `QaToolsByTheTradeDisplay1101BugTests` and `QaToolsByTheTradeDisplay1101GameTests` (2 each: the Farmer's hoe, the Shepherd's shears, the Miner's pickaxe and the Lumberjack's axe outlast an evening with the owner beside them), `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits

@@ -201,4 +201,32 @@ public class QaPeacefulLairGameTests implements FabricGameTest {
 			});
 		});
 	}
+	/**
+	 * B767: Peaceful for a moment takes the chief away; the world is back on Normal and saved and loaded before the hall's
+	 * round. The camp remembers he was taken, not brought down: it leaves in peace, with no rest days.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"qaPeacefulLairBlipSaved"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaPeacefulLairBlipSaved")
+	public void aChiefPeacefulTookIsStillNoKillAfterASaveOnNormal(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		helper.runAfterDelay(2, () -> {
+			at(level, 95, 13000);
+			helper.assertTrue(BanditCamps.found(level, hall, helper.absolutePos(CAMP)) != null, "no camp");
+			java.util.UUID chief = Lairs.near(level, hall).orElseThrow().captain();
+			level.getServer().setDifficulty(Difficulty.PEACEFUL, true);
+			helper.runAfterDelay(10, () -> {
+				helper.assertTrue(level.getEntity(chief) == null, "Peaceful didn't take the chief away; the test proves nothing");
+				level.getServer().setDifficulty(Difficulty.NORMAL, true);
+				Lairs.Data.get(level).roundTrip(level.registryAccess());
+				helper.assertTrue(Lairs.near(level, hall).isPresent(), "the camp didn't load back");
+				Lairs.round(level, hall, true, always());
+				helper.assertTrue(Lairs.near(level, hall).isEmpty(), "the camp lingers without its chief");
+				helper.assertTrue(last(entity).equals("The raiders of the Bandit camp packed up and left the village in peace") && Lairs.resting(level, hall) == 0,
+					"Peaceful for a moment, saved, back on Normal: '" + last(entity) + "', resting " + Lairs.resting(level, hall));
+				helper.succeed();
+			});
+		});
+	}
 }

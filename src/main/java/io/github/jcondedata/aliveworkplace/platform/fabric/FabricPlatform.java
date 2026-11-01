@@ -174,6 +174,11 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public void onEntityUnload(BiConsumer<Entity, ServerLevel> action) {
+		ServerEntityEvents.ENTITY_UNLOAD.register(action::accept);
+	}
+
+	@Override
 	public void onChunkLoad(BiConsumer<ServerLevel, net.minecraft.world.level.chunk.LevelChunk> action) {
 		net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents.CHUNK_LOAD.register(action::accept);
 	}

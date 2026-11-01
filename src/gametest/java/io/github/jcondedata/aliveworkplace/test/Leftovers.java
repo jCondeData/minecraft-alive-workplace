@@ -65,6 +65,24 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every bed (a home point of interest) within {@code VillageHalls.RADIUS} (as it is now) of {@code hall}
+	 * (absolute). A hall's reach goes past its test's area, and a bed an earlier batch's test left there (never cleared,
+	 * as it stood outside that test's area) is one of the village's beds: StewardCivicRulesGameTests counted a gray bed
+	 * 3 blocks past its area's edge as a third dark bed once a new test class moved it next to that bed (B775). The beds'
+	 * points of interest go a tick later, with the blocks. Only for tests alone in their batch.
+	 */
+	static void beds(GameTestHelper helper, net.minecraft.core.BlockPos hall) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		java.util.List<net.minecraft.core.BlockPos> beds = level.getPoiManager().findAll(
+			h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), p -> true, hall,
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.map(net.minecraft.core.BlockPos::immutable).toList();
+		for (net.minecraft.core.BlockPos bed : beds) {
+			level.removeBlock(bed, false); // its other half goes with it, as it can't stand alone
+		}
+	}
+
+	/**
 	 * Forgets every build a Steward started from a hall in or near the test area, and removes every Storehouse whose
 	 * village reaches it. Both outlive their test: a site is saved world data, and a Storehouse built outside its own
 	 * area is never cleared. A Steward's rounds visit both, so a Steward test at the same spot as an earlier batch's

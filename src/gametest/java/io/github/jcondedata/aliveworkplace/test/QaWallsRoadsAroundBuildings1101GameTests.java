@@ -69,6 +69,10 @@ public class QaWallsRoadsAroundBuildings1101GameTests implements FabricGameTest 
 	/** As QaStewardWalls1101Tests: flat grass, old sites, finished builds and Wonders round the area forgotten, a hall. */
 	private static BlockPos ground(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B777: a Village Hall an earlier batch left near here (never cleared, outside its own area) is a nearer village to
+		// a wall piece's corner, and StewardSafety skipped that piece. Its point of interest goes a tick after the block;
+		// every test here waits 2 ticks before the round.
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos a = helper.absolutePos(BlockPos.ZERO);
 		BoundingBox near = new BoundingBox(a.getX() - 80, level.getMinBuildHeight(), a.getZ() - 80, a.getX() + 110, level.getMaxBuildHeight(), a.getZ() + 110);
@@ -260,7 +264,8 @@ public class QaWallsRoadsAroundBuildings1101GameTests implements FabricGameTest 
 			List<BuildSite> open = round(helper, v);
 			helper.assertTrue(open.size() == 1, open.size() + " wall sites opened beside the Well, not 1");
 			helper.assertTrue(open.get(0).placement().equals(first.placement()), "the first piece " + first.box()
-				+ " was skipped though the finished Well " + well + " stops a column short; the site opened at " + box(helper, open.get(0)));
+				+ " was skipped though the finished Well " + well + " stops a column short; the site opened at " + box(helper, open.get(0))
+				+ " (StewardSafety on the first piece: " + io.github.jcondedata.aliveworkplace.city.StewardSafety.check(helper.getLevel(), v.hall(), first.box(), false) + ")");
 			helper.succeed();
 		}));
 	}

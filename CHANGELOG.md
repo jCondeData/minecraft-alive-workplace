@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Great Wall whose lost sentry is refused by another mod (with `forceVillageSpawns` off) no longer uses up four iron
+  blocks and a pumpkin every morning for a golem that never comes: the stockpile keeps them.
+- Ending a trade pact while the other village's caravan is on the road no longer gets its cargo free: a caravan that set
+  out under the pact is still paid at the pact's terms when it arrives.
 - Switching the world to Peaceful for a moment and back to Normal no longer breaks a bandit camp up as if its chief
   fell: Peaceful took him away, so the camp now packs up and leaves in peace (no "Chief ... fell" line, no rest days).
 - A Farmer's hoe, a Shepherd's shears and any other worker's tool no longer vanish when a player stands beside them

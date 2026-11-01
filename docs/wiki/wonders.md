@@ -426,7 +426,8 @@ and the Golem Smith (or 4 iron golems and a Master Tinkerer while Legends are of
   next morning (the hall's round before 2000 ticks of the day) by the village's Golem Smith, or a Tinkerer standing in,
   from 4 iron blocks and a pumpkin (or a carved one) in the stockpile, the chests round the Foundation Stone; the
   chronicle says "Tibbs made a new sentry for the Great Wall from four iron blocks and a pumpkin". Without the iron,
-  or nobody to make it, nobody comes.
+  or nobody to make it, nobody comes. The iron and pumpkin are taken only once the golem stands: a golem refused by
+  another mod (with `forceVillageSpawns` off) leaves them in the stockpile (B755).
 - **The Great Gate** shuts at nightfall and opens in the morning with the village's gates (guards or none), and stays
   shut through a siege.
 

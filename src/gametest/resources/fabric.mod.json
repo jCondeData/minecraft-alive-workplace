@@ -572,6 +572,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPlanOverSite1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderHouseTwoWonders1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPlots1101BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWonderOverlap1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderPlanOverSiteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildReserve1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderRestart1101GameTests",

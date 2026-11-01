@@ -55,7 +55,7 @@ blueprint's four turns and its mirror image. A spot is good only if the front fa
 footprint and a 2-block margin lie inside the zone and off the roads, the ground varies by at most 4 blocks, nothing
 stands there but natural ground, trees and the plants of the `steward_clearable` tag (a carved pumpkin is not one), and a builder's bench stands in the village (anywhere in it then reaches, 36.20) or is within `maxSiteDistance` of the spot. At most a tenth of
 the footprint may be over water and none of it over lava, it stays 2 blocks clear of every build site and finished
-building (a laid-out Wonder counts, finished or waiting for its goods), and the same blueprint with the same mirroring is never put within 24 blocks of another, center to center (exactly 24 counts
+building (a laid-out Wonder counts, finished or waiting for its goods: exactly 2 free blocks beside it fit, 1 doesn't, and a search already made starts over when a Wonder is laid out), and the same blueprint with the same mirroring is never put within 24 blocks of another, center to center (exactly 24 counts
 as within; a turned twin counts, a mirrored one doesn't).
 
 **Open builds.** His level sets how many of his builds may be open at once (1, 2, 2, 3, 4 from Novice to Master),
@@ -165,7 +165,8 @@ read as the bad_zone sentence; a gone style stays only with the zone that had it
 with its cells, strokes that change nothing take no undo step, a stranger's eraser and side panel are refused, the
 first painter's claim is saved, a block's zone comes from the nearest hall, an 8x8 cell at radius 128),
 `QaStewardRulesDataGameTests` (2, 27.6), `QaStewardPlotFitGameTests` (2, 27.7: the front faces the nearer road;
-clearable plants), `QaStewardDeskModesGameTests` (10, 27.8: mode buttons, operator and friend approvals, approving
+clearable plants), `QaWonderOverlap1101GameTests` (2 of 7, B747: the margin round a waiting Wonder from both sides, a
+kept search started over when a Wonder is laid out on its plot), `QaStewardDeskModesGameTests` (10, 27.8: mode buttons, operator and friend approvals, approving
 twice, Steward or hall gone, Run's morning line, save and reload, the desk's sentences, the Ledger, Show me's 30
 seconds), `QaWorkplaceCopiesGameTests` (4, 27.11), `QaSteward1031GameTests` (10, 27.1a and 27.19: one XP short of Journeyman refused and the next XP let in, Expert and Master
 qualify, a Steward moves halls, the recipe in any slots and with a lookalike, the half-way line to another hall, a stranger's

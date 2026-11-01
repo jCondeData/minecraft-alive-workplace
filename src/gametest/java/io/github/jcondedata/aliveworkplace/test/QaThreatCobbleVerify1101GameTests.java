@@ -399,11 +399,13 @@ public class QaThreatCobbleVerify1101GameTests implements FabricGameTest {
 			at(level, 95, 13000);
 			helper.assertTrue(BanditCamps.found(level, hall, helper.absolutePos(CAMP)) != null, "no camp");
 			chief[0] = Lairs.near(level, hall).orElseThrow().captain();
+			// (heard from here on: the hall's own timed round may come any tick after Peaceful took the chief and send
+			// the camp off before the round this test asks for, B770)
+			c.seen().clear();
 			level.getServer().setDifficulty(Difficulty.PEACEFUL, true);
 		});
 		helper.runAfterDelay(12, () -> {
 			helper.assertTrue(level.getEntity(chief[0]) == null, "Peaceful didn't take the chief away; the test proves nothing");
-			c.seen().clear();
 			hallRound(helper, hall);
 		});
 		helper.runAfterDelay(16, () -> {
@@ -523,6 +525,44 @@ public class QaThreatCobbleVerify1101GameTests implements FabricGameTest {
 			String last = lines.isEmpty() ? "" : lines.get(lines.size() - 1);
 			helper.assertTrue(last.contains(p.getGameProfile().getName()) && last.contains("broke up"), "the kill isn't remembered: " + lines);
 			helper.assertTrue(Lairs.resting(level, hall) > 0, "no rest days after the chief fell");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * A player switches the world to Peaceful for a moment (as players do to clear the night's mobs) and back to Normal
+	 * before the hall's next round: the game took the chief away, nobody brought him down. The camp is a lair that stood
+	 * when the world went Peaceful; it must not be "broken up" as if its chief fell (no such chronicle line, no
+	 * broken-up chat, no rest days).
+	 */
+	//$ gametest_ticks_batch BIG '80' '"qav1101PeacefulBlip"'
+	@GameTest(template = BIG, timeoutTicks = 80, batch = "qav1101PeacefulBlip")
+	public void qaAMomentOfPeacefulBeforeTheHallsRoundIsNoKill(GameTestHelper helper) {
+		BlockPos hall = lairVillage(helper);
+		ServerLevel level = helper.getLevel();
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		QaStageFiveGameTests.Client c = listener(helper, "qav1101blip");
+		UUID[] chief = {null};
+		helper.runAfterDelay(2, () -> {
+			at(level, 95, 13000);
+			helper.assertTrue(BanditCamps.found(level, hall, helper.absolutePos(CAMP)) != null, "no camp");
+			chief[0] = Lairs.near(level, hall).orElseThrow().captain();
+			level.getServer().setDifficulty(Difficulty.PEACEFUL, true);
+		});
+		helper.runAfterDelay(12, () -> {
+			helper.assertTrue(level.getEntity(chief[0]) == null, "Peaceful didn't take the chief away; the test proves nothing");
+			level.getServer().setDifficulty(Difficulty.NORMAL, true);
+			c.seen().clear();
+			hallRound(helper, hall);
+		});
+		helper.runAfterDelay(15, () -> {
+			at(level, 96, 100);
+			hallRound(helper, hall);
+		});
+		helper.runAfterDelay(18, () -> {
+			noBreakUp(helper, entity, c, "Peaceful for a moment, then Normal");
+			helper.assertTrue(Lairs.resting(level, hall) == 0, "rest days though nobody killed the chief: " + Lairs.resting(level, hall)
+				+ "; chronicle " + chronicle(entity));
 			helper.succeed();
 		});
 	}

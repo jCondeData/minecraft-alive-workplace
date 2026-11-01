@@ -72,6 +72,9 @@ public class CrafterWork extends Behavior<Villager> {
 	private static final int LOOK_EVERY = 100;
 	/** A request another crafter took is left to them this long. */
 	private static final long CLAIM_TICKS = 2400;
+	/** B760: with the job's chests full on arrival, how often we try again, and how long before taking it home instead. */
+	private static final int FULL_RETRY_TICKS = 40;
+	private static final int FULL_WAIT_TICKS = 2400;
 
 	private enum Phase { IDLE, FETCHING, CRAFTING, DELIVERING, TIDYING }
 
@@ -114,6 +117,9 @@ public class CrafterWork extends Behavior<Villager> {
 	private Phase phase = Phase.IDLE;
 	private int timer;
 	private int lookTimer;
+	/** B760: ticks until the next try at full chests, and how long we've waited for room so far. */
+	private int deliverWait;
+	private int fullFor;
 	/** The last look found nothing to do (so the line above the head says so). */
 	private boolean foundNothing = true;
 
@@ -201,6 +207,8 @@ public class CrafterWork extends Behavior<Villager> {
 				return;
 			}
 			toFetch = new LinkedHashMap<>(job.plan().takes());
+			deliverWait = 0;
+			fullFor = 0;
 			phase = Phase.FETCHING;
 			step = 0;
 			stepwise = chains() && stepwise(job.plan());
@@ -482,6 +490,8 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 		});
 		timer = -1;
+		deliverWait = 0;
+		fullFor = 0;
 		foundNothing = false;
 		walker.reset();
 	}
@@ -564,18 +574,51 @@ public class CrafterWork extends Behavior<Villager> {
 		if (!walker.walkTo(level, villager, chests.get(0), REACH)) {
 			return;
 		}
+		if (deliverWait > 0) {
+			deliverWait--;
+			return;
+		}
 		int made = 0;
+		List<ItemStack> unplaced = new ArrayList<>();
 		for (ItemStack stack : bag.takeAll()) {
-			if (stack.is(job.plan().target())) {
-				made += stack.getCount();
-			}
 			ItemStack rest = SupplyContainers.insert(level, chests, finished(level, stack));
+			if (stack.is(job.plan().target())) {
+				made += stack.getCount() - rest.getCount();
+			}
 			if (!rest.isEmpty()) {
-				drop(level, chests.get(0).above(), rest);
+				unplaced.add(rest);
 			}
 		}
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, chests.get(0), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
+		if (!unplaced.isEmpty() && fullFor < FULL_WAIT_TICKS) {
+			// B760: the chests filled up after we chose the job; dropped by them, the builder never found it. Hold on to
+			// it and try again, keeping the request ours so nobody makes it a second time.
+			for (ItemStack rest : unplaced) {
+				ItemStack over = bag.add(rest);
+				if (!over.isEmpty()) {
+					drop(level, chests.get(0).above(), over);
+				}
+			}
+			if (made > 0) {
+				delivered(level, villager, job, made);
+			}
+			if (!job.claim().isEmpty()) {
+				claim(job.claim(), level.getGameTime());
+			}
+			deliverWait = FULL_RETRY_TICKS;
+			fullFor += FULL_RETRY_TICKS;
+			return;
+		}
+		// given up after a long wait: what's left goes home with tidy(), like a job whose chests are gone
+		for (ItemStack rest : unplaced) {
+			ItemStack over = bag.add(rest);
+			if (!over.isEmpty()) {
+				drop(level, chests.get(0).above(), over);
+			}
+		}
+		fullFor = 0;
+		deliverWait = 0;
 		delivered(level, villager, job, made);
 		if (!job.claim().isEmpty()) {
 			synchronized (CLAIMS) {
@@ -608,6 +651,31 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 		}
 		walker.reset();
+	}
+
+	/**
+	 * Whether everything {@code makes} fits in {@code chests} as they are now (B760): empty slots, and room left in stacks
+	 * of the same plain item. Counted low for a slot holding more than a stack, never high.
+	 */
+	static boolean roomFor(ServerLevel level, List<BlockPos> chests, Map<Item, Integer> makes) {
+		if (chests.isEmpty()) {
+			return false;
+		}
+		long freeSlots = SupplyContainers.freeSlots(level, chests);
+		for (Map.Entry<Item, Integer> e : makes.entrySet()) {
+			ItemStack plain = new ItemStack(e.getKey());
+			int max = Math.max(1, plain.getMaxStackSize());
+			long left = e.getValue();
+			for (BlockPos chest : chests) {
+				for (ItemStack in : SupplyContainers.peekMatching(level, chest, s -> ItemStack.isSameItemSameComponents(s, plain))) {
+					left -= Math.max(0, max - in.getCount());
+				}
+			}
+			if (left > 0) {
+				freeSlots -= (left + max - 1) / max;
+			}
+		}
+		return freeSlots >= 0;
 	}
 
 	/** The first builder near our workstation waiting for something we can make from what they can get at. */
@@ -730,6 +798,9 @@ public class CrafterWork extends Behavior<Villager> {
 						}
 					}
 					continue;
+				}
+				if (!roomFor(level, SupplyContainers.find(level, deliverTo, area), made.makes())) {
+					continue; // B760: his store is full; made anyway, it lay on the ground by it and was made again and again
 				}
 				if (chains()) {
 					JobShortages.covered(site.id(), want.getKey(), now);

@@ -499,6 +499,36 @@ public final class Walls {
 			&& site.minY() <= piece.maxY() + GROUND_REACH && site.maxY() >= piece.minY() - GROUND_REACH;
 	}
 
+	/**
+	 * The ground a wall piece may not be opened on (B752): every finished building that isn't a wall piece (an older
+	 * kit's piece is replaced, {@link #replaces}) and every laid-out Wonder's parts, finished or going up, whose
+	 * footprint meets the span of {@code pieces}. Build sites are checked on their own ({@link #onSpot}).
+	 */
+	static List<BoundingBox> held(ServerLevel level, List<Piece> pieces) {
+		if (pieces.isEmpty()) {
+			return List.of();
+		}
+		BoundingBox span = BoundingBox.encapsulatingBoxes(pieces.stream().map(Piece::box).toList()).orElseThrow();
+		List<BoundingBox> out = new ArrayList<>();
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedIn(level)) {
+			if (!isPiece(f.structure())) {
+				BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size()))
+					.filter(box -> columnsMeet(box, span)).ifPresent(out::add);
+			}
+		}
+		for (BoundingBox box : io.github.jcondedata.aliveworkplace.wonder.WonderPlans.footprints(level)) {
+			if (columnsMeet(box, span)) {
+				out.add(box);
+			}
+		}
+		return out;
+	}
+
+	/** Whether two footprints share a column, whatever their heights. */
+	static boolean columnsMeet(BoundingBox a, BoundingBox b) {
+		return a.minX() <= b.maxX() && a.maxX() >= b.minX() && a.minZ() <= b.maxZ() && a.maxZ() >= b.minZ();
+	}
+
 	/** The wall's pieces still to build, in order. */
 	public static List<Piece> unbuilt(ServerLevel level, BlockPos hall) {
 		return pieces(level, hall).stream().filter(p -> !stands(level, p)).toList();
@@ -556,9 +586,14 @@ public final class Walls {
 		int opened = open.size();
 		boolean replacing = open.stream().anyMatch(s -> pieces(level, hall).stream()
 			.anyMatch(p -> p.placement().equals(s.placement()) && replaces(level, p)));
-		for (Piece piece : unbuilt(level, hall)) {
+		List<Piece> unbuilt = unbuilt(level, hall);
+		List<BoundingBox> held = held(level, unbuilt);
+		for (Piece piece : unbuilt) {
 			if (taken.stream().anyMatch(box -> onSpot(box, piece.box()))) {
 				continue;
+			}
+			if (held.stream().anyMatch(box -> columnsMeet(box, piece.box()))) {
+				continue; // B752: not through a finished building or a Wonder's ground, finished or waiting for its goods
 			}
 			if (!StewardSafety.allowed(level, hall, piece.box(), false)) {
 				continue; // 27.19: not through a player's build, Keep Clear or another village

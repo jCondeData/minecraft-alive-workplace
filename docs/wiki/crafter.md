@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760
 
 ## 1. What a player sees
 
@@ -27,8 +27,11 @@ What a job makes for a builder goes where that builder looks for materials: the 
 when there are none, the village Storehouse (else another village-mate's chests he takes from). A builder with no
 chest anywhere he looks isn't crafted for, so nothing made for him is left lying by the crafter's bench (B721).
 A builder who has a chest of his own still gets it there, never in the Storehouse, and two chestless builders each get
-theirs. Known issue: when the Storehouse is full, what's made is dropped on the ground by it and the crafter keeps
-making more (B760, open).
+theirs.
+A job is only taken when what it makes fits in those chests as they are; with them full, the crafter waits and looks
+again later. If they fill up while he carries the job to them, he keeps it in his bag and tries again every two
+seconds (for up to two minutes, then takes it home), so nothing is dropped by a full Storehouse and nothing is made
+twice (B760).
 
 When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
 under "Short of": "Can't be made yet: short of 4 Oak Logs to make 3 Barrels" (items named in the plural after a count above one, B426). When no job in the village makes a crafted
@@ -185,6 +188,10 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   (`theStorehouseChestBrokenMidDeliveryLosesNoPlanks`); no Storehouse and only the Carpenter's own chest leaves nothing
   lying (`noStorehouseAndNoChestMeansNoPlanksLeftLying`); a save and reload on the way still delivers to the Storehouse,
   once (`reloadedOnTheWayToTheStorehouseDeliversOnce`) (B721).
+- `QaCarpenterFullStorehouseBug1101Tests.aFullStorehouseNeverLeavesThePlanksOnTheGround`: with the Storehouse full, no
+  log is crafted and no plank lies on the ground (B760); `CarpenterFullStorehouseB760GameTests`:
+  `aFullStorehouseThatFreesUpGetsThePlanksThen` (one log used once there's room, the row built) and
+  `aStorehouseFilledOnTheWayIsWaitedFor` (held in the bag, put in once room comes back).
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.
 - `JobChainGameTests.theCarpenterMakesTheSlabsTheBuilderNeeds`, `theCarpenterFetchesTheOneLogItNeeds`,
   `oneCarpenterServesTwoBuilders`: one step, exactly one log, two askers.

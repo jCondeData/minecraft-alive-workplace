@@ -143,7 +143,7 @@ public class WonderSiteGameTests implements FabricGameTest {
 	 * restart does, and a read-back manager starts its session's layout count afresh (it isn't saved; the sites are).
 	 */
 	//$ gametest EMPTY_STRUCTURE
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	@GameTest(template = EMPTY_STRUCTURE)
 	public void aLaidOutWonderSurvivesASave(GameTestHelper helper) {
 		var registries = helper.getLevel().registryAccess();
 		WonderManager wrote = new WonderManager();

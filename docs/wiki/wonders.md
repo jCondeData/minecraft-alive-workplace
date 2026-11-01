@@ -1062,3 +1062,8 @@ a stranger refused and the stone's [Abandon this Wonder] link; with none in; aft
 `QaBuilderFixes1027bGameTests` (3: a stack of 64 candles offered twice comes back as exactly 64 and one plan, and a
 second cancel gives nothing more; an operator who isn't the owner ends it and the goods and plan go to the owner, not
 the operator; a wrong id leaves the Wonder and its handed-in goods alone).
+
+QA GameTests for B714 in `QaVillageFixes1101GameTests` (3): a Wonder Plan sharing just one column with a Wonder
+waiting for its goods is refused ("It would stand over another Wonder") and goes down one column clear; a house sharing
+that edge column is refused ("That spot overlaps another build in progress (Test Folly).") and one column clear is
+taken; a Wonder begun but not laid out yet (no Foundation Stone) stops no house.

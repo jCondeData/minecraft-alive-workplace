@@ -369,7 +369,8 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 - 21.1c (owner, 2026-10-03): the Fossil Scientist works at Cobblemon's own Fossil Analyzer.
 - B737: handing a Field Marker to a Lumberjack, Orchard Keeper or Berry Breeder names the block they really work at
   ("within 8 blocks of their Chopping Block", or Fletching Table, Fruit Basket, Composter), since the Lumberjack and
-  Orchard Keeper may take either. Tests: `AreaJobWorkBlockGameTests`.
+  Orchard Keeper may take either; the Berry Breeder's says "of her Composter". Tests: `AreaJobWorkBlockGameTests`,
+  `QaVillageFixes1101GameTests` (each started line in full).
 - 36.20 (owner, 2026-10-26, "village-wide"): a quarry, a field, a tree farm, an orchard or a berry plot may be anywhere
   in the village the worker's block stands in (within the hall's radius, or in a painted City Plan zone), and outside it
   within 128 blocks of the block, each job's own config key: `quarryReach`, `fieldReach`, `treeFarmReach`,

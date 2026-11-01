@@ -379,7 +379,7 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
   its own marked ware, one rule for every worker instead of a check per tool.
 - B776: workers read their hand through `TradeDisplay.workHand`, which clears a marked ware first, wherever they take,
   bag, store or use what they hold (Shepherd, Farmer, Fisher, Miner, Lumberjack, Mechanic, fire brigade, conscripts,
-  the Grey Cough's healer). A ware is never cleared on load: the next worker step or display clears it.
+  the Gray Cough's healer). A ware is never cleared on load: the next worker step or display clears it.
 - B737: handing a Field Marker to a Lumberjack, Orchard Keeper or Berry Breeder names the block they really work at
   ("within 8 blocks of their Chopping Block", or Fletching Table, Fruit Basket, Composter), since the Lumberjack and
   Orchard Keeper may take either; the Berry Breeder's says "of her Composter". Tests: `AreaJobWorkBlockGameTests`,

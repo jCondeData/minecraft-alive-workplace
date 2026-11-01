@@ -527,6 +527,44 @@ public class QaThreatCobbleVerify1101GameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A player switches the world to Peaceful for a moment (as players do to clear the night's mobs) and back to Normal
+	 * before the hall's next round: the game took the chief away, nobody brought him down. The camp is a lair that stood
+	 * when the world went Peaceful; it must not be "broken up" as if its chief fell (no such chronicle line, no
+	 * broken-up chat, no rest days).
+	 */
+	//$ gametest_ticks_batch BIG '80' '"qav1101PeacefulBlip"'
+	@GameTest(template = BIG, timeoutTicks = 80, batch = "qav1101PeacefulBlip")
+	public void qaAMomentOfPeacefulBeforeTheHallsRoundIsNoKill(GameTestHelper helper) {
+		BlockPos hall = lairVillage(helper);
+		ServerLevel level = helper.getLevel();
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		QaStageFiveGameTests.Client c = listener(helper, "qav1101blip");
+		UUID[] chief = {null};
+		helper.runAfterDelay(2, () -> {
+			at(level, 95, 13000);
+			helper.assertTrue(BanditCamps.found(level, hall, helper.absolutePos(CAMP)) != null, "no camp");
+			chief[0] = Lairs.near(level, hall).orElseThrow().captain();
+			level.getServer().setDifficulty(Difficulty.PEACEFUL, true);
+		});
+		helper.runAfterDelay(12, () -> {
+			helper.assertTrue(level.getEntity(chief[0]) == null, "Peaceful didn't take the chief away; the test proves nothing");
+			level.getServer().setDifficulty(Difficulty.NORMAL, true);
+			c.seen().clear();
+			hallRound(helper, hall);
+		});
+		helper.runAfterDelay(15, () -> {
+			at(level, 96, 100);
+			hallRound(helper, hall);
+		});
+		helper.runAfterDelay(18, () -> {
+			noBreakUp(helper, entity, c, "Peaceful for a moment, then Normal");
+			helper.assertTrue(Lairs.resting(level, hall) == 0, "rest days though nobody killed the chief: " + Lairs.resting(level, hall)
+				+ "; chronicle " + chronicle(entity));
+			helper.succeed();
+		});
+	}
+
 	// ==== B382: the desert raiders' ramp over a player's sand =======================================================
 
 	/** One block of the player's sand at the west end of the Stone Wall's outside foot (its corner, not in front of the husk). */

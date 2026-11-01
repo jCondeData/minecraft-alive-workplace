@@ -123,6 +123,7 @@ public class QaToolsByTheTradeDisplay1101GameTests implements net.fabricmc.fabri
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
+		int delay = level.getGameRules().getInt(ModGameRules.BUILD_DELAY);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(200, level.getServer()); // slow: the quarry outlasts the test
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(5, 2, 5), new BlockPos(8, 2, 8))) {
 			helper.setBlock(p, Blocks.STONE);
@@ -142,7 +143,9 @@ public class QaToolsByTheTradeDisplay1101GameTests implements net.fabricmc.fabri
 			if (!evening[0] && isIt(miner.getMainHandItem())) {
 				evening[0] = true; // they took the pickaxe and started: now the shift ends
 				helper.setDayTime(9500);
+				level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(delay, level.getServer()); // back as the other tests expect
 			} else if (!evening[0] && ++waited[0] > 1500) {
+				level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(delay, level.getServer());
 				helper.fail("the Miner never took the named pickaxe from the chest: it's in the " + whereIs(helper, miner));
 			}
 		});

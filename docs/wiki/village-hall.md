@@ -439,7 +439,12 @@ lets a stranger's in. B730/B732: a cabin's beds with a campfire, hay and the bui
 water out and is told whose village it is; the owner, a friend and an operator pour in from outside; a stranger pours
 outside the village from either side of its edge), `QaProtectionEdge1031Tests` (B741: a stranger outside can't place
 TNT or light a fire just inside the edge through a block's inward face, but places outside; the owner and a friend
-place just inside from outside), `ReadingFocusGameTests` (36.5: hovered, held on the way into
+place just inside from outside), `QaProtectionFixes1101Tests` (B741-B743 from both sides of the edge: a stranger
+places at x = reach + 1 and replaces grass or snow just outside, but not at reach, high up, or with a bed whose head
+reaches in; an operator, and anyone with protection off, place just inside; a stranger's landing tramples only
+outside, while zombies, riderless horses and operators trample inside and villagers don't; a stranger's trident,
+punch and real arrow in flight leave glow frames and paintings, and a frame just inside the edge, while the owner's
+and an operator's knock items out), `ReadingFocusGameTests` (36.5: hovered, held on the way into
 the pane, let go outside the panel for the pinned button; unpinning and page changes; the wheel and Shift),
 `FreeJobsPageGameTests` (36.9: the listing with job, building and distance, `aPickTakesTheFreeBlock`, a block claimed
 meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockSurvivesAReload`),

@@ -39,8 +39,8 @@ Inside the hall's area, as far as its reach goes across the map and at any heigh
 - hurt the villagers, golems, animals, armor stands, item frames and paintings, by hand or with arrows, tridents and
   potions (a stranger's arrow doesn't knock the item out of a frame or break it);
 - have their own villagers work there: a blueprint, [Quarry Marker](quarry-marker.md) or
-  [Field Marker](field-marker.md) whose area reaches into the village is refused, even when its corners were clicked
-  outside it;
+  [Field Marker](field-marker.md) (a farmer's field, a lumberjack's tree farm, an orchard or a berry plot) whose area
+  reaches into the village is refused, even when its corners were clicked outside it;
 - open the hall's screen with a Village Ledger.
 
 Anyone else is told whose village it is. **Still open to everyone:** walking in, opening doors and gates, pressing

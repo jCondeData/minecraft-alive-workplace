@@ -432,6 +432,9 @@ the wagon-bed list and its save, an older list lets a cabin's bed go and keeps t
 `ProtectedHandOverGameTests` (B718: a stranger's build and quarry reaching in refused, his field refused with whose
 village it is; the owner's build and field reaching in, a build just outside and a quarry with protection off taken),
 `QaVillageGuardsBug1031Tests` (B731: a stranger's tree farm, orchard and berry plot reaching in refused with whose village it is),
+`QaVillageFixes1101GameTests` (B731: a stranger's tree farm exactly 16 from the hall refused and 17 off taken; a refused
+orchard leaves the old one and the marker in hand; the owner's own plot and orchard reaching in taken; protection off
+lets a stranger's in. B730/B732: a cabin's beds with a campfire, hay and the builder's table within 2 blocks stay homes),
 `QaProtectedBucketBug1031Tests` and `BucketProtectionGameTests` (B719: a stranger outside can't pour lava in or scoop
 water out and is told whose village it is; the owner, a friend and an operator pour in from outside; a stranger pours
 outside the village from either side of its edge), `QaProtectionEdge1031Tests` (B741: a stranger outside can't place

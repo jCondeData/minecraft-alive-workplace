@@ -209,7 +209,7 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   while he carries the planks and stays full never leaves them on the ground, 3200 ticks on (B773).
 - `QaCarpenterFullStore1101cBugTests.planksTakenHomeStillReachTheBuilderWhoAsked`: planks taken home after the long
   wait reach the chestless builder once a Storehouse slot frees, none on the ground and the wood adding up (B778);
-  `QaCarpenterFullStore1101cGameTests.reloadedWhileCarryingHomePlanksOnStillFeedsTheBuilder`: the same with a save and
+  `QaCarpenterHomePlanks1101GameTests.reloadedWhileCarryingHomePlanksOnStillFeedsTheBuilder`: the same with a save and
   reload of the Carpenter on his way, the row built and no job left saved.
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.
 - `JobChainGameTests.theCarpenterMakesTheSlabsTheBuilderNeeds`, `theCarpenterFetchesTheOneLogItNeeds`,

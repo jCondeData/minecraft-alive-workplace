@@ -132,6 +132,9 @@ public class QaConfigExtremesGameTests {
 		VillageGrowth.CAP = 3;
 		ServerLevel level = helper.getLevel();
 		BlockPos hall = helper.absolutePos(HALL);
+		// B650: the hall's own first round may already have a baby (the meals counted twice); a birth just now keeps that
+		// round from adding one, while this test's grow(..., 0) still counts from "never".
+		((VillageHallBlockEntity) level.getBlockEntity(hall)).setLastBirth(level.getGameTime());
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(player));
 		helper.runAfterDelay(5, () -> {

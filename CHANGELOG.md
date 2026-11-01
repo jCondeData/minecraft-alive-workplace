@@ -23,6 +23,9 @@ asks for the steps, `latest.log` and any crash report).
   and knocks the crops off; the owner, friends and operators still trample as before.
 - A stranger's arrows and tridents no longer knock items out of item frames, or break frames and paintings, inside a
   protected village.
+- On a server that ran an earlier version, a brown or green bed you place by a campfire, a hay bale and the builder's
+  Blueprint Table is no longer taken for a settlers' wagon bedroll: its villager keeps the home and the hall counts
+  it (B749).
 
 ## 0.151.2 — 2026-10-31
 

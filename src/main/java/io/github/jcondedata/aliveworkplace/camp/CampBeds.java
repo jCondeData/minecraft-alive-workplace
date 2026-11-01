@@ -50,6 +50,14 @@ import org.jetbrains.annotations.Nullable;
  * list: a dimension whose list began with the world ({@link Data#complete}, a world started with this version) has every
  * camp's beds on it, and any other bed there is a home. A list saved before then, or a world first opened with this
  * version after it began (no list yet, its clock already running), may hold such camps and keeps the look.
+ *
+ * <p>B749: that look ran on every unlisted bed for good in such a save, so on a server whose list was saved before B730
+ * (the owner's) a cabin bed placed today by the builder's table was still taken for a bedroll. The look for an unlisted
+ * bed is now only for the save's first session with this version ({@link Data#looks}): a list from before B715 (no
+ * {@code version}) or a dimension with no list until after its first ticks. That session's first hall rounds list the
+ * old camps round each village (a hall's round runs as soon as it loads); once the list is saved in this format, it
+ * holds every camp the look found, and any other bed is a home, as in a new world. An older list's unverified beds
+ * (B715) are looked at once each whenever they are asked about.
  */
 public final class CampBeds {
 	/** How close the camp's campfire and hay bale are to its bedrolls in an older camp (both camps: within 10 blocks). */
@@ -76,6 +84,12 @@ public final class CampBeds {
 		 * known by their look.
 		 */
 		boolean complete;
+		/**
+		 * Whether an unlisted brown or green bed is judged by an older camp's look (B749): only in a list from before B715
+		 * or a dimension that had none until after its first ticks, until the list is saved again (not saved itself: a list
+		 * in this format holds the camps that look found, so a bed placed since is a home).
+		 */
+		boolean looks;
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(() -> fresh(level), Data::load, null), NAME);
@@ -87,6 +101,8 @@ public final class CampBeds {
 			if (level.getGameTime() <= NEW_WORLD) {
 				data.complete = true;
 				data.setDirty();
+			} else {
+				data.looks = true; // a save from before the list may hold camps it never saw
 			}
 			return data;
 		}
@@ -118,6 +134,11 @@ public final class CampBeds {
 			}
 		}
 
+		/** Whether an unlisted bed here is still judged by an older camp's look (B749): this session of a save from before B715. */
+		public boolean looks() {
+			return looks;
+		}
+
 		/** Whether an older list holds {@code pos} and it hasn't been looked at again yet (B715). */
 		public boolean unverified(BlockPos pos) {
 			return unverified.contains(pos.asLong());
@@ -144,6 +165,7 @@ public final class CampBeds {
 			Data data = new Data();
 			data.complete = Nbt.getBoolean(tag, "complete"); // absent: a list from before B730, which may predate camps' lists
 			boolean old = Nbt.getInt(tag, "version") < VERSION; // a list from before B715: its beds are looked at again
+			data.looks = old && !data.complete; // and its unlisted beds, this session (B749)
 			for (long pos : Nbt.getLongArray(tag, "beds")) {
 				(old ? data.unverified : data.beds).add(pos);
 			}
@@ -197,9 +219,10 @@ public final class CampBeds {
 	private static long seenTick = -1;
 
 	/**
-	 * Whether the bed at {@code pos} is a settlers' wagon bed: on the list, or, in a save that may hold camps placed before
-	 * the list, one of an older camp's bedrolls. Either way it is a camp's brown or green bedroll (another bed put where one
-	 * stood is a bed like any other). In a complete list's dimension a bed off the list is a home (B730, B732).
+	 * Whether the bed at {@code pos} is a settlers' wagon bed: on the list, or, in the first session of a save that may hold
+	 * camps placed before the list ({@link Data#looks}), or for an older list's unverified bed, one of an older camp's
+	 * bedrolls. Either way it is a camp's brown or green bedroll (another bed put where one stood is a bed like any other).
+	 * Anywhere else a bed off the list is a home (B730, B732, B749).
 	 */
 	public static boolean isWagonBed(ServerLevel level, BlockPos pos) {
 		if (!level.isLoaded(pos) || !isBedroll(level.getBlockState(pos))) {
@@ -209,8 +232,8 @@ public final class CampBeds {
 		if (data.has(pos)) {
 			return true;
 		}
-		if (data.complete && !data.unverified(pos)) {
-			return false; // no camp placed it
+		if (!data.looks && !data.unverified(pos)) {
+			return false; // no camp placed it (a new world's list, or one saved since B715: B730, B732, B749)
 		}
 		if (!level.getServer().isSameThread()) {
 			return looksLikeCamp(level, pos);

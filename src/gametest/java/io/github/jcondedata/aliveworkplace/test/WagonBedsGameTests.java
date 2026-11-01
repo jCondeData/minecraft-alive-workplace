@@ -360,4 +360,46 @@ public class WagonBedsGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		helper.assertTrue(data.complete() && reloaded.complete(), "a new world's list isn't complete (B730): " + data.complete() + ", after a reload " + reloaded.complete());
 		helper.succeed();
 	}
+
+	/**
+	 * B749: an older save's look ends with its first save in this version. In the first session an old camp's bedroll (its
+	 * campfire, hay bale and Blueprint Table) is known by its look and listed; once the list is saved and loaded again it
+	 * keeps the bedroll, and a green bed placed since beside the same fire, hay and table is a home: its resident keeps it at
+	 * the hall's round and the census counts it.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"anOlderSavesLookEndsWithItsFirstSave"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "anOlderSavesLookEndsWithItsFirstSave")
+	public void anOlderSavesLookEndsWithItsFirstSave(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		radius(helper, 18);
+		olderSave(helper);
+		ServerLevel level = helper.getLevel();
+		helper.assertTrue(CampBeds.Data.get(level).looks(), "setup: an older save's list doesn't look at unlisted beds");
+		BlockPos roll = bed(helper, new BlockPos(6, 2, 7), Blocks.BROWN_BED);
+		helper.setBlock(new BlockPos(10, 2, 6), Blocks.CAMPFIRE);
+		helper.setBlock(new BlockPos(12, 2, 9), Blocks.HAY_BLOCK);
+		helper.setBlock(new BlockPos(12, 2, 4), ModBlocks.BLUEPRINT_TABLE);
+		helper.runAfterDelay(3, () -> {
+			helper.assertTrue(CampBeds.isWagonBed(level, roll) && CampBeds.Data.get(level).has(roll), "the old camp's bedroll isn't known by its look");
+			CampBeds.Data reloaded = CampBeds.Data.load(CampBeds.Data.get(level).save(new CompoundTag(), level.registryAccess()), level.registryAccess());
+			helper.assertTrue(!reloaded.looks() && !reloaded.complete() && reloaded.has(roll),
+				"after a save: looks " + reloaded.looks() + ", complete " + reloaded.complete() + ", bedroll listed " + reloaded.has(roll));
+			level.getDataStorage().set(CampBeds.Data.NAME, reloaded);
+			BlockPos cabin = bed(helper, new BlockPos(8, 2, 7), Blocks.GREEN_BED);
+			Villager resident = helper.spawn(EntityType.VILLAGER, new BlockPos(9, 2, 10));
+			resident.setNoAi(true);
+			helper.runAfterDelay(3, () -> {
+				helper.assertTrue(CampBeds.claim(level, resident, cabin), "set-up: couldn't take the new bed");
+				helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+				helper.runAfterDelay(60, () -> {
+					helper.assertTrue(CampBeds.isWagonBed(level, roll), "the listed bedroll is no wagon bed after the save");
+					helper.assertTrue(!CampBeds.isWagonBed(level, cabin) && !reloaded.has(cabin) && cabin.equals(home(resident)),
+						"a bed placed after the save is taken for a bedroll: wagon " + CampBeds.isWagonBed(level, cabin) + ", home " + home(resident));
+					VillageHalls.Census census = VillageHalls.census(level, helper.absolutePos(HALL));
+					helper.assertTrue(census.beds() == 1 && census.wagonBeds() == 1, "beds " + census.beds() + ", wagon " + census.wagonBeds());
+					helper.succeed();
+				});
+			});
+		});
+	}
 }

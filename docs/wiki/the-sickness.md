@@ -43,7 +43,8 @@ Roadmap items: 31.18, B135, B343
   they stand if they have neither). Never past half the village's grown villagers, Doctor Wren not counted. It stops
   once the tonic is brewed.
 - **The healer** is the village's Nurse nearest the hall; with no Nurse, its Physician nearest the hall (32.18, while
-  `physicians` is on: B135). With neither, Doctor Wren is sent for: he comes to the hall at the next day's start, a
+  `physicians` is on and the disasters expansion is open: B135), counting only those within the hall's area (a Physician
+  just beyond it isn't the village's). With neither, Doctor Wren is sent for: he comes to the hall at the next day's start, a
   villager in a cleric's robe kept by the hall, and leaves in a puff when the story ends. With a Nurse or Physician he
   never comes. If the healer is lost while players are near, another Nurse or Physician (or Doctor Wren) takes over.
 - **A Physician as healer** brews the tonic at their own brewing stand; their house-to-house rounds wait while they

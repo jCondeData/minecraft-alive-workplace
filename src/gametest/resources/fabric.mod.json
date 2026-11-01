@@ -821,6 +821,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBattleStationGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaiderCulturesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaiderCulturesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHealerFoodFireGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScoutGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPortalThreatBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuietLairGameTests",
@@ -1053,7 +1054,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaToolsDisplayRestart1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactTrains1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClicksShops1101GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaCarpenterCarryOn1101dGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaCarpenterCarryOn1101dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWaresFisherMiner1101GameTests"
 		]
 	},
 	"depends": {

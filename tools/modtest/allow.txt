@@ -4,6 +4,8 @@
 # --- ours, triggered on purpose by tests ---
 # B208GameTests and B211GameTests make the world refuse hostile mobs and village golems, wolves, horses and llamas, as Cobbleverse's MobsBeGone does, and set Peaceful, to prove each refusal is logged plainly.
 (Another mod refused to let minecraft:\S+ spawn for the|Could not spawn minecraft:\S+ for the) 
+# QaHostileSpawnsForced1101dGameTests gives a captain and a golem a living villager's UUID so the world refuses them even when placed directly (REFUSED_FORCED); vanilla warns of the clash.
+UUID of added entity already exists: (Vindicator|IronGolem)\['(Vindicator|Iron Golem)'
 # QaThreatFixes1031GameTests (B709) refuses the bandit camp's chief to prove the camp is then simply not made (and is made once allowed); the lair says why.
 made no camp near the village hall at BlockPos\{.*\}: its captain could not spawn
 # QaRoadGameTests ships three broken road style files in the test pack to prove each is skipped and the shipped styles still load (27.15).

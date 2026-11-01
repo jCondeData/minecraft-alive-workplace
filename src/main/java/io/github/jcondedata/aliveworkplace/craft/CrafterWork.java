@@ -227,7 +227,7 @@ public class CrafterWork extends Behavior<Villager> {
 	private void fetch(ServerLevel level, Villager villager, BuilderBag bag) {
 		status(villager, Phase.FETCHING);
 		if (toFetch.isEmpty()) {
-			phase = Phase.CRAFTING;
+			phase = job.plan().steps().isEmpty() ? Phase.DELIVERING : Phase.CRAFTING; // B778: carried on from home, nothing to make
 			timer = -1;
 			save(villager);
 			return;
@@ -634,6 +634,35 @@ public class CrafterWork extends Behavior<Villager> {
 		walker.reset();
 	}
 
+	/**
+	 * B778: what of {@code item} (up to {@code count}) waits in the chests by our own workstation, {@code home}, as a plan
+	 * with nothing to make, to carry on to the builder's {@code deliverTo} while it has room; null for none. What a job
+	 * took home after the long wait for a full Storehouse (B773) lay there for good, since builders don't take from a
+	 * crafter's chests. Chests the builder already takes from (his own, the village stores) are left out.
+	 */
+	@Nullable
+	private Crafting.Plan carryOn(ServerLevel level, List<BlockPos> home, List<BlockPos> sources, BlockPos deliverTo, @Nullable BoundingBox area,
+		Item item, int count) {
+		if (home.isEmpty() || count <= 0) {
+			return null;
+		}
+		List<BlockPos> to = SupplyContainers.find(level, deliverTo, area);
+		int have = 0;
+		for (BlockPos chest : home) {
+			if (sources.contains(chest) || to.contains(chest)) {
+				continue;
+			}
+			for (ItemStack in : SupplyContainers.peekMatching(level, chest, s -> s.is(item) && fetchable(level, s))) {
+				have += in.getCount();
+			}
+		}
+		int n = Math.min(have, count);
+		if (n <= 0 || !roomFor(level, to, Map.of(item, n))) {
+			return null;
+		}
+		return new Crafting.Plan(item, n, List.of(), Map.of(item, n), Map.of(item, n));
+	}
+
 	/** Whether the chests by our workstation can take all of {@code stacks} (B773: with none, taking it home dropped it). */
 	private static boolean roomAtHome(ServerLevel level, BlockPos station, List<ItemStack> stacks) {
 		Map<Item, Integer> left = new LinkedHashMap<>();
@@ -703,6 +732,7 @@ public class CrafterWork extends Behavior<Villager> {
 		List<Villager> builders = level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(radius + 16),
 			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).map(p -> p.closerThan(station, radius)).orElse(false));
 		builders.sort((a, b) -> Double.compare(a.distanceToSqr(villager), b.distanceToSqr(villager)));
+		List<BlockPos> home = builders.isEmpty() ? List.of() : SupplyContainers.find(level, station, null);
 		for (Villager builder : builders) {
 			BuildSite site = Builders.activeSite(level, builder);
 			// B636: a builder short of something is served while he builds on, not only once he stands waiting
@@ -799,6 +829,14 @@ public class CrafterWork extends Behavior<Villager> {
 						}
 						continue;
 					}
+				}
+				Crafting.Plan carried = carryOn(level, home, sources, deliverTo, area, want.getKey(), want.getValue());
+				if (carried != null) {
+					synchronized (CLAIMS) {
+						CLAIMS.put(claim, now + CLAIM_TICKS);
+					}
+					List<BlockPos> from = home.stream().filter(p -> !sources.contains(p)).toList();
+					return new Job(deliverTo, area, carried, claim, from);
 				}
 				Crafting.Plan made = planFor(level, want.getKey(), want.getValue(), usable);
 				if (!fits(made)) {

@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Hauler Golems: a hauler whose nearest Storehouse is across water (an island in a deep moat) no longer sinks to
+  the bottom and stands there with its whole load for good. Hauler and Farmhand Golems now swim while at work, so they
+  cross the water or climb back out at the bank and get the load to a Storehouse.
+- Carpenters and other crafters: what a crafter took home after waiting a long time at a full Storehouse now reaches
+  the builder who asked for it. Once the builder's chests or the Storehouse have room, he carries it there before
+  making any more; before, it stayed in the crafter's chest and the builder waited for good.
 - The Lost Caravan: a carter you've freed keeps following you home however long the walk takes; he no longer vanishes
   on the seventh day with the goods lost and "Nobody came for him". Where the receiving village's Village Hall was
   broken, walking him there no longer ends the story, and carrying the goods there no longer takes them and drops

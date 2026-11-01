@@ -1026,6 +1026,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHostileSpawnsForced1101dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatCobbleVerify1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaToolsByTheTradeDisplay1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWares1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageBugsVerify1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageHomesLife1101GameTests"
 		]
 	},

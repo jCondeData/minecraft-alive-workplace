@@ -96,4 +96,10 @@ strangers and only once.
 pact partner, accepted without stopping its routes) and `anOfferButtonTheTabShowsWithTheLighthouseIsntRefusedAsTooFar`
 (B595: with the Lighthouse a village 3,000 blocks off is listed and its offer made; "2,048" and "4,096" in the refusals).
 
+`QaPacts1101GameTests`: an accepted offer noted once in both chronicles (and nothing before Accept); ending a trade pact
+shuts both Routes tabs in the same tick (no route, cargo unpaid, a new offer at once); end letters to an offline owner
+wait at the post office; an ally with one guard sends no riders and with two sends one (the singular sentences); an
+alliance under notice still rides and not after its day; a lapsed offer made again with a fresh 3 days; every change
+marked for saving. Known gap (B768): a caravan already on the road when its pact ends unloads unpaid.
+
 Showcase scene `pacts`.

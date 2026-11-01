@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Elders: an elder now walks 15% slower on every walk, the game's own strolls and trips to bed included, not only on
+  the walks a job asks for. Before, a walk the game set up or started again went at full speed, so an elder could
+  keep pace with a younger villager beside him.
 - Hauler Golems: a hauler whose nearest Storehouse is across water (an island in a deep moat) no longer sinks to
   the bottom and stands there with its whole load for good. Hauler and Farmhand Golems now swim while at work, so they
   cross the water or climb back out at the bank and get the load to a Storehouse.

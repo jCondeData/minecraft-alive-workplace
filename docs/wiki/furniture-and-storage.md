@@ -487,6 +487,9 @@ removed as a restarted server sees it: a finished nook's gone chair is put back 
 is what the repair asks for; a restart without the mod mid-build, after the chair went down, still ends with the vanilla
 chair; a site saved mid-build plans and lists the vanilla piece and saves again without the gone block; a two-block piece
 with one block gone is dropped whole while another mod's piece in the same choice is kept);
+QA's `QaFurnitureOrderMidBuild1101GameTests` (3: the order emptied, or the mod added, after a build began, then a
+restart: the nook still finishes with the chair it was begun with; a site saved before its first plan chooses when
+it is planned, one planned vanilla stays vanilla);
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.

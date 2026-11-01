@@ -821,6 +821,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBattleStationGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaiderCulturesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaiderCulturesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHealerFoodFireGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScoutGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPortalThreatBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuietLairGameTests",

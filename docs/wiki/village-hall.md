@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153
 
 ## What a player sees
 
@@ -209,6 +209,11 @@ met is the village's wellbeing, 0 to 100%. Work goes up to 25% faster in a well-
 **Ranks.** Hamlet, then Village (10 villagers and 5 finished buildings), Town (20, 12, and 3 research levels), City
 (35, 25 and 7). A rank up means fireworks, a chronicle line, more caravans, more market traders, quests that pay a
 quarter more, and room for ten more villagers. Roads never count as buildings and a whole wall counts as one.
+
+**Food in store** is the meals in the store (the chests by the village's smokers, old Kitchen Stoves and Storehouses),
+counted the way growth counts them (`VillageHalls.food` is `VillageGrowth.meals`): food tagged
+`aliveworkplace:not_villager_food` (rotten flesh, spider eyes, golden food, pufferfish, chorus fruit, honey, cake, …)
+never shows, and a chest by none of those isn't counted (B153, `QaHealerFoodFireGameTests`).
 
 **Growth.** At most once a day, with a free bed, 16 meals in the store and wellbeing of 50% or more, the two
 villagers nearest the free bed have a baby (the family eats 8 meals), up to `villageGrowthCap`. The baby takes that

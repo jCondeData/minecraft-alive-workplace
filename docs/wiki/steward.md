@@ -3,7 +3,7 @@
 A seasoned Builder who runs a village from its City Plan: he decides what the village needs next, finds the plot and
 has the builders build it. Part of 1.1 (Villages that build themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B468, B469, B471, B472, B503, 36.20
+Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B468, B469, B471, B472, B503, 36.20, B747
 
 ## What a player sees
 
@@ -55,7 +55,7 @@ blueprint's four turns and its mirror image. A spot is good only if the front fa
 footprint and a 2-block margin lie inside the zone and off the roads, the ground varies by at most 4 blocks, nothing
 stands there but natural ground, trees and the plants of the `steward_clearable` tag (a carved pumpkin is not one), and a builder's bench stands in the village (anywhere in it then reaches, 36.20) or is within `maxSiteDistance` of the spot. At most a tenth of
 the footprint may be over water and none of it over lava, it stays 2 blocks clear of every build site and finished
-building, and the same blueprint with the same mirroring is never put within 24 blocks of another, center to center (exactly 24 counts
+building (a laid-out Wonder counts, finished or waiting for its goods), and the same blueprint with the same mirroring is never put within 24 blocks of another, center to center (exactly 24 counts
 as within; a turned twin counts, a mirrored one doesn't).
 
 **Open builds.** His level sets how many of his builds may be open at once (1, 2, 2, 3, 4 from Novice to Master),

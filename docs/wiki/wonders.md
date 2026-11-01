@@ -32,7 +32,8 @@ hall's owner, their friends and operators may. Before that, a click says what's 
   the air to pick it up again or, not placed, open the style screen, where it can only be mirrored (each Wonder keeps
   its own blocks);
 - it goes down only with its center within the hall's reach (64 blocks), every corner within 96 blocks of the hall, and
-  not over a finished building or another Wonder; otherwise it says why ("It would stand over the finished Chapel").
+  not over a finished building, a build in progress or another Wonder; otherwise it says why ("It would stand over the
+  finished Chapel"). A single shared column counts as over; one block clear is free.
   Another Wonder counts from the moment its Foundation Stone is set, even while it waits for a stage's goods and
   nothing stands there yet, and a builder won't take a house inside its ground either;
 - a Book and Quill in the other hand writes the whole Wonder's material list.
@@ -1072,7 +1073,9 @@ A Wonder Plan is refused over any build in progress, an ordinary house as well a
 stand over the Test Hut, a build in progress"), and the ground is free again once that build is canceled; finished, it
 counts as a finished building. A builder refuses a house over any Wonder going up, even when a finished Wonder lies
 under it as well (B750). GameTests: `WonderPlanOverSiteGameTests` (2) and QA's `QaWonderPlanOverSite1101BugTests` and
-`QaWonderHouseTwoWonders1101BugTests`.
+`QaWonderHouseTwoWonders1101BugTests`. The edges hold from both sides: a house or plan sharing one column with the other
+is refused and one block clear is allowed, a house hanging high above a waiting Wonder is refused too (a Wonder holds its
+whole columns), and a turned Wonder holds the ground it turned onto (QA's `QaWonderOverlap1101GameTests`).
 
 QA GameTests in `QaWonders1101GameTests` (16; 35.3 with the real designs, 35.9, 35.11, 35.13, 35.15, 35.17): for each
 of the five Wonders, its whole blueprint (`wonder/<id>`, the one its plan carries) holds exactly the blocks its stages

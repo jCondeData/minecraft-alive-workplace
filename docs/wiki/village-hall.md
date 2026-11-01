@@ -226,7 +226,9 @@ let go. The look is only for a save that may hold camps placed before the list: 
 village's own builder's Blueprint Table stays a home (B730, B732). On an older save (a list from before B715, or
 none until after the world's first ticks) the look for unlisted beds lasts only until the list is first saved in the
 new format: the halls' first rounds list the old camps, and from then on a bed placed later, such as a cabin's by the
-builder's table on a long-running server, stays a home (B749). At each round the
+builder's table on a long-running server, stays a home (B749). Only a brown or green bed is ever a wagon bed; a
+wagon bed that is broken comes off the list at the hall's next round, and a bed put on its spot after that is a home.
+At each round the
 hall moves out anyone homed in one (they wake and forget it, then find a bed in a house) and holds every wagon bed for
 nobody, so it is never claimed again. The census leaves them out of Beds and Free, and the Beds button says how many
 it left out ("Not counted: 2 wagon beds"). Before a hall stands, the settlers sleep in the wagon as before.
@@ -436,6 +438,10 @@ words, a stuck quest swapped after a save and reload, MobsBeGone's file read), c
 two free beds take in two newcomers and the hall says it's full, the inn takes a traveler only into a free house bed,
 the wagon-bed list and its save, an older list lets a cabin's bed go and keeps the camp's), `QaWagonBedsBug1031Tests`
 (B715: a cabin's brown bed by a campfire and hay is still a home),
+`QaCabinBedsHome1101GameTests` (B730, B732, B749: the old look's campfire and hay at 10 blocks, not 11, and table at 12,
+not 13; other colors never wagon beds; a cabin at the look's far edges and a bed a villager takes by itself stay homes
+in a new world; a real camp on a server with an older list keeps its wagon beds through a reload while a player's bed
+beside it is a home; an old list's bedroll survives the first save; a bed put back where a wagon bed stood is a home),
 `HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
 `ProtectionSpecGameTests`, `HallProtectHintGameTests`, `QaProtectedBuildBug1031Tests`, `QaProtectedQuarryBug1031Tests`,
 `ProtectedHandOverGameTests` (B718: a stranger's build and quarry reaching in refused, his field refused with whose

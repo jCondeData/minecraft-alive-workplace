@@ -12,6 +12,7 @@
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.BuilderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLaneC1101bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTakeDownGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTakeDownBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaContraptionLinesGameTests",
@@ -994,6 +995,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B728GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendsLairs1031dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeWarnings1031dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDayWarning1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampBedsUpgrade1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlockWordsAtOne1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageGuards1031GameTests",

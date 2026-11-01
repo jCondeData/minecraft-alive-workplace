@@ -14,7 +14,9 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.IronGolem;
@@ -22,11 +24,16 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.FireChargeItem;
+import net.minecraft.world.item.FlintAndSteelItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.CraftingTableBlock;
@@ -43,7 +50,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * A protected village (the Village Hall's setting, off unless its owner turns it on): inside the hall's area —
  * {@link VillageHalls#RADIUS} blocks across the map from the hall, at any height — only the hall's owner, their friends
- * ({@code /workplace friend add}) and operators may break or place blocks, open chests and other blocks, empty buckets,
+ * ({@code /workplace friend add}) and operators may break or place blocks (or trample the fields), open chests and other blocks, empty buckets,
  * or hurt the villagers, golems, animals, armor stands and item frames (by hand, or with arrows, tridents and potions),
  * and only they may open the hall's screen with a Village Ledger. Anyone may still come in, open doors and gates, press
  * buttons, ring the bell, use a crafting table, trade with the villagers and open their own mailbox; with the village
@@ -72,14 +79,14 @@ public final class VillageProtection {
 				io.github.jcondedata.aliveworkplace.trade.TradePage.openForStranger(stranger, hit.getBlockPos());
 				return InteractionResult.SUCCESS;
 			}
-			return mayChange(level, player, hit.getBlockPos()) ? InteractionResult.PASS : InteractionResult.FAIL;
+			return mayChange(level, player, hit.getBlockPos()) && mayPlace(level, player, hand, hit) ? InteractionResult.PASS : InteractionResult.FAIL;
 		});
 		Platform.get().allowUseItem((player, level, hand) ->
 			!(player.getItemInHand(hand).getItem() instanceof BucketItem) || mayUseBucket(level, player, player.getItemInHand(hand)));
 		Platform.get().allowAttackEntity((player, level, entity) -> mayHurt(level, player, entity));
 		// Arrows, tridents, thrown potions and the like: the player who threw or shot them (their hits in melee are above)
-		Platform.get().allowDamage((entity, source, amount) -> !(source.getEntity() instanceof Player player) || source.getDirectEntity() == player
-			|| mayHurt(entity.level(), player, entity));
+		// (item frames and paintings aren't living, so their hits come through HangingHurtMixin instead, B743)
+		Platform.get().allowDamage((entity, source, amount) -> mayBeHurt(entity, source));
 		Platform.get().onUseEntity((player, level, hand, entity, hit) ->
 			(entity instanceof HangingEntity || entity instanceof ArmorStand) && !mayChange(level, player, entity.blockPosition())
 				? InteractionResult.FAIL : InteractionResult.PASS);
@@ -103,6 +110,30 @@ public final class VillageProtection {
 		return mayChange(level, player, hit.getBlockPos()) && mayChange(level, player, hit.getBlockPos().relative(hit.getDirection()));
 	}
 
+	/**
+	 * B741: whether {@code player} may put what they hold where a click on {@code hit} would put it, not only where they
+	 * clicked: a block goes in the cell beside the clicked face (or the clicked cell, when it can be replaced; a bed's head
+	 * one further on), and flint and steel or a fire charge lights the cell beside the face. A stranger outside can't place
+	 * a block or fire just inside a village by clicking the inward face of a block outside its edge; one inside may still
+	 * place outside it. If not, they're told whose village it is.
+	 */
+	static boolean mayPlace(Level level, Player player, InteractionHand hand, BlockHitResult hit) {
+		ItemStack stack = player.getItemInHand(hand);
+		if (stack.getItem() instanceof BlockItem blockItem) {
+			BlockPlaceContext context = blockItem.updatePlacementContext(new BlockPlaceContext(level, player, hand, stack, hit));
+			if (context == null) {
+				return true; // nothing would be placed
+			}
+			BlockPos at = context.getClickedPos();
+			return mayChange(level, player, at)
+				&& (!(blockItem.getBlock() instanceof BedBlock) || mayChange(level, player, at.relative(context.getHorizontalDirection())));
+		}
+		if (stack.getItem() instanceof FlintAndSteelItem || stack.getItem() instanceof FireChargeItem) {
+			return mayChange(level, player, hit.getBlockPos().relative(hit.getDirection()));
+		}
+		return true;
+	}
+
 	/** Blocks anyone may use in a protected village. */
 	static boolean open(BlockState state) {
 		return state.getBlock() instanceof DoorBlock || state.getBlock() instanceof TrapDoorBlock || state.getBlock() instanceof FenceGateBlock
@@ -116,6 +147,29 @@ public final class VillageProtection {
 	 */
 	public static boolean mayHurt(Level level, Player player, Entity entity) {
 		return !kept(entity) || io.github.jcondedata.aliveworkplace.realm.Feuds.mayFight(player, entity) || mayChange(level, player, entity.blockPosition());
+	}
+
+	/**
+	 * Whether the hit {@code source} may hurt {@code entity}: always, unless a player threw or shot what hits it (an arrow,
+	 * a trident, a potion, their TNT) and may not hurt it (their hits in melee are checked when they attack). B743: also
+	 * asked for item frames and paintings, which the living-damage event never reaches.
+	 */
+	public static boolean mayBeHurt(Entity entity, DamageSource source) {
+		return !(source.getEntity() instanceof Player player) || source.getDirectEntity() == player || mayHurt(entity.level(), player, entity);
+	}
+
+	/**
+	 * B742: whether {@code entity}'s landing may trample the farmland at {@code pos}: always, unless a player (or what a
+	 * player rides and steers) lands there who may not change things there; then they're told whose village it is.
+	 * {@code entity} is null when farmland turns to dirt by itself (it dries out, a block is put on it, a path under it
+	 * ticks): that always may.
+	 */
+	public static boolean mayTrample(Level level, @org.jetbrains.annotations.Nullable Entity entity, BlockPos pos) {
+		if (entity == null) {
+			return true;
+		}
+		Entity who = entity.getControllingPassenger() instanceof Player rider ? rider : entity;
+		return !(who instanceof Player player) || mayChange(level, player, pos);
 	}
 
 	/** What a protected village keeps others from hurting. */

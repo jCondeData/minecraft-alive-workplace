@@ -16,6 +16,14 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A stranger standing outside a protected village can no longer place a block (such as TNT) or light a fire just inside
+  its edge by clicking the inward side of a block outside it; they're told whose village it is.
+- A stranger jumping on a protected village's fields (on foot or on horseback) no longer turns the farmland to dirt
+  and knocks the crops off; the owner, friends and operators still trample as before.
+- A stranger's arrows and tridents no longer knock items out of item frames, or break frames and paintings, inside a
+  protected village.
+
 ## 0.151.2 — 2026-10-31
 
 ### Fixed

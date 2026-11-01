@@ -237,7 +237,9 @@ day. Each season has a festival on its middle day. At `seasonDays` 1 the calenda
 **Protection.** The hall's owner (whoever placed it) can switch protection on by shift-clicking the hall's name
 icon. Then only the owner, their friends and operators may break or place blocks, open chests or hurt villagers in the
 hall's area, or empty or fill buckets there (judged where the bucket pours or scoops, so a stranger standing just
-outside can't pour lava in, B719). Anyone may still walk in, open doors, trade and ring the bell. A build, quarry or field that anyone else
+outside can't pour lava in, B719). A block or a fire is judged where it would go, so clicking the inward face of a
+block just outside doesn't put one inside (B741). A stranger's landing doesn't trample the village's farmland (B742),
+and their arrows and tridents don't knock items out of item frames or break frames and paintings (B743). Anyone may still walk in, open doors, trade and ring the bell. A build, quarry or field that anyone else
 hands a Builder, Miner or Farmer, or a tree farm, orchard or berry plot handed to a Lumberjack, Orchard Keeper or Berry
 Breeder, is refused wherever its footprint reaches into the area, even when it was clicked outside it (B718, B731).
 
@@ -390,6 +392,15 @@ point of interest, saved by Minecraft).
 - B719: a bucket is checked where it acts, by the bucket's own raycast (`VillageProtection.mayUseBucket`): the block it
   hits and the one beside the face it hits, either of which the bucket may fill or empty. A stranger outside can't
   pour into or scoop out of the village; one inside its edge may pour just outside it.
+- B741: a click on a block is also checked where what's held would go (`VillageProtection.mayPlace`): a block item at
+  its placement cell (as vanilla picks it: the clicked cell when it can be replaced, else the one
+  beside the clicked face; a bed's head one further on), flint and steel or a fire charge at the cell beside the face.
+- B742: `FarmlandTrampleMixin` (on `FarmBlock.turnToDirt`, which only a landing calls with an entity) asks
+  `VillageProtection.mayTrample`: a player, or a mount a player steers, who may not change things there doesn't
+  trample; mobs on their own and the owner, friends and operators trample as in vanilla.
+- B743: item frames and paintings aren't living, so Fabric's damage event never sees them; `HangingHurtMixin` (on
+  `ItemFrame.hurt` and `BlockAttachedEntity.hurt`) asks `VillageProtection.mayBeHurt`, the same check the event uses:
+  a hit a player threw or shot is refused where they may not hurt what it hits.
 - Villages keep working with no player near (23.6, owner's call): see `keepVillagesWorking` on
   [Config switches](config-switches.md).
 
@@ -426,7 +437,9 @@ orchard leaves the old one and the marker in hand; the owner's own plot and orch
 lets a stranger's in. B730/B732: a cabin's beds with a campfire, hay and the builder's table within 2 blocks stay homes),
 `QaProtectedBucketBug1031Tests` and `BucketProtectionGameTests` (B719: a stranger outside can't pour lava in or scoop
 water out and is told whose village it is; the owner, a friend and an operator pour in from outside; a stranger pours
-outside the village from either side of its edge), `ReadingFocusGameTests` (36.5: hovered, held on the way into
+outside the village from either side of its edge), `QaProtectionEdge1031Tests` (B741: a stranger outside can't place
+TNT or light a fire just inside the edge through a block's inward face, but places outside; the owner and a friend
+place just inside from outside), `ReadingFocusGameTests` (36.5: hovered, held on the way into
 the pane, let go outside the panel for the pinned button; unpinning and page changes; the wheel and Shift),
 `FreeJobsPageGameTests` (36.9: the listing with job, building and distance, `aPickTakesTheFreeBlock`, a block claimed
 meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockSurvivesAReload`),

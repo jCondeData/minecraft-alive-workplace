@@ -779,6 +779,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWallLineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardWalls1101Tests",
 			"io.github.jcondedata.aliveworkplace.test.RoadWonderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWallsRoadsAroundBuildings1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardDeskModesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWorkplaceCopiesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CityPlanScreenGameTests",

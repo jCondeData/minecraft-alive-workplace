@@ -1038,7 +1038,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeace1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeaceBugs1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPacts1101BugTests",
-			"io.github.jcondedata.aliveworkplace.test.B768GameTests"
+			"io.github.jcondedata.aliveworkplace.test.B768GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClicksShops1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGraves1101GameTests"
 		]
 	},
 	"depends": {

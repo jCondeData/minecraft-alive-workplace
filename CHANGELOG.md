@@ -19,6 +19,8 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - Switching the world to Peaceful for a moment and back to Normal no longer breaks a bandit camp up as if its chief
   fell: Peaceful took him away, so the camp now packs up and leaves in peace (no "Chief ... fell" line, no rest days).
+- A Farmer's hoe, a Shepherd's shears and any other worker's tool no longer vanish when a player stands beside them
+  after work: villagers showing their wares to a player now leave a worker's own tool in hand.
 - A Militia Drill's chronicle line ("drilled N villagers") counts everyone who drilled that day, even when the server
   restarted in the middle of the drill: the villagers who already drilled are now saved with the village.
 - The Steward no longer opens a wall piece straight through a finished building or a Wonder (finished, or laid out and

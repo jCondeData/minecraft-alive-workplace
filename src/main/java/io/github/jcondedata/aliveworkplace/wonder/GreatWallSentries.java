@@ -242,9 +242,10 @@ public final class GreatWallSentries {
 			if (SupplyContainers.count(level, chests, Items.IRON_BLOCK) < IRON || SupplyContainers.count(level, chests, pumpkin) < 1) {
 				continue;
 			}
-			SupplyContainers.extract(level, chests, Items.IRON_BLOCK, IRON);
-			SupplyContainers.extract(level, chests, pumpkin, 1);
+			// paid only once the golem stands: a refused golem (forceVillageSpawns off) keeps the stockpile's iron (B755)
 			if (raise(level, post) != null) {
+				SupplyContainers.extract(level, chests, Items.IRON_BLOCK, IRON);
+				SupplyContainers.extract(level, chests, pumpkin, 1);
 				made++;
 				Villager who = maker.get();
 				Chronicle.atHall(level, hall, Chronicle.Kind.ARRIVED, Component.translatable("chronicle.aliveworkplace.great_wall.sentry_replaced",

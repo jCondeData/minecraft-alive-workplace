@@ -467,6 +467,13 @@ public final class Pacts {
 			if (caravans.routesFrom(pact.b().pos()).contains(pact.a().pos())) {
 				caravans.toggleRoute(pact.b().pos(), pact.a().pos());
 			}
+			// B768: a caravan that set out under the pact is still paid at its terms when it arrives
+			if (!pact.giftsA()) {
+				caravans.pactEnded(pact.a().pos(), pact.b().pos());
+			}
+			if (!pact.giftsB()) {
+				caravans.pactEnded(pact.b().pos(), pact.a().pos());
+			}
 		}
 		String kind = pact.alliance() ? "alliance" : "pact";
 		Component a = Realms.name(server, pact.a());

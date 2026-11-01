@@ -332,13 +332,24 @@ public class PlotGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	//$ gametest_ticks_batch AREA '20' '"plotJetty"'
 	@GameTest(template = AREA, timeoutTicks = 20, batch = "plotJetty")
 	public void aFishersHutGoesOnAShoreWithShallowWaterUnderItsJetty(GameTestHelper helper) {
+		// B774: a Village Hall an earlier batch left near this spot (outside its own area, so never cleared) is a nearer
+		// village or a protected one to the hut's box, and StewardSafety refused every plot (UNSAFE). Its point of interest
+		// goes a tick after the block, so the checks start once it has.
+		Leftovers.halls(helper);
 		ground(helper);
+		helper.runAfterDelay(2, () -> jettyChecks(helper));
+	}
+
+	private static void jettyChecks(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		CityPlan plan = homes(helper, "");
 		ResourceLocation hut = AliveWorkplace.id("fishers_hut");
 		BlockPos spot = new BlockPos(16, 2, 13);
 		java.util.function.Supplier<Plots.Verdict> at = () -> Plots.check(level, helper.absolutePos(HALL), plan, "homes", hut,
 			helper.absolutePos(spot), Rotation.COUNTERCLOCKWISE_90, Mirror.NONE);
+		// the hut's box (see above), for what StewardSafety says when it refuses a plot here
+		BoundingBox box = BoundingBox.fromCorners(helper.absolutePos(new BlockPos(10, 2, 7)), helper.absolutePos(new BlockPos(22, 2, 19)));
+		java.util.function.BiConsumer<Plots.Verdict, String> fits = (v, what) -> fits(helper, v, what + unsafe(helper, v, box));
 		// the layers under the area's floor this test digs into, put back afterwards
 		java.util.Map<BlockPos, net.minecraft.world.level.block.state.BlockState> under = new java.util.HashMap<>();
 		for (BlockPos p : BlockPos.betweenClosed(helper.absolutePos(new BlockPos(4, -3, 5)), helper.absolutePos(new BlockPos(24, -1, 21)))) {
@@ -368,11 +379,11 @@ public class PlotGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		};
 		refused(helper, at.get(), Plots.Reason.SHORE, "no water at all");
 		pond.accept(new int[]{6, 14}, 2);
-		fits(helper, at.get(), "the jetty over water 2 deep, on out past its end");
+		fits.accept(at.get(), "the jetty over water 2 deep, on out past its end");
 		helper.assertTrue(at.get().plot().get().placement().origin().getY() == helper.absolutePos(new BlockPos(0, 2, 0)).getY(),
 			"the hut's floor isn't on the shore: " + at.get().plot().get().placement());
 		pond.accept(new int[]{6, 14}, 3);
-		fits(helper, at.get(), "water 3 deep under the jetty");
+		fits.accept(at.get(), "water 3 deep under the jetty");
 		pond.accept(new int[]{12, 12}, 4);
 		refused(helper, at.get(), Plots.Reason.DEEP, "a hole 4 deep under the jetty");
 		dry.accept(new int[]{6, 14});
@@ -382,7 +393,7 @@ public class PlotGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		pond.accept(new int[]{11, 14}, 2);
 		refused(helper, at.get(), Plots.Reason.SHORE, "water by the hut, the jetty's end on dry land");
 		pond.accept(new int[]{6, 10}, 2);
-		fits(helper, at.get(), "the whole jetty over water");
+		fits.accept(at.get(), "the whole jetty over water");
 		pond.accept(new int[]{15, 16}, 1);
 		refused(helper, at.get(), Plots.Reason.WATER, "the hut itself two rows into the water");
 		dry.accept(new int[]{6, 16});
@@ -392,6 +403,25 @@ public class PlotGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			helper.absolutePos(new BlockPos(13, 2, 13)), Rotation.COUNTERCLOCKWISE_90, Mirror.NONE), "a Ferry House by deep water");
 		dry.accept(new int[]{6, 7});
 		helper.succeed();
+	}
+
+	/**
+	 * When {@code v} is UNSAFE, what refused it: StewardSafety's refusal for {@code box} (absolute) and the Village Halls
+	 * near it, so a failure says which hall (a leftover from another batch?) stood in the way; empty otherwise.
+	 */
+	private static String unsafe(GameTestHelper helper, Plots.Verdict v, BoundingBox box) {
+		if (!v.reason().equals(Optional.of(Plots.Reason.UNSAFE))) {
+			return "";
+		}
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		List<String> halls = level.getPoiManager().findAll(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> true,
+				hall, 160, PoiManager.Occupancy.ANY)
+			.map(p -> helper.relativePos(p) + (p.equals(hall) ? " (this test's)" : "")
+				+ (level.getBlockEntity(p) instanceof VillageHallBlockEntity e && e.isProtected() ? " protected" : ""))
+			.toList();
+		return " (StewardSafety: " + io.github.jcondedata.aliveworkplace.city.StewardSafety.check(level, hall, box, false)
+			+ "; halls within 160, relative to this test: " + halls + ")";
 	}
 
 	/** A Blueprint Table in the village reaches all of it (36.20); none, no plot. */

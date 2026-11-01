@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773
 
 ## 1. What a player sees
 
@@ -31,7 +31,8 @@ theirs.
 A job is only taken when what it makes fits in those chests as they are; with them full, the crafter waits and looks
 again later. If they fill up while he carries the job to them, he keeps it in his bag and tries again every two
 seconds (for up to two minutes, then takes it home), so nothing is dropped by a full Storehouse and nothing is made
-twice (B760).
+twice (B760). He only takes it home if the chests by his own bench have room for it; with none there, or full ones,
+he keeps carrying it and trying the Storehouse, so it never ends up on the ground by his bench (B773).
 
 When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
 under "Short of": "Can't be made yet: short of 4 Oak Logs to make 3 Barrels" (items named in the plural after a count above one, B426). When no job in the village makes a crafted
@@ -192,6 +193,8 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   log is crafted and no plank lies on the ground (B760); `CarpenterFullStorehouseB760GameTests`:
   `aFullStorehouseThatFreesUpGetsThePlanksThen` (one log used once there's room, the row built) and
   `aStorehouseFilledOnTheWayIsWaitedFor` (held in the bag, put in once room comes back).
+- `QaVillageEconomySaves1101BugTests.aStorehouseThatStaysFullAfterHeSetOffLeavesNoPlanksLying`: a Storehouse that fills
+  while he carries the planks and stays full never leaves them on the ground, 3200 ticks on (B773).
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.
 - `JobChainGameTests.theCarpenterMakesTheSlabsTheBuilderNeeds`, `theCarpenterFetchesTheOneLogItNeeds`,
   `oneCarpenterServesTwoBuilders`: one step, exactly one log, two askers.

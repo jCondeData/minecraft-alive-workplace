@@ -80,6 +80,59 @@ public class HaulerEveryChestGameTests implements net.fabricmc.fabric.api.gamete
 	}
 
 	/**
+	 * A Golem Smith who is dying (health 0, still in the level for the death animation) doesn't set the hauler's side:
+	 * the living lumberjack beside him, another player's worker, does. The smith is found first (same spot, added first).
+	 */
+	//$ gametest_batch HUGE '"haulerEveryChestDyingSmith"'
+	@GameTest(template = HUGE, batch = "haulerEveryChestDyingSmith")
+	public void aDyingGolemSmithDoesNotSetTheHaulersSide(GameTestHelper helper) {
+		Villager smith = smithAndOneWorker(helper);
+		smith.setHealth(0f);
+		helper.assertFalse(smith.isAlive() || smith.isRemoved(), "the smith should be dying but still in the level");
+		Villager side = HaulerGolems.sideOf(helper.getLevel(), helper.absolutePos(STOREHOUSE));
+		helper.assertTrue(side != smith, "a dying Golem Smith set the hauler's side");
+		helper.assertTrue(side != null && side.isAlive() && OTHER_PLAYER.equals(ModAttachments.BUILDER_EMPLOYER.get(side)),
+			"the side should be the living lumberjack's (another player's), not " + (side == null ? "nobody" : side.getVillagerData().getProfession()));
+		helper.succeed();
+	}
+
+	/** A baby who carries the Golem Smith legend doesn't set the hauler's side; the living lumberjack beside him does. */
+	//$ gametest_batch HUGE '"haulerEveryChestBabySmith"'
+	@GameTest(template = HUGE, batch = "haulerEveryChestBabySmith")
+	public void aBabyWithTheGolemSmithLegendDoesNotSetTheHaulersSide(GameTestHelper helper) {
+		Villager smith = smithAndOneWorker(helper);
+		smith.setAge(-24000);
+		helper.assertTrue(smith.isBaby() && smith.isAlive() && GolemSmith.isSmith(smith), "the smith should be a living baby with the legend");
+		Villager side = HaulerGolems.sideOf(helper.getLevel(), helper.absolutePos(STOREHOUSE));
+		helper.assertTrue(side != smith, "a baby with the Golem Smith legend set the hauler's side");
+		helper.assertTrue(side != null && side.isAlive() && OTHER_PLAYER.equals(ModAttachments.BUILDER_EMPLOYER.get(side)),
+			"the side should be the living lumberjack's (another player's), not " + (side == null ? "nobody" : side.getVillagerData().getProfession()));
+		helper.succeed();
+	}
+
+	/**
+	 * The open Storehouse, a settled Golem Smith, and then one lumberjack of another player's standing on the smith's
+	 * spot (so the smith comes first in the level's list); no other villager about.
+	 */
+	private static Villager smithAndOneWorker(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		GolemHaulerFightGameTests.strayStorehouses(helper);
+		wideVillage(helper);
+		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
+		helper.setBlock(STORE_CHEST, Blocks.CHEST);
+		Villager smith = golemSmith(helper);
+		BlockPos block = CHESTS[0].north();
+		helper.setBlock(block, ModBlocks.CHOPPING_BLOCK);
+		helper.setBlock(CHESTS[0], Blocks.CHEST);
+		Villager jack = helper.spawn(EntityType.VILLAGER, SMITH_TABLE.east());
+		jack.setNoAi(true);
+		Jobs.employ(helper.getLevel(), jack, helper.absolutePos(block), ModVillagers.CHOPPING_BLOCK_POI, ModVillagers.LUMBERJACK);
+		ModAttachments.BUILDER_EMPLOYER.set(jack, OTHER_PLAYER);
+		helper.assertTrue(Village.takesPart(jack), "the lumberjack doesn't take part in the village");
+		return smith;
+	}
+
+	/**
 	 * With a Golem Smith of the village's by the Storehouse, the village's lumberjacks' chests are hauled and another
 	 * player's lumberjack's is left alone.
 	 */

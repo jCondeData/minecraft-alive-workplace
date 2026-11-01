@@ -323,7 +323,9 @@ through a save; the sneak-click's line in English, and no choice with an item in
 builds nothing, takes nothing and starts no wait, and the whole cost takes exactly the cost; the 2-day wait still
 holds at the last tick of the next day and ends at the first tick of the day after; a golem forged in a roofed house
 stands on its floor beside the Smith; under a roof too low for a golem all round, nothing is built and nothing taken
-(never on the roof, B628, `QaGolemSmithBugGameTests`); a guest Legend isn't counted under "Legends living here" (B630,
+(never on the roof, B628, `QaGolemSmithBugGameTests`), and once a hole cut in that roof beside him makes room the next
+forging stands the golem on the ground in it and takes the cost; in a corridor three blocks wide a golem stands down its
+middle, never half in a wall (`QaKingRaidGolemSpot1101dGameTests`); a guest Legend isn't counted under "Legends living here" (B630,
 `QaLegendsHallEdgesBugTests`); the Hauler's and Farmhand's names over their heads; a plain iron golem hauls
 nothing; a farmhand picks and replants ripe wheat, carrots and nether wart and leaves unripe wheat, a melon and a
 poppy alone; a Wall Sentry kills a foe 4 blocks off its post within its leash and leaves one 7 blocks off alone, and

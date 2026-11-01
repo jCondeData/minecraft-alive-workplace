@@ -333,6 +333,26 @@ public class QaDayWarning1101GameTests implements FabricGameTest {
 	}
 
 	/**
+	 * "A scout by a tower first (they count), then a guard" (lane-d-1101-1310, kills the survivor Warnings:126, the sort
+	 * deleted): three archers posted by the tower before a scout is, and the scout still keeps the watch and counts them.
+	 */
+	//$ gametest_ticks_batch AREA '60' '"qaDayWarnScoutFirst"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "qaDayWarnScoutFirst")
+	public void aScoutPostedAfterThreeArchersStillKeepsTheWatch(GameTestHelper helper) {
+		Village village = village(helper, true);
+		ServerLevel level = village.level();
+		for (int i = 0; i < 3; i++) {
+			guard(helper, new ItemStack(Items.BOW), 16 + i, 14).setNoAi(true);
+		}
+		Villager scout = guard(helper, new ItemStack(Items.SPYGLASS), 19, 14);
+		scout.setNoAi(true);
+		helper.assertTrue(Warnings.source(level, village.hall()).map(s -> s.counts() && s.who().getString().equals(scout.getName().getString())).orElse(false),
+			"expected the scout (" + scout.getName().getString() + ") to keep the watch and count them ahead of the archers, the source is "
+				+ Warnings.source(level, village.hall()).map(s -> s.who().getString() + " (counts " + s.counts() + ")"));
+		helper.succeed();
+	}
+
+	/**
 	 * "The guards icon and the Defence page show the next attack and its side": before a warning the guards icon has no
 	 * raiders line; warned of an attack from the east, it reads "Raiders tomorrow night, from the east" and the Defence
 	 * page's slot "Attack tomorrow night" with "<who>, from the east"; on the day both say tonight.

@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Carpenter no longer turns log after log into planks for a builder whose store (his chests or the village
+  Storehouse) is full, leaving them on the ground: he waits until there's room, then makes just what was asked; and
+  if the store fills up while he's on his way, he holds on to what he made and puts it in once there's space.
 - A Carpenter crafting for a builder with no chest by his Blueprint Table brings what he makes to the village
   Storehouse, where the builder fetches it, instead of dropping it by his own bench while the builder waits for ever.
 - The Village Hall's Chronicle button reads "(1 entry)" for a chronicle of one, and a work-pace effect naming one trade

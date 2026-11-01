@@ -39,7 +39,8 @@ Roadmap items: 31.15, 31.16, B659, B738
   3. **The storm**, once the keep stands: the allies come to the hall; raise a Rally Banner within 48 blocks of the fort
      and they follow it with your guards. His raiders (the village's bandit raid, half again as big) come every second
      night until he falls, except while the village is quiet (threat level 0, At peace or Peaceful): then nobody
-     comes, and the raids return once it isn't quiet (B738). If he stands after 10 days, **the King's tribute**: he takes a third of the treasury and
+     comes, and the raids return once it isn't quiet (B738). On a night a raid is already on, his raiders don't come on top of
+     it; they come once it ends, that same night. If he stands after 10 days, **the King's tribute**: he takes a third of the treasury and
      rides off with his band, the fort is left a ruin, moods drop 10 for 3 days, and the story ends badly.
   - **Ending**: his band leaves the fort (the treasure chest is yours), a festival the next evening, +150 reputation
     and the honor **Kingslayer** to everyone who fought in the storm, Pell joins the village (no job), the allies go
@@ -144,4 +145,6 @@ horn) in their own entity data.
 - GameTests: `QaQuietVillageSweep1031GameTests` and `QaThreatFixes1101GameTests` (B738): a storm night brings no
   raid At peace, at threat level 0 or on Peaceful; lifted the same night, the King's raid comes that night, as it does
   on a later storm night.
+- GameTests: `QaKingRaidGolemSpot1101dGameTests` (QA): a storm night with a raid already on keeps that raid as it is,
+  and the King's raid comes that night once it is called off.
 - Showcase scenes `bandit_fort` and `bandit_king`.

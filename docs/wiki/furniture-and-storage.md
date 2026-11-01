@@ -482,7 +482,11 @@ and a missing list, the list off the screen and in the saved file), `FurnishingC
 `FurnishingTableGameTests.withoutFurnitureModsTheBuildIsVanilla`,
 `FurnishingTableGameTests.theFirstModWithAFittingPieceIsChosen`, `FurnishingTableGameTests.switchedOffTheBuildIsVanilla`,
 `FurnishingTableGameTests.aSiteSavedMidBuildKeepsItsChoice`, `FurnishingTableGameTests.aRemovedModsPieceTurnsBackToVanilla`,
-`FurnishingTableGameTests.eachMistakeInAFurnishingTableIsNamed`;
+`FurnishingTableGameTests.eachMistakeInAFurnishingTableIsNamed`; QA's `QaFurnitureModGone1101GameTests` (3, the mod
+removed as a restarted server sees it: a finished nook's gone chair is put back by upkeep as its vanilla chair, which
+is what the repair asks for; a restart without the mod mid-build, after the chair went down, still ends with the vanilla
+chair; a site saved mid-build plans and lists the vanilla piece and saves again without the gone block; a two-block piece
+with one block gone is dropped whole while another mod's piece in the same choice is kept);
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.

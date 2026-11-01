@@ -795,6 +795,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScoutReportGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPeacefulLairGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFurnitureModGone1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefusedThreatsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefusedWarlordGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPortalThreatsGameTests",

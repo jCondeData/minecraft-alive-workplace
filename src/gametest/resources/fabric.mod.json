@@ -593,6 +593,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillageFixes1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsOldList1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCabinBedsHome1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCabinBedsReplaceBug1101Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsFirstSession1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEveryBlockEntityField1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataCollections1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataCollections1101BugTests",

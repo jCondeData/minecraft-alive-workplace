@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A bed you put straight back where a settlers' wagon bedroll stood is now a home at once: before the Village Hall's
+  next round it was still taken for a wagon bed and its villager lost the home.
+- On a server upgraded from an older version of the mod, cabin beds by a campfire, hay and the builder's
+  Blueprint Table are homes again once the server has autosaved, not only after its next restart.
 - A Great Wall whose lost sentry is refused by another mod (with `forceVillageSpawns` off) no longer uses up four iron
   blocks and a pumpkin every morning for a golem that never comes: the stockpile keeps them.
 - Ending a trade pact while the other village's caravan is on the road no longer gets its cargo free: a caravan that set

@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Hauler Golems: a hauler in a pool or moat whose water lies a block below the banks (not filled to the brim) no
+  longer floats by the bank for good with its load. It swims to the bank nearest where it is going and climbs out, and
+  one whose only Storehouse is on an island in such a moat wades across and climbs up onto it (B783).
+- Hauler and Farmhand Golems: a golem at work going round a lava trench no longer cuts the corner and slips into the
+  lava. Its way now keeps a block clear of lava and fire (B784).
 - Saves: one damaged entry in the bounties, caravans or stories file (a claimed bounty id, a caravan village without
   its name, a sale without its buyer, a mood boost or a tracked quest that can't be read) no longer loses the whole
   file. The bad entry is skipped with a warning in the log, and every other bounty, caravan village, route, shipment,

@@ -138,4 +138,6 @@ Roadmap items: 32.21, B134, B383, B704, B705
   `QaPeacefulLairGameTests.aChiefGoneOutsidePeacefulStillBreaksTheCampUp` (B364): on Peaceful a standing camp leaves in
   peace (also after a save and load), a player's kill just before still counts as the chief falling, and a chief gone
   off Peaceful still breaks the camp up.
+- `QaThreatSpawnsPeace1101GameTests.aForcedCampOnPeacefulLeavesInPeaceAndPlayersAreToldSo` (B364 with B208): a camp
+  forced past a mob blocklist, then Peaceful: players near are told it packed up and left, no broken camp is counted.
 - Showcase scenes: `at_peace`.

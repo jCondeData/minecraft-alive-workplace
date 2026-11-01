@@ -984,7 +984,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWorkReach1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaColonyWaitOneDay1031BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGrowthOffRankLine1031BugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1101GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeace1101GameTests"
 		]
 	},
 	"depends": {

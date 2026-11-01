@@ -88,7 +88,7 @@ None. One new screen page (the Defense page).
   refusal where nobody is near no longer uses up the day's word, B708). A story arc's mobs go the same
   way (B211).
 - `forceVillageSpawns` (true, B211): the same blocklist names iron golems, wolves, horses, cats and llamas, so the
-  village's own go in through `HostileSpawns.addVillage`: the Golem Smith's golems and the Iron Pact's golem, relief
+  village's own go in through `HostileSpawns.addVillage`: the Golem Smith's golems (the Great Wall's sentries too) and the Iron Pact's golem, relief
   riders' horses (a rider whose horse is refused comes on foot), the Beastmaster's foals and wolf pups (bred as vanilla
   breeds them, then added checked), a caravan's pack llamas and a story arc's non-hostile mobs. Forced when on (log:
   "Another mod refused to let minecraft:iron_golem spawn for the ...; Alive Workplace placed it directly"), left out and
@@ -174,6 +174,11 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - `B211GameTests`: with the world refusing iron golems, wolves, horses and llamas, the Golem Smith's golem, the Iron
   Pact's golem, a relief rider's horse (with its rider on it), a Beastmaster foal and wolf pup and a caravan llama are in
   the world and still there 100 ticks later; with `forceVillageSpawns` off they are left out and the log says why.
+- `QaThreatSpawnsPeace1101GameTests`: each refused mob type is logged once per way, forced or not; a camp whose chief
+  alone is refused (forcing off) isn't made and leaves no bandits about; a night attack with its zombies refused counts
+  only the skeletons and spiders standing; both force switches are on by default and in an older file; a Great Wall
+  sentry refused still takes its post; a player's pumpkin golem and a pup bred the vanilla way are never forced; a
+  forced camp on Peaceful leaves in peace, players near told so and no broken camp counted.
 - `B209GameTests`: the chief killed, the camp's record, band and scouts' report are gone at once and its campfire, two
   chests, tents and five beds are gone within 150 ticks, while a player's gold block in a tent stays, the ground under
   the fire is back to the land's and

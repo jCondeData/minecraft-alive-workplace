@@ -145,7 +145,10 @@ default; a world without the file starts with none.
   once (`theInsigniaDropsAndPaysOnce`), expiry with the band, the board's posters, save and load, the switch off; quiet villages (B134): none posted At
   peace (`anAtPeaceVillagePostsNoBounty`) or at threat level 0 (`threatLevelZeroPostsNoBounty`), still one at levels
   1 to 3 (`aNormalVillageStillPostsOne`), and an open bounty stays when the village turns At peace
-  (`anOpenBountySurvivesTheVillageTurningPeaceful`).
+  (`anOpenBountySurvivesTheVillageTurningPeaceful`). `QaThreatSpawnsPeace1101GameTests`: none on Peaceful and the tab says
+  why (`onPeacefulNoBountyIsPostedAndTheTabSaysWhyInWords`), no lair captain's bounty while quiet and one once it isn't
+  (`aQuietVillagesLairCaptainIsPostedOnlyOnceItIsntQuiet`), and an open bounty at threat level 0 still hunted and paid
+  (`anOpenBountyAtThreatLevelZeroIsStillHuntedAndPaid`).
 - GameTests: `RogueBountyGameTests` (the eight groups load and a biome finds its group; never posted without Cobblemon,
   saved and loaded, nothing spawned). Compat GameTests: `RogueCompatTests` (species, level and name by biome and rank,
   size or Alpha, through a save; a win pays once; a capture pays once and the catcher keeps it, named; the glow for

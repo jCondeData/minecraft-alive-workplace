@@ -228,7 +228,7 @@ public class FisherWork extends Behavior<Villager> {
 		}
 
 		// 2. A rod in hand.
-		ItemStack rod = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		ItemStack rod = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager); // a shown rod is the display's (B776)
 		if (!isRod(rod) && boat != null) {
 			reelUp();
 			status(villager, Phase.ROWING);

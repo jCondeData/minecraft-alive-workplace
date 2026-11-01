@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A ware a villager shows a player at the trade display (an emerald, bread, a painting, a rod) no longer becomes theirs
+  when work starts or after a restart: Shepherds, Farmers, Fishers, Miners and other workers let it go instead of
+  putting it in their bag or chest, so standing by no longer earns free emeralds or bread.
 - A server stopped in the middle of a Militia Drill day now remembers who already drilled even when its last autosave
   came before the drill: the chronicle's "villagers sparred" count is the same as without the restart.
 - When the Storehouse fills up while the Carpenter carries a chestless builder's planks and stays full, he keeps

@@ -59,7 +59,7 @@ public class ShepherdWork extends RanchWork {
 	@Nullable
 	@Override
 	protected Entity tendTarget(ServerLevel level, Villager villager, BlockPos station, List<BlockPos> own) {
-		if (!villager.getMainHandItem().is(Items.SHEARS) && SupplyContainers.firstWith(level, own, Items.SHEARS) == null) {
+		if (!io.github.jcondedata.aliveworkplace.work.TradeDisplay.ownHand(villager).is(Items.SHEARS) && SupplyContainers.firstWith(level, own, Items.SHEARS) == null) {
 			return null;
 		}
 		return level.getEntitiesOfClass(Entity.class, new AABB(station).inflate(RADIUS, 6, RADIUS), ShepherdWork::shearable).stream()
@@ -77,7 +77,7 @@ public class ShepherdWork extends RanchWork {
 	@Nullable
 	@Override
 	protected Boolean prepare(ServerLevel level, Villager villager, List<BlockPos> own, BuilderBag bag) {
-		ItemStack held = villager.getMainHandItem();
+		ItemStack held = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager); // never a shown ware (B776)
 		if (held.is(Items.SHEARS)) {
 			return true;
 		}
@@ -103,7 +103,7 @@ public class ShepherdWork extends RanchWork {
 
 	@Override
 	protected boolean tend(ServerLevel level, Villager villager, Entity animal, List<BlockPos> own, BuilderBag bag) {
-		ItemStack shears = villager.getMainHandItem();
+		ItemStack shears = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager);
 		if (!shears.is(Items.SHEARS) || !shearable(animal)) {
 			return false;
 		}

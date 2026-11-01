@@ -248,7 +248,7 @@ public final class Fields {
 		for (ItemStack stack : bag.takeAll()) {
 			store(level, supplies, composter, stack);
 		}
-		ItemStack tool = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		ItemStack tool = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager);
 		if (!tool.isEmpty()) {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			store(level, supplies, composter, tool);

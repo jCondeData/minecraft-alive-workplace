@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.IronGolem;
 
@@ -19,6 +20,12 @@ import net.minecraft.world.entity.animal.IronGolem;
  * goods or a Farmhand tends the fields, so the golem's wandering doesn't pull it off the job; a fight comes first (the
  * golem's attack goal ranks above this one and takes over whenever it has a target). The Wall Sentry's post is held by
  * {@link WallSentries.HoldGoal}, which ranks above the attack.
+ *
+ * <p>While at work the golem swims, the way most mobs do (B722): a plain iron golem sinks and walks the bottom, so in
+ * water two deep with steep banks (a moat round a Storehouse) it could never climb out and stood there with its load
+ * for good. At work its paths may cross water on the surface ({@code setCanFloat}) and it keeps its head up in deep
+ * water, so it crosses or climbs back out at the bank; a plain golem, and a role golem in a fight, keep vanilla's
+ * sinking.
  */
 public class GolemRoleGoal extends Goal {
 	/** How often (ticks) the golem decides its next step; walking happens in between. */
@@ -60,13 +67,22 @@ public class GolemRoleGoal extends Goal {
 	}
 
 	@Override
+	public void start() {
+		golem.getNavigation().setCanFloat(true);
+	}
+
+	@Override
 	public void stop() {
 		golem.getNavigation().stop();
+		golem.getNavigation().setCanFloat(false);
 		arrived(golem);
 	}
 
 	@Override
 	public void tick() {
+		if (golem.isInWater() && golem.getFluidHeight(FluidTags.WATER) > golem.getFluidJumpThreshold()) {
+			golem.getJumpControl().jump(); // swims up, as vanilla's FloatGoal does (B722)
+		}
 		if ((golem.tickCount + golem.getId()) % EVERY != 0 || !(golem.level() instanceof ServerLevel level)) {
 			return;
 		}

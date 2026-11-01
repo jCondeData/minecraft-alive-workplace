@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778
 
 ## 1. What a player sees
 
@@ -33,6 +33,9 @@ again later. If they fill up while he carries the job to them, he keeps it in hi
 seconds (for up to two minutes, then takes it home), so nothing is dropped by a full Storehouse and nothing is made
 twice (B760). He only takes it home if the chests by his own bench have room for it; with none there, or full ones,
 he keeps carrying it and trying the Storehouse, so it never ends up on the ground by his bench (B773).
+What he took home isn't lost to the builder: while a builder still waits for something that lies in the chests by
+the crafter's own bench (and those aren't chests the builder takes from himself), the crafter carries it on to the
+builder's chests or the Storehouse as soon as they have room, before he makes any more of it (B778).
 
 When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
 under "Short of": "Can't be made yet: short of 4 Oak Logs to make 3 Barrels" (items named in the plural after a count above one, B426). When no job in the village makes a crafted
@@ -130,6 +133,15 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - 37.16a: the Crafter's Workshop rule (`workplace_crafters_workshop`) is deleted; its condition
   `builders_short_of_parts` stays (a pack's rule may name it) and never holds, saying why.
 
+- B778 (lane-a-1101-1823): what a job took home after the long wait (B773) is carried on to the builder once his
+  chests or the Storehouse have room, as a job with nothing to make (`CrafterWork.carryOn`: up to what he still
+  misses, from the chests by the crafter's own bench that the builder doesn't already take from). Chosen over the two
+  other ways: carrying it for good (B773's no-room branch) would keep the crafter from all other work for as long as
+  the Storehouse stays full, and letting builders take from a crafter's chests (`Village.takesPart`) would change
+  every place that list is used (the job board, the hauler golems, enchanting, workplace rules) and let builders take
+  the crafter's own makings. Anything of the asked item in those chests is carried on, whoever put it there: they are
+  the crafter's, and nothing else takes from them.
+
 ## 7. Known limits
 
 - What's short is found along the first way down the recipes: with oak and spruce logs both short it names oak.
@@ -195,6 +207,10 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   `aStorehouseFilledOnTheWayIsWaitedFor` (held in the bag, put in once room comes back).
 - `QaVillageEconomySaves1101BugTests.aStorehouseThatStaysFullAfterHeSetOffLeavesNoPlanksLying`: a Storehouse that fills
   while he carries the planks and stays full never leaves them on the ground, 3200 ticks on (B773).
+- `QaCarpenterFullStore1101cBugTests.planksTakenHomeStillReachTheBuilderWhoAsked`: planks taken home after the long
+  wait reach the chestless builder once a Storehouse slot frees, none on the ground and the wood adding up (B778);
+  `QaCarpenterFullStore1101cGameTests.reloadedWhileCarryingHomePlanksOnStillFeedsTheBuilder`: the same with a save and
+  reload of the Carpenter on his way, the row built and no job left saved.
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.
 - `JobChainGameTests.theCarpenterMakesTheSlabsTheBuilderNeeds`, `theCarpenterFetchesTheOneLogItNeeds`,
   `oneCarpenterServesTwoBuilders`: one step, exactly one log, two askers.

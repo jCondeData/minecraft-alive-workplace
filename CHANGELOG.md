@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Steward no longer opens a wall piece straight through a finished building or a Wonder (finished, or laid out and
+  waiting for its goods): he skips that piece and builds the next one on open ground. His roads go round a Wonder's
+  ground too.
 - A Carpenter no longer turns log after log into planks for a builder whose store (his chests or the village
   Storehouse) is full, leaving them on the ground: he waits until there's room, then makes just what was asked; and
   if the store fills up while he's on his way, he holds on to what he made and puts it in once there's space.

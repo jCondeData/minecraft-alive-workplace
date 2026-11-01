@@ -947,6 +947,7 @@
 			"io.github.jcondedata.aliveworkplace.test.PriceTagRateAndClassEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardMaterials1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterReserve1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCarpenterChestlessBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaSupplyReachEdge1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerUnreachable1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShoppingPlurals1031GameTests",

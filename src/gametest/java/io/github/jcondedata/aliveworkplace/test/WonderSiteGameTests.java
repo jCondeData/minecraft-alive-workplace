@@ -138,6 +138,31 @@ public class WonderSiteGameTests implements FabricGameTest {
 		WonderManager.get(level).remove(wonder);
 	}
 
+	/**
+	 * B758: a laid-out Wonder (its placement, Foundation Stone, parts and lead) is read back the same after a save, as a
+	 * restart does, and a read-back manager starts its session's layout count afresh (it isn't saved; the sites are).
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aLaidOutWonderSurvivesASave(GameTestHelper helper) {
+		var registries = helper.getLevel().registryAccess();
+		WonderManager wrote = new WonderManager();
+		WonderSite begun = wrote.begin(FOLLY, new BlockPos(10, 64, -20), UUID.randomUUID(), "Owner", 3);
+		BlueprintData.Placement at = new BlueprintData.Placement(helper.getLevel().dimension().location(), new BlockPos(30, 64, -5),
+			Rotation.CLOCKWISE_90, Mirror.LEFT_RIGHT);
+		wrote.place(begun.id(), at, new BlockPos(29, 64, -6));
+		wrote.setParts(begun.id(), List.of(UUID.randomUUID(), UUID.randomUUID()));
+		wrote.setBuilder(begun.id(), UUID.randomUUID());
+		WonderSite laid = wrote.site(begun.id()).orElseThrow();
+		helper.assertTrue(wrote.layouts() > 0, "laying a Wonder out didn't count a layout");
+		WonderManager read = WonderManager.load(wrote.save(new CompoundTag(), registries), registries);
+		helper.assertTrue(read.sites().equals(List.of(laid)), "a laid-out Wonder read back as " + read.sites() + ", saved " + laid);
+		helper.assertTrue(read.site(begun.id()).flatMap(WonderSite::placement).equals(Optional.of(at)), "its placement didn't come back");
+		helper.assertTrue(read.site(begun.id()).flatMap(WonderSite::stone).equals(Optional.of(new BlockPos(29, 64, -6))), "its stone didn't come back");
+		helper.assertTrue(read.layouts() == 0, "a read-back manager's layout count is " + read.layouts() + ", not a fresh 0");
+		helper.succeed();
+	}
+
 	// ---------------------------------------------------------------- handing over, the stone
 
 	/**

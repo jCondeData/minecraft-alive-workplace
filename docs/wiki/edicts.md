@@ -95,8 +95,8 @@ On the hall: `edicts` (each edict in force and the day it was proclaimed; empty 
 edict's progress and whether it is reformed; empty), `raidWorkUntil` (Conscription: when work may start again),
 `extraMeals` (Free Bread's part-meals carried over). The reform stories (31.22) keep `aliveworkplace_reform_stories`
 in the world's data: each village's Shift Bell, the days of a harvest supper, grand festival and drill, whether the
-first lamplit night is still to come, and the last 7 days of treasury takings for the Fair Ledger (all empty by
-default). The summed effects are not saved; they are added up again when
+first lamplit night is still to come, the last 7 days of treasury takings for the Fair Ledger, and the villagers who
+have drilled on a drill day (`drillers`, so a restart mid-drill keeps the chronicle's count; all empty by default). The summed effects are not saved; they are added up again when
 the hall loads.
 
 ## Items, blocks, jobs, commands

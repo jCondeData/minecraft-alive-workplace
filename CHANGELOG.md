@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Militia Drill's chronicle line ("drilled N villagers") counts everyone who drilled that day, even when the server
+  restarted in the middle of the drill: the villagers who already drilled are now saved with the village.
 - The Steward no longer opens a wall piece straight through a finished building or a Wonder (finished, or laid out and
   waiting for its goods): he skips that piece and builds the next one on open ground. His roads go round a Wonder's
   ground too.

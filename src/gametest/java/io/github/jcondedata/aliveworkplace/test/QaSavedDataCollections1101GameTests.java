@@ -203,7 +203,6 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 		INNER_NOT_SAVED.put("trainer.RaidHelpers$Hire.nextStrike", "the helpers' next strike, set again at the join and every strike (RaidHelpers#tick)");
 		INNER_NOT_SAVED.put("trainer.RaidHelpers$Hire.nextLook", "says so: not saved, after a restart they look at once");
 		INNER_NOT_SAVED.put("cup.CupMatches$Call.battle", "says so: the running battle, not saved (a restart ends it, and the bout is called again)");
-		KNOWN_BUGS.put("story.ReformStories$Entry.drillers", "the villagers who drilled today, counted in the chronicle at the drill's end: a restart mid-drill forgets them");
 		INNER_NOT_SAVED.put("story.ReformStories$Entry.dummies", "the drill's training dummies, found again at the drill's first beat (ReformStories#drill)");
 		INNER_NOT_SAVED.put("mine.QuarrySite.onChange", "a callback the manager sets on the site it holds, not data");
 	}

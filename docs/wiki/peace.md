@@ -40,6 +40,9 @@ Roadmap items: 32.21, B134, B383, B704, B705
     quiet village, sends the lair away in peace then and there rather than breaking it up (a captain who fell was
     told by `Lairs.onDeath` at once, so a player's kill just before still breaks the camp up; off a quiet village a
     captain gone still breaks it up, B364);
+  - a captain the game takes away on Peaceful is remembered as taken, not fallen (`Lairs.onRemoved`, saved with the
+    lairs): if the world is back on Normal before the hall's next round, the lair still leaves in peace rather than
+    being broken up as if he fell (B767);
   - a disaster under way ends at once, as when it is switched off; covens hex nobody;
   - no bounty is posted (`Bounties.mayPost` and the hall's bounty round ask `Threats.quiet`); open ones stay (B134).
   - no story arc marked `threat` starts (the Sickness's Gray Cough, the Bandit King): `Arcs.tryStart` and
@@ -137,8 +140,11 @@ Roadmap items: 32.21, B134, B383, B704, B705
   `QaPeacefulLairGameTests.aChiefAPlayerKillsJustBeforePeacefulStillFell`,
   `QaPeacefulLairGameTests.aChiefGoneOutsidePeacefulStillBreaksTheCampUp` (B364): on Peaceful a standing camp leaves in
   peace (also after a save and load), a player's kill just before still counts as the chief falling, and a chief gone
-  off Peaceful still breaks the camp up.
-- `QaThreatCobbleVerify1101GameTests` (3, QA, B364, through the hall's own round): Peaceful sends a standing camp away
-  in peace (no broken-up line, no rest days); at threat level 0 the camp still stands the same evening and leaves at the
-  next dawn, with no new camp for 3 days; back on Normal a chief a player kills still breaks the camp up.
+  off Peaceful still breaks the camp up. `aChiefPeacefulTookIsStillNoKillAfterASaveOnNormal` (B767): Peaceful for a
+  moment, then a save and load on Normal: the camp leaves in peace, no rest days.
+- `QaThreatCobbleVerify1101GameTests` (4, QA, B364, B767, through the hall's own round): Peaceful sends a standing camp
+  away in peace (no broken-up line, no rest days; what the player hears is counted from before Peaceful, as the hall's
+  timed round may come first, B770); at threat level 0 the camp still stands the same evening and leaves at the next
+  dawn, with no new camp for 3 days; back on Normal a chief a player kills still breaks the camp up; Peaceful for a
+  moment and back to Normal before the hall's round is no kill (B767).
 - Showcase scenes: `at_peace`.

@@ -34,7 +34,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  * them after work. Vanilla's trade display ({@code ShowTradesToPlayer}) shows a villager's wares in its main hand and
  * empties that hand when a player is close (B-fisher: "fishes once, then needs a new rod"). Fishers and conscripts are
  * kept from it; here the other workers whose tool lives in that hand: the Miner's pickaxe (mid-quarry, the shift ends),
- * and the Lumberjack's axe (the Farmer's hoe and the Shepherd's shears: QaToolsByTheTradeDisplay1101BugTests, a bug). Each tool carries a name to know it again; after the
+ * the Lumberjack's axe and the Physician's Remedy (the Farmer's hoe and the Shepherd's shears: QaToolsByTheTradeDisplay1101BugTests, a bug). Each tool carries a name to know it again; after the
  * evening with the owner beside them it must still be on the worker (hand or bag) or back in their chest.
  */
 public class QaToolsByTheTradeDisplay1101GameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
@@ -123,6 +123,7 @@ public class QaToolsByTheTradeDisplay1101GameTests implements net.fabricmc.fabri
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
+		int delay = level.getGameRules().getInt(ModGameRules.BUILD_DELAY);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(200, level.getServer()); // slow: the quarry outlasts the test
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(5, 2, 5), new BlockPos(8, 2, 8))) {
 			helper.setBlock(p, Blocks.STONE);
@@ -142,7 +143,9 @@ public class QaToolsByTheTradeDisplay1101GameTests implements net.fabricmc.fabri
 			if (!evening[0] && isIt(miner.getMainHandItem())) {
 				evening[0] = true; // they took the pickaxe and started: now the shift ends
 				helper.setDayTime(9500);
+				level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(delay, level.getServer()); // back as the other tests expect
 			} else if (!evening[0] && ++waited[0] > 1500) {
+				level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(delay, level.getServer());
 				helper.fail("the Miner never took the named pickaxe from the chest: it's in the " + whereIs(helper, miner));
 			}
 		});
@@ -162,5 +165,23 @@ public class QaToolsByTheTradeDisplay1101GameTests implements net.fabricmc.fabri
 		Jobs.employ(level, villager, helper.absolutePos(WORK), ModVillagers.CHOPPING_BLOCK_POI, ModVillagers.LUMBERJACK);
 		villager.setItemSlot(EquipmentSlot.MAINHAND, named(Items.IRON_AXE));
 		eveningWithTheOwner(helper, villager, 1200, "Lumberjack's axe", () -> true);
+	}
+
+	/** A Physician holding a named Remedy from the chest by the stand (ready for a patient), off work with the owner beside them. */
+	//$ gametest_ticks_batch AREA '2000' '"qaToolPhysician1101"'
+	@GameTest(template = AREA, timeoutTicks = 2000, batch = "qaToolPhysician1101")
+	public void qaAPhysiciansRemedyOutlastsAnEveningWithTheOwnerBeside(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(9500);
+		helper.setBlock(WORK, Blocks.BREWING_STAND);
+		helper.setBlock(CHEST, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(CHEST);
+		chest.setItem(0, named(io.github.jcondedata.aliveworkplace.registry.ModItems.REMEDY));
+		Villager villager = helper.spawn(EntityType.VILLAGER, AT);
+		io.github.jcondedata.aliveworkplace.work.Stations.assign(level, villager, helper.absolutePos(WORK), ModVillagers.PHYSICIAN);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.work.PhysicianWork.ready(level, villager, helper.absolutePos(WORK))
+			&& isIt(villager.getMainHandItem()), "the Physician didn't take the named Remedy from the chest: hand " + villager.getMainHandItem());
+		eveningWithTheOwner(helper, villager, 1200, "Physician's Remedy", () -> true);
 	}
 }

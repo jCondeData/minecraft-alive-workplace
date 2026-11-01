@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.IronGolem;
@@ -49,7 +50,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * A protected village (the Village Hall's setting, off unless its owner turns it on): inside the hall's area —
  * {@link VillageHalls#RADIUS} blocks across the map from the hall, at any height — only the hall's owner, their friends
- * ({@code /workplace friend add}) and operators may break or place blocks, open chests and other blocks, empty buckets,
+ * ({@code /workplace friend add}) and operators may break or place blocks (or trample the fields), open chests and other blocks, empty buckets,
  * or hurt the villagers, golems, animals, armor stands and item frames (by hand, or with arrows, tridents and potions),
  * and only they may open the hall's screen with a Village Ledger. Anyone may still come in, open doors and gates, press
  * buttons, ring the bell, use a crafting table, trade with the villagers and open their own mailbox; with the village
@@ -84,8 +85,8 @@ public final class VillageProtection {
 			!(player.getItemInHand(hand).getItem() instanceof BucketItem) || mayUseBucket(level, player, player.getItemInHand(hand)));
 		Platform.get().allowAttackEntity((player, level, entity) -> mayHurt(level, player, entity));
 		// Arrows, tridents, thrown potions and the like: the player who threw or shot them (their hits in melee are above)
-		Platform.get().allowDamage((entity, source, amount) -> !(source.getEntity() instanceof Player player) || source.getDirectEntity() == player
-			|| mayHurt(entity.level(), player, entity));
+		// (item frames and paintings aren't living, so their hits come through HangingHurtMixin instead, B743)
+		Platform.get().allowDamage((entity, source, amount) -> mayBeHurt(entity, source));
 		Platform.get().onUseEntity((player, level, hand, entity, hit) ->
 			(entity instanceof HangingEntity || entity instanceof ArmorStand) && !mayChange(level, player, entity.blockPosition())
 				? InteractionResult.FAIL : InteractionResult.PASS);
@@ -146,6 +147,24 @@ public final class VillageProtection {
 	 */
 	public static boolean mayHurt(Level level, Player player, Entity entity) {
 		return !kept(entity) || io.github.jcondedata.aliveworkplace.realm.Feuds.mayFight(player, entity) || mayChange(level, player, entity.blockPosition());
+	}
+
+	/**
+	 * Whether the hit {@code source} may hurt {@code entity}: always, unless a player threw or shot what hits it (an arrow,
+	 * a trident, a potion, their TNT) and may not hurt it (their hits in melee are checked when they attack). B743: also
+	 * asked for item frames and paintings, which the living-damage event never reaches.
+	 */
+	public static boolean mayBeHurt(Entity entity, DamageSource source) {
+		return !(source.getEntity() instanceof Player player) || source.getDirectEntity() == player || mayHurt(entity.level(), player, entity);
+	}
+
+	/**
+	 * B742: whether {@code entity}'s landing may trample the farmland at {@code pos}: always, unless a player (or what a
+	 * player rides and steers) lands there who may not change things there; then they're told whose village it is.
+	 */
+	public static boolean mayTrample(Level level, Entity entity, BlockPos pos) {
+		Entity who = entity.getControllingPassenger() instanceof Player rider ? rider : entity;
+		return !(who instanceof Player player) || mayChange(level, player, pos);
 	}
 
 	/** What a protected village keeps others from hurting. */

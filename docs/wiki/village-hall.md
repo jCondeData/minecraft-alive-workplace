@@ -238,7 +238,8 @@ day. Each season has a festival on its middle day. At `seasonDays` 1 the calenda
 icon. Then only the owner, their friends and operators may break or place blocks, open chests or hurt villagers in the
 hall's area, or empty or fill buckets there (judged where the bucket pours or scoops, so a stranger standing just
 outside can't pour lava in, B719). A block or a fire is judged where it would go, so clicking the inward face of a
-block just outside doesn't put one inside (B741). Anyone may still walk in, open doors, trade and ring the bell. A build, quarry or field that anyone else
+block just outside doesn't put one inside (B741). A stranger's landing doesn't trample the village's farmland (B742),
+and their arrows and tridents don't knock items out of item frames or break frames and paintings (B743). Anyone may still walk in, open doors, trade and ring the bell. A build, quarry or field that anyone else
 hands a Builder, Miner or Farmer, or a tree farm, orchard or berry plot handed to a Lumberjack, Orchard Keeper or Berry
 Breeder, is refused wherever its footprint reaches into the area, even when it was clicked outside it (B718, B731).
 
@@ -394,6 +395,12 @@ point of interest, saved by Minecraft).
 - B741: a click on a block is also checked where what's held would go (`VillageProtection.mayPlace`): a block item at
   its placement cell (as vanilla picks it: the clicked cell when it can be replaced, else the one
   beside the clicked face; a bed's head one further on), flint and steel or a fire charge at the cell beside the face.
+- B742: `FarmlandTrampleMixin` (on `FarmBlock.turnToDirt`, which only a landing calls with an entity) asks
+  `VillageProtection.mayTrample`: a player, or a mount a player steers, who may not change things there doesn't
+  trample; mobs on their own and the owner, friends and operators trample as in vanilla.
+- B743: item frames and paintings aren't living, so Fabric's damage event never sees them; `HangingHurtMixin` (on
+  `ItemFrame.hurt` and `BlockAttachedEntity.hurt`) asks `VillageProtection.mayBeHurt`, the same check the event uses:
+  a hit a player threw or shot is refused where they may not hurt what it hits.
 - Villages keep working with no player near (23.6, owner's call): see `keepVillagesWorking` on
   [Config switches](config-switches.md).
 

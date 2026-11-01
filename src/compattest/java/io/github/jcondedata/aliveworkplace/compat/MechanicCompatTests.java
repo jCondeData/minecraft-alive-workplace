@@ -79,7 +79,7 @@ public class MechanicCompatTests implements FabricGameTest {
 		return property.getName(state.getValue(property));
 	}
 
-	private static Villager mechanic(GameTestHelper helper) {
+	static Villager mechanic(GameTestHelper helper) {
 		helper.setBlock(TOOLBOX, create("brown_toolbox").defaultBlockState());
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Stations.assign(helper.getLevel(), villager, helper.absolutePos(TOOLBOX), ModVillagers.MECHANIC);
@@ -87,7 +87,7 @@ public class MechanicCompatTests implements FabricGameTest {
 		return villager;
 	}
 
-	private static Container chest(GameTestHelper helper, ItemStack... stacks) {
+	static Container chest(GameTestHelper helper, ItemStack... stacks) {
 		helper.setBlock(CHEST, Blocks.CHEST.defaultBlockState());
 		Container chest = (Container) helper.getBlockEntity(CHEST);
 		for (int i = 0; i < stacks.length; i++) {
@@ -96,7 +96,7 @@ public class MechanicCompatTests implements FabricGameTest {
 		return chest;
 	}
 
-	private static int count(Container container, Item item) {
+	static int count(Container container, Item item) {
 		int n = 0;
 		for (int i = 0; i < container.getContainerSize(); i++) {
 			if (container.getItem(i).is(item)) {
@@ -110,7 +110,7 @@ public class MechanicCompatTests implements FabricGameTest {
 	 * A small drive line (a stone footing, three shafts along x and a cogwheel at the end) built at {@link #LINE}, saved
 	 * as a blueprint and recorded as a finished build; returns the line's blocks' positions (shafts 0-2, cogwheel 3).
 	 */
-	private static List<BlockPos> finishedLine(GameTestHelper helper) {
+	static List<BlockPos> finishedLine(GameTestHelper helper) {
 		return finishedLine(helper, false);
 	}
 

@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Undertakers: an Undertaker no longer carries graves out of the next village into his own Graveyard. A grave that
+  lies in another village stays there; graves in his own village, and ones out in the wilds, are laid to rest as before.
+- Chronicle: a villager killed on the village's edge up a hill (inside the village, but far from the hall in a straight
+  line) now gets the usual death line in the hall's Chronicle, as they were already mourned and dated in the Book of
+  Families.
 - Physicians: a Remedy the Physician shows a player standing by with emeralds is no longer a free cure. He used the
   shown copy on an ill villager and the Remedy in the chest by his brewing stand never went down; now he puts it away
   and cures with a real Remedy from the chest (or brews one), else asks for one on the requests board.

@@ -356,7 +356,9 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
   uncounted death and outside a village (`theWordsOfADeath`); `villageMourning` off (`mourningSwitchedOff`); the
   Undertaker's funeral and the grave's saved flag, an old grave without one (`theUndertakerLeadsAFuneral`);
   QA's `QaVillageCircleBugTests.aDeathOnTheVillagesRimUpAHillIsMourned` (B562: a death 14 out and 10 up in a 16-block
-  village is mourned: the son by the hall grieves, a player by the hall is told, the chronicle line has job and age).
+  village is mourned: the son by the hall grieves, a player by the hall is told, the chronicle line has job and age);
+  B780: QA's `QaVillageReachGraves1101BugTests.aDeathOnTheRimUpAHillIsWrittenInTheHallsChronicle` (that death's line
+  is in the hall's chronicle) and `B779B780GameTests.aDeathOnTheRimIsWrittenAndOneJustPastItIsNot`.
 - Showcase scene: `village_mourns` (Mira dies, Tom and Pip mourn, Ulric the undertaker leads her funeral).
 - Showcase scene: `ageless_elder` (a refusal, the charm taken, the night after 45 elder days, the badge).
 - GameTests: `RetirementGameTests`: the full hand-over in order, the own child chosen over another, two days of

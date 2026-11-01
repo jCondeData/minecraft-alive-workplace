@@ -1042,6 +1042,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeaceBugs1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPacts1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.B768GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGraves1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGraves1101BugTests",
+			"io.github.jcondedata.aliveworkplace.test.B779B780GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayPhysician1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.B781GameTests"

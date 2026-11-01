@@ -968,6 +968,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterChestlessBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterStorehouse1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStorehouseBug1101Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageEconomySaves1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.CarpenterFullStorehouseB760GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSupplyReachEdge1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerUnreachable1031GameTests",

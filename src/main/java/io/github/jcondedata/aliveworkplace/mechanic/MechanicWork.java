@@ -577,7 +577,7 @@ public class MechanicWork extends Behavior<Villager> {
 		state.walker.reset();
 		state.part = null;
 		state.machine = null;
-		ItemStack held = villager.getMainHandItem();
+		ItemStack held = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager);
 		if (!held.isEmpty() && "create".equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(held.getItem()).getNamespace())) {
 			// a part fetched but not put back goes back to the store (or at the toolbox's foot)
 			Optional<BlockPos> post = post(level, villager);

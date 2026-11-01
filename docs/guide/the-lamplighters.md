@@ -17,7 +17,7 @@ us in because the streets are dark. Light them, and we'll walk home safe without
 
 ## The story
 
-1. **The Ask.** Talk to the porter about the curfew.
+1. **The Ask.** Talk to the Porter (or whoever asks; the quest names them) about the curfew.
 2. **The First Step.** Lanterns for every street corner: bring **192 lanterns**.
 3. **The Second Step.** A day later: **96 glowstone** for the brightest lamps.
 4. **The Third Step.** A day later: clear the dark of what prowls in it: **slay 32 monsters**.

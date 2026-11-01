@@ -20,13 +20,21 @@
         "translate": "arc.aliveworkplace.shift_bell.1"
       },
       "intro": [
-        "arc.aliveworkplace.shift_bell.1.intro.1"
+        {
+          "translate": "arc.aliveworkplace.shift_bell.1.intro.1",
+          "with": [
+            "@asker"
+          ]
+        }
       ],
       "quests": [
         {
           "id": "aliveworkplace:arc/shift_bell/ask",
           "name": {
-            "translate": "arc.aliveworkplace.shift_bell.ask"
+            "translate": "arc.aliveworkplace.shift_bell.ask",
+            "with": [
+              "@asker"
+            ]
           },
           "objectives": [
             {

@@ -163,7 +163,7 @@ public final class Conscription {
 	 * chance); with both hands full they fight without one showing. Never drops on death.
 	 */
 	public static void arm(Villager villager) {
-		ItemStack held = villager.getMainHandItem();
+		ItemStack held = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager); // a shown ware isn't kept (B776)
 		if (isMilitiaSword(held)) {
 			return;
 		}

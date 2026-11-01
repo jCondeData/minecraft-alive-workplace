@@ -17,6 +17,18 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Lost Caravan: a carter you've freed keeps following you home however long the walk takes; he no longer vanishes
+  on the seventh day with the goods lost and "Nobody came for him". Where the receiving village's Village Hall was
+  broken, walking him there no longer ends the story, and carrying the goods there no longer takes them and drops
+  them on the ground: you keep them and are told the hall is gone. A new hall in that village takes the story on, and
+  the carter can always be walked home to the village that sent him.
+- Reform stories ask the right villager when the usual trade is missing: a village with no Bard has a Cheerful villager
+  ask for the Festival Fund, and one with no Nurse has a mother ask for the Midwives (anyone else only when there's
+  neither). The ask's quest and intro now name the villager who actually asks ("Talk to Ada about the curfew"), not a
+  Porter, Librarian, Nurse, Bard or Toolsmith who isn't there.
+- A ware a villager shows a player at the trade display (an emerald, bread, a painting, a rod) no longer becomes theirs
+  when work starts or after a restart: Shepherds, Farmers, Fishers, Miners and other workers let it go instead of
+  putting it in their bag or chest, so standing by no longer earns free emeralds or bread.
 - A server stopped in the middle of a Militia Drill day now remembers who already drilled even when its last autosave
   came before the drill: the chronicle's "villagers sparred" count is the same as without the restart.
 - When the Storehouse fills up while the Carpenter carries a chestless builder's planks and stays full, he keeps

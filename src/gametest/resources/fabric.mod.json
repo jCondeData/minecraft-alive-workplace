@@ -350,6 +350,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformStoryGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReformStoryBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformDrillRestart1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBoxSavesGameTests",
@@ -421,6 +422,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPacts1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPacts1031BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTradeBoardGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWares1101BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWares1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWaresFarmer1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryJobsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryTradesGameTests",
@@ -705,6 +709,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CaravanTrailGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LostCaravanGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanThreats1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.ProfessorsThesisGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BanditKingStoryGameTests",
@@ -1035,7 +1040,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPacts1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.B768GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactUnderway1101GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaToolsDisplayRestart1101GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaToolsDisplayRestart1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101cGameTests"
 		]
 	},
 	"depends": {

@@ -385,7 +385,7 @@ public final class Miners {
 		for (ItemStack stack : load) {
 			deliver(level, supplies, bench, stack);
 		}
-		ItemStack tool = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		ItemStack tool = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager); // a shown ware isn't stored (B776)
 		if (!tool.isEmpty()) {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			store(level, supplies, bench, tool);

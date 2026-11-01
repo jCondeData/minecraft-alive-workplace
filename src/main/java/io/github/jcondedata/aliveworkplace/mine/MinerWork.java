@@ -119,7 +119,7 @@ public class MinerWork extends Behavior<Villager> {
 		BlockPos target = null;
 		boolean fill = false;
 		boolean ladder = false;
-		ItemStack pick = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		ItemStack pick = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager);
 		for (int budget = SKIP_BUDGET; budget > 0 && !site.isDone(); budget--) {
 			BlockPos pos = site.current();
 			if (site.phase() != QuarrySite.Phase.PIT) {

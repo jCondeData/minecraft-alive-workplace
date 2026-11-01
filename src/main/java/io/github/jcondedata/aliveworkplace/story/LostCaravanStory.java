@@ -342,7 +342,8 @@ public final class LostCaravanStory {
 			if (!s.started && s.chapter == 0) {
 				continue;
 			}
-			if (today >= s.beganDay + RESCUE_DAYS && !s.flags.containsKey(TOBIN_HOME)) {
+			// Seven days without a rescue: once his cage is open he's rescued, and keeps following until he reaches a village (B624).
+			if (today >= s.beganDay + RESCUE_DAYS && !s.flags.containsKey(TOBIN_HOME) && leader(s) == null) {
 				ownWay(level, r);
 				continue;
 			}
@@ -443,14 +444,21 @@ public final class LostCaravanStory {
 		}
 	}
 
-	/** The carter is within {@link #REACH} blocks of either village's hall: he's home, and the last chapter is done. */
+	/**
+	 * The carter is within {@link #REACH} blocks of either village's standing hall: he's home, and the last chapter is
+	 * done. Where the receiving village's hall was broken there's no village to come home to (B625); he can still be
+	 * walked to the sending one, or to the receiving village's new hall ({@link #receiving}).
+	 */
 	static void reached(ServerLevel level, Running r, Villager carter) {
 		ArcState s = r.state();
 		if (leader(s) == null) {
 			return;
 		}
-		BlockPos to = to(s);
+		BlockPos to = receiving(level, s);
 		for (BlockPos hall : to == null ? List.of(r.hall()) : List.of(r.hall(), to)) {
+			if (!standing(level, hall)) {
+				continue;
+			}
 			double dx = carter.getX() - (hall.getX() + 0.5);
 			double dz = carter.getZ() - (hall.getZ() + 0.5);
 			if (dx * dx + dz * dz <= REACH * REACH) {
@@ -465,6 +473,37 @@ public final class LostCaravanStory {
 				return;
 			}
 		}
+	}
+
+	/** Whether a Village Hall stands at {@code hall} (a hall's chunk not loaded counts as not there). */
+	static boolean standing(ServerLevel level, BlockPos hall) {
+		return level.isLoaded(hall) && level.getBlockEntity(hall) instanceof VillageHallBlockEntity;
+	}
+
+	/**
+	 * The receiving village's hall: {@link #to} while it stands. With that hall broken (B625, B626) and another one
+	 * standing within {@link VillageHalls#RADIUS} of it (the village's hall set up again), the story moves there: the
+	 * goods go to it and the carter can come home to it. Null when there's no receiving village standing (or none ever,
+	 * the operators' command): the carter can still come home to the sending village, and the goods wait for a new hall.
+	 */
+	@Nullable
+	static BlockPos receiving(ServerLevel level, ArcState s) {
+		BlockPos to = to(s);
+		if (to == null || !level.isLoaded(to)) {
+			return null;
+		}
+		if (standing(level, to)) {
+			return to;
+		}
+		BlockPos moved = VillageHalls.nearest(level, to).orElse(null);
+		if (moved == null || !standing(level, moved) || Arcs.running(level, moved) != null
+			|| running(level).stream().anyMatch(r -> r.hall().equals(moved))) {
+			return null;
+		}
+		s.extra.putLong(TO, moved.asLong());
+		Stories.Data.get(level).setDirty();
+		AliveWorkplace.LOG.info("Lost Caravan: the receiving hall at {} is gone; the story goes on at {}", to, moved);
+		return moved;
 	}
 
 	// ---- the lost goods (deliver_goods) ------------------------------------------------------------------------------
@@ -526,9 +565,17 @@ public final class LostCaravanStory {
 			if (to == null || Nbt.getBoolean(s.extra, DELIVERED)) {
 				continue;
 			}
-			double dx = player.getX() - (to.getX() + 0.5);
-			double dz = player.getZ() - (to.getZ() + 0.5);
-			if (dx * dx + dz * dz > REACH * REACH) {
+			BlockPos at = receiving(level, s); // (null with the receiving hall broken; a new hall for the village takes over)
+			if (at == null) {
+				// the receiving hall broken (B626): nobody there takes the goods, and the player keeps them
+				if (within(player, to) && carries(player, goods(s)) && r.entry().quests.stream().anyMatch(q -> s.id.equals(q.arc)
+					&& q.current() >= 0 && q.objectives.get(q.current()) instanceof DeliverGoods)) {
+					Chat.actionBar(player, Component.translatable("message.aliveworkplace.lost_caravan.no_hall", villageName(level, to)).withStyle(ChatFormatting.GOLD));
+				}
+				continue;
+			}
+			to = at;
+			if (!within(player, to)) {
 				continue;
 			}
 			for (Quest q : List.copyOf(r.entry().quests)) {
@@ -551,6 +598,13 @@ public final class LostCaravanStory {
 				return;
 			}
 		}
+	}
+
+	/** Whether {@code player} is within {@link #REACH} blocks of {@code hall} (across). */
+	private static boolean within(ServerPlayer player, BlockPos hall) {
+		double dx = player.getX() - (hall.getX() + 0.5);
+		double dz = player.getZ() - (hall.getZ() + 0.5);
+		return dx * dx + dz * dz <= REACH * REACH;
 	}
 
 	/** Whether {@code player} carries every item of {@code goods}, as many of each. */
@@ -595,7 +649,8 @@ public final class LostCaravanStory {
 				Friendship.add(carter, who, "", FRIENDSHIP);
 			}
 		}
-		BlockPos to = to(s);
+		// the receiving village, when it still stands (or isn't loaded to tell): no standing or chronicle in one that's gone
+		BlockPos to = to(s) == null || !level.isLoaded(to(s)) ? to(s) : receiving(level, s);
 		if (to != null) {
 			// the arc's own effects thank them in the sending village; the receiving one does here
 			for (UUID who : Reputation.paid("helpers", s)) {

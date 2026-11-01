@@ -7020,6 +7020,7 @@
   "message.aliveworkplace.lost_caravan.delivered": "The lost goods are in %s's store at last.",
   "message.aliveworkplace.lost_caravan.joins": "%1$s is home safe, and stays in %2$s.",
   "message.aliveworkplace.lost_caravan.own_way": "Nobody came for %s, who slipped away from the raiders and found the way home with nothing. The goods are lost.",
+  "message.aliveworkplace.lost_caravan.no_hall": "%s's Village Hall is gone: nobody here can take the lost goods.",
   "chronicle.aliveworkplace.lost_caravan.overdue": "The caravan from %1$s to %2$s never came in, with %3$s.",
   "chronicle.aliveworkplace.lost_caravan.freed": "%2$s opened the raiders' cage, and %1$s was free.",
   "chronicle.aliveworkplace.lost_caravan.delivered": "%1$s brought in the lost caravan's goods: %2$s.",

@@ -20,18 +20,24 @@ Roadmap items: 31.19, 31.20
 - **The captive**: the carter, a villager of the sending village with one of the village names (Tobin, say), is locked
   in the stockade's cage. Flip the lever and the iron gate opens: he thanks whoever stands nearest and follows them,
   as a rallied guard does: he walks after them, catches up at once from more than 32 blocks, and waits where he is
-  when they're more than 64 away. The chapter is done when he comes within 24 blocks of either village's hall.
+  when they're more than 64 away. The chapter is done when he comes within 24 blocks of either village's hall, as
+  long as that hall stands: where the receiving village's hall was broken there's no village to come home to (B625).
 - **The lost goods** (a second quest, not needed to go on): the stockade's chest holds the lost shipment's own goods
   (the bandits' loot isn't rolled there). Carry every stack of them to within 24 blocks of the receiving village's
   hall: they go into its store (or are set down on its hall without one) and the quest pays 8 emeralds and +50
-  standing there.
+  standing there. With that hall broken nothing is taken: the action bar says "Ashford's Village Hall is gone: nobody
+  here can take the lost goods.", and the player keeps them (B626).
+- **A broken receiving hall**: when a Village Hall stands again within the village's radius (64 blocks) of the broken
+  one, the story moves to it: the goods go there and the carter can come home to it. Until then he can still be walked
+  to the sending village, which ends the story as usual; the goods quest then closes with the arc.
 - **The ending**: the carter joins the village he reached, with no job yet: he takes a free workstation like any
   villager and starts at Journeyman, as a hired traveler does. Everyone who helped (found the wreck, followed the
   marks, opened the cage, walked him home) gets +150 standing in both villages and the honor Wayfinder, and +100
   friendship with him; both chronicles tell it.
-- **No rescue**: after 7 days from the loss without the carter home, he finds his own way back to the sending
+- **No rescue**: after 7 days from the loss without the carter freed, he finds his own way back to the sending
   village with nothing (a plain villager by its hall, no head start), the goods are gone from the chest, and the arc
-  fails; both villages are told.
+  fails; both villages are told. Once his cage is open he has been rescued: he keeps following, however long the
+  walk home takes (B624).
 - **The wreck** (`story/caravan_wreck`, 13 x 12): the settlers' covered wagon lies on its side a third of the way along
   the caravan's road (or 150 blocks out from the village when the road there is water or rough ground). Its floor
   stands up like a wall, its white canvas arches out torn at the back with a hoop showing, one upper wheel lies flat in
@@ -119,6 +125,11 @@ every objective's.
   trail is followed to them.
 - 31.20: the carter is caged when the stockade is built, whatever the chapter, and he counts as home only after his
   cage was opened. The "7 days" run from the day the caravan went missing.
+- B624: "7 days without a rescue" means 7 days with the cage still shut; a freed carter is never sent home on his own.
+- B625, B626: only a standing Village Hall counts as a village for coming home and for the delivery. A hall rebuilt
+  within `VillageHalls.RADIUS` of the broken one (and running no arc of its own) takes over as the receiving village
+  (`LostCaravanStory.receiving` moves `to`); with none, the story can still end in the sending village, whose hall
+  always stands while the arc runs, so it never hangs. The ending gives no standing in a receiving village that's gone.
 - 31.20: the delivery takes every stack at once, when the player comes within 24 blocks of the receiving hall
   carrying them all; a part load counts nothing.
 - 31.20: the carter joins with no job and the Journeyman head start (`HEAD_START` 3), so he takes whatever free
@@ -155,7 +166,11 @@ every objective's.
   caged with the shipment's own goods in the chest, following once the gate opens, waiting at 100 blocks, catching up
   from 49, joining at Journeyman with standing, Wayfinder and friendship in both villages, the arc's data saved and read
   back (`eachChapterMovesOnAndTobinComesHome`); the delivery (`theDeliveryQuestPays`); the failure path
-  (`afterSevenDaysHeFindsHisOwnWay`).
+  (`afterSevenDaysHeFindsHisOwnWay`); a broken receiving hall keeping the goods and telling the player, then a hall
+  set up again 10 blocks on taking them (`aBrokenReceivingHallTakesNothingUntilItsRebuilt`); a carter freed on day 6
+  still following on day 8, not home at the broken hall, home in the sending village
+  (`aFreedCarterGoesHomeToTheVillageThatStands`).
+- QA bugs (`QaLostCaravanBugTests`): B624, B625, B626.
 - QA (`QaLostCaravanGameTests`, 16 tests): the 300/301-block road edge, `lostCaravanChance` 0, 1 and its clamps, an arc in
   either village keeping the caravan on the road, both halls told and only the sender's map, the trail out of order
   and twice, the action bar's directions, marks placed at 96 blocks and not 97 and never over a player's blocks,

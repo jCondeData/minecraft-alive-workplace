@@ -44,7 +44,8 @@ may.
 Hold it and you see the whole Wonder as see-through blocks. Right-click the ground to place it (its front faces you),
 sneak-right-click the ground to turn it, and sneak-right-click the air to pick it up again or, before placing, to
 mirror it. It must stand with its middle within 64 blocks of the hall and every corner within 96, and never over a
-finished building. A book and quill in your other hand writes down the whole Wonder's material list.
+finished building or another Wonder (even one whose Foundation Stone is set but that still waits for its goods, with
+nothing standing there yet; a builder won't take a house on that ground either). A book and quill in your other hand writes down the whole Wonder's material list.
 
 ## Laying the Foundation Stone
 

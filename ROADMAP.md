@@ -4857,7 +4857,7 @@ Legends.
   - every condition type has a true and a false GameTest, and a `legend` falls back to its stand-in;
   - the caps hold: a Town with one Wonder can't start a second and a City can, the same kind twice in one village is
     refused, and `wonderServerLimit 1` refuses a second village.
-- [x] **35.3** (approved 2026-10-12) **The Wonders page and the Wonder Plan.** A new button on the Village Hall's screen opens the
+- [x] **35.3** (approved 2026-10-12) (verified 2026-11-01: QaWonders1101GameTests [16]: each Wonder's whole plan blueprint = its stages' blocks and the plan's size; plan centered on the hall in 4 turns and mirrored, refused past 64; data requirements and stage titles as specced; 31 emeralds refused, 32 buy the plan; wiki Library count fixed) **The Wonders page and the Wonder Plan.** A new button on the Village Hall's screen opens the
   **Wonders** page (a `ChoiceMenu`): every enabled Wonder as its icon, name and power in a line, each requirement
   ticked or crossed with what's missing ("2 of 3 Chapels", "the Seer: not in the village"), and the cap ("Wonders: 1
   of 1 for a Town"); a Wonder going up shows its stage and how far along it is. With everything ticked, **Draw up the
@@ -4963,7 +4963,7 @@ Legends.
   - a GameTest checks the server-wide message and the chronicle lines;
   - scene `wonder_finished`: the folly's time-lapse, ending in its festival fireworks.
   - [x] **35.8a** (approved 2026-10-13) (verified 2026-10-27: on main 39a690ce7, full build green: QaWonders1027GameTests [7] plus existing WonderFinds/WonderStage tests; 35.8a: the folly's stage II top layer is all stone and its cornice stays stone turned 180 against a dirt hill with landscaping; mutants: WonderUpkeep.counted 4/4, breakStone 2/2; 35.7b's month-of-play pacing is a human call, not tested; 35.8 stays open on B605) Change from the owner (2026-10-13): fix the dirt band round the folly's top under the dome (it should be the stone cornice)
-- [x] **35.9** (approved 2026-10-12) **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
+- [x] **35.9** (approved 2026-10-12) (verified 2026-11-01: QaWonders1101GameTests [16]: each Wonder's whole plan blueprint = its stages' blocks and the plan's size; plan centered on the hall in 4 turns and mirrored, refused past 64; data requirements and stage titles as specced; 31 emeralds refused, 32 buy the plan; wiki Library count fixed) **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
   critique questions, STYLE.md), drawn in a new `tools/blueprints/wonders.py` with the kit and saved by
   `wonder_stages()`: a Gothic cathedral on a cross plan, about 27 wide (39 across the transepts) and 55 long, its two
   west towers 44 high under stone spires reaching 52. A nave of five bays under a steep deepslate-tile roof; aisles
@@ -4998,7 +4998,7 @@ Legends.
     without one; a wedding goes to the Cathedral with its mood and baby; a damaged Cathedral turns both off;
   - scene `wonder_great_cathedral`: the time-lapse, ending at dusk with a wedding at the altar; its GIF and powers are
     in the README's Wonders section.
-- [x] **35.11** (approved 2026-10-12) **The Lighthouse: its design.** A coastal landmark about 25 × 33 and 46 high, drawn like 35.9: a stepped
+- [x] **35.11** (approved 2026-10-12) (verified 2026-11-01: QaWonders1101GameTests [16]: each Wonder's whole plan blueprint = its stages' blocks and the plan's size; plan centered on the hall in 4 turns and mirrored, refused past 64; data requirements and stage titles as specced; 31 emeralds refused, 32 buy the plan; wiki Library count fixed) **The Lighthouse: its design.** A coastal landmark about 25 × 33 and 46 high, drawn like 35.9: a stepped
   stone mole at the water's edge carrying a round tower that tapers from 13 across to 9, banded in white and red, with
   a gallery on stone corbels at 38; a lantern room of glass round sea lanterns and a ring of redstone lamps that an
   inverted daylight detector lights at night; a copper cupola with a lightning-rod vane. At its foot, the keeper's
@@ -5024,7 +5024,7 @@ Legends.
     warning gets its own test once M32's pirates exist); a damaged Lighthouse turns them all off;
   - scene `wonder_lighthouse`: the time-lapse beside a sea dug and filled by the harness, ending at night with the
     lamps lit; its GIF and powers are in the README.
-- [x] **35.13** (approved 2026-10-12) **The Great Library: its design.** A domed library on a cross plan, about 41 × 41 and 34 high, drawn
+- [x] **35.13** (approved 2026-10-12) (verified 2026-11-01: QaWonders1101GameTests [16]: each Wonder's whole plan blueprint = its stages' blocks and the plan's size; plan centered on the hall in 4 turns and mirrored, refused past 64; data requirements and stage titles as specced; 31 emeralds refused, 32 buy the plan; wiki Library count fixed) **The Great Library: its design.** A domed library on a cross plan, about 41 × 41 and 34 high, drawn
   like 35.9: a rotunda 19 across under a copper dome with a glass lantern at its top; four wings of reading halls,
   each with two floors of bookshelf galleries; a portico of six columns under a pediment, over a grand stair. At the
   centre, an Enchanting Table ringed by fifteen bookshelves, with a lectern (a librarian); four lecterns in the wings
@@ -5058,7 +5058,7 @@ Legends.
     research loads unchanged; Swift Hands V on top of every other bonus stays at or under twice the pace;
   - scene `wonder_great_library`: the time-lapse, ending in the rotunda on the scholar's screen with the second tier;
     its GIF and powers are in the README.
-- [x] **35.15** (approved 2026-10-13) **The Great Wall: its design.** A defence placed like the other walls (stand inside the village and
+- [x] **35.15** (approved 2026-10-13) (verified 2026-11-01: QaWonders1101GameTests [16]: each Wonder's whole plan blueprint = its stages' blocks and the plan's size; plan centered on the hall in 4 turns and mirrored, refused past 64; data requirements and stage titles as specced; 31 emeralds refused, 32 buy the plan; wiki Library count fixed) **The Great Wall: its design.** A defence placed like the other walls (stand inside the village and
   place it facing out: its stairs are on your side), drawn like 35.9: 97 long, 7 thick and 12 high on a battered
   plinth, a walk along the top behind crenellations, and five towers (9 × 9, 18 high, hipped roofs; one at each end
   and two at the quarters), each with stairs inside, a grindstone for a guard and an alcove where a sentry golem
@@ -5071,7 +5071,7 @@ Legends.
   (Cleric), 64 baked potatoes (Chef); III 8 crossbows (Fletcher), 8 iron chestplates (Armorer), 8 shields (Carpenter);
   IV 16 iron blocks (Armorer), 4 pumpkins (Farmer), 16 campfires (Carpenter): the iron and the pumpkins become its
   sentries. Done when: 35.9's four design checks pass for it, with the walk at a player's eye in its renders.
-  - [x] **35.15a** (approved 2026-10-13) Change from the owner (2026-10-13): add solid tower bases with more decoration; wonders should have lots of decoration, so give the Great Wall a bit more decoration and detail, similar to the Hanging Gardens
+  - [x] **35.15a** (approved 2026-10-13) (verified 2026-11-01: QaWonders1101GameTests [16]: each Wonder's whole plan blueprint = its stages' blocks and the plan's size; plan centered on the hall in 4 turns and mirrored, refused past 64; data requirements and stage titles as specced; 31 emeralds refused, 32 buy the plan; wiki Library count fixed) Change from the owner (2026-10-13): add solid tower bases with more decoration; wonders should have lots of decoration, so give the Great Wall a bit more decoration and detail, similar to the Hanging Gardens
 - [x] **35.16** (approved 2026-10-13) (verified 2026-10-25: QaThreatsLateGameTests: bounty names, Town reward 18, hand-in refusals and the right hall, ownerless captain drops insignia; Great Wall arc +-10 degrees both sides and across +-180, hall inside footprint, raid gathers past the arc. 33.17 left unverified: B425) **The Great Wall: its powers and time-lapse.** While it stands, no raid gathers behind it: our night
   raids and the bandits' (`guard/VillageRaids.gatheringPoint`, `guard/BanditCamps`) gather outside the arc the wall
   covers as seen from the hall, plus 10° either side, and (needs M32's sieges item) siege raiders can't put ladders to
@@ -5085,7 +5085,7 @@ Legends.
     iron; a damaged Wall turns both off;
   - scene `wonder_great_wall`: the time-lapse, then a night raid gathering on the open side while the sentries watch;
     its GIF and powers are in the README.
-- [x] **35.17** (approved 2026-10-12) **The Observatory: its design.** On a raised terrace about 31 × 31, drawn like 35.9: a round tower 15
+- [x] **35.17** (approved 2026-10-12) (verified 2026-11-01: QaWonders1101GameTests [16]: each Wonder's whole plan blueprint = its stages' blocks and the plan's size; plan centered on the hall in 4 turns and mirrored, refused past 64; data requirements and stage titles as specced; 31 emeralds refused, 32 buy the plan; wiki Library count fixed) **The Observatory: its design.** On a raised terrace about 31 × 31, drawn like 35.9: a round tower 15
   across and 30 high under a copper dome with a slit of tinted glass, a great telescope of cut copper 12 long leaning
   out of the slit, a star-chart room in a low wing with a cartography table and a lectern, a courtyard with a sundial
   (a stone face and its gnomon) and an orrery (a gold sun with planets hung on chains), and a spiral stair up to a

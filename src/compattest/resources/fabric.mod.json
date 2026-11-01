@@ -125,6 +125,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.RaidHelperCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDenHelperCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDenHelperBugTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaDenHelpersHome1101dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDenHelperRaidCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDenHelperRaidBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDenSentencesCompatTests",

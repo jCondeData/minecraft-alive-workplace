@@ -5426,7 +5426,7 @@ Depends on: nothing open.
   like a repair), a build with nothing changed (no button), save and reload mid-refresh; text in `en_us.json`; wiki
   (builder.md, workplace-looks.md) and the guide; scene `refresh_old_house` (before and after of an old Stone House).
 
-- [x] **36.22** (owner, 2026-10-27) (review: pending 2026-10-27) **Miners dig deeper as they level up.** Owner: "miners only mining 16 blocks deep is
+- [x] **36.22** (owner, 2026-10-27) (review: pending 2026-10-27) (verified 2026-11-01: 9 QA tests [QaWorkReach1101GameTests]: Novice digs a whole 64 pit silently; a 96 marker over 65-deep ground stops a Novice at 64, told Journeyman word for word; a 128 marker cut to 90 by the floor dug whole by a Journeyman; an Expert stops one layer above a 128-deep bedrock pit, told Master; a Novice's strip mine shaft to Y=-53 [over 64 down] not cut by level; Expert becoming Master mid-quarry takes the bedrock pit to the floor with the exact 'reached Master level' line; old saves without wanted_bottom keep their depth, cut ones keep it; bedrock marker survives an ItemStack save; plus quarryReach 20 from the config file taken at 20, refused at 21 in full. Full build green [5456 + 896]; wiki villager-jobs.md and guide miner.md corrected [strip mines, real depth, reach across the ground]) **Miners dig deeper as they level up.** Owner: "miners only mining 16 blocks deep is
   annoying, with higher levels you should be able to mine further". Today the Quarry Marker cycles 4, 8, 16, 32, 64 and
   strip mines for every miner (`mine/QuarryData.DEPTHS`, starting at 16). He chose (2026-10-27, asked by
   digest-1027-1255): **deeper with levels**: keep 4 to 64 for every miner, and add deeper choices unlocked by the

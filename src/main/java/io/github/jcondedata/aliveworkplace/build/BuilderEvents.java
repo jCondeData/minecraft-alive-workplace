@@ -81,6 +81,8 @@ public final class BuilderEvents {
 		Platform.get().allowDamage((entity, source, amount) ->
 			!(entity instanceof Villager villager && !entity.level().isClientSide() && (io.github.jcondedata.aliveworkplace.nether.Netherworkers.shields(villager, source)
 				|| io.github.jcondedata.aliveworkplace.guard.Guards.block(villager, source, amount))));
+		// A lair's captain the game takes away on Peaceful is remembered as taken, not fallen (B767).
+		Platform.get().onEntityUnload((entity, level) -> io.github.jcondedata.aliveworkplace.threat.Lairs.onRemoved(level, entity));
 		Platform.get().afterDeath((entity, source) -> {
 			if (entity instanceof Villager villager && entity.level() instanceof ServerLevel level) {
 				Builders.onBuilderDeath(level, villager);

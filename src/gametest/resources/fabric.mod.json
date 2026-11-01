@@ -1049,7 +1049,6 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPactTrains1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClicksShops1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGraves1101GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterCarryOn1101dGameTests"
 		]
 	},

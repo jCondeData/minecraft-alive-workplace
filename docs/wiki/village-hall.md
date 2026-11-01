@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744
 
 ## What a player sees
 
@@ -176,7 +176,8 @@ says so ("No Builder can take the ...: none has a bench near it and room in thei
 Builder gets it queued "after the current build", once however often it is clicked. In a village somebody owns, only
 the owner and their friends can order one. The tab says how many builds can go up a level ("1 build", "2 builds").
 
-The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day), trade routes
+The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day; "(1 entry)" on
+its button for a chronicle of one, B744), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
 Book of Edicts, the calendar, Legends, the Festival Cup and Classes. The bell calls everyone home. A cake calls a
 festival. A named Name Tag used on the hall names the village (the tag isn't used up; like the City Plan, the Village Ledger and

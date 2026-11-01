@@ -3,7 +3,7 @@
 A seasoned Builder who runs a village from its City Plan: he decides what the village needs next, finds the plot and
 has the builders build it. Part of 1.1 (Villages that build themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B468, B469, B471, B472, B503, 36.20, B747
+Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B468, B469, B471, B472, B503, 36.20, B747, B723
 
 ## What a player sees
 
@@ -73,7 +73,8 @@ approved by hand; a lane the Steward lays from a finished house's door and his h
 not, so a stretch of them that would run through a player's section waits instead (B520). A player placing or breaking a block inside a hall's
 area marks its 16×16×16 section, and only that one. His sites clear only natural blocks. His waiting builds (not a player's own) share one
 shopping list, the 8 most needed added up over all of them, on the desk, the Storehouse's requests board and in the
-caravans' wants ("30 Glass, 12 Oak Logs, 1 Torch"); the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
+caravans' wants ("30 Glass, 12 Oak Logs, 1 Torch"), each building material his blueprints use named in the plural
+from 2 up ("12 Spruce Logs, 6 Glass Panes, 4 Ladders", B723); the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
 less, isn't enough) he proposes nothing new and the desk says so.
 
 **Old houses (27.20, 27.21).** In zones with "renew old houses" on he finds the houses no builder built (by their

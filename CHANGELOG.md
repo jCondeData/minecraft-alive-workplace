@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Village Hall's Chronicle button reads "(1 entry)" for a chronicle of one, and a work-pace effect naming one trade
+  reads "1 trade works 50% faster" instead of "1 trades work".
+- The Steward's shopping list names the building materials his blueprints use in the plural: "12 Spruce Logs,
+  6 Glass Panes, 4 Ladders, 2 Oak Doors" on the desk, the Storehouse board and the daily message.
 - A Wonder Plan can no longer go down over a house that is still being built; it says which build stands there
   ("It would stand over the Test Hut, a build in progress"), and the ground is free again once that build is canceled.
 - A builder now refuses a house that reaches over a Wonder going up even when a finished Wonder lies under it too.

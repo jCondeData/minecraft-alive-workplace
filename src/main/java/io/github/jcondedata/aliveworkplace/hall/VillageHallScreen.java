@@ -279,7 +279,7 @@ public final class VillageHallScreen {
 		menu.divider(1);
 		int lines = entity == null ? 0 : entity.chronicle().size();
 		menu.button(CHRONICLE, icon(Items.WRITTEN_BOOK, Component.translatable("screen.aliveworkplace.hall.chronicle"), ChatFormatting.WHITE,
-			line(Component.translatable("screen.aliveworkplace.hall.chronicle_hint", lines), ChatFormatting.GRAY)), p -> {
+			line(Words.counted("screen.aliveworkplace.hall.chronicle_hint", lines, lines), ChatFormatting.GRAY)), p -> {
 			renderChronicle(menu, level, hall);
 			menu.broadcastChanges();
 		});

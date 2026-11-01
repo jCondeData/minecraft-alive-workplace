@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.3 — 2026-11-01
+
 ### Fixed
 - Undertakers: an Undertaker no longer carries graves out of the next village into his own Graveyard. A grave that
   lies in another village stays there; graves in his own village, and ones out in the wilds, are laid to rest as before.

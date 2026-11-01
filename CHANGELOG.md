@@ -17,6 +17,18 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A server stopped in the middle of a Militia Drill day now remembers who already drilled even when its last autosave
+  came before the drill: the chronicle's "villagers sparred" count is the same as without the restart.
+- When the Storehouse fills up while the Carpenter carries a chestless builder's planks and stays full, he keeps
+  carrying them and trying again instead of dropping them on the ground by his bench.
+- A bed you put straight back where a settlers' wagon bedroll stood is now a home at once: before the Village Hall's
+  next round it was still taken for a wagon bed and its villager lost the home.
+- On a server upgraded from an older version of the mod, cabin beds by a campfire, hay and the builder's
+  Blueprint Table are homes again once the server has autosaved, not only after its next restart.
+- A Great Wall whose lost sentry is refused by another mod (with `forceVillageSpawns` off) no longer uses up four iron
+  blocks and a pumpkin every morning for a golem that never comes: the stockpile keeps them.
+- Ending a trade pact while the other village's caravan is on the road no longer gets its cargo free: a caravan that set
+  out under the pact is still paid at the pact's terms when it arrives.
 - Switching the world to Peaceful for a moment and back to Normal no longer breaks a bandit camp up as if its chief
   fell: Peaceful took him away, so the camp now packs up and leaves in peace (no "Chief ... fell" line, no rest days).
 - A Farmer's hoe, a Shepherd's shears and any other worker's tool no longer vanish when a player stands beside them

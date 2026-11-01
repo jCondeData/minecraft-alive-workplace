@@ -58,6 +58,10 @@ import org.jetbrains.annotations.Nullable;
  * old camps round each village (a hall's round runs as soon as it loads); once the list is saved in this format, it
  * holds every camp the look found, and any other bed is a home, as in a new world. An older list's unverified beds
  * (B715) are looked at once each whenever they are asked about.
+ *
+ * <p>B754: the look lasted until the server's next restart, as the list was never marked to be saved; such a list is now
+ * saved at the first autosave, and saving it ends the look. B761: a new brown or green bed put where a listed bedroll
+ * stood takes the spot off the list at once ({@link #changed}), so it is a home without waiting for the hall's round.
  */
 public final class CampBeds {
 	/** How close the camp's campfire and hay bale are to its bedrolls in an older camp (both camps: within 10 blocks). */
@@ -87,9 +91,10 @@ public final class CampBeds {
 		/**
 		 * Whether an unlisted brown or green bed is judged by an older camp's look (B749): only in a list from before B715
 		 * or a dimension that had none until after its first ticks, until the list is saved again (not saved itself: a list
-		 * in this format holds the camps that look found, so a bed placed since is a home).
+		 * in this format holds the camps that look found, so a bed placed since is a home). B754: it did last the whole
+		 * session; {@link #save} now ends it, and such a list is marked to be saved at the first autosave.
 		 */
-		boolean looks;
+		volatile boolean looks;
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(() -> fresh(level), Data::load, null), NAME);
@@ -103,6 +108,7 @@ public final class CampBeds {
 				data.setDirty();
 			} else {
 				data.looks = true; // a save from before the list may hold camps it never saw
+				data.setDirty(); // until the first autosave writes it (B754)
 			}
 			return data;
 		}
@@ -150,6 +156,7 @@ public final class CampBeds {
 
 		@Override
 		public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+			looks = false; // saved in this format: it holds every camp the look found, and a bed placed since is a home (B754)
 			tag.putInt("version", VERSION);
 			if (complete) {
 				tag.putBoolean("complete", true);
@@ -165,7 +172,10 @@ public final class CampBeds {
 			Data data = new Data();
 			data.complete = Nbt.getBoolean(tag, "complete"); // absent: a list from before B730, which may predate camps' lists
 			boolean old = Nbt.getInt(tag, "version") < VERSION; // a list from before B715: its beds are looked at again
-			data.looks = old && !data.complete; // and its unlisted beds, this session (B749)
+			data.looks = old && !data.complete; // and its unlisted beds, until it is saved again (B749, B754)
+			if (data.looks) {
+				data.setDirty(); // the first autosave writes it in this format, which ends the look (B754)
+			}
 			for (long pos : Nbt.getLongArray(tag, "beds")) {
 				(old ? data.unverified : data.beds).add(pos);
 			}
@@ -188,6 +198,22 @@ public final class CampBeds {
 				Data.get(level);
 			}
 		});
+	}
+
+	/**
+	 * A block changed (from ServerLevel.onBlockStateChange): a brown or green bed put on a listed spot is a new bed, not the
+	 * bedroll that stood there, so the spot comes off the list at once (B761). A bed the player puts straight back where a
+	 * bedroll was broken is a bed like any other, before the hall's next round takes the broken one off. A camp placed
+	 * there lists its beds again itself ({@link #record}, after it is placed).
+	 */
+	public static void changed(ServerLevel level, BlockPos pos, BlockState old, BlockState now) {
+		if (!isBedHead(now) || !isBedroll(now) || (isBedHead(old) && isBedroll(old))) {
+			return; // no bedroll's head placed (a bedroll's own changes, someone sleeping in it, keep it listed)
+		}
+		Data data = level.getDataStorage().get(new SavedData.Factory<>(Data::new, Data::load, null), Data.NAME);
+		if (data != null && (data.has(pos) || data.unverified(pos))) {
+			data.remove(pos);
+		}
 	}
 
 	/** Puts the beds (their heads, where a bed's place in the village is) of the camp just placed in {@code box} on the list. */

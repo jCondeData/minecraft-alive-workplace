@@ -594,6 +594,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillageFixes1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsOldList1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCabinBedsHome1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCabinBedsReplaceBug1101Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsFirstSession1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEveryBlockEntityField1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataCollections1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataCollections1101BugTests",
@@ -975,6 +977,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSupplyReach1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageEconomySaves1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageEconomySaves1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.CarpenterFullStorehouseB760GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSupplyReachEdge1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerUnreachable1031GameTests",
@@ -1026,7 +1029,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHostileSpawnsForced1101dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatCobbleVerify1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaToolsByTheTradeDisplay1101GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaVillageHomesLife1101GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaVillageHomesLife1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeace1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeaceBugs1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPacts1101BugTests",
+			"io.github.jcondedata.aliveworkplace.test.B768GameTests"
 		]
 	},
 	"depends": {

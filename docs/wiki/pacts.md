@@ -39,7 +39,8 @@ least two guards send relief riders (as in [realm relief](realms.md)); no treasu
 it.
 
 **Ending.** Either side ends a trade pact at once (its routes both ways stop) or an alliance with a day's notice; the
-other owner gets a letter, and both chronicles note it.
+other owner gets a letter, and both chronicles note it. A caravan already on the road when its pact ends set out under
+it, so it's still paid at the pact's terms (board price) when it arrives, unless its side had gifts on (B768).
 
 ## How it works
 
@@ -59,7 +60,8 @@ the realm's own. Owners are compared with `Realms.ownerOf` (the hall's, or as la
 
 `aliveworkplace_pacts` (with the overworld): the pacts (both villages, alliance or not, the notice's end, each side's
 gifts), the offers waiting, and whether old routes were made pacts. A world from before 1.7 has none of it and starts
-empty.
+empty. A caravan on the road under a pact that ended is marked `pact` in `aliveworkplace_caravans` (B768; false in
+older saves).
 
 ## Items, blocks, jobs, commands
 
@@ -100,6 +102,8 @@ pact partner, accepted without stopping its routes) and `anOfferButtonTheTabShow
 shuts both Routes tabs in the same tick (no route, cargo unpaid, a new offer at once); end letters to an offline owner
 wait at the post office; an ally with one guard sends no riders and with two sends one (the singular sentences); an
 alliance under notice still rides and not after its day; a lapsed offer made again with a fresh 3 days; every change
-marked for saving. Known gap (B768): a caravan already on the road when its pact ends unloads unpaid.
+marked for saving. `QaPacts1101BugTests` and `B768GameTests` (B768): a caravan on the road when its pact ends is still
+paid on arrival; only the sides with gifts off are marked, the mark survives a save, and a caravan without it (or with
+pacts off) isn't paid.
 
 Showcase scene `pacts`.

@@ -10,7 +10,8 @@ Roadmap items: 31.19, 31.20
 ## What a player sees
 
 - **Overdue**: when a caravan sets off on a road longer than 300 blocks, 1 in 20 goes missing (config
-  `lostCaravanChance`), if neither village has a story arc running. Its goods never arrive: the arc holds them. Players
+  `lostCaravanChance`), if neither village has a story arc running and neither is quiet (threat level 0, At peace
+  or Peaceful: there the caravan just arrives, B725). Its goods never arrive: the arc holds them. Players
   near either hall read "The caravan from Thornholm to Ashford is a day overdue", both chronicles note it with the
   goods it carried, and the sending hall hands out a map marked with the wreck. Chapter 1 ends when a player comes
   within 12 blocks of the wreck ("The caravan's wreck: tracks lead away from the road").

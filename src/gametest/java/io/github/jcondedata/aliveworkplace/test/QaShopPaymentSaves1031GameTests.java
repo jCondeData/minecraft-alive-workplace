@@ -232,8 +232,12 @@ public class QaShopPaymentSaves1031GameTests implements FabricGameTest {
 		List<ItemEntity> dropped = helper.getLevel().getEntitiesOfClass(ItemEntity.class, box, e -> e.getItem().is(Items.EMERALD));
 		int onCounter = dropped.stream().mapToInt(e -> e.getItem().getCount()).sum();
 		helper.assertTrue(inChest + onCounter == 100, inChest + " emeralds in the chest and " + onCounter + " on the counter, expected 100 in all");
+		BlockPos counter = helper.absolutePos(COUNTER);
 		for (ItemEntity e : dropped) {
 			helper.assertTrue(e.getItem().getCount() <= e.getItem().getMaxStackSize(), "a dropped stack of " + e.getItem().getCount() + " emeralds");
+			// nightly survivor (Shops.store, 2026-10-31): the overflow lands on the counter itself, centered over it, not beside it
+			helper.assertTrue(Math.abs(e.getX() - (counter.getX() + 0.5)) < 0.01 && Math.abs(e.getZ() - (counter.getZ() + 0.5)) < 0.01 && e.getY() > counter.getY() + 1,
+				"a stack of the payment dropped at " + e.position() + ", not on top of the counter at " + counter);
 		}
 		helper.succeed();
 	}

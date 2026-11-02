@@ -332,11 +332,17 @@ public class QaLaneC1101bGameTests implements net.fabricmc.fabric.api.gametest.v
 				bed(helper, foot, Blocks.YELLOW_BED);
 				helper.runAfterDelay(2, () -> {
 					helper.assertTrue(!CampBeds.isWagonBed(level, listed), "a yellow bed put where a camp's bedroll stood is a wagon bed");
+					// B786: the census reaches 18 blocks across (and 32 up and down) from the hall, past this area's edges, where an
+					// earlier batch's tests left their beds (never cleared, as only this area is); those beds aren't this test's
+					List<BlockPos> own = List.of(red, white, blue, listed);
+					List<BlockPos> stray = VillageHalls.beds(level, helper.absolutePos(HALL)).filter(p -> !own.contains(p)).map(BlockPos::immutable).toList();
+					stray.forEach(p -> level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL));
 					helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 					helper.runAfterDelay(60, () -> {
 						VillageHalls.Census census = VillageHalls.census(level, helper.absolutePos(HALL));
 						helper.assertTrue(census.wagonBeds() == 0 && census.beds() == 4, "census: wagon beds " + census.wagonBeds() + ", beds " + census.beds()
-							+ " (expected the red, white, blue and yellow beds)");
+							+ " (expected the red, white, blue and yellow beds; counted " + VillageHalls.beds(level, helper.absolutePos(HALL)).map(BlockPos::toShortString).toList()
+							+ ", wagon beds " + CampBeds.inVillage(level, helper.absolutePos(HALL)) + ", strays removed before the hall " + stray + ")");
 						bed(helper, foot, Blocks.BROWN_BED);
 						helper.runAfterDelay(2, () -> {
 							helper.assertTrue(CampBeds.isWagonBed(level, listed), "the brown bedroll put back on its listed spot isn't a wagon bed");

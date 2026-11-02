@@ -1118,6 +1118,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWaresFisherMiner1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderConfig1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderConfig1102BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderDelay1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidOfOneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStackRoom1102cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCountWords1102cGameTests"

@@ -66,7 +66,7 @@ public final class Signposts {
 			LOOKED.put(entity, today);
 		}
 		int changed = 0;
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
 			if (isSignpost(f.structure()) && level.isLoaded(f.placement().origin())) {
 				changed += write(level, f.placement().origin());
 			}

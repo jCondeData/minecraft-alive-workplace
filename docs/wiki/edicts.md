@@ -152,7 +152,10 @@ the ask through M30's three steps to its ending and the edict reformed in that v
 arcs and `arcsAtOnce`), `QaReformStoryGameTests` (11: the QA lane's for 31.22: the fallback askers (any smith, a
 Scholar, anyone), no Guard leaving M30's step on the quest page, `storyArcs` off through the real quest page, a side arc
 beside a main arc in its cooldown, the blueprints only to the finisher, a reload with the asker dead, the bell only on
-natural ground, the ledger's seven days, every sentence). Showcase scene `reform_story`.
+natural ground, the ledger's seven days, every sentence), QA's `QaVillageFixesVerify1102GameTests` (B772: drill
+day across two restarts counts each driller once, one driller reads "1 villager", the next drill day counts afresh;
+with no dummies only the guards drill; a baby at the dummies doesn't).
+Showcase scene `reform_story`.
 
 A season under the edicts (30.22): `SEASON=true tools/packtest/run.sh` lays out a City of 35 with six farms, a kitchen
 and a store on the real pack server and runs it 4 days under Long Shifts, Free Bread, Large Families and Festival

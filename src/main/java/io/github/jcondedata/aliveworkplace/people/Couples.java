@@ -211,7 +211,7 @@ public final class Couples {
 		if (cathedral.isPresent()) {
 			return cathedral.get();
 		}
-		return io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
+		return io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.filter(f -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(f.structure())
 				.equals(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.CHAPEL.id()))
 			.map(f -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(),

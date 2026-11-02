@@ -403,7 +403,7 @@ public final class LegendGuests {
 
 	/** The village's finished Chapel (the {@code chapel} blueprint): where its guests stand, or empty. */
 	public static Optional<BlockPos> chapel(ServerLevel level, BlockPos hall) {
-		return BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
+		return BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.filter(f -> BlueprintStyles.base(f.structure()).equals(StarterBlueprints.CHAPEL.id()))
 			.map(f -> BlueprintOutline.bounds(f.placement(), StarterBlueprints.CHAPEL.size()))
 			.map(box -> new BlockPos(box.getCenter().getX(), box.minY() + 1, box.getCenter().getZ()))

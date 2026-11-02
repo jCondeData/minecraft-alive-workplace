@@ -156,7 +156,7 @@ public record Conditions(List<String> biomes, boolean coast, boolean netherLink,
 			return portal;
 		}
 		ResourceLocation gate = StarterBlueprints.NETHER_GATE.id();
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
 			ResourceLocation id = BlueprintStyles.base(f.structure());
 			boolean upgrade = BlueprintUpgrades.tier(id) > 1 && id.getNamespace().equals(gate.getNamespace()) && id.getPath().startsWith(gate.getPath() + "_");
 			if (id.equals(gate) || upgrade) {

@@ -130,7 +130,7 @@ public final class VillageHabitats {
 		if (hall == null || has(level, hall)) {
 			return null;
 		}
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall.getBlockPos(), VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall.getBlockPos())) {
 			if (!isGarden(f.structure()) || !f.placement().dimension().equals(level.dimension().location())) {
 				continue;
 			}

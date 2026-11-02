@@ -229,7 +229,7 @@ public final class BattleStations {
 	private static Map<BlockPos, Integer> byBuild(ServerLevel level, BlockPos hall) {
 		Map<BlockPos, Integer> out = new java.util.LinkedHashMap<>();
 		int build = 0;
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
 			if (!hasStations(f.structure())) {
 				continue;
 			}

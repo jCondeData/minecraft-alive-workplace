@@ -173,6 +173,10 @@ public class PorterGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "porter_strangers")
 	public void porterLeavesStrangersWorkersAlone(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B736: work hours. The porter takes his storehouse owner's side only while working (PorterWork, WORK schedule
+		// 2000-9000), and the clock is wherever the last batch left it: after a batch ending at night he never worked,
+		// so his employer stayed null and the "took nothing" check proved nothing either.
+		helper.setDayTime(2000);
 		Leftovers.village(helper, 48);
 		Villager miner = miner(helper);
 		ModAttachments.BUILDER_EMPLOYER.set(miner, new Employer(UUID.randomUUID(), "Bea"));

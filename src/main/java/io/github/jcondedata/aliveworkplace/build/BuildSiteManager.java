@@ -229,23 +229,60 @@ public final class BuildSiteManager extends SavedData {
 		return out;
 	}
 
-	/** Every finished building in {@code level}. */
 	/**
 	 * The finished buildings in the village round {@code hall}: its claimed area (36.20's rule, {@link
 	 * io.github.jcondedata.aliveworkplace.work.Reach#claims}: the hall's radius or a painted City Plan zone), each measured
-	 * from the spot the builder's reach is ({@link Builders#spot}). B616: the Repairs page listed only those within the
-	 * radius, so a build kept up in a zone past it never showed there.
+	 * from the spot the builder's reach is ({@link Builders#spot}) or from its origin corner (B620: the lists that went by
+	 * the corner keep every building they counted). B616: the Repairs page listed only those within the
+	 * radius, so a build kept up in a zone past it never showed there; B620: every village-wide list of the village's
+	 * buildings (services, beauty, rank, market, defences, …) uses this too. The hall's plan is read once and each
+	 * building's spot is remembered for a minute (B620: these lists run on the hall's rounds and villagers' looks).
 	 */
 	public List<Finished> finishedInVillage(ServerLevel level, net.minecraft.core.BlockPos hall) {
 		List<Finished> out = new java.util.ArrayList<>();
+		io.github.jcondedata.aliveworkplace.city.CityPlan plan = level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity
+			? entity.plan() : null;
+		long radius = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
 		for (Finished f : finishedIn(level)) {
-			if (io.github.jcondedata.aliveworkplace.work.Reach.claims(level, hall, Builders.spot(level, f.structure(), f.placement()))) {
+			// its corner (what the lists went by before B620, so nothing that counted stops counting) or its middle
+			if (claims(hall, plan, radius, f.placement().origin()) || claims(hall, plan, radius, spot(level, f))) {
 				out.add(f);
 			}
 		}
 		return out;
 	}
 
+	/** Reach.claims with the hall's plan read once. */
+	private static boolean claims(net.minecraft.core.BlockPos hall, @Nullable io.github.jcondedata.aliveworkplace.city.CityPlan plan, long radius,
+			net.minecraft.core.BlockPos pos) {
+		long dx = pos.getX() - hall.getX();
+		long dz = pos.getZ() - hall.getZ();
+		return dx * dx + dz * dz <= radius * radius
+			|| plan != null && plan.zoneAt(hall, new net.minecraft.core.BlockPos(pos.getX(), hall.getY(), pos.getZ())).isPresent();
+	}
+
+	/**
+	 * Builders.spot of each finished building, kept a minute (a blueprint reload may change a size). Static, and so
+	 * never part of the saved data: the spot follows from the building's blueprint and placement alone.
+	 */
+	private static final Map<Finished, net.minecraft.core.BlockPos> SPOTS = new java.util.HashMap<>();
+	private static long spotsMinute = Long.MIN_VALUE;
+
+	private static net.minecraft.core.BlockPos spot(ServerLevel level, Finished f) {
+		long minute = level.getGameTime() / 1200;
+		if (minute != spotsMinute) {
+			SPOTS.clear();
+			spotsMinute = minute;
+		}
+		net.minecraft.core.BlockPos known = SPOTS.get(f);
+		if (known == null) {
+			known = Builders.spot(level, f.structure(), f.placement());
+			SPOTS.put(f, known);
+		}
+		return known;
+	}
+
+	/** Every finished building in {@code level}. */
 	public List<Finished> finishedIn(ServerLevel level) {
 		List<Finished> out = new java.util.ArrayList<>();
 		ResourceLocation dimension = Ids.of(level.dimension());

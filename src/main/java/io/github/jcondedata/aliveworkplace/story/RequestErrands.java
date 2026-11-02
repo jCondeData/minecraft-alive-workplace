@@ -477,7 +477,7 @@ public final class RequestErrands {
 
 	/** Whether a building of {@code blueprint} (any style of it) is finished in the village round {@code hall}. */
 	public static boolean finished(ServerLevel level, BlockPos hall, ResourceLocation blueprint) {
-		return BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
+		return BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.anyMatch(f -> BlueprintStyles.base(f.structure()).equals(blueprint));
 	}
 

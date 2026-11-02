@@ -95,7 +95,7 @@ public final class Warnings {
 	/** The middle of every finished Lookout Tower and Wall Tower of the village round {@code hall}. */
 	public static List<BlockPos> towers(ServerLevel level, BlockPos hall) {
 		List<BlockPos> out = new ArrayList<>();
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
 			if (!isTower(f.structure())) {
 				continue;
 			}

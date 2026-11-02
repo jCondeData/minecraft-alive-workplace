@@ -229,7 +229,7 @@ public final class Sieges {
 
 	private static List<Defence> defences(ServerLevel level, BlockPos hall) {
 		List<Defence> out = new ArrayList<>();
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
 			if (isDefence(f.structure())) {
 				BlueprintLibrary.get(level, f.structure()).ifPresent(b -> out.add(new Defence(f, b)));
 			}

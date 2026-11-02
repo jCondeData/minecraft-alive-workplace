@@ -1134,6 +1134,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCountWords1102cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOneCount1102cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaColonySupplies1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaColonyWords1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWagonListAutosave1102cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallEveryPage1102cGameTests"
 		]

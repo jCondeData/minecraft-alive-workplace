@@ -1415,6 +1415,7 @@
   "screen.aliveworkplace.hall.free_beds": "Free: %s",
   "screen.aliveworkplace.hall.full": "The village is full: nobody new moves in until a bed is free",
   "screen.aliveworkplace.hall.wagon_beds": "Not counted: %s wagon beds (for the road, not homes)",
+  "screen.aliveworkplace.hall.wagon_beds.one": "Not counted: %s wagon bed (for the road, not a home)",
   "screen.aliveworkplace.hall.food": "Food in store: %s",
   "screen.aliveworkplace.hall.food_where": "In the chests by the Storehouses and smokers",
   "screen.aliveworkplace.hall.guards": "Guards: %s",

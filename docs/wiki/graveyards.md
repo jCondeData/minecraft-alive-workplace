@@ -5,7 +5,7 @@ field, on a doorstep. Now the village's Undertaker takes each one to the village
 there. The villager can still be brought back from the Graveyard. A village without a Graveyard gets a small plot near
 its hall instead (owner's decision, 2026-10-19).
 
-Roadmap items: B222
+Roadmap items: B222, B788
 
 <!-- Lanes: add each id to the line above in the commit that builds it, and put the new config keys, saved fields,
      tests and scenes in backticks so wikicheck.py checks them. -->
@@ -35,7 +35,10 @@ Graves that old saves left scattered round the village are moved the same way, o
   is never moved to this one, even within the Undertaker's 32 blocks; a grave in no village (out in the wilds) still is
   (B779). Where two villages' circles overlap, a grave belongs to the village whose hall is nearer across.
 - The resting places (`Graveyards.resting`) are worked out each time from the finished Graveyard builds the village
-  remembers (within the hall's reach) and their placement, rotation included. Nothing new is saved.
+  remembers (within the hall's reach) and their placement, rotation included. Nothing new is saved. A Graveyard whose
+  middle lies in another village (inside that village's hall circle) is that village's: this village never lays a grave
+  there nor counts the graves in it as its own, however near it stands. One in no village (its hall gone) is still
+  used (B788).
 - Moving copies the grave's block entity as it is (the villager's saved data, the epitaph, the day they died). The new
   grave is laid before the old one is cleared, so a save at any moment keeps exactly one grave.
 - Graves already in a Graveyard's walls, or on the hall plot, stay put. Graves in the Graveyard are tended wherever it
@@ -84,4 +87,8 @@ Nothing new. A moved grave keeps its block entity (`villager`, `name`, `professi
   `B779B780GameTests.aGraveIsMovedOnceTheNextVillagesHallIsGone`; QA's
   `QaVillageFixesVerify1102GameTests.qaWhereVillagesOverlapAGraveGoesToTheNearerHallsGraveyard` (where two villages
   overlap, the grave nearer this hall is laid in its Graveyard, the one nearer the other hall stays).
+- B788: `B788GameTests.aNeighborsGraveyardIsNotThisVillages` (the next village's Graveyard, within this hall's reach,
+  isn't this village's), `B788GameTests.eachVillageKeepsItsOwnGraveyard`,
+  `B788GameTests.aGraveyardWhoseHallIsGoneIsTheNearVillages` and
+  `B788GameTests.anUndertakerNeverLaysAGraveInTheNeighborsGraveyard`.
 - Showcase scene: `undertaker_graveyard`.

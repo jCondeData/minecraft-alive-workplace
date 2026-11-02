@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620
 
 ## What a player sees
 
@@ -187,6 +187,15 @@ name such as Thornholm.
 
 ## How it works
 
+**The village's buildings are its claimed area (B620).** Whatever counts the village's own finished buildings (its
+beauty, the buildings its rank needs, its Market Square, Arena, Chapel, Manor ballroom, services, gates, towers, battle
+stations, defenses against a siege, signposts, waystone plazas, guildhalls, shrines, the rebuilds and the Founder's statues, the
+buildings fires and disasters strike, the advice's upgrade tips, class needs and the Steward's conditions) takes those
+whose middle lies in the hall's radius or in a cell painted into one of its City Plan zones, the same rule as the
+Repairs page (B616) and the builder's reach (36.20): a Topiary Garden in a zone past the radius adds its beauty, one in an
+unpainted corner as far away doesn't (`BuildSiteManager.finishedInVillage`, tested in `ZoneVillageBuildingsGameTests`).
+Lookups that mean a distance (free ground for a statue, roads, maps, a Wonder's overlap) still measure one.
+
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32
 up and down) belongs to it; its villagers and its beds are counted by that one circle, so a villager and the bed beside him are
 always both in or both out (B361, `VillageHalls.contains`). A villager is housed only while his bed is still there: a bed broken at noon houses nobody from that moment, though vanilla forgets it only at bedtime (B362, `VillageNeeds.bed` checks the bed's point of interest). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
@@ -223,7 +232,8 @@ with N free beds takes in at most N newcomers, whichever way they come; a travel
 next one. With no bed free the Beds button says **The village is full: nobody new
 moves in until a bed is free**.
 
-**Wagon beds are no homes** (B206, B207, `camp/CampBeds`). The bedrolls of a Settler's Wagon's camp or a Colony Camp
+**Wagon beds are no homes** (B206, B207, `camp/CampBeds`). The Beds button says how many it left out, in the singular for one ("Not counted: 1 wagon bed
+(for the road, not a home)", B787). The bedrolls of a Settler's Wagon's camp or a Colony Camp
 are listed when the camp is placed (`aliveworkplace_camp_beds`, per dimension); an older camp's are known by their
 look (a brown or green bed with a campfire and a hay bale within 10 blocks and the camp's Blueprint Table, or an old
 camp's Builder's Bench, within 12) and listed once seen. A player's brown bed by a campfire and hay, with no camp's table,

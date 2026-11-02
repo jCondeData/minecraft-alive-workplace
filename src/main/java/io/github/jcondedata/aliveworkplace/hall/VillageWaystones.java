@@ -235,7 +235,7 @@ public final class VillageWaystones {
 	private static List<Plaza> plazas(ServerLevel level, BlockPos hall) {
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		List<Plaza> plazas = new ArrayList<>();
-		for (BuildSiteManager.Finished f : manager.finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : manager.finishedInVillage(level, hall)) {
 			if (isPlaza(f.structure())) {
 				plazas.add(new Plaza(f.structure(), f.placement()));
 			}

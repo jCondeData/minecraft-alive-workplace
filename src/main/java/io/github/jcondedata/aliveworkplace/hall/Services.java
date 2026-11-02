@@ -211,7 +211,7 @@ public final class Services implements ResourceManagerReloadListener {
 				}
 			}
 		}
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
 			ResourceLocation root = ClassNeeds.root(f.structure());
 			for (Service s : all.values()) {
 				for (ResourceLocation b : s.blueprints()) {

@@ -1132,7 +1132,7 @@ public final class VillageHallScreen {
 			lines.add(line(Component.translatable("screen.aliveworkplace.hall.full"), ChatFormatting.YELLOW));
 		}
 		if (census.wagonBeds() > 0) {
-			lines.add(line(Component.translatable("screen.aliveworkplace.hall.wagon_beds", census.wagonBeds()), ChatFormatting.GRAY));
+			lines.add(line(Words.counted("screen.aliveworkplace.hall.wagon_beds", census.wagonBeds(), census.wagonBeds()), ChatFormatting.GRAY));
 		}
 		lines.add(Cradles.status(level, hall));
 		return lines.toArray(Component[]::new);

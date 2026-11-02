@@ -446,7 +446,7 @@ public final class Disasters implements ResourceManagerReloadListener {
 
 	/** {@code fires_a_day}: one fire on top of a finished build of the village (or by the hall without one); false if none would take. */
 	public static boolean startFire(ServerLevel level, BlockPos hall, RandomSource random) {
-		List<BuildSiteManager.Finished> builds = BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS);
+		List<BuildSiteManager.Finished> builds = BuildSiteManager.get(level).finishedInVillage(level, hall);
 		for (int tries = 0; tries < 8; tries++) {
 			BlockPos around = builds.isEmpty() ? hall : builds.get(random.nextInt(builds.size())).placement().origin();
 			int x = around.getX() + random.nextInt(13) - 6;
@@ -491,7 +491,7 @@ public final class Disasters implements ResourceManagerReloadListener {
 		}
 		Disaster.Effect e = a.get().disaster().effect(Disaster.Effect.Type.MOOD).get();
 		if (!e.unlessBuilt().isEmpty()) {
-			for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, a.get().hall(), VillageHalls.RADIUS)) {
+			for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, a.get().hall())) {
 				if (e.unlessBuilt().contains(BlueprintStyles.base(f.structure()))) {
 					return null;
 				}
@@ -560,7 +560,7 @@ public final class Disasters implements ResourceManagerReloadListener {
 		}
 		int solid = 0;
 		int wood = 0;
-		List<BuildSiteManager.Finished> builds = BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS);
+		List<BuildSiteManager.Finished> builds = BuildSiteManager.get(level).finishedInVillage(level, hall);
 		for (BuildSiteManager.Finished f : builds.subList(0, Math.min(16, builds.size()))) {
 			BlockPos o = f.placement().origin();
 			for (int dx = -12; dx <= 12; dx += 3) {

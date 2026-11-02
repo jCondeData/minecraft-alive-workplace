@@ -14,7 +14,8 @@ and rank, villagers, beds, food in store, guards, wellbeing, requests, buildings
 left a list: the page tabs, then everyone who lives within 64 blocks, each as their workstation (stacked as high as
 their level) with their name and job. The pane on the right reads out whatever is under the mouse, every line of it;
 with nothing there it shows the village's numbers "at a glance". A button only ever reads its own lines: the item drawn on it (the iron sword on the Mercenaries and
-Guards buttons) never adds its attack damage or other item lines (B19). Click a villager and they glow for ten seconds so you
+Guards buttons) never adds its attack damage or other item lines (B19). Counts read in the singular for one (B833): "1 kind of meal in the
+store" on the Food button, "1 mercenary is here until dawn" on the Mercenaries button. Click a villager and they glow for ten seconds so you
 can find them, and stay in the pane (the wheel scrolls a long one; × or Esc puts them away). Click a jobless villager
 to see the free workstations and give them one. Every page of the hall opens in the same screen. (Since Milestone 40
 the left side is the sidebar and the villagers are the People table; see below.)

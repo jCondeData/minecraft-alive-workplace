@@ -133,7 +133,9 @@ village's 48 blocks from his table (the distance it gives is rounded up, so one 
 Novice to Master: 100%, 85%, 70%, 55%, 40%, rounded to whole ticks (at 30, a Novice places a block every 30 ticks and a
 Master every 12), and never faster than a block a tick. Then the village's mood, traits, edicts and so on change it
 (`work/Pace`). A bigger delay is never faster and a higher level never slower, up to the rule's largest value,
-2147483647 (B822: over about 21 million it used to overflow and build every tick). `/gamerule` refuses values under 1.
+2147483647 (B822: over about 21 million it used to overflow and build every tick). The Fisherman waits the same rule's
+delay 15 to 60 times for a bite (`FisherWork.biteTicks`, capped at the largest value), so a huge rule all but stops
+him too (B832: past about 36 million it used to overflow and he caught a fish every second). `/gamerule` refuses values under 1.
 A raised rule counts from the next block; a lowered one too, so a Builder in the middle of a huge delay keeps waiting it
 out until his work restarts (B831, open). XP: 1 per 5 blocks placed and 10 for finishing a build (`BuilderLevels`).
 

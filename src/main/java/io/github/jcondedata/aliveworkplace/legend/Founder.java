@@ -317,7 +317,7 @@ public final class Founder {
 				case RANK -> true;
 				case LEGEND -> key.equals("chronicle.aliveworkplace.legend.settled");
 				case WEDDING -> !wedding;
-				case RAID -> key.equals("chronicle.aliveworkplace.raid_won");
+				case RAID -> key.equals("chronicle.aliveworkplace.raid_won") || key.equals("chronicle.aliveworkplace.raid_won.one"); // a raid of one (B833)
 				default -> false;
 			};
 			if (keep) {

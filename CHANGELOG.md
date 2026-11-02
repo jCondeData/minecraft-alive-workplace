@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Desert raids: a husk that fell beside the Pharaoh in the last seconds of a raid no longer gets up after the raid is
+  over (called off, gone at noon or fought off), left behind as a raider in a village with no raid on (B828).
 - Piglin incursions: a piglin that carried gold off a village chest keeps it when the Warlord's fall turns it
   zombified, so killed it drops the gold and at dawn takes it home (counted in the siege report) (B829).
 - Hauler Golem: a golem no longer stands idle for good when the nearest worker's goods (or a Drop Box's) don't fit

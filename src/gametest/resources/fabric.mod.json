@@ -483,6 +483,7 @@
 			"io.github.jcondedata.aliveworkplace.test.WarbandGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PirateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DesertRaiderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRisings1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.PiglinGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CovenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SiegeGameTests",

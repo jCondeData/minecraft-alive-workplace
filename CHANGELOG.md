@@ -17,6 +17,16 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Create trains: a server stopped between the village round that points the two stations at their track and the next
+  no longer leaves both stations named 'Track Station' for good; they are named after their villages either way (a
+  station a player renamed keeps its name) (B800).
+- Scan Tool: a scanned glow lichen or sculk vein now asks for one item per face it covers. A lichen on three faces was
+  listed as one glow lichen and built on all three, so shears took two lichen off it for free (B792).
+- Militia Drill: in a village with no Training Dummy, where the guards drill by the hall, the chronicle now reads
+  "Drill day in ...: 1 villager sparred by the hall." instead of speaking of dummies the village doesn't have (B797).
+- Village Hall: one damaged entry in a hall's save (a hand-edited file, or one a crash cut short) no longer repeals
+  every edict, disbands every guild, or forgets every reform's progress, found service, house furniture look, City Plan
+  zone or research level of that village. Only the bad entry is left out, with a warning in the log (B796).
 - Scan Tool: builders now build again a scanned cake with a candle on it (from a cake and the candle) and the full
   length of scanned cave vines, weeping vines, twisting vines, kelp and big dripleaf stems (one glow berries, vine,
   kelp or big dripleaf a block; hanging vines go up from the ceiling down). Before, these were silently left out (B793,

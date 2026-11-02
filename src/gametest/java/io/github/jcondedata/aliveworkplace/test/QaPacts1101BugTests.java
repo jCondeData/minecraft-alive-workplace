@@ -47,6 +47,10 @@ public class QaPacts1101BugTests implements FabricGameTest {
 			helper.setBlock(chestAt, net.minecraft.world.level.block.Blocks.AIR);
 			helper.setBlock(store, net.minecraft.world.level.block.Blocks.AIR);
 		});
+		// an earlier batch's Storehouse or chest left standing outside its own area (never cleared) is one of village 1's
+		// stores too: the control caravan unloaded into it, so "0 delivered, 100 paid" to this test's chest
+		Leftovers.storehouses(helper);
+		Leftovers.stores(helper, helper.absolutePos(store));
 		helper.setBlock(store, io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE);
 		helper.setBlock(chestAt, net.minecraft.world.level.block.Blocks.CHEST);
 		TradeGoods.Good good = TradeGoods.all().get(0);

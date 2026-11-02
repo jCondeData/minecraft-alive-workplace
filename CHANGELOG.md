@@ -19,6 +19,9 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - Militia Drill: in a village with no Training Dummy, where the guards drill by the hall, the chronicle now reads
   "Drill day in ...: 1 villager sparred by the hall." instead of speaking of dummies the village doesn't have (B797).
+- Village Hall: one damaged entry in a hall's save (a hand-edited file, or one a crash cut short) no longer repeals
+  every edict, disbands every guild, or forgets every reform's progress, found service, house furniture look, City Plan
+  zone or research level of that village. Only the bad entry is left out, with a warning in the log (B796).
 - Scan Tool: builders now build again a scanned cake with a candle on it (from a cake and the candle) and the full
   length of scanned cave vines, weeping vines, twisting vines, kelp and big dripleaf stems (one glow berries, vine,
   kelp or big dripleaf a block; hanging vines go up from the ceiling down). Before, these were silently left out (B793,

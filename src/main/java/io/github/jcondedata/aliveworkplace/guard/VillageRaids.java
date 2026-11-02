@@ -410,19 +410,20 @@ public final class VillageRaids {
 		boolean portal = false;
 		boolean wading = false;
 		BlockPos gather = null;
-		if (foretold) {
+		// From a ship they wade ashore at the village's beach nearest it (32.8), not from the land side: also when the
+		// clock or a Seer set the side (B823: every real pirate raid passes one), since the side told is the ship's.
+		BlockPos beach = culture.arrival() == Culture.Arrival.SHORE
+			? camp.map(c -> io.github.jcondedata.aliveworkplace.threat.Ships.beach(level, hall, c.pos())).orElse(null) : null;
+		if (beach != null) {
+			gather = io.github.jcondedata.aliveworkplace.threat.Ships.wading(level, beach, camp.get().pos());
+			wading = true;
+			foretold = false; // (they come ashore together at the beach, not spread over the told side)
+		} else if (foretold) {
 			gather = foretoldPoint(level, hall, angle);
 		} else if (culture.arrival() == Culture.Arrival.LAIR) {
 			gather = camp.map(c -> gatheringPoint(level, hall, Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()), 0.5, random)).orElse(null);
 		} else if (culture.arrival() == Culture.Arrival.SHORE) {
-			// From a ship they wade ashore at the village's beach nearest it (32.8), not from the land side.
-			BlockPos beach = camp.map(c -> io.github.jcondedata.aliveworkplace.threat.Ships.beach(level, hall, c.pos())).orElse(null);
-			if (beach != null) {
-				gather = io.github.jcondedata.aliveworkplace.threat.Ships.wading(level, beach, camp.get().pos());
-				wading = true;
-			} else {
-				gather = shorePoint(level, hall);
-			}
+			gather = shorePoint(level, hall);
 		} else if (culture.arrival() == Culture.Arrival.PORTAL) {
 			// Out of their lair's own portal (32.10: the Blackstone Outpost's), else out of the village's.
 			gather = camp.map(c -> io.github.jcondedata.aliveworkplace.threat.Piglins.portal(level, c)).orElse(null);

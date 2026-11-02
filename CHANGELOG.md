@@ -23,6 +23,9 @@ asks for the steps, `latest.log` and any crash report).
 - Raids: a raid of one reads in the singular in chat and in the chronicle, for every raider culture: "1 of Captain
   Brine's drowned pirates wades ashore", "1 desert raider marches on", "1 of X's warband marches on", never "wade"
   or "march" (B824).
+- Pirates: the raid the village's clock (or a Seer) sets now wades ashore at the beach nearest the ship, as 32.8 says.
+  The side the clock rolled used to win, so the crew appeared at the village's edge on that side, sometimes over the
+  water (B823).
 - A jobless villager on his way to a job block he picked himself can be given that block: sneak-right-clicked with
   the job's item, he takes it instead of being told someone works at each one (B803), and the Village Hall's Job list
   counts it free for him ("Mason · 1 free Stonecutter", not "place a Stonecutter first", B807).

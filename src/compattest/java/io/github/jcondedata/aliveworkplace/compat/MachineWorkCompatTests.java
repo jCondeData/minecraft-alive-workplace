@@ -622,6 +622,89 @@ public class MachineWorkCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** A chest with one item in each of its 27 slots: a flour in the first, a cobblestone in every other. */
+	private static Container aStackInEverySlot(GameTestHelper helper, int flour, int cobblestone) {
+		Container chest = chest(helper, new ItemStack(Kind.MILL.output(), flour));
+		for (int i = 1; i < chest.getContainerSize(); i++) {
+			chest.setItem(i, new ItemStack(Items.COBBLESTONE, cobblestone));
+		}
+		return chest;
+	}
+
+	/**
+	 * B820: the Mechanic sees to a millstone holding 32 flour by a store chest with one item in each of its 27 slots (no
+	 * slot empty, but the flour stack has room for 63): all 32 flour go in, none is dropped, and it counts as work.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"machine_store_stack_room"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "machine_store_stack_room")
+	public void aStoreWithAStackInEverySlotTakesTheMechanicsOutput(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		ServerLevel level = helper.getLevel();
+		villageWorkshop(helper);
+		Container chest = aStackInEverySlot(helper, 1, 1);
+		BlockPos mill = rig(helper, Kind.MILL, false);
+		millOutput(helper, mill, new ItemStack(Kind.MILL.output(), 32));
+		BlockPos at = helper.absolutePos(mill);
+		var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+		helper.assertTrue(stores.count(level, List.of(at), Kind.MILL.output()) == 32, "setup: the millstone doesn't hold 32 flour");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.SupplyContainers.freeSlots(level, List.of(helper.absolutePos(CHEST))) == 0, "setup: the chest has an empty slot");
+		var done = MachineWork.tend(level, List.of(helper.absolutePos(CHEST)), at, file(Kind.MILL), helper.absolutePos(CHEST));
+		int dropped = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, helper.getBounds().inflate(4)).stream()
+			.mapToInt(e -> e.getItem().getCount()).sum();
+		helper.assertTrue(done == io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.Tended.WORKED, "seeing to the millstone by a chest with room in its flour stack: " + done);
+		helper.assertTrue(count(chest, Kind.MILL.output()) == 33, "the store holds " + count(chest, Kind.MILL.output()) + " flour, not 1 + 32");
+		helper.assertTrue(stores.count(level, List.of(at), Kind.MILL.output()) == 0, "the millstone kept " + stores.count(level, List.of(at), Kind.MILL.output()) + " flour");
+		helper.assertTrue(dropped == 0, dropped + " items were dropped on the ground");
+		clearMachines(helper);
+		helper.succeed();
+	}
+
+	/** B820, the other side: every slot holds a full stack (the flour's too): the store is full, the flour stays in the millstone. */
+	//$ gametest_ticks_batch AREA '200' '"machine_store_brim_full"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "machine_store_brim_full")
+	public void aStoreFullToTheBrimTakesNothing(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		ServerLevel level = helper.getLevel();
+		villageWorkshop(helper);
+		Container chest = aStackInEverySlot(helper, 64, 64);
+		BlockPos mill = rig(helper, Kind.MILL, false);
+		millOutput(helper, mill, new ItemStack(Kind.MILL.output(), 32));
+		BlockPos at = helper.absolutePos(mill);
+		var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+		var done = MachineWork.tend(level, List.of(helper.absolutePos(CHEST)), at, file(Kind.MILL), helper.absolutePos(CHEST));
+		int dropped = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, helper.getBounds().inflate(4)).stream()
+			.mapToInt(e -> e.getItem().getCount()).sum();
+		helper.assertTrue(done == io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.Tended.FULL, "seeing to the millstone by a brim-full store: " + done);
+		helper.assertTrue(count(chest, Kind.MILL.output()) == 64, "the brim-full store holds " + count(chest, Kind.MILL.output()) + " flour");
+		helper.assertTrue(stores.count(level, List.of(at), Kind.MILL.output()) == 32, "the millstone holds " + stores.count(level, List.of(at), Kind.MILL.output()) + " of its 32 flour");
+		helper.assertTrue(dropped == 0, dropped + " items were dropped on the ground");
+		clearMachines(helper);
+		helper.succeed();
+	}
+
+	/**
+	 * B820 on a farmer's trip: 20 wheat in the store, a flour in another slot and a cobblestone in each of the rest (no
+	 * slot empty): the flour stack has room, so the farmer still mills the wheat and brings the flour back.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"machine_store_stack_room_trip"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "machine_store_stack_room_trip")
+	public void aFarmerMillsForAStoreWithAStackInEverySlot(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		villageWorkshop(helper);
+		Container chest = aStackInEverySlot(helper, 1, 1);
+		chest.setItem(2, new ItemStack(Kind.MILL.input(), 20));
+		rig(helper, Kind.MILL, true);
+		worker(helper, Kind.MILL);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(count(chest, Kind.MILL.input()) < 20, "no wheat taken to the millstone yet");
+			helper.assertTrue(count(chest, Kind.MILL.output()) > 1, "no flour brought back to the store yet");
+			clearMachines(helper);
+		});
+	}
+
 	/** Config {@code machineWork} off: the farmer leaves the turning millstone alone. */
 	//$ gametest_ticks_batch AREA '600' '"machine_work_off"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "machine_work_off")

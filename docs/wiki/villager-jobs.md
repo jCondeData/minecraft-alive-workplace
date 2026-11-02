@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802
 
 ## What a player sees
 
@@ -153,6 +153,11 @@ hours (a night's hire sleeps first) and the player is told when the work starts 
 
 **A Miner keeps all they dig (B224).** Stone of every kind, gravel and dirt go into the chests by the blast furnace with
 the ores; with those chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
+
+**A Fisherman comes back for cooked fish (B147, B802).** Fish done in a furnace or smoker by his barrel call him home
+when the barrel can take them: an empty slot, or a stack of the same fish with room (a barrel whose every slot holds
+something still takes cooked cod on its cooked cod stack). A barrel full to the brim doesn't call him
+(`QaFisherFurnace1102GameTests`).
 
 **Fewer job blocks (21.1a).** Related jobs share a block. A jobless villager by a vanilla block takes the vanilla
 job by itself, as in vanilla (since 36.17, one of the block's jobs at random: [Random jobs](random-jobs.md)); the
@@ -364,7 +369,9 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
   10th with `message.aliveworkplace.route.filter_full` and stays as it is (B334). In a protected village only the
   owner, friends and operators may mark a container (anyone else gets `message.aliveworkplace.protection.denied`); the
   note keeps who marked its source, and a postman doesn't take from a protected village that keeps that player (or,
-  for a route from before, the postman's employer) out (B717).
+  for a route from before, the postman's employer) out (B717). A postman sneak-right-clicked with an empty hand gives
+  his status, each count in its own form: "Postman — 1 parcel delivered · 2 courier routes" (B809), then a line per
+  route.
 - Texts: `message.aliveworkplace.job.chosen`, `message.aliveworkplace.job.needs_station`,
   `message.aliveworkplace.job.station_taken`, `message.aliveworkplace.job.class_needed`,
   `tooltip.aliveworkplace.station.hint`, `message.aliveworkplace.retrain.offer`, `.confirm`, `.short`, `.done`,

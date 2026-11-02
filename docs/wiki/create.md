@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820
 
 ## What a player sees
 
@@ -32,8 +32,9 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   **chef** pours water into the basin under a mechanical mixer, adds wheat flour and takes out dough; the **miner**
   drops raw iron, copper or gold between two crushing wheels and gathers the crushed ore that falls out below. A
   machine is only fed while it turns ("the Millstone isn't turning" shows over the worker otherwise), and nothing is
-  fed once the chest holds enough of what it makes (64 flour, sheets or crushed ore, 32 dough) or has no free slot
-  ("the store is full: the Millstone waits"). A trip is short, and the job's own work picks up again after it. The
+  fed once the chest holds enough of what it makes (64 flour, sheets or crushed ore, 32 dough) or has no room for it
+  ("the store is full: the Millstone waits"); a chest with a part stack of flour has room even when no slot is empty
+  (B820). A trip is short, and the job's own work picks up again after it. The
   Mechanic's round now covers the press, the mixer and the crushing wheels too. Only the village's own machines and
   chests are used (B243): a machine or a chest counts when it stands inside a building the village's builders
   finished (in a turned or flipped building, exactly the blocks its builders placed: one block past its walls, floor or
@@ -114,7 +115,9 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   round; Create drives it from then on. It is named "Thornholm - Ashford Caravan Train". A caravan on that line waits
   at the station until the train stands there, boards it (steam and the bell) and is unloaded the moment the train
   stands at the other village's station. A station the village points at its track faces the other village (Create's
-  stations are stopped at from one side). Without a free villager, before the train is put together, or after a player
+  stations are stopped at from one side). Each station is named after its village once Create knows it, also when the
+  server was restarted in between (B800); a station a player renamed by hand keeps the player's name, and the train's
+  schedule is made from the names the stations have when it is put together. Without a free villager, before the train is put together, or after a player
   breaks it up, caravans take the timed trip above.
 - **One line, a built train, goods in its chest** (39.7b). The track a builder lays along a road follows
   `CaravanTrains.plan`: a straight piece (`xo`, `zo`) on each level node, an ascending piece (`an`, `as`, `ae`, `aw`) on
@@ -557,7 +560,11 @@ tested (the GameTests use the table as the server does).
 - `MachineWorkCompatTests` (with Create): for each of the millstone, the press over a depot, the mixer over a basin
   and the crushing wheels, with the job's own worker: turned by a creative motor, the chest's input goes to the machine
   and what it makes comes back to the chest; standing still, nothing is taken; a full chest, nothing is taken; a worker
-  saved and loaded mid-trip with the input in hand finishes the job; `machineWork` off, nothing is fed.
+  saved and loaded mid-trip with the input in hand finishes the job; `machineWork` off, nothing is fed. B820: a store
+  chest with one item in each of its 27 slots (a flour among them) takes all 32 flour the Mechanic empties from a
+  millstone (`MachineWorkCompatTests.aStoreWithAStackInEverySlotTakesTheMechanicsOutput`) and the farmer still mills
+  its wheat (`MachineWorkCompatTests.aFarmerMillsForAStoreWithAStackInEverySlot`); every slot a full stack, the flour
+  stays in the millstone and seeing to it reads full (`MachineWorkCompatTests.aStoreFullToTheBrimTakesNothing`).
 - `QaMachineTripCompatTests` (QA, B244, with Create): a miner carrying 10 raw iron to the crushing wheels when
   `machineWork` is switched off puts them back in the store, and after a save and load with the switch on again the iron
   still comes to 10; a Novice armorer who loses the job mid-trip puts the 8 iron back, and killed afterwards drops none.

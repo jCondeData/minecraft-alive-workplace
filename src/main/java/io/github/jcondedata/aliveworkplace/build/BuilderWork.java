@@ -1880,23 +1880,28 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	private void deposit(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench) {
-		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
-		if (supplies.isEmpty() || SupplyContainers.freeSlots(level, supplies) == 0) {
-			List<BlockPos> store = Builders.storehouseChests(level, villager, bench, plan.supplyExclude());
-			if (!store.isEmpty() && SupplyContainers.freeSlots(level, store) > 0) {
-				supplies = store;
-			}
-		}
-		BlockPos target = supplies.isEmpty() ? bench : supplies.get(0);
-		if (!moveInReach(level, villager, site, plan, target, CONTAINER_REACH, false)) {
-			return;
-		}
 		Set<Item> keep = new HashSet<>();
 		boolean keepNothing = helping || site.stage() == BuildPlan.Stage.DECONSTRUCT;
 		for (BuildPlan.Step s : keepNothing ? List.<BuildPlan.Step>of() : ahead(site, plan)) {
 			for (MaterialRules.Requirement r : s.requirements()) {
 				keep.add(r.item());
 			}
+		}
+		// What goes in (B820): our chests are full when none of it fits, not when no slot is empty
+		List<ItemStack> going = bag.stacks().stream().filter(s -> !keep.contains(s.getItem())).toList();
+		if (going.isEmpty()) {
+			going = bag.stacks();
+		}
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
+		if (!SupplyContainers.fitsAnyOf(level, supplies, going)) {
+			List<BlockPos> store = Builders.storehouseChests(level, villager, bench, plan.supplyExclude());
+			if (SupplyContainers.fitsAnyOf(level, store, going)) {
+				supplies = store;
+			}
+		}
+		BlockPos target = supplies.isEmpty() ? bench : supplies.get(0);
+		if (!moveInReach(level, villager, site, plan, target, CONTAINER_REACH, false)) {
+			return;
 		}
 		List<ItemStack> junk = bag.takeAllExcept(keep);
 		if (junk.isEmpty()) {
@@ -2033,7 +2038,7 @@ public class BuilderWork extends Behavior<Villager> {
 			// yet: the builder tills it again, as a farmer would, rather than leave the field bare
 			level.setBlock(under, net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState(), Block.UPDATE_ALL);
 		}
-		if (!state.canSurvive(level, pos)) {
+		if (!MaterialRules.canStand(level, pos, state)) {
 			defer(site, villager, pos); // nothing to attach to yet; retried at the end of the stage
 			return;
 		}

@@ -78,6 +78,12 @@ public interface ItemStores {
 	/** Takes up to {@code maxStacks} stacks of items matching {@code test} out of the store at {@code pos}. */
 	List<ItemStack> takeMatching(Level level, BlockPos pos, Predicate<ItemStack> test, int maxStacks);
 
+	/**
+	 * As {@link #takeMatching(Level, BlockPos, Predicate, int)}, but from each stack at most {@code most} of it (given a
+	 * copy of the stack as it is, its count what it holds): B820, what the store it goes to has room for.
+	 */
+	List<ItemStack> takeMatching(Level level, BlockPos pos, Predicate<ItemStack> test, int maxStacks, java.util.function.ToLongFunction<ItemStack> most);
+
 	/** Copies of the stacks in the store at {@code pos} that match {@code test} (nothing is taken). */
 	List<ItemStack> peekMatching(Level level, BlockPos pos, Predicate<ItemStack> test);
 
@@ -85,6 +91,13 @@ public interface ItemStores {
 
 	/** Puts a stack into the stores; returns what didn't fit. */
 	ItemStack insert(Level level, List<BlockPos> stores, ItemStack stack);
+
+	/**
+	 * How many of each stack (its count is how many are wanted) the stores would take, put in one after the other and
+	 * undone (B802, B806): a stack of the same item with room counts, not only an empty slot, and two stacks never count
+	 * the same room twice.
+	 */
+	long[] fits(Level level, List<BlockPos> stores, List<ItemStack> stacks);
 
 	/** How much of {@code fluid} the tank at {@code pos} (a Create basin, say) holds, in millibuckets; 0 without a tank. */
 	long fluidMb(Level level, BlockPos pos, net.minecraft.world.level.material.Fluid fluid);

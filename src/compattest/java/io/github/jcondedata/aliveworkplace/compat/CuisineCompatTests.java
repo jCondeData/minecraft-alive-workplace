@@ -171,6 +171,26 @@ public class CuisineCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * B810: the Dishes tab counts the dishes waiting in the singular for one ("1 dish waiting", never "1 dishes
+	 * waiting") and in the plural for two.
+	 */
+	//$ gametest_batch AREA '"cuisine_tab_dish_words"'
+	@GameTest(template = AREA, batch = "cuisine_tab_dish_words")
+	public void oneDishWaitingReadsInTheSingular(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		BlockPos hall = hall(helper);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ResourceLocation salad = BuiltInRegistries.ITEM.getKey(cc("mixed_vegetable_salad"));
+		DishRequests.get(helper.getLevel()).add(hall, salad, 1);
+		List<String> one = lore(board(helper, player, hall).icon(TradePage.Tab.DISHES.slot()));
+		helper.assertTrue(one.contains("1 dish waiting"), "the tab with one dish waiting: " + one);
+		DishRequests.get(helper.getLevel()).add(hall, salad, 1);
+		List<String> two = lore(board(helper, player, hall).icon(TradePage.Tab.DISHES.slot()));
+		helper.assertTrue(two.contains("2 dishes waiting"), "the tab with two dishes waiting: " + two);
+		helper.succeed();
+	}
+
+	/**
 	 * The Done when (38.8a; was 38.8's "a Chef with the makings cooks a level-1 dish and keeps 16", reversed by the
 	 * owner): a player asks at the board for 4 Mixed Vegetable Salads; the Novice Chef cooks them from their own crafting
 	 * recipe with the makings in his chest, delivers them (no Storehouse: to the chest by his stove), the request comes

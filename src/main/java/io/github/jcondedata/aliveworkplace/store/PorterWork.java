@@ -141,13 +141,10 @@ public class PorterWork extends Behavior<Villager> {
 				walker.reset();
 				return; // a Wonder's goods before anything else (35.7)
 			}
-			if (SupplyContainers.freeStacks(level, store) == 0) {
-				phase = Phase.FULL;
-				return;
-			}
-			target = choose(level, villager, storehouse);
+			boolean[] noRoom = {false};
+			target = choose(level, villager, storehouse, store, capacity(villager), noRoom);
 			if (target == null) {
-				phase = Phase.IDLE;
+				phase = noRoom[0] ? Phase.FULL : Phase.IDLE;
 				return;
 			}
 			walker.reset();
@@ -156,8 +153,8 @@ public class PorterWork extends Behavior<Villager> {
 		if (!walker.walkTo(level, villager, target.chests().get(0), REACH)) {
 			return;
 		}
-		int room = Math.min(capacity(villager), SupplyContainers.freeStacks(level, store));
-		int taken = collect(level, target, bag, room);
+		// B820: what of the goods the store has room for, a stack of them with room counting (not only empty slots)
+		int taken = collect(level, target, bag, HaulerGolems.fitting(level, store, goods(level, target), capacity(villager)));
 		if (taken > 0) {
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, target.chests().get(0), SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
@@ -351,19 +348,28 @@ public class PorterWork extends Behavior<Villager> {
 
 	/** The nearest village-mate with enough goods to be worth the walk, or null. */
 	@Nullable
-	private static Village.Stash choose(ServerLevel level, Villager villager, BlockPos storehouse) {
+	private static Village.Stash choose(ServerLevel level, Villager villager, BlockPos storehouse, List<BlockPos> store, int stacks, boolean[] noRoom) {
 		Village.Stash box = dropBox(level, storehouse);
 		if (box != null) {
-			return box; // what players left for the village first
+			if (!HaulerGolems.fitting(level, store, goods(level, box), stacks).isEmpty()) {
+				return box; // what players left for the village first
+			}
+			noRoom[0] = true;
 		}
 		for (Village.Stash stash : Village.stashes(level, villager, storehouse, null)) {
 			if (carriesNothingFrom(stash.job())) {
 				continue;
 			}
-			long load = goods(level, stash).values().stream().mapToLong(Long::longValue).sum();
-			if (load >= MIN_LOAD) {
-				return stash;
+			Map<Item, Long> goods = goods(level, stash);
+			long load = goods.values().stream().mapToLong(Long::longValue).sum();
+			if (load < MIN_LOAD) {
+				continue;
 			}
+			if (HaulerGolems.fitting(level, store, goods, stacks).isEmpty()) {
+				noRoom[0] = true; // the store has no room for these goods: B820, a stack of them with room counts
+				continue;
+			}
+			return stash;
 		}
 		return null;
 	}
@@ -405,18 +411,12 @@ public class PorterWork extends Behavior<Villager> {
 		return out;
 	}
 
-	/** Takes up to {@code stacks} stacks of goods from the stash into the bag; returns how many items. */
-	static int collect(ServerLevel level, Village.Stash stash, BuilderBag bag, int stacks) {
+	/** Takes up to {@code trip}'s amount of each item from the stash into the bag; returns how many items. */
+	static int collect(ServerLevel level, Village.Stash stash, BuilderBag bag, Map<Item, Integer> trip) {
 		int taken = 0;
-		int left = stacks;
-		for (Map.Entry<Item, Long> e : goods(level, stash).entrySet()) {
-			if (left <= 0) {
-				break;
-			}
+		for (Map.Entry<Item, Integer> e : trip.entrySet()) {
 			Item item = e.getKey();
-			int perStack = Math.max(1, item.getDefaultMaxStackSize());
-			int want = (int) Math.min(e.getValue(), (long) left * perStack);
-			want = Math.min(want, bag.spaceFor(item));
+			int want = Math.min(e.getValue(), bag.spaceFor(item));
 			if (want <= 0) {
 				continue;
 			}
@@ -426,9 +426,7 @@ public class PorterWork extends Behavior<Villager> {
 				if (over > 0) {
 					SupplyContainers.insert(level, stash.chests(), new ItemStack(item, over)); // didn't fit after all: put it back
 				}
-				int added = got - over;
-				taken += added;
-				left -= (added + perStack - 1) / perStack;
+				taken += got - over;
 			}
 		}
 		return taken;

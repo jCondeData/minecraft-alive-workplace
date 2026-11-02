@@ -170,7 +170,7 @@ public class HaulerEveryChestGameTests implements net.fabricmc.fabric.api.gamete
 	}
 
 	/** The open Storehouse with its empty chest and three lumberjacks, 64 logs in each one's chest (as QaHaulerEveryChestBugTests). */
-	private static Villager[] village(GameTestHelper helper) {
+	static Villager[] village(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		GolemHaulerFightGameTests.strayStorehouses(helper);
 		wideVillage(helper);
@@ -234,14 +234,14 @@ public class HaulerEveryChestGameTests implements net.fabricmc.fabric.api.gamete
 		return smith;
 	}
 
-	private static IronGolem hauler(GameTestHelper helper) {
+	static IronGolem hauler(GameTestHelper helper) {
 		IronGolem golem = GolemSmith.build(helper.getLevel(), helper.absolutePos(new BlockPos(14, 2, 14)), GolemSmith.Role.HAULER);
 		helper.assertTrue(golem != null, "a hauler");
 		Leftovers.after(helper, golem::discard);
 		return golem;
 	}
 
-	private static int logs(GameTestHelper helper, BlockPos chest) {
+	static int logs(GameTestHelper helper, BlockPos chest) {
 		return ((Container) helper.getBlockEntity(chest)).countItem(Items.OAK_LOG);
 	}
 }

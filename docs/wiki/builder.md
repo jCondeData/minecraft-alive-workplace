@@ -59,6 +59,11 @@ scanned pushed out is built retracted and pushed out by its own redstone, with i
 the build stands retracted, never a pushed-out base with nothing in front.
 Glow lichen and sculk vein cost one item per face they cover (B792), as shears count them: a lichen on three faces
 is listed as three glow lichen, so breaking the build gives back no more than was paid.
+Water plants are built the way a player grows them: sugar cane goes up with the decoration, after the pool beside its
+foot is poured (B816), so a cane three tall by the water stands three tall again. Sea pickles and living coral scanned
+under water are built waterlogged (each costs a water bucket as well, which comes back empty), so pickles glow and
+coral stays alive (B817); other waterlogged blocks, such as stairs and slabs, are still built dry. Tall seagrass costs a
+seagrass and a bone meal, as a player plants seagrass and uses bone meal on it (B818), and is built both halves tall.
 
 ## 2. How it works
 
@@ -565,7 +570,9 @@ gets the blueprint at the player's feet, a builder builds a drawn box from the c
 listed as a cake and a red candle and built from them, and with no candle the builder waits for one and builds no bare
 cake; cave and weeping vines three long under a ceiling, and twisting vines three tall, are listed one item a block and
 built that long with nothing skipped; a pushed-out sticky piston is built with its head, and without its redstone it
-stands retracted). `QaBuilders1102bBugTests` (5, QA: a glow lichen scanned on three faces is listed as three lichen and
+stands retracted). `QaScanRebuild1102dBugTests` (3, QA, B816-B818: sugar cane three tall on sand by a pool is built
+three tall; three sea pickles at the bottom of a pool are built as three, waterlogged; tall seagrass in a pool is built
+again, both halves, with nothing skipped). `QaBuilders1102bBugTests` (5, QA: a glow lichen scanned on three faces is listed as three lichen and
 built on no more faces than were paid, B792; a candle cake, three-long hanging vines, a pushed-out piston and a lone
 banner's preview). `QaScanRebuild1102cGameTests` (9, the tester's, B793-B795: a lit cake with a red candle is paid
 once from the chest and built; kelp three tall in a glass tank, a stalactite three long, a spore blossom, hanging roots

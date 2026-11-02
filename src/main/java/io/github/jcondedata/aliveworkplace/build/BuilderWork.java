@@ -2038,7 +2038,7 @@ public class BuilderWork extends Behavior<Villager> {
 			// yet: the builder tills it again, as a farmer would, rather than leave the field bare
 			level.setBlock(under, net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState(), Block.UPDATE_ALL);
 		}
-		if (!state.canSurvive(level, pos)) {
+		if (!MaterialRules.canStand(level, pos, state)) {
 			defer(site, villager, pos); // nothing to attach to yet; retried at the end of the stage
 			return;
 		}

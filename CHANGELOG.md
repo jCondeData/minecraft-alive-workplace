@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Scan Tool rebuilds by the water: sugar cane by a pool is built three tall again (it went up before the pool's water and
+  was skipped, B816); sea pickles and living coral scanned under water are built waterlogged, so the pickles glow (B817,
+  each also costs a water bucket, given back empty); tall seagrass is built from a seagrass and a bone meal, as a player
+  grows it, instead of being left out without a word (B818).
 - Porters, the Mechanic and villagers at Create's machines: a store chest whose every slot holds something, but whose
   stacks still have room, is no longer taken as full. A porter carried nothing to a Storehouse with a part stack in
   every slot, and the Mechanic and the farmer left the millstone's flour waiting; they now ask whether the goods fit.

@@ -10,7 +10,7 @@ Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419
 - **Unlocked builds** show in color, first in the list, and Get Blueprint works as before (for a Blank Blueprint).
 - **Locked builds** show grayed out with a line saying how to get one ("Sold by a Journeyman Builder", "A market-day
   trader", "A questbook reward", "Found in chests", "Sold by a builder once the tier below stands", "Sold by a
-  villager of its trade"). Their 3D preview is still drawn, dimmed, with the materials; Get Blueprint is grayed out.
+  villager of its trade"). Their 3D preview is still drawn, dimmed, with the materials; Get Blueprint is grayed out. A block drawn by its block entity (a banner, a decorated pot, a sign) shows in a preview as its item, so a scan of one banner is never an empty picture (B798).
 - **Rare builds** (the builder-only grander homes, the Wonders, and `rare.json`'s Chapel, Market Square, Map Room,
   Bandstand, Guildhall, Nether Gate and Library III) are a dark **???** at the end of the list, with no name, preview or
   materials, until the village unlocks one.

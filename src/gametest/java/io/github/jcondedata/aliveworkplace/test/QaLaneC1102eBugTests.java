@@ -16,6 +16,7 @@ import net.minecraft.world.item.Items;
  */
 public class QaLaneC1102eBugTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
+	private static final String AREA = "aliveworkplace_test:big_area";
 	private static final BlockPos FAR_BOX = QaLaneC1102eGameTests.FAR_BOX;
 
 	/**
@@ -42,6 +43,25 @@ public class QaLaneC1102eBugTests implements net.fabricmc.fabric.api.gametest.v1
 				+ " of 33 logs; the farther Drop Box keeps " + left + "; the golem carries " + HaulerGolems.load(golem)
 				+ "; the nearer Drop Box's cobblestone (no room) holds it up");
 			helper.assertTrue(QaStackRoom1102cGameTests.count(helper, QaStackRoom1102cGameTests.HAUL_BOX, Items.COBBLESTONE) == 32,
+				"the nearer Drop Box's cobblestone moved though none fits");
+		});
+	}
+
+	/**
+	 * B847's porter kin: the same shape at a porter's Storehouse (room for logs only, a nearer Drop Box of 32 cobblestone,
+	 * a farther one of 32 logs). The porter should pass the first box over and bring the 32 logs in.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"qaLaneC1102ePorterTwoDropBoxes"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qaLaneC1102ePorterTwoDropBoxes")
+	public void qaB847APortersFartherDropBoxWhoseGoodsFitIsEmptiedPastANearerOneThatDont(GameTestHelper helper) {
+		net.minecraft.world.entity.npc.Villager porter = QaLaneC1102eGameTests.porterTwoBoxes(helper, true);
+		helper.succeedWhen(() -> {
+			int stored = QaStackRoom1102cGameTests.count(helper, QaLaneC1102eGameTests.P_STORE_CHEST, Items.OAK_LOG);
+			int left = QaStackRoom1102cGameTests.count(helper, QaLaneC1102eGameTests.P_FAR_BOX, Items.OAK_LOG);
+			helper.assertTrue(stored == 33 && left == 0, "the porter's Storehouse (room for 63 logs) has " + stored + " of 33 logs; the farther Drop Box keeps "
+				+ left + "; the porter's bag " + io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(porter).count(Items.OAK_LOG)
+				+ " logs; the nearer Drop Box's cobblestone (no room) holds it up");
+			helper.assertTrue(QaStackRoom1102cGameTests.count(helper, QaLaneC1102eGameTests.P_NEAR_BOX, Items.COBBLESTONE) == 32,
 				"the nearer Drop Box's cobblestone moved though none fits");
 		});
 	}

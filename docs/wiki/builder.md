@@ -49,6 +49,12 @@ A scan keeps the box's item frames, glow item frames, paintings and armor stands
 villager, a mob, a dropped item or a minecart with its load is never copied. The builder puts them up last, as it does a
 starter build's frames, each paid with its item from the chests; one with no item there is left out. Scans saved before
 this have none and load as before.
+Blocks with no item of their own are built from what a player would use (B793, B794): a cake with a candle on it costs
+a cake and that candle; the middle pieces of cave vines, weeping vines, twisting vines, kelp and a big dripleaf's stem
+each cost one glow berries, weeping vines, twisting vines, kelp or big dripleaf. What hangs from the block above it
+(cave and weeping vines, stalactites) goes up last and top-down, so a vine three long is built three long. A piston
+scanned pushed out is built retracted and pushed out by its own redstone, with its head (B795); one with no power in
+the build stands retracted, never a pushed-out base with nothing in front.
 
 ## 2. How it works
 
@@ -236,7 +242,10 @@ sites are remembered). Each site (`BuildSite.save`) holds:
 
 On the villager (attachments in `registry/ModAttachments`):
 - `builder_job` (`BuilderJob`): `site` and `helper` (false by default).
-- `builder_bag`: the 27-slot bag, empty by default.
+- `builder_bag`: the 27-slot bag, empty by default. A stack of an item no loaded mod has any more (a mod taken out of
+  the pack) is dropped with a warning in the log and the rest of the bag loads, as a chest keeps its other slots; the
+  same goes for a Hauler Golem's load, a postman's courier routes (a route keeps its ends and its other filter items)
+  and a worker's machine trip (B791, `RemovedModItemsGameTests`, `QaRemovedModItems1102BugTests`).
 - `builder_employer`: who the Builder works for (fields not listed here).
 
 Per finished building (36.15): `repair_ask` (`asked`, `yes`, `not_now` or `paused`; absent: never asked, as in every
@@ -418,9 +427,10 @@ GameTests (`src/gametest/java/.../test/`): `BlueprintsStayGameTests.everyBluepri
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbor's bench outlasts a build;
 a bench put down and employed at in one command is held),
 `TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `QaJobBuildsGameTests` and `QaJobBuildsCompatTests` (28.13: each job's Journeyman sells their build and a Novice or an Apprentice doesn't; in all ten builds the job block takes a villager sneak-clicked with the job's item), `QaStageFiveGameTests.madeUpPreviewIdsAreNotRemembered` (B340: 5000 made-up preview ids remembered as 0, a real one
-answered, its repeat at once ignored and answered after 100 ticks), `TablePreviewGameTests` (7, the table's
+answered, its repeat at once ignored and answered after 100 ticks), `TablePreviewGameTests` (9, the table's
 3D preview data; 36.1: Starter Cottage IV's preview has cells below the ground and its fitted height counts them, and
-at scale 2 no cellar block shares a cell with a ground-floor block), `DoorwayHeadroomGameTests` (7, B173: a villager
+at scale 2 no cellar block shares a cell with a ground-floor block; B798: a banner, wall banner, decorated pot, sign and
+head alone in a blueprint each get a preview cell, a barrier none, and a scanned lone banner has its cell on the Table), `DoorwayHeadroomGameTests` (7, B173: a villager
 walks in by the Healing Center's front door onto its carpet, and by the Manor's front door onto the stair right inside:
 `DoorwayHeadroomGameTests.aVillagerWalksInByTheHealingCentersFrontDoor`,
 `DoorwayHeadroomGameTests.aVillagerWalksInByTheManorsFrontDoorOntoItsStair`; B178: three villagers walk from the War
@@ -543,7 +553,11 @@ with the chest full loses nothing; an upgrade lines up over its own finished bui
 sneaking and never over another kind of building). `QaTakeDownGameTests` (8: a camp, a turned and mirrored hut and a hut with its table broken come down losing no block; a plain hand-over leaves the building standing; a stranger can't have it taken down; a take-down handed to a busy Builder waits its turn; one canceled halfway carries on when its blueprint is handed back as it came; the placed blueprint's tooltip tells how) and `QaTakeDownBugTests` (2: a canceled take-down's blueprint comes back still placed, B513; a queued take-down is announced as one, with no materials sentence, B514). `TakeDownCancelGameTests` (2, B526: a take-down canceled halfway says it's a take-down, its blueprint goes through a save and comes back to a plain hand-back carrying on the take-down; the take-down mark is kept at its spot and through a save, dropped when moved, and an old blueprint reads as plain) and QA's `QaBuilderFixes1026BugTests` (1: handed back as the cancel line says, the take-down carries on). QA's `QaBuilderFixes1026GameTests` (5: the lead killed while two helpers work ends the build once, one blueprint on the ground, builder_died with the hut and the spot, the helpers stop and nothing is doubled or lost; a helper killed then a save and load still finishes the hut whole, no blueprint dropped, no builder_died; a queued take-down and a queued build each say their own exact line; and two scaffolding cases, on its page). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
 does: each side 1 to 32, no Blank Blueprint or no block draws nothing and takes nothing, two draws give the same build
 for two blanks, a hollow and a solid box of one size are two builds, a blank in the first slot is used and a full bag
-gets the blueprint at the player's feet, a builder builds a drawn box from the chest). `QaScanRoundTripGameTests` (1, from
+gets the blueprint at the player's feet, a builder builds a drawn box from the chest). `ScanRebuildPlantsGameTests` (6, B793-B795, scanned with real clicks and built again: a cake with a red candle is
+listed as a cake and a red candle and built from them, and with no candle the builder waits for one and builds no bare
+cake; cave and weeping vines three long under a ceiling, and twisting vines three tall, are listed one item a block and
+built that long with nothing skipped; a pushed-out sticky piston is built with its head, and without its redstone it
+stands retracted). `QaScanRoundTripGameTests` (1, from
 the Scan Tool's guide page: a hand-built room with two double chests lying either way, a door, a bed, a wall torch, a
 hanging lantern, an upside-down stair and a ladder, scanned with real clicks and built again a quarter turned, comes out
 block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`). `QaScanPotGameTests`

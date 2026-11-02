@@ -110,7 +110,15 @@ final class TablePreview {
 			if (scale != 1f) {
 				pose.scale(scale, scale, scale);
 			}
-			blocks.renderSingleBlock(c.state(), pose, g.bufferSource(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+			if (io.github.jcondedata.aliveworkplace.table.TableServer.drawnAsItem(c.state())) {
+				// B798: a banner, decorated pot or sign has no block model (its block entity draws it): drawn as its item
+				pose.translate(0.5f, 0.5f, 0.5f);
+				Minecraft.getInstance().getItemRenderer().renderStatic(new net.minecraft.world.item.ItemStack(c.state().getBlock()),
+					net.minecraft.world.item.ItemDisplayContext.NONE, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, pose, g.bufferSource(),
+					Minecraft.getInstance().level, 0);
+			} else {
+				blocks.renderSingleBlock(c.state(), pose, g.bufferSource(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+			}
 			pose.popPose();
 		}
 		g.flush();

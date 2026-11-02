@@ -350,7 +350,7 @@ public final class ModAttachments {
 	public static final Attachment<Integer> SHOP_SALES = Attachment.saved("shop_sales", com.mojang.serialization.Codec.INT);
 
 	/** A postman's courier routes (from Delivery Notes). */
-	public static final Attachment<java.util.List<io.github.jcondedata.aliveworkplace.mail.RouteData>> COURIER_ROUTES = Attachment.saved("courier_routes", io.github.jcondedata.aliveworkplace.mail.RouteData.CODEC.listOf());
+	public static final Attachment<java.util.List<io.github.jcondedata.aliveworkplace.mail.RouteData>> COURIER_ROUTES = Attachment.saved("courier_routes", io.github.jcondedata.aliveworkplace.mc.Lenient.list(io.github.jcondedata.aliveworkplace.mail.RouteData.CODEC, "courier route"));
 
 	/** How many battles a trainer has fought (shown above its head). */
 	public static final Attachment<Integer> TRAINER_BATTLES = Attachment.saved("trainer_battles", com.mojang.serialization.Codec.INT);

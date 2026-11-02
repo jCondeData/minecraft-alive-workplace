@@ -29,6 +29,16 @@ public class QaBuilderDelay1102GameTests {
 
 	/** The ticks at which the hut lost an unfinished block (one per placed block; a door's two halves count once). */
 	private static List<Integer> watch(GameTestHelper helper, QaBuilderConfig1102GameTests.Run r) {
+		return watch(helper, r, new ArrayList<>());
+	}
+
+	/**
+	 * Like {@link #watch(GameTestHelper, QaBuilderConfig1102GameTests.Run)}, also writing into {@code delays} the
+	 * Builder's delay as it stood when each block went down. The delay includes his {@link
+	 * io.github.jcondedata.aliveworkplace.work.Pace pace} (mood, traits, the village), which moves during a long suite
+	 * run, so a block's wait is compared with the delay in effect when the block before it was placed.
+	 */
+	private static List<Integer> watch(GameTestHelper helper, QaBuilderConfig1102GameTests.Run r, List<Integer> delays) {
 		List<Integer> ticks = new ArrayList<>();
 		int[] last = {r.plan().unfinished(r.level()).size()};
 		helper.onEachTick(() -> {
@@ -38,6 +48,7 @@ public class QaBuilderDelay1102GameTests {
 			int now = r.plan().unfinished(r.level()).size();
 			if (now < last[0]) {
 				ticks.add((int) helper.getTick());
+				delays.add(BuilderLevels.delay(r.level(), r.villager()));
 			}
 			last[0] = now;
 		});
@@ -111,19 +122,24 @@ public class QaBuilderDelay1102GameTests {
 		QaBuilderConfig1102GameTests.Run r = QaBuilderConfig1102GameTests.start(helper, QaBuilderConfig1102GameTests.BENCH,
 			QaBuilderConfig1102GameTests.CHEST, QaBuilderConfig1102GameTests.HUT, QaBuilderConfig1102GameTests.hutMaterials());
 		setLevel(r.villager(), lvl);
-		List<Integer> ticks = watch(helper, r);
+		List<Integer> delays = new ArrayList<>();
+		List<Integer> ticks = watch(helper, r, delays);
 		helper.runAtTickTime(900, () -> {
 			int expected = BuilderLevels.delay(level, r.villager());
 			helper.assertTrue(ticks.size() >= 4, "only " + ticks.size() + " blocks placed in 900 ticks at workplaceBuildDelay " + rule + " (level " + lvl
 				+ ", " + expected + " ticks a block): " + QaBuilderConfig1102GameTests.where(helper, r));
-			int shortest = Integer.MAX_VALUE;
+			int exact = 0;
 			for (int i = 1; i < ticks.size(); i++) {
-				shortest = Math.min(shortest, ticks.get(i) - ticks.get(i - 1));
+				int gap = ticks.get(i) - ticks.get(i - 1);
+				int want = delays.get(i - 1);
+				helper.assertTrue(gap >= want, "level " + lvl + " at workplaceBuildDelay " + rule + ": blocks " + i + " and " + (i + 1) + " only " + gap
+					+ " ticks apart, under the " + want + " ticks a block when the first went down; placed at " + ticks + ", delays " + delays);
+				if (gap == want) {
+					exact++;
+				}
 			}
-			helper.assertTrue(shortest >= expected, "level " + lvl + " at workplaceBuildDelay " + rule + ": two blocks only " + shortest
-				+ " ticks apart, under the " + expected + " ticks a block; placed at " + ticks);
-			helper.assertTrue(shortest == expected, "level " + lvl + " at workplaceBuildDelay " + rule + ": no two blocks exactly " + expected
-				+ " ticks apart (shortest " + shortest + "); placed at " + ticks);
+			helper.assertTrue(exact > 0, "level " + lvl + " at workplaceBuildDelay " + rule + ": no two blocks exactly the delay apart; placed at "
+				+ ticks + ", delays " + delays);
 			helper.succeed();
 		});
 	}
@@ -152,7 +168,8 @@ public class QaBuilderDelay1102GameTests {
 		ServerLevel level = QaBuilderConfig1102GameTests.rules(helper, false, 30);
 		QaBuilderConfig1102GameTests.Run r = QaBuilderConfig1102GameTests.start(helper, QaBuilderConfig1102GameTests.BENCH,
 			QaBuilderConfig1102GameTests.CHEST, QaBuilderConfig1102GameTests.HUT, QaBuilderConfig1102GameTests.hutMaterials());
-		List<Integer> ticks = watch(helper, r);
+		List<Integer> delays = new ArrayList<>();
+		List<Integer> ticks = watch(helper, r, delays);
 		int[] upAt = {-1};
 		int[] novice = {-1};
 		helper.onEachTick(() -> {
@@ -168,12 +185,22 @@ public class QaBuilderDelay1102GameTests {
 			helper.assertTrue(master < novice[0], "a Master waits " + master + " ticks a block, a Novice " + novice[0]);
 			List<Integer> after = ticks.subList(upAt[0], ticks.size());
 			helper.assertTrue(after.size() >= 4, "only " + after.size() + " blocks after the level-up: " + ticks);
-			int shortest = Integer.MAX_VALUE;
-			for (int i = 1; i < after.size(); i++) {
-				shortest = Math.min(shortest, after.get(i) - after.get(i - 1));
+			// The block in hand at the level-up keeps its Novice wait; from the next one on, each wait is the Master's delay
+			// as it stood when the block before went down (his pace moves with mood and the village during a suite run).
+			int exact = 0;
+			for (int i = upAt[0] + 1; i < ticks.size(); i++) {
+				int gap = ticks.get(i) - ticks.get(i - 1);
+				int want = delays.get(i - 1);
+				helper.assertTrue(want < novice[0], "after the level-up block " + i + " was laid with a wait of " + want + " ticks, not under a Novice's "
+					+ novice[0] + "; delays " + delays);
+				helper.assertTrue(gap >= want, "after the level-up blocks " + i + " and " + (i + 1) + " are only " + gap + " ticks apart, under "
+					+ want + "; placed at " + ticks + ", delays " + delays);
+				if (gap == want) {
+					exact++;
+				}
 			}
-			helper.assertTrue(shortest == master, "after the level-up the closest two blocks are " + shortest + " ticks apart, wanted " + master
-				+ " (a Novice's " + novice[0] + "); placed at " + ticks + ", leveled after block " + upAt[0]);
+			helper.assertTrue(exact > 0, "after the level-up no two blocks are exactly the Master's delay apart (" + master + " now, a Novice's "
+				+ novice[0] + "); placed at " + ticks + ", delays " + delays + ", leveled after block " + upAt[0]);
 			helper.succeed();
 		});
 	}

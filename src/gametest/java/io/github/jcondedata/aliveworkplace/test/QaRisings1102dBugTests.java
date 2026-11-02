@@ -25,8 +25,9 @@ import net.minecraft.world.phys.AABB;
 /**
  * QA (lane D, 2026-11-02), bug tests for the Pharaoh's curse (32.9) at a raid's end: a husk that fell beside the living
  * Pharaoh in the last three seconds before the raid was called off ("its raiders go at once", 32.21) or before the
- * desert raiders left at noon rises after they've gone, a raider (aliveworkplace_raider) in a village with no raid on.
- * Both fail on main 6b44763ae; see the bug in ROADMAP Bugs.
+ * desert raiders left at noon, rises after they've gone, a raider (aliveworkplace_raider) in a village with no raid on.
+ * Also when the raid is fought off (the Pharaoh, its last, killed a second after the husk). All three fail on main
+ * 9e0535007 (B828).
  */
 public class QaRisings1102dBugTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
@@ -148,6 +149,34 @@ public class QaRisings1102dBugTests implements FabricGameTest {
 		helper.runAfterDelay(100, () -> {
 			List<Mob> left = raidersLeft(helper, hall);
 			helper.assertTrue(left.isEmpty(), "a raider rose in the village after the desert raiders left at noon: "
+				+ left.stream().map(m -> m.getType().toShortString() + " at " + m.blockPosition().toShortString()).toList());
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Fought off: a husk falls beside the Pharaoh, and a second later the Pharaoh, the raid's last, falls too. The raid
+	 * is over, won; two seconds on, no raider of it gets up in the village.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaRisingsFoughtOff1102d"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaRisingsFoughtOff1102d")
+	public void aHuskThatFellJustBeforeTheRaidWasFoughtOffNeverRisesAfterIt(GameTestHelper helper) {
+		setUp(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = raid(helper, 100);
+		level.setDayTime((level.getDayTime() / 24000) * 24000 + 1000); // morning: the desert raiders' hours (until noon)
+		Husk pharaoh = pharaoh(helper, new BlockPos(8, 2, 8));
+		Husk husk = husk(helper, new BlockPos(20, 2, 20));
+		husk.kill();
+		helper.assertTrue(Risings.pending() == 1, "setup: expected the husk waiting to rise, waiting: " + Risings.pending());
+		helper.runAfterDelay(20, () -> {
+			pharaoh.kill();
+			VillageRaids.tick(level, hall, 0, 0, Long.MIN_VALUE / 2, d -> { });
+			helper.assertTrue(ThreatData.get(level).raid(hall).isEmpty(), "setup: expected the raid over once its last raider fell");
+		});
+		helper.runAfterDelay(100, () -> {
+			List<Mob> left = raidersLeft(helper, hall);
+			helper.assertTrue(left.isEmpty(), "a raider rose in the village after the raid was fought off: "
 				+ left.stream().map(m -> m.getType().toShortString() + " at " + m.blockPosition().toShortString()).toList());
 			helper.succeed();
 		});

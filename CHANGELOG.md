@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Porters, the Mechanic and villagers at Create's machines: a store chest whose every slot holds something, but whose
+  stacks still have room, is no longer taken as full. A porter carried nothing to a Storehouse with a part stack in
+  every slot, and the Mechanic and the farmer left the millstone's flour waiting; they now ask whether the goods fit.
+  Builders putting their bag away use their own chests in the same case instead of walking to the Storehouse (B820).
 - Counts read in the singular for one: a postman's status says "1 parcel delivered · 1 courier route" (B809), the hall's
   Advice button "1 suggestion, first: ..." and the board's Dishes tab "1 dish waiting" (B810).
 - Hauler Golems: a Storehouse whose every slot holds something, but whose stacks still have room, is no longer taken

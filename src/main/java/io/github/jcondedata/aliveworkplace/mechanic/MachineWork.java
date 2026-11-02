@@ -276,29 +276,119 @@ public class MachineWork extends Behavior<Villager> {
 	}
 
 	/**
-	 * Takes what the machine made (never what it's still working on, nor a player's input waiting in it), at most
-	 * {@code maxStacks} stacks: what the store has room for stays in the machine, never dropped by the store to despawn.
+	 * Takes what the machine made (never what it's still working on, nor a player's input waiting in it), as much of it
+	 * as the store has room for once {@code first} (what goes back to it before) is in: a stack of the same item with
+	 * room counts, not only an empty slot (B820). What doesn't fit stays in the machine, never dropped by the store to
+	 * despawn.
 	 */
-	static List<ItemStack> takeOutput(ServerLevel level, MachineWorkFiles.Machine file, BlockPos machine, List<Recipe<?>> recipes, int maxStacks) {
-		if (maxStacks <= 0) {
+	static List<ItemStack> takeOutput(ServerLevel level, MachineWorkFiles.Machine file, BlockPos machine, List<Recipe<?>> recipes, List<BlockPos> chests,
+			List<ItemStack> first) {
+		if (chests.isEmpty()) {
 			return new ArrayList<>();
 		}
 		BlockPos at = collectPos(file, machine);
 		List<Recipe<?>> all = allRecipes(level, file);
 		if (!file.collect().drop()) {
-			return STORES.takeMatching(level, at, s -> !inWork(file, all, s), Math.min(9, maxStacks));
-		}
-		List<ItemStack> out = new ArrayList<>();
-		for (ItemEntity e : dropped(level, at)) {
-			if (out.size() >= maxStacks) {
-				break;
+			List<ItemStack> made = made(level, file, machine);
+			long[] fit = fitsAfter(level, chests, first, made);
+			List<ItemStack> budget = new ArrayList<>();
+			for (int i = 0; i < made.size(); i++) {
+				if (fit[i] <= 0) {
+					continue;
+				}
+				ItemStack m = made.get(i);
+				ItemStack same = budget.stream().filter(b -> ItemStack.isSameItemSameComponents(b, m)).findFirst().orElse(null);
+				if (same != null) {
+					same.grow((int) fit[i]);
+				} else {
+					budget.add(m.copyWithCount((int) fit[i]));
+				}
 			}
+			if (budget.isEmpty()) {
+				return new ArrayList<>();
+			}
+			return STORES.takeMatching(level, at, s -> !inWork(file, all, s), OUTPUT_STACKS, s -> spend(budget, s));
+		}
+		List<ItemEntity> entities = new ArrayList<>();
+		List<ItemStack> made = new ArrayList<>();
+		for (ItemEntity e : dropped(level, at)) {
 			if (!inWork(file, all, e.getItem())) {
-				out.add(e.getItem().copy());
+				entities.add(e);
+				made.add(e.getItem().copy());
+			}
+		}
+		long[] fit = fitsAfter(level, chests, first, made);
+		List<ItemStack> out = new ArrayList<>();
+		for (int i = 0; i < made.size(); i++) {
+			int n = (int) Math.min(fit[i], made.get(i).getCount());
+			if (n <= 0) {
+				continue;
+			}
+			ItemEntity e = entities.get(i);
+			out.add(made.get(i).copyWithCount(n));
+			if (n >= e.getItem().getCount()) {
 				e.discard();
+			} else {
+				ItemStack rest = e.getItem().copy();
+				rest.shrink(n);
+				e.setItem(rest);
 			}
 		}
 		return out;
+	}
+
+	/** Stacks of what the machine made taken out in one go. */
+	private static final int OUTPUT_STACKS = 9;
+
+	/** Copies of what the machine made and may be taken out (the first {@link #OUTPUT_STACKS} stacks of a machine's inventory). */
+	private static List<ItemStack> made(ServerLevel level, MachineWorkFiles.Machine file, BlockPos machine) {
+		BlockPos at = collectPos(file, machine);
+		List<Recipe<?>> all = allRecipes(level, file);
+		List<ItemStack> made = new ArrayList<>();
+		if (file.collect().drop()) {
+			for (ItemEntity e : dropped(level, at)) {
+				if (!inWork(file, all, e.getItem())) {
+					made.add(e.getItem().copy());
+				}
+			}
+			return made;
+		}
+		made.addAll(STORES.peekMatching(level, at, s -> !inWork(file, all, s)));
+		return made.size() > OUTPUT_STACKS ? new ArrayList<>(made.subList(0, OUTPUT_STACKS)) : made;
+	}
+
+	/** How many of each of {@code made} the store would take once {@code first} is in (tried and undone). */
+	private static long[] fitsAfter(ServerLevel level, List<BlockPos> chests, List<ItemStack> first, List<ItemStack> made) {
+		List<ItemStack> all = new ArrayList<>(first.size() + made.size());
+		first.forEach(s -> all.add(s.copy()));
+		all.addAll(made);
+		long[] fit = SupplyContainers.fits(level, chests, all);
+		return java.util.Arrays.copyOfRange(fit, first.size(), fit.length);
+	}
+
+	/** Takes up to {@code stack}'s count of it out of {@code budget}; returns how many. */
+	private static long spend(List<ItemStack> budget, ItemStack stack) {
+		for (ItemStack b : budget) {
+			if (!b.isEmpty() && ItemStack.isSameItemSameComponents(b, stack)) {
+				int n = Math.min(b.getCount(), stack.getCount());
+				b.shrink(n);
+				return n;
+			}
+		}
+		return 0;
+	}
+
+	/** Whether the store would take some of what the machine made (B820: room in a stack already there counts). */
+	static boolean outputFits(ServerLevel level, MachineWorkFiles.Machine file, BlockPos machine, List<BlockPos> chests) {
+		if (chests.isEmpty()) {
+			return false;
+		}
+		for (long fit : fitsAfter(level, chests, List.of(), made(level, file, machine))) {
+			if (fit > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Whether the machine still holds input to work on, the village's or a player's (then it isn't fed more). */
@@ -316,10 +406,22 @@ public class MachineWork extends Behavior<Villager> {
 	 * ingredients it holds, as many times over as the file's {@code batch} allows (and the store holds). Empty: nothing.
 	 */
 	public static List<ItemStack> plan(ServerLevel level, MachineWorkFiles.Machine file, List<BlockPos> chests, List<Recipe<?>> recipes) {
+		return plan(level, file, chests, recipes, true);
+	}
+
+	/**
+	 * {@link #plan(ServerLevel, MachineWorkFiles.Machine, List, List)}; with {@code room}, only for a result the store
+	 * has room for (a full store pauses the work), counting room in a stack of it already there (B820).
+	 */
+	private static List<ItemStack> plan(ServerLevel level, MachineWorkFiles.Machine file, List<BlockPos> chests, List<Recipe<?>> recipes, boolean room) {
 		for (Recipe<?> recipe : recipes) {
-			Item made = Recipes.result(recipe, level.registryAccess()).getItem();
+			ItemStack result = Recipes.result(recipe, level.registryAccess());
+			Item made = result.getItem();
 			int keep = file.makes().stream().filter(m -> m.item() == made).mapToInt(MachineWorkFiles.Make::keep).findFirst().orElse(0);
 			if (SupplyContainers.count(level, chests, made) >= keep) {
+				continue;
+			}
+			if (room && !SupplyContainers.fitsAny(level, chests, result)) {
 				continue;
 			}
 			Map<Item, Integer> needs = new LinkedHashMap<>();
@@ -423,15 +525,18 @@ public class MachineWork extends Behavior<Villager> {
 		if (!VillageMachines.village(level, machine)) {
 			return MechanicWork.Tended.FINE; // a player's own machine (B243): never fed, never emptied
 		}
-		if (chests.isEmpty() || SupplyContainers.freeSlots(level, chests) <= 0) {
+		if (chests.isEmpty()) {
 			return MechanicWork.Tended.FULL;
 		}
 		List<Recipe<?>> recipes = recipes(level, file);
 		boolean worked = false;
-		List<ItemStack> made = takeOutput(level, file, machine, recipes, SupplyContainers.freeSlots(level, chests));
+		boolean waiting = hasOutput(level, file, machine, recipes);
+		List<ItemStack> made = takeOutput(level, file, machine, recipes, chests, List.of());
 		if (!made.isEmpty()) {
 			toStore(level, chests, made, dropAt);
 			worked = true;
+		} else if (waiting) {
+			return MechanicWork.Tended.FULL; // none of what it made fits the store (a stack of it with room counts: B820)
 		}
 		boolean turning = turning(level, machine, file.minSpeed());
 		if (turning && !holdsInput(level, file, machine, recipes)) {
@@ -513,28 +618,34 @@ public class MachineWork extends Behavior<Villager> {
 		if (chests.isEmpty()) {
 			return false;
 		}
-		boolean full = SupplyContainers.freeSlots(level, chests) <= 0;
 		for (MachineWorkFiles.Machine file : files) {
 			for (BlockPos machine : findMachines(level, post.get(), file)) {
 				if (!whole(level, file, machine)) {
 					continue;
 				}
-				if (full) {
-					status(villager, Component.translatable("message.aliveworkplace.machine_work.full", file.machine().getName()));
-					return false;
-				}
+				Component full = Component.translatable("message.aliveworkplace.machine_work.full", file.machine().getName());
 				List<Recipe<?>> recipes = recipes(level, file);
 				if (hasOutput(level, file, machine, recipes)) {
-					ModAttachments.MACHINE_JOB.set(villager, new MachineJob(machine, file.id(), MachineJob.Stage.FEED, List.of()));
-					return true;
+					// B820: the store is full when what the machine made doesn't fit, not when no slot is empty
+					if (outputFits(level, file, machine, chests)) {
+						ModAttachments.MACHINE_JOB.set(villager, new MachineJob(machine, file.id(), MachineJob.Stage.FEED, List.of()));
+						return true;
+					}
+					status(villager, full);
+					continue;
 				}
 				if (!turning(level, machine, file.minSpeed())) {
 					status(villager, Component.translatable("message.aliveworkplace.machine_work.stopped", file.machine().getName()));
 					continue;
 				}
-				if (!holdsInput(level, file, machine, recipes) && !plan(level, file, chests, recipes).isEmpty()) {
-					ModAttachments.MACHINE_JOB.set(villager, new MachineJob(machine, file.id(), MachineJob.Stage.FETCH, List.of()));
-					return true;
+				if (!holdsInput(level, file, machine, recipes)) {
+					if (!plan(level, file, chests, recipes).isEmpty()) {
+						ModAttachments.MACHINE_JOB.set(villager, new MachineJob(machine, file.id(), MachineJob.Stage.FETCH, List.of()));
+						return true;
+					}
+					if (!plan(level, file, chests, recipes, false).isEmpty()) {
+						status(villager, full); // something to make, but no room in the store for it
+					}
 				}
 			}
 		}
@@ -569,7 +680,7 @@ public class MachineWork extends Behavior<Villager> {
 			case FETCH -> {
 				List<Recipe<?>> recipes = recipes(level, file);
 				List<ItemStack> planned = plan(level, file, chests, recipes);
-				if (gone || planned.isEmpty() || SupplyContainers.freeSlots(level, chests) <= 0 || !VillageMachines.village(level, job.machine())) {
+				if (gone || planned.isEmpty() || !VillageMachines.village(level, job.machine())) { // empty when the result has no room (B820)
 					done(villager, state);
 					return;
 				}
@@ -605,7 +716,7 @@ public class MachineWork extends Behavior<Villager> {
 						} else {
 							back.addAll(carried); // stopped since: the input goes back to the store
 						}
-						back.addAll(takeOutput(level, file, job.machine(), recipes, SupplyContainers.freeSlots(level, chests) - back.size()));
+						back.addAll(takeOutput(level, file, job.machine(), recipes, chests, List.copyOf(back)));
 					} else {
 						back.addAll(carried);
 					}

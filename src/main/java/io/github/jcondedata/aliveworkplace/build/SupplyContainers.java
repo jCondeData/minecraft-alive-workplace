@@ -269,6 +269,25 @@ public final class SupplyContainers {
 		return !stack.isEmpty() && STORES.fits(level, containers, List.of(stack.copyWithCount(1)))[0] > 0;
 	}
 
+	/** Whether the containers would take at least one item of any of {@code stacks} (B820). */
+	public static boolean fitsAnyOf(ServerLevel level, List<BlockPos> containers, List<ItemStack> stacks) {
+		List<ItemStack> ones = new java.util.ArrayList<>();
+		for (ItemStack s : stacks) {
+			if (!s.isEmpty()) {
+				ones.add(s.copyWithCount(1));
+			}
+		}
+		if (ones.isEmpty() || containers.isEmpty()) {
+			return false;
+		}
+		for (long fit : STORES.fits(level, containers, ones)) {
+			if (fit > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private SupplyContainers() {
 	}
 }

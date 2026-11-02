@@ -353,6 +353,11 @@ final class FabricItemStores implements ItemStores {
 
 	@Override
 	public List<ItemStack> takeMatching(Level level, BlockPos pos, Predicate<ItemStack> test, int maxStacks) {
+		return takeMatching(level, pos, test, maxStacks, s -> Long.MAX_VALUE);
+	}
+
+	@Override
+	public List<ItemStack> takeMatching(Level level, BlockPos pos, Predicate<ItemStack> test, int maxStacks, java.util.function.ToLongFunction<ItemStack> most) {
 		List<ItemStack> out = new ArrayList<>();
 		Storage<ItemVariant> s = storage(level, pos);
 		if (s == null) {
@@ -367,8 +372,13 @@ final class FabricItemStores implements ItemStores {
 			if (!test.test(sample)) {
 				continue;
 			}
+			long want = Math.min(view.getAmount(), sample.getMaxStackSize());
+			want = Math.min(want, most.applyAsLong(variant.toStack((int) want)));
+			if (want <= 0) {
+				continue;
+			}
 			try (Transaction tx = Transaction.openOuter()) {
-				long got = view.extract(variant, Math.min(view.getAmount(), sample.getMaxStackSize()), tx);
+				long got = view.extract(variant, want, tx);
 				tx.commit();
 				if (got > 0) {
 					out.add(variant.toStack((int) got));

@@ -78,6 +78,12 @@ public interface ItemStores {
 	/** Takes up to {@code maxStacks} stacks of items matching {@code test} out of the store at {@code pos}. */
 	List<ItemStack> takeMatching(Level level, BlockPos pos, Predicate<ItemStack> test, int maxStacks);
 
+	/**
+	 * As {@link #takeMatching(Level, BlockPos, Predicate, int)}, but from each stack at most {@code most} of it (given a
+	 * copy of the stack as it is, its count what it holds): B820, what the store it goes to has room for.
+	 */
+	List<ItemStack> takeMatching(Level level, BlockPos pos, Predicate<ItemStack> test, int maxStacks, java.util.function.ToLongFunction<ItemStack> most);
+
 	/** Copies of the stacks in the store at {@code pos} that match {@code test} (nothing is taken). */
 	List<ItemStack> peekMatching(Level level, BlockPos pos, Predicate<ItemStack> test);
 

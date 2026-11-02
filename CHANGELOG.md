@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Scan Tool: a scanned glow lichen or sculk vein now asks for one item per face it covers. A lichen on three faces was
+  listed as one glow lichen and built on all three, so shears took two lichen off it for free (B792).
 - Militia Drill: in a village with no Training Dummy, where the guards drill by the hall, the chronicle now reads
   "Drill day in ...: 1 villager sparred by the hall." instead of speaking of dummies the village doesn't have (B797).
 - Village Hall: one damaged entry in a hall's save (a hand-edited file, or one a crash cut short) no longer repeals

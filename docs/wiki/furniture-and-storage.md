@@ -519,7 +519,7 @@ barrels: before the tag the Print Shop's Handcrafted desk and counters counted a
 `StorageRoomGameTests.aFullVanillaStoreIsFullForPorters` (no mods: the vanilla counts and board unchanged);
 B820: `PorterGameTests.porterFillsAStoreWithAStackInEverySlot` (a cobblestone in each of the 27 slots: the miner's
 spare cobblestone still goes in) and `PorterGameTests.porterLeavesTheGoodsWhenTheStoreIsBrimFull` (every slot a full
-stack: nothing taken);
+stack: nothing taken); `QaStackRoom1102cGameTests` (QA): with 63 cobblestone in every slot the porter carries exactly the 27 that fit and the miner keeps the rest; ender pearls, 16 to a stack, in every slot leave a Drop Box's 20 pearls where they are, and with 15 in every slot all 20 go in; `QaMechanicRoom1102cCompatTests` (QA): the Mechanic empties exactly as much flour as the store's flour stack has room for (all 32, or 14 with 18 left in the millstone) and reads full when only other kinds' part stacks are there;
 with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierStoresAndGivesItems` (all 36 blocks),
 `SophisticatedStorageCompatTests.porterFillsALimitedBarrelFromASophisticatedBarrel`,
 `SophisticatedStorageCompatTests.builderUsesAndLeavesSophisticatedStorage`,

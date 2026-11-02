@@ -105,6 +105,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateStoresHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFluidsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateTankKeptCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateMachinesProtection1102CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMachineGoneSaveCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateDrainFluidsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicFluidsCompatTests",

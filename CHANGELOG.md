@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Militia Drill: in a village with no Training Dummy, where the guards drill by the hall, the chronicle now reads
+  "Drill day in ...: 1 villager sparred by the hall." instead of speaking of dummies the village doesn't have (B797).
 - Scan Tool: builders now build again a scanned cake with a candle on it (from a cake and the candle) and the full
   length of scanned cave vines, weeping vines, twisting vines, kelp and big dripleaf stems (one glow berries, vine,
   kelp or big dripleaf a block; hanging vines go up from the ceiling down). Before, these were silently left out (B793,

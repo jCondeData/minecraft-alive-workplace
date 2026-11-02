@@ -7518,6 +7518,8 @@
   "chronicle.aliveworkplace.reform_story.drill_day": "%s will drill at noon tomorrow.",
   "chronicle.aliveworkplace.reform_story.drilled": "Drill day in %s: %s villagers sparred at the dummies.",
   "chronicle.aliveworkplace.reform_story.drilled.one": "Drill day in %s: %s villager sparred at the dummies.",
+  "chronicle.aliveworkplace.reform_story.drilled_hall": "Drill day in %s: %s villagers sparred by the hall.",
+  "chronicle.aliveworkplace.reform_story.drilled_hall.one": "Drill day in %s: %s villager sparred by the hall.",
   "villager.aliveworkplace.reform_story.midwife": "Midwife",
   "villager.aliveworkplace.reform_story.old_soldier": "Old Soldier",
   "item.aliveworkplace.fair_ledger.title": "The Fair Ledger of %s",

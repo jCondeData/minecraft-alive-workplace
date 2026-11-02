@@ -521,7 +521,11 @@ public final class ReformStories {
 				} else {
 					e.drillDone = true;
 					data.setDirty();
-					line(level, hall, Chronicle.Kind.STORY, io.github.jcondedata.aliveworkplace.work.Words.counted("chronicle.aliveworkplace.reform_story.drilled", e.drillers.size(),
+					// With no Training Dummy the guards drilled by the hall: the line mustn't name dummies (B797). The list
+					// isn't saved, so a drill that spanned a restart looks again.
+					List<BlockPos> found = e.dummies != null ? e.dummies : dummies(level, hall);
+					String key = found.isEmpty() ? "chronicle.aliveworkplace.reform_story.drilled_hall" : "chronicle.aliveworkplace.reform_story.drilled";
+					line(level, hall, Chronicle.Kind.STORY, io.github.jcondedata.aliveworkplace.work.Words.counted(key, e.drillers.size(),
 						VillageHalls.name(level, hall), e.drillers.size()));
 					e.drillers.clear();
 				}

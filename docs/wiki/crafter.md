@@ -102,7 +102,11 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 ## 4. Saved data
 
 - `crafter_job` on the villager (since 37.14, now on every crafting job's villager): the job in hand (who it's for, the
-  chain's steps, what it takes, the phase and the next step). None: no job in hand, as on every older save.
+  chain's steps, what it takes, the phase and the next step). None: no job in hand, as on every older save. A job
+  that names an item no loaded mod has any more (its target, a step's makings or what it takes; a mod taken out of
+  the pack) doesn't load and the villager has no job in hand; the bag still loads whole, and with no job its makings
+  go back into the chest by the workstation (`QaCrafterJobRemovedMod1102GameTests`,
+  `QaAttachmentRemovedModId1102GameTests`).
 - The bag (`builder_bag`) and items made (`items_crafted`) are the ones every crafting job already saves.
 - Nothing new is saved: the shortage notes are kept in memory and renewed every look.
 

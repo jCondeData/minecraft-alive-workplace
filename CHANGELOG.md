@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Village Hall: with one settlers' wagon bed in reach, the Beds button now reads "Not counted: 1 wagon bed (for the
+  road, not a home)" instead of "1 wagon beds" (B787).
 - Graveyards: a village no longer uses the next village's Graveyard standing near by as its own. Its Undertaker never
   lays a grave there, and the graves in it aren't counted as resting in this village; a village without a Graveyard of
   its own uses its plot near the hall (B788).

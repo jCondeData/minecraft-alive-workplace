@@ -453,7 +453,8 @@ in a new world; a real camp on a server with an older list keeps its wagon beds 
 beside it is a home; an old list's bedroll survives the first save; a bed put back where a wagon bed stood is a home),
 `QaCabinBedsReplaceBug1101Tests` (B761: a bed put back at once where a wagon bed stood is a home),
 `QaVillageFixesVerify1102GameTests` (B761: a green bed put back at once stays a home after a restart; lying down in a
-bedroll or putting a bed elsewhere leaves the camp's bedrolls listed),
+bedroll or putting a bed elsewhere leaves the camp's bedrolls listed; the Bed list never offers a held bedroll and offers
+a bed put back on a bedroll's spot as free at once),
 `QaWagonBedsFirstSession1101BugTests` (B754: a cabin bed placed after an upgraded list's autosave, in the same run and
 after a restart, is a home),
 `HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,

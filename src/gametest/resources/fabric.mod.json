@@ -1047,6 +1047,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaColonyWaitOneDay1031BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGrowthOffRankLine1031BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaKingRaidGuards1102dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSettlersRoad1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaKingRaidGolemSpot1101dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHostileSpawnsForced1101dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatCobbleVerify1101GameTests",

@@ -28,6 +28,10 @@ asks for the steps, `latest.log` and any crash report).
 - Builder: a very large `workplaceBuildDelay` (over about 21 million ticks) no longer makes Builders place a block
   every tick. The number overflowed and came out negative; now a bigger delay is always slower, up to the rule's
   largest value (B822).
+- Fisherman: a very large `workplaceBuildDelay` (over about 36 million) no longer makes Fishermen catch a fish every
+  second. The wait for a bite overflowed; now it is capped, so a bigger delay always means a longer wait (B832).
+- Village Hall: one of a kind reads in the singular: "1 kind of meal in the store" on the Food button, "1 mercenary is
+  here until dawn" on the Mercenaries button, and "The village fought off the raid (1 monster)" in the chronicle (B833).
 - Raids: a raid of one reads in the singular in chat and in the chronicle, for every raider culture: "1 of Captain
   Brine's drowned pirates wades ashore", "1 desert raider marches on", "1 of X's warband marches on", never "wade"
   or "march" (B824).

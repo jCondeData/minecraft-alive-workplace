@@ -365,7 +365,7 @@ public class FisherWork extends Behavior<Villager> {
 			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "cast", spot);
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, villager.blockPosition(), SoundEvents.FISHING_BOBBER_THROW, SoundSource.NEUTRAL, 0.5f, 0.4f + level.random.nextFloat() * 0.4f);
-			biteAt = BuilderLevels.delay(level, villager) * biteWait(level, villager, rod, level.random);
+			biteAt = biteTicks(BuilderLevels.delay(level, villager), biteWait(level, villager, rod, level.random));
 			level.sendParticles(ParticleTypes.SPLASH, bobber.x, bobber.y, bobber.z, 6, 0.1, 0, 0.1, 0);
 			return;
 		}
@@ -383,6 +383,15 @@ public class FisherWork extends Behavior<Villager> {
 		reelIn(level, villager, bag, rod, bobber, open);
 		waited = 0;
 		catches++;
+	}
+
+	/**
+	 * The ticks to a bite: the fisher's delay times {@code steps}, taken in long and capped at {@link Integer#MAX_VALUE}.
+	 * As an int, a huge workplaceBuildDelay overflowed to 0 or below and every cast then bit after the 20-tick floor, so
+	 * fishermen caught faster the bigger the delay (B832). A bigger delay is never faster.
+	 */
+	public static int biteTicks(int delay, int steps) {
+		return (int) Math.min(Integer.MAX_VALUE, Math.max(0L, (long) delay * steps));
 	}
 
 	/**

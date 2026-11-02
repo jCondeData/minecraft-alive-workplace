@@ -223,7 +223,7 @@ public final class VillageHallScreen {
 			bedLines(level, hall, census)), null);
 		int kinds = VillageHalls.mealKinds(level, hall);
 		List<Component> foodLore = new ArrayList<>(List.of(line("screen.aliveworkplace.hall.food_where", ChatFormatting.GRAY),
-			line(Component.translatable("screen.aliveworkplace.hall.meal_kinds", kinds, io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS),
+			line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.meal_kinds", kinds, kinds, io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS),
 				kinds >= io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS ? ChatFormatting.GREEN : ChatFormatting.YELLOW)));
 		Component luxuries = ClassesPage.luxuriesLine(level, hall); // the luxuries in store (34.6), with classes on
 		if (luxuries != null) {
@@ -331,7 +331,7 @@ public final class VillageHallScreen {
 		});
 		int band = io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).size();
 		menu.button(MERCENARIES, icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.hall.mercenaries"), ChatFormatting.WHITE,
-			line(band > 0 ? Component.translatable("screen.aliveworkplace.hall.mercenaries_here", band)
+			line(band > 0 ? io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.mercenaries_here", band, band)
 				: Component.translatable("screen.aliveworkplace.hall.mercenaries_hint", io.github.jcondedata.aliveworkplace.guard.Mercenaries.BAND,
 					io.github.jcondedata.aliveworkplace.work.Money.describe((long) io.github.jcondedata.aliveworkplace.guard.Mercenaries.price(level, hall)
 						* io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, io.github.jcondedata.aliveworkplace.guard.Mercenaries.price(level, hall))),

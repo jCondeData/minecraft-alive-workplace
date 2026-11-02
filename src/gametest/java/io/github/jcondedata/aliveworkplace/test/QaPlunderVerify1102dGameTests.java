@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
+import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.threat.Culture;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.Piglins;
@@ -14,6 +15,8 @@ import io.github.jcondedata.aliveworkplace.threat.Plunder;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import io.github.jcondedata.aliveworkplace.threat.Threats;
 import java.util.List;
+import net.minecraft.world.Container;
+import net.minecraft.world.level.block.Blocks;
 import java.util.Optional;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
@@ -41,7 +44,12 @@ import net.minecraft.world.phys.AABB;
  *     turned, carries the 12, and killed drops the 12 ingots and no extra shown ingot;</li>
  * <li>(32.10, "the siege report says it the morning after, or the chronicle when there was no siege") a raid without a
  *     siege that loses a single nugget at dawn: the chronicle says the 1 gold, through the raid's own dawn round. Kills
- *     the mutant {@code lost > 1} in Plunder's end, which every other plunder test lets live.</li>
+ *     the mutant {@code lost > 1} in Plunder's end, which every other plunder test lets live;</li>
+ * <li>(32.10, "within 4 blocks of a chest (any storage block) in the village") a chest 3 blocks from a raider but just
+ *     outside the village keeps its gold, while one just inside is taken. Kills the mutant that lets a chest in reach
+ *     but outside the village count;</li>
+ * <li>(32.10, "into a chest of its lair") the gold carried home goes into the outpost's own chest, the one nearest its
+ *     middle, not an empty chest set out at the edge of its ground. Kills the mutant that picks the farthest.</li>
  * </ul>
  */
 public class QaPlunderVerify1102dGameTests implements FabricGameTest {
@@ -178,5 +186,97 @@ public class QaPlunderVerify1102dGameTests implements FabricGameTest {
 			"the chronicle after a raid that carried off one nugget: " + lines);
 		helper.assertTrue(ThreatData.get(level).plundered(hall) == 0, "the count wasn't spent once told: " + ThreatData.get(level).plundered(hall));
 		helper.succeed();
+	}
+
+	/**
+	 * A village of radius 8: one piglin stands just inside its east edge with a chest of gold 3 blocks further east,
+	 * outside the village; another stands inside with a chest a block off, just inside the south edge. Two plunder
+	 * rounds later the outside chest still holds its gold and the inside one is emptied.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"qaPlunderVerifyEdge1102d"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaPlunderVerifyEdge1102d")
+	public void aChestInReachButOutsideTheVillageKeepsItsGold(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = village(helper);
+		VillageHalls.RADIUS = 8; // (village() puts the radius back) the village's box: x and z from -5 to 11 here
+		Culture culture = piglins(helper);
+		helper.setBlock(new BlockPos(13, 2, 3), Blocks.CHEST);
+		helper.setBlock(new BlockPos(3, 2, 11), Blocks.CHEST);
+		Container outside = helper.getBlockEntity(new BlockPos(13, 2, 3));
+		Container inside = helper.getBlockEntity(new BlockPos(3, 2, 11));
+		outside.setItem(0, new ItemStack(Items.GOLD_INGOT, 7));
+		inside.setItem(0, new ItemStack(Items.GOLD_INGOT, 7));
+		Mob east = piglin(helper, culture, new BlockPos(10, 2, 3));
+		Mob south = piglin(helper, culture, new BlockPos(3, 2, 10));
+		helper.assertTrue(VillageHalls.area(hall).contains(east.position()) && VillageHalls.area(hall).contains(south.position()),
+			"setup: expected both piglins inside the village");
+		helper.assertTrue(!VillageHalls.area(hall).contains(helper.absolutePos(new BlockPos(13, 2, 3)).getCenter())
+			&& VillageHalls.area(hall).contains(helper.absolutePos(new BlockPos(3, 2, 11)).getCenter()), "setup: expected one chest outside the village, one inside");
+		VillageRaids.track(level, hall, culture, List.of(east, south));
+		helper.runAfterDelay(45, () -> {
+			helper.assertTrue(Plunder.carried(south).getCount() == 7 && inside.getItem(0).isEmpty(),
+				"setup: the chest just inside the village wasn't plundered: the piglin carries " + Plunder.carried(south));
+			helper.assertTrue(Plunder.carried(east).isEmpty() && outside.getItem(0).getCount() == 7,
+				"a chest 3 blocks off but outside the village was plundered: the piglin carries " + Plunder.carried(east)
+				+ ", the chest holds " + outside.getItem(0));
+			helper.succeed();
+		});
+	}
+
+	private static int gold(Container box) {
+		int n = 0;
+		for (int i = 0; i < box.getContainerSize(); i++) {
+			if (box.getItem(i).is(Items.GOLD_INGOT)) {
+				n += box.getItem(i).getCount();
+			}
+		}
+		return n;
+	}
+
+	/**
+	 * A piglin outpost; an empty chest is set at the far corner of its ground (14 out, 8 up). A piglin carries 20 gold
+	 * ingots home at dawn: they go into the outpost's own chest, nearest its middle, and the far chest stays empty.
+	 */
+	//$ gametest_ticks_batch AREA '60' '"qaPlunderVerifyHoard1102d"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "qaPlunderVerifyHoard1102d")
+	public void theGoldCarriedHomeGoesIntoTheChestNearestTheOutpostsMiddle(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = village(helper);
+		Culture culture = piglins(helper);
+		boolean lairs = Lairs.ENABLED;
+		Lairs.ENABLED = true;
+		Leftovers.after(helper, () -> {
+			Lairs.forget(level);
+			Lairs.ENABLED = lairs;
+		});
+		Leftovers.halls(helper);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		((VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(VillageRanks.Rank.TOWN);
+		helper.runAfterDelay(2, () -> {
+			Lairs.Lair lair = Lairs.found(level, hall, helper.absolutePos(new BlockPos(15, 1, 15)), PIGLINS);
+			helper.assertTrue(lair != null, "setup: no outpost");
+			BlockPos c = lair.pos();
+			BlockPos far = c.offset(14, 8, 14);
+			java.util.Map<BlockPos, Container> own = new java.util.HashMap<>();
+			for (BlockPos p : BlockPos.betweenClosed(c.offset(-14, -4, -14), c.offset(14, 8, 14))) {
+				if (level.getBlockEntity(p) instanceof Container box && level.getBlockState(p).is(Blocks.CHEST)) {
+					box.getItem(0); // (rolls a loot table if it has one)
+					own.put(p.immutable(), box);
+				}
+			}
+			helper.assertTrue(!own.isEmpty() && !own.containsKey(far), "setup: expected the outpost's own chest, and the far corner free");
+			level.setBlock(far, Blocks.CHEST.defaultBlockState(), 3);
+			Container farChest = (Container) level.getBlockEntity(far);
+			int before = own.values().stream().mapToInt(QaPlunderVerify1102dGameTests::gold).sum();
+			Mob thief = piglin(helper, culture, new BlockPos(6, 2, 6));
+			Plunder.carry(level, thief, new ItemStack(Items.GOLD_INGOT, 20));
+			Threats.tactics(culture).forEach(t -> t.leave(level, hall, culture, thief));
+			int after = own.values().stream().mapToInt(QaPlunderVerify1102dGameTests::gold).sum();
+			helper.assertTrue(gold(farChest) == 0, "the gold carried home went into the empty chest at the far edge of the outpost's ground: "
+				+ gold(farChest) + " ingots there");
+			helper.assertTrue(after == before + 20, "the outpost's own chest didn't get the 20 ingots: " + before + " -> " + after);
+			level.setBlock(far, Blocks.AIR.defaultBlockState(), 3);
+			helper.succeed();
+		});
 	}
 }

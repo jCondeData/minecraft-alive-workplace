@@ -121,4 +121,90 @@ public class QaCreateMachinesProtection1102CompatTests implements FabricGameTest
 			helper.succeed();
 		});
 	}
+	private static net.minecraft.world.level.block.state.BlockState westFacing(String id) {
+		return MechanicCompatTests.with(MechanicCompatTests.with(MechanicCompatTests.create(id).defaultBlockState(), "facing", "west"),
+			"axis_along_first", "true");
+	}
+
+	/** A stranger's Mechanical Saw one step outside a protected village, facing in, leaves the village's edge log standing. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_saw_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_saw_protected")
+	public void aSawOutsideAProtectedVillageCantCutItsEdge(GameTestHelper helper) {
+		hall(helper, true);
+		helper.setBlock(EDGE, Blocks.OAK_LOG);
+		BlockPos saw = EDGE.east();
+		helper.setBlock(saw.east(), MechanicCompatTests.with(MechanicCompatTests.create("creative_motor").defaultBlockState(), "facing", "west"));
+		helper.setBlock(saw, MechanicCompatTests.with(MechanicCompatTests.create("mechanical_saw").defaultBlockState(), "facing", "west"));
+		helper.runAfterDelay(300, () -> {
+			float turning = speed(helper, saw);
+			boolean kept = helper.getBlockState(EDGE).is(Blocks.OAK_LOG);
+			undo(helper);
+			helper.assertTrue(turning != 0, "the saw never turned, so the test proves nothing");
+			helper.assertTrue(kept, "a stranger's Mechanical Saw outside the protected village cut its edge log (saw speed " + turning + ")");
+			helper.succeed();
+		});
+	}
+
+	/** The control for the saw: the hall unprotected, the same saw cuts the edge log (the setup works). */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_saw_unprotected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_saw_unprotected")
+	public void aSawOutsideAnUnprotectedVillageCutsItsEdge(GameTestHelper helper) {
+		hall(helper, false);
+		helper.setBlock(EDGE, Blocks.OAK_LOG);
+		BlockPos saw = EDGE.east();
+		helper.setBlock(saw.east(), MechanicCompatTests.with(MechanicCompatTests.create("creative_motor").defaultBlockState(), "facing", "west"));
+		helper.setBlock(saw, MechanicCompatTests.with(MechanicCompatTests.create("mechanical_saw").defaultBlockState(), "facing", "west"));
+		helper.runAfterDelay(300, () -> {
+			boolean cut = !helper.getBlockState(EDGE).is(Blocks.OAK_LOG);
+			float turning = speed(helper, saw);
+			undo(helper);
+			helper.assertTrue(cut, "the saw didn't cut the unprotected edge log in 300 ticks (saw speed " + turning + ")");
+			helper.succeed();
+		});
+	}
+
+	/** A Mechanical Piston facing west (axis_along_first: it turns on Y) with two poles behind it, turned from below. */
+	private static void westPiston(GameTestHelper helper, BlockPos piston) {
+		helper.setBlock(piston.east(2), MechanicCompatTests.with(MechanicCompatTests.create("piston_extension_pole").defaultBlockState(), "facing", "west"));
+		helper.setBlock(piston.east(), MechanicCompatTests.with(MechanicCompatTests.create("piston_extension_pole").defaultBlockState(), "facing", "west"));
+		helper.setBlock(piston, westFacing("mechanical_piston"));
+		helper.setBlock(piston.below(), MechanicCompatTests.with(MechanicCompatTests.create("creative_motor").defaultBlockState(), "facing", "up"));
+	}
+
+	/** A stranger's Mechanical Piston one step outside a protected village can't push the village's edge block deeper in. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_piston_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_piston_protected")
+	public void aMechanicalPistonOutsideAProtectedVillageCantPushItsEdgeIn(GameTestHelper helper) {
+		hall(helper, true);
+		helper.setBlock(EDGE, Blocks.OAK_PLANKS);
+		BlockPos piston = EDGE.east();
+		westPiston(helper, piston);
+		helper.runAfterDelay(300, () -> {
+			float turning = speed(helper, piston);
+			String row = helper.getBlockState(EDGE) + " / " + helper.getBlockState(EDGE.west()) + " / " + helper.getBlockState(EDGE.west(2));
+			boolean kept = helper.getBlockState(EDGE).is(Blocks.OAK_PLANKS);
+			undo(helper);
+			helper.assertTrue(turning != 0, "the piston never turned, so the test proves nothing");
+			helper.assertTrue(kept, "a stranger's Mechanical Piston outside the protected village moved its edge block: the row inward reads " + row);
+			helper.succeed();
+		});
+	}
+
+	/** The control for the piston: the hall unprotected, the same piston pushes the edge block in. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_piston_unprotected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_piston_unprotected")
+	public void aMechanicalPistonOutsideAnUnprotectedVillagePushesItsEdgeIn(GameTestHelper helper) {
+		hall(helper, false);
+		helper.setBlock(EDGE, Blocks.OAK_PLANKS);
+		BlockPos piston = EDGE.east();
+		westPiston(helper, piston);
+		helper.runAfterDelay(300, () -> {
+			boolean moved = !helper.getBlockState(EDGE).is(Blocks.OAK_PLANKS);
+			String row = helper.getBlockState(EDGE) + " / " + helper.getBlockState(EDGE.west()) + " / " + helper.getBlockState(EDGE.west(2));
+			float turning = speed(helper, piston);
+			undo(helper);
+			helper.assertTrue(moved, "the piston didn't push the unprotected edge block (speed " + turning + "): " + row);
+			helper.succeed();
+		});
+	}
 }

@@ -100,7 +100,7 @@ public class QaReformStoryBugTests {
 		});
 	}
 
-	private static void askedEveryTime(GameTestHelper helper, String edictPath, Villager want, List<Villager> others, String who) {
+	static void askedEveryTime(GameTestHelper helper, String edictPath, Villager want, List<Villager> others, String who) {
 		ServerLevel level = helper.getLevel();
 		BlockPos hall = helper.absolutePos(HALL);
 		VillageHallBlockEntity entity = QaReformStoryGameTests.ready(helper);
@@ -118,7 +118,7 @@ public class QaReformStoryBugTests {
 		helper.succeed();
 	}
 
-	private static Villager add(GameTestHelper helper, BlockPos at, UUID id) {
+	static Villager add(GameTestHelper helper, BlockPos at, UUID id) {
 		Villager v = EntityType.VILLAGER.create(helper.getLevel());
 		v.setUUID(id);
 		v.setNoAi(true);

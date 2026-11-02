@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796
 
 ## What a player sees
 
@@ -346,6 +346,9 @@ empty unless a default is given here:
   and `steward_desk`, `services`, `piece_looks`, `bannerBase` and `bannerPatterns` (the village's colors).
 - A saved quest that can't be read (a `kind` this version doesn't know, after going back to an older jar, or a hand
   edit) is left out with a warning in the log; the hall's other quests and data load as usual.
+- Likewise one damaged entry of `edicts`, `guilds`, `reforms`, `services` or `piece_looks`, a zone or road of `plan`,
+  or a level of `research` is left out with a warning, and the rest of that list loads (B796; before, the whole list
+  was lost without a word).
 
 The calendar keeps the last day it fired for with the overworld. Friends are saved in `aliveworkplace_friends`.
 Not saved: the census (counted again every 600 ticks) and the screen's layout. The Free job blocks page saves
@@ -462,6 +465,9 @@ not 13; other colors never wagon beds; a cabin at the look's far edges and a bed
 in a new world; a real camp on a server with an older list keeps its wagon beds through a reload while a player's bed
 beside it is a home; an old list's bedroll survives the first save; a bed put back where a wagon bed stood is a home),
 `QaCabinBedsReplaceBug1101Tests` (B761: a bed put back at once where a wagon bed stood is a home),
+`QaWagonBedSingularBugTests` and `QaWagonBedCount1102GameTests` (B787: the Beds button's wagon line word for word with two
+bedrolls, "Not counted: 2 wagon beds (for the road, not homes)", and one, "Not counted: 1 wagon bed (for the road, not
+a home)"; with none left, no line),
 `QaVillageFixesVerify1102GameTests` (B761: a green bed put back at once stays a home after a restart; lying down in a
 bedroll or putting a bed elsewhere leaves the camp's bedrolls listed; the Bed list never offers a held bedroll and offers
 a bed put back on a bedroll's spot as free at once),
@@ -507,6 +513,8 @@ Crafting Table", a jobless and a working villager made the Carpenter from Job â–
 `QaBuilders1028GameTests` (B635, QA: a table broken while Job â–¾ is open makes no Carpenter and the line then says to
 place one; an older save's table with no workstation record is offered once its chunk loads; tables 8 blocks from
 the hall are offered, 9 aren't).
+QA's `QaHallListsOneBadEntry1102BugTests` (B796: one empty entry first in each of the five lists, the two good ones
+still load) and `B796GameTests` (one damaged plan zone and one damaged research level, the rest kept).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end

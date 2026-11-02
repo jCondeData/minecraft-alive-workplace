@@ -17,6 +17,37 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Hauler and Farmhand Golems: a golem at work finds the way round a long wall or lava trench, such as a village wall
+  with its gate off to the side. A hauler whose Storehouse lay behind a wall 17 blocks long walked up to the wall, stood
+  there and gave the Storehouse up with its load; it now looks as far for a way as a villager does (B815).
+- Hauler and Farmhand Golems: a golem at work no longer jumps into water two or more blocks below the bank, water it
+  can't climb back out of. A hauler whose nearest Storehouse is on an island in such a moat takes its load to another
+  Storehouse instead of floating in the moat with it for good (B813).
+- Hauler and Farmhand Golems: a golem at work going round a lava trench whose lava lies a block or more below the
+  ground no longer cuts the corner and falls in. Its way keeps a block clear of sunken lava and fire too (B814).
+- Scan Tool: a scanned big dripleaf on its stems is built back whole, stacked from the bottom leaf on leaf as a player
+  grows one; it was built as nothing at all, every piece skipped (B812).
+- Create trains: a server stopped between the village round that points the two stations at their track and the next
+  no longer leaves both stations named 'Track Station' for good; they are named after their villages either way (a
+  station a player renamed keeps its name) (B800).
+- Scan Tool: a scanned glow lichen or sculk vein now asks for one item per face it covers. A lichen on three faces was
+  listed as one glow lichen and built on all three, so shears took two lichen off it for free (B792).
+- Militia Drill: in a village with no Training Dummy, where the guards drill by the hall, the chronicle now reads
+  "Drill day in ...: 1 villager sparred by the hall." instead of speaking of dummies the village doesn't have (B797).
+- Village Hall: one damaged entry in a hall's save (a hand-edited file, or one a crash cut short) no longer repeals
+  every edict, disbands every guild, or forgets every reform's progress, found service, house furniture look, City Plan
+  zone or research level of that village. Only the bad entry is left out, with a warning in the log (B796).
+- Scan Tool: builders now build again a scanned cake with a candle on it (from a cake and the candle) and the full
+  length of scanned cave vines, weeping vines, twisting vines, kelp and big dripleaf stems (one glow berries, vine,
+  kelp or big dripleaf a block; hanging vines go up from the ceiling down). Before, these were silently left out (B793,
+  B794).
+- Scan Tool: a scanned pushed-out piston is built with its head, pushed out by its own redstone, instead of as a stuck
+  pushed-out base with nothing in front; without power in the build it stands retracted (B795).
+- Blueprint Table: a build's 3D preview now draws banners, decorated pots, signs and other blocks drawn by their block
+  entity (as their item), so a scan of a lone banner or pot no longer shows an empty picture (B798).
+- Saves: taking a mod out of the pack no longer empties a Builder's whole bag, a Hauler Golem's whole load, every
+  courier route a postman holds or a worker's whole machine trip when one item in it came from that mod. Only that item
+  is lost, as in a chest; the rest loads (B791).
 - Villages: buildings finished in a City Plan zone painted past the hall's radius now count for the village everywhere,
   not only on the Repairs page: its beauty, its rank's buildings, its Market Square, Arena, Chapel and services, its gates,
   towers and defenses, its signposts and plazas, fires and disasters, and the hall's advice (B620).

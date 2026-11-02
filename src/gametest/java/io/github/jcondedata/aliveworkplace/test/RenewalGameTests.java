@@ -63,14 +63,14 @@ public class RenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	private static final ResourceLocation TWO_BED_HOUSE = ResourceLocation.withDefaultNamespace("village/plains/houses/plains_medium_house_1");
 	private static final ResourceLocation SMALL_HOUSE = ResourceLocation.withDefaultNamespace("village/plains/houses/plains_small_house_1");
 
-	private record Village(ServerLevel level, BlockPos hall, ServerPlayer owner, Villager steward, Villager builder) {
+	record Village(ServerLevel level, BlockPos hall, ServerPlayer owner, Villager steward, Villager builder) {
 		VillageHallBlockEntity entity() {
 			return (VillageHallBlockEntity) level.getBlockEntity(hall);
 		}
 	}
 
 	/** The village, its one zone in {@code style} with the renew switch {@code renew}. */
-	private static Village village(GameTestHelper helper, String style, boolean renew) {
+	static Village village(GameTestHelper helper, String style, boolean renew) {
 		Leftovers.clear(helper);
 		// a hall another batch left near here would be nearer the old house than this one: the renewal is then refused as
 		// another village's (renewFar failed so in a full run, next to villageHallCountsTheVillage's spot)
@@ -126,7 +126,7 @@ public class RenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	}
 
 	/** The house measured from {@code seed} (absolute) and judged for the village. */
-	private static OldHouses.House measure(GameTestHelper helper, Village v, BlockPos seed) {
+	static OldHouses.House measure(GameTestHelper helper, Village v, BlockPos seed) {
 		OldHouses.Measure m = new OldHouses.Measure(v.level(), seed);
 		while (!m.done()) {
 			m.step(1 << 16);
@@ -145,13 +145,13 @@ public class RenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	}
 
 	/** Beds (head halves) in {@code box}. */
-	private static List<BlockPos> beds(ServerLevel level, BoundingBox box) {
+	static List<BlockPos> beds(ServerLevel level, BoundingBox box) {
 		return level.getPoiManager().findAll(h -> h.is(PoiTypes.HOME), box::isInside, box.getCenter(), 24, PoiManager.Occupancy.ANY)
 			.map(BlockPos::immutable).toList();
 	}
 
 	/** The renewal proposed on the desk for the house found by {@code seed}. */
-	private static StewardDesk.Proposal propose(GameTestHelper helper, Village v, OldHouses.House house) {
+	static StewardDesk.Proposal propose(GameTestHelper helper, Village v, OldHouses.House house) {
 		helper.assertTrue(house.renewable(), "setup: the old house isn't renewable: " + house.verdict());
 		Optional<Renewals.Replacement> replacement = Renewals.replacement(v.level(), v.hall(), house);
 		helper.assertTrue(replacement.isPresent(), "nothing on the list fits the old house " + house.box());
@@ -187,7 +187,7 @@ public class RenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		Builders.finish(level, v.builder(), site);
 	}
 
-	private static BuildSite site(GameTestHelper helper, Village v) {
+	static BuildSite site(GameTestHelper helper, Village v) {
 		List<Renewals.Renewal> active = Renewals.active(v.level(), v.hall());
 		helper.assertTrue(active.size() == 1, "expected one renewal under way, found " + active.size());
 		BuildSite site = BuildSiteManager.get(v.level()).get(active.get(0).site());

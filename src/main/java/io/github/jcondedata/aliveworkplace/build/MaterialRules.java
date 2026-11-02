@@ -97,6 +97,59 @@ public final class MaterialRules {
 		return "create:belt".equals(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
 	}
 
+	/**
+	 * B794: the stem pieces of a plant that has no item of its own, placed with the plant's own item as a player lengthens
+	 * it: cave vines with glow berries, weeping and twisting vines, kelp, and a big dripleaf's stem with a big dripleaf.
+	 */
+	private static final Map<Block, Block> GROWN_FROM = Map.of(
+		Blocks.CAVE_VINES_PLANT, Blocks.CAVE_VINES,
+		Blocks.WEEPING_VINES_PLANT, Blocks.WEEPING_VINES,
+		Blocks.TWISTING_VINES_PLANT, Blocks.TWISTING_VINES,
+		Blocks.KELP_PLANT, Blocks.KELP,
+		Blocks.BIG_DRIPLEAF_STEM, Blocks.BIG_DRIPLEAF
+	);
+
+	/**
+	 * B812: what a builder puts down for {@code wanted} at {@code pos}. A big dripleaf's stem only stands with a stem or the
+	 * leaf above it, so a column built bottom-up had no first piece: each stem with nothing above it yet goes down as a big
+	 * dripleaf (the item it costs, on the same facing), as a player builds one up leaf on leaf, and vanilla turns it into a
+	 * stem when the next piece goes on top. Every other block is put down as planned.
+	 */
+	public static BlockState grownAs(net.minecraft.world.level.LevelReader level, net.minecraft.core.BlockPos pos, BlockState wanted) {
+		if (wanted.is(Blocks.BIG_DRIPLEAF_STEM)) {
+			BlockState above = level.getBlockState(pos.above());
+			if (!above.is(Blocks.BIG_DRIPLEAF_STEM) && !above.is(Blocks.BIG_DRIPLEAF)) {
+				return Blocks.BIG_DRIPLEAF.withPropertiesOf(wanted);
+			}
+		}
+		return wanted;
+	}
+
+	/**
+	 * B794: a block that hangs from the one above it (cave and weeping vines, a stalactite), so a hanging run of them goes
+	 * up top-down, after everything else (BuildPlan): each piece needs the one above it to be there already.
+	 */
+	public static boolean hangsDown(BlockState state) {
+		Block b = state.getBlock();
+		return b instanceof net.minecraft.world.level.block.CaveVinesBlock || b instanceof net.minecraft.world.level.block.CaveVinesPlantBlock
+			|| b instanceof net.minecraft.world.level.block.WeepingVinesBlock || b instanceof net.minecraft.world.level.block.WeepingVinesPlantBlock
+			|| b instanceof PointedDripstoneBlock && state.getValue(BlockStateProperties.VERTICAL_DIRECTION) == Direction.DOWN;
+	}
+
+	/**
+	 * B793: the candle on a candle cake (no item of its own: a player puts a candle on a cake), found by id as vanilla
+	 * names them ({@code white_candle_cake} holds a {@code white_candle}); air if there is no such candle.
+	 */
+	private static Item candleOn(Block cake) {
+		net.minecraft.resources.ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(cake);
+		if (!id.getPath().endsWith("_cake")) {
+			return Items.AIR;
+		}
+		net.minecraft.resources.ResourceLocation candle = id.withPath(id.getPath().substring(0, id.getPath().length() - "_cake".length()));
+		Item item = io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.ITEM, candle);
+		return item instanceof net.minecraft.world.item.BlockItem bi && bi.getBlock() instanceof CandleBlock ? item : Items.AIR;
+	}
+
 	private static Item placedByAnotherItem(Block block) {
 		String with = PLACED_WITH.get(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block).toString());
 		return with == null ? Items.AIR
@@ -161,6 +214,15 @@ public final class MaterialRules {
 			}
 			return out;
 		}
+		if (block instanceof net.minecraft.world.level.block.CandleCakeBlock) {
+			// B793: a cake with a candle on it is a cake and a candle (it has no item of its own)
+			Item candle = candleOn(block);
+			if (candle != Items.AIR) {
+				out.add(new Requirement(Items.CAKE, 1));
+				out.add(new Requirement(candle, 1));
+			}
+			return out;
+		}
 		if (ModdedBlocks.ownCosts(block, out)) {
 			return out;
 		}
@@ -181,7 +243,8 @@ public final class MaterialRules {
 			|| b instanceof CandleBlock || b instanceof SnowLayerBlock || b instanceof FlowerPotBlock || b instanceof TrapDoorBlock
 			|| b instanceof TripWireHookBlock || b instanceof TripWireBlock || b instanceof CocoaBlock || b instanceof AbstractSkullBlock
 			|| b instanceof AmethystClusterBlock || b instanceof PointedDripstoneBlock || b instanceof MultifaceBlock
-			|| b instanceof BellBlock || b instanceof CakeBlock || modLantern(b);
+			|| b instanceof BellBlock || b instanceof CakeBlock || b instanceof net.minecraft.world.level.block.CandleCakeBlock
+			|| hangsDown(b.defaultBlockState()) || modLantern(b);
 	}
 
 	/**
@@ -275,6 +338,9 @@ public final class MaterialRules {
 			return bucket == Items.AIR ? Optional.empty() : Optional.of(new Requirement(bucket, 1));
 		}
 		Item item = SUBSTITUTES.getOrDefault(block, block.asItem());
+		if (item == Items.AIR && GROWN_FROM.containsKey(block)) {
+			item = GROWN_FROM.get(block).asItem();
+		}
 		if (item == Items.AIR) {
 			item = placedByAnotherItem(block);
 		}
@@ -294,6 +360,9 @@ public final class MaterialRules {
 			count = state.getValue(BlockStateProperties.FLOWER_AMOUNT);
 		} else if (block instanceof SnowLayerBlock) {
 			count = state.getValue(BlockStateProperties.LAYERS);
+		} else if (block instanceof MultifaceBlock) {
+			// Glow lichen, sculk vein: one item per face, as placing and shearing count them (B792)
+			count = Math.max(1, MultifaceBlock.availableFaces(state).size());
 		}
 		return Optional.of(new Requirement(item, count));
 	}
@@ -332,6 +401,11 @@ public final class MaterialRules {
 		}
 		if (state.getBlock() instanceof LeavesBlock && state.hasProperty(BlockStateProperties.PERSISTENT)) {
 			state = state.setValue(BlockStateProperties.PERSISTENT, true);
+		}
+		if (state.getBlock() instanceof net.minecraft.world.level.block.piston.PistonBaseBlock && state.getValue(BlockStateProperties.EXTENDED)) {
+			// B795: a scanned pushed-out piston has its head in front, which is no block a builder places: the piston goes
+			// down retracted and its redstone pushes it out with its head, as a player's piston does
+			state = state.setValue(BlockStateProperties.EXTENDED, false);
 		}
 		return emptied(state);
 	}
@@ -410,6 +484,11 @@ public final class MaterialRules {
 		if (wanted.is(Blocks.CAULDRON) && actual.getBlock() instanceof net.minecraft.world.level.block.AbstractCauldronBlock) {
 			// A cauldron is built empty (emptied); one filled since is still the cauldron that was built
 			return true;
+		}
+		if (actual.is(Blocks.BIG_DRIPLEAF) && wanted.is(Blocks.BIG_DRIPLEAF_STEM)) {
+			// B812: the top of a big dripleaf column still going up is a leaf (grownAs); it turns into the stem when the
+			// piece above it goes on, so it counts as built (stem or leaf depends on the block above, a neighbour)
+			return actual.getValue(BlockStateProperties.HORIZONTAL_FACING) == wanted.getValue(BlockStateProperties.HORIZONTAL_FACING);
 		}
 		if (actual.getBlock() != wanted.getBlock() && unweathered(actual.getBlock()) != unweathered(wanted.getBlock())) {
 			return false;

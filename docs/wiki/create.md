@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800
 
 ## What a player sees
 
@@ -330,7 +330,8 @@ showcase catalog).
 - `machine_job`, an attachment on a worker (39.3): a trip to a machine under way: the machine's position, its file,
   the stage (`fetch`, `feed`, `return`) and what's carried. Every field is optional; without it the worker has no trip.
   A trip saved mid-way goes on after a load, so nothing carried is lost. In a world opened again after Create was taken
-  out of the pack the trip can't go on: what was carried goes back into the store by the workstation, or drops at the
+  out of the pack the trip still loads (a carried stack of Create's own, such as its flour, is dropped from the record,
+  B791) but can't go on: what was carried goes back into the store by the workstation, or drops at the
   worker's feet when there's none, and the record is cleared. (The design note's per-dimension `machines`
   list wasn't needed: workers find machines near their workstation in loaded chunks.)
 

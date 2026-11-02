@@ -38,6 +38,16 @@ CHECKED_PAIRS = {
     "advice.aliveworkplace.rank.how": "VillageAdvice passes one list of four values to both; .how picks %2$s-%4$s by position",
     "screen.aliveworkplace.daycare.levels": "CobblemonDaycare fills the levels line with its own two values",
     "screen.aliveworkplace.hall.rank_perks.no_growth": "VillageHallScreen passes the same four values to both; .no_growth (villageGrowthCap 0) leaves the cap, 0, out",
+    # Checked by lane-e-1102-0721 (2026-11-02) against the code:
+    "screen.aliveworkplace.daycare_keeper.pairs": "CobblemonDaycareKeeper fills the pairs line with its own two values, the title with the keeper's name",
+    "screen.aliveworkplace.daycare_keeper.odds": "CobblemonDaycareKeeper fills the odds line with its own three chances",
+    "screen.aliveworkplace.daycare_keeper.with": "CobblemonDaycareKeeper fills the 'with' line with its own two values",
+    "message.aliveworkplace.colony.cap.none": "Colonies sends .none (colonies per village 0) on its own with the village, never with .cap's two values",
+    "advice.aliveworkplace.disaster_answer.how": "Disasters passes (disaster, job) to both; the title uses the first, .how picks %2$s",
+    "advice.aliveworkplace.disaster_house.how": "Disasters passes (disaster, house, job, station, item) to both; the title uses %1$s and %2$s",
+    "advice.aliveworkplace.wonder.how": "WondersPage passes (wonder, what's missing) to both; .how picks %1$s",
+    "advice.aliveworkplace.wonder_more.how": "WondersPage passes (wonder, what's missing, how many more) to both; .how picks %1$s",
+    "advice.aliveworkplace.wonder_ready.how": "WondersPage passes (wonder, the plans' price) to both; the title uses the first, .how %2$s",
 }
 
 # Job names other than the README job table's, and the name to use instead (ROADMAP 24.5). Prose may write a job in

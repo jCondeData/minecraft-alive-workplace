@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Saves: taking a mod out of the pack no longer empties a Builder's whole bag, a Hauler Golem's whole load, every
+  courier route a postman holds or a worker's whole machine trip when one item in it came from that mod. Only that item
+  is lost, as in a chest; the rest loads (B791).
 - Villages: buildings finished in a City Plan zone painted past the hall's radius now count for the village everywhere,
   not only on the Repairs page: its beauty, its rank's buildings, its Market Square, Arena, Chapel and services, its gates,
   towers and defenses, its signposts and plazas, fires and disasters, and the hall's advice (B620).

@@ -31,7 +31,7 @@ public record MachineJob(BlockPos machine, ResourceLocation file, Stage stage, L
 		BlockPos.CODEC.optionalFieldOf("machine", BlockPos.ZERO).forGetter(MachineJob::machine),
 		ResourceLocation.CODEC.optionalFieldOf("file", ResourceLocation.fromNamespaceAndPath("aliveworkplace", "none")).forGetter(MachineJob::file),
 		Stage.CODEC.optionalFieldOf("stage", Stage.RETURN).forGetter(MachineJob::stage),
-		ItemStack.CODEC.listOf().optionalFieldOf("carried", List.of()).forGetter(MachineJob::carried)
+		io.github.jcondedata.aliveworkplace.mc.Lenient.list(ItemStack.CODEC, "machine trip").optionalFieldOf("carried", List.of()).forGetter(MachineJob::carried)
 	).apply(i, MachineJob::new));
 
 	public MachineJob {

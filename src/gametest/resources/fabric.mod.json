@@ -605,6 +605,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataCollections1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataOneBadEntry1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataOneBadEntry1101BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRemovedModItems1102BugTests",
+			"io.github.jcondedata.aliveworkplace.test.RemovedModItemsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataBadMapKey1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.AreaJobWorkBlockGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DeliveryNoteProtectionGameTests",

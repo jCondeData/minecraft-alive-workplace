@@ -236,7 +236,10 @@ sites are remembered). Each site (`BuildSite.save`) holds:
 
 On the villager (attachments in `registry/ModAttachments`):
 - `builder_job` (`BuilderJob`): `site` and `helper` (false by default).
-- `builder_bag`: the 27-slot bag, empty by default.
+- `builder_bag`: the 27-slot bag, empty by default. A stack of an item no loaded mod has any more (a mod taken out of
+  the pack) is dropped with a warning in the log and the rest of the bag loads, as a chest keeps its other slots; the
+  same goes for a Hauler Golem's load, a postman's courier routes (a route keeps its ends and its other filter items)
+  and a worker's machine trip (B791, `RemovedModItemsGameTests`, `QaRemovedModItems1102BugTests`).
 - `builder_employer`: who the Builder works for (fields not listed here).
 
 Per finished building (36.15): `repair_ask` (`asked`, `yes`, `not_now` or `paused`; absent: never asked, as in every

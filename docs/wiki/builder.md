@@ -557,7 +557,15 @@ gets the blueprint at the player's feet, a builder builds a drawn box from the c
 listed as a cake and a red candle and built from them, and with no candle the builder waits for one and builds no bare
 cake; cave and weeping vines three long under a ceiling, and twisting vines three tall, are listed one item a block and
 built that long with nothing skipped; a pushed-out sticky piston is built with its head, and without its redstone it
-stands retracted). `QaScanRoundTripGameTests` (1, from
+stands retracted). `QaScanRebuild1102cGameTests` (9, the tester's, B793-B795: a lit cake with a red candle is paid
+once from the chest and built; kelp three tall in a glass tank, a stalactite three long, a spore blossom, hanging roots
+and a hanging sign under a ceiling are built again; a pushed-out sticky piston built turned a quarter faces south with
+its head; a lever-pushed piston is never left stuck (lever on with the head, or off and retracted); cave vines whose
+site is saved and loaded every 7 ticks still end three long). A big dripleaf's stem isn't built yet (B812).
+`QaScanRebuild1102dGameTests` (6, the tester's: a lily pad on a pool, a scaffolding tower that is part of the scan,
+four pink petals, three turtle eggs, a full water cauldron, and farmland with wheat beside a dirt path, each scanned and
+built again whole with nothing skipped and asked for as a player places them).
+`QaScanRoundTripGameTests` (1, from
 the Scan Tool's guide page: a hand-built room with two double chests lying either way, a door, a bed, a wall torch, a
 hanging lantern, an upside-down stair and a ladder, scanned with real clicks and built again a quarter turned, comes out
 block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`). `QaScanPotGameTests`

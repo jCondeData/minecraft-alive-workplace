@@ -129,10 +129,13 @@ that village's store, so the village's own Builder on a village build (or none) 
 village's 48 blocks from his table (the distance it gives is rounded up, so one just past the reach reads past it:
 48.3 blocks says 49, B355), someone else's, or no chest round it he can read.
 
-**Speed.** Exactly `workplaceBuildDelay` ticks per block (default 8; B515: it was one tick more) times a share by Builder level 1 to 5:
-100%, 100%, 85%, 70%, 55%, 40% (index 0 is unused). Then the village's mood, traits, edicts and so on change it
-(`work/Pace`). A bigger delay is never faster, up to the rule's largest value (B822: over about 21 million it used to
-overflow and build every tick). XP: 1 per 5 blocks placed and 10 for finishing a build (`BuilderLevels`).
+**Speed.** Exactly `workplaceBuildDelay` ticks per block (default 8; B515: it was one tick more) times a share by Builder level,
+Novice to Master: 100%, 85%, 70%, 55%, 40%, rounded to whole ticks (at 30, a Novice places a block every 30 ticks and a
+Master every 12), and never faster than a block a tick. Then the village's mood, traits, edicts and so on change it
+(`work/Pace`). A bigger delay is never faster and a higher level never slower, up to the rule's largest value,
+2147483647 (B822: over about 21 million it used to overflow and build every tick). `/gamerule` refuses values under 1.
+A raised rule counts from the next block; a lowered one too, so a Builder in the middle of a huge delay keeps waiting it
+out until his work restarts (B831, open). XP: 1 per 5 blocks placed and 10 for finishing a build (`BuilderLevels`).
 
 **Queue and crew.** A Builder takes up to 5 more blueprints on top of its current one (`MAX_QUEUE`). Up to 3 idle
 Builders (`MAX_HELPERS`; Guilds can change this) help one site, each claiming steps ahead of the lead. A helper that dies drops only its bag; the steps it claimed go back to the crew and the lead finishes the build (B516). The owner

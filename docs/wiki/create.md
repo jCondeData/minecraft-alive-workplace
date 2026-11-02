@@ -455,6 +455,9 @@ blocked) gets no sign yet: the player starts it with an empty hand (39.4). A sch
 table opens may be read cut short and said so once; it's imported when the upload finishes and the table opens again
 (39.6). Whether Create's client keeps a written Schematic's right-click on the table for itself in a real game is not
 tested (the GameTests use the table as the server does).
+Create's Mechanical Piston moves the mod's blocks with what is in them, as it moves chests (tested: Mailbox, Shop
+Counter, Drop Box, Blueprint Table); a Wonder's Foundation Stone stays put. What a moved Village Hall, Mailbox or
+Travel Post keeps of its place in the village, the post and the travel network is not tested.
 
 ## Proof
 
@@ -496,6 +499,9 @@ tested (the GameTests use the table as the server does).
   mirrored from exactly the material list, go up whole and empty.
   `QaCreateStoresHeldCompatTests` (lane E's QA): the same for a millstone (holding wheat), a chute, an item vault, a
   mechanical crafter and a toolbox.
+  `QaCreateMovesOurBlocks1102eCompatTests` (lane E's QA): a Mechanical Piston pushes a Mailbox, a Shop Counter, a
+  Drop Box and a Blueprint Table two steps and each keeps exactly what was in it (nothing doubled on the ground, nothing
+  lost), while a Wonder's Foundation Stone isn't moved at all (a plank pushed by the same piston is the control).
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,

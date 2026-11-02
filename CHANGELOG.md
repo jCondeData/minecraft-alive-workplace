@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A jobless villager on his way to a job block he picked himself can be given that block: sneak-right-clicked with
+  the job's item, he takes it instead of being told someone works at each one (B803), and the Village Hall's Job list
+  counts it free for him ("Mason · 1 free Stonecutter", not "place a Stonecutter first", B807).
 - Scan Tool rebuilds by the water: sugar cane by a pool is built three tall again (it went up before the pool's water and
   was skipped, B816); sea pickles and living coral scanned under water are built waterlogged, so the pickles glow (B817,
   each also costs a water bucket, given back empty); tall seagrass is built from a seagrass and a bone meal, as a player

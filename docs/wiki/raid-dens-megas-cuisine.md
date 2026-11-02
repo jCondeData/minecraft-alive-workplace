@@ -118,6 +118,7 @@ divider; the tab sits in the row's free slot before Routes and shows only while 
 dish with the Chef's level it needs, how many are asked for and how many the village's store holds; a click asks for 4
 more, shift-click 16, right-click takes the request down (at most 64 of a dish wait). Without a Chef in the village
 every dish is locked and the tab says a Chef is needed; a dish above the best Chef's level says which level it needs.
+The tab's own icon counts the dishes waiting in all ("1 dish waiting", "5 dishes waiting", B810).
 The village's Chef (the one whose stove's nearest hall it is) cooks the oldest request his level allows before his own
 menu, from the same makings, up to a batch of 8, and carries it to the village's Storehouse (the chests by his stove if
 it has none); what he delivers comes off the request. A request whose makings are missing waits. The requests are

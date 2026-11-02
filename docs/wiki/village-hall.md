@@ -39,7 +39,8 @@ empty section, season, day and year. The client (`VillageHallMenuScreen`, hooks 
 the open section's buttons, all as labeled rows, a plain sentence over the list when the section is empty (People
 with nobody, Homes & Food with no beds or food, Buildings with nothing going up, Defense with no guards, Quests with
 none open, Trade with no neighbor in range, Laws & Realm with no edict or realm), and with nothing hovered the advice
-tips (Overview; the advice button's lines carry every tip and how) or the section's one-line purpose. A sidebar click
+tips (Overview; the advice button's lines carry every tip and how, after a first line that counts them: "1 suggestion,
+first: ..." for one, "3 suggestions, first: ..." for more, B810) or the section's one-line purpose. A sidebar click
 is vanilla's menu-button click (`clickMenuButton(player, ordinal)`), which remembers the section per player while
 the server runs (`HallSections.last`, not saved) and lays the main page out again, from any page. A page opened from a
 section keeps the sidebar; its back button returns to the section. The Book of Edicts or a page opened on its own

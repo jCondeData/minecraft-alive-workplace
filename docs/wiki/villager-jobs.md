@@ -369,7 +369,9 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
   10th with `message.aliveworkplace.route.filter_full` and stays as it is (B334). In a protected village only the
   owner, friends and operators may mark a container (anyone else gets `message.aliveworkplace.protection.denied`); the
   note keeps who marked its source, and a postman doesn't take from a protected village that keeps that player (or,
-  for a route from before, the postman's employer) out (B717).
+  for a route from before, the postman's employer) out (B717). A postman sneak-right-clicked with an empty hand gives
+  his status, each count in its own form: "Postman — 1 parcel delivered · 2 courier routes" (B809), then a line per
+  route.
 - Texts: `message.aliveworkplace.job.chosen`, `message.aliveworkplace.job.needs_station`,
   `message.aliveworkplace.job.station_taken`, `message.aliveworkplace.job.class_needed`,
   `tooltip.aliveworkplace.station.hint`, `message.aliveworkplace.retrain.offer`, `.confirm`, `.short`, `.done`,

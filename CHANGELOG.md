@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Counts read in the singular for one: a postman's status says "1 parcel delivered · 1 courier route" (B809), the hall's
+  Advice button "1 suggestion, first: ..." and the board's Dishes tab "1 dish waiting" (B810).
 - Hauler Golems: a Storehouse whose every slot holds something, but whose stacks still have room, is no longer taken
   as full. A busy Storehouse with a stack of every kind (or a stack-upgraded Sophisticated barrel) stopped its haulers
   for good; they now bring the goods in while there's room for them, and put a load back only where it fits (B806).

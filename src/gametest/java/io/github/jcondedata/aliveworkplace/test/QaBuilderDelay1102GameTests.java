@@ -142,6 +142,42 @@ public class QaBuilderDelay1102GameTests {
 		timed(helper, 5, 30);
 	}
 
+	/**
+	 * "Each level also makes them faster": a Novice at 30 ticks made a Master after three blocks lays the rest 12 ticks
+	 * apart (never closer), from the block after the one in hand.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"qaDelayLevelUpMidBuild"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qaDelayLevelUpMidBuild")
+	public void aBuilderLeveledUpMidBuildBuildsFasterFromTheNextBlock(GameTestHelper helper) {
+		ServerLevel level = QaBuilderConfig1102GameTests.rules(helper, false, 30);
+		QaBuilderConfig1102GameTests.Run r = QaBuilderConfig1102GameTests.start(helper, QaBuilderConfig1102GameTests.BENCH,
+			QaBuilderConfig1102GameTests.CHEST, QaBuilderConfig1102GameTests.HUT, QaBuilderConfig1102GameTests.hutMaterials());
+		List<Integer> ticks = watch(helper, r);
+		int[] upAt = {-1};
+		int[] novice = {-1};
+		helper.onEachTick(() -> {
+			if (upAt[0] < 0 && ticks.size() >= 3) {
+				novice[0] = BuilderLevels.delay(level, r.villager());
+				setLevel(r.villager(), 5);
+				upAt[0] = ticks.size();
+			}
+		});
+		helper.runAtTickTime(1100, () -> {
+			int master = BuilderLevels.delay(level, r.villager());
+			helper.assertTrue(upAt[0] > 0, "never three blocks: " + ticks);
+			helper.assertTrue(master < novice[0], "a Master waits " + master + " ticks a block, a Novice " + novice[0]);
+			List<Integer> after = ticks.subList(upAt[0], ticks.size());
+			helper.assertTrue(after.size() >= 4, "only " + after.size() + " blocks after the level-up: " + ticks);
+			int shortest = Integer.MAX_VALUE;
+			for (int i = 1; i < after.size(); i++) {
+				shortest = Math.min(shortest, after.get(i) - after.get(i - 1));
+			}
+			helper.assertTrue(shortest == master, "after the level-up the closest two blocks are " + shortest + " ticks apart, wanted " + master
+				+ " (a Novice's " + novice[0] + "); placed at " + ticks + ", leveled after block " + upAt[0]);
+			helper.succeed();
+		});
+	}
+
 	// ------------------------------------------------------------------------------------------------- huge values on a real build
 
 	private static void barelyMoves(GameTestHelper helper, int lvl, int rule) {

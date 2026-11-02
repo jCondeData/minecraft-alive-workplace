@@ -270,4 +270,51 @@ public class QaCreateMachinesProtection1102CompatTests implements FabricGameTest
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * A drill on a moving contraption: a stranger's Mechanical Piston two steps outside the protected village with a Drill
+	 * on its head, facing in (a classic tunnel bore). The piston carries the drill, and a drill on a contraption breaks what
+	 * it moves into (Create's drill movement, not the drill block's own breaking), so this is a second way in.
+	 */
+	private static void pistonDrill(GameTestHelper helper) {
+		BlockPos piston = EDGE.east(2);
+		westPiston(helper, piston);
+		helper.setBlock(piston.west(), MechanicCompatTests.with(MechanicCompatTests.create("mechanical_drill").defaultBlockState(), "facing", "west"));
+	}
+
+	/** A stranger's piston-carried Drill outside a protected village can't bore into its edge. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_piston_drill_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_piston_drill_protected")
+	public void aDrillOnAPistonOutsideAProtectedVillageCantBoreIntoItsEdge(GameTestHelper helper) {
+		hall(helper, true);
+		helper.setBlock(EDGE, Blocks.OAK_PLANKS);
+		pistonDrill(helper);
+		helper.runAfterDelay(300, () -> {
+			float turning = speed(helper, EDGE.east(2));
+			String row = helper.getBlockState(EDGE) + " / " + helper.getBlockState(EDGE.east()) + " / " + helper.getBlockState(EDGE.east(2));
+			boolean kept = helper.getBlockState(EDGE).is(Blocks.OAK_PLANKS);
+			undo(helper);
+			helper.assertTrue(turning != 0, "the piston never turned, so the test proves nothing");
+			helper.assertTrue(kept, "a stranger's Drill carried by a Mechanical Piston outside the protected village broke its edge block: the row"
+				+ " outward reads " + row);
+			helper.succeed();
+		});
+	}
+
+	/** The control for the piston-carried drill: the hall unprotected, the same bore breaks the edge block. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_piston_drill_unprotected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_piston_drill_unprotected")
+	public void aDrillOnAPistonOutsideAnUnprotectedVillageBoresIntoItsEdge(GameTestHelper helper) {
+		hall(helper, false);
+		helper.setBlock(EDGE, Blocks.OAK_PLANKS);
+		pistonDrill(helper);
+		helper.runAfterDelay(300, () -> {
+			boolean broken = !helper.getBlockState(EDGE).is(Blocks.OAK_PLANKS);
+			String row = helper.getBlockState(EDGE) + " / " + helper.getBlockState(EDGE.east()) + " / " + helper.getBlockState(EDGE.east(2));
+			float turning = speed(helper, EDGE.east(2));
+			undo(helper);
+			helper.assertTrue(broken, "the piston-carried drill didn't break the unprotected edge block (piston speed " + turning + "): " + row);
+			helper.succeed();
+		});
+	}
 }

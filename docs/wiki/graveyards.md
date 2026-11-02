@@ -91,4 +91,7 @@ Nothing new. A moved grave keeps its block entity (`villager`, `name`, `professi
   isn't this village's), `B788GameTests.eachVillageKeepsItsOwnGraveyard`,
   `B788GameTests.aGraveyardWhoseHallIsGoneIsTheNearVillages` and
   `B788GameTests.anUndertakerNeverLaysAGraveInTheNeighborsGraveyard`.
+- QA (B788's edges): `QaGraveyardRim1102GameTests`: a Graveyard whose middle lies exactly on this village's rim is
+  this village's only; one block further out, inside the next village's circle, it is the next village's only; where
+  two circles overlap, each Graveyard goes to the hall nearer its middle.
 - Showcase scene: `undertaker_graveyard`.

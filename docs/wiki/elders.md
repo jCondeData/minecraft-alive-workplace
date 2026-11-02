@@ -325,6 +325,9 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
 
 ## Proof
 
+- QA (B771's pace): `QaElderPace1102GameTests`: the villager's own tick slows an elder with nobody asking and takes it
+  off once he's no elder; asking again never slows him twice; an ageless elder walks as slowly; a save never holds the
+  pace and a loaded elder is slowed once by his tick.
 - GameTests: `LifeStageGameTests`: the world's clock moved on to grown day 119 (not an elder) and 120 (an elder, the
   hall's line, the chronicle's note once), and 30 configured days (`aVillagerIsAnElderAfterTheConfiguredDays`); the walk
   target every worker gets, an ageless elder's too, and two villagers walking side by side for 60 ticks, the elder

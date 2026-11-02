@@ -1,6 +1,8 @@
 package io.github.jcondedata.aliveworkplace.test;
 
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
+import io.github.jcondedata.aliveworkplace.mechanic.MachineJob;
 import io.github.jcondedata.aliveworkplace.mail.RouteData;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.LinkedHashMap;
@@ -19,6 +21,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 /**
@@ -124,6 +127,37 @@ public class QaRemovedModItems1102BugTests implements FabricGameTest {
 		helper.assertTrue(back.contains(logs) && back.contains(all), "the two untouched routes changed in the load: " + back);
 		helper.assertTrue(back.stream().anyMatch(r -> r.from().equals(wheat.from()) && r.to().equals(wheat.to()) && r.filter().contains(Items.WHEAT)),
 			"the route with the removed item didn't keep its ends and its wheat: " + back);
+		helper.succeed();
+	}
+	/**
+	 * Create taken out of the pack while a farmer walked back from the village's millstone with flour ({@code
+	 * create:wheat_flour}) and the 12 wheat the stone didn't take yet: with Create gone his trip must still load, so the
+	 * Create-gone path ({@code QaCreateGoneGameTests#aMachineTripSavedWithCreateGivesItsWheatBack}) gives the wheat back.
+	 * Instead the whole trip is dropped with the flour and the 12 wheat are never seen again.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void aMachineTripCarryingCreateFlourStillGivesItsWheatBackWithCreateGone(GameTestHelper helper) {
+		helper.assertTrue(!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("create"), "Create is loaded in the plain suite");
+		Villager farmer = EntityType.VILLAGER.create(helper.getLevel());
+		ModAttachments.MACHINE_JOB.set(farmer, new MachineJob(new BlockPos(5, 64, 5), AliveWorkplace.id("millstone"), MachineJob.Stage.FEED,
+			List.of(new ItemStack(Items.WHEAT, 12), new ItemStack(Items.SUGAR, 4))));
+		CompoundTag saved = farmer.saveWithoutId(new CompoundTag());
+		Tag jobTag = attachment(saved, "machine_job");
+		helper.assertTrue(jobTag instanceof CompoundTag j && j.getList("carried", Tag.TAG_COMPOUND).size() == 2, "the trip didn't save 2 carried stacks: " + jobTag);
+		ListTag carried = ((CompoundTag) jobTag).getList("carried", Tag.TAG_COMPOUND);
+		for (int i = 0; i < carried.size(); i++) {
+			if (carried.getCompound(i).getString("id").equals("minecraft:sugar")) {
+				carried.getCompound(i).putString("id", "create:wheat_flour"); // Create's flour, with Create gone
+			}
+		}
+
+		Villager reopened = EntityType.VILLAGER.create(helper.getLevel());
+		reopened.load(saved);
+		MachineJob back = ModAttachments.MACHINE_JOB.get(reopened);
+		helper.assertTrue(back != null, "the farmer's whole trip was lost with Create's flour, and the 12 wheat he carried with it");
+		helper.assertTrue(back.carried().stream().filter(s -> s.is(Items.WHEAT)).mapToInt(ItemStack::getCount).sum() == 12,
+			"the wheat carried after the load: " + back.carried());
 		helper.succeed();
 	}
 }

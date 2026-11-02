@@ -249,7 +249,11 @@ On the villager (attachments in `registry/ModAttachments`):
 - `builder_bag`: the 27-slot bag, empty by default. A stack of an item no loaded mod has any more (a mod taken out of
   the pack) is dropped with a warning in the log and the rest of the bag loads, as a chest keeps its other slots; the
   same goes for a Hauler Golem's load, a postman's courier routes (a route keeps its ends and its other filter items)
-  and a worker's machine trip (B791, `RemovedModItemsGameTests`, `QaRemovedModItems1102BugTests`).
+  and a worker's machine trip, which keeps its machine and stage even when every stack it carried is gone (B791,
+  `RemovedModItemsGameTests`, `QaRemovedModItems1102BugTests`; QA `QaVillageVerify1102GameTests`: gone stacks first,
+  in the middle and last drop out with the others kept in order, a bag of only gone stacks loads empty and the
+  villager's other saved data stays, a named, damaged tool keeps its components, a bag saved again is the old save
+  minus the gone stacks, a golem load with several gone keys or only gone keys).
 - `builder_employer`: who the Builder works for (fields not listed here).
 
 Per finished building (36.15): `repair_ask` (`asked`, `yes`, `not_now` or `paused`; absent: never asked, as in every
@@ -563,7 +567,15 @@ cake; cave and weeping vines three long under a ceiling, and twisting vines thre
 built that long with nothing skipped; a pushed-out sticky piston is built with its head, and without its redstone it
 stands retracted). `QaBuilders1102bBugTests` (5, QA: a glow lichen scanned on three faces is listed as three lichen and
 built on no more faces than were paid, B792; a candle cake, three-long hanging vines, a pushed-out piston and a lone
-banner's preview). `QaScanRoundTripGameTests` (1, from
+banner's preview). `QaScanRebuild1102cGameTests` (9, the tester's, B793-B795: a lit cake with a red candle is paid
+once from the chest and built; kelp three tall in a glass tank, a stalactite three long, a spore blossom, hanging roots
+and a hanging sign under a ceiling are built again; a pushed-out sticky piston built turned a quarter faces south with
+its head; a lever-pushed piston is never left stuck (lever on with the head, or off and retracted); cave vines whose
+site is saved and loaded every 7 ticks still end three long). A big dripleaf's stem isn't built yet (B812).
+`QaScanRebuild1102dGameTests` (6, the tester's: a lily pad on a pool, a scaffolding tower that is part of the scan,
+four pink petals, three turtle eggs, a full water cauldron, and farmland with wheat beside a dirt path, each scanned and
+built again whole with nothing skipped and asked for as a player places them).
+`QaScanRoundTripGameTests` (1, from
 the Scan Tool's guide page: a hand-built room with two double chests lying either way, a door, a bed, a wall torch, a
 hanging lantern, an upside-down stair and a ladder, scanned with real clicks and built again a quarter turned, comes out
 block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`). `QaScanPotGameTests`

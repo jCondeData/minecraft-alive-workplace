@@ -40,11 +40,13 @@ import org.jetbrains.annotations.Nullable;
  * (B783). When its path can't take it out of the water, the golem picks the nearest bank it can climb (at most
  * {@link #CLIMB} above its feet, with room to stand), toward where it is going, swims there and pulls itself up, the
  * way a swimming player climbs out of a pool. A golem on the bank whose path ends there, short of where it is going,
- * wades in once toward it (an island in a moat whose banks are too high for a path) and climbs out on the far side.
+ * wades in once toward it (an island in a moat whose banks are too high for a path) and climbs out on the far side,
+ * but only into water it could climb back out of where it went in (B813, {@link GolemPaths}).
  *
  * <p>At work its paths keep a block clear of lava and fire (B784). Vanilla lets a path run along a lava trench's edge at
  * a small cost, and a golem is wide: it steers for the middle of its 2x2 nodes but counts a node reached half a block
- * early, so turning round a trench's end it cut the corner and its whole width slid over the lava.
+ * early, so turning round a trench's end it cut the corner and its whole width slid over the lava. Lava sunk below the
+ * ground counts too (B814, {@link GolemPaths}).
  */
 public class GolemRoleGoal extends Goal {
 	/** How often (ticks) the golem decides its next step; walking happens in between. */
@@ -111,6 +113,7 @@ public class GolemRoleGoal extends Goal {
 		damageFire = golem.getPathfindingMalus(PathType.DAMAGE_FIRE);
 		golem.setPathfindingMalus(PathType.DANGER_FIRE, -1.0F); // keeps a block clear of lava and fire (B784)
 		golem.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
+		GolemPaths.atWork(golem, true); // and of sunken lava and water too low to leave (B813, B814)
 	}
 
 	@Override
@@ -119,6 +122,7 @@ public class GolemRoleGoal extends Goal {
 		golem.getNavigation().setCanFloat(false);
 		golem.setPathfindingMalus(PathType.DANGER_FIRE, dangerFire);
 		golem.setPathfindingMalus(PathType.DAMAGE_FIRE, damageFire);
+		GolemPaths.atWork(golem, false);
 		arrived(golem);
 		EXITS.remove(golem);
 	}
@@ -262,6 +266,9 @@ public class GolemRoleGoal extends Goal {
 					BlockPos p = at.offset(dx, dy, dz);
 					if (!level.getFluidState(p).is(FluidTags.WATER) || !level.getFluidState(p.above()).isEmpty()) {
 						continue; // only the top water block
+					}
+					if (GolemPaths.tooLowToLeave(at.getY(), p.getY())) {
+						continue; // water it couldn't climb back out of here (B813)
 					}
 					double d = p.getCenter().distanceTo(goal);
 					if (d < bestDist) {

@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Hauler and Farmhand Golems: a golem at work no longer jumps into water two or more blocks below the bank, water it
+  can't climb back out of. A hauler whose nearest Storehouse is on an island in such a moat takes its load to another
+  Storehouse instead of floating in the moat with it for good (B813).
+- Hauler and Farmhand Golems: a golem at work going round a lava trench whose lava lies a block or more below the
+  ground no longer cuts the corner and falls in. Its way keeps a block clear of sunken lava and fire too (B814).
 - Scan Tool: a scanned big dripleaf on its stems is built back whole, stacked from the bottom leaf on leaf as a player
   grows one; it was built as nothing at all, every piece skipped (B812).
 - Create trains: a server stopped between the village round that points the two stations at their track and the next

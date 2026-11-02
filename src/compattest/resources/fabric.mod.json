@@ -101,6 +101,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovesOurBlocks1102eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMachinesOnOurBlocks1102eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerOnOurThings1102eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerOnOurThings1102eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMachineFetchCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateBuildsTurnedCompatTests",

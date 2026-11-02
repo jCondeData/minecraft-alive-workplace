@@ -627,6 +627,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ScanRebuildPlantsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanRebuild1102cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanRebuild1102dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanRebuild1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartWordsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.LighthousePowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LibraryPowerGameTests",

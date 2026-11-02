@@ -1094,7 +1094,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPactTrains1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClicksShops1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterCarryOn1101dGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWaresFisherMiner1101GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWaresFisherMiner1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderConfig1102GameTests"
 		]
 	},
 	"depends": {

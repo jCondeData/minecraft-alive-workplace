@@ -227,6 +227,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScanPotGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanRoundTripGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanCorners1102bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoreTwoChests1102bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchEdgesGameTests",

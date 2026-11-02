@@ -233,4 +233,22 @@ public class QaBuilders1102bBugTests implements net.fabricmc.fabric.api.gametest
 			LOGGER.info("qa 1102b piston: built pushed out with its head ({})", base);
 		}).thenSucceed();
 	}
+
+	/**
+	 * The Blueprint Table shows a preview of every build it lists (TablePreviewGameTests: no listed build with blocks
+	 * draws 0 cells). A scan of one standing banner (a block drawn by its block entity) is listed with 1 block, but its
+	 * preview has no cells, so the Table shows an empty picture.
+	 */
+	//$ gametest_ticks_batch HUGE '400' '"qa1102bBannerPreview"'
+	@GameTest(template = HUGE, timeoutTicks = 400, batch = "qa1102bBannerPreview")
+	public void aScannedLoneBannerHasAPreviewOnTheTable(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setBlock(SRC, Blocks.WHITE_BANNER);
+		ResourceLocation id = QaBuilders1102bGameTests.scan(helper, SRC, SRC);
+		var server = helper.getLevel().getServer();
+		var preview = io.github.jcondedata.aliveworkplace.table.TableServer.preview(server, id);
+		helper.assertTrue(preview.isPresent(), "the scanned banner has no preview at all");
+		helper.assertTrue(preview.get().count() > 0, "the Blueprint Table's preview of a scanned lone banner (" + id + ") has 0 cells: the Table draws an empty picture");
+		helper.succeed();
+	}
 }

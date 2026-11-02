@@ -171,6 +171,9 @@ every objective's.
   still following on day 8, not home at the broken hall, home in the sending village
   (`aFreedCarterGoesHomeToTheVillageThatStands`).
 - QA bugs (`QaLostCaravanBugTests`): B624, B625, B626.
+- QA (`QaLostCaravanHallBack1102GameTests`, B624 and B626 from the far side): a receiving hall broken and put back
+  on its own spot takes the goods and gives the standing; a carter freed on day 6 still follows on day 7 after a
+  restart.
 - QA (`QaLostCaravanGameTests`, 16 tests): the 300/301-block road edge, `lostCaravanChance` 0, 1 and its clamps, an arc in
   either village keeping the caravan on the road, both halls told and only the sender's map, the trail out of order
   and twice, the action bar's directions, marks placed at 96 blocks and not 97 and never over a player's blocks,

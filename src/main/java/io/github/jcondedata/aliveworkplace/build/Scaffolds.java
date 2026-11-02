@@ -69,6 +69,8 @@ public final class Scaffolds {
 	@Nullable
 	private Column job;
 	private int timer;
+	/** The workplaceBuildDelay rule {@link #timer} was set from (B831). */
+	private int timerRule;
 	private int walkTicks;
 	private int retryWait;
 	/** Where this builder was last put while climbing (gravity pulls it back a little each tick). */
@@ -194,6 +196,7 @@ public final class Scaffolds {
 			return;
 		}
 		put(villager, next.getY());
+		rewait(level, villager);
 		if (timer > 0) {
 			timer--;
 			return;
@@ -201,7 +204,8 @@ public final class Scaffolds {
 		if (!BuildBudget.take(level)) {
 			return;
 		}
-		timer = BuilderLevels.delay(level, villager);
+		timerRule = BuilderLevels.rule(level);
+		timer = BuilderLevels.delay(timerRule, villager);
 		if (!free) {
 			if (bag.remove(Items.SCAFFOLDING, 1) < 1) {
 				return;
@@ -476,6 +480,7 @@ public final class Scaffolds {
 			}
 			return true;
 		}
+		rewait(level, villager);
 		if (timer > 0) {
 			timer--;
 			return true;
@@ -483,7 +488,8 @@ public final class Scaffolds {
 		if (!BuildBudget.take(level)) {
 			return true;
 		}
-		timer = BuilderLevels.delay(level, villager);
+		timerRule = BuilderLevels.rule(level);
+		timer = BuilderLevels.delay(timerRule, villager);
 		remove(level, top);
 		site.removeScaffold(top);
 		if (!free) {
@@ -534,6 +540,15 @@ public final class Scaffolds {
 		ItemStack rest = SupplyContainers.insert(level, chests, new ItemStack(Items.SCAFFOLDING, taken));
 		if (!rest.isEmpty()) {
 			Builders.dropNear(level, at, rest);
+		}
+	}
+
+	/** B831: the rule lowered mid-wait shortens the wait now, not after the builder's work restarts. */
+	private void rewait(ServerLevel level, Villager villager) {
+		if (timer > 0) {
+			int rule = BuilderLevels.rule(level);
+			timer = BuilderLevels.rewait(timer, timerRule, rule, () -> BuilderLevels.delay(rule, villager));
+			timerRule = rule;
 		}
 	}
 }

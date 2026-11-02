@@ -105,6 +105,8 @@ public class BuilderWork extends Behavior<Villager> {
 	private static final double INSIDE_MARGIN = 0.05;
 
 	private int workTimer;
+	/** The workplaceBuildDelay rule {@link #workTimer} was set from (B831). */
+	private int workTimerRule;
 	/** This builder's bag, this tick. */
 	@Nullable
 	private BuilderBag bagNow;
@@ -550,6 +552,12 @@ public class BuilderWork extends Behavior<Villager> {
 
 		// 4. Do the work, one block per workplaceBuildDelay ticks.
 		if (workTimer > 0) {
+			// B831: the rule lowered mid-wait shortens the wait now, not after his work restarts
+			int rule = BuilderLevels.rule(level);
+			workTimer = BuilderLevels.rewait(workTimer, workTimerRule, rule, () -> BuilderLevels.delay(rule, villager) - 1);
+			workTimerRule = rule;
+		}
+		if (workTimer > 0) {
 			workTimer--;
 			return;
 		}
@@ -557,7 +565,8 @@ public class BuilderWork extends Behavior<Villager> {
 			return; // 25.3: the level's block changes for this tick are spent; try again next tick
 		}
 		// B515: this tick is the first of the delay, so the next block comes exactly delay ticks later (not delay + 1)
-		workTimer = Math.max(0, BuilderLevels.delay(level, villager) - 1);
+		workTimerRule = BuilderLevels.rule(level);
+		workTimer = Math.max(0, BuilderLevels.delay(workTimerRule, villager) - 1);
 		if (action == Action.BREAK && site.stage() == BuildPlan.Stage.DECONSTRUCT) {
 			takeDown(level, villager, site, bag, bench, step);
 		} else if (action == Action.BREAK) {

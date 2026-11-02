@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Builders: lowering `/gamerule workplaceBuildDelay` in the middle of a build takes effect at once; a Builder (or a
+  Fisherman waiting for a bite) no longer waits out the old, longer delay until his work restarts (B831).
 - Miners: in a village with a kitchen (a smoker with a chest beside it), the rock and finds a Miner brings home go
   into the Storehouse again, not into the kitchen's chest; the kitchen gets them only when the Storehouse is full (B834).
 - Desert raids: a husk that fell beside the Pharaoh in the last seconds of a raid no longer gets up after the raid is

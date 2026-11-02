@@ -254,6 +254,8 @@ public class QaBuilders1028GameTests implements net.fabricmc.fabric.api.gametest
 	private static final BlockPos STOREHOUSE = new BlockPos(14, 2, 14);
 	private static final BlockPos STORE_CHEST = new BlockPos(14, 2, 12);
 	private static final BlockPos STORE_BARREL = new BlockPos(12, 2, 14);
+	private static final BlockPos KITCHEN = new BlockPos(14, 2, 2);
+	private static final BlockPos KITCHEN_CHEST = new BlockPos(14, 2, 3);
 
 	private static long stored(GameTestHelper helper, Item item) {
 		long n = 0;
@@ -280,10 +282,24 @@ public class QaBuilders1028GameTests implements net.fabricmc.fabric.api.gametest
 	//$ gametest_ticks_batch BUILD '5000' '"qaB229OwnHall"'
 	@GameTest(template = BUILD, timeoutTicks = 5000, batch = "qaB229OwnHall")
 	public void qaB229WithItsOwnHallEveryDugBlockReachesTheHallsStorehouse(GameTestHelper helper) {
-		minerToStorehouse(helper, true, 0);
+		minerToStorehouse(helper, true, 0, false);
+	}
+
+	/**
+	 * B834: the village also has a kitchen (a smoker with its chest) in the hall's reach, as an earlier test left one
+	 * beside this area in a full run: the Miner's rock still goes to the Storehouse, not into the kitchen's chest.
+	 */
+	//$ gametest_ticks_batch BUILD '5000' '"qaB834Kitchen"'
+	@GameTest(template = BUILD, timeoutTicks = 5000, batch = "qaB834Kitchen")
+	public void qaB834AKitchenInTheHallsReachDoesntTakeTheMinersFinds(GameTestHelper helper) {
+		minerToStorehouse(helper, true, 0, true);
 	}
 
 	private static void minerToStorehouse(GameTestHelper helper, boolean hall, int wanted) {
+		minerToStorehouse(helper, hall, wanted, false);
+	}
+
+	private static void minerToStorehouse(GameTestHelper helper, boolean hall, int wanted, boolean kitchen) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
 		Leftovers.storehouses(helper);
@@ -305,6 +321,11 @@ public class QaBuilders1028GameTests implements net.fabricmc.fabric.api.gametest
 			helper.setBlock(new BlockPos(2, 2, 14), ModBlocks.VILLAGE_HALL);
 		}
 		helper.setBlock(STOREHOUSE, ModBlocks.STOREHOUSE);
+		if (kitchen) {
+			// 12 blocks from the bench and from the Storehouse: neither the Miner's chest nor the Storehouse's
+			helper.setBlock(KITCHEN, Blocks.SMOKER);
+			helper.setBlock(KITCHEN_CHEST, Blocks.CHEST);
+		}
 		helper.setBlock(STORE_CHEST, Blocks.CHEST);
 		helper.setBlock(STORE_BARREL, Blocks.BARREL);
 		helper.setBlock(BENCH, Blocks.BLAST_FURNACE);
@@ -355,8 +376,10 @@ public class QaBuilders1028GameTests implements net.fabricmc.fabric.api.gametest
 						ground += drop.getItem().getCount();
 					}
 				}
+				long cooked = kitchen ? ((Container) helper.getBlockEntity(KITCHEN_CHEST)).countItem(e.getKey()) : 0;
 				helper.assertTrue(have == e.getValue(), "the Storehouse holds " + have + " " + e.getKey() + ", dug " + e.getValue()
-					+ " (bag " + bag + ", on the ground " + ground + ", reloads " + reloads[0] + ", hall " + hall + ")");
+					+ " (bag " + bag + ", on the ground " + ground + ", reloads " + reloads[0] + ", hall " + hall
+					+ (kitchen ? ", in the kitchen's chest " + cooked : "") + ")");
 			}
 			LoggerHolder.LOG.info("[QA B229] every dug block is in the Storehouse (hall {}, {} reloads): {}", hall, reloads[0], expect);
 		});

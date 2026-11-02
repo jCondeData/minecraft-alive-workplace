@@ -439,7 +439,16 @@ public final class Miners {
 
 	/** The village Storehouse's chests (or the Village Hall's store) near {@code bench}, other than the Miner's own. */
 	private static List<BlockPos> villageStore(ServerLevel level, List<BlockPos> supplies, BlockPos bench) {
-		return io.github.jcondedata.aliveworkplace.craft.LuxuryWork.store(level, bench).stream().filter(c -> !supplies.contains(c)).toList();
+		List<BlockPos> store = io.github.jcondedata.aliveworkplace.craft.LuxuryWork.store(level, bench);
+		java.util.Optional<BlockPos> hall = io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, bench);
+		// B834: a hall's store lists its kitchens' chests first (smokers, for meals); the rock and the finds go to the
+		// Storehouse's chests first, and into a kitchen's only when those are full (or the village has no Storehouse).
+		java.util.Set<BlockPos> ordered = new java.util.LinkedHashSet<>();
+		if (hall.isPresent()) {
+			ordered.addAll(io.github.jcondedata.aliveworkplace.hall.VillageNeeds.storehouses(level, hall.get()));
+		}
+		ordered.addAll(store);
+		return ordered.stream().filter(c -> !supplies.contains(c)).toList();
 	}
 
 	static void store(ServerLevel level, List<BlockPos> supplies, BlockPos near, ItemStack stack) {

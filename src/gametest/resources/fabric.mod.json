@@ -903,6 +903,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaZoneRepairsPageBugTests",
 			"io.github.jcondedata.aliveworkplace.test.ZoneVillageBuildingsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReach1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFurnishedMidJob1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReachEdgeUpkeepBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReachRepairs1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGameTests",

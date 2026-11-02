@@ -317,4 +317,96 @@ public class QaCreateMachinesProtection1102CompatTests implements FabricGameTest
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * A drill on a rotating contraption: a stranger's Mechanical Bearing one step outside the protected village (x = 8),
+	 * facing up and turned by a creative motor below it, with a Mechanical Drill facing west on top as its contraption.
+	 * Every block stands outside, but as the bearing turns the drill's working face sweeps a circle around it, through the
+	 * village's edge column (x = 7) at the drill's height, where an oak plank stands.
+	 */
+	private static final BlockPos BEARING = EDGE.east();
+	private static final BlockPos SWEPT = EDGE.above();
+
+	private static void bearingDrill(GameTestHelper helper) {
+		helper.setBlock(BEARING.below(), MechanicCompatTests.with(MechanicCompatTests.create("creative_motor").defaultBlockState(), "facing", "up"));
+		helper.setBlock(BEARING.above(), MechanicCompatTests.with(MechanicCompatTests.create("mechanical_drill").defaultBlockState(), "facing", "west"));
+		helper.setBlock(BEARING, MechanicCompatTests.with(MechanicCompatTests.create("mechanical_bearing").defaultBlockState(), "facing", "up"));
+	}
+
+	/** A stranger's Drill on a Mechanical Bearing outside a protected village can't sweep through its edge. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_bearing_drill_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_bearing_drill_protected")
+	public void aDrillOnABearingOutsideAProtectedVillageCantSweepItsEdge(GameTestHelper helper) {
+		hall(helper, true);
+		helper.setBlock(SWEPT, Blocks.OAK_PLANKS);
+		bearingDrill(helper);
+		helper.runAfterDelay(300, () -> {
+			float turning = speed(helper, BEARING);
+			boolean kept = helper.getBlockState(SWEPT).is(Blocks.OAK_PLANKS);
+			undo(helper);
+			helper.assertTrue(turning != 0, "the bearing never turned, so the test proves nothing");
+			helper.assertTrue(kept, "a stranger's Drill on a Mechanical Bearing outside the protected village broke its edge block at "
+				+ helper.absolutePos(SWEPT) + " (the bearing at " + helper.absolutePos(BEARING) + ", speed " + turning + ")");
+			helper.succeed();
+		});
+	}
+
+	/** The control for the bearing drill: the hall unprotected, the same sweep breaks the edge block. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_bearing_drill_unprotected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_bearing_drill_unprotected")
+	public void aDrillOnABearingOutsideAnUnprotectedVillageSweepsItsEdge(GameTestHelper helper) {
+		hall(helper, false);
+		helper.setBlock(SWEPT, Blocks.OAK_PLANKS);
+		bearingDrill(helper);
+		helper.runAfterDelay(300, () -> {
+			boolean broken = !helper.getBlockState(SWEPT).is(Blocks.OAK_PLANKS);
+			float turning = speed(helper, BEARING);
+			undo(helper);
+			helper.assertTrue(broken, "the bearing's drill didn't break the unprotected edge block in 300 ticks (bearing speed " + turning + ")");
+			helper.succeed();
+		});
+	}
+
+	/** A Mechanical Saw facing west on the head of a stranger's Mechanical Piston two steps outside the village. */
+	private static void pistonSaw(GameTestHelper helper) {
+		BlockPos piston = EDGE.east(2);
+		westPiston(helper, piston);
+		helper.setBlock(piston.west(), MechanicCompatTests.with(MechanicCompatTests.create("mechanical_saw").defaultBlockState(), "facing", "west"));
+	}
+
+	/** A stranger's piston-carried Saw outside a protected village can't cut its edge log. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_piston_saw_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_piston_saw_protected")
+	public void aSawOnAPistonOutsideAProtectedVillageCantCutItsEdge(GameTestHelper helper) {
+		hall(helper, true);
+		helper.setBlock(EDGE, Blocks.OAK_LOG);
+		pistonSaw(helper);
+		helper.runAfterDelay(300, () -> {
+			float turning = speed(helper, EDGE.east(2));
+			String row = helper.getBlockState(EDGE) + " / " + helper.getBlockState(EDGE.east()) + " / " + helper.getBlockState(EDGE.east(2));
+			boolean kept = helper.getBlockState(EDGE).is(Blocks.OAK_LOG);
+			undo(helper);
+			helper.assertTrue(turning != 0, "the piston never turned, so the test proves nothing");
+			helper.assertTrue(kept, "a stranger's Saw carried by a Mechanical Piston outside the protected village cut its edge log: the row"
+				+ " outward reads " + row);
+			helper.succeed();
+		});
+	}
+
+	/** The control for the piston-carried saw: the hall unprotected, the same saw cuts the edge log. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_piston_saw_unprotected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_piston_saw_unprotected")
+	public void aSawOnAPistonOutsideAnUnprotectedVillageCutsItsEdge(GameTestHelper helper) {
+		hall(helper, false);
+		helper.setBlock(EDGE, Blocks.OAK_LOG);
+		pistonSaw(helper);
+		helper.runAfterDelay(300, () -> {
+			boolean cut = !helper.getBlockState(EDGE).is(Blocks.OAK_LOG);
+			String row = helper.getBlockState(EDGE) + " / " + helper.getBlockState(EDGE.east()) + " / " + helper.getBlockState(EDGE.east(2));
+			float turning = speed(helper, EDGE.east(2));
+			undo(helper);
+			helper.assertTrue(cut, "the piston-carried saw didn't cut the unprotected edge log (piston speed " + turning + "): " + row);
+			helper.succeed();
+		});
+	}
 }

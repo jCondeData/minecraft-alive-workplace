@@ -1062,6 +1062,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWagonBedCount1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRenewalTakeDown1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaElderPace1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFisherFurnace1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCarpenterFullStore1101cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayPhysician1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.B781GameTests",

@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Piglin incursions: gold a piglin carried off a village chest no longer vanishes when an operator calls the raid off
+  (`/workplace threat end` or `clear`); it falls where the piglin stood (B840).
 - Builders: a build under a sand dune or a gravel cap is no longer called done with its rooms full of the sand or
   gravel that fell in while the ground was cleared; the builder waits for it to land and digs it out (B837).
 - Builders: leveling the ground round a build no longer digs out the ground under the build next door, so a neighbor

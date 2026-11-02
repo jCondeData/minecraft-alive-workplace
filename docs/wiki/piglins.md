@@ -30,6 +30,8 @@ Roadmap items: 32.10, B829
   most**, carried on its head where you can see it. **Kill it and it drops the stack.** If it is still alive at dawn
   it carries the gold home, into the outpost's hoard, and the **siege report** the next morning says how much was
   carried off ("... 64 gold was carried off from the village's chests."), or the chronicle when there was no siege.
+  When an operator calls the raid off (`/workplace threat end` or `clear`), nothing is carried off: what each piglin
+  held falls where it stood (B840).
 - **The Warlord's fall.** Kill him and the outpost is broken: its **portal goes out**, and every piglin and hoglin of
   his band left in the Overworld, at the outpost and raiding, **turns zombified** at once (zombified piglins and
   zoglins, dazed for a moment). Those that were raiding stay in the raid until it ends.
@@ -57,7 +59,8 @@ Roadmap items: 32.10, B829
   carries nothing looks within 4 blocks for a storage block inside the village's area and takes one stack of gold out
   of it through the loader's storage access. What it carries is kept on it (the attachment `plunder`, saved with the
   mob). A new tactic hook, `leave`, is called for each raider leaving at the end of its hours: a plunderer's stack goes
-  into the storage block of its lair nearest the lair's middle and is counted for the hall.
+  into the storage block of its lair nearest the lair's middle and is counted for the hall. A raid called off
+  (`VillageRaids.callOff`) runs no `leave`: each raider's stack is dropped where it stands first (`Plunder.dropCarried`).
 - **A captain's `zombifies_band`** and **a lair's `portal`**: when the lair is broken (its captain killed) its portal
   blocks go, and the band (at the lair, and its raiders out in the village) is converted as the game converts
   piglins and hoglins, before the rest is sent away.
@@ -133,6 +136,8 @@ Roadmap items: 32.10, B829
 - `QaPortalThreatBugTests.aRaiderRidingAChickenStaysOutOfAPortal`, `QaPortalThreatBugTests.aBanditOfTheFortStaysOutOfAPortal`:
   a raider riding a chicken and one of the Bandit King's fort's men stay out of a lit portal, while a plain chicken and
   a plain pillager go through (B375).
+- `QaPlunderCalledOff1102dBugTests.aRaidEndedByTheOperatorDoesNotMakeThePlunderedGoldVanish`: a piglin carrying 12
+  gold ingots, then `/workplace threat end`: the 12 ingots are on the ground in the village, not gone (B840).
 - Showcase scene `piglins`: the outpost, a raid stepping out of its portal, a piglin carrying off a stack of gold.
 - `QaPiglinRaidGameTests.aRaidingHoglinGoesForAVillager`, `QaPiglinRaidGameTests.aRaidingPiglinBruteGoesForAVillager`:
   a raiding hoglin and a raiding brute, penned with a villager, strike it themselves.

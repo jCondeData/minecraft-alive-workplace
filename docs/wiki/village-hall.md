@@ -219,7 +219,8 @@ never shows, and a chest by none of those isn't counted (B153, `QaHealerFoodFire
 **Growth.** At most once a day, with a free bed, 16 meals in the store and wellbeing of 50% or more, the two
 villagers nearest the free bed have a baby (the family eats 8 meals), up to `villageGrowthCap`. The baby takes that
 bed at once (B206), so a second birth, an inn's traveler or vanilla breeding can't count the same bed free: a village
-with N free beds takes in at most N newcomers. With no bed free the Beds button says **The village is full: nobody new
+with N free beds takes in at most N newcomers, whichever way they come; a traveler who moves on frees the bed for the
+next one. With no bed free the Beds button says **The village is full: nobody new
 moves in until a bed is free**.
 
 **Wagon beds are no homes** (B206, B207, `camp/CampBeds`). The bedrolls of a Settler's Wagon's camp or a Colony Camp

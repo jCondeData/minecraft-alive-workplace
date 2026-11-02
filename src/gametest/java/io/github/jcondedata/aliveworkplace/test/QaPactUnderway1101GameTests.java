@@ -60,6 +60,10 @@ public class QaPactUnderway1101GameTests implements FabricGameTest {
 			helper.setBlock(chestAt, Blocks.AIR);
 			helper.setBlock(store, Blocks.AIR);
 		});
+		// an earlier batch's Storehouse or chest left standing outside its own area (never cleared) is one of village 1's
+		// stores too: the caravan unloaded into it, not this test's chest ("room for one bundle (20), but 0 were unloaded", B804)
+		Leftovers.storehouses(helper);
+		Leftovers.stores(helper, helper.absolutePos(store));
 		helper.setBlock(store, ModBlocks.STOREHOUSE);
 		helper.setBlock(chestAt, Blocks.CHEST);
 		TradeGoods.Good good = TradeGoods.all().get(0);

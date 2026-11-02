@@ -47,11 +47,18 @@ import org.jetbrains.annotations.Nullable;
  * a small cost, and a golem is wide: it steers for the middle of its 2x2 nodes but counts a node reached half a block
  * early, so turning round a trench's end it cut the corner and its whole width slid over the lava. Lava sunk below the
  * ground counts too (B814, {@link GolemPaths}).
+ *
+ * <p>At work its path searches reach as far as a villager's, so it finds the way round a long wall or trench (B815,
+ * {@link GolemPaths}); a search that finds no way to the target isn't tried again for {@link #REPATH} ticks.
  */
 public class GolemRoleGoal extends Goal {
 	/** How often (ticks) the golem decides its next step; walking happens in between. */
 	public static final int EVERY = 5;
 	private static final double SPEED = 1.0;
+	/** Ticks a golem whose search found no way to its target waits before searching for it again (B815). */
+	public static final int REPATH = 20;
+	/** Each walking golem's last search that found no way: {target as a long, game time it may search again}. */
+	private static final Map<IronGolem, long[]> NO_WAY = Collections.synchronizedMap(new WeakHashMap<>());
 	/**
 	 * How long (ticks) a golem may walk without getting a block farther before it squeezes through: its path runs
 	 * between mobs that stand still and push it back (villagers with no AI, 2 blocks apart, are a golem's width), and
@@ -159,7 +166,17 @@ public class GolemRoleGoal extends Goal {
 			return false;
 		}
 		if (golem.getNavigation().isDone() || !pos.equals(golem.getNavigation().getTargetPos())) {
-			golem.getNavigation().moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, SPEED);
+			long now = golem.level().getGameTime();
+			long[] noWay = NO_WAY.get(golem);
+			if (noWay == null || noWay[0] != pos.asLong() || now >= noWay[1]) {
+				golem.getNavigation().moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, SPEED);
+				Path path = golem.getNavigation().getPath();
+				if (path != null && !path.canReach()) {
+					NO_WAY.put(golem, new long[]{pos.asLong(), now + REPATH}); // a wide search found no way: not again at once (B815)
+				} else {
+					NO_WAY.remove(golem);
+				}
+			}
 		}
 		headway(golem);
 		return false;
@@ -194,6 +211,7 @@ public class GolemRoleGoal extends Goal {
 		WALK_TARGETS.remove(golem);
 		WADED.remove(golem);
 		CLIMBED.remove(golem);
+		NO_WAY.remove(golem);
 	}
 
 	/**

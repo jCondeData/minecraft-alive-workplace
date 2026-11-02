@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Hauler and Farmhand Golems: a golem at work finds the way round a long wall or lava trench, such as a village wall
+  with its gate off to the side. A hauler whose Storehouse lay behind a wall 17 blocks long walked up to the wall, stood
+  there and gave the Storehouse up with its load; it now looks as far for a way as a villager does (B815).
 - Hauler and Farmhand Golems: a golem at work no longer jumps into water two or more blocks below the bank, water it
   can't climb back out of. A hauler whose nearest Storehouse is on an island in such a moat takes its load to another
   Storehouse instead of floating in the moat with it for good (B813).

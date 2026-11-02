@@ -40,7 +40,8 @@ golem's role. Sneak-right-click them with an empty hand to choose which comes ne
   same way, and it fetches from the next one. At work it swims, so a moat or a river never traps it: it crosses, or
   climbs back out at the bank, even one standing a block above the water. Water lower than that, two blocks or more
   below the bank, it won't jump into, since it couldn't climb back out: it finds another way or another Storehouse. It
-  keeps a block clear of lava and fire, lava sunk below the ground too.
+  keeps a block clear of lava and fire, lava sunk below the ground too, and finds the way round a long wall or lava
+  trench to a gate or end it can pass.
 - **Farmhand Golem** (an iron hoe): tends the fields and carries the harvest in.
 - **Wall Sentry** (a shield): a tougher golem that holds a spot on the wall. Sneak-right-click it with a
   [Patrol Map](patrol-map.md) to give it its post.

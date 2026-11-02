@@ -16,8 +16,8 @@ import net.minecraft.world.level.block.Blocks;
 /**
  * Bug tests (qa-lane-c-1102-0655) from verifying B722, B783 and B784: corners their fixes miss. Water two blocks below
  * its banks still traps a Hauler Golem with its load (B722's "doesn't path into water it can't leave"); a two-wide lava
- * trench whose surface is a block below the ground (B784's own shape) still burns it (B813, B814). The long-detour tests
- * (B815) stay on tests/hauler-water-1102 until that bug is fixed.
+ * trench whose surface is a block below the ground (B784's own shape) still burns it (B813, B814); and a loaded hauler
+ * gives up a Storehouse it could reach round a 17-long wall or trench (B815).
  */
 public class QaHaulerWaterVerify1102BugTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 
@@ -62,5 +62,22 @@ public class QaHaulerWaterVerify1102BugTests implements net.fabricmc.fabric.api.
 	@GameTest(template = HUGE, timeoutTicks = 1600, batch = "qaVerify1102LavaLowB")
 	public void aHaulerGoesRoundATwoWideLavaTrenchABlockBelowTheGroundCopy1(GameTestHelper helper) {
 		lavaRun(helper, 2, 1, 7, 17, "a two-wide lava trench a block below the ground (copy 1)");
+	}
+
+	/**
+	 * A stone wall two high and 17 long (z 4 to 20) stands between the loaded hauler and its only Storehouse, 15 blocks
+	 * off; the way round is open on both ends. The golem must go round and store the load, not give the Storehouse up.
+	 */
+	//$ gametest_ticks_batch HUGE '1600' '"qaVerify1102LongWall"'
+	@GameTest(template = HUGE, timeoutTicks = 1600, batch = "qaVerify1102LongWall")
+	public void aHaulerGoesRoundALongStoneWall(GameTestHelper helper) {
+		lavaRun(helper, 1, -1, "a 17-long stone wall");
+	}
+
+	/** The same with a one-wide lava trench level with the ground, 17 long. */
+	//$ gametest_ticks_batch HUGE '1600' '"qaVerify1102LongLava"'
+	@GameTest(template = HUGE, timeoutTicks = 1600, batch = "qaVerify1102LongLava")
+	public void aHaulerGoesRoundALongOneWideLavaTrench(GameTestHelper helper) {
+		lavaRun(helper, 1, 0, "a one-wide lava trench, 17 long");
 	}
 }

@@ -27,10 +27,22 @@ import net.minecraft.world.level.pathfinder.NodeEvaluator;
  * so water whose surface is two blocks below the bank is water it can't leave there: it dropped in after a Storehouse on
  * an island, floated by the banks and gave up every Storehouse with its load. Now its path never drops into water it
  * couldn't climb back out of at that spot; it goes in where the bank is low enough, or not at all.
+ *
+ * <p>Long detours (B815). An iron golem's follow range is 16, and vanilla's path search walks no farther than that from
+ * where it starts and visits at most 16 nodes a block of it: a Storehouse 15 blocks off behind a wall or lava trench 17
+ * long is some 25 blocks of walking round its end, so every search ended at the obstacle (the nearest it got) and the
+ * golem stood there until it gave the Storehouse up. A working golem's searches reach {@link #RANGE} blocks with
+ * {@link #NODES} times the nodes, as far as a villager with a job paths in one go ({@code PathNavigationMixin}); a walk
+ * whose search found no way waits {@link GolemRoleGoal#REPATH} ticks before searching again, so a golem facing a target
+ * it truly can't reach doesn't search every few ticks.
  */
 public final class GolemPaths {
 	/** How far below a golem's footing (blocks) lava still counts as beside it: as far as a path drops, and one more. */
 	static final int SUNKEN = 4;
+	/** How far (blocks) a working golem's path search reaches: a villager's follow range, three times a golem's (B815). */
+	public static final float RANGE = 48.0F;
+	/** How many times vanilla's node budget (16 a block of follow range) a working golem's search may visit (B815). */
+	public static final float NODES = 3.0F;
 	/** Golems at work (whose paths follow these rules). */
 	private static final Set<IronGolem> AT_WORK = Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
 

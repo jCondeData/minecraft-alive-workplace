@@ -604,6 +604,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataCollections1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataCollections1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataOneBadEntry1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSavedDataOneBadEntry1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.AreaJobWorkBlockGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DeliveryNoteProtectionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShopNeighboursGameTests",
@@ -990,6 +991,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSupplyReachEdge1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerUnreachable1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerMoatBug1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaHaulerWater1101dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHaulerWater1101dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShoppingPlurals1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShoppingPluralsBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallWordsAtExtremes1031GameTests",
@@ -1041,6 +1044,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillageHomesLife1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeace1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeaceBugs1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLairBlipSentryIron1101dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPacts1101BugTests",
 			"io.github.jcondedata.aliveworkplace.test.B768GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGraves1101GameTests",
@@ -1053,6 +1057,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaToolsDisplayRestart1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactTrains1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClicksShops1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCarpenterCarryOn1101dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTradeDisplayWaresFisherMiner1101GameTests"
 		]
 	},

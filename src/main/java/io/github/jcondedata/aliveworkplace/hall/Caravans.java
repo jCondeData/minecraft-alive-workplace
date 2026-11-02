@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
@@ -912,47 +913,51 @@ public final class Caravans {
 			Data data = new Data();
 			ListTag list = Nbt.getList(tag, "villages", Tag.TAG_COMPOUND);
 			for (int i = 0; i < list.size(); i++) {
-				CompoundTag t = Nbt.compoundAt(list, i);
-				BlockPos hall = BlockPos.of(Nbt.getLong(t, "hall"));
-				Component name = Component.Serializer.fromJson(Nbt.getString(t, "name"), registries);
-				List<Want> wants = new ArrayList<>();
-				ListTag wl = Nbt.getList(t, "wants", Tag.TAG_COMPOUND);
-				for (int j = 0; j < wl.size(); j++) {
-					ResourceLocation id = ResourceLocation.tryParse(Nbt.getString(Nbt.compoundAt(wl, j), "item"));
-					if (id != null && BuiltInRegistries.ITEM.containsKey(id)) {
-						wants.add(new Want(Lookup.value(BuiltInRegistries.ITEM, id), Nbt.getInt(Nbt.compoundAt(wl, j), "count")));
+				try {
+					CompoundTag t = Nbt.compoundAt(list, i);
+					BlockPos hall = BlockPos.of(Nbt.getLong(t, "hall"));
+					Component name = Component.Serializer.fromJson(Nbt.getString(t, "name"), registries);
+					List<Want> wants = new ArrayList<>();
+					ListTag wl = Nbt.getList(t, "wants", Tag.TAG_COMPOUND);
+					for (int j = 0; j < wl.size(); j++) {
+						ResourceLocation id = ResourceLocation.tryParse(Nbt.getString(Nbt.compoundAt(wl, j), "item"));
+						if (id != null && BuiltInRegistries.ITEM.containsKey(id)) {
+							wants.add(new Want(Lookup.value(BuiltInRegistries.ITEM, id), Nbt.getInt(Nbt.compoundAt(wl, j), "count")));
+						}
 					}
-				}
-				data.villages.put(hall, new Village(hall, name == null ? Component.empty() : name, List.copyOf(wants), Nbt.getLong(t, "lastCaravanDay")));
-				ListTag rl = Nbt.getList(t, "routes", Tag.TAG_COMPOUND);
-				for (int j = 0; j < rl.size(); j++) {
-					data.routes.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(Nbt.getLong(Nbt.compoundAt(rl, j), "to")));
-				}
-				ListTag hl = Nbt.getList(t, "halves", Tag.TAG_COMPOUND); // 27.17; older saves have none
-				for (int j = 0; j < hl.size(); j++) {
-					CompoundTag ht = Nbt.compoundAt(hl, j);
-					data.halves.computeIfAbsent(hall, k -> new LinkedHashMap<>()).put(BlockPos.of(Nbt.getLong(ht, "to")),
-						new Half(BlockPos.of(Nbt.getLong(ht, "end")), Nbt.getBoolean(ht, "finished"), Nbt.getBoolean(ht, "milestone"), Nbt.getBoolean(ht, "noted")));
-				}
-				CompoundTag lt = Nbt.getCompound(t, "leader"); // 28.17; older saves have none
-				if (lt.hasUUID("id")) {
-					data.leaders.put(hall, new Leader(lt.getUUID("id"), Nbt.getString(lt, "name"), Nbt.getInt(lt, "tier"), Nbt.getInt(lt, "xp"),
-						Nbt.getBoolean(lt, "leader")));
-				}
-				io.github.jcondedata.aliveworkplace.trade.Market market = io.github.jcondedata.aliveworkplace.trade.Market.load(t); // 33.2; older saves have none
-				if (!market.isEmpty()) {
-					data.markets.put(hall, market);
-				}
-				net.minecraft.world.item.DyeColor colour = net.minecraft.world.item.DyeColor.byName(Nbt.getString(t, "colour"), null); // 33.7; older saves have none
-				if (colour != null) {
-					data.colours.put(hall, colour);
-				}
-				long[] stationsHere = t.getLongArray("stations"); // 39.7; older saves have none
-				if (stationsHere.length > 0) {
-					data.stations.put(hall, java.util.Arrays.stream(stationsHere).mapToObj(BlockPos::of).toList());
-				}
-				for (long other : t.getLongArray("tracks")) { // 39.7; older saves have none
-					data.tracks.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(other));
+					data.villages.put(hall, new Village(hall, name == null ? Component.empty() : name, List.copyOf(wants), Nbt.getLong(t, "lastCaravanDay")));
+					ListTag rl = Nbt.getList(t, "routes", Tag.TAG_COMPOUND);
+					for (int j = 0; j < rl.size(); j++) {
+						data.routes.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(Nbt.getLong(Nbt.compoundAt(rl, j), "to")));
+					}
+					ListTag hl = Nbt.getList(t, "halves", Tag.TAG_COMPOUND); // 27.17; older saves have none
+					for (int j = 0; j < hl.size(); j++) {
+						CompoundTag ht = Nbt.compoundAt(hl, j);
+						data.halves.computeIfAbsent(hall, k -> new LinkedHashMap<>()).put(BlockPos.of(Nbt.getLong(ht, "to")),
+							new Half(BlockPos.of(Nbt.getLong(ht, "end")), Nbt.getBoolean(ht, "finished"), Nbt.getBoolean(ht, "milestone"), Nbt.getBoolean(ht, "noted")));
+					}
+					CompoundTag lt = Nbt.getCompound(t, "leader"); // 28.17; older saves have none
+					if (lt.hasUUID("id")) {
+						data.leaders.put(hall, new Leader(lt.getUUID("id"), Nbt.getString(lt, "name"), Nbt.getInt(lt, "tier"), Nbt.getInt(lt, "xp"),
+							Nbt.getBoolean(lt, "leader")));
+					}
+					io.github.jcondedata.aliveworkplace.trade.Market market = io.github.jcondedata.aliveworkplace.trade.Market.load(t); // 33.2; older saves have none
+					if (!market.isEmpty()) {
+						data.markets.put(hall, market);
+					}
+					net.minecraft.world.item.DyeColor colour = net.minecraft.world.item.DyeColor.byName(Nbt.getString(t, "colour"), null); // 33.7; older saves have none
+					if (colour != null) {
+						data.colours.put(hall, colour);
+					}
+					long[] stationsHere = t.getLongArray("stations"); // 39.7; older saves have none
+					if (stationsHere.length > 0) {
+						data.stations.put(hall, java.util.Arrays.stream(stationsHere).mapToObj(BlockPos::of).toList());
+					}
+					for (long other : t.getLongArray("tracks")) { // 39.7; older saves have none
+						data.tracks.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(other));
+					}
+				} catch (Exception e) {
+					AliveWorkplace.LOG.warn("Skipping a saved caravan village: {}", e.getMessage());
 				}
 			}
 			ListTag road = Nbt.getList(tag, "road", Tag.TAG_COMPOUND);
@@ -982,12 +987,16 @@ public final class Caravans {
 			}
 			ListTag sold = Nbt.getList(tag, "sales", Tag.TAG_COMPOUND); // 33.6; older saves have none
 			for (int i = 0; i < sold.size(); i++) {
-				CompoundTag t = Nbt.compoundAt(sold, i);
-				ResourceLocation good = ResourceLocation.tryParse(Nbt.getString(t, "good"));
-				Component buyer = Component.Serializer.fromJson(Nbt.getString(t, "buyer"), registries);
-				if (good != null) {
-					data.sales.add(new Sale(BlockPos.of(Nbt.getLong(t, "seller")), buyer == null ? Component.empty() : buyer, good, Nbt.getInt(t, "items"),
-						Nbt.getInt(t, "cents"), Nbt.getLong(t, "day"), Nbt.has(t, "buyerHall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(t, "buyerHall")) : null)); // buyerHall: B430
+				try {
+					CompoundTag t = Nbt.compoundAt(sold, i);
+					ResourceLocation good = ResourceLocation.tryParse(Nbt.getString(t, "good"));
+					Component buyer = Component.Serializer.fromJson(Nbt.getString(t, "buyer"), registries);
+					if (good != null) {
+						data.sales.add(new Sale(BlockPos.of(Nbt.getLong(t, "seller")), buyer == null ? Component.empty() : buyer, good, Nbt.getInt(t, "items"),
+							Nbt.getInt(t, "cents"), Nbt.getLong(t, "day"), Nbt.has(t, "buyerHall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(t, "buyerHall")) : null)); // buyerHall: B430
+					}
+				} catch (Exception e) {
+					AliveWorkplace.LOG.warn("Skipping a saved caravan sale: {}", e.getMessage());
 				}
 			}
 			ListTag owed = Nbt.getList(tag, "refunds", Tag.TAG_COMPOUND); // B430; older saves have none

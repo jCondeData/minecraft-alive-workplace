@@ -996,7 +996,11 @@ public final class Bounties implements ResourceManagerReloadListener {
 			}
 			ListTag c = Nbt.getList(tag, "claimed", Tag.TAG_STRING);
 			for (int i = 0; i < c.size(); i++) {
-				data.claimed.add(UUID.fromString(Nbt.stringAt(c, i)));
+				try {
+					data.claimed.add(UUID.fromString(Nbt.stringAt(c, i)));
+				} catch (IllegalArgumentException e) {
+					AliveWorkplace.LOG.warn("Skipping a saved claimed bounty id that isn't one: {}", e.getMessage());
+				}
 			}
 			for (long p : Nbt.getLongArray(tag, "boards")) {
 				data.boards.add(BlockPos.of(p));

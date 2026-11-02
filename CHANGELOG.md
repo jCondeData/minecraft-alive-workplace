@@ -16,7 +16,18 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.3 — 2026-11-01
+
 ### Fixed
+- Hauler Golems: a hauler in a pool or moat whose water lies a block below the banks (not filled to the brim) no
+  longer floats by the bank for good with its load. It swims to the bank nearest where it is going and climbs out, and
+  one whose only Storehouse is on an island in such a moat wades across and climbs up onto it (B783).
+- Hauler and Farmhand Golems: a golem at work going round a lava trench no longer cuts the corner and slips into the
+  lava. Its way now keeps a block clear of lava and fire (B784).
+- Saves: one damaged entry in the bounties, caravans or stories file (a claimed bounty id, a caravan village without
+  its name, a sale without its buyer, a mood boost or a tracked quest that can't be read) no longer loses the whole
+  file. The bad entry is skipped with a warning in the log, and every other bounty, caravan village, route, shipment,
+  quest and arc loads (B763).
 - Undertakers: an Undertaker no longer carries graves out of the next village into his own Graveyard. A grave that
   lies in another village stays there; graves in his own village, and ones out in the wilds, are laid to rest as before.
 - Chronicle: a villager killed on the village's edge up a hill (inside the village, but far from the hall in a straight

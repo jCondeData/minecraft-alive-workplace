@@ -887,6 +887,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCovenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiratesThreatLevelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPirates1102dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRisings1102dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCovens1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PirateLandingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonProfessorGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonRangerGameTests",

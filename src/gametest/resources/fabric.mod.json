@@ -1127,7 +1127,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRaidFixes1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStackRoom1102cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCountWords1102cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaOneCount1102cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaOneCount1102cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaColonySupplies1102GameTests"
 		]
 	},
 	"depends": {

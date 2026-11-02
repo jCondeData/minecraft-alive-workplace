@@ -65,9 +65,9 @@ public final class MarketDays {
 		return day == today && (lastMarketDay == today || level.getDayTime() % VillageNeeds.DAY >= 6000) ? day + EVERY_DAYS : day;
 	}
 
-	/** The village's Market Square (a finished one within the hall's reach), or empty. */
+	/** The village's Market Square (a finished one in its claimed area), or empty. */
 	public static Optional<BlockPos> square(ServerLevel level, BlockPos hall) {
-		return BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
+		return BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.filter(f -> BlueprintStyles.base(f.structure()).equals(StarterBlueprints.MARKET_SQUARE.id()))
 			.map(f -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(), StarterBlueprints.MARKET_SQUARE.size()))
 			.map(box -> new BlockPos(box.getCenter().getX(), box.minY() + 1, box.getCenter().getZ()))

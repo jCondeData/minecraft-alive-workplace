@@ -8,7 +8,6 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.hall.Decorations;
-import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
@@ -219,7 +218,7 @@ public final class ClassNeeds {
 
 		List<BuildSiteManager.Finished> builds() {
 			if (builds == null) {
-				builds = BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS);
+				builds = BuildSiteManager.get(level).finishedInVillage(level, hall);
 			}
 			return builds;
 		}

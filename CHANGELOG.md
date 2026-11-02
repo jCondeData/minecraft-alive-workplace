@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Villages: buildings finished in a City Plan zone painted past the hall's radius now count for the village everywhere,
+  not only on the Repairs page: its beauty, its rank's buildings, its Market Square, Arena, Chapel and services, its gates,
+  towers and defenses, its signposts and plazas, fires and disasters, and the hall's advice (B620).
 - Village Hall: with one settlers' wagon bed in reach, the Beds button now reads "Not counted: 1 wagon bed (for the
   road, not a home)" instead of "1 wagon beds" (B787).
 - Graveyards: a village no longer uses the next village's Graveyard standing near by as its own. Its Undertaker never

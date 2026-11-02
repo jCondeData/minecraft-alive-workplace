@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Scan Tool: a scanned big dripleaf on its stems is built back whole, stacked from the bottom leaf on leaf as a player
+  grows one; it was built as nothing at all, every piece skipped (B812).
 - Create trains: a server stopped between the village round that points the two stations at their track and the next
   no longer leaves both stations named 'Track Station' for good; they are named after their villages either way (a
   station a player renamed keeps its name) (B800).

@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812
 
 ## 1. What a player sees
 
@@ -52,7 +52,9 @@ this have none and load as before.
 Blocks with no item of their own are built from what a player would use (B793, B794): a cake with a candle on it costs
 a cake and that candle; the middle pieces of cave vines, weeping vines, twisting vines, kelp and a big dripleaf's stem
 each cost one glow berries, weeping vines, twisting vines, kelp or big dripleaf. What hangs from the block above it
-(cave and weeping vines, stalactites) goes up last and top-down, so a vine three long is built three long. A piston
+(cave and weeping vines, stalactites) goes up last and top-down, so a vine three long is built three long. A big
+dripleaf grows from the bottom as a player stacks one leaf on another: each stem goes down as a leaf and turns into
+a stem when the next piece goes on top (B812), so a big dripleaf on two stems is built three tall. A piston
 scanned pushed out is built retracted and pushed out by its own redstone, with its head (B795); one with no power in
 the build stands retracted, never a pushed-out base with nothing in front.
 Glow lichen and sculk vein cost one item per face they cover (B792), as shears count them: a lichen on three faces

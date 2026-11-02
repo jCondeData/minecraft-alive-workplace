@@ -201,6 +201,68 @@ public class ScanRebuildPlantsGameTests implements net.fabricmc.fabric.api.gamet
 		}).thenSucceed();
 	}
 
+	/**
+	 * B812: a big dripleaf on three stems facing east, scanned, is built four tall facing east from a chest holding exactly
+	 * its list (four big dripleaves): each stem goes down as a leaf and turns into a stem under the next piece, so nothing is
+	 * skipped and nothing is left over or short.
+	 */
+	//$ gametest_ticks_batch HUGE '2400' '"b812DripleafPaid"'
+	@GameTest(template = HUGE, timeoutTicks = 2400, batch = "b812DripleafPaid")
+	public void aScannedBigDripleafFourTallIsBuiltFromItsListFacingItsWay(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockState stem = Blocks.BIG_DRIPLEAF_STEM.defaultBlockState().setValue(net.minecraft.world.level.block.BigDripleafStemBlock.FACING, Direction.EAST);
+		helper.setBlock(SRC, Blocks.MOSS_BLOCK);
+		for (int dy = 1; dy <= 3; dy++) {
+			helper.setBlock(SRC.above(dy), stem);
+		}
+		helper.setBlock(SRC.above(4), Blocks.BIG_DRIPLEAF.defaultBlockState().setValue(net.minecraft.world.level.block.BigDripleafBlock.FACING, Direction.EAST));
+		ResourceLocation id = QaBuilders1102bGameTests.scan(helper, SRC, SRC.above(4));
+		for (int dy = 4; dy >= 0; dy--) {
+			helper.setBlock(SRC.above(dy), Blocks.AIR);
+		}
+		QaBuilders1102bGameTests.Built b = QaBuilders1102bGameTests.buildBack(helper, id, Rotation.NONE, Mirror.NONE, false);
+		Map<Item, Integer> asked = b.site().plan(level).materials();
+		helper.assertTrue(asked.getOrDefault(Items.BIG_DRIPLEAF, 0) == 4, "a big dripleaf on three stems asks " + asked + ", not 4 big dripleaves");
+		fill(helper, asked);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(BuildSiteManager.get(level).get(b.site().id()) == null, "still building: " + b.site().stage() + " missing " + b.site().missing());
+			for (int dy = 1; dy <= 4; dy++) {
+				BlockState s = level.getBlockState(b.origin().above(dy));
+				helper.assertTrue(s.is(dy < 4 ? Blocks.BIG_DRIPLEAF_STEM : Blocks.BIG_DRIPLEAF), "piece " + dy + " was built as " + s
+					+ " (" + b.site().skipped() + " skipped)");
+				helper.assertTrue(s.getValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING) == Direction.EAST, "piece " + dy + " faces " + s);
+			}
+			helper.assertTrue(b.site().skipped() == 0, b.site().skipped() + " skipped");
+		});
+	}
+
+	/**
+	 * B812: a big dripleaf column stopped partway (a save, a reload, the builder called away) has a leaf on its top stem's
+	 * spot; that counts as built, so the build goes on above it instead of breaking it, and a stem with its stem or leaf
+	 * already above it goes down as a stem. A leaf facing the other way is not the stem that was planned.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void aBigDripleafColumnStoppedPartwayGoesOnFromItsTop(GameTestHelper helper) {
+		BlockState stem = Blocks.BIG_DRIPLEAF_STEM.defaultBlockState().setValue(net.minecraft.world.level.block.BigDripleafStemBlock.FACING, Direction.SOUTH);
+		BlockState leaf = Blocks.BIG_DRIPLEAF.defaultBlockState().setValue(net.minecraft.world.level.block.BigDripleafBlock.FACING, Direction.SOUTH);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(leaf, stem), "a leaf on a planned stem's spot doesn't count as built");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(
+			leaf.setValue(net.minecraft.world.level.block.BigDripleafBlock.FACING, Direction.NORTH), stem), "a leaf facing north counts as a stem facing south");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(stem, leaf), "a stem counts as the planned leaf");
+		BlockPos pos = new BlockPos(1, 2, 1);
+		helper.setBlock(pos.below(), Blocks.MOSS_BLOCK);
+		BlockPos abs = helper.absolutePos(pos);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.MaterialRules.grownAs(helper.getLevel(), abs, stem).equals(leaf),
+			"a stem with nothing above it doesn't go down as a leaf");
+		helper.setBlock(pos.above(), leaf);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.MaterialRules.grownAs(helper.getLevel(), abs, stem) == stem,
+			"a stem under its leaf doesn't go down as a stem");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.MaterialRules.grownAs(helper.getLevel(), abs, leaf) == leaf, "a leaf isn't put down as planned");
+		helper.succeed();
+	}
+
 	/** Fills the supply chest with exactly {@code asked} (and dirt for the foundation). */
 	private static void fill(GameTestHelper helper, Map<Item, Integer> asked) {
 		helper.setBlock(SUPPLY, Blocks.CHEST);

@@ -110,6 +110,22 @@ public final class MaterialRules {
 	);
 
 	/**
+	 * B812: what a builder puts down for {@code wanted} at {@code pos}. A big dripleaf's stem only stands with a stem or the
+	 * leaf above it, so a column built bottom-up had no first piece: each stem with nothing above it yet goes down as a big
+	 * dripleaf (the item it costs, on the same facing), as a player builds one up leaf on leaf, and vanilla turns it into a
+	 * stem when the next piece goes on top. Every other block is put down as planned.
+	 */
+	public static BlockState grownAs(net.minecraft.world.level.LevelReader level, net.minecraft.core.BlockPos pos, BlockState wanted) {
+		if (wanted.is(Blocks.BIG_DRIPLEAF_STEM)) {
+			BlockState above = level.getBlockState(pos.above());
+			if (!above.is(Blocks.BIG_DRIPLEAF_STEM) && !above.is(Blocks.BIG_DRIPLEAF)) {
+				return Blocks.BIG_DRIPLEAF.withPropertiesOf(wanted);
+			}
+		}
+		return wanted;
+	}
+
+	/**
 	 * B794: a block that hangs from the one above it (cave and weeping vines, a stalactite), so a hanging run of them goes
 	 * up top-down, after everything else (BuildPlan): each piece needs the one above it to be there already.
 	 */
@@ -468,6 +484,11 @@ public final class MaterialRules {
 		if (wanted.is(Blocks.CAULDRON) && actual.getBlock() instanceof net.minecraft.world.level.block.AbstractCauldronBlock) {
 			// A cauldron is built empty (emptied); one filled since is still the cauldron that was built
 			return true;
+		}
+		if (actual.is(Blocks.BIG_DRIPLEAF) && wanted.is(Blocks.BIG_DRIPLEAF_STEM)) {
+			// B812: the top of a big dripleaf column still going up is a leaf (grownAs); it turns into the stem when the
+			// piece above it goes on, so it counts as built (stem or leaf depends on the block above, a neighbour)
+			return actual.getValue(BlockStateProperties.HORIZONTAL_FACING) == wanted.getValue(BlockStateProperties.HORIZONTAL_FACING);
 		}
 		if (actual.getBlock() != wanted.getBlock() && unweathered(actual.getBlock()) != unweathered(wanted.getBlock())) {
 			return false;

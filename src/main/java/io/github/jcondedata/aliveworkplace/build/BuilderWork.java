@@ -2016,7 +2016,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private void place(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BuildPlan.Step step,
 					   List<MaterialRules.Requirement> requirements, boolean free) {
 		BlockPos pos = step.pos();
-		BlockState state = step.state();
+		BlockState state = MaterialRules.grownAs(level, pos, step.state()); // B812: a big dripleaf column grows leaf on leaf
 
 		// Two-block blocks need their second spot free.
 		if (step.secondaryPos() != null) {

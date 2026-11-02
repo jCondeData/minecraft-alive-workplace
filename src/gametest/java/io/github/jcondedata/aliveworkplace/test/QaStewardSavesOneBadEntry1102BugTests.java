@@ -115,4 +115,35 @@ public class QaStewardSavesOneBadEntry1102BugTests implements FabricGameTest {
 		helper.assertTrue(lost.isEmpty(), "one damaged entry loses the Steward's whole record: " + lost);
 		helper.succeed();
 	}
+
+	/**
+	 * The same for the hall's Book of Families ({@code families}, 34.21): one person who can't be read (an empty entry put
+	 * first) must not cost the village every other person in the book.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void oneDamagedPersonInTheBookOfFamiliesDoesntLoseTheRest(GameTestHelper helper) {
+		var level = helper.getLevel();
+		BlockPos pos = helper.absolutePos(new BlockPos(1, 2, 1));
+		var state = ModBlocks.VILLAGE_HALL.defaultBlockState();
+		VillageHallBlockEntity a = new VillageHallBlockEntity(pos, state);
+		java.util.UUID ana = new java.util.UUID(1, 1);
+		java.util.UUID ben = new java.util.UUID(2, 2);
+		a.families().put(new io.github.jcondedata.aliveworkplace.people.FamilyBook.Person(ana, net.minecraft.network.chat.Component.literal("Ana"),
+			1, 3, true, -1, null, null, ben, "minecraft:farmer"));
+		a.families().put(new io.github.jcondedata.aliveworkplace.people.FamilyBook.Person(ben, net.minecraft.network.chat.Component.literal("Ben"),
+			1, 2, false, -1, null, null, ana, "minecraft:mason"));
+		CompoundTag tag = a.saveWithoutMetadata(level.registryAccess());
+		VillageHallBlockEntity clean = new VillageHallBlockEntity(pos, state);
+		clean.loadWithComponents(tag.copy(), level.registryAccess());
+		helper.assertTrue(clean.families().size() == 2, "set-up: the clean load has " + clean.families().size() + " of 2 people");
+		CompoundTag hurt = tag.copy();
+		helper.assertTrue(hurt.get("families") instanceof ListTag, "set-up: the hall saved no families list: " + hurt.getAllKeys());
+		((ListTag) hurt.get("families")).add(0, new CompoundTag());
+		VillageHallBlockEntity b = new VillageHallBlockEntity(pos, state);
+		b.loadWithComponents(hurt, level.registryAccess());
+		helper.assertTrue(b.families().get(ana) != null && b.families().get(ben) != null,
+			"one unreadable person loses the Book of Families: " + b.families().size() + " of 2 people back");
+		helper.succeed();
+	}
 }

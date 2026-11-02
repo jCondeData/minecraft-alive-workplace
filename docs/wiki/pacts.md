@@ -106,4 +106,8 @@ marked for saving. `QaPacts1101BugTests` and `B768GameTests` (B768): a caravan o
 paid on arrival; only the sides with gifts off are marked, the mark survives a save, and a caravan without it (or with
 pacts off) isn't paid.
 
+`QaPactChronicles1102GameTests`: the offerer's chronicle word for word for the offer ("Offered X a trade pact (a letter
+to neighbour)") and the decline ("X declined the offer"); the side that offered a trade pact ends it at once: no route
+either way, the other owner's letter, "The trade pact with X ended" once in each chronicle, and a second End refused.
+
 Showcase scene `pacts`.

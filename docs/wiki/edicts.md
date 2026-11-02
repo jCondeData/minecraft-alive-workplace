@@ -155,7 +155,7 @@ beside a main arc in its cooldown, the blueprints only to the finisher, a reload
 natural ground, the ledger's seven days, every sentence), QA's `QaVillageFixesVerify1102GameTests` (B772: drill
 day across two restarts counts each driller once, one driller reads "1 villager", the next drill day counts afresh;
 with no dummies only the guards drill; a baby at the dummies doesn't), `QaReformStoryBugTests` (B632-B634: a Cheerful
-villager asks with no Bard, a mother with no Nurse, the ask names who asks), QA's `QaDrillNoDummiesBug1102Tests` (B797: with no dummy the drill line doesn't name dummies) and QA's `QaReformAskers1102GameTests`
+villager asks with no Bard, a mother with no Nurse, the ask names who asks), QA's `QaDrillNoDummiesBug1102Tests` (B797: with no dummy the drill line doesn't name dummies), QA's `QaDrillHallWords1102GameTests` (B797: "2 villagers sparred by the hall." and "1 villager" word for word, still "by the hall" across a restart mid-drill, and a village with a dummy still "at the dummies" across one) and QA's `QaReformAskers1102GameTests`
 (B632, B633 from the other side: the Bard asks though a Cheerful villager is about, the Nurse though a mother is; with
 neither, the story still starts and one villager asks; B634: the ask names the Farmer who asked, Bram, also after a
 restart).

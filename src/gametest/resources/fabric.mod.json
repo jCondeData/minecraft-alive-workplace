@@ -609,6 +609,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaColonyOrderRemovedMod1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterJobRemovedMod1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataRemovedModId1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaAttachmentRemovedModId1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.RemovedModItemsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedDataBadMapKey1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.AreaJobWorkBlockGameTests",

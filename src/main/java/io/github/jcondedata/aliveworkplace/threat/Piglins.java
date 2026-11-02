@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.threat;
 
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -22,6 +23,7 @@ import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
@@ -219,8 +221,8 @@ public final class Piglins {
 
 	/**
 	 * Turns {@code mob} zombified now, as the Overworld does in the end: a piglin or brute into a zombified piglin, a
-	 * hoglin into a zoglin, dazed for 10 s. A raider stays one of its raid (its raid and role tags go with it); it is no
-	 * more one of a lair's band. Another mod refusing the turned mob is answered as for every foe ({@link HostileSpawns#keep},
+	 * hoglin into a zoglin, dazed for 10 s. A raider stays one of its raid (its raid and role tags go with it, and so
+	 * does the gold it carries off, B829); it is no more one of a lair's band. Another mod refusing the turned mob is answered as for every foe ({@link HostileSpawns#keep},
 	 * B356). Null for anything else, or when the turned mob couldn't stay in the world.
 	 */
 	@Nullable
@@ -231,10 +233,12 @@ public final class Piglins {
 		}
 		List<String> tags = new ArrayList<>();
 		for (String tag : mob.getTags()) {
-			if (tag.equals(Threats.RAIDER_TAG) || tag.equals(Threats.EXTRA_TAG) || tag.startsWith("aliveworkplace_role_")) {
+			if (tag.equals(Threats.RAIDER_TAG) || tag.equals(Threats.EXTRA_TAG) || tag.startsWith("aliveworkplace_role_") || tag.equals(Plunder.SHOWN_TAG)) {
 				tags.add(tag);
 			}
 		}
+		// Its plunder goes with it (B829): convertTo copies the ingot shown on its head but not the gold it carries.
+		ItemStack plunder = Plunder.carried(mob).copy();
 		Mob turned = mob.convertTo(into, true);
 		// convertTo's addFreshEntity can be refused by another mod's mob blocklist (MobsBeGone), which left the band
 		// gone instead of zombified (B356); the turned mob is kept the way every other foe is (B208).
@@ -242,6 +246,9 @@ public final class Piglins {
 			return null;
 		}
 		tags.forEach(turned::addTag);
+		if (!plunder.isEmpty()) {
+			ModAttachments.PLUNDER.set(turned, plunder);
+		}
 		turned.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
 		level.sendParticles(ParticleTypes.SMOKE, turned.getX(), turned.getY() + 1, turned.getZ(), 12, 0.3, 0.5, 0.3, 0.02);
 		level.playSound(null, turned.blockPosition(), mob instanceof Hoglin ? SoundEvents.HOGLIN_CONVERTED_TO_ZOMBIFIED : SoundEvents.PIGLIN_CONVERTED_TO_ZOMBIFIED,

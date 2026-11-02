@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Miners: in a village with a kitchen (a smoker with a chest beside it), the rock and finds a Miner brings home go
+  into the Storehouse again, not into the kitchen's chest; the kitchen gets them only when the Storehouse is full (B834).
+- Desert raids: a husk that fell beside the Pharaoh in the last seconds of a raid no longer gets up after the raid is
+  over (called off, gone at noon or fought off), left behind as a raider in a village with no raid on (B828).
+- Piglin incursions: a piglin that carried gold off a village chest keeps it when the Warlord's fall turns it
+  zombified, so killed it drops the gold and at dawn takes it home (counted in the siege report) (B829).
+- Hauler Golem: a golem no longer stands idle for good when the nearest worker's goods (or a Drop Box's) don't fit
+  in the Storehouse; it passes them over and hauls another worker's goods that do fit, as porters do (B830).
 - Builder: a very large `workplaceBuildDelay` (over about 21 million ticks) no longer makes Builders place a block
   every tick. The number overflowed and came out negative; now a bigger delay is always slower, up to the rule's
   largest value (B822).

@@ -5,7 +5,7 @@ ROADMAP 32.10. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) has a lit Nether portal they
 come through, and who carry off the village's gold (see [Desert raiders](desert.md) for the culture before it).
 
-Roadmap items: 32.10
+Roadmap items: 32.10, B829
 
 ## What a player sees
 
@@ -154,5 +154,8 @@ Roadmap items: 32.10
   Warlord's gold gear and +50 health, and gold carried home at dawn lands in the outpost's chest; the report's gold
   sentence for 0, 1 and 64; the hoard's contents over 400 seeded rolls; the roster's 35/25/25/15 shares; a City with a
   portal is raided, a City without one and a Hamlet with one are not.
+- `QaPlunder1102dBugTests` (B829): a piglin of the Warlord's band carrying 12 gold ingots, turned zombified by his
+  fall, drops the 12 when killed; saved and loaded again it still carries them and shows one on its head, and killed
+  it drops the 12, not the shown ingot as a 13th.
 - `QaSandRampEdgeGameTests.aRaiderThreePastTheLandingIsNotCountedOverTheWall` (desert raiders' ramp, 32.9): the edge
   of the "came over the wall" zone, from both sides.

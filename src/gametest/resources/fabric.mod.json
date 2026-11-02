@@ -486,6 +486,7 @@
 			"io.github.jcondedata.aliveworkplace.test.WarbandGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PirateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DesertRaiderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRisings1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.PiglinGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CovenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SiegeGameTests",
@@ -862,6 +863,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLairEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinRaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinIncursionGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPlunder1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSurvivors1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatsM32GameTests",
@@ -1127,9 +1129,13 @@
 			"io.github.jcondedata.aliveworkplace.test.RaidOfOneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidFixes1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStackRoom1102cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHaulerFitChoice1102cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.HaulerFitChoiceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCountWords1102cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOneCount1102cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaColonySupplies1102GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaColonySupplies1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWagonListAutosave1102cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallEveryPage1102cGameTests"
 		]
 	},
 	"depends": {

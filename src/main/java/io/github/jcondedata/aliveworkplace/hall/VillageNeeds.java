@@ -293,7 +293,14 @@ public final class VillageNeeds {
 		poi.findAll(h -> h.is(ModVillagers.KITCHEN_STOVE_POI) || h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER), p -> true, hall,
 			VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
 			.forEach(stove -> chests.addAll(SupplyContainers.find(level, stove.immutable(), null)));
-		poi.findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
+		chests.addAll(storehouses(level, hall));
+		return new ArrayList<>(chests);
+	}
+
+	/** The chests of the Storehouses in {@code hall}'s village: {@link #store} without the kitchens' (B834). */
+	public static List<BlockPos> storehouses(ServerLevel level, BlockPos hall) {
+		Set<BlockPos> chests = new LinkedHashSet<>();
+		level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
 			.forEach(storehouse -> chests.addAll(SupplyContainers.find(level, storehouse.immutable(), null)));
 		return new ArrayList<>(chests);
 	}

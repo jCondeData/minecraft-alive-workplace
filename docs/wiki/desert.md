@@ -5,7 +5,7 @@ ROADMAP 32.9. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is an old tomb, and who get over
 walls with sand where pillagers use ladders (see [Drowned pirates](pirates.md) for the culture before it).
 
-Roadmap items: 32.9, B382, B437
+Roadmap items: 32.9, B382, B437, B828
 
 ## What a player sees
 
@@ -18,7 +18,8 @@ Roadmap items: 32.9, B382, B437
 - **The Pharaoh.** A husk in a golden helmet and chestplate with a golden sword and 50 more health, his name over his
   head (one of twenty: "Pharaoh Khaemhet the Undying"). He leads the raids on a City himself. **While he lives, a
   husk that falls within 24 blocks of him gets up again** three seconds later, where it fell, at half health and in a
-  burst of sand. It rises only once, and none rises once he is dead.
+  burst of sand. It rises only once, and none rises once he is dead. A raider whose raid is over by then (called
+  off, gone at noon or fought off) stays dead.
 - **The raiders**, all called "Desert raider": husks (55%), husks in gold armor with iron swords (25%) and skeleton
   archers in gold helmets (20%).
 - **Sand ramps.** Where pillagers set ladders, the plain husks pile sand against the wall: a block every half second,
@@ -107,4 +108,7 @@ Roadmap items: 32.9, B382, B437
   ramp's foot behind the wall is let go there (B331).
 - `DesertRaiderGameTests.noSandWithMobGriefingOff`.
 - `DesertRaiderGameTests.theDesertSiegeIsStillOnAtMidMorningAndOverAtNoon`.
+- `QaRisings1102dBugTests` (B828): a husk that fell just before the raid was called off, before the raiders left at
+  noon, or before the Pharaoh (the last raider) was killed never rises after the raid; one that falls while the raid
+  is still on rises as a raider of it.
 - Showcase scene `desert_raiders`: the tomb camp, a sand ramp rising against a Stone Wall and a husk getting up again.

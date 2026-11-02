@@ -261,20 +261,23 @@ public final class BuildSiteManager extends SavedData {
 			|| plan != null && plan.zoneAt(hall, new net.minecraft.core.BlockPos(pos.getX(), hall.getY(), pos.getZ())).isPresent();
 	}
 
-	/** Builders.spot of each finished building, kept a minute (a blueprint reload may change a size). */
-	private final Map<Finished, net.minecraft.core.BlockPos> spots = new java.util.HashMap<>();
-	private long spotsMinute = Long.MIN_VALUE;
+	/**
+	 * Builders.spot of each finished building, kept a minute (a blueprint reload may change a size). Static, and so
+	 * never part of the saved data: the spot follows from the building's blueprint and placement alone.
+	 */
+	private static final Map<Finished, net.minecraft.core.BlockPos> SPOTS = new java.util.HashMap<>();
+	private static long spotsMinute = Long.MIN_VALUE;
 
-	private net.minecraft.core.BlockPos spot(ServerLevel level, Finished f) {
+	private static net.minecraft.core.BlockPos spot(ServerLevel level, Finished f) {
 		long minute = level.getGameTime() / 1200;
 		if (minute != spotsMinute) {
-			spots.clear();
+			SPOTS.clear();
 			spotsMinute = minute;
 		}
-		net.minecraft.core.BlockPos known = spots.get(f);
+		net.minecraft.core.BlockPos known = SPOTS.get(f);
 		if (known == null) {
 			known = Builders.spot(level, f.structure(), f.placement());
-			spots.put(f, known);
+			SPOTS.put(f, known);
 		}
 		return known;
 	}

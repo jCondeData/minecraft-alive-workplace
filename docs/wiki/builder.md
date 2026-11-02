@@ -247,7 +247,11 @@ On the villager (attachments in `registry/ModAttachments`):
 - `builder_bag`: the 27-slot bag, empty by default. A stack of an item no loaded mod has any more (a mod taken out of
   the pack) is dropped with a warning in the log and the rest of the bag loads, as a chest keeps its other slots; the
   same goes for a Hauler Golem's load, a postman's courier routes (a route keeps its ends and its other filter items)
-  and a worker's machine trip (B791, `RemovedModItemsGameTests`, `QaRemovedModItems1102BugTests`).
+  and a worker's machine trip, which keeps its machine and stage even when every stack it carried is gone (B791,
+  `RemovedModItemsGameTests`, `QaRemovedModItems1102BugTests`; QA `QaVillageVerify1102GameTests`: gone stacks first,
+  in the middle and last drop out with the others kept in order, a bag of only gone stacks loads empty and the
+  villager's other saved data stays, a named, damaged tool keeps its components, a bag saved again is the old save
+  minus the gone stacks, a golem load with several gone keys or only gone keys).
 - `builder_employer`: who the Builder works for (fields not listed here).
 
 Per finished building (36.15): `repair_ask` (`asked`, `yes`, `not_now` or `paused`; absent: never asked, as in every

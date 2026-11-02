@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812
 
 ## 1. What a player sees
 
@@ -52,7 +52,9 @@ this have none and load as before.
 Blocks with no item of their own are built from what a player would use (B793, B794): a cake with a candle on it costs
 a cake and that candle; the middle pieces of cave vines, weeping vines, twisting vines, kelp and a big dripleaf's stem
 each cost one glow berries, weeping vines, twisting vines, kelp or big dripleaf. What hangs from the block above it
-(cave and weeping vines, stalactites) goes up last and top-down, so a vine three long is built three long. A piston
+(cave and weeping vines, stalactites) goes up last and top-down, so a vine three long is built three long. A big
+dripleaf grows from the bottom as a player stacks one leaf on another: each stem goes down as a leaf and turns into
+a stem when the next piece goes on top (B812), so a big dripleaf on two stems is built three tall. A piston
 scanned pushed out is built retracted and pushed out by its own redstone, with its head (B795); one with no power in
 the build stands retracted, never a pushed-out base with nothing in front.
 Glow lichen and sculk vein cost one item per face they cover (B792), as shears count them: a lichen on three faces
@@ -247,7 +249,11 @@ On the villager (attachments in `registry/ModAttachments`):
 - `builder_bag`: the 27-slot bag, empty by default. A stack of an item no loaded mod has any more (a mod taken out of
   the pack) is dropped with a warning in the log and the rest of the bag loads, as a chest keeps its other slots; the
   same goes for a Hauler Golem's load, a postman's courier routes (a route keeps its ends and its other filter items)
-  and a worker's machine trip (B791, `RemovedModItemsGameTests`, `QaRemovedModItems1102BugTests`).
+  and a worker's machine trip, which keeps its machine and stage even when every stack it carried is gone (B791,
+  `RemovedModItemsGameTests`, `QaRemovedModItems1102BugTests`; QA `QaVillageVerify1102GameTests`: gone stacks first,
+  in the middle and last drop out with the others kept in order, a bag of only gone stacks loads empty and the
+  villager's other saved data stays, a named, damaged tool keeps its components, a bag saved again is the old save
+  minus the gone stacks, a golem load with several gone keys or only gone keys).
 - `builder_employer`: who the Builder works for (fields not listed here).
 
 Per finished building (36.15): `repair_ask` (`asked`, `yes`, `not_now` or `paused`; absent: never asked, as in every
@@ -561,7 +567,15 @@ cake; cave and weeping vines three long under a ceiling, and twisting vines thre
 built that long with nothing skipped; a pushed-out sticky piston is built with its head, and without its redstone it
 stands retracted). `QaBuilders1102bBugTests` (5, QA: a glow lichen scanned on three faces is listed as three lichen and
 built on no more faces than were paid, B792; a candle cake, three-long hanging vines, a pushed-out piston and a lone
-banner's preview). `QaScanRoundTripGameTests` (1, from
+banner's preview). `QaScanRebuild1102cGameTests` (9, the tester's, B793-B795: a lit cake with a red candle is paid
+once from the chest and built; kelp three tall in a glass tank, a stalactite three long, a spore blossom, hanging roots
+and a hanging sign under a ceiling are built again; a pushed-out sticky piston built turned a quarter faces south with
+its head; a lever-pushed piston is never left stuck (lever on with the head, or off and retracted); cave vines whose
+site is saved and loaded every 7 ticks still end three long). A big dripleaf's stem isn't built yet (B812).
+`QaScanRebuild1102dGameTests` (6, the tester's: a lily pad on a pool, a scaffolding tower that is part of the scan,
+four pink petals, three turtle eggs, a full water cauldron, and farmland with wheat beside a dirt path, each scanned and
+built again whole with nothing skipped and asked for as a player places them).
+`QaScanRoundTripGameTests` (1, from
 the Scan Tool's guide page: a hand-built room with two double chests lying either way, a door, a bed, a wall torch, a
 hanging lantern, an upside-down stair and a ladder, scanned with real clicks and built again a quarter turned, comes out
 block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`). `QaScanPotGameTests`

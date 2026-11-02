@@ -42,8 +42,9 @@ hurry: he keeps following until you get him home.
 
 The stockade's chest holds the lost goods. Carry every stack of them to the village they were going to and they go into
 its store, for 8 emeralds and a little standing there. You don't need to: the story goes on without them. If that
-village's hall has been broken, nobody there takes the goods (you keep them) until a new hall stands in the village;
-the carter can still be walked home to the village that sent him.
+village's hall has been broken, nobody there takes the goods (you keep them) and the carter can't come home there
+until a new hall stands in the village (put back on the same spot or nearby); meanwhile he can still be walked home to
+the village that sent him. Another village's hall doesn't count.
 
 ![Tobin follows the player home](https://jcondedata.github.io/minecraft-alive-workplace/lost_caravan/still-4.jpg)
 

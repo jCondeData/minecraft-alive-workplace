@@ -28,7 +28,8 @@ Roadmap items: 31.19, 31.20
   standing there. With that hall broken nothing is taken: the action bar says "Ashford's Village Hall is gone: nobody
   here can take the lost goods.", and the player keeps them (B626).
 - **A broken receiving hall**: when a Village Hall stands again within the village's radius (64 blocks) of the broken
-  one, the story moves to it: the goods go there and the carter can come home to it. Until then he can still be walked
+  one, the story moves to it: the goods go there and the carter can come home to it, after a restart too; a hall put
+  back on the very spot counts the same. Another village's hall (beyond that radius) is never home. Until then he can still be walked
   to the sending village, which ends the story as usual; the goods quest then closes with the arc.
 - **The ending**: the carter joins the village he reached, with no job yet: he takes a free workstation like any
   villager and starts at Journeyman, as a hired traveler does. Everyone who helped (found the wreck, followed the
@@ -174,6 +175,10 @@ every objective's.
 - QA (`QaLostCaravanHallBack1102GameTests`, B624 and B626 from the far side): a receiving hall broken and put back
   on its own spot takes the goods and gives the standing; a carter freed on day 6 still follows on day 7 after a
   restart.
+- QA (`QaVillageVerify1102GameTests`, B625): with the receiving hall broken, Tobin is not home where it stood (after a
+  restart too) nor at a third village's hall; the hall put back on its spot, or set up again 7 blocks on after a restart,
+  ends the story there with "... is home safe, and stays in Brookmere." and +150 standing at the hall that stands, none
+  where the old one stood.
 - QA (`QaLostCaravanGameTests`, 16 tests): the 300/301-block road edge, `lostCaravanChance` 0, 1 and its clamps, an arc in
   either village keeping the caravan on the road, both halls told and only the sender's map, the trail out of order
   and twice, the action bar's directions, marks placed at 96 blocks and not 97 and never over a player's blocks,

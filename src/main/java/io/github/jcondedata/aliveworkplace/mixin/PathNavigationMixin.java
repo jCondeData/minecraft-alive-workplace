@@ -1,15 +1,20 @@
 package io.github.jcondedata.aliveworkplace.mixin;
 
+import io.github.jcondedata.aliveworkplace.legend.GolemPaths;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.pathfinder.Path;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -21,6 +26,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * walking in by a shut door opened it, and the new path led to some bed across the village it had only looked at, or
  * came out as "can't get there" and led away round the building; it shut the door behind it and never got in. Now the
  * target (and how close counts as there) of the path the mob follows is kept, and a path worked out again goes there.
+ *
+ * <p>A working golem's path search reaches as far as a villager's, not its own follow range of 16, so it finds the way
+ * round a long wall or lava trench (B815, {@link GolemPaths#RANGE}).
  */
 @Mixin(PathNavigation.class)
 abstract class PathNavigationMixin {
@@ -32,6 +40,9 @@ abstract class PathNavigationMixin {
 	private BlockPos targetPos;
 	@Shadow
 	private int reachRange;
+	@Shadow
+	@Final
+	protected Mob mob;
 
 	/** The last path worked out, and how close to its target counted as there. */
 	@Unique
@@ -45,6 +56,20 @@ abstract class PathNavigationMixin {
 	private BlockPos aliveworkplace$followedTarget;
 	@Unique
 	private int aliveworkplace$followedReach;
+
+	/** How far the search walks (and the region it reads): {@link GolemPaths#RANGE} for a golem at work (B815). */
+	@ModifyVariable(method = "createPath(Ljava/util/Set;IZIF)Lnet/minecraft/world/level/pathfinder/Path;", at = @At("HEAD"), argsOnly = true)
+	private float aliveworkplace$golemRange(float range) {
+		return GolemPaths.atWork(this.mob) ? Math.max(range, GolemPaths.RANGE) : range;
+	}
+
+	/** How many nodes the search may visit, as a multiple of the golem's own budget (B815). */
+	@ModifyArg(method = "createPath(Ljava/util/Set;IZIF)Lnet/minecraft/world/level/pathfinder/Path;",
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/pathfinder/PathFinder;findPath(Lnet/minecraft/world/level/PathNavigationRegion;Lnet/minecraft/world/entity/Mob;Ljava/util/Set;FIF)Lnet/minecraft/world/level/pathfinder/Path;"),
+		index = 5)
+	private float aliveworkplace$golemNodes(float multiplier) {
+		return GolemPaths.atWork(this.mob) ? Math.max(multiplier, GolemPaths.NODES) : multiplier;
+	}
 
 	@Inject(method = "createPath(Ljava/util/Set;IZIF)Lnet/minecraft/world/level/pathfinder/Path;", at = @At("RETURN"))
 	private void aliveworkplace$rememberWorked(Set<BlockPos> targets, int regionOffset, boolean offsetUpward, int reach, float range,

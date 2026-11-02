@@ -114,7 +114,9 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   round; Create drives it from then on. It is named "Thornholm - Ashford Caravan Train". A caravan on that line waits
   at the station until the train stands there, boards it (steam and the bell) and is unloaded the moment the train
   stands at the other village's station. A station the village points at its track faces the other village (Create's
-  stations are stopped at from one side). Without a free villager, before the train is put together, or after a player
+  stations are stopped at from one side). Each station is named after its village once Create knows it, also when the
+  server was restarted in between (B800); a station a player renamed by hand keeps the player's name, and the train's
+  schedule is made from the names the stations have when it is put together. Without a free villager, before the train is put together, or after a player
   breaks it up, caravans take the timed trip above.
 - **One line, a built train, goods in its chest** (39.7b). The track a builder lays along a road follows
   `CaravanTrains.plan`: a straight piece (`xo`, `zo`) on each level node, an ascending piece (`an`, `as`, `ae`, `aw`) on

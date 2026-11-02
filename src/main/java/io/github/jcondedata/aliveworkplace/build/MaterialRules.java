@@ -223,11 +223,20 @@ public final class MaterialRules {
 			}
 			return out;
 		}
+		if (block instanceof net.minecraft.world.level.block.TallSeagrassBlock) {
+			// B818: tall seagrass has no item of its own: a player plants seagrass and uses bone meal on it
+			out.add(new Requirement(Items.SEAGRASS, 1));
+			out.add(new Requirement(Items.BONE_MEAL, 1));
+			return out;
+		}
 		if (ModdedBlocks.ownCosts(block, out)) {
 			return out;
 		}
 		if (!ModdedBlocks.costFromDataOnly(block)) {
 			requirement(state).ifPresent(out::add);
+		}
+		if (!out.isEmpty() && livesInWater(state) && state.getValue(BlockStateProperties.WATERLOGGED)) {
+			out.add(new Requirement(Items.WATER_BUCKET, 1)); // B817: its water, poured as a player's (the bucket comes back)
 		}
 		if (nbt != null && (!out.isEmpty() || ModdedBlocks.costFromDataOnly(block))) {
 			ModdedBlocks.extraCosts(block, nbt, out);
@@ -244,7 +253,35 @@ public final class MaterialRules {
 			|| b instanceof TripWireHookBlock || b instanceof TripWireBlock || b instanceof CocoaBlock || b instanceof AbstractSkullBlock
 			|| b instanceof AmethystClusterBlock || b instanceof PointedDripstoneBlock || b instanceof MultifaceBlock
 			|| b instanceof BellBlock || b instanceof CakeBlock || b instanceof net.minecraft.world.level.block.CandleCakeBlock
-			|| hangsDown(b.defaultBlockState()) || modLantern(b);
+			|| hangsDown(b.defaultBlockState()) || modLantern(b)
+			// B816: sugar cane stands only with water beside its foot, so it goes up with the decoration, after the pool's
+			// water (poured with the decoration, a layer below the cane), not in the structure before there is any
+			|| b instanceof net.minecraft.world.level.block.SugarCaneBlock;
+	}
+
+	/**
+	 * B817: a block that lives in water and has a waterlogged switch: sea pickles (which glow only in water) and living
+	 * coral (which dies dry). Scanned waterlogged, it is built waterlogged and costs a water bucket as well; every other
+	 * waterlogged block (a stair, a slab) is still built dry ({@link #forPlacement}).
+	 */
+	public static boolean livesInWater(BlockState state) {
+		Block b = state.getBlock();
+		return state.hasProperty(BlockStateProperties.WATERLOGGED) && (b instanceof net.minecraft.world.level.block.SeaPickleBlock
+			|| b instanceof net.minecraft.world.level.block.CoralPlantBlock || b instanceof net.minecraft.world.level.block.CoralFanBlock
+			|| b instanceof net.minecraft.world.level.block.CoralWallFanBlock);
+	}
+
+	/**
+	 * Whether {@code state} can be put down at {@code pos} now. Like {@code state.canSurvive}, except that the lower half of
+	 * tall seagrass (B818), which survives only in its own water, is checked as the seagrass a player plants there before
+	 * using bone meal on it: on ground it can stand on. Once down, it holds its own water.
+	 */
+	public static boolean canStand(net.minecraft.world.level.LevelReader level, BlockPos pos, BlockState state) {
+		if (state.getBlock() instanceof net.minecraft.world.level.block.TallSeagrassBlock
+			&& state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER) {
+			return Blocks.SEAGRASS.defaultBlockState().canSurvive(level, pos);
+		}
+		return state.canSurvive(level, pos);
 	}
 
 	/**
@@ -394,9 +431,12 @@ public final class MaterialRules {
 		return out.rotate(rotation);
 	}
 
-	/** Adjust a blueprint state before placing it: no free water, no decaying leaves. */
+	/**
+	 * Adjust a blueprint state before placing it: no free water, no decaying leaves. A sea pickle or living coral scanned
+	 * in water keeps it (B817, {@link #livesInWater}: it costs a water bucket).
+	 */
 	public static BlockState forPlacement(BlockState state) {
-		if (state.hasProperty(BlockStateProperties.WATERLOGGED)) {
+		if (state.hasProperty(BlockStateProperties.WATERLOGGED) && !livesInWater(state)) {
 			state = state.setValue(BlockStateProperties.WATERLOGGED, false);
 		}
 		if (state.getBlock() instanceof LeavesBlock && state.hasProperty(BlockStateProperties.PERSISTENT)) {

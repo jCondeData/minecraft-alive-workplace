@@ -17,6 +17,22 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Scan Tool rebuilds by the water: sugar cane by a pool is built three tall again (it went up before the pool's water and
+  was skipped, B816); sea pickles and living coral scanned under water are built waterlogged, so the pickles glow (B817,
+  each also costs a water bucket, given back empty); tall seagrass is built from a seagrass and a bone meal, as a player
+  grows it, instead of being left out without a word (B818).
+- Porters, the Mechanic and villagers at Create's machines: a store chest whose every slot holds something, but whose
+  stacks still have room, is no longer taken as full. A porter carried nothing to a Storehouse with a part stack in
+  every slot, and the Mechanic and the farmer left the millstone's flour waiting; they now ask whether the goods fit.
+  Builders putting their bag away use their own chests in the same case instead of walking to the Storehouse (B820).
+- Counts read in the singular for one: a postman's status says "1 parcel delivered · 1 courier route" (B809), the hall's
+  Advice button "1 suggestion, first: ..." and the board's Dishes tab "1 dish waiting" (B810).
+- Hauler Golems: a Storehouse whose every slot holds something, but whose stacks still have room, is no longer taken
+  as full. A busy Storehouse with a stack of every kind (or a stack-upgraded Sophisticated barrel) stopped its haulers
+  for good; they now bring the goods in while there's room for them, and put a load back only where it fits (B806).
+- Fisherman: cooked fish in the furnace by his barrel call him home whenever the barrel can take them, also when every
+  slot holds something but his cooked fish stack still has room. The fish used to wait for his next catch, or all
+  night (B802).
 - Hauler and Farmhand Golems: a golem at work finds the way round a long wall or lava trench, such as a village wall
   with its gate off to the side. A hauler whose Storehouse lay behind a wall 17 blocks long walked up to the wall, stood
   there and gave the Storehouse up with its load; it now looks as far for a way as a villager does (B815).

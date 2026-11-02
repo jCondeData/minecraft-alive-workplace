@@ -39,7 +39,8 @@ empty section, season, day and year. The client (`VillageHallMenuScreen`, hooks 
 the open section's buttons, all as labeled rows, a plain sentence over the list when the section is empty (People
 with nobody, Homes & Food with no beds or food, Buildings with nothing going up, Defense with no guards, Quests with
 none open, Trade with no neighbor in range, Laws & Realm with no edict or realm), and with nothing hovered the advice
-tips (Overview; the advice button's lines carry every tip and how) or the section's one-line purpose. A sidebar click
+tips (Overview; the advice button's lines carry every tip and how, after a first line that counts them: "1 suggestion,
+first: ..." for one, "3 suggestions, first: ..." for more, B810) or the section's one-line purpose. A sidebar click
 is vanilla's menu-button click (`clickMenuButton(player, ordinal)`), which remembers the section per player while
 the server runs (`HallSections.last`, not saved) and lays the main page out again, from any page. A page opened from a
 section keeps the sidebar; its back button returns to the section. The Book of Edicts or a page opened on its own
@@ -348,7 +349,7 @@ empty unless a default is given here:
   edit) is left out with a warning in the log; the hall's other quests and data load as usual.
 - Likewise one damaged entry of `edicts`, `guilds`, `reforms`, `services` or `piece_looks`, a zone or road of `plan`,
   or a level of `research` is left out with a warning, and the rest of that list loads (B796; before, the whole list
-  was lost without a word).
+  was lost without a word). The Steward's `steward` and `steward_desk` are still read whole (B821).
 
 The calendar keeps the last day it fired for with the overworld. Friends are saved in `aliveworkplace_friends`.
 Not saved: the census (counted again every 600 ticks) and the screen's layout. The Free job blocks page saves
@@ -514,7 +515,10 @@ Crafting Table", a jobless and a working villager made the Carpenter from Job â–
 place one; an older save's table with no workstation record is offered once its chunk loads; tables 8 blocks from
 the hall are offered, 9 aren't).
 QA's `QaHallListsOneBadEntry1102BugTests` (B796: one empty entry first in each of the five lists, the two good ones
-still load) and `B796GameTests` (one damaged plan zone and one damaged research level, the rest kept).
+still load), `B796GameTests` (one damaged plan zone and one damaged research level, the rest kept) and QA's
+`QaHallLenientLoad1102GameTests` (a clean hall writes the same tags after a load; one loaded with damage writes back
+only its good entries, which load the same again; a list saved as a string, a number or a compound loads empty and the
+hall keeps its owner).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end

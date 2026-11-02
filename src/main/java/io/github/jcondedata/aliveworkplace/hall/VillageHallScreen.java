@@ -298,8 +298,7 @@ public final class VillageHallScreen {
 		menu.button(PlayerBank.BUTTON, PlayerBank.tab(level, hall), p -> PlayerBank.open(menu, level, hall, p)); // the bank (29.17)
 		List<VillageAdvice.Tip> tips = VillageAdvice.tips(level, hall);
 		List<Component> adviceLore = new ArrayList<>();
-		adviceLore.add(line(tips.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none")
-			: Component.translatable("screen.aliveworkplace.hall.advice_count", tips.size(), tips.get(0).title()), ChatFormatting.GRAY));
+		adviceLore.add(line(adviceCount(tips), ChatFormatting.GRAY));
 		for (VillageAdvice.Tip tip : tips) { // every tip and how, read out on the Overview (40.1)
 			adviceLore.add(line(tip.title(), ChatFormatting.YELLOW));
 			adviceLore.add(line(tip.how(), ChatFormatting.GRAY));
@@ -1118,6 +1117,12 @@ public final class VillageHallScreen {
 
 	public static Component line(String key, ChatFormatting color) {
 		return line(Component.translatable(key), color);
+	}
+
+	/** The Advice button's first line (B810): "No suggestions", "1 suggestion, first: ..." or "3 suggestions, first: ...". */
+	public static Component adviceCount(List<VillageAdvice.Tip> tips) {
+		return tips.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none")
+			: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.advice_count", tips.size(), tips.size(), tips.get(0).title());
 	}
 
 	/**

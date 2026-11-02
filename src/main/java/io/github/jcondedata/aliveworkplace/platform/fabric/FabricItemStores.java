@@ -353,6 +353,11 @@ final class FabricItemStores implements ItemStores {
 
 	@Override
 	public List<ItemStack> takeMatching(Level level, BlockPos pos, Predicate<ItemStack> test, int maxStacks) {
+		return takeMatching(level, pos, test, maxStacks, s -> Long.MAX_VALUE);
+	}
+
+	@Override
+	public List<ItemStack> takeMatching(Level level, BlockPos pos, Predicate<ItemStack> test, int maxStacks, java.util.function.ToLongFunction<ItemStack> most) {
 		List<ItemStack> out = new ArrayList<>();
 		Storage<ItemVariant> s = storage(level, pos);
 		if (s == null) {
@@ -367,8 +372,13 @@ final class FabricItemStores implements ItemStores {
 			if (!test.test(sample)) {
 				continue;
 			}
+			long want = Math.min(view.getAmount(), sample.getMaxStackSize());
+			want = Math.min(want, most.applyAsLong(variant.toStack((int) want)));
+			if (want <= 0) {
+				continue;
+			}
 			try (Transaction tx = Transaction.openOuter()) {
-				long got = view.extract(variant, Math.min(view.getAmount(), sample.getMaxStackSize()), tx);
+				long got = view.extract(variant, want, tx);
 				tx.commit();
 				if (got > 0) {
 					out.add(variant.toStack((int) got));
@@ -406,6 +416,38 @@ final class FabricItemStores implements ItemStores {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public long[] fits(Level level, List<BlockPos> stores, List<ItemStack> stacks) {
+		long[] fit = new long[stacks.size()];
+		List<Storage<ItemVariant>> found = new ArrayList<>();
+		for (BlockPos p : stores) {
+			Storage<ItemVariant> s = storage(level, p);
+			if (s != null) {
+				found.add(s);
+			}
+		}
+		if (found.isEmpty()) {
+			return fit;
+		}
+		try (Transaction tx = Transaction.openOuter()) { // never committed: everything put in is undone
+			for (int i = 0; i < stacks.size(); i++) {
+				ItemStack stack = stacks.get(i);
+				if (stack.isEmpty()) {
+					continue;
+				}
+				ItemVariant variant = ItemVariant.of(stack);
+				for (Storage<ItemVariant> s : found) {
+					long want = stack.getCount() - fit[i];
+					if (want <= 0) {
+						break;
+					}
+					fit[i] += Math.max(0, Math.min(want, s.insert(variant, want, tx)));
+				}
+			}
+		}
+		return fit;
 	}
 
 	@Override

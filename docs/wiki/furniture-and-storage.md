@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820
 
 ## 1. What a player sees
 
@@ -113,7 +113,9 @@ Storehouse chests with the gate closed (they always did, through the same item s
 gate (37.8): where a slot holds more than a stack, a stack upgrade or a limited barrel, the Storehouse board's info adds
 "Room for 6912 more items (some slots hold more than a stack)" under the usual "chests, items, empty slots" line ("1 chest", "1 item" and "1 empty slot" with one, B377 and B395), and
 porters keep filling such a store while any of its slots has room for another stack, even when no slot is empty. With
-only vanilla chests the board and the porters are exactly as before.
+only vanilla chests the board is exactly as before. Porters (and the Mechanic, the workers at Create's machines and
+builders putting their bag away) ask whether the goods they carry fit, so a vanilla chest with a part stack in every
+slot still takes more of what its stacks hold (B820); only a store with no room for those goods is full.
 
 A Sophisticated Storage controller (37.9, behind the gate and `moddedStorageNetworks`): put one in the Storehouse's area
 touching your Sophisticated barrels and chests, and the Storehouse treats everything it links as one store. The board
@@ -405,8 +407,9 @@ rides, which can't be summoned.
   plant on a chain from a beam. The Kitchen is too small for a bench beside its table, oven, bed and larder hatch, and a
   block more in it made the chef's job test fail (B168), so its crockery takes the potted fern's place on the worktop.
 - The room in items is a line of its own, shown only where a slot holds more than a stack, so the board with vanilla
-  chests doesn't change (37.8). The porter's free stacks count a slot's room for more of what it holds; a load of
-  something else that doesn't fit stays in his bag and he waits, as with any full store.
+  chests doesn't change (37.8). A porter plans each trip from what of the worker's goods the store would take, tried
+  and undone (B820, as the Hauler Golem since B806), so room in a stack already there counts and he never fetches what
+  can't go in; a load of something else that doesn't fit stays in his bag and he waits, as with any full store.
 - Seats (37.6): supper is the Village Hall's banquet hour (10500), and the evening runs till the villagers' schedule
   turns to rest (12000); vanilla villagers have no other meal hour, so "for meals" is supper. A villager's seat isn't
   saved: a villager sitting when the world is saved stands up after the load (the design note), so the seat is saved
@@ -514,6 +517,9 @@ barrels: before the tag the Print Shop's Handcrafted desk and counters counted a
 `FurnishedWorkplacesCompatTests.theHealingCenterAndSchoolhouseGetPokeBallDesks`. Showcase scene `furnished_workplaces`.
 37.8: `StorageRoomGameTests.vanillaRoomIsCountedAsBefore`,
 `StorageRoomGameTests.aFullVanillaStoreIsFullForPorters` (no mods: the vanilla counts and board unchanged);
+B820: `PorterGameTests.porterFillsAStoreWithAStackInEverySlot` (a cobblestone in each of the 27 slots: the miner's
+spare cobblestone still goes in) and `PorterGameTests.porterLeavesTheGoodsWhenTheStoreIsBrimFull` (every slot a full
+stack: nothing taken);
 with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierStoresAndGivesItems` (all 36 blocks),
 `SophisticatedStorageCompatTests.porterFillsALimitedBarrelFromASophisticatedBarrel`,
 `SophisticatedStorageCompatTests.builderUsesAndLeavesSophisticatedStorage`,

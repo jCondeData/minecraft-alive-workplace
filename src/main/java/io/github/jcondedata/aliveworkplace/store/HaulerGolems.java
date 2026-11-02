@@ -76,16 +76,17 @@ public final class HaulerGolems {
 			}
 			return;
 		}
-		if (SupplyContainers.freeSlots(level, store) == 0) {
-			return;
-		}
 		Village.Stash stash = choose(level, golem, storehouse);
 		if (stash == null) {
 			return;
 		}
+		Map<Item, Integer> trip = fitting(level, store, PorterWork.goods(level, stash), STACKS);
+		if (trip.isEmpty()) {
+			return; // the Storehouse has no room for these goods (a stack of them with room counts: B806)
+		}
 		BlockPos pickup = stash.chests().get(0);
 		if (GolemRoleGoal.walkTo(golem, pickup, REACH)) {
-			if (collect(level, golem, stash, Math.min(STACKS, SupplyContainers.freeSlots(level, store))) > 0) {
+			if (collect(level, golem, stash, trip) > 0) {
 				FETCHED_FROM.put(golem, List.copyOf(stash.chests()));
 			}
 		} else {
@@ -102,10 +103,10 @@ public final class HaulerGolems {
 	private static void putBack(ServerLevel level, IronGolem golem, Map<Item, Integer> load) {
 		Map<BlockPos, Long> skip = skipped(level, golem);
 		BlockPos box = level.getPoiManager().findClosest(h -> h.is(ModVillagers.DROP_BOX_POI),
-			p -> !skip.containsKey(p) && SupplyContainers.freeSlots(level, List.of(p)) > 0, golem.blockPosition(), STOREHOUSE_RANGE,
+			p -> !skip.containsKey(p) && takesAny(level, List.of(p), load), golem.blockPosition(), STOREHOUSE_RANGE,
 			PoiManager.Occupancy.ANY).orElse(null);
 		if (box == null) {
-			box = workerChest(level, golem, skip);
+			box = workerChest(level, golem, skip, load);
 		}
 		if (box == null) {
 			return;
@@ -122,9 +123,9 @@ public final class HaulerGolems {
 	 * chest with room (never a Storehouse's), skipping ones the golem has lately given up on; null when none.
 	 */
 	@Nullable
-	private static BlockPos workerChest(ServerLevel level, IronGolem golem, Map<BlockPos, Long> skip) {
+	private static BlockPos workerChest(ServerLevel level, IronGolem golem, Map<BlockPos, Long> skip, Map<Item, Integer> load) {
 		for (BlockPos from : FETCHED_FROM.getOrDefault(golem, List.of())) {
-			if (!skip.containsKey(from) && SupplyContainers.freeSlots(level, List.of(from)) > 0) {
+			if (!skip.containsKey(from) && takesAny(level, List.of(from), load)) {
 				return from;
 			}
 		}
@@ -140,7 +141,7 @@ public final class HaulerGolems {
 		double bestDist = Double.MAX_VALUE;
 		for (Village.Stash stash : Village.workerStashes(level, center, ModAttachments.BUILDER_EMPLOYER.get(context), null)) {
 			for (BlockPos c : stash.chests()) {
-				if (stores.contains(c) || skip.containsKey(c) || SupplyContainers.freeSlots(level, List.of(c)) == 0) {
+				if (stores.contains(c) || skip.containsKey(c) || !takesAny(level, List.of(c), load)) {
 					continue;
 				}
 				double d = c.distSqr(golem.blockPosition());
@@ -233,23 +234,61 @@ public final class HaulerGolems {
 		return goods.values().stream().mapToLong(Long::longValue).sum();
 	}
 
-	/** Takes up to {@code stacks} stacks of goods from {@code stash} into the golem's load; returns how many items. */
-	public static int collect(ServerLevel level, IronGolem golem, Village.Stash stash, int stacks) {
-		Map<Item, Integer> load = new LinkedHashMap<>(load(golem));
-		int taken = 0;
-		int left = stacks;
-		for (Map.Entry<Item, Long> e : PorterWork.goods(level, stash).entrySet()) {
+	/**
+	 * Of {@code goods}, up to {@code stacks} stacks in order, how many of each the stores would take (B806: room in a stack
+	 * already there counts, not only an empty slot, as it does when the load goes in); only items with room are listed.
+	 */
+	static Map<Item, Integer> fitting(ServerLevel level, List<BlockPos> store, Map<Item, Long> goods, int stacks) {
+		List<Item> items = new java.util.ArrayList<>();
+		List<ItemStack> wants = new java.util.ArrayList<>();
+		long left = (long) stacks;
+		for (Map.Entry<Item, Long> e : goods.entrySet()) {
 			if (left <= 0) {
 				break;
 			}
-			Item item = e.getKey();
-			int perStack = Math.max(1, item.getDefaultMaxStackSize());
-			int want = (int) Math.min(e.getValue(), (long) left * perStack);
-			int got = SupplyContainers.extract(level, stash.chests(), item, want);
+			int perStack = Math.max(1, e.getKey().getDefaultMaxStackSize());
+			int want = (int) Math.min(e.getValue(), left * perStack);
+			if (want <= 0) {
+				continue;
+			}
+			items.add(e.getKey());
+			wants.add(new ItemStack(e.getKey(), want));
+			left -= (want + perStack - 1) / perStack;
+		}
+		Map<Item, Integer> trip = new LinkedHashMap<>();
+		if (wants.isEmpty()) {
+			return trip;
+		}
+		long[] fit = SupplyContainers.fits(level, store, wants);
+		for (int i = 0; i < items.size(); i++) {
+			if (fit[i] > 0) {
+				trip.merge(items.get(i), (int) Math.min(Integer.MAX_VALUE, fit[i]), Integer::sum);
+			}
+		}
+		return trip;
+	}
+
+	/** Whether the stores would take some of {@code load}. */
+	private static boolean takesAny(ServerLevel level, List<BlockPos> stores, Map<Item, Integer> load) {
+		List<ItemStack> each = new java.util.ArrayList<>();
+		load.keySet().forEach(item -> each.add(new ItemStack(item)));
+		for (long fit : SupplyContainers.fits(level, stores, each)) {
+			if (fit > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Takes up to {@code trip}'s amount of each item from {@code stash} into the golem's load; returns how many items. */
+	public static int collect(ServerLevel level, IronGolem golem, Village.Stash stash, Map<Item, Integer> trip) {
+		Map<Item, Integer> load = new LinkedHashMap<>(load(golem));
+		int taken = 0;
+		for (Map.Entry<Item, Integer> e : trip.entrySet()) {
+			int got = SupplyContainers.extract(level, stash.chests(), e.getKey(), e.getValue());
 			if (got > 0) {
-				load.merge(item, got, Integer::sum);
+				load.merge(e.getKey(), got, Integer::sum);
 				taken += got;
-				left -= (got + perStack - 1) / perStack;
 			}
 		}
 		ModAttachments.HAULER_LOAD.set(golem, load.isEmpty() ? null : Map.copyOf(load));

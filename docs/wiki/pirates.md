@@ -4,7 +4,7 @@ ROADMAP 32.8. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. The pirates are a raider culture (see
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is a ship on the sea.
 
-Roadmap items: 32.8
+Roadmap items: 32.8, B823
 
 ## What a player sees
 
@@ -18,7 +18,8 @@ Roadmap items: 32.8
   his name over his head. He stays in his cabin. His crew: drowned with tridents (40%), drowned (30%) and skeleton
   gunners in black leather caps with Flame bows (30%), all called "Drowned pirate".
 - **They come ashore.** On a raid night the crew wades in from the water off **the village's beach nearest the ship**,
-  never from the land side, so a sea wall or a harbor gate is what holds them. They raid by night only: at dawn they
+  never from the land side, so a sea wall or a harbor gate is what holds them; that holds for the raid the village's
+  clock (or its Seer) sets for a side too. Without a ship they come from the side told. They raid by night only: at dawn they
   go back into the sea (with a splash).
 - **The ship burns and sinks.** When the captain falls, his chest is put on a 3 x 3 raft of spruce logs on the water
   between the ship and the village (past the bow, or off a side if the bow's water is taken), and the ship burns and
@@ -92,5 +93,9 @@ Roadmap items: 32.8
 - `PirateGameTests.aSinkingShipCarriesOnAfterARestartAndTheSwitches`: a chest taken before the captain fell (no raft);
   a save and load mid-sinking; the lines a player reads; the config switch, the expansion gate, a Village and an inland
   Town.
+- `PirateLandingGameTests.theClocksPirateRaidWadesAshoreAtTheBeachNearestTheShip`: the raid the clock set for tonight
+  (as every real pirate raid comes) wades ashore within 5 blocks of the beach nearest the ship (B823).
+- `PirateLandingGameTests.withNoShipAToldPirateRaidKeepsToTheToldSide`: with no ship, a raid told for the east gathers
+  on dry ground on the east.
 - `PirateGameTests.whereAShipMayAnchor`: deep enough water under the whole ship, not over the beach, the bow's turn.
 - Showcase scene `pirates`: the ship at anchor off a Town at dusk, the crew wading ashore, the ship sinking.

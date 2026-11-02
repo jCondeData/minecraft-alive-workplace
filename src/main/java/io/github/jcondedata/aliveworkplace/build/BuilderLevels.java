@@ -50,7 +50,9 @@ public final class BuilderLevels {
 
 	public static int delay(int baseDelay, int villagerLevel) {
 		int level = Math.max(1, Math.min(5, villagerLevel));
-		return Math.round(Math.max(0, baseDelay) * DELAY_PERCENT[level] / 100f);
+		// In long: as an int, a delay over about 21 million times the percent overflowed negative and the builder then
+		// placed a block every tick (B822). The share is never above 100%, so the result always fits an int.
+		return (int) Math.round(Math.max(0, baseDelay) * (long) DELAY_PERCENT[level] / 100.0);
 	}
 
 	/** How much faster than a novice, in percent (0 for novices). */

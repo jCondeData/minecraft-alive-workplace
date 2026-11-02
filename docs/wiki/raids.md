@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133
+Roadmap items: 32.2, 32.14, B133, B824
 
 ## What a player sees
 
@@ -14,6 +14,9 @@ its captain falls. Under that look:
   but the village no longer counted as raided and never got its "fought off" or "fled at dawn" line.
 - An attack is now **decided a day ahead**. At dusk each hall rolls whether raiders come the *next* night, so there is a
   day in which a warning can be given (below); a village with nobody keeping watch still hears the horn first.
+- The horn's chat line and the chronicle count the raiders in proper English: "1 drowned pirate wades ashore", "1 of
+  Captain Brine's warband marches on", "3 desert raiders march on" (B824: a raid of one used to read "1 ... wade"). Each
+  counted raid line has a `.one` key beside it in the language file; a culture's data file may leave it out.
 
 ## A day's warning (32.14)
 

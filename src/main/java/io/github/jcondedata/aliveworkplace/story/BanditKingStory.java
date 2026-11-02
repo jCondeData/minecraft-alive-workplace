@@ -581,8 +581,10 @@ public final class BanditKingStory {
 		}
 		sendHome(level, hall);
 		level.playSound(null, hall, SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 1f, 0.7f);
-		tell(level, hall, "tribute", ChatFormatting.RED, taken / 100);
-		chronicle(level, hall, "tribute", taken / 100);
+		int emeralds = taken / 100;
+		String tribute = emeralds == 1 ? "tribute.one" : "tribute"; // "1 emerald" (B842)
+		tell(level, hall, tribute, ChatFormatting.RED, emeralds);
+		chronicle(level, hall, tribute, emeralds);
 	}
 
 	/** The fort is left a ruin: a share of what it was built of falls (fixed by where it stands, so it reads the same twice). */

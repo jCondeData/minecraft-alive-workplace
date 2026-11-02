@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Colonies: a colony founded by a single settler (the other died before they set out) reads in the singular: "Tomas
+  has founded Newbrook" in chat and "Our settler Tomas founded Newbrook" in the mother village's chronicle (B841).
+- Bandit King: a tribute of one emerald reads "1 emerald", not "1 emeralds", in chat and in the chronicle (B842).
 - Piglin incursions: gold a piglin carried off a village chest no longer vanishes when an operator calls the raid off
   (`/workplace threat end` or `clear`); it falls where the piglin stood (B840).
 - Builders: a build under a sand dune or a gravel cap is no longer called done with its rooms full of the sand or

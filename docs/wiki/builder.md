@@ -415,6 +415,8 @@ claims and trip counts.
 
 ## 8. Proof
 
+`QaLaneC1102eGameTests` (QA, B832): six real fishermen catch nothing in 1500 ticks at workplaceBuildDelay 35791395 (the
+first delay whose 60-step bite passes the int range) and at 2147483647, and the same pond at the default 8 still catches.
 `B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not
 waiting); a click there hands one over and it's off the board; after a save and reload it's listed again while he builds
 on, and a torch put in the chest takes it off before the hut is done.

@@ -457,7 +457,8 @@ point of interest, saved by Minecraft).
 
 ## Proof
 
-GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
+GameTests: `QaLaneC1102eGameTests` (QA, B833: the plurals beside the new singulars through the hall's buttons, "2
+mercenaries are here until dawn" and "3 kinds of meal in the store"), `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
 `B301GameTests` (no clearing-out quest or step where nothing can be fought, bandits and wild Pokémon counting, the
 words, a stuck quest swapped after a save and reload, MobsBeGone's file read), compat `WildFoesCompatTests`,
 `WagonBedsGameTests` (B206, B207: settlers leave the wagon once the hall stands, an older camp's bedroll is mended,

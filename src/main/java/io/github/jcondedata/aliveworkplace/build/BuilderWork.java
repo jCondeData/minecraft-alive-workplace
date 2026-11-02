@@ -37,6 +37,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -75,6 +76,13 @@ public class BuilderWork extends Behavior<Villager> {
 	private static final int SKIP_BUDGET = 256;
 	/** B508: how many times a build goes back over its structure and decoration for blocks broken since they were laid. */
 	static final int MOST_RECHECKS = 2;
+	/**
+	 * B837: how many times CLEAR goes back over its list for sand or gravel that fell in from above (each pass takes the
+	 * box's height off a dune over it, so this digs out one about 16 times as tall as the build).
+	 */
+	static final int MOST_CLEAR_PASSES = 16;
+	/** B837: how far over the box a falling block is still on its way into it. */
+	private static final int FALL_LOOK_UP = 16;
 	private static final int STUCK_TICKS = 100;
 	/** How long a builder with no path to where it's going waits before hopping there. */
 	private static final int NO_PATH_TICKS = 30;
@@ -202,7 +210,9 @@ public class BuilderWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
-		return !villager.isSleeping() && Builders.workSite(level, villager) != null;
+		// B839: the brain keeps ticking a running behavior after its activity ends, so stop when the schedule leaves
+		// WORK (dusk, bedtime, a raid) instead of building on into the night until the 1200-tick stint runs out.
+		return !villager.isSleeping() && villager.getBrain().isActive(Activity.WORK) && Builders.workSite(level, villager) != null;
 	}
 
 	@Override
@@ -374,6 +384,13 @@ public class BuilderWork extends Behavior<Villager> {
 				if (crew && site.endsStage() && !standingStill && crewOnGivenUp(site, gameTime)) {
 					setStatus(site, BuildSite.Status.WORKING);
 					return; // B254: a member is laying a block the lead gave up on: the stage waits for it, not for long
+				}
+				if (site.endsStage() && site.stage() == BuildPlan.Stage.CLEAR && stillFalling(level, plan)) {
+					setStatus(site, BuildSite.Status.WORKING);
+					return; // B837: sand or gravel from above is still coming down into the box: CLEAR waits for it to land
+				}
+				if (site.endsStage() && site.stage() == BuildPlan.Stage.CLEAR && fellIn(level, site, plan, bench)) {
+					continue; // B837: it fell into spots already cleared: back over the list to dig it out
 				}
 				if (site.endsStage() && site.stage() == BuildPlan.Stage.LANDSCAPE && backToBroken(level, site, plan)) {
 					continue; // B508: a block laid earlier is gone (broken by a player, a mob, an explosion): put back first
@@ -887,6 +904,55 @@ public class BuilderWork extends Behavior<Villager> {
 		return false;
 	}
 
+	/**
+	 * B837: whether sand, gravel or the like is on its way down into the build's box: a falling block over its columns, or
+	 * one on the layer just over the box that is about to drop (its fall is scheduled). A dune over the site comes down
+	 * into each layer CLEAR takes, after the layer is done.
+	 */
+	static boolean stillFalling(ServerLevel level, BuildPlan plan) {
+		net.minecraft.world.level.levelgen.structure.BoundingBox box = plan.bounds();
+		net.minecraft.world.phys.AABB columns = new net.minecraft.world.phys.AABB(box.minX(), box.minY(), box.minZ(),
+			box.maxX() + 1, box.maxY() + 1 + FALL_LOOK_UP, box.maxZ() + 1);
+		if (!level.getEntitiesOfClass(net.minecraft.world.entity.item.FallingBlockEntity.class, columns).isEmpty()) {
+			return true;
+		}
+		BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+		for (int x = box.minX(); x <= box.maxX(); x++) {
+			for (int z = box.minZ(); z <= box.maxZ(); z++) {
+				at.set(x, box.maxY() + 1, z);
+				BlockState state = level.getBlockState(at);
+				if (state.getBlock() instanceof net.minecraft.world.level.block.FallingBlock
+					&& level.getBlockTicks().hasScheduledTick(at, state.getBlock())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * B837: the end of CLEAR. If sand or gravel (a falling block) has come down into a spot CLEAR had already taken
+	 * (one left empty, or a wall's or roof's, whose hole would let the rest of it into the rooms later), the lead goes back over the list (at most {@link #MOST_CLEAR_PASSES} times a build), what's
+	 * clear passed straight over. After that, what's still there is counted as skipped, never claimed done. True if it
+	 * went back.
+	 */
+	static boolean fellIn(ServerLevel level, BuildSite site, BuildPlan plan, BlockPos bench) {
+		int left = 0;
+		for (BuildPlan.Step step : plan.steps(BuildPlan.Stage.CLEAR)) {
+			if (level.getBlockState(step.pos()).getBlock() instanceof net.minecraft.world.level.block.FallingBlock && actionFor(level, site, step, bench) == Action.BREAK) {
+				if (site.clearPasses() < MOST_CLEAR_PASSES) {
+					site.backOverClear();
+					return true;
+				}
+				left++;
+			}
+		}
+		if (left > 0) {
+			site.leftBroken(left);
+		}
+		return false;
+	}
+
 	/** A step can't be done now. The lead retries it at the end of the stage; a helper leaves it to the lead. */
 	private void defer(BuildSite site, Villager villager, BlockPos pos) {
 		Set<BlockPos> leave = site.gaveUp(pos) ? retakeFailed : avoid; // B254: a given-up block is tried once more each
@@ -929,6 +995,9 @@ public class BuilderWork extends Behavior<Villager> {
 		boolean worldEmpty = world.isAir() || world.getBlock() instanceof LiquidBlock;
 
 		if (stage == BuildPlan.Stage.LANDSCAPE) {
+			if (BuildSiteManager.get(level).underAnotherBuild(level, site.placement(), pos)) {
+				return Action.NONE; // B838: the ground in and under a neighboring build is that build's, dug or filled
+			}
 			if (wanted.isAir()) {
 				// Dig away natural ground only; whatever else has turned up there since stays.
 				return !worldEmpty && BuildPlan.isTerrain(world) && !isProtected(level, pos, world, bench) ? Action.BREAK : Action.NONE;

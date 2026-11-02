@@ -16,7 +16,20 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.4 — 2026-11-02
+
 ### Fixed
+- Colonies: a colony founded by a single settler (the other died before they set out) reads in the singular: "Tomas
+  has founded Newbrook" in chat and "Our settler Tomas founded Newbrook" in the mother village's chronicle (B841).
+- Bandit King: a tribute of one emerald reads "1 emerald", not "1 emeralds", in chat and in the chronicle (B842).
+- Piglin incursions: gold a piglin carried off a village chest no longer vanishes when an operator calls the raid off
+  (`/workplace threat end` or `clear`); it falls where the piglin stood (B840).
+- Builders: a build under a sand dune or a gravel cap is no longer called done with its rooms full of the sand or
+  gravel that fell in while the ground was cleared; the builder waits for it to land and digs it out (B837).
+- Builders: leveling the ground round a build no longer digs out the ground under the build next door, so a neighbor
+  standing on a stone pad is no longer left with its floor floating (B838).
+- Builders: a Builder now stops building when his working day ends and goes to bed, instead of placing blocks for
+  almost another hour in the dark (B839).
 - Miners: in a village with a kitchen (a smoker with a chest beside it), the rock and finds a Miner brings home go
   into the Storehouse again, not into the kitchen's chest; the kitchen gets them only when the Storehouse is full (B834).
 - Desert raids: a husk that fell beside the Pharaoh in the last seconds of a raid no longer gets up after the raid is

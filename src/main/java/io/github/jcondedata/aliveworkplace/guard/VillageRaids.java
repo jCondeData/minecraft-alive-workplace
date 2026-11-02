@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.threat.Conditions;
 import io.github.jcondedata.aliveworkplace.threat.Culture;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
+import io.github.jcondedata.aliveworkplace.threat.Plunder;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import io.github.jcondedata.aliveworkplace.threat.Threats;
 import io.github.jcondedata.aliveworkplace.work.Words;
@@ -559,7 +560,8 @@ public final class VillageRaids {
 	/**
 	 * Calls off the raid under way on the village round {@code hall} (an operator's {@code /workplace threat end}, 32.21):
 	 * its raiders go at once (a captain back to his camp, the band's own back to their lair), its tactics end as when
-	 * raiders leave at dawn (the gates open again), and the village is told. Nothing goes into the list of past attacks.
+	 * raiders leave at dawn (the gates open again), and the village is told. Nothing goes into the list of past attacks,
+ * and nothing is carried off: what a raider took falls where it stood (B840).
 	 * False when no raid is under way.
 	 */
 	public static boolean callOff(ServerLevel level, BlockPos hall) {
@@ -572,6 +574,7 @@ public final class VillageRaids {
 		int band = (int) left.stream().filter(m -> !m.getTags().contains(Threats.EXTRA_TAG) && !Lairs.leading(m)).count();
 		for (Mob m : left) {
 			level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, m.getX(), m.getY() + 0.5, m.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
+			Plunder.dropCarried(m); // called off, nothing is carried off: it falls where they stood (B840)
 			if (Lairs.leading(m)) {
 				Lairs.comeHome(level, m);
 			} else {

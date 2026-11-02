@@ -80,6 +80,16 @@ public class QaBuilderSwitchEdgesGameTests implements FabricGameTest {
 		foundationDip(helper, 2);
 	}
 
+	/**
+	 * QA (2026-11-02): workplaceFoundationDepth has no top ("12 (min 0)"), so at its largest value, 2147483647, the same
+	 * dip is filled to its bottom and the fill stops at the ground: the hut is finished, nothing overflows or hangs.
+	 */
+	//$ gametest_ticks_batch HUGE '5000' '"qaEdgeFoundationMax"'
+	@GameTest(template = HUGE, timeoutTicks = 5000, batch = "qaEdgeFoundationMax")
+	public void foundationDepthAtItsLargestFillsATwoDeepDipToTheBottom(GameTestHelper helper) {
+		foundationDip(helper, Integer.MAX_VALUE);
+	}
+
 	private static void foundationDip(GameTestHelper helper, int depthRule) {
 		ServerLevel level = start(helper, true);
 		int depth = level.getGameRules().getInt(ModGameRules.FOUNDATION_DEPTH);

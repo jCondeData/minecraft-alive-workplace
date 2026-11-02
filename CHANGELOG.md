@@ -21,6 +21,8 @@ asks for the steps, `latest.log` and any crash report).
   gravel that fell in while the ground was cleared; the builder waits for it to land and digs it out (B837).
 - Builders: leveling the ground round a build no longer digs out the ground under the build next door, so a neighbor
   standing on a stone pad is no longer left with its floor floating (B838).
+- Builders: a Builder now stops building when his working day ends and goes to bed, instead of placing blocks for
+  almost another hour in the dark (B839).
 - Miners: in a village with a kitchen (a smoker with a chest beside it), the rock and finds a Miner brings home go
   into the Storehouse again, not into the kitchen's chest; the kitchen gets them only when the Storehouse is full (B834).
 - Desert raids: a husk that fell beside the Pharaoh in the last seconds of a raid no longer gets up after the raid is

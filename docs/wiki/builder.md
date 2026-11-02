@@ -72,6 +72,10 @@ Builder knows about it lives in that record, and the record is saved, so a Build
 stopped, chunk unloaded, Builder asleep) and carry on exactly where it was. `BuilderWork` is written to be
 restartable at any tick for this reason.
 
+**Working hours.** A Builder works from early morning (1000) to dusk (11000), longer than vanilla villagers, then
+idles and goes to bed at 12000. He stops building as soon as his schedule leaves work, puts his tool away and heads
+for bed; he doesn't build on into the night (B839). In the morning he carries on where he stopped.
+
 **Stages, in order:** CLEAR (top-down), FOUNDATION, STRUCTURE (bottom-up), DECORATION, LANDSCAPE, DONE.
 - CLEAR takes away what is in the way, but never breaks containers, its own bench or any other Builder's Bench (a
   neighbor's bench inside the build's box stays, and the build finishes round it, B132). Sand or gravel standing over

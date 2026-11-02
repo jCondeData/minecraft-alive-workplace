@@ -75,4 +75,18 @@ public class QaBuilderMidJob1102BugTests implements FabricGameTest {
 			helper.assertTrue(off.isEmpty(), "materials made or lost by the two huts: left loose " + off + ", wanted " + 2 * EXTRA + " of each");
 		});
 	}
+
+	// ------------------------------------------------------------------------------------------------------- night
+
+	/**
+	 * ModVillagers.BUILDER_SCHEDULE: builders "work from early morning to dusk, then go to bed like everyone else". Mid-
+	 * STRUCTURE midnight comes (the clock held at 18000, a bed by the bench): 200 ticks on (time enough to set down the
+	 * block in hand and walk six blocks to bed) the builder must have stopped building. Before B839's fix he went on
+	 * placing blocks in the REST activity for about 1,100 ticks (BuilderWork ran its stint out).
+	 */
+	//$ gametest_ticks_batch HUGE '16000' '"qaMidJobNightBug"'
+	@GameTest(template = HUGE, timeoutTicks = 16000, batch = "qaMidJobNightBug")
+	public void aBuilderStopsBuildingSoonAfterMidnightComes(GameTestHelper helper) {
+		QaBuilderMidJob1102GameTests.night(helper, 200);
+	}
 }

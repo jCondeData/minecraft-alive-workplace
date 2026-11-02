@@ -37,6 +37,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -209,7 +210,9 @@ public class BuilderWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
-		return !villager.isSleeping() && Builders.workSite(level, villager) != null;
+		// B839: the brain keeps ticking a running behavior after its activity ends, so stop when the schedule leaves
+		// WORK (dusk, bedtime, a raid) instead of building on into the night until the 1200-tick stint runs out.
+		return !villager.isSleeping() && villager.getBrain().isActive(Activity.WORK) && Builders.workSite(level, villager) != null;
 	}
 
 	@Override

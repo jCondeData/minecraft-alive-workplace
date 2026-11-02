@@ -88,6 +88,9 @@ restartable at any tick for this reason.
 - LANDSCAPE digs away ground above the floor and fills holes with dirt, but never above the land just beyond the
   leveled ring (B280): a build standing a block above the lawn round it leaves the lawn as it is, where it once got a
   raised band of dirt round it. A blueprint clicked onto a flower or tall grass stands on the ground under the plant.
+- LANDSCAPE leaves the ground in and under a neighboring build alone (B838): a site under way or a finished
+  building whose box the leveled ring reaches, its basement too, is neither dug nor filled, so two builds side by side
+  don't dig the pad out from under each other (test `QaBuilderMidJob1102BugTests`).
 - FOUNDATION and LANDSCAPE depend on the terrain, so a site loaded in the middle of those stages makes its list
   again from the terrain; steps already done are skipped.
 - A step that cannot be done yet is put off once, then skipped (counted in `skipped`).

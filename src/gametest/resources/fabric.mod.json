@@ -722,6 +722,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StrangeMoodGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStrangeMoodGameTests",

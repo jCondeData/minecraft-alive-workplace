@@ -992,6 +992,9 @@ public class BuilderWork extends Behavior<Villager> {
 		boolean worldEmpty = world.isAir() || world.getBlock() instanceof LiquidBlock;
 
 		if (stage == BuildPlan.Stage.LANDSCAPE) {
+			if (BuildSiteManager.get(level).underAnotherBuild(level, site.placement(), pos)) {
+				return Action.NONE; // B838: the ground in and under a neighboring build is that build's, dug or filled
+			}
 			if (wanted.isAir()) {
 				// Dig away natural ground only; whatever else has turned up there since stays.
 				return !worldEmpty && BuildPlan.isTerrain(world) && !isProtected(level, pos, world, bench) ? Action.BREAK : Action.NONE;

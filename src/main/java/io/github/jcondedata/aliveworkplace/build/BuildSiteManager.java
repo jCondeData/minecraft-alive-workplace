@@ -309,6 +309,57 @@ public final class BuildSiteManager extends SavedData {
 		return java.util.Optional.empty();
 	}
 
+	/** A build's box: a site under way or a finished building, and where it was placed. */
+	private record Footprint(BlueprintData.Placement placement, net.minecraft.world.level.levelgen.structure.BoundingBox box) {
+	}
+
+	/** {@link #footprints}, worked out at {@link #footprintsAt} game time for {@link #footprintsChanges} (not saved). */
+	private List<Footprint> footprints = List.of();
+	private int footprintsChanges = -1;
+	private long footprintsAt = Long.MIN_VALUE;
+
+	/**
+	 * B838: whether {@code pos} lies in or under the box of a build other than the one placed at {@code self}: a site under
+	 * way or a finished building, its basement too. Levelling round a build leaves that ground alone (a hut's ring dug
+	 * out the stone pad its neighbor's floor stood on). The boxes are worked out again when a site or building comes or
+	 * goes, and at most every few seconds otherwise (a blueprint that loads late).
+	 */
+	public boolean underAnotherBuild(ServerLevel level, BlueprintData.Placement self, net.minecraft.core.BlockPos pos) {
+		long now = level.getGameTime();
+		if (footprintsChanges != changes || now - footprintsAt >= 100 || now < footprintsAt) {
+			List<Footprint> out = new java.util.ArrayList<>();
+			for (BuildSite site : sites.values()) {
+				box(level, site.structure(), site.placement()).ifPresent(b -> out.add(new Footprint(site.placement(), b)));
+			}
+			for (Finished f : finishedIn(level)) {
+				box(level, f.structure(), f.placement()).ifPresent(b -> out.add(new Footprint(f.placement(), b)));
+			}
+			footprints = out;
+			footprintsChanges = changes;
+			footprintsAt = now;
+		}
+		for (Footprint f : footprints) {
+			net.minecraft.world.level.levelgen.structure.BoundingBox b = f.box();
+			if (pos.getX() >= b.minX() && pos.getX() <= b.maxX() && pos.getZ() >= b.minZ() && pos.getZ() <= b.maxZ()
+				&& pos.getY() <= b.maxY() && !f.placement().equals(self)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static java.util.Optional<net.minecraft.world.level.levelgen.structure.BoundingBox> box(ServerLevel level, ResourceLocation structure,
+																										BlueprintData.Placement placement) {
+		if (!placement.dimension().equals(Ids.of(level.dimension()))) {
+			return java.util.Optional.empty();
+		}
+		return io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, structure).map(b -> {
+			net.minecraft.world.level.levelgen.structure.BoundingBox above = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(placement, b.size());
+			return new net.minecraft.world.level.levelgen.structure.BoundingBox(above.minX(), above.minY() - b.basement(), above.minZ(),
+				above.maxX(), above.maxY(), above.maxZ());
+		});
+	}
+
 	public static BuildSiteManager get(ServerLevel level) {
 		BuildSiteManager manager = level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(BuildSiteManager::new, BuildSiteManager::load, null), NAME);
 		manager.level = level;

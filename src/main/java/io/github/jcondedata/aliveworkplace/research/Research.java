@@ -207,8 +207,9 @@ public final class Research {
 		 * 29.11), not a level; levels of the trees are kept under {@code <tree>/<topic>}.
 		 */
 		public static final String CURRENT = "@";
+		// Levels load one by one: a damaged one is skipped, not the whole village's research (B796).
 		public static final Codec<State> CODEC = RecordCodecBuilder.create(i -> i.group(
-			Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("levels", Map.of()).forGetter(State::levels),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.map(Codec.STRING, Codec.INT, "research level").optionalFieldOf("levels", Map.of()).forGetter(State::levels),
 			Codec.STRING.optionalFieldOf("current").forGetter(State::current),
 			Codec.INT.optionalFieldOf("progress", 0).forGetter(State::progress),
 			Codec.BOOL.optionalFieldOf("paid", false).forGetter(State::paid)

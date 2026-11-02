@@ -3,7 +3,7 @@
 Laws a village's owner proclaims at the Village Hall. Each gives the village a boost at a cost, and each has a reform
 that takes the cost away for good. Part of 1.4 (Edicts and civic items): switched on in 1.0 with every other expansion.
 
-Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327, B744, B772
+Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327, B744, B772, B797
 
 ## What a player sees
 
@@ -68,7 +68,7 @@ counts and pay, one a day; the villagers talk about it and the chronicle tells e
 | The Festival Fund | the Bard (else a Cheerful villager, else anyone) | the next festival is grand: twice the fireworks, its good mood a day longer |
 | The Fair Ledger | a Librarian or Scholar | "The Fair Ledger of <village>", a written book of the treasury's takings day by day for the last 7 days, for the hall's owner |
 | The Lamplighters | a Porter (else anyone) | two Street Lamp blueprints for whoever finished it, and a chronicle line on the first lamplit night |
-| The Militia Drill | a Guard | drill day: at noon the next day every grown villager spars at the village's Training Dummies (the guards alone with none), then a chronicle line |
+| The Militia Drill | a Guard | drill day: at noon the next day every grown villager spars at the village's Training Dummies (the guards alone with none, by the hall), then a chronicle line ("... sparred at the dummies.", or "... sparred by the hall." with no dummy) |
 
 Reform stories are `side` arcs: they run beside another story and don't count against `arcsAtOnce` or the cooldown.
 While one runs, its M30 step stays off the quest page. With `storyArcs` off, or when nobody of the trade lives there to
@@ -155,7 +155,7 @@ beside a main arc in its cooldown, the blueprints only to the finisher, a reload
 natural ground, the ledger's seven days, every sentence), QA's `QaVillageFixesVerify1102GameTests` (B772: drill
 day across two restarts counts each driller once, one driller reads "1 villager", the next drill day counts afresh;
 with no dummies only the guards drill; a baby at the dummies doesn't), `QaReformStoryBugTests` (B632-B634: a Cheerful
-villager asks with no Bard, a mother with no Nurse, the ask names who asks) and QA's `QaReformAskers1102GameTests`
+villager asks with no Bard, a mother with no Nurse, the ask names who asks), QA's `QaDrillNoDummiesBug1102Tests` (B797: with no dummy the drill line doesn't name dummies) and QA's `QaReformAskers1102GameTests`
 (B632, B633 from the other side: the Bard asks though a Cheerful villager is about, the Nurse though a mother is; with
 neither, the story still starts and one villager asks; B634: the ask names the Farmer who asked, Bram, also after a
 restart).

@@ -454,6 +454,25 @@ public class QaBuilders1102bGameTests implements net.fabricmc.fabric.api.gametes
 	}
 
 	/**
+	 * A scanned plain white banner, and in the supply chest only the player's white banner with a two-layer design.
+	 * Built from it, the design must still be somewhere (on the placed banner or the banner handed back).
+	 */
+	//$ gametest_ticks_batch HUGE '2400' '"qa1102bDesignBanner"'
+	@GameTest(template = HUGE, timeoutTicks = 2400, batch = "qa1102bDesignBanner")
+	public void thePlayersDesignedBannerIsNeverTurnedIntoAPlainOneAndKeepsItsDesign(GameTestHelper helper) {
+		var patterns = helper.getLevel().registryAccess().lookupOrThrow(Registries.BANNER_PATTERN);
+		BannerPatternLayers design = new BannerPatternLayers.Builder()
+			.add(patterns.getOrThrow(BannerPatterns.STRIPE_TOP), DyeColor.RED)
+			.add(patterns.getOrThrow(BannerPatterns.BORDER), DyeColor.BLACK).build();
+		ItemStack banner = new ItemStack(Items.WHITE_BANNER);
+		banner.set(DataComponents.BANNER_PATTERNS, design);
+		oneBlockFromThePlayersItem(helper, Blocks.WHITE_BANNER, banner, "design layers", s -> {
+			BannerPatternLayers in = s.get(DataComponents.BANNER_PATTERNS);
+			return in == null ? 0 : in.layers().size() * s.getCount();
+		}, be -> be instanceof BannerBlockEntity b ? b.getPatterns().layers().size() : 0);
+	}
+
+	/**
 	 * A scanned empty purple shulker box, and in the supply chest only the player's purple shulker box holding 64
 	 * diamonds. Built from it, the 64 diamonds must still be there (in the placed box or handed back).
 	 */

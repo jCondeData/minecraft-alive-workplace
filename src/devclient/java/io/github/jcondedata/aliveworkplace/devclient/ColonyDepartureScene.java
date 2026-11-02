@@ -294,7 +294,13 @@ final class ColonyDepartureScene {
 		// The Storehouse and its chest, with everything the settlers take.
 		BlockPos store = ground(level, hall.getX() - 3, hall.getZ());
 		level.setBlockAndUpdate(store, ModBlocks.STOREHOUSE.defaultBlockState());
-		chestAt = ground(level, hall.getX() - 4, hall.getZ());
+		// B684: right beside the Storehouse at its own height, on a solid block. With each on its own column's ground, the
+		// random village once put one on a house's roof and the other in the street, more than the 4 blocks apart (up or
+		// down) a Storehouse's chests may be, so the settlers found no chest and took nothing.
+		chestAt = store.west();
+		if (!level.getBlockState(chestAt.below()).isFaceSturdy(level, chestAt.below(), Direction.UP)) {
+			level.setBlockAndUpdate(chestAt.below(), Blocks.COBBLESTONE.defaultBlockState());
+		}
 		level.setBlockAndUpdate(chestAt, Blocks.CHEST.defaultBlockState());
 		stock(level);
 		// The Storehouse's own porter (B132): with the Storehouse free, Dara or Tomas took it as a porter within the 50 ticks

@@ -70,8 +70,10 @@ public final class Retraining {
 	 */
 	static Optional<BlockPos> freeTable(ServerLevel level, Villager villager) {
 		BlockPos near = villager.blockPosition();
-		return level.getPoiManager().findClosest(ModVillagers.BUILDER.acquirableJobSite(), near, (int) Math.ceil(Stations.REACH),
-				PoiManager.Occupancy.HAS_SPACE)
+		// (the table a jobless villager is walking to on their own is held for them, and free for them (B803))
+		return Stations.nearer(near, level.getPoiManager().findClosest(ModVillagers.BUILDER.acquirableJobSite(), near, (int) Math.ceil(Stations.REACH),
+				PoiManager.Occupancy.HAS_SPACE), Stations.walkingTo(level, villager)
+				.filter(pos -> level.getPoiManager().getType(pos).filter(ModVillagers.BUILDER.acquirableJobSite()).isPresent()))
 			.filter(pos -> pos.distToCenterSqr(villager.position()) <= Stations.REACH * Stations.REACH);
 	}
 

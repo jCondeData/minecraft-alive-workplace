@@ -232,17 +232,50 @@ public class QaHaulerWaterVerify1102GameTests implements net.fabricmc.fabric.api
 		Map<Item, Integer> load = Map.of(Items.OAK_LOG, 64, Items.COBBLESTONE, 10);
 		ModAttachments.HAULER_LOAD.set(golem, load);
 		IronGolem[] now = {golem};
+		// B825: it failed only in full suites (about 1 run in 10, never in 230 runs alone), the reloaded golem floating
+		// where it went in with no Storehouse to head for. What happened first is kept, so the next failure names it.
+		StringBuilder story = new StringBuilder();
+		BlockPos storehouse = helper.absolutePos(new BlockPos(12, TOP, 12));
+		boolean[] told = new boolean[3];
 		helper.onEachTick(() -> {
 			if (now[0] == golem && golem.isInWater()) {
 				now[0] = reloaded(helper, golem);
+				story.append(" reloaded on tick ").append(helper.getTick()).append(" at ").append(helper.relativeVec(now[0].position())).append(';');
 				helper.assertTrue(carried(now[0]) == 74, "the reloaded hauler carries " + HaulerGolems.load(now[0]) + " instead of 64 logs and 10 cobblestone");
+			}
+			IronGolem copy = now[0];
+			if (copy == golem) {
+				return;
+			}
+			if (!told[0] && HaulerGolems.storehouse(helper.getLevel(), copy).isEmpty()) {
+				told[0] = true;
+				story.append(" on tick ").append(helper.getTick()).append(" it had no Storehouse to head for at ").append(helper.relativeVec(copy.position()))
+					.append(" (in water ").append(copy.isInWater()).append(", the Storehouse block ")
+					.append(helper.getLevel().getBlockState(storehouse).is(ModBlocks.STOREHOUSE) ? "stands" : "is gone").append(", its point of interest ")
+					.append(HaulerGolems.storehouse(helper.getLevel(), copy.blockPosition()).isPresent() ? "is there, so it gave the Storehouse up" : "is gone")
+					.append("), with ").append(others(helper, copy)).append(" about;");
+			}
+			if (!told[1] && copy.getTarget() != null) {
+				told[1] = true;
+				story.append(" on tick ").append(helper.getTick()).append(" it went for ").append(copy.getTarget()).append(';');
+			}
+			if (!told[2] && copy.isRemoved()) {
+				told[2] = true;
+				story.append(" on tick ").append(helper.getTick()).append(" it was removed (").append(copy.getRemovalReason()).append(");");
 			}
 		});
 		helper.succeedWhen(() -> {
 			helper.assertTrue(now[0] != golem, "the hauler never went into the moat (not reloaded yet)");
-			delivered(helper, now[0], chest, load, "reloaded while crossing a moat");
+			delivered(helper, now[0], chest, load, "reloaded while crossing a moat (" + story.toString().trim() + ")");
 			helper.assertTrue(golem.isRemoved(), "the golem from before the reload is still about");
 		});
+	}
+
+	/** The other entities within 16 blocks of {@code golem}, by type and block (the test's own golem left out). */
+	private static String others(GameTestHelper helper, IronGolem golem) {
+		java.util.List<String> near = helper.getLevel().getEntities(golem, golem.getBoundingBox().inflate(16)).stream()
+			.map(e -> e.getType().toShortString() + " at " + e.blockPosition().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()).toList();
+		return near.isEmpty() ? "nothing else" : near.toString();
 	}
 
 	// ---- B784: lava ----

@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807
 
 ## What a player sees
 
@@ -84,7 +84,9 @@ click on a job sends the offer to chat and marks the line ("Click again to pay 2
 second pays and retrains them through 36.18's `HallRetraining.retrain` (the price, the class check, "someone took that
 workstation first", not enough emeralds: nothing changes and the player is told how short), and the list closes on a
 row that says the new job. A builder hands his builds back (`Retraining.dropWork`). A jobless villager is given the
-block in one click, for nothing (`VillageHalls.assign`, as the free jobs page). No job is free, also two clicks: the
+block in one click, for nothing (`VillageHalls.assign`, as the free jobs page). The block a jobless villager is walking
+to by himself, which vanilla holds for him on the way, is free on his own list and nobody else's (B807:
+`VillageHalls.freeStations(level, hall, villager)`, `Stations.walkingTo`). No job is free, also two clicks: the
 first says plainly that their trades and level go and their block is left free; the second takes the job away
 (`Retraining.unemploy`: the builds handed back, the block let go, profession none, level 1). They may then take a free
 block nearby by themselves, as any jobless villager does. A grayed line's click says what's missing ("The Mason job

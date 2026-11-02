@@ -142,12 +142,23 @@ public final class VillageHalls {
 	 * never listed the Carpenter's Workshop's table and nobody could be made a Carpenter from it).
 	 */
 	public static List<FreeStation> freeStations(ServerLevel level, BlockPos hall) {
+		return freeStations(level, hall, null);
+	}
+
+	/**
+	 * As {@link #freeStations(ServerLevel, BlockPos)}, for {@code forWhom}: the block they're walking to on their own,
+	 * which vanilla holds for them on the way, is free for them too (B807: the only Stonecutter read "place a Stonecutter
+	 * first" for the jobless villager walking to it).
+	 */
+	public static List<FreeStation> freeStations(ServerLevel level, BlockPos hall, @org.jetbrains.annotations.Nullable Villager forWhom) {
+		Optional<BlockPos> theirs = forWhom == null ? Optional.empty() : io.github.jcondedata.aliveworkplace.work.Stations.walkingTo(level, forWhom);
 		List<FreeStation> out = new ArrayList<>();
 		// The job a kind of workstation gives, found once per kind rather than once per workstation (B103).
 		java.util.Map<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>, Optional<VillagerProfession>> jobs = new java.util.HashMap<>();
 		// A block with a free place, or a beehive nobody works at (B657: a beehive keeps no places, so it never had one).
 		level.getPoiManager().getInRange(VillageHalls::jobBlock, hall, RADIUS, PoiManager.Occupancy.ANY)
-			.filter(record -> record.hasSpace() || io.github.jcondedata.aliveworkplace.work.Stations.freeAt(level, record.getPos()))
+			.filter(record -> record.hasSpace() || io.github.jcondedata.aliveworkplace.work.Stations.freeAt(level, record.getPos())
+				|| theirs.filter(record.getPos()::equals).isPresent())
 			.forEach(record -> jobs.computeIfAbsent(record.getPoiType(), VillageHalls::firstJob)
 				.ifPresent(p -> out.add(new FreeStation(record.getPos().immutable(), p, record.getPoiType()))));
 		out.sort(Comparator.comparingDouble(f -> f.pos().distSqr(hall)));
@@ -211,9 +222,11 @@ public final class VillageHalls {
 		}
 		// The offered block first: if someone took it meanwhile, nothing changes and they keep their own block (bug B27).
 		// A beehive keeps no places (B657): it's theirs if nobody works there yet.
-		boolean taken = io.github.jcondedata.aliveworkplace.work.Stations.keepsNoCount(station.poi())
+		// The block they're walking to on their own is held for them already (B807): it's theirs, not held a second time.
+		boolean taken = io.github.jcondedata.aliveworkplace.work.Stations.walkingTo(level, villager).filter(station.pos()::equals).isPresent()
+			|| (io.github.jcondedata.aliveworkplace.work.Stations.keepsNoCount(station.poi())
 			? io.github.jcondedata.aliveworkplace.work.Stations.freeAt(level, station.pos())
-			: level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent();
+			: level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent());
 		if (!taken) {
 			return false;
 		}

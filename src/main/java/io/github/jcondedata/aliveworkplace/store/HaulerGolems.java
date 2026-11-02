@@ -76,14 +76,12 @@ public final class HaulerGolems {
 			}
 			return;
 		}
-		Village.Stash stash = choose(level, golem, storehouse);
-		if (stash == null) {
-			return;
+		Pickup chosen = choose(level, golem, storehouse, store);
+		if (chosen == null) {
+			return; // nobody has a trip's worth of goods the Storehouse has room for (B806, B830)
 		}
-		Map<Item, Integer> trip = fitting(level, store, PorterWork.goods(level, stash), STACKS);
-		if (trip.isEmpty()) {
-			return; // the Storehouse has no room for these goods (a stack of them with room counts: B806)
-		}
+		Village.Stash stash = chosen.stash();
+		Map<Item, Integer> trip = chosen.trip();
 		BlockPos pickup = stash.chests().get(0);
 		if (GolemRoleGoal.walkTo(golem, pickup, REACH)) {
 			if (collect(level, golem, stash, trip) > 0) {
@@ -194,16 +192,24 @@ public final class HaulerGolems {
 		return load == null ? Map.of() : load;
 	}
 
+	/** A stash to fetch from and how many of each of its goods the Storehouse has room for (never empty). */
+	record Pickup(Village.Stash stash, Map<Item, Integer> trip) {
+	}
+
 	/**
-	 * The nearest stash with a trip's worth of goods, of any village worker on {@link #sideOf}'s side (every one of them,
-	 * B627), but none whose chest the golem has lately given up on.
+	 * The nearest stash with a trip's worth of goods the Storehouse has room for, of any village worker on {@link #sideOf}'s
+	 * side (every one of them, B627), but none whose chest the golem has lately given up on. A Drop Box or worker whose
+	 * goods don't fit is passed over for the next one, as porters do (B830, like B820's fix to {@link PorterWork}).
 	 */
 	@Nullable
-	static Village.Stash choose(ServerLevel level, IronGolem golem, BlockPos storehouse) {
+	static Pickup choose(ServerLevel level, IronGolem golem, BlockPos storehouse, List<BlockPos> store) {
 		Map<BlockPos, Long> skip = skipped(level, golem);
 		Village.Stash box = PorterWork.dropBox(level, storehouse, p -> !skip.containsKey(p));
-		if (box != null && total(PorterWork.goods(level, box)) >= PorterWork.MIN_LOAD) {
-			return box;
+		if (box != null) {
+			Pickup pickup = pickup(level, store, box);
+			if (pickup != null) {
+				return pickup;
+			}
 		}
 		Villager context = sideOf(level, storehouse);
 		if (context == null) {
@@ -211,11 +217,25 @@ public final class HaulerGolems {
 		}
 		for (Village.Stash stash : Village.workerStashes(level, storehouse, ModAttachments.BUILDER_EMPLOYER.get(context), null)) {
 			if (stash.job() != ModVillagers.PORTER // a Storehouse's chests: the store, not a worker's
-				&& !skip.containsKey(stash.chests().get(0)) && total(PorterWork.goods(level, stash)) >= PorterWork.MIN_LOAD) {
-				return stash;
+				&& !skip.containsKey(stash.chests().get(0))) {
+				Pickup pickup = pickup(level, store, stash);
+				if (pickup != null) {
+					return pickup;
+				}
 			}
 		}
 		return null;
+	}
+
+	/** {@code stash} with what of its goods fits {@code store}, when it has a trip's worth and some fits; else null. */
+	@Nullable
+	private static Pickup pickup(ServerLevel level, List<BlockPos> store, Village.Stash stash) {
+		Map<Item, Long> goods = PorterWork.goods(level, stash);
+		if (total(goods) < PorterWork.MIN_LOAD) {
+			return null;
+		}
+		Map<Item, Integer> trip = fitting(level, store, goods, STACKS);
+		return trip.isEmpty() ? null : new Pickup(stash, trip);
 	}
 
 	/**

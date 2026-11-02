@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Hauler Golem: a golem no longer stands idle for good when the nearest worker's goods (or a Drop Box's) don't fit
+  in the Storehouse; it passes them over and hauls another worker's goods that do fit, as porters do (B830).
 - Builder: a very large `workplaceBuildDelay` (over about 21 million ticks) no longer makes Builders place a block
   every tick. The number overflowed and came out negative; now a bigger delay is always slower, up to the rule's
   largest value (B822).

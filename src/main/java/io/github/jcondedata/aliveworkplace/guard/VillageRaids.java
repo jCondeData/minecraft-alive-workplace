@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.threat.Culture;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import io.github.jcondedata.aliveworkplace.threat.Threats;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -541,7 +542,7 @@ public final class VillageRaids {
 			? Lairs.message(named.get(), "raid_led", false, spawned.size(), name, Lairs.captainName(named.get()))
 			: named.isPresent()
 			? Lairs.message(named.get(), "raid", true, spawned.size(), name, Lairs.captainName(named.get()))
-			: Component.translatable(culture.messages().key("raid", "message.aliveworkplace.raid.begins"), spawned.size(), name);
+			: Words.countedFirst(culture.messages().key("raid", "message.aliveworkplace.raid.begins"), spawned.size(), name);
 		for (ServerPlayer player : players(level, hall)) {
 			Chat.chat(player, said.copy().withStyle(ChatFormatting.RED));
 		}
@@ -549,7 +550,7 @@ public final class VillageRaids {
 			? Lairs.chronicle(named.get(), "raid_led", false, spawned.size(), Lairs.captainName(named.get()))
 			: named.isPresent()
 			? Lairs.chronicle(named.get(), "raid", true, spawned.size(), Lairs.captainName(named.get()))
-			: Component.translatable(culture.chronicle().key("raid", "chronicle.aliveworkplace.raid"), spawned.size()));
+			: Words.countedFirst(culture.chronicle().key("raid", "chronicle.aliveworkplace.raid"), spawned.size()));
 		Threats.tactics(culture).forEach(t -> t.begin(level, hall, culture, spawned));
 		return raid;
 	}

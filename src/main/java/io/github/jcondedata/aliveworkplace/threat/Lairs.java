@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -954,14 +955,14 @@ public final class Lairs {
 	public static net.minecraft.network.chat.MutableComponent message(Lair lair, String event, boolean named, Object... args) {
 		Culture.Keys keys = Threats.get(lair.culture()).map(Culture::messages).orElse(lair.culture().equals(Threats.BANDITS) ? BANDIT_MESSAGES : Culture.Keys.NONE);
 		String which = named ? event + "_named" : event;
-		return Component.translatable(keys.key(which, "message.aliveworkplace.lair." + which), args);
+		return Words.countedFirst(keys.key(which, "message.aliveworkplace.lair." + which), args); // "1 of X's pirates wades" (B824)
 	}
 
 	/** A chronicle line about {@code lair}, as {@link #message}, from its culture's {@code chronicle} keys. */
 	public static net.minecraft.network.chat.MutableComponent chronicle(Lair lair, String event, boolean named, Object... args) {
 		Culture.Keys keys = Threats.get(lair.culture()).map(Culture::chronicle).orElse(lair.culture().equals(Threats.BANDITS) ? BANDIT_CHRONICLE : Culture.Keys.NONE);
 		String which = named ? event + "_named" : event;
-		return Component.translatable(keys.key(which, "chronicle.aliveworkplace.lair." + which), args);
+		return Words.countedFirst(keys.key(which, "chronicle.aliveworkplace.lair." + which), args);
 	}
 
 	private static List<ServerPlayer> players(ServerLevel level, BlockPos hall) {

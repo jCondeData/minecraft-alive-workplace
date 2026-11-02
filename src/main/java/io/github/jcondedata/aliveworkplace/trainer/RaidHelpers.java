@@ -18,7 +18,6 @@ import io.github.jcondedata.aliveworkplace.work.Words;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -595,7 +594,8 @@ public final class RaidHelpers {
 	public static final class Data extends SavedData {
 		private static final String NAME = "aliveworkplace_raid_helpers";
 		final Map<UUID, Hire> hires = new LinkedHashMap<>();
-		final Map<UUID, Long> homeward = new HashMap<>();
+		// kept in insertion (and saved) order, like hires, so a save -> load -> save is the same tag
+		final Map<UUID, Long> homeward = new LinkedHashMap<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);

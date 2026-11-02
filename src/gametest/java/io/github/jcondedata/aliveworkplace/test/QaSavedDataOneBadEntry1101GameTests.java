@@ -39,11 +39,6 @@ public class QaSavedDataOneBadEntry1101GameTests implements FabricGameTest {
 
 	static {
 		// Each a load that throws on the one bad entry, so Minecraft drops the whole file (QaSavedDataOneBadEntry1101BugTests).
-		KNOWN_BUGS.put("bounty.Bounties$Data claimed", "a claimed id that isn't a UUID: UUID.fromString throws out of Bounties.Data#load");
-		KNOWN_BUGS.put("hall.Caravans$Data villages", "a village without a name: Component.Serializer.fromJson(\"\") throws out of Caravans.Data#load");
-		KNOWN_BUGS.put("hall.Caravans$Data sales", "a sale without a buyer: Component.Serializer.fromJson(\"\") throws out of Caravans.Data#load");
-		KNOWN_BUGS.put("story.Stories$Data halls[].mood_boosts", "a mood boost without its text: the parse throws out of Stories.Data#load");
-		KNOWN_BUGS.put("story.Stories$Data tracked", "a tracked quest without a player: Nbt.getUuid throws (NPE) out of Stories.Data#load");
 		String bounty = "Bounties.Data#load skips a bounty it can't read, with a warning (\"Skipping a saved bounty\")";
 		BY_DESIGN.put("bounty.Bounties$Data bounties[].band", bounty);
 		BY_DESIGN.put("bounty.Bounties$Data bounties[].takers", bounty);

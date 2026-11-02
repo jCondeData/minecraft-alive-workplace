@@ -38,7 +38,7 @@ golem's role. Sneak-right-click them with an empty hand to choose which comes ne
   trying the first one again a couple of minutes later. If no Storehouse can be reached, it puts the load back into
   the nearest Drop Box instead of standing around with it. A Drop Box or worker's chest it can't get to is skipped the
   same way, and it fetches from the next one. At work it swims, so a moat or a river never traps it: it crosses, or
-  climbs back out at the bank.
+  climbs back out at the bank, even one standing a block above the water. It keeps a block clear of lava and fire.
 - **Farmhand Golem** (an iron hoe): tends the fields and carries the harvest in.
 - **Wall Sentry** (a shield): a tougher golem that holds a spot on the wall. Sneak-right-click it with a
   [Patrol Map](patrol-map.md) to give it its post.

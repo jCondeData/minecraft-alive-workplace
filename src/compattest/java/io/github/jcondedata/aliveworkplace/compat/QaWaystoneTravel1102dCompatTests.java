@@ -168,6 +168,15 @@ public class QaWaystoneTravel1102dCompatTests implements FabricGameTest {
 	private static void start(GameTestHelper helper) {
 		RaidHelperCompatTests.clearAround(helper); // B541: halls and stones earlier batches left nearby
 		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+		// Plazas other classes' batches left finished nearby would be Ashford's too (its village reaches past the area since
+		// B620), each with its own standing stone: no test here may count on Ashford having only the one it is given.
+		ServerLevel level = helper.getLevel();
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		for (BuildSiteManager.Finished f : manager.finishedNear(level, a(helper), 160)) {
+			if (VillageWaystones.isPlaza(f.structure())) {
+				manager.forgetFinished(f.placement());
+			}
+		}
 		villages(helper);
 	}
 

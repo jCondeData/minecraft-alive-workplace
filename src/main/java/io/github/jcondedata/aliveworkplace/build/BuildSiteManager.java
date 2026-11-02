@@ -313,10 +313,15 @@ public final class BuildSiteManager extends SavedData {
 	private record Footprint(BlueprintData.Placement placement, net.minecraft.world.level.levelgen.structure.BoundingBox box) {
 	}
 
-	/** {@link #footprints}, worked out at {@link #footprintsAt} game time for {@link #footprintsChanges} (not saved). */
-	private List<Footprint> footprints = List.of();
-	private int footprintsChanges = -1;
-	private long footprintsAt = Long.MIN_VALUE;
+	/** The boxes, worked out at {@code at} game time for {@code changes}. Not saved, and kept outside the manager's fields. */
+	private static final class Footprints {
+		List<Footprint> list = List.of();
+		int changes = -1;
+		long at = Long.MIN_VALUE;
+	}
+
+	/** Per manager, held outside its fields so the saved-data checks (which read every field) don't take it for data. */
+	private static final java.util.Map<BuildSiteManager, Footprints> FOOTPRINTS = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
 
 	/**
 	 * B838: whether {@code pos} lies in or under the box of a build other than the one placed at {@code self}: a site under
@@ -326,7 +331,8 @@ public final class BuildSiteManager extends SavedData {
 	 */
 	public boolean underAnotherBuild(ServerLevel level, BlueprintData.Placement self, net.minecraft.core.BlockPos pos) {
 		long now = level.getGameTime();
-		if (footprintsChanges != changes || now - footprintsAt >= 100 || now < footprintsAt) {
+		Footprints cache = FOOTPRINTS.computeIfAbsent(this, m -> new Footprints());
+		if (cache.changes != changes || now - cache.at >= 100 || now < cache.at) {
 			List<Footprint> out = new java.util.ArrayList<>();
 			for (BuildSite site : sites.values()) {
 				box(level, site.structure(), site.placement()).ifPresent(b -> out.add(new Footprint(site.placement(), b)));
@@ -334,11 +340,11 @@ public final class BuildSiteManager extends SavedData {
 			for (Finished f : finishedIn(level)) {
 				box(level, f.structure(), f.placement()).ifPresent(b -> out.add(new Footprint(f.placement(), b)));
 			}
-			footprints = out;
-			footprintsChanges = changes;
-			footprintsAt = now;
+			cache.list = out;
+			cache.changes = changes;
+			cache.at = now;
 		}
-		for (Footprint f : footprints) {
+		for (Footprint f : cache.list) {
 			net.minecraft.world.level.levelgen.structure.BoundingBox b = f.box();
 			if (pos.getX() >= b.minX() && pos.getX() <= b.maxX() && pos.getZ() >= b.minZ() && pos.getZ() <= b.maxZ()
 				&& pos.getY() <= b.maxY() && !f.placement().equals(self)) {

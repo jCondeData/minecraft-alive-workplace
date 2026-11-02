@@ -1104,6 +1104,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaElderPace1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStationsWalkedTo1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallJobWalkedTo1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWalkedToEdges1102cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B803GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformAskers1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanHallBack1102GameTests",

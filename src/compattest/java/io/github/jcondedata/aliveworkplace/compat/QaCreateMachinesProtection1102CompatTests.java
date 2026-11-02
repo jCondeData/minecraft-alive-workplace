@@ -207,4 +207,67 @@ public class QaCreateMachinesProtection1102CompatTests implements FabricGameTest
 			helper.succeed();
 		});
 	}
+	/**
+	 * A Deployer at {@code deployer} facing west (it turns on Y), turned by a creative motor below it, its hand given {@code stack}
+	 * once Create has made its fake player (by reflection: the compat tests don't compile against Create).
+	 */
+	private static void westDeployer(GameTestHelper helper, BlockPos deployer, net.minecraft.world.item.ItemStack stack) {
+		helper.setBlock(deployer, westFacing("deployer"));
+		helper.setBlock(deployer.below(), MechanicCompatTests.with(MechanicCompatTests.create("creative_motor").defaultBlockState(), "facing", "up"));
+		helper.runAfterDelay(2, () -> {
+			try {
+				BlockEntity be = helper.getBlockEntity(deployer);
+				Object player = be.getClass().getMethod("getPlayer").invoke(be);
+				((net.minecraft.world.entity.player.Player) player).setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+			} catch (ReflectiveOperationException e) {
+				helper.fail("couldn't give the deployer its item: " + e);
+			}
+		});
+	}
+
+	/** Whether any oak planks stand on the hall's row between the hall and {@code x} (inside the village). */
+	private static String planksInside(GameTestHelper helper) {
+		StringBuilder at = new StringBuilder();
+		for (int x = HALL.getX() + 1; x <= EDGE.getX(); x++) {
+			for (int y = 2; y <= 3; y++) {
+				if (helper.getBlockState(new BlockPos(x, y, HALL.getZ())).is(Blocks.OAK_PLANKS)) {
+					at.append(" ").append(x).append(",").append(y);
+				}
+			}
+		}
+		return at.toString();
+	}
+
+	/** A stranger's Deployer outside a protected village, holding planks and facing in, puts no block inside. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_deployer_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_deployer_protected")
+	public void aDeployerOutsideAProtectedVillagePlacesNothingInside(GameTestHelper helper) {
+		hall(helper, true);
+		BlockPos deployer = EDGE.east(2);
+		westDeployer(helper, deployer, new net.minecraft.world.item.ItemStack(Blocks.OAK_PLANKS, 16));
+		helper.runAfterDelay(300, () -> {
+			float turning = speed(helper, deployer);
+			String inside = planksInside(helper);
+			undo(helper);
+			helper.assertTrue(turning != 0, "the deployer never turned, so the test proves nothing");
+			helper.assertTrue(inside.isEmpty(), "a stranger's Deployer outside the protected village placed planks inside it at x,y:" + inside);
+			helper.succeed();
+		});
+	}
+
+	/** The control for the deployer: the hall unprotected, the same deployer places planks in the village. */
+	//$ gametest_ticks_batch AREA '400' '"qa_create_deployer_unprotected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_create_deployer_unprotected")
+	public void aDeployerOutsideAnUnprotectedVillagePlacesInside(GameTestHelper helper) {
+		hall(helper, false);
+		BlockPos deployer = EDGE.east(2);
+		westDeployer(helper, deployer, new net.minecraft.world.item.ItemStack(Blocks.OAK_PLANKS, 16));
+		helper.runAfterDelay(300, () -> {
+			String inside = planksInside(helper);
+			String front = helper.getBlockState(EDGE.east()) + " / " + helper.getBlockState(EDGE);
+			undo(helper);
+			helper.assertTrue(!inside.isEmpty(), "the deployer placed nothing inside the unprotected village; in front of it: " + front);
+			helper.succeed();
+		});
+	}
 }

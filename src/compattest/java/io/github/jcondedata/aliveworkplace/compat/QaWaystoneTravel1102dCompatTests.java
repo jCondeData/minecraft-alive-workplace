@@ -177,6 +177,13 @@ public class QaWaystoneTravel1102dCompatTests implements FabricGameTest {
 				manager.forgetFinished(f.placement());
 			}
 		}
+		// a plaza another batch's builder left going up nearby (WaystonesCompatTests' waystonePlaza) would be Ashford's too,
+		// its stone standing: Ashford's own stone broken, the villages stayed linked through it
+		for (io.github.jcondedata.aliveworkplace.build.BuildSite site : List.copyOf(manager.all())) {
+			if (VillageWaystones.isPlaza(site.structure()) && site.placement().origin().closerThan(a(helper), 160)) {
+				manager.remove(site.id());
+			}
+		}
 		villages(helper);
 	}
 

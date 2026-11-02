@@ -215,9 +215,10 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 		}
 	}
 
+	// Zones and roads load one by one: a damaged one is skipped, not the whole plan (B796).
 	public static final Codec<CityPlan> CODEC = RecordCodecBuilder.create(i -> i.group(
-		Zone.CODEC.listOf().optionalFieldOf("zones", List.of()).forGetter(CityPlan::zones),
-		Road.CODEC.listOf().optionalFieldOf("roads", List.of()).forGetter(CityPlan::roads),
+		io.github.jcondedata.aliveworkplace.mc.Lenient.list(Zone.CODEC, "plan zone").optionalFieldOf("zones", List.of()).forGetter(CityPlan::zones),
+		io.github.jcondedata.aliveworkplace.mc.Lenient.list(Road.CODEC, "plan road").optionalFieldOf("roads", List.of()).forGetter(CityPlan::roads),
 		Wall.CODEC.optionalFieldOf("wall").forGetter(CityPlan::wall),
 		Mode.CODEC.optionalFieldOf("mode", Mode.ASK).forGetter(CityPlan::mode)
 	).apply(i, CityPlan::new));

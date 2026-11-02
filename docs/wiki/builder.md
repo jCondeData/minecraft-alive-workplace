@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792
 
 ## 1. What a player sees
 
@@ -55,6 +55,8 @@ each cost one glow berries, weeping vines, twisting vines, kelp or big dripleaf.
 (cave and weeping vines, stalactites) goes up last and top-down, so a vine three long is built three long. A piston
 scanned pushed out is built retracted and pushed out by its own redstone, with its head (B795); one with no power in
 the build stands retracted, never a pushed-out base with nothing in front.
+Glow lichen and sculk vein cost one item per face they cover (B792), as shears count them: a lichen on three faces
+is listed as three glow lichen, so breaking the build gives back no more than was paid.
 
 ## 2. How it works
 
@@ -557,7 +559,9 @@ gets the blueprint at the player's feet, a builder builds a drawn box from the c
 listed as a cake and a red candle and built from them, and with no candle the builder waits for one and builds no bare
 cake; cave and weeping vines three long under a ceiling, and twisting vines three tall, are listed one item a block and
 built that long with nothing skipped; a pushed-out sticky piston is built with its head, and without its redstone it
-stands retracted). `QaScanRoundTripGameTests` (1, from
+stands retracted). `QaBuilders1102bBugTests` (5, QA: a glow lichen scanned on three faces is listed as three lichen and
+built on no more faces than were paid, B792; a candle cake, three-long hanging vines, a pushed-out piston and a lone
+banner's preview). `QaScanRoundTripGameTests` (1, from
 the Scan Tool's guide page: a hand-built room with two double chests lying either way, a door, a bed, a wall torch, a
 hanging lantern, an upside-down stair and a ladder, scanned with real clicks and built again a quarter turned, comes out
 block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`). `QaScanPotGameTests`

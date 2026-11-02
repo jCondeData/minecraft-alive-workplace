@@ -61,6 +61,8 @@ import org.jetbrains.annotations.Nullable;
 public final class CreateTrains implements CaravanTrains.Railway {
 	/** How long the train waits at each station (seconds, Create's "scheduled delay"). */
 	static final int WAIT_SECONDS = 10;
+	/** The name Create gives every new station ({@code GlobalStation}'s constructor). */
+	private static final String DEFAULT_NAME = "Track Station";
 
 	@Override
 	public boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name) {
@@ -68,7 +70,15 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			return false;
 		}
 		if (be.edgePoint.hasValidTrack()) {
-			return be.getStation() != null;
+			GlobalStation known = be.getStation();
+			if (known != null && DEFAULT_NAME.equals(known.name) && !name.equals(known.name)) {
+				// B800: named from what is saved (the track set, Create's default name), not only from the in-memory map,
+				// so a server stopped between the round that aimed the station and the next still names it; a station a
+				// player renamed by hand keeps its name
+				pending.remove(station);
+				be.updateName(name);
+			}
+			return known != null;
 		}
 		for (BlockPos offset : NEAR) {
 			BlockPos track = station.offset(offset);

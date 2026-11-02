@@ -344,6 +344,9 @@ public final class MaterialRules {
 			count = state.getValue(BlockStateProperties.FLOWER_AMOUNT);
 		} else if (block instanceof SnowLayerBlock) {
 			count = state.getValue(BlockStateProperties.LAYERS);
+		} else if (block instanceof MultifaceBlock) {
+			// Glow lichen, sculk vein: one item per face, as placing and shearing count them (B792)
+			count = Math.max(1, MultifaceBlock.availableFaces(state).size());
 		}
 		return Optional.of(new Requirement(item, count));
 	}

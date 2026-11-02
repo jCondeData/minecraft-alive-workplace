@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Create trains: a server stopped between the village round that points the two stations at their track and the next
+  no longer leaves both stations named 'Track Station' for good; they are named after their villages either way (a
+  station a player renamed keeps its name) (B800).
 - Scan Tool: a scanned glow lichen or sculk vein now asks for one item per face it covers. A lichen on three faces was
   listed as one glow lichen and built on all three, so shears took two lichen off it for free (B792).
 - Militia Drill: in a village with no Training Dummy, where the guards drill by the hall, the chronicle now reads

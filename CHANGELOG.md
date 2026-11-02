@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Scan Tool: builders now build again a scanned cake with a candle on it (from a cake and the candle) and the full
+  length of scanned cave vines, weeping vines, twisting vines, kelp and big dripleaf stems (one glow berries, vine,
+  kelp or big dripleaf a block; hanging vines go up from the ceiling down). Before, these were silently left out (B793,
+  B794).
+- Scan Tool: a scanned pushed-out piston is built with its head, pushed out by its own redstone, instead of as a stuck
+  pushed-out base with nothing in front; without power in the build it stands retracted (B795).
 - Saves: taking a mod out of the pack no longer empties a Builder's whole bag, a Hauler Golem's whole load, every
   courier route a postman holds or a worker's whole machine trip when one item in it came from that mod. Only that item
   is lost, as in a chest; the rest loads (B791).

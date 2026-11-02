@@ -49,6 +49,12 @@ A scan keeps the box's item frames, glow item frames, paintings and armor stands
 villager, a mob, a dropped item or a minecart with its load is never copied. The builder puts them up last, as it does a
 starter build's frames, each paid with its item from the chests; one with no item there is left out. Scans saved before
 this have none and load as before.
+Blocks with no item of their own are built from what a player would use (B793, B794): a cake with a candle on it costs
+a cake and that candle; the middle pieces of cave vines, weeping vines, twisting vines, kelp and a big dripleaf's stem
+each cost one glow berries, weeping vines, twisting vines, kelp or big dripleaf. What hangs from the block above it
+(cave and weeping vines, stalactites) goes up last and top-down, so a vine three long is built three long. A piston
+scanned pushed out is built retracted and pushed out by its own redstone, with its head (B795); one with no power in
+the build stands retracted, never a pushed-out base with nothing in front.
 
 ## 2. How it works
 
@@ -546,7 +552,11 @@ with the chest full loses nothing; an upgrade lines up over its own finished bui
 sneaking and never over another kind of building). `QaTakeDownGameTests` (8: a camp, a turned and mirrored hut and a hut with its table broken come down losing no block; a plain hand-over leaves the building standing; a stranger can't have it taken down; a take-down handed to a busy Builder waits its turn; one canceled halfway carries on when its blueprint is handed back as it came; the placed blueprint's tooltip tells how) and `QaTakeDownBugTests` (2: a canceled take-down's blueprint comes back still placed, B513; a queued take-down is announced as one, with no materials sentence, B514). `TakeDownCancelGameTests` (2, B526: a take-down canceled halfway says it's a take-down, its blueprint goes through a save and comes back to a plain hand-back carrying on the take-down; the take-down mark is kept at its spot and through a save, dropped when moved, and an old blueprint reads as plain) and QA's `QaBuilderFixes1026BugTests` (1: handed back as the cancel line says, the take-down carries on). QA's `QaBuilderFixes1026GameTests` (5: the lead killed while two helpers work ends the build once, one blueprint on the ground, builder_died with the hut and the spot, the helpers stop and nothing is doubled or lost; a helper killed then a save and load still finishes the hut whole, no blueprint dropped, no builder_died; a queued take-down and a queued build each say their own exact line; and two scaffolding cases, on its page). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
 does: each side 1 to 32, no Blank Blueprint or no block draws nothing and takes nothing, two draws give the same build
 for two blanks, a hollow and a solid box of one size are two builds, a blank in the first slot is used and a full bag
-gets the blueprint at the player's feet, a builder builds a drawn box from the chest). `QaScanRoundTripGameTests` (1, from
+gets the blueprint at the player's feet, a builder builds a drawn box from the chest). `ScanRebuildPlantsGameTests` (6, B793-B795, scanned with real clicks and built again: a cake with a red candle is
+listed as a cake and a red candle and built from them, and with no candle the builder waits for one and builds no bare
+cake; cave and weeping vines three long under a ceiling, and twisting vines three tall, are listed one item a block and
+built that long with nothing skipped; a pushed-out sticky piston is built with its head, and without its redstone it
+stands retracted). `QaScanRoundTripGameTests` (1, from
 the Scan Tool's guide page: a hand-built room with two double chests lying either way, a door, a bed, a wall torch, a
 hanging lantern, an upside-down stair and a ladder, scanned with real clicks and built again a quarter turned, comes out
 block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`). `QaScanPotGameTests`

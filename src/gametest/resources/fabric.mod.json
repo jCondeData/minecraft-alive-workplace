@@ -1079,6 +1079,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaDrillNoDummiesBug1102Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaDrillHallWords1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactChronicles1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStewardSavesOneBadEntry1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.B779B780GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B788GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGraveyardRim1102GameTests",

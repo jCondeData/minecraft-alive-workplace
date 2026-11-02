@@ -409,6 +409,38 @@ final class FabricItemStores implements ItemStores {
 	}
 
 	@Override
+	public long[] fits(Level level, List<BlockPos> stores, List<ItemStack> stacks) {
+		long[] fit = new long[stacks.size()];
+		List<Storage<ItemVariant>> found = new ArrayList<>();
+		for (BlockPos p : stores) {
+			Storage<ItemVariant> s = storage(level, p);
+			if (s != null) {
+				found.add(s);
+			}
+		}
+		if (found.isEmpty()) {
+			return fit;
+		}
+		try (Transaction tx = Transaction.openOuter()) { // never committed: everything put in is undone
+			for (int i = 0; i < stacks.size(); i++) {
+				ItemStack stack = stacks.get(i);
+				if (stack.isEmpty()) {
+					continue;
+				}
+				ItemVariant variant = ItemVariant.of(stack);
+				for (Storage<ItemVariant> s : found) {
+					long want = stack.getCount() - fit[i];
+					if (want <= 0) {
+						break;
+					}
+					fit[i] += Math.max(0, Math.min(want, s.insert(variant, want, tx)));
+				}
+			}
+		}
+		return fit;
+	}
+
+	@Override
 	public ItemStack insert(Level level, List<BlockPos> stores, ItemStack stack) {
 		if (stack.isEmpty()) {
 			return ItemStack.EMPTY;

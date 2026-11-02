@@ -256,6 +256,19 @@ public final class SupplyContainers {
 		return STORES.insert(level, containers, stack);
 	}
 
+	/**
+	 * How many of each stack (its count is how many are wanted) the containers would take now, one after the other,
+	 * tried and undone (B802, B806). Unlike {@link #freeSlots} it counts the room in stacks already there.
+	 */
+	public static long[] fits(ServerLevel level, List<BlockPos> containers, List<ItemStack> stacks) {
+		return STORES.fits(level, containers, stacks);
+	}
+
+	/** Whether the containers would take at least one of {@code stack}. */
+	public static boolean fitsAny(ServerLevel level, List<BlockPos> containers, ItemStack stack) {
+		return !stack.isEmpty() && STORES.fits(level, containers, List.of(stack.copyWithCount(1)))[0] > 0;
+	}
+
 	private SupplyContainers() {
 	}
 }

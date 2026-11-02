@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802
 
 ## What a player sees
 
@@ -153,6 +153,11 @@ hours (a night's hire sleeps first) and the player is told when the work starts 
 
 **A Miner keeps all they dig (B224).** Stone of every kind, gravel and dirt go into the chests by the blast furnace with
 the ores; with those chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
+
+**A Fisherman comes back for cooked fish (B147, B802).** Fish done in a furnace or smoker by his barrel call him home
+when the barrel can take them: an empty slot, or a stack of the same fish with room (a barrel whose every slot holds
+something still takes cooked cod on its cooked cod stack). A barrel full to the brim doesn't call him
+(`QaFisherFurnace1102GameTests`).
 
 **Fewer job blocks (21.1a).** Related jobs share a block. A jobless villager by a vanilla block takes the vanilla
 job by itself, as in vanilla (since 36.17, one of the block's jobs at random: [Random jobs](random-jobs.md)); the

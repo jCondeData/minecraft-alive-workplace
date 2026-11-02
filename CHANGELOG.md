@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Hauler Golems: a Storehouse whose every slot holds something, but whose stacks still have room, is no longer taken
+  as full. A busy Storehouse with a stack of every kind (or a stack-upgraded Sophisticated barrel) stopped its haulers
+  for good; they now bring the goods in while there's room for them, and put a load back only where it fits (B806).
+- Fisherman: cooked fish in the furnace by his barrel call him home whenever the barrel can take them, also when every
+  slot holds something but his cooked fish stack still has room. The fish used to wait for his next catch, or all
+  night (B802).
 - Hauler and Farmhand Golems: a golem at work finds the way round a long wall or lava trench, such as a village wall
   with its gate off to the side. A hauler whose Storehouse lay behind a wall 17 blocks long walked up to the wall, stood
   there and gave the Storehouse up with its load; it now looks as far for a way as a villager does (B815).

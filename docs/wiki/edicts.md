@@ -157,7 +157,8 @@ day across two restarts counts each driller once, one driller reads "1 villager"
 with no dummies only the guards drill; a baby at the dummies doesn't), `QaReformStoryBugTests` (B632-B634: a Cheerful
 villager asks with no Bard, a mother with no Nurse, the ask names who asks) and QA's `QaReformAskers1102GameTests`
 (B632, B633 from the other side: the Bard asks though a Cheerful villager is about, the Nurse though a mother is; with
-neither, the story still starts and one villager asks).
+neither, the story still starts and one villager asks; B634: the ask names the Farmer who asked, Bram, also after a
+restart).
 Showcase scene `reform_story`.
 
 A season under the edicts (30.22): `SEASON=true tools/packtest/run.sh` lays out a City of 35 with six farms, a kitchen

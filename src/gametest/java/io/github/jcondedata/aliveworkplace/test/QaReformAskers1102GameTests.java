@@ -10,6 +10,8 @@ import io.github.jcondedata.aliveworkplace.people.Traits.Trait;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.story.Arcs;
+import io.github.jcondedata.aliveworkplace.story.Quest;
+import io.github.jcondedata.aliveworkplace.story.Stories;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,12 +23,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.phys.Vec3;
 
 /**
  * QA for B632 and B633 (31.22 reform stories) from the other side of each fix. The spec's askers are "the Bard (else a
  * Cheerful villager)" and "the Nurse (else a mother)": with the first there, it asks even when the fallback is there
- * too; with neither, the story still starts and some grown villager asks.
+ * too; with neither, the story still starts and some grown villager asks. And B634's named asker survives a restart.
  */
 public class QaReformAskers1102GameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
@@ -120,5 +123,37 @@ public class QaReformAskers1102GameTests implements net.fabricmc.fabric.api.game
 		QaReformStoryGameTests.village(helper);
 		List<Villager> all = plain(helper, 61102, 10);
 		helper.runAfterDelay(2, () -> someoneAsks(helper, "large_families", all));
+	}
+
+	/**
+	 * B634 through a restart: Bram the Farmer asks for the Lamplighters (no Porter); the ask quest names him, and still
+	 * does once the stories are saved and read back, never "the porter".
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaReformAskNameReload1102"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaReformAskNameReload1102")
+	public void qaTheAskersNameSurvivesARestart(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		QaReformStoryGameTests.village(helper);
+		Villager farmer = QaReformStoryGameTests.villager(helper, new BlockPos(8, 2, 6), VillagerProfession.FARMER);
+		farmer.setCustomName(Component.literal("Bram"));
+		helper.runAfterDelay(2, () -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			VillageHallBlockEntity entity = QaReformStoryGameTests.ready(helper);
+			entity.setEdicts(List.of(new Edicts.InForce(AliveWorkplace.id("curfew").toString(), Chronicle.day(level))));
+			QaReformStoryGameTests.autoRound(level, hall, entity);
+			helper.assertTrue(QaReformStoryGameTests.asks(farmer), "setup: the farmer didn't ask");
+			helper.assertTrue(askName(level, hall).contains("Bram"), "the ask doesn't name Bram: \"" + askName(level, hall) + "\"");
+			QaLostCaravanGameTests.reloadStories(level);
+			String after = askName(level, hall);
+			helper.assertTrue(after.contains("Bram") && !after.toLowerCase(java.util.Locale.ROOT).contains("porter"),
+				"after a restart the ask reads \"" + after + "\", not Bram's");
+			helper.succeed();
+		});
+	}
+
+	private static String askName(ServerLevel level, BlockPos hall) {
+		List<Quest> quests = Stories.open(level, hall).stream().filter(q -> q.arc != null).toList();
+		return quests.isEmpty() ? "(no arc quest)" : quests.get(0).name.map(Component::getString).orElse("(unnamed)");
 	}
 }

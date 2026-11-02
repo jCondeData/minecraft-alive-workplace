@@ -33,7 +33,7 @@ public record RouteData(Optional<BlockPos> from, Optional<BlockPos> to, List<Ite
 	public static final Codec<RouteData> CODEC = RecordCodecBuilder.create(i -> i.group(
 		BlockPos.CODEC.optionalFieldOf("from").forGetter(RouteData::from),
 		BlockPos.CODEC.optionalFieldOf("to").forGetter(RouteData::to),
-		BuiltInRegistries.ITEM.byNameCodec().listOf().optionalFieldOf("filter", List.of()).forGetter(RouteData::filter),
+		io.github.jcondedata.aliveworkplace.mc.Lenient.list(BuiltInRegistries.ITEM.byNameCodec(), "route filter").optionalFieldOf("filter", List.of()).forGetter(RouteData::filter),
 		UUIDUtil.CODEC.optionalFieldOf("by").forGetter(RouteData::by)
 	).apply(i, RouteData::new));
 

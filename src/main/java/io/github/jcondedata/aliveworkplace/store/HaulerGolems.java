@@ -51,7 +51,7 @@ public final class HaulerGolems {
 	/** The worker's chests each golem's load was last fetched from (in memory only; B593). */
 	private static final Map<IronGolem, List<BlockPos>> FETCHED_FROM = Collections.synchronizedMap(new WeakHashMap<>());
 
-	public static final Codec<Map<Item, Integer>> LOAD_CODEC = Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT);
+	public static final Codec<Map<Item, Integer>> LOAD_CODEC = io.github.jcondedata.aliveworkplace.mc.Lenient.map(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT, "golem load");
 
 	/** One step of a hauler's round: store the load, or fetch goods from the nearest worker who has enough. */
 	public static void work(ServerLevel level, IronGolem golem) {

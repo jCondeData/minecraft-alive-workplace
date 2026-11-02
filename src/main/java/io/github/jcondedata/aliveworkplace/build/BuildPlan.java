@@ -162,6 +162,7 @@ public final class BuildPlan {
 		foundation.sort(order(bounds, false));
 		structure.sort(order(bounds, false));
 		decoration.sort(order(bounds, false));
+		hangingLast(decoration, bounds);
 		List<Step> landscape = level != null && landscapeMargin > 0 ? landscape(level, above, landscapeMargin) : List.of();
 		BuildPlan plan = new BuildPlan(List.copyOf(clear), List.copyOf(foundation), List.copyOf(structure), List.copyOf(decoration),
 			List.copyOf(landscape), List.of(), bounds);
@@ -515,6 +516,18 @@ public final class BuildPlan {
 	}
 
 	/** Layer by layer; within a layer, row by row in a snake so the builder does not zig-zag. */
+	/**
+	 * B794: what hangs from the block above it (cave and weeping vines, stalactites) goes last and top-down, so each piece
+	 * has the one above it to hang from; bottom-up, a vine three long had nothing under its ceiling piece to start from.
+	 * A plan with nothing hanging keeps its order (a site saved mid-build goes on where it was).
+	 */
+	private static void hangingLast(List<Step> decoration, BoundingBox bounds) {
+		List<Step> hanging = new ArrayList<>();
+		decoration.removeIf(s -> MaterialRules.hangsDown(s.state()) && hanging.add(s));
+		hanging.sort(order(bounds, true));
+		decoration.addAll(hanging);
+	}
+
 	private static Comparator<Step> order(BoundingBox bounds, boolean topDown) {
 		return (a, b) -> {
 			int ay = a.pos().getY(), by = b.pos().getY();

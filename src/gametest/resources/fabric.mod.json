@@ -1147,7 +1147,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuildDelayFisher1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.SingularCountsAndBiteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulers1102gGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuildDelay1102gGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuildDelay1102gGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLaneC1102eGameTests"
 		]
 	},
 	"depends": {

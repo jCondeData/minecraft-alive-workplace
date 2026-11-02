@@ -149,6 +149,23 @@ public final class BuildSite {
 	 */
 	private final java.util.Set<BlockPos> leftOut = new java.util.HashSet<>();
 
+	/**
+	 * B837: how often CLEAR went back over its list for sand or gravel that fell into spots already cleared (a dune or a
+	 * gravel cap over the site). Saved; 0 in older saves.
+	 */
+	private int clearPasses;
+
+	/** How often CLEAR went back over its list for what fell in (B837). */
+	public int clearPasses() {
+		return clearPasses;
+	}
+
+	/** B837: back to the start of CLEAR, to dig out what fell into the spots already cleared. */
+	public void backOverClear() {
+		clearPasses++;
+		backTo(BuildPlan.Stage.CLEAR, 0);
+	}
+
 	/** How often the build went back for blocks broken mid-build (B508). */
 	public int rechecks() {
 		return rechecks;
@@ -989,6 +1006,9 @@ public final class BuildSite {
 		if (rechecks > 0) {
 			tag.putInt("rechecks", rechecks); // B508
 		}
+		if (clearPasses > 0) {
+			tag.putInt("clear_passes", clearPasses); // B837
+		}
 		if (!leftOut.isEmpty()) {
 			tag.putLongArray("left_out", leftOut.stream().mapToLong(BlockPos::asLong).toArray()); // B508
 		}
@@ -1047,6 +1067,7 @@ public final class BuildSite {
 		site.kineticOrder = Nbt.getBoolean(tag, "kinetic_order"); // 39.5: older saves build in today's order
 		site.kineticPasses = Nbt.getInt(tag, "kinetic_passes");
 		site.rechecks = Nbt.getInt(tag, "rechecks"); // B508: none in older saves
+		site.clearPasses = Nbt.getInt(tag, "clear_passes"); // B837: none in older saves
 		for (long p : Nbt.getLongArray(tag, "left_out")) {
 			site.leftOut.add(BlockPos.of(p));
 		}

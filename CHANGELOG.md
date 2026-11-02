@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Builders: a build under a sand dune or a gravel cap is no longer called done with its rooms full of the sand or
+  gravel that fell in while the ground was cleared; the builder waits for it to land and digs it out (B837).
 - Miners: in a village with a kitchen (a smoker with a chest beside it), the rock and finds a Miner brings home go
   into the Storehouse again, not into the kitchen's chest; the kitchen gets them only when the Storehouse is full (B834).
 - Desert raids: a husk that fell beside the Pharaoh in the last seconds of a raid no longer gets up after the raid is

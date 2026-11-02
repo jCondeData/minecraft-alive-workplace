@@ -34,11 +34,13 @@ golem's role. Sneak-right-click them with an empty hand to choose which comes ne
 
 - **Hauler Golem** (a chest): carries goods from every worker's chest in the village to the nearest
   [Storehouse](storehouse.md) (with a Golem Smith about, from the workers who answer to the Smith's people). If it
-  can't get there (walled in, across water, or up on a ledge), it gives up after about 10 seconds and takes the load to the next nearest Storehouse,
+  can't get there (walled in, or up on a ledge), it gives up after about 10 seconds and takes the load to the next nearest Storehouse,
   trying the first one again a couple of minutes later. If no Storehouse can be reached, it puts the load back into
   the nearest Drop Box instead of standing around with it. A Drop Box or worker's chest it can't get to is skipped the
-  same way, and it fetches from the next one. At work it swims, so a moat or a river never traps it: it crosses, or
-  climbs back out at the bank, even one standing a block above the water. It keeps a block clear of lava and fire.
+  same way, and it fetches from the next one. At work it swims, so a moat or a river doesn't trap it: it crosses, or
+  climbs back out at a bank level with the water or a block above it. Water two blocks below its banks can still
+  trap it with its load, so keep moats and pools near its routes filled to within a block of the top. It keeps a block
+  clear of lava and fire at ground level; fence off lava that lies a block or more below the ground.
 - **Farmhand Golem** (an iron hoe): tends the fields and carries the harvest in.
 - **Wall Sentry** (a shield): a tougher golem that holds a spot on the wall. Sneak-right-click it with a
   [Patrol Map](patrol-map.md) to give it its post.

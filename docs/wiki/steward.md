@@ -176,7 +176,8 @@ needed, caravans, once a day, the pause's day from both sides, the sentences), `
 from both sides, abandoned blocks, allowed block entities, containers, 2000 blocks and 20×16×20 from both sides, a
 finished build, placed leaves, the ledger, the desk line) and `QaRenewalGameTests` (9, 27.21: the switch, two days
 from both sides, a Fletcher's Lodge facing the old door, the sentences, a tight zone, broken lists, a building too big
-passed over, a zone not renewed), `QaStewardSameRangeGameTests` (1, B470: Wells 25 and 24.04 blocks apart are not within
+passed over, a zone not renewed), `QaRenewalTakeDown1102GameTests` (2, 27.21 and B789: the village's builder takes an
+approved old house down on foot, approved by the owner or by the Steward himself, and the rebuild follows), `QaStewardSameRangeGameTests` (1, B470: Wells 25 and 24.04 blocks apart are not within
 24) and `QaBuilderFixes1027bGameTests` (B470's two: 24 blocks off refused on all four sides and 25 not, diagonals 23.35
 and 23.77 refused and 24.04 not, a turned twin still counts and a mirrored one doesn't; the even Market Stall and the
 Hay Cart turned against an unturned one, half a block off on both axes, measured the same way).

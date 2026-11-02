@@ -308,7 +308,7 @@ public final class Stations {
 				continue;
 			}
 			kinds.add(station);
-			free(level, station, villager.blockPosition()).ifPresent(pos -> found.add(new Found(pos, job.get().profession().get())));
+			free(level, station, villager).ifPresent(pos -> found.add(new Found(pos, job.get().profession().get())));
 		}
 		if (kinds.isEmpty()) {
 			return InteractionResult.PASS;
@@ -345,8 +345,13 @@ public final class Stations {
 		return !stack.isEmpty() && (ALL.stream().anyMatch(s -> s.jobFor(stack).isPresent()) || Retraining.picksBuilder(stack));
 	}
 
-	/** The nearest block of {@code station}'s kind within {@link #REACH} of {@code near} that nobody works at. */
-	static Optional<BlockPos> free(ServerLevel level, Station station, BlockPos near) {
+	/**
+	 * The nearest block of {@code station}'s kind within {@link #REACH} of {@code villager} that nobody works at, counting
+	 * the one {@code villager} is walking to on their own as free for them (B803: vanilla holds it for them on the way, so
+	 * the search for a block with a free place skipped it, and the only composter read as someone else's).
+	 */
+	static Optional<BlockPos> free(ServerLevel level, Station station, Villager villager) {
+		BlockPos near = villager.blockPosition();
 		PoiManager poi = level.getPoiManager();
 		int radius = (int) Math.ceil(REACH);
 		if (station.block() == Blocks.BEEHIVE) {
@@ -355,8 +360,30 @@ public final class Stations {
 					near, radius, PoiManager.Occupancy.ANY)
 				.min(Comparator.comparingDouble(pos -> pos.distToCenterSqr(near.getCenter())));
 		}
-		return poi.findClosest(station.poi(), near, radius, PoiManager.Occupancy.HAS_SPACE)
+		return nearer(near, poi.findClosest(station.poi(), near, radius, PoiManager.Occupancy.HAS_SPACE),
+				walkingTo(level, villager).filter(pos -> poi.getType(pos).filter(station.poi()).isPresent()))
 			.filter(pos -> pos.distToCenterSqr(near.getCenter()) <= REACH * REACH);
+	}
+
+	/** The one of {@code a} and {@code b} nearer {@code near}. */
+	static Optional<BlockPos> nearer(BlockPos near, Optional<BlockPos> a, Optional<BlockPos> b) {
+		if (a.isEmpty() || b.isEmpty()) {
+			return a.isPresent() ? a : b;
+		}
+		return a.get().distSqr(near) <= b.get().distSqr(near) ? a : b;
+	}
+
+	/**
+	 * The job block a jobless {@code villager} is walking to on their own in {@code level}, which vanilla's AcquirePoi holds
+	 * for them on the way (their potential job site): free for them, though it has no free place left (B803, B807). Empty
+	 * when they walk to none, or the block is gone, or its place isn't held after all.
+	 */
+	public static Optional<BlockPos> walkingTo(ServerLevel level, Villager villager) {
+		PoiManager poi = level.getPoiManager();
+		return villager.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE)
+			.filter(g -> g.dimension().equals(level.dimension()))
+			.map(GlobalPos::pos)
+			.filter(pos -> poi.getType(pos).filter(type -> keepsNoCount(type) || poi.getFreeTickets(pos) < type.value().maxTickets()).isPresent());
 	}
 
 	/**
@@ -480,7 +507,10 @@ public final class Stations {
 		Optional<GlobalPos> old = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE);
 		if (old.isEmpty() || !old.get().equals(target)) {
 			old.ifPresent(g -> releaseOld(level, villager, g));
-			level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);
+			if (walkingTo(level, villager).filter(station::equals).isEmpty()) {
+				// (the block they walked to is held for them already: taking it again would hold it twice (B803))
+				level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);
+			}
 		} else if (level.getPoiManager().getFreeTickets(station) > 0) {
 			// The block they remember, but its place is free: it was broken while they were away and put back (bug B26).
 			level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);

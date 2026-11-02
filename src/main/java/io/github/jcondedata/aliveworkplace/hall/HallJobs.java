@@ -154,7 +154,7 @@ public final class HallJobs {
 	/** Every job on {@code villager}'s list, those with a free block first, then the rest, each in the registry's order. */
 	public static List<Option> options(ServerLevel level, BlockPos hall, Villager villager) {
 		Map<VillagerProfession, List<VillageHalls.FreeStation>> free = new LinkedHashMap<>();
-		for (VillageHalls.FreeStation station : VillageHalls.freeStations(level, hall)) {
+		for (VillageHalls.FreeStation station : VillageHalls.freeStations(level, hall, villager)) {
 			for (VillagerProfession job : VillageHalls.jobs(station)) {
 				free.computeIfAbsent(job, j -> new ArrayList<>()).add(new VillageHalls.FreeStation(station.pos(), job, station.poi()));
 			}

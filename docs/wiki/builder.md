@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822
 
 ## 1. What a player sees
 
@@ -131,7 +131,8 @@ village's 48 blocks from his table (the distance it gives is rounded up, so one 
 
 **Speed.** Exactly `workplaceBuildDelay` ticks per block (default 8; B515: it was one tick more) times a share by Builder level 1 to 5:
 100%, 100%, 85%, 70%, 55%, 40% (index 0 is unused). Then the village's mood, traits, edicts and so on change it
-(`work/Pace`). XP: 1 per 5 blocks placed and 10 for finishing a build (`BuilderLevels`).
+(`work/Pace`). A bigger delay is never faster, up to the rule's largest value (B822: over about 21 million it used to
+overflow and build every tick). XP: 1 per 5 blocks placed and 10 for finishing a build (`BuilderLevels`).
 
 **Queue and crew.** A Builder takes up to 5 more blueprints on top of its current one (`MAX_QUEUE`). Up to 3 idle
 Builders (`MAX_HELPERS`; Guilds can change this) help one site, each claiming steps ahead of the lead. A helper that dies drops only its bag; the steps it claimed go back to the crew and the lead finishes the build (B516). The owner
@@ -572,7 +573,7 @@ cake; cave and weeping vines three long under a ceiling, and twisting vines thre
 built that long with nothing skipped; a pushed-out sticky piston is built with its head, and without its redstone it
 stands retracted). `QaScanRebuild1102dBugTests` (3, QA, B816-B818: sugar cane three tall on sand by a pool is built
 three tall; three sea pickles at the bottom of a pool are built as three, waterlogged; tall seagrass in a pool is built
-again, both halves, with nothing skipped). `QaBuilders1102bBugTests` (5, QA: a glow lichen scanned on three faces is listed as three lichen and
+again, both halves, with nothing skipped). `QaScanRebuild1102fGameTests` (10, QA, B816-B818: cane one and three tall on dirt, grass, sand and red sand by one channel, cane with water only a diagonal away skipped and never floating, cane by the world's own water, a chest short of cane waits then builds it, a save and reload mid-decoration; one and four pickles glow under water, dry pickles stay dry, living coral stays alive; tall seagrass costs one seagrass and one bone meal a plant, seagrass one deep is plain seagrass). `QaBuilderLeftovers1102GameTests` (9, QA, B820: a Builder's leftovers fill the part stacks of his own chest, go to the Storehouse when every slot holds another item or the chest is brim-full, the one that doesn't fit goes on, after a save and reload too, and at the end of a job; a Hauler Golem leaves named logs and an enchanted, damaged axe untouched, also after a reload). `QaBuilders1102bBugTests` (5, QA: a glow lichen scanned on three faces is listed as three lichen and
 built on no more faces than were paid, B792; a candle cake, three-long hanging vines, a pushed-out piston and a lone
 banner's preview). `QaScanRebuild1102cGameTests` (9, the tester's, B793-B795: a lit cake with a red candle is paid
 once from the chest and built; kelp three tall in a glass tank, a stalactite three long, a spore blossom, hanging roots

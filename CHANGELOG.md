@@ -17,6 +17,17 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Scan Tool: builders now build again a scanned cake with a candle on it (from a cake and the candle) and the full
+  length of scanned cave vines, weeping vines, twisting vines, kelp and big dripleaf stems (one glow berries, vine,
+  kelp or big dripleaf a block; hanging vines go up from the ceiling down). Before, these were silently left out (B793,
+  B794).
+- Scan Tool: a scanned pushed-out piston is built with its head, pushed out by its own redstone, instead of as a stuck
+  pushed-out base with nothing in front; without power in the build it stands retracted (B795).
+- Blueprint Table: a build's 3D preview now draws banners, decorated pots, signs and other blocks drawn by their block
+  entity (as their item), so a scan of a lone banner or pot no longer shows an empty picture (B798).
+- Saves: taking a mod out of the pack no longer empties a Builder's whole bag, a Hauler Golem's whole load, every
+  courier route a postman holds or a worker's whole machine trip when one item in it came from that mod. Only that item
+  is lost, as in a chest; the rest loads (B791).
 - Villages: buildings finished in a City Plan zone painted past the hall's radius now count for the village everywhere,
   not only on the Repairs page: its beauty, its rank's buildings, its Market Square, Arena, Chapel and services, its gates,
   towers and defenses, its signposts and plazas, fires and disasters, and the hall's advice (B620).

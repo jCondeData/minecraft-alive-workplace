@@ -307,4 +307,41 @@ public class TablePreviewGameTests implements FabricGameTest {
 		helper.assertTrue(problems.isEmpty(), problems.size() + " wrong cells: " + String.join("; ", problems.subList(0, Math.min(4, problems.size()))));
 		helper.succeed();
 	}
+
+	/**
+	 * B798: blocks with no model of their own, drawn by their block entity (a banner, a wall banner, a decorated pot, a
+	 * sign, a head), each alone in a blueprint, get a preview cell of that block; a barrier still gets none.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void blocksDrawnByTheirBlockEntityHaveAPreviewCell(GameTestHelper helper) {
+		List<String> problems = new ArrayList<>();
+		for (Block block : List.of(Blocks.WHITE_BANNER, Blocks.RED_WALL_BANNER, Blocks.DECORATED_POT, Blocks.OAK_SIGN, Blocks.SKELETON_SKULL)) {
+			Blueprint one = new Blueprint(AliveWorkplace.id("test/preview_one"), new Vec3i(1, 1, 1),
+				List.of(new Blueprint.Entry(BlockPos.ZERO, block.defaultBlockState(), null)));
+			Map<BlockPos, BlockState> cells = cells(TableServer.buildPreview(one.id(), one));
+			if (cells.size() != 1 || !cells.values().iterator().next().is(block)) {
+				problems.add(block + ": " + cells);
+			}
+		}
+		Blueprint barrier = new Blueprint(AliveWorkplace.id("test/preview_barrier"), new Vec3i(1, 1, 1),
+			List.of(new Blueprint.Entry(BlockPos.ZERO, Blocks.BARRIER.defaultBlockState(), null)));
+		helper.assertTrue(TableServer.buildPreview(barrier.id(), barrier).count() == 0, "a barrier is drawn in the preview");
+		helper.assertTrue(problems.isEmpty(), "no preview cell for: " + String.join("; ", problems));
+		helper.succeed();
+	}
+
+	/** B798 (QA, tests/scan-rebuild-1102): a scan of one standing banner has a preview of it on the Table. */
+	//$ gametest_ticks_batch '"aliveworkplace_test:huge_area"' '400' '"b798BannerPreview"'
+	@GameTest(template = "aliveworkplace_test:huge_area", timeoutTicks = 400, batch = "b798BannerPreview")
+	public void aScannedLoneBannerHasAPreviewOnTheTable(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		BlockPos at = new BlockPos(18, 2, 18);
+		helper.setBlock(at, Blocks.WHITE_BANNER);
+		ResourceLocation id = QaBuilders1102bGameTests.scan(helper, at, at);
+		Optional<TablePayloads.Preview> preview = TableServer.preview(helper.getLevel().getServer(), id);
+		helper.assertTrue(preview.isPresent(), "the scanned banner has no preview at all");
+		helper.assertTrue(preview.get().count() == 1, "the Table's preview of a scanned lone banner (" + id + ") has " + preview.get().count() + " cells");
+		helper.succeed();
+	}
 }

@@ -462,6 +462,9 @@ not 13; other colors never wagon beds; a cabin at the look's far edges and a bed
 in a new world; a real camp on a server with an older list keeps its wagon beds through a reload while a player's bed
 beside it is a home; an old list's bedroll survives the first save; a bed put back where a wagon bed stood is a home),
 `QaCabinBedsReplaceBug1101Tests` (B761: a bed put back at once where a wagon bed stood is a home),
+`QaWagonBedSingularBugTests` and `QaWagonBedCount1102GameTests` (B787: the Beds button's wagon line word for word with two
+bedrolls, "Not counted: 2 wagon beds (for the road, not homes)", and one, "Not counted: 1 wagon bed (for the road, not
+a home)"; with none left, no line),
 `QaVillageFixesVerify1102GameTests` (B761: a green bed put back at once stays a home after a restart; lying down in a
 bedroll or putting a bed elsewhere leaves the camp's bedrolls listed; the Bed list never offers a held bedroll and offers
 a bed put back on a bedroll's spot as free at once),

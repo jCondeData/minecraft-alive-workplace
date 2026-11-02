@@ -330,7 +330,8 @@ showcase catalog).
 - `machine_job`, an attachment on a worker (39.3): a trip to a machine under way: the machine's position, its file,
   the stage (`fetch`, `feed`, `return`) and what's carried. Every field is optional; without it the worker has no trip.
   A trip saved mid-way goes on after a load, so nothing carried is lost. In a world opened again after Create was taken
-  out of the pack the trip can't go on: what was carried goes back into the store by the workstation, or drops at the
+  out of the pack the trip still loads (a carried stack of Create's own, such as its flour, is dropped from the record,
+  B791) but can't go on: what was carried goes back into the store by the workstation, or drops at the
   worker's feet when there's none, and the record is cleared. (The design note's per-dimension `machines`
   list wasn't needed: workers find machines near their workstation in loaded chunks.)
 

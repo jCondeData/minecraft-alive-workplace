@@ -17,7 +17,7 @@ public final class BuilderBag {
 	public static final int SLOTS = 27;
 	/** The most a bag ever holds: {@link #SLOTS} and Engineering II's 18 more (35.14). */
 	public static final int MAX_SLOTS = SLOTS + 18;
-	public static final Codec<BuilderBag> CODEC = ItemStack.CODEC.listOf().xmap(BuilderBag::of, BuilderBag::stacks);
+	public static final Codec<BuilderBag> CODEC = io.github.jcondedata.aliveworkplace.mc.Lenient.list(ItemStack.CODEC, "builder bag").xmap(BuilderBag::of, BuilderBag::stacks);
 
 	private final SimpleContainer items = new SimpleContainer(MAX_SLOTS);
 	/** How many of the slots take new stacks now (not saved: the builder's work sets it each round from Engineering). */

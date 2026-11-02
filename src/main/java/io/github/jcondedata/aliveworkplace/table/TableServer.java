@@ -314,10 +314,19 @@ public final class TableServer {
 		return Optional.of(preview);
 	}
 
-	/** Whether a preview draws this block: not air, nothing invisible (barriers, light, fluids), no structure-block helpers. */
+	/**
+	 * Whether a preview draws this block: not air, nothing invisible (barriers, light, fluids), no structure-block helpers.
+	 * A block drawn only by its block entity (a banner, a decorated pot, a sign) is drawn as its item (B798).
+	 */
 	public static boolean previewShows(net.minecraft.world.level.block.state.BlockState state) {
-		return !state.isAir() && state.getRenderShape() != net.minecraft.world.level.block.RenderShape.INVISIBLE
+		return !state.isAir() && (state.getRenderShape() != net.minecraft.world.level.block.RenderShape.INVISIBLE || drawnAsItem(state))
 			&& !state.is(net.minecraft.world.level.block.Blocks.JIGSAW) && !state.is(net.minecraft.world.level.block.Blocks.STRUCTURE_BLOCK);
+	}
+
+	/** B798: a block with no model of its own, drawn by its block entity, that the preview draws as its item instead. */
+	public static boolean drawnAsItem(net.minecraft.world.level.block.state.BlockState state) {
+		return state.getRenderShape() == net.minecraft.world.level.block.RenderShape.INVISIBLE && state.hasBlockEntity()
+			&& state.getBlock().asItem() != net.minecraft.world.item.Items.AIR;
 	}
 
 	/**

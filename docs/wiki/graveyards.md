@@ -33,7 +33,7 @@ Graves that old saves left scattered round the village are moved the same way, o
   revive (nothing in the chest), it takes the nearest grave that isn't resting in the village's Graveyard (or hall
   plot) and moves it. A grave that lies in another village (inside that village's hall circle) is that village's and
   is never moved to this one, even within the Undertaker's 32 blocks; a grave in no village (out in the wilds) still is
-  (B779).
+  (B779). Where two villages' circles overlap, a grave belongs to the village whose hall is nearer across.
 - The resting places (`Graveyards.resting`) are worked out each time from the finished Graveyard builds the village
   remembers (within the hall's reach) and their placement, rotation included. Nothing new is saved.
 - Moving copies the grave's block entity as it is (the villager's saved data, the epitaph, the day they died). The new
@@ -81,5 +81,7 @@ Nothing new. A moved grave keeps its block entity (`villager`, `name`, `professi
 - B779: QA's `QaVillageReachGraves1101BugTests.aGraveInTheNextVillageIsNotLaidInThisVillagesGraveyard` (the next
   village's grave stays out of this Graveyard, this village's own is laid there);
   `B779B780GameTests.aGraveInNoVillageIsStillLaidInTheGraveyard` and
-  `B779B780GameTests.aGraveIsMovedOnceTheNextVillagesHallIsGone`.
+  `B779B780GameTests.aGraveIsMovedOnceTheNextVillagesHallIsGone`; QA's
+  `QaVillageFixesVerify1102GameTests.qaWhereVillagesOverlapAGraveGoesToTheNearerHallsGraveyard` (where two villages
+  overlap, the grave nearer this hall is laid in its Graveyard, the one nearer the other hall stays).
 - Showcase scene: `undertaker_graveyard`.

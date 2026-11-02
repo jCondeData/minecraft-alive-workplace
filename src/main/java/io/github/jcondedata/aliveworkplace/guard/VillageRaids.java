@@ -604,8 +604,8 @@ public final class VillageRaids {
 			Chat.chat(player, Component.translatable(fled ? "message.aliveworkplace.raid.fled" : "message.aliveworkplace.raid.won", name)
 				.withStyle(ChatFormatting.GREEN));
 		}
-		Chronicle.record(level, hall, Chronicle.Kind.RAID, Component.translatable(fled ? "chronicle.aliveworkplace.raid_fled" : "chronicle.aliveworkplace.raid_won",
-			raid.raiders()));
+		Chronicle.record(level, hall, Chronicle.Kind.RAID, fled ? Component.translatable("chronicle.aliveworkplace.raid_fled")
+			: Words.counted("chronicle.aliveworkplace.raid_won", raid.raiders(), raid.raiders())); // "(1 monster)" (B833)
 		if (!fled) {
 			level.playSound(null, hall, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1.5f, 1f);
 		}

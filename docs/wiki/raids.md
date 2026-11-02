@@ -17,6 +17,8 @@ its captain falls. Under that look:
 - The horn's chat line and the chronicle count the raiders in proper English: "1 drowned pirate wades ashore", "1 of
   Captain Brine's warband marches on", "3 desert raiders march on" (B824: a raid of one used to read "1 ... wade"). Each
   counted raid line has a `.one` key beside it in the language file; a culture's data file may leave it out.
+  A raid of one fought off reads "The village fought off the raid (1 monster)" in the chronicle, and still counts in
+  the Founder's story of the village (B833).
 
 ## A day's warning (32.14)
 

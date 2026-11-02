@@ -458,6 +458,12 @@ tested (the GameTests use the table as the server does).
 Create's Mechanical Piston moves the mod's blocks with what is in them, as it moves chests (tested: Mailbox, Shop
 Counter, Drop Box, Blueprint Table); a Wonder's Foundation Stone stays put. What a moved Village Hall, Mailbox or
 Travel Post keeps of its place in the village, the post and the travel network is not tested.
+Create's funnels and chutes take nothing out of a Shop Counter or a Mailbox, and a funnel pushing into a counter,
+mailbox or drop box loses and doubles nothing (a counter refuses it). A Mechanical Drill breaking a Mailbox, Shop
+Counter, Drop Box, Builder's Bench, Blueprint Table or Village Hall drops what a player breaking it gets (a named
+hall keeps its name). A Deployer acts as a fake player: one a player placed acts for him; one nobody placed still
+becomes the owner of a hall it sets down and of an unowned Mailbox or Shop Counter it clicks (B843), and a stranger's
+deployer can place blocks in and rename the hall of a protected village (B844).
 
 ## Proof
 
@@ -502,6 +508,11 @@ Travel Post keeps of its place in the village, the post and the travel network i
   `QaCreateMovesOurBlocks1102eCompatTests` (lane E's QA): a Mechanical Piston pushes a Mailbox, a Shop Counter, a
   Drop Box and a Blueprint Table two steps and each keeps exactly what was in it (nothing doubled on the ground, nothing
   lost), while a Wonder's Foundation Stone isn't moved at all (a plank pushed by the same piston is the control).
+  `QaCreateMachinesOnOurBlocks1102eCompatTests` (lane E's QA, 15): funnels and chutes on a counter, mailbox and drop
+  box, and a drill breaking each of the mod's item-holding blocks, each against a control (a chest, a player).
+  `QaCreateDeployerOnOurThings1102eCompatTests` (lane E's QA, 7): a deployer an owner placed sets down his hall, names a
+  hall and a villager, hands in an insignia once; a stranger's stick changes nothing. The failing cases (B843, B844)
+  are on `tests/create-deployer-1102`.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,

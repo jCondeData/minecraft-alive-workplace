@@ -1003,6 +1003,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerMoatBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerWater1101dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerWater1101dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHaulerWaterVerify1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShoppingPlurals1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShoppingPluralsBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallWordsAtExtremes1031GameTests",

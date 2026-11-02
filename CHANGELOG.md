@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.4 — 2026-11-02
+
 ### Fixed
 - Colonies: a colony founded by a single settler (the other died before they set out) reads in the singular: "Tomas
   has founded Newbrook" in chat and "Our settler Tomas founded Newbrook" in the mother village's chronicle (B841).

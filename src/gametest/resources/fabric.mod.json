@@ -614,6 +614,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPactsUpgrade1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReservedReach1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilders1101GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilders1102bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderPartWordsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.LighthousePowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LibraryPowerGameTests",

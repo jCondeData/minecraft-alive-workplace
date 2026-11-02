@@ -44,6 +44,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  *   village's hall is laid in its Graveyard, one nearer the other hall stays.</li>
  *   <li>B780 (any death inside the village is written in its chronicle): the height edge (HEIGHT above the hall
  *   written, a block more not) and two overlapping villages (each death in exactly the nearer hall's chronicle).</li>
+ *   <li>31.22's drill day: with no dummies only the guards drill; a baby at the dummies doesn't.</li>
  * </ul>
  */
 public class QaVillageFixesVerify1102GameTests implements FabricGameTest {
@@ -148,6 +149,43 @@ public class QaVillageFixesVerify1102GameTests implements FabricGameTest {
 						"census: beds " + census.beds() + " (want 1), wagon beds " + census.wagonBeds() + " (want " + (rolls.size() - 1) + ")");
 					helper.succeed();
 				});
+			});
+		});
+	}
+
+	/**
+	 * B761 through the People table's Bed list (40.4: "only beds in that village"; a wagon's bedrolls are no homes): the
+	 * camp's held bedrolls are never offered, and a brown bed put straight back on a broken bedroll's spot is offered as a
+	 * free bed at once, before the hall's next round, and still after it; choosing it makes it the villager's home.
+	 */
+	//$ gametest_ticks_batch HUGE '300' '"qaFix1102BedListPutBack"'
+	@GameTest(template = HUGE, timeoutTicks = 300, batch = "qaFix1102BedListPutBack")
+	public void qaABedPutBackOnABedrollsSpotIsOfferedFreeInTheBedList(GameTestHelper helper) {
+		camp(helper, (level, rolls) -> {
+			BlockPos hall = helper.absolutePos(HALL);
+			List<BlockPos> offered = io.github.jcondedata.aliveworkplace.hall.HallBeds.options(level, hall).stream().map(o -> o.bed()).toList();
+			helper.assertTrue(rolls.stream().noneMatch(offered::contains), "the Bed list offers the camp's bedrolls: " + offered);
+			clearCampLook(helper);
+			BlockPos spot = rolls.get(0);
+			Direction facing = breakBed(level, spot);
+			placeBed(level, spot, facing, Blocks.BROWN_BED);
+			java.util.function.Supplier<String> check = () -> {
+				List<io.github.jcondedata.aliveworkplace.hall.HallBeds.Option> options = io.github.jcondedata.aliveworkplace.hall.HallBeds.options(level, hall);
+				boolean free = options.stream().anyMatch(o -> o.bed().equals(spot) && !o.taken());
+				boolean bedroll = options.stream().anyMatch(o -> !o.bed().equals(spot) && rolls.contains(o.bed()));
+				return free && !bedroll ? null : "the Bed list " + options.stream().map(o -> helper.relativePos(o.bed()) + (o.taken() ? " taken" : " free")).toList()
+					+ " (the bed put back at " + helper.relativePos(spot) + ")";
+			};
+			String now = check.get();
+			helper.assertTrue(now == null, "at once: " + now);
+			helper.runAfterDelay(45, () -> {
+				String later = check.get();
+				helper.assertTrue(later == null, "after the hall's round: " + later);
+				Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(2, 2, 26));
+				v.setNoAi(true);
+				helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.HallBeds.moveIn(level, v, spot) && spot.equals(QaVillageGuards1031GameTests.home(v)),
+					"choosing the bed put back didn't make it the villager's home: " + QaVillageGuards1031GameTests.home(v));
+				helper.succeed();
 			});
 		});
 	}
@@ -365,6 +403,82 @@ public class QaVillageFixesVerify1102GameTests implements FabricGameTest {
 			helper.assertTrue(eDeaths.stream().filter(l -> l.startsWith("Bea")).count() == 1 && eDeaths.stream().noneMatch(l -> l.startsWith("Ada")),
 				"the east hall's chronicle (Bea's village, not Ada's) reads " + eDeaths);
 			helper.succeed();
+		});
+	}
+
+	// ---- 31.22: drill day's edges (who drills) ------------------------------------------------------------------------
+
+	/** Drill day with no Training Dummy in reach (every stray one taken away); then {@code body}. */
+	static void noDummyScene(GameTestHelper helper, QaVillageEconomySaves1101GameTests.DrillBody body) {
+		Leftovers.clear(helper);
+		helper.setBlock(QaVillageEconomySaves1101GameTests.HALL, ModBlocks.VILLAGE_HALL);
+		ServerLevel level = helper.getLevel();
+		long time = level.getDayTime();
+		Leftovers.after(helper, () -> level.setDayTime(time));
+		helper.runAfterDelay(2, () -> {
+			BlockPos hall = helper.absolutePos(QaVillageEconomySaves1101GameTests.HALL);
+			for (BlockPos stray : ReformStories.dummies(level, hall)) {
+				level.removeBlock(stray, false);
+			}
+			ReformStories.forget(level, hall);
+			helper.assertTrue(ReformStories.dummies(level, hall).isEmpty(), "set-up: dummies about: " + ReformStories.dummies(level, hall));
+			body.run(level, hall);
+			ReformStories.Data.get(level).entry(hall).drillDone = true;
+			ReformStories.Data.get(level).setDirty();
+			helper.succeed();
+		});
+	}
+
+	static Villager standing(GameTestHelper helper, BlockPos rel, net.minecraft.world.entity.npc.VillagerProfession job, int age) {
+		Villager v = helper.spawn(EntityType.VILLAGER, rel);
+		v.setNoAi(true);
+		v.setAge(age);
+		v.setVillagerData(v.getVillagerData().setProfession(job).setLevel(2));
+		return v;
+	}
+
+	/** One whole drill day at {@code hall} today: the morning, a beat at noon, the end. The day's drill lines. */
+	static List<String> drillDay(ServerLevel level, BlockPos hall) {
+		long today = Chronicle.day(level);
+		QaVillageEconomySaves1101GameTests.drillToday(level, hall, today);
+		QaVillageEconomySaves1101GameTests.beat(level, today, 1000);
+		QaVillageEconomySaves1101GameTests.beat(level, today, ReformStories.DRILL_START + 20);
+		QaVillageEconomySaves1101GameTests.beat(level, today, ReformStories.DRILL_END + 20);
+		return QaVillageEconomySaves1101GameTests.drillLines(level, hall, VillageHalls.name(level, hall).getString());
+	}
+
+	/**
+	 * 31.22 ("at noon the next day every grown villager spars ... at the village's Training Dummies (the guards alone if
+	 * there are none)"): with no dummy in reach, a Guard and a Farmer standing by the hall at noon: only the Guard drills,
+	 * so the line counts 1.
+	 */
+	//$ gametest_ticks_batch HUGE '100' '"qaFix1102DrillGuardsAlone"'
+	@GameTest(template = HUGE, timeoutTicks = 100, batch = "qaFix1102DrillGuardsAlone")
+	public void qaWithNoDummiesOnlyTheGuardsDrill(GameTestHelper helper) {
+		noDummyScene(helper, (level, hall) -> {
+			standing(helper, QaVillageEconomySaves1101GameTests.HALL.offset(1, 0, 0), io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD, 0);
+			standing(helper, QaVillageEconomySaves1101GameTests.HALL.offset(-1, 0, 0), net.minecraft.world.entity.npc.VillagerProfession.FARMER, 0);
+			List<String> lines = drillDay(level, hall);
+			String village = VillageHalls.name(level, hall).getString();
+			helper.assertTrue(lines.size() == 1 && lines.get(0).startsWith("Drill day in " + village + ": 1 villager "),
+				"with no dummies a Guard and a Farmer by the hall: the drill line reads " + lines + ", not one counting 1 villager (the Guard)");
+		});
+	}
+
+	/**
+	 * 31.22 ("every grown villager spars"): at the dummy a grown Farmer and a baby stand side by side at noon; only the
+	 * grown one drills, so the line counts 1.
+	 */
+	//$ gametest_ticks_batch HUGE '100' '"qaFix1102DrillNoBabies"'
+	@GameTest(template = HUGE, timeoutTicks = 100, batch = "qaFix1102DrillNoBabies")
+	public void qaABabyAtTheDummiesDoesNotDrill(GameTestHelper helper) {
+		QaVillageEconomySaves1101GameTests.drillScene(helper, (level, hall) -> {
+			standing(helper, QaVillageEconomySaves1101GameTests.DUMMY.offset(1, 0, 0), net.minecraft.world.entity.npc.VillagerProfession.FARMER, 0);
+			standing(helper, QaVillageEconomySaves1101GameTests.DUMMY.offset(-1, 0, 0), net.minecraft.world.entity.npc.VillagerProfession.NONE, -24000);
+			List<String> lines = drillDay(level, hall);
+			String village = VillageHalls.name(level, hall).getString();
+			String expected = "Drill day in " + village + ": 1 villager sparred at the dummies.";
+			helper.assertTrue(lines.equals(List.of(expected)), "a grown Farmer and a baby at the dummy: the drill line reads " + lines + ", not [" + expected + "]");
 		});
 	}
 

@@ -3,13 +3,17 @@ package io.github.jcondedata.aliveworkplace.test;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.WorkplaceConfig;
 import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
+import io.github.jcondedata.aliveworkplace.hall.Chronicle;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.threat.Culture;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.Piglins;
 import io.github.jcondedata.aliveworkplace.threat.Plunder;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import io.github.jcondedata.aliveworkplace.threat.Threats;
+import java.util.List;
 import java.util.Optional;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
@@ -34,7 +38,10 @@ import net.minecraft.world.phys.AABB;
  * <li>at dawn the zombified plunderer carries the gold home: the hall counts all 12 lost, and the ingot it showed on
  *     its head comes off with the plunder;</li>
  * <li>a plunderer whose head wasn't bare (its own golden helmet, so the plunder isn't shown) keeps its helmet once
- *     turned, carries the 12, and killed drops the 12 ingots and no extra shown ingot.</li>
+ *     turned, carries the 12, and killed drops the 12 ingots and no extra shown ingot;</li>
+ * <li>(32.10, "the siege report says it the morning after, or the chronicle when there was no siege") a raid without a
+ *     siege that loses a single nugget at dawn: the chronicle says the 1 gold, through the raid's own dawn round. Kills
+ *     the mutant {@code lost > 1} in Plunder's end, which every other plunder test lets live.</li>
  * </ul>
  */
 public class QaPlunderVerify1102dGameTests implements FabricGameTest {
@@ -141,5 +148,35 @@ public class QaPlunderVerify1102dGameTests implements FabricGameTest {
 			helper.assertTrue(ingots == 12, "the helmeted zombified plunderer, killed, dropped " + ingots + " gold ingots, expected the 12 it carried");
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * A piglin raid begun the night before, no walls (no siege): at dawn its one raider leaves carrying a single gold
+	 * nugget. The raid's own dawn round ends it, and the chronicle says the village lost 1 gold; the count is spent.
+	 */
+	//$ gametest_ticks_batch AREA '60' '"qaPlunderVerifyOneNugget1102d"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "qaPlunderVerifyOneNugget1102d")
+	public void aSingleNuggetCarriedOffAtDawnIsInTheChronicle(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = village(helper);
+		Leftovers.halls(helper);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		helper.assertTrue(entity != null, "setup: no Village Hall");
+		long time = level.getDayTime();
+		Leftovers.after(helper, () -> level.setDayTime(time));
+		Culture culture = piglins(helper);
+		Mob piglin = piglin(helper, culture, new BlockPos(12, 2, 12));
+		ThreatData.get(level).begin(new ThreatData.Under(hall, PIGLINS, 1, level.getGameTime() - 6000));
+		helper.assertTrue(ThreatData.get(level).siege(hall).isEmpty(), "setup: expected no siege at a village without walls");
+		Plunder.carry(level, piglin, new ItemStack(Items.GOLD_NUGGET, 1));
+		level.setDayTime((level.getDayTime() / 24000) * 24000 + 23000 + 24000); // dawn: piglins' hours (night) are over
+		VillageRaids.tick(level, hall, 0, 0, Long.MIN_VALUE / 2, d -> { });
+		helper.assertTrue(ThreatData.get(level).raid(hall).isEmpty(), "setup: expected the raid over at dawn");
+		List<String> lines = entity.chronicle().stream().filter(e -> e.kind() == Chronicle.Kind.RAID).map(e -> e.text().getString()).toList();
+		helper.assertTrue(lines.contains("The piglins carried off 1 gold from the village's chests"),
+			"the chronicle after a raid that carried off one nugget: " + lines);
+		helper.assertTrue(ThreatData.get(level).plundered(hall) == 0, "the count wasn't spent once told: " + ThreatData.get(level).plundered(hall));
+		helper.succeed();
 	}
 }

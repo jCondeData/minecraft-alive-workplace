@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Piglin incursions: a piglin that carried gold off a village chest keeps it when the Warlord's fall turns it
+  zombified, so killed it drops the gold and at dawn takes it home (counted in the siege report) (B829).
 - Hauler Golem: a golem no longer stands idle for good when the nearest worker's goods (or a Drop Box's) don't fit
   in the Storehouse; it passes them over and hauls another worker's goods that do fit, as porters do (B830).
 - Builder: a very large `workplaceBuildDelay` (over about 21 million ticks) no longer makes Builders place a block

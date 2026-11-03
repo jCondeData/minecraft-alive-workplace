@@ -1195,7 +1195,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerPathsVerify1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCommonMarket1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRetrain1103cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaStewardWords1103cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaStewardWords1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallBeds1103cGameTests"
 		]
 	},
 	"depends": {

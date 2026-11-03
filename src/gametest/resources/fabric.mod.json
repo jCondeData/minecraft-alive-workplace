@@ -504,6 +504,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGates1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampHeight1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderHeight1103dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeCaps1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderVerify1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderCalledOff1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavesAfterFixes1103eGameTests",
@@ -1230,7 +1231,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFurnished1103fGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuildViews1103gGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallFixes1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallMidActivity1103cGameTests"
 		]
 	},
 	"depends": {

@@ -172,6 +172,9 @@ every objective's.
   still following on day 8, not home at the broken hall, home in the sending village
   (`aFreedCarterGoesHomeToTheVillageThatStands`).
 - QA bugs (`QaLostCaravanBugTests`): B624, B625, B626.
+- QA (`QaLostCaravanNoHall1103GameTests`, B626): with the receiving hall broken, only the player who brings the goods
+  to that village is told the hall is gone: one standing there with none of the goods, or carrying them 200 blocks off,
+  hears nothing.
 - QA (`QaLostCaravanHallBack1102GameTests`, B624 and B626 from the far side): a receiving hall broken and put back
   on its own spot takes the goods and gives the standing; a carter freed on day 6 still follows on day 7 after a
   restart.

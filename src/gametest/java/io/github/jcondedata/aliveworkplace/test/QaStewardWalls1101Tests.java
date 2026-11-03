@@ -86,6 +86,9 @@ public class QaStewardWalls1101Tests implements FabricGameTest {
 				level.setBlock(at, Blocks.AIR.defaultBlockState(), 2);
 			}
 		});
+		// B859: a hall an earlier batch left just outside the area is nearer the wall's corner piece than this one, so the
+		// Steward rightly skips that piece as another village's ground (2 of 10 nightly repeats opened the second piece)
+		Leftovers.halls(helper);
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos hall = helper.absolutePos(HALL);
 		Leftovers.wonderGround(helper, hall);

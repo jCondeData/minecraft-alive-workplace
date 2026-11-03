@@ -1447,7 +1447,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     upgrade check, the client pass, the config matrix, the plain-Fabric boot; `baseline.json` not updated (no Full
     run). Left: B412, the rest of the Full run, then the owner's play session.
 - [ ] **26.5** (approved: owner 2026-10-13, publish once 26.4 has passed and we feel ready; waits on 26.4) **Publish.** Done when: the pages are live and linked from the README.
-- [x] **26.6** (approved 2026-10-19) **Retrain a villager who already has a job** (owner's playtest, 2026-10-14: in Cobblemon villages almost
+- [x] **26.6** (approved 2026-10-19) (verified 2026-11-03: QaRetrain1103cGameTests [13]: tiers 5/10/20/35/50 short-by-one and exact, confirm window 100/101 ticks, other villager/item second, reach 4.5 both sides, already a Builder, config prices; 2 hand mutants killed; guide jobs.md matches) **Retrain a villager who already has a job** (owner's playtest, 2026-10-14: in Cobblemon villages almost
   every villager already works, so there's nobody to hire). Sneak-right-click any grown villager who has a job (vanilla,
   ours or another mod's, traded with or not; never a child or a nitwit) within about 4 blocks of one of our job blocks
   (the Blueprint Table and every workstation that picks one of our jobs), holding that job's item: the villager is

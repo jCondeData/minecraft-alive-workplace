@@ -148,5 +148,5 @@ horn) in their own entity data.
 - GameTests: `QaKingRaidGolemSpot1101dGameTests` (QA): a storm night with a raid already on keeps that raid as it is,
   and the King's raid comes that night once it is called off.
 - GameTests: `QaKingTribute1102dBugTests` (B842): a tribute of one emerald reads "took 1 emerald in tribute"
-  (`theKingsTributeOfOneEmeraldReadsInTheSingular`), two read "2 emeralds"; `QaDropBoxMixed1103GameTests` (QA): a treasury of 5.99 emeralds (1.99 taken) still reads "1 emerald", and 9 read "3 emeralds".
+  (`theKingsTributeOfOneEmeraldReadsInTheSingular`), two read "2 emeralds"; `QaDropBoxRoom1103cGameTests` (QA): a treasury of 5.99 emeralds (1.99 taken) still reads "1 emerald", and 9 read "3 emeralds".
 - Showcase scenes `bandit_fort` and `bandit_king`.

@@ -128,7 +128,7 @@ public class QaHaulerWaterVerify1102GameTests implements net.fabricmc.fabric.api
 		for (Map.Entry<Item, Integer> e : expected.entrySet()) {
 			int stored = count(helper, chest, e.getKey());
 			helper.assertTrue(stored == e.getValue(), where + ": the Storehouse chest holds " + stored + " of " + e.getValue() + " " + e.getKey()
-				+ "; the golem carries " + HaulerGolems.load(golem) + " at " + golem.position() + " (in water: " + golem.isInWater()
+				+ "; the golem carries " + HaulerGolems.load(golem) + " at " + helper.relativeVec(golem.position()) + " in the test area (in water: " + golem.isInWater()
 				+ "), heading for " + HaulerGolems.storehouse(helper.getLevel(), golem));
 		}
 		helper.assertTrue(carried(golem) == 0, where + ": the golem still carries " + HaulerGolems.load(golem));
@@ -158,6 +158,88 @@ public class QaHaulerWaterVerify1102GameTests implements net.fabricmc.fabric.api
 	@GameTest(template = HUGE, timeoutTicks = 1600, batch = "qaVerify1102MoatDeepLevel")
 	public void aHaulerSwimsADeepMoatLevelWithItsBanksToTheOnlyStorehouse(GameTestHelper helper) {
 		islandRun(helper, 3, 0, "a moat three deep, level with its banks");
+	}
+
+	/**
+	 * B858: a new hauler goes straight to work, never off on vanilla's "move back to the village" stroll first. That goal
+	 * ranks the same as the work, starts first on about 1 golem in 5 a few sections from a village (an earlier test's, in
+	 * CI) and walks it up to 10 blocks toward it, in CI once off the raised ground in the shallow-moat test, where it then
+	 * gave its Storehouse up. 45 haulers a few sections from a bell: each must be at work, and none strolling, on every tick
+	 * of its first 60.
+	 */
+	//$ gametest_ticks_batch HUGE '100' '"qaVerify1102NoStrollFirst"'
+	@GameTest(template = HUGE, timeoutTicks = 100, batch = "qaVerify1102NoStrollFirst")
+	public void aNewHaulerGoesToWorkBeforeAnyVanillaStroll(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		GolemHaulerFightGameTests.strayStorehouses(helper);
+		// a village two to four sections off (a bell, a meeting point), as an earlier test's left beside this one in CI: the
+		// stroll heads for it; none of these golems stands in it
+		BlockPos bell = helper.absolutePos(new BlockPos(-24, 2, 14));
+		helper.getLevel().setBlockAndUpdate(bell, Blocks.BELL.defaultBlockState());
+		// a village counts only claimed points of interest: as if its villagers met at the bell
+		helper.assertTrue(helper.getLevel().getPoiManager().take(h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.MEETING),
+			(h, p) -> p.equals(bell), bell, 1).isPresent(), "the bell claimed as a meeting point");
+		Leftovers.after(helper, () -> {
+			helper.getLevel().getPoiManager().release(bell);
+			helper.getLevel().removeBlock(bell, false);
+		});
+		java.util.List<IronGolem> golems = new java.util.ArrayList<>();
+		for (int x = 10; x <= 26; x += 4) {
+			for (int z = 2; z <= 26; z += 3) {
+				IronGolem golem = hauler(helper, new BlockPos(x, 1, z));
+				ModAttachments.HAULER_LOAD.set(golem, Map.of(Items.OAK_LOG, 64));
+				golems.add(golem);
+			}
+		}
+		java.lang.reflect.Field field;
+		try {
+			field = net.minecraft.world.entity.Mob.class.getDeclaredField("goalSelector");
+			field.setAccessible(true);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException(e);
+		}
+		StringBuilder strolled = new StringBuilder();
+		helper.onEachTick(() -> {
+			if (helper.getTick() < 4) {
+				return; // its goals are first picked in its first ticks
+			}
+			for (IronGolem golem : golems) {
+				java.util.List<net.minecraft.world.entity.ai.goal.Goal> running;
+				try {
+					running = ((net.minecraft.world.entity.ai.goal.GoalSelector) field.get(golem)).getAvailableGoals().stream()
+						.filter(net.minecraft.world.entity.ai.goal.WrappedGoal::isRunning).map(net.minecraft.world.entity.ai.goal.WrappedGoal::getGoal).toList();
+				} catch (IllegalAccessException e) {
+					throw new IllegalStateException(e);
+				}
+				boolean working = running.stream().anyMatch(g -> g instanceof io.github.jcondedata.aliveworkplace.legend.GolemRoleGoal);
+				boolean strolling = running.stream().anyMatch(g -> g instanceof net.minecraft.world.entity.ai.goal.RandomStrollGoal);
+				if ((!working || strolling) && strolled.length() < 400) {
+					strolled.append(" tick ").append(helper.getTick()).append(" at ").append(helper.relativePos(golem.blockPosition())).append(": ")
+						.append(running.stream().map(g -> g.getClass().getSimpleName()).toList()).append(';');
+				}
+			}
+		});
+		helper.runAtTickTime(60, () -> {
+			helper.assertTrue(strolled.isEmpty(), "haulers not at work, or off on a stroll, in their first ticks:" + strolled);
+			// and whenever one stops for a fight, its work takes over from any stroll again, not only when it starts first
+			for (IronGolem golem : golems) {
+				java.util.Set<net.minecraft.world.entity.ai.goal.WrappedGoal> goals;
+				try {
+					goals = ((net.minecraft.world.entity.ai.goal.GoalSelector) field.get(golem)).getAvailableGoals();
+				} catch (IllegalAccessException e) {
+					throw new IllegalStateException(e);
+				}
+				net.minecraft.world.entity.ai.goal.WrappedGoal work = goals.stream()
+					.filter(g -> g.getGoal() instanceof io.github.jcondedata.aliveworkplace.legend.GolemRoleGoal).findFirst().orElseThrow();
+				for (net.minecraft.world.entity.ai.goal.WrappedGoal g : goals) {
+					if (g.getGoal() instanceof net.minecraft.world.entity.ai.goal.RandomStrollGoal) {
+						helper.assertTrue(g.getPriority() > work.getPriority(), "a hauler's work (rank " + work.getPriority() + ") gives way to "
+							+ g.getGoal().getClass().getSimpleName() + " (rank " + g.getPriority() + ")");
+					}
+				}
+			}
+			helper.succeed();
+		});
 	}
 
 	// ---- B783: surface below the banks ----

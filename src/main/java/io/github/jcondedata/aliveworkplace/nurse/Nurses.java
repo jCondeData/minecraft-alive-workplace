@@ -30,7 +30,16 @@ public final class Nurses {
 	/** Ticks between treatments for one player, at Novice level. */
 	public static final int COOLDOWN = 1200;
 	private static final boolean COBBLEMON = Platform.get().isModLoaded("cobblemon");
-	private static final Map<UUID, Long> LAST_TREATED = new HashMap<>();
+	/**
+	 * When each player was last treated and the tick they may come back (B864). The return is set from the nurse's
+	 * pace when she treats and only ever moves earlier: a nurse who works faster when asked (a level, a better mood)
+	 * lets you in sooner, but a slower pace later (a bad mood, an ill village) never refuses a player who waited the
+	 * time they were given.
+	 */
+	private static final Map<UUID, Treated> LAST_TREATED = new HashMap<>();
+
+	private record Treated(long at, long ready) {
+	}
 	/** Config {@code nurseHealingMachine}: a nurse at a Healing Machine heals your team in it (ROADMAP 28.7). */
 	public static volatile boolean HEALING_MACHINE = true;
 
@@ -50,9 +59,16 @@ public final class Nurses {
 		}
 		long now = level.getGameTime();
 		int cooldown = BuilderLevels.delay(COOLDOWN, nurse);
-		Long last = LAST_TREATED.get(player.getUUID());
-		if (last != null && now - last < cooldown) {
-			int seconds = secondsLeft(cooldown - (now - last));
+		Treated last = LAST_TREATED.get(player.getUUID());
+		if (last != null) {
+			long ready = Math.min(last.ready(), last.at() + cooldown);
+			if (ready < last.ready()) {
+				LAST_TREATED.put(player.getUUID(), new Treated(last.at(), ready));
+			}
+			last = now < ready ? new Treated(last.at(), ready) : null;
+		}
+		if (last != null) {
+			int seconds = secondsLeft(last.ready() - now);
 			tell(player, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.nurse.wait", seconds, nurse.getDisplayName(), seconds),
 				ChatFormatting.YELLOW);
 			return;
@@ -66,7 +82,7 @@ public final class Nurses {
 			tell(player, Component.translatable("message.aliveworkplace.nurse.machine_busy", nurse.getDisplayName()), ChatFormatting.YELLOW);
 			return;
 		}
-		LAST_TREATED.put(player.getUUID(), now);
+		LAST_TREATED.put(player.getUUID(), new Treated(now, now + cooldown));
 		boolean hurt = player.getHealth() < player.getMaxHealth();
 		player.setHealth(player.getMaxHealth());
 		for (MobEffectInstance effect : player.getActiveEffects().stream().toList()) {

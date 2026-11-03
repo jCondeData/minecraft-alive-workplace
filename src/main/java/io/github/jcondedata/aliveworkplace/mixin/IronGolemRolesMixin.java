@@ -15,7 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * The Golem Smith's golems (29.15): every iron golem gets the role goals (idle on a plain golem): a Wall Sentry holds
- * its post above everything, a Hauler's or Farmhand's work ranks below the golem's attack. A Wall Sentry's blow also
+ * its post above everything, a Hauler's or Farmhand's work gives way to the golem's attack (it stops whenever the golem
+ * has a target) and outranks vanilla's strolls: at the same rank as "move back to the village" that stroll could start
+ * first and walk a golem at work off somewhere it can't get back from, and it gave its Storehouse up (B858). A Wall Sentry's blow also
  * throws the attacker back off the wall. A Hauler or Farmhand held up on its way by mobs that stand still isn't pushed
  * until it arrives (B329).
  */
@@ -30,7 +32,7 @@ abstract class IronGolemRolesMixin extends AbstractGolem {
 		IronGolem self = (IronGolem) (Object) this;
 		this.goalSelector.addGoal(0, new WallSentries.HoldGoal(self));
 		this.goalSelector.addGoal(0, new io.github.jcondedata.aliveworkplace.wonder.GreatWallSentries.WatchGoal(self)); // the Great Wall's sentries (35.16)
-		this.goalSelector.addGoal(2, new GolemRoleGoal(self));
+		this.goalSelector.addGoal(1, new GolemRoleGoal(self)); // above MoveBackToVillageGoal (2), B858
 	}
 
 	/** A Hauler or Farmhand held up by mobs that stand in its way squeezes past them (B329). */

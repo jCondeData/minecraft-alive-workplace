@@ -115,6 +115,8 @@ public class BuilderWork extends Behavior<Villager> {
 	private int workTimer;
 	/** The workplaceBuildDelay rule {@link #workTimer} was set from (B831). */
 	private int workTimerRule;
+	/** B845: whether {@link #workTimer} has been set yet (a fresh brain, as after a load or a re-hire, has not). */
+	private boolean workTimerSet;
 	/** This builder's bag, this tick. */
 	@Nullable
 	private BuilderBag bagNow;
@@ -219,7 +221,13 @@ public class BuilderWork extends Behavior<Villager> {
 
 	@Override
 	protected void start(ServerLevel level, Villager villager, long gameTime) {
-		workTimer = 0;
+		// B845: a restart never gives a free block. The same brain (he woke, a new stint) keeps the wait in hand (the
+		// tick cuts it if the rule went down meanwhile); a fresh one (a load, re-hired) starts a whole wait at today's rule.
+		if (!workTimerSet) {
+			workTimerRule = BuilderLevels.rule(level);
+			workTimer = Math.max(0, BuilderLevels.delay(workTimerRule, villager) - 1);
+			workTimerSet = true;
+		}
 		waitTimer = 0;
 		stuckTimer = 0;
 		reachTicks = 0;

@@ -313,24 +313,51 @@ public class QaCobbleWaystoneFixes1028CompatTests implements FabricGameTest {
 		PartnerShowsCompatTests.after(helper, () -> level.getChunkSource().removeRegionTicket(TICKET, pos, 2, pos));
 	}
 
-	/** Runs {@code then} once the chunk at {@code relative} ticks entities and has loaded its own (up to 200 ticks). */
+	/** How long {@link #whenReady} waits for a far chunk, by the clock (B857). */
+	private static final long READY_MS = 30_000L;
+	/** The server thread's pause on each tick still waiting, so READY_MS takes at most READY_MS / PAUSE_MS ticks. */
+	private static final long PAUSE_MS = 5L;
+	/** The reach tests' timeout: the 10 ticks after the wait and the control, plus the longest wait in ticks. */
+	private static final int REACH_TICKS = 400 + (int) (READY_MS / PAUSE_MS);
+
+	/**
+	 * Runs {@code then} once the chunk at {@code relative} ticks entities and has loaded its own. B857: the GameTest
+	 * server doesn't wait between ticks (vanilla's {@code GameTestServer.waitUntilNextTick} only runs queued tasks), so
+	 * on a busy CI runner it raced through the old 200-tick wait in under a second while the far chunk's generation and
+	 * entity load (worker and IO threads) were still queued. The wait is now by the clock (30 s), each waiting tick
+	 * pausing the server thread for 5 ms, and the failure says what the chunk was still missing.
+	 */
 	private static void whenReady(GameTestHelper helper, BlockPos relative, int waited, Runnable then) {
+		whenReady(helper, relative, waited, System.nanoTime(), then);
+	}
+
+	private static void whenReady(GameTestHelper helper, BlockPos relative, int waited, long started, Runnable then) {
 		BlockPos abs = helper.absolutePos(relative);
 		ServerLevel level = helper.getLevel();
-		if (level.isPositionEntityTicking(abs) && level.areEntitiesLoaded(ChunkPos.asLong(abs))) {
+		boolean ticking = level.isPositionEntityTicking(abs);
+		boolean loaded = level.areEntitiesLoaded(ChunkPos.asLong(abs));
+		if (ticking && loaded) {
 			then.run();
-		} else {
-			helper.assertTrue(waited < 200, "the chunk at " + relative + " never took entities");
-			helper.runAfterDelay(1, () -> whenReady(helper, relative, waited + 1, then));
+			return;
 		}
+		long ms = (System.nanoTime() - started) / 1_000_000L;
+		helper.assertTrue(ms < READY_MS, "the chunk at " + relative + " never took entities (after " + waited + " ticks, " + ms
+			+ " ms: entity ticking " + ticking + ", entities loaded " + loaded + ", chunk present "
+			+ level.hasChunk(abs.getX() >> 4, abs.getZ() >> 4) + ")");
+		try {
+			Thread.sleep(PAUSE_MS);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		helper.runAfterDelay(1, () -> whenReady(helper, relative, waited + 1, started, then));
 	}
 
 	/**
 	 * A wild Pokémon standing on the hall's floor exactly 64 blocks east of the hall is within 64 blocks: the Ranger
 	 * (beside the hall) sets out for it.
 	 */
-	//$ gametest_ticks_batch AREA '400' '"qa_ranger1028_reach64"'
-	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_ranger1028_reach64")
+	//$ gametest_ticks_batch AREA 'REACH_TICKS' '"qa_ranger1028_reach64"'
+	@GameTest(template = AREA, timeoutTicks = REACH_TICKS, batch = "qa_ranger1028_reach64")
 	public void aWildPokemonExactly64BlocksFromTheHallIsBefriended(GameTestHelper helper) {
 		setUp(helper);
 		ServerLevel level = helper.getLevel();
@@ -359,8 +386,8 @@ public class QaCobbleWaystoneFixes1028CompatTests implements FabricGameTest {
 	 * One 65 blocks east of the hall isn't within 64, even though it is 64 from the Ranger (who stands a block east of
 	 * the hall): no walk all day; a Pikachu 5 blocks from the hall then brings one (the control).
 	 */
-	//$ gametest_ticks_batch AREA '400' '"qa_ranger1028_reach65"'
-	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_ranger1028_reach65")
+	//$ gametest_ticks_batch AREA 'REACH_TICKS' '"qa_ranger1028_reach65"'
+	@GameTest(template = AREA, timeoutTicks = REACH_TICKS, batch = "qa_ranger1028_reach65")
 	public void aWildPokemon65BlocksFromTheHallIsNotBefriended(GameTestHelper helper) {
 		setUp(helper);
 		ServerLevel level = helper.getLevel();

@@ -350,11 +350,38 @@ public final class PersonalRequests {
 		for (Quest q : List.copyOf(e.quests)) {
 			int i = q.current();
 			Villager giver = q.personal() ? giver(level, q) : null;
+			if (giver != null && i >= 0 && q.objectives.get(i) instanceof Objectives.LevelUp && !hasJob(giver)) {
+				callOff(level, hall, e, q); // jobless now (No job at the hall, B890): no level to reach, so nobody is let down
+				continue;
+			}
 			if (giver != null && i >= 0 && q.objectives.get(i) instanceof Objectives.Looked looked) {
 				int now = Math.min(looked.need(), looked.look(level, hall, giver, q, dawn));
 				if (now > q.progress[i]) {
 					Stories.progress(level, hall, entity, q, i, now - q.progress[i], null);
 				}
+			}
+		}
+	}
+
+	private static boolean hasJob(Villager villager) {
+		net.minecraft.world.entity.npc.VillagerProfession job = villager.getVillagerData().getProfession();
+		return job != net.minecraft.world.entity.npc.VillagerProfession.NONE && job != net.minecraft.world.entity.npc.VillagerProfession.NITWIT;
+	}
+
+	/**
+	 * Takes {@code quest} down because it can no longer be done (its giver lost the job a "Next level" needs, B890): not
+	 * missed, so no helper loses friendship and the giver isn't let down; each helper online is told it's called off.
+	 */
+	static void callOff(ServerLevel level, BlockPos hall, Stories.Entry e, Quest quest) {
+		if (!e.quests.remove(quest)) {
+			return;
+		}
+		Stories.Data.get(level).setDirty();
+		QuestTracker.changed(level.getServer(), quest.id);
+		for (UUID id : quest.helpers.keySet()) {
+			ServerPlayer helper = online(level, id);
+			if (helper != null) {
+				Chat.chat(helper, Component.translatable("message.aliveworkplace.request.called_off", quest.poster, quest.title()).withStyle(ChatFormatting.YELLOW));
 			}
 		}
 	}

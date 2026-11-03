@@ -18,6 +18,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A hired mercenary, a relief rider or Doctor Wren on the Village Hall's People table now shows their own job and
+  counts as working, with no job change offered: before, they were listed as jobless and one click made them a Mason
+  for free (B889).
+- Giving a friend No job at the hall now calls off their open "Next level before the festival" request ("Dara has no
+  job now, so ... is called off. No friendship is lost.") instead of leaving it to fail at its deadline (B890).
+- A scout retrained (or given No job) while looking through his spyglass puts it away, so he no longer holds it up
+  for good (B891).
 - A retired elder picked for a job on the Village Hall's People table is now refused with "Bram has retired and
   takes no job now: they mentor the young instead." Before, you were told "Bram is now a Mason" while he stayed
   jobless, and the Stonecutter stayed taken by nobody, so no one else could work there (B885).

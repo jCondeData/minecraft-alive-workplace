@@ -70,6 +70,10 @@ public final class VillageHalls {
 				continue;
 			}
 			VillagerProfession job = v.getVillagerData().getProfession();
+			if (HallPeople.visitor(v) && v.getVillagerData().getProfession() != VillagerProfession.NONE) {
+				workers.add(v); // a hired band, relief rider or story's visitor at work: not jobless, and not the village's own guards (B889)
+				continue;
+			}
 			if (job == VillagerProfession.NONE || job == VillagerProfession.NITWIT || v.getBrain().getMemory(MemoryModuleType.JOB_SITE).isEmpty()) {
 				jobless.add(v);
 			} else {
@@ -218,6 +222,7 @@ public final class VillageHalls {
 	/** Gives {@code villager} the job at {@code station}, if it's still free and they can work (not a nitwit or a child). */
 	public static boolean assign(ServerLevel level, Villager villager, FreeStation station) {
 		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT
+			|| HallPeople.visitor(villager) // a hired band's, relief rider's or story visitor's job isn't the village's to give (B889)
 			|| io.github.jcondedata.aliveworkplace.people.Retirement.refuses(villager, villager.getVillagerData().setProfession(station.profession()))) {
 			return false; // a retired elder takes no job: refused before the block is taken, or it's held for nobody (B885)
 		}

@@ -34,6 +34,9 @@ the festival".
 
 Miss the deadline and every helper loses 30 friendship with them, they are glum for a day ("Let down: nobody helped
 in time" in their mood) and they ask nobody for anything for 3 days.
+A "Next level" request whose giver loses their job (No job at the hall) can't be done any more, so it is called off
+instead: the helpers read "Dara has no job now, so \"Next level before the festival\" is called off. No friendship is
+lost." and nobody is let down (B890).
 
 The six requests:
 

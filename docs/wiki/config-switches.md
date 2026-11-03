@@ -295,6 +295,9 @@ the release takes the new defaults, a later choice holds),
 expansions' builds wait the same way; the Table refuses a closed expansion's build by id),
 `HallSpecGameTests.theConfigsSwitchesOutsideTests`, `ProtectionSpecGameTests.theConfigSwitchesProtectionOff`,
 `RoadGameTests.withStewardRoadsOffNothingIsBuilt`, `WallGameTests.withStewardWallsOffNothingIsProposedOrBuilt`,
-`CaravanRoadGameTests.withCaravanRoadsOffNoRoadIsPlanned`, `GiftedGameTests.giftedChanceZeroMeansNobody`.
+`CaravanRoadGameTests.withCaravanRoadsOffNoRoadIsPlanned`, `GiftedGameTests.giftedChanceZeroMeansNobody`,
+`QaVillageSpawns1103dGameTests` (3, QA, B211, `forceVillageSpawns`: forced golems, pups and relief horses are in the
+world and ticking, the riders stay mounted and a pup of two tame wolves keeps their owner; only what the world refuses
+is forced and logged; with the switch off a band's riders all come on foot and the log says so).
 
 Showcase scenes: `config` (the settings screen).

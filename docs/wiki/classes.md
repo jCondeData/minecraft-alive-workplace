@@ -144,7 +144,8 @@ The day a server first runs 1.8, every village with a hall switches on by itself
   level). `villageClasses` off: nothing is seeded and nothing held back; what was seeded stays saved.
 - **Operators:** `/workplace classes status` (the nearest hall: seeding, settling in or settled, and the counts) and
   `/workplace classes reseed` (the hall goes back to unseeded and its villagers lose their class and progress; ages
-  and family names are kept; the next rounds seed them again, with a new week).
+  and family names are kept; the next rounds seed them again, with a new week). Each count reads in its own form: "1
+  villager lost their class", "1 of 1 villager has a class so far", "1 newcomer" (B862, `QaClassesOne1103GameTests`).
 
 ## Switches
 

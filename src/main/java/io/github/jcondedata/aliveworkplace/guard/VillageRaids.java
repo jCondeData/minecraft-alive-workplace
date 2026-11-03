@@ -159,14 +159,15 @@ public final class VillageRaids {
 
 	/**
 	 * The hall's round: a raid under way is checked on (and ended); the attack the clock set for tonight begins at its
-	 * hour; at dusk the clock rolls the next night's.
+	 * hour; at dusk the clock rolls the next night's. Only the raid's own raiders count ({@link #own}): a neighbor
+	 * village's, standing within this one's reach, neither keep this raid going nor leave with it (B856).
 	 */
 	public static void tick(ServerLevel level, BlockPos hall, int villagers, int guards, long lastRaidDay, java.util.function.LongConsumer raided) {
 		ThreatData data = ThreatData.get(level);
 		ThreatData.Under raid = data.raid(hall).orElse(null);
 		long time = level.getDayTime() % VillageNeeds.DAY;
 		if (raid != null) {
-			List<Mob> left = raiders(level, hall);
+			List<Mob> left = own(level, hall);
 			Optional<Culture> culture = Threats.get(raid.culture());
 			boolean sea = culture.map(c -> c.arrival() == Culture.Arrival.SHORE).orElse(false);
 			// Most raiders leave at dawn; a culture whose hours are until_noon stays through the morning.

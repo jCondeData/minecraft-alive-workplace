@@ -333,7 +333,7 @@ public final class ClassMigration {
 		long unseeded = village.stream().filter(v -> !ModAttachments.SOCIAL_CLASS.has(v)).count();
 		long today = Chronicle.day(level);
 		if (seeding(level, hall)) {
-			out.add(Component.translatable("command.aliveworkplace.classes.seeding", name, village.size() - unseeded, village.size()));
+			out.add(seeding(name, village.size() - unseeded, village.size()));
 		} else if (settling(level, hall, today)) {
 			out.add(io.github.jcondedata.aliveworkplace.work.Words.counted("command.aliveworkplace.classes.settling", daysLeft(level, hall, today), name, daysLeft(level, hall, today)));
 		} else {
@@ -342,9 +342,22 @@ public final class ClassMigration {
 		out.add(Component.translatable("command.aliveworkplace.classes.counts", village.size() - unseeded == 0
 			? Component.translatable("command.aliveworkplace.classes.nobody") : counts(village)));
 		if (!seeding(level, hall) && unseeded > 0) {
-			out.add(Component.translatable("command.aliveworkplace.classes.newcomers", unseeded));
+			out.add(io.github.jcondedata.aliveworkplace.work.Words.counted("command.aliveworkplace.classes.newcomers", unseeded, unseeded));
 		}
 		return out;
+	}
+
+	/**
+	 * "Thornholm is finding its places: 16 of 36 villagers have a class so far.", with "1 of 1 villager has" and "1 of 5
+	 * villagers has" (B862): {@code .one} when the village has one villager, {@code .rest_one} when one has a class.
+	 */
+	public static Component seeding(Component name, long have, long of) {
+		return io.github.jcondedata.aliveworkplace.work.Words.countedTwo("command.aliveworkplace.classes.seeding", of, have, name, have, of);
+	}
+
+	/** "Thornholm will find its places again: 22 villagers lost their class...", "1 villager" for one (B862). */
+	public static Component reseeded(Component village, int cleared) {
+		return io.github.jcondedata.aliveworkplace.work.Words.counted("command.aliveworkplace.classes.reseeded", cleared, village, cleared);
 	}
 
 	/**

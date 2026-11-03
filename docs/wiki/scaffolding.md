@@ -129,7 +129,10 @@ canceled (all 64 on the ground), the chest emptied mid-column (none lost), and a
 hurt, the chest as full as before). QA's `QaBuilderFixes1026GameTests.scaffoldingSwitchedOffWithScaffoldsUpStillTakesThemAllDown`
 (switched off with scaffolds up: all down, all 64 back in the chest) and
 `QaBuilderFixes1026GameTests.cancelWithTheChestFullDropsTheScaffoldingAndLosesNone` (canceled with the chest full: none
-left standing, none lost between the chest, the bag and the ground).
+left standing, none lost between the chest, the bag and the ground). QA's `QaScaffoldDelay1103eGameTests` (2, B831:
+`workplaceBuildDelay` raised to its largest value, 2147483647, while scaffolding goes up or comes down stops the builder;
+lowered back to 2 he carries on within 200 ticks without his work restarting, and the pillar ends finished with no
+scaffold standing and all 64 back).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks
 away at the builder's height, with stills of it up the scaffolding and taking it down).

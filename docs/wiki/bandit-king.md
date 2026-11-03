@@ -41,7 +41,8 @@ Roadmap items: 31.15, 31.16, B659, B738
      night until he falls, except while the village is quiet (threat level 0, At peace or Peaceful): then nobody
      comes, and the raids return once it isn't quiet (B738). On a night a raid is already on, his raiders don't come on top of
      it; they come once it ends, that same night. If he stands after 10 days, **the King's tribute**: he takes a third of the treasury and
-     rides off with his band ("The Bandit King took 1 emerald in tribute", never "1 emeralds", B842), the fort is left a ruin, moods drop 10 for 3 days, and the story ends badly.
+     rides off with his band ("The Bandit King took 1 emerald in tribute", never "1 emeralds", B842; the amount as the
+     treasury writes it, "0.99 emeralds" or "100 CobbleDollars", never rounded down, B866), the fort is left a ruin, moods drop 10 for 3 days, and the story ends badly.
   - **Ending**: his band leaves the fort (the treasure chest is yours), a festival the next evening, +150 reputation
     and the honor **Kingslayer** to everyone who fought in the storm, Pell joins the village (no job), the allies go
     home, and no bandit camps come for 10 days. Every chapter, banner, ally, raid and ending has its chronicle line.
@@ -148,5 +149,7 @@ horn) in their own entity data.
 - GameTests: `QaKingRaidGolemSpot1101dGameTests` (QA): a storm night with a raid already on keeps that raid as it is,
   and the King's raid comes that night once it is called off.
 - GameTests: `QaKingTribute1102dBugTests` (B842): a tribute of one emerald reads "took 1 emerald in tribute"
-  (`theKingsTributeOfOneEmeraldReadsInTheSingular`), two read "2 emeralds"; `QaDropBoxRoom1103cGameTests` (QA): a treasury of 5.99 emeralds (1.99 taken) still reads "1 emerald", and 9 read "3 emeralds".
+  (`theKingsTributeOfOneEmeraldReadsInTheSingular`), two read "2 emeralds". `QaKingTribute1103dBugTests` and
+  `QaKingTribute1103dGameTests` (B866): 0.99 and 1.99 emeralds taken read as such in the chronicle and in chat, a
+  whole 3 reads "3 emeralds"; the compat test `QaKingTributeDollars1103dCompatTests` reads "100 CobbleDollars".
 - Showcase scenes `bandit_fort` and `bandit_king`.

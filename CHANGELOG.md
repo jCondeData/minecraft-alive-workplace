@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A scanned soul sand elevator (or a magma block's sinking column) is built back with its water, so the bubbles rise
+  (or sink) again; each block costs a water bucket that comes back empty (B861).
+- A scanned melon or pumpkin on its grown stem is built back with the stem: it costs one melon or pumpkin seeds and is
+  planted as a fresh stem (B865).
 - A colony founded by a single settler now opens its chronicle with "Founded on day 1 by a settler from Thornholm:
   Tomas" (the Founder's blessed line too) instead of "by settlers" (B853).
 - Under a huge `/gamerule workplaceBuildDelay`, a Builder no longer places one block straight away whenever his work
@@ -27,12 +31,20 @@ asks for the steps, `latest.log` and any crash report).
   couldn't climb back up, and it then stood there holding its load (B858).
 - The Nurse no longer turns you away after you waited out the minute she gave you because she slowed down meanwhile (a
   bad mood, an illness): the wait is set when she treats you and only ever gets shorter (B864).
+- Handing a guard a Patrol Map with one marked point says "route of 1 point", not "1 points"; the operators'
+  `/workplace classes` lines read "1 villager lost their class and is given one", "1 of 1 villager has a class" and
+  "1 newcomer" (B862).
+- The Bandit King's tribute line says what the treasury lost the way the treasury writes it ("took 0.99 emeralds",
+  "33.33 emeralds", or "100 CobbleDollars" with CobbleDollars), no longer rounded down to whole emeralds (B866).
 - The Nurse no longer gives you your health back on every click while her Healing Machine is busy with another
   player's team: she now treats nothing until it's free (your minute isn't used), and right after a treatment she says
   to come back in 60 seconds, not 61 (B850, B851).
 - Raids: calling off one village's raid (`/workplace threat end`) no longer sends away the raiders of a neighbor
   village's raid that stood within its reach; those nearer the other village stay, so that raid goes on instead of
   counting as fought off, and its husks beside the Pharaoh still rise (B849).
+- Raids: with two raided villages side by side, a neighbor village's raiders no longer keep this village's raid going
+  after its own raiders are all dead: the hall's round counts only this raid's raiders, so the raid ends as fought off.
+  And when this village's raiders leave at their hour, the neighbor's raiders standing within its reach stay (B856).
 
 ## 0.151.4 — 2026-11-02
 

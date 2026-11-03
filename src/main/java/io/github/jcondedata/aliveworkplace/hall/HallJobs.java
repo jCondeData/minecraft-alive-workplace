@@ -76,6 +76,8 @@ public final class HallJobs {
 		NO_BLOCK,
 		/** A job above their class (34.8). */
 		CLASS,
+		/** Any job, for a retired elder: they take none again (34.20, B897). */
+		RETIRED,
 		/** The job they have now. */
 		CURRENT,
 		/** No job. */
@@ -220,7 +222,11 @@ public final class HallJobs {
 		boolean paid = retraining(level, villager);
 		Component price = HallRetraining.price(villager);
 		List<Component> header = new ArrayList<>();
-		if (paid) {
+		boolean retired = io.github.jcondedata.aliveworkplace.people.Retirement.isRetired(villager);
+		Component retiredLine = Component.translatable("message.aliveworkplace.job.retired", who);
+		if (retired) { // no job is theirs for nothing, or at all (B897)
+			header.add(retiredLine.copy().withStyle(ChatFormatting.GRAY));
+		} else if (paid) {
 			header.add(Component.translatable("screen.aliveworkplace.hall_retrain.price", price, Retraining.levelName(villager)).withStyle(ChatFormatting.GOLD));
 			header.add(Component.translatable("screen.aliveworkplace.hall_retrain.lost").withStyle(ChatFormatting.GRAY));
 		} else {
@@ -235,6 +241,10 @@ public final class HallJobs {
 			List<Component> tip = new ArrayList<>();
 			if (option.current()) {
 				out.add(line(item, Component.translatable("screen.aliveworkplace.hall.jobs.current", job), State.CURRENT, id, tip));
+			} else if (retired) {
+				// Every line says why, whether or not a block is free: not "place one first" or a class he isn't missing (B897).
+				tip.add(retiredLine.copy().withStyle(ChatFormatting.RED));
+				out.add(line(item, job, State.RETIRED, id, tip));
 			} else if (option.free().isEmpty()) {
 				tip.add(Component.translatable("screen.aliveworkplace.hall.jobs.none_hint", blockName).withStyle(ChatFormatting.GRAY));
 				out.add(line(item, Words.articled("screen.aliveworkplace.hall.jobs.none", 1, job, blockName), State.NO_BLOCK, id, tip));
@@ -360,6 +370,12 @@ public final class HallJobs {
 		}
 		Option option = options(level, hall, villager).stream().filter(o -> o.job() == job).findFirst().orElse(null);
 		if (option == null || option.current()) {
+			return true;
+		}
+		if (option.refusal() != null && io.github.jcondedata.aliveworkplace.people.Retirement.isRetired(villager)) {
+			// A retired elder: why, on every line, before "no free block" (B897)
+			Chat.actionBar(player, option.refusal().copy().withStyle(ChatFormatting.YELLOW));
+			no(level, player);
 			return true;
 		}
 		if (option.free().isEmpty()) {

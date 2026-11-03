@@ -18,6 +18,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Village Hall People table: a hired mercenary at a guard post, or Doctor Wren at a brewing stand, can no longer be
+  retrained (they'd have left with the village's new job at dawn); a retired elder's job list and page now say on every
+  line that he has retired, instead of "place a Blast Furnace first" or "Someone took that workstation first"; and
+  retraining a shopkeeper (or No job) closes a trade screen another player has open with him, so nobody buys from
+  trades they never saw (B895, B896, B897, B899).
 - With a furniture mod in `furnitureMods`, the Blueprint Table's materials list and 3D preview, and the Steward desk's
   "Needs most:" counts, now show the furnished build the builder will actually ask for (its chairs and tables), not the
   vanilla one, and update as soon as the order or `furnishedBuilds` changes. A Healing Center or Schoolhouse built in

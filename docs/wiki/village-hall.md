@@ -81,7 +81,9 @@ named by the free blocks themselves, nearest kind first: "Carpenter · 1 free Ca
 Table", B658), then the rest grayed: "Mason · place a Stonecutter first", a job above their class with the class it needs (34.8), "Librarian ·
 their job now". The Builder is one of them ("Builder · 1 free Blueprint Table"). Last, for a villager with a job, **No
 job**. Hired mercenaries, relief riders and a story's visitor such as Doctor Wren aren't the village's to
-employ: their row shows their own job, they count as working, and Job ▾ offers nothing (B889). Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
+employ: their row shows their own job, they count as working, and Job ▾ offers nothing (B889), even once they have
+taken a block of their own, a mercenary a free guard post or Doctor Wren a brewing stand: a click says "Mercenary's job
+can't be changed here." (B895: `HallRetraining.canRetrain` refuses a `HallPeople.visitor`). Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
 click on a job sends the offer to chat and marks the line ("Click again to pay 20 emeralds: Dara becomes a Mason"); a
 second pays and retrains them through 36.18's `HallRetraining.retrain` (the price, the class check, "someone took that
 workstation first", not enough emeralds: nothing changes and the player is told how short), and the list closes on a
@@ -91,10 +93,14 @@ block in one click, for nothing (`VillageHalls.assign`, as the free jobs page). 
 to by himself, which vanilla holds for him on the way, is free on his own list and nobody else's (B807:
 `VillageHalls.freeStations(level, hall, villager)`, `Stations.walkingTo`). No job is free, also two clicks: the
 first says plainly that their trades and level go and their block is left free; the second takes the job away
-(`Retraining.unemploy`: the builds handed back, the block let go, profession none, level 1). They may then take a free
+(`Retraining.unemploy`: the builds handed back, the block let go, profession none, level 1). Either change closes a
+trade screen another player has open with the villager, since the old trades are gone (B899: before, it kept listing
+them while the server answered with the new job's). They may then take a free
 block nearby by themselves, as any jobless villager does. A grayed line's click says what's missing ("The Mason job
 needs a free Stonecutter: place one in the village first"). A retired elder's
-list is all grayed, each line saying "Bram has retired and takes no job now: they mentor the young instead." (B885:
+list is all grayed, its header and each line saying "Bram has retired and takes no job now: they mentor the young
+instead." whether or not a block is free, and a click says so too (B897); his own page, opened from his row, grays
+every free block with the same line (B896: not "Someone took that workstation first") (B885:
 `VillageHalls.assign` also refuses a retired villager before it takes the block, so a Stonecutter is never held for
 nobody). Children, nitwits and Legends get a grayed Job ▾; with
 `workplaceRetraining` off it's hidden on every row. No new packet: Job ▾ is a menu-button click of `HallJobs.OPEN`

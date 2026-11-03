@@ -193,6 +193,7 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 		}
 		INNER_NOT_SAVED.put("build.BuildSite.placedThisStage", "says so: not saved, after a load such a block is redone once at most");
 		INNER_NOT_SAVED.put("build.BuildSite.placedStage", "the stage placedThisStage is for, not saved with it");
+		INNER_NOT_SAVED.put("build.BuildSite.digs", "says so (B868): how often each spot was dug on the current list, not saved; after a load a spot gets its digs afresh");
 		INNER_NOT_SAVED.put("build.BuildSite.placedBy", "says so: blocks placed per builder since the site was loaded");
 		INNER_NOT_SAVED.put("story.ArcState.endWith", "says so: set by an end_arc effect, not saved (it ends at once)");
 		INNER_NOT_SAVED.put("build.BuildSite.progressFromCursor", "says so: transient, worked out at load from a save without shown_progress (BuildSite#load)");

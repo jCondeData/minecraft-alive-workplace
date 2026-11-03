@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A colony founded by a single settler now opens its chronicle with "Founded on day 1 by a settler from Thornholm:
+  Tomas" (the Founder's blessed line too) instead of "by settlers" (B853).
+- Under a huge `/gamerule workplaceBuildDelay`, a Builder no longer places one block straight away whenever his work
+  restarts (waking up, a reload, being re-hired): a restart keeps the wait he had, or starts a whole one (B845).
 - Hauler and Farmhand golems go straight to work instead of sometimes first wandering toward a nearby village (vanilla's
   "move back to the village" stroll, which ranked the same as their work). That walk could take a hauler off a ledge it
   couldn't climb back up, and it then stood there holding its load (B858).

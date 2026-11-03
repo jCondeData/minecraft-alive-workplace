@@ -37,7 +37,8 @@ import net.minecraft.world.phys.AABB;
 /**
  * QA (lane-c-1103-0052), verifying B841 from its spec: a colony founded by one settler reads in the singular, in the
  * owner's chat ("Tomas has founded Newbrook, ...") and the mother's chronicle ("Our settler Tomas founded ..."), the
- * Founder's blessed form too; two settlers stay plural. Every line the arrival writes is checked for a raw key or an
+ * Founder's blessed form too, and the colony's own chronicle ("by a settler from Thornholm: Tomas", B853); two settlers
+ * stay plural. Every line the arrival writes is checked for a raw key or an
  * unfilled %s, and en_us.json for every key the arrival can pick.
  */
 public class QaColonyWordsVerify1103GameTests implements FabricGameTest {
@@ -47,7 +48,8 @@ public class QaColonyWordsVerify1103GameTests implements FabricGameTest {
 		"message.aliveworkplace.colony.arrived", "message.aliveworkplace.colony.arrived.one",
 		"chronicle.aliveworkplace.colony.mother", "chronicle.aliveworkplace.colony.mother.one",
 		"chronicle.aliveworkplace.colony.mother_blessed", "chronicle.aliveworkplace.colony.mother_blessed.one",
-		"chronicle.aliveworkplace.colony.founded", "chronicle.aliveworkplace.colony.founded_blessed"};
+		"chronicle.aliveworkplace.colony.founded", "chronicle.aliveworkplace.colony.founded_blessed",
+		"chronicle.aliveworkplace.colony.founded.one", "chronicle.aliveworkplace.colony.founded_blessed.one"};
 
 	/** A lone builder Tomas, unblessed: the singular in chat and in the mother's chronicle, no blessing. */
 	//$ gametest_ticks_batch AREA '300' '"qaColWords1103One"'
@@ -157,6 +159,9 @@ public class QaColonyWordsVerify1103GameTests implements FabricGameTest {
 		String who = String.join(" and ", names);
 		String chat = who + (one ? " has" : " have") + " founded Newbrook, [^%]+ of Thornholm\\. A letter is on its way\\.";
 		String ours = (one ? "Our settler " : "Our settlers ") + who + " founded Newbrook, ";
+		// B853: the colony's own chronicle in the singular too ("by a settler from Thornholm: Tomas")
+		String founded = (blessed ? " with the Founder's blessing, by " : " by ") + (one ? "a settler" : "settlers") + " from Thornholm: " + who;
+		String wrongFounded = (one ? "settlers" : "a settler") + " from Thornholm";
 		helper.succeedWhen(() -> {
 			RealmData realms = RealmData.get(level.getServer());
 			helper.assertTrue(realms.orders().isEmpty() && realms.foundedBy(mother).size() == 1, "not founded yet");
@@ -170,6 +175,8 @@ public class QaColonyWordsVerify1103GameTests implements FabricGameTest {
 				"want the mother's chronicle '" + ours + "...'" + (blessed ? " with the blessing" : " without it") + report);
 			helper.assertTrue(mine.stream().noneMatch(l -> l.startsWith(one ? "Our settlers " : "Our settler " + who)), "the wrong number in the mother's chronicle" + report);
 			helper.assertTrue(lines.stream().noneMatch(l -> l.contains(one ? who + " have founded" : who + " has founded")), "the wrong number in chat" + report);
+			helper.assertTrue(theirs.stream().anyMatch(l -> l.startsWith("Founded on day ") && l.endsWith(founded)), "want the colony's chronicle '..." + founded + "'" + report);
+			helper.assertTrue(theirs.stream().noneMatch(l -> l.contains(wrongFounded)), "the wrong number in the colony's chronicle" + report);
 			for (String l : concat(lines, mine, theirs)) {
 				helper.assertTrue(!l.contains("aliveworkplace.") && !l.contains("%s") && !l.contains("%1$") && !l.contains("%2$") && !l.contains("%3$") && !l.contains("%4$"),
 					"a raw key or unfilled argument: '" + l + "'");

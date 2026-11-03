@@ -458,7 +458,9 @@ table opens may be read cut short and said so once; it's imported when the uploa
 (39.6). Whether Create's client keeps a written Schematic's right-click on the table for itself in a real game is not
 tested (the GameTests use the table as the server does).
 Create's Mechanical Piston moves the mod's blocks with what is in them, as it moves chests (tested: Mailbox, Shop
-Counter, Drop Box, Blueprint Table); a Wonder's Foundation Stone stays put. What a moved Village Hall, Mailbox or
+Counter, Drop Box, Blueprint Table), and a Mailbox, Shop Counter, Storehouse or grave keeps every saved field (owner,
+stock, orders, who lies there), also when the world is saved and loaded while it is in the air on the moving
+contraption; a Wonder's Foundation Stone stays put. What a moved Village Hall, Mailbox or
 Travel Post keeps of its place in the village, the post and the travel network is not tested.
 Create's funnels and chutes take nothing out of a Shop Counter or a Mailbox, and a funnel pushing into a counter,
 mailbox or drop box loses and doubles nothing (a counter refuses it). A Mechanical Drill breaking a Mailbox, Shop
@@ -510,6 +512,9 @@ deployer can place blocks in and rename the hall of a protected village (B844).
   `QaCreateMovesOurBlocks1102eCompatTests` (lane E's QA): a Mechanical Piston pushes a Mailbox, a Shop Counter, a
   Drop Box and a Blueprint Table two steps and each keeps exactly what was in it (nothing doubled on the ground, nothing
   lost), while a Wonder's Foundation Stone isn't moved at all (a plank pushed by the same piston is the control).
+  `QaCreateMovedSaved1103eCompatTests` (lane E's QA, 8): the same piston pushes a Mailbox, a Shop Counter, a
+  Storehouse and a grave, each set up (owner, items, orders, the dead villager and a funeral due); its saved data reads
+  the same two steps on, both plainly and with the moving contraption saved, removed and loaded back mid-push.
   `QaCreateMachinesOnOurBlocks1102eCompatTests` (lane E's QA, 15): funnels and chutes on a counter, mailbox and drop
   box, and a drill breaking each of the mod's item-holding blocks, each against a control (a chest, a player).
   `QaCreateDeployerOnOurThings1102eCompatTests` (lane E's QA, 7): a deployer an owner placed sets down his hall, names a

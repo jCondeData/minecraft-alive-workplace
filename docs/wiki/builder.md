@@ -74,7 +74,8 @@ restartable at any tick for this reason.
 
 **Working hours.** A Builder works from early morning (1000) to dusk (11000), longer than vanilla villagers, then
 idles and goes to bed at 12000. He stops building as soon as his schedule leaves work, puts his tool away and heads
-for bed; he doesn't build on into the night (B839). In the morning he carries on where he stopped.
+for bed; he doesn't build on into the night (B839). In the morning he carries on where he stopped, also when the
+world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
 
 **Stages, in order:** CLEAR (top-down), FOUNDATION, STRUCTURE (bottom-up), DECORATION, LANDSCAPE, DONE.
 - CLEAR takes away what is in the way, but never breaks containers, its own bench or any other Builder's Bench (a
@@ -94,7 +95,8 @@ for bed; he doesn't build on into the night (B839). In the morning he carries on
   raised band of dirt round it. A blueprint clicked onto a flower or tall grass stands on the ground under the plant.
 - LANDSCAPE leaves the ground in and under a neighboring build alone (B838): a site under way or a finished
   building whose box the leveled ring reaches, its basement too, is neither dug nor filled, so two builds side by side
-  don't dig the pad out from under each other (test `QaBuilderMidJob1102BugTests`).
+  don't dig the pad out from under each other (test `QaBuilderMidJob1102BugTests`; with a save and load just before
+  the ring is leveled, `QaSavesAfterFixes1103eGameTests`).
 - FOUNDATION and LANDSCAPE depend on the terrain, so a site loaded in the middle of those stages makes its list
   again from the terrain; steps already done are skipped.
 - A step that cannot be done yet is put off once, then skipped (counted in `skipped`).

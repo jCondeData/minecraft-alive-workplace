@@ -460,7 +460,10 @@ point of interest, saved by Minecraft).
 GameTests: `QaLaneC1102eGameTests` (QA, B833: the plurals beside the new singulars through the hall's buttons, "2
 mercenaries are here until dawn" and "3 kinds of meal in the store"), `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
 `B301GameTests` (no clearing-out quest or step where nothing can be fought, bandits and wild Pokémon counting, the
-words, a stuck quest swapped after a save and reload, MobsBeGone's file read), compat `WildFoesCompatTests`,
+words, a stuck quest swapped after a save and reload, MobsBeGone's file read), `QaSlayQuest1103dGameTests` (QA, B301: the real
+world and the real blocklist file, three of four night monsters listed still lets monsters come, all four in Cobbleverse's
+layout offers no clearing-out quest in 40 board seeds, Peaceful and back; a quest that can still be finished keeps its
+progress and words; the bread a stuck quest becomes is capped at 64, from both sides), compat `WildFoesCompatTests`,
 `WagonBedsGameTests` (B206, B207: settlers leave the wagon once the hall stands, an older camp's bedroll is mended,
 two free beds take in two newcomers and the hall says it's full, the inn takes a traveler only into a free house bed,
 the wagon-bed list and its save, an older list lets a cabin's bed go and keeps the camp's), `QaWagonBedsBug1031Tests`

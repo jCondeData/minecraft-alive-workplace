@@ -69,13 +69,15 @@ public final class HallRetraining {
 
 	/**
 	 * Whether the hall offers to change {@code villager}'s job: the rule is on, and they're a grown villager with a job and
-	 * its block (not a nitwit, a Legend or a caravan's carter).
+	 * its block (not a nitwit, a Legend, a caravan's carter or a {@link HallPeople#visitor visitor}: a hired mercenary at a
+	 * guard post he took, or Doctor Wren at a brewing stand, works here without being the village's to retrain, B895).
 	 */
 	public static boolean canRetrain(ServerLevel level, Villager villager) {
 		VillagerProfession job = villager.getVillagerData().getProfession();
 		return Retraining.on(level) && villager.isAlive() && !villager.isBaby() && job != VillagerProfession.NONE && job != VillagerProfession.NITWIT
 			&& villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isPresent()
-			&& io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).isEmpty() && !CaravanSights.isParty(villager);
+			&& io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).isEmpty() && !CaravanSights.isParty(villager)
+			&& !HallPeople.visitor(villager);
 	}
 
 	/** The free job blocks {@code villager} could change to: every free block in the village of a job other than theirs. */

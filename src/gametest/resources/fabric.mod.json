@@ -1239,8 +1239,12 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnished1103fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildViews1103gGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFurnishedTable1103fBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuildViews1103gBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallFixes1103cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaHallMidActivity1103cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaHallMidActivity1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallFixes1103cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallMidActivity1103cBugTests"
 		]
 	},
 	"depends": {

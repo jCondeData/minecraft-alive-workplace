@@ -91,7 +91,10 @@ public class QaVillageReachGraves1101GameTests implements net.fabricmc.fabric.ap
 	private static final BlockPos HALL_B = new BlockPos(18, 2, 18);
 	private static final BlockPos CHEST_B = new BlockPos(16, 2, 20);
 
-	/** Two villages (A Thornholm, B Ashford, waiting for 32 oak logs), each with a Storehouse chest; no markets; instant caravans. */
+	/**
+	 * Two villages (A Thornholm, B Ashford, waiting for 32 oak logs), each with a Storehouse chest; no markets; instant
+	 * caravans; no hall rounds but the test's own (and a newly set hall's first).
+	 */
 	private static Caravans.Data caravans(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
@@ -99,6 +102,10 @@ public class QaVillageReachGraves1101GameTests implements net.fabricmc.fabric.ap
 		int radius = VillageHalls.RADIUS;
 		long travel = Caravans.MIN_TRAVEL;
 		boolean economy = io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED;
+		int every = VillageNeeds.CHECK_EVERY;
+		// Only the rounds the test runs (B799): a hall's own round (every CHECK_EVERY ticks, at a time set by the world
+		// clock) that came between brought the caravan home before the new hall's round could be checked.
+		VillageNeeds.CHECK_EVERY = Integer.MAX_VALUE;
 		VillageHalls.RADIUS = 6;
 		Caravans.MIN_TRAVEL = 0;
 		io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED = true;
@@ -110,6 +117,7 @@ public class QaVillageReachGraves1101GameTests implements net.fabricmc.fabric.ap
 			VillageHalls.RADIUS = radius;
 			Caravans.MIN_TRAVEL = travel;
 			io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED = economy;
+			VillageNeeds.CHECK_EVERY = every;
 			data.remove(a);
 			data.remove(b);
 			data.clearRoad(a);

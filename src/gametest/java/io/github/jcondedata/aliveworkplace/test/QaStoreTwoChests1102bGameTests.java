@@ -27,7 +27,7 @@ public class QaStoreTwoChests1102bGameTests implements net.fabricmc.fabric.api.g
 	private static final BlockPos FIRST = new BlockPos(23, 2, 26);
 	private static final BlockPos SECOND = new BlockPos(26, 2, 23);
 
-	//$ gametest_ticks_batch QaBuilderStockGameTests.HUGE '3000' '"qaStoreTwoChests"'
+	//$ gametest_ticks_batch 'QaBuilderStockGameTests.HUGE' '3000' '"qaStoreTwoChests"'
 	@GameTest(template = QaBuilderStockGameTests.HUGE, timeoutTicks = 3000, batch = "qaStoreTwoChests")
 	public void aStorehouseChestEmptiedMidJobLetsTheBuilderFinishFromTheOther(GameTestHelper helper) {
 		ServerLevel level = QaBuilderStockGameTests.setup(helper, STOREHOUSE, 25, 1);

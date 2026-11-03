@@ -36,7 +36,22 @@ public final class BuilderLevels {
 
 	/** Ticks between blocks for this builder. */
 	public static int delay(ServerLevel level, Villager villager) {
-		return delay(Rules.number(level, ModGameRules.BUILD_DELAY), villager);
+		return delay(rule(level), villager);
+	}
+
+	/** The {@code workplaceBuildDelay} game rule's current value. */
+	public static int rule(ServerLevel level) {
+		return Rules.number(level, ModGameRules.BUILD_DELAY);
+	}
+
+	/**
+	 * B831: a wait of {@code remaining} ticks begun when the rule was {@code ruleThen}, now that it is {@code ruleNow}:
+	 * shortened to {@code full} (the whole wait at today's rule, from {@code fullNow}) when the rule went down, else left
+	 * as it is. Waits are set from the rule once and only counted down after, so without this a huge delay lowered
+	 * mid-build kept the worker waiting out the old one until his work restarted.
+	 */
+	public static int rewait(int remaining, int ruleThen, int ruleNow, java.util.function.IntSupplier fullNow) {
+		return ruleNow < ruleThen ? Math.min(remaining, Math.max(0, fullNow.getAsInt())) : remaining;
 	}
 
 	/**

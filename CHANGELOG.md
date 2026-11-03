@@ -18,6 +18,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A retired elder picked for a job on the Village Hall's People table is now refused with "Bram has retired and
+  takes no job now: they mentor the young instead." Before, you were told "Bram is now a Mason" while he stayed
+  jobless, and the Stonecutter stayed taken by nobody, so no one else could work there (B885).
+- A Steward given a new job or No job from the People table no longer keeps the City Plan in his hand for good: he
+  puts it down, as a dismissed Steward does (B886).
 - Clicking an old chat [Yes] to a Builder's repair question after mending the hole by hand now says the build
   has nothing missing any more, instead of promising a repair that never starts (B879).
 - Powder snow a Builder builds from a powder snow bucket gives him the empty bucket back, as water and lava

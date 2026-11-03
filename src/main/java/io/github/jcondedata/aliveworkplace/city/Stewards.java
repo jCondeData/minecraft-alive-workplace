@@ -219,13 +219,22 @@ public final class Stewards {
 	/** Takes the Steward's job away: jobless again, his trades and levels gone, the plan out of his hands. */
 	static void dismiss(ServerLevel level, Villager villager) {
 		villager.getBrain().eraseMemory(MemoryModuleType.JOB_SITE);
+		stepDown(villager);
+		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NONE).setLevel(1));
+		villager.setVillagerXp(0);
+		villager.refreshBrain(level);
+	}
+
+	/**
+	 * What ends with the stewardship, whoever ends it (dismissed, or retrained or given No job at the hall, B886): the
+	 * City Plan he carries on his rounds (a prop, never dropped) out of his hands and his round's day forgotten. The job
+	 * and the hall's place are the caller's.
+	 */
+	public static void stepDown(Villager villager) {
 		if (StewardWork.holdsPlan(villager)) {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		}
-		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NONE).setLevel(1));
-		villager.setVillagerXp(0);
 		ModAttachments.STEWARD_ROUND_DAY.remove(villager);
-		villager.refreshBrain(level);
 	}
 
 	private Stewards() {

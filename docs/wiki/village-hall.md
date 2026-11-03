@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886
 
 ## What a player sees
 
@@ -84,14 +84,18 @@ job**. Hovering a line shows where the nearest free block is, the price and what
 click on a job sends the offer to chat and marks the line ("Click again to pay 20 emeralds: Dara becomes a Mason"); a
 second pays and retrains them through 36.18's `HallRetraining.retrain` (the price, the class check, "someone took that
 workstation first", not enough emeralds: nothing changes and the player is told how short), and the list closes on a
-row that says the new job. A builder hands his builds back (`Retraining.dropWork`). A jobless villager is given the
+row that says the new job. A builder hands his builds back (`Retraining.dropWork`); a Steward puts the
+City Plan he carries on his rounds down, as a dismissal does (`Stewards.stepDown`, B886), and the hall's place is free. A jobless villager is given the
 block in one click, for nothing (`VillageHalls.assign`, as the free jobs page). The block a jobless villager is walking
 to by himself, which vanilla holds for him on the way, is free on his own list and nobody else's (B807:
 `VillageHalls.freeStations(level, hall, villager)`, `Stations.walkingTo`). No job is free, also two clicks: the
 first says plainly that their trades and level go and their block is left free; the second takes the job away
 (`Retraining.unemploy`: the builds handed back, the block let go, profession none, level 1). They may then take a free
 block nearby by themselves, as any jobless villager does. A grayed line's click says what's missing ("The Mason job
-needs a free Stonecutter: place one in the village first"). Children, nitwits and Legends get a grayed Job ▾; with
+needs a free Stonecutter: place one in the village first"). A retired elder's
+list is all grayed, each line saying "Bram has retired and takes no job now: they mentor the young instead." (B885:
+`VillageHalls.assign` also refuses a retired villager before it takes the block, so a Stonecutter is never held for
+nobody). Children, nitwits and Legends get a grayed Job ▾; with
 `workplaceRetraining` off it's hidden on every row. No new packet: Job ▾ is a menu-button click of `HallJobs.OPEN`
 (100000) + the row's slot (again: closes), a job is `HallJobs.PICK` (200000) + its registry number (No job:
 `VillagerProfession.NONE`'s), `HallJobs.CLOSE` closes it; the list reaches the client inside the open person's button

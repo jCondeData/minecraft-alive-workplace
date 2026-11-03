@@ -168,7 +168,11 @@ public final class HallJobs {
 				continue;
 			}
 			List<VillageHalls.FreeStation> blocks = free.getOrDefault(job, List.of());
-			Option option = new Option(job, block, blocks, io.github.jcondedata.aliveworkplace.people.ClassJobs.refusal(hall, villager, job), job == now);
+			// A retired elder takes no job again (34.20, B885): every line says so, and a pick is refused before any block is taken.
+			Component refusal = io.github.jcondedata.aliveworkplace.people.Retirement.isRetired(villager)
+				? Component.translatable("message.aliveworkplace.job.retired", villager.getDisplayName())
+				: io.github.jcondedata.aliveworkplace.people.ClassJobs.refusal(hall, villager, job);
+			Option option = new Option(job, block, blocks, refusal, job == now);
 			(option.current() || blocks.isEmpty() || option.refusal() != null ? rest : open).add(option);
 		}
 		open.addAll(rest);

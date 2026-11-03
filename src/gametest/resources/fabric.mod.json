@@ -1220,6 +1220,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaDeliveryNote1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoryVerify1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallRoles1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallRoles1103cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103bGameTests"
 		]

@@ -404,6 +404,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRepairCellarGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRepairAsks1103bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSpec1103bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBlueprintLibrary1103bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRepairCellarBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageSixGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneCaravanBugTests",

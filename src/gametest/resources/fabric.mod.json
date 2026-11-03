@@ -233,6 +233,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchEdgesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderLimitsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCrewGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCrewCarryBugTests",
@@ -423,6 +424,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaEconomySurvivorsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerLifeJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerLifeJobsBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCharterMourning1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactsBoardStewardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactsRealmEdictsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPacts1031GameTests",
@@ -577,6 +579,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScanNameBugTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintNamesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupply1026bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupplies1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupply1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSoak1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWaitStatus1027GameTests",
@@ -1162,6 +1165,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScanRebuild1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanRebuild1103BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanStem1103BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanWaterStems1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanItemless1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDropBoxMixed1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaKeepBuildsLoaded1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildDelayChangeGameTests",
@@ -1199,7 +1204,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRetrain1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStewardWords1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallBeds1103cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaEldersColonies1103cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaEldersColonies1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageWords1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCountedWords1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDeliveryNote1103cGameTests"
 		]
 	},
 	"depends": {

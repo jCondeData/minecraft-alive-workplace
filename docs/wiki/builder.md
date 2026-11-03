@@ -619,7 +619,10 @@ pass, counted once in skipped; two refilled spots give skipped 2 and the build f
 from a chest or the bag give one empty bucket back per pour, and stone leaves nothing extra; a Yes after one of two
 holes was mended is still agreed and repaired; a wall mended by hand leaves the list after Yes or Not now, and new
 damage is asked about afresh; damage done before the Yes is repaired; the Repairs page's Yes on a mended wall promises
-no repair).
+no repair). `QaBuilderSurvivors1103cGameTests` (4, QA, B865, B831: a fresh melon or pumpkin stem counts as the grown
+stem of its own kind only; scanned grown stems are planted once, one seed each, and never dug or replanted; a stem
+already growing where the grown stem is drawn is left standing and costs nothing; a scaffold wait with one tick left
+ends at once when the delay is lowered to zero).
 `QaScanRebuild1102dGameTests` (6, the tester's: a lily pad on a pool, a scaffolding tower that is part of the scan,
 four pink petals, three turtle eggs, a full water cauldron, and farmland with wheat beside a dirt path, each scanned and
 built again whole with nothing skipped and asked for as a player places them).

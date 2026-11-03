@@ -81,6 +81,13 @@ public class BuilderWork extends Behavior<Villager> {
 	 * box's height off a dune over it, so this digs out one about 16 times as tall as the build).
 	 */
 	static final int MOST_CLEAR_PASSES = 16;
+	/**
+	 * B868: how many times one spot is dug on a list before it counts as filled again each time it is dug (sand dropped
+	 * back, a cobblestone generator, a player): then it is deferred like any step that can't be done yet, and skipped if
+	 * it is still at it on the retry. Ordinary digging takes a spot once (sand coming down from a dune over the box a few
+	 * times), so a normal build never gets near it.
+	 */
+	static final int MOST_REDIGS = 16;
 	/** B837: how far over the box a falling block is still on its way into it. */
 	private static final int FALL_LOOK_UP = 16;
 	private static final int STUCK_TICKS = 100;
@@ -414,9 +421,15 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			action = actionFor(level, site, candidate, bench);
-			if (action == Action.NONE || crew && site.placedThisStage(candidate.pos()) || site.rechecks() > 0 && site.leftOut(candidate.pos())) {
-				// (B508: going back for broken blocks, the ones given up earlier stay given up)
+			if (action == Action.NONE || crew && site.placedThisStage(candidate.pos()) || site.rechecks() > 0 && site.leftOut(candidate.pos())
+				|| site.stage() == BuildPlan.Stage.CLEAR && site.refilled(candidate.pos())) {
+				// (B508: going back for broken blocks, the ones given up earlier stay given up; B868: so do CLEAR's refilled spots
+				// on a later pass for what fell in)
 				site.advance(); // (B139: a crew member placed it, and it has changed by itself since: it stays)
+			} else if (action == Action.BREAK && site.digs(candidate.pos()) >= MOST_REDIGS) {
+				// B868: filled again each time it was dug (the lead stayed on it for ever, the cursor never moving): it can't
+				// be done now, like any such step: comes round once more at the end of the list, then is left (skipped)
+				site.deferRefilled(candidate.pos());
 			} else if (action == Action.PLACE && outForLandscape(level, site, candidate, bag)) {
 				site.defer(); // nothing to fill it with: comes round once more at the end, then is left
 			} else if (crew && action == Action.SKIP && site.isRetrying() && !standingStill && crewHasWork(level, site, plan, bench)) {
@@ -594,8 +607,10 @@ public class BuilderWork extends Behavior<Villager> {
 		workTimer = Math.max(0, BuilderLevels.delay(workTimerRule, villager) - 1);
 		if (action == Action.BREAK && site.stage() == BuildPlan.Stage.DECONSTRUCT) {
 			takeDown(level, villager, site, bag, bench, step);
+			site.dug(step.pos()); // B868
 		} else if (action == Action.BREAK) {
 			breakBlock(level, villager, bag, bench, plan, step.pos());
+			site.dug(step.pos()); // B868
 		} else {
 			place(level, villager, site, plan, bag, step, requirements, free);
 		}
@@ -624,8 +639,8 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			Action a = actionFor(level, site, candidate, bench);
-			if (a != Action.BREAK && a != Action.PLACE) {
-				continue;
+			if (a != Action.BREAK && a != Action.PLACE || a == Action.BREAK && site.digs(pos) >= MOST_REDIGS) {
+				continue; // (B868: a spot filled again each time it's dug is the lead's to defer)
 			}
 			if (pos.equals(claimed)) {
 				pick = candidate;
@@ -726,8 +741,8 @@ public class BuilderWork extends Behavior<Villager> {
 				continue; // 39.5: a kinetic part waits for the lead to reach its group
 			}
 			Action a = actionFor(level, site, s, bench);
-			if (a != Action.BREAK && a != Action.PLACE) {
-				continue;
+			if (a != Action.BREAK && a != Action.PLACE || a == Action.BREAK && site.digs(s.pos()) >= MOST_REDIGS) {
+				continue; // (B868: a spot filled again each time it's dug is the lead's to defer)
 			}
 			int y = s.pos().getY();
 			if (layered(site) && (topDown ? y < layer - CREW_LAYERS : y > layer + CREW_LAYERS)) {
@@ -956,6 +971,9 @@ public class BuilderWork extends Behavior<Villager> {
 	static boolean fellIn(ServerLevel level, BuildSite site, BuildPlan plan, BlockPos bench) {
 		int left = 0;
 		for (BuildPlan.Step step : plan.steps(BuildPlan.Stage.CLEAR)) {
+			if (site.refilled(step.pos())) {
+				continue; // B868: given up for being filled again each time it was dug, and counted in skipped already
+			}
 			if (level.getBlockState(step.pos()).getBlock() instanceof net.minecraft.world.level.block.FallingBlock && actionFor(level, site, step, bench) == Action.BREAK) {
 				if (site.clearPasses() < MOST_CLEAR_PASSES) {
 					site.backOverClear();
@@ -2158,8 +2176,9 @@ public class BuilderWork extends Behavior<Villager> {
 		if (!free) {
 			for (MaterialRules.Requirement r : requirements) {
 				MaterialLedger.used(r.item(), bag.remove(r.item(), r.count()));
-				// What's left over goes back in the bag (the empty bucket after pouring water).
-				ItemStack leftover = r.item().getCraftingRemainingItem() == null ? ItemStack.EMPTY : new ItemStack(r.item().getCraftingRemainingItem(), r.count());
+				// What's left over goes back in the bag (the empty bucket after pouring water or powder snow, B873).
+				net.minecraft.world.item.Item emptied = MaterialRules.leftAfterPlacing(r.item());
+				ItemStack leftover = emptied == null ? ItemStack.EMPTY : new ItemStack(emptied, r.count());
 				if (!leftover.isEmpty()) {
 					MaterialLedger.gained(leftover);
 					ItemStack rest = bag.add(leftover);

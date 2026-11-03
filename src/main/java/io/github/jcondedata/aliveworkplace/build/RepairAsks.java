@@ -175,10 +175,15 @@ public final class RepairAsks {
 			return said(player, f.get(), Outcome.NOT_YOURS);
 		}
 		BuildSiteManager manager = BuildSiteManager.get(level);
+		boolean going = repairOf(level, f.get().placement()) != null;
+		if (!going && missingNow(level, f.get()) == 0) { // B879: put right by hand meanwhile, so nothing to agree to; it comes off the list
+			manager.setRepairAsk(f.get().placement(), null);
+			return said(player, null, Outcome.GONE);
+		}
 		Ask ask = manager.repairAsk(f.get().placement());
 		manager.setRepairAsk(f.get().placement(), new Ask(State.YES, ask != null ? ask.missing() : 0));
 		said(player, f.get(), Outcome.YES);
-		if (repairOf(level, f.get().placement()) == null) {
+		if (!going) {
 			startNow(level, f.get());
 		}
 		return Outcome.YES;

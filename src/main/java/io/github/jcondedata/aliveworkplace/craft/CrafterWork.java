@@ -1231,14 +1231,15 @@ public class CrafterWork extends Behavior<Villager> {
 		Component title = Words.countedFirst("message.aliveworkplace." + who + ".title", ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0));
 		Component idle = phase == Phase.IDLE && job == null ? idleLine(villager) : null;
 		Component line = idle != null ? idle : job != null && phase != Phase.TIDYING
-			? (phase == Phase.FETCHING // "fetching what 1 Amethyst Ring takes"
-				? io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace." + lines + ".state.fetching", job.plan().count(), job.plan().count(),
-					job.plan().target().getDescription())
+			? (phase == Phase.FETCHING // "fetching what 1 Amethyst Ring takes", "fetching what 2 Amethyst Rings take"
+				? Words.counted("message.aliveworkplace." + lines + ".state.fetching", job.plan().count(), job.plan().count(),
+					Words.itemName(job.plan().target(), job.plan().count()))
+				// B878: "making 2 Amethyst Rings", "taking 3 Arrows to the guard": the item's plural after any count but one
 				: Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase(), job.plan().count(),
-					job.plan().target().getDescription()))
+					Words.itemName(job.plan().target(), job.plan().count())))
 			: Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase());
 		if (phase == Phase.CRAFTING && stepwise && job != null && job.plan().steps().size() > 1) {
-			// 37.14a: "making 3 Barrel (step 2 of 3)"
+			// 37.14a: "making 3 Barrels (step 2 of 3)"
 			line = Component.translatable("message.aliveworkplace.job_chain.step", line, Math.min(step + 1, job.plan().steps().size()), job.plan().steps().size());
 		}
 		WorkerStatus.set(villager, title, -1f, line.copy().withStyle(ChatFormatting.GRAY));

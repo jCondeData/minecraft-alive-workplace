@@ -155,6 +155,45 @@ public final class BuildSite {
 	 */
 	private int clearPasses;
 
+	/**
+	 * B868: how often each spot of the list the site is on was dug, by anyone, since the list began (or the spot was last
+	 * deferred for being refilled). A spot filled again the moment it is dug (sand dropped back, a cobblestone generator, a
+	 * player) would otherwise keep the lead at his cursor for ever. Not saved: after a load a spot gets its digs afresh.
+	 */
+	private final Map<BlockPos, Integer> digs = new java.util.HashMap<>();
+	/**
+	 * B868: the CLEAR spots given up because they were filled again each time they were dug (deferred, then skipped):
+	 * later passes over CLEAR (B837) pass them over, so they are counted in skipped once. Saved; empty in older saves.
+	 */
+	private final java.util.Set<BlockPos> refilled = new java.util.HashSet<>();
+
+	/** B868: the block at {@code pos} was dug out (a builder broke it for the list the site is on). */
+	public void dug(BlockPos pos) {
+		digs.merge(pos.immutable(), 1, Integer::sum);
+	}
+
+	/** B868: how often the spot at {@code pos} was dug on the list the site is on. */
+	public int digs(BlockPos pos) {
+		return digs.getOrDefault(pos, 0);
+	}
+
+	/**
+	 * B868: the current step's spot was filled again each time it was dug: deferred like any step that can't be done
+	 * yet (its digs start over for the retry); while retrying, skipped, and a CLEAR spot left for good.
+	 */
+	public void deferRefilled(BlockPos pos) {
+		digs.remove(pos);
+		if (retrying && stage == BuildPlan.Stage.CLEAR) {
+			refilled.add(pos.immutable());
+		}
+		defer();
+	}
+
+	/** Whether CLEAR gave the spot at {@code pos} up for being filled again each time it was dug (B868). */
+	public boolean refilled(BlockPos pos) {
+		return refilled.contains(pos);
+	}
+
 	/** How often CLEAR went back over its list for what fell in (B837). */
 	public int clearPasses() {
 		return clearPasses;
@@ -199,6 +238,7 @@ public final class BuildSite {
 		gaveUp.clear();
 		placedThisStage.clear();
 		placedStage = null;
+		digs.clear(); // B868
 		onChange.run();
 	}
 
@@ -608,6 +648,7 @@ public final class BuildSite {
 			deferred.clear();
 			gaveUp.clear();
 		}
+		digs.clear(); // B868: a new list (or the retry of the deferred) counts its digs afresh
 		cursor = 0;
 		onChange.run();
 	}
@@ -1012,6 +1053,9 @@ public final class BuildSite {
 		if (!leftOut.isEmpty()) {
 			tag.putLongArray("left_out", leftOut.stream().mapToLong(BlockPos::asLong).toArray()); // B508
 		}
+		if (!refilled.isEmpty()) {
+			tag.putLongArray("refilled", refilled.stream().mapToLong(BlockPos::asLong).toArray()); // B868
+		}
 		if (furniture == null) {
 			tag.putBoolean("furniture_unchosen", true); // 37.3: a new site not yet planned chooses when it is
 		} else if (!furniture.isVanilla()) {
@@ -1070,6 +1114,9 @@ public final class BuildSite {
 		site.clearPasses = Nbt.getInt(tag, "clear_passes"); // B837: none in older saves
 		for (long p : Nbt.getLongArray(tag, "left_out")) {
 			site.leftOut.add(BlockPos.of(p));
+		}
+		for (long p : Nbt.getLongArray(tag, "refilled")) { // B868: none in older saves
+			site.refilled.add(BlockPos.of(p));
 		}
 		// 37.3: older saves have neither, and build vanilla
 		site.furniture = Nbt.getBoolean(tag, "furniture_unchosen") ? null

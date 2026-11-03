@@ -180,7 +180,10 @@ public class QaSandRampSteps1103d2GameTests implements FabricGameTest {
 			boolean let = SandRamps.over(level, hall, husk.getUUID());
 			if (over) {
 				if (let) {
-					helper.assertTrue(Math.abs(husk.getY() - (base.getY() + y)) < 1.0E-6,
+					// Where it stood when the ramp goal let it go: that goal runs in the husk's AI step, before it moves this
+					// tick, so its height then is yo (set before the tick). By now it may have jumped: vanilla MoveControl
+					// jumps a mob whose feet are below the top of the stair it stands in (B875: 3.5 + 0.42 at tick 3 on CI).
+					helper.assertTrue(Math.abs(husk.yo - (base.getY() + y)) < 1.0E-6,
 						"let go, but not standing where it was put (test setup?): " + where);
 					helper.succeed();
 				} else if (helper.getTick() >= 150) {

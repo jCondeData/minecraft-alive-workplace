@@ -1230,7 +1230,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaHallRolesDuty1103bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallFixes1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallMidActivity1103cGameTests"
 		]
 	},
 	"depends": {

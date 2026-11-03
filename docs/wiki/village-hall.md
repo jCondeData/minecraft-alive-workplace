@@ -86,7 +86,7 @@ click on a job sends the offer to chat and marks the line ("Click again to pay 2
 second pays and retrains them through 36.18's `HallRetraining.retrain` (the price, the class check, "someone took that
 workstation first", not enough emeralds: nothing changes and the player is told how short), and the list closes on a
 row that says the new job. A builder hands his builds back (`Retraining.dropWork`); a Steward puts the
-City Plan he carries on his rounds down, as a dismissal does (`Stewards.stepDown`, B886), and the hall's place is free. A jobless villager is given the
+City Plan he carries on his rounds down, as a dismissal does (`Stewards.stepDown`, B886), and the hall's place is free. A guard retrained or given No job on his way to a rung alarm bell stops running for it and doesn't answer the next ring (unless, jobless, he takes a guard's block back by himself), and a guard friend's "tools of my trade" request stays finishable after No job. A jobless villager is given the
 block in one click, for nothing (`VillageHalls.assign`, as the free jobs page). The block a jobless villager is walking
 to by himself, which vanilla holds for him on the way, is free on his own list and nobody else's (B807:
 `VillageHalls.freeStations(level, hall, villager)`, `Stations.walkingTo`). No job is free, also two clicks: the
@@ -513,7 +513,7 @@ meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockS
 `aFreeUpgradeIsBuilt` by the village's Builder; `aBlockedUpgradeSaysWhatIsInTheWay` with another build's block, a
 fence, a path, then water (natural); `naturalGroundDoesNotBlockAnUpgrade`, all of it cleared;
 `residentsKeepTheirBedsThroughAnUpgrade`; `anOrderedUpgradeSurvivesAReload`; every sentence written).
-`HallPeopleGameTests` (40.2: the rows and counts of a village of 8 and of 60 scrolled to its last villager, the
+`QaHallFixes1103cGameTests` (B885, B886, B889-B891 beyond their repros: visitors and Doctor Wren never jobless or given a block, a hire ending, the level request called off for every helper and across a save, a scout given No job, a retired elder's forged picks, a new Steward after a retrained one), `QaHallMidActivity1103cGameTests` (job changes mid-alarm, mid-trade and with a tools request open). `HallPeopleGameTests` (40.2: the rows and counts of a village of 8 and of 60 scrolled to its last villager, the
 details of a builder, a guard, a child and a nitwit and Job ▾ on the builder, a villager who dies or leaves while the
 screen is open; scene `hall_people`). `HallPeopleJobGameTests` (40.3, every case through Job ▾'s clicks:
 `aChangeThatWorks` (price on top, "Mason · 1 free Stonecutter", the offer, then paid), `aJobWithNoFreeBlock`,

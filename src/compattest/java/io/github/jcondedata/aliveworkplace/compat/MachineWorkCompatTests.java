@@ -437,6 +437,66 @@ public class MachineWorkCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * QA lane E, 2026-11-03, 39.3's "a recipe whose result the store wants (fewer than the file's keep)" from both sides:
+	 * a store already holding the file's keep of the machine's output (split over two stacks, as players leave it) feeds
+	 * the turning machine nothing in 400 ticks; one short of it, the worker takes the input to the machine. (Not the
+	 * mixer: the Chef bakes the store's dough into bread, so its dough drops below the keep by itself.)
+	 */
+	//$ gametest_ticks_batch AREA '600' '"qa_mill_keep_reached"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa_mill_keep_reached")
+	public void aStoreHoldingSixtyFourFlourSendsNoWheatToTheMill(GameTestHelper helper) {
+		keepAt(helper, Kind.MILL, 0);
+	}
+
+	//$ gametest_ticks_batch AREA '2400' '"qa_mill_keep_short"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qa_mill_keep_short")
+	public void aStoreHoldingSixtyThreeFlourSendsWheatToTheMill(GameTestHelper helper) {
+		keepAt(helper, Kind.MILL, 1);
+	}
+
+	//$ gametest_ticks_batch AREA '600' '"qa_press_keep_reached"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa_press_keep_reached")
+	public void aStoreHoldingSixtyFourIronSheetsSendsNoIronToThePress(GameTestHelper helper) {
+		keepAt(helper, Kind.PRESS, 0);
+	}
+
+	//$ gametest_ticks_batch AREA '2400' '"qa_press_keep_short"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qa_press_keep_short")
+	public void aStoreHoldingSixtyThreeIronSheetsSendsIronToThePress(GameTestHelper helper) {
+		keepAt(helper, Kind.PRESS, 1);
+	}
+
+	/** The store holds {@code short_} fewer of the output than the file's keep, in two stacks, and 20 of the input. */
+	private static void keepAt(GameTestHelper helper, Kind kind, int short_) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		villageWorkshop(helper);
+		MachineWorkFiles.Machine file = file(kind);
+		int keep = file.makes().stream().filter(m -> m.item() == kind.output()).mapToInt(MachineWorkFiles.Make::keep).findFirst()
+			.orElseThrow(() -> new AssertionError("setup: " + kind.file + " doesn't make " + kind.output));
+		int held = keep - short_;
+		Container chest = chest(helper, new ItemStack(kind.input(), 20), new ItemStack(kind.output(), held / 2), new ItemStack(kind.output(), held - held / 2));
+		rig(helper, kind, true);
+		Villager villager = worker(helper, kind);
+		if (short_ == 0) {
+			helper.runAfterDelay(400, () -> {
+				helper.assertTrue(count(chest, kind.input()) == 20, kind + ": the store already holds " + held + " " + kind.output + " (the file keeps "
+					+ keep + ") but " + (20 - count(chest, kind.input())) + " " + kind.input + " went to the " + kind.file);
+				helper.assertTrue(!MachineWork.busy(villager), kind + ": with " + held + " " + kind.output + " in the store the worker set off for the "
+					+ kind.file + ": " + ModAttachments.MACHINE_JOB.get(villager));
+				clearMachines(helper);
+				helper.succeed();
+			});
+		} else {
+			helper.succeedWhen(() -> {
+				helper.assertTrue(count(chest, kind.input()) < 20, kind + ": the store holds " + held + " " + kind.output + ", " + short_
+					+ " short of the file's " + keep + ", but no " + kind.input + " went to the " + kind.file + " yet");
+				clearMachines(helper);
+			});
+		}
+	}
+
+	/**
 	 * QA lane E, 2026-10-27 (nightly survivor MachineWork:572): a trip set off to fetch for the mill, and the store filled
 	 * up before the fetch (a player's cobblestone in every other slot): the farmer ends the trip and takes none of the
 	 * wheat, as a full store pauses the mill.

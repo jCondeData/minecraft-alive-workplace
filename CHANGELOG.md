@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A courier route or Delivery Note that carried only items of a mod taken out of the pack no longer turns into "carry
+  everything" and empties its chest: it carries nothing of them, says "1 item no longer in the game", and the items
+  come back on it if the mod returns (B819).
 - A Builder no longer stays clearing a site forever when a spot is refilled the moment he digs it (sand dropping back
   from a pile, a cobblestone generator): he puts it off, then leaves it (counted as skipped) and builds on (B868).
 - Sand or gravel that falls into a hut's rooms while it goes up is dug out before the Builder calls it done, into his

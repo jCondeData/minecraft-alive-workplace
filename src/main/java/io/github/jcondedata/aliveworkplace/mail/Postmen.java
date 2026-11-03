@@ -95,8 +95,7 @@ public final class Postmen {
 			BlockPos t = r.to().orElse(BlockPos.ZERO);
 			text.append(Component.literal("\n  "));
 			text.append(Component.translatable("message.aliveworkplace.route.line", f.getX(), f.getY(), f.getZ(), t.getX(), t.getY(), t.getZ(),
-				r.filter().isEmpty() ? Component.translatable("tooltip.aliveworkplace.route.everything")
-					: Component.literal(r.filter().stream().map(i -> i.getDescription().getString()).reduce((a, b) -> a + ", " + b).orElse("")))
+				r.filterNames())
 				.withStyle(ChatFormatting.GRAY));
 		}
 		if (!routes.isEmpty()) {

@@ -46,7 +46,8 @@ Roadmap items: 31.4
 - One main arc runs in a village at a time; side arcs (the reforms) run beside it. The hall's round moves arcs on and
   rolls for a new one: it needs no main arc running there, `arcCooldownDays` passed since the last ended (8: an arc that
   ended on day 10 keeps the next away on day 17, and one may start on day 18), and fewer than `arcsAtOnce` main arcs on
-  the whole server (side arcs aren't counted). A `threat` arc doesn't start in a village At peace or at threat level 0.
+  the whole server (side arcs aren't counted). A `threat` arc doesn't start in a village At peace, at threat level 0 or
+  on Peaceful.
 - Every 40 ticks the engine checks waiting builds and spawned foes against the players' positions: a build is placed
   once a player is near; a foe comes once a player is near its spot, and one that's gone (its chunk unloaded and lost)
   is put back at its spot.
@@ -99,4 +100,7 @@ far build never over paving and once across a reload, who hears an announcement,
 `QaDisabledArcsGameTests`, `QaThreatArcsPeace1031GameTests`, `QaStoryArcsPeace1031GameTests`,
 `QaRefusedArcMobs1031GameTests`, `QaHallStoryGameTests`, `QaStoryArcEngineBug1031Tests`, `StoryArcCastGameTests`
 (a `talk` or `role:` kill counts only the one this arc cast in this village, across a reload) and
-`QaVillage1031VerifyGameTests` (a villager tagged by hand as the part is no stand-in). Showcase scene `story_arc`.
+`QaVillage1031VerifyGameTests` (a villager tagged by hand as the part is no stand-in) and `QaStoryVerify1103cGameTests`
+(a `threat` arc waiting while At peace, at level 0 and on Peaceful and starting once threatened, a removed file's one log
+line after a save and reload, the real `/reload` reading the arc files again, the commands refused to non-operators,
+every story sentence in American English). Showcase scene `story_arc`.

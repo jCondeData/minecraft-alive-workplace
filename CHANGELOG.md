@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Mechanic saved or reloaded (a restart, his chunk unloading) while carrying a part from the store no longer keeps
+  it in his hand when a player has filled the hole meanwhile, nor loses it when he next fetches another part: it goes
+  back to the store by his toolbox (with Create).
 - The Village Hall's Free job blocks page no longer offers a block to a retired elder or a hired mercenary (the hall
   would refuse them, then say "Someone took that workstation first"); an elder who retires while the page is open is
   told "Bram has retired and takes no job now: they mentor the young instead." when picked, and the block stays free

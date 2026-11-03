@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848
 
 ## 1. What a player sees
 
@@ -410,6 +410,8 @@ rides, which can't be summoned.
   chests doesn't change (37.8). A porter plans each trip from what of the worker's goods the store would take, tried
   and undone (B820, as the Hauler Golem since B806), so room in a stack already there counts and he never fetches what
   can't go in; a load of something else that doesn't fit stays in his bag and he waits, as with any full store.
+  Drop Boxes are looked at nearest first, and the first whose goods fit is emptied, so a nearer box whose goods have
+  no room never hides a farther one (B848, as the Hauler Golem since B847).
 - Seats (37.6): supper is the Village Hall's banquet hour (10500), and the evening runs till the villagers' schedule
   turns to rest (12000); vanilla villagers have no other meal hour, so "for meals" is supper. A villager's seat isn't
   saved: a villager sitting when the world is saved stands up after the load (the design note), so the seat is saved
@@ -519,7 +521,7 @@ barrels: before the tag the Print Shop's Handcrafted desk and counters counted a
 `StorageRoomGameTests.aFullVanillaStoreIsFullForPorters` (no mods: the vanilla counts and board unchanged);
 B820: `PorterGameTests.porterFillsAStoreWithAStackInEverySlot` (a cobblestone in each of the 27 slots: the miner's
 spare cobblestone still goes in) and `PorterGameTests.porterLeavesTheGoodsWhenTheStoreIsBrimFull` (every slot a full
-stack: nothing taken); `QaStackRoom1102cGameTests` (QA): with 63 cobblestone in every slot the porter carries exactly the 27 that fit and the miner keeps the rest; ender pearls, 16 to a stack, in every slot leave a Drop Box's 20 pearls where they are, and with 15 in every slot all 20 go in; `QaMechanicRoom1102cCompatTests` (QA): the Mechanic empties exactly as much flour as the store's flour stack has room for (all 32, or 14 with 18 left in the millstone) and reads full when only other kinds' part stacks are there;
+stack: nothing taken); B848: `QaLaneC1102eBugTests.qaB847APortersFartherDropBoxWhoseGoodsFitIsEmptiedPastANearerOneThatDont` (QA: past a nearer Drop Box of cobblestone with no room the porter brings a farther box's 32 logs in), `DropBoxFitOrderGameTests.thePorterEmptiesTheNearerDropBoxFirstWhenBothFit` and `DropBoxFitOrderGameTests.thePorterTakesNothingWhenNoDropBoxFits` (nothing taken or dropped for 1,200 ticks); `QaStackRoom1102cGameTests` (QA): with 63 cobblestone in every slot the porter carries exactly the 27 that fit and the miner keeps the rest; ender pearls, 16 to a stack, in every slot leave a Drop Box's 20 pearls where they are, and with 15 in every slot all 20 go in; `QaMechanicRoom1102cCompatTests` (QA): the Mechanic empties exactly as much flour as the store's flour stack has room for (all 32, or 14 with 18 left in the millstone) and reads full when only other kinds' part stacks are there;
 with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierStoresAndGivesItems` (all 36 blocks),
 `SophisticatedStorageCompatTests.porterFillsALimitedBarrelFromASophisticatedBarrel`,
 `SophisticatedStorageCompatTests.builderUsesAndLeavesSophisticatedStorage`,

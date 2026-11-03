@@ -199,17 +199,15 @@ public final class HaulerGolems {
 	/**
 	 * The nearest stash with a trip's worth of goods the Storehouse has room for, of any village worker on {@link #sideOf}'s
 	 * side (every one of them, B627), but none whose chest the golem has lately given up on. A Drop Box or worker whose
-	 * goods don't fit is passed over for the next one, as porters do (B830, like B820's fix to {@link PorterWork}).
+	 * goods don't fit is passed over for the next one, as porters do (B830, B847, like B820's fix to {@link PorterWork}).
 	 */
 	@Nullable
 	static Pickup choose(ServerLevel level, IronGolem golem, BlockPos storehouse, List<BlockPos> store) {
 		Map<BlockPos, Long> skip = skipped(level, golem);
-		Village.Stash box = PorterWork.dropBox(level, storehouse, p -> !skip.containsKey(p));
-		if (box != null) {
-			Pickup pickup = pickup(level, store, box);
-			if (pickup != null) {
-				return pickup;
-			}
+		// the nearest Drop Box whose goods fit, past any whose don't (B847)
+		Pickup fromBox = PorterWork.firstDropBox(level, storehouse, p -> !skip.containsKey(p), box -> pickup(level, store, box));
+		if (fromBox != null) {
+			return fromBox;
 		}
 		Villager context = sideOf(level, storehouse);
 		if (context == null) {

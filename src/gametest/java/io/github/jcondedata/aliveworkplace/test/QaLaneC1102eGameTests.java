@@ -180,6 +180,52 @@ public class QaLaneC1102eGameTests implements net.fabricmc.fabric.api.gametest.v
 		});
 	}
 
+	// ---- B847's porter kin: two Drop Boxes by a porter's Storehouse (PorterGameTests' village) ----
+
+	static final BlockPos P_STOREHOUSE = new BlockPos(19, 2, 19);
+	static final BlockPos P_STORE_CHEST = new BlockPos(19, 2, 17);
+	static final BlockPos P_NEAR_BOX = new BlockPos(8, 2, 17);
+	static final BlockPos P_FAR_BOX = new BlockPos(2, 2, 8);
+
+	/**
+	 * A porter at a Storehouse whose chest has room for logs only (26 full cobblestone stacks and a log), a farther Drop
+	 * Box with 32 logs and, when {@code nearBox}, a nearer one with 32 cobblestone. Returns the porter.
+	 */
+	static Villager porterTwoBoxes(GameTestHelper helper, boolean nearBox) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000); // work hours
+		Leftovers.village(helper, 48);
+		QaStackRoom1102cGameTests.strayDropBoxes(helper);
+		helper.setBlock(P_STOREHOUSE, ModBlocks.STOREHOUSE);
+		helper.setBlock(P_STORE_CHEST, Blocks.CHEST);
+		Container store = (Container) helper.getBlockEntity(P_STORE_CHEST);
+		QaStackRoom1102cGameTests.fillEach(store, Items.COBBLESTONE, 64);
+		store.setItem(26, new ItemStack(Items.OAK_LOG, 1));
+		if (nearBox) {
+			helper.setBlock(P_NEAR_BOX, ModBlocks.DROP_BOX);
+			((Container) helper.getBlockEntity(P_NEAR_BOX)).setItem(0, new ItemStack(Items.COBBLESTONE, 32));
+		}
+		helper.setBlock(P_FAR_BOX, ModBlocks.DROP_BOX);
+		((Container) helper.getBlockEntity(P_FAR_BOX)).setItem(0, new ItemStack(Items.OAK_LOG, 32));
+		Villager porter = helper.spawn(EntityType.VILLAGER, new BlockPos(18, 2, 18));
+		io.github.jcondedata.aliveworkplace.store.Porters.employ(helper.getLevel(), porter, helper.absolutePos(P_STOREHOUSE));
+		return porter;
+	}
+
+	/** The control for the porter's two Drop Boxes: the farther box alone, its 32 logs fit, and the porter brings them in. */
+	//$ gametest_ticks_batch AREA '2400' '"qaLaneC1102ePorterFarBoxAlone"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qaLaneC1102ePorterFarBoxAlone")
+	public void qaB847APortersFartherDropBoxAloneIsEmptied(GameTestHelper helper) {
+		Villager porter = porterTwoBoxes(helper, false);
+		helper.succeedWhen(() -> {
+			int stored = count(helper, P_STORE_CHEST, Items.OAK_LOG);
+			helper.assertTrue(stored == 33 && count(helper, P_FAR_BOX, Items.OAK_LOG) == 0
+				&& ModAttachments.BUILDER_BAG.getOrCreate(porter).count(Items.OAK_LOG) == 0,
+				"the Storehouse has " + stored + " of 33 logs; the Drop Box keeps " + count(helper, P_FAR_BOX, Items.OAK_LOG));
+			LOG.info("[QA 1102e] B847 porter control: a lone Drop Box's 32 logs came in");
+		});
+	}
+
 	// ---- B832: real fishermen at the edges of workplaceBuildDelay ----
 
 	/** Six fishermen in one pond with the rule at {@code rule}; the fish they caught after 1500 ticks. */

@@ -146,8 +146,9 @@ Master every 12), and never faster than a block a tick. Then the village's mood,
 2147483647 (B822: over about 21 million it used to overflow and build every tick). The Fisherman waits the same rule's
 delay 15 to 60 times for a bite (`FisherWork.biteTicks`, capped at the largest value), so a huge rule all but stops
 him too (B832: past about 36 million it used to overflow and he caught a fish every second). `/gamerule` refuses values under 1.
-A raised rule counts from the next block; a lowered one too, so a Builder in the middle of a huge delay keeps waiting it
-out until his work restarts (B831, open). XP: 1 per 5 blocks placed and 10 for finishing a build (`BuilderLevels`).
+A raised rule counts from the next block. A lowered one cuts the wait in hand at once to the new delay
+(`BuilderLevels.rewait`, for blocks, scaffolding and a Fisherman's bite), so a Builder in the middle of a huge delay
+builds again at the new speed without his work restarting (B831: he used to wait out the old delay). XP: 1 per 5 blocks placed and 10 for finishing a build (`BuilderLevels`).
 
 **Queue and crew.** A Builder takes up to 5 more blueprints on top of its current one (`MAX_QUEUE`). Up to 3 idle
 Builders (`MAX_HELPERS`; Guilds can change this) help one site, each claiming steps ahead of the lead. A helper that dies drops only its bag; the steps it claimed go back to the crew and the lead finishes the build (B516). The owner

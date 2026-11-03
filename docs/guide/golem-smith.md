@@ -37,7 +37,8 @@ golem's role. Sneak-right-click them with an empty hand to choose which comes ne
   can't get there (walled in, or up on a ledge), it gives up after about 10 seconds and takes the load to the next nearest Storehouse,
   trying the first one again a couple of minutes later. If no Storehouse can be reached, it puts the load back into
   the nearest Drop Box instead of standing around with it. A Drop Box or worker's chest it can't get to is skipped the
-  same way, and it fetches from the next one. At work it swims, so a moat or a river never traps it: it crosses, or
+  same way, and it fetches from the next one, as it does past a Drop Box or chest whose goods have no room in the
+  Storehouse. At work it swims, so a moat or a river never traps it: it crosses, or
   climbs back out at the bank, even one standing a block above the water. Water lower than that, two blocks or more
   below the bank, it won't jump into, since it couldn't climb back out: it finds another way or another Storehouse. It
   keeps a block clear of lava and fire, lava sunk below the ground too, and finds the way round a long wall or lava

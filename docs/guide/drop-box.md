@@ -23,7 +23,8 @@ Craft it from a **barrel** and a **hopper**, anywhere in the grid. It's in the m
 
 Right-click it to open it and put anything in: the loot from a trip, a stack of logs, whatever you're carrying. Put it
 within 48 blocks of a [Storehouse](storehouse.md), and its porter empties the Drop Box first and carries everything to
-the store.
+the store. With several Drop Boxes, the porter (and a Hauler Golem) empties the nearest one first. A box whose goods
+have no room in the Storehouse waits, and the next box whose goods fit is emptied instead.
 
 ## How it fits in
 

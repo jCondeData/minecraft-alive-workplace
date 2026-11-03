@@ -120,5 +120,8 @@ it and the owner hears it in chat. No colony is counted, so no wait before the n
 - `QaColonyWords1102BugTests` (B841): a colony founded by one settler, Tomas, tells the owner "Tomas has founded
   Newbrook, ..." and the mother's chronicle "Our settler Tomas founded ...", never "have" or "settlers"
   (`qaOneSettlerFoundsAColonyInTheSingular`).
+- `QaColonyWordsVerify1103GameTests` (3, QA, B841): one settler reads "Tomas has founded Newbrook, ..." and "Our settler
+  Tomas founded Newbrook, ...", with the Founder's blessing "..., with the Founder's blessing" too, and Tomas and Dara stay
+  plural ("have founded", "Our settlers"); no line shows a raw key or an unfilled %s.
 
 Showcase scenes: `colony`

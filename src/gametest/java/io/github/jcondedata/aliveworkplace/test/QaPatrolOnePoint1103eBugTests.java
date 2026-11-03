@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 public class QaPatrolOnePoint1103eBugTests {
 	private static final String AREA = "aliveworkplace_test:build_area";
 
+	/** Each test has its own batch: it calls {@link Leftovers#clear}, which removes every villager within 48 blocks. */
 	private static List<String> handOver(GameTestHelper helper, int points, String name) {
 		Leftovers.clear(helper);
 		Villager guard = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
@@ -39,8 +40,8 @@ public class QaPatrolOnePoint1103eBugTests {
 	}
 
 	/** One marked point: the action bar reads "route of 1 point". */
-	//$ gametest AREA
-	@GameTest(template = AREA)
+	//$ gametest_batch AREA '"qaPatrolOnePoint1103e"'
+	@GameTest(template = AREA, batch = "qaPatrolOnePoint1103e")
 	public void qaARouteOfOnePointReadsSingular(GameTestHelper helper) {
 		List<String> bar = handOver(helper, 1, "QaPatrolOne");
 		helper.assertTrue(bar.size() == 1, "the action bar said " + bar);
@@ -49,8 +50,8 @@ public class QaPatrolOnePoint1103eBugTests {
 	}
 
 	/** Control: two points read "route of 2 points". */
-	//$ gametest AREA
-	@GameTest(template = AREA)
+	//$ gametest_batch AREA '"qaPatrolTwoPoints1103e"'
+	@GameTest(template = AREA, batch = "qaPatrolTwoPoints1103e")
 	public void qaARouteOfTwoPointsReadsPlural(GameTestHelper helper) {
 		List<String> bar = handOver(helper, 2, "QaPatrolTwo");
 		helper.assertTrue(bar.size() == 1, "the action bar said " + bar);

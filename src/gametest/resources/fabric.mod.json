@@ -497,6 +497,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRaidCallOff1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidCallOff1103cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidNeighbours1103dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRaidVertical1103dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSentryPostTaken1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderVerify1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderCalledOff1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavesAfterFixes1103eGameTests",

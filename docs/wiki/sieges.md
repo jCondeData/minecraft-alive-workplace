@@ -12,6 +12,12 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
 - **The gates shut at once**, whatever the hour and with or without guards, and the **portcullis drops**: iron bars
   come down across the gateway of every finished Gatehouse, under the drawn-up ones. Players can still open the fence
   gates by hand. Both open again at the first dawn after, once the raid is over.
+- **Every night the guards shut the gates** (no siege needed): in a village with a Village Hall and at least one guard,
+  the fence gates of every finished Gatehouse and Palisade Gate in the village shut at dusk (day time 12,500) and open
+  again just before dawn (23,500), on the hall's round, so within half a minute; the same every day, and for a gate
+  build turned or mirrored when it was placed. Without a guard they stay as they are. A gate you open by hand at night
+  is shut again on the next round; a gate you broke or replaced with something else is left as it is, and the others
+  still move. A gate build outside the hall's village is never touched.
 - **The ram goes for the gate** nearest the raiders' side: a ravager, or without one the raiders with axes. Every blow
   is heard, the block cracks a little more with each, and at the end it breaks: nothing drops. The chat says "The
   raiders have broken through a gate of Oakbrook!" The other raiders wait a few blocks behind the ram and walk in
@@ -50,7 +56,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
   fallen snow (one layer) at the wall's foot count as air: the ladder goes up through them, and they are gone afterward
   (no seeds, grass or snowballs drop). Your flowers, saplings, blocks and snow piled deeper there still turn a ladder
   away. When the raid is over every
-  ladder is taken away; nothing else of the wall is touched and no ladder item is left behind.
+  ladder is taken away; nothing else of the wall is touched and no ladder item is left behind. A wall more than 10
+  blocks high gets no ladder, and if you build a wall up past that while a ladder stands against it, the ladder is
+  taken down within a second or two, nothing dropped.
 - **No raider appears inside the walls**: a siege gathers beyond the outermost finished wall on the side it comes from.
 - **Guards take battle stations** (32.6) when a siege begins, instead of rallying at the bell. Archers go up to the
   tops of finished Wall Towers and Lookout Towers and the walkways of the Gatehouse, Stone Wall and Palisade, on the
@@ -286,6 +294,16 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   gates, two sieges at once, and what a client sees of the cracks (the showcase scene films them).
 
 ## Proof
+
+- QA (lane D, 2026-11-03): `QaGates1103dGameTests` (4): the night gates shut at 12,500 and not at 12,499, open at 23,500
+  and not at 23,499, on day 0 and day 3; a Gatehouse turned a quarter and mirrored has its own gates shut; a broken gate
+  and one swapped for a fence are left alone while the third still shuts, a gate opened by hand at night is shut on the
+  next round and one left open stays open in the morning; a Gatehouse outside a hall's village is never touched (and is,
+  with the village wider). With the suite, mutation kills 22 of 23 mutants of `guard/Gates` (the survivor: the gate
+  sound left out).
+- QA (lane D, 2026-11-03): `QaLadderHeight1103dGameTests` (3): a pillager climber sets a ladder up walls exactly 10
+  high and not a rung up walls 11 high; walls built up to 12 high once a ladder has two rungs take it down within 40
+  ticks, off the siege's list, no ladder item dropped.
 
 - GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
   and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's

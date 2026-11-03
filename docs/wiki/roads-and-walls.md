@@ -110,7 +110,7 @@ The generated blueprints for stretches are saved the way the Shape Planner saves
 - A road between villages reaches 256 blocks at most by default, so far-apart villages get two halves and two
   milestones, not one road.
 - Roads are built only while no building waits for a builder, so in a busy village they come last.
-- Not checked for this page: how gates open and close (the README says they are shut at night).
+- How gates open and close is on [Sieges](sieges.md) ("Every night the guards shut the gates").
 
 ## Proof
 

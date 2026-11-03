@@ -87,7 +87,8 @@ public class QaGuardPartnersCompatTests implements FabricGameTest {
 			float lost = hit(helper, guard, pig);
 			helper.assertTrue(lost <= 1.01f, "the pig lost " + lost + ": a Pokémon's move joined a hit on an animal");
 			helper.assertTrue(pig.getLastDamageSource() == null || !pig.getLastDamageSource().is(GuardPartners.POKEMON_MOVE), "a move hit the pig");
-			Husk husk = husk(helper, new BlockPos(5, 2, 4));
+			// The control husk goes where the Machop can see it (B887: at a fixed spot it could be behind the pasture block).
+			Husk husk = beside(helper, husk(helper, new BlockPos(5, 2, 4)));
 			float onHusk = hit(helper, guard, husk);
 			helper.assertTrue(onHusk > 1f + 0.8f * GuardPartners.damage(10), "the control: no move on the husk either (" + onHusk + ")");
 			helper.succeed();

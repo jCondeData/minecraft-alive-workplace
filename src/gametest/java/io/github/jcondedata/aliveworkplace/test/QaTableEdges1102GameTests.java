@@ -59,6 +59,14 @@ public class QaTableEdges1102GameTests {
 			e -> BlueprintItem.data(e.getItem()).map(d -> d.structure().equals(id)).orElse(false)).stream().mapToInt(e -> e.getItem().getCount()).sum();
 	}
 
+	/** Every item entity near the test, for failure messages. */
+	private static String floor(GameTestHelper helper) {
+		return helper.getLevel().getEntitiesOfClass(ItemEntity.class, helper.getBounds().inflate(8), e -> true).stream()
+			.map(e -> e.getItem().getCount() + " " + e.getItem().getItem() + BlueprintItem.data(e.getItem()).map(d -> " " + d.structure()).orElse("")
+				+ " at " + e.blockPosition())
+			.toList().toString();
+	}
+
 	private static void brokenTable(GameTestHelper helper, net.minecraft.world.level.block.Block replacement) {
 		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
 		ServerPlayer player = playerAtTable(helper, GameType.SURVIVAL);
@@ -137,9 +145,13 @@ public class QaTableEdges1102GameTests {
 	 * A full inventory with a stack of 2 blanks (taking one frees no slot): the blank is paid once and the blueprint is
 	 * not lost, in the inventory or dropped at the player's feet.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaTableFullInventory"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaTableFullInventory")
 	public void aFullInventoryNeverLosesTheNewBlueprint(GameTestHelper helper) {
+		// B863: the blueprints on the floor were counted within 8 blocks of this 1-block test, so a Market Stall
+		// blueprint a neighbour (or an earlier batch at this spot) dropped there counted as this one's. Alone in its
+		// batch, cleared first, and only what landed after Get Blueprint counts.
+		Leftovers.clear(helper);
 		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
 		ServerPlayer player = playerAtTable(helper, GameType.SURVIVAL);
 		{
@@ -149,16 +161,20 @@ public class QaTableEdges1102GameTests {
 				player.getInventory().setItem(i, new ItemStack(Items.DIRT, 64));
 			}
 			helper.assertTrue(player.getInventory().getFreeSlot() < 0, "the inventory isn't full");
+			int before = dropped(helper, STALL);
+			helper.assertTrue(before == 0, "setup: " + before + " Market Stall blueprints already on the floor");
 			boolean took = TableServer.take(player, table, STALL);
 			int blanks = player.getInventory().countItem(ModItems.BLANK_BLUEPRINT);
 			int have = blueprints(player, STALL);
 			helper.runAfterDelay(2, () -> {
 				int onFloor = dropped(helper, STALL);
+				String found = " (took " + took + ", " + blanks + " blanks left, " + have + " in the inventory, " + onFloor
+					+ " on the floor: " + floor(helper) + "; player at " + player.blockPosition() + ")";
 				if (took) {
-					helper.assertTrue(blanks == 1, "the blank was paid " + (2 - blanks) + " times");
-					helper.assertTrue(have + onFloor == 1, "after Get Blueprint with a full inventory: " + have + " in it and " + onFloor + " on the floor");
+					helper.assertTrue(blanks == 1, "the blank was paid " + (2 - blanks) + " times" + found);
+					helper.assertTrue(have + onFloor == 1, "after Get Blueprint with a full inventory, " + (have + onFloor) + " blueprints, not 1" + found);
 				} else {
-					helper.assertTrue(blanks == 2 && have + onFloor == 0, "refused, but " + blanks + " blanks are left and " + (have + onFloor) + " blueprints given");
+					helper.assertTrue(blanks == 2 && have + onFloor == 0, "refused, but blueprints were given or blanks used" + found);
 				}
 				leave(helper, player);
 				helper.succeed();

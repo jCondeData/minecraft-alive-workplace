@@ -398,7 +398,7 @@ public final class ColonyArrival {
 		// 33.23: "founded with the Founder's blessing" in both chronicles
 		String blessed = order.blessed() ? "_blessed" : "";
 		String one = settlers.size() == 1 ? ".one" : ""; // "Our settler Tomas", "Tomas has founded" (B841)
-		Chronicle.atHall(level, hall, Chronicle.Kind.FOUNDED, Component.translatable("chronicle.aliveworkplace.colony.founded" + blessed, day, motherName, names));
+		Chronicle.atHall(level, hall, Chronicle.Kind.FOUNDED, Component.translatable("chronicle.aliveworkplace.colony.founded" + blessed + one, day, motherName, names));
 		Component where = VillageHallScreen.where(motherHall, hall);
 		Chronicle.atHall(level, motherHall, Chronicle.Kind.FOUNDED, Component.translatable("chronicle.aliveworkplace.colony.mother" + blessed + one, names, colony, where));
 		io.github.jcondedata.aliveworkplace.hall.VillageMoments.award(level, motherHall, io.github.jcondedata.aliveworkplace.hall.VillageMoments.COLONY, null); // the questbook's colony quest

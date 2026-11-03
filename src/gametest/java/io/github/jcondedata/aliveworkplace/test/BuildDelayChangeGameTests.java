@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 /**
  * B831: workplaceBuildDelay changed in the middle of a job takes effect without the worker's job restarting. Lowered,
  * the wait in hand is cut to the new delay; raised, the next wait is the new one; across a save and reload the
- * lowered rule is still read at once.
+ * lowered rule is still read at once. B845: a restart of his work under a huge delay gives no free block.
  */
 public class BuildDelayChangeGameTests {
 	private static final String AREA = "aliveworkplace_test:build_area";
@@ -160,6 +160,52 @@ public class BuildDelayChangeGameTests {
 			helper.assertTrue(after >= 3, "lowered to 4 at " + loweredAt[0] + " after a reload at " + reloadedAt[0] + ", but only " + after
 				+ " blocks in the next 200 ticks (blocks at " + ticks + "): " + QaBuilderConfig1102GameTests.where(helper, r));
 			helper.succeed();
+		});
+	}
+
+	/**
+	 * B845: building at 4, raised to 30,000,000, then his work restarts (the same brain stopping and starting, as at
+	 * dusk and dawn; then a save and reload, a fresh brain): no restart gives a free block. At most the one already due
+	 * when the rule went up comes.
+	 */
+	//$ gametest_ticks_batch AREA '1600' '"delayRaisedThenRestarted"'
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "delayRaisedThenRestarted")
+	public void aRestartUnderAHugeDelayGivesNoFreeBlock(GameTestHelper helper) {
+		ServerLevel level = QaBuilderConfig1102GameTests.rules(helper, false, 4);
+		QaBuilderConfig1102GameTests.Run r = QaBuilderConfig1102GameTests.start(helper, QaBuilderConfig1102GameTests.BENCH,
+			QaBuilderConfig1102GameTests.CHEST, QaBuilderConfig1102GameTests.HUT, QaBuilderConfig1102GameTests.hutMaterials());
+		List<Integer> ticks = watch(helper, r);
+		int[] raisedAt = {-1};
+		int[] stoppedAt = {-1};
+		int[] reloadedAt = {-1};
+		helper.onEachTick(() -> {
+			int t = (int) helper.getTick();
+			if (raisedAt[0] < 0 && ticks.size() >= 3) {
+				setDelay(level, 30_000_000);
+				raisedAt[0] = t;
+			} else if (raisedAt[0] >= 0 && stoppedAt[0] < 0 && t >= raisedAt[0] + 40 && (between(ticks, raisedAt[0], t) >= 1 || t >= raisedAt[0] + 400)) {
+				// once the block already due when the rule went up has come: the wait in hand is now the huge one
+				r.villager().getBrain().stopAll(level, r.villager()); // his work stops; the brain starts it again next tick
+				stoppedAt[0] = t;
+			} else if (stoppedAt[0] >= 0 && reloadedAt[0] < 0 && t >= stoppedAt[0] + 200) {
+				QaBuilderConfig1102GameTests.restart(helper, r);
+				reloadedAt[0] = t;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(raisedAt[0] >= 0, "fewer than 3 blocks at 4 in " + helper.getTick() + " ticks: " + ticks + "; "
+				+ QaBuilderConfig1102GameTests.where(helper, r));
+			helper.assertTrue(reloadedAt[0] >= 0 && helper.getTick() >= reloadedAt[0] + 300, "waiting for the restarts and 300 ticks after");
+			helper.assertTrue(r.live() != null, "the build site was lost: " + QaBuilderConfig1102GameTests.where(helper, r));
+			long due = between(ticks, raisedAt[0], stoppedAt[0]);
+			helper.assertTrue(due <= 1, due + " blocks after the rule went up to 30,000,000 at " + raisedAt[0] + " (blocks at " + ticks
+				+ "); at most the 1 already due was expected");
+			long afterStop = between(ticks, stoppedAt[0], reloadedAt[0]);
+			helper.assertTrue(afterStop == 0, afterStop + " block(s) after his work stopped and started again at " + stoppedAt[0]
+				+ " under workplaceBuildDelay 30,000,000 (blocks at " + ticks + "): a restart gave a free block");
+			long afterReload = between(ticks, reloadedAt[0], (int) helper.getTick());
+			helper.assertTrue(afterReload == 0, afterReload + " block(s) after a reload at " + reloadedAt[0]
+				+ " under workplaceBuildDelay 30,000,000 (blocks at " + ticks + "): a restart gave a free block");
 		});
 	}
 

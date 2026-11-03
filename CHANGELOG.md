@@ -18,6 +18,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A colony founded by a single settler now opens its chronicle with "Founded on day 1 by a settler from Thornholm:
+  Tomas" (the Founder's blessed line too) instead of "by settlers" (B853).
+- Under a huge `/gamerule workplaceBuildDelay`, a Builder no longer places one block straight away whenever his work
+  restarts (waking up, a reload, being re-hired): a restart keeps the wait he had, or starts a whole one (B845).
+- Hauler and Farmhand golems go straight to work instead of sometimes first wandering toward a nearby village (vanilla's
+  "move back to the village" stroll, which ranked the same as their work). That walk could take a hauler off a ledge it
+  couldn't climb back up, and it then stood there holding its load (B858).
+- The Nurse no longer turns you away after you waited out the minute she gave you because she slowed down meanwhile (a
+  bad mood, an illness): the wait is set when she treats you and only ever gets shorter (B864).
 - The Nurse no longer gives you your health back on every click while her Healing Machine is busy with another
   player's team: she now treats nothing until it's free (your minute isn't used), and right after a treatment she says
   to come back in 60 seconds, not 61 (B850, B851).

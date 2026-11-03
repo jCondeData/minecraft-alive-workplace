@@ -459,7 +459,9 @@ point of interest, saved by Minecraft).
 
 GameTests: `QaLaneC1102eGameTests` (QA, B833: the plurals beside the new singulars through the hall's buttons, "2
 mercenaries are here until dawn" and "3 kinds of meal in the store"), `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
-`B301GameTests` (no clearing-out quest or step where nothing can be fought, bandits and wild Pokémon counting, the
+`QaOneEmerald1103d2GameTests` (6, QA, B406 without CobbleDollars: the treasury on the hall page and when collected at 1,
+1.5 and 2.5 emeralds and empty, a quest reward of 1 and 2, the purse, "short by" at 0 to 2, a trainer's +2 emeralds,
+and the mailbox's "Posted 1 item"/"2 items"), `B301GameTests` (no clearing-out quest or step where nothing can be fought, bandits and wild Pokémon counting, the
 words, a stuck quest swapped after a save and reload, MobsBeGone's file read), `QaSlayQuest1103dGameTests` (QA, B301: the real
 world and the real blocklist file, three of four night monsters listed still lets monsters come, all four in Cobbleverse's
 layout offers no clearing-out quest in 40 board seeds, Peaceful and back; a quest that can still be finished keeps its

@@ -889,6 +889,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillageSpawns1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSlayQuest1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPeacefulLair1103dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaOneEmerald1103d2GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSandRampSteps1103d2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaColonyWords1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSurvivors1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampEdgeGameTests",

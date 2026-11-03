@@ -106,6 +106,9 @@ Roadmap items: 32.9, B382, B437, B828
   ramp's foot, behind a wall four high, is let go there (B330).
 - `DesertRaiderGameTests.aHuskComingDownOntoARaisedTerraceIsLetGo`: a husk coming down onto a terrace two above the
   ramp's foot behind the wall is let go there (B331).
+- `QaSandRampSteps1103d2GameTests` (5, QA, B330, B331): a husk standing still inside the wall is let go as over it on
+  a bottom slab one up (foot + 1.5), on a stair's lower step, on a top slab one up (foot + 2) and on a full block in the
+  first column past the wall; one still outside on the ground is never counted over the wall.
 - `DesertRaiderGameTests.noSandWithMobGriefingOff`.
 - `DesertRaiderGameTests.theDesertSiegeIsStillOnAtMidMorningAndOverAtNoon`.
 - `QaRisings1102dBugTests` (B828): a husk that fell just before the raid was called off, before the raiders left at

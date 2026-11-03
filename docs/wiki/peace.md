@@ -67,7 +67,7 @@ Roadmap items: 32.21, B134, B383, B704, B705, B767
 - **The command is an order**: it ignores the switches, the threat level and At peace (a lair set down by a quiet
   village still leaves at the next dawn). `start` refuses while a raid is under way, `lair` while a lair stands and for a
   culture without one, `disaster` while one is under way. `end` calls the raid off (the raiders go, the band's own back
-  to their lair, the gates open; nothing goes into the past attacks) and ends the disaster. A neighbour village's own
+  to their lair, the gates open; nothing goes into the past attacks) and ends the disaster. A neighbor village's own
   raid goes on: its raiders, the ones nearer that village, stay, even within this one's reach (B849). `clear` does that, sends the
   lair away and empties the threat clock.
 
@@ -149,6 +149,6 @@ Roadmap items: 32.21, B134, B383, B704, B705, B767
   dawn, with no new camp for 3 days; back on Normal a chief a player kills still breaks the camp up; Peaceful for a
   moment and back to Normal before the hall's round is no kill (B767).
 - `QaRisingsVerify1102dGameTests.aNeighbourVillagesCallOffLeavesTheOtherRaidsRaidersAndItGoesOn` (B849): `end` on one
-  of two villages side by side sends its own raider away, not the neighbour's standing within its reach, and the
-  neighbour's raid is still on after its round.
+  of two villages side by side sends its own raider away, not the neighbor's standing within its reach, and the
+  neighbor's raid is still on after its round.
 - Showcase scenes: `at_peace`.

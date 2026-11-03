@@ -6718,6 +6718,7 @@
   "message.aliveworkplace.request.another_time": "Another time, then, %s.",
   "message.aliveworkplace.request.done": "You helped %s: %s. You earned %s.",
   "message.aliveworkplace.request.missed": "You didn't help %s in time (%s). They feel let down: 30 friendship lost.",
+  "message.aliveworkplace.request.called_off": "%s has no job now, so \"%s\" is called off. No friendship is lost.",
   "chronicle.aliveworkplace.request_done": "%s helped %s: %s",
   "mood.aliveworkplace.reason.let_down": "Let down: nobody helped in time",
   "quest.aliveworkplace.level_up": "Help them reach %s",

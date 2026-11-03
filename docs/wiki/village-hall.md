@@ -80,7 +80,8 @@ Stonecutter" (counted over every free block, a shared block such as a lectern co
 named by the free blocks themselves, nearest kind first: "Carpenter · 1 free Carpenter's Bench, 1 free Crafting
 Table", B658), then the rest grayed: "Mason · place a Stonecutter first", a job above their class with the class it needs (34.8), "Librarian ·
 their job now". The Builder is one of them ("Builder · 1 free Blueprint Table"). Last, for a villager with a job, **No
-job**. Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
+job**. Hired mercenaries, relief riders and a story's visitor such as Doctor Wren aren't the village's to
+employ: their row shows their own job, they count as working, and Job ▾ offers nothing (B889). Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
 click on a job sends the offer to chat and marks the line ("Click again to pay 20 emeralds: Dara becomes a Mason"); a
 second pays and retrains them through 36.18's `HallRetraining.retrain` (the price, the class check, "someone took that
 workstation first", not enough emeralds: nothing changes and the player is told how short), and the list closes on a

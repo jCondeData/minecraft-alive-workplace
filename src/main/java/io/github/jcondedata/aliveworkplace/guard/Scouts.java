@@ -226,7 +226,9 @@ public final class Scouts {
 			return;
 		}
 		if (!isScout(scout)) {
-			// The spyglass taken off them: no scout any more, the mission is called off.
+			// The spyglass taken off them, or retrained (B891): no scout any more, the mission is called off and a raised
+			// spyglass put away, as finishing a look does.
+			lower(scout);
 			Data.get(level).remove(mission.scout());
 			LEGS.remove(mission.scout());
 			return;

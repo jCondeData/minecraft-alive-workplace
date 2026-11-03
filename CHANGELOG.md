@@ -40,6 +40,9 @@ asks for the steps, `latest.log` and any crash report).
 - A maker's line above their head names many things in the plural: "making 2 Amethyst Rings", "fetching what 3
   Barrels take", "taking 3 Arrows to the guard" (Crafter, Chef, Jeweler and the other luxury makers, Toolsmith,
   Fletcher and Weaponsmith); one stays one (B878).
+- A courier route or Delivery Note that carried only items of a mod taken out of the pack no longer turns into "carry
+  everything" and empties its chest: it carries nothing of them, says "1 item no longer in the game", and the items
+  come back on it if the mod returns (B819).
 - A scanned soul sand elevator (or a magma block's sinking column) is built back with its water, so the bubbles rise
   (or sink) again; each block costs a water bucket that comes back empty (B861).
 - A scanned melon or pumpkin on its grown stem is built back with the stem: it costs one melon or pumpkin seeds and is

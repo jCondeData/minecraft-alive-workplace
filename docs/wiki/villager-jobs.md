@@ -377,7 +377,9 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
   note keeps who marked its source, and a postman doesn't take from a protected village that keeps that player (or,
   for a route from before, the postman's employer) out (B717). A postman sneak-right-clicked with an empty hand gives
   his status, each count in its own form: "Postman — 1 parcel delivered · 2 courier routes" (B809), then a line per
-  route.
+  route. A route or note whose kinds belong to a mod taken out of the pack keeps them: it never turns into "carries
+  everything", the note says "Carries only: 1 item no longer in the game" (`tooltip.aliveworkplace.route.gone`), and
+  the kinds come back if the mod does (B819).
 - Texts: `message.aliveworkplace.job.chosen`, `message.aliveworkplace.job.needs_station`,
   `message.aliveworkplace.job.station_taken`, `message.aliveworkplace.job.class_needed`,
   `tooltip.aliveworkplace.station.hint`, `message.aliveworkplace.retrain.offer`, `.confirm`, `.short`, `.done`,

@@ -644,6 +644,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallListsOneBadEntry1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.B796GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageVerify1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageVerify1102BugTests",
+			"io.github.jcondedata.aliveworkplace.test.B819GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPostmanStatusWords1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallCountWordsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.AreaJobWorkBlockGameTests",

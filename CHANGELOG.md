@@ -21,6 +21,9 @@ asks for the steps, `latest.log` and any crash report).
 - The Nurse no longer gives you your health back on every click while her Healing Machine is busy with another
   player's team: she now treats nothing until it's free (your minute isn't used), and right after a treatment she says
   to come back in 60 seconds, not 61 (B850, B851).
+- Raids: calling off one village's raid (`/workplace threat end`) no longer sends away the raiders of a neighbour
+  village's raid that stood within its reach; those nearer the other village stay, so that raid goes on instead of
+  counting as fought off, and its husks beside the Pharaoh still rise (B849).
 
 ## 0.151.4 — 2026-11-02
 

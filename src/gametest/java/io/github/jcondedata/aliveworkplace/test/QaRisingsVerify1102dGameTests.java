@@ -166,6 +166,33 @@ public class QaRisingsVerify1102dGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B849: two villages side by side, each with a desert raid. Calling off the first's sends its own raider away, but
+	 * not the second's, though it stands within the first's reach (nearer its own hall); the second village's round then
+	 * finds its raider still about, so its raid goes on, not ended as fought off.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaRisingsNeighbourRaiders1103"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaRisingsNeighbourRaiders1103")
+	public void aNeighbourVillagesCallOffLeavesTheOtherRaidsRaidersAndItGoesOn(GameTestHelper helper) {
+		BlockPos relA = new BlockPos(2, 2, 2);
+		BlockPos relB = new BlockPos(27, 2, 27);
+		setUp(helper, relA, relB);
+		ServerLevel level = helper.getLevel();
+		BlockPos hallA = raid(helper, relA, 100);
+		BlockPos hallB = raid(helper, relB, 100);
+		long began = ThreatData.get(level).raid(hallB).orElseThrow().began();
+		Husk theirs = husk(helper, new BlockPos(6, 2, 6), true);
+		Husk ours = husk(helper, new BlockPos(22, 2, 22), true);
+		helper.assertTrue(VillageRaids.raiders(level, hallA).contains(ours), "setup: expected the second village's raider within the first's reach");
+		helper.assertTrue(VillageRaids.callOff(level, hallA), "setup: expected the first village's raid called off");
+		helper.assertTrue(theirs.isRemoved(), "the first village's own raider stayed after its raid was called off");
+		helper.assertTrue(!ours.isRemoved() && ours.isAlive(), "the second village's raider (4 blocks from its hall, 28 from the first's) was sent away when the first village's raid was called off");
+		VillageRaids.tick(level, hallB, 0, 0, 0, day -> { });
+		helper.assertTrue(ThreatData.get(level).raid(hallB).map(r -> r.began() == began).orElse(false),
+			"the second village's raid ended in its round after the neighbour's was called off: " + ThreatData.get(level).raid(hallB));
+		helper.succeed();
+	}
+
 	/** No raid anywhere: a husk that was no raider falls beside a Pharaoh and rises as before, not made a raider. */
 	//$ gametest_ticks_batch AREA '200' '"qaRisingsNoRaid1102d"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaRisingsNoRaid1102d")

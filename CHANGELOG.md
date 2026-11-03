@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Sand or gravel that falls into a hut's rooms while it goes up (its support broken mid-build) is dug out into the
+  Builder's chests before he calls the hut done, so a finished hut has no sand standing in it (B869).
 - A hired mercenary, a relief rider or Doctor Wren on the Village Hall's People table now shows their own job and
   counts as working, with no job change offered: before, they were listed as jobless and one click made them a Mason
   for free (B889).

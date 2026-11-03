@@ -202,7 +202,33 @@ public final class BuildSite {
 	/** B837: back to the start of CLEAR, to dig out what fell into the spots already cleared. */
 	public void backOverClear() {
 		clearPasses++;
+		boolean onlyFallen = digOut;
 		backTo(BuildPlan.Stage.CLEAR, 0);
+		digOut = onlyFallen; // B869: a dig-out's next pass is a dig-out too
+	}
+
+	/**
+	 * B869: sand or gravel that fell into the build's rooms after CLEAR (its support broken mid-build) is dug out before
+	 * the build is called done. True while the build is back in CLEAR for that: only such blocks where the drawing has air
+	 * are dug, and the list running out goes straight back to LANDSCAPE. Saved; false in older saves.
+	 */
+	private boolean digOut;
+
+	/** Whether CLEAR is a dig-out of what fell into the built rooms (B869). */
+	public boolean digOut() {
+		return digOut;
+	}
+
+	/** B869: back over CLEAR to dig out what fell into the rooms (one of the build's {@link #clearPasses}). */
+	public void backToDigOut() {
+		clearPasses++;
+		backTo(BuildPlan.Stage.CLEAR, 0);
+		digOut = true;
+	}
+
+	/** B869: sand fallen into the rooms, still there once CLEAR's passes ran out: given up for good, counted once. */
+	public void leaveOut(BlockPos pos) {
+		leftOut.add(pos.immutable());
 	}
 
 	/** How often the build went back for blocks broken mid-build (B508). */
@@ -234,6 +260,7 @@ public final class BuildSite {
 		this.stage = stage;
 		cursor = index;
 		retrying = false;
+		digOut = false; // B869: set again by a dig-out
 		deferred.clear();
 		gaveUp.clear();
 		placedThisStage.clear();
@@ -643,7 +670,9 @@ public final class BuildSite {
 		if (!retrying && !deferred.isEmpty()) {
 			retrying = true;
 		} else {
-			stage = stage.next();
+			// B869: a dig-out of what fell into the rooms goes straight back to the end of the build
+			stage = digOut && stage == BuildPlan.Stage.CLEAR ? BuildPlan.Stage.LANDSCAPE : stage.next();
+			digOut = false;
 			retrying = false;
 			deferred.clear();
 			gaveUp.clear();
@@ -854,6 +883,7 @@ public final class BuildSite {
 		refresh = from;
 		stage = BuildPlan.Stage.CLEAR;
 		cursor = 0;
+		digOut = false;
 		plan = null;
 		onChange.run();
 	}
@@ -1050,6 +1080,9 @@ public final class BuildSite {
 		if (clearPasses > 0) {
 			tag.putInt("clear_passes", clearPasses); // B837
 		}
+		if (digOut) {
+			tag.putBoolean("dig_out", true); // B869
+		}
 		if (!leftOut.isEmpty()) {
 			tag.putLongArray("left_out", leftOut.stream().mapToLong(BlockPos::asLong).toArray()); // B508
 		}
@@ -1112,6 +1145,7 @@ public final class BuildSite {
 		site.kineticPasses = Nbt.getInt(tag, "kinetic_passes");
 		site.rechecks = Nbt.getInt(tag, "rechecks"); // B508: none in older saves
 		site.clearPasses = Nbt.getInt(tag, "clear_passes"); // B837: none in older saves
+		site.digOut = Nbt.getBoolean(tag, "dig_out"); // B869: none in older saves
 		for (long p : Nbt.getLongArray(tag, "left_out")) {
 			site.leftOut.add(BlockPos.of(p));
 		}

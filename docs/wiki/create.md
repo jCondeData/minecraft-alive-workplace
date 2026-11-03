@@ -553,6 +553,9 @@ deployer can place blocks in and rename the hall of a protected village (B844).
 - `QaMechanicBeltController1103eCompatTests` (QA, with Create): a three-segment belt saved where its controller stood
   elsewhere, gone from a finished build: every segment the Mechanic puts back names as its `Controller` the place where
   the controller segment stands in this world, plain and turned a quarter.
+- `QaMechanicSavedMidMend1103eCompatTests` (QA, with Create, saves): a Mechanic saved and loaded on his way to the
+  store for a cogwheel takes one, not two; saved and loaded twice three ticks apart while carrying it, he puts it in
+  once: the hole filled, one cogwheel left of the store's two, nothing in his hand or on the ground.
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is

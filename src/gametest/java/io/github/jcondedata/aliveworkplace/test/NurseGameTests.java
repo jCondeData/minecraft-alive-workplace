@@ -74,10 +74,12 @@ public class NurseGameTests implements FabricGameTest {
 		helper.runAfterDelay(Nurses.COOLDOWN - 1, () -> {
 			helper.assertTrue(helper.getLevel().getGameTime() - start == Nurses.COOLDOWN - 1, "setup: "
 				+ (helper.getLevel().getGameTime() - start) + " ticks went by");
+			player.setHealth(5f); // a minute of natural regeneration (or a nurse's tending) may have healed him meanwhile
 			Nurses.treat(player, nurse);
 			helper.assertTrue(player.getHealth() == 5f, "treated a tick before the minute was up");
 		});
 		helper.runAfterDelay(Nurses.COOLDOWN, () -> {
+			player.setHealth(5f);
 			Nurses.treat(player, nurse);
 			helper.assertTrue(player.getHealth() == player.getMaxHealth(), "not treated once the minute was up: " + player.getHealth());
 			helper.succeed();

@@ -613,6 +613,13 @@ once from the chest and built; kelp three tall in a glass tank, a stalactite thr
 and a hanging sign under a ceiling are built again; a pushed-out sticky piston built turned a quarter faces south with
 its head; a lever-pushed piston is never left stuck (lever on with the head, or off and retracted); cave vines whose
 site is saved and loaded every 7 ticks still end three long). A big dripleaf's stem isn't built yet (B812).
+`QaBuilderFixes1103cGameTests` (12, QA, B868, B873, B879: a CLEAR spot refilled 16 or 20 times and then left is dug on
+the retry with nothing skipped; a spot given up for being refilled stays given up through a save and a later CLEAR
+pass, counted once in skipped; two refilled spots give skipped 2 and the build finishes; water and powder snow paid
+from a chest or the bag give one empty bucket back per pour, and stone leaves nothing extra; a Yes after one of two
+holes was mended is still agreed and repaired; a wall mended by hand leaves the list after Yes or Not now, and new
+damage is asked about afresh; damage done before the Yes is repaired; the Repairs page's Yes on a mended wall promises
+no repair).
 `QaScanRebuild1102dGameTests` (6, the tester's: a lily pad on a pool, a scaffolding tower that is part of the scan,
 four pink petals, three turtle eggs, a full water cauldron, and farmland with wheat beside a dirt path, each scanned and
 built again whole with nothing skipped and asked for as a player places them).

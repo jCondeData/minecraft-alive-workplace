@@ -423,6 +423,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaEconomySurvivorsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerLifeJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerLifeJobsBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCharterMourning1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactsBoardStewardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPactsRealmEdictsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPacts1031GameTests",
@@ -885,6 +886,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaKingTribute1103dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPatrolOnePoint1103eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassesOne1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWordsVerify1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaNurseWait1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageSpawns1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSlayQuest1103dGameTests",
@@ -1185,12 +1187,20 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1102eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDropBoxRoom1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanNoHall1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanNoHall1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRoadWonderSmallRadius1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1102eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.DropBoxFitOrderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerFitVerify1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaColonyWordsVerify1103GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaHaulerPathsVerify1103GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaHaulerPathsVerify1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCommonMarket1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRetrain1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStewardWords1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallBeds1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaEldersColonies1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageWords1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDeliveryNote1103cGameTests"
 		]
 	},
 	"depends": {

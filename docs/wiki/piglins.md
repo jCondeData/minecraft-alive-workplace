@@ -138,6 +138,9 @@ Roadmap items: 32.10, B829
   a plain pillager go through (B375).
 - `QaPlunderCalledOff1102dBugTests.aRaidEndedByTheOperatorDoesNotMakeThePlunderedGoldVanish`: a piglin carrying 12
   gold ingots, then `/workplace threat end`: the 12 ingots are on the ground in the village, not gone (B840).
+- `QaSavesAfterFixes1103eGameTests` (lane E's QA): the same piglin and its raid saved and loaded first, then
+  `/workplace threat end` or `clear`: exactly the 12 ingots lie in the village, none twice; of two piglins only the one
+  carrying 7 gold drops anything.
 - Showcase scene `piglins`: the outpost, a raid stepping out of its portal, a piglin carrying off a stack of gold.
 - `QaPiglinRaidGameTests.aRaidingHoglinGoesForAVillager`, `QaPiglinRaidGameTests.aRaidingPiglinBruteGoesForAVillager`:
   a raiding hoglin and a raiding brute, penned with a villager, strike it themselves.

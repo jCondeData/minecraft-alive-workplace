@@ -72,9 +72,16 @@ Builder knows about it lives in that record, and the record is saved, so a Build
 stopped, chunk unloaded, Builder asleep) and carry on exactly where it was. `BuilderWork` is written to be
 restartable at any tick for this reason.
 
+**Working hours.** A Builder works from early morning (1000) to dusk (11000), longer than vanilla villagers, then
+idles and goes to bed at 12000. He stops building as soon as his schedule leaves work, puts his tool away and heads
+for bed; he doesn't build on into the night (B839). In the morning he carries on where he stopped.
+
 **Stages, in order:** CLEAR (top-down), FOUNDATION, STRUCTURE (bottom-up), DECORATION, LANDSCAPE, DONE.
 - CLEAR takes away what is in the way, but never breaks containers, its own bench or any other Builder's Bench (a
-  neighbor's bench inside the build's box stays, and the build finishes round it, B132).
+  neighbor's bench inside the build's box stays, and the build finishes round it, B132). Sand or gravel standing over
+  the box (a dune, a gravel cap on a hill) falls into each layer as it is taken: at the end of CLEAR the builder waits
+  for what is still coming down, then goes back over the list and digs out what fell in, up to 16 times a build (B837;
+  saved as `clear_passes`, 0 in older saves).
 - FOUNDATION fills under a build standing on uneven ground. How deep is the `workplaceFoundationDepth` rule.
 - STRUCTURE goes bottom-up so every block has something to stand on. A block a player puts mid-build where the
   drawing has another is taken out into the builder's chests and the drawn block laid (a Steward's build keeps the
@@ -85,6 +92,9 @@ restartable at any tick for this reason.
 - LANDSCAPE digs away ground above the floor and fills holes with dirt, but never above the land just beyond the
   leveled ring (B280): a build standing a block above the lawn round it leaves the lawn as it is, where it once got a
   raised band of dirt round it. A blueprint clicked onto a flower or tall grass stands on the ground under the plant.
+- LANDSCAPE leaves the ground in and under a neighboring build alone (B838): a site under way or a finished
+  building whose box the leveled ring reaches, its basement too, is neither dug nor filled, so two builds side by side
+  don't dig the pad out from under each other (test `QaBuilderMidJob1102BugTests`).
 - FOUNDATION and LANDSCAPE depend on the terrain, so a site loaded in the middle of those stages makes its list
   again from the terrain; steps already done are skipped.
 - A step that cannot be done yet is put off once, then skipped (counted in `skipped`).
@@ -405,6 +415,8 @@ claims and trip counts.
 
 ## 8. Proof
 
+`QaLaneC1102eGameTests` (QA, B832): six real fishermen catch nothing in 1500 ticks at workplaceBuildDelay 35791395 (the
+first delay whose 60-step bite passes the int range) and at 2147483647, and the same pond at the default 8 still catches.
 `B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not
 waiting); a click there hands one over and it's off the board; after a save and reload it's listed again while he builds
 on, and a torch put in the chest takes it off before the hut is done.
@@ -578,7 +590,7 @@ cake; cave and weeping vines three long under a ceiling, and twisting vines thre
 built that long with nothing skipped; a pushed-out sticky piston is built with its head, and without its redstone it
 stands retracted). `QaScanRebuild1102dBugTests` (3, QA, B816-B818: sugar cane three tall on sand by a pool is built
 three tall; three sea pickles at the bottom of a pool are built as three, waterlogged; tall seagrass in a pool is built
-again, both halves, with nothing skipped). `QaScanRebuild1102fGameTests` (10, QA, B816-B818: cane one and three tall on dirt, grass, sand and red sand by one channel, cane with water only a diagonal away skipped and never floating, cane by the world's own water, a chest short of cane waits then builds it, a save and reload mid-decoration; one and four pickles glow under water, dry pickles stay dry, living coral stays alive; tall seagrass costs one seagrass and one bone meal a plant, seagrass one deep is plain seagrass). `QaBuilderLeftovers1102GameTests` (9, QA, B820: a Builder's leftovers fill the part stacks of his own chest, go to the Storehouse when every slot holds another item or the chest is brim-full, the one that doesn't fit goes on, after a save and reload too, and at the end of a job; a Hauler Golem leaves named logs and an enchanted, damaged axe untouched, also after a reload). `QaBuilderTerrain1102GameTests` (6, QA: a box full of sand dug out, a pond by the doorway leaves no water in the hut, lava pools with fire spread on burn nothing and kill no one, a crack under the floor is filled to the bottom and the build ends with no dirt in the chest, an oak through the footprint leaves no log or leaf, snow, grass and flowers are cleared and never asked for; every material adds up). `QaBuilderMidJob1102GameTests` (6, QA: a builder killed mid-structure is followed at his bench with nothing doubled, the bench mined and put straight back, a player's block in the room neither holds the build nor is lost, two reloads three ticks apart, a builder asleep builds nothing and finishes in the morning, two touching huts on flat ground). `QaBuilders1102bBugTests` (5, QA: a glow lichen scanned on three faces is listed as three lichen and
+again, both halves, with nothing skipped). `QaScanRebuild1102fGameTests` (10, QA, B816-B818: cane one and three tall on dirt, grass, sand and red sand by one channel, cane with water only a diagonal away skipped and never floating, cane by the world's own water, a chest short of cane waits then builds it, a save and reload mid-decoration; one and four pickles glow under water, dry pickles stay dry, living coral stays alive; tall seagrass costs one seagrass and one bone meal a plant, seagrass one deep is plain seagrass). `QaBuilderLeftovers1102GameTests` (9, QA, B820: a Builder's leftovers fill the part stacks of his own chest, go to the Storehouse when every slot holds another item or the chest is brim-full, the one that doesn't fit goes on, after a save and reload too, and at the end of a job; a Hauler Golem leaves named logs and an enchanted, damaged axe untouched, also after a reload). `QaBuilderTerrain1102GameTests` (6, QA: a box full of sand dug out, a pond by the doorway leaves no water in the hut, lava pools with fire spread on burn nothing and kill no one, a crack under the floor is filled to the bottom and the build ends with no dirt in the chest, an oak through the footprint leaves no log or leaf, snow, grass and flowers are cleared and never asked for; every material adds up). `QaBuilderTerrain1102BugTests` (2, QA, B837: a sand dune over the whole site and a gravel cap over dirt, reloaded mid-CLEAR, are all dug out of the hut, nothing left falling, every material adds up). `QaBuilderMidJob1102GameTests` (6, QA: a builder killed mid-structure is followed at his bench with nothing doubled, the bench mined and put straight back, a player's block in the room neither holds the build nor is lost, two reloads three ticks apart, a builder asleep builds nothing and finishes in the morning, two touching huts on flat ground). `QaBuilders1102bBugTests` (5, QA: a glow lichen scanned on three faces is listed as three lichen and
 built on no more faces than were paid, B792; a candle cake, three-long hanging vines, a pushed-out piston and a lone
 banner's preview). `QaScanRebuild1102cGameTests` (9, the tester's, B793-B795: a lit cake with a red candle is paid
 once from the chest and built; kelp three tall in a glass tank, a stalactite three long, a spore blossom, hanging roots

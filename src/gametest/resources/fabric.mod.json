@@ -489,6 +489,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRisings1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRisingsVerify1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderVerify1102dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPlunderCalledOff1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPirateLanding1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PiglinGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CovenGameTests",
@@ -720,7 +721,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStackRoom1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderLeftovers1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StrangeMoodGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStrangeMoodGameTests",
@@ -869,6 +872,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinRaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinIncursionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunder1102dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaKingTribute1102dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaColonyWords1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSurvivors1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatsM32GameTests",
@@ -1144,7 +1149,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallEveryPage1102cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOneCount1102cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildDelayFisher1102BugTests",
-			"io.github.jcondedata.aliveworkplace.test.SingularCountsAndBiteGameTests"
+			"io.github.jcondedata.aliveworkplace.test.SingularCountsAndBiteGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLaneC1102eGameTests"
 		]
 	},
 	"depends": {

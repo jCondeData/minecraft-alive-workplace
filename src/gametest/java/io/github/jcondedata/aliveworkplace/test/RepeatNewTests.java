@@ -16,7 +16,8 @@ import net.minecraft.gametest.framework.TestFunction;
  * times (default 10), every copy in a batch of its own so neighbours can't disturb it. Without the variable it adds no
  * tests, so the normal suite is unchanged. {@code tools/modtest/newtests.py} lists the tests added in the last day and
  * the nightly workflow runs only this class with them (it rewrites the test mod's entrypoints in its own checkout).
- * Copies are named {@code repeat_<n>_<class>_<method>}.
+ * Copies are named {@code repeat_<n>_<class>_<method>}. The compat suite registers it too, for its own new tests
+ * (classes in {@link #COMPAT_PACKAGE}; the nightly sets the variable to those for the compat run only).
  */
 public class RepeatNewTests {
 	public static final String ENV = "ALIVEWORKPLACE_REPEAT";
@@ -57,9 +58,23 @@ public class RepeatNewTests {
 		return out;
 	}
 
+	/**
+	 * The compat suite's test package: the compat run (runCompatGameTest) registers this class too (a copy of this
+	 * file, see build.gradle.kts), and its new tests ({@code newtests.py --compat}) live there.
+	 */
+	static final String COMPAT_PACKAGE = "io.github.jcondedata.aliveworkplace.compat";
+
+	private static Class<?> testClass(String className) throws ClassNotFoundException {
+		try {
+			return Class.forName(RepeatNewTests.class.getPackageName() + "." + className);
+		} catch (ClassNotFoundException e) {
+			return Class.forName(COMPAT_PACKAGE + "." + className);
+		}
+	}
+
 	private static Method find(String className, String methodName) {
 		try {
-			Class<?> type = Class.forName(RepeatNewTests.class.getPackageName() + "." + className);
+			Class<?> type = testClass(className);
 			for (Method m : type.getDeclaredMethods()) {
 				if (m.getName().equals(methodName) && m.isAnnotationPresent(GameTest.class) && m.getParameterCount() == 1) {
 					m.setAccessible(true);

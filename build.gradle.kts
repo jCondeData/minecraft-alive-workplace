@@ -98,12 +98,13 @@ compattest?.let { loom.createRemapConfigurations(it) }
 // The GameTest watchdog (B114: fails a run whose server thread stops ticking, with every thread's stack) and the
 // mock-player sweep (B210: without it the compat suite kept every test's mock player, about 120 by batch 266, and ran
 // out of a 2 GB heap at batch megaSwitchOff) run in the compat tests too: their files, copied from the gametest
-// sources into the compattest source set.
+// sources into the compattest source set. So does RepeatNewTests (no tests unless ALIVEWORKPLACE_REPEAT is set).
 compattest?.let { set ->
     val watchdogSource = tasks.register<Sync>("compatWatchdogSource") {
         from(rootProject.file("src/gametest/java")) {
             include("**/test/GameTestWatchdog.java")
             include("**/test/MockPlayerSweep.java")
+            include("**/test/RepeatNewTests.java") // the nightly's repeats of the compat suite's new tests (22.7)
         }
         into(layout.buildDirectory.dir("generated/compatWatchdog"))
     }

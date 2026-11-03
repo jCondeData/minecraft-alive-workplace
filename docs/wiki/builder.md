@@ -61,6 +61,8 @@ A melon's or pumpkin's grown stem costs one melon or pumpkin seeds and is plante
 (B865). A bubble column is the water a player poured on soul sand or magma: each of its blocks costs a water bucket
 (the bucket comes back) and is poured once the soul sand or magma is down, and the bubbles rise (or sink) again, so a
 scanned soul sand elevator works when it is built back (B861).
+Powder snow costs a powder snow bucket, and the empty bucket comes back to the Builder as it does for a player
+(B873), like the water and lava buckets he pours.
 Glow lichen and sculk vein cost one item per face they cover (B792), as shears count them: a lichen on three faces
 is listed as three glow lichen, so breaking the build gives back no more than was paid.
 Water plants are built the way a player grows them: sugar cane goes up with the decoration, after the pool beside its

@@ -2176,8 +2176,9 @@ public class BuilderWork extends Behavior<Villager> {
 		if (!free) {
 			for (MaterialRules.Requirement r : requirements) {
 				MaterialLedger.used(r.item(), bag.remove(r.item(), r.count()));
-				// What's left over goes back in the bag (the empty bucket after pouring water).
-				ItemStack leftover = r.item().getCraftingRemainingItem() == null ? ItemStack.EMPTY : new ItemStack(r.item().getCraftingRemainingItem(), r.count());
+				// What's left over goes back in the bag (the empty bucket after pouring water or powder snow, B873).
+				net.minecraft.world.item.Item emptied = MaterialRules.leftAfterPlacing(r.item());
+				ItemStack leftover = emptied == null ? ItemStack.EMPTY : new ItemStack(emptied, r.count());
 				if (!leftover.isEmpty()) {
 					MaterialLedger.gained(leftover);
 					ItemStack rest = bag.add(leftover);

@@ -67,6 +67,23 @@ public final class MaterialRules {
 	public record Requirement(Item item, int count) {
 	}
 
+	/**
+	 * What is left in the builder's hand after placing a block from {@code item}: the empty bucket after pouring water or
+	 * lava, as for a player. B873: vanilla's powder snow bucket (and a bucket of fish or an axolotl) has no crafting
+	 * remainder, yet a player who empties one keeps the bucket, so every bucket item gives one back. Null: nothing.
+	 */
+	@Nullable
+	public static Item leftAfterPlacing(Item item) {
+		Item rest = item.getCraftingRemainingItem();
+		if (rest != null && rest != Items.AIR) {
+			return rest;
+		}
+		if (item instanceof net.minecraft.world.item.BucketItem || item instanceof net.minecraft.world.item.SolidBucketItem) {
+			return item == Items.BUCKET ? null : Items.BUCKET;
+		}
+		return null;
+	}
+
 	/** Blocks a builder never places: unobtainable, technical, or exploitable. */
 	private static final Set<Block> NEVER_PLACE = Set.of(
 		Blocks.BARRIER, Blocks.BEDROCK, Blocks.COMMAND_BLOCK, Blocks.CHAIN_COMMAND_BLOCK, Blocks.REPEATING_COMMAND_BLOCK,

@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Powder snow a Builder builds from a powder snow bucket gives him the empty bucket back, as water and lava
+  buckets do, so a paid build no longer costs an iron bucket per block (B873).
 - A spot in a build's box that is filled again the moment the Builder digs it (sand dropped back, a cobblestone
   generator, a player) no longer keeps him clearing for ever: after 16 digs it is left for later, then skipped, and
   the build goes on (B868).

@@ -501,6 +501,15 @@ with one block gone is dropped whole while another mod's piece in the same choic
 QA's `QaFurnitureOrderMidBuild1101GameTests` (3: the order emptied, or the mod added, after a build began, then a
 restart: the nook still finishes with the chair it was begun with; a site saved before its first plan chooses when
 it is planned, one planned vanilla stays vanilla);
+QA's `QaFurnished1103fGameTests` (7: every furnished build in every style lists what its builder plans, pieces
+included, and a Dark Oak chair is a dark oak chair; the choice survives a save and reload at every stage with the order
+emptied or the switch off; the cottage in every turn and mirror gets its pieces on their spots at the same cost; a Dark
+Oak cottage with the pieces is built from exactly its materials, none left over; a player's block on a chair spot is
+left by the repair; a vanilla chair broken after the build is put back as it stood, for one stair; a nook begun with
+the switch off and switched on mid-build stays vanilla);
+QA's `QaBuildViews1103gGameTests` (2: with the switch off or no installed mod in the order, the Table's preview and
+materials and the Steward desk's needs are the vanilla build's; the held Blueprint's preview draws what a new site of
+it builds, as drawn and in Dark Oak);
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.

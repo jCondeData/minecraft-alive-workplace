@@ -57,6 +57,10 @@ dripleaf grows from the bottom as a player stacks one leaf on another: each stem
 a stem when the next piece goes on top (B812), so a big dripleaf on two stems is built three tall. A piston
 scanned pushed out is built retracted and pushed out by its own redstone, with its head (B795); one with no power in
 the build stands retracted, never a pushed-out base with nothing in front.
+A melon's or pumpkin's grown stem costs one melon or pumpkin seeds and is planted as a fresh stem beside its fruit
+(B865). A bubble column is the water a player poured on soul sand or magma: each of its blocks costs a water bucket
+(the bucket comes back) and is poured once the soul sand or magma is down, and the bubbles rise (or sink) again, so a
+scanned soul sand elevator works when it is built back (B861).
 Glow lichen and sculk vein cost one item per face they cover (B792), as shears count them: a lichen on three faces
 is listed as three glow lichen, so breaking the build gives back no more than was paid.
 Water plants are built the way a player grows them: sugar cane goes up with the decoration, after the pool beside its

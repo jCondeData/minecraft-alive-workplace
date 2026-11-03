@@ -73,7 +73,7 @@ public final class MaterialRules {
 		Blocks.STRUCTURE_BLOCK, Blocks.STRUCTURE_VOID, Blocks.JIGSAW, Blocks.SPAWNER, Blocks.TRIAL_SPAWNER, Blocks.VAULT,
 		Blocks.END_PORTAL_FRAME, Blocks.END_PORTAL, Blocks.END_GATEWAY, Blocks.NETHER_PORTAL, Blocks.REINFORCED_DEEPSLATE,
 		Blocks.LIGHT, Blocks.BUDDING_AMETHYST, Blocks.MOVING_PISTON, Blocks.PISTON_HEAD, Blocks.FIRE, Blocks.SOUL_FIRE,
-		Blocks.FROSTED_ICE, Blocks.BUBBLE_COLUMN
+		Blocks.FROSTED_ICE
 	);
 
 	/** Blocks you cannot hold as an item in survival: the builder uses the base material instead. */
@@ -100,22 +100,34 @@ public final class MaterialRules {
 	/**
 	 * B794: the stem pieces of a plant that has no item of its own, placed with the plant's own item as a player lengthens
 	 * it: cave vines with glow berries, weeping and twisting vines, kelp, and a big dripleaf's stem with a big dripleaf.
+	 * B865: a melon's or pumpkin's grown (attached) stem costs the seeds of its stem ({@link #grownAs}).
 	 */
 	private static final Map<Block, Block> GROWN_FROM = Map.of(
 		Blocks.CAVE_VINES_PLANT, Blocks.CAVE_VINES,
 		Blocks.WEEPING_VINES_PLANT, Blocks.WEEPING_VINES,
 		Blocks.TWISTING_VINES_PLANT, Blocks.TWISTING_VINES,
 		Blocks.KELP_PLANT, Blocks.KELP,
-		Blocks.BIG_DRIPLEAF_STEM, Blocks.BIG_DRIPLEAF
+		Blocks.BIG_DRIPLEAF_STEM, Blocks.BIG_DRIPLEAF,
+		Blocks.ATTACHED_MELON_STEM, Blocks.MELON_STEM,
+		Blocks.ATTACHED_PUMPKIN_STEM, Blocks.PUMPKIN_STEM
 	);
 
 	/**
 	 * B812: what a builder puts down for {@code wanted} at {@code pos}. A big dripleaf's stem only stands with a stem or the
 	 * leaf above it, so a column built bottom-up had no first piece: each stem with nothing above it yet goes down as a big
 	 * dripleaf (the item it costs, on the same facing), as a player builds one up leaf on leaf, and vanilla turns it into a
-	 * stem when the next piece goes on top. Every other block is put down as planned.
+	 * stem when the next piece goes on top. B865: a melon's or pumpkin's grown (attached) stem is planted as its seeds
+	 * plant it, a fresh stem (it grows and turns to its fruit by itself). B861: a bubble column is the water a player poured
+	 * on soul sand or magma: it is poured as a water source, and the block below turns it into bubbles again. Every other
+	 * block is put down as planned.
 	 */
 	public static BlockState grownAs(net.minecraft.world.level.LevelReader level, net.minecraft.core.BlockPos pos, BlockState wanted) {
+		if (wanted.getBlock() instanceof net.minecraft.world.level.block.AttachedStemBlock) {
+			return emptied(GROWN_FROM.get(wanted.getBlock()).defaultBlockState());
+		}
+		if (wanted.getBlock() instanceof net.minecraft.world.level.block.BubbleColumnBlock) {
+			return Blocks.WATER.defaultBlockState();
+		}
 		if (wanted.is(Blocks.BIG_DRIPLEAF_STEM)) {
 			BlockState above = level.getBlockState(pos.above());
 			if (!above.is(Blocks.BIG_DRIPLEAF_STEM) && !above.is(Blocks.BIG_DRIPLEAF)) {
@@ -188,8 +200,9 @@ public final class MaterialRules {
 		if (state.isAir() || NEVER_PLACE.contains(block) || ModdedBlocks.neverPlace(block)) {
 			return Kind.SKIP;
 		}
-		if (block instanceof LiquidBlock) {
-			// Still water or lava is poured from a bucket once the walls are up; flowing liquid comes by itself.
+		if (block instanceof LiquidBlock || block instanceof net.minecraft.world.level.block.BubbleColumnBlock) {
+			// Still water or lava is poured from a bucket once the walls are up; flowing liquid comes by itself. A bubble
+			// column is water too (B861), poured once the soul sand or magma under it is down.
 			return state.getFluidState().isSource() && bucket(state) != Items.AIR ? Kind.DECORATION : Kind.SKIP;
 		}
 		if (isSecondaryHalf(state) || requirements(state, nbt).isEmpty()) {
@@ -370,7 +383,7 @@ public final class MaterialRules {
 	/** The item (and how many) consumed to place this state. Empty if it cannot be built. */
 	public static Optional<Requirement> requirement(BlockState state) {
 		Block block = state.getBlock();
-		if (block instanceof LiquidBlock) {
+		if (block instanceof LiquidBlock || block instanceof net.minecraft.world.level.block.BubbleColumnBlock) {
 			Item bucket = state.getFluidState().isSource() ? bucket(state) : Items.AIR;
 			return bucket == Items.AIR ? Optional.empty() : Optional.of(new Requirement(bucket, 1));
 		}
@@ -529,6 +542,14 @@ public final class MaterialRules {
 			// B812: the top of a big dripleaf column still going up is a leaf (grownAs); it turns into the stem when the
 			// piece above it goes on, so it counts as built (stem or leaf depends on the block above, a neighbour)
 			return actual.getValue(BlockStateProperties.HORIZONTAL_FACING) == wanted.getValue(BlockStateProperties.HORIZONTAL_FACING);
+		}
+		if (wanted.getBlock() instanceof net.minecraft.world.level.block.BubbleColumnBlock) {
+			// B861: the water poured for a bubble column turns to bubbles once the block below ticks, rising over soul sand
+			// and sinking over magma (the block below, a neighbour, decides): the water or either column is built
+			return actual.getBlock() instanceof net.minecraft.world.level.block.BubbleColumnBlock || actual.is(Blocks.WATER) && actual.getFluidState().isSource();
+		}
+		if (wanted.getBlock() instanceof net.minecraft.world.level.block.AttachedStemBlock && actual.is(GROWN_FROM.get(wanted.getBlock()))) {
+			return true; // B865: planted as a fresh stem (grownAs), it turns to the grown stem by itself once its fruit is beside it
 		}
 		if (actual.getBlock() != wanted.getBlock() && unweathered(actual.getBlock()) != unweathered(wanted.getBlock())) {
 			return false;

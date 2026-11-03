@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A scanned soul sand elevator (or a magma block's sinking column) is built back with its water, so the bubbles rise
+  (or sink) again; each block costs a water bucket that comes back empty (B861).
+- A scanned melon or pumpkin on its grown stem is built back with the stem: it costs one melon or pumpkin seeds and is
+  planted as a fresh stem (B865).
 - A colony founded by a single settler now opens its chronicle with "Founded on day 1 by a settler from Thornholm:
   Tomas" (the Founder's blessed line too) instead of "by settlers" (B853).
 - Under a huge `/gamerule workplaceBuildDelay`, a Builder no longer places one block straight away whenever his work

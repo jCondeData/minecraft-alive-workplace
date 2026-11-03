@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A villager no longer claims a free bed up a ladder when a shut iron door stands between the ladder's top and the
+  bed: villagers can't open iron doors, so he climbed up, stood at the door and gave the bed up. Wooden doors, and an
+  iron door left open, still let him through (B876).
 - A Mechanic saved or reloaded (a restart, his chunk unloading) while carrying a part from the store no longer keeps
   it in his hand when a player has filled the hole meanwhile, nor loses it when he next fetches another part: it goes
   back to the store by his toolbox (with Create).

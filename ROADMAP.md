@@ -4573,7 +4573,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
 
   Done when: a GameTest for each edict (boost on, cost on; the reform turns the cost off and keeps the boost); the
   capital's book shows the realm slots; showcase scene `realm_edicts`.
-  - [x] **33.22a** (approved 2026-10-13) Change from the owner (2026-10-13): keep the Common Market as built, the realm's own people buy at the board's price and strangers still pay the 10 percent; wrap the Royal Highway tooltip so it fits on screen
+  - [x] **33.22a** (approved 2026-10-13) (verified 2026-11-03: QaCommonMarket1103cGameTests [4]: second member's owner + friend, op with no hall, outsider owner + friend, lifted/proclaimed again; 10% at cent boundaries; refusals name each buyer's price; wiki realms.md matches; tooltip wrap is client-only, not tested) Change from the owner (2026-10-13): keep the Common Market as built, the realm's own people buy at the board's price and strangers still pay the 10 percent; wrap the Royal Highway tooltip so it fits on screen
 - [x] **33.23** (approved 2026-10-12) (verified 2026-10-31: lane-c-1031-0353: QaSteward1031GameTests [27.1a thresholds, Expert/Master, moving halls, City Plan recipe exact; 27.19 gaps, killed StewardSafety:139 survivor], QaRealmLegendsJournal1031GameTests [33.23 Founder/Prince boundaries, killed/off; 31.3 tracking, bar order, expiry, hand-in, command, journal lines]; full build green 5080 tests) **Legends of the realm** (needs M29's The Founder and Merchant Prince):
   - **The Founder**: a village he lives in can found colonies from Town rank, sends four settlers instead of two and
     waits half as long between colonies; its colonies are "founded with the Founder's blessing" in both chronicles,

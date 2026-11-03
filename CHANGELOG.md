@@ -49,6 +49,9 @@ asks for the steps, `latest.log` and any crash report).
   zombified, so killed it drops the gold and at dawn takes it home (counted in the siege report) (B829).
 - Hauler Golem: a golem no longer stands idle for good when the nearest worker's goods (or a Drop Box's) don't fit
   in the Storehouse; it passes them over and hauls another worker's goods that do fit, as porters do (B830).
+- Hauler Golems and porters: a Drop Box whose goods have no room in the Storehouse no longer hides the other Drop Boxes.
+  They look at the boxes nearest first and empty the first one whose goods fit, so a farther box of logs comes in while
+  a nearer box of cobblestone waits for room (B847, B848).
 - Builder: a very large `workplaceBuildDelay` (over about 21 million ticks) no longer makes Builders place a block
   every tick. The number overflowed and came out negative; now a bigger delay is always slower, up to the rule's
   largest value (B822).

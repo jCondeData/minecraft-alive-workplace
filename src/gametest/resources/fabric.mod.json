@@ -1197,6 +1197,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanNoHall1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLostCaravanNoHall1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRoadWonderSmallRadius1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSurvivors1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1102eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.DropBoxFitOrderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerFitVerify1103GameTests",
@@ -1210,7 +1211,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaEldersColonies1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageWords1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCountedWords1103cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaDeliveryNote1103cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaDeliveryNote1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoryVerify1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallRoles1103cGameTests"
 		]
 	},
 	"depends": {

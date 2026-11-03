@@ -30,9 +30,16 @@ public class QaNurseBusy1103dCompatTests implements FabricGameTest {
 		io.github.jcondedata.aliveworkplace.people.Traits.ENABLED = false;
 		PartnerShowsCompatTests.after(helper, () -> io.github.jcondedata.aliveworkplace.people.Traits.ENABLED = traits);
 		Villager nurse = QaNurseMachine1102dCompatTests.nurse(helper, QaNurseMachine1102dCompatTests.MACHINE, QaNurseMachine1102dCompatTests.NURSE_AT, 1);
-		helper.assertValueEqual(io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(io.github.jcondedata.aliveworkplace.nurse.Nurses.COOLDOWN, nurse),
-			io.github.jcondedata.aliveworkplace.nurse.Nurses.COOLDOWN, "setup: a Novice nurse's minute in ticks");
+		// other pace sources (moods) still apply in a full run, so the waits below come from her own minute
+		int minute = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(io.github.jcondedata.aliveworkplace.nurse.Nurses.COOLDOWN, nurse);
+		helper.assertTrue(minute >= 900 && minute <= 1500, "setup: her minute is not roughly a minute: " + minute + " ticks");
 		return nurse;
+	}
+
+	/** The wait line's seconds {@code elapsed} ticks into the nurse's minute (rounded up). */
+	private static String wait(Villager nurse, int elapsed) {
+		int left = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(io.github.jcondedata.aliveworkplace.nurse.Nurses.COOLDOWN, nurse) - elapsed;
+		return "Come back in " + (left + 19) / 20 + " seconds";
 	}
 
 	private static void hurt(QaNurseMachine1102dCompatTests.Visitor v) {
@@ -70,7 +77,7 @@ public class QaNurseBusy1103dCompatTests implements FabricGameTest {
 			b.seen().clear();
 			hurt(b);
 			QaNurseMachine1102dCompatTests.rightClick(b, nurse);
-			helper.assertTrue(QaNurseMachine1102dCompatTests.said(b, "Come back in 58 seconds"), "B, 2 seconds into their minute, while busy: " + b.seen());
+			helper.assertTrue(QaNurseMachine1102dCompatTests.said(b, wait(nurse, 40)), "B, 2 seconds into their minute, while busy: " + b.seen());
 			helper.assertFalse(QaNurseMachine1102dCompatTests.said(b, "busy"), "B, in their minute, was told the machine is busy: " + b.seen());
 			untreated(helper, b, "B in their minute, machine busy");
 			busyChecked[0] = true;
@@ -134,7 +141,7 @@ public class QaNurseBusy1103dCompatTests implements FabricGameTest {
 				helper.assertTrue(QaNurseMachine1102dCompatTests.said(b, "put your 1 Pokémon in the Healing Machine"), "first free click: " + b.seen());
 				b.seen().clear();
 				QaNurseMachine1102dCompatTests.rightClick(b, nurse);
-				helper.assertTrue(QaNurseMachine1102dCompatTests.said(b, "Come back in 60 seconds"), "right after the free click: " + b.seen());
+				helper.assertTrue(QaNurseMachine1102dCompatTests.said(b, wait(nurse, 0)), "right after the free click: " + b.seen());
 				treated[0] = true;
 			}
 		});
@@ -175,7 +182,7 @@ public class QaNurseBusy1103dCompatTests implements FabricGameTest {
 				helper.assertFalse(machine.isInUse(), "B's empty team started the machine");
 				b.seen().clear();
 				QaNurseMachine1102dCompatTests.rightClick(b, nurse);
-				helper.assertTrue(QaNurseMachine1102dCompatTests.said(b, "Come back in 60 seconds"), "right after: " + b.seen());
+				helper.assertTrue(QaNurseMachine1102dCompatTests.said(b, wait(nurse, 0)), "right after: " + b.seen());
 				treated[0] = true;
 			}
 			helper.assertTrue(treated[0], "the machine is still busy");

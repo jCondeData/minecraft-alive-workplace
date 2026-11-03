@@ -82,8 +82,8 @@ public class QaNurseWait1103dGameTests implements FabricGameTest {
 		helper.assertTrue(v.player().hasEffect(MobEffects.POISON), elapsed + " ticks after a treatment she cured poison again");
 	}
 
-	//$ gametest_ticks_batch AREA '1400' '"qaNurseWaitEdges1103d"'
-	@GameTest(template = AREA, timeoutTicks = 1400, batch = "qaNurseWaitEdges1103d")
+	//$ gametest_ticks_batch AREA '1700' '"qaNurseWaitEdges1103d"'
+	@GameTest(template = AREA, timeoutTicks = 1700, batch = "qaNurseWaitEdges1103d")
 	public void qaTheWaitLineAtEachEdgeOfTheMinute(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Nurses.resetCooldowns();
@@ -93,8 +93,10 @@ public class QaNurseWait1103dGameTests implements FabricGameTest {
 		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.people.Traits.ENABLED = traits);
 		Villager nurse = NurseGameTests.nurse(helper);
 		nurse.setNoAi(true);
-		helper.assertValueEqual(io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse), Nurses.COOLDOWN,
-			"setup: a Novice nurse's minute in ticks");
+		// her "minute" is Nurses.COOLDOWN scaled by her pace (moods and other pace sources still apply in a full run),
+		// so the edges are taken from her own minute; it is still roughly a minute
+		int minute = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse);
+		helper.assertTrue(minute >= 900 && minute <= 1500, "setup: her minute is not roughly a minute: " + minute + " ticks");
 		Visitor v = visitor(helper, "qaNurseWait");
 		v.player().setHealth(5f);
 		v.player().addEffect(new MobEffectInstance(MobEffects.POISON, 1200));
@@ -105,15 +107,15 @@ public class QaNurseWait1103dGameTests implements FabricGameTest {
 		long start = helper.getLevel().getGameTime();
 		String seconds = name + " just treated you. Come back in %d seconds.";
 		String second = name + " just treated you. Come back in 1 second.";
-		refused(helper, v, nurse, start, 0, seconds.formatted(60));
-		helper.runAfterDelay(1, () -> refused(helper, v, nurse, start, 1, seconds.formatted(60)));
-		helper.runAfterDelay(19, () -> refused(helper, v, nurse, start, 19, seconds.formatted(60)));
-		helper.runAfterDelay(20, () -> refused(helper, v, nurse, start, 20, seconds.formatted(59)));
-		helper.runAfterDelay(1160, () -> refused(helper, v, nurse, start, 1160, seconds.formatted(2)));
-		helper.runAfterDelay(1179, () -> refused(helper, v, nurse, start, 1179, seconds.formatted(2)));
-		helper.runAfterDelay(1180, () -> refused(helper, v, nurse, start, 1180, second));
-		helper.runAfterDelay(1199, () -> refused(helper, v, nurse, start, 1199, second));
-		helper.runAfterDelay(Nurses.COOLDOWN, () -> {
+		// the seconds left round up: ticks left 1 to 20 read 1 second, 21 to 40 read 2, and a full minute never reads one more
+		int full = (minute + 19) / 20;
+		refused(helper, v, nurse, start, 0, seconds.formatted(full));
+		helper.runAfterDelay(1, () -> refused(helper, v, nurse, start, 1, seconds.formatted((minute - 1 + 19) / 20)));
+		helper.runAfterDelay(minute - 40, () -> refused(helper, v, nurse, start, minute - 40, seconds.formatted(2)));
+		helper.runAfterDelay(minute - 21, () -> refused(helper, v, nurse, start, minute - 21, seconds.formatted(2)));
+		helper.runAfterDelay(minute - 20, () -> refused(helper, v, nurse, start, minute - 20, second));
+		helper.runAfterDelay(minute - 1, () -> refused(helper, v, nurse, start, minute - 1, second));
+		helper.runAfterDelay(minute, () -> {
 			v.player().setHealth(5f);
 			v.player().addEffect(new MobEffectInstance(MobEffects.POISON, 1200));
 			List<String> heard = rightClick(v, nurse);
@@ -122,7 +124,8 @@ public class QaNurseWait1103dGameTests implements FabricGameTest {
 			helper.assertTrue(heard.contains(name + " patched you up. Take care out there!"), "the treatment line: " + heard);
 			// and the new minute starts there: straight away it's 60 seconds again
 			v.player().setHealth(5f);
-			helper.assertTrue(rightClick(v, nurse).contains(seconds.formatted(60)), "right after the second treatment: " + v.seen());
+			int again = (io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse) + 19) / 20;
+			helper.assertTrue(rightClick(v, nurse).contains(seconds.formatted(again)), "right after the second treatment: " + v.seen());
 			helper.assertTrue(v.player().getHealth() == 5f, "treated twice on one tick");
 			helper.succeed();
 		});

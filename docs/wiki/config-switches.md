@@ -145,7 +145,7 @@ range is in brackets.
 | `disabledArcs` | empty |  | Story arc ids that never start, not even by `/workplace story start` (it says the arc is switched off); a running one ends at its next round. In the file only. |
 | `villageProtection` | on |  | A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). |
 | `partnerShows` | on | 1.2 | Pokémon pastured by a workstation are seen helping at work (with Cobblemon): they carry, water, spark... |
-| `nurseHealingMachine` | on | 1.2 | A nurse at Cobblemon's Healing Machine heals your team in it, and keeps it charged while on shift. |
+| `nurseHealingMachine` | on | 1.2 | A nurse at Cobblemon's Healing Machine heals your team in it, and keeps it charged while on shift. While it's busy with another team she treats nothing, and your minute isn't used. |
 | `maxWorkPace` | 200 (100 to 400) |  | How fast every bonus together can make a worker, in percent of the usual pace. Sickness and bad moods still slow them after that; their level doesn't count. |
 | `villageEdicts` | on | 1.4 | Villages' owners proclaim edicts at the hall (off: none can be, and those in force do nothing but stay saved). |
 | `workHorns` | on | 1.4 | The Work Horn calls a rush when blown in a village. Off: it only sounds. |

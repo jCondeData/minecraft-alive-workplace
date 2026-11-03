@@ -26,11 +26,9 @@ public class QaStoreTwoChests1102bGameTests implements net.fabricmc.fabric.api.g
 	private static final BlockPos STOREHOUSE = new BlockPos(26, 2, 26);
 	private static final BlockPos FIRST = new BlockPos(23, 2, 26);
 	private static final BlockPos SECOND = new BlockPos(26, 2, 23);
-	/** QaBuilderStockGameTests.HUGE; a swap line takes a plain name (Stonecutter rejects a dotted one). */
-	private static final String HUGE = QaBuilderStockGameTests.HUGE;
 
-	//$ gametest_ticks_batch HUGE '3000' '"qaStoreTwoChests"'
-	@GameTest(template = HUGE, timeoutTicks = 3000, batch = "qaStoreTwoChests")
+	//$ gametest_ticks_batch 'QaBuilderStockGameTests.HUGE' '3000' '"qaStoreTwoChests"'
+	@GameTest(template = QaBuilderStockGameTests.HUGE, timeoutTicks = 3000, batch = "qaStoreTwoChests")
 	public void aStorehouseChestEmptiedMidJobLetsTheBuilderFinishFromTheOther(GameTestHelper helper) {
 		ServerLevel level = QaBuilderStockGameTests.setup(helper, STOREHOUSE, 25, 1);
 		Container second = (Container) helper.getBlockEntity(SECOND);

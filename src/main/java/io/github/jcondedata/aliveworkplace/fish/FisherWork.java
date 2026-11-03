@@ -102,6 +102,9 @@ public class FisherWork extends Behavior<Villager> {
 	private boolean furnaceCalls;
 	private int waited;
 	private int biteAt;
+	/** The workplaceBuildDelay rule and the delay steps {@link #biteAt} was set from (B831). */
+	private int biteRule;
+	private int biteSteps;
 	private int catches;
 	/** The bobber on the water while casting (only for show). */
 	@Nullable
@@ -365,10 +368,18 @@ public class FisherWork extends Behavior<Villager> {
 			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "cast", spot);
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, villager.blockPosition(), SoundEvents.FISHING_BOBBER_THROW, SoundSource.NEUTRAL, 0.5f, 0.4f + level.random.nextFloat() * 0.4f);
-			biteAt = biteTicks(BuilderLevels.delay(level, villager), biteWait(level, villager, rod, level.random));
+			biteRule = BuilderLevels.rule(level);
+			biteSteps = biteWait(level, villager, rod, level.random);
+			biteAt = biteTicks(BuilderLevels.delay(biteRule, villager), biteSteps);
 			level.sendParticles(ParticleTypes.SPLASH, bobber.x, bobber.y, bobber.z, 6, 0.1, 0, 0.1, 0);
 			return;
 		}
+		// B831: the rule lowered mid-wait brings the bite closer now, not after the next cast
+		int rule = BuilderLevels.rule(level);
+		if (rule < biteRule) {
+			biteAt = Math.min(biteAt, biteTicks(BuilderLevels.delay(rule, villager), biteSteps));
+		}
+		biteRule = rule;
 		if (waited % 25 == 0) {
 			level.sendParticles(ParticleTypes.FISHING, bobber.x, bobber.y, bobber.z, 2, 0.05, 0, 0.05, 0);
 		}

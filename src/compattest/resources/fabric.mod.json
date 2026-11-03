@@ -84,6 +84,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainStationNames1102CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainStationNamesRestart1102BugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainStationRenamed1102eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaTrainSameNames1103eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainChestFull1101CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainChestSingles1103eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMachineFullOutput1103eCompatTests",

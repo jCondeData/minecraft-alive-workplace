@@ -59,9 +59,56 @@ public class NurseGameTests implements FabricGameTest {
 	}
 
 	/** The minute's edge: one tick before it she treats nothing; on the tick it ends she treats again. */
-	//$ gametest_ticks_batch AREA '1300' '"nurseMinuteBoundary"'
-	@GameTest(template = AREA, timeoutTicks = 1300, batch = "nurseMinuteBoundary")
+	//$ gametest_ticks_batch AREA '2400' '"nurseMinuteBoundary"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "nurseMinuteBoundary")
 	public void nurseTreatsAgainExactlyAfterAMinute(GameTestHelper helper) {
+		Villager nurse = nurse(helper);
+		// Two patients treated on the same tick: one asks a tick early, the other on the minute, so the early ask can
+		// never spend the on-time one's treatment.
+		ServerPlayer early = helper.makeMockServerPlayerInLevel();
+		ServerPlayer onTime = helper.makeMockServerPlayerInLevel();
+		Nurses.resetCooldowns();
+		for (ServerPlayer player : java.util.List.of(early, onTime)) {
+			player.setGameMode(GameType.SURVIVAL);
+			player.setHealth(5f);
+			Nurses.treat(player, nurse);
+			helper.assertTrue(player.getHealth() == player.getMaxHealth(), "not healed: " + player.getHealth());
+		}
+		long start = helper.getLevel().getGameTime();
+		// Her minute is the pace-adjusted one at the treatment (BuilderLevels.delay, as Nurses.treat uses). A busy full
+		// suite moves her pace (mood, the village) while the patients wait: B864, a slower pace later refused a patient
+		// who had waited the minute he was given. The wait now only ever shortens: ready at min(minute, today's minute).
+		int minute = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse);
+		helper.runAfterDelay(minute - 1, () -> {
+			long waited = helper.getLevel().getGameTime() - start;
+			helper.assertTrue(waited == minute - 1, "setup: " + waited + " ticks went by, not " + (minute - 1));
+			int now = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse);
+			early.setHealth(5f); // a minute of natural regeneration (or a nurse's tending) may have healed him meanwhile
+			Nurses.treat(early, nurse);
+			boolean due = Math.min(minute, now) <= waited;
+			helper.assertTrue((early.getHealth() == early.getMaxHealth()) == due, (due ? "not treated" : "treated")
+				+ " a tick before the minute was up: health " + early.getHealth() + " (minute " + minute + " ticks at the treatment, "
+				+ now + " now, " + waited + " waited)");
+		});
+		helper.runAfterDelay(minute, () -> {
+			long waited = helper.getLevel().getGameTime() - start;
+			onTime.setHealth(5f);
+			Nurses.treat(onTime, nurse);
+			helper.assertTrue(onTime.getHealth() == onTime.getMaxHealth(), "not treated once the minute was up: health " + onTime.getHealth()
+				+ " (minute " + minute + " ticks at the treatment, " + io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse)
+				+ " now, " + waited + " waited)");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B864: a nurse who slows down after treating you (here she falls ill, twice as slow) still treats you once the
+	 * minute you were given is up; one who gets faster lets you in sooner.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"nurseSlowerAfter"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "nurseSlowerAfter")
+	public void nurseSlowingDownNeverStretchesTheMinuteGiven(GameTestHelper helper) {
+		Leftovers.clear(helper);
 		Villager nurse = nurse(helper);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
@@ -70,22 +117,17 @@ public class NurseGameTests implements FabricGameTest {
 		Nurses.treat(player, nurse);
 		helper.assertTrue(player.getHealth() == player.getMaxHealth(), "not healed: " + player.getHealth());
 		long start = helper.getLevel().getGameTime();
-		// her minute is the pace-adjusted one (BuilderLevels.delay, as Nurses.treat uses), which a busy full suite can move
 		int minute = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse);
-		player.setHealth(5f);
-		helper.runAfterDelay(minute - 1, () -> {
-			helper.assertTrue(helper.getLevel().getGameTime() - start == minute - 1, "setup: "
-				+ (helper.getLevel().getGameTime() - start) + " ticks went by");
-			player.setHealth(5f); // a minute of natural regeneration (or a nurse's tending) may have healed him meanwhile
-			Nurses.treat(player, nurse);
-			helper.assertTrue(player.getHealth() == 5f, "treated a tick before the minute was up (minute " + minute + " ticks, now "
-				+ io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse) + ")");
-		});
+		io.github.jcondedata.aliveworkplace.people.Sickness.fallIll(helper.getLevel(), nurse);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(nurse), "setup: the nurse didn't fall ill");
+		int slower = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse);
+		helper.assertTrue(slower > minute, "setup: falling ill didn't slow her: " + minute + " ticks, then " + slower);
 		helper.runAfterDelay(minute, () -> {
 			player.setHealth(5f);
 			Nurses.treat(player, nurse);
-			helper.assertTrue(player.getHealth() == player.getMaxHealth(), "not treated once the minute was up: " + player.getHealth() + " (minute " + minute + " ticks, now "
-				+ io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse) + ")");
+			helper.assertTrue(player.getHealth() == player.getMaxHealth(), "refused after the minute he was given: health " + player.getHealth()
+				+ " (minute " + minute + " ticks at the treatment, " + io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse)
+				+ " now, " + (helper.getLevel().getGameTime() - start) + " waited)");
 			helper.succeed();
 		});
 	}

@@ -134,7 +134,7 @@ public class JobChainGameTests {
 			Container chest = helper.getBlockEntity(a.chest());
 			helper.assertTrue(chest.countItem(Items.OAK_LOG) == 0, "the logs should be used up, " + chest.countItem(Items.OAK_LOG) + " left");
 			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(carpenter, 0) == 3, "the carpenter made " + ModAttachments.ITEMS_CRAFTED.getOrElse(carpenter, 0) + " barrels");
-			helper.assertTrue(stepLine.get() != null && stepLine.get().equals("making 3 Barrel (step 2 of 3)"),
+			helper.assertTrue(stepLine.get() != null && stepLine.get().equals("making 3 Barrels (step 2 of 3)"),
 				"the carpenter's line never said the step it was at: " + stepLine.get());
 			helper.assertTrue(ModAttachments.CRAFTER_JOB.get(carpenter) == null, "the finished job is still saved on the carpenter");
 		});

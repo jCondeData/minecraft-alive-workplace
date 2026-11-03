@@ -12,7 +12,7 @@ Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760
 ## 1. What a player sees
 
 A builder short of three barrels with only oak logs in the chest: the village's Carpenter fetches the logs, and at the
-bench the line above their head says "making 3 Barrel (step 1 of 3)", then step 2 (the slabs), then step 3; the barrels
+bench the line above their head says "making 3 Barrels (step 1 of 3)", then step 2 (the slabs), then step 3; the barrels
 go into the builder's chest and the build carries on. A Mason with a furnace by the stonecutter turns clay balls into
 brick stairs the same way (fired, laid, cut, a coal burnt for every eight fired). The Librarian makes the bookish parts,
 the Tinkerer the metal ones (raw iron fired into ingots, then bars or a lantern), the Toolsmith tools, the dyer dyed

@@ -42,6 +42,9 @@ asks for the steps, `latest.log` and any crash report).
 - Raids: calling off one village's raid (`/workplace threat end`) no longer sends away the raiders of a neighbor
   village's raid that stood within its reach; those nearer the other village stay, so that raid goes on instead of
   counting as fought off, and its husks beside the Pharaoh still rise (B849).
+- Raids: with two raided villages side by side, a neighbor village's raiders no longer keep this village's raid going
+  after its own raiders are all dead: the hall's round counts only this raid's raiders, so the raid ends as fought off.
+  And when this village's raiders leave at their hour, the neighbor's raiders standing within its reach stay (B856).
 
 ## 0.151.4 — 2026-11-02
 

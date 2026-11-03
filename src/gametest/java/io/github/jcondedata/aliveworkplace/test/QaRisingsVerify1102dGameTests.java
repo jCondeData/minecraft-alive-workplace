@@ -148,6 +148,9 @@ public class QaRisingsVerify1102dGameTests implements FabricGameTest {
 		BlockPos hallA = raid(helper, relA, 100);
 		BlockPos hallB = raid(helper, relB, 100);
 		long began = ThreatData.get(level).raid(hallB).orElseThrow().began();
+		// The first village's own raider, so a round of its hall before the call-off doesn't end its raid as fought off
+		// (B856: the Pharaoh and the husk, nearer the second village, are that raid's, not the first's).
+		husk(helper, new BlockPos(6, 2, 6), true);
 		pharaoh(helper, new BlockPos(22, 2, 22), true);
 		Husk husk = husk(helper, new BlockPos(24, 2, 24), true);
 		husk.kill();
@@ -190,6 +193,64 @@ public class QaRisingsVerify1102dGameTests implements FabricGameTest {
 		VillageRaids.tick(level, hallB, 0, 0, 0, day -> { });
 		helper.assertTrue(ThreatData.get(level).raid(hallB).map(r -> r.began() == began).orElse(false),
 			"the second village's raid ended in its round after the neighbour's was called off: " + ThreatData.get(level).raid(hallB));
+		helper.succeed();
+	}
+
+	/**
+	 * B856: two raided villages side by side. The first's raiders are all killed; only the second's raider is about,
+	 * within the first's reach but nearer its own hall. The first village's round counts only its own raiders, so its
+	 * raid ends (fought off), and the second's goes on with its raider still there.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaRaidRoundOwn1103"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaRaidRoundOwn1103")
+	public void aVillagesRoundEndsItsRaidOnceItsOwnRaidersAreGoneThoughANeighboursAreNear(GameTestHelper helper) {
+		BlockPos relA = new BlockPos(2, 2, 2);
+		BlockPos relB = new BlockPos(27, 2, 27);
+		setUp(helper, relA, relB);
+		ServerLevel level = helper.getLevel();
+		BlockPos hallA = raid(helper, relA, 100);
+		BlockPos hallB = raid(helper, relB, 100);
+		long began = ThreatData.get(level).raid(hallB).orElseThrow().began();
+		Husk theirs = husk(helper, new BlockPos(6, 2, 6), true);
+		Husk ours = husk(helper, new BlockPos(22, 2, 22), true);
+		helper.assertTrue(VillageRaids.raiders(level, hallA).contains(ours), "setup: expected the second village's raider within the first's reach");
+		theirs.kill();
+		helper.assertTrue(!theirs.isAlive(), "setup: expected the first village's raider dead");
+		VillageRaids.tick(level, hallA, 0, 0, 0, day -> { });
+		helper.assertTrue(ThreatData.get(level).raid(hallA).isEmpty(),
+			"the first village's raid went on in its round with all its raiders dead, kept up by the second village's raider (4 blocks from its own hall, 28 from the first's): "
+				+ ThreatData.get(level).raid(hallA));
+		helper.assertTrue(!ours.isRemoved() && ours.isAlive(), "the second village's raider was sent away by the first village's round");
+		VillageRaids.tick(level, hallB, 0, 0, 0, day -> { });
+		helper.assertTrue(ThreatData.get(level).raid(hallB).map(r -> r.began() == began).orElse(false),
+			"the second village's raid ended in its round though its raider is still about: " + ThreatData.get(level).raid(hallB));
+		helper.succeed();
+	}
+
+	/**
+	 * B856: the first village's raiders leave when its hours are over (desert raiders: at noon), and only they: the
+	 * second village's raider, within the first's reach but nearer its own hall, stays, and its raid goes on.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaRaidRoundOwnLeave1103"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaRaidRoundOwnLeave1103")
+	public void aVillagesRaidersLeavingAtTheirHourLeaveANeighboursRaiderBehind(GameTestHelper helper) {
+		BlockPos relA = new BlockPos(2, 2, 2);
+		BlockPos relB = new BlockPos(27, 2, 27);
+		setUp(helper, relA, relB);
+		ServerLevel level = helper.getLevel();
+		level.setDayTime((level.getDayTime() / 24000) * 24000 + 7000); // afternoon: the desert raiders' hours are over
+		BlockPos hallA = raid(helper, relA, 2000);
+		BlockPos hallB = raid(helper, relB, 2000);
+		long began = ThreatData.get(level).raid(hallB).orElseThrow().began();
+		Husk theirs = husk(helper, new BlockPos(6, 2, 6), true);
+		Husk ours = husk(helper, new BlockPos(22, 2, 22), true);
+		helper.assertTrue(VillageRaids.raiders(level, hallA).contains(ours), "setup: expected the second village's raider within the first's reach");
+		VillageRaids.tick(level, hallA, 0, 0, 0, day -> { });
+		helper.assertTrue(ThreatData.get(level).raid(hallA).isEmpty(), "setup: expected the first village's raid over at its hour: " + ThreatData.get(level).raid(hallA));
+		helper.assertTrue(theirs.isRemoved(), "the first village's own raider stayed after its raid left");
+		helper.assertTrue(!ours.isRemoved() && ours.isAlive(), "the second village's raider (4 blocks from its hall, 28 from the first's) left with the first village's raiders");
+		helper.assertTrue(ThreatData.get(level).raid(hallB).map(r -> r.began() == began).orElse(false),
+			"the second village's raid is no longer under way: " + ThreatData.get(level).raid(hallB));
 		helper.succeed();
 	}
 

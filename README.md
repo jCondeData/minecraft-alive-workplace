@@ -1492,9 +1492,10 @@ start <culture>`, `lair <culture>`, `disaster <id>`, `end` and `clear`, at the n
 ## Nurses
 Stand a villager by a **brewing stand** and sneak-right-click them with a **honey bottle**: they become a **Nurse**.
 Right-click the nurse with an empty hand to get your health back and bad effects cleared; with **Cobblemon** installed
-they heal your whole team too. Once a minute per player (less as they level up). They also look after hurt villagers and
-iron golems nearby, and cure the village's ill with a honey bottle, a bucket of milk or a healing potion from the chest
-by the brewing stand (see *Sickness*). Sneak-right-click to trade.
+they heal your whole team too. Once a minute per player (less as they level up). A nurse whose Healing Machine is busy
+with another player's team treats nothing until it's free, and your minute isn't used. They also look after hurt
+villagers and iron golems nearby, and cure the village's ill with a honey bottle, a bucket of milk or a healing potion
+from the chest by the brewing stand (see *Sickness*). Sneak-right-click to trade.
 
 ## Shops
 Craft a **Shop Counter** (an emerald over planks and a chest) and place it near a villager without a job: the shop is

@@ -281,6 +281,21 @@ public final class VillageRaids {
 	}
 
 	/**
+	 * The raiders of the raid on {@code hall}: those about it ({@link #raiders}) but for the ones nearer another village
+	 * with a raid under way, within that village's reach, which are that raid's (the rule a fallen raider's raid is found
+	 * by, B828; B849).
+	 */
+	static List<Mob> own(ServerLevel level, BlockPos hall) {
+		int r = VillageHalls.RADIUS + 32;
+		List<BlockPos> others = ThreatData.get(level).raids().stream().map(ThreatData.Under::hall).filter(h -> !h.equals(hall)).toList();
+		return raiders(level, hall).stream().filter(m -> {
+			BlockPos at = m.blockPosition();
+			return others.stream().noneMatch(h -> Math.abs(h.getX() - at.getX()) <= r && Math.abs(h.getZ() - at.getZ()) <= r
+				&& Math.abs(h.getY() - at.getY()) <= 48 && h.distSqr(at) < hall.distSqr(at));
+		}).toList();
+	}
+
+	/**
 	 * A night rolled ahead (29.16: at dawn, with a Seer in the village): whether raiders come, from which side ({@code angle},
 	 * radians from the hall as {@code atan2(dz, dx)}) and at what time of night ({@code at}, day time).
 	 */
@@ -561,7 +576,9 @@ public final class VillageRaids {
 	 * Calls off the raid under way on the village round {@code hall} (an operator's {@code /workplace threat end}, 32.21):
 	 * its raiders go at once (a captain back to his camp, the band's own back to their lair), its tactics end as when
 	 * raiders leave at dawn (the gates open again), and the village is told. Nothing goes into the list of past attacks,
- * and nothing is carried off: what a raider took falls where it stood (B840).
+	 * and nothing is carried off: what a raider took falls where it stood (B840). A neighbour village's raiders stay,
+	 * even those standing within this village's reach: a raider nearer another village with a raid under way is that
+	 * raid's (B849).
 	 * False when no raid is under way.
 	 */
 	public static boolean callOff(ServerLevel level, BlockPos hall) {
@@ -570,7 +587,7 @@ public final class VillageRaids {
 		if (raid == null) {
 			return false;
 		}
-		List<Mob> left = raiders(level, hall);
+		List<Mob> left = own(level, hall);
 		int band = (int) left.stream().filter(m -> !m.getTags().contains(Threats.EXTRA_TAG) && !Lairs.leading(m)).count();
 		for (Mob m : left) {
 			level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, m.getX(), m.getY() + 0.5, m.getZ(), 10, 0.3, 0.5, 0.3, 0.02);

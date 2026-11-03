@@ -47,6 +47,49 @@ public class NurseGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** B851: the wait is rounded up to whole seconds, so a full minute left reads 60, never 61. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void nurseWaitRoundsUpToWholeSeconds(GameTestHelper helper) {
+		int[][] cases = {{1200, 60}, {1199, 60}, {1181, 60}, {1180, 59}, {21, 2}, {20, 1}, {1, 1}};
+		for (int[] c : cases) {
+			helper.assertTrue(Nurses.secondsLeft(c[0]) == c[1], c[0] + " ticks left reads " + Nurses.secondsLeft(c[0]) + " seconds, not " + c[1]);
+		}
+		helper.succeed();
+	}
+
+	/** The minute's edge: one tick before it she treats nothing; on the tick it ends she treats again. */
+	//$ gametest_ticks_batch AREA '1300' '"nurseMinuteBoundary"'
+	@GameTest(template = AREA, timeoutTicks = 1300, batch = "nurseMinuteBoundary")
+	public void nurseTreatsAgainExactlyAfterAMinute(GameTestHelper helper) {
+		Villager nurse = nurse(helper);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		Nurses.resetCooldowns();
+		player.setHealth(5f);
+		Nurses.treat(player, nurse);
+		helper.assertTrue(player.getHealth() == player.getMaxHealth(), "not healed: " + player.getHealth());
+		long start = helper.getLevel().getGameTime();
+		// her minute is the pace-adjusted one (BuilderLevels.delay, as Nurses.treat uses), which a busy full suite can move
+		int minute = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse);
+		player.setHealth(5f);
+		helper.runAfterDelay(minute - 1, () -> {
+			helper.assertTrue(helper.getLevel().getGameTime() - start == minute - 1, "setup: "
+				+ (helper.getLevel().getGameTime() - start) + " ticks went by");
+			player.setHealth(5f); // a minute of natural regeneration (or a nurse's tending) may have healed him meanwhile
+			Nurses.treat(player, nurse);
+			helper.assertTrue(player.getHealth() == 5f, "treated a tick before the minute was up (minute " + minute + " ticks, now "
+				+ io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse) + ")");
+		});
+		helper.runAfterDelay(minute, () -> {
+			player.setHealth(5f);
+			Nurses.treat(player, nurse);
+			helper.assertTrue(player.getHealth() == player.getMaxHealth(), "not treated once the minute was up: " + player.getHealth() + " (minute " + minute + " ticks, now "
+				+ io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse) + ")");
+			helper.succeed();
+		});
+	}
+
 	/** Hurt villagers near a nurse at work get better. */
 	//$ gametest_ticks AREA '400'
 	@GameTest(template = AREA, timeoutTicks = 400)

@@ -68,6 +68,13 @@ public class QaLaneC1101bGameTests implements net.fabricmc.fabric.api.gametest.v
 		VillageHalls.RADIUS = 18;
 		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
 		ServerLevel level = helper.getLevel();
+		// B852: an older save's list looks at unlisted beds only until it is first saved (B749, B754), and the server's
+		// autosave (every 6000 ticks) lands inside a test now and then, ending that first session halfway through it (a
+		// player's server does the same, on purpose). These tests are each about one session, so the level isn't saved
+		// while they run, as with /save-off.
+		boolean noSave = level.noSave;
+		level.noSave = true;
+		Leftovers.after(helper, () -> level.noSave = noSave);
 		CampBeds.Data live = CampBeds.Data.get(level);
 		Leftovers.after(helper, () -> level.getDataStorage().set(CampBeds.Data.NAME, live));
 		BoundingBox box = BoundingBox.fromCorners(helper.absolutePos(new BlockPos(-2, 0, -2)), helper.absolutePos(new BlockPos(31, 12, 31)));
@@ -337,15 +344,17 @@ public class QaLaneC1101bGameTests implements net.fabricmc.fabric.api.gametest.v
 					List<BlockPos> own = List.of(red, white, blue, listed);
 					List<BlockPos> stray = VillageHalls.beds(level, helper.absolutePos(HALL)).filter(p -> !own.contains(p)).map(BlockPos::immutable).toList();
 					stray.forEach(p -> level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL));
-					helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
-					helper.runAfterDelay(60, () -> {
+					helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);					helper.runAfterDelay(60, () -> {
 						VillageHalls.Census census = VillageHalls.census(level, helper.absolutePos(HALL));
 						helper.assertTrue(census.wagonBeds() == 0 && census.beds() == 4, "census: wagon beds " + census.wagonBeds() + ", beds " + census.beds()
 							+ " (expected the red, white, blue and yellow beds; counted " + VillageHalls.beds(level, helper.absolutePos(HALL)).map(BlockPos::toShortString).toList()
 							+ ", wagon beds " + CampBeds.inVillage(level, helper.absolutePos(HALL)) + ", strays removed before the hall " + stray + ")");
 						bed(helper, foot, Blocks.BROWN_BED);
 						helper.runAfterDelay(2, () -> {
-							helper.assertTrue(CampBeds.isWagonBed(level, listed), "the brown bedroll put back on its listed spot isn't a wagon bed");
+							CampBeds.Data list = CampBeds.Data.get(level);
+							helper.assertTrue(CampBeds.isWagonBed(level, listed), "the brown bedroll put back on its listed spot isn't a wagon bed (list: listed "
+								+ list.has(listed) + ", unverified " + list.unverified(listed) + ", looks " + list.looks() + ", complete " + list.complete()
+								+ ", the level's list is the test's own " + (list == old) + ")");
 							helper.succeed();
 						});
 					});

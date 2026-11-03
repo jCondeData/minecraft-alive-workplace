@@ -349,12 +349,16 @@ public class PorterWork extends Behavior<Villager> {
 	/** The nearest village-mate with enough goods to be worth the walk, or null. */
 	@Nullable
 	private static Village.Stash choose(ServerLevel level, Villager villager, BlockPos storehouse, List<BlockPos> store, int stacks, boolean[] noRoom) {
-		Village.Stash box = dropBox(level, storehouse);
-		if (box != null) {
-			if (!HaulerGolems.fitting(level, store, goods(level, box), stacks).isEmpty()) {
-				return box; // what players left for the village first
+		// what players left for the village first: the nearest Drop Box whose goods fit (B848: one that doesn't is passed over)
+		Village.Stash box = firstDropBox(level, storehouse, p -> true, b -> {
+			if (HaulerGolems.fitting(level, store, goods(level, b), stacks).isEmpty()) {
+				noRoom[0] = true;
+				return null;
 			}
-			noRoom[0] = true;
+			return b;
+		});
+		if (box != null) {
+			return box;
 		}
 		for (Village.Stash stash : Village.stashes(level, villager, storehouse, null)) {
 			if (carriesNothingFrom(stash.job())) {
@@ -374,19 +378,20 @@ public class PorterWork extends Behavior<Villager> {
 		return null;
 	}
 
-	/** The nearest Drop Box near the storehouse with anything in it, as a stash with no job (everything in it goes). */
+	/**
+	 * Of the non-empty Drop Boxes near {@code storehouse} that {@code allowed} lets through (a hauler's skip list, B456),
+	 * nearest first, the first that {@code pick} takes (a non-null answer), or null. Each box is a stash with no job
+	 * (everything in it goes). A box whose goods {@code pick} turns down, such as goods with no room in the store, is
+	 * passed over for the next one (B847, B848). The boxes are looked in lazily: none past the one taken.
+	 */
 	@Nullable
-	static Village.Stash dropBox(ServerLevel level, BlockPos storehouse) {
-		return dropBox(level, storehouse, p -> true);
-	}
-
-	/** The nearest non-empty Drop Box to {@code storehouse} that {@code allowed} lets through (a hauler's skip list, B456). */
-	@Nullable
-	static Village.Stash dropBox(ServerLevel level, BlockPos storehouse, java.util.function.Predicate<BlockPos> allowed) {
+	static <T> T firstDropBox(ServerLevel level, BlockPos storehouse, java.util.function.Predicate<BlockPos> allowed,
+			java.util.function.Function<Village.Stash, T> pick) {
 		return level.getPoiManager().findAllClosestFirstWithType(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.DROP_BOX_POI),
 				p -> allowed.test(p) && level.getBlockEntity(p) instanceof DropBoxBlockEntity box && !box.isEmpty(), storehouse, DROP_BOX_RANGE,
 				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
-			.findFirst().map(pair -> new Village.Stash(pair.getSecond(), VillagerProfession.NONE, List.of(pair.getSecond()))).orElse(null);
+			.map(pair -> pick.apply(new Village.Stash(pair.getSecond(), VillagerProfession.NONE, List.of(pair.getSecond()))))
+			.filter(java.util.Objects::nonNull).findFirst().orElse(null);
 	}
 
 	/** Builders, ball smiths, chefs and other porters: there's never anything to carry away from them. */

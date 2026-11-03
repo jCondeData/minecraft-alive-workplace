@@ -301,8 +301,8 @@ public class QaFurnished1103fGameTests implements FabricGameTest {
 	 * and its chair the test mod's (an upturned dark oak stair); and not one of the plan's items is left in the barrels or
 	 * the builder's hands (no block came free, none was paid twice).
 	 */
-	//$ gametest_ticks_batch 'aliveworkplace_test:huge_area' '20000' '"qaFurnishedDarkOakBuild1103f"'
-	@GameTest(template = aliveworkplace_test:huge_area, timeoutTicks = 20000, batch = "qaFurnishedDarkOakBuild1103f")
+	//$ gametest_ticks_batch '"aliveworkplace_test:huge_area"' '20000' '"qaFurnishedDarkOakBuild1103f"'
+	@GameTest(template = "aliveworkplace_test:huge_area", timeoutTicks = 20000, batch = "qaFurnishedDarkOakBuild1103f")
 	public void aDarkOakCottageWithThePiecesIsBuiltFromExactlyItsMaterials(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		QaFurnishedGameTests.resetAfter(helper);

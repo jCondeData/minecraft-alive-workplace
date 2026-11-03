@@ -550,6 +550,9 @@ deployer can place blocks in and rename the hall of a protected village (B844).
   needed; a millstone turned by a creative motor gets the chest's wheat and its flour comes back, one that doesn't
   turn gets nothing; `mechanics` off, the toolbox is hidden from the jobless and nothing is mended; the round and the
   job survive a save and load.
+- `QaMechanicBeltController1103eCompatTests` (QA, with Create): a three-segment belt saved where its controller stood
+  elsewhere, gone from a finished build: every segment the Mechanic puts back names as its `Controller` the place where
+  the controller segment stands in this world, plain and turned a quarter.
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is
@@ -589,6 +592,9 @@ deployer can place blocks in and rename the hall of a protected village (B844).
   millstone (`MachineWorkCompatTests.aStoreWithAStackInEverySlotTakesTheMechanicsOutput`) and the farmer still mills
   its wheat (`MachineWorkCompatTests.aFarmerMillsForAStoreWithAStackInEverySlot`); every slot a full stack, the flour
   stays in the millstone and seeing to it reads full (`MachineWorkCompatTests.aStoreFullToTheBrimTakesNothing`).
+  The same on the farmer's own trip to a turning millstone already holding 32 flour (`QaMachineFullOutput1103eCompatTests`,
+  QA): brim full, he never sets off, says "Machine work: the store is full: the Millstone waits" and the flour stays in
+  the millstone; with room in the flour's stack only, he brings all 32 into the store, none dropped.
 - `QaMachineTripCompatTests` (QA, B244, with Create): a miner carrying 10 raw iron to the crushing wheels when
   `machineWork` is switched off puts them back in the store, and after a save and load with the switch on again the iron
   still comes to 10; a Novice armorer who loses the job mid-trip puts the 8 iron back, and killed afterwards drops none.

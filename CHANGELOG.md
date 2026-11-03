@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A hired mercenary or Doctor Wren can no longer be given another job by sneak-right-clicking them with a job's item
+  either: "Doctor Wren's job can't be changed here." (B906; the hall's Job ▾ and No job already refuse her, B905).
 - Village Hall People table: a hired mercenary at a guard post, or Doctor Wren at a brewing stand, can no longer be
   retrained (they'd have left with the village's new job at dawn); a retired elder's job list and page now say on every
   line that he has retired, instead of "place a Blast Furnace first" or "Someone took that workstation first"; and

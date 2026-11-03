@@ -472,6 +472,13 @@ public final class Stations {
 		if (!Friends.mayCommand(player, villager)) {
 			return Hiring.hire(player, villager, Component.empty()); // refuses, and says whose they are
 		}
+		// A hired mercenary at a guard post he took, or a story's visitor such as Doctor Wren at a brewing stand, isn't the
+		// village's to give another job, here as at the hall's People table (B889, B895, B906).
+		if (io.github.jcondedata.aliveworkplace.hall.HallPeople.visitor(villager)) {
+			villager.level().playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_NO, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.hall.jobs.cant", villager.getDisplayName()).withStyle(ChatFormatting.YELLOW));
+			return InteractionResult.CONSUME;
+		}
 		// A retired elder never takes a job again (34.20, B346): before, the item gave the job (undone at once) and kept the block's ticket.
 		if (io.github.jcondedata.aliveworkplace.people.Retirement.refuses(villager, villager.getVillagerData().setProfession(profession))) {
 			villager.level().playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_NO, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);

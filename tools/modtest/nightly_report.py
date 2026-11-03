@@ -6,7 +6,8 @@
 
 Reads what the nightly jobs leave in --dir: mutants-<k>.md (tools/modtest/mutate.py's output, one per shard),
 repeats.xml (the repeat run's JUnit report: tools/modtest/newtests.py's tests via RepeatNewTests), repeats.txt
-(the tests repeated, one Class#method per line) and since.txt (the commit the window starts at).
+(the tests repeated, one Class#method per line) and since.txt (the commit the window starts at); and the same for the
+compat suite's new tests (newtests.py --compat, repeated in runCompatGameTest): repeats-compat.xml and repeats-compat.txt.
 """
 import argparse
 import glob
@@ -53,15 +54,15 @@ def mutants(folder):
     return out, killed, total, survivors, problems
 
 
-def repeats(folder):
-    """({test: (failed copies, copies, first reason)}, problems), from the repeat run's JUnit report (repeats.xml)."""
+def repeats(folder, stem="repeats"):
+    """({test: (failed copies, copies, first reason)}, problems), from the repeat run's JUnit report (<stem>.xml)."""
     import xml.etree.ElementTree as ET
-    tests = [t.strip() for t in (read(os.path.join(folder, "repeats.txt")) or "").splitlines() if t.strip()]
+    tests = [t.strip() for t in (read(os.path.join(folder, stem + ".txt")) or "").splitlines() if t.strip()]
     if not tests:
         return {}, []
-    report = os.path.join(folder, "repeats.xml")
+    report = os.path.join(folder, stem + ".xml")
     if not os.path.exists(report):
-        return {}, ["the repeat run left no JUnit report (see repeats.log)"]
+        return {}, [f"the {'compat ' if stem != 'repeats' else ''}repeat run left no JUnit report (see {stem}.log)"]
     copies, failed = {}, {}
     for case in ET.parse(report).getroot().iter("testcase"):
         m = COPY.match(case.get("name", ""))
@@ -110,6 +111,20 @@ def main():
             lines.append(f"- {mark}: `{t}` failed {bad} of {n}" + (f": {why}" if why else ""))
     for t in unrun:
         problems.append(f"{t} had no copies in the repeat run")
+    creps, crep_problems = repeats(a.dir, "repeats-compat")
+    problems += crep_problems
+    cflaky = {t: v for t, v in creps.items() if v[0] > 0}
+    if creps or crep_problems:
+        lines.append("")
+        lines.append(f"**Compat repeats:** {len(creps)} new compat test(s) (runCompatGameTest), each 3 times"
+                     + (f"; **{len(cflaky)} flaky**" if cflaky else "; all passed every time") + ".")
+        for t, (bad, n, why) in sorted(creps.items()):
+            mark = "FLAKY" if bad else ("NOT RUN" if n == 0 else "ok")
+            lines.append(f"- {mark}: `{t}` failed {bad} of {n}" + (f": {why}" if why else ""))
+        for t, v in creps.items():
+            if v[1] == 0:
+                problems.append(f"{t} had no copies in the compat repeat run")
+    flaky = {**flaky, **cflaky}
     if problems:
         lines += ["", "**Problems:**"] + [f"- {x}" for x in problems]
     report = "\n".join(lines) + "\n"

@@ -307,7 +307,9 @@ showcase catalog).
 - `mechanics` (39.2): the Mechanic job. Off: a jobless villager doesn't see a toolbox as a workstation, and
   Mechanics already hired stand idle. Off for players until 2.3 ships (the gate), and does nothing without Create.
 - `machineWork` (39.3): villagers (and the Mechanic) feed Create's machines. Off: nobody feeds a machine; a trip
-  already under way waits, saved, until it's on again. Off for players until 2.3 ships, and does nothing without Create.
+  already under way ends at once (B244): what the worker carried goes back into the village's store by their
+  workstation, or drops at their feet when it doesn't fit, and stays there when the switch is on again. Off for
+  players until 2.3 ships, and does nothing without Create.
 
 - `createBuilds` (39.4, 39.5, 39.8): the Watermill, the Windmill, the Workshop and 39.8's six builds at the Blueprint Table and in the creative
   tab, and the contraption order and turning check for builds started while it's on. Off: they aren't offered, and new

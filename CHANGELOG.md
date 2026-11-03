@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A spot in a build's box that is filled again the moment the Builder digs it (sand dropped back, a cobblestone
+  generator, a player) no longer keeps him clearing for ever: after 16 digs it is left for later, then skipped, and
+  the build goes on (B868).
 - A maker's line above their head names many things in the plural: "making 2 Amethyst Rings", "fetching what 3
   Barrels take", "taking 3 Arrows to the guard" (Crafter, Chef, Jeweler and the other luxury makers, Toolsmith,
   Fletcher and Weaponsmith); one stays one (B878).

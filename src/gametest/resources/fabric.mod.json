@@ -1162,6 +1162,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaKeepBuildsLoaded1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildDelayChangeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderRestartClear1103bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderRestartClear1103bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderStages1103bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTableEdges1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidOfOneGameTests",

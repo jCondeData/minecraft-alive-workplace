@@ -162,13 +162,66 @@ public final class BuildSite {
 
 	/** B837: back to the start of CLEAR, to dig out what fell into the spots already cleared. */
 	public void backOverClear() {
+		backOverClear(0);
+	}
+
+	/**
+	 * {@link #backOverClear()}. {@code retaken} of those spots were given up in the pass just ended (B868: refilled each
+	 * time they were dug) and counted in skipped; the new pass goes for them again, so they aren't counted yet.
+	 */
+	public void backOverClear(int retaken) {
+		skipped = Math.max(0, skipped - retaken);
+		clearPasses++;
+		boolean onlyFallen = digOut;
+		backTo(BuildPlan.Stage.CLEAR, 0);
+		digOut = onlyFallen; // B869: a dig-out's next pass is a dig-out too
+	}
+
+	/**
+	 * B869: sand or gravel that fell into the build's rooms after CLEAR (its support broken mid-build) is dug out before
+	 * the build is called done. True while the build is back in CLEAR for that: only such blocks in the drawing's air are
+	 * dug, and the list running out goes straight back to LANDSCAPE. Saved; false in older saves.
+	 */
+	private boolean digOut;
+
+	/** Whether CLEAR is a dig-out of what fell into the finished rooms (B869). */
+	public boolean digOut() {
+		return digOut;
+	}
+
+	/** B869: back over CLEAR to dig out what fell into the rooms (one of the build's {@link #clearPasses}). */
+	public void backToDigOut() {
 		clearPasses++;
 		backTo(BuildPlan.Stage.CLEAR, 0);
+		digOut = true;
+	}
+
+	/**
+	 * B868: the CLEAR step the lead dug at the cursor (null once the cursor moves). Its block back the tick after (a
+	 * sand pile or a cobblestone generator refilling it, a player) puts the step off rather than dig it for ever. Not
+	 * saved: after a load such a spot is dug once more at most.
+	 */
+	@Nullable
+	private BlockPos dugAt;
+
+	/** The lead dug the block of the step at the cursor (B868). */
+	public void dug(BlockPos pos) {
+		dugAt = pos.immutable();
+	}
+
+	/** Whether the step at {@code pos}, still in the way, was already dug at this cursor (B868). */
+	public boolean dugAgain(BlockPos pos) {
+		return pos.equals(dugAt);
 	}
 
 	/** How often the build went back for blocks broken mid-build (B508). */
 	public int rechecks() {
 		return rechecks;
+	}
+
+	/** B869: sand fallen into a room at {@code pos}, still there once the passes ran out: given up for good. */
+	public void leaveOut(BlockPos pos) {
+		leftOut.add(pos.immutable());
 	}
 
 	/** Whether the block at {@code pos} was given up for good this build (B508). */
@@ -195,6 +248,8 @@ public final class BuildSite {
 		this.stage = stage;
 		cursor = index;
 		retrying = false;
+		digOut = false;
+		dugAt = null;
 		deferred.clear();
 		gaveUp.clear();
 		placedThisStage.clear();
@@ -377,6 +432,7 @@ public final class BuildSite {
 	/** The step is finished (or was already fine): move on. */
 	public void advance() {
 		cursor++;
+		dugAt = null;
 		onChange.run();
 	}
 
@@ -603,12 +659,15 @@ public final class BuildSite {
 		if (!retrying && !deferred.isEmpty()) {
 			retrying = true;
 		} else {
-			stage = stage.next();
+			// B869: a dig-out of what fell into the rooms goes straight back to the end of the build
+			stage = digOut && stage == BuildPlan.Stage.CLEAR ? BuildPlan.Stage.LANDSCAPE : stage.next();
+			digOut = false;
 			retrying = false;
 			deferred.clear();
 			gaveUp.clear();
 		}
 		cursor = 0;
+		dugAt = null;
 		onChange.run();
 	}
 
@@ -1009,6 +1068,9 @@ public final class BuildSite {
 		if (clearPasses > 0) {
 			tag.putInt("clear_passes", clearPasses); // B837
 		}
+		if (digOut) {
+			tag.putBoolean("dig_out", true); // B869
+		}
 		if (!leftOut.isEmpty()) {
 			tag.putLongArray("left_out", leftOut.stream().mapToLong(BlockPos::asLong).toArray()); // B508
 		}
@@ -1068,6 +1130,7 @@ public final class BuildSite {
 		site.kineticPasses = Nbt.getInt(tag, "kinetic_passes");
 		site.rechecks = Nbt.getInt(tag, "rechecks"); // B508: none in older saves
 		site.clearPasses = Nbt.getInt(tag, "clear_passes"); // B837: none in older saves
+		site.digOut = Nbt.getBoolean(tag, "dig_out"); // B869: none in older saves
 		for (long p : Nbt.getLongArray(tag, "left_out")) {
 			site.leftOut.add(BlockPos.of(p));
 		}

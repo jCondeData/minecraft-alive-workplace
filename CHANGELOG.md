@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Builder no longer stays clearing a site forever when a spot is refilled the moment he digs it (sand dropping back
+  from a pile, a cobblestone generator): he puts it off, then leaves it (counted as skipped) and builds on (B868).
+- Sand or gravel that falls into a hut's rooms while it goes up is dug out before the Builder calls it done, into his
+  chests, so a finished hut has no sand standing in it (B869).
 - A scanned soul sand elevator (or a magma block's sinking column) is built back with its water, so the bubbles rise
   (or sink) again; each block costs a water bucket that comes back empty (B861).
 - A scanned melon or pumpkin on its grown stem is built back with the stem: it costs one melon or pumpkin seeds and is

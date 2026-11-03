@@ -182,6 +182,9 @@ public final class Retraining {
 	 * carries on from there, the steps already done skipped).
 	 */
 	static void dropWork(ServerLevel level, ServerPlayer player, Villager villager) {
+		if (io.github.jcondedata.aliveworkplace.city.Stewards.isSteward(villager)) {
+			io.github.jcondedata.aliveworkplace.city.Stewards.stepDown(villager); // the City Plan leaves his hand, as a dismissal takes it (B886)
+		}
 		for (BuildSite queued : Builders.queue(level, villager)) {
 			if (queued.wonder() != null) {
 				io.github.jcondedata.aliveworkplace.wonder.WonderCrews.handOn(level, queued, villager);

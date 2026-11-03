@@ -749,7 +749,10 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		BlockPos other = hall.equals(v.a()) ? v.b() : v.a();
 		List<BlockPos> ours = v.data().stations(hall);
 		List<BlockPos> theirs = v.data().stations(other);
-		if (ours.isEmpty() || theirs.isEmpty() || CaravanTrains.realTrain(level, v.a(), v.b()) || !railway().linked(level, ours.get(0), theirs.get(0))
+		// B904: like the builder (CaravanTrains.build), never while the pair's train is on the railway, the trains switch off
+		// or not: blocks put up again where it stood took its conductor out of the train as it left (Create's seats sit
+		// down a mob that comes onto them)
+		if (ours.isEmpty() || theirs.isEmpty() || railway().exists(level, CaravanTrains.railwayId(v.a(), v.b())) || !railway().linked(level, ours.get(0), theirs.get(0))
 			|| railway().built(level, ours.get(0), theirs.get(0))) {
 			return;
 		}

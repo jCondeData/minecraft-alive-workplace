@@ -311,6 +311,35 @@ public final class CreateTrains implements CaravanTrains.Railway {
 	}
 
 	@Override
+	public void follow(ServerLevel level, UUID owner, BlockPos therePos, BlockPos homePos) {
+		Train train = train(owner);
+		if (train == null || train.graph == null || !level.isLoaded(therePos) || !level.isLoaded(homePos)) {
+			return;
+		}
+		Schedule schedule = train.runtime.getSchedule();
+		GlobalStation there = station(level, therePos);
+		GlobalStation home = station(level, homePos);
+		if (schedule == null || schedule.entries.size() != 2 || there == null || home == null) {
+			return; // not the schedule the village gave it (a player's own, or none): left alone
+		}
+		java.util.Set<String> names = new java.util.HashSet<>();
+		for (GlobalStation s : train.graph.getPoints(EdgePointType.STATION)) {
+			names.add(s.name);
+		}
+		String[] now = {there.name, home.name};
+		for (int i = 0; i < 2; i++) {
+			if (schedule.entries.get(i).instruction instanceof DestinationInstruction to) {
+				String text = to.getData().getString("Text");
+				if (!names.contains(text) && !text.equals(now[i])) {
+					// a stop whose station was renamed: Create's schedule finds stations by name, so it would wait for good
+					to.getData().putString("Text", now[i]);
+					AliveWorkplace.LOG.info("Alive Workplace: the village train {} now stops at '{}' (was '{}')", train.id, now[i], text);
+				}
+			}
+		}
+	}
+
+	@Override
 	public boolean at(ServerLevel level, UUID owner, BlockPos pos) {
 		Train train = train(owner);
 		GlobalStation station = station(level, pos);

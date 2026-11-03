@@ -117,7 +117,9 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   stands at the other village's station. A station the village points at its track faces the other village (Create's
   stations are stopped at from one side). Each station is named after its village once Create knows it, also when the
   server was restarted in between (B800); a station a player renamed by hand keeps the player's name, and the train's
-  schedule is made from the names the stations have when it is put together. Without a free villager, before the train is put together, or after a player
+  schedule is made from the names the stations have when it is put together. A station renamed later, with Create's
+  station screen while the train runs, is followed: the hall's next look at its train points that stop at the new name
+  (`CreateTrains.follow`), so the train and its caravans keep coming (B900). Without a free villager, before the train is put together, or after a player
   breaks it up, caravans take the timed trip above.
 - **One line, a built train, goods in its chest** (39.7b). The track a builder lays along a road follows
   `CaravanTrains.plan`: a straight piece (`xo`, `zo`) on each level node, an ascending piece (`an`, `as`, `ae`, `aw`) on
@@ -141,7 +143,8 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   station, rode the train or had its goods in its chest (B359): at its hall's next round it takes the timed trip and
   arrives with its goods. With the switch off, goods in the chest come back out of it (a train no longer there keeps
   them, as above); with Create gone the train and its chest went with Create, so the caravan's own record of its goods
-  is delivered.
+  is delivered. Switched on again, the train still standing on its track runs once more with its conductor and carries
+  the next caravan; no second train is put together (B904).
 - **The Conductor** (39.7d). A jobless villager next to a Create Train Station becomes the village's Conductor, in a
   maroon railwayman's cap with a gold braid band and badge, a maroon tunic with two rows of brass buttons, a gold watch
   chain, a ticket punch at the belt and black gloves. When the village puts its train together, the Conductor by its

@@ -119,6 +119,8 @@ standing, save and reload mid-stretch, the rank left alone, a new building's lan
 off), `CaravanRoadGameTests` (4), `WallGameTests` (9), `CityPlanRoadGameTests` (4).
 `RoadWonderGameTests` (2, B753: a street goes round a Wonder waiting for its goods and round a finished one, and straight
 once the Wonder is forgotten).
+`QaRoadWonderSmallRadius1103GameTests` (QA, B753): at the smallest village radius (16) a street still goes round a
+Wonder laid out about 16 blocks from the hall, and straight once it is forgotten.
 
 QA (27.15, 27.16): `QaRoadGameTests` (6: each shipped style's blocks and mix weights, broken style files skipped,
 stretches of at most 24 that never overlap, no two-block step, going round a finished building and a player's blocks,

@@ -96,7 +96,7 @@ public class PatrolMapItem extends Item {
 			return InteractionResult.FAIL;
 		}
 		ModAttachments.PATROL_ROUTE.set(guard, route.points());
-		Chat.actionBar(player, Component.translatable("message.aliveworkplace.patrol.given", guard.getDisplayName(), route.points().size())
+		Chat.actionBar(player, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.patrol.given", route.points().size(), guard.getDisplayName(), route.points().size())
 			.withStyle(ChatFormatting.GREEN));
 		guard.playSound(SoundEvents.VILLAGER_YES, 1f, 1f);
 		return InteractionResult.SUCCESS;

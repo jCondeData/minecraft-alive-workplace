@@ -52,7 +52,7 @@ public class LostCaravanGameTests implements FabricGameTest {
 	private static final BlockPos CHEST = new BlockPos(20, 2, 25);
 
 	/** Two villages 320 blocks apart, the sending one in the test area; the chance forced to 1 in 1. */
-	private static BlockPos[] begin(GameTestHelper helper) {
+	static BlockPos[] begin(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.players(helper);
 		ServerLevel level = helper.getLevel();
@@ -96,7 +96,7 @@ public class LostCaravanGameTests implements FabricGameTest {
 	}
 
 	/** The lost caravan's arc started by a forced loss of 32 logs and 12 bread from {@code a} to {@code b}. */
-	private static ArcState lose(GameTestHelper helper, BlockPos a, BlockPos b) {
+	static ArcState lose(GameTestHelper helper, BlockPos a, BlockPos b) {
 		ServerLevel level = helper.getLevel();
 		boolean lost = LostCaravanStory.lose(level, a, b, List.of(new ItemStack(Items.OAK_LOG, 32), new ItemStack(Items.BREAD, 12)), RandomSource.create(7));
 		helper.assertTrue(lost, "the forced caravan didn't go missing");

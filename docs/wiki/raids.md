@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133, B824
+Roadmap items: 32.2, 32.14, B133, B824, B856
 
 ## What a player sees
 
@@ -19,6 +19,10 @@ its captain falls. Under that look:
   counted raid line has a `.one` key beside it in the language file; a culture's data file may leave it out.
   A raid of one fought off reads "The village fought off the raid (1 monster)" in the chronicle, and still counts in
   the Founder's story of the village (B833).
+- Two raided villages side by side keep their raids apart: a hall's round counts only its own raid's raiders, not a
+  raider standing within its reach but nearer another village with a raid under way (that raid's). So a village whose
+  raiders are all dead has fought its raid off even with the neighbor's raiders about, and when its raiders leave at
+  their hour the neighbor's stay (B856, the rule a call-off already used, B849).
 
 ## A day's warning (32.14)
 
@@ -198,3 +202,7 @@ None.
   and the portcullis down at noon, the villagers in at dusk, the clock's raiders at the hour; with the Legends switch off no
   warning, then told when it's on again; every new sentence). Unchanged and passing: `SeerGameTests`,
   `WarningGameTests`, `LighthousePowerGameTests`, `LegendGuestsGameTests`.
+- B856: `QaRisingsVerify1102dGameTests.aVillagesRoundEndsItsRaidOnceItsOwnRaidersAreGoneThoughANeighboursAreNear`
+  (two desert raids 25 blocks apart; the first's raider killed, its round ends its raid though the second's raider
+  stands within its reach; the second's raid goes on) and `aVillagesRaidersLeavingAtTheirHourLeaveANeighboursRaiderBehind`
+  (the first's raiders leave at noon, the second's raider stays and its raid goes on).

@@ -58,7 +58,7 @@ public class QaKingTribute1102dBugTests implements FabricGameTest {
 	}
 
 	/** The storm outlasted with {@code treasury} (hundredths of an emerald) in the hall; the chronicle's tribute line. */
-	private static String tribute(GameTestHelper helper, int treasury) {
+	static String tribute(GameTestHelper helper, int treasury) {
 		Leftovers.clear(helper);
 		settings(helper);
 		ServerLevel level = helper.getLevel();

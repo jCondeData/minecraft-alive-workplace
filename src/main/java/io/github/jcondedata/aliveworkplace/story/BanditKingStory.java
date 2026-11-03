@@ -581,10 +581,11 @@ public final class BanditKingStory {
 		}
 		sendHome(level, hall);
 		level.playSound(null, hall, SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 1f, 0.7f);
-		int emeralds = taken / 100;
-		String tribute = emeralds == 1 ? "tribute.one" : "tribute"; // "1 emerald" (B842)
-		tell(level, hall, tribute, ChatFormatting.RED, emeralds);
-		chronicle(level, hall, tribute, emeralds);
+		// What the treasury lost, as the hall's treasury reads it: "0.99 emeralds", "1 emerald", "100 CobbleDollars" (B866).
+		// (New keys: chronicle lines already saved keep the old tribute keys and their whole-emerald number.)
+		Component amount = io.github.jcondedata.aliveworkplace.trade.TradePage.money(taken);
+		tell(level, hall, "tribute_taken", ChatFormatting.RED, amount);
+		chronicle(level, hall, "tribute_taken", amount);
 	}
 
 	/** The fort is left a ruin: a share of what it was built of falls (fixed by where it stands, so it reads the same twice). */

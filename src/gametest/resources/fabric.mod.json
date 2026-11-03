@@ -1158,6 +1158,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScanRebuild1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanRebuild1103BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanStem1103BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanWaterStems1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDropBoxMixed1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaKeepBuildsLoaded1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildDelayChangeGameTests",

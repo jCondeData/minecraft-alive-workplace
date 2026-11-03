@@ -7,7 +7,7 @@ with every other expansion. It covers: ages, the slower walk, the "quiet old age
 Families, the Family page and the Printer's family tree (34.21), and the seeding of everyone's age when classes switch
 on (34.22, [Classes](classes.md)).
 
-Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187, B380, B442
+Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187, B380, B442, B885
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -164,7 +164,8 @@ writes in only the villagers inside the circle, and only couples inside it court
   then the level and its least xp. The assignments are moved as they are (`Retirement.ASSIGNMENTS`).
 - **Never re-employed.** `WorkerLimits.refuse` turns down any job for a retired villager (by themselves at a
   workstation, or by order), their search for a workstation sees none (`WorkerLimits.hideFull`), and a player's
-  job item is refused in `Stations.take` before the block's ticket is taken (B346).
+  job item is refused in `Stations.take` before the block's ticket is taken (B346). The hall's Job ▾ grays every job
+  with that line, and `VillageHalls.assign` refuses them before it takes a block (B885).
 - **Mentoring.** Each round a retired elder picks a Novice or Apprentice of their old trade (the same pupil as before,
   else the nearest) and teaches them for 90 seconds (`taught_by`), renewed every round. Taught, every xp they earn is
   half again: through `Traits.xp` (builders' levels) and from trades (`Villager.rewardTradeXp`, a mixin). The retired

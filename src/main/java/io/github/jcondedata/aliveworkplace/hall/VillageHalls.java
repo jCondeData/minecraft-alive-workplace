@@ -217,8 +217,9 @@ public final class VillageHalls {
 
 	/** Gives {@code villager} the job at {@code station}, if it's still free and they can work (not a nitwit or a child). */
 	public static boolean assign(ServerLevel level, Villager villager, FreeStation station) {
-		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
-			return false;
+		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT
+			|| io.github.jcondedata.aliveworkplace.people.Retirement.refuses(villager, villager.getVillagerData().setProfession(station.profession()))) {
+			return false; // a retired elder takes no job: refused before the block is taken, or it's held for nobody (B885)
 		}
 		// The offered block first: if someone took it meanwhile, nothing changes and they keep their own block (bug B27).
 		// A beehive keeps no places (B657): it's theirs if nobody works there yet.

@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Hauler and Farmhand golems go straight to work instead of sometimes first wandering toward a nearby village (vanilla's
+  "move back to the village" stroll, which ranked the same as their work). That walk could take a hauler off a ledge it
+  couldn't climb back up, and it then stood there holding its load (B858).
 - The Nurse no longer gives you your health back on every click while her Healing Machine is busy with another
   player's team: she now treats nothing until it's free (your minute isn't used), and right after a treatment she says
   to come back in 60 seconds, not 61 (B850, B851).

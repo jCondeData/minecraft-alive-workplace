@@ -233,6 +233,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitchEdgesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderLimitsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCrewGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCrewCarryBugTests",

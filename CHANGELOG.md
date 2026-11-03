@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A maker's line above their head names many things in the plural: "making 2 Amethyst Rings", "fetching what 3
+  Barrels take", "taking 3 Arrows to the guard" (Crafter, Chef, Jeweler and the other luxury makers, Toolsmith,
+  Fletcher and Weaponsmith); one stays one (B878).
 - A scanned soul sand elevator (or a magma block's sinking column) is built back with its water, so the bubbles rise
   (or sink) again; each block costs a water bucket that comes back empty (B861).
 - A scanned melon or pumpkin on its grown stem is built back with the stem: it costs one melon or pumpkin seeds and is

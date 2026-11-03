@@ -179,8 +179,8 @@ public class QaCrafterFurnitureGameTests {
 
 	/**
 	 * Every line above a Carpenter's head through a three-step chain reads as English with its numbers in: the title with
-	 * the count made, "fetching what 3 Barrel take", each step ("making 3 Barrel (step 1 of 3)" to step 3), and
-	 * "taking 3 Barrel to the builder"; no raw key or empty %s anywhere.
+	 * the count made, "fetching what 3 Barrels take", each step ("making 3 Barrels (step 1 of 3)" to step 3), and
+	 * "taking 3 Barrels to the builder"; no raw key or empty %s anywhere.
 	 */
 	//$ gametest_ticks_batch AREA '3600' '"qaChainLines"'
 	@GameTest(template = AREA, timeoutTicks = 3600, batch = "qaChainLines")
@@ -199,8 +199,8 @@ public class QaCrafterFurnitureGameTests {
 		});
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, a);
-			for (String want : List.of("fetching what 3 Barrel take", "making 3 Barrel (step 1 of 3)", "making 3 Barrel (step 2 of 3)",
-				"making 3 Barrel (step 3 of 3)", "taking 3 Barrel to the builder")) {
+			for (String want : List.of("fetching what 3 Barrels take", "making 3 Barrels (step 1 of 3)", "making 3 Barrels (step 2 of 3)",
+				"making 3 Barrels (step 3 of 3)", "taking 3 Barrels to the builder")) {
 				helper.assertTrue(lines.contains(want), "the carpenter never said \"" + want + "\"; it said " + lines);
 			}
 			helper.assertTrue(titles.contains("Carpenter · 0 made") && titles.contains("Carpenter · 3 made"), "the carpenter's titles: " + titles);

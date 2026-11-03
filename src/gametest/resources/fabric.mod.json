@@ -1207,6 +1207,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaEldersColonies1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageWords1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCountedWords1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCountedWords1103cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDeliveryNote1103cGameTests"
 		]
 	},

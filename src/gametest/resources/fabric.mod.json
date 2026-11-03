@@ -725,6 +725,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderMindChange1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSitesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StrangeMoodGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStrangeMoodGameTests",
@@ -1153,11 +1155,14 @@
 			"io.github.jcondedata.aliveworkplace.test.QaOneCount1102cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildDelayFisher1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.SingularCountsAndBiteGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHaulers1102gGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuildDelay1102gGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1102eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1102eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.DropBoxFitOrderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerFitVerify1103GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaColonyWordsVerify1103GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaColonyWordsVerify1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHaulerPathsVerify1103GameTests"
 		]
 	},
 	"depends": {

@@ -502,6 +502,9 @@ emptied or the switch off; the cottage in every turn and mirror gets its pieces 
 Oak cottage with the pieces is built from exactly its materials, none left over; a player's block on a chair spot is
 left by the repair; a vanilla chair broken after the build is put back as it stood, for one stair; a nook begun with
 the switch off and switched on mid-build stays vanilla);
+QA's `QaBuildViews1103gGameTests` (2: with the switch off or no installed mod in the order, the Table's preview and
+materials and the Steward desk's needs are the vanilla build's; the held Blueprint's preview draws what a new site of
+it builds, as drawn and in Dark Oak);
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.

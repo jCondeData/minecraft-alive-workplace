@@ -1154,7 +1154,9 @@
 			"io.github.jcondedata.aliveworkplace.test.SingularCountsAndBiteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1102eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1102eBugTests",
-			"io.github.jcondedata.aliveworkplace.test.DropBoxFitOrderGameTests"
+			"io.github.jcondedata.aliveworkplace.test.DropBoxFitOrderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHaulerFitVerify1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaColonyWordsVerify1103GameTests"
 		]
 	},
 	"depends": {

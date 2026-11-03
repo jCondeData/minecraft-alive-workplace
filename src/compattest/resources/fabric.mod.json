@@ -229,6 +229,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaNurseMachine1102dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaNurseMachine1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.NurseBusyMachineCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaNurseBusy1103dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareInheritance1103dCompatTests"
 		]
 	},

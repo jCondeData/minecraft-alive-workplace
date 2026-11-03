@@ -70,18 +70,22 @@ public class NurseGameTests implements FabricGameTest {
 		Nurses.treat(player, nurse);
 		helper.assertTrue(player.getHealth() == player.getMaxHealth(), "not healed: " + player.getHealth());
 		long start = helper.getLevel().getGameTime();
+		// her minute is the pace-adjusted one (BuilderLevels.delay, as Nurses.treat uses), which a busy full suite can move
+		int minute = io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse);
 		player.setHealth(5f);
-		helper.runAfterDelay(Nurses.COOLDOWN - 1, () -> {
-			helper.assertTrue(helper.getLevel().getGameTime() - start == Nurses.COOLDOWN - 1, "setup: "
+		helper.runAfterDelay(minute - 1, () -> {
+			helper.assertTrue(helper.getLevel().getGameTime() - start == minute - 1, "setup: "
 				+ (helper.getLevel().getGameTime() - start) + " ticks went by");
 			player.setHealth(5f); // a minute of natural regeneration (or a nurse's tending) may have healed him meanwhile
 			Nurses.treat(player, nurse);
-			helper.assertTrue(player.getHealth() == 5f, "treated a tick before the minute was up");
+			helper.assertTrue(player.getHealth() == 5f, "treated a tick before the minute was up (minute " + minute + " ticks, now "
+				+ io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse) + ")");
 		});
-		helper.runAfterDelay(Nurses.COOLDOWN, () -> {
+		helper.runAfterDelay(minute, () -> {
 			player.setHealth(5f);
 			Nurses.treat(player, nurse);
-			helper.assertTrue(player.getHealth() == player.getMaxHealth(), "not treated once the minute was up: " + player.getHealth());
+			helper.assertTrue(player.getHealth() == player.getMaxHealth(), "not treated once the minute was up: " + player.getHealth() + " (minute " + minute + " ticks, now "
+				+ io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(Nurses.COOLDOWN, nurse) + ")");
 			helper.succeed();
 		});
 	}

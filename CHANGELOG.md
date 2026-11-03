@@ -18,6 +18,18 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A villager no longer claims a free bed up a ladder when a shut iron door stands between the ladder's top and the
+  bed: villagers can't open iron doors, so he climbed up, stood at the door and gave the bed up. Wooden doors, and an
+  iron door left open, still let him through (B876).
+- A Mechanic saved or reloaded (a restart, his chunk unloading) while carrying a part from the store no longer keeps
+  it in his hand when a player has filled the hole meanwhile, nor loses it when he next fetches another part: it goes
+  back to the store by his toolbox (with Create).
+- The Village Hall's Free job blocks page no longer offers a block to a retired elder or a hired mercenary (the hall
+  would refuse them, then say "Someone took that workstation first"); an elder who retires while the page is open is
+  told "Bram has retired and takes no job now: they mentor the young instead." when picked, and the block stays free
+  (B892).
+- Sand or gravel that falls into a hut's rooms while it goes up (its support broken mid-build) is dug out into the
+  Builder's chests before he calls the hut done, so a finished hut has no sand standing in it (B869).
 - A hired mercenary, a relief rider or Doctor Wren on the Village Hall's People table now shows their own job and
   counts as working, with no job change offered: before, they were listed as jobless and one click made them a Mason
   for free (B889).
@@ -40,6 +52,9 @@ asks for the steps, `latest.log` and any crash report).
 - A maker's line above their head names many things in the plural: "making 2 Amethyst Rings", "fetching what 3
   Barrels take", "taking 3 Arrows to the guard" (Crafter, Chef, Jeweler and the other luxury makers, Toolsmith,
   Fletcher and Weaponsmith); one stays one (B878).
+- A courier route or Delivery Note that carried only items of a mod taken out of the pack no longer turns into "carry
+  everything" and empties its chest: it carries nothing of them, says "1 item no longer in the game", and the items
+  come back on it if the mod returns (B819).
 - A scanned soul sand elevator (or a magma block's sinking column) is built back with its water, so the bubbles rise
   (or sink) again; each block costs a water bucket that comes back empty (B861).
 - A scanned melon or pumpkin on its grown stem is built back with the stem: it costs one melon or pumpkin seeds and is

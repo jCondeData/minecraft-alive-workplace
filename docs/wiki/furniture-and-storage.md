@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848, B876
 
 ## 1. What a player sees
 
@@ -90,7 +90,9 @@ A bed up a ladder is a bed like any other (B304). The Terrace is two homes under
 ladder: a villager without a bed takes a free one there, even next door to where he stands, and at bedtime he goes in
 by that home's door and climbs that home's ladder. Before, a villager could only claim a bed he could walk to, so the
 Terrace's beds stood free while villagers spent the night standing about its rooms (on a chest, say), and a villager
-coming in by the other home's door climbed the wrong ladder and gave his bed up.
+coming in by the other home's door climbed the wrong ladder and gave his bed up. A door between the ladder's top and
+the bed counts only if a villager can get through it, as vanilla's walking sees doors: a wooden one (he opens it) or
+any door standing open. A shut iron door is a wall to him, so a bed behind one up a ladder isn't claimed (B876).
 
 Every home of a multi-home build is furnished alike (B641): a Terrace or Terrace II furnished before B281 (its spots
 file then had no table and chair for the east kitchen, whose table stands against the party wall) kept spruce stand-ins
@@ -474,6 +476,9 @@ Handcrafted (compat) `TerraceSleepCompatTests.aVillagerWithoutABedTakesAFreeFanc
 `terrace_sleep` (B310: it moves the villagers in a server task after the one placing the Terrace, since the placed beds
 count as beds only once the tasks the placing queued have run; looked up in the same task, it found no beds and nobody
 moved in).
+B876: `QaHallBeds1103cBugTests.aBedBehindAnIronDoorUpALadderIsNotClaimable` (failing before the fix),
+`QaHallBeds1103cBugTests.aBedBehindAnOpenIronDoorUpALadderIsClaimable` (open, then shut again) and
+`QaHallBeds1103cGameTests.aBedBehindAShutOakDoorUpALadderIsClaimable`.
 B300: `FloatingFurnishingsGameTests.noFurnishedBlueprintHasAFloatingPiece` (every furnished blueprint, vanilla and
 with one-block tables), `FloatingFurnishingsGameTests.aPotOnALowerTableSitsOnIt`,
 `FloatingFurnishingsGameTests.aBuiltFurnishedHomeHasNothingFloating`, `FloatingFurnishingsGameTests.aPieceLeftOnNothingIsSetDown`.

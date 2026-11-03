@@ -635,6 +635,8 @@
   "tooltip.aliveworkplace.route.to": "To %s %s %s",
   "tooltip.aliveworkplace.route.everything": "Carries everything but tools, weapons and armor",
   "tooltip.aliveworkplace.route.only": "Carries only: %s",
+  "tooltip.aliveworkplace.route.gone": "%s items no longer in the game",
+  "tooltip.aliveworkplace.route.gone.one": "%s item no longer in the game",
   "tooltip.aliveworkplace.route.how": "Right-click the container to take from, then the one to bring to. Hold an item in your other hand and right-click the air to carry only that.",
   "tooltip.aliveworkplace.route.hand_over": "Give it to a Postman",
   "message.aliveworkplace.route.reset": "Delivery Note cleared.",

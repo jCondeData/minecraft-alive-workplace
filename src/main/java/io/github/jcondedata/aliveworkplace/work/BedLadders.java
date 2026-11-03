@@ -174,7 +174,7 @@ public final class BedLadders {
 
 	/**
 	 * Whether a villager stepping off the ladder whose top is {@code top} can walk to {@code bed} on the bed's floor: a walk
-	 * over blocks it can stand in (nothing taller than a step underfoot, nothing at head height; doors open) to the bed or a
+	 * over blocks it can stand in (nothing taller than a step underfoot, nothing at head height; doors a villager opens, B876) to the bed or a
 	 * block beside it, within {@link #REACH} of the bed. A wall between them (the Terrace's party wall) says no.
 	 */
 	static boolean reachesBed(ServerLevel level, BlockPos top, BlockPos bed) {
@@ -205,14 +205,22 @@ public final class BedLadders {
 	/** Whether a villager can stand at {@code at}: no more than a step (a carpet, a slab, a bed) underfoot, room for the head. */
 	private static boolean standable(ServerLevel level, BlockPos at) {
 		BlockState feet = level.getBlockState(at);
-		if (!(feet.getBlock() instanceof DoorBlock)) {
+		if (!passableDoor(feet)) {
 			VoxelShape shape = feet.getCollisionShape(level, at);
 			if (!shape.isEmpty() && shape.max(Direction.Axis.Y) > STEP_UP) {
 				return false;
 			}
 		}
 		BlockState head = level.getBlockState(at.above());
-		return head.getBlock() instanceof DoorBlock || head.getCollisionShape(level, at.above()).isEmpty();
+		return passableDoor(head) || head.getCollisionShape(level, at.above()).isEmpty();
+	}
+
+	/**
+	 * A door a villager gets through, as vanilla's pathing sees it: an open one, or a shut wooden one (villagers open those).
+	 * A shut iron door is a wall to them (B876).
+	 */
+	private static boolean passableDoor(BlockState state) {
+		return state.getBlock() instanceof DoorBlock door && (door.isOpen(state) || DoorBlock.isWoodenDoor(state));
 	}
 
 	/**

@@ -409,6 +409,9 @@ public class BuilderWork extends Behavior<Villager> {
 				if (site.endsStage() && site.stage() == BuildPlan.Stage.CLEAR && fellIn(level, site, plan, bench)) {
 					continue; // B837: it fell into spots already cleared: back over the list to dig it out
 				}
+				if (site.endsStage() && site.stage() == BuildPlan.Stage.LANDSCAPE && fellIntoRooms(level, site, plan, bench)) {
+					continue; // B869: sand or gravel fell into the rooms after CLEAR: dug out before the build is called done
+				}
 				if (site.endsStage() && site.stage() == BuildPlan.Stage.LANDSCAPE && backToBroken(level, site, plan)) {
 					continue; // B508: a block laid earlier is gone (broken by a player, a mob, an explosion): put back first
 				}
@@ -982,10 +985,56 @@ public class BuilderWork extends Behavior<Villager> {
 				left++;
 			}
 		}
+		if (left > 0 && !site.digOut()) {
+			site.leftBroken(left); // (B869: a dig-out's leftovers are counted once, by fellIntoRooms)
+		}
+		return false;
+	}
+
+	/**
+	 * B869: the end of the build (once LANDSCAPE has run out). Sand or gravel that fell into the build's rooms after CLEAR
+	 * (a prop under a pile broken mid-build) stands where the drawing has air: the lead goes back over CLEAR digging out
+	 * only such blocks ({@link BuildSite#digOut}), then straight back to the end of LANDSCAPE. It shares CLEAR's
+	 * {@link #MOST_CLEAR_PASSES}, and a spot refilled each time it is dug is given up as in CLEAR (B868), so it always
+	 * ends; what's still there after that is counted as skipped once and left for the repair round. True if it went back.
+	 */
+	static boolean fellIntoRooms(ServerLevel level, BuildSite site, BuildPlan plan, BlockPos bench) {
+		if (site.isDeconstruction() || site.isRepair()) {
+			return false; // a repair only fills the holes it was made for
+		}
+		int left = 0;
+		for (BuildPlan.Step step : plan.steps(BuildPlan.Stage.CLEAR)) {
+			if (site.leftOut(step.pos()) || site.refilled(step.pos()) || !fallenIn(level, site, step, bench)) {
+				continue; // (given up earlier, and counted then)
+			}
+			if (site.clearPasses() < MOST_CLEAR_PASSES) {
+				site.backToDigOut();
+				return true;
+			}
+			site.leaveOut(step.pos()); // counted once, however often the build comes back here (B508)
+			left++;
+		}
 		if (left > 0) {
 			site.leftBroken(left);
 		}
 		return false;
+	}
+
+	/**
+	 * B869: whether the step's spot, air in the drawing, holds sand, gravel, concrete powder or the like (a falling block;
+	 * an anvil or a dragon egg is a player's, and stays) that the builder may dig (a Steward's site keeps a player's).
+	 */
+	private static boolean fallenIn(ServerLevel level, BuildSite site, BuildPlan.Step step, BlockPos bench) {
+		if (!step.state().isAir()) {
+			return false;
+		}
+		BlockPos pos = step.pos();
+		BlockState world = level.getBlockState(pos);
+		return world.getBlock() instanceof net.minecraft.world.level.block.FallingBlock
+			&& !(world.getBlock() instanceof net.minecraft.world.level.block.AnvilBlock)
+			&& !(world.getBlock() instanceof net.minecraft.world.level.block.DragonEggBlock)
+			&& !isProtected(level, pos, world, bench)
+			&& !(site.isSteward() && StewardSafety.playersBlock(level, pos, world));
 	}
 
 	/** A step can't be done now. The lead retries it at the end of the stage; a helper leaves it to the lead. */
@@ -1044,6 +1093,9 @@ public class BuilderWork extends Behavior<Villager> {
 		if (stage == BuildPlan.Stage.CLEAR) {
 			if (worldEmpty) {
 				return Action.NONE;
+			}
+			if (site.digOut()) {
+				return fallenIn(level, site, step, bench) ? Action.BREAK : Action.NONE; // B869: only what fell into the rooms
 			}
 			boolean wantedEmpty = wanted.isAir();
 			// The top of a door or the head of a bed isn't placed on its own, but it needs the spot free: an upgrade

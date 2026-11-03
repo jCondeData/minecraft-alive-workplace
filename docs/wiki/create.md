@@ -234,7 +234,10 @@ plants) is missing. A build a builder is repairing is left to the builder. A bel
 build stands, so each segment finds its controller; one belt connector is used per belt. The round lists the millstones
 within 32 blocks, nearest first, and is looked up again each time it comes back to its start or a machine on it is
 gone. A millstone "turns" at 1 RPM or more, read by name (`Speed`) from its saved data. Create's machines, belts and
-toolboxes are no longer counted as anyone's supply chest (a millstone's wheat, a player's tools).
+toolboxes are no longer counted as anyone's supply chest (a millstone's wheat, a player's tools). The part in the
+Mechanic's hand is never saved as a job: a Mechanic loaded (a restart, his chunk unloading) still carrying one puts it
+in if its hole is still open, and otherwise takes it back to the store by the toolbox (at the toolbox's foot when the
+store is full); he also takes it back before fetching a different part, so a part is never lost from his hand (B884).
 
 **Machine work.** Each machine is a data file, `data/aliveworkplace/machine_work/<id>.json` (`millstone`, `press`,
 `mixer`, `crushing`), read on every load and `/reload`; a datapack can add or replace them. A file names the machine's

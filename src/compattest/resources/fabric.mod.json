@@ -88,6 +88,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainChestSingles1103eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMachineFullOutput1103eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicBeltController1103eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMechanicPartInHandSaved1103eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicSavedMidMend1103eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainHallGoneCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateTrackCompatTests",

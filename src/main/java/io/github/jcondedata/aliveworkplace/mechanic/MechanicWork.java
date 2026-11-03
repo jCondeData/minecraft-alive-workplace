@@ -16,6 +16,7 @@ import io.github.jcondedata.aliveworkplace.platform.ItemStores;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.TradeDisplay;
 import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.Tag;
@@ -76,7 +78,8 @@ import org.jetbrains.annotations.Nullable;
  * machine that has stopped turning is reported on their status, never fed.</li>
  * </ul>
  * Restartable at any tick: only the round is saved; a part in hand when the work stops goes back to the store, and the
- * next part is looked for again. Config {@code mechanics} off: no new Mechanics (the toolbox is hidden from jobless
+ * next part is looked for again; a part in hand that no hole needs (after a save) goes back too, and fetching never
+ * takes a part over one already in hand (B884). Config {@code mechanics} off: no new Mechanics (the toolbox is hidden from jobless
  * villagers, {@code WorkerLimits}) and those hired stand idle. {@link #crewLead} is 39.5's hook: the Mechanic who leads
  * the builders on a contraption.
  */
@@ -417,7 +420,13 @@ public class MechanicWork extends Behavior<Villager> {
 		state.machine = null;
 		Part waiting = null;
 		List<BlockPos> chests = null;
-		for (Part part : missingParts(level, post)) {
+		List<Part> missing = missingParts(level, post);
+		ItemStack held = TradeDisplay.workHand(villager);
+		if (isPart(held) && missing.stream().noneMatch(p -> held.is(p.cost()))) {
+			// a part no hole needs any more (B884: carried through a save while a player filled its hole) goes back
+			stash(level, villager);
+		}
+		for (Part part : missing) {
 			if (part.cost() == Items.AIR || villager.getMainHandItem().is(part.cost())) {
 				state.part = part;
 				state.task = Task.PLACE;
@@ -487,6 +496,13 @@ public class MechanicWork extends Behavior<Villager> {
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(state.store));
 		if (state.walker.reach(level, villager, state.store, 3.0)) {
 			state.walker.reset();
+			if (isPart(TradeDisplay.workHand(villager)) && !villager.getMainHandItem().is(part.cost())) {
+				stash(level, villager); // never over a part already in hand (B884): it goes back to the store first
+			}
+			if (villager.getMainHandItem().is(part.cost())) {
+				state.task = Task.PLACE; // already carrying one
+				return;
+			}
 			if (STORES.extract(level, List.of(state.store), part.cost(), 1) < 1) {
 				state.part = null; // someone took it first: look again
 				return;
@@ -577,15 +593,25 @@ public class MechanicWork extends Behavior<Villager> {
 		state.walker.reset();
 		state.part = null;
 		state.machine = null;
-		ItemStack held = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager);
-		if (!held.isEmpty() && "create".equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(held.getItem()).getNamespace())) {
-			// a part fetched but not put back goes back to the store (or at the toolbox's foot)
-			Optional<BlockPos> post = post(level, villager);
-			ItemStack rest = post.isPresent() ? SupplyContainers.insert(level, SupplyContainers.find(level, post.get(), null), held.copy()) : held.copy();
-			if (!rest.isEmpty()) {
-				drop(level, post.orElse(villager.blockPosition()), rest);
-			}
-			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+		stash(level, villager);
+	}
+
+	/** Whether {@code held} is a part the Mechanic carries (a Create item). */
+	private static boolean isPart(ItemStack held) {
+		return !held.isEmpty() && "create".equals(BuiltInRegistries.ITEM.getKey(held.getItem()).getNamespace());
+	}
+
+	/** A part in the Mechanic's hand goes back to the store by the toolbox (or at its foot when the store is full). */
+	private static void stash(ServerLevel level, Villager villager) {
+		ItemStack held = TradeDisplay.workHand(villager);
+		if (!isPart(held)) {
+			return;
 		}
+		Optional<BlockPos> post = post(level, villager);
+		ItemStack rest = post.isPresent() ? SupplyContainers.insert(level, SupplyContainers.find(level, post.get(), null), held.copy()) : held.copy();
+		if (!rest.isEmpty()) {
+			drop(level, post.orElse(villager.blockPosition()), rest);
+		}
+		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 	}
 }

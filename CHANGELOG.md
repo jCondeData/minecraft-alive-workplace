@@ -27,6 +27,11 @@ asks for the steps, `latest.log` and any crash report).
   couldn't climb back up, and it then stood there holding its load (B858).
 - The Nurse no longer turns you away after you waited out the minute she gave you because she slowed down meanwhile (a
   bad mood, an illness): the wait is set when she treats you and only ever gets shorter (B864).
+- Handing a guard a Patrol Map with one marked point says "route of 1 point", not "1 points"; the operators'
+  `/workplace classes` lines read "1 villager lost their class and is given one", "1 of 1 villager has a class" and
+  "1 newcomer" (B862).
+- The Bandit King's tribute line says what the treasury lost the way the treasury writes it ("took 0.99 emeralds",
+  "33.33 emeralds", or "100 CobbleDollars" with CobbleDollars), no longer rounded down to whole emeralds (B866).
 - The Nurse no longer gives you your health back on every click while her Healing Machine is busy with another
   player's team: she now treats nothing until it's free (your minute isn't used), and right after a treatment she says
   to come back in 60 seconds, not 61 (B850, B851).

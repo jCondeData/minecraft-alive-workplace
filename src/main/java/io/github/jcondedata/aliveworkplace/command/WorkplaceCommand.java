@@ -226,7 +226,7 @@ public final class WorkplaceCommand {
 		}
 		int cleared = io.github.jcondedata.aliveworkplace.people.ClassMigration.reseed(level, hall);
 		Component village = io.github.jcondedata.aliveworkplace.hall.VillageHalls.name(level, hall);
-		source.sendSuccess(() -> Component.translatable("command.aliveworkplace.classes.reseeded", village, cleared), true);
+		source.sendSuccess(() -> io.github.jcondedata.aliveworkplace.people.ClassMigration.reseeded(village, cleared), true);
 		return Math.max(1, cleared);
 	}
 

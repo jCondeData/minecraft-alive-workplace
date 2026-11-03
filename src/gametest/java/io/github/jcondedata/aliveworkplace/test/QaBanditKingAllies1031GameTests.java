@@ -403,7 +403,8 @@ public class QaBanditKingAllies1031GameTests implements FabricGameTest {
 		System.out.println("QA31.16 tribute: of 10000 hundredths the King took " + taken);
 		helper.assertTrue(taken == 3333 || taken == 3334, "the tribute of 100 emeralds: " + taken / 100.0 + " emeralds taken");
 		List<String> told = entity.chronicle().stream().filter(e -> e.kind() == Chronicle.Kind.STORY).map(e -> e.text().getString()).toList();
-		helper.assertTrue(told.contains("The Bandit King took 33 emeralds in tribute and left his fort a ruin."), "the chronicle: " + told);
+		// What the treasury lost, as it writes it (B866): 33.33 emeralds, not the whole 33.
+		helper.assertTrue(told.contains("The Bandit King took 33.33 emeralds in tribute and left his fort a ruin."), "the chronicle: " + told);
 		helper.succeed();
 	}
 

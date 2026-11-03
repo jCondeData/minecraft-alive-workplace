@@ -64,6 +64,12 @@ public class QaSurvivors1103cGameTests implements net.fabricmc.fabric.api.gamete
 		helper.assertTrue(level.getGameTime() > NEW_WORLD, "set-up: the test world is still in its first ticks: " + level.getGameTime());
 		DimensionDataStorage storage = level.getDataStorage();
 		CampBeds.Data before = CampBeds.Data.get(level);
+		// put the live list back on disk too, not just in memory: tests that save and reload it read the file
+		Leftovers.after(helper, () -> {
+			storage.set(CampBeds.Data.NAME, before);
+			before.setDirty();
+			storage.save();
+		});
 		forget(storage, CampBeds.Data.NAME); // as on a save from before the list: none in memory, none on disk
 		CampBeds.Data first = CampBeds.Data.get(level);
 		helper.assertTrue(first != before, "set-up: the list wasn't started afresh");

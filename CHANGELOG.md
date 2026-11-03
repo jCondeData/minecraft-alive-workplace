@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- The Village Hall's Free job blocks page no longer offers a block to a retired elder or a hired mercenary (the hall
+  would refuse them, then say "Someone took that workstation first"); an elder who retires while the page is open is
+  told "Bram has retired and takes no job now: they mentor the young instead." when picked, and the block stays free
+  (B892).
 - Sand or gravel that falls into a hut's rooms while it goes up (its support broken mid-build) is dug out into the
   Builder's chests before he calls the hut done, so a finished hut has no sand standing in it (B869).
 - A hired mercenary, a relief rider or Doctor Wren on the Village Hall's People table now shows their own job and

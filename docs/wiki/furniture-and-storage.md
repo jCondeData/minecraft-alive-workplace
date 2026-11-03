@@ -25,8 +25,9 @@ pieces it was built with whatever changes later, and a removed mod's pieces come
 
 Nothing yet for players: the expansion's gate stays closed until 2.1. Behind it, a build started on a server with
 Handcrafted gets Handcrafted chairs, tables and fancy beds where the vanilla build had stair chairs, fence tables and
-beds (37.3); the Blueprint Table's preview, its supply report and the material list book show those pieces and cost
-their items, and so does the builder's shopping list.
+beds (37.3); the Blueprint Table's preview and its "All materials" list, the held Blueprint's preview, the supply
+report, the material list book and the Steward desk's "Needs most:" counts show those pieces and cost their items, and
+so does the builder's shopping list. They follow the order and the switch as soon as either changes (B893, B901, B902).
 
 Any mod's piece will do (37.13): a spruce chair is a spruce chair whichever furniture mod made it. The material list
 book shows the piece once, "Spruce Chair (any furniture mod)", with each mod's piece on hover, and counts any of them
@@ -70,7 +71,8 @@ lectern, the Print Shop a printer's desk by the press and its buyers' counter, V
 seven chairs (none in front of its doorway), and the Kitchen crockery on the worktop (in place of its potted fern). With Handcrafted and Beautify those become
 Handcrafted counters, desks, chairs, benches, shelves and crockery and Beautify picture frames, rose trellises and
 hanging pots of vines. The Healing Center's and Schoolhouse's desks are CobbleFurnies' Poké Ball desks whenever
-CobbleFurnies is in the list (the owner's answer). No piece ever stands on a job block, a bed or a chest: the
+CobbleFurnies is in the list (the owner's answer), in every style too: a city zone's style or one picked at the Table
+swaps only the wood and stone (B903). No piece ever stands on a job block, a bed or a chest: the
 workplaces' beds (the Healing Center's ward, the shopkeeper's, the cook's) stay vanilla beds, and every job still finds
 its block and exactly its own chests and barrels, because the furniture mods' pieces that hold items (Handcrafted's
 counters, desks, shelves, drawers, cupboards, nightstands and side tables, Cozy Home's storage counters, CobbleFurnies'

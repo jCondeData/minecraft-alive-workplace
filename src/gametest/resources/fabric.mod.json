@@ -1143,6 +1143,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaReachGridEdge1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScaffoldMutants1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanRebuild1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDropBoxMixed1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildDelayChangeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTableEdges1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.RaidOfOneGameTests",

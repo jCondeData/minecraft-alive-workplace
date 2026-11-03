@@ -9,6 +9,8 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
+import io.github.jcondedata.aliveworkplace.build.BuildSite;
+import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.hall.HallPages;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
@@ -19,8 +21,10 @@ import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.wonder.Wonder;
 import io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints;
+import io.github.jcondedata.aliveworkplace.wonder.WonderManager;
 import io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem;
 import io.github.jcondedata.aliveworkplace.wonder.WonderPlans;
+import io.github.jcondedata.aliveworkplace.wonder.WonderSite;
 import io.github.jcondedata.aliveworkplace.wonder.Wonders;
 import io.github.jcondedata.aliveworkplace.wonder.WondersPage;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
@@ -160,6 +164,39 @@ public class QaWonders1101GameTests implements FabricGameTest {
 		return new BlueprintData.Placement(p.dimension(), p.origin().offset(dx, 0, dz), turn, mirror);
 	}
 
+	/**
+	 * Forgets every build in progress and every Wonder whose footprint shares a column with one of {@code boxes}, and
+	 * says which (its blueprint, its owner and its origin), so a recurrence names the leftover. Only for a test alone
+	 * in its batch.
+	 */
+	private static List<String> clearUnder(ServerLevel level, List<BoundingBox> boxes) {
+		List<String> out = new ArrayList<>();
+		ResourceLocation dimension = level.dimension().location();
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		for (BuildSite site : List.copyOf(sites.all())) {
+			if (!site.placement().dimension().equals(dimension)) {
+				continue;
+			}
+			Optional<BoundingBox> other = BlueprintLibrary.get(level, site.structure()).map(b -> BlueprintOutline.bounds(site.placement(), b.size()));
+			if (other.isPresent() && boxes.stream().anyMatch(b -> sharesColumn(b, other.get()))) {
+				out.add("site " + site.structure() + " of " + site.ownerName() + " at " + site.placement().origin().toShortString());
+				sites.remove(site.id());
+			}
+		}
+		WonderManager wonders = WonderManager.get(level);
+		for (BoundingBox box : boxes) {
+			for (Optional<WonderSite> w = WonderPlans.wonderOver(level, dimension, box); w.isPresent(); w = WonderPlans.wonderOver(level, dimension, box)) {
+				out.add("Wonder " + w.get().id() + " at " + w.get().placement().map(p -> p.origin().toShortString()).orElse("?"));
+				wonders.remove(w.get().id());
+			}
+		}
+		return out;
+	}
+
+	private static boolean sharesColumn(BoundingBox a, BoundingBox b) {
+		return a.minX() <= b.maxX() && a.maxX() >= b.minX() && a.minZ() <= b.maxZ() && a.maxZ() >= b.minZ();
+	}
+
 	/** Centred on the hall it goes down, in all four turns and mirrored; its centre past the hall's reach, it's refused. */
 	static void centredOnTheHall(GameTestHelper helper, String id) {
 		Leftovers.clear(helper);
@@ -175,6 +212,17 @@ public class QaWonders1101GameTests implements FabricGameTest {
 		helper.assertTrue(drawn.isPresent() && carried.isPresent(), id + ": the plan carries no Wonder (" + drawn + ") or no size (" + carried + ")");
 		WonderPlanItem.Plan plan = drawn.get();
 		Vec3i size = carried.get();
+		// B883: wonderGround forgets finished buildings and Wonder sites, but placeRefusal also refuses any build in
+		// progress (B748), and other tests' builders leave theirs in BuildSiteManager (saved data that outlives test
+		// areas): CI 3025/3027 refused the 97-wide Great Wall over a leftover Stone House site. Alone in its batch, so
+		// every site or Wonder under any of the eight footprints is another, finished test's; forget them
+		List<BoundingBox> boxes = new ArrayList<>();
+		for (Rotation turn : Rotation.values()) {
+			for (Mirror mirror : new Mirror[] {Mirror.NONE, Mirror.FRONT_BACK}) {
+				boxes.add(BlueprintOutline.bounds(centred(level, size, hall, turn, mirror, 0), size));
+			}
+		}
+		List<String> cleared = clearUnder(level, boxes);
 		List<String> wrong = new ArrayList<>();
 		for (Rotation turn : Rotation.values()) {
 			for (Mirror mirror : new Mirror[] {Mirror.NONE, Mirror.FRONT_BACK}) {
@@ -182,7 +230,10 @@ public class QaWonders1101GameTests implements FabricGameTest {
 				why.ifPresent(c -> wrong.add(turn + "/" + mirror + ": " + c.getString()));
 			}
 		}
-		helper.assertTrue(wrong.isEmpty(), id + " (" + size + ") centred on the hall is refused: " + wrong);
+		if (!wrong.isEmpty()) {
+			helper.fail(id + " (" + size + ") centred on the hall " + hall.toShortString() + " is refused: " + wrong
+				+ "; still under it: " + clearUnder(level, boxes) + "; forgotten before: " + cleared);
+		}
 		// its centre a few blocks past the hall's reach: refused, and the line says why in English
 		Optional<Component> far = WonderPlans.placeRefusal(level, plan, centred(level, size, hall, Rotation.NONE, Mirror.NONE, VillageHalls.RADIUS + 3), size);
 		helper.assertTrue(far.isPresent() && key(far.get()).equals("message.aliveworkplace.wonder_plan.outside")

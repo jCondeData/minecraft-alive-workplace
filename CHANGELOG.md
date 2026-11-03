@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Clicking an old chat [Yes] to a Builder's repair question after mending the hole by hand now says the build
+  has nothing missing any more, instead of promising a repair that never starts (B879).
 - Powder snow a Builder builds from a powder snow bucket gives him the empty bucket back, as water and lava
   buckets do, so a paid build no longer costs an iron bucket per block (B873).
 - A spot in a build's box that is filled again the moment the Builder digs it (sand dropped back, a cobblestone

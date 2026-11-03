@@ -507,6 +507,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLadderHeight1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeCaps1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeLadderBreach1103dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeLadderBreach1103dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderVerify1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderCalledOff1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavesAfterFixes1103eGameTests",

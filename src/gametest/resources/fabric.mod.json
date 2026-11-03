@@ -1191,7 +1191,8 @@
 			"io.github.jcondedata.aliveworkplace.test.DropBoxFitOrderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerFitVerify1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaColonyWordsVerify1103GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaHaulerPathsVerify1103GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaHaulerPathsVerify1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGolemPaths1103dGameTests"
 		]
 	},
 	"depends": {

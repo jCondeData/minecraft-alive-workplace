@@ -17,13 +17,15 @@ import net.minecraft.world.entity.monster.Husk;
  * Fails on the code of 2026-11-03; not registered until B856 is fixed.
  */
 public class QaRaidCallOff1103cBugTests implements FabricGameTest {
+	static final String AREA = QaRaidCallOff1103cGameTests.AREA;
+
 	/**
 	 * Two raided villages, halls 25 blocks apart on each axis. The first village's only raider falls; the second's stands
 	 * 4 blocks from its own hall (within the first's reach, but nearer its own). At the first village's next round its
 	 * raid ends as fought off (booked: 3 came, 3 fell, not fled); the second's goes on with its raider.
 	 */
 	//$ gametest_ticks_batch AREA '100' '"qaRaidRoundOwnRaiders1103c"'
-	@GameTest(template = QaRaidCallOff1103cGameTests.AREA, timeoutTicks = 100, batch = "qaRaidRoundOwnRaiders1103c")
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaRaidRoundOwnRaiders1103c")
 	public void aRaidedVillagesRoundEndsItsRaidWhenOnlyTheNeighboursRaidersAreLeft(GameTestHelper helper) {
 		BlockPos relA = new BlockPos(2, 2, 2);
 		BlockPos relB = new BlockPos(27, 2, 27);

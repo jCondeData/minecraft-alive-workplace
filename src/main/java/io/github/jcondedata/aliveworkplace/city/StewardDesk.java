@@ -958,7 +958,13 @@ public final class StewardDesk {
 		if (blueprint.isEmpty()) {
 			return List.of();
 		}
-		BuildPlan plan = BuildPlan.create(blueprint.get(), new BlueprintData.Placement(Ids.of(level.dimension()), BlockPos.ZERO, Rotation.NONE, Mirror.NONE));
+		// B902: the furniture this server builds there (37.3), so the counts are what the builder will ask for
+		BlueprintData.Placement at = proposal.placement();
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice choice = at != null && at.dimension().equals(Ids.of(level.dimension()))
+			? io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(proposal.blueprint(), level, at.origin())
+			: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(proposal.blueprint());
+		Blueprint furnished = choice.apply(blueprint.get(), proposal.blueprint());
+		BuildPlan plan = BuildPlan.create(furnished, new BlueprintData.Placement(Ids.of(level.dimension()), BlockPos.ZERO, Rotation.NONE, Mirror.NONE));
 		Map<Item, Integer> grouped = new LinkedHashMap<>();
 		plan.materials().forEach((item, n) -> grouped.merge(MaterialFamilies.key(item), n, Integer::sum));
 		List<BlockPos> chests = builderFor(level, hall, proposal)

@@ -175,7 +175,9 @@ public final class TableServer {
 	private record CachedStyles(Blueprint blueprint, List<TablePayloads.StyleChoice> styles) {
 	}
 	private static final Map<ResourceLocation, CachedStyles> STYLES = java.util.Collections.synchronizedMap(new HashMap<>());
-	private record CachedMaterials(Blueprint blueprint, java.util.BitSet jobsOn, List<TablePayloads.Material> materials, BuildJobs.Summary jobs) {
+	/** {@code furniture}: the pieces the materials were counted with (B893: kept only while this server would still build those). */
+	private record CachedMaterials(Blueprint blueprint, java.util.BitSet jobsOn, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture,
+								   List<TablePayloads.Material> materials, BuildJobs.Summary jobs) {
 	}
 	private static final Map<ResourceLocation, CachedMaterials> MATERIALS = java.util.Collections.synchronizedMap(
 		new java.util.LinkedHashMap<>(16, 0.75f, true) {
@@ -257,14 +259,18 @@ public final class TableServer {
 		return jobs;
 	}
 
-	/** A build's materials and its job blocks and beds (36.6a), worked out once per build. */
+	/**
+	 * A build's materials and its job blocks and beds (36.6a), worked out once per build and furniture choice. The
+	 * materials are the furnished build's (37.3, B893): the pieces this server would build now, as the builder asks for.
+	 */
 	private static CachedMaterials cachedMaterials(ResourceLocation id, Blueprint blueprint) {
 		java.util.BitSet on = jobsOn();
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(id);
 		CachedMaterials cached = MATERIALS.get(id);
-		if (cached != null && cached.blueprint() == blueprint && cached.jobsOn().equals(on)) {
+		if (cached != null && cached.blueprint() == blueprint && cached.jobsOn().equals(on) && cached.furniture().equals(furniture)) {
 			return cached;
 		}
-		cached = new CachedMaterials(blueprint, on, List.copyOf(materials(blueprint)), BuildJobs.of(blueprint));
+		cached = new CachedMaterials(blueprint, on, furniture, List.copyOf(materials(furniture.apply(blueprint, id))), BuildJobs.of(blueprint));
 		MATERIALS.put(id, cached);
 		return cached;
 	}
@@ -275,7 +281,8 @@ public final class TableServer {
 	public static final int PREVIEW_CAP = 4096;
 	private static final int PREVIEW_MAX_SCALE = 16;
 	private static final int PREVIEW_CACHE_SIZE = 48;
-	private record CachedPreview(Blueprint blueprint, TablePayloads.Preview preview) {
+	/** {@code furniture}: the pieces the preview draws (B901: kept only while this server would still build those). */
+	private record CachedPreview(Blueprint blueprint, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture, TablePayloads.Preview preview) {
 	}
 	private static final Map<ResourceLocation, CachedPreview> PREVIEWS = java.util.Collections.synchronizedMap(
 		new java.util.LinkedHashMap<>(16, 0.75f, true) {
@@ -305,12 +312,14 @@ public final class TableServer {
 		if (blueprint.isEmpty()) {
 			return Optional.empty();
 		}
+		// 37.3, B901: the furniture this server would build (as the held Blueprint's preview draws it)
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(id);
 		CachedPreview cached = PREVIEWS.get(id);
-		if (cached != null && cached.blueprint() == blueprint.get()) {
+		if (cached != null && cached.blueprint() == blueprint.get() && cached.furniture().equals(furniture)) {
 			return Optional.of(cached.preview());
 		}
-		TablePayloads.Preview preview = buildPreview(id, blueprint.get());
-		PREVIEWS.put(id, new CachedPreview(blueprint.get(), preview));
+		TablePayloads.Preview preview = buildPreview(id, furniture.apply(blueprint.get(), id));
+		PREVIEWS.put(id, new CachedPreview(blueprint.get(), furniture, preview));
 		return Optional.of(preview);
 	}
 

@@ -230,11 +230,12 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 
 	/**
 	 * Whether the desks of {@code blueprint} are Poké Ball desks (37.5): the Healing Center's and the Schoolhouse's, at
-	 * every level (our own blueprints only).
+	 * every level (our own blueprints only), in any style too (B903: a style swaps only the wood and stone).
 	 */
 	public static boolean hasPokeBallDesks(ResourceLocation blueprint) {
-		String path = blueprint.getPath();
-		return blueprint.getNamespace().equals(io.github.jcondedata.aliveworkplace.AliveWorkplace.MOD_ID)
+		ResourceLocation base = io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(blueprint);
+		String path = base.getPath();
+		return base.getNamespace().equals(io.github.jcondedata.aliveworkplace.AliveWorkplace.MOD_ID)
 			&& (path.matches("healing_center(_\\d+)?") || path.matches("schoolhouse(_\\d+)?"));
 	}
 

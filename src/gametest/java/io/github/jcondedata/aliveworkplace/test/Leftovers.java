@@ -72,10 +72,19 @@ final class Leftovers {
 	 * points of interest go a tick later, with the blocks. Only for tests alone in their batch.
 	 */
 	static void beds(GameTestHelper helper, net.minecraft.core.BlockPos hall) {
+		beds(helper, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+	}
+
+	/**
+	 * Removes every bed within {@code radius} of {@code centre} (absolute), as {@link #beds(GameTestHelper,
+	 * net.minecraft.core.BlockPos)} does for a hall: an Innkeeper counts free beds 32 blocks round its counter, past its
+	 * test's area, and a bed an earlier batch left there brought a traveler to an inn that had none (B871).
+	 */
+	static void beds(GameTestHelper helper, net.minecraft.core.BlockPos centre, int radius) {
 		net.minecraft.server.level.ServerLevel level = helper.getLevel();
 		java.util.List<net.minecraft.core.BlockPos> beds = level.getPoiManager().findAll(
-			h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), p -> true, hall,
-			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), p -> true, centre,
+			radius, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
 			.map(net.minecraft.core.BlockPos::immutable).toList();
 		for (net.minecraft.core.BlockPos bed : beds) {
 			level.removeBlock(bed, false); // its other half goes with it, as it can't stand alone

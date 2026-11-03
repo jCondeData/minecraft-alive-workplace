@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.test;
 
 import io.github.jcondedata.aliveworkplace.bard.BardWork;
+import io.github.jcondedata.aliveworkplace.camp.CampBeds;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.inn.Innkeepers;
@@ -372,15 +373,33 @@ public class QaServiceJobs1031GameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 500, batch = "qaInnNoBed")
 	public void noFreeBedNoTravelerAndItSaysSo(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos counter = helper.absolutePos(STATION);
+		// B871: the inn counts beds 32 blocks round its counter, past this area; a bed an earlier batch left there isn't this inn's
+		Leftovers.beds(helper, counter, Innkeepers.RADIUS);
 		helper.setDayTime(1500);
-		helper.setBlock(STATION, ModBlocks.SHOP_COUNTER);
-		Villager inn = picked(helper, StationsSpecGameTests.player(helper), STANDING, Items.RED_BED, ModVillagers.INNKEEPER);
-		helper.runAfterDelay(450, () -> {
-			helper.assertTrue(Innkeepers.guests(helper.getLevel(), helper.absolutePos(STATION)).isEmpty(), "a traveler came with no bed");
-			helper.assertTrue(line(inn, helper).equals("needs a free bed for guests"), "status: " + line(inn, helper));
-			helper.assertTrue(title(inn, helper).equals("Innkeeper · 0 guests hosted"), "title: " + title(inn, helper));
-			helper.succeed();
+		helper.runAfterDelay(1, () -> { // the beds' points of interest go with their blocks
+			List<BlockPos> seen = CampBeds.freeHomes(level, counter, Innkeepers.RADIUS);
+			helper.assertTrue(seen.isEmpty(), "setup: the innkeeper sees " + seen.size() + " free beds: " + shortly(seen));
+			helper.setBlock(STATION, ModBlocks.SHOP_COUNTER);
+			Villager inn = picked(helper, StationsSpecGameTests.player(helper), STANDING, Items.RED_BED, ModVillagers.INNKEEPER);
+			helper.runAfterDelay(450, () -> {
+				List<Villager> guests = Innkeepers.guests(level, counter);
+				List<BlockPos> free = CampBeds.freeHomes(level, counter, Innkeepers.RADIUS);
+				helper.assertTrue(guests.isEmpty(), "a traveler came with no bed: " + guests.stream().map(g -> g.getName().getString() + " "
+					+ g.getUUID().toString().substring(0, 8) + " at " + g.blockPosition().toShortString() + " took the bed at "
+					+ g.getBrain().getMemory(MemoryModuleType.HOME).map(h -> h.pos().toShortString()).orElse("<none>")).toList()
+					+ "; free beds the innkeeper sees now: " + free.size() + " " + shortly(free));
+				helper.assertTrue(line(inn, helper).equals("needs a free bed for guests"), "status: " + line(inn, helper));
+				helper.assertTrue(title(inn, helper).equals("Innkeeper · 0 guests hosted"), "title: " + title(inn, helper));
+				helper.succeed();
+			});
 		});
+	}
+
+	/** {@code beds} for a failure message (absolute: the message starts with the test's own position). */
+	private static List<String> shortly(List<BlockPos> beds) {
+		return beds.stream().map(BlockPos::toShortString).toList();
 	}
 
 	/** innkeeper.md: "Guests: one traveler a morning, two at a time"; "the inn is full". Two staying: no third. */

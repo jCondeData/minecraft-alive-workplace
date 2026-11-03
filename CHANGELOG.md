@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.5 — 2026-11-03
+
 ### Fixed
 
 - A village train keeps running after a player renames one of its two Train Stations with Create's station screen:

@@ -92,12 +92,13 @@ public class QaDropBoxRoom1103cGameTests implements net.fabricmc.fabric.api.game
 
 	// ---- B842: the Bandit King's tribute at the edges of "1 emerald" ----
 
-	/** The top of the singular: a treasury of 5.99 emeralds, a third is 1.99, and the line reads "1 emerald". */
+	/** The top of the singular: a treasury of 5.99 emeralds, a third is 1.99; since B866 the line gives the share as
+	 * taken, "1.99 emeralds" (it read "1 emerald" when this test was written, before B866). */
 	//$ gametest_ticks_batch HUGE '60' '"qaKingTribute1103Top"'
 	@GameTest(template = HUGE, timeoutTicks = 60, batch = "qaKingTribute1103Top")
 	public void qaATributeJustUnderTwoEmeraldsReadsInTheSingular(GameTestHelper helper) {
 		String line = QaKingTribute1102dBugTests.tribute(helper, 599);
-		helper.assertTrue(line.equals("The Bandit King took 1 emerald in tribute and left his fort a ruin."), "the tribute line at 5.99: " + line);
+		helper.assertTrue(line.equals("The Bandit King took 1.99 emeralds in tribute and left his fort a ruin."), "the tribute line at 5.99: " + line);
 		LOG.info("[QA 1103] B842: 5.99 emeralds in the treasury reads '{}'", line);
 		helper.succeed();
 	}

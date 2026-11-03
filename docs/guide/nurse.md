@@ -28,7 +28,9 @@ moves in by herself.
 ## What she does
 
 - **You.** Right-click her with an empty hand: your health comes back and bad effects are cleared. With Cobblemon your
-  whole team is healed too. Once a minute per player at Novice, less as she levels up. Sneak to trade instead.
+  whole team is healed too. Once a minute per player at Novice, less as she levels up. If she works at a Healing
+  Machine that is busy with another player's team, she treats nothing yet and your minute isn't used: ask again once
+  it's free. Sneak to trade instead.
 - **The sick.** Now and then a villager falls ill (see [Village life](village-life.md)): they sneeze, walk slowly and work
   at half pace. The nurse finds the ill within 32 blocks and cures them at once with a honey bottle, a bucket of milk or
   a potion of healing or regeneration from her chest. With none there, she asks for one on the Storehouse's requests

@@ -32,7 +32,7 @@ public class RoadWonderGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	private static final int FOLLY_SIZE = 9;
 
 	/** A street from x 2 to x 27 along z 8, routed now; its nodes in level coordinates. */
-	private static List<BlockPos> route(GameTestHelper helper, BlockPos hall) {
+	static List<BlockPos> route(GameTestHelper helper, BlockPos hall) {
 		VillageHallBlockEntity entity = QaRoadGameTests.hall(helper, hall);
 		entity.setPlan(CityPlan.EMPTY.addRoad(QaRoadGameTests.road(CityPlan.Road.STREET, "stonework",
 			QaRoadGameTests.p(helper, hall, 2, 8), QaRoadGameTests.p(helper, hall, 27, 8))));
@@ -46,7 +46,7 @@ public class RoadWonderGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	}
 
 	/** Lays the folly out over the street's line for {@code hall}; finished when asked. */
-	private static WonderSite folly(GameTestHelper helper, BlockPos hall, boolean finished) {
+	static WonderSite folly(GameTestHelper helper, BlockPos hall, boolean finished) {
 		ServerLevel level = helper.getLevel();
 		helper.assertTrue(Wonders.loaded().get(FOLLY) != null, "the test folly isn't loaded: " + Wonders.problems());
 		WonderManager manager = WonderManager.get(level);
@@ -64,7 +64,7 @@ public class RoadWonderGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	}
 
 	/** The street (3 wide) keeps off the folly's stage I footprint. */
-	private static void clearOf(GameTestHelper helper, List<BlockPos> nodes, String what) {
+	static void clearOf(GameTestHelper helper, List<BlockPos> nodes, String what) {
 		BlockPos o = helper.absolutePos(WONDER_ORIGIN);
 		BoundingBox box = new BoundingBox(o.getX(), o.getY(), o.getZ(), o.getX() + FOLLY_SIZE - 1, o.getY() + 6, o.getZ() + FOLLY_SIZE - 1);
 		for (BlockPos n : nodes) {
@@ -79,7 +79,7 @@ public class RoadWonderGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		}
 	}
 
-	private static void straight(GameTestHelper helper, List<BlockPos> nodes) {
+	static void straight(GameTestHelper helper, List<BlockPos> nodes) {
 		int z = helper.absolutePos(new BlockPos(0, 2, 8)).getZ();
 		helper.assertTrue(nodes.stream().allMatch(n -> n.getZ() == z), "with the Wonder forgotten the street still goes round its ground: " + nodes);
 	}

@@ -117,6 +117,10 @@ Roadmap items: 32.21, B134, B383, B704, B705, B767
   Peaceful work now.
 - Bandit King arcs and other story threats don't read the threat level.
 - At threat level 3 the fire, drought and plague chances are capped at 100% a day.
+- With two raided villages side by side, a hall's own round still counts every raider within its reach, the
+  neighbor's too (B856, open): one village's raiders leaving at dawn take the neighbor's desert raiders (hours until
+  noon) standing within its reach, and a raid whose own raiders are gone isn't fought off while the neighbor's stand
+  in its reach. `threat end` already follows the rule (B849).
 
 ## Proof
 
@@ -151,4 +155,11 @@ Roadmap items: 32.21, B134, B383, B704, B705, B767
 - `QaRisingsVerify1102dGameTests.aNeighbourVillagesCallOffLeavesTheOtherRaidsRaidersAndItGoesOn` (B849): `end` on one
   of two villages side by side sends its own raider away, not the neighbor's standing within its reach, and the
   neighbor's raid is still on after its round.
+- `QaRaidNeighbours1103dGameTests.aRaiderNearerAVillageWithNoRaidIsStillThisRaidsAndGoesWhenCalledOff` (QA, B849, the
+  rule's other side): a raider within this village's reach but nearer a village with no raid under way is this raid's,
+  and `end` sends it away.
+- `QaPeacefulLair1103dGameTests` (2, QA, B364): a plain camp taken by Peaceful is never told, chronicled, counted or
+  rewarded as broken up (it "packed up and left the village in peace" once, the leave message once, no
+  `village/camp_broken` advancement, no rest days); a chief a player only wounded before Peaceful took him is no kill
+  of that player's.
 - Showcase scenes: `at_peace`.

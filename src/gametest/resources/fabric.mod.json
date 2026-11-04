@@ -377,6 +377,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CurfewGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ConscriptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConscription1104dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConscriptionBugs1104dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WorkHornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",

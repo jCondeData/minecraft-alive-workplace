@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A conscript on a wall, tower or cliff fights a raider at its foot up to 24 blocks away, as the edict says (he
+  only looked 8 blocks up and down before), and one with no way down lets that raider be after a few seconds instead
+  of standing stuck at the edge (B926).
 - Many things read in the plural after a count: a crafter "short of 2 Jungle Logs" (and Cherry Logs, Crimson and Warped
   Stems, Sticks, Nuggets, Ingots, Clay Balls, Feathers, Diamonds, Bricks, Eggs, Buckets and more, B920), a Wonder's
   Foundation Stone "2 Lanterns, 2 still to bring", as the Steward's list says it (B921), and a Chef "cooking 4 Cooked

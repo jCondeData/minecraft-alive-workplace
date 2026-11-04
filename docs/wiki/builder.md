@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880
 
 ## 1. What a player sees
 
@@ -178,7 +178,8 @@ Builders (`MAX_HELPERS`; Guilds can change this) help one site, each claiming st
 asked that time shrink with each Builder: tested at 2 builders = 50%, 4 = 29% of the time alone (ROADMAP 23.1a).
 
 **Who may order.** With `workplaceBuilderOwnership` on, a Builder takes orders only from the player who hired it,
-their friends (`/workplace friend add|remove|list`) and operators.
+their friends (`/workplace friend add|remove|list`) and operators. That includes orders from the Village Hall: the
+Upgrades page and a house's new outside look go only to a Builder the clicking player may command (B880).
 
 **Upkeep and paths.** An idle Builder looks over buildings it (or its employer) finished anywhere in the village his
 table stands in, or outside it within `maxSiteDistance` (36.20), every 1200 ticks, and fills only the holes with its usual materials; things players put there

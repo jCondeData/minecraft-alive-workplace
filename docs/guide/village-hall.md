@@ -127,7 +127,8 @@ the next, where it is, what the next level costs in blocks, and whether there's 
 your Builder goes and builds the next level right over the old one. Grass, dirt, stone, trees, snow or water in the
 way don't matter: the Builder clears them as part of the job. A wall, a fence, a path, a chest or another building does,
 and the page tells you what's in the way and its exact spot, so you can move it and try again. The villagers who live
-in the house keep their beds the whole time.
+in the house keep their beds the whole time. If Builder ownership is on, only a Builder you hired (or a friend's) takes
+the order: another player's Builder won't, and the page tells you whose it is.
 
 ![The Upgrades page](https://jcondedata.github.io/minecraft-alive-workplace/hall_upgrade/still-1.jpg)
 

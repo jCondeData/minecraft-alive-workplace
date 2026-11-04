@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- With Builder ownership on, the Village Hall's Upgrades page and a house's new outside look no longer hand the order to a Builder another player hired; the page says whose Builder it is and how to be added as a friend (B880).
+
 ## 0.151.5 — 2026-11-03
 
 ### Fixed

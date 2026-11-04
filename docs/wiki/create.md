@@ -586,6 +586,11 @@ deployer can place blocks in and rename the hall of a protected village (B844).
 - `QaContraptionLines1104eCompatTests` (QA, with Create, 39.5's lines): "its 1 moving part turns", two stuck parts
   both named, four named with no "more", five reading four and "and 1 more", eleven "and 7 more", a part gone from its
   spot "a missing part at x y z", and the Mechanic whose toolbox is in reach named as the one who checked.
+- `QaCreateZombified1104e2CompatTests` (QA, with Create, B928 kin): a farmer killed by a zombie on Hard mid machine
+  trip (a zombie villager now, no death loot) leaves his 12 wheat where he fell, and the zombie villager carries
+  neither the wheat nor the trip; cured, he is a farmer again with no trip and no second load. A Mechanic killed by a
+  zombie with the store's cogwheel in hand loses it, and a train driver turned by a zombie stops the train as B962's
+  do: those tests wait on `tests/mechanic-struck-1104`.
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is

@@ -147,6 +147,14 @@ public class QaEconomy1103cGameTests implements FabricGameTest {
 			});
 		helper.setBlock(helper.relativePos(hall).offset(4, 0, 0), ModBlocks.STOREHOUSE);
 		helper.setBlock(helper.relativePos(hall).offset(4, 0, 2), Blocks.CHEST);
+		// The Storehouse's reach goes past the area too: a chest an earlier batch left just outside it would be counted as
+		// a second Storehouse chest (failed 1 of 10 in the nightly repeats, 2026-11-04), so only ours stays.
+		BlockPos ours = helper.absolutePos(helper.relativePos(hall).offset(4, 0, 2));
+		Caravans.storehouse(land.level(), hall).stream().filter(p -> !p.equals(ours))
+			.forEach(p -> {
+				if (land.level().getBlockEntity(p) instanceof Container c) c.clearContent(); // nothing spilled into the next test
+				land.level().setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
+			});
 		helper.assertTrue(Feuds.declare(land.level(), land.hall(0), land.hall(1), land.owner()).ok(), "couldn't declare the feud");
 		ServerPlayer neutral = RealmGameTests.listener(helper, new ArrayList<>(), "passer-by");
 		return new Feud(land, hall, land.owner(), neutral);

@@ -588,7 +588,7 @@ Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, whi
 
 37.6 (no mods): `FurnitureSeatsGameTests.theSeatsTagLoadsWithoutTheFurnitureMods`; with Handcrafted (compat):
 `FurnitureSeatsCompatTests.aVillagerSitsOnAHandcraftedChairAtSupperAndGetsUpAtDawn`,
-`FurnitureSeatsCompatTests.aSeatInUseIsntTakenTwice`, `FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt` (B945), `FurnitureSeatsCompatTests.aVillagerStandsUpWhenHurtAndNobodySitsWithTheSwitchOff`,
+`FurnitureSeatsCompatTests.aSeatInUseIsntTakenTwice`, `FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt` (B945), `QaSeatGiveUp1104cCompatTests` (3, QA, B945: after giving up he still sits on a farther open chair, sits on the same chair once the minute is over and it can be reached, and the chair stays free for a villager arriving during the minute), `FurnitureSeatsCompatTests.aVillagerStandsUpWhenHurtAndNobodySitsWithTheSwitchOff`,
 `FurnitureSeatsCompatTests.aSeatLoadedFromASaveLetsItsVillagerGo`,
 `FurnitureSeatsCompatTests.aVillagerClaimsAndSleepsInAFancyBedAndTheHouseIsTheirHome` (the fancy bed is a villager home
 point of interest, the villager claims and sleeps in it, the Starter Cottage it stands in is their home, and its chair

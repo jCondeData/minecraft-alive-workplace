@@ -12,6 +12,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Job chains](crafter.md): every crafting job makes the builders' parts through whole recipe chains of its own kind, and the builder says what nobody can make (37.14a, which retired the Crafter).
 - [Blueprint library](blueprint-library.md): the Blueprint Table as a collection each village unlocks (26.10).
 - [Workplace looks](workplace-looks.md): the twelve workplaces, each its own building (26.11).
+- [Textures and item icons](textures.md): every texture drawn from a recipe in vanilla's style, and the item icons the owner picked (21.1, 21.1b).
 - [More decorations](more-decorations.md): fourteen small decorations that aren't houses, from a market cross to a footbridge (26.14).
 - [Basements and cellars](basements.md): the Level 4s with a basement dug under them, and the cellars from Level 1: the Butcher's freezer, the Smith's coal store, the Cook's larder, the Storehouse's vault (26.15).
 - [Cellars for the Level IIs and for old builds](cellars.md): eight Level IIIs, each its Level II with a cellar dug under it, and "Dig the cellar" for a Smithy, Storehouse or Kitchen built before it had one (36.7).

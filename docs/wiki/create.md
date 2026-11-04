@@ -32,7 +32,8 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   **chef** pours water into the basin under a mechanical mixer, adds wheat flour and takes out dough; the **miner**
   drops raw iron, copper or gold between two crushing wheels and gathers the crushed ore that falls out below. A
   machine is only fed while it turns ("the Millstone isn't turning" shows over the worker otherwise), and nothing is
-  fed once the chest holds enough of what it makes (64 flour, sheets or crushed ore, 32 dough) or has no room for it
+  fed once the chest holds enough of what it makes (64 flour, sheets or crushed ore, 32 dough; counted over every stack,
+  so 64 means 64 in all and 63 still gets a batch) or has no room for it
   ("the store is full: the Millstone waits"); a chest with a part stack of flour has room even when no slot is empty
   (B820). A trip is short, and the job's own work picks up again after it. The
   Mechanic's round now covers the press, the mixer and the crushing wheels too. Only the village's own machines and

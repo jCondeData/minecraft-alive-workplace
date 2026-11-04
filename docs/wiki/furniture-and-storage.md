@@ -512,6 +512,9 @@ the switch off and switched on mid-build stays vanilla);
 QA's `QaBuildViews1103gGameTests` (2: with the switch off or no installed mod in the order, the Table's preview and
 materials and the Steward desk's needs are the vanilla build's; the held Blueprint's preview draws what a new site of
 it builds, as drawn and in Dark Oak);
+QA's `QaTableFurnished1104GameTests` (3, B893, B901: the Table's preview follows the order and the switch back and forth
+on one running server, never a preview cached a step before; with a mod first, the Table's "All materials" list is item
+for item the list of the site a builder gets for that blueprint, as drawn and in Dark Oak);
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.

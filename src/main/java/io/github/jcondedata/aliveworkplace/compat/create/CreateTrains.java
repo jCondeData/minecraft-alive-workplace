@@ -198,6 +198,25 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		return station;
 	}
 
+	/**
+	 * The station at {@code pos}: from its block entity while its chunk is loaded (never loading it), else from Create's
+	 * railway, which keeps the station (its name too) with the chunk unloaded (B912).
+	 */
+	@Nullable
+	private GlobalStation known(ServerLevel level, @Nullable TrackGraph graph, BlockPos pos) {
+		if (level.isLoaded(pos)) {
+			return station(level, pos);
+		}
+		if (graph != null) {
+			for (GlobalStation s : graph.getPoints(EdgePointType.STATION)) {
+				if (pos.equals(s.getBlockEntityPos()) && level.dimension().equals(s.getBlockEntityDimension())) {
+					return s;
+				}
+			}
+		}
+		return null;
+	}
+
 	@Nullable
 	private static TrackGraph graphOf(GlobalStation station) {
 		for (TrackGraph graph : Create.RAILWAYS.trackNetworks.values()) {
@@ -320,6 +339,14 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			return null;
 		}
 		be.exitAssemblyMode();
+		// B913: Create's assembly keeps the carriages (the conductor with them) put away until the railway's next tick takes
+		// them out, and only then counts the conductor; a village that unloads first (the player walking off) would leave
+		// the train without conductors, standing there till he came back. Taken out and counted now, while it's loaded:
+		// Create keeps that count while the carriages are put away (unloaded), so the train runs on
+		for (Carriage carriage : train.carriages) {
+			carriage.manageEntities(level);
+			carriage.updateConductors();
+		}
 		train.name = Component.translatable("train.aliveworkplace.caravan", home.name, away.name);
 		train.runtime.setSchedule(schedule(away.name, home.name), false);
 		AliveWorkplace.LOG.info("Alive Workplace: the village train {} runs between {} and {}", train.id, home.name, away.name);
@@ -364,12 +391,14 @@ public final class CreateTrains implements CaravanTrains.Railway {
 	@Override
 	public void follow(ServerLevel level, UUID owner, BlockPos therePos, BlockPos homePos) {
 		Train train = train(owner);
-		if (train == null || train.graph == null || !level.isLoaded(therePos) || !level.isLoaded(homePos)) {
+		if (train == null || train.graph == null) {
 			return;
 		}
 		Schedule schedule = train.runtime.getSchedule();
-		GlobalStation there = station(level, therePos);
-		GlobalStation home = station(level, homePos);
+		// B912: an end whose village isn't loaded (partners are up to 2048 blocks apart) is read from Create's railway,
+		// which keeps every station's name, so a station renamed there is followed from the other village
+		GlobalStation there = known(level, train.graph, therePos);
+		GlobalStation home = known(level, train.graph, homePos);
 		if (schedule == null || schedule.entries.size() != 2 || there == null || home == null) {
 			return; // not the schedule the village gave it (a player's own, or none): left alone
 		}

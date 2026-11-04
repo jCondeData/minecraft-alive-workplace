@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.threat;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 
@@ -13,8 +14,9 @@ import net.minecraft.world.level.saveddata.SavedData;
 public final class RainLedger extends SavedData {
 	public static final String NAME = "aliveworkplace_rain";
 	private static final String LAST_RAIN = "last_rain_day";
-	private boolean known;
-	private long lastRain;
+	/** No rain day known yet (an old save, a new world). */
+	private static final long UNKNOWN = Long.MIN_VALUE;
+	private long lastRain = UNKNOWN;
 
 	public static RainLedger get(ServerLevel level) {
 		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(RainLedger::new, RainLedger::load, null), NAME);
@@ -25,15 +27,14 @@ public final class RainLedger extends SavedData {
 	 * back) starts the count from today.
 	 */
 	public long dryDays(long today) {
-		if (!known || lastRain > today) {
+		if (lastRain == UNKNOWN || lastRain > today) {
 			rainedOn(today);
 		}
 		return today - lastRain;
 	}
 
 	public void rainedOn(long day) {
-		if (!known || lastRain != day) {
-			known = true;
+		if (lastRain != day) {
 			lastRain = day;
 			setDirty();
 		}
@@ -41,7 +42,7 @@ public final class RainLedger extends SavedData {
 
 	@Override
 	public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
-		if (known) {
+		if (lastRain != UNKNOWN) {
 			tag.putLong(LAST_RAIN, lastRain);
 		}
 		return tag;
@@ -49,8 +50,7 @@ public final class RainLedger extends SavedData {
 
 	public static RainLedger load(CompoundTag tag, HolderLookup.Provider registries) {
 		RainLedger ledger = new RainLedger();
-		if (tag.contains(LAST_RAIN)) {
-			ledger.known = true;
+		if (Nbt.has(tag, LAST_RAIN, Tag.TAG_ANY_NUMERIC)) {
 			ledger.lastRain = Nbt.getLong(tag, LAST_RAIN);
 		}
 		return ledger;

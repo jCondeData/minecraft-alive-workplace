@@ -20,8 +20,8 @@ Each mod at a glance (every one optional; the player guide's page is `docs/guide
 | Sophisticated Storage | Its chests and barrels are stores (always); the board's room line; a controller is one store for what it links | `moddedStorageNetworks` (the controller) | Vanilla chests only; off, each linked block is its own store |
 | Tom's Simple Storage | An inventory connector in the Storehouse is one store for its network; its terminal shows the village's goods | `moddedStorageNetworks` | Off, each chest on the network is its own store |
 
-With none of them installed, or `furnishedBuilds` off, every build is exactly the vanilla build; a building keeps the
-pieces it was built with whatever changes later, and a removed mod's pieces come back as vanilla pieces under upkeep.
+With none of them installed, or `furnishedBuilds` off, every build is exactly the vanilla build; a building, and a build
+already going up (over a restart too), keeps the pieces it began with whatever changes later, and a removed mod's pieces come back as vanilla pieces under upkeep.
 
 Nothing yet for players: the expansion's gate stays closed until 2.1. Behind it, a build started on a server with
 Handcrafted gets Handcrafted chairs, tables and fancy beds where the vanilla build had stair chairs, fence tables and
@@ -512,6 +512,13 @@ the switch off and switched on mid-build stays vanilla);
 QA's `QaBuildViews1103gGameTests` (2: with the switch off or no installed mod in the order, the Table's preview and
 materials and the Steward desk's needs are the vanilla build's; the held Blueprint's preview draws what a new site of
 it builds, as drawn and in Dark Oak);
+QA's `QaFurnishedViews1104cGameTests` (9, B893, B901, B902, B903: for every furnished build, and the cottage and the
+Healing Center in every style, the Table's list and preview and the desk's needs are exactly what a new builder's site
+plans; the switch turned off and on again and the order changed between two Table opens never leave a stale list,
+preview or count; a mod in the order that isn't installed is passed over; a build going up keeps its pieces after the
+order changes and over a save and reload while a new one follows the new order; every level of the Healing Center and
+Schoolhouse, in every style and a village-color style, has the Poké Ball desks and is furnished on the same spots as
+drawn);
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.

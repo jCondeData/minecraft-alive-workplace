@@ -22,8 +22,9 @@ five days, and the first rain ends it.
 
 ## What a drought does
 
-Around the Village Hall the crops, melon and pumpkin stems and berry bushes grow at a quarter of their usual pace. The
-farmland dries out, even next to water, the cauldrons lose a level of water every day, and the villagers grumble that
+Around the Village Hall the crops (pitcher crops too), melon and pumpkin stems and berry bushes grow at a quarter of
+their usual pace. The farmland dries out, even next to water, and a pond won't wet it again until the drought is over,
+the cauldrons lose a level of water every day, and the villagers grumble that
 "the wells are low". Build the village a **Well** or a **Fountain** and they stop worrying about the wells.
 
 ![The dry fields and the Well Keeper's buckets](https://jcondedata.github.io/minecraft-alive-workplace/drought/still-2.jpg)

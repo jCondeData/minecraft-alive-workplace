@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.animal.horse.Llama;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -65,10 +67,18 @@ public final class Cavalry {
 			&& !(horse instanceof Llama);
 	}
 
-	/** The free horse within {@link #HORSE_RANGE} of their post: a Beastmaster's bred horse first (29.20), then the nearest; or null. */
+	/**
+	 * The free horse within {@link #HORSE_RANGE} of their post (measured across the ground from the post's middle to
+	 * where the horse stands, and no more than 8 up or down): a Beastmaster's bred horse first (29.20), then the
+	 * nearest; or null.
+	 */
 	@Nullable
 	public static AbstractHorse freeHorse(ServerLevel level, Villager villager, BlockPos post) {
-		return level.getEntitiesOfClass(AbstractHorse.class, new AABB(post).inflate(HORSE_RANGE, 8, HORSE_RANGE), Cavalry::usable).stream()
+		Vec3 middle = Vec3.atBottomCenterOf(post);
+		double reach = (double) HORSE_RANGE * HORSE_RANGE;
+		return level.getEntitiesOfClass(AbstractHorse.class, new AABB(post).inflate(HORSE_RANGE, 8, HORSE_RANGE),
+				h -> usable(h) && Math.abs(h.getY() - middle.y) <= 8
+					&& Mth.square(h.getX() - middle.x) + Mth.square(h.getZ() - middle.z) <= reach).stream()
 			.min(Comparator.comparing((AbstractHorse h) -> !io.github.jcondedata.aliveworkplace.legend.Beastmaster.bred(h))
 				.thenComparingDouble(villager::distanceToSqr))
 			.orElse(null);

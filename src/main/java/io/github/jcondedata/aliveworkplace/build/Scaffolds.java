@@ -250,13 +250,14 @@ public final class Scaffolds {
 					List<BlockPos> cells = new ArrayList<>();
 					BlockPos cell = p.below();
 					boolean based = false;
-					while (cells.size() < MAX_HEIGHT && cell.getY() >= level.getMinBuildHeight()) {
+					// Up to MAX_HEIGHT scaffolds: the block under the last one is looked at too (B929).
+					while (cell.getY() >= level.getMinBuildHeight()) {
 						BlockState there = level.getBlockState(cell);
 						if (there.is(Blocks.SCAFFOLDING) || there.isFaceSturdy(level, cell, Direction.UP)) {
 							based = true;
 							break;
 						}
-						if (!free(level, plan, cell)) {
+						if (cells.size() >= MAX_HEIGHT || !free(level, plan, cell)) {
 							break;
 						}
 						cells.add(0, cell);

@@ -18,6 +18,18 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- In a drought, farmland next to water now stays dry like the rest of the fields instead of soaking up the pond
+  again, so those fields need the Well Keeper's buckets too (B946).
+- Pitcher crops now grow at a quarter pace in a drought, like the other crops (B947).
+- The days without rain are now saved with the world, so restarting the server no longer resets the count and keeps
+  droughts away (B948).
+- A guard no longer rides off on a horse standing 25 blocks from their Guard Post: only a horse within 24 blocks of
+  the post, as the guide says, is theirs (B950).
+- A Builder now puts up scaffolding for a block that needs a column of exactly 32 scaffolds instead of skipping it
+  (B929).
+- A Builder digging a basement or a cellar next to water or lava in the earth (an aquifer, a buried pond, a lava
+  pocket) plugs it with dirt as he digs, so it no longer runs into the pit: he no longer gets stuck in the water for
+  good or burns to death in the lava, and the basement is finished dry (B923, B924).
 - A blueprint whose top pokes over the world's build limit (or whose basement reaches under the world's bottom) no
   longer eats the materials of the blocks that can't stand there and then waits for more for ever: the builder skips
   those blocks without taking anything, builds the rest and finishes, and the hand-over warns that they will be left

@@ -1189,6 +1189,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderStages1103bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B868GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderRestartClear1103bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderDigOut1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefilledSpots1103eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTableEdges1102GameTests",
@@ -1246,6 +1247,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallMidActivity1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallFixes1103cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallMidActivity1103cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallStory1103cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaEconomy1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallStory1103cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.JobItemVisitorGameTests"
 		]

@@ -204,9 +204,8 @@ None.
   `WarningGameTests`, `LighthousePowerGameTests`, `LegendGuestsGameTests`.
 - B133 (QA, lane D): `QaLaneD1104GameTests` (2: a Seer's village isn't told of an attack three days off, is told the
   next dawn, two days off, once, in the Seer's words, and the Defense page counts it down from "Attack in 2 days" to
-  "Attack tonight"; a Seer who is gone tells nothing and the page reads "No lookout"), and
-  `QaLaneD1104BugTests.qaB133TheDefensePageDoesNotPutTheSeerOnATower` (not registered: with only a Seer, the page's
-  idle line says they keep watch from a tower and see a day ahead).
+  "Attack tonight"; a Seer who is gone tells nothing and the page reads "No lookout"); with only a Seer, the page's
+  idle line still says they keep watch from a tower and see a day ahead (B919).
 - B856: `QaRisingsVerify1102dGameTests.aVillagesRoundEndsItsRaidOnceItsOwnRaidersAreGoneThoughANeighboursAreNear`
   (two desert raids 25 blocks apart; the first's raider killed, its round ends its raid though the second's raider
   stands within its reach; the second's raid goes on) and `aVillagesRaidersLeavingAtTheirHourLeaveANeighboursRaiderBehind`

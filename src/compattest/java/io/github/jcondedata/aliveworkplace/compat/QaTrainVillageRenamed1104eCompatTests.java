@@ -44,6 +44,16 @@ public class QaTrainVillageRenamed1104eCompatTests implements FabricGameTest {
 	private static void ride(GameTestHelper helper, java.util.function.Function<QaTrainSameNames1103eCompatTests.Four, BlockPos> renamed, String to) {
 		ServerLevel level = helper.getLevel();
 		QaTrainSameNames1103eCompatTests.Four v = QaTrainSameNames1103eCompatTests.villages(helper, "Elmwood");
+		// as QaTrainHub1103eCompatTests.villages: a Storehouse an earlier batch left outside this area, within a hall's
+		// reach, would take the goods that come in (Caravans.storehouse), and the chests here would be short
+		net.minecraft.world.phys.AABB area = helper.getBounds();
+		for (BlockPos hall : v.halls()) {
+			for (BlockPos store : level.getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI),
+					p -> !area.contains(net.minecraft.world.phys.Vec3.atCenterOf(p)), hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS,
+					net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+				level.removeBlock(store, false);
+			}
+		}
 		CreateTrainCompatTests.conductor(helper, new BlockPos(6, 2, 16));
 		CreateTrainCompatTests.conductor(helper, new BlockPos(23, 2, 16));
 		UUID train = CaravanTrains.railwayId(v.pine(), v.far());
@@ -100,7 +110,8 @@ public class QaTrainVillageRenamed1104eCompatTests implements FabricGameTest {
 						for (BlockPos h : v.halls()) {
 							logs += ((Container) level.getBlockEntity(h.east(3).north(2))).countItem(Items.OAK_LOG);
 						}
-						helper.assertTrue(logs == 64, "logs were lost or doubled on the way: " + logs + " of 64 in the four chests");
+						helper.assertTrue(logs == 64, "logs were lost or doubled on the way: " + logs + " of 64 in the four chests; the far village's storehouse chests "
+							+ Caravans.storehouse(level, v.far()));
 						QaTrainSameNames1103eCompatTests.tidy(level, v, train);
 						helper.succeed();
 					} else if (tick[0] - since[0] > 2600) {

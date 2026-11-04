@@ -708,6 +708,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 	 * puff, and the village's cooldown starts. Placed builds stay.
 	 */
 	static void end(ServerLevel level, BlockPos hall, Stories.Entry e, ArcState s, @Nullable String how) {
+		ReformStories.arcEnds(level, hall, s); // B917: a reform story's half-done step is kept
 		takeDown(level, e, s, true);
 		ArcEffects.dismiss(level, s);
 		ProfessorsThesis.dismissThessaly(level, s); // (B663) stopped or switched off, not only published

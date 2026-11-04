@@ -3,7 +3,7 @@
 Laws a village's owner proclaims at the Village Hall. Each gives the village a boost at a cost, and each has a reform
 that takes the cost away for good. Part of 1.4 (Edicts and civic items): switched on in 1.0 with every other expansion.
 
-Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327, B744, B772, B797
+Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327, B744, B772, B797, B917
 
 ## What a player sees
 
@@ -73,7 +73,9 @@ counts and pay, one a day; the villagers talk about it and the chronicle tells e
 
 Reform stories are `side` arcs: they run beside another story and don't count against `arcsAtOnce` or the cooldown.
 While one runs, its M30 step stays off the quest page. With `storyArcs` off, or when nobody of the trade lives there to
-ask, the steps go up on the quest page as before, and progress made either way carries over.
+ask, the steps go up on the quest page as before, and progress made either way carries over, a half-done step too:
+with 10 of a step's 24 clocks handed in, switching the story off or on (or listing it in `disabledArcs`) leaves the step
+asking only the 14 left.
 
 **Curfew** overrules the villagers' schedule from dusk (tick 12000) to dawn for everyone but guards and
 mercenaries, and a monster can't hurt a villager asleep in bed. **Conscription** gives each conscript a stone sword

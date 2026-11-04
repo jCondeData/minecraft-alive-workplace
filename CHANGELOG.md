@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Items handed in on half a reform step still count when the reform's story is switched off or on: 10 of the Shift
+  Bell's 24 clocks given to the story leave the quest page's step asking only the 14 left, and the other way round
+  (B917).
 - A raider on its way to follow the others up a siege ladder turns for the gate as soon as the gate is broken open,
   instead of walking on to the ladder and climbing the wall anyway (B907).
 - Sneak-clicking a hired mercenary, relief rider or Doctor Wren with a job's item says "Mercenary's job can't be

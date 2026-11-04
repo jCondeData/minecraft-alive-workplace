@@ -145,15 +145,22 @@ public final class Reforms {
 
 	/**
 	 * A village's progress on one edict's reform, saved on the hall: the edict's id, the steps done, whether it is
-	 * reformed, and the day ({@link Chronicle#day}) its next step may go up.
+	 * reformed, the day ({@link Chronicle#day}) its next step may go up, and (B917) how much of step {@code step} was
+	 * already handed in the other way (on M30's quest or the story's), carried over when the story is switched on or off.
 	 */
-	public record Progress(String id, int step, boolean reformed, long nextDay) {
+	public record Progress(String id, int step, boolean reformed, long nextDay, int handed) {
 		public static final Codec<Progress> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Codec.STRING.fieldOf("id").forGetter(Progress::id),
 			Codec.INT.optionalFieldOf("step", 0).forGetter(Progress::step),
 			Codec.BOOL.optionalFieldOf("reformed", false).forGetter(Progress::reformed),
-			Codec.LONG.optionalFieldOf("nextDay", 0L).forGetter(Progress::nextDay)
+			Codec.LONG.optionalFieldOf("nextDay", 0L).forGetter(Progress::nextDay),
+			Codec.INT.optionalFieldOf("handed", 0).forGetter(Progress::handed)
 		).apply(i, Progress::new));
+
+		/** Progress with nothing of the current step handed in yet. */
+		public Progress(String id, int step, boolean reformed, long nextDay) {
+			this(id, step, reformed, nextDay, 0);
+		}
 	}
 
 	/** Fireworks over the hall when an edict is reformed. */
@@ -174,6 +181,23 @@ public final class Reforms {
 		all.removeIf(p -> p.id().equals(progress.id()));
 		all.add(progress);
 		entity.setReforms(all);
+	}
+
+	/**
+	 * B917: {@code n} of the edict {@code id}'s step {@code step} were handed in one way (M30's quest or the story's);
+	 * kept so the other way asks only the rest. Ignored for any other step, or once reformed; never goes back.
+	 */
+	public static void carry(VillageHallBlockEntity entity, String id, int step, int n) {
+		Progress progress = progress(entity, id);
+		if (!progress.reformed() && progress.step() == step && n > progress.handed()) {
+			save(entity, new Progress(id, step, false, progress.nextDay(), n));
+		}
+	}
+
+	/** B917: how much of the edict {@code id}'s step {@code step} was handed in already (see {@link #carry}). */
+	public static int handed(VillageHallBlockEntity entity, String id, int step) {
+		Progress progress = progress(entity, id);
+		return progress.reformed() || progress.step() != step ? 0 : progress.handed();
 	}
 
 	/** The reform of the edict {@code id}, if its file has one. */
@@ -241,9 +265,13 @@ public final class Reforms {
 			}
 			int step = progress.step();
 			if (io.github.jcondedata.aliveworkplace.story.ReformStories.told(level, hall, f.id(), reform.get())) { // 31.22: the story runs the steps
+				for (VillageQuests.Quest q : quests) { // B917: what was handed in on M30's step counts on the story's
+					q.reform().filter(r -> r.edict().equals(f.id())).ifPresent(r -> carry(entity, f.id(), r.step(), q.progress()));
+				}
 				changed |= quests.removeIf(q -> q.reform().map(r -> r.edict().equals(f.id())).orElse(false));
 				continue;
 			}
+			io.github.jcondedata.aliveworkplace.story.ReformStories.keep(level, hall, entity, f.id(), step); // B917: a story's half-done step
 			changed |= quests.removeIf(q -> q.reform().map(r -> r.edict().equals(f.id()) && r.step() != step).orElse(false));
 			if (quests.stream().anyMatch(q -> q.reform().map(r -> r.edict().equals(f.id())).orElse(false)) || today < progress.nextDay()) {
 				continue;
@@ -253,7 +281,8 @@ public final class Reforms {
 			}
 			Step s = reform.get().steps().get(step).resolve(battles, Foes.slayable(level));
 			int reward = Math.round(s.reward() * VillageRanks.questRewardFactor(entity.rank()));
-			VillageQuests.Quest quest = new VillageQuests.Quest(UUID.randomUUID(), s.kind(), s.item(), s.count(), 0, reward, level.getGameTime(), "",
+			int handed = Math.max(0, Math.min(handed(entity, f.id(), step), s.count() - 1)); // B917: never done before a hand-in
+			VillageQuests.Quest quest = new VillageQuests.Quest(UUID.randomUUID(), s.kind(), s.item(), s.count(), handed, reward, level.getGameTime(), "",
 				Optional.empty(), Optional.of(new VillageQuests.ReformStep(f.id(), step)));
 			quests.add(quest);
 			changed = true;

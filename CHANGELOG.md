@@ -16,8 +16,16 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.6 — 2026-11-04
+
 ### Fixed
 
+- A villager without a bed who is already upstairs in the wrong bedroom of a Terrace at bedtime (both its beds someone else's) now goes down his ladder, takes a free bed in the home next door and sleeps in it, instead of standing about the bedroom all night.
+- In a siege, a raider walking to a ladder that is only a step or two from its foot when the gate is broken open now turns and goes in by the gate, as the others do, instead of climbing the whole ladder and going over the wall.
+- A Builder taking down a Lily Pond or a Footbridge leaves no water behind any more: he scoops the water up first, so it no longer floods the ground once the bank is gone, and the chests get back exactly the water buckets the build cost (they used to fill with extra buckets).
+- A Hauler Golem that starts right beside a lava pit sunk a block below the ground (out of a Drop Box or Golem
+  Smith next to it) no longer freezes at the edge with its load: it steps away from the lava, goes round and stores
+  it (B944).
 - A villager who can't reach the chair they picked (penned in, say) no longer keeps it from everyone: after giving
   up on it they leave it alone for a minute, so a villager standing right beside it sits down (B945).
 - A villager turned into a witch by lightning is now handled as a death: the Book of Families dates it, their partner

@@ -20,7 +20,9 @@ import net.minecraft.world.level.pathfinder.NodeEvaluator;
  * down, so a trench whose lava lies a block or more below the ground looked like a plain drop: the golem's path ran
  * along its edge, overhanging it, and turning round the trench's end the golem cut the corner and fell in. Now a place
  * whose footing, or a footing beside it, is open air above lava or fire within {@link #SUNKEN} blocks counts as next to
- * the lava, so the path keeps a block clear of it, as it does of lava level with the ground (B784).
+ * the lava, so the path keeps a block clear of it, as it does of lava level with the ground (B784). A golem already
+ * standing that close (B944) may still step through the places within {@link #LEAVE} blocks of it, so its path leads
+ * out instead of nowhere.
  *
  * <p>Water too low to leave (B813). Vanilla lets a path drop up to three blocks into water. A floating golem's feet are
  * half a block above the top water block, and it climbs out onto a bank at most {@link GolemRoleGoal#CLIMB} above them,
@@ -39,6 +41,8 @@ import net.minecraft.world.level.pathfinder.NodeEvaluator;
 public final class GolemPaths {
 	/** How far below a golem's footing (blocks) lava still counts as beside it: as far as a path drops, and one more. */
 	static final int SUNKEN = 4;
+	/** How far (blocks) from where a golem stands beside sunken lava its path may still step to leave it (B944). */
+	static final int LEAVE = 2;
 	/** How far (blocks) a working golem's path search reaches: a villager's follow range, three times a golem's (B815). */
 	public static final float RANGE = 48.0F;
 	/** How many times vanilla's node budget (16 a block of follow range) a working golem's search may visit (B815). */
@@ -68,6 +72,19 @@ public final class GolemPaths {
 	 * blocks: lava a golem standing there could slip or fall into.
 	 */
 	public static boolean besideSunkenFire(BlockGetter level, Mob mob, int x, int y, int z) {
+		if (!nearSunkenFire(level, mob, x, y, z)) {
+			return false;
+		}
+		// The way out (B944): a golem already standing beside sunken lava (it came out of a Drop Box or Golem Smith there,
+		// or stepped up to the edge) would find every place round it marked too, and no path would leave. The places
+		// within LEAVE blocks of where it stands stay open while it stands in the danger itself, so its path steps out
+		// of it, away from the lava (the lava itself, and the drop into it, stay shut to a path as vanilla keeps them).
+		BlockPos at = mob.blockPosition();
+		return Math.abs(x - at.getX()) > LEAVE || Math.abs(z - at.getZ()) > LEAVE || Math.abs(y - at.getY()) > 1
+			|| !nearSunkenFire(level, mob, at.getX(), at.getY(), at.getZ());
+	}
+
+	private static boolean nearSunkenFire(BlockGetter level, Mob mob, int x, int y, int z) {
 		int width = Mth.floor(mob.getBbWidth() + 1.0F); // the footprint the path finder checks (NodeEvaluator.prepare)
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		for (int cx = x - 1; cx <= x + width; cx++) {

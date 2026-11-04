@@ -95,7 +95,9 @@ by that home's door and climbs that home's ladder. Before, a villager could only
 Terrace's beds stood free while villagers spent the night standing about its rooms (on a chest, say), and a villager
 coming in by the other home's door climbed the wrong ladder and gave his bed up. A door between the ladder's top and
 the bed counts only if a villager can get through it, as vanilla's walking sees doors: a wooden one (he opens it) or
-any door standing open. A shut iron door is a wall to him, so a bed behind one up a ladder isn't claimed (B876).
+any door standing open. A shut iron door is a wall to him, so a bed behind one up a ladder isn't claimed (B876). A villager
+without a bed who is already up in the wrong bedroom at bedtime (both its beds someone else's) takes a free bed next
+door too: he goes down his own ladder, along to the other home's door and up its ladder (B925).
 
 Every home of a multi-home build is furnished alike (B641): a Terrace or Terrace II furnished before B281 (its spots
 file then had no table and chair for the east kitchen, whose table stands against the party wall) kept spruce stand-ins
@@ -483,6 +485,8 @@ Handcrafted (compat) `TerraceSleepCompatTests.aVillagerWithoutABedTakesAFreeFanc
 `terrace_sleep` (B310: it moves the villagers in a server task after the one placing the Terrace, since the placed beds
 count as beds only once the tasks the placing queued have run; looked up in the same task, it found no beds and nobody
 moved in).
+B925: `QaTerraceUpstairs1104c2BugTests.qaAHomelessVillagerAlreadyUpInTheWrongBedroomTakesAFreeBedNextDoor` (failing
+before the fix).
 B876: `QaHallBeds1103cBugTests.aBedBehindAnIronDoorUpALadderIsNotClaimable` (failing before the fix),
 `QaHallBeds1103cBugTests.aBedBehindAnOpenIronDoorUpALadderIsClaimable` (open, then shut again) and
 `QaHallBeds1103cGameTests.aBedBehindAShutOakDoorUpALadderIsClaimable`.

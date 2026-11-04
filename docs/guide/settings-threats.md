@@ -38,7 +38,8 @@ comes. More in [Threat Level](threat-level.md).
 Normally **on**: some modpacks stop vanilla's hostile mobs from spawning at all (Cobbleverse does, with a mod called
 MobsBeGone that blocks pillagers, zombies and most other vanilla mobs). With this on, a bandit camp's chief and men and a
 raid's raiders are put in the world anyway, so a camp is never empty and a raid really comes. Off: those mobs stay out,
-so no camp goes up and no raid comes, and the server log says which mob was blocked.
+so a raid comes only with the mobs that aren't blocked, and when every one is blocked no camp goes up and no raid comes;
+the server log says which mob was blocked. Switched off mid-raid, it leaves the raiders already there.
 
 On **Peaceful** difficulty hostile mobs can't exist at all, so nothing comes whatever this says; players near the place
 are told so.

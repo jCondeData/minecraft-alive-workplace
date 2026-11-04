@@ -157,6 +157,9 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - `B208GameTests`: with the world refusing hostile mobs as MobsBeGone does, a camp's chief and band of 6 and a night
   attack's raiders are in the world, persistent, and still there 100 ticks later; with `forceThreatSpawns` off no camp is
   made or broken up, no raid begins, and the log says why; on Peaceful nothing spawns and a player near is told once.
+- `QaNightRefusals1104d2GameTests` (6): only zombies refused with forcing on, all come and are counted; the refusal
+  lifted or `forceThreatSpawns` switched off mid-night leaves the raid as it was; monsters refused only past the village
+  edge still come; a forced raider saves as persistent; the log line names the hall and the switch.
 - `QaRefusedCampBlocksBugTests` (B709): a camp whose chief is refused changes no block round it.
   `QaPeacefulToldBugTests` (B708): a Peaceful refusal 500 blocks from everyone, then one by a player: he is told once.
   `QaThreatFixes1031GameTests`: a camp refused then allowed on the same ground stands with its chief alive and out of

@@ -10,11 +10,14 @@ import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.build.Employer;
+import io.github.jcondedata.aliveworkplace.build.Friends;
 import io.github.jcondedata.aliveworkplace.build.MaterialFamilies;
 import io.github.jcondedata.aliveworkplace.build.MaterialRules;
 import io.github.jcondedata.aliveworkplace.city.StewardSafety;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -84,7 +88,7 @@ public final class UpgradesPage {
 
 	/** What a click on a build came to. */
 	public enum Outcome {
-		STARTED, QUEUED, BLOCKED, BUILDING, NOT_ALLOWED, NO_BUILDER, GONE;
+		STARTED, QUEUED, BLOCKED, BUILDING, NOT_ALLOWED, NO_BUILDER, NOT_YOURS, GONE;
 
 		public boolean ok() {
 			return this == STARTED || this == QUEUED;
@@ -284,9 +288,11 @@ public final class UpgradesPage {
 		if (next.isEmpty()) {
 			return Outcome.GONE;
 		}
-		Optional<Villager> builder = builderFor(level, hall, BlueprintOutline.bounds(placement, next.get().size()).getCenter());
+		BlockPos centre = BlueprintOutline.bounds(placement, next.get().size()).getCenter();
+		Optional<Villager> builder = builderFor(level, hall, centre, v -> Friends.mayCommand(player, v));
 		if (builder.isEmpty()) {
-			return Outcome.NO_BUILDER;
+			// B880: with workplaceBuilderOwnership on, another player's hired Builder takes no orders from this one
+			return builderFor(level, hall, centre, v -> true).isPresent() ? Outcome.NOT_YOURS : Outcome.NO_BUILDER;
 		}
 		Villager villager = builder.get();
 		UUID owner = entity.owner() != null ? entity.owner() : player.getUUID();
@@ -302,12 +308,15 @@ public final class UpgradesPage {
 		return busy ? Outcome.QUEUED : Outcome.STARTED;
 	}
 
-	/** The village's Builder for a build centred on {@code centre}: the nearest idle one whose bench reaches it, else the one with the shortest queue. */
-	static Optional<Villager> builderFor(ServerLevel level, BlockPos hall, BlockPos centre) {
+	/**
+	 * The village's Builder for a build centred on {@code centre}, among those {@code allowed} (the ones the ordering
+	 * player may command): the nearest idle one whose bench reaches it, else the one with the shortest queue.
+	 */
+	static Optional<Villager> builderFor(ServerLevel level, BlockPos hall, BlockPos centre, Predicate<Villager> allowed) {
 		Villager best = null;
 		int bestQueue = Integer.MAX_VALUE;
 		List<Villager> builders = level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent()).stream()
+				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)).stream()
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()))).toList();
 		for (Villager v : builders) {
 			BlockPos bench = Builders.benchPos(v).orElseThrow();
@@ -321,6 +330,15 @@ public final class UpgradesPage {
 			}
 		}
 		return Optional.ofNullable(best);
+	}
+
+	/** The name of whoever hired the village's nearest Builder that {@code player} may not command ("" if none). */
+	static String othersEmployer(ServerLevel level, BlockPos hall, ServerPlayer player) {
+		return level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
+				v -> v.isAlive() && Builders.isBuilder(v) && !Friends.mayCommand(player, v)).stream()
+			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(player)))
+			.map(v -> ModAttachments.BUILDER_EMPLOYER.get(v)).filter(java.util.Objects::nonNull).map(Employer::name)
+			.findFirst().orElse("");
 	}
 
 	// --- The page -------------------------------------------------------------------------------------------------
@@ -437,6 +455,8 @@ public final class UpgradesPage {
 			case BUILDING -> Component.translatable("message.aliveworkplace.upgrades.building", next);
 			case NOT_ALLOWED -> Component.translatable("message.aliveworkplace.upgrades.not_allowed");
 			case NO_BUILDER -> Component.translatable("message.aliveworkplace.upgrades.no_builder", next);
+			case NOT_YOURS -> Component.translatable("message.aliveworkplace.upgrades.not_yours", next, othersEmployer(level, hall, p),
+				p.getGameProfile().getName());
 			case GONE -> Component.translatable("message.aliveworkplace.upgrades.gone");
 		};
 		Chat.actionBar(p, text.copy().withStyle(outcome.ok() ? ChatFormatting.GREEN : ChatFormatting.YELLOW));

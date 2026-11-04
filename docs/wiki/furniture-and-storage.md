@@ -519,6 +519,9 @@ preview or count; a mod in the order that isn't installed is passed over; a buil
 order changes and over a save and reload while a new one follows the new order; every level of the Healing Center and
 Schoolhouse, in every style and a village-color style, has the Poké Ball desks and is furnished on the same spots as
 drawn);
+QA's `QaTableFurnished1104GameTests` (3, B893, B901: the Table's preview follows the order and the switch back and forth
+on one running server, never a preview cached a step before; with a mod first, the Table's "All materials" list is item
+for item the list of the site a builder gets for that blueprint, as drawn and in Dark Oak);
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.

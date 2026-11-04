@@ -53,6 +53,12 @@ wait at each, and Create runs it from then on: you can watch it come and go, and
   chronicle says who built it, and the station then puts it on the rails.
 - **Room at the station.** Leave four blocks of straight track just past the station, and four blocks of air above
   it, for the train.
+- **A village between two neighbors on one line.** A Create station only takes trains coming from one side, so a
+  village with a train neighbor on each side of its track needs a station facing each. When its stations all face the
+  first neighbor, one of its builders puts up a second station beside the same track, two blocks along it towards the
+  second neighbor, from a Create station in the chests by the bench, and the chronicle says so. It's named after both
+  villages, as `Middleton (Eastwick)`, and the second neighbor's train stops there. Keep a spare Create station by the
+  bench; until it's up, that neighbor's caravans walk.
 - **The village's train is its own.** Nothing of the mod ever touches trains you put together yourself.
 
 ## Riding the train
@@ -76,6 +82,9 @@ A caravan between two villages joined by rail goes by train:
 - **A station broken while the train is on its way:** the caravan gets off where the track ends and walks the rest.
   It still arrives with everything it carried, a little later, and the chronicle says so. Until the station is
   rebuilt, caravans walk.
+- **Each station is named after its village.** When another station on the same railway already has that name (two
+  villages called the same, by a name tag or by chance), the village adds its hall's position, as `Oakford 120_64_-35`,
+  so each train still stops at the right village. A station you rename yourself keeps your name.
 - **Only one village with a station,** or a road that isn't finished, or a road that ends at a milestone: caravans walk.
 - **You break the village's train up:** caravans waiting for it take the quicker trip instead, and the village builds a
   new train when it can. Goods that were riding in its chest stay in that chest: the caravan doesn't bring them a second

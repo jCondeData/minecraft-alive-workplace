@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.build.Friends;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.world.VillageHouses;
@@ -16,6 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -54,7 +56,7 @@ public final class PieceLooks {
 
 	/** What choosing a look came to. */
 	public enum Outcome {
-		STARTED, QUEUED, SAME, BUILDING, NOT_ALLOWED, NO_LEADER, NO_BUILDER, GONE;
+		STARTED, QUEUED, SAME, BUILDING, NOT_ALLOWED, NO_LEADER, NO_BUILDER, NOT_YOURS, GONE;
 
 		public boolean ok() {
 			return this == STARTED || this == QUEUED;
@@ -130,9 +132,10 @@ public final class PieceLooks {
 				return Outcome.SAME;
 			}
 		}
-		Optional<Villager> builder = builderFor(level, hall, piece);
+		Optional<Villager> builder = builderFor(level, hall, piece, v -> Friends.mayCommand(player, v));
 		if (builder.isEmpty()) {
-			return Outcome.NO_BUILDER;
+			// B880: with workplaceBuilderOwnership on, another player's hired Builder takes no orders from this one
+			return builderFor(level, hall, piece, v -> true).isPresent() ? Outcome.NOT_YOURS : Outcome.NO_BUILDER;
 		}
 		if (open != null) {
 			Builders.cancel(level, open);
@@ -157,14 +160,17 @@ public final class PieceLooks {
 		entity.setPieceLooks(choices);
 	}
 
-	/** The village's builder for {@code piece}: the nearest idle one whose bench reaches it, else the one with the shortest queue. */
-	static Optional<Villager> builderFor(ServerLevel level, BlockPos hall, VillagePieces.Piece piece) {
+	/**
+	 * The village's builder for {@code piece}, among those {@code allowed} (the ones the choosing player may command): the
+	 * nearest idle one whose bench reaches it, else the one with the shortest queue.
+	 */
+	static Optional<Villager> builderFor(ServerLevel level, BlockPos hall, VillagePieces.Piece piece, Predicate<Villager> allowed) {
 		BlockPos centre = piece.placement().origin().offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
 			new BlockPos(4, 0, 5), Mirror.NONE, piece.placement().rotation(), BlockPos.ZERO));
 		Villager best = null;
 		int bestQueue = Integer.MAX_VALUE;
 		List<Villager> builders = level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent()).stream()
+				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)).stream()
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()))).toList();
 		for (Villager v : builders) {
 			BlockPos bench = Builders.benchPos(v).orElseThrow();
@@ -182,6 +188,12 @@ public final class PieceLooks {
 
 	/** What to tell the player after {@code outcome}. */
 	public static Component message(ServerLevel level, BlockPos hall, VillagePieces.Piece piece, String look, Outcome outcome) {
+		return message(level, hall, piece, look, outcome, null);
+	}
+
+	/** What to tell {@code player} (who chose the look; null if unknown) after {@code outcome}. */
+	public static Component message(ServerLevel level, BlockPos hall, VillagePieces.Piece piece, String look, Outcome outcome,
+			@Nullable ServerPlayer player) {
 		Component house = VillagePieces.houseName(piece.house());
 		Component style = VillagePieces.styleName(look);
 		String owner = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.ownerName() : "";
@@ -196,6 +208,9 @@ public final class PieceLooks {
 			case NOT_ALLOWED -> Component.translatable("message.aliveworkplace.piece_look.not_allowed", owner).withStyle(ChatFormatting.RED);
 			case NO_LEADER -> Component.translatable("message.aliveworkplace.piece_look.no_leader").withStyle(ChatFormatting.RED);
 			case NO_BUILDER -> Component.translatable("message.aliveworkplace.piece_look.no_builder", house, Builders.MAX_SITE_DISTANCE)
+				.withStyle(ChatFormatting.RED);
+			case NOT_YOURS -> Component.translatable("message.aliveworkplace.piece_look.not_yours", house,
+				player != null ? UpgradesPage.othersEmployer(level, hall, player) : "", player != null ? player.getGameProfile().getName() : "")
 				.withStyle(ChatFormatting.RED);
 			case GONE -> Component.translatable("message.aliveworkplace.piece_look.gone").withStyle(ChatFormatting.RED);
 		};
@@ -304,7 +319,7 @@ public final class PieceLooks {
 			menu.button(FIRST_LOOK + i, VillageHallScreen.icon(icon(look), Component.translatable("screen.aliveworkplace.piece_looks.look",
 				VillagePieces.styleName(look)), ChatFormatting.GOLD, lore.toArray(Component[]::new)), p -> {
 				Outcome outcome = choose(level, hall, p, piece, look);
-				Chat.actionBar(p, message(level, hall, piece, look, outcome));
+				Chat.actionBar(p, message(level, hall, piece, look, outcome, p));
 				renderPiece(menu, level, hall, piece);
 				menu.broadcastChanges();
 			});

@@ -453,6 +453,43 @@ public class PieceLooksGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * B880: ownership on and the village's only builder hired by another player who never named the leader a friend: the
+	 * leader's pick starts nothing and says whose the builder is; once the hirer adds him as a friend, it starts.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"pieceLookNotForAnotherPlayersBuilder"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "pieceLookNotForAnotherPlayersBuilder")
+	public void aLookIsNotHandedToAnotherPlayersHiredBuilder(GameTestHelper helper) {
+		Village v = village(helper, false);
+		VillagePieces.Piece found = piece(helper, v);
+		ServerLevel level = v.level();
+		boolean before = level.getGameRules().getBoolean(ModGameRules.BUILDER_OWNERSHIP);
+		level.getGameRules().getRule(ModGameRules.BUILDER_OWNERSHIP).set(true, level.getServer());
+		ServerPlayer leader = WonderFinishedGameTests.listener(helper, new java.util.ArrayList<>(), "LookLeader");
+		ServerPlayer hirer = WonderFinishedGameTests.listener(helper, new java.util.ArrayList<>(), "LookHirer");
+		io.github.jcondedata.aliveworkplace.build.Friends friends = io.github.jcondedata.aliveworkplace.build.Friends.get(level.getServer());
+		Leftovers.after(helper, () -> {
+			level.getGameRules().getRule(ModGameRules.BUILDER_OWNERSHIP).set(before, level.getServer());
+			friends.remove(hirer.getUUID(), leader.getUUID());
+		});
+		helper.assertFalse(leader.hasPermissions(2) || hirer.hasPermissions(2), "setup: an operator");
+		io.github.jcondedata.aliveworkplace.build.Friends.hire(hirer, v.builder());
+		v.entity().setOwner(leader.getUUID(), "LookLeader");
+		PieceLooks.Outcome outcome = PieceLooks.choose(level, v.hall(), leader, found, "desert");
+		helper.assertTrue(outcome == PieceLooks.Outcome.NOT_YOURS, "outcome " + outcome);
+		helper.assertTrue(PieceLooks.rebuild(level, found) == null && Builders.activeSite(level, v.builder()) == null, "another player's builder took it");
+		String said = PieceLooks.message(level, v.hall(), found, "desert", outcome, leader).getString();
+		helper.assertTrue(said.equals("No builder of yours can rebuild the Guard House: the village's builders work for LookHirer. Hire one of your own, "
+			+ "or ask them to run /workplace friend add LookLeader."), "said: " + said);
+		friends.add(hirer.getUUID(), leader.getUUID(), "LookLeader");
+		outcome = PieceLooks.choose(level, v.hall(), leader, found, "desert");
+		helper.assertTrue(outcome == PieceLooks.Outcome.STARTED, "a friend's pick: " + outcome);
+		BuildSite site = PieceLooks.rebuild(level, found);
+		helper.assertTrue(site != null && v.builder().getUUID().equals(site.builder()), "the builder isn't rebuilding it: " + site);
+		Builders.cancel(level, site);
+		helper.succeed();
+	}
+
 	/** An unknown style (a forged click) is refused and changes nothing. */
 	//$ gametest_ticks_batch AREA '200' '"qaPieceLookForged"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaPieceLookForged")

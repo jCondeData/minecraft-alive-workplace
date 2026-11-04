@@ -171,6 +171,12 @@ public class QaTrainHubNoStation1104eCompatTests implements FabricGameTest {
 						"the second neighbor's train runs with no station facing it at the hub: " + QaTrainHub1103eCompatTests.trains(level, v));
 					if (tick[0] - since[0] >= 400) {
 						sendWheat(helper, v, pair[0]);
+						// the guide: till the station is up, that neighbor's caravans take the quicker trip without a train you can see
+						long now = level.getGameTime();
+						long walk = Caravans.trip(level, pair[0], v.hub(), v.data());
+						helper.assertTrue(v.data().onTheRoad().stream().anyMatch(s -> s.from().equals(pair[0]) && s.to().equals(v.hub()) && s.byTrain()
+								&& s.arrives() <= now + CaravanTrains.trainTrip(walk)),
+							"the second neighbor's caravan doesn't take the quicker train trip (walk " + walk + " ticks, now " + now + "): " + v.data().onTheRoad());
 						since[0] = tick[0];
 						phase[0] = 2;
 					}

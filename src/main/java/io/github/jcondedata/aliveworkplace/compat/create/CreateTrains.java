@@ -100,14 +100,7 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			}
 			CompoundTag tag = be.saveWithoutMetadata(level.registryAccess());
 			tag.put("TargetTrack", NbtUtils.writeBlockPos(track.subtract(station)));
-			// Facing the other station: trains coming from there stop here, and the village train is put together on
-			// that side of it (found by trying both in CreateTrainCompatTests: facing away, no path is ever found)
-			Vec3 toward = Vec3.atLowerCornerOf(other.subtract(station));
-			// 39.7c: a station on a spur (its track ends on one side, runs on by a curve on the other) faces the way out
-			Direction plus = Direction.getNearest(axes.get(0).x, 0, axes.get(0).z);
-			boolean onPlus = runsOn(level, track, plus);
-			boolean onMinus = runsOn(level, track, plus.getOpposite());
-			tag.putBoolean("TargetDirection", onPlus != onMinus ? onPlus : axes.get(0).dot(toward) > 0);
+			tag.putBoolean("TargetDirection", wanted(level, station, track, axes.get(0), other));
 			be.loadWithComponents(tag, level.registryAccess());
 			be.setChanged();
 			be.notifyUpdate();
@@ -115,6 +108,34 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			return false;
 		}
 		return false;
+	}
+
+	/**
+	 * The way (positive along {@code axis} or not) a station beside {@code track} faces to take trains coming from
+	 * {@code other}: towards it, so trains coming from there stop here and the village train is put together on that side
+	 * (found by trying both in CreateTrainCompatTests: facing away, no path is ever found). 39.7c: a station on a spur (its
+	 * track ends on one side, runs on by a curve on the other) faces the way out.
+	 */
+	private static boolean wanted(ServerLevel level, BlockPos station, BlockPos track, Vec3 axis, BlockPos other) {
+		Direction plus = Direction.getNearest(axis.x, 0, axis.z);
+		boolean onPlus = runsOn(level, track, plus);
+		boolean onMinus = runsOn(level, track, plus.getOpposite());
+		return onPlus != onMinus ? onPlus : axis.dot(Vec3.atLowerCornerOf(other.subtract(station))) > 0;
+	}
+
+	@Override
+	public int facing(ServerLevel level, BlockPos station, BlockPos other) {
+		if (!level.isLoaded(station) || !(level.getBlockEntity(station) instanceof StationBlockEntity be) || !be.edgePoint.hasValidTrack()) {
+			return 0;
+		}
+		BlockPos track = be.edgePoint.getGlobalPosition();
+		BlockState state = be.edgePoint.getTrackBlockState();
+		List<Vec3> axes = ((ITrackBlock) state.getBlock()).getTrackAxes(level, track, state);
+		if (axes.size() != 1 || Math.abs(axes.get(0).y) > 1e-3) {
+			return 1; // a player's station on a curve or slope: taken as it is, as before B898
+		}
+		boolean positive = be.edgePoint.getTargetDirection() == Direction.AxisDirection.POSITIVE;
+		return positive == wanted(level, station, track, axes.get(0), other) ? 1 : -1;
 	}
 
 	/** Whether the straight track from {@code track} towards {@code way} runs on (a curve at its end, or 64 blocks of it) rather than ending (39.7c). */

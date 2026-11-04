@@ -321,6 +321,11 @@ public final class Caravans {
 			return stations.getOrDefault(hall, List.of());
 		}
 
+		/** The villages with Create stations on the list (39.7, B898). */
+		public Set<BlockPos> stationHalls() {
+			return java.util.Collections.unmodifiableSet(stations.keySet());
+		}
+
 		/** Notes the village's stations (39.7); a village not on the list keeps none. */
 		public void setStations(BlockPos hall, List<BlockPos> found) {
 			if (!villages.containsKey(hall)) {

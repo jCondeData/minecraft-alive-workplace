@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898
 
 ## What a player sees
 
@@ -123,7 +123,13 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   name the village gave them, since a Create schedule stops at the nearest station of its name: a station whose village's
   name another station there already has (two villages of one name, a name tag or two made-up names alike) gets the
   village's name with its hall's position added, as `Oakford 120_64_-35`; one named before that, or whose network was
-  joined to another since, is renamed so while its train runs, and the train's stop follows it (B894). Without a free villager, before the train is put together, or after a player
+  joined to another since, is renamed so while its train runs, and the train's stop follows it (B894). A Create station takes trains coming from one side only, so a village with a
+  train neighbor on each side of one line uses a station facing each (`CaravanTrains.stationFor`: the nearest, unless it
+  faces away and another neighbor's train comes in at it, so a village with one neighbor keeps its station whichever
+  way it faces; else another station within 16 blocks of it facing that neighbor or not pointed yet); when every station faces another neighbor's train, a builder of
+  the village puts up a Create station from the bench's chests beside the same track, two blocks along it towards the
+  new neighbor (`CaravanTrains.secondStation`), named `Middleton (Eastwick)`, and a train still aimed at the first station is pointed
+  at it (B898). Without a free villager, before the train is put together, or after a player
   breaks it up, caravans take the timed trip above.
 - **One line, a built train, goods in its chest** (39.7b). The track a builder lays along a road follows
   `CaravanTrains.plan`: a straight piece (`xo`, `zo`) on each level node, an ascending piece (`an`, `as`, `ae`, `aw`) on

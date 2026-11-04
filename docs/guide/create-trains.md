@@ -53,6 +53,12 @@ wait at each, and Create runs it from then on: you can watch it come and go, and
   chronicle says who built it, and the station then puts it on the rails.
 - **Room at the station.** Leave four blocks of straight track just past the station, and four blocks of air above
   it, for the train.
+- **A village between two neighbors on one line.** A Create station only takes trains coming from one side, so a
+  village with a train neighbor on each side of its track needs a station facing each. When its stations all face the
+  first neighbor, one of its builders puts up a second station beside the same track, two blocks along it towards the
+  second neighbor, from a Create station in the chests by the bench, and the chronicle says so. It's named after both
+  villages, as `Middleton (Eastwick)`, and the second neighbor's train stops there. Keep a spare Create station by the
+  bench; until it's up, that neighbor's caravans walk.
 - **The village's train is its own.** Nothing of the mod ever touches trains you put together yourself.
 
 ## Riding the train

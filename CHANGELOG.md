@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A villager who can't reach the chair they picked (penned in, say) no longer keeps it from everyone: after giving
+  up on it they leave it alone for a minute, so a villager standing right beside it sits down (B945).
 - A villager turned into a witch by lightning is now handled as a death: the Book of Families dates it, their partner
   is widowed, a Legend guest's place is freed, and a Legend's slot falls free 7 days later as after a death with no
   grave, instead of being kept by someone who no longer exists (B943).

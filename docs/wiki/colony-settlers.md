@@ -25,7 +25,8 @@ couple makes three or four settlers; someone whose partner can't be spared (a gu
 volunteer. If the village can't spare two, the hall says so and the charter stays in your hand.
 
 **Supplies.** 64 logs, 64 planks, 64 cobblestone, 32 bread, 16 torches, 12 glass panes and 3 beds (any wood, any
-bed color) come out of the chests by the village's Storehouses. What is missing:
+bed color) come out of the chests by the village's Storehouses: those within `supplyRadius` of one and at most 4 blocks
+above or below it, as for every job (a chest 5 blocks up or down gives nothing, B684). What is missing:
 
 - goes on the village's wants, so partner villages' caravans bring it;
 - shows on every Storehouse's requests board in a settler's name ("24 planks"); a click hands yours over, into the

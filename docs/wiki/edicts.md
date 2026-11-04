@@ -87,7 +87,10 @@ mercenaries, and a monster can't hurt a villager asleep in bed. **Conscription**
 made for the raid (never taken from a chest), which is gone when the raid ends and again whenever the villager
 loads, so a save in the middle of a raid can't leave a free sword. The sword stays in the conscript's hand all fight:
 vanilla's trade display (wares shown to a player standing by) leaves a hand holding it alone, and a hand emptied any
-other way takes the sword up again at once (B324, B327).
+other way takes the sword up again at once (B324, B327). A conscript goes for the nearest raider he can see within
+24 blocks, counting up and down as well as across, the same reach the reformed work stop uses: one on a wall or tower
+fights the raider at its foot (B926). A raider he can't get a block closer to in 5 seconds (no way down from his tower)
+he lets be for 10 seconds, so he isn't stuck at the edge all night; one within 4 blocks (behind a fence) he stands by.
 
 ## Switches
 
@@ -154,7 +157,8 @@ GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, ran
 `TreasuryEdictGameTests` (8), `QaEdictEffectsGameTests` (10: the QA lane's boundaries for 30.6 to 30.8),
 `QaEdictsGameTests` (14: the QA lane's boundaries for 30.3, 30.5, 30.9 to 30.11, 30.15 and 30.17),
 `QaPaceAndBookGameTests` (11: the QA lane's for 30.1a, 30.2, 30.4 and 30.21: the 300th bread, friends' and operators'
-clicks, the last day before lifting, the cap at 100 and 400), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `CivicTalkGameTests` (7),
+clicks, the last day before lifting, the cap at 100 and 400), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `QaConscriptionBugs1104dGameTests` (4, B926: a raider 10 and 15 blocks below a
+conscript, 23.4 and 25 blocks away, a stranded conscript letting the raider be, edicts off), `CivicTalkGameTests` (7),
 `PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`, `ReformStoryGameTests` (10: each of the eight stories from
 the ask through M30's three steps to its ending and the edict reformed in that village only; `storyArcs` off; side
 arcs and `arcsAtOnce`), `QaReformStoryGameTests` (11: the QA lane's for 31.22: the fallback askers (any smith, a

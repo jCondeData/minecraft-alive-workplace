@@ -11,6 +11,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** Builders keep longer hours than other villagers (see {@link ModVillagers#BUILDER_SCHEDULE}). */
 @Mixin(Villager.class)
 abstract class VillagerMixin {
+	/**
+	 * B928: struck by lightning, a villager becomes a witch without dying, so no death hook sees it: the worker's bag,
+	 * blueprint and site are left as a death leaves them, here, once the witch is in the world and before the villager goes.
+	 */
+	@Inject(method = "thunderHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/Villager;releaseAllPois()V"))
+	private void aliveworkplace$struckIntoWitch(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.LightningBolt bolt, CallbackInfo ci) {
+		io.github.jcondedata.aliveworkplace.build.BuilderEvents.onStruckIntoWitch(level, (Villager) (Object) this);
+	}
+
 	/** A shopkeeper's offers are whatever the shop has in stock right now. */
 	@Inject(method = "mobInteract", at = @At("HEAD"))
 	private void aliveworkplace$shopStock(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand,

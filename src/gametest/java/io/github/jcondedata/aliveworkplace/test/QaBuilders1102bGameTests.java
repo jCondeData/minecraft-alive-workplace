@@ -604,7 +604,11 @@ public class QaBuilders1102bGameTests implements net.fabricmc.fabric.api.gametes
 		return buildBack(helper, id, turn, mirror, true);
 	}
 
-	/** The same, with free materials {@code freeGoods}. */
+	/**
+	 * The same, with free materials {@code freeGoods}. Call it once per test: it sets the build rules and puts back, when
+	 * the test ends, the values it read; a second call reads the first one's values and puts those back last, so free
+	 * materials stay on and helpers off for every later test (seen 2026-11-04: three builder tests failed after one).
+	 */
 	static Built buildBack(GameTestHelper helper, ResourceLocation id, Rotation turn, Mirror mirror, boolean freeGoods) {
 		ServerLevel level = helper.getLevel();
 		boolean free = level.getGameRules().getBoolean(ModGameRules.FREE_MATERIALS);

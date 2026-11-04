@@ -1164,6 +1164,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillageHomesLife1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeace1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaNightRefusals1104d2GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCampsDesert1104d3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpawnsPeaceBugs1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLairBlipSentryIron1101dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWaystoneBeside1101dGameTests",

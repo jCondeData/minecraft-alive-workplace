@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A blueprint whose top pokes over the world's build limit (or whose basement reaches under the world's bottom) no
+  longer eats the materials of the blocks that can't stand there and then waits for more for ever: the builder skips
+  those blocks without taking anything, builds the rest and finishes, and the hand-over warns that they will be left
+  out (B937).
 - A Builder struck by lightning and turned into a witch drops his bag and the blueprint where he stood and tells his
   owner, as when he dies; his materials no longer vanish and his build no longer waits for ever on a builder who is
   gone. Any other worker turned that way drops what was in their bag, a tool that is yours and their area's marker

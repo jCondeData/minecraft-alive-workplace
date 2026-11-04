@@ -366,6 +366,12 @@ public final class Builders {
 			tell(player, Component.translatable("message.aliveworkplace.assign.started", villager.getDisplayName(),
 				Blueprints.displayName(site.structure()), SupplyContainers.RADIUS), ChatFormatting.GREEN);
 		}
+		if (!deconstruct) {
+			// B937: told up front that what pokes over the world's top (or under its bottom) won't be built
+			for (Component warning : heightWarnings(level, box, blueprint.get().basement(), Blueprints.displayName(site.structure()))) {
+				tell(player, warning, ChatFormatting.YELLOW);
+			}
+		}
 		Component later = existing == null ? io.github.jcondedata.aliveworkplace.work.Jobs.startsLater(villager) : null; // B220
 		if (later != null) {
 			tell(player, later, ChatFormatting.YELLOW);
@@ -376,6 +382,21 @@ public final class Builders {
 				Blueprints.displayName(site.structure()), Blueprints.displayName(existing.structure()), queued + 1), ChatFormatting.GREEN);
 		}
 		return InteractionResult.SUCCESS;
+	}
+
+	/**
+	 * B937: the hand-over's warnings for a build whose box ({@code box}, above ground; {@code basement} layers more under
+	 * it) reaches over the world's build limit or under its bottom: those blocks can't be built and are skipped.
+	 */
+	public static List<Component> heightWarnings(net.minecraft.world.level.Level level, BoundingBox box, int basement, Component name) {
+		List<Component> out = new java.util.ArrayList<>();
+		if (box.maxY() >= level.getMaxBuildHeight()) {
+			out.add(Component.translatable("message.aliveworkplace.assign.over_top", name, level.getMaxBuildHeight()));
+		}
+		if (box.minY() - basement < level.getMinBuildHeight()) {
+			out.add(Component.translatable("message.aliveworkplace.assign.under_bottom", name, level.getMinBuildHeight()));
+		}
+		return out;
 	}
 
 	/** Creates the site and gives the villager the job. Also used by tests and commands. */
@@ -549,7 +570,8 @@ public final class Builders {
 	private static Map<Item, Integer> needOf(ServerLevel level, List<BuildPlan.Step> upcoming) {
 		Map<Item, Integer> need = new LinkedHashMap<>();
 		for (BuildPlan.Step step : upcoming) {
-			if (!MaterialRules.matches(level.getBlockState(step.pos()), step.state())) {
+			// B937: a block over the world's build limit (or under its bottom) is skipped, so it needs nothing
+			if (!BuildPlan.outsideWorld(level, step) && !MaterialRules.matches(level.getBlockState(step.pos()), step.state())) {
 				for (MaterialRules.Requirement r : step.requirements()) {
 					need.merge(MaterialFamilies.key(r.item()), r.count(), Integer::sum);
 				}

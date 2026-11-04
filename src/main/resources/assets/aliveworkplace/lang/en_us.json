@@ -271,6 +271,8 @@
   "message.aliveworkplace.assign.work_block": "workstation",
   "message.aliveworkplace.assign.overlaps": "That spot overlaps another build in progress (%s).",
   "message.aliveworkplace.assign.started": "%s will build %s! Put the materials in chests within %s blocks of their Blueprint Table.",
+  "message.aliveworkplace.assign.over_top": "The top of %s reaches over the world's build limit (y %s). Nothing can stand up there, so those blocks will be left out and need no materials.",
+  "message.aliveworkplace.assign.under_bottom": "The bottom of %s reaches below the bottom of the world (y %s). Nothing can be built down there, so those blocks will be left out and need no materials.",
   "message.aliveworkplace.waiting": "%s is waiting for materials to build %s. Still needed: %s",
   "message.aliveworkplace.finished": "%s finished building %s! The blueprint is back in the supply chest.",
   "message.aliveworkplace.contraption_turns": "%s checked the %s: all %s moving parts turn.",

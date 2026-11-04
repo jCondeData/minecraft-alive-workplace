@@ -123,6 +123,12 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
 - FOUNDATION and LANDSCAPE depend on the terrain, so a site loaded in the middle of those stages makes its list
   again from the terrain; steps already done are skipped.
 - A step that cannot be done yet is put off once, then skipped (counted in `skipped`).
+- A block over the world's build limit (y 320 in the Overworld) or under its bottom (y -64) can't be placed: a
+  blueprint on a mountain top whose roof pokes over the limit, or a deep basement dug past the bottom. The builder
+  skips such a block like any step that can't be done (counted in `skipped`), takes no material for it and never
+  waits for one, so the rest is built and the build ends (B937; a door whose top half would be over the limit is
+  skipped whole). The hand-over warns of it in yellow ("The top of Test Hut reaches over the world's build limit
+  (y 320)..."). Tests `QaBuildHeightLimit1104BugTests`, `BuildHeightLimitGameTests` (with a save and load mid-build).
 - "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors
   (a fence's connections, a stair's corner shape). Without that a finished wall could look unfinished forever.
 - Nobody is built into a block: before a block goes down the builder checks there is room for it as it will

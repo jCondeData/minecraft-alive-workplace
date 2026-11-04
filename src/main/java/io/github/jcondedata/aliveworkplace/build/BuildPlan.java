@@ -412,8 +412,20 @@ public final class BuildPlan {
 		return state.is(net.minecraft.tags.BlockTags.CROPS) || state.getBlock() instanceof net.minecraft.world.level.block.CropBlock;
 	}
 
+	/**
+	 * B937: whether {@code step}'s block, or its other half (a door's top, a bed's head), lies over the world's build limit
+	 * or under its bottom, where nothing can be placed: a blueprint on a mountain top whose roof pokes over y 320, a deep
+	 * basement dug down past bedrock. The builder skips such a step without taking its materials.
+	 */
+	public static boolean outsideWorld(Level level, Step step) {
+		return level.isOutsideBuildHeight(step.pos()) || step.secondaryPos() != null && level.isOutsideBuildHeight(step.secondaryPos());
+	}
+
 	/** Whether {@code step}'s block is gone: the spot is open (air, water, plants) and not already what it should be. */
 	static boolean missing(Level level, Step step) {
+		if (outsideWorld(level, step)) {
+			return false; // B937: nothing can stand there, so it's never gone either
+		}
 		BlockState world = level.getBlockState(step.pos());
 		return !step.state().isAir() && world.canBeReplaced() && !MaterialRules.matches(world, step.state());
 	}

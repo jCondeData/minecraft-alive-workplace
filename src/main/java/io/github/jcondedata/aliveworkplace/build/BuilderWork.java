@@ -1069,6 +1069,13 @@ public class BuilderWork extends Behavior<Villager> {
 		BlockPos pos = step.pos();
 		BlockState world = level.getBlockState(pos);
 		BlockState wanted = step.state();
+		if (BuildPlan.outsideWorld(level, step)) {
+			// B937: over the world's build limit or under its bottom nothing can be placed (the materials vanished and the
+			// build waited for more for ever): a block to place there is skipped (deferred once, then counted in skipped),
+			// and there is nothing to dig, level or take down
+			boolean placing = stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.STRUCTURE || stage == BuildPlan.Stage.DECORATION;
+			return placing && !wanted.isAir() ? Action.SKIP : Action.NONE;
+		}
 		if (stage == BuildPlan.Stage.DECONSTRUCT) {
 			// Take down only what the blueprint put there; leave containers and anything else alone.
 			return MaterialRules.matches(world, wanted) && !isProtected(level, pos, world, bench) ? Action.BREAK : Action.NONE;

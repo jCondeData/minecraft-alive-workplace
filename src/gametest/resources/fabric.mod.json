@@ -754,6 +754,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderLeftovers1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuildHeightLimit1104BugTests",
+			"io.github.jcondedata.aliveworkplace.test.BuildHeightLimitGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderConverted1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderConverted1104BugTests",
 			"io.github.jcondedata.aliveworkplace.test.B928GameTests",

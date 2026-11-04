@@ -939,6 +939,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatsM32GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisastersGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDroughtPlague1104dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDroughtGuard1104d3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassPerksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassPerksBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOneEmeraldBugTests",

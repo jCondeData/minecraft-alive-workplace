@@ -1001,6 +1001,13 @@ CobbleDollars only; a resting villager stays out of the stands, the +5 lasts unt
 line in each form. A failing test on the tests/stadium-thesis-1028 branch (until fixed): a file
 with one visitor reads "1 visiting trainers".
 
+QA compat GameTests in `QaStadiumDays1104CompatTests` (35.24): thirty Stadium Days in a row each bring two to four
+visitors (every count seen, the file's every 2 days with 2 to 4); with no realm or partner only travellers of rank 3 to 5
+(each seen), called "the Traveler" and a Trainer a player can challenge; the server's own clock brings them on an even
+afternoon and the odd day's afternoon has none; five fans by three seats seat three, only they "watched a Stadium Day"
+(+5); a village with no trainer of its own fights no bout, the visitors stay until dusk; a visitor's own trainer at home
+gains a battle and XP from the visitor's bout.
+
 GameTests in `ColossusPowerGameTests` (35.22): a villager at home 12 happier with "proud of the Colossus", one in a
 village off its routes not at all, then with a caravan route 8 happier with "the realm's Colossus", its 8 beauty;
 damaged all back as before, repaired on again, Wonders off off; the inn one traveler a morning and two at most

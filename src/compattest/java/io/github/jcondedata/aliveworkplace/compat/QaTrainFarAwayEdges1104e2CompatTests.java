@@ -259,7 +259,9 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 				return "";
 			}
 			return r.elapsed() >= WAIT ? "the caravan aboard the first departure never reached the near village: " + logs + " of 32 logs in its chest, caravan "
-				+ s + ", train " + r.status() : null;
+				+ s + ", train " + r.status() + ", the near hall's storehouse chests " + Caravans.storehouse(r.level, r.l.near).stream()
+				.map(p -> p.subtract(helper.absolutePos(BlockPos.ZERO)) + "=" + ((Container) r.level.getBlockEntity(p)).countItem(Items.OAK_LOG)).toList()
+				+ ", train's chest " + CreateTrainCompatTests.railway().cargo(r.level, r.owner) : null;
 		});
 	}
 
@@ -298,6 +300,15 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 			PartnerShowsCompatTests.clearLeftovers(helper);
 			line(l);
 			data = Caravans.Data.get(level);
+			// arriving goods go into the chests by every Storehouse within the hall's reach (Caravans.storehouse): one an
+			// earlier batch left near here would take the train's logs (as CreateTrainCompatTests.villages clears them)
+			for (BlockPos hall : List.of(l.near, l.far)) {
+				for (BlockPos store : level.getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI),
+						p -> true, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS,
+						net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+					level.removeBlock(store, false);
+				}
+			}
 			for (BlockPos hall : List.of(l.near, l.far)) {
 				data.remove(hall);
 				level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());

@@ -245,7 +245,7 @@ public final class BuildSiteManager extends SavedData {
 		long radius = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
 		for (Finished f : finishedIn(level)) {
 			// its corner (what the lists went by before B620, so nothing that counted stops counting) or its middle
-			if (claims(level, hall, plan, radius, f.placement().origin()) || claims(level, hall, plan, radius, spot(level, f))) {
+			if (claims(hall, plan, radius, f.placement().origin()) || claims(hall, plan, radius, spot(level, f))) {
 				out.add(f);
 			}
 		}
@@ -253,12 +253,12 @@ public final class BuildSiteManager extends SavedData {
 	}
 
 	/** Reach.claims with the hall's plan read once. */
-	private static boolean claims(ServerLevel level, net.minecraft.core.BlockPos hall, @Nullable io.github.jcondedata.aliveworkplace.city.CityPlan plan,
-			long radius, net.minecraft.core.BlockPos pos) {
+	private static boolean claims(net.minecraft.core.BlockPos hall, @Nullable io.github.jcondedata.aliveworkplace.city.CityPlan plan, long radius,
+			net.minecraft.core.BlockPos pos) {
 		long dx = pos.getX() - hall.getX();
 		long dz = pos.getZ() - hall.getZ();
 		return dx * dx + dz * dz <= radius * radius
-			|| plan != null && io.github.jcondedata.aliveworkplace.work.Reach.zoned(level, hall, plan, pos);
+			|| plan != null && plan.zoneAt(hall, new net.minecraft.core.BlockPos(pos.getX(), hall.getY(), pos.getZ())).isPresent();
 	}
 
 	/**

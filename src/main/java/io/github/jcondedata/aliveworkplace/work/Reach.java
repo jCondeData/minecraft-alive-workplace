@@ -43,24 +43,15 @@ public final class Reach {
 			.min(Comparator.comparingLong(hall -> VillageHalls.across(hall, workBlock)));
 	}
 
-	/**
-	 * True if {@code pos} is in the claimed area of the village round {@code hall} (any height): its radius, or a cell
-	 * of its City Plan's zones that isn't nearer another hall (B805: a cell painted before a nearer hall was placed is
-	 * that village's, as painting it now would be).
-	 */
+	/** True if {@code pos} is in the claimed area of the village round {@code hall} (any height). */
 	public static boolean claims(ServerLevel level, BlockPos hall, BlockPos pos) {
 		long dx = pos.getX() - hall.getX();
 		long dz = pos.getZ() - hall.getZ();
 		if (dx * dx + dz * dz <= (long) VillageHalls.RADIUS * VillageHalls.RADIUS) {
 			return true;
 		}
-		return level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && zoned(level, hall, entity.plan(), pos);
-	}
-
-	/** True if {@code pos} is in a zone of {@code plan} (the plan of the hall at {@code hall}) in a cell not nearer another hall. */
-	public static boolean zoned(ServerLevel level, BlockPos hall, CityPlan plan, BlockPos pos) {
-		BlockPos ground = new BlockPos(pos.getX(), hall.getY(), pos.getZ());
-		return plan.zoneAt(hall, ground).isPresent() && !CityPlan.nearerAnotherHall(level, hall, CityPlan.cellAt(hall, ground));
+		return level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity
+			&& entity.plan().zoneAt(hall, new BlockPos(pos.getX(), hall.getY(), pos.getZ())).isPresent();
 	}
 
 	/** True if {@code spot} is in reach of the worker's block at {@code workBlock}, {@code outside} blocks being the long reach. */

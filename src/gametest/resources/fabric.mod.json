@@ -1251,7 +1251,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallStory1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEconomy1103cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallStory1103cBugTests",
-			"io.github.jcondedata.aliveworkplace.test.JobItemVisitorGameTests"
+			"io.github.jcondedata.aliveworkplace.test.JobItemVisitorGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReformStories1104cBugTests"
 		]
 	},
 	"depends": {

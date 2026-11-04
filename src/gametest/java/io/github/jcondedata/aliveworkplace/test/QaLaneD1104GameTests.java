@@ -334,6 +334,33 @@ public class QaLaneD1104GameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * B920 (B426 kin): other woods than oak: a crafter short of two logs of jungle, cherry, crimson or warped wood names
+	 * them in the plural, as B426 expects ("plural item names after counts above one"), the same as spruce, birch and the rest.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void qaB426EveryWoodsLogsAreNamedInThePlural(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		List<String> wrong = new ArrayList<>();
+		Map<Item, String> planks = new LinkedHashMap<>();
+		planks.put(Items.SPRUCE_PLANKS, "short of 2 Spruce Logs to make 8 Spruce Planks");
+		planks.put(Items.BIRCH_PLANKS, "short of 2 Birch Logs to make 8 Birch Planks");
+		planks.put(Items.JUNGLE_PLANKS, "short of 2 Jungle Logs to make 8 Jungle Planks");
+		planks.put(Items.ACACIA_PLANKS, "short of 2 Acacia Logs to make 8 Acacia Planks");
+		planks.put(Items.DARK_OAK_PLANKS, "short of 2 Dark Oak Logs to make 8 Dark Oak Planks");
+		planks.put(Items.MANGROVE_PLANKS, "short of 2 Mangrove Logs to make 8 Mangrove Planks");
+		planks.put(Items.CHERRY_PLANKS, "short of 2 Cherry Logs to make 8 Cherry Planks");
+		planks.put(Items.CRIMSON_PLANKS, "short of 2 Crimson Stems to make 8 Crimson Planks");
+		planks.put(Items.WARPED_PLANKS, "short of 2 Warped Stems to make 8 Warped Planks");
+		planks.forEach((item, want) -> {
+			Map<Item, Integer> lack = Crafting.lacking(level, Crafting.Kind.CRAFTING, item, 8, Map.of());
+			check(wrong, JobShortages.lackLine(lack, 8, item).getString(), want);
+		});
+		helper.assertTrue(wrong.isEmpty(), String.join("; ", wrong));
+		helper.succeed();
+	}
+
 	static void check(List<String> wrong, String got, String want) {
 		if (!got.equals(want)) {
 			wrong.add("\"" + got + "\" (want \"" + want + "\")");

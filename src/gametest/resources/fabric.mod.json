@@ -377,6 +377,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CurfewGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ConscriptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConscription1104dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConscriptionBugs1104dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WorkHornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
@@ -753,6 +754,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderLeftovers1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuildHeightLimit1104BugTests",
+			"io.github.jcondedata.aliveworkplace.test.BuildHeightLimitGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderConverted1104GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderConverted1104BugTests",
+			"io.github.jcondedata.aliveworkplace.test.B928GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGround1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102BugTests",
@@ -1193,6 +1199,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScanWaterStems1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTableFurnished1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanItemless1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanCosts1104bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PowderSnowBucketGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDropBoxMixed1103GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaKeepBuildsLoaded1103GameTests",
@@ -1278,7 +1285,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerFixes1104c2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageFixes1104c3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1104dGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaVillagerVerify1104c3GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaVillagerVerify1104c3GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWonderWords1104cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillagerVerify1104c3BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupplyReach1104bGameTests"
 		]
 	},
 	"depends": {

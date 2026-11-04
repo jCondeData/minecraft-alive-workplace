@@ -49,7 +49,7 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
   in their way and set a ladder up its outer face, a rung every half second, with the sound of a ladder being placed.
   When the first one stands the chat says "Ladders at the walls of Oakbrook! A guard on the wall can throw them down."
   They climb it, cross the wall's top and drop inside; the other raiders follow up the same ladder while the gate is
-  still shut.
+  still shut. Once the gate is open, one still on its way to a ladder turns and goes in by the gate instead.
 - **A guard on the walkway throws a ladder down** when he is within 2 blocks of its top: the whole ladder breaks away
   at once, whoever is on it falls, and the raiders need 10 seconds before they raise it again.
 - **Ladders go on any wall, yours too, but only into air**, and never against a gate. Grass, ferns, dead bushes and
@@ -123,7 +123,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
     the foot.
   - A goal on the raider holds it to its ladder: it waits at the foot, climbs at a ladder's speed, walks across the
     top and is let go once it is past the wall's inner face, where it drops. The others (never the rams) are sent to
-    the nearest standing ladder while the breach is shut.
+    the nearest standing ladder while the breach is shut. One let go before it is on the ladder (the gate opened,
+    or its ladder went down) has its walk to the ladder stopped, so the director sends it to the gate (B907).
   - **Throwing down**: a grown guard, awake, standing on something at least 2 blocks above the ladder's foot, within
     2 blocks of its top rung. The rungs go (break particles, no drops) and the ladder is not raised again for 200
     ticks. A raider on it falls and takes the fall's damage.

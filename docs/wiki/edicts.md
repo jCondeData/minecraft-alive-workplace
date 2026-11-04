@@ -3,7 +3,7 @@
 Laws a village's owner proclaims at the Village Hall. Each gives the village a boost at a cost, and each has a reform
 that takes the cost away for good. Part of 1.4 (Edicts and civic items): switched on in 1.0 with every other expansion.
 
-Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327, B744, B772, B797
+Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327, B744, B772, B797, B917
 
 ## What a player sees
 
@@ -55,7 +55,8 @@ step falls back to slaying monsters when Cobblemon or a trainer is missing.
 
 **Reforms as stories (31.22).** With `storyArcs` on, each reform is told as a short side story of the same name
 (`data/aliveworkplace/arcs/<name>.json`, named by the reform's `arc`). When the edict is in force a villager of the
-fitting trade asks you for it: talk to them and the reform's three steps follow as the story's quests, the same items,
+fitting trade asks you for it in chat, in one pair of quotes (Toolsmith: "We hammer from dawn to dark ... gladly.",
+B914): talk to them and the reform's three steps follow as the story's quests, the same items,
 counts and pay, one a day; the villagers talk about it and the chronicle tells each chapter. The ending pays the new
 `reform_edict` reward (the edict reformed for that village, as the last step would) and leaves something lasting:
 
@@ -72,7 +73,9 @@ counts and pay, one a day; the villagers talk about it and the chronicle tells e
 
 Reform stories are `side` arcs: they run beside another story and don't count against `arcsAtOnce` or the cooldown.
 While one runs, its M30 step stays off the quest page. With `storyArcs` off, the story listed in `disabledArcs`, or when nobody of the
-trade lives there to ask, the steps go up on the quest page as before, and progress made either way carries over. QA's
+trade lives there to ask, the steps go up on the quest page as before, and progress made either way carries over, a half-done step too:
+with 10 of a step's 24 clocks handed in, switching the story off or on (or listing it in `disabledArcs`) leaves the step
+asking only the 14 left (B917). QA's
 `QaReformStories1104cGameTests` (10: wrong items, too few and the other village's hall never move a step; kills before
 the step or elsewhere don't count; a passed reform or edicts off start no story; a story switched off midway never
 doubles a step; the Granary and the Drill wait for their own trade; two stories side by side; a real restart at the ask;

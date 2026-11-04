@@ -132,7 +132,7 @@ hurt, the chest as full as before). QA's `QaBuilderFixes1026GameTests.scaffoldin
 left standing, none lost between the chest, the bag and the ground). QA's `QaScaffoldDelay1103eGameTests` (2, B831:
 `workplaceBuildDelay` raised to its largest value, 2147483647, while scaffolding goes up or comes down stops the builder;
 lowered back to 2 he carries on within 200 ticks without his work restarting, and the pillar ends finished with no
-scaffold standing and all 64 back).
+scaffold standing and all 64 back). QA's `QaScaffoldShift1104GameTests` (4: night and a panic each put him down at the column's foot within 200 ticks, unhurt, and he finishes with none left standing and all 64 back; a save and reload with three scaffolds up builds on that column, never a second; the request for scaffolding goes within 1,200 ticks of the chest holding enough, none lost).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks
 away at the builder's height, with stills of it up the scaffolding and taking it down).

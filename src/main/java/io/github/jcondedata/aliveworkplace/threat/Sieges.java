@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.city.WallKits;
+import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
@@ -805,10 +806,10 @@ public final class Sieges {
 		return Vec3.atBottomCenterOf(siege.breach).add(siege.out.getStepX() * 4 + sx * side * 4, 0, siege.out.getStepZ() * 4 + sz * side * 4);
 	}
 
-	/** The raiders still about in the village round {@code hall} (as {@code VillageRaids.raiders} finds them). */
+	/** The raiders still about in the village round {@code hall}: within its reach, the rule {@code VillageRaids.raiders} uses. */
 	static List<Mob> raiders(ServerLevel level, BlockPos hall) {
-		int r = VillageHalls.RADIUS + 32;
-		return level.getEntitiesOfClass(Mob.class, new AABB(hall).inflate(r, 48, r), m -> m.isAlive() && m.getTags().contains(Threats.RAIDER_TAG));
+		return level.getEntitiesOfClass(Mob.class, VillageRaids.near(hall),
+			m -> m.isAlive() && m.getTags().contains(Threats.RAIDER_TAG) && VillageRaids.reaches(hall, m));
 	}
 
 	/** The next gate block to break: the first in the siege's order that still stands in the world. */

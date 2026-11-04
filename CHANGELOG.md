@@ -18,6 +18,21 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Fletcher making spectral arrows for a guard reads "making 8 Spectral Arrows", not "8 Spectral Arrow"; bows,
+  crossbows, shears and the stone and iron tools and swords get their plurals too (B916).
+- With only a Seer as the village's lookout, the hall's Defense page no longer says they keep watch from a tower a
+  day ahead: it reads "sees raids in visions, 2 days before they come", and the Lighthouse's keeper has a line of their
+  own (B919).
+- Items handed in on half a reform step still count when the reform's story is switched off or on: 10 of the Shift
+  Bell's 24 clocks given to the story leave the quest page's step asking only the 14 left, and the other way round
+  (B917).
+- A raider on its way to follow the others up a siege ladder turns for the gate as soon as the gate is broken open,
+  instead of walking on to the ladder and climbing the wall anyway (B907).
+- Sneak-clicking a hired mercenary, relief rider or Doctor Wren with a job's item says "Mercenary's job can't be
+  changed here." even with no block of that job near, instead of sending you to fetch one only to be refused (B911).
+- One raider standing just below a second raided village (49 blocks under its hall) no longer keeps both villages'
+  raids going: every raider belongs to exactly one raid, so each can be fought off (B915).
+- A reform story's asker now speaks in one pair of quotes (Toolsmith: "We hammer ... gladly."), not two (B914).
 - A village with a train neighbor on each side of one Create line now gets both neighbors' goods by train: a Create
   station only takes trains from one side, so when the village's station faces the first neighbor, one of its builders
   puts up a second station beside the track (from a Create station by the bench), facing the second, and that

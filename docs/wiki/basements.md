@@ -114,6 +114,6 @@ ground, the right size, a way down and a light, and each Level III's builder sel
 `levelFourDigsAndFinishesItsBasement`: Starter Cottage IV over a finished Cottage III on real ground;
 `butchersShopGoesUpWithItsFreezer`; `reloadMidDigCarriesOn`: saved and loaded mid-dig and mid-structure, the foundation
 never fills the dug room; `noMaterialsStillDigsAndKeepsContainers`; `cellarIsBuiltWithTheGroundLeftAlone`), and
-`BuilderGameTests.starterUpgradesKeepMostOfTheirBase`, `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`. QA's `QaBasementGameTests` (3, every build with a basement): its way down comes up through the ground floor; no spot on its floor is left dark (block light 0); it can be walked to from outside and back out, every chest down there within reach.
+`BuilderGameTests.starterUpgradesKeepMostOfTheirBase`, `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`. QA's `QaBasementGameTests` (3, every build with a basement): its way down comes up through the ground floor; no spot on its floor is left dark (block light 0); it can be walked to from outside and back out, every chest down there within reach. QA's `QaBasementGround1104GameTests` (2: a cave two deep under the floor leaves the basement's floor whole; a water source just under the floor stays under it, the basement dry). Water or lava in the earth beside the walls is not yet handled (B923, B924).
 
 Showcase scenes: basement

@@ -79,7 +79,7 @@ asking only the 14 left (B917). QA's
 `QaReformStories1104cGameTests` (10: wrong items, too few and the other village's hall never move a step; kills before
 the step or elsewhere don't count; a passed reform or edicts off start no story; a story switched off midway never
 doubles a step; the Granary and the Drill wait for their own trade; two stories side by side; a real restart at the ask;
-the ask and steps read exactly as written, in American English). QA's `QaReformCarry1104cGameTests` (1: 10 of a step's 24 clocks handed to the story, the edict lifted and
+the ask and steps read exactly as written, in American English). QA's `QaLaneC1104fGameTests` (1 of its 6: the Fair Ledger finished by another player goes to the hall's owner, online elsewhere, not to the finisher). QA's `QaReformCarry1104cGameTests` (1: 10 of a step's 24 clocks handed to the story, the edict lifted and
 proclaimed again, and the step comes back holding the 10, once).
 
 **Curfew** overrules the villagers' schedule from dusk (tick 12000) to dawn for everyone but guards and
@@ -160,7 +160,10 @@ GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, ran
 clicks, the last day before lifting, the cap at 100 and 400), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `QaConscriptionBugs1104dGameTests` (4, B926: a raider 10 and 15 blocks below a
 conscript, 23.4 and 25 blocks away, a stranded conscript letting the raider be, edicts off), `QaConscriptReach1104d2GameTests` (4: a second raider on a
 stranded conscript's platform fought, the let-be over and a way down given, a raider 3 blocks off behind a fence never
-let be, a reachable raider 20 blocks across chased and struck), `CivicTalkGameTests` (7),
+let be, a reachable raider 20 blocks across chased and struck), QA's
+`QaLaneC1104eGameTests` (B926 from below: a raider 16 above and 12 across, 20 blocks away, fought, one 26.4 away not
+until the conscript comes within 24; the nearest of two raiders struck first; B917: a hall holding a step's whole count
+still shows the story's step one short of done until a hand-in), `CivicTalkGameTests` (7),
 `PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`, `ReformStoryGameTests` (10: each of the eight stories from
 the ask through M30's three steps to its ending and the edict reformed in that village only; `storyArcs` off; side
 arcs and `arcsAtOnce`), `QaReformStoryGameTests` (11: the QA lane's for 31.22: the fallback askers (any smith, a

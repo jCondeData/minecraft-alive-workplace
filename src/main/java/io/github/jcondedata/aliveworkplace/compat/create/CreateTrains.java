@@ -349,6 +349,10 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		}
 		train.name = Component.translatable("train.aliveworkplace.caravan", home.name, away.name);
 		train.runtime.setSchedule(schedule(away.name, home.name), false);
+		// Counted at once, the conductor would take the new train off on the railway's next tick; Create's own count a tick
+		// later finds none yet and holds it at the station for its schedule's cooldown (2 seconds), the moment the caravans
+		// waiting there board. Kept: without it they missed the first train and waited a whole round trip
+		train.runtime.startCooldown();
 		AliveWorkplace.LOG.info("Alive Workplace: the village train {} runs between {} and {}", train.id, home.name, away.name);
 		return train.id;
 	}

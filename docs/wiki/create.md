@@ -123,7 +123,8 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   (`CreateTrains.follow`), so the train and its caravans keep coming (B900), also when the renamed station's village
   isn't loaded any more (the player renamed it there and went home): the name is read from Create's railway, which
   keeps every station with its chunk unloaded (B912). A train put together at a station whose village unloads soon
-  after (the player walking off) keeps its conductor and runs on (B913). Stations on one track network never share a
+  after (the player walking off) keeps its conductor and runs on (B913); it still waits two seconds at that station
+  first (Create's schedule cooldown), so the caravans waiting there board it. Stations on one track network never share a
   name the village gave them, since a Create schedule stops at the nearest station of its name: a station whose village's
   name another station there already has (two villages of one name, a name tag or two made-up names alike) gets the
   village's name with its hall's position added, as `Oakford 120_64_-35`; one named before that, or whose network was

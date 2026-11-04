@@ -51,7 +51,7 @@ a typo never makes a Legend come for free. The two Pokémon Legends load only wi
 many as the villages' ranks allow (`mythicLegendCap`: by default a Town holds 1 and a City 2). A full one says so
 ("A Town can hold 1 Mythic Legend, and this one has 1."). The server keeps one
 record of every Legend settled anywhere. A Legend holds their slot alive, as a zombie villager, or dead in a grave;
-dead with no grave they fall 7 days later and the slot is free again.
+dead with no grave (or turned into a witch by lightning) they fall 7 days later and the slot is free again.
 
 **Four ways to come.**
 - *Visit* (29.8): once a day a village with no guest may get one, at the inn, the market, a festival, the Chapel or
@@ -241,7 +241,7 @@ Without the Legend settled (or on strike), nothing changes. A guest who settles 
 
 ## Proof
 
-GameTests: `LegendEngineGameTests` (6), `LegendSlotsGameTests` (6), `LegendsHallGameTests` (3),
+GameTests: `LegendEngineGameTests` (6), `LegendSlotsGameTests` (6), `B943GameTests` (a Legend struck into a witch handled as a death), `LegendsHallGameTests` (3),
 `LegendNeedsGameTests` (9), `QaLaneD1104GameTests` (2, QA, B136: each of the eleven 1.8 luxury goods taken from the store by a Legend of its own kind only, with "enjoying their ..."; a wine-lover with only other kinds' goods leaves them and her luxury unmet until a Cider comes), `LegendGuestsGameTests` (8), `LegendSitesGameTests` (7), `StrangeMoodGameTests` (6),
 `GiftedGameTests` (6), `GiftedBornGameTests` (9), and one class per Legend: `MasterArchitectGameTests`,
 `PathfinderGameTests`, `OldSageGameTests`, `GolemSmithGameTests` (with `GolemHaulerFightGameTests`, 4: a hauler back at work

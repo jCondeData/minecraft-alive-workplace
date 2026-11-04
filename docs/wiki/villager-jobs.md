@@ -145,7 +145,11 @@ says what it does all day.
 **Daycare hatchlings (28.12, B854).** A Daycare Keeper's pair hatches the mother's base form in her regional form: a
 female Alolan Ninetales hatches an Alolan Vulpix, a Kanto mother a Kanto Vulpix whatever the father. The hatchling
 takes the pre-evolution form whose evolution leads to the mother's form (`CobblemonDaycareKeeper.preForm`); Cobbreeding's
-egg is made from the same hatchling (the hatchling is tested in `QaDaycareBugs1103dCompatTests`).
+egg is made from the same hatchling and keeps the form (`form=galar` and the like). With Ditto, the parent that isn't
+Ditto counts as the mother. Regions Galar, Hisui and Paldea work the same (Perrserker a Galarian Meowth, Sneasler a
+Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with no regional form (Alolan Raichu,
+Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A Blaze Breed Tauros hatchling (with Ditto) turns Combat Breed after
+a reload (B955). Tested in `QaDaycareBugs1103dCompatTests` and `QaDaycareRegional1104d2CompatTests` (11).
 
 ## How it works
 

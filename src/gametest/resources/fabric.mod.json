@@ -1263,7 +1263,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBenchMovesCellars1104bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildReserve1104bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneD1104GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaVillagerFixes1104c2GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaVillagerFixes1104c2GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageFixes1104c3GameTests"
 		]
 	},
 	"depends": {

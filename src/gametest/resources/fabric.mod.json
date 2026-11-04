@@ -1275,7 +1275,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaFletcherWords1104cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSeerWatch1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerFixes1104c2GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaVillageFixes1104c3GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaVillageFixes1104c3GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillagerVerify1104c3GameTests"
 		]
 	},
 	"depends": {

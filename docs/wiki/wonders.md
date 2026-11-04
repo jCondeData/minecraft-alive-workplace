@@ -1002,7 +1002,7 @@ line in each form. A failing test on the tests/stadium-thesis-1028 branch (until
 with one visitor reads "1 visiting trainers".
 
 QA compat GameTests in `QaStadiumDays1104CompatTests` (35.24): thirty Stadium Days in a row each bring two to four
-visitors (every count seen, the file's every 2 days with 2 to 4); with no realm or partner only travellers of rank 3 to 5
+visitors (every count seen, the file's every 2 days with 2 to 4); with no realm or partner only travelers of rank 3 to 5
 (each seen), called "the Traveler" and a Trainer a player can challenge; the server's own clock brings them on an even
 afternoon and the odd day's afternoon has none; five fans by three seats seat three, only they "watched a Stadium Day"
 (+5); a village with no trainer of its own fights no bout, the visitors stay until dusk; a visitor's own trainer at home

@@ -33,7 +33,8 @@ show there:
 - every villager watching within 12 blocks gets **+3 mood** ("watched a Mega Evolution at the shrine") for as long as
   a festival's good mood lasts.
 
-The show is held once a festival. Afterwards the crowd goes back to the square for the dancing and the fireworks.
+The show is held once a festival. The crowd stays by the shrine until the hour and a half is over, then goes back to
+the square for the dancing and the fireworks.
 
 The pedestal has to be standing: if it is broken, the shrine holds no show until it is put back.
 

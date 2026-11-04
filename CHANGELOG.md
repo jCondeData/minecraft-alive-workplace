@@ -18,6 +18,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Fletcher making spectral arrows for a guard reads "making 8 Spectral Arrows", not "8 Spectral Arrow"; bows,
+  crossbows, shears and the stone and iron tools and swords get their plurals too (B916).
+- With only a Seer as the village's lookout, the hall's Defense page no longer says they keep watch from a tower a
+  day ahead: it reads "sees raids in visions, 2 days before they come", and the Lighthouse's keeper has a line of their
+  own (B919).
 - Items handed in on half a reform step still count when the reform's story is switched off or on: 10 of the Shift
   Bell's 24 clocks given to the story leave the quest page's step asking only the 14 left, and the other way round
   (B917).

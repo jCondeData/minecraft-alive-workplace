@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133, B824, B856
+Roadmap items: 32.2, 32.14, B133, B824, B856, B919
 
 ## What a player sees
 
@@ -42,7 +42,9 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 - **Told at once.** Players in the village, and the hall's owner wherever they are online, read "Smoke on the north
   road: Warlord Harl's band will strike Oakvale tomorrow night." The chronicle has it; the guards icon says "Raiders
   tomorrow night, from the north" ("Raiders in 2 days" after a Seer's warning) and the Defense page's new slot shows
-  the attack, who and the side.
+  the attack, who and the side. While no attack is seen, that slot says who keeps watch, each in their own words: a
+  guard "keeps watch from a tower: a raid is seen a day ahead", a Seer "sees raids in visions, 2 days before they
+  come", the Lighthouse's keeper "watches the sea from the lighthouse" (B919).
 - **On the day.** From noon the gates shut and the portcullis of every gate build drops; at dusk the guards take their
   battle stations ([Sieges](sieges.md)) and the villagers go in, before the horn. The siege that begins takes the
   dropped bars over; if no attack came, the bars go up the next morning.

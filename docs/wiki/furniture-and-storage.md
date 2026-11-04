@@ -130,6 +130,10 @@ and the blocks are separate stores again, with everything still in them. A "Soph
 vanilla ones and a controller on top of the Storehouse block, touching the chests on both sides.
 A Sophisticated barrel or chest a builder adds to a controller's network joins it, even when it touches only another
 linked barrel, as it would if you placed it yourself (B238).
+A storage link counts what lies behind it once: linked to the controller with the Storage Tool, the storage behind it
+is the controller's; placed without the tool, or built by a builder, it links nothing, and the storage behind it is a
+store of its own. Break a linked link and that storage is a store of its own again, with its goods counted once (B257;
+`QaStorageHallCompat1104c3Tests`).
 Behind the gate (37.10), a Tom's Simple Storage inventory connector within the Storehouse's 8 blocks is one store for
 every inventory it joins: the chests, barrels and filing cabinets touching it (and touching those), and the one each
 cable connector on its cables faces. The board's first line counts the connector as one chest, and a second line says

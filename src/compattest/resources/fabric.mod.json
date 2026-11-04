@@ -92,6 +92,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainVillageRenamed1104eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TrainHubCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainStationRenamedLater1103eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaTrainRenamedFarAway1104eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainStationSameName1104eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainStationOddNames1104eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainsBackOn1103eCompatTests",
@@ -250,7 +251,9 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaNurseMachine1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.NurseBusyMachineCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaNurseBusy1103dCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaDaycareInheritance1103dCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaDaycareInheritance1103dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaDaycareBugs1103dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaStorageHallCompat1104c3Tests"
 		]
 	},
 	"depends": {

@@ -188,7 +188,8 @@ public final class CaravanTrains {
 		/**
 		 * B900: the village train's schedule kept on the two stations' current names (it goes by name, and a player may
 		 * rename a station with Create's screen once the train runs): a stop whose station no longer has its name is
-		 * pointed at {@code there} (the first stop) or {@code home} (the second) under the name it has now.
+		 * pointed at {@code there} (the first stop) or {@code home} (the second) under the name it has now. B912: either
+		 * station may be unloaded (its name is the railway's).
 		 */
 		void follow(ServerLevel level, UUID owner, BlockPos there, BlockPos home);
 

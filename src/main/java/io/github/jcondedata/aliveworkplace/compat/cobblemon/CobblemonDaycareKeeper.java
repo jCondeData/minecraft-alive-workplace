@@ -9,6 +9,7 @@ import com.cobblemon.mod.common.api.moves.MoveTemplate;
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.api.pokemon.PokemonPropertyExtractor;
 import com.cobblemon.mod.common.api.pokemon.egg.EggGroup;
+import com.cobblemon.mod.common.api.pokemon.evolution.Evolution;
 import com.cobblemon.mod.common.api.pokemon.evolution.PreEvolution;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
@@ -157,10 +158,15 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			if (pre == null) {
 				break;
 			}
+			form = preForm(form, pre);
 			species = pre.getSpecies();
-			form = pre.getForm();
 		}
-		Pokemon baby = PokemonProperties.Companion.parse(species.getResourceIdentifier().toString() + " level=1", " ", "=").create();
+		// The form's aspects (an Alolan Vulpix's "alolan") pick the form, and stay with the hatchling when it's saved
+		StringBuilder properties = new StringBuilder(species.getResourceIdentifier().toString());
+		for (String aspect : form.getAspects()) {
+			properties.append(' ').append(aspect);
+		}
+		Pokemon baby = PokemonProperties.Companion.parse(properties + " level=1", " ", "=").create();
 		if (form != baby.getForm() && species.getForms().contains(form)) {
 			baby.setForm(form);
 		}
@@ -208,6 +214,57 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 		}
 		baby.heal();
 		return baby;
+	}
+
+	/**
+	 * The form of {@code pre}'s species that {@code form} evolves from. Cobblemon resolves a regional pre-evolution
+	 * ("vulpix alolan") to the species' standard form, so this takes the form whose evolution leads to {@code form}
+	 * (same species, same aspects), else the one with {@code form}'s aspects, else Cobblemon's.
+	 */
+	private static FormData preForm(FormData form, PreEvolution pre) {
+		Species species = pre.getSpecies();
+		List<FormData> forms = new ArrayList<>();
+		forms.add(species.getStandardForm());
+		for (FormData candidate : species.getForms()) {
+			if (!forms.contains(candidate)) {
+				forms.add(candidate);
+			}
+		}
+		Set<String> aspects = new HashSet<>(form.getAspects());
+		List<FormData> leading = new ArrayList<>();
+		for (FormData candidate : forms) {
+			if (evolvesInto(candidate, form, aspects)) {
+				leading.add(candidate);
+			}
+		}
+		FormData resolved = pre.getForm();
+		if (leading.contains(resolved) || leading.isEmpty() && aspects.isEmpty()) {
+			return resolved;
+		}
+		if (!leading.isEmpty()) {
+			return leading.get(0);
+		}
+		for (FormData candidate : forms) {
+			if (new HashSet<>(candidate.getAspects()).equals(aspects)) {
+				return candidate;
+			}
+		}
+		return resolved;
+	}
+
+	private static boolean evolvesInto(FormData from, FormData to, Set<String> aspects) {
+		String target = to.getSpecies().getResourceIdentifier().getPath();
+		for (Evolution evolution : from.getEvolutions()) {
+			PokemonProperties result = evolution.getResult();
+			String species = result.getSpecies();
+			if (species == null || !species.substring(species.indexOf(':') + 1).equalsIgnoreCase(target)) {
+				continue;
+			}
+			if (new HashSet<>(result.getAspects()).equals(aspects)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static Set<String> moveNames(Pokemon pokemon) {

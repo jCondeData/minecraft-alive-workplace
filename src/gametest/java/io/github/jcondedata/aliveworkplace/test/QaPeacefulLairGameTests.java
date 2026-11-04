@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.guard.BanditCamps;
 import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
@@ -57,7 +58,10 @@ public class QaPeacefulLairGameTests implements FabricGameTest {
 		};
 	}
 
-	/** A hall (village radius 16) with four villagers and a bandit camp by it; config, clock, difficulty and threats put back at the end. */
+	/**
+	 * A hall (village radius 16) with four villagers and a bandit camp by it; no hall rounds but the tests' own (and the
+	 * new hall's first); config, clock, difficulty and threats put back at the end.
+	 */
 	private static BlockPos village(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
@@ -67,6 +71,10 @@ public class QaPeacefulLairGameTests implements FabricGameTest {
 		long time = level.getDayTime();
 		boolean lairs = Lairs.ENABLED;
 		Difficulty difficulty = level.getDifficulty();
+		int every = VillageNeeds.CHECK_EVERY;
+		// Only the rounds the tests run (B855, as B799): the hall's own round (every CHECK_EVERY ticks, at a time set by
+		// the world clock) that fell in a test's 10 ticks on Peaceful sent the camp away before the test's save and load.
+		VillageNeeds.CHECK_EVERY = Integer.MAX_VALUE;
 		VillageHalls.RADIUS = 16;
 		Lairs.ENABLED = true;
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
@@ -84,6 +92,7 @@ public class QaPeacefulLairGameTests implements FabricGameTest {
 			ThreatData.get(level).forgetPast(hall);
 			ThreatData.get(level).forgetClock(hall);
 			VillageHalls.RADIUS = radius;
+			VillageNeeds.CHECK_EVERY = every;
 			Lairs.ENABLED = lairs;
 			level.setDayTime(time);
 			new WorkplaceConfig().apply();

@@ -210,8 +210,8 @@ None.
   `WarningGameTests`, `LighthousePowerGameTests`, `LegendGuestsGameTests`.
 - B133 (QA, lane D): `QaLaneD1104GameTests` (2: a Seer's village isn't told of an attack three days off, is told the
   next dawn, two days off, once, in the Seer's words, and the Defense page counts it down from "Attack in 2 days" to
-  "Attack tonight"; a Seer who is gone tells nothing and the page reads "No lookout"); with only a Seer, the page's
-  idle line still says they keep watch from a tower and see a day ahead (B919).
+  "Attack tonight"; a Seer who is gone tells nothing and the page reads "No lookout"). The page's idle line for a Seer
+  once said they kept watch from a tower and saw a day ahead (B919, fixed).
 - B856: `QaRisingsVerify1102dGameTests.aVillagesRoundEndsItsRaidOnceItsOwnRaidersAreGoneThoughANeighboursAreNear`
   (two desert raids 25 blocks apart; the first's raider killed, its round ends its raid though the second's raider
   stands within its reach; the second's raid goes on) and `aVillagesRaidersLeavingAtTheirHourLeaveANeighboursRaiderBehind`
@@ -220,3 +220,10 @@ None.
   blocks below a second raided hall: after both halls' rounds only one raid is still under way), with
   `QaRaidOwnership1104cGameTests`; unchanged and passing: `QaRaidVertical1103dGameTests`,
   `QaRaidReachHeight1104dGameTests`, `QaRaidNeighbours1103dGameTests`, `QaRisingsVerify1102dGameTests`.
+- B915, B919 (QA, lane D): `QaThreatFixes1104dGameTests`. B915: a Ravager, a Husk and a Silverfish are each in a
+  hall's reach at 48 blocks above and below their feet and out at 49, and the raid-of check follows the same edge; two raided
+  villages with one raider between them (a tall and a short mob, 48 and 49 above and below the second hall) keep
+  exactly one raid going, the one that owns it, and the other is fought off; killing that raider ends only its own
+  raid. B919: the Seer's idle line word for word ("sees raids in visions, 2 days before they come", never a tower),
+  "a day before" for a one-day Seer and "3 days" for a three-day one, "No lookout" once the Seer is gone, and the
+  Lighthouse keeper's sea-watch line.

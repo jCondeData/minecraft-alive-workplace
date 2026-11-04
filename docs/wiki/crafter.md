@@ -86,7 +86,7 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
 The builder's status (`BuilderStatusSync.supplyLines`) adds `JobShortages.line` under "Short of" while it waits:
 first up to two chains short of a raw material, else the crafted parts (something a crafting table, stonecutter,
 furnace or furniture bench makes) that no job has looked at in the last 600 ticks, once the site has waited that long.
-The cook, the luxury makers, the Weaponsmith and the Fletcher keep their old one-plan way. Their status lines name what they make in the plural after a count above one: "making 8 Spectral Arrows" (B916; bows, crossbows, shears and the stone and iron tools and swords have plurals too).
+The cook, the luxury makers, the Weaponsmith and the Fletcher keep their old one-plan way. Their status lines name what they make in the plural after a count above one: "making 8 Spectral Arrows" (B916; bows, crossbows, shears and the stone and iron tools and swords have plurals too), and so do the cook's pies, cookies, cakes and stews ("cooking 2 Pumpkin Pies"). Two of the cook's Smoker dishes have no plural yet and still read as one: "cooking 4 Cooked Porkchop" and "cooking 8 Beetroot Soup" (B931).
 
 The retired Crafter: `Crafters.tick` (every villager's AI step, from `VillagerMixin`) finds a villager whose profession is
 `aliveworkplace:crafter` and makes it jobless: the workbench's POI ticket let go, the `crafter_job` dropped (and its claim

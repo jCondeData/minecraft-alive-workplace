@@ -269,6 +269,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 
 ## Known limits
 
+- Ladders (32.5, B934, open): a follower already within about 2 blocks of a ladder's foot when the gate breaks open
+  still climbs the whole ladder and goes over by it instead of turning for the gate.
 - Battle stations (32.6): a station only counts if the guard can get within 3.5 blocks of its foot. Merlons can
   hide a foe from an archer standing behind one; he shoots when he has a line of sight. Stations are chosen without
   regard to their view: on the Gatehouse the station picked is behind a merlon, and from the Gatehouse's walkway and
@@ -371,3 +373,7 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   crossbow from a station, the damage an arrow does with the height bonus (only the factor), an offline player.
 - Showcase scene `battle_stations`: two archers leaving their Guard Post for stations on a Gatehouse and a Wall Tower
   and shooting down at raiders hacking at the portcullis.
+- B907 (QA, lane D): `QaThreatFixes1104dGameTests`: a restart as the gate breaks open (siege and ladder state
+  forgotten) still sends the follower in by the gate, climbing no more than 2 blocks; the lead climber already up its
+  ladder when the gate breaks gets over the wall and inside. Failing (B934): a follower 0.5-2 blocks from the foot,
+  QaThreatFixes1104dBugTests on tests/ladder-follower-1104d.

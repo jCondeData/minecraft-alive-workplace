@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B147, B201
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201
 
 ## What a player sees
 
@@ -141,6 +141,11 @@ is never a cure either (B781): he puts it away and cures with a real Remedy from
 
 The Class column only counts once classes are on (see [Classes](classes.md)). Each job's own page or README section
 says what it does all day.
+
+**Daycare hatchlings (28.12, B854).** A Daycare Keeper's pair hatches the mother's base form in her regional form: a
+female Alolan Ninetales hatches an Alolan Vulpix, a Kanto mother a Kanto Vulpix whatever the father. The hatchling
+takes the pre-evolution form whose evolution leads to the mother's form (`CobblemonDaycareKeeper.preForm`); Cobbreeding's
+egg is made from the same hatchling (the hatchling is tested in `QaDaycareBugs1103dCompatTests`).
 
 ## How it works
 

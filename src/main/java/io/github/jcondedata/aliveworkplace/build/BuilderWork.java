@@ -609,7 +609,7 @@ public class BuilderWork extends Behavior<Villager> {
 		workTimerRule = BuilderLevels.rule(level);
 		workTimer = Math.max(0, BuilderLevels.delay(workTimerRule, villager) - 1);
 		if (action == Action.BREAK && site.stage() == BuildPlan.Stage.DECONSTRUCT) {
-			takeDown(level, villager, site, bag, bench, step);
+			takeDown(level, villager, site, plan, bag, bench, step);
 			site.dug(step.pos()); // B868
 		} else if (action == Action.BREAK) {
 			breakBlock(level, villager, bag, bench, plan, step.pos());
@@ -2145,9 +2145,13 @@ public class BuilderWork extends Behavior<Villager> {
 	 * Deconstruction: removes the block and keeps exactly what it cost to build (glass comes back as
 	 * glass, a potted flower as a pot and a flower), like a careful builder rather than a pickaxe.
 	 */
-	private void takeDown(ServerLevel level, Villager villager, BuildSite site, BuilderBag bag, BlockPos bench, BuildPlan.Step step) {
+	private void takeDown(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench, BuildPlan.Step step) {
 		BlockPos pos = step.pos();
 		BlockState state = level.getBlockState(pos);
+		if (MaterialRules.isPouredLiquid(state)) {
+			scoop(level, villager, site, plan, bag, bench, step, state);
+			return;
+		}
 		if (step.secondaryPos() != null) {
 			level.setBlock(step.secondaryPos(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 		}
@@ -2155,7 +2159,37 @@ public class BuilderWork extends Behavior<Villager> {
 		level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
 		level.levelEvent(2001, pos, Block.getId(state)); // break particles and sound
 		level.gameEvent(villager, GameEvent.BLOCK_DESTROY, pos);
-		for (MaterialRules.Requirement r : step.requirements()) {
+		giveBack(level, villager, site, bag, bench, step.requirements());
+	}
+
+	/**
+	 * B961: a poured liquid taken down is scooped up as a player would, with an empty bucket (from his bag, else the
+	 * bench's chests): its pouring left that bucket empty, so he gets the full one back and nothing more. Without an empty
+	 * bucket he takes the liquid away and gets nothing (a bucket is never made from nothing). Nothing round it is told the
+	 * source is gone, so the sources beside it don't fill the hole again and nothing flows (its bank still stands: the
+	 * take-down plan takes liquids first).
+	 */
+	private void scoop(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench,
+					   BuildPlan.Step step, BlockState state) {
+		BlockPos pos = step.pos();
+		level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+		level.playSound(null, pos, state.getFluidState().is(net.minecraft.tags.FluidTags.LAVA) ? SoundEvents.BUCKET_FILL_LAVA : SoundEvents.BUCKET_FILL,
+			net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+		level.gameEvent(villager, GameEvent.FLUID_PICKUP, pos);
+		boolean bucket = bag.remove(net.minecraft.world.item.Items.BUCKET, 1) == 1;
+		if (!bucket && bench != null) {
+			bucket = SupplyContainers.extract(level, SupplyContainers.find(level, bench, plan.supplyExclude()), net.minecraft.world.item.Items.BUCKET, 1) == 1;
+		}
+		if (bucket) {
+			MaterialLedger.used(net.minecraft.world.item.Items.BUCKET, 1);
+			giveBack(level, villager, site, bag, bench, step.requirements());
+		} else {
+			giveBack(level, villager, site, bag, bench, List.of());
+		}
+	}
+
+	private void giveBack(ServerLevel level, Villager villager, BuildSite site, BuilderBag bag, BlockPos bench, List<MaterialRules.Requirement> requirements) {
+		for (MaterialRules.Requirement r : requirements) {
 			MaterialLedger.gained(r.item(), r.count());
 			int rest = bag.addAll(r.item(), r.count());
 			if (rest > 0) {

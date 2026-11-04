@@ -324,8 +324,8 @@ public final class BuildPlan {
 	}
 
 	/**
-	 * Plan for taking the build down: every block the blueprint places, decorations first (so nothing
-	 * pops off and drops), then the rest from the top down. Blocks that are not what the blueprint says
+	 * Plan for taking the build down: every block the blueprint places, its poured liquids first (B961), then the
+	 * decorations (so nothing pops off and drops), then the rest from the top down. Blocks that are not what the blueprint says
 	 * are left alone.
 	 */
 	public static BuildPlan deconstruct(Blueprint blueprint, BlueprintData.Placement placement) {
@@ -335,7 +335,19 @@ public final class BuildPlan {
 		List<Step> structure = new ArrayList<>(build.structure);
 		decorations.sort(order(bounds, true));
 		structure.sort(order(bounds, true));
-		List<Step> steps = new ArrayList<>(decorations);
+		// B961: the water (any poured liquid) first of all, while every block round it still holds it: taken away after
+		// its bank or a plant beside it, it ran out over the ground, and the sources beside a hole filled it again
+		List<Step> steps = new ArrayList<>();
+		for (Step s : decorations) {
+			if (MaterialRules.isPouredLiquid(s.state())) {
+				steps.add(s);
+			}
+		}
+		for (Step s : decorations) {
+			if (!MaterialRules.isPouredLiquid(s.state())) {
+				steps.add(s);
+			}
+		}
 		steps.addAll(structure);
 		return new BuildPlan(List.of(), List.of(), List.of(), List.of(), List.of(), List.copyOf(steps), bounds);
 	}

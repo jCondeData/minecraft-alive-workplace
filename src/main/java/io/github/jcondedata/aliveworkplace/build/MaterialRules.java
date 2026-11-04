@@ -397,6 +397,17 @@ public final class MaterialRules {
 		return null;
 	}
 
+	/**
+	 * B961: a liquid source a builder pours from a bucket (still water or lava, or the water of a bubble column). Taken
+	 * down, it is scooped up again: the empty bucket its pouring left goes back in, and nothing round it is told it's
+	 * gone (the sources beside it would fill the hole again).
+	 */
+	public static boolean isPouredLiquid(BlockState state) {
+		Block block = state.getBlock();
+		return (block instanceof LiquidBlock || block instanceof net.minecraft.world.level.block.BubbleColumnBlock)
+			&& state.getFluidState().isSource() && bucket(state) != Items.AIR;
+	}
+
 	/** The item (and how many) consumed to place this state. Empty if it cannot be built. */
 	public static Optional<Requirement> requirement(BlockState state) {
 		Block block = state.getBlock();

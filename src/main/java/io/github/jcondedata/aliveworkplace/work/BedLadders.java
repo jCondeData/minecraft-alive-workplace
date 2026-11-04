@@ -40,6 +40,8 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>The ladder taken is one that comes up in the bed's room (B304), and a free bed up a ladder can be claimed, which
  * vanilla's claim (it wants a path to the bed) never allowed ({@link #pathUpALadder}, from {@code AcquirePoiMixin}).
+ * A villager already up on the floor of a bed it can't walk to there (the Terrace's other bedroom) goes down its own
+ * ladder first, then across and up the right one (B925, {@link #down}); such a bed can be claimed too.
  */
 public final class BedLadders {
 	/** How far from the bed (each way, flat) a ladder up to its floor is looked for. */
@@ -52,6 +54,8 @@ public final class BedLadders {
 	private static final int PATHS = 2;
 	/** The ladder found for each villager's bed: [bed, top, bottom]. */
 	private static final Map<Villager, BlockPos[]> LADDERS = new WeakHashMap<>();
+	/** The ladder down from the floor a villager is on, for a bed on that floor it can't walk to: [bed, top, bottom] (B925). */
+	private static final Map<Villager, BlockPos[]> DOWN = new WeakHashMap<>();
 
 	public static void tick(Villager villager) {
 		if (!(villager.level() instanceof ServerLevel level) || villager.isSleeping() || villager.isPassenger()) {
@@ -60,6 +64,7 @@ public final class BedLadders {
 		Brain<Villager> brain = villager.getBrain();
 		if (!brain.isActive(Activity.REST)) {
 			LADDERS.remove(villager);
+			DOWN.remove(villager);
 			return;
 		}
 		GlobalPos home = brain.getMemory(MemoryModuleType.HOME).orElse(null);
@@ -70,6 +75,9 @@ public final class BedLadders {
 		BlockPos feet = villager.blockPosition();
 		if (feet.getY() > bed.getY() || Math.abs(feet.getX() - bed.getX()) > REACH + 2 || Math.abs(feet.getZ() - bed.getZ()) > REACH + 2) {
 			return;
+		}
+		if (down(level, villager, bed, feet)) {
+			return; // going down a ladder first: the bed is on this floor, but behind a wall (B925)
 		}
 		if (feet.getY() >= bed.getY() - 1 && !LADDERS.containsKey(villager)) {
 			return; // on the bed's floor or a step below it: vanilla walks there
@@ -106,6 +114,146 @@ public final class BedLadders {
 			villager.getLookControl().setLookAt(bed.getX() + 0.5, bed.getY() + 0.5, bed.getZ() + 0.5);
 		}
 		villager.fallDistance = 0;
+	}
+
+	/**
+	 * A villager on the bed's floor who can't walk to it there (in the Terrace's other bedroom, the party wall between them:
+	 * the owner's Aldous, B925) goes down a ladder from that floor first; then {@link #tick} takes them across downstairs
+	 * and up the ladder in the bed's room. Whether this has the villager in hand (walking to that ladder or down it).
+	 */
+	private static boolean down(ServerLevel level, Villager villager, BlockPos bed, BlockPos feet) {
+		Brain<Villager> brain = villager.getBrain();
+		BlockPos[] plan = DOWN.get(villager);
+		if (plan != null && (!plan[0].equals(bed) || !(level.getBlockState(plan[1]).getBlock() instanceof LadderBlock))) {
+			DOWN.remove(villager);
+			plan = null;
+		}
+		if (plan == null) {
+			// only once vanilla's walk to the bed has fallen short, and looked for once a second
+			if (Math.abs(feet.getY() - bed.getY()) > 1 || !brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)
+				|| villager.tickCount % 20 != 0) {
+				return false;
+			}
+			BlockPos[] found = downAndAcross(level, feet, bed);
+			if (found == null) {
+				return false;
+			}
+			plan = new BlockPos[] {bed.immutable(), found[0], found[1]};
+			DOWN.put(villager, plan);
+		}
+		BlockPos top = plan[1];
+		BlockPos bottom = plan[2];
+		if (feet.getY() <= bottom.getY() || feet.getY() > top.getY() + 1) {
+			DOWN.remove(villager); // down (or somewhere else altogether): the way up to the bed takes over
+			return false;
+		}
+		brain.eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+		double dx = top.getX() + 0.5 - villager.getX();
+		double dz = top.getZ() + 0.5 - villager.getZ();
+		boolean inColumn = feet.getX() == top.getX() && feet.getZ() == top.getZ();
+		if (!inColumn && dx * dx + dz * dz > 1.7 * 1.7) {
+			// to the ladder's hole (vanilla walks there); the bed isn't given up meanwhile
+			if (!brain.getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getTarget().currentBlockPosition().equals(top.above())).orElse(false)) {
+				brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(top.above(), 0.5f, 1));
+			}
+			return true;
+		}
+		// beside the hole or in it: over it and down the ladder (a climbable slows the fall); vanilla's walking waits meanwhile
+		brain.eraseMemory(MemoryModuleType.WALK_TARGET);
+		villager.getNavigation().stop();
+		villager.getMoveControl().setWantedPosition(villager.getX(), villager.getY(), villager.getZ(), 0);
+		double fall = inColumn ? -CLIMB : villager.getDeltaMovement().y;
+		villager.setDeltaMovement(dx * 0.2, fall, dz * 0.2);
+		villager.fallDistance = 0;
+		return true;
+	}
+
+	/**
+	 * For a villager at {@code feet} on {@code bed}'s floor who can't walk to it there: a ladder down from that floor [top,
+	 * bottom] that they can walk to, from whose foot they can walk to the foot of a ladder that comes up in the bed's room
+	 * ({@link #reachesBed}); or null.
+	 */
+	@Nullable
+	private static BlockPos[] downAndAcross(ServerLevel level, BlockPos feet, BlockPos bed) {
+		if (reachesBed(level, feet, bed)) {
+			return null; // vanilla walks there
+		}
+		List<BlockPos> ups = new ArrayList<>();
+		for (BlockPos top : tops(level, bed)) {
+			if (reachesBed(level, top, bed)) {
+				ups.add(bottom(level, top, level.getMinBuildHeight()));
+			}
+		}
+		if (ups.isEmpty()) {
+			return null;
+		}
+		BlockPos[] best = null;
+		double bestDistance = Double.MAX_VALUE;
+		for (BlockPos top : tops(level, feet)) {
+			BlockPos bottom = bottom(level, top, level.getMinBuildHeight());
+			double d = top.distSqr(feet);
+			if (bottom.getY() >= top.getY() - 1 || d >= bestDistance || !reachesBed(level, top, feet)) {
+				continue; // no floor below to go down to, a farther one, or not one they can walk to up here
+			}
+			for (BlockPos up : ups) {
+				if (!up.equals(bottom) && walks(level, bottom, up)) {
+					best = new BlockPos[] {top, bottom};
+					bestDistance = d;
+					break;
+				}
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * Whether a villager can walk from {@code from} to beside {@code to} (the feet of two ladders): over blocks it can stand
+	 * on, a step up or down at a time, through doors it opens, within {@link #REACH} + 2 of them both.
+	 */
+	static boolean walks(ServerLevel level, BlockPos from, BlockPos to) {
+		int margin = REACH + 2;
+		int minX = Math.min(from.getX(), to.getX()) - margin;
+		int maxX = Math.max(from.getX(), to.getX()) + margin;
+		int minZ = Math.min(from.getZ(), to.getZ()) - margin;
+		int maxZ = Math.max(from.getZ(), to.getZ()) + margin;
+		LongOpenHashSet seen = new LongOpenHashSet();
+		ArrayDeque<BlockPos> open = new ArrayDeque<>();
+		seen.add(from.asLong());
+		open.add(from);
+		while (!open.isEmpty()) {
+			BlockPos at = open.poll();
+			if (Math.abs(at.getX() - to.getX()) + Math.abs(at.getZ() - to.getZ()) <= 1 && Math.abs(at.getY() - to.getY()) <= 1) {
+				return true;
+			}
+			for (Direction d : Direction.Plane.HORIZONTAL) {
+				BlockPos side = at.relative(d);
+				if (side.getX() < minX || side.getX() > maxX || side.getZ() < minZ || side.getZ() > maxZ) {
+					continue;
+				}
+				for (int dy : new int[] {0, 1, -1}) {
+					BlockPos next = side.above(dy);
+					if (dy > 0 && !standable(level, at.above())) {
+						continue; // no room overhead to step up
+					}
+					if (dy < 0 && !standable(level, side)) {
+						break; // a wall in the way down
+					}
+					if (standable(level, next) && onFloor(level, next)) {
+						if (seen.add(next.asLong())) {
+							open.add(next);
+						}
+						break;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	/** Whether there is something to stand on at {@code at}: a block below, or a low one (a slab, a carpet) in it. */
+	private static boolean onFloor(ServerLevel level, BlockPos at) {
+		return !level.getBlockState(at).getCollisionShape(level, at).isEmpty()
+			|| !level.getBlockState(at.below()).getCollisionShape(level, at.below()).isEmpty();
 	}
 
 	/**
@@ -237,12 +385,21 @@ public final class BedLadders {
 		BlockPos feet = villager.blockPosition();
 		PoiManager poi = level.getPoiManager();
 		List<BlockPos> beds = pois.stream().filter(p -> p.getFirst().is(PoiTypes.HOME)).map(Pair::getSecond)
-			.filter(b -> b.getY() > feet.getY() + 1 && poi.getFreeTickets(b) > 0)
+			.filter(b -> b.getY() >= feet.getY() - 1 && poi.getFreeTickets(b) > 0)
 			.sorted(Comparator.comparingDouble(b -> b.distSqr(feet))).toList();
 		int walks = PATHS; // a path costs more than the block reads: a few per look (vanilla looks again a second later)
 		for (BlockPos bed : beds) {
 			if (walks <= 0) {
 				break;
+			}
+			if (bed.getY() <= feet.getY() + 1) {
+				// on the villager's floor but not one vanilla walks to: down a ladder here, across and up one there (B925)
+				walks--;
+				if (Math.abs(bed.getX() - feet.getX()) <= REACH + 2 && Math.abs(bed.getZ() - feet.getZ()) <= REACH + 2
+					&& downAndAcross(level, feet, bed) != null) {
+					return new Path(List.of(new Node(bed.getX(), bed.getY(), bed.getZ())), bed.immutable(), true);
+				}
+				continue;
 			}
 			List<BlockPos> bottoms = new ArrayList<>();
 			for (BlockPos top : tops(level, bed)) {

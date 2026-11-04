@@ -55,7 +55,8 @@ step falls back to slaying monsters when Cobblemon or a trainer is missing.
 
 **Reforms as stories (31.22).** With `storyArcs` on, each reform is told as a short side story of the same name
 (`data/aliveworkplace/arcs/<name>.json`, named by the reform's `arc`). When the edict is in force a villager of the
-fitting trade asks you for it: talk to them and the reform's three steps follow as the story's quests, the same items,
+fitting trade asks you for it in chat, in one pair of quotes (Toolsmith: "We hammer from dawn to dark ... gladly.",
+B914): talk to them and the reform's three steps follow as the story's quests, the same items,
 counts and pay, one a day; the villagers talk about it and the chronicle tells each chapter. The ending pays the new
 `reform_edict` reward (the edict reformed for that village, as the last step would) and leaves something lasting:
 

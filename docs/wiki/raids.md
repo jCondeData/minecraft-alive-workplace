@@ -23,6 +23,10 @@ its captain falls. Under that look:
   raider standing within its reach but nearer another village with a raid under way (that raid's). So a village whose
   raiders are all dead has fought its raid off even with the neighbor's raiders about, and when its raiders leave at
   their hour the neighbor's stay (B856, the rule a call-off already used, B849).
+  Every raider belongs to exactly one raid: a village's reach is measured from where the raider stands (its feet),
+  RADIUS + 32 across and 48 blocks up or down from the hall, the same rule for who a village counts, whose raid a
+  raider is and a siege's raiders; of the raids that reach it, the nearest hall's (the first raided, on a tie). So one
+  raider 49 blocks below a second raided village no longer keeps both raids going (B915).
 
 ## A day's warning (32.14)
 
@@ -210,3 +214,7 @@ None.
   (two desert raids 25 blocks apart; the first's raider killed, its round ends its raid though the second's raider
   stands within its reach; the second's raid goes on) and `aVillagesRaidersLeavingAtTheirHourLeaveANeighboursRaiderBehind`
   (the first's raiders leave at noon, the second's raider stays and its raid goes on).
+- B915: `QaRaidOwnership1104cBugTests.aRaider49BlocksBelowAnotherRaidedHallKeepsOnlyOneRaidGoing` (one raider 49
+  blocks below a second raided hall: after both halls' rounds only one raid is still under way), with
+  `QaRaidOwnership1104cGameTests`; unchanged and passing: `QaRaidVertical1103dGameTests`,
+  `QaRaidReachHeight1104dGameTests`, `QaRaidNeighbours1103dGameTests`, `QaRisingsVerify1102dGameTests`.

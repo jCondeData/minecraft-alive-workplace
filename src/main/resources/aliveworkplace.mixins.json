@@ -36,6 +36,7 @@
 		"MerchantContainerMixin",
 		"MerchantResultSlotMixin",
 		"MobAccessor",
+		"PathNavigationAccessor",
 		"PathNavigationMixin",
 		"PlayerListMixin",
 		"PoiManagerMixin",

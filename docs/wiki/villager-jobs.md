@@ -15,7 +15,7 @@ block's own job comes back with its own item (wheat for a Farmer, coal for an Ar
 ("Dara took the Miner job at the Blast Furnace."), or what is missing (no such block near, or every one taken).
 A hired mercenary or a story's visitor such as Doctor Wren isn't the village's to give a job, even at a block
 they took themselves: the item says "Doctor Wren's job can't be changed here." and nothing changes (B906, as the
-Village Hall's People table, B895).
+Village Hall's People table, B895), whatever blocks are near: never "needs a Stonecutter" or "taken" first (B911).
 A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it.
 The block they are walking to counts as free for them (B803): handed its job's item, they take that one, while
 another villager is told it's taken. A free block of that kind nearer them still wins (and the one they were walking

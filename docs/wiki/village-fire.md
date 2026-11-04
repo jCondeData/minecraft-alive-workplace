@@ -129,4 +129,7 @@ builders put it back after a restart too.
   `FireGameTests.theWaterCarriedSurvivesASave`, `FireGameTests.theBuilderPutsBackWhatBurned`,
   `FireGameTests.switchedOffAFirewardenStandsIdle`, `FireGameTests.everyNewSentenceHasItsText`.
 - `PastureCompatTests.pasturedWaterTypesDouseTheFire` (with Cobblemon): a Squirtle by the grindstone puts a fire out.
+- QA (`QaVillageFixes1104c3GameTests`, B390): a fire set against the outside of a finished hut's corner post is written
+  up under the hut's name; a fire on the ground two blocks from the hut is "Fire in the village", and a spot one block
+  further out than the wall, or two over the roof, belongs to no build.
 - Showcase scenes: `fire`.

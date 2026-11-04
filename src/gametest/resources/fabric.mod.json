@@ -376,6 +376,7 @@
 			"io.github.jcondedata.aliveworkplace.test.OpenGatesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CurfewGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ConscriptionGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConscription1104dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WorkHornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
@@ -1272,7 +1273,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRaidOwnership1104cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidOwnership1104cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFletcherWords1104cBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSeerWatch1104GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSeerWatch1104GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillagerFixes1104c2GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageFixes1104c3GameTests"
 		]
 	},
 	"depends": {

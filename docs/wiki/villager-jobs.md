@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201
 
 ## What a player sees
 
@@ -17,7 +17,8 @@ A hired mercenary, a relief rider or a story's visitor such as Doctor Wren isn't
 a block they took themselves: the item says "Doctor Wren's job can't be changed here." and nothing changes (B906, as
 the Village Hall's People table, B895), whatever blocks are near: never "needs a Stonecutter" or "taken" first (B911).
 A retired elder is told they have retired instead; an elder who hasn't retired takes the job like anyone.
-A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it.
+A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it
+(B201: the next jobless villager does, `QaVillagerFixes1104c2GameTests`).
 The block they are walking to counts as free for them (B803): handed its job's item, they take that one, while
 another villager is told it's taken. A free block of that kind nearer them still wins (and the one they were walking
 to is let go); one they walk to that is out of reach (over 4.5 blocks) isn't given, and they keep walking to it.
@@ -164,14 +165,16 @@ new hours apply at once (`BrainAccessor`). Outside their hours the hand-off is t
 hours (a night's hire sleeps first) and the player is told when the work starts (`Jobs.startsLater`).
 
 **A Miner keeps all they dig (B224).** Stone of every kind, gravel and dirt go into the chests by the blast furnace with
-the ores; with those chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
+the ores (a pit of stone as cobblestone, topped onto the stack already there, none left lying about); with those
+chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
 A kitchen's chest (a smoker's, in the hall's village) gets the finds only when the Storehouse's chests are full or the
 village has no Storehouse; a Storehouse with room in part stacks is filled first (B834, `QaLaneC1102eGameTests`).
 
 **A Fisherman comes back for cooked fish (B147, B802).** Fish done in a furnace or smoker by his barrel call him home
 when the barrel can take them: an empty slot, or a stack of the same fish with room (a barrel whose every slot holds
 something still takes cooked cod on its cooked cod stack). A barrel full to the brim doesn't call him
-(`QaFisherFurnace1102GameTests`).
+(`QaFisherFurnace1102GameTests`). Meanwhile the cooked fish wait in the furnace, none dropped or lost, and he
+fetches them as soon as a slot is free (`QaVillagerFixes1104c2GameTests`).
 
 **Fewer job blocks (21.1a).** Related jobs share a block. A jobless villager by a vanilla block takes the vanilla
 job by itself, as in vanilla (since 36.17, one of the block's jobs at random: [Random jobs](random-jobs.md)); the

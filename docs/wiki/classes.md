@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): switched on in 1.0 with
 every other expansion (`Expansions.M34`).
 
-Roadmap items: 34.1, 34.5, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22, B398
+Roadmap items: 34.1, 34.5, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22, B398, B367
 
 ## What a player sees
 
@@ -64,6 +64,9 @@ ages carries the day it was made (`made_day`): its tooltip reads "Pressed on day
 then "Pressed on day 42 · vintage". A maker takes an aged making only once it is old enough. When nothing short can be made, the first
 missing making goes on the requests board. Craftsmanship research speeds the makers like the other crafters. A data pack adds a good with
 a new recipe file and no code.
+The line over a maker's head counts the goods (B367): "fetching what 1 Amethyst Ring takes", "making 1 Amethyst Ring",
+"putting 1 Amethyst Ring away" for one, "fetching what 2 Amethyst Rings take" and "making 2 Amethyst Rings" for two
+(`QaCountedWords1103cGameTests`, `QaCountedWords1103cBugTests`).
 
 **The Tailor (34.10).** Stand a villager by a loom and sneak-right-click them with string (shears bring the Shepherd
 back). A Novice sews Work Clothes from 3 wool of any colors, 2 leather and a string; an Apprentice Fine Clothes from

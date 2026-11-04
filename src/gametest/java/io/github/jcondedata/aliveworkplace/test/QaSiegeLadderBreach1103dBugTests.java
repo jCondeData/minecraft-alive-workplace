@@ -16,9 +16,12 @@ import net.minecraft.world.entity.Mob;
  * spec: "the other raiders follow up the same ladder while the gate is still shut"; once it is open, they go in by it.
  */
 public class QaSiegeLadderBreach1103dBugTests {
+	/** The siege ladder tests' area (a plain name: Stonecutter's swap lines can't take a dotted one). */
+	private static final String AREA = QaSiegeLadderBreach1103dGameTests.AREA;
+
 	/** After the gate is broken open, the follower that was let go never goes more than two rungs up the ladder. */
-	//$ gametest_ticks_batch QaSiegeLadderBreach1103dGameTests.AREA '1500' '"qaLadderBreachLetGoNoClimb1103d"'
-	@GameTest(template = QaSiegeLadderBreach1103dGameTests.AREA, timeoutTicks = 1500, batch = "qaLadderBreachLetGoNoClimb1103d")
+	//$ gametest_ticks_batch AREA '1500' '"qaLadderBreachLetGoNoClimb1103d"'
+	@GameTest(template = AREA, timeoutTicks = 1500, batch = "qaLadderBreachLetGoNoClimb1103d")
 	public void aFollowerLetGoOfTheLadderDoesntClimbItAnyway(GameTestHelper helper) {
 		QaSiegeLadderBreach1103dGameTests.Yard yard = QaSiegeLadderBreach1103dGameTests.yard(helper);
 		Mob[] mobs = QaSiegeLadderBreach1103dGameTests.raiders(helper, yard);

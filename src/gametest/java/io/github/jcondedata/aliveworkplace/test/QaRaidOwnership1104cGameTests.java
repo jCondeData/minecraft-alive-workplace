@@ -64,6 +64,8 @@ public class QaRaidOwnership1104cGameTests implements FabricGameTest {
 				ThreatData.get(level).end(hall);
 				ThreatData.get(level).forgetPast(hall);
 				VillageRaids.forget(hall);
+				// a hall outside this area is never cleared and became a later batch's village (B918)
+				level.removeBlock(hall, false);
 			}
 			VillageHalls.RADIUS = radius;
 			level.setDayTime(time);

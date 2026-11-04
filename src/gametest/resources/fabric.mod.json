@@ -1299,6 +1299,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBenchMovesCellars1104bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildReserve1104bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneD1104GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTerraceUpstairs1104c2BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidOwnership1104cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidOwnership1104cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFletcherWords1104cBugTests",

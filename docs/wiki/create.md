@@ -612,6 +612,9 @@ deployer can place blocks in and rename the hall of a protected village (B844).
 - `QaTrainVillageRenamed1104eCompatTests` (QA, B894, with Create): with the Pine-Oakford train running, the middle
   village renamed Oakford with a name tag, or the far Oakford renamed Pine: the four stations keep four names and
   Pine's 32 logs reach the far village by train.
+- `QaSecondStationWords1104eGameTests` (QA, B898, without Create): the second station's site reads "Second Train
+  Station" (the train's "Village Train") for halls at positive, negative and zero positions, the two villages' sites
+  never share an id, and the chronicle's line reads as written.
 
 - `MachineWorkCompatTests` (with Create): for each of the millstone, the press over a depot, the mixer over a basin
   and the crushing wheels, with the job's own worker: turned by a creative motor, the chest's input goes to the machine

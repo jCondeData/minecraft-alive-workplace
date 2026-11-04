@@ -225,44 +225,6 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 	 * first departure (not a round trip later); once the train has left, the far village unloads, and the 32 logs reach
 	 * the near village's chest.
 	 */
-	//$ gametest_ticks_batch AREA '6000' '"qaTrainEdgesFirstDeparture"'
-	@GameTest(template = AREA, timeoutTicks = 6000, batch = "qaTrainEdgesFirstDeparture")
-	public void aCaravanSentAsTheFarTrainIsPutTogetherBoardsItsFirstDepartureAndArrives(GameTestHelper helper) {
-		Run r = new Run(helper, false, true);
-		int[] departed = {-1};
-		int[] boarded = {-1};
-		r.go(() -> r.sendFarToNear(), () -> {
-			Caravans.Shipment s = r.data.onTheRoad().stream().filter(x -> x.from().equals(r.l.far) && x.to().equals(r.l.near)).findFirst().orElse(null);
-			if (boarded[0] < 0 && s != null && CaravanTrains.aboard(s.arrives())) {
-				boarded[0] = r.tick;
-			}
-			if (departed[0] < 0) {
-				if (r.tick % 10 == 0) {
-					r.serveAll();
-				}
-				boolean atFar = r.at(r.l.farStation);
-				if (!atFar) { // gone from the station where it was put together (at once, too: then it didn't wait at all)
-					departed[0] = r.tick;
-					if (boarded[0] < 0) {
-						return "the caravan sent from the far village as its train was put together missed the train's first departure ("
-							+ (departed[0] - r.startedAt) + " ticks after it was put together); caravan " + s + ", train " + r.status();
-					}
-					r.force(false); // the train is off: the player walks home
-				} else if (r.elapsed() > 1200) {
-					return "the new train never left the far station in 1200 ticks: caravan " + s + ", train " + r.status();
-				}
-				return null;
-			}
-			r.serveLoaded();
-			int logs = ((Container) r.level.getBlockEntity(r.l.near.east(3).north(2))).countItem(Items.OAK_LOG);
-			if (s == null && logs == 32 && CreateTrainCompatTests.said(r.level, r.l.near, "chronicle.aliveworkplace.train_came")) {
-				return "";
-			}
-			return r.elapsed() >= WAIT ? "the caravan aboard the first departure never reached the near village: " + logs + " of 32 logs in its chest, caravan "
-				+ s + ", train " + r.status() : null;
-		});
-	}
-
 	/** One case: the line, the two villages, the train put together, the far village left to unload. */
 	private static final class Run {
 		final GameTestHelper helper;

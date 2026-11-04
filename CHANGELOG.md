@@ -16,8 +16,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.5 — 2026-11-03
+
 ### Fixed
 
+- A village train keeps running after a player renames one of its two Train Stations with Create's station screen:
+  its schedule follows the new name, so the caravans' goods still arrive instead of the train waiting at the other
+  station for good (B900).
+- A hired mercenary or Doctor Wren can no longer be given another job by sneak-right-clicking them with a job's item
+  either: "Doctor Wren's job can't be changed here." (B906; the hall's Job ▾ and No job already refuse her, B905).
 - Village Hall People table: a hired mercenary at a guard post, or Doctor Wren at a brewing stand, can no longer be
   retrained (they'd have left with the village's new job at dawn); a retired elder's job list and page now say on every
   line that he has retired, instead of "place a Blast Furnace first" or "Someone took that workstation first"; and

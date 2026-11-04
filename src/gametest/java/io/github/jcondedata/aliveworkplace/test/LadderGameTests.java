@@ -544,8 +544,8 @@ public class LadderGameTests implements FabricGameTest {
 	 * does every point with {@code sieges} off. A raid started by a culture that sets ladders then has every raider
 	 * outside the ring.
 	 */
-	//$ gametest_ticks_batch AREA '1200' '"ladderRing"'
-	@GameTest(template = AREA, timeoutTicks = 1200, batch = "ladderRing")
+	//$ gametest_ticks_batch AREA 'RING_TICKS' '"ladderRing"'
+	@GameTest(template = AREA, timeoutTicks = RING_TICKS, batch = "ladderRing")
 	public void aSiegeGathersOutsideTheRingOfWalls(GameTestHelper helper) {
 		Culture culture = village(helper);
 		ServerLevel level = helper.getLevel();
@@ -613,12 +613,23 @@ public class LadderGameTests implements FabricGameTest {
 		}
 		Leftovers.after(helper, () -> east.forEach(chunk -> level.getChunkSource().removeRegionTicket(RING_TICKET, chunk, 2, chunk)));
 		boolean[] started = {false};
+		long since = System.nanoTime();
 		helper.onEachTick(() -> {
 			if (started[0]) {
 				return;
 			}
-			if (!east.stream().allMatch(chunk -> level.isPositionEntityTicking(chunk.getMiddleBlockPosition(hall.getY())))) {
-				helper.assertTrue(helper.getTick() < 1100, "the ground east of the ring never came live");
+			List<net.minecraft.world.level.ChunkPos> waiting = east.stream().filter(chunk -> !level.isPositionEntityTicking(chunk.getMiddleBlockPosition(hall.getY()))).toList();
+			if (!waiting.isEmpty()) {
+				// B909: by the clock, not by ticks; the GameTest server doesn't wait between ticks, so on a busy CI runner
+				// the old 1100-tick wait went by in a fifth of a second while the chunks' promotion was still queued.
+				long ms = (System.nanoTime() - since) / 1_000_000L;
+				helper.assertTrue(ms < RING_READY_MS, "the ground east of the ring never came live (after " + helper.getTick() + " ticks, " + ms + " ms: "
+					+ waiting.size() + " of " + east.size() + " chunks not entity ticking, first " + waiting.get(0) + ")");
+				try {
+					Thread.sleep(RING_PAUSE_MS);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
 				return;
 			}
 			started[0] = true;
@@ -635,9 +646,19 @@ public class LadderGameTests implements FabricGameTest {
 		});
 	}
 
-	/** Keeps the ground east of the ring live for {@link #aSiegeGathersOutsideTheRingOfWalls} (B176); it lapses by itself after 1500 ticks. */
+	/**
+	 * How long {@link #aSiegeGathersOutsideTheRingOfWalls} waits for the ground east of the ring, by the clock (B909, as
+	 * B857): the GameTest server runs its ticks back to back, so a wait counted in ticks raced by on a busy CI runner.
+	 */
+	private static final long RING_READY_MS = 30_000L;
+	/** The server thread's pause on each tick still waiting, so RING_READY_MS takes at most RING_READY_MS / RING_PAUSE_MS ticks. */
+	private static final long RING_PAUSE_MS = 5L;
+	/** The ring test's timeout: the longest wait in ticks, plus room for the raid's start. */
+	private static final int RING_TICKS = 200 + (int) (RING_READY_MS / RING_PAUSE_MS);
+
+	/** Keeps the ground east of the ring live for {@link #aSiegeGathersOutsideTheRingOfWalls} (B176); it lapses by itself a little after the test's timeout. */
 	private static final net.minecraft.server.level.TicketType<net.minecraft.world.level.ChunkPos> RING_TICKET = net.minecraft.server.level.TicketType.create(
-		"aliveworkplace_test_ring", java.util.Comparator.comparingLong(net.minecraft.world.level.ChunkPos::toLong), 1500);
+		"aliveworkplace_test_ring", java.util.Comparator.comparingLong(net.minecraft.world.level.ChunkPos::toLong), RING_TICKS + 300);
 
 	/**
 	 * QA (lane D, 2026-10-26): short grass, as on any plains village's ground, along the whole outer foot of the wall

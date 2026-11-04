@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461, B707, B748, B750, B755
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461, B707, B748, B750, B755, B921
 
 ## What a player sees
 
@@ -48,7 +48,9 @@ the builder has no bench or works for another village or another player, the cap
 room for the stone.
 
 - **Right-click the stone**: "The Test Folly of Testholm", "Stage 1 of 3, The Ground Story: 34% built", then the
-  stage's material list, each line "40 Stone Bricks, 12 still to bring" or "… all there", what's still to bring first.
+  stage's material list, each line "40 Stone Bricks, 12 still to bring" or "… all there", what's still to bring first,
+  each block named in the plural after a count above one, as the Steward's list names it ("2 Lanterns, 2 still to
+  bring", B921).
 - **Each stage starts when every part of the one before is done and its own goods are dedicated**, and the builder it
   was handed to takes it on (the owner reads "Stage 2 of 3 of the Test Folly is next: The Upper Story. It begins once
   its goods are in").

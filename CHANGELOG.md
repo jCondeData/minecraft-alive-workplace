@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Many things read in the plural after a count: a crafter "short of 2 Jungle Logs" (and Cherry Logs, Crimson and Warped
+  Stems, Sticks, Nuggets, Ingots, Clay Balls, Feathers, Diamonds, Bricks, Eggs, Buckets and more, B920), a Wonder's
+  Foundation Stone "2 Lanterns, 2 still to bring", as the Steward's list says it (B921), and a Chef "cooking 4 Cooked
+  Porkchops" or "2 Bowls of Beetroot Soup" (B931).
 - A village train put together at a far village's station keeps running when that village unloads right after (the
   player walks away), instead of standing there without its conductor until he comes back; a new train still waits
   two seconds at its station first, so the caravans waiting there board it (B913).

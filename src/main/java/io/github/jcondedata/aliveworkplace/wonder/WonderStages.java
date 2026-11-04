@@ -18,6 +18,7 @@ import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,7 +53,7 @@ public final class WonderStages {
 	/** Ticks between checks for a finished stage. */
 	static final int INTERVAL = 20;
 	/** Most material lines the stone's status shows. */
-	static final int MAX_LINES = 8;
+	public static final int MAX_LINES = 8;
 	/** Where the stone may go, tried in turn: just outside the front corner, then along and in front of it (template blocks). */
 	private static final List<BlockPos> STONE_SPOTS = List.of(new BlockPos(-1, 0, -1), new BlockPos(-2, 0, -1), new BlockPos(-1, 0, -2),
 		new BlockPos(-2, 0, -2), new BlockPos(-1, 1, -1));
@@ -240,10 +241,7 @@ public final class WonderStages {
 				: Component.translatable("message.aliveworkplace.wonder.status.materials", SupplyContainers.RADIUS))
 				.withStyle(shortOf == 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 			for (int i = 0; i < Math.min(MAX_LINES, lines.size()); i++) {
-				Line l = lines.get(i);
-				text.append("\n    ").append(l.toBring() > 0
-					? Component.translatable("message.aliveworkplace.wonder.status.short", l.need(), l.item().getDescription(), l.toBring()).withStyle(ChatFormatting.YELLOW)
-					: Component.translatable("message.aliveworkplace.wonder.status.there", l.need(), l.item().getDescription()).withStyle(ChatFormatting.DARK_GREEN));
+				text.append("\n    ").append(lineText(lines.get(i)));
 			}
 			if (lines.size() > MAX_LINES) {
 				text.append("\n    ").append(Component.translatable("tooltip.aliveworkplace.blueprint.more", lines.size() - MAX_LINES).withStyle(ChatFormatting.DARK_GRAY));
@@ -327,6 +325,17 @@ public final class WonderStages {
 
 	/** One line of a stage's material list: the material, how many the stage still needs, how many the chests lack. */
 	public record Line(Item item, int need, int toBring) {
+	}
+
+	/**
+	 * One material line of the stone's status: "40 Oak Logs, 12 still to bring" or "2 Lanterns, all there", the material
+	 * named in the plural after a count above one, as the Steward's list names it (B921).
+	 */
+	public static Component lineText(Line l) {
+		Component name = Words.itemName(l.item(), l.need());
+		return l.toBring() > 0
+			? Component.translatable("message.aliveworkplace.wonder.status.short", l.need(), name, l.toBring()).withStyle(ChatFormatting.YELLOW)
+			: Component.translatable("message.aliveworkplace.wonder.status.there", l.need(), name).withStyle(ChatFormatting.DARK_GREEN);
 	}
 
 	/**

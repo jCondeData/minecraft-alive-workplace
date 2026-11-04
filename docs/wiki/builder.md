@@ -28,7 +28,7 @@ keeps striking around it for a moment, so what a struck worker leaves is put dow
 their workstation (a Builder's Blueprint Table) when that is 4 or more blocks from the bolt, else on the nearest open
 ground at least 4 blocks away, looked for within 8 blocks and from 3 under his feet to 2 over them; the message names
 that spot. Where there is none (a builder deep in a narrow pit, or on a narrow tower, within 3 blocks of his bench),
-it is still dropped where he stood and the bolt burns it: an open bug (`QaStruckAndTop1104BugTests`). On Peaceful lightning makes no witch and nothing is dropped.
+it is still dropped where he stood and the bolt burns it: an open bug (B964). On Peaceful lightning makes no witch and nothing is dropped.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
@@ -135,7 +135,7 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   (y 320)..."). The held blueprint's supply report and its Material List book leave those blocks out too (B953).
   A blueprint laid wholly over the top on ground as high as the world ends at once with nothing used and the
   blueprint back in the chests; on a lone block at y 319 the hand-over still takes it and the builder waits for
-  cobblestone to fill a foundation under it (an open bug, `QaStruckAndTop1104BugTests`).
+  cobblestone to fill a foundation under it (an open bug, B965).
   Tests `QaBuildHeightLimit1104BugTests`, `BuildHeightLimitGameTests` (with a save and load mid-build), `B953GameTests`,
   `QaStruckAndTop1104GameTests`.
 - "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors

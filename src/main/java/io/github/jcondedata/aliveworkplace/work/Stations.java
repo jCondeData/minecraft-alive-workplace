@@ -275,6 +275,9 @@ public final class Stations {
 			if (now == ModVillagers.BUILDER || !Retraining.on(level)) {
 				return InteractionResult.PASS;
 			}
+			if (io.github.jcondedata.aliveworkplace.hall.HallPeople.visitor(villager)) {
+				return refuseVisitor(player, villager); // before "needs a Blueprint Table": no table would change it (B911)
+			}
 			Optional<BlockPos> table = Retraining.freeTable(level, villager);
 			if (table.isEmpty()) {
 				Chat.actionBar(player, Component.translatable("message.aliveworkplace.job.needs_station", name(ModVillagers.BUILDER),
@@ -312,6 +315,10 @@ public final class Stations {
 		}
 		if (kinds.isEmpty()) {
 			return InteractionResult.PASS;
+		}
+		// A hired visitor is refused whatever blocks are near, not sent to fetch or free one only to be refused there (B911).
+		if (io.github.jcondedata.aliveworkplace.hall.HallPeople.visitor(villager)) {
+			return refuseVisitor(player, villager);
 		}
 		Optional<Found> nearest = found.stream().min(Comparator.comparingDouble(f -> f.pos().distToCenterSqr(villager.position())));
 		if (nearest.isEmpty()) {
@@ -468,6 +475,19 @@ public final class Stations {
 	 * job is changes: an unhired villager stays the village's (so they keep sharing chests with its other workers, as
 	 * when a villager took one of the old job blocks by itself), and someone else's hired worker can't be changed.
 	 */
+	/**
+	 * Refuses a job item to a hired visitor ({@code HallPeople.visitor}): someone else's is refused as in {@link #take}
+	 * (whose they are), one the player may command hears "X's job can't be changed here."
+	 */
+	private static InteractionResult refuseVisitor(ServerPlayer player, Villager villager) {
+		if (!Friends.mayCommand(player, villager)) {
+			return Hiring.hire(player, villager, Component.empty()); // refuses, and says whose they are
+		}
+		villager.level().playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_NO, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.hall.jobs.cant", villager.getDisplayName()).withStyle(ChatFormatting.YELLOW));
+		return InteractionResult.CONSUME;
+	}
+
 	static InteractionResult take(ServerPlayer player, Villager villager, BlockPos station, VillagerProfession profession) {
 		if (!Friends.mayCommand(player, villager)) {
 			return Hiring.hire(player, villager, Component.empty()); // refuses, and says whose they are
@@ -475,9 +495,7 @@ public final class Stations {
 		// A hired mercenary at a guard post he took, or a story's visitor such as Doctor Wren at a brewing stand, isn't the
 		// village's to give another job, here as at the hall's People table (B889, B895, B906).
 		if (io.github.jcondedata.aliveworkplace.hall.HallPeople.visitor(villager)) {
-			villager.level().playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_NO, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
-			Chat.actionBar(player, Component.translatable("message.aliveworkplace.hall.jobs.cant", villager.getDisplayName()).withStyle(ChatFormatting.YELLOW));
-			return InteractionResult.CONSUME;
+			return refuseVisitor(player, villager);
 		}
 		// A retired elder never takes a job again (34.20, B346): before, the item gave the job (undone at once) and kept the block's ticket.
 		if (io.github.jcondedata.aliveworkplace.people.Retirement.refuses(villager, villager.getVillagerData().setProfession(profession))) {

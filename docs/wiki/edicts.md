@@ -158,7 +158,9 @@ GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, ran
 `QaEdictsGameTests` (14: the QA lane's boundaries for 30.3, 30.5, 30.9 to 30.11, 30.15 and 30.17),
 `QaPaceAndBookGameTests` (11: the QA lane's for 30.1a, 30.2, 30.4 and 30.21: the 300th bread, friends' and operators'
 clicks, the last day before lifting, the cap at 100 and 400), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `QaConscriptionBugs1104dGameTests` (4, B926: a raider 10 and 15 blocks below a
-conscript, 23.4 and 25 blocks away, a stranded conscript letting the raider be, edicts off), `CivicTalkGameTests` (7),
+conscript, 23.4 and 25 blocks away, a stranded conscript letting the raider be, edicts off), `QaConscriptReach1104d2GameTests` (4: a second raider on a
+stranded conscript's platform fought, the let-be over and a way down given, a raider 3 blocks off behind a fence never
+let be, a reachable raider 20 blocks across chased and struck), `CivicTalkGameTests` (7),
 `PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`, `ReformStoryGameTests` (10: each of the eight stories from
 the ask through M30's three steps to its ending and the edict reformed in that village only; `storyArcs` off; side
 arcs and `arcsAtOnce`), `QaReformStoryGameTests` (11: the QA lane's for 31.22: the fallback askers (any smith, a

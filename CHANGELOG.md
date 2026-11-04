@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Builder digging a basement or a cellar next to water or lava in the earth (an aquifer, a buried pond, a lava
+  pocket) plugs it with dirt as he digs, so it no longer runs into the pit: he no longer gets stuck in the water for
+  good or burns to death in the lava, and the basement is finished dry (B923, B924).
 - A blueprint whose top pokes over the world's build limit (or whose basement reaches under the world's bottom) no
   longer eats the materials of the blocks that can't stand there and then waits for more for ever: the builder skips
   those blocks without taking anything, builds the rest and finishes, and the hand-over warns that they will be left

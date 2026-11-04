@@ -297,7 +297,8 @@ places, so "have room" never counted them; `Stations.freeAt`), each matched to t
 (finished builds, and builds going up). Who could take a block: a grown villager in the village without a job, not a
 nitwit, a Legend, a retired elder or a hired mercenary or relief rider (B892: `FreeJobsPage.canTake` leaves out whoever
 `VillageHalls.assign` refuses, so nobody is offered a block the click can't give; an elder who retires while the page is
-open is told why when picked, and the block stays free). One who has never worked takes any block; one who still has an old job's trades but lost the block
+open is told why when picked, and the block stays free; an elder who hasn't retired is still offered one, and a guard
+post a mercenary held is free again, and offered, once his contract ends and he leaves). One who has never worked takes any block; one who still has an old job's trades but lost the block
 is offered only a block of that same job, because changing job is paid retraining (26.6). A job above a villager's
 class (34.8) is grayed with the class it needs. The pick is checked again on the click: if someone took the block
 meanwhile, or the villager found work, nothing changes, the action bar says why and the list comes back. The page

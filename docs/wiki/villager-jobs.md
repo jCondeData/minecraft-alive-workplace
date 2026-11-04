@@ -13,9 +13,10 @@ share gives one of its jobs at random, likeliest the one the village has fewest 
 **sneak-right-click them holding the job's item**. A villager already working there switches the same way, and the
 block's own job comes back with its own item (wheat for a Farmer, coal for an Armorer). You are told what happened
 ("Dara took the Miner job at the Blast Furnace."), or what is missing (no such block near, or every one taken).
-A hired mercenary or a story's visitor such as Doctor Wren isn't the village's to give a job, even at a block
-they took themselves: the item says "Doctor Wren's job can't be changed here." and nothing changes (B906, as the
-Village Hall's People table, B895), whatever blocks are near: never "needs a Stonecutter" or "taken" first (B911).
+A hired mercenary, a relief rider or a story's visitor such as Doctor Wren isn't the village's to give a job, even at
+a block they took themselves: the item says "Doctor Wren's job can't be changed here." and nothing changes (B906, as
+the Village Hall's People table, B895), whatever blocks are near: never "needs a Stonecutter" or "taken" first (B911).
+A retired elder is told they have retired instead; an elder who hasn't retired takes the job like anyone.
 A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it.
 The block they are walking to counts as free for them (B803): handed its job's item, they take that one, while
 another villager is told it's taken. A free block of that kind nearer them still wins (and the one they were walking

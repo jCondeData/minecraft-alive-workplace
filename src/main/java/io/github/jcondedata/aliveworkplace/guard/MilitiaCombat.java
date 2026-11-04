@@ -90,7 +90,10 @@ public class MilitiaCombat extends Behavior<Villager> {
 		Conscription.arm(villager);
 		damage = militia.damage();
 		range = militia.range();
-		if (ignored != null && (level.getGameTime() >= ignoredUntil || !ignored.isAlive())) {
+		// B954: the let-be ends once the raider comes within NEXT_TO (it climbed or jumped up to him), as one that close
+		// is never let be; it used to stay skipped for the whole IGNORE_TICKS however close it came.
+		if (ignored != null && (level.getGameTime() >= ignoredUntil || !ignored.isAlive()
+				|| ignored.level() != level || villager.distanceToSqr(ignored) <= NEXT_TO * NEXT_TO)) {
 			ignored = null;
 		}
 		target = findFoe(level, villager, range, ignored);

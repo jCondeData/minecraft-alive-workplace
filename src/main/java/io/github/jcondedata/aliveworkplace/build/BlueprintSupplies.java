@@ -87,6 +87,11 @@ public final class BlueprintSupplies {
 		Map<Item, Integer> need = new LinkedHashMap<>();
 		for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
 			for (BuildPlan.Step step : plan.steps(stage)) {
+				// B953: a block over the world's build limit (or under its bottom) is left out by the builder, so it
+				// needs nothing (as Builders.remainingNeed counts it)
+				if (BuildPlan.outsideWorld(level, step)) {
+					continue;
+				}
 				// Never load a chunk just for a tooltip: an unloaded block counts as not built yet.
 				if (level.isLoaded(step.pos()) && MaterialRules.matches(level.getBlockState(step.pos()), step.state())) {
 					continue;

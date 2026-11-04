@@ -48,6 +48,7 @@ Husks don't burn, so a desert siege doesn't end at dawn: they stay until **noon*
 - **What it brings:** while their lair stands nearby, a [drought](drought.md) is twice as likely.
 - **What stops it:** archers on the walls to stop the ramp builders, and killing the Pharaoh first to end the curse.
   A [war party](war-party.md) can break the camp.
-- **The sarcophagus:** gold, emeralds, a golden apple, gold nuggets, bones, lapis or an enchanted book, now and then a
-  diamond, and one time in five the dune armor trim.
+- **The sarcophagus:** gold, emeralds, a golden apple, gold nuggets, bones, rotten flesh, lapis or an enchanted book,
+  now and then a diamond, two times in three a blueprint (a chapel, a market square, a library and the like), and one
+  time in five the dune armor trim.
 - **Switched off:** `desert_raiders` under `raiderCultures` in the config file. With **Sieges** off, no sand ramps.

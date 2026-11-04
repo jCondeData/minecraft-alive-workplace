@@ -22,7 +22,7 @@ proper siege.
 
 Now and then raiders make camp 80 to 104 blocks from the Village Hall, on dry, fairly flat, open ground. The captain
 has a name, and it floats over his head and is in every message about the camp: "Smoke rises beyond Oakvale: Chief Harl
-Ashgrave and a band of raiders have made camp..." While the camp stands, the village's night raids come from it,
+Ashgrave and a band of bandits have made camp..." While the camp stands, the village's night raids come from it,
 twice as often. Each kind of raider has a camp of its own: bandits a bandit camp, a pillager warband a war camp,
 desert raiders an old tomb, drowned pirates a pirate ship, piglins a blackstone outpost, witches a coven hut.
 

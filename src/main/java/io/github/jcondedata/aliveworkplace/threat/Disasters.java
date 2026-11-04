@@ -79,8 +79,6 @@ public final class Disasters implements ResourceManagerReloadListener {
 	/** The last day each hall rolled, and applied its disaster's daily effects (not saved: a restart may roll again that day). */
 	private static final Map<String, Long> ROLLED = new ConcurrentHashMap<>();
 	private static final Map<String, Long> APPLIED = new ConcurrentHashMap<>();
-	/** The last day it rained, by dimension (not saved: a restart counts from that day). */
-	private static final Map<String, Long> RAIN = new ConcurrentHashMap<>();
 	/** The wood share of each hall's finished builds and the day it was sampled. */
 	private static final Map<String, double[]> WOOD = new ConcurrentHashMap<>();
 
@@ -98,7 +96,6 @@ public final class Disasters implements ResourceManagerReloadListener {
 		AFFLICTED.clear();
 		ROLLED.clear();
 		APPLIED.clear();
-		RAIN.clear();
 		WOOD.clear();
 		Drought.forget();
 	}
@@ -194,7 +191,7 @@ public final class Disasters implements ResourceManagerReloadListener {
 	public static void round(ServerLevel level, BlockPos pos, VillageHallBlockEntity hall, VillageHalls.Census census) {
 		long day = Chronicle.day(level);
 		if (raining(level)) {
-			RAIN.put(level.dimension().location().toString(), day);
+			RainLedger.get(level).rainedOn(day);
 		}
 		boolean quiet = Threats.quiet(level, pos); // the threat level 0, Peaceful or At peace (32.21): no disaster comes
 		if (!quiet) {
@@ -525,14 +522,17 @@ public final class Disasters implements ResourceManagerReloadListener {
 
 	// The weather and the village's wood.
 
-	/** Days since it last rained in {@code level} (counted from the first round this server saw; 0 while it rains). */
+	/**
+	 * Days since it last rained in {@code level} (0 while it rains), saved in the world ({@link RainLedger}, B948) so a
+	 * restart doesn't reset it; an older world counts from the first day this version saw.
+	 */
 	public static long dryDays(ServerLevel level) {
 		long day = Chronicle.day(level);
-		String dim = level.dimension().location().toString();
+		RainLedger ledger = RainLedger.get(level);
 		if (raining(level)) {
-			RAIN.put(dim, day);
+			ledger.rainedOn(day);
 		}
-		return day - RAIN.computeIfAbsent(dim, k -> day);
+		return ledger.dryDays(day);
 	}
 
 	/** Whether it rains in {@code level} (the weather as set, not the sky's slow fade in and out). */
@@ -547,7 +547,7 @@ public final class Disasters implements ResourceManagerReloadListener {
 
 	/** Sets the last day it rained (tests). */
 	public static void rainedOn(ServerLevel level, long day) {
-		RAIN.put(level.dimension().location().toString(), day);
+		RainLedger.get(level).rainedOn(day);
 	}
 
 	/** The share of wood among the blocks of the village's finished builds, sampled round each build once a day. */

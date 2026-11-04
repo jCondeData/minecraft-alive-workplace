@@ -72,8 +72,10 @@ Roadmap items: 32.15, 32.19
 
 On the Village Hall: `disaster` (the id under way or foretold; absent: none), `disasterSince` (the day it begins;
 -1), `disasterEnds` (its last day; absent: until rain) and `lastDisasterDay` (the day the last one ended; -100: never).
-A hall saved before 32.15 has none. The list of afflicted halls, the day each hall last rolled, the last rain and the
-wood share are kept in memory and rebuilt by the halls' rounds after a restart.
+A hall saved before 32.15 has none. The last day it rained is saved per dimension (`aliveworkplace_rain.dat`,
+`last_rain_day`, B948; none in older worlds: the count starts on the first day the new version sees). The list of
+afflicted halls, the day each hall last rolled and the wood share are kept in memory and rebuilt by the halls' rounds
+after a restart.
 
 ## Items, blocks, jobs, commands
 

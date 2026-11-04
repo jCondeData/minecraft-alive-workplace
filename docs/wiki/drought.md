@@ -14,8 +14,10 @@ Roadmap items: 32.17
   raiders' lair stands near. Players in the village and the hall's owner read "A drought has come to Oakvale: the
   crops wilt and the wells run low." It lasts 3 to 5 days, and rain ends it at once: "The drought in Oakvale is over:
   the wells are filling again." The hall's chronicle notes both, and the wellbeing icon and What next? show it.
-- **In the hall's area**: wheat, carrots, potatoes, beetroots, melon and pumpkin stems and sweet berry bushes grow at a
-  quarter of their pace; farmland dries a step on each of its random ticks, even beside water; every water cauldron
+- **In the hall's area**: wheat, carrots, potatoes, beetroots, torchflower and pitcher crops, melon and pumpkin stems
+  and sweet berry bushes grow at a quarter of their pace; farmland dries a step on each of its random ticks, even
+  beside water, and water nearby doesn't wet it again (dry farmland by water stays tilled, but dry, until a Well Keeper
+  waters it or it rains); every water cauldron
   loses a level a day; and every villager is 10 less happy, "The wells are low", unless the village has a finished
   **Well** (either tier) or **Fountain**.
 - **The Well Keeper** (a villager at a cauldron given a shovel) works the long day shift. In a drought they fill a
@@ -38,8 +40,15 @@ Roadmap items: 32.17
   0.25, `farmland_dries`, `cauldrons_drain` 1 and `mood` -10 (`mood.aliveworkplace.reason.drought`, `unless_built`
   `aliveworkplace:well`, `aliveworkplace:well_2`, `aliveworkplace:fountain`); `answered_by` and `foretold_by` the Well
   Keeper, `foretell_days` 1; its own lines (`disaster.aliveworkplace.drought.*`, `chronicle.aliveworkplace.drought.*`).
-- **Stems and berry bushes.** The engine's crop check (a mixin on the crop's random tick) now also runs on
-  `StemBlock` and `SweetBerryBushBlock` (`DroughtPlantMixin`), so any disaster's `crop_growth` holds them back too.
+- **Stems, berry bushes and pitcher crops.** The engine's crop check (a mixin on the crop's random tick) now also runs
+  on `StemBlock`, `SweetBerryBushBlock` and `PitcherCropBlock` (`DroughtPlantMixin`; a pitcher crop isn't a
+  `CropBlock`, B947), so any disaster's `crop_growth` holds them back too. Torchflower crops are `CropBlock`s already.
+- **Farmland by water** (`DroughtFarmlandMixin`, B946): `farmland_dries` takes wet farmland down a step, and farmland
+  already at moisture 0 within vanilla's reach of water (4 blocks) skips its tick in an afflicted area, so the water
+  doesn't wet it back to 7. It isn't turned to dirt either: vanilla keeps farmland by water tilled. In the rain vanilla
+  wets it as usual.
+- **Days without rain** (`threat/RainLedger`, B948): the last day it rained is saved per dimension, so a restart no
+  longer starts the count again.
 - **Watered farmland** (`threat/Drought`): a bucket sets the 3 x 3 farmland round the block it's poured on to moisture
   7 and remembers each, in memory, for the day. On a watered block the crop check always lets the crop grow (and
   draws no random number, so it grows exactly as without the drought), and the farmland's random tick keeps its
@@ -63,7 +72,9 @@ Roadmap items: 32.17
 
 On a Well Keeper: `well_keeper_water` (1: their bucket is full; absent or 0: empty). The drought itself is saved on
 the hall by the engine (`disaster`, `disasterSince`, `disasterEnds`). Which farmland was watered today is kept in
-memory: after a restart the keeper waters it again.
+memory: after a restart the keeper waters it again. Per dimension, `aliveworkplace_rain.dat` (`RainLedger`, from
+B948): `last_rain_day`, the last day it rained. A world saved before has none and counts the dry days from the first day
+the new version sees (0 on that day), as before.
 
 ## Items, blocks, jobs, commands
 
@@ -85,6 +96,11 @@ memory: after a restart the keeper waters it again.
   and slow its crops), which is what makes "grow at full pace that day" true.
 - 32.17 (lane b): the keeper never fills the bucket at a cauldron: in a drought that would only move the village's
   water from one place to another.
+- B946 (lane a): "farmland dries, water or not" is read as water not wetting it again in the drought either: dry
+  farmland by water stays dry farmland (not dirt) until a Well Keeper's bucket or the rain, so fields by a pond need
+  the keeper like the rest.
+- B948 (lane a): the dry days survive a restart (saved), rather than a restart counting from that day, so a server
+  that restarts often still gets droughts outside the dry biomes.
 - 32.17 (lane b): between droughts only farmland dried right out (moisture 0) is watered, so a keeper doesn't walk
   the fields all day for farmland that is merely damp.
 
@@ -109,6 +125,13 @@ memory: after a restart the keeper waters it again.
   `DroughtGameTests.theKeeperForetellsItADayAhead`, `DroughtGameTests.theChanceFollowsTheDryDays`,
   `DroughtGameTests.theJobStartsFromACauldronAndAShovel` (and config off: no job, a hired keeper idle),
   `DroughtGameTests.theBucketSurvivesASave`, `DroughtGameTests.everyNewSentenceHasItsText`; `StationsGameTests`' row.
+- `QaDroughtPlague1104dBugTests.farmlandByWaterStaysDryInADrought` (B946): farmland a block from a pond, dried to 1,
+  never goes above 1 in 20 random ticks of the drought.
+- `QaDroughtPlague1104dBugTests.pitcherCropsAreHeldBack` (B947): pitcher crops grow about a quarter as often in a
+  drought as without it.
+- `QaDroughtPlague1104dBugTests.aRestartDoesNotMakeItRain` (B948): after 6 dry days in the plains the chance stays 5%
+  once the memory is forgotten as at a restart; `DroughtGameTests.theDaysWithoutRainAreSaved`: the last rain day
+  survives a save and load, an old save without it counts from that day, and a day set back starts the count again.
 - `QaDisastersGameTests.theDroughtsChanceByBiomeAndDryDays` (QA): in the plains no chance on the 4th day without
   rain, 5% from the 5th; 15% in the desert, savanna and badlands from the first dry day; none in the rain.
 - `QaDisastersGameTests.aDesertLairDoublesTheDrought`: a standing desert raiders' lair makes it 30% in the desert and

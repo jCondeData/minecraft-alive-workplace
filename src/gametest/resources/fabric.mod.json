@@ -15,6 +15,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1101bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTakeDownGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTakeDownBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDroughtPlague1104dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaContraptionLinesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEverySavedCollectionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneUpkeepGameTests",

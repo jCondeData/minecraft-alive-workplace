@@ -122,4 +122,9 @@ memory: after a restart the keeper waters it again.
   wells are low" away; a Well finished 60 blocks off, outside the village, doesn't.
 - `QaDisastersGameTests.theDroughtAndPlagueReadRight`: the start, end and foretold messages with the village's name,
   the chronicle's lines, the wellbeing line ("Drought (days left: N)") and the mood reason read as above.
+- `QaDroughtPlague1104dGameTests` (QA, 2026-11-04): over 30 seeds a drought with no rain lasts 3, 4 or 5 days, on
+  every one of them and not a day more (`aDryDroughtLastsItsDaysAndNoMore`); wheat outside the hall's area grows at
+  full pace (`cropsOutsideTheVillageGrowAtFullPace`); melon stems are held back (`melonStemsAreHeldBack`); a bucket
+  wets the 3 x 3 round it and none of the 16 blocks beyond (`aBucketWetsNineFarmlandNotATenth`); the mood is exactly 10
+  less with "The wells are low" and back after the rain (`theMoodIsTenLessAndComesBack`).
 - Showcase scenes: `drought`.

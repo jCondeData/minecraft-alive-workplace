@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Builder struck by lightning and turned into a witch drops his bag and the blueprint where he stood and tells his
+  owner, as when he dies; his materials no longer vanish and his build no longer waits for ever on a builder who is
+  gone. Any other worker turned that way drops what was in their bag, a tool that is yours and their area's marker
+  (B928).
 - A conscript on a wall, tower or cliff fights a raider at its foot up to 24 blocks away, as the edict says (he
   only looked 8 blocks up and down before), and one with no way down lets that raider be after a few seconds instead
   of standing stuck at the edge (B926).

@@ -1030,6 +1030,14 @@ public final class Builders {
 
 	/** The builder died: drop its bag and the blueprint where it fell, keep what was built. */
 	public static void onBuilderDeath(ServerLevel level, Villager villager) {
+		onBuilderGone(level, villager, "message.aliveworkplace.builder_died");
+	}
+
+	/**
+	 * The builder is gone, dead or turned into something else (a witch by lightning, B928): drop its bag and the
+	 * blueprint where it was, keep what was built, and tell the owner with {@code told} (the site, then x y z).
+	 */
+	public static void onBuilderGone(ServerLevel level, Villager villager, String told) {
 		for (BuildSite queued : queue(level, villager)) {
 			if (queued.wonder() != null) {
 				// 35.5: a Wonder's part waiting for this builder goes to another; its site stays (a part whose site is
@@ -1076,7 +1084,7 @@ public final class Builders {
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 			if (owner != null) {
 				BlockPos p = villager.blockPosition();
-				tell(owner, Component.translatable("message.aliveworkplace.builder_died", Blueprints.siteName(level, site), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
+				tell(owner, Component.translatable(told, Blueprints.siteName(level, site), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
 			}
 			ModAttachments.BUILDER_JOB.remove(villager);
 			if (keptForTheNext(site)) {

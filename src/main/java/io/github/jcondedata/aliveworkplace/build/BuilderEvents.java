@@ -85,17 +85,9 @@ public final class BuilderEvents {
 		Platform.get().onEntityUnload((entity, level) -> io.github.jcondedata.aliveworkplace.threat.Lairs.onRemoved(level, entity));
 		Platform.get().afterDeath((entity, source) -> {
 			if (entity instanceof Villager villager && entity.level() instanceof ServerLevel level) {
-				Builders.onBuilderDeath(level, villager);
-				io.github.jcondedata.aliveworkplace.mine.Miners.onMinerDeath(level, villager);
-				io.github.jcondedata.aliveworkplace.farm.Fields.onDeath(level, villager);
-				io.github.jcondedata.aliveworkplace.wood.TreeFarms.onDeath(level, villager);
-				io.github.jcondedata.aliveworkplace.orchard.Orchards.onDeath(level, villager);
-				io.github.jcondedata.aliveworkplace.berry.BerryBreeders.onDeath(level, villager);
+				workLeft(level, villager, "message.aliveworkplace.builder_died");
 				io.github.jcondedata.aliveworkplace.people.FamilyBook.onDeath(level, villager); // the Book of Families dates them (34.21)
 				io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);
-				io.github.jcondedata.aliveworkplace.hall.Guilds.onDeath(level, villager);
-				io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager); // (before the grave keeps the villager)
-				io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.onDeath(level, villager);
 				net.minecraft.core.BlockPos grave = io.github.jcondedata.aliveworkplace.grave.Graves.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.legend.LegendSlots.onDeath(level, villager, grave);
 				// The village mourns (36.16): told who it was, their family grieving, the grave waiting for its funeral.
@@ -507,6 +499,48 @@ public final class BuilderEvents {
 			return InteractionResult.SUCCESS;
 		}
 		return InteractionResult.PASS;
+	}
+
+	/**
+	 * What a worker leaves behind when they're gone, dead or turned into something else: a builder's bag, blueprint and
+	 * site (the owner told with {@code builderTold}), a miner's quarry, the markers of a field, tree farm, orchard or berry
+	 * plot, a guild they led and the Pokémon in a rancher's or daycare keeper's care. Runs before a grave keeps the villager.
+	 */
+	private static void workLeft(ServerLevel level, Villager villager, String builderTold) {
+		Builders.onBuilderGone(level, villager, builderTold);
+		io.github.jcondedata.aliveworkplace.mine.Miners.onMinerDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.farm.Fields.onDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.wood.TreeFarms.onDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.orchard.Orchards.onDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.berry.BerryBreeders.onDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.hall.Guilds.onDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.onDeath(level, villager);
+	}
+
+	/**
+	 * B928: lightning turned {@code villager} into a witch (vanilla's {@code Villager.thunderHit}, on any difficulty but
+	 * Peaceful). There's no death, so the death hooks never run and everything the worker carried would vanish with them:
+	 * their work is left as a death leaves it, and whatever is still in their bag (any worker's: a miner's ore, a
+	 * crafter's goods, a porter's load) and a tool that is the owner's fall where they stood. Called just before the villager is
+	 * discarded, the witch already in the world.
+	 */
+	public static void onStruckIntoWitch(ServerLevel level, Villager villager) {
+		workLeft(level, villager, "message.aliveworkplace.builder_struck");
+		BuilderBag bag = io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.get(villager);
+		if (bag != null) {
+			for (ItemStack stack : bag.takeAll()) {
+				Builders.dropNear(level, villager.blockPosition(), stack);
+			}
+		}
+		for (net.minecraft.world.entity.EquipmentSlot slot : net.minecraft.world.entity.EquipmentSlot.values()) {
+			ItemStack held = villager.getItemBySlot(slot);
+			// what a death always drops (a tool that is the owner's, set above 1); a builder's held block is only a look
+			if (!held.isEmpty() && ((io.github.jcondedata.aliveworkplace.mixin.MobAccessor) villager).aliveworkplace$dropChance(slot) > 1f) {
+				villager.setItemSlot(slot, ItemStack.EMPTY);
+				Builders.dropNear(level, villager.blockPosition(), held);
+			}
+		}
 	}
 
 	private BuilderEvents() {

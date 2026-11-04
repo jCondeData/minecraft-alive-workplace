@@ -286,6 +286,7 @@
   "message.aliveworkplace.assign.deconstruct": "%s will take down %s and put the blocks in the chests within %s blocks of their Blueprint Table. Chests, furnaces and other blocks that hold things are left standing.",
   "message.aliveworkplace.status.stage.deconstruct": "Taking it down",
   "message.aliveworkplace.builder_died": "Your builder died while building %s. Their tools and the blueprint dropped at %s %s %s.",
+  "message.aliveworkplace.builder_struck": "Lightning turned your builder into a witch while building %s. Their tools and the blueprint dropped at %s %s %s.",
   "message.aliveworkplace.status.idle": "%s has no building job. Hand them a placed blueprint.",
   "message.aliveworkplace.status.no_bench": "%s has lost their Blueprint Table.",
   "message.aliveworkplace.status.builder": "Builder",

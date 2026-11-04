@@ -21,6 +21,10 @@ free Builder, who takes away what the old drawing left (floating or invisible pi
 chests) and puts in the new pieces, as a repair. Chests and what's in them, beds villagers sleep in, job blocks and
 blocks a player put there or changed stay. With no Builder free it waits until one is. Builders get
 better with each building: they level up like villagers you trade with, and each level makes them faster.
+A Builder who dies, or whom lightning turns into a witch (B928), drops his bag and the blueprint where he was, keeps
+what was built and tells you where (`message.aliveworkplace.builder_died`, `message.aliveworkplace.builder_struck`).
+Any other worker struck that way drops what is in their bag, a tool that is yours and their area's marker. On Peaceful
+lightning makes no witch and nothing is dropped.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
@@ -446,6 +450,11 @@ claims and trip counts.
 
 ## 8. Proof
 
+`B928GameTests` (3: a builder struck into a witch mid-job, then a save and load of the build sites: the site stays
+closed, one blueprint on the ground and no material lost; on Peaceful he keeps his bag, his site and his blueprint; a
+struck worker drops their bag, the owner's axe and the tree farm's marker, and a block a builder only holds for the look
+isn't made). QA's `QaBuilderConverted1104GameTests` (1: a zombie's bite on Hard drops the bag and one blueprint, nothing
+doubled) and `QaBuilderConverted1104BugTests` (1: struck by lightning mid-job, nothing lost and the build left).
 `QaLaneC1102eGameTests` (QA, B832): six real fishermen catch nothing in 1500 ticks at workplaceBuildDelay 35791395 (the
 first delay whose 60-step bite passes the int range) and at 2147483647, and the same pond at the default 8 still catches.
 `B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not

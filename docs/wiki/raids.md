@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133, B824, B856
+Roadmap items: 32.2, 32.14, B133, B824, B856, B919
 
 ## What a player sees
 
@@ -23,6 +23,10 @@ its captain falls. Under that look:
   raider standing within its reach but nearer another village with a raid under way (that raid's). So a village whose
   raiders are all dead has fought its raid off even with the neighbor's raiders about, and when its raiders leave at
   their hour the neighbor's stay (B856, the rule a call-off already used, B849).
+  Every raider belongs to exactly one raid: a village's reach is measured from where the raider stands (its feet),
+  RADIUS + 32 across and 48 blocks up or down from the hall, the same rule for who a village counts, whose raid a
+  raider is and a siege's raiders; of the raids that reach it, the nearest hall's (the first raided, on a tie). So one
+  raider 49 blocks below a second raided village no longer keeps both raids going (B915).
 
 ## A day's warning (32.14)
 
@@ -38,7 +42,9 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 - **Told at once.** Players in the village, and the hall's owner wherever they are online, read "Smoke on the north
   road: Warlord Harl's band will strike Oakvale tomorrow night." The chronicle has it; the guards icon says "Raiders
   tomorrow night, from the north" ("Raiders in 2 days" after a Seer's warning) and the Defense page's new slot shows
-  the attack, who and the side.
+  the attack, who and the side. While no attack is seen, that slot says who keeps watch, each in their own words: a
+  guard "keeps watch from a tower: a raid is seen a day ahead", a Seer "sees raids in visions, 2 days before they
+  come", the Lighthouse's keeper "watches the sea from the lighthouse" (B919).
 - **On the day.** From noon the gates shut and the portcullis of every gate build drops; at dusk the guards take their
   battle stations ([Sieges](sieges.md)) and the villagers go in, before the horn. The siege that begins takes the
   dropped bars over; if no attack came, the bars go up the next morning.
@@ -210,3 +216,7 @@ None.
   (two desert raids 25 blocks apart; the first's raider killed, its round ends its raid though the second's raider
   stands within its reach; the second's raid goes on) and `aVillagesRaidersLeavingAtTheirHourLeaveANeighboursRaiderBehind`
   (the first's raiders leave at noon, the second's raider stays and its raid goes on).
+- B915: `QaRaidOwnership1104cBugTests.aRaider49BlocksBelowAnotherRaidedHallKeepsOnlyOneRaidGoing` (one raider 49
+  blocks below a second raided hall: after both halls' rounds only one raid is still under way), with
+  `QaRaidOwnership1104cGameTests`; unchanged and passing: `QaRaidVertical1103dGameTests`,
+  `QaRaidReachHeight1104dGameTests`, `QaRaidNeighbours1103dGameTests`, `QaRisingsVerify1102dGameTests`.

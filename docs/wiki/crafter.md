@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916
 
 ## 1. What a player sees
 
@@ -86,7 +86,7 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
 The builder's status (`BuilderStatusSync.supplyLines`) adds `JobShortages.line` under "Short of" while it waits:
 first up to two chains short of a raw material, else the crafted parts (something a crafting table, stonecutter,
 furnace or furniture bench makes) that no job has looked at in the last 600 ticks, once the site has waited that long.
-The cook, the luxury makers, the Weaponsmith and the Fletcher keep their old one-plan way.
+The cook, the luxury makers, the Weaponsmith and the Fletcher keep their old one-plan way. Their status lines name what they make in the plural after a count above one: "making 8 Spectral Arrows" (B916; bows, crossbows, shears and the stone and iron tools and swords have plurals too).
 
 The retired Crafter: `Crafters.tick` (every villager's AI step, from `VillagerMixin`) finds a villager whose profession is
 `aliveworkplace:crafter` and makes it jobless: the workbench's POI ticket let go, the `crafter_job` dropped (and its claim

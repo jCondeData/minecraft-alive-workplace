@@ -60,10 +60,21 @@ public final class Warnings {
 	/** From this time of the warned day the gates shut and the portcullis drops. */
 	public static final long NOON = 6000;
 
-	/** Who saw them coming: the name shown, whether they counted the raiders (a scout), and how many days ahead they see (1: a day's warning). */
-	public record Source(Component who, boolean counts, int days) {
+	/** The Defense page's idle line for a guard or scout by a tower: "%s keeps watch from a tower: a raid is seen a day ahead". */
+	public static final String TOWER_WATCH = "screen.aliveworkplace.defence.next_watch";
+
+	/**
+	 * Who saw them coming: the name shown, whether they counted the raiders (a scout), how many days ahead they see (1: a
+	 * day's warning), and the lang key of the Defense page's line while no attack is seen (B919: a Seer has no tower), given
+	 * the name and the days, with a {@code .one} form for a single day.
+	 */
+	public record Source(Component who, boolean counts, int days, String watch) {
 		public Source(Component who, boolean counts) {
 			this(who, counts, 1);
+		}
+
+		public Source(Component who, boolean counts, int days) {
+			this(who, counts, days, TOWER_WATCH);
 		}
 	}
 

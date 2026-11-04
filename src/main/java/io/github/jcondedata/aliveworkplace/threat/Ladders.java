@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.threat;
 
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mixin.MobAccessor;
+import io.github.jcondedata.aliveworkplace.mixin.PathNavigationAccessor;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.ArrayList;
@@ -287,7 +288,16 @@ public final class Ladders {
 			Site site = storm.assigned.get(id);
 			boolean climber = role == Culture.Role.CLIMBER;
 			if (site != null && !climber && !onIt(mob, site) && (siege.breach != null && !site.standing() || !shut)) {
-				release(storm, id); // (back to the others at the gate: its ladder went down, or the gate is open)
+				// Back to the others at the gate: its ladder went down, or the gate is open. The walk to the ladder that Ladders
+				// gave it stops too, with the rework of that path a changed block (the gate broken open) asked for: the director
+				// paths only a raider standing still, so it walked on to the foot and climbed the ladder the vanilla way before
+				// it turned for the open gate (B907).
+				BlockPos going = storm.sent.get(id);
+				release(storm, id);
+				if (going != null && going.equals(mob.getNavigation().getTargetPos())) {
+					mob.getNavigation().stop();
+					((PathNavigationAccessor) mob.getNavigation()).aliveworkplace$setDelayedRecomputation(false);
+				}
 				continue;
 			}
 			if (site == null) {

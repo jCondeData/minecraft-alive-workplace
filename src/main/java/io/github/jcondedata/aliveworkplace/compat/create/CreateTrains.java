@@ -65,7 +65,7 @@ public final class CreateTrains implements CaravanTrains.Railway {
 	private static final String DEFAULT_NAME = "Track Station";
 
 	@Override
-	public boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name) {
+	public boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name, String apart) {
 		if (!(level.getBlockEntity(station) instanceof StationBlockEntity be)) {
 			return false;
 		}
@@ -76,7 +76,15 @@ public final class CreateTrains implements CaravanTrains.Railway {
 				// so a server stopped between the round that aimed the station and the next still names it; a station a
 				// player renamed by hand keeps its name
 				pending.remove(station);
-				be.updateName(name);
+				be.updateName(free(known, name, apart));
+			} else if (known != null && name.equals(known.name) && !apart.equals(name) && shared(known, name)) {
+				// B894: a station the village named that shares its name with another on the network (two villages of
+				// one name whose networks were joined, or named before B894): told apart, and the train's schedule
+				// follows it (follow)
+				pending.remove(station);
+				be.updateName(apart);
+				AliveWorkplace.LOG.info("Alive Workplace: the station at {} is now '{}' (another station on its network is also '{}')",
+					station.toShortString(), apart, name);
 			}
 			return known != null;
 		}
@@ -103,7 +111,7 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			be.loadWithComponents(tag, level.registryAccess());
 			be.setChanged();
 			be.notifyUpdate();
-			pending.put(station.immutable(), name); // named once Create knows it (its next tick)
+			pending.put(station.immutable(), new String[] {name, apart}); // named once Create knows it (its next tick)
 			return false;
 		}
 		return false;
@@ -132,7 +140,29 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		new BlockPos(0, 0, -1), new BlockPos(2, 0, 0), new BlockPos(-2, 0, 0), new BlockPos(0, 0, 2), new BlockPos(0, 0, -2)).toList();
 
 	/** Stations aimed by the village and the name they get once Create knows them. */
-	private final Map<BlockPos, String> pending = new java.util.concurrent.ConcurrentHashMap<>();
+	private final Map<BlockPos, String[]> pending = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/**
+	 * B894: {@code name}, or {@code apart} when another station on {@code station}'s network already has {@code name}
+	 * (a schedule stops at the nearest of the stations of its name, so a village's train would stop at the namesake).
+	 */
+	private static String free(GlobalStation station, String name, String apart) {
+		return shared(station, name) ? apart : name;
+	}
+
+	/** Whether a station other than {@code station} on its network is called {@code name}. */
+	private static boolean shared(GlobalStation station, String name) {
+		TrackGraph graph = graphOf(station);
+		if (graph == null) {
+			return false;
+		}
+		for (GlobalStation s : graph.getPoints(EdgePointType.STATION)) {
+			if (!s.id.equals(station.id) && name.equals(s.name)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	@Nullable
 	private GlobalStation station(ServerLevel level, BlockPos pos) {
@@ -140,9 +170,9 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			return null;
 		}
 		GlobalStation station = be.getStation();
-		String name = station == null ? null : pending.remove(pos);
+		String[] name = station == null ? null : pending.remove(pos);
 		if (name != null) {
-			be.updateName(name);
+			be.updateName(free(station, name[0], name[1]));
 		}
 		return station;
 	}
@@ -330,8 +360,9 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		for (int i = 0; i < 2; i++) {
 			if (schedule.entries.get(i).instruction instanceof DestinationInstruction to) {
 				String text = to.getData().getString("Text");
-				if (!names.contains(text) && !text.equals(now[i])) {
-					// a stop whose station was renamed: Create's schedule finds stations by name, so it would wait for good
+				if (!text.equals(now[i]) && (!names.contains(text) || now[i].startsWith(text + " "))) {
+					// a stop whose station was renamed: Create's schedule finds stations by name, so it would wait for good;
+					// B894: or told apart from a namesake (its name and a key), whose name the stop would still find
 					to.getData().putString("Text", now[i]);
 					AliveWorkplace.LOG.info("Alive Workplace: the village train {} now stops at '{}' (was '{}')", train.id, now[i], text);
 				}

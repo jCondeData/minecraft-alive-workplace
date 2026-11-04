@@ -76,6 +76,9 @@ A caravan between two villages joined by rail goes by train:
 - **A station broken while the train is on its way:** the caravan gets off where the track ends and walks the rest.
   It still arrives with everything it carried, a little later, and the chronicle says so. Until the station is
   rebuilt, caravans walk.
+- **Each station is named after its village.** When another station on the same railway already has that name (two
+  villages called the same, by a name tag or by chance), the village adds its hall's position, as `Oakford 120_64_-35`,
+  so each train still stops at the right village. A station you rename yourself keeps your name.
 - **Only one village with a station,** or a road that isn't finished, or a road that ends at a milestone: caravans walk.
 - **You break the village's train up:** caravans waiting for it take the quicker trip instead, and the village builds a
   new train when it can. Goods that were riding in its chest stay in that chest: the caravan doesn't bring them a second

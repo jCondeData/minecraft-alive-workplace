@@ -125,9 +125,17 @@ public final class CaravanTrains {
 		/**
 		 * Points the station at {@code station} at the Create track beside it, if it isn't yet, facing {@code other}
 		 * (trains coming from {@code other} stop there, and the village train is put together on that side); true when
-		 * Create knows it as a station on a track network.
+		 * Create knows it as a station on a track network. B894: a station is never given a name another station on its
+		 * network already has (Create's schedules go by name and stop at the nearest of the namesakes): it is given
+		 * {@code apart} instead, and a station the village named {@code name} that shares it (two villages of one name
+		 * whose networks were joined, or a world from before B894) is renamed {@code apart}.
 		 */
-		boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name);
+		boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name, String apart);
+
+		/** {@link #aim(ServerLevel, BlockPos, BlockPos, String, String)} with no other name to fall back on. */
+		default boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name) {
+			return aim(level, station, other, name, name);
+		}
 
 		/** Whether the two stations stand on one track network (a train can run between them). */
 		boolean linked(ServerLevel level, BlockPos a, BlockPos b);
@@ -257,6 +265,12 @@ public final class CaravanTrains {
 			BlockPos station = stations.get(0); // the village's own station, the nearest (the other's may be in reach too)
 			if (!data.stations(other).isEmpty()) {
 				BlockPos far = data.stations(other).get(0);
+				if (level.isLoaded(station)) {
+					// B894: a station that shares its name with another on the network (named before B894, or networks
+					// joined since) is told apart while the train runs, and the train's schedule follows it below
+					String[] names = stationNames(level, hall, other);
+					RAILWAY.run(r -> r.aim(level, station, far, names[0], names[1]));
+				}
 				// B900: the train was put together by the first village at its station, going to the other's first
 				RAILWAY.run(r -> r.follow(level, id, first(hall, other) ? far : station, first(hall, other) ? station : far));
 			}
@@ -298,6 +312,17 @@ public final class CaravanTrains {
 		}
 	}
 
+	/**
+	 * The name {@code hall}'s station gets for its train to {@code other}, and the one it gets instead when another station
+	 * on its network already has that name (B894): the village's name, with the hall's key added to tell it apart. The
+	 * schedule goes by name, so the two villages of a pair with one name are told apart from the start.
+	 */
+	static String[] stationNames(ServerLevel level, BlockPos hall, BlockPos other) {
+		String ours = VillageHalls.name(level, hall).getString();
+		String apart = ours + " " + Roads.hallKey(hall);
+		return ours.equals(VillageHalls.name(level, other).getString()) ? new String[] {apart, apart} : new String[] {ours, apart};
+	}
+
 	/** Our station and theirs, both pointed at their track and on one network Create knows; null when not (yet). */
 	@Nullable
 	private static BlockPos[] aimed(ServerLevel level, BlockPos hall, BlockPos other, Caravans.Data data) {
@@ -308,19 +333,13 @@ public final class CaravanTrains {
 		}
 		BlockPos station = ours.get(0);
 		BlockPos far = theirs.get(0);
-		String ourName = VillageHalls.name(level, hall).getString();
-		String theirName = VillageHalls.name(level, other).getString();
-		if (ourName.equals(theirName)) { // the schedule goes by name: two stations of one name would be one stop
-			ourName += " " + Roads.hallKey(hall);
-			theirName += " " + Roads.hallKey(other);
-		}
-		String us = ourName;
-		String them = theirName;
+		String[] us = stationNames(level, hall, other);
+		String[] them = stationNames(level, other, hall);
 		if (level.isLoaded(station)) {
 			spurFor(level, hall, other, station); // 39.7c: a Train Station off the road joined to the road's track first
 			spurFor(level, other, hall, far);
 		}
-		if (!level.isLoaded(station) || !RAILWAY.call(r -> r.aim(level, station, far, us) & r.aim(level, far, station, them) && r.linked(level, station, far), false)) {
+		if (!level.isLoaded(station) || !RAILWAY.call(r -> r.aim(level, station, far, us[0], us[1]) & r.aim(level, far, station, them[0], them[1]) && r.linked(level, station, far), false)) {
 			return null;
 		}
 		return new BlockPos[] {station, far};

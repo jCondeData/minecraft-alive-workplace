@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894
 
 ## What a player sees
 
@@ -119,7 +119,11 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   server was restarted in between (B800); a station a player renamed by hand keeps the player's name, and the train's
   schedule is made from the names the stations have when it is put together. A station renamed later, with Create's
   station screen while the train runs, is followed: the hall's next look at its train points that stop at the new name
-  (`CreateTrains.follow`), so the train and its caravans keep coming (B900). Without a free villager, before the train is put together, or after a player
+  (`CreateTrains.follow`), so the train and its caravans keep coming (B900). Stations on one track network never share a
+  name the village gave them, since a Create schedule stops at the nearest station of its name: a station whose village's
+  name another station there already has (two villages of one name, a name tag or two made-up names alike) gets the
+  village's name with its hall's position added, as `Oakford 120_64_-35`; one named before that, or whose network was
+  joined to another since, is renamed so while its train runs, and the train's stop follows it (B894). Without a free villager, before the train is put together, or after a player
   breaks it up, caravans take the timed trip above.
 - **One line, a built train, goods in its chest** (39.7b). The track a builder lays along a road follows
   `CaravanTrains.plan`: a straight piece (`xo`, `zo`) on each level node, an ascending piece (`an`, `as`, `ae`, `aw`) on

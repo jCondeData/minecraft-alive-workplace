@@ -114,6 +114,8 @@ public final class CaravanTrains {
 	static final int SERVE_EVERY = 10;
 	/** A train site's id part, after the hall's folder of road segments (39.7b). */
 	static final String TRAIN_PART = "train_";
+	/** The site id part of a station put up for a second neighbor's train (B898). */
+	static final String STATION_PART = "station_";
 	/** How far from a turn (nodes) the curve round it starts, tried in this order (39.7b). */
 	static final int[] CURVE_REACH = {3, 2};
 
@@ -125,9 +127,26 @@ public final class CaravanTrains {
 		/**
 		 * Points the station at {@code station} at the Create track beside it, if it isn't yet, facing {@code other}
 		 * (trains coming from {@code other} stop there, and the village train is put together on that side); true when
-		 * Create knows it as a station on a track network.
+		 * Create knows it as a station on a track network. B894: a station is never given a name another station on its
+		 * network already has (Create's schedules go by name and stop at the nearest of the namesakes): it is given
+		 * {@code apart} instead, and a station the village named {@code name} that shares it (two villages of one name
+		 * whose networks were joined, or a world from before B894) is renamed {@code apart}.
 		 */
-		boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name);
+		boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name, String apart);
+
+		/** {@link #aim(ServerLevel, BlockPos, BlockPos, String, String)} with no other name to fall back on. */
+		default boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name) {
+			return aim(level, station, other, name, name);
+		}
+
+		/**
+		 * B898: which way the station at {@code station} faces: 1 the way {@link #aim} would point it for trains coming from
+		 * {@code other} (they can stop there), -1 the other way (they find no path to it), 0 not pointed at a track yet (or
+		 * no station there, or not loaded).
+		 */
+		default int facing(ServerLevel level, BlockPos station, BlockPos other) {
+			return 1;
+		}
 
 		/** Whether the two stations stand on one track network (a train can run between them). */
 		boolean linked(ServerLevel level, BlockPos a, BlockPos b);
@@ -246,6 +265,21 @@ public final class CaravanTrains {
 			if (stations.isEmpty()) {
 				continue;
 			}
+			// B898: the stations of the pair's train, ours and theirs, each facing the other village
+			BlockPos station = stationFor(level, hall, other, data);
+			BlockPos far = data.stations(other).isEmpty() ? null : stationFor(level, other, hall, data);
+			if (station == null || far == null && !data.stations(other).isEmpty()) {
+				// every station of ours (or theirs) faces another neighbor's train, so this one's can't come in: a builder
+				// of ours puts up a station facing it, and till then the caravans waiting for the train take the trip
+				if (station == null && rides(data, hall, other)) {
+					openStation(level, hall, other, entity, data);
+				}
+				data.retime(hall, other, BOARDING, timed);
+				if (!exists) {
+					data.retime(hall, other, ABOARD, timed);
+				}
+				continue;
+			}
 			if (!exists) {
 				data.retime(hall, other, BOARDING, timed); // no train: the caravans waiting for it take the trip as before
 				data.retime(hall, other, ABOARD, timed);
@@ -254,9 +288,13 @@ public final class CaravanTrains {
 				}
 				continue;
 			}
-			BlockPos station = stations.get(0); // the village's own station, the nearest (the other's may be in reach too)
-			if (!data.stations(other).isEmpty()) {
-				BlockPos far = data.stations(other).get(0);
+			if (far != null) {
+				if (level.isLoaded(station)) {
+					// B894: a station that shares its name with another on the network (named before B894, or networks
+					// joined since) is told apart while the train runs, and the train's schedule follows it below
+					String[] names = stationNames(level, hall, other, station, data);
+					RAILWAY.run(r -> r.aim(level, station, far, names[0], names[1]));
+				}
 				// B900: the train was put together by the first village at its station, going to the other's first
 				RAILWAY.run(r -> r.follow(level, id, first(hall, other) ? far : station, first(hall, other) ? station : far));
 			}
@@ -298,6 +336,152 @@ public final class CaravanTrains {
 		}
 	}
 
+	/**
+	 * The name {@code hall}'s station gets for its train to {@code other}, and the one it gets instead when another station
+	 * on its network already has that name (B894): the village's name, with the hall's key added to tell it apart. The
+	 * schedule goes by name, so the two villages of a pair with one name are told apart from the start. B898: a station
+	 * that isn't the village's nearest (one facing a second neighbor) adds that neighbor's name: "Middleton (Eastwick)".
+	 */
+	static String[] stationNames(ServerLevel level, BlockPos hall, BlockPos other, BlockPos station, Caravans.Data data) {
+		String village = VillageHalls.name(level, hall).getString();
+		String theirs = VillageHalls.name(level, other).getString();
+		List<BlockPos> stations = data.stations(hall);
+		String ours = stations.isEmpty() || stations.get(0).equals(station) ? village : village + " (" + theirs + ")";
+		String apart = ours + " " + Roads.hallKey(hall);
+		return village.equals(theirs) ? new String[] {apart, apart} : new String[] {ours, apart};
+	}
+
+	/**
+	 * B898: {@code hall}'s station for its train to {@code other}. A Create station takes trains coming from one side
+	 * only, so a village between two train neighbors on one line needs a station facing each: the village's nearest
+	 * station unless it faces away from {@code other} and another neighbor's train comes in at it (so a village with one
+	 * neighbor keeps its station as before B898, whichever way it faces); else another of its stations by the nearest
+	 * (within {@link #BY_THE_STATION} blocks) facing {@code other}, else one not pointed yet (pointed towards
+	 * {@code other} on the pair's next look), else one no other neighbor's train needs. Null when there's none: a builder
+	 * of the village puts up one ({@link #secondStation}).
+	 */
+	@Nullable
+	public static BlockPos stationFor(ServerLevel level, BlockPos hall, BlockPos other, Caravans.Data data) {
+		List<BlockPos> stations = data.stations(hall);
+		if (stations.isEmpty() || data.stations(other).isEmpty() || !RAILWAY.present() || !level.isLoaded(stations.get(0))) {
+			return stations.isEmpty() ? null : stations.get(0);
+		}
+		BlockPos toward = data.stations(other).get(0);
+		BlockPos nearest = stations.get(0);
+		int first = RAILWAY.call(r -> r.facing(level, nearest, toward), 1);
+		if (first >= 0 || !neededByAnother(level, hall, other, nearest, data)) {
+			return nearest; // facing this neighbor, not pointed yet, or no other neighbor's train comes in at it: as before B898
+		}
+		// the nearest faces another neighbor's train: another station of ours by it (a second platform, as secondStation
+		// puts up), facing this neighbor, else not pointed yet, else facing away but needed by no other neighbor
+		int[] faces = new int[stations.size()];
+		for (int i = 1; i < stations.size(); i++) {
+			BlockPos s = stations.get(i);
+			// 2: left alone (not loaded, away from our nearest, or a station of another village's in our reach)
+			faces[i] = level.isLoaded(s) && s.distSqr(nearest) <= BY_THE_STATION * BY_THE_STATION && ours(hall, s, data)
+				? RAILWAY.call(r -> r.facing(level, s, toward), 1) : 2;
+		}
+		for (int want : new int[] {1, 0}) {
+			for (int i = 1; i < stations.size(); i++) {
+				if (faces[i] == want) {
+					return stations.get(i);
+				}
+			}
+		}
+		for (int i = 1; i < stations.size(); i++) {
+			if (faces[i] == -1 && !neededByAnother(level, hall, other, stations.get(i), data)) {
+				return stations.get(i);
+			}
+		}
+		return null;
+	}
+
+	/** How far (blocks) from a village's nearest station another of its stations may stand to take a second neighbor's train (B898). */
+	static final int BY_THE_STATION = 16;
+
+	/** Whether {@code station} on {@code hall}'s list is the village's own: no other village's nearest, and no nearer another's hall than ours (B898). */
+	private static boolean ours(BlockPos hall, BlockPos station, Caravans.Data data) {
+		for (BlockPos p : data.stationHalls()) {
+			List<BlockPos> theirs = data.stations(p);
+			if (!p.equals(hall) && (theirs.get(0).equals(station) || station.distSqr(p) < station.distSqr(hall))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** Whether a train neighbor of {@code hall} other than {@code other} comes in at {@code station} as it faces (B898). */
+	private static boolean neededByAnother(ServerLevel level, BlockPos hall, BlockPos other, BlockPos station, Caravans.Data data) {
+		for (BlockPos p : data.partners(hall)) {
+			if (!p.equals(other) && rides(data, hall, p) && RAILWAY.call(r -> r.facing(level, station, data.stations(p).get(0)), 1) == 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * B898: where a builder of {@code hall} puts up a station for the train from {@code other} when every station of the
+	 * village faces another neighbor's ({@link #stationFor} null): a Create station beside the same track as the
+	 * village's nearest station, two blocks along it towards {@code other} (or three, or one), so each neighbor's train stops on its
+	 * own side and the two never meet. Null when it isn't needed or there's no room (the track there not straight, the
+	 * spots beside it taken).
+	 */
+	@Nullable
+	public static Map<BlockPos, BlockState> secondStation(ServerLevel level, BlockPos hall, BlockPos other, Caravans.Data data) {
+		List<BlockPos> stations = data.stations(hall);
+		if (stations.isEmpty() || data.stations(other).isEmpty() || stationFor(level, hall, other, data) != null) {
+			return null;
+		}
+		BlockPos near = stations.get(0);
+		BlockPos track = stationTrack(level, near);
+		if (track == null) {
+			return null;
+		}
+		String shape = shapeOf(level.getBlockState(track));
+		BlockPos toward = data.stations(other).get(0);
+		Direction along = "xo".equals(shape) ? (toward.getX() >= near.getX() ? Direction.EAST : Direction.WEST)
+			: (toward.getZ() >= near.getZ() ? Direction.SOUTH : Direction.NORTH);
+		BlockPos side = track.subtract(near);
+		for (int k : new int[] {2, 3, 1}) { // a block of track between the two trains' ends where there's room
+			BlockPos at = near.relative(along, k);
+			BlockState there = level.getBlockState(at);
+			if (level.isLoaded(at) && there.canBeReplaced() && there.getFluidState().isEmpty() && shape.equals(shapeOf(level.getBlockState(at.offset(side))))) {
+				return Map.of(at.immutable(), Lookup.value(BuiltInRegistries.BLOCK, STATION).defaultBlockState());
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Opens the site of the station {@link #secondStation} puts up for the train from {@code other} (B898), taken by an
+	 * idle builder of ours, who brings the Create station from the bench's chests like any build's part. Null: one
+	 * already open, not needed, no room, or nobody free.
+	 */
+	@Nullable
+	public static BuildSite openStation(ServerLevel level, BlockPos hall, BlockPos other, VillageHallBlockEntity entity, Caravans.Data data) {
+		for (BuildSite site : Roads.openSegments(level, hall)) {
+			if (isTrainSite(site.structure()) || isStationSite(site.structure())) {
+				return null; // one at a time
+			}
+		}
+		Map<BlockPos, BlockState> parts = secondStation(level, hall, other, data);
+		if (parts == null) {
+			return null;
+		}
+		return openSite(level, hall, entity, stationSiteId(hall, other), parts);
+	}
+
+	/** The site of the station {@code hall}'s builder puts up for the train from {@code other} (B898). */
+	public static ResourceLocation stationSiteId(BlockPos hall, BlockPos other) {
+		return AliveWorkplace.id(Roads.FOLDER + Roads.hallKey(hall) + "/" + STATION_PART + Roads.hallKey(other).replace('-', 'm'));
+	}
+
+	/** Whether {@code id} is the site of a station put up for a second neighbor's train (B898). */
+	public static boolean isStationSite(ResourceLocation id) {
+		return Roads.isSegment(id) && id.getPath().substring(Roads.FOLDER.length()).contains("/" + STATION_PART);
+	}
+
 	/** Our station and theirs, both pointed at their track and on one network Create knows; null when not (yet). */
 	@Nullable
 	private static BlockPos[] aimed(ServerLevel level, BlockPos hall, BlockPos other, Caravans.Data data) {
@@ -306,21 +490,21 @@ public final class CaravanTrains {
 		if (ours.isEmpty() || theirs.isEmpty() || !level.isLoaded(theirs.get(0))) {
 			return null;
 		}
-		BlockPos station = ours.get(0);
-		BlockPos far = theirs.get(0);
-		String ourName = VillageHalls.name(level, hall).getString();
-		String theirName = VillageHalls.name(level, other).getString();
-		if (ourName.equals(theirName)) { // the schedule goes by name: two stations of one name would be one stop
-			ourName += " " + Roads.hallKey(hall);
-			theirName += " " + Roads.hallKey(other);
+		BlockPos station = stationFor(level, hall, other, data); // B898: each facing the other village
+		BlockPos far = stationFor(level, other, hall, data);
+		if (station == null || far == null) {
+			return null; // a station facing the other village is still to be put up (serve, openStation)
 		}
-		String us = ourName;
-		String them = theirName;
+		String[] us = stationNames(level, hall, other, station, data);
+		String[] them = stationNames(level, other, hall, far, data);
 		if (level.isLoaded(station)) {
 			spurFor(level, hall, other, station); // 39.7c: a Train Station off the road joined to the road's track first
 			spurFor(level, other, hall, far);
 		}
-		if (!level.isLoaded(station) || !RAILWAY.call(r -> r.aim(level, station, far, us) & r.aim(level, far, station, them) && r.linked(level, station, far), false)) {
+		// B898: pointed towards the other village's nearest station, the way stationFor reads them
+		BlockPos towardThem = theirs.get(0);
+		BlockPos towardUs = ours.get(0);
+		if (!level.isLoaded(station) || !RAILWAY.call(r -> r.aim(level, station, towardThem, us[0], us[1]) & r.aim(level, far, towardUs, them[0], them[1]) && r.linked(level, station, far), false)) {
 			return null;
 		}
 		return new BlockPos[] {station, far};
@@ -425,7 +609,7 @@ public final class CaravanTrains {
 	@Nullable
 	public static BuildSite openTrain(ServerLevel level, BlockPos hall, BlockPos other, VillageHallBlockEntity entity, BlockPos station, BlockPos far) {
 		for (BuildSite site : Roads.openSegments(level, hall)) {
-			if (isTrainSite(site.structure())) {
+			if (isTrainSite(site.structure()) || isStationSite(site.structure())) {
 				return null; // one at a time
 			}
 		}
@@ -433,11 +617,17 @@ public final class CaravanTrains {
 		if (parts == null || parts.isEmpty()) {
 			return null;
 		}
+		return openSite(level, hall, entity, trainId(hall, other), parts);
+	}
+
+	/** A site of {@code parts} where they stand, on the ground as it is, taken by an idle builder of {@code hall}'s village. */
+	@Nullable
+	private static BuildSite openSite(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, ResourceLocation id, Map<BlockPos, BlockState> parts) {
 		BoundingBox box = BoundingBox.encapsulatingPositions(parts.keySet()).orElseThrow();
 		BlockPos origin = new BlockPos(box.minX(), box.minY(), box.minZ());
 		List<Blueprint.Entry> entries = new ArrayList<>();
 		parts.forEach((pos, state) -> entries.add(new Blueprint.Entry(pos.subtract(origin), state, null)));
-		Blueprint blueprint = new Blueprint(trainId(hall, other), new Vec3i(box.getXSpan(), box.getYSpan(), box.getZSpan()), entries);
+		Blueprint blueprint = new Blueprint(id, new Vec3i(box.getXSpan(), box.getYSpan(), box.getZSpan()), entries);
 		Villager builder = Roads.builderFor(level, hall, box, true);
 		if (builder == null || !Roads.save(level, blueprint)) {
 			return null;
@@ -1176,6 +1366,16 @@ public final class CaravanTrains {
 				if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity) {
 					Component who = io.github.jcondedata.aliveworkplace.hall.Chronicle.lineStarter(builder);
 					Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.train_built", who));
+				}
+			}
+			return true;
+		}
+		if (isStationSite(site.structure())) {
+			// B898: a station facing a second neighbor's train: the hall's next look at its trains points it at the track
+			for (BlockPos hall : Roads.hallsOf(level, site)) {
+				if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity) {
+					Component who = io.github.jcondedata.aliveworkplace.hall.Chronicle.lineStarter(builder);
+					Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.second_station_built", who));
 				}
 			}
 			return true;

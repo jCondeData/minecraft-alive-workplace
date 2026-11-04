@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880
 
 ## What a player sees
 
@@ -332,7 +332,10 @@ The first blocking spot is the one named. A room left empty in both levels (with
 isn't something the next level adds, so it isn't checked. While clearing, a Builder now leaves a bed a villager has
 claimed (its home point is taken) where the blueprint only wants air, so residents keep their beds through any
 upgrade, the Steward's and bought ones too. Ordering needs the right to build in the village (the owner, their friends
-or an operator; anyone in a village nobody owns), and is checked again on the click.
+or an operator; anyone in a village nobody owns), and is checked again on the click. With `workplaceBuilderOwnership`
+on, only a Builder the clicking player may command (one they hired, a friend's, or one nobody hired) is sent, on this page and
+when choosing a house's outside look (B880): if the only Builders near belong to someone else, nothing is ordered and the
+bar says whose they are and that they can add the player with `/workplace friend add`.
 
 ## Switches
 

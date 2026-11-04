@@ -6,8 +6,10 @@ import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.BuilderJob;
 import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.build.Friends;
 import io.github.jcondedata.aliveworkplace.hall.HallPages;
 import io.github.jcondedata.aliveworkplace.hall.UpgradesPage;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.people.Homes;
@@ -15,6 +17,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
+import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import java.util.Optional;
@@ -383,6 +386,95 @@ public class UpgradesPageGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Ownership on for this test; the rule put back afterwards. */
+	private static void ownership(GameTestHelper helper, boolean on) {
+		ServerLevel level = helper.getLevel();
+		boolean before = level.getGameRules().getBoolean(ModGameRules.BUILDER_OWNERSHIP);
+		level.getGameRules().getRule(ModGameRules.BUILDER_OWNERSHIP).set(on, level.getServer());
+		Leftovers.after(helper, () -> level.getGameRules().getRule(ModGameRules.BUILDER_OWNERSHIP).set(before, level.getServer()));
+	}
+
+	/**
+	 * B880: ownership on, the hall owned by one player and the village's only Builder hired by another. The hall's owner
+	 * clicks the hut's row: nothing is ordered and he's told whose the Builder is and how to be let in. Once the hirer
+	 * names him a friend, the same click sends that Builder.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"upgradeNotForAnotherPlayersBuilder"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "upgradeNotForAnotherPlayersBuilder")
+	public void anUpgradeIsNotHandedToAnotherPlayersHiredBuilder(GameTestHelper helper) {
+		Village v = stage(helper);
+		ownership(helper, true);
+		List<Component> seen = new ArrayList<>();
+		ServerPlayer leader = WonderFinishedGameTests.listener(helper, seen, "HallLeader");
+		ServerPlayer hirer = WonderFinishedGameTests.listener(helper, new ArrayList<>(), "BuilderHirer");
+		Friends friends = Friends.get(v.level().getServer());
+		Leftovers.after(helper, () -> friends.remove(hirer.getUUID(), leader.getUUID()));
+		helper.runAfterDelay(2, () -> {
+			helper.assertFalse(leader.hasPermissions(2) || hirer.hasPermissions(2), "setup: an operator");
+			Friends.hire(hirer, v.builder());
+			((VillageHallBlockEntity) v.level().getBlockEntity(v.hall())).setOwner(leader.getUUID(), "HallLeader");
+			ChoiceMenu menu = openPage(helper, leader);
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_ROW).is(Items.BRICKS), "the hut's row: " + menu.icon(VillageHallScreen.FIRST_ROW));
+			menu.press(VillageHallScreen.FIRST_ROW, leader);
+			helper.assertTrue(upgradeSite(v).isEmpty(), "another player's hired Builder took the order: " + upgradeSite(v).map(BuildSite::ownerName));
+			helper.assertTrue(Builders.activeSite(v.level(), v.builder()) == null && Builders.queue(v.level(), v.builder()).isEmpty(), "the Builder got work");
+			String expected = Component.translatable("message.aliveworkplace.upgrades.not_yours", Blueprints.displayName(HUT_2), "BuilderHirer", "HallLeader").getString();
+			helper.assertTrue(expected.contains("BuilderHirer") && seen.stream().anyMatch(c -> c.getString().equals(expected)),
+				"not told (" + expected + "): " + seen.stream().map(Component::getString).toList());
+			helper.assertTrue(UpgradesPage.order(v.level(), v.hall(), leader, v.hut()) == UpgradesPage.Outcome.NOT_YOURS, "not NOT_YOURS");
+			// the hirer lets him give orders: the same click now sends the Builder
+			friends.add(hirer.getUUID(), leader.getUUID(), "HallLeader");
+			ChoiceMenu again = openPage(helper, leader);
+			again.press(VillageHallScreen.FIRST_ROW, leader);
+			BuildSite site = upgradeSite(v).orElse(null);
+			helper.assertTrue(site != null && site.structure().equals(HUT_2) && v.builder().getUUID().equals(site.builder()), "a friend's order wasn't taken: " + site);
+			helper.succeed();
+		});
+	}
+
+	/** With two Builders near, one hired by someone else and one by the hall's owner, the owner's is sent even if farther. */
+	//$ gametest_ticks_batch AREA '100' '"upgradePicksTheOwnersBuilder"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "upgradePicksTheOwnersBuilder")
+	public void anUpgradeGoesToABuilderThePlayerMayCommand(GameTestHelper helper) {
+		Village v = stage(helper);
+		ownership(helper, true);
+		ServerPlayer leader = WonderFinishedGameTests.listener(helper, new ArrayList<>(), "HallLeader2");
+		ServerPlayer hirer = WonderFinishedGameTests.listener(helper, new ArrayList<>(), "BuilderHirer2");
+		helper.setBlock(new BlockPos(17, 2, 3), ModBlocks.BUILDERS_BENCH);
+		Villager mine = helper.spawn(EntityType.VILLAGER, new BlockPos(17, 2, 5));
+		Builders.employ(v.level(), mine, helper.absolutePos(new BlockPos(17, 2, 3)));
+		helper.runAfterDelay(2, () -> {
+			helper.assertFalse(leader.hasPermissions(2) || hirer.hasPermissions(2), "setup: an operator");
+			Friends.hire(hirer, v.builder());
+			Friends.hire(leader, mine);
+			((VillageHallBlockEntity) v.level().getBlockEntity(v.hall())).setOwner(leader.getUUID(), "HallLeader2");
+			UpgradesPage.Outcome outcome = UpgradesPage.order(v.level(), v.hall(), leader, v.hut());
+			helper.assertTrue(outcome == UpgradesPage.Outcome.STARTED, "outcome " + outcome);
+			BuildSite site = upgradeSite(v).orElse(null);
+			helper.assertTrue(site != null && mine.getUUID().equals(site.builder()), "not the owner's own Builder: " + (site == null ? null : site.builder()));
+			helper.assertTrue(Builders.activeSite(v.level(), v.builder()) == null, "the other player's Builder got the work");
+			helper.succeed();
+		});
+	}
+
+	/** With ownership off, any Builder in the village takes the hall's orders, hired by whoever. */
+	//$ gametest_ticks_batch AREA '100' '"upgradeOwnershipOff"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "upgradeOwnershipOff")
+	public void withOwnershipOffAnyBuilderTakesTheUpgrade(GameTestHelper helper) {
+		Village v = stage(helper);
+		ownership(helper, false);
+		ServerPlayer leader = WonderFinishedGameTests.listener(helper, new ArrayList<>(), "HallLeader3");
+		ServerPlayer hirer = WonderFinishedGameTests.listener(helper, new ArrayList<>(), "BuilderHirer3");
+		helper.runAfterDelay(2, () -> {
+			Friends.hire(hirer, v.builder());
+			((VillageHallBlockEntity) v.level().getBlockEntity(v.hall())).setOwner(leader.getUUID(), "HallLeader3");
+			UpgradesPage.Outcome outcome = UpgradesPage.order(v.level(), v.hall(), leader, v.hut());
+			helper.assertTrue(outcome == UpgradesPage.Outcome.STARTED, "outcome " + outcome);
+			helper.assertTrue(upgradeSite(v).map(s -> v.builder().getUUID().equals(s.builder())).orElse(false), "not sent");
+			helper.succeed();
+		});
+	}
+
 	/** Every sentence the page and its clicks show is written. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
@@ -397,7 +489,7 @@ public class UpgradesPageGameTests implements FabricGameTest {
 			"screen.aliveworkplace.upgrades.free_clear.one", "screen.aliveworkplace.upgrades.blocked", "screen.aliveworkplace.upgrades.blocked_by",
 			"screen.aliveworkplace.upgrades.building", "screen.aliveworkplace.upgrades.click", "message.aliveworkplace.upgrades.started",
 			"message.aliveworkplace.upgrades.queued", "message.aliveworkplace.upgrades.blocked", "message.aliveworkplace.upgrades.building",
-			"message.aliveworkplace.upgrades.not_allowed", "message.aliveworkplace.upgrades.no_builder", "message.aliveworkplace.upgrades.gone",
+			"message.aliveworkplace.upgrades.not_allowed", "message.aliveworkplace.upgrades.no_builder", "message.aliveworkplace.upgrades.not_yours", "message.aliveworkplace.upgrades.gone",
 			"chronicle.aliveworkplace.upgrade_ordered")) {
 			helper.assertTrue(lang.has(key), "not written: " + key);
 		}

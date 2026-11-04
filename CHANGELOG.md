@@ -18,6 +18,21 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A blueprint whose top pokes over the world's build limit (or whose basement reaches under the world's bottom) no
+  longer eats the materials of the blocks that can't stand there and then waits for more for ever: the builder skips
+  those blocks without taking anything, builds the rest and finishes, and the hand-over warns that they will be left
+  out (B937).
+- A Builder struck by lightning and turned into a witch drops his bag and the blueprint where he stood and tells his
+  owner, as when he dies; his materials no longer vanish and his build no longer waits for ever on a builder who is
+  gone. Any other worker turned that way drops what was in their bag, a tool that is yours and their area's marker
+  (B928).
+- A conscript on a wall, tower or cliff fights a raider at its foot up to 24 blocks away, as the edict says (he
+  only looked 8 blocks up and down before), and one with no way down lets that raider be after a few seconds instead
+  of standing stuck at the edge (B926).
+- Many things read in the plural after a count: a crafter "short of 2 Jungle Logs" (and Cherry Logs, Crimson and Warped
+  Stems, Sticks, Nuggets, Ingots, Clay Balls, Feathers, Diamonds, Bricks, Eggs, Buckets and more, B920), a Wonder's
+  Foundation Stone "2 Lanterns, 2 still to bring", as the Steward's list says it (B921), and a Chef "cooking 4 Cooked
+  Porkchops" or "2 Bowls of Beetroot Soup" (B931).
 - A village train put together at a far village's station keeps running when that village unloads right after (the
   player walks away), instead of standing there without its conductor until he comes back; a new train still waits
   two seconds at its station first, so the caravans waiting there board it (B913).

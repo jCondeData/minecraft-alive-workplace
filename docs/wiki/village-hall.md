@@ -262,7 +262,9 @@ new format: the halls' first rounds list the old camps, and from then on a bed p
 builder's table on a long-running server, stays a home (B749). Such a list is saved at the first autosave (about five
 minutes after the server starts), which ends the look for the rest of that run too, not only after a restart (B754).
 Only a brown or green bed is ever a wagon bed; a wagon bed that is broken comes off the list at the hall's next round,
-and a new bed put on its spot comes off it at once, even before that round, so it is a home (B761).
+and a new bed put on its spot comes off it at once, even before that round, so it is a home (B761); only during an
+older save's look (above, before its list is first saved) is a brown or green bed put back by the camp's campfire, hay
+and table found by its look and listed again (B852).
 At each round the
 hall moves out anyone homed in one (they wake and forget it, then find a bed in a house) and holds every wagon bed for
 nobody, so it is never claimed again. The census leaves them out of Beds and Free, and the Beds button says how many

@@ -21,6 +21,10 @@ free Builder, who takes away what the old drawing left (floating or invisible pi
 chests) and puts in the new pieces, as a repair. Chests and what's in them, beds villagers sleep in, job blocks and
 blocks a player put there or changed stay. With no Builder free it waits until one is. Builders get
 better with each building: they level up like villagers you trade with, and each level makes them faster.
+A Builder who dies, or whom lightning turns into a witch (B928), drops his bag and the blueprint where he was, keeps
+what was built and tells you where (`message.aliveworkplace.builder_died`, `message.aliveworkplace.builder_struck`).
+Any other worker struck that way drops what is in their bag, a tool that is yours and their area's marker. On Peaceful
+lightning makes no witch and nothing is dropped.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
@@ -119,6 +123,12 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
 - FOUNDATION and LANDSCAPE depend on the terrain, so a site loaded in the middle of those stages makes its list
   again from the terrain; steps already done are skipped.
 - A step that cannot be done yet is put off once, then skipped (counted in `skipped`).
+- A block over the world's build limit (y 320 in the Overworld) or under its bottom (y -64) can't be placed: a
+  blueprint on a mountain top whose roof pokes over the limit, or a deep basement dug past the bottom. The builder
+  skips such a block like any step that can't be done (counted in `skipped`), takes no material for it and never
+  waits for one, so the rest is built and the build ends (B937; a door whose top half would be over the limit is
+  skipped whole). The hand-over warns of it in yellow ("The top of Test Hut reaches over the world's build limit
+  (y 320)..."). Tests `QaBuildHeightLimit1104BugTests`, `BuildHeightLimitGameTests` (with a save and load mid-build).
 - "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors
   (a fence's connections, a stair's corner shape). Without that a finished wall could look unfinished forever.
 - Nobody is built into a block: before a block goes down the builder checks there is room for it as it will
@@ -446,6 +456,11 @@ claims and trip counts.
 
 ## 8. Proof
 
+`B928GameTests` (3: a builder struck into a witch mid-job, then a save and load of the build sites: the site stays
+closed, one blueprint on the ground and no material lost; on Peaceful he keeps his bag, his site and his blueprint; a
+struck worker drops their bag, the owner's axe and the tree farm's marker, and a block a builder only holds for the look
+isn't made). QA's `QaBuilderConverted1104GameTests` (1: a zombie's bite on Hard drops the bag and one blueprint, nothing
+doubled) and `QaBuilderConverted1104BugTests` (1: struck by lightning mid-job, nothing lost and the build left).
 `QaLaneC1102eGameTests` (QA, B832): six real fishermen catch nothing in 1500 ticks at workplaceBuildDelay 35791395 (the
 first delay whose 60-step bite passes the int range) and at 2147483647, and the same pond at the default 8 still catches.
 `B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not

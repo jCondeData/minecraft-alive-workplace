@@ -613,6 +613,7 @@ public class BuilderWork extends Behavior<Villager> {
 			site.dug(step.pos()); // B868
 		} else if (action == Action.BREAK) {
 			breakBlock(level, villager, bag, bench, plan, step.pos());
+			sealFluids(level, site, plan, step.pos());
 			site.dug(step.pos()); // B868
 		} else {
 			place(level, villager, site, plan, bag, step, requirements, free);
@@ -2112,6 +2113,31 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!rest.isEmpty()) {
 				Builders.dropNear(level, bench, rest);
 			}
+		}
+	}
+
+	/**
+	 * B923, B924: a spot dug below the ground (a basement or a cellar) that opens onto water or lava in the earth beside
+	 * it (an aquifer, a buried pond, a lava pocket) has that fluid plugged with earth in the same tick, before it can run
+	 * in, as a player digging down stops a leak: the pit stays dry, the builder never stands in water or burns, and the
+	 * room is walled and floored as drawn. Only a fluid where the drawing wants no fluid of its own is plugged (a pool
+	 * the drawing has stays), and nothing but a fluid block is ever replaced. Done with the break, so no saved state.
+	 */
+	static void sealFluids(ServerLevel level, BuildSite site, BuildPlan plan, BlockPos dug) {
+		if (dug.getY() >= site.placement().origin().getY()) {
+			return; // above the ground a dug spot is a wall or a floor of the house, as before
+		}
+		for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+			BlockPos n = dug.relative(d);
+			BlockState there = level.getBlockState(n);
+			if (!(there.getBlock() instanceof LiquidBlock) || !level.isLoaded(n)) {
+				continue;
+			}
+			BlockState wanted = plan.targets().get(n);
+			if (wanted != null && (wanted.isAir() || !wanted.getFluidState().isEmpty())) {
+				continue; // the drawing's own pool, or a spot of the room the dig will reach itself
+			}
+			level.setBlock(n, net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
 		}
 	}
 

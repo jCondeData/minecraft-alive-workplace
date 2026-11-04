@@ -21,10 +21,10 @@ them, the bandits may come back with a king.
 ## Smoke on Three Hills
 
 "Smoke rises from three hills round the village: three bandit camps went up in a night." The three chiefs call
-themselves **Captains of the Bandit King**: vindicators in an iron helmet and chestplate with an iron axe, tougher
-than a plain chief, each with a few bandits (axes and crossbows) who stay close to their camp. Every camp flies his
-**war banner**, black with a red skull. Take all three banners: chat counts them ("A war banner of the Bandit King is
-taken (2 of 3)").
+themselves **Captains of the Bandit King**: vindicators in an iron helmet and chestplate with an iron axe, as tough
+as the chief of any bandit camp, each with a few bandits (axes and crossbows) who stay close to their camp. Every
+camp flies his **war banner**, black with a red skull. Take all three banners: chat counts them ("A war banner of
+the Bandit King is taken (2 of 3)").
 
 ## The King's Fort
 

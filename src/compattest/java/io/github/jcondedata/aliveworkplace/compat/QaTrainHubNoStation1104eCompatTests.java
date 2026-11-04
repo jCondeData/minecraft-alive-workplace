@@ -282,4 +282,94 @@ public class QaTrainHubNoStation1104eCompatTests implements FabricGameTest {
 			}
 		});
 	}
+	/**
+	 * A world saved before B898 opened with this jar: the hub's one station pointed at Westmere, and the Eastwick-hub
+	 * train already put together the old way (at the pair's first village's station, its schedule to the other's), so it
+	 * stood with no way in. With a Create station in the hub's bench barrel, the builder puts up the second station, the
+	 * old train's stop follows it, and Eastwick's 32 wheat then reach the hub by that train, none lost or doubled.
+	 */
+	//$ gametest_ticks_batch AREA '7000' '"qaTrainHubOldSave"'
+	@GameTest(template = AREA, timeoutTicks = 7000, batch = "qaTrainHubOldSave")
+	public void aWorldFromBeforeTheFixWithTheStuckSecondTrainGetsItsGoodsThrough(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.assertTrue(CaravanTrains.RAILWAY.present(), "nothing fills in Create's trains with Create installed");
+		QaTrainHub1103eCompatTests.Three v = QaTrainHub1103eCompatTests.villages(helper);
+		builder(helper, 1);
+		CreateTrainCompatTests.conductor(helper, new BlockPos(6, 2, 16));
+		CreateTrainCompatTests.conductor(helper, new BlockPos(15, 2, 16));
+		Villager eastConductor = CreateTrainCompatTests.conductor(helper, new BlockPos(23, 2, 16));
+		CaravanTrains.Railway r = CreateTrainCompatTests.railway();
+		BlockPos west = helper.absolutePos(QaTrainHub1103eCompatTests.STATION_WEST);
+		BlockPos hub = helper.absolutePos(QaTrainHub1103eCompatTests.STATION_HUB);
+		BlockPos east = helper.absolutePos(QaTrainHub1103eCompatTests.STATION_EAST);
+		java.util.UUID id = CaravanTrains.railwayId(v.east(), v.hub());
+		int[] tick = {0};
+		int[] phase = {0};
+		int[] since = {0};
+		helper.onEachTick(() -> {
+			tick[0]++;
+			if (tick[0] % 10 != 0) {
+				return;
+			}
+			switch (phase[0]) {
+				case 0 -> { // the old world: the hub's station faces Westmere, the Eastwick train put together the old way
+					boolean aimed = r.aim(level, hub, west, "Middleton") & r.aim(level, west, hub, "Westmere") & r.aim(level, east, hub, "Eastwick");
+					if (!aimed || !r.linked(level, hub, east)) {
+						if (tick[0] > 600) {
+							helper.fail("setup: the old world's stations weren't aimed in 600 ticks");
+						}
+						return;
+					}
+					BlockPos ours = CaravanTrains.first(v.east(), v.hub()) ? east : hub;
+					BlockPos theirs = ours.equals(east) ? hub : east;
+					if (!r.built(level, ours, theirs)) {
+						Map<BlockPos, BlockState> parts = r.train(level, ours, theirs);
+						helper.assertTrue(parts != null, "setup: no room for the old train at " + ours);
+						parts.forEach((pos, state) -> level.setBlockAndUpdate(pos, state));
+						return;
+					}
+					Villager driver = ours.equals(east) ? eastConductor : CaravanTrains.conductorFor(level, ours);
+					java.util.UUID train = r.assemble(level, ours, theirs, id, driver);
+					if (train == null) {
+						if (tick[0] > 600) {
+							helper.fail("setup: the old Eastwick-hub train couldn't be put together: " + r.status(level, id));
+						}
+						return;
+					}
+					helper.assertTrue(r.facing(level, hub, east) == -1, "setup: the hub's one station doesn't face away from Eastwick");
+					since[0] = tick[0];
+					phase[0] = 1;
+				}
+				case 1 -> { // opened with this jar: the second station goes up and the old train runs to it
+					round(level, v);
+					BlockPos second = second(helper);
+					if (second != null && tick[0] - since[0] > 200 && CaravanTrains.realTrain(level, v.east(), v.hub())) {
+						sendWheat(helper, v, v.east());
+						helper.assertTrue(v.data().onTheRoad().stream().anyMatch(s -> s.from().equals(v.east()) && s.to().equals(v.hub()) && CaravanTrains.waiting(s.arrives())),
+							"setup: Eastwick's caravan doesn't wait for the old train: " + v.data().onTheRoad());
+						since[0] = tick[0];
+						phase[0] = 2;
+					} else if (tick[0] - since[0] > 3000) {
+						helper.fail("opened with this jar, no second station or no Eastwick train in 3000 ticks: second " + second + "; "
+							+ QaTrainHub1103eCompatTests.trains(level, v) + "; the hub's sites " + sites(level, v));
+					}
+				}
+				default -> {
+					round(level, v);
+					List<Caravans.Shipment> left = v.data().onTheRoad().stream().filter(s -> s.to().equals(v.hub())).toList();
+					if (left.isEmpty()) {
+						int wheat = QaTrainHub1103eCompatTests.count(level, v, Items.WHEAT);
+						helper.assertTrue(wheat == 64, "wheat was lost or doubled: " + wheat + " of 64 in the chests");
+						helper.assertTrue(CreateTrainCompatTests.said(level, v.hub(), "chronicle.aliveworkplace.train_came"), "the wheat didn't come in by train");
+						QaTrainHub1103eCompatTests.tidy(level, v);
+						helper.succeed();
+					} else if (tick[0] - since[0] > 3300) {
+						helper.fail("the old Eastwick train never brought the wheat to the hub in 3300 ticks: " + left + "; "
+							+ QaTrainHub1103eCompatTests.trains(level, v) + "; stations: second " + second(helper) + " named "
+							+ (second(helper) == null ? "-" : QaTrainStationNames1102CompatTests.name(level, second(helper))));
+					}
+				}
+			}
+		});
+	}
 }

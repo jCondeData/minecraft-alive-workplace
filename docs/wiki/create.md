@@ -609,6 +609,9 @@ deployer can place blocks in and rename the hall of a protected village (B844).
   first neighbor's train runs, no second station appears, the second neighbor's 32 wheat come by the timed trip (64 in
   the chests), and once a station is brought the builder puts it up and that train runs; the second station mined
   while its train carries the wheat: the builder puts it back and the wheat comes in by train, none lost or doubled.
+  A world from before B898 (the hub's one station facing Westmere, the Eastwick train already put together the old way
+  with no way in): the builder puts up the second station, the old train's stop follows it, and Eastwick's wheat
+  comes in by that train.
 - `QaTrainVillageRenamed1104eCompatTests` (QA, B894, with Create): with the Pine-Oakford train running, the middle
   village renamed Oakford with a name tag, or the far Oakford renamed Pine: the four stations keep four names and
   Pine's 32 logs reach the far village by train.

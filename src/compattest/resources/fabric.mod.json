@@ -251,7 +251,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.NurseBusyMachineCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaNurseBusy1103dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareInheritance1103dCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaDaycareBugs1103dCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaDaycareBugs1103dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaStorageHallCompat1104c3Tests"
 		]
 	},
 	"depends": {

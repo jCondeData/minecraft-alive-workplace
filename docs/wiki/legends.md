@@ -242,7 +242,7 @@ Without the Legend settled (or on strike), nothing changes. A guest who settles 
 ## Proof
 
 GameTests: `LegendEngineGameTests` (6), `LegendSlotsGameTests` (6), `LegendsHallGameTests` (3),
-`LegendNeedsGameTests` (9), `LegendGuestsGameTests` (8), `LegendSitesGameTests` (7), `StrangeMoodGameTests` (6),
+`LegendNeedsGameTests` (9), `QaLaneD1104GameTests` (2, QA, B136: each of the eleven 1.8 luxury goods taken from the store by a Legend of its own kind only, with "enjoying their ..."; a wine-lover with only other kinds' goods leaves them and her luxury unmet until a Cider comes), `LegendGuestsGameTests` (8), `LegendSitesGameTests` (7), `StrangeMoodGameTests` (6),
 `GiftedGameTests` (6), `GiftedBornGameTests` (9), and one class per Legend: `MasterArchitectGameTests`,
 `PathfinderGameTests`, `OldSageGameTests`, `GolemSmithGameTests` (with `GolemHaulerFightGameTests`, 4: a hauler back at work
 after a fight, B329; `GolemHaulerRouteGameTests`, 2: a hauler whose nearest Storehouse is walled in gives it up after

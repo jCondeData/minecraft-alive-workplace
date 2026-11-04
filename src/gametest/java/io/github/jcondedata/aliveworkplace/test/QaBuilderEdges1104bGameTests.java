@@ -74,7 +74,7 @@ public class QaBuilderEdges1104bGameTests implements net.fabricmc.fabric.api.gam
 	/**
 	 * The owner, online, hands the hut over himself; lightning turns the builder mid-STRUCTURE. He reads, word for word,
 	 * "Lightning turned your builder into a witch while building Test Hut. Their tools and the blueprint dropped at x y z."
-	 * with where the builder stood. He picks up the fallen blueprint and the spilled materials (put back in the chest), lays
+	 * with the spot the blueprint now lies on, out of the bolt's reach (B952). He picks up the fallen blueprint and the spilled materials (put back in the chest), lays
 	 * the blueprint on the same spot again and hands it to a second builder at the same bench: it is taken (not refused
 	 * over the gone builder's site), the hut finishes and every material is accounted for (the stock less the hut's list).
 	 */
@@ -97,6 +97,7 @@ public class QaBuilderEdges1104bGameTests implements net.fabricmc.fabric.api.gam
 		String hut = Blueprints.displayName(TEST_HUT).getString();
 		long[] struckAt = {-1};
 		String[] told = {null};
+		BlockPos[] stood = {null};
 		Villager[] second = {null};
 		UUID[] secondSite = {null};
 		helper.onEachTick(() -> {
@@ -105,9 +106,8 @@ public class QaBuilderEdges1104bGameTests implements net.fabricmc.fabric.api.gam
 				if (s == null || s.stage() != BuildPlan.Stage.STRUCTURE || s.cursor() < 4 || QaBuilderConverted1104GameTests.bag(first, r.plan()).isEmpty()) {
 					return;
 				}
-				BlockPos p = first.blockPosition();
-				told[0] = "Lightning turned your builder into a witch while building " + hut + ". Their tools and the blueprint dropped at "
-					+ p.getX() + " " + p.getY() + " " + p.getZ() + ".";
+				stood[0] = first.blockPosition();
+				told[0] = "Lightning turned your builder into a witch while building " + hut + ". Their tools and the blueprint dropped at ";
 				strike(level, first);
 				struckAt[0] = helper.getTick();
 				calmWitches(helper);
@@ -116,6 +116,19 @@ public class QaBuilderEdges1104bGameTests implements net.fabricmc.fabric.api.gam
 			if (second[0] != null || helper.getTick() - struckAt[0] < 5) {
 				return;
 			}
+			// B952: what fell is put down out of the bolt's reach (4+ blocks from where he stood), and the message names that
+			// spot: word for word, with the x y z of the block the blueprint now lies on
+			ItemEntity lying = null;
+			for (ItemEntity e : level.getEntitiesOfClass(ItemEntity.class, helper.getBounds().inflate(16))) {
+				if (e.getItem().is(ModItems.BLUEPRINT)) {
+					lying = e;
+				}
+			}
+			helper.assertTrue(lying != null, "no blueprint fell when the builder was struck");
+			BlockPos at = lying.blockPosition();
+			helper.assertTrue(Math.max(Math.abs(at.getX() - stood[0].getX()), Math.abs(at.getZ() - stood[0].getZ())) > 3,
+				"the blueprint lies at " + at + ", in the bolt's reach of where the builder stood (" + stood[0] + ")");
+			told[0] = told[0] + at.getX() + " " + at.getY() + " " + at.getZ() + ".";
 			helper.assertTrue(texts(c.seen()).contains(told[0]), "the owner wasn't told \"" + told[0] + "\"; he saw " + texts(c.seen()));
 			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null || !first.getUUID().equals(BuildSiteManager.get(level).get(site.id()).builder()),
 				"the struck builder still has his site");

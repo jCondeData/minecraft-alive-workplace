@@ -1117,6 +1117,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerWaterVerify1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerWaterVerify1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageVerify1104c4GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageVerify1104c4BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShoppingPlurals1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShoppingPluralsBug1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallWordsAtExtremes1031GameTests",

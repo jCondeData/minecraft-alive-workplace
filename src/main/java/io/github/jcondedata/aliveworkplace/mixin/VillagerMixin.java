@@ -13,11 +13,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class VillagerMixin {
 	/**
 	 * B928: struck by lightning, a villager becomes a witch without dying, so no death hook sees it: the worker's bag,
-	 * blueprint and site are left as a death leaves them, here, once the witch is in the world and before the villager goes.
+	 * blueprint and site are left as a death leaves them, here, once the witch is in the world and before the villager goes
+	 * (out of the bolt's reach, B952).
 	 */
 	@Inject(method = "thunderHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/Villager;releaseAllPois()V"))
 	private void aliveworkplace$struckIntoWitch(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.LightningBolt bolt, CallbackInfo ci) {
-		io.github.jcondedata.aliveworkplace.build.BuilderEvents.onStruckIntoWitch(level, (Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.build.BuilderEvents.onStruckIntoWitch(level, (Villager) (Object) this, bolt);
 	}
 
 	/** A shopkeeper's offers are whatever the shop has in stock right now. */

@@ -19,8 +19,8 @@ makes camp out beyond it: tents round a fire, a **Bandit Chief** in iron armor a
 
 ## When a camp goes up
 
-Everyone nearby gets the news: "Smoke rises beyond Oakvale: bandits have made camp to the north. Until their chief
-falls, they'll raid the village at night." The camp stands 80 to 104 blocks from the hall, on dry, open ground. The
+Everyone nearby gets the news: "Smoke rises beyond Oakvale: bandits have made camp 92 blocks north. Until their
+chief falls, they'll raid the village at night." The camp stands 80 to 104 blocks from the hall, on dry, open ground. The
 hall's guards icon shows where it is.
 
 While it stands:

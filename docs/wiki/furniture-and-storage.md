@@ -82,7 +82,8 @@ Villagers use the furniture (37.6). From supper (time 10500) until bed (12000), 
 evening meeting walks to the nearest free chair, stool, bench, couch or sofa of the furniture mods within 8 blocks and
 sits on it, as spectators sit in the Stadium's stands. They stand up for work, for bed, for danger (hurt, a hostile
 mob near, panicking or a raid), when the seat is broken, or with `furnishedBuilds` off. One seat holds one villager:
-a seat with anyone on it, or that another villager is already walking to, is passed over. Handcrafted's fancy beds are
+a seat with anyone on it, or that another villager is already walking to, is passed over. A villager who can't
+reach their seat in 30 seconds (penned in, say) gives up on it and leaves it to the others for a minute (B945). Handcrafted's fancy beds are
 real beds: villagers claim and sleep in them, and the house they stand in counts as their home (its grade, the Village
 Hall's list, free beds for a new baby). A home with a furniture mod's seat in it is a furnished home, worth 1 beauty
 to the people who sleep there (the "beauty near home" a Burgher or a Noble needs, M34). Vanilla stair chairs are not
@@ -587,7 +588,7 @@ Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, whi
 
 37.6 (no mods): `FurnitureSeatsGameTests.theSeatsTagLoadsWithoutTheFurnitureMods`; with Handcrafted (compat):
 `FurnitureSeatsCompatTests.aVillagerSitsOnAHandcraftedChairAtSupperAndGetsUpAtDawn`,
-`FurnitureSeatsCompatTests.aSeatInUseIsntTakenTwice`, `FurnitureSeatsCompatTests.aVillagerStandsUpWhenHurtAndNobodySitsWithTheSwitchOff`,
+`FurnitureSeatsCompatTests.aSeatInUseIsntTakenTwice`, `FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt` (B945), `FurnitureSeatsCompatTests.aVillagerStandsUpWhenHurtAndNobodySitsWithTheSwitchOff`,
 `FurnitureSeatsCompatTests.aSeatLoadedFromASaveLetsItsVillagerGo`,
 `FurnitureSeatsCompatTests.aVillagerClaimsAndSleepsInAFancyBedAndTheHouseIsTheirHome` (the fancy bed is a villager home
 point of interest, the villager claims and sleeps in it, the Starter Cottage it stands in is their home, and its chair

@@ -579,6 +579,13 @@ deployer can place blocks in and rename the hall of a protected village (B844).
 - `QaMechanicSavedMidMend1103eCompatTests` (QA, with Create, saves): a Mechanic saved and loaded on his way to the
   store for a cogwheel takes one, not two; saved and loaded twice three ticks apart while carrying it, he puts it in
   once: the hole filled, one cogwheel left of the store's two, nothing in his hand or on the ground.
+- `QaMechanicPartStruck1104eCompatTests` (QA, with Create, B928 kin): a Mechanic struck by lightning (a witch) with
+  empty hands, or right after he set the cogwheel in the hole, leaves the store and the mend as they were, nothing
+  dropped. Struck or killed with the store's cogwheel in hand, it vanishes (B959; and a machine trip's load when
+  struck, B960): their tests wait on `tests/mechanic-struck-1104`.
+- `QaContraptionLines1104eCompatTests` (QA, with Create, 39.5's lines): "its 1 moving part turns", two stuck parts
+  both named, four named with no "more", five reading four and "and 1 more", eleven "and 7 more", a part gone from its
+  spot "a missing part at x y z", and the Mechanic whose toolbox is in reach named as the one who checked.
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is

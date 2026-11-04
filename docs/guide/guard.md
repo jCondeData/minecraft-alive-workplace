@@ -45,8 +45,8 @@ as Expert. Masters are made in real fights.
 
 ![Sparring with the Training Dummy](https://jcondedata.github.io/minecraft-alive-workplace/guard/still-4.jpg)
 
-**On horseback.** A tame, saddled horse, donkey or mule left free (not on a lead) within 24 blocks of the post is one the
-guard rides on patrol.
+**On horseback.** A tame, saddled horse, donkey, mule or camel left free (not on a lead) within 24 blocks of the post is
+one the guard rides on patrol.
 
 **Ring the bell** and the guards rush to it and fight anything near it for a minute and a half, while everyone else runs
 home to hide.

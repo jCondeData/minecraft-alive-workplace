@@ -101,7 +101,8 @@ public class B928GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 
 	/**
 	 * Any worker turned by lightning: what's in their bag, the owner's tool they hold and their tree farm's marker fall
-	 * where they stood; a block held only for the look (a builder's, drop chance 0) isn't made out of nothing.
+	 * (out of the bolt's reach, B952, so looked for a little round the area); a block held only for the look (a
+	 * builder's, drop chance 0) isn't made out of nothing.
 	 */
 	//$ gametest_ticks_batch AREA '200' '"b928Workers"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "b928Workers")
@@ -129,11 +130,11 @@ public class B928GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			helper.assertTrue(!worker.isAlive() && !holder.isAlive(), "a villager wasn't turned");
 			helper.assertTrue(level.getEntitiesOfClass(Witch.class, helper.getBounds()).size() == 2, "not two witches");
 			Map<Item, Integer> ground = new HashMap<>();
-			for (ItemEntity e : level.getEntitiesOfClass(ItemEntity.class, helper.getBounds().inflate(2))) {
+			for (ItemEntity e : level.getEntitiesOfClass(ItemEntity.class, helper.getBounds().inflate(12))) {
 				ground.merge(e.getItem().getItem(), e.getItem().getCount(), Integer::sum);
 			}
 			helper.assertTrue(ground.getOrDefault(Items.IRON_INGOT, 0) == 12 && ground.getOrDefault(Items.COAL, 0) == 5,
-				"the worker's bag didn't fall where they stood: " + ground);
+				"the worker's bag didn't fall: " + ground);
 			helper.assertTrue(ground.getOrDefault(Items.IRON_AXE, 0) == 1, "the owner's axe didn't fall: " + ground);
 			helper.assertTrue(ground.getOrDefault(ModItems.FIELD_MARKER, 0) == 1, "the tree farm's marker didn't fall: " + ground);
 			helper.assertTrue(ground.getOrDefault(Items.OAK_PLANKS, 0) == 0, "a block held only for the look was dropped: " + ground);

@@ -150,4 +150,20 @@ the new version sees (0 on that day), as before.
   full pace (`cropsOutsideTheVillageGrowAtFullPace`); melon stems are held back (`melonStemsAreHeldBack`); a bucket
   wets the 3 x 3 round it and none of the 16 blocks beyond (`aBucketWetsNineFarmlandNotATenth`); the mood is exactly 10
   less with "The wells are low" and back after the rain (`theMoodIsTenLessAndComesBack`).
+- `QaDroughtGuard1104d3GameTests` (QA, 2026-11-04, B946 to B948): with no drought, or outside the hall's area in one,
+  a pond wets dry farmland to 7 at its first random tick; in the drought a field by a pond at 7 dries a step a tick to
+  0 and never climbs back in 40 more; once rain ends the drought, or `drought` is switched off, the pond wets it again;
+  a Well Keeper's bucket wets it to 7 for the day, and the next day it dries again. Pitcher crops outside the area, or
+  on watered farmland, grow exactly as often as with no drought; torchflower crops are held to about a quarter. The
+  last rain day survives a save and load at every count (to day 2^40), a garbled one counts from the day it's read,
+  it is written to `data/aliveworkplace_rain.dat` when the world saves, and rain after a restart starts the count again.
+- `QaDroughtFixes1104cGameTests` (QA, 2026-11-04, B946-B948 edges): a pond outside the hall's area still wets its
+  dry field to 7 while one inside stays at 0 (`aPondOutsideTheVillageStillWetsItsFieldInADrought`); dry planted
+  farmland by a pond stays tilled and dry for 200 random ticks, wheat and all (`plantedFarmlandByAPondStaysTilledAndDry`);
+  a Well Keeper's bucket still wets a field by a pond and it stays at 7 that day (`theWellKeepersBucketStillWetsAFieldByAPond`);
+  after the drought the pond wets the field again (`afterTheDroughtThePondWetsTheFieldAgain`); farmland away from water
+  dries to 0 and stays farmland under a crop (`farmlandAwayFromWaterStillDriesInADrought`); a pitcher crop outside the
+  area grows exactly as often as with no drought, and torchflower crops are held to a quarter pace; the rain day is
+  what the save writes, reads back (also from an int, and a broken value counts from today), survives `forget()`, and
+  rain sets the count to 0 (`theRainDayIsWrittenToTheWorldAndReadBack`, `rainSetsTheDryDaysBackToZeroAndIsSaved`).
 - Showcase scenes: `drought`.

@@ -51,6 +51,16 @@ public class QaTrainStationGlobNames1104eCompatTests implements FabricGameTest {
 		run(helper, STATION_A, "Ashford [West]");
 	}
 
+	/**
+	 * The village itself named with brackets (a name tag on its hall) before its train runs: the village names its
+	 * station after itself, so the stop copies the brackets just the same.
+	 */
+	//$ gametest_ticks_batch AREA '3600' '"qaTrainVillageBrackets"'
+	@GameTest(template = AREA, timeoutTicks = 3600, batch = "qaTrainVillageBrackets")
+	public void aVillageNamedWithBracketsStillGetsTheCaravan(GameTestHelper helper) {
+		run(helper, null, "Bramble [East]");
+	}
+
 	private static void rename(GameTestHelper helper, BlockPos which, String name) {
 		StationBlockEntity be = (StationBlockEntity) helper.getBlockEntity(which);
 		helper.assertTrue(be.getStation() != null, "setup: the station isn't a station Create knows");
@@ -62,6 +72,9 @@ public class QaTrainStationGlobNames1104eCompatTests implements FabricGameTest {
 		helper.assertTrue(CaravanTrains.RAILWAY.present(), "nothing fills in Create's trains with Create installed");
 		CreateTrainCompatTests.line(helper);
 		CreateTrainCompatTests.Villages v = CreateTrainCompatTests.villages(helper);
+		if (which == null) {
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(v.b())).setCustomName(net.minecraft.network.chat.Component.literal(name));
+		}
 		CreateTrainCompatTests.conductor(helper, new BlockPos(6, 2, 16));
 		UUID train = CaravanTrains.railwayId(v.a(), v.b());
 		int[] tick = {0};
@@ -76,7 +89,12 @@ public class QaTrainStationGlobNames1104eCompatTests implements FabricGameTest {
 			}
 			if (sentAt[0] < 0) {
 				if (CaravanTrains.realTrain(level, v.a(), v.b())) {
-					rename(helper, which, name);
+					if (which != null) {
+						rename(helper, which, name);
+					} else {
+						String b = QaTrainStationNames1102CompatTests.name(level, helper.absolutePos(STATION_B));
+						helper.assertTrue(name.equals(b), "setup: the village's station isn't named after it: '" + b + "'");
+					}
 					CreateTrainCompatTests.sendAgain(level, v);
 					Caravans.Shipment s = v.data().onTheRoad().stream().filter(x -> x.to().equals(v.b())).findFirst().orElse(null);
 					helper.assertTrue(s != null && s.byTrain(), "setup: the caravan doesn't go by train: " + s);

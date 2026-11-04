@@ -4,7 +4,7 @@ Builders put up vanilla scaffolding to reach blocks with nowhere to stand near t
 dome's crown) and take it down again afterwards. Part of Wonders (2.0), behind its expansion gate (`Expansions.M35`), which
 1.0 opens with every other expansion.
 
-Roadmap items: 35.6, 35.6a
+Roadmap items: 35.6, 35.6a, B929
 
 ## 1. What a player sees
 
@@ -33,7 +33,7 @@ materials are on). With too little on hand it hops as it always did, so builds w
 **Where.** Every place to stand from which the block is in reach (eye within 5 blocks of it) is tried: one whose feet
 and head are air and where the drawing leaves air or nothing. Under it a column runs down through air (again only
 where the drawing leaves air or nothing) to the ground, a floor, a wall top or a column already standing, at most 32
-blocks. The one needing the fewest new scaffolds wins (then the one nearest the builder), so a column already up is
+scaffolds (a column of exactly 32 counts, B929; a stand needing 33 is never scaffolded). The one needing the fewest new scaffolds wins (then the one nearest the builder), so a column already up is
 built on rather than a new one started.
 
 **Putting it up.** The builder fetches as many scaffolds as the column needs, up to 16 at a time so the column can
@@ -132,7 +132,7 @@ hurt, the chest as full as before). QA's `QaBuilderFixes1026GameTests.scaffoldin
 left standing, none lost between the chest, the bag and the ground). QA's `QaScaffoldDelay1103eGameTests` (2, B831:
 `workplaceBuildDelay` raised to its largest value, 2147483647, while scaffolding goes up or comes down stops the builder;
 lowered back to 2 he carries on within 200 ticks without his work restarting, and the pillar ends finished with no
-scaffold standing and all 64 back). QA's `QaScaffoldShift1104GameTests` (4: night and a panic each put him down at the column's foot within 200 ticks, unhurt, and he finishes with none left standing and all 64 back; a save and reload with three scaffolds up builds on that column, never a second; the request for scaffolding goes within 1,200 ticks of the chest holding enough, none lost).
+scaffold standing and all 64 back). QA's `QaScaffoldShift1104GameTests` (4: night and a panic each put him down at the column's foot within 200 ticks, unhurt, and he finishes with none left standing and all 64 back; a save and reload with three scaffolds up builds on that column, never a second; the request for scaffolding goes within 1,200 ticks of the chest holding enough, none lost). QA's `QaScaffoldHeight1104GameTests` (3: a column of 31 is planned, one of 33 never, a low block gets the shortest column) and `QaScaffoldHeight1104BugTests.aColumnOfExactlyThirtyTwoScaffoldsIsPlanned` (B929: a block 38 over the floor gets a column of exactly 32, the builder standing 33 up).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks
 away at the builder's height, with stills of it up the scaffolding and taking it down).

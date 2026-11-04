@@ -166,6 +166,13 @@ public final class CaravanTrains {
 		/** Whether a village train with this owner is on the railway (and not derailed). */
 		boolean exists(ServerLevel level, UUID owner);
 
+		/**
+		 * B900: the village train's schedule kept on the two stations' current names (it goes by name, and a player may
+		 * rename a station with Create's screen once the train runs): a stop whose station no longer has its name is
+		 * pointed at {@code there} (the first stop) or {@code home} (the second) under the name it has now.
+		 */
+		void follow(ServerLevel level, UUID owner, BlockPos there, BlockPos home);
+
 		/** Whether the village train with this owner stands at the station at {@code station} now. */
 		boolean at(ServerLevel level, UUID owner, BlockPos station);
 
@@ -248,6 +255,11 @@ public final class CaravanTrains {
 				continue;
 			}
 			BlockPos station = stations.get(0); // the village's own station, the nearest (the other's may be in reach too)
+			if (!data.stations(other).isEmpty()) {
+				BlockPos far = data.stations(other).get(0);
+				// B900: the train was put together by the first village at its station, going to the other's first
+				RAILWAY.run(r -> r.follow(level, id, first(hall, other) ? far : station, first(hall, other) ? station : far));
+			}
 			boolean standing = RAILWAY.call(r -> r.at(level, id, station), false);
 			calls(level, hall, id, station, standing); // 39.7d: the Conductor calls the stop as it comes in
 			if (!standing) {

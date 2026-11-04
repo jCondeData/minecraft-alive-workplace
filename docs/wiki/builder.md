@@ -130,7 +130,8 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   skips such a block like any step that can't be done (counted in `skipped`), takes no material for it and never
   waits for one, so the rest is built and the build ends (B937; a door whose top half would be over the limit is
   skipped whole). The hand-over warns of it in yellow ("The top of Test Hut reaches over the world's build limit
-  (y 320)..."). Tests `QaBuildHeightLimit1104BugTests`, `BuildHeightLimitGameTests` (with a save and load mid-build).
+  (y 320)..."). The held blueprint's supply report and its Material List book leave those blocks out too (B953).
+  Tests `QaBuildHeightLimit1104BugTests`, `BuildHeightLimitGameTests` (with a save and load mid-build), `B953GameTests`.
 - "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors
   (a fence's connections, a stair's corner shape). Without that a finished wall could look unfinished forever.
 - Nobody is built into a block: before a block goes down the builder checks there is room for it as it will

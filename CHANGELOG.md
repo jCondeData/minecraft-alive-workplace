@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A blueprint whose top pokes over the world's build limit (or whose bottom is under the world's floor) no longer
+  asks, in its tooltip and Material List book, for the blocks that can't be placed there and need no materials (B953).
 - A worker turned into a witch by a real lightning bolt no longer loses his bag and blueprint to the same bolt's
   next strikes: they are put down out of its reach, on his Blueprint Table or workstation or nearby ground (B952).
 - In a drought, farmland next to water now stays dry like the rest of the fields instead of soaking up the pond

@@ -58,7 +58,7 @@ wait at each, and Create runs it from then on: you can watch it come and go, and
   first neighbor, one of its builders puts up a second station beside the same track, two blocks along it towards the
   second neighbor, from a Create station in the chests by the bench, and the chronicle says so. It's named after both
   villages, as `Middleton (Eastwick)`, and the second neighbor's train stops there. Keep a spare Create station by the
-  bench; until it's up, that neighbor's caravans walk.
+  bench; until it's up, that neighbor's caravans take the quicker trip without a train you can see.
 - **The village's train is its own.** Nothing of the mod ever touches trains you put together yourself.
 
 ## Riding the train

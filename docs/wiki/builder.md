@@ -179,7 +179,11 @@ asked that time shrink with each Builder: tested at 2 builders = 50%, 4 = 29% of
 
 **Who may order.** With `workplaceBuilderOwnership` on, a Builder takes orders only from the player who hired it,
 their friends (`/workplace friend add|remove|list`) and operators. That includes orders from the Village Hall: the
-Upgrades page and a house's new outside look go only to a Builder the clicking player may command (B880).
+Upgrades page and a house's new outside look go only to a Builder the clicking player may command (B880): his own
+Builder is picked even when it is farther away or busy (the upgrade is queued behind its job), a Builder nobody hired
+takes anyone's order, and an operator may send any. A refused order leaves the other player's Builder, its job and its
+queue exactly as they were; a friend removed with `/workplace friend remove` is refused again
+(`QaBuilderOwnership1104bGameTests`, 9).
 
 **Upkeep and paths.** An idle Builder looks over buildings it (or its employer) finished anywhere in the village his
 table stands in, or outside it within `maxSiteDistance` (36.20), every 1200 ticks, and fills only the holes with its usual materials; things players put there
@@ -520,6 +524,8 @@ every stage and after a save and reload, `everyStageAndAfterAReload`; a finished
 `QaOffHandBookGameTests` (2, QA on B394: an off-hand Book and Quill doesn't stop the Postal Desk handing out waiting
 parcels, `anOffHandBookDoesNotStopThePostalDeskHandingOutParcels`; on a bench with no build it says so and is kept,
 `anOffHandBookOnABenchWithNoBuildSaysSoAndIsKept`).
+`QaBuildReserve1104bGameTests` (7, QA of B84's build reserve at its edges: only what lies beyond a build's shortfall is ever free, `onlyWhatIsBeyondTheShortfallIsFree`; the bench's own chests lower the hold item for item, `benchChestsLowerTheShareItemForItem`, but a shared store never counts as one, `theStoreNeverCountsAsTheBenchsOwnChest`; two benches add up, `twoBenchesSharingOneStoreKeepBackTheSum`; a builder's bag counts once across his queued builds, `oneBuildersBagCountsOnceForHisQueuedBuilds`, and nobody else's counts, `anotherVillagersBagDoesntCount`; holding back one item never holds back another, `oneKeptBackItemNeverHoldsBackAnother`).
+`QaBenchMovesCellars1104bGameTests` (6, QA of B290 and 36.7: a Builder moved to another table mid-structure finishes from the new table's chests and never touches the old one's again, every material accounted for (`aMoveMidStructureLeavesTheOldTablesChestUntouched`); he carries on when the old table is broken after the move (`theOldTableBrokenAfterTheMoveDoesntStopTheBuild`); moved there and back, his build and his queued builds return to the first table (`aMoveThereAndBackLeavesEverythingAtTheFirstTable`); digging an old build's cellar leaves every container above ground with exactly what it held (`aCellarDigLeavesTheContainersAboveGroundAndTheirContents`) and a player's chest in the half-dug cellar with its contents (`aChestInTheHalfDugCellarSurvivesTheDig`); builds with no basement are never offered "Dig the cellar" (`aBuildWithNoBasementIsNeverOfferedACellar`)).
 `B290GameTests` (6, B290: a hired Builder at a workshop table 34 blocks from the village's unowned Storehouse, in a
 village whose hall his employer owns, counts its stone overhead, in the list and the status and builds from it,
 `aHiredBuilderAtAWorkshopTableBuildsFromTheVillageStorehouse`; a player's Storehouse feeds the village's own Builder on

@@ -130,7 +130,9 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   way it faces; else another station within 16 blocks of it facing that neighbor or not pointed yet); when every station faces another neighbor's train, a builder of
   the village puts up a Create station from the bench's chests beside the same track, two blocks along it towards the
   new neighbor (`CaravanTrains.secondStation`), named `Middleton (Eastwick)`, and a train still aimed at the first station is pointed
-  at it (B898). Without a free villager, before the train is put together, or after a player
+  at it (B898). Till that station is up (no Create station in the bench's chests yet) that neighbor's caravans take
+  the timed trip, and a second station a player mines while its train runs is put back by the builder from the chests,
+  the goods aboard coming in once it stands. Without a free villager, before the train is put together, or after a player
   breaks it up, caravans take the timed trip above.
 - **One line, a built train, goods in its chest** (39.7b). The track a builder lays along a road follows
   `CaravanTrains.plan`: a straight piece (`xo`, `zo`) on each level node, an ascending piece (`an`, `as`, `ae`, `aw`) on
@@ -603,6 +605,19 @@ deployer can place blocks in and rename the hall of a protected village (B844).
   Ashford's 64 logs always add up (none left in the train, none twice); a world saved with a caravan waiting to board and
   one in the chest, opened with the switch off and no train on the line: the first comes in with its 16 logs, the other is
   written off with one "broken up" line and its logs never arrive.
+- `QaTrainHubNoStation1104eCompatTests` (QA, B898, with Create): the hub's bench chests with no Create station: the
+  first neighbor's train runs, no second station appears, the second neighbor's 32 wheat come by the timed trip (64 in
+  the chests), and once a station is brought the builder puts it up and that train runs; the second station mined
+  while its train carries the wheat: the builder puts it back and the wheat comes in by train, none lost or doubled.
+  A world from before B898 (the hub's one station facing Westmere, the Eastwick train already put together the old way
+  with no way in): the builder puts up the second station, the old train's stop follows it, and Eastwick's wheat
+  comes in by that train.
+- `QaTrainVillageRenamed1104eCompatTests` (QA, B894, with Create): with the Pine-Oakford train running, the middle
+  village renamed Oakford with a name tag, or the far Oakford renamed Pine: the four stations keep four names and
+  Pine's 32 logs reach the far village by train.
+- `QaSecondStationWords1104eGameTests` (QA, B898, without Create): the second station's site reads "Second Train
+  Station" (the train's "Village Train") for halls at positive, negative and zero positions, the two villages' sites
+  never share an id, and the chronicle's line reads as written.
 
 - `MachineWorkCompatTests` (with Create): for each of the millstone, the press over a depot, the mixer over a basin
   and the crushing wheels, with the job's own worker: turned by a creative motor, the chest's input goes to the machine

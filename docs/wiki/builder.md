@@ -334,7 +334,7 @@ claims and trip counts.
 - Block: Builder's Bench (`aliveworkplace:builders_bench`), the job block. Profession: Builder (`entity.minecraft.villager.builder`).
 - Items: Blueprint (`aliveworkplace:blueprint`; "Blueprint: %s" when named), Blank Blueprint (`aliveworkplace:blank_blueprint`, bought from
   villagers for emeralds), Builder's Tea (`aliveworkplace:builders_tea`). The Blueprint Table makes and uploads blueprints.
-- Hand over: right-click the Builder with a Blueprint. Sneak-right-click with an empty hand: status. A placed Blueprint sneak-handed over its finished building: take it down (a busy Builder queues it and says so: "Builder will take down Test Hut after Cottage (number 1 in line). It needs no materials.", B514). A Blueprint, a Book and Quill or a
+- Hand over: right-click the Builder with a Blueprint. Sneak-right-click with an empty hand: status. A placed Blueprint sneak-handed over its finished building: take it down (a busy Builder queues it and says so: "Builder will take down Test Hut after Cottage (number 1 in line). It needs no materials.", B514). Water (or lava) in it is scooped up first, while its bank still holds it, with the empty buckets its pouring left: nothing runs out over the ground and the buckets come back full, one per bucket it cost (B961). A Blueprint, a Book and Quill or a
   Wonder Plan in the off hand works too when the main hand is empty.
 - Commands: `/workplace blueprints`, `/workplace blueprint`, `/workplace import`, `/workplace sites`,
   `/workplace cancel <site>` (the blueprint stays placed; hand it back to carry on; a canceled take-down says "Canceled the

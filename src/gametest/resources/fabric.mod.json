@@ -25,6 +25,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CellarGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoreDecorationsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDecorations1104fGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDecorations1104fBugTests",
 			"io.github.jcondedata.aliveworkplace.test.TableJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ChimneyCampfireGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StairCornerGameTests",

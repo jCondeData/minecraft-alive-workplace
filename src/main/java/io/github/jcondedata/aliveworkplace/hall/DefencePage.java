@@ -318,7 +318,8 @@ public final class DefencePage {
 		Optional<io.github.jcondedata.aliveworkplace.guard.Warnings.Source> source = io.github.jcondedata.aliveworkplace.guard.Warnings.source(level, hall);
 		if (source.isPresent()) {
 			return VillageHallScreen.icon(Items.SPYGLASS, Component.translatable("screen.aliveworkplace.defence.next_none"), ChatFormatting.GREEN,
-				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.next_watch", source.get().who()), ChatFormatting.GRAY));
+				// each source's own line (B919: the Seer has no tower and sees two days ahead), given the name and the days
+				VillageHallScreen.line(Words.countedIfAny(source.get().watch(), source.get().days(), source.get().who(), source.get().days()), ChatFormatting.GRAY));
 		}
 		return VillageHallScreen.icon(Items.GRAY_STAINED_GLASS_PANE, Component.translatable("screen.aliveworkplace.defence.next_blind"), ChatFormatting.YELLOW,
 			VillageHallScreen.line("screen.aliveworkplace.defence.next_blind_hint", ChatFormatting.DARK_GRAY));

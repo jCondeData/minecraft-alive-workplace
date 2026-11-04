@@ -141,6 +141,8 @@
 			"io.github.jcondedata.aliveworkplace.test.HallPeopleJobGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallPeopleBedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallScreenGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallVisitorJobs1104cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReformStories1104cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallCustomScreenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallScreenBugTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonCenterGameTests",
@@ -190,6 +192,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B120GameTests",
 			"io.github.jcondedata.aliveworkplace.test.ScaffoldingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScaffoldingGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScaffoldShift1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScaffoldDelay1103eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClearPassesSaved1103eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScaffoldingBugTests",
@@ -359,6 +362,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ReformStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformStoryBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReformCarry1104cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformSavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformDrillRestart1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBoxSavesGameTests",
@@ -510,6 +514,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLadderHeight1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeCaps1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeLadderBreach1103dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeLadderBreach1103dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderVerify1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderCalledOff1102dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavesAfterFixes1103eGameTests",
@@ -748,6 +753,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderLeftovers1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderTerrain1102BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBasementGround1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1103GameTests",
@@ -1263,7 +1269,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaReformCarry1104cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBenchMovesCellars1104bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildReserve1104bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaLaneD1104GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaLaneD1104GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRaidOwnership1104cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRaidOwnership1104cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFletcherWords1104cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSeerWatch1104GameTests"
 		]
 	},
 	"depends": {

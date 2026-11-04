@@ -194,6 +194,8 @@ public class TreasuryEdictGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "festivalNoMoney")
 	public void festivalSeasonWithoutMoneyDisappointsTheVillage(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.halls(helper); // B918: another batch's hall left nearby made these villagers its village
+		CivicEffects.forget();
 		village(helper);
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		helper.runAfterDelay(5, () -> {

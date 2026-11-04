@@ -162,7 +162,13 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   builder's line, nothing taken.
 - `QaLaneD1104GameTests.qaB426TheRealLackReadsOneAndTwoLogsRight` (QA, B426): from the real lack, "short of 1 Oak Log
   to make 4 Oak Planks", "short of 2 Oak Logs to make 8 Oak Planks" and "short of 2 Oak Logs to make 1 Barrel"
-  (two jungle, cherry, crimson or warped logs still read in the singular: B920).
+  (and since B920's fix two jungle, cherry, crimson or warped logs read in the plural too:
+  `QaLaneD1104GameTests.qaB426EveryWoodsLogsAreNamedInThePlural`).
+- `QaLaneC1104eGameTests` (QA, B878/B920/B931): 1 Stick, Egg or Cherry Log reads in the singular and 0, 2, 8 and 64
+  in the plural; "short of 2 Sticks, 1 Copper Ingot to make 1 Iron Pickaxe" and "short of 1 Crimson Stem to make 4
+  Crimson Planks"; every `plural.aliveworkplace.*` key in the language file names a real item or creature, isn't empty
+  and differs from the one-form (but for names already plural, "Fine Clothes", "Drowned"); every countable input and
+  output of the mod's luxury recipes has a plural.
 - `QaCrafterFurnitureBugTests.b352AMasonShortOfCoalSaysSoAndTakesNothing`: the kiln a coal short names the coal, not
   the bricks, and takes nothing (B352).
 - `QaJobChainBugGameTests.aTinkererWithOreButNoCoalNamesTheCoalAndTakesNothing`: the forge with the raw iron but no

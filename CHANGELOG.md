@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A City Plan cell painted for a village before a nearer Village Hall was placed counts only for the nearer village: a
+  Stone Wall finished there no longer makes both villages walled or counts for both ranks (B805).
 - A village train put together at a far village's station keeps running when that village unloads right after (the
   player walks away), instead of standing there without its conductor until he comes back (B913).
 - A village's Train Station renamed with Create's screen is followed by the train's schedule even when the player

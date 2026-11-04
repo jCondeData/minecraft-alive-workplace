@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A reform story's asker now speaks in one pair of quotes (Toolsmith: "We hammer ... gladly."), not two (B914).
 - A village with a train neighbor on each side of one Create line now gets both neighbors' goods by train: a Create
   station only takes trains from one side, so when the village's station faces the first neighbor, one of its builders
   puts up a second station beside the track (from a Create station by the bench), facing the second, and that

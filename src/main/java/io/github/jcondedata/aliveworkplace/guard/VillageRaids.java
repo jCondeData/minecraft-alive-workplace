@@ -24,6 +24,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
@@ -275,24 +276,53 @@ public final class VillageRaids {
 		return Lairs.of(level, hall, culture).map(c -> Lairs.raidSize(c, size)).orElse(size);
 	}
 
-	/** The raiders still about in the village round {@code hall}. */
+	/** The raiders still about in the village round {@code hall}: those within its reach ({@link #reaches}). */
 	public static List<Mob> raiders(ServerLevel level, BlockPos hall) {
+		return level.getEntitiesOfClass(Mob.class, near(hall), m -> m.isAlive() && m.getTags().contains(TAG) && reaches(hall, m));
+	}
+
+	/** A box round {@code hall} that holds every mob {@link #reaches} it (a block wider, for the entity lookup). */
+	public static AABB near(BlockPos hall) {
 		int r = VillageHalls.RADIUS + 32;
-		return level.getEntitiesOfClass(Mob.class, new AABB(hall).inflate(r, 48, r), m -> m.isAlive() && m.getTags().contains(TAG));
+		return new AABB(hall).inflate(r + 1, 49, r + 1);
 	}
 
 	/**
-	 * The raiders of the raid on {@code hall}: those about it ({@link #raiders}) but for the ones nearer another village
-	 * with a raid under way, within that village's reach, which are that raid's (the rule a fallen raider's raid is found
-	 * by, B828; B849).
+	 * Whether {@code mob} is within the reach of a raid on the village round {@code hall}: where it stands (its feet's
+	 * block) is at most {@code RADIUS + 32} across and 48 up or down from the hall. The one reach rule for raiders: who a
+	 * village counts ({@link #raiders}), whose raid a raider is ({@link #raidOf}) and a siege's raiders all use it (B915).
+	 */
+	public static boolean reaches(BlockPos hall, Entity mob) {
+		int r = VillageHalls.RADIUS + 32;
+		BlockPos at = mob.blockPosition();
+		return Math.abs(hall.getX() - at.getX()) <= r && Math.abs(hall.getZ() - at.getZ()) <= r && Math.abs(hall.getY() - at.getY()) <= 48;
+	}
+
+	/**
+	 * The raid under way that {@code mob} belongs to: of those whose {@link #reach} it touches, the one whose hall is
+	 * nearest, the first listed on a tie. The one rule that hands out raiders, used by {@link #own} and by a fallen
+	 * raider's raid (Risings), so every raider counts for exactly one raid (B828; B849; B915). Null when none reaches it.
+	 */
+	@Nullable
+	public static ThreatData.Under raidOf(ServerLevel level, Entity mob) {
+		BlockPos at = mob.blockPosition();
+		ThreatData.Under best = null;
+		for (ThreatData.Under raid : ThreatData.get(level).raids()) {
+			if (reaches(raid.hall(), mob) && (best == null || raid.hall().distSqr(at) < best.hall().distSqr(at))) {
+				best = raid;
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * The raiders of the raid on {@code hall}: those about it ({@link #raiders}) that {@link #raidOf} gives to it, not
+	 * the ones a nearer village's raid owns (B828; B849; B915).
 	 */
 	static List<Mob> own(ServerLevel level, BlockPos hall) {
-		int r = VillageHalls.RADIUS + 32;
-		List<BlockPos> others = ThreatData.get(level).raids().stream().map(ThreatData.Under::hall).filter(h -> !h.equals(hall)).toList();
 		return raiders(level, hall).stream().filter(m -> {
-			BlockPos at = m.blockPosition();
-			return others.stream().noneMatch(h -> Math.abs(h.getX() - at.getX()) <= r && Math.abs(h.getZ() - at.getZ()) <= r
-				&& Math.abs(h.getY() - at.getY()) <= 48 && h.distSqr(at) < hall.distSqr(at));
+			ThreatData.Under owner = raidOf(level, m);
+			return owner == null || owner.hall().equals(hall);
 		}).toList();
 	}
 

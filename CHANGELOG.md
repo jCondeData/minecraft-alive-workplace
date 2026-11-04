@@ -20,6 +20,8 @@ asks for the steps, `latest.log` and any crash report).
 
 - Sneak-clicking a hired mercenary, relief rider or Doctor Wren with a job's item says "Mercenary's job can't be
   changed here." even with no block of that job near, instead of sending you to fetch one only to be refused (B911).
+- One raider standing just below a second raided village (49 blocks under its hall) no longer keeps both villages'
+  raids going: every raider belongs to exactly one raid, so each can be fought off (B915).
 - A reform story's asker now speaks in one pair of quotes (Toolsmith: "We hammer ... gladly."), not two (B914).
 - A village with a train neighbor on each side of one Create line now gets both neighbors' goods by train: a Create
   station only takes trains from one side, so when the village's station faces the first neighbor, one of its builders

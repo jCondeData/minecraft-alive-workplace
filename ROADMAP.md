@@ -1938,7 +1938,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     gets no wall proposal; the rank's building count goes up by one for the whole wall; the Palisade Tower is clean in
     `check.py` and a builder builds it;
   - showcase scene `walls`: a GIF of a palisade going up round a small village, and its gate shut at night.
-- [x] **27.19** (approved 2026-10-06) **Safe by design.** Everything the Steward builds passes one check (`steward/StewardSafety`), and his
+- [x] **27.19** (approved 2026-10-06) (verified 2026-11-04: QaLaneC1104fGameTests [6]: a stranger's refused break/placement marks no section, owner's does; protection off marks; player-less placement and failed placement mark nothing; Fair Ledger goes to the hall's owner, not the finisher. 3 hand-planted mutants killed) **Safe by design.** Everything the Steward builds passes one check (`steward/StewardSafety`), and his
   sites are careful on their own:
   - only inside his own village's zones of the right kind: never in Keep Clear, never nearer another hall, never in a
     protected village whose owner isn't his hall's owner;
@@ -3866,7 +3866,7 @@ write their own stories; nothing waits forever on a player.
   - compat GameTests: catches count by type, biome, time and height; `show`; `battle_leader`; Thessaly comes when
     there's no leader nearby; the book lists the catches; plain GameTest: without Cobblemon the arc never starts;
   - showcase scene `professors_thesis` (Cobblemon: the professor's request, a catch counting, the published thesis).
-- [x] **31.22** (approved 2026-10-12) **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
+- [x] **31.22** (approved 2026-10-12) (verified 2026-11-04: QaLaneC1104fGameTests [6]: a stranger's refused break/placement marks no section, owner's does; protection off marks; player-less placement and failed placement mark nothing; Fair Ledger goes to the hall's owner, not the finisher. 3 hand-planted mutants killed) **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
   waits (`sessions.py pause --blocked "needs M30's reforms"`). Through the reform's `arc` field (30.5), each reform
   becomes a short arc of the same name: an opening chapter where a villager of the fitting trade asks you for it
   (`talk`), then M30's three steps as its quests with M30's numbers, then an ending scene that leaves something

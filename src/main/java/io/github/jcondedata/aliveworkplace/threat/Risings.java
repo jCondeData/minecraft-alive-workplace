@@ -1,7 +1,6 @@
 package io.github.jcondedata.aliveworkplace.threat;
 
 import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
-import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -118,25 +117,12 @@ public final class Risings {
 	}
 
 	/**
-	 * The raid a fallen raider ({@link VillageRaids#TAG}) belonged to: the one under way whose village it fell in (within
-	 * the reach {@link VillageRaids#raiders} counts raiders at), the nearest if several. Null for one that isn't a raider.
+	 * The raid a fallen raider ({@link VillageRaids#TAG}) belonged to, by the rule raids count their raiders with
+	 * ({@link VillageRaids#raidOf}). Null for one that isn't a raider.
 	 */
 	@org.jetbrains.annotations.Nullable
 	private static ThreatData.Under raidOf(ServerLevel level, LivingEntity entity) {
-		if (!entity.getTags().contains(VillageRaids.TAG)) {
-			return null;
-		}
-		int r = VillageHalls.RADIUS + 32;
-		BlockPos at = entity.blockPosition();
-		ThreatData.Under best = null;
-		for (ThreatData.Under raid : ThreatData.get(level).raids()) {
-			BlockPos hall = raid.hall();
-			if (Math.abs(hall.getX() - at.getX()) <= r && Math.abs(hall.getZ() - at.getZ()) <= r && Math.abs(hall.getY() - at.getY()) <= 48
-				&& (best == null || hall.distSqr(at) < best.hall().distSqr(at))) {
-				best = raid;
-			}
-		}
-		return best;
+		return entity.getTags().contains(VillageRaids.TAG) ? VillageRaids.raidOf(level, entity) : null;
 	}
 
 	/** Whether the raid {@code p}'s raider fell in is still the one under way on its village (true for one that wasn't a raider). */

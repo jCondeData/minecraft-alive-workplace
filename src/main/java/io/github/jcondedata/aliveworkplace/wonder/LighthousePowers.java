@@ -144,7 +144,8 @@ public final class LighthousePowers {
 			return Optional.empty();
 		}
 		WonderSite site = Wonders.powers(level, hall, EARLY_WARNING).get(0).site();
-		return Optional.of(new Warnings.Source(Component.translatable("message.aliveworkplace.lighthouse.keeper", postName(level, site)), false));
+		return Optional.of(new Warnings.Source(Component.translatable("message.aliveworkplace.lighthouse.keeper", postName(level, site)), false, 1,
+			"screen.aliveworkplace.defence.next_watch_lighthouse"));
 	}
 
 	/**

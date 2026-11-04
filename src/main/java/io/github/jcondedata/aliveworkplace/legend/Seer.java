@@ -223,7 +223,8 @@ public final class Seer {
 	 */
 	static Optional<Warnings.Source> warningSource(ServerLevel level, BlockPos hall) {
 		int days = Legends.foretold(level, hall, RAID);
-		return days <= 0 ? Optional.empty() : foreteller(level, hall).map(a -> new Warnings.Source(a.villager().getName(), false, days));
+		return days <= 0 ? Optional.empty() : foreteller(level, hall).map(a -> new Warnings.Source(a.villager().getName(), false, days,
+			"screen.aliveworkplace.defence.next_watch_seer"));
 	}
 
 	/** Days of warning the village round {@code hall} gets of attacks of {@code kind} (M32: {@link Legends#foretold}). */

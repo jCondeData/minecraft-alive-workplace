@@ -1522,7 +1522,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   chapter's tasks are reachable in a test world; a compat test that every referenced item and entity id exists; the
   guide links to it; scene `questbook` with stills of each chapter.
 
-- [x] **26.9** (approved 2026-10-18) **See a build before you pick it** (owner's playtest, 2026-10-14: "you can't see what you're building").
+- [x] **26.9** (approved 2026-10-18) (verified 2026-11-04: TablePreviewGameTests [9: own blocks, every listed build under the cap, huge build coarser, imported build, unlisted ids send nothing, basement below ground line, block-entity cells] plus QaTableFurnished1104/QaBuildViews1103g/QaScanPot previews on main; scene table_preview passed in the last showcase runs [only fossil and wonder_crew failed, 2026-11-03]; guide blueprint-table.md 'The library' describes the 3D picture with stills) **See a build before you pick it** (owner's playtest, 2026-10-14: "you can't see what you're building").
   The Blueprint Table's library shows a picture of the selected build beside its name, size and material count: a
   small 3D view of the blueprint itself, drawn by the client from the blueprint's blocks (so it works for imported and
   uploaded builds too, with no image files to keep), that turns slowly and can be dragged to look round. Large builds

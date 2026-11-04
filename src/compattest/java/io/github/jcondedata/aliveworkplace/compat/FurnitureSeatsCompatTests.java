@@ -167,6 +167,49 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B945 (QA lane-c-1104-1254): a villager penned in glass 4 blocks from a chair picks it but can't reach it; a villager
+	 * then comes right beside the chair. Once the penned one gives up ({@code GIVE_UP}, 600 ticks) they leave the chair
+	 * alone for a while, so the one beside it sits: a chair nobody can reach isn't kept from everyone for good.
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '1600' '"qa1104c4_penned_walker"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 1600, batch = "qa1104c4_penned_walker")
+	public void aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos chair = chair(helper);
+		BlockPos pen = CHAIR.west(4);
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dz = -1; dz <= 1; dz++) {
+				for (int y = 2; y <= 4; y++) {
+					if (dx != 0 || dz != 0 || y == 4) {
+						helper.setBlock(pen.offset(dx, y - 2, dz), net.minecraft.world.level.block.Blocks.GLASS);
+					}
+				}
+			}
+		}
+		Villager penned = helper.spawn(EntityType.VILLAGER, pen);
+		Runnable restore = clock(level);
+		setTime(level, FurnitureSeats.SUPPER + 300);
+		Villager[] beside = {null};
+		long[] pickedAt = {-1};
+		helper.onEachTick(() -> {
+			if (beside[0] == null && !FurnitureSeats.free(level, chair, null) && seats(helper, chair).isEmpty()) {
+				pickedAt[0] = helper.getTick();
+				beside[0] = helper.spawn(EntityType.VILLAGER, CHAIR.south());
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(beside[0] != null, "setup: the penned villager never picked the chair");
+			helper.assertFalse(penned.isPassenger(), "setup: the penned villager reached the chair");
+			helper.assertTrue(seatOf(beside[0]) != null, "the villager right beside the chair hasn't sat " + (helper.getTick() - pickedAt[0])
+				+ " ticks after the penned villager (who can't reach it) picked it; the chair is free: " + FurnitureSeats.free(level, chair, beside[0]));
+			penned.discard();
+			beside[0].discard();
+			restore.run();
+		});
+	}
+
 	//$ gametest_ticks_batch HUGE_AREA '600' '"furniture_seat_danger"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 600, batch = "furniture_seat_danger")
 	public void aVillagerStandsUpWhenHurtAndNobodySitsWithTheSwitchOff(GameTestHelper helper) {

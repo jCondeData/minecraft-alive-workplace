@@ -383,6 +383,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaConscription1104dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConscriptionBugs1104dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConscriptReach1104d2GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConscriptReach1104d2BugTests",
 			"io.github.jcondedata.aliveworkplace.test.WorkHornGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
@@ -765,6 +766,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderConverted1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderConverted1104BugTests",
 			"io.github.jcondedata.aliveworkplace.test.B928GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B952GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B943GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B953GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGround1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGround1104BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMidJob1102GameTests",
@@ -1305,7 +1309,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGuardOrders1104dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1104eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1104fGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderEdges1104bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderEdges1104bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDroughtFixes1104cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGuardHorseReach1104cGameTests"
 		]
 	},
 	"depends": {

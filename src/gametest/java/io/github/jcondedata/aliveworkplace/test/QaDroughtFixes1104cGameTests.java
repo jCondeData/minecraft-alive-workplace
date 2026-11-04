@@ -258,8 +258,10 @@ public class QaDroughtFixes1104cGameTests implements FabricGameTest {
 		ServerLevel level = v.level();
 		var registries = level.registryAccess();
 		long day = Chronicle.day(level);
-		Disasters.rainedOn(level, day - 7);
 		RainLedger ledger = RainLedger.get(level);
+		Disasters.rainedOn(level, day - 8);
+		ledger.setDirty(false); // as after an autosave (the ledger is the world's one, shared with every other test)
+		Disasters.rainedOn(level, day - 7);
 		helper.assertTrue(ledger.isDirty(), "a new rain day isn't marked for the world's save");
 		CompoundTag saved = ledger.save(new CompoundTag(), registries);
 		helper.assertTrue(saved.getLong("last_rain_day") == day - 7, "the save wrote " + saved + ", not the day it last rained (" + (day - 7) + ")");

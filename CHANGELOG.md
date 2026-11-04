@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- In a siege, a raider walking to a ladder that is only a step or two from its foot when the gate is broken open now turns and goes in by the gate, as the others do, instead of climbing the whole ladder and going over the wall.
 - A Builder taking down a Lily Pond or a Footbridge leaves no water behind any more: he scoops the water up first, so it no longer floods the ground once the bank is gone, and the chests get back exactly the water buckets the build cost (they used to fill with extra buckets).
 - A Hauler Golem that starts right beside a lava pit sunk a block below the ground (out of a Drop Box or Golem
   Smith next to it) no longer freezes at the edge with its load: it steps away from the lava, goes round and stores

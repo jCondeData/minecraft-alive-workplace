@@ -116,4 +116,12 @@ game). All new fields are optional, so old saves load unchanged.
   catch it without Medicine and clearly fewer with two levels.
 - `QaDisastersGameTests.theDroughtAndPlagueReadRight`: the chronicle's "A plague broke out in the village.", the
   wellbeing line "Plague, until no one is ill" and the end message with the village's name.
+- `QaDroughtPlague1104dGameTests` (QA, 2026-11-04): with a fixed seed a villager exactly 3 blocks from the ill catches it
+  and one 4 blocks off never does in 200 rounds (`thePlagueReachesThreeBlocksNotFour`); a Nurse's honey cures an
+  ordinary illness but not the plague, and spends none on the plague's ill (`aNursesRemedyDoesNotCureThePlague`); a
+  Remedy from a player's hand keeps a villager well exactly 240000 ticks: one day left, still well; past it, they
+  catch it (`theRemedyKeepsThemWellTenDaysNotEleven`); a new case on day 2 keeps the plague on until day 3
+  (`aNewCaseKeepsThePlagueOn`); after a save and load the ill keep the tick they fell ill and pass it on, and the
+  Remedy's protection holds (`aPlagueSurvivesARestart`); `plague: false` mid-plague ends it at the next round, passes
+  nothing on, and the ill get well after the usual three days (`switchedOffMidPlague`).
 - Showcase scene: `plague`.

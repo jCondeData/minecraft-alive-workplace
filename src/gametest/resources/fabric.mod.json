@@ -935,6 +935,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatsM32GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDisastersGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDroughtPlague1104dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassPerksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassPerksBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOneEmeraldBugTests",
@@ -1293,7 +1294,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerVerify1104c3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderWords1104cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerVerify1104c3BugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupplyReach1104bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupplyReach1104bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGuardOrders1104dGameTests"
 		]
 	},
 	"depends": {

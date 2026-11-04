@@ -90,7 +90,8 @@ vanilla's trade display (wares shown to a player standing by) leaves a hand hold
 other way takes the sword up again at once (B324, B327). A conscript goes for the nearest raider he can see within
 24 blocks, counting up and down as well as across, the same reach the reformed work stop uses: one on a wall or tower
 fights the raider at its foot (B926). A raider he can't get a block closer to in 5 seconds (no way down from his tower)
-he lets be for 10 seconds, so he isn't stuck at the edge all night; one within 4 blocks (behind a fence) he stands by.
+he lets be for 10 seconds, so he isn't stuck at the edge all night; one within 4 blocks (behind a fence) he stands by,
+and one he let be that climbs or jumps up within 4 blocks of him he fights at once (B954).
 
 ## Switches
 
@@ -160,7 +161,8 @@ GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, ran
 clicks, the last day before lifting, the cap at 100 and 400), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `QaConscriptionBugs1104dGameTests` (4, B926: a raider 10 and 15 blocks below a
 conscript, 23.4 and 25 blocks away, a stranded conscript letting the raider be, edicts off), `QaConscriptReach1104d2GameTests` (4: a second raider on a
 stranded conscript's platform fought, the let-be over and a way down given, a raider 3 blocks off behind a fence never
-let be, a reachable raider 20 blocks across chased and struck), QA's
+let be, a reachable raider 20 blocks across chased and struck), `QaConscriptReach1104d2BugTests` (1, B954: the raider
+he let be coming up 2 blocks from him is struck within 2 seconds), QA's
 `QaLaneC1104eGameTests` (B926 from below: a raider 16 above and 12 across, 20 blocks away, fought, one 26.4 away not
 until the conscript comes within 24; the nearest of two raiders struck first; B917: a hall holding a step's whole count
 still shows the story's step one short of done until a hand-in), `CivicTalkGameTests` (7),

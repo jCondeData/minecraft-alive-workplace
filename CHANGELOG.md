@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A conscript no longer ignores a raider he let be (one he couldn't get closer to) when it climbs or jumps up to
+  him: one within 4 blocks he fights at once, instead of after the 10-second let-be runs out (B954).
 - A blueprint whose top pokes over the world's build limit (or whose bottom is under the world's floor) no longer
   asks, in its tooltip and Material List book, for the blocks that can't be placed there and need no materials (B953).
 - A worker turned into a witch by a real lightning bolt no longer loses his bag and blueprint to the same bolt's

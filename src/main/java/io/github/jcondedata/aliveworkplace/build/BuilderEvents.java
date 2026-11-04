@@ -548,6 +548,11 @@ public final class BuilderEvents {
 		Set<ItemEntity> lying = Collections.newSetFromMap(new IdentityHashMap<>());
 		lying.addAll(level.getEntitiesOfClass(ItemEntity.class, around));
 		workLeft(level, villager, "message.aliveworkplace.builder_struck", safe);
+		// B943: the villager is gone as after a death: dated in the Book of Families, their partner widowed, a Legend
+		// guest's slot freed (a Legend's slot clock starts, as for a death with no grave: the witch is no Legend)
+		io.github.jcondedata.aliveworkplace.people.FamilyBook.onDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.legend.LegendSlots.onDeath(level, villager, null);
 		BuilderBag bag = io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.get(villager);
 		if (bag != null) {
 			for (ItemStack stack : bag.takeAll()) {

@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A villager turned into a witch by lightning is now handled as a death: the Book of Families dates it, their partner
+  is widowed, a Legend guest's place is freed, and a Legend's slot falls free 7 days later as after a death with no
+  grave, instead of being kept by someone who no longer exists (B943).
 - A conscript no longer ignores a raider he let be (one he couldn't get closer to) when it climbs or jumps up to
   him: one within 4 blocks he fights at once, instead of after the 10-second let-be runs out (B954).
 - A blueprint whose top pokes over the world's build limit (or whose bottom is under the world's floor) no longer

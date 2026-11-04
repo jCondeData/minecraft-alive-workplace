@@ -83,7 +83,8 @@ their job now". The Builder is one of them ("Builder · 1 free Blueprint Table")
 job**. Hired mercenaries, relief riders and a story's visitor such as Doctor Wren aren't the village's to
 employ: their row shows their own job, they count as working, and Job ▾ offers nothing (B889), even once they have
 taken a block of their own, a mercenary a free guard post or Doctor Wren a brewing stand: a click says "Mercenary's job
-can't be changed here." (B895: `HallRetraining.canRetrain` refuses a `HallPeople.visitor`). Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
+can't be changed here." (B895: `HallRetraining.canRetrain` refuses a `HallPeople.visitor`), and No job leaves
+Doctor Wren the Cleric she came as (B905). Sneak-clicking one with a job's item says the same (B906, `Stations.take`). Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
 click on a job sends the offer to chat and marks the line ("Click again to pay 20 emeralds: Dara becomes a Mason"); a
 second pays and retrains them through 36.18's `HallRetraining.retrain` (the price, the class check, "someone took that
 workstation first", not enough emeralds: nothing changes and the player is told how short), and the list closes on a

@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A raider on its way to follow the others up a siege ladder turns for the gate as soon as the gate is broken open,
+  instead of walking on to the ladder and climbing the wall anyway (B907).
 - Sneak-clicking a hired mercenary, relief rider or Doctor Wren with a job's item says "Mercenary's job can't be
   changed here." even with no block of that job near, instead of sending you to fetch one only to be refused (B911).
 - One raider standing just below a second raided village (49 blocks under its hall) no longer keeps both villages'

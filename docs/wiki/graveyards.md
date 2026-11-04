@@ -81,6 +81,8 @@ Nothing new. A moved grave keeps its block entity (`villager`, `name`, `professi
 - `B222GameTests.reloadMidMoveKeepsTheGrave`: the Undertaker saved and loaded mid-move carries on; one grave, saved and
   loaded with everything in it.
 - `B222GameTests.switchOffLeavesGravesWhereTheyFall` and `B222GameTests.noGraveyardMeansAPlotNearTheHall`.
+- QA's `QaVillagerFixes1104c2GameTests.qaWithAnAppleInTheChestAStreetGraveIsRevivedNotMoved`: with a golden apple
+  already in the chest, the street grave is revived where it lies (name kept, apple used) and never laid in the Graveyard.
 - B779: QA's `QaVillageReachGraves1101BugTests.aGraveInTheNextVillageIsNotLaidInThisVillagesGraveyard` (the next
   village's grave stays out of this Graveyard, this village's own is laid there);
   `B779B780GameTests.aGraveInNoVillageIsStillLaidInTheGraveyard` and

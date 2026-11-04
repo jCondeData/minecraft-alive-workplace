@@ -445,7 +445,7 @@ public class QaStageSevenGameTests implements net.fabricmc.fabric.api.gametest.v
 
 	// --- The personal-request letter ------------------------------------------------------------------------------
 
-	private static ItemStack takeMarked(ServerPlayer p, boolean reply) {
+	static ItemStack takeMarked(ServerPlayer p, boolean reply) {
 		ItemStack s = PersonalErrandGameTests.marked(p, "aliveworkplace_letter", reply);
 		ItemStack copy = s.copy();
 		s.setCount(0);
@@ -555,7 +555,7 @@ public class QaStageSevenGameTests implements net.fabricmc.fabric.api.gametest.v
 	}
 
 	/** Dara's village and Mira's in Elmford (two halls in the area), Dara's letter accepted by a real client. */
-	private static void letterVillage(GameTestHelper helper, LetterBody body) {
+	static void letterVillage(GameTestHelper helper, LetterBody body) {
 		PersonalRequestGameTests.village(helper, () -> {
 			ServerLevel level = helper.getLevel();
 			VillageHalls.RADIUS = 6; // two villages in one test area (put back by the village's own cleanup)

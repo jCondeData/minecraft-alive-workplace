@@ -145,4 +145,7 @@ Roadmap items: 31.18, B135, B343
   cure" at 40% over the healer's head), an even village of 12 reaching exactly 6 coughing and never 7, nobody catching
   it or being thanked while it runs its course, and the ending's +100 friendship exactly from each villager who was ill
   and none from the rest.
+- QA (`QaVillageFixes1104c3GameTests.qaHealerMidStoryLetsTheCharterAndRemedyThrough`, B343): mid-story, a sneak-click
+  with a Guild Charter on the (Journeyman) healer gets the guild's answer and the charter is kept, a Remedy is used on
+  them, neither tells the story, and an empty hand still does.
 - Showcase scenes: `sickness` (the coughing village, a herb patch, the brew, the cure going round).

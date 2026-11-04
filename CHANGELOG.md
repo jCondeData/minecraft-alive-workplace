@@ -18,6 +18,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A village train put together at a far village's station keeps running when that village unloads right after (the
+  player walks away), instead of standing there without its conductor until he comes back; a new train still waits
+  two seconds at its station first, so the caravans waiting there board it (B913).
+- With Cobblemon, a Daycare Keeper's regional mother hatches her regional form: a female Alolan Ninetales hatches an
+  Alolan Vulpix, not a Kanto one, and a Kanto mother still hatches a Kanto Vulpix whatever the father (B854).
+- A village's Train Station renamed with Create's screen is followed by the train's schedule even when the player
+  then leaves that village and it unloads; before, the train stood at the other station for good (B912).
 - A Fletcher making spectral arrows for a guard reads "making 8 Spectral Arrows", not "8 Spectral Arrow"; bows,
   crossbows, shears and the stone and iron tools and swords get their plurals too (B916).
 - With only a Seer as the village's lookout, the hall's Defense page no longer says they keep watch from a tower a

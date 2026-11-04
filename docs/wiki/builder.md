@@ -23,8 +23,10 @@ blocks a player put there or changed stay. With no Builder free it waits until o
 better with each building: they level up like villagers you trade with, and each level makes them faster.
 A Builder who dies, or whom lightning turns into a witch (B928), drops his bag and the blueprint where he was, keeps
 what was built and tells you where (`message.aliveworkplace.builder_died`, `message.aliveworkplace.builder_struck`).
-Any other worker struck that way drops what is in their bag, a tool that is yours and their area's marker. On Peaceful
-lightning makes no witch and nothing is dropped.
+Any other worker struck that way drops what is in their bag, a tool that is yours and their area's marker. A real bolt
+keeps striking around it for a moment, so what a struck worker leaves is put down out of its reach (B952): on top of
+their workstation (a Builder's Blueprint Table) when that is 4 or more blocks from the bolt, else on the nearest open
+ground at least 4 blocks away; the message names that spot. On Peaceful lightning makes no witch and nothing is dropped.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
@@ -461,6 +463,8 @@ closed, one blueprint on the ground and no material lost; on Peaceful he keeps h
 struck worker drops their bag, the owner's axe and the tree farm's marker, and a block a builder only holds for the look
 isn't made). QA's `QaBuilderConverted1104GameTests` (1: a zombie's bite on Hard drops the bag and one blueprint, nothing
 doubled) and `QaBuilderConverted1104BugTests` (1: struck by lightning mid-job, nothing lost and the build left).
+`B952GameTests` (3: one and two real bolts on a builder mid-job leave one blueprint and his whole bag; a real bolt on any
+other worker leaves their bag and the owner's axe).
 `QaLaneC1102eGameTests` (QA, B832): six real fishermen catch nothing in 1500 ticks at workplaceBuildDelay 35791395 (the
 first delay whose 60-step bite passes the int range) and at 2147483647, and the same pond at the default 8 still catches.
 `B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not

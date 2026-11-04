@@ -3,12 +3,21 @@ package io.github.jcondedata.aliveworkplace.build;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 /** Player ↔ builder interactions and lifecycle hooks. */
 public final class BuilderEvents {
@@ -85,7 +94,7 @@ public final class BuilderEvents {
 		Platform.get().onEntityUnload((entity, level) -> io.github.jcondedata.aliveworkplace.threat.Lairs.onRemoved(level, entity));
 		Platform.get().afterDeath((entity, source) -> {
 			if (entity instanceof Villager villager && entity.level() instanceof ServerLevel level) {
-				workLeft(level, villager, "message.aliveworkplace.builder_died");
+				workLeft(level, villager, "message.aliveworkplace.builder_died", villager.blockPosition());
 				io.github.jcondedata.aliveworkplace.people.FamilyBook.onDeath(level, villager); // the Book of Families dates them (34.21)
 				io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);
 				net.minecraft.core.BlockPos grave = io.github.jcondedata.aliveworkplace.grave.Graves.onDeath(level, villager);
@@ -503,11 +512,12 @@ public final class BuilderEvents {
 
 	/**
 	 * What a worker leaves behind when they're gone, dead or turned into something else: a builder's bag, blueprint and
-	 * site (the owner told with {@code builderTold}), a miner's quarry, the markers of a field, tree farm, orchard or berry
-	 * plot, a guild they led and the Pokémon in a rancher's or daycare keeper's care. Runs before a grave keeps the villager.
+	 * site (the owner told with {@code builderTold}, naming {@code leftAt}), a miner's quarry, the markers of a field, tree
+	 * farm, orchard or berry plot, a guild they led and the Pokémon in a rancher's or daycare keeper's care. Runs before a
+	 * grave keeps the villager.
 	 */
-	private static void workLeft(ServerLevel level, Villager villager, String builderTold) {
-		Builders.onBuilderGone(level, villager, builderTold);
+	private static void workLeft(ServerLevel level, Villager villager, String builderTold, BlockPos leftAt) {
+		Builders.onBuilderGone(level, villager, builderTold, leftAt);
 		io.github.jcondedata.aliveworkplace.mine.Miners.onMinerDeath(level, villager);
 		io.github.jcondedata.aliveworkplace.farm.Fields.onDeath(level, villager);
 		io.github.jcondedata.aliveworkplace.wood.TreeFarms.onDeath(level, villager);
@@ -522,15 +532,26 @@ public final class BuilderEvents {
 	 * B928: lightning turned {@code villager} into a witch (vanilla's {@code Villager.thunderHit}, on any difficulty but
 	 * Peaceful). There's no death, so the death hooks never run and everything the worker carried would vanish with them:
 	 * their work is left as a death leaves it, and whatever is still in their bag (any worker's: a miner's ore, a
-	 * crafter's goods, a porter's load) and a tool that is the owner's fall where they stood. Called just before the villager is
-	 * discarded, the witch already in the world.
+	 * crafter's goods, a porter's load) and a tool that is the owner's fall to the ground. Called just before the villager
+	 * is discarded, the witch already in the world.
+	 * <p>
+	 * B952: a real bolt keeps striking every entity in its reach for several ticks (and lights fire where it lands), so
+	 * what fell where the worker stood burned the next tick. Everything left here is put down out of {@code bolt}'s reach
+	 * instead (see {@link #outOfReach}), and the owner is told that spot.
 	 */
-	public static void onStruckIntoWitch(ServerLevel level, Villager villager) {
-		workLeft(level, villager, "message.aliveworkplace.builder_struck");
+	public static void onStruckIntoWitch(ServerLevel level, Villager villager, Entity bolt) {
+		BlockPos stood = villager.blockPosition();
+		BlockPos safe = outOfReach(level, villager, bolt);
+		// every hook drops at the villager's feet (Builders.dropNear, a field's or quarry's marker): what wasn't lying here
+		// before the hooks ran is what they left, and is moved to the safe spot
+		AABB around = new AABB(stood).inflate(2);
+		Set<ItemEntity> lying = Collections.newSetFromMap(new IdentityHashMap<>());
+		lying.addAll(level.getEntitiesOfClass(ItemEntity.class, around));
+		workLeft(level, villager, "message.aliveworkplace.builder_struck", safe);
 		BuilderBag bag = io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.get(villager);
 		if (bag != null) {
 			for (ItemStack stack : bag.takeAll()) {
-				Builders.dropNear(level, villager.blockPosition(), stack);
+				Builders.dropNear(level, stood, stack);
 			}
 		}
 		for (net.minecraft.world.entity.EquipmentSlot slot : net.minecraft.world.entity.EquipmentSlot.values()) {
@@ -538,9 +559,72 @@ public final class BuilderEvents {
 			// what a death always drops (a tool that is the owner's, set above 1); a builder's held block is only a look
 			if (!held.isEmpty() && ((io.github.jcondedata.aliveworkplace.mixin.MobAccessor) villager).aliveworkplace$dropChance(slot) > 1f) {
 				villager.setItemSlot(slot, ItemStack.EMPTY);
-				Builders.dropNear(level, villager.blockPosition(), held);
+				Builders.dropNear(level, stood, held);
 			}
 		}
+		if (safe.equals(stood)) {
+			return;
+		}
+		for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, around)) {
+			if (!lying.contains(item)) {
+				item.setPos(safe.getX() + 0.5, safe.getY() + 0.1, safe.getZ() + 0.5);
+				item.setDeltaMovement(Vec3.ZERO);
+				item.clearFire();
+			}
+		}
+	}
+
+	/** How far a bolt reaches sideways: vanilla's {@code LightningBolt} strikes every entity within 3 blocks of it on x and z. */
+	private static final double BOLT_REACH = 3.0;
+	/** The farthest from the bolt a spot is looked for (blocks, each way). */
+	private static final int SAFE_SEARCH = 8;
+
+	/**
+	 * B952: where what a struck worker leaves is put down, out of {@code bolt}'s reach (and so out of the fire it lights,
+	 * which is within a block of it): on top of their workstation (a builder's Blueprint Table) when that is out of reach,
+	 * else the open, solid-floored spot nearest to it (or to the worker, without one) at least 4 blocks from the bolt. A
+	 * second bolt in the same place doesn't reach it either. Where nothing is found, where the worker stood.
+	 */
+	static BlockPos outOfReach(ServerLevel level, Villager villager, Entity bolt) {
+		BlockPos stood = villager.blockPosition();
+		java.util.Optional<BlockPos> bench = Builders.benchPos(villager);
+		if (bench.isPresent() && outOfReach(bolt, bench.get().above()) && open(level, bench.get().above())) {
+			return bench.get().above();
+		}
+		BlockPos toward = bench.orElse(stood);
+		BlockPos best = null;
+		double bestDistance = Double.MAX_VALUE;
+		BlockPos at = bolt.blockPosition();
+		for (int dx = -SAFE_SEARCH; dx <= SAFE_SEARCH; dx++) {
+			for (int dz = -SAFE_SEARCH; dz <= SAFE_SEARCH; dz++) {
+				for (int dy = 2; dy >= -3; dy--) {
+					BlockPos p = new BlockPos(at.getX() + dx, stood.getY() + dy, at.getZ() + dz);
+					if (!outOfReach(bolt, p) || !open(level, p) || !level.getBlockState(p.below()).isFaceSturdy(level, p.below(), Direction.UP)) {
+						continue;
+					}
+					double d = p.distSqr(toward) + p.distSqr(stood) * 0.001; // nearest the bench, ties nearest where he stood
+					if (d < bestDistance) {
+						bestDistance = d;
+						best = p;
+					}
+					break; // the highest standing spot in this column
+				}
+			}
+		}
+		return best != null ? best : stood;
+	}
+
+	/** Whether an item lying in {@code p} is out of the bolt's reach (its box, a quarter block wide, clear of it on x or z). */
+	private static boolean outOfReach(Entity bolt, BlockPos p) {
+		double margin = BOLT_REACH + 0.5; // the item's half width and a little more
+		return Math.abs(p.getX() + 0.5 - bolt.getX()) > margin || Math.abs(p.getZ() + 0.5 - bolt.getZ()) > margin;
+	}
+
+	/** An item can lie in {@code p}: nothing solid, no liquid and no fire there. */
+	private static boolean open(ServerLevel level, BlockPos p) {
+		net.minecraft.world.level.block.state.BlockState state = level.getBlockState(p);
+		return state.getCollisionShape(level, p).isEmpty() && state.getFluidState().isEmpty()
+			&& !(state.getBlock() instanceof net.minecraft.world.level.block.BaseFireBlock) && level.getWorldBorder().isWithinBounds(p);
 	}
 
 	private BuilderEvents() {

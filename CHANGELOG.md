@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A worker turned into a witch by a real lightning bolt no longer loses his bag and blueprint to the same bolt's
+  next strikes: they are put down out of its reach, on his Blueprint Table or workstation or nearby ground (B952).
 - In a drought, farmland next to water now stays dry like the rest of the fields instead of soaking up the pond
   again, so those fields need the Well Keeper's buckets too (B946).
 - Pitcher crops now grow at a quarter pace in a drought, like the other crops (B947).

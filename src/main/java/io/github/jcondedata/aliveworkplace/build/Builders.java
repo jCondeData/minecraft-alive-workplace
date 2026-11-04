@@ -1060,6 +1060,14 @@ public final class Builders {
 	 * blueprint where it was, keep what was built, and tell the owner with {@code told} (the site, then x y z).
 	 */
 	public static void onBuilderGone(ServerLevel level, Villager villager, String told) {
+		onBuilderGone(level, villager, told, villager.blockPosition());
+	}
+
+	/**
+	 * The same, the owner told the drops are at {@code leftAt}: where they'll lie once the caller has moved them (a
+	 * builder struck by a real bolt, B952: out of its reach).
+	 */
+	public static void onBuilderGone(ServerLevel level, Villager villager, String told, BlockPos leftAt) {
 		for (BuildSite queued : queue(level, villager)) {
 			if (queued.wonder() != null) {
 				// 35.5: a Wonder's part waiting for this builder goes to another; its site stays (a part whose site is
@@ -1105,7 +1113,7 @@ public final class Builders {
 			}
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 			if (owner != null) {
-				BlockPos p = villager.blockPosition();
+				BlockPos p = leftAt;
 				tell(owner, Component.translatable(told, Blueprints.siteName(level, site), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
 			}
 			ModAttachments.BUILDER_JOB.remove(villager);

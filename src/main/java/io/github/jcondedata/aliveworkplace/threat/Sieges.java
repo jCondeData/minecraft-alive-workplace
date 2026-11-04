@@ -839,6 +839,19 @@ public final class Sieges {
 		return true;
 	}
 
+	/**
+	 * Whether the first way through the breach is open in the world right now: as {@link #open}, but a gate block broken
+	 * by someone else counts at once, not only when the director next notices it (up to {@link #EVERY} ticks later).
+	 */
+	public static boolean openNow(ServerLevel level, ThreatData.Siege siege) {
+		for (ThreatData.Gate gate : siege.gates) {
+			if (gate.lane == 0 && !gate.high && gate.state == ThreatData.GateState.STANDING && isGate(level.getBlockState(gate.pos))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/** The raiders who break gates: those with the role {@code ram}; without one, those with an axe in hand. */
 	private static List<Mob> rams(List<Mob> raiders) {
 		List<Mob> rams = raiders.stream().filter(m -> Threats.role(m) == Culture.Role.RAM).toList();

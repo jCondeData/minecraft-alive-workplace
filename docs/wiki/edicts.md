@@ -76,7 +76,8 @@ trade lives there to ask, the steps go up on the quest page as before, and progr
 `QaReformStories1104cGameTests` (10: wrong items, too few and the other village's hall never move a step; kills before
 the step or elsewhere don't count; a passed reform or edicts off start no story; a story switched off midway never
 doubles a step; the Granary and the Drill wait for their own trade; two stories side by side; a real restart at the ask;
-the ask and steps read exactly as written, in American English).
+the ask and steps read exactly as written, in American English). QA's `QaReformCarry1104cGameTests` (1: 10 of a step's 24 clocks handed to the story, the edict lifted and
+proclaimed again, and the step comes back holding the 10, once).
 
 **Curfew** overrules the villagers' schedule from dusk (tick 12000) to dawn for everyone but guards and
 mercenaries, and a monster can't hurt a villager asleep in bed. **Conscription** gives each conscript a stone sword

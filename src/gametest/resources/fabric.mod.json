@@ -770,6 +770,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B928GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B952GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B943GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendLightning1104cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.B953GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGround1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGround1104BugTests",
@@ -1318,7 +1319,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderEdges1104bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDroughtFixes1104cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuardHorseReach1104cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaGreatWall1104d4GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaGreatWall1104d4GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStruckAndTop1104GameTests"
 		]
 	},
 	"depends": {

@@ -6,7 +6,6 @@
 # Bugs fixed in sight of players
 
 # Milestone 21: the texture rebuild and the item icons
-21.1 21.1b
 
 # Milestone 22: a showcase scene for every feature
 22.3

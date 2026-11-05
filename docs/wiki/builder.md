@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965
 
 ## 1. What a player sees
 
@@ -133,11 +133,11 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   waits for one, so the rest is built and the build ends (B937; a door whose top half would be over the limit is
   skipped whole). The hand-over warns of it in yellow ("The top of Test Hut reaches over the world's build limit
   (y 320)..."). The held blueprint's supply report and its Material List book leave those blocks out too (B953).
-  A blueprint laid wholly over the top on ground as high as the world ends at once with nothing used and the
-  blueprint back in the chests; on a lone block at y 319 the hand-over still takes it and the builder waits for
-  cobblestone to fill a foundation under it (an open bug, B965).
+  A blueprint laid wholly over the top ends at once with nothing used and the blueprint back in the chests, on
+  ground as high as the world or on a lone block at y 319: no foundation goes under a block that will never be built,
+  and no ground is leveled round a build of which nothing can stand (B965).
   Tests `QaBuildHeightLimit1104BugTests`, `BuildHeightLimitGameTests` (with a save and load mid-build), `B953GameTests`,
-  `QaStruckAndTop1104GameTests`.
+  `QaStruckAndTop1104GameTests`, `QaStruckAndTop1104BugTests`.
 - "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors
   (a fence's connections, a stair's corner shape). Without that a finished wall could look unfinished forever.
 - Nobody is built into a block: before a block goes down the builder checks there is room for it as it will

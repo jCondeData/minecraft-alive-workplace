@@ -64,4 +64,16 @@ public class QaStruckAndTop1104BugTests implements net.fabricmc.fabric.api.gamet
 			}
 		});
 	}
+
+	/**
+	 * B937 gap: a blueprint laid on a lone block at y 319 (the world's top layer), lower ground round it, so none of the
+	 * hut can stand. The hand-over takes it ("those blocks will be left out and need no materials"), but the builder then
+	 * asks for cobblestone to fill a foundation under a hut that will never be there, and waits for it for ever.
+	 * Expected: refused, or ended at once with no material used and the blueprint back.
+	 */
+	//$ gametest_ticks_batch HUGE '3000' '"qaWhollyOverPillar"'
+	@GameTest(template = HUGE, timeoutTicks = 3000, batch = "qaWhollyOverPillar")
+	public void aBlueprintLaidWhollyOverTheTopOnAPillarUsesNothingAndKeepsTheBlueprint(GameTestHelper helper) {
+		QaStruckAndTop1104GameTests.whollyOver(helper, false);
+	}
 }

@@ -163,7 +163,11 @@ public final class BuildPlan {
 		structure.sort(order(bounds, false));
 		decoration.sort(order(bounds, false));
 		hangingLast(decoration, bounds);
-		List<Step> landscape = level != null && landscapeMargin > 0 ? landscape(level, above, landscapeMargin) : List.of();
+		// B965: a build wholly over the world's top (or under its bottom) leaves nothing standing, so no ground is levelled
+		// round it either: the build ends at once with nothing used
+		boolean anyInside = level == null || structure.stream().anyMatch(s -> !outsideWorld(level, s))
+			|| decoration.stream().anyMatch(s -> !outsideWorld(level, s));
+		List<Step> landscape = level != null && landscapeMargin > 0 && anyInside ? landscape(level, above, landscapeMargin) : List.of();
 		BuildPlan plan = new BuildPlan(List.copyOf(clear), List.copyOf(foundation), List.copyOf(structure), List.copyOf(decoration),
 			List.copyOf(landscape), List.of(), bounds);
 		List<EntityStep> entities = new ArrayList<>();
@@ -480,6 +484,9 @@ public final class BuildPlan {
 			// The bottom layer; with a basement (26.15) also the ground floor where no basement is under it (a porch)
 			if (top.getY() != bottom && top.getY() != ground || step.state().getCollisionShape(level, top).isEmpty() || inTopHalf(step.state())) {
 				continue;
+			}
+			if (outsideWorld(level, step)) {
+				continue; // B965: a block over the world's top is never built (B937), so there is nothing to hold up under it
 			}
 			BlockState fill = foundationBlock(level, top, step.state());
 			for (int depth = 1; depth <= maxDepth; depth++) {

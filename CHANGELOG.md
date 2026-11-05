@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A blueprint laid on a lone block at the very top of the world, where none of the building can stand, no longer leaves the Builder waiting for ever for cobblestone to fill a foundation under it: the build ends at once with nothing used and the blueprint comes back.
 - A Builder struck by lightning at the bottom of a deep pit, or on top of a tower, with his Blueprint Table close by no longer loses everything: his bag and the blueprint are now put down on the ground round the pit or at the tower's foot, out of the bolt's reach, as on flat ground.
 
 ## 0.151.6 — 2026-11-04

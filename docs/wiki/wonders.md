@@ -455,7 +455,7 @@ their marks for when it's repaired, and nobody is replaced.
 Damaged (or with Wonders off) both are paused: the search waits, the map button draws only the village map and the
 calendar has no Coming days; what was found stays in the hall.
 
-**The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot, 31 high to its treetops,
+**The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot (a 47 by 43 site with the ramp's foot and the pool), 31 high to its treetops,
 about 16,200 blocks. Four terraces 6 high, each 4 in from the one below (39, 31, 23 and 15 across), each faced all
 round with an arcade of 3-wide arches on cut sandstone columns with chiseled capitals, under a terracotta band and a
 cut sandstone coping; behind each arcade a gallery runs round the terrace under its garden, lit by glow berries

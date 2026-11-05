@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.6 — 2026-11-04
+
 ### Fixed
 
 - A villager without a bed who is already upstairs in the wrong bedroom of a Terrace at bedtime (both its beds someone else's) now goes down his ladder, takes a free bed in the home next door and sleeps in it, instead of standing about the bedroom all night.

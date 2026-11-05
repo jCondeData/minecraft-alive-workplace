@@ -225,6 +225,46 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 	 * first departure (not a round trip later); once the train has left, the far village unloads, and the 32 logs reach
 	 * the near village's chest.
 	 */
+	//$ gametest_ticks_batch AREA '6000' '"qaTrainEdgesFirstDeparture"'
+	@GameTest(template = AREA, timeoutTicks = 6000, batch = "qaTrainEdgesFirstDeparture")
+	public void aCaravanSentAsTheFarTrainIsPutTogetherBoardsItsFirstDepartureAndArrives(GameTestHelper helper) {
+		Run r = new Run(helper, false, true);
+		int[] departed = {-1};
+		int[] boarded = {-1};
+		r.go(() -> r.sendFarToNear(), () -> {
+			Caravans.Shipment s = r.data.onTheRoad().stream().filter(x -> x.from().equals(r.l.far) && x.to().equals(r.l.near)).findFirst().orElse(null);
+			if (boarded[0] < 0 && s != null && CaravanTrains.aboard(s.arrives())) {
+				boarded[0] = r.tick;
+			}
+			if (departed[0] < 0) {
+				if (r.tick % 10 == 0) {
+					r.serveAll();
+				}
+				boolean atFar = r.at(r.l.farStation);
+				if (!atFar) { // gone from the station where it was put together (at once, too: then it didn't wait at all)
+					departed[0] = r.tick;
+					if (boarded[0] < 0) {
+						return "the caravan sent from the far village as its train was put together missed the train's first departure ("
+							+ (departed[0] - r.startedAt) + " ticks after it was put together); caravan " + s + ", train " + r.status();
+					}
+					r.force(false); // the train is off: the player walks home
+				} else if (r.elapsed() > 1200) {
+					return "the new train never left the far station in 1200 ticks: caravan " + s + ", train " + r.status();
+				}
+				return null;
+			}
+			r.serveLoaded();
+			int logs = ((Container) r.level.getBlockEntity(r.l.near.east(3).north(2))).countItem(Items.OAK_LOG);
+			if (s == null && logs == 32 && CreateTrainCompatTests.said(r.level, r.l.near, "chronicle.aliveworkplace.train_came")) {
+				return "";
+			}
+			return r.elapsed() >= WAIT ? "the caravan aboard the first departure never reached the near village: " + logs + " of 32 logs in its chest, caravan "
+				+ s + ", train " + r.status() + ", the near hall's storehouse chests " + Caravans.storehouse(r.level, r.l.near).stream()
+				.map(p -> p.subtract(helper.absolutePos(BlockPos.ZERO)) + "=" + ((Container) r.level.getBlockEntity(p)).countItem(Items.OAK_LOG)).toList()
+				+ ", train's chest " + CreateTrainCompatTests.railway().cargo(r.level, r.owner) : null;
+		});
+	}
+
 	/** One case: the line, the two villages, the train put together, the far village left to unload. */
 	private static final class Run {
 		final GameTestHelper helper;
@@ -260,6 +300,15 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 			PartnerShowsCompatTests.clearLeftovers(helper);
 			line(l);
 			data = Caravans.Data.get(level);
+			// arriving goods go into the chests by every Storehouse within the hall's reach (Caravans.storehouse): one an
+			// earlier batch left near here would take the train's logs (as CreateTrainCompatTests.villages clears them)
+			for (BlockPos hall : List.of(l.near, l.far)) {
+				for (BlockPos store : level.getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI),
+						p -> true, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS,
+						net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+					level.removeBlock(store, false);
+				}
+			}
 			for (BlockPos hall : List.of(l.near, l.far)) {
 				data.remove(hall);
 				level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());

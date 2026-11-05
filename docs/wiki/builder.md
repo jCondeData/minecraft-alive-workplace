@@ -26,7 +26,9 @@ what was built and tells you where (`message.aliveworkplace.builder_died`, `mess
 Any other worker struck that way drops what is in their bag, a tool that is yours and their area's marker. A real bolt
 keeps striking around it for a moment, so what a struck worker leaves is put down out of its reach (B952): on top of
 their workstation (a Builder's Blueprint Table) when that is 4 or more blocks from the bolt, else on the nearest open
-ground at least 4 blocks away; the message names that spot. On Peaceful lightning makes no witch and nothing is dropped.
+ground at least 4 blocks away, looked for within 8 blocks and from 3 under his feet to 2 over them; the message names
+that spot. Where there is none (a builder deep in a narrow pit, or on a narrow tower, within 3 blocks of his bench),
+it is still dropped where he stood and the bolt burns it: an open bug (B964). On Peaceful lightning makes no witch and nothing is dropped.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
@@ -131,7 +133,11 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   waits for one, so the rest is built and the build ends (B937; a door whose top half would be over the limit is
   skipped whole). The hand-over warns of it in yellow ("The top of Test Hut reaches over the world's build limit
   (y 320)..."). The held blueprint's supply report and its Material List book leave those blocks out too (B953).
-  Tests `QaBuildHeightLimit1104BugTests`, `BuildHeightLimitGameTests` (with a save and load mid-build), `B953GameTests`.
+  A blueprint laid wholly over the top on ground as high as the world ends at once with nothing used and the
+  blueprint back in the chests; on a lone block at y 319 the hand-over still takes it and the builder waits for
+  cobblestone to fill a foundation under it (an open bug, B965).
+  Tests `QaBuildHeightLimit1104BugTests`, `BuildHeightLimitGameTests` (with a save and load mid-build), `B953GameTests`,
+  `QaStruckAndTop1104GameTests`.
 - "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors
   (a fence's connections, a stair's corner shape). Without that a finished wall could look unfinished forever.
 - Nobody is built into a block: before a block goes down the builder checks there is room for it as it will
@@ -464,6 +470,11 @@ closed, one blueprint on the ground and no material lost; on Peaceful he keeps h
 struck worker drops their bag, the owner's axe and the tree farm's marker, and a block a builder only holds for the look
 isn't made). QA's `QaBuilderConverted1104GameTests` (1: a zombie's bite on Hard drops the bag and one blueprint, nothing
 doubled) and `QaBuilderConverted1104BugTests` (1: struck by lightning mid-job, nothing lost and the build left).
+QA's `QaStruckAndTop1104GameTests` (9: real bolts on a builder by lava with his bench covered, on two builders at once and
+twice on one spot leave every bag and blueprint on safe ground; a real bolt, a save and load and a second builder finish
+the hut with nothing lost; a hut whose floor is the world's bottom layer is built whole with no warning; the held
+blueprint's lists exactly at the top and the bottom ask for everything; a hut sunk under the bottom saved and loaded
+mid-build ends with nothing lost; a blueprint wholly over the top uses nothing and comes back).
 `B952GameTests` (3: one and two real bolts on a builder mid-job leave one blueprint and his whole bag; a real bolt on any
 other worker leaves their bag and the owner's axe).
 `QaLaneC1102eGameTests` (QA, B832): six real fishermen catch nothing in 1500 ticks at workplaceBuildDelay 35791395 (the

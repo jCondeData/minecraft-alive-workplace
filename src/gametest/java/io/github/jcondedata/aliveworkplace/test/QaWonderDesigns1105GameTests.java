@@ -161,8 +161,8 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 	// --- the Hanging Gardens (35.19) ------------------------------------------------------------------------------------
 
 	/** "a chest on each level (four village farms) ... a ramp spirals up": a player from the ground reaches all four and the crown. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE', batch = BATCH, timeoutTicks = 400
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = BATCH, timeoutTicks = 400)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaGardensRampReachesEveryFarmAndTheCrown(GameTestHelper helper) {
 		Map<BlockPos, BlockState> all = whole(helper, "hanging_gardens");
 		Set<BlockPos> walked = walk(all);
@@ -181,8 +181,8 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 	}
 
 	/** "A cistern at the top pours a waterfall down one side into a pool": water on the crown, on every ledge between, and at the foot. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE', batch = BATCH, timeoutTicks = 400
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = BATCH, timeoutTicks = 400)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaGardensFallsRunFromTheCisternToThePool(GameTestHelper helper) {
 		Map<BlockPos, BlockState> all = whole(helper, "hanging_gardens");
 		List<BlockPos> water = where(all, "minecraft:water");
@@ -209,8 +209,8 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 	}
 
 	/** The wiki: "on a 39 by 39 foot" (the first terrace; the whole site with the ramp's foot and the pool is 47 by 43), "31 high to its treetops". */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE', batch = BATCH, timeoutTicks = 400
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = BATCH, timeoutTicks = 400)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaGardensFootAndHeightAsTheWikiSays(GameTestHelper helper) {
 		Map<BlockPos, BlockState> all = whole(helper, "hanging_gardens");
 		int[] b = box(all, p -> true);
@@ -230,8 +230,8 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 	static final Pattern COPPER = Pattern.compile("minecraft:(waxed_)?((exposed|weathered|oxidized)_)?(cut_copper(_stairs|_slab)?|copper_block|chiseled_copper|copper_grate)");
 
 	/** "a cloak of cut copper that weathers green over the weeks (about 250 copper blocks)" (wiki: about 370 with the lantern's). */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE', batch = BATCH, timeoutTicks = 400
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = BATCH, timeoutTicks = 400)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaColossusCopperWeathers(GameTestHelper helper) {
 		Map<BlockPos, BlockState> all = whole(helper, "colossus");
 		int copper = 0;
@@ -252,8 +252,8 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 	}
 
 	/** "a robed villager, nose and all ... the face seen from the road": the nose stands out past the eyes (emerald pupils). */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE', batch = BATCH, timeoutTicks = 400
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = BATCH, timeoutTicks = 400)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaColossusNoseStandsOutPastTheEyes(GameTestHelper helper) {
 		Map<BlockPos, BlockState> all = whole(helper, "colossus");
 		List<BlockPos> eyes = where(all, "minecraft:emerald_block");
@@ -277,8 +277,8 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 	}
 
 	/** "the other raising a lantern; the lantern is a glass cage round glowstone, lit day and night"; the wiki: nine braziers, seven signs. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE', batch = BATCH, timeoutTicks = 400
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = BATCH, timeoutTicks = 400)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaColossusLanternCagedAndRaised(GameTestHelper helper) {
 		Map<BlockPos, BlockState> all = whole(helper, "colossus");
 		List<BlockPos> glow = where(all, "minecraft:glowstone");
@@ -316,8 +316,8 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 	 * the gate onto the field, up the stands, to both trainer boxes' Training Posts, the professor's lectern, the nurse's
 	 * brewing stand, and along a covered concourse under the stands.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE', batch = BATCH, timeoutTicks = 400
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = BATCH, timeoutTicks = 400)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaStadiumInteriorsWalkThrough(GameTestHelper helper) {
 		Map<BlockPos, BlockState> all = whole(helper, "stadium");
 		Set<BlockPos> walked = walk(all);
@@ -389,8 +389,8 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 	}
 
 	/** The wiki: "an oval arena 53 by 43, its bowl 18 high (24 to the gate's banners)"; four towers of eight lamps round a detector. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE', batch = BATCH, timeoutTicks = 400
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = BATCH, timeoutTicks = 400)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaStadiumSizeAndFloodlightsAsTheWikiSays(GameTestHelper helper) {
 		Map<BlockPos, BlockState> all = whole(helper, "stadium");
 		int[] b = box(all, p -> true);
@@ -415,7 +415,7 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		+ "favour\\w*|honour\\w*|metre\\w*|theatre\\w*|organis\\w*|realis\\w*|recognis\\w*|neighbour\\w*|harbour\\w*|programme\\w*|plough\\w*|mould\\w*)\\b");
 
 	/** Every sentence a player reads about the three Wonders has its line, in American English. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE', batch = BATCH
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' 'BATCH'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = BATCH)
 	public void qaWonderWordsInAmericanEnglish(GameTestHelper helper) {
 		JsonObject lang;

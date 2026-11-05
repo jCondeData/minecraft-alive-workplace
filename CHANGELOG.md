@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Weaponsmith whose grindstone is broken while he carries a worn piece to mend no longer keeps it out of reach for good: after a short wait he puts it back in the chest it came from (or drops it at his feet if that chest is gone too), and the iron back in its chest. And a Weaponsmith saved and reloaded mid-job (a restart or the chunk unloading) now still takes a guard's helmet back to the guard's chest, instead of filing it in his own.
 - In a siege, a gate set back in the breach (by a builder mending the walls, or by hand) is now rammed again and the raiders still get in, instead of the ram standing idle and the others waiting outside a shut gate till dawn. Put back as a different gate block, it holds with that block's own strength (iron bars longer than a fence gate).
 - A basement dug next to waterlogged blocks in the ground (glow lichen, dripstone or seagrass in a flooded cave, or an old waterlogged stair) no longer ends with up to 27 blocks of dirt standing in the room: the Builder now drains those blocks (keeping them) or plugs the seagrass, and clears away any water that already ran in, so the basement is finished open and dry as drawn.
 - A blueprint laid on a lone block at the very top of the world, where none of the building can stand, no longer leaves the Builder waiting for ever for cobblestone to fill a foundation under it: the build ends at once with nothing used and the blueprint comes back.

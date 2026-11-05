@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B970, B971
 
 ## What a player sees
 
@@ -370,7 +370,8 @@ gives no marker back (there was none), and the Miner takes the pit again within 
 A villager's job is vanilla's own profession and job-site memory. On top of it the mod saves small attachments on
 the villager (`registry/ModAttachments`), each absent or zero by default: the job in hand (`builder_job`,
 `miner_job`, `farm_field`, `tree_farm`, `orchard`, `courier_routes`, `patrol_route`), who hired them
-(`builder_employer`), and a counter per job that the hall shows (`trees_felled`, `fish_caught`, `mail_delivered`
+(`builder_employer`), a Weaponsmith's mending job in hand (`mending_job`: the piece, the chest it came from, the material, its chest
+and the phase, B971; absent in older saves, where a piece being carried is tidied into the smith's own chests as before), and a counter per job that the hall shows (`trees_felled`, `fish_caught`, `mail_delivered`
 and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill_build` (the build's origin),
 `last_growth`, `grown` and `grown_since_pass` (36.12); all absent in older saves and marked-out quarries. A quarry
 cut off above its marker's depth by the miner's level saves `wanted_bottom`, the floor the marker asked for (36.22);
@@ -501,7 +502,7 @@ there, save and reload mid-way, the switch off, iron and diamond as the miner ri
 pit, regrowth bottom up at the set rate with a player's block kept and nothing outside touched, a day grows back only a
 day's worth, the weighted mix, save and reload of the site and mid-dig, the switch off, the Quarry Marker still works,
 the new sentences), `QaStageThreeBugTests` (B333: a survival player's right-click marks a chest, then a barrel, and
-neither opens; B334: a tenth kind on a full note), `QaStageThreeGameTests` (a sneak-click clears the note, a non-container
+neither opens; B334: a tenth kind on a full note), `QaSmithScribe1105cBugTests` (2: B970, the grindstone broken while the Weaponsmith carries a player's sword: the sword and the iron go back to their chests; B971, a smith reloaded mid-job still puts a guard's helmet back in the guard's chest), `WeaponsmithGameTests.weaponsmithWithTheGrindstoneAndTheChestGoneDropsThePiece` and `WeaponsmithGameTests.weaponsmithKilledMidJobDropsThePiece` (the piece falls at the smith's feet with nowhere to go back to, or when he's killed carrying it), `QaStageThreeGameTests` (a sneak-click clears the note, a non-container
 is refused, up to 9 kinds). `ShopNeighboursGameTests` (4, B716: a lone shop sells and is paid into its own chest; with a stocked neighbor shop 6 blocks off, a sale on the trade screen and on the shop screen takes and pays only the shop's own chest; a chest midway between two players' counters is exactly one shop's, Frank's, every time; one owner's two counters share a chest until a stranger owns the other), `QaShopNeighboursBug1031Tests` (1, B716, QA: Frank's empty shop never sells Bob's cobblestone from the chest by Bob's counter). `ShopStockGameTests` (5, B348: the chest emptied while the trades are open sells
 nothing and shows sold out, emptied after the payment is in hands over nothing and keeps the emerald, less than a lot
 left isn't sold, a restocked shop sells again, a normal sale takes the goods from the chest), `ShopCounterHopperGameTests` (3,

@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.craft.CrafterWork;
 import io.github.jcondedata.aliveworkplace.guard.Guards;
+import io.github.jcondedata.aliveworkplace.mend.MendingJob.Phase;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Village;
@@ -54,17 +55,17 @@ public class MendingWork extends Behavior<Villager> {
 	private static final int LOOK_EVERY = 100;
 	private static final int MEND_TICKS = 40;
 
-	private enum Phase { IDLE, FETCHING, MATERIAL, MENDING, RETURNING, TIDYING }
-
-	/** Mending {@code item} (as found) from {@code from} with {@code units} of {@code material} out of {@code materialChest}. */
-	private record Job(ItemStack item, BlockPos from, Item material, int units, BlockPos materialChest) {
-	}
+	private static final int BENCHLESS_TICKS = 200;
+	private static final Map<Villager, Long> BENCHLESS = new WeakHashMap<>();
 
 	private static final Set<Villager> BUSY = Collections.newSetFromMap(new WeakHashMap<>());
 
 	private final Walker walker = new Walker(SPEED);
 	@Nullable
-	private Job job;
+	private MendingJob job;
+	/** The job last saved on the villager ({@link ModAttachments#MENDING_JOB}, B971); null: none saved. */
+	@Nullable
+	private MendingJob saved;
 	private Phase phase = Phase.IDLE;
 	private int lookTimer;
 	private int timer;
@@ -117,8 +118,68 @@ public class MendingWork extends Behavior<Villager> {
 
 	@Override
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
-		// The piece (if any) is in the bag: tidied into our chests next time if the job is gone by then.
+		// The piece (if any) is in the bag and the job is saved (B971): carried on next time, or given back by benchlessTick
+		// if the grindstone is gone for good (B970).
 		busy(villager, false);
+	}
+
+	/**
+	 * Every villager's AI step (mixin/VillagerMixin, B970): a smith whose grindstone has been gone for
+	 * {@link #BENCHLESS_TICKS} with a mending job saved lets the job go: the piece goes back to the chest it was found in
+	 * and the material to its chest, or at the smith's feet when those are gone or full (as other jobs drop their bag,
+	 * {@code Crafters.retire}). A grindstone put back (or moved) within that time carries on with the job.
+	 */
+	public static void benchlessTick(Villager villager) {
+		if (!(villager.level() instanceof ServerLevel level)) {
+			return;
+		}
+		MendingJob kept = ModAttachments.MENDING_JOB.get(villager);
+		if (kept == null || Builders.benchPos(villager).isPresent()) {
+			synchronized (BENCHLESS) {
+				BENCHLESS.remove(villager);
+			}
+			return;
+		}
+		long now = level.getGameTime();
+		long since;
+		synchronized (BENCHLESS) {
+			since = BENCHLESS.computeIfAbsent(villager, v -> now);
+		}
+		if (now - since < BENCHLESS_TICKS) {
+			return;
+		}
+		synchronized (BENCHLESS) {
+			BENCHLESS.remove(villager);
+		}
+		giveUp(level, villager, kept);
+	}
+
+	/** Lets {@code kept} go: the piece back where it was found and the material back to its chest, else at the smith's feet. */
+	static void giveUp(ServerLevel level, Villager villager, MendingJob kept) {
+		ModAttachments.MENDING_JOB.remove(villager);
+		busy(villager, false);
+		BuilderBag bag = ModAttachments.BUILDER_BAG.get(villager);
+		if (bag == null || bag.isEmpty()) {
+			return;
+		}
+		if (kept.phase() != Phase.FETCHING) { // still fetching: the piece isn't taken yet (a sword in the bag is another's)
+			ItemStack piece = bag.takeFirst(kept::isThePiece);
+			if (!piece.isEmpty()) {
+				giveTo(level, villager, kept.from(), piece);
+			}
+		}
+		int units = bag.remove(kept.material(), kept.units());
+		if (units > 0) {
+			giveTo(level, villager, kept.materialChest(), new ItemStack(kept.material(), units));
+		}
+	}
+
+	/** Puts {@code stack} in the chest at {@code chest}, or drops it at the smith's feet when that's gone, unloaded or full. */
+	private static void giveTo(ServerLevel level, Villager villager, BlockPos chest, ItemStack stack) {
+		ItemStack rest = level.isLoaded(chest) ? SupplyContainers.insert(level, List.of(chest), stack) : stack;
+		if (!rest.isEmpty()) {
+			Block.popResource(level, villager.blockPosition(), rest);
+		}
 	}
 
 	/** Whether {@code stack} is worn enough to be worth mending. */
@@ -133,6 +194,45 @@ public class MendingWork extends Behavior<Villager> {
 			return;
 		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
+		MendingJob kept = ModAttachments.MENDING_JOB.get(villager);
+		if (job != null && kept == null && saved != null) {
+			job = null; // let go meanwhile (benchlessTick): what was in the bag is back where it came from
+			saved = null;
+		}
+		if (job == null && kept != null) {
+			// B971: a job saved before a reload (or by this smith's previous brain) carries on where it was, so the piece
+			// still goes back where it was found, not into our own chests
+			job = kept;
+			saved = kept;
+			phase = kept.phase();
+			timer = -1;
+			walker.reset();
+		}
+		try {
+			work(level, villager, station, bag);
+		} finally {
+			remember(villager);
+		}
+	}
+
+	/** Saves the job in hand on the villager when it (or its phase) changed, or removes it when it's done (B971). */
+	private void remember(Villager villager) {
+		if (job == null) {
+			if (saved != null) {
+				saved = null;
+				ModAttachments.MENDING_JOB.remove(villager);
+			}
+			return;
+		}
+		if (job == saved && phase == saved.phase()) {
+			return;
+		}
+		saved = job.withPhase(phase);
+		job = saved;
+		ModAttachments.MENDING_JOB.set(villager, saved);
+	}
+
+	private void work(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag) {
 		if (job == null) {
 			if (!bag.isEmpty()) {
 				tidy(level, villager, station, bag);
@@ -258,7 +358,7 @@ public class MendingWork extends Behavior<Villager> {
 
 	/** The piece being mended, in the bag (never the material). */
 	private boolean isThePiece(ItemStack stack) {
-		return job != null && ItemStack.isSameItem(stack, job.item()) && stack.isDamageableItem();
+		return job != null && job.isThePiece(stack);
 	}
 
 	/** Puts what's left in the bag in the chests by the grindstone. */
@@ -283,7 +383,7 @@ public class MendingWork extends Behavior<Villager> {
 	 * other workers of the village. Null if there's nothing to mend (or nothing to mend it with).
 	 */
 	@Nullable
-	private static Job choose(ServerLevel level, Villager villager, BlockPos station) {
+	private static MendingJob choose(ServerLevel level, Villager villager, BlockPos station) {
 		List<BlockPos> own = SupplyContainers.find(level, station, null);
 		List<BlockPos> materials = new ArrayList<>(own);
 		Set<BlockPos> places = new LinkedHashSet<>(own);
@@ -315,7 +415,7 @@ public class MendingWork extends Behavior<Villager> {
 					int units = (int) Math.min(e.getValue(), Math.min(4, (worn.getDamageValue() + per - 1) / per));
 					BlockPos from = SupplyContainers.firstWith(level, materials, e.getKey());
 					if (units > 0 && from != null) {
-						return new Job(worn.copy(), chest, e.getKey(), units, from);
+						return new MendingJob(worn.copy(), chest, e.getKey(), units, from, Phase.FETCHING);
 					}
 				}
 			}

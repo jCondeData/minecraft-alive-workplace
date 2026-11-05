@@ -1328,7 +1328,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGuardHorseReach1104cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGreatWall1104d4GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStruckAndTop1104GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaStruckAndTop1104BugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaStruckAndTop1104BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cBugTests"
 		]
 	},
 	"depends": {

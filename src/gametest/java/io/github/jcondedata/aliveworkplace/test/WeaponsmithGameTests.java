@@ -102,6 +102,61 @@ public class WeaponsmithGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B970's neighbour: the grindstone and the chest the worn sword came from both broken while the smith carries it. With
+	 * nowhere to put it back, the sword lands at the smith's feet and the iron goes back to its chest; nothing stays in the
+	 * bag and the job isn't kept.
+	 */
+	//$ gametest_ticks_batch AREA '1800' '"weaponsmith_nowhere_back"'
+	@GameTest(template = AREA, timeoutTicks = 1800, batch = "weaponsmith_nowhere_back")
+	public void weaponsmithWithTheGrindstoneAndTheChestGoneDropsThePiece(GameTestHelper helper) {
+		Villager smith = QaSmithScribe1105cGameTests.weaponsmith(helper);
+		Container stock = QaSmithScribe1105cGameTests.chest(helper, QaSmithScribe1105cGameTests.STOCK);
+		Container drop = QaSmithScribe1105cGameTests.chest(helper, QaSmithScribe1105cGameTests.DROP);
+		drop.setItem(0, QaSmithScribe1105cGameTests.worn(Items.IRON_SWORD, 200));
+		stock.setItem(0, new ItemStack(Items.IRON_INGOT, 10));
+		boolean[] broken = {false};
+		helper.onEachTick(() -> {
+			if (!broken[0] && drop.countItem(Items.IRON_SWORD) == 0) {
+				helper.destroyBlock(QaSmithScribe1105cGameTests.GRINDSTONE);
+				helper.destroyBlock(QaSmithScribe1105cGameTests.DROP);
+				broken[0] = true;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(broken[0], "the smith never took the sword");
+			int swords = QaSmithScribe1105cGameTests.onGround(helper, Items.IRON_SWORD);
+			int iron = stock.countItem(Items.IRON_INGOT) + QaSmithScribe1105cGameTests.onGround(helper, Items.IRON_INGOT);
+			helper.assertTrue(swords == 1 && iron == 10, "swords on the ground " + swords + ", iron " + iron + " of 10; the bag holds "
+				+ QaSmithScribe1105cGameTests.bag(smith).stacks());
+			helper.assertTrue(!ModAttachments.MENDING_JOB.has(smith), "the mending job is still kept");
+		});
+	}
+
+	/** The smith killed while carrying a player's worn sword: the sword (and the iron) fall where he was, not lost. */
+	//$ gametest_ticks_batch AREA '1200' '"weaponsmith_killed_mid_job"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "weaponsmith_killed_mid_job")
+	public void weaponsmithKilledMidJobDropsThePiece(GameTestHelper helper) {
+		Villager smith = QaSmithScribe1105cGameTests.weaponsmith(helper);
+		Container stock = QaSmithScribe1105cGameTests.chest(helper, QaSmithScribe1105cGameTests.STOCK);
+		Container drop = QaSmithScribe1105cGameTests.chest(helper, QaSmithScribe1105cGameTests.DROP);
+		drop.setItem(0, QaSmithScribe1105cGameTests.worn(Items.IRON_SWORD, 200));
+		stock.setItem(0, new ItemStack(Items.IRON_INGOT, 10));
+		boolean[] killed = {false};
+		helper.onEachTick(() -> {
+			if (!killed[0] && drop.countItem(Items.IRON_SWORD) == 0) {
+				smith.kill();
+				killed[0] = true;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(killed[0], "the smith never took the sword");
+			int swords = drop.countItem(Items.IRON_SWORD) + QaSmithScribe1105cGameTests.onGround(helper, Items.IRON_SWORD);
+			int iron = stock.countItem(Items.IRON_INGOT) + QaSmithScribe1105cGameTests.onGround(helper, Items.IRON_INGOT);
+			helper.assertTrue(swords == 1 && iron == 10, "the smith killed mid-job: swords " + swords + ", iron " + iron + " of 10");
+		});
+	}
+
 	private static Villager weaponsmith(GameTestHelper helper) {
 		helper.setBlock(GRINDSTONE, Blocks.GRINDSTONE);
 		helper.setBlock(CHEST, Blocks.CHEST);

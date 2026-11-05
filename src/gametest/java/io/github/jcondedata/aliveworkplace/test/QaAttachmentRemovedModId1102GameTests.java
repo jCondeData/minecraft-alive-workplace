@@ -37,6 +37,8 @@ public class QaAttachmentRemovedModId1102GameTests implements FabricGameTest {
 		BY_DESIGN.put("brigade_held", "one stack: the gone item is the whole value (vanilla drops an unknown stack too)");
 		BY_DESIGN.put("crafter_job", "a job to make or from a gone item can't be done; its makings are in the bag, which is kept"
 			+ " and tidied back into the Crafter's chest (QaCrafterJobRemovedMod1102GameTests)");
+		BY_DESIGN.put("mending_job", "a job to mend a gone item, or with a gone material, can't be done; the piece is in the bag,"
+			+ " which is kept and tidied into the Weaponsmith's chests as before the job was saved (B971)");
 	}
 
 	//$ gametest EMPTY_STRUCTURE

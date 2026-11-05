@@ -31,6 +31,9 @@ A villager without a job takes a free **grindstone** as a Weaponsmith, as in van
   weaponsmith finds worn gear in the chests by the grindstone, by the guards' posts and at the other workers, mends it
   the way an anvil does (each ingot, plank, diamond or bit of leather puts back a quarter) and takes it back where it
   was. **Drop your own worn gear in their chest** and it comes back mended.
+  If the grindstone is broken while they carry a piece, they give up the job: it goes back to the chest it came from
+  (or falls at their feet if that chest is gone too), and so does the material. A weaponsmith reloaded mid-job (a
+  restart, or the chunk unloading) still takes the piece back where it was found.
 - **Swords.** A guard of the village with no weapon and none in their chest gets a sword, iron from the storehouse or
   the smelters, else stone, brought to the chest by their post.
 

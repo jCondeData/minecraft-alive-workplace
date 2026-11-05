@@ -45,6 +45,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -2122,22 +2123,50 @@ public class BuilderWork extends Behavior<Villager> {
 	 * in, as a player digging down stops a leak: the pit stays dry, the builder never stands in water or burns, and the
 	 * room is walled and floored as drawn. Only a fluid where the drawing wants no fluid of its own is plugged (a pool
 	 * the drawing has stays), and nothing but a fluid block is ever replaced. Done with the break, so no saved state.
+	 * <p>
+	 * B958: a waterlogged block in the earth (glow lichen, dripstone, a buried stair) is drained and kept, and a water
+	 * plant that is all water (seagrass, kelp) is plugged like water. Fluid that has already run into a spot of the room
+	 * (drawn air, {@link BuildPlan#drawnAirAt}) is taken away, never plugged with earth, and the spots round it are
+	 * sealed in turn, so no dirt is left standing in the room where the drawing is open.
 	 */
 	static void sealFluids(ServerLevel level, BuildSite site, BuildPlan plan, BlockPos dug) {
-		if (dug.getY() >= site.placement().origin().getY()) {
+		int ground = site.placement().origin().getY();
+		if (dug.getY() >= ground) {
 			return; // above the ground a dug spot is a wall or a floor of the house, as before
 		}
-		for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
-			BlockPos n = dug.relative(d);
-			BlockState there = level.getBlockState(n);
-			if (!(there.getBlock() instanceof LiquidBlock) || !level.isLoaded(n)) {
-				continue;
+		java.util.ArrayDeque<BlockPos> open = new java.util.ArrayDeque<>();
+		Set<BlockPos> seen = new HashSet<>();
+		open.add(dug);
+		seen.add(dug);
+		int budget = 256; // the spots of the room opened this tick that are looked round; a flooded room is a few dozen
+		while (!open.isEmpty() && budget-- > 0) {
+			BlockPos at = open.poll();
+			for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+				BlockPos n = at.relative(d);
+				if (n.getY() >= ground || !level.isLoaded(n)) {
+					continue;
+				}
+				BlockState there = level.getBlockState(n);
+				if (there.getFluidState().isEmpty()) {
+					continue;
+				}
+				BlockState wanted = plan.targets().get(n);
+				if (wanted != null && !wanted.getFluidState().isEmpty()) {
+					continue; // the drawing's own pool or waterlogged block
+				}
+				boolean logged = there.hasProperty(BlockStateProperties.WATERLOGGED) && there.getValue(BlockStateProperties.WATERLOGGED);
+				if (logged) {
+					level.setBlock(n, there.setValue(BlockStateProperties.WATERLOGGED, false), Block.UPDATE_ALL);
+				} else if (wanted == null && plan.drawnAirAt(n)) {
+					// a spot of the room: the water that ran in goes, as the dig takes it, and what feeds it is sealed
+					level.setBlock(n, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+					if (seen.add(n)) {
+						open.add(n);
+					}
+				} else {
+					level.setBlock(n, net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
+				}
 			}
-			BlockState wanted = plan.targets().get(n);
-			if (wanted != null && (wanted.isAir() || !wanted.getFluidState().isEmpty())) {
-				continue; // the drawing's own pool, or a spot of the room the dig will reach itself
-			}
-			level.setBlock(n, net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
 		}
 	}
 

@@ -6,7 +6,7 @@ freezer, the Smith's coal store, the Cook's cold larder and the Storehouse's vau
 should also get basements in a new Level 4 version, but some buildings should get basements in general at any level,
 like a butcher maybe has a freezer").
 
-Roadmap items: 26.15
+Roadmap items: 26.15, B958
 
 ## 1. What a player sees
 
@@ -63,6 +63,9 @@ Cellars from Level 1:
   in, as a player digging down stops a leak: the room stays dry, the builder never stands in water or burns, and the
   walls and floor go up as drawn. Only a fluid block is replaced, never where the drawing wants its own water or lava
   or a spot of the room; above the ground nothing changes. The same holds for a Smithy's "Dig the cellar".
+  Waterlogged blocks in that earth (glow lichen, dripstone, a buried stair) are drained and kept, and seagrass or
+  kelp is plugged like water (B958); water that has already run into the room is taken away, never plugged with
+  dirt, so the room is left open as drawn. A waterlogged block the blueprint draws stays as drawn.
 - No job block in a basement but the job's own: casks are spruce or dark oak log ends, stock is in chests, so a cellar
   never hands a villager a job. The Butcher's Shop has the smoker upstairs.
 - Unlocks: the Level 4s come the way every upgrade does (the builder who finishes the III sells it; a builder's level-up
@@ -118,6 +121,6 @@ ground, the right size, a way down and a light, and each Level III's builder sel
 `levelFourDigsAndFinishesItsBasement`: Starter Cottage IV over a finished Cottage III on real ground;
 `butchersShopGoesUpWithItsFreezer`; `reloadMidDigCarriesOn`: saved and loaded mid-dig and mid-structure, the foundation
 never fills the dug room; `noMaterialsStillDigsAndKeepsContainers`; `cellarIsBuiltWithTheGroundLeftAlone`), and
-`BuilderGameTests.starterUpgradesKeepMostOfTheirBase`, `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`. QA's `QaBasementGameTests` (3, every build with a basement): its way down comes up through the ground floor; no spot on its floor is left dark (block light 0); it can be walked to from outside and back out, every chest down there within reach. QA's `QaBasementGround1104GameTests` (2: a cave two deep under the floor leaves the basement's floor whole; a water source just under the floor stays under it, the basement dry). QA's `QaBasementGround1104BugTests` (3, B923, B924: water sources in the earth beside three of the Cottage IV's basement walls and under its floor leave no water in it and the builder alive; lava in the same spots with fire spread on burns nothing and kills no one; water beside an old Smithy's coal store leaves its cellar dig dry and the whole Smithy as drawn).
+`BuilderGameTests.starterUpgradesKeepMostOfTheirBase`, `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`. QA's `QaBasementGameTests` (3, every build with a basement): its way down comes up through the ground floor; no spot on its floor is left dark (block light 0); it can be walked to from outside and back out, every chest down there within reach. QA's `QaBasementGround1104GameTests` (2: a cave two deep under the floor leaves the basement's floor whole; a water source just under the floor stays under it, the basement dry). QA's `QaBasementGround1104BugTests` (3, B923, B924: water sources in the earth beside three of the Cottage IV's basement walls and under its floor leave no water in it and the builder alive; lava in the same spots with fire spread on burns nothing and kills no one; water beside an old Smithy's coal store leaves its cellar dig dry and the whole Smithy as drawn). QA's `QaBasementFluids1104fBugTests` (2, B958: waterlogged glow lichen, dripstone and seagrass, or waterlogged stairs, beside the basement leave it dry and built as drawn, with no dirt in the room).
 
 Showcase scenes: basement

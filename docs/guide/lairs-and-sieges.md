@@ -54,7 +54,7 @@ A raid on a village with at least one finished wall or gate build is a **siege**
 are shut and the portcullis is down." The gates shut at once and every finished Gatehouse drops its portcullis. A ram
 (a ravager, or raiders with axes) goes for the nearest gate: a Palisade Gate holds about 10 seconds, a Gatehouse about
 a minute. A **Gatehouse II** has a barbican with a second gate and portcullis, and raiders have to break both, so it
-holds several times as long. Only gates the builders made can break; a gate you placed yourself is never hit.
+holds several times as long. Only gates the builders made can break; a gate you placed yourself is never hit. A gate put back in the breach during the siege, by a builder or by you, has to be broken all over again.
 
 Raiders with ladders set them against the walls and climb over. A guard on the walkway within 2 blocks of a ladder's
 top throws it down.

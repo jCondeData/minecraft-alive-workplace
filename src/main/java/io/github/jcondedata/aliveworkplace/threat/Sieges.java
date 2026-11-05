@@ -812,9 +812,24 @@ public final class Sieges {
 			m -> m.isAlive() && m.getTags().contains(Threats.RAIDER_TAG) && VillageRaids.reaches(hall, m));
 	}
 
-	/** The next gate block to break: the first in the siege's order that still stands in the world. */
+	/**
+	 * The next gate block to break: the first in the siege's order that still stands in the world. A gate block broken or
+	 * taken earlier that stands again (a builder's siege repair or a player's hand set a gate back in the breach) stands
+	 * in the siege again too, with the hit points of the block there now (B966): remembered as broken, the way counted as
+	 * open, the ram had nothing to strike and the others were sent in through a shut gate till dawn.
+	 */
 	@Nullable
 	private static ThreatData.Gate next(ServerLevel level, ThreatData data, ThreatData.Siege siege) {
+		for (ThreatData.Gate gate : siege.gates) {
+			if (gate.state != ThreatData.GateState.STANDING) {
+				BlockState there = level.getBlockState(gate.pos);
+				if (isGate(there)) {
+					gate.state = ThreatData.GateState.STANDING;
+					gate.hp = hitPoints(there) * siege.hpFactor;
+					data.setDirty();
+				}
+			}
+		}
 		for (ThreatData.Gate gate : siege.gates) {
 			if (gate.state != ThreatData.GateState.STANDING) {
 				continue;

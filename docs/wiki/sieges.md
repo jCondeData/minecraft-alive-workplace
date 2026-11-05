@@ -24,6 +24,10 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
   through the gap; the ram steps aside out of the gateway to let them past, then widens it. A raider a fight took
   round the side of the walls comes back round to the gateway and in, and one that strolls back out through the gap
   is sent in again.
+- **A gate set back in the breach is rammed again** (B966): one a builder mends during the siege (walls and gates
+  first) or a player puts back by hand stands in the siege again, with the hit points of the block there now (a
+  fence gate's, a door's or iron bars'), and the ram breaks it again before the others walk in. A solid block put in
+  the gateway is not a gate: the rams never break walls.
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
 - **The defense upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
@@ -380,6 +384,7 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 - A gate set back mid-siege (QA, lane D, 2026-11-05): `QaSiegeRegateLadder1105dGameTests`: the follower that let go of
   its ladder for the broken-open gate still gets in after the gate is put back, shut (4 of 4 runs). `QaSiegeOpenGate1105dGameTests`: a
   middle gate a player opens by hand as the siege begins still lets the siege run its course: the pillager is through
-  within 600 ticks and nothing drops (2 of 2). Failing (B966): at
-  the Palisade Gate alone the ram never strikes the gate put back in the breach and nobody gets in,
-  QaSiegeRegate1105dGameTests on tests/siege-regate-1105d.
+  within 600 ticks and nothing drops (2 of 2). B966 (fixed, lane-a-1105-0323): at the Palisade Gate alone the gate put
+  back in the breach was never struck again and nobody got in; `QaSiegeRegate1105dGameTests`: the same gate set back
+  is broken again and the pillager gets through, and iron bars set back stand again with the bars' hit points (more
+  than a fence gate's) and are broken too.

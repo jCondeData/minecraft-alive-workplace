@@ -1313,6 +1313,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1104dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatFixes1104dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeRegateLadder1105dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeRegate1105dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConscriptLetBe1105dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeOpenGate1105dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerVerify1104c3GameTests",

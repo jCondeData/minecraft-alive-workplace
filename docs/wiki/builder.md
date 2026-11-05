@@ -137,7 +137,7 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   ground as high as the world or on a lone block at y 319: no foundation goes under a block that will never be built,
   and no ground is leveled round a build of which nothing can stand (B965).
   Tests `QaBuildHeightLimit1104BugTests`, `BuildHeightLimitGameTests` (with a save and load mid-build), `B953GameTests`,
-  `QaStruckAndTop1104GameTests`, `QaStruckAndTop1104BugTests`.
+  `QaStruckAndTop1104GameTests`, `QaStruckAndTop1104BugTests`, `QaBuilderGaps1105GameTests` (a roof on y 319).
 - "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors
   (a fence's connections, a stair's corner shape). Without that a finished wall could look unfinished forever.
 - Nobody is built into a block: before a block goes down the builder checks there is room for it as it will
@@ -479,6 +479,15 @@ mid-build ends with nothing lost; a blueprint wholly over the top uses nothing a
 other worker leaves their bag and the owner's axe).
 `QaStruckAndTop1104BugTests` (QA, B964: a real bolt on a builder at the bottom of a 4-deep pit with his bench on the rim,
 and on top of a 5-high tower over his bench, leaves his whole bag and one blueprint).
+`QaBuilderGaps1105GameTests` (QA, 10: a Smithy's cellar dug beside waterlogged stairs, seagrass and kelp, a basement
+beside a bubble column and a kelp column, water where the basement's own walls and floor go, and a save and load mid-dig
+beside waterlogged earth all end dry and as drawn; a real bolt with the bench 4 blocks off puts the bag on the bench, 3
+blocks off on the ground, atop a tower at its foot and in a pond on the dry bank, each at the spot the message names; on
+Peaceful a bolt makes no witch and drops nothing; a hut whose roof is the world's top layer is built whole). Open: B969, a
+struck builder whose bench is gone has his bag put over the empty spot, so it falls and the message names mid-air.
+`QaBuilderGaps1105bGameTests` (QA, 2 here: a builder struck on grass over a sealed cave gets his bag on the surface; on a
+bridge over a sealed flat-roofed room, on its roof under the sky). Open: B973, struck in a wheat field (or over a stair
+roof) above a sealed cave or room, the bag is put inside it, where a player must dig to reach it.
 `QaLaneC1102eGameTests` (QA, B832): six real fishermen catch nothing in 1500 ticks at workplaceBuildDelay 35791395 (the
 first delay whose 60-step bite passes the int range) and at 2147483647, and the same pond at the default 8 still catches.
 `B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not

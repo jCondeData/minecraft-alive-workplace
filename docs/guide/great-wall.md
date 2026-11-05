@@ -45,7 +45,7 @@ its stairs are on your side. See [Wonders](wonders.md) for drawing up the plans.
   (the chests round the Foundation Stone) holds **4 iron blocks and a pumpkin**.
 - **The Great Gate shuts at night** and opens in the morning, like the village's gates.
 
-If the Wall is damaged (a tenth of it missing), both powers stop until the builders repair it: raids can gather
+If the Wall is damaged (more than a tenth of it missing), both powers stop until the builders repair it: raids can gather
 anywhere again, the sentries are plain golems, and nobody is replaced.
 
 ## How it fits with the rest

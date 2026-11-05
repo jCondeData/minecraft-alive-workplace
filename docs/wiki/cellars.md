@@ -102,5 +102,10 @@ but the hatch, are listed with their basement and sold by the Level II's builder
 Smithy II's plan digging the cellar too, and the trade gone after; `noOfferWhenTheCellarIsThere`; `reloadMidDigFinishesTheCellar`;
 `staleDigTradeGoesAndCannotStartABuild`: two Smithies, one dug by hand, a builder saved with its trade), `QaRepairCellarBugTests`, and
 `BasementGameTests.basementsLoadUnderTheGround` (all eight load with a way down and a light), and QA's `QaBasementGameTests` (each cellar walked to and back out, its chests within reach, its floor lit everywhere).
+QA's `QaBuilderGaps1105bGameTests` (3 here: a Storehouse's and a Kitchen's "Dig the cellar" keep every chest above with its
+contents and a player's block, leave a closed hatch over a ladder down to the floor and say so once, and the trade goes
+after; a Storehouse dug by hand in another shape down to just over half solid is still offered and dug as drawn) and
+`QaBuilderGaps1105GameTests` (a Smithy's cellar dug beside waterlogged earth stays dry). Open: B974, a Smithy torn
+down by hand is still offered its dig.
 
 Showcase scenes: cellars

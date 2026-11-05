@@ -486,7 +486,9 @@ Handcrafted (compat) `TerraceSleepCompatTests.aVillagerWithoutABedTakesAFreeFanc
 count as beds only once the tasks the placing queued have run; looked up in the same task, it found no beds and nobody
 moved in).
 B925: `QaTerraceUpstairs1104c2BugTests.qaAHomelessVillagerAlreadyUpInTheWrongBedroomTakesAFreeBedNextDoor` (failing
-before the fix).
+before the fix); QA's `QaTerraceBeds1105cGameTests` (the mirror from the west bedroom, every bed taken, one free bed for
+two homeless villagers, the free bed broken on his way, a save and load mid-walk, a villager's own bed upstairs kept, and
+B304 from the west kitchen).
 B876: `QaHallBeds1103cBugTests.aBedBehindAnIronDoorUpALadderIsNotClaimable` (failing before the fix),
 `QaHallBeds1103cBugTests.aBedBehindAnOpenIronDoorUpALadderIsClaimable` (open, then shut again) and
 `QaHallBeds1103cGameTests.aBedBehindAShutOakDoorUpALadderIsClaimable`.

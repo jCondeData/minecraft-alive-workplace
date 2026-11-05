@@ -162,7 +162,8 @@ clicks, the last day before lifting, the cap at 100 and 400), `CurfewGameTests` 
 conscript, 23.4 and 25 blocks away, a stranded conscript letting the raider be, edicts off), `QaConscriptReach1104d2GameTests` (4: a second raider on a
 stranded conscript's platform fought, the let-be over and a way down given, a raider 3 blocks off behind a fence never
 let be, a reachable raider 20 blocks across chased and struck), `QaConscriptReach1104d2BugTests` (1, B954: the raider
-he let be coming up 2 blocks from him is struck within 2 seconds), QA's
+he let be coming up 2 blocks from him is struck within 2 seconds), `QaConscriptLetBe1105dGameTests` (1: the raider he
+let be coming up only to 5 blocks off, across a gap, stays let be for the 10 seconds and is taken up after), QA's
 `QaLaneC1104eGameTests` (B926 from below: a raider 16 above and 12 across, 20 blocks away, fought, one 26.4 away not
 until the conscript comes within 24; the nearest of two raiders struck first; B917: a hall holding a step's whole count
 still shows the story's step one short of done until a hand-in), `CivicTalkGameTests` (7),

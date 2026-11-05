@@ -651,6 +651,25 @@ public final class BuildPlan {
 		return solid.contains(pos);
 	}
 
+	private java.util.Set<BlockPos> drawnAir;
+
+	/**
+	 * B958: whether the drawing has air at {@code pos} (a spot of a room the dig clears), which {@link #targets()} never
+	 * holds: only the blocks a build places are there.
+	 */
+	public synchronized boolean drawnAirAt(BlockPos pos) {
+		if (drawnAir == null) {
+			java.util.Set<BlockPos> set = new java.util.HashSet<>();
+			for (Step s : clear) {
+				if (s.state().isAir() && !targets.containsKey(s.pos())) {
+					set.add(s.pos());
+				}
+			}
+			drawnAir = set;
+		}
+		return drawnAir.contains(pos);
+	}
+
 	/**
 	 * True if the plan still has to put a solid block at {@code pos}: somewhere a builder should not
 	 * stand (or send anyone else to stand), or it will be in its own way later.

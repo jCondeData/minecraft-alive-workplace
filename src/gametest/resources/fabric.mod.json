@@ -598,6 +598,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderReloadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBenchMovePathsPaceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBenchMovePathsPaceBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderPaths1105GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderPaths1105BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderRecheck1026GameTests",

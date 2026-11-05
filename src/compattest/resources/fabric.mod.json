@@ -107,6 +107,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicHandNoRoom1104eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicPartStruck1104eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaContraptionLines1104eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateZombified1104e2CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicSavedMidMend1103eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainHallGoneCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateTrackCompatTests",

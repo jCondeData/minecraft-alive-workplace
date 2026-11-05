@@ -170,7 +170,9 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 	/**
 	 * B945 (QA lane-c-1104-1254): a villager penned in glass 4 blocks from a chair picks it but can't reach it; a villager
 	 * then comes right beside the chair. Once the penned one gives up ({@code GIVE_UP}, 600 ticks) they leave the chair
-	 * alone for a while, so the one beside it sits: a chair nobody can reach isn't kept from everyone for good.
+	 * alone for a while, so the one beside it sits: a chair nobody can reach isn't kept from everyone for good. B967: the
+	 * one beside it is fenced in at the chair's corner; loose, they wandered out of the chair's reach in the 600 ticks (3
+	 * runs in 13) and the test failed although the chair was free.
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '1600' '"qa1104c4_penned_walker"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 1600, batch = "qa1104c4_penned_walker")
@@ -188,26 +190,67 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 				}
 			}
 		}
+		// The villager beside the chair stays beside it (B967), in a glass cell at its corner: within sitting reach, but never
+		// standing in the chair's block (which would make the penned one drop it without giving up).
+		BlockPos cell = CHAIR.south().east();
+		for (Direction side : Direction.Plane.HORIZONTAL) {
+			for (int y = 0; y <= 2; y++) {
+				helper.setBlock(cell.relative(side).above(y), net.minecraft.world.level.block.Blocks.GLASS);
+			}
+		}
 		Villager penned = helper.spawn(EntityType.VILLAGER, pen);
 		Runnable restore = clock(level);
 		setTime(level, FurnitureSeats.SUPPER + 300);
 		Villager[] beside = {null};
 		long[] pickedAt = {-1};
+		StringBuilder log = new StringBuilder();
+		boolean[] wasFree = {false};
+		boolean[] wasInReach = {true};
 		helper.onEachTick(() -> {
 			if (beside[0] == null && !FurnitureSeats.free(level, chair, null) && seats(helper, chair).isEmpty()) {
 				pickedAt[0] = helper.getTick();
-				beside[0] = helper.spawn(EntityType.VILLAGER, CHAIR.south());
+				beside[0] = helper.spawn(EntityType.VILLAGER, cell);
+				log.append(" penned picked it at tick ").append(pickedAt[0]).append(';');
+			}
+			if (beside[0] != null && log.length() < 1500) {
+				boolean free = FurnitureSeats.free(level, chair, beside[0]);
+				if (free != wasFree[0]) {
+					wasFree[0] = free;
+					log.append(" tick ").append(helper.getTick()).append(free ? " free" : " held by "
+						+ level.getEntitiesOfClass(Entity.class, new AABB(chair), e -> e != beside[0] && e.isAlive()).stream()
+							.map(e -> e == penned ? "penned" : e.getType().toShortString()).toList() + " or a villager walking to it")
+						.append(';');
+				}
+				BlockPos at = beside[0].blockPosition();
+				boolean inReach = Math.abs(chair.getX() - at.getX()) <= FurnitureSeats.REACH && Math.abs(chair.getZ() - at.getZ()) <= FurnitureSeats.REACH
+					&& chair.getY() - at.getY() >= -2 && chair.getY() - at.getY() <= 1;
+				if (inReach != wasInReach[0]) {
+					wasInReach[0] = inReach;
+					log.append(" tick ").append(helper.getTick()).append(inReach ? " beside back in reach" : " beside out of reach at "
+						+ helper.relativePos(at).toShortString()).append(';');
+				}
 			}
 		});
 		helper.succeedWhen(() -> {
 			helper.assertTrue(beside[0] != null, "setup: the penned villager never picked the chair");
 			helper.assertFalse(penned.isPassenger(), "setup: the penned villager reached the chair");
-			helper.assertTrue(seatOf(beside[0]) != null, "the villager right beside the chair hasn't sat " + (helper.getTick() - pickedAt[0])
-				+ " ticks after the penned villager (who can't reach it) picked it; the chair is free: " + FurnitureSeats.free(level, chair, beside[0]));
+			helper.assertTrue(seatOf(beside[0]) != null, "the villager beside the chair at " + helper.relativePos(chair).toShortString()
+				+ " hasn't sat " + (helper.getTick() - pickedAt[0]) + " ticks after the penned villager (who can't reach it) picked it; day time "
+				+ level.getDayTime() % 24000 + ", sitting time " + FurnitureSeats.sittingTime(level) + "; beside at "
+				+ helper.relativePos(beside[0].blockPosition()).toShortString() + " " + goals(helper, beside[0]) + "; penned at "
+				+ helper.relativePos(penned.blockPosition()).toShortString() + " " + goals(helper, penned) + ";" + log);
 			penned.discard();
 			beside[0].discard();
 			restore.run();
 		});
+	}
+
+	/** A villager's activity and walk target, for failure messages. */
+	private static String goals(GameTestHelper helper, Villager v) {
+		return "(" + v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("no activity") + ", walking to "
+			+ v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET)
+				.map(t -> helper.relativePos(t.getTarget().currentBlockPosition()).toShortString()).orElse("nothing")
+			+ (v.isPassenger() ? ", riding " + v.getVehicle().getType().toShortString() : "") + ")";
 	}
 
 	//$ gametest_ticks_batch HUGE_AREA '600' '"furniture_seat_danger"'

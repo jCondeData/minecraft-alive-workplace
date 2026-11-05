@@ -5327,7 +5327,7 @@ Legends.
   - scene `wonder_observatory`: the time-lapse, then the Sky Chart in hand and the Coming days page; its GIF and
     powers are in the README.
   - [x] **35.18a** (approved auto 2026-10-12) Change from the owner (2026-10-12): the Observatory's Sky Chart covers about 6,144 blocks across (384 chunks, 12 regions), not 1,024; everything else approved
-- [x] **35.19** (approved 2026-10-13) **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
+- [x] **35.19** (approved 2026-10-13) (verified 2026-11-05: QaWonderDesigns1105GameTests [9]: walkable from outside to every Gardens farm chest and the crown, and to the Stadium's field, boxes, lectern, nurse's stand, upper stands and covered concourse on all sides; falls water crown to pool; Colossus copper unwaxed, nose past the eyes, caged raised lantern, 9 braziers, 7 signs; wiki sizes; American English) **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
   31, 23 and 15 across, 6 high each) faced with arcades of sandstone arches on columns. Each terrace is topped with
   soil: fields of wheat, carrots and beetroots between water channels with a composter and a chest on each level (four
   village farms), sweet and glow berry beds, flowering azaleas and oaks, vines and glow berries hanging over the
@@ -5350,7 +5350,7 @@ Legends.
     off;
   - scene `wonder_hanging_gardens`: the time-lapse, ending with the falls running and farmers on the terraces; its GIF
     and powers are in the README.
-- [x] **35.21** (approved 2026-10-13) **The Colossus: its design.** The Founder's statue, 47 high, drawn like 35.9: a robed villager, nose
+- [x] **35.21** (approved 2026-10-13) (verified 2026-11-05: QaWonderDesigns1105GameTests [9]: walkable from outside to every Gardens farm chest and the crown, and to the Stadium's field, boxes, lectern, nurse's stand, upper stands and covered concourse on all sides; falls water crown to pool; Colossus copper unwaxed, nose past the eyes, caged raised lantern, 9 braziers, 7 signs; wiki sizes; American English) **The Colossus: its design.** The Founder's statue, 47 high, drawn like 35.9: a robed villager, nose
   and all, one hand on the chest and the other raising a lantern, on a 13-high stepped plinth with an arch through it
   (5 wide, 6 high) for the main road and its caravans, so the village passes beneath. The figure is stone (polished
   diorite and smooth stone) under a cloak of cut copper that weathers green over the weeks (about 250 copper blocks);
@@ -5372,7 +5372,7 @@ Legends.
     with beds free; the plaque reads the village's name and founding day; a damaged Colossus turns them off;
   - scene `wonder_colossus`: the time-lapse with the scaffolding going up and coming down, ending at night with the
     lantern lit over the road; its GIF and powers are in the README.
-- [x] **35.23** (approved 2026-10-13) **The Stadium: its design (Cobblemon).** An oval arena about 47 × 37 and 16 high, drawn like 35.9: a
+- [x] **35.23** (approved 2026-10-13) (verified 2026-11-05: QaWonderDesigns1105GameTests [9]: walkable from outside to every Gardens farm chest and the crown, and to the Stadium's field, boxes, lectern, nurse's stand, upper stands and covered concourse on all sides; falls water crown to pool; Colossus copper unwaxed, nose past the eyes, caged raised lantern, 9 braziers, 7 signs; wiki sizes; American English) **The Stadium: its design (Cobblemon).** An oval arena about 47 × 37 and 16 high, drawn like 35.9: a
   battle field 31 × 21 of grass with white lines and a centre circle (no logos), two trainer boxes with a Training
   Post each, a professor's box at the side, stands of five tiers along the sides and three at the ends with seats in
   red and white (the village's own colours once M30's Village Banner exists), a covered stand on the west under a
@@ -5388,7 +5388,7 @@ Legends.
   banners (Carpenter), 64 cooked beef (Chef), 32 berries (Orchard Keeper); IV 8 daylight detectors (Tinkerer), 16
   Ultra Balls (Ball Smith), 32 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it (the compat
   GameTests for the parts with Cobblemon's blocks).
-  - [x] **35.23a** (approved 2026-10-13) Change from the owner (2026-10-13): make the Stadium a little bigger with more decoration, and give it interiors to walk through like a real football stadium
+  - [x] **35.23a** (approved 2026-10-13) (verified 2026-11-05: QaWonderDesigns1105GameTests [9]: walkable from outside to every Gardens farm chest and the crown, and to the Stadium's field, boxes, lectern, nurse's stand, upper stands and covered concourse on all sides; falls water crown to pool; Colossus copper unwaxed, nose past the eyes, caged raised lantern, 9 braziers, 7 signs; wiki sizes; American English) Change from the owner (2026-10-13): make the Stadium a little bigger with more decoration, and give it interiors to walk through like a real football stadium
 - [x] **35.24** (approved 2026-10-13) (verified 2026-11-04: 6 new compat tests [QaStadiumDays1104CompatTests]: 2-4 visitors over 30 Stadium Days, travelers rank 3-5 named the Traveler, the level's own clock [even/odd day], seats limit the crowd and its +5 mood, no bout without a home trainer, bout XP for the visitor's trainer at home; 5x repeats clean) **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
   - **Stadium Days**, every second day in the afternoon: two to four visiting trainers (from the villages of its realm
     or its caravan partners; travelling trainers from Journeyman to Master when those have none) stand in the trainer

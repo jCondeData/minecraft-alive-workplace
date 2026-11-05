@@ -581,13 +581,14 @@ public final class BuilderEvents {
 
 	/** How far a bolt reaches sideways: vanilla's {@code LightningBolt} strikes every entity within 3 blocks of it on x and z. */
 	private static final double BOLT_REACH = 3.0;
-	/** The farthest from the bolt a spot is looked for (blocks, each way). */
+	/** The farthest from the bolt a spot is looked for (blocks, each way, up and down from the worker's feet too: B964). */
 	private static final int SAFE_SEARCH = 8;
 
 	/**
 	 * B952: where what a struck worker leaves is put down, out of {@code bolt}'s reach (and so out of the fire it lights,
 	 * which is within a block of it): on top of their workstation (a builder's Blueprint Table) when that is out of reach,
-	 * else the open, solid-floored spot nearest to it (or to the worker, without one) at least 4 blocks from the bolt. A
+	 * else the open, solid-floored spot nearest to it (or to the worker, without one) at least 4 blocks from the bolt, up
+	 * to {@link #SAFE_SEARCH} above or below the worker's feet (B964: a pit's rim, a tower's foot). A
 	 * second bolt in the same place doesn't reach it either. Where nothing is found, where the worker stood.
 	 */
 	static BlockPos outOfReach(ServerLevel level, Villager villager, Entity bolt) {
@@ -602,7 +603,9 @@ public final class BuilderEvents {
 		BlockPos at = bolt.blockPosition();
 		for (int dx = -SAFE_SEARCH; dx <= SAFE_SEARCH; dx++) {
 			for (int dz = -SAFE_SEARCH; dz <= SAFE_SEARCH; dz++) {
-				for (int dy = 2; dy >= -3; dy--) {
+				// B964: as far up and down as sideways, so a worker deep in a pit or atop a tower still finds the ground
+				// round it; every standing spot in the column counts (nearest the bench wins, so the nearest floor)
+				for (int dy = SAFE_SEARCH; dy >= -SAFE_SEARCH; dy--) {
 					BlockPos p = new BlockPos(at.getX() + dx, stood.getY() + dy, at.getZ() + dz);
 					if (!outOfReach(bolt, p) || !open(level, p) || !level.getBlockState(p.below()).isFaceSturdy(level, p.below(), Direction.UP)) {
 						continue;
@@ -612,7 +615,6 @@ public final class BuilderEvents {
 						bestDistance = d;
 						best = p;
 					}
-					break; // the highest standing spot in this column
 				}
 			}
 		}

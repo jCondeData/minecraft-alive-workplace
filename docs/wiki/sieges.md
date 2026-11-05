@@ -378,6 +378,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   ladder when the gate breaks gets over the wall and inside. B934's fix: a follower 0.5-2 blocks from the foot turns
   for the gate too (`QaThreatFixes1104dBugTests`, registered with it).
 - A gate set back mid-siege (QA, lane D, 2026-11-05): `QaSiegeRegateLadder1105dGameTests`: the follower that let go of
-  its ladder for the broken-open gate still gets in after the gate is put back, shut (4 of 4 runs). Failing (B966): at
+  its ladder for the broken-open gate still gets in after the gate is put back, shut (4 of 4 runs). `QaSiegeOpenGate1105dGameTests`: a
+  middle gate a player opens by hand as the siege begins still lets the siege run its course: the pillager is through
+  within 600 ticks and nothing drops (2 of 2). Failing (B966): at
   the Palisade Gate alone the ram never strikes the gate put back in the breach and nobody gets in,
   QaSiegeRegate1105dGameTests on tests/siege-regate-1105d.

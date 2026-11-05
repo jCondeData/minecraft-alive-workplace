@@ -65,7 +65,7 @@ public class SiegeGameTests implements FabricGameTest {
 	private static final BlockPos PLAYERS_GATE = new BlockPos(18, 2, FRONT);
 
 	/** A yard and what stands in it. */
-	private record Yard(ServerLevel level, BlockPos hall, BlockPos origin, StarterBlueprints.Entry build, Culture culture, Villager villager) {
+	record Yard(ServerLevel level, BlockPos hall, BlockPos origin, StarterBlueprints.Entry build, Culture culture, Villager villager) {
 		/** The world position of the build's blueprint position (x, y, z). */
 		BlockPos at(int x, int y, int z) {
 			return origin.offset(x, y, z);
@@ -82,7 +82,7 @@ public class SiegeGameTests implements FabricGameTest {
 	 * Builds the yard with {@code build} (the Palisade Gate or the Gatehouse) finished in its front wall, its outside to
 	 * the south, and a villager in a closed cell inside. What the test changes goes when it ends.
 	 */
-	private static Yard yard(GameTestHelper helper, StarterBlueprints.Entry build) {
+	static Yard yard(GameTestHelper helper, StarterBlueprints.Entry build) {
 		Leftovers.clear(helper);
 		// Walls and gates an earlier batch's test recorded finished at this spot would join the siege (their gates, bars and
 		// breach), so the ram's work and the pillager's time hung on which batch ran here before (B121, B122).
@@ -166,7 +166,7 @@ public class SiegeGameTests implements FabricGameTest {
 	}
 
 	/** One of the culture's raiders with {@code role}, as a raid spawns it, at the helper position (x, 2, z), after the villager. */
-	private static Mob raider(GameTestHelper helper, Yard yard, Culture.Role role, double x, double z) {
+	static Mob raider(GameTestHelper helper, Yard yard, Culture.Role role, double x, double z) {
 		ServerLevel level = yard.level();
 		Culture.Member member = yard.culture().roster().stream().filter(m -> m.role() == role).findFirst().orElseThrow();
 		Mob mob = Threats.create(level, member);
@@ -185,7 +185,7 @@ public class SiegeGameTests implements FabricGameTest {
 	 * foe it has (what, where, and in sight or not: a raider with a foe in sight fights on and the siege's director leaves
 	 * it be) and where its path goes.
 	 */
-	private static String state(GameTestHelper helper, Mob mob) {
+	static String state(GameTestHelper helper, Mob mob) {
 		BlockPos base = helper.absolutePos(BlockPos.ZERO);
 		java.util.function.Function<net.minecraft.world.phys.Vec3, String> rel = v -> String.format(java.util.Locale.ROOT, "(%.1f, %.1f, %.1f)",
 			v.x - base.getX(), v.y - base.getY(), v.z - base.getZ());
@@ -207,7 +207,7 @@ public class SiegeGameTests implements FabricGameTest {
 	}
 
 	/** Whether {@code mob} is through the gate: inside the yard's front wall. */
-	private static boolean through(GameTestHelper helper, Yard yard, Mob mob) {
+	static boolean through(GameTestHelper helper, Yard yard, Mob mob) {
 		BlockPos base = helper.absolutePos(BlockPos.ZERO);
 		double x = mob.getX() - base.getX();
 		double z = mob.getZ() - base.getZ();
@@ -220,7 +220,7 @@ public class SiegeGameTests implements FabricGameTest {
 		return build == StarterBlueprints.GATEHOUSE || build == StarterBlueprints.GATEHOUSE_2;
 	}
 
-	private static boolean isFenceGate(ServerLevel level, BlockPos pos) {
+	static boolean isFenceGate(ServerLevel level, BlockPos pos) {
 		return level.getBlockState(pos).getBlock() instanceof FenceGateBlock;
 	}
 

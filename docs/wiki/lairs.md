@@ -174,6 +174,11 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - `QaRefusedThreatsGameTests`: with the world refusing every hostile mob, `/workplace threat start` brings each of the
   seven cultures' raiders into the world, persistent, and ending the raid takes them away; a war camp, tomb camp, Blackstone
   Outpost and Coven Hut each have their captain and band in the world, still there 100 ticks on and not broken up.
+- `QaNightAttackRefusedGameTests` (QA, B216): a blocklist naming only zombies still lets a night attack on a village of
+  8 come whole (5 raiders, zombies among them, all in the world and persistent 100 ticks on; the log names the zombie as
+  placed directly); `/workplace threat start monsters` with every monster refused says "Monsters are raiding <village>:
+  N of them." with N the raiders in the world and the raid recorded; with `forceThreatSpawns` off the same command
+  brings nobody, records no raid, and the log says "forceThreatSpawns is off".
 - `B211GameTests`: with the world refusing iron golems, wolves, horses and llamas, the Golem Smith's golem, the Iron
   Pact's golem, a relief rider's horse (with its rider on it), a Beastmaster foal and wolf pup and a caravan llama are in
   the world and still there 100 ticks later; with `forceVillageSpawns` off they are left out and the log says why.

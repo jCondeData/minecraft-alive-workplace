@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432
 
 ## What a player sees
 
@@ -371,6 +371,13 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   together with `SiegeGameTests` and `LadderGameTests`; not checked for flakiness with the repeat generator, and not
   tested: Lookout Tower, Gatehouse, Stone Wall and Palisade stations in a GameTest (the scene uses a Gatehouse), a
   crossbow from a station, the damage an arrow does with the height bonus (only the factor), an offline player.
+- `QaBattleStationViewGameTests` (QA, B252 and B320, a Gatehouse with its gate the breach):
+  `theStationOverTheGateIsTheOneThatSeesMost` (a crenel over the gate, x 4 or 6 of the blueprint; it sees more of the
+  ground than the old merlon spot and at least as much as every other free station in reach),
+  `anArcherPushedOffHisStationsMiddleStepsBack` (pushed half a block aside, he is back within 0.25 of its middle and
+  still on it), `afterARestartHeTakesTheSameStationAgain` (the places forgotten as a stop forgets them: the same station
+  again) and `aRaiderComingAtTheGateIsShotOnTheWayIn` (held 19 out until the archer is up, then coming on: hit at least
+  2 blocks out from the gate's face, from the station).
 - Showcase scene `battle_stations`: two archers leaving their Guard Post for stations on a Gatehouse and a Wall Tower
   and shooting down at raiders hacking at the portcullis.
 - B907 (QA, lane D): `QaThreatFixes1104dGameTests`: a restart as the gate breaks open (siege and ladder state

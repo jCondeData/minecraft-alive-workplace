@@ -919,6 +919,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBattleStationGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBattleStationViewGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaNightAttackRefusedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaiderCulturesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaiderCulturesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHealerFoodFireGameTests",

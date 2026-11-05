@@ -20,9 +20,10 @@ along to help you raid them. The village never raids a den on its own: the raid 
 ## The dens your village knows
 
 Open the [Village Hall](village-hall.md), click the guards icon and look at the [Defense page](defense-page.md): it
-lists the raid dens within about 160 blocks of the hall, nearest first, such as "Raid den, tier 3, Fire, active". A
+lists the raid dens within 160 blocks of the hall, nearest first, such as "Raid den, tier 3, Fire, active". A
 glowing icon means the den is active; "resting" means someone beat it and it hasn't come back yet. The village map
-marks the nearby ones with a magenta banner. A den shows up once someone has been close enough for it to load.
+marks the nearby ones with a magenta banner. A den shows up once someone has been close enough for it to load, and at once when a den crystal is placed near the
+hall or a hall is built by dens already there.
 
 ## Hiring raid helpers
 

@@ -1330,12 +1330,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStruckAndTop1104BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBedsHauler1105cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests",
-<<<<<<< HEAD
-			"io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cBugTests"
-=======
+			"io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPrinterNurseBard1105cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPrinterNurseBard1105cBugTests"
->>>>>>> main
 		]
 	},
 	"depends": {

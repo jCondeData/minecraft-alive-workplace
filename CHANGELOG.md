@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.7 — 2026-11-06
+
 ### Fixed
 
 - A basement dug next to waterlogged blocks in the ground (glow lichen, dripstone or seagrass in a flooded cave, or an old waterlogged stair) no longer ends with up to 27 blocks of dirt standing in the room: the Builder now drains those blocks (keeping them) or plugs the seagrass, and clears away any water that already ran in, so the basement is finished open and dry as drawn.

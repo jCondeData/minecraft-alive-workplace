@@ -535,6 +535,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderVerify1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderReport1106dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlunderReport1106dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeHeroTie1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampBlend1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFireIgnition1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovenHexBlink1107dGameTests",

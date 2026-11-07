@@ -18,11 +18,12 @@ import org.jetbrains.annotations.Nullable;
  * A Crafter's job in hand (ROADMAP 37.14), saved on the villager so a chain half made carries on after a restart: what's
  * made for whom ({@code deliverTo}, the chests by the asker's workstation, outside {@code area}), the chain's steps,
  * what it takes from the stores ({@code takes}, fetched from {@code sources}), how far it's got ({@code phase} and
- * {@code step}, the next step to make) and the request it answers ({@code claim}). The ingredients and what's made so far
+ * {@code step}, the next step to make), the request it answers ({@code claim}) and the profession that took it
+ * ({@code profession}, a registry id; empty in saves from before B1009). The ingredients and what's made so far
  * are in the villager's bag, which is saved too.
  */
 public record CrafterJob(BlockPos deliverTo, Optional<BoundingBox> area, Item target, int count, List<Crafting.Step> steps,
-						 Map<Item, Integer> takes, List<BlockPos> sources, String claim, Phase phase, int step) {
+						 Map<Item, Integer> takes, List<BlockPos> sources, String claim, Phase phase, int step, String profession) {
 	/** Where a job is: fetching the makings, at the bench (step by step), or taking it to the asker. */
 	public enum Phase { FETCHING, CRAFTING, DELIVERING }
 
@@ -51,13 +52,21 @@ public record CrafterJob(BlockPos deliverTo, Optional<BoundingBox> area, Item ta
 		BlockPos.CODEC.listOf().optionalFieldOf("sources", List.of()).forGetter(CrafterJob::sources),
 		Codec.STRING.optionalFieldOf("claim", "").forGetter(CrafterJob::claim),
 		PHASE.optionalFieldOf("phase", Phase.FETCHING).forGetter(CrafterJob::phase),
-		Codec.INT.optionalFieldOf("step", 0).forGetter(CrafterJob::step)
+		Codec.INT.optionalFieldOf("step", 0).forGetter(CrafterJob::step),
+		Codec.STRING.optionalFieldOf("profession", "").forGetter(CrafterJob::profession)
 	).apply(i, CrafterJob::new));
 
 	public CrafterJob {
 		steps = List.copyOf(steps);
 		takes = new LinkedHashMap<>(takes);
 		sources = List.copyOf(sources);
+		profession = profession == null ? "" : profession;
+	}
+
+	/** A job not yet stamped with the profession that holds it (as saved before B1009). */
+	public CrafterJob(BlockPos deliverTo, Optional<BoundingBox> area, Item target, int count, List<Crafting.Step> steps,
+					  Map<Item, Integer> takes, List<BlockPos> sources, String claim, Phase phase, int step) {
+		this(deliverTo, area, target, count, steps, takes, sources, claim, phase, step, "");
 	}
 
 	/** A new job for {@code plan}, fetching first. */
@@ -67,11 +76,24 @@ public record CrafterJob(BlockPos deliverTo, Optional<BoundingBox> area, Item ta
 	}
 
 	public CrafterJob withPhase(Phase next) {
-		return new CrafterJob(deliverTo, area, target, count, steps, takes, sources, claim, next, step);
+		return new CrafterJob(deliverTo, area, target, count, steps, takes, sources, claim, next, step, profession);
 	}
 
 	public CrafterJob nextStep() {
-		return new CrafterJob(deliverTo, area, target, count, steps, takes, sources, claim, phase, step + 1);
+		return new CrafterJob(deliverTo, area, target, count, steps, takes, sources, claim, phase, step + 1, profession);
+	}
+
+	/** This job held by a villager of {@code by} (its registry id), the profession that holds it (B1009). */
+	public CrafterJob withProfession(String by) {
+		return new CrafterJob(deliverTo, area, target, count, steps, takes, sources, claim, phase, step, by);
+	}
+
+	/**
+	 * Whether a villager of {@code now} (its registry id) still holds this job: the one who took it, not the jobless
+	 * villager or the Librarian he became when his bench went (B1009). A job saved before B1009 names no profession.
+	 */
+	public boolean heldBy(String now) {
+		return profession.isEmpty() || profession.equals(now);
 	}
 
 	@Nullable

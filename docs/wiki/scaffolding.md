@@ -107,7 +107,10 @@ Vanilla scaffolding (`minecraft:scaffolding`). No new items, blocks or commands.
 - A carpenter crafts for a build that is short of materials, whether the builder waits or is still building (B636).
   It also makes the scaffolding a build asked for after skipping its step without it, even once that build has
   ended; the skipped part is built when the player starts the build again (`QaScaffolding1107GameTests`).
-- Not tested: a carpenter taking the bamboo and string from the Storehouse rather than the builder's chest.
+- The bamboo and string may be in the village's Storehouse instead of the builder's chest: the carpenter fetches them
+  from there, makes the scaffolding into the builder's chest, and the player's next go builds the skipped top with it;
+  split between the two, he takes the builder's chest's bamboo first; with no string anywhere nothing is made and no
+  bamboo leaves the Storehouse (`QaScaffoldStorehouse1107GameTests`).
 
 ## 8. Proof
 
@@ -137,7 +140,15 @@ scaffolding a build that skipped its step asked for, from bamboo and string by t
 started again then finishes the pillar with all 6 back; a crew's helper never carries or climbs scaffolding; free
 materials leave the player's 64 in the chest every tick; the column's foot broken with the builder 5 up loses none and
 hurts nobody; every standing scaffold is on the site's list, at most 16 carried at once, none in landscaping, taken
-down from the top one a tick).
+down from the top one a tick). QA's `QaScaffoldStorehouse1107GameTests` (4: the bamboo and string only in the village's
+Storehouse, a real Carpenter makes the scaffolding the build asked for into the builder's chest, the bamboo, string and
+scaffolding adding up at every tick and the bamboo used coming out of the Storehouse; the bamboo split between the
+builder's chest and the Storehouse, none lost or made twice; no string anywhere, nothing made, all 36 bamboo left in the
+Storehouse 3,000 ticks after the build ended, which skipped its top without waiting; and the build started again builds
+the skipped top on the Storehouse-made scaffolding, nothing skipped, all of it back). QA's `QaScaffoldClimb1107GameTests` (3, B1004: the lead
+is never put on a column's top in one jump, at every tick of the pillar; put down at the column's foot at night, he climbs
+back up it in the morning and finishes with nothing skipped; a crew's helper never stands in or on scaffolding yet
+still lays his share of the pillar).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks
 away at the builder's height, with stills of it up the scaffolding and taking it down).

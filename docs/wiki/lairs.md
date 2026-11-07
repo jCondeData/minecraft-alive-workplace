@@ -166,6 +166,8 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   every wall, and only one (B709); each of two players is told once a day, within 96 blocks and not at 97, and again
   the next day (B708); on Peaceful the lair and start orders say so and leave nothing, then work on Normal (B704); the names
   are suggested by path or whole id and nothing else, the lair order never the monsters (B705).
+  `QaPeacefulRadius1107dGameTests` (B708): a player exactly 96 blocks from a foe refused on Peaceful is told, one
+  96.05 blocks off is not.
 - `QaThreatOrderLairOut1031GameTests` (B720): a start order by a camp with nobody home is answered "nobody left at
   their camp", not "found nowhere to gather", and brings nothing; the same camp with its band home sends the raid.
   `QaThreatFixes1101GameTests` (B720): one bandit home brings a raid of him alone; once he is out too the order reads

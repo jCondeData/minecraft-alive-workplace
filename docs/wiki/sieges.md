@@ -24,6 +24,10 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   through the gap; the ram steps aside out of the gateway to let them past, then widens it. A raider a fight took
   round the side of the walls comes back round to the gateway and in, and one that strolls back out through the gap
   is sent in again.
+- **A gate put back in the breach is rammed again**: a builder mends the gates first in a siege, or you set the fence
+  gate back by hand, and the ram comes back and breaks it again (with fresh hit points) before the raiders walk in. A
+  gateway **walled up** with a solid block (cobblestone, planks) stays shut: rams don't break walls, so the raiders
+  climb ladders or sand ramps if they bring them and otherwise wait outside; clear the block and the way is open again.
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
 - **The defense upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
@@ -96,6 +100,10 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   blocks are broken in a fixed order: the middle way through first, from the outside in (at a Gatehouse: the two
   dropped bars, then the fence gate), then the ways beside it, and last what hangs above head height (the drawn-up
   bars), which only the ram itself needs gone.
+- **The way after the gate went** (B966, B972): every director step looks again at each gate block that went. One a gate
+  stands in again is standing again with fresh hit points (the ram goes back to it first, being earlier in the order);
+  a block nothing walks through that isn't a gate counts as walled (`WALLED`, saved), which shuts the middle way as a
+  standing gate does but is never struck. `Sieges.openNow` (the ladder layers') reads the world for both at once.
 - **The cracks** are the block's destroy progress, 0 to 9, from the share of hit points gone, shown again every 10
   seconds because a client forgets them after 20.
 - **One director a siege**, every 20 ticks, asking for at most 4 paths a tick. It walks the rams to the block, has
@@ -305,6 +313,10 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 - QA (lane D, 2026-11-03): `QaLadderHeight1103dGameTests` (3): a pillager climber sets a ladder up walls exactly 10
   high and not a rung up walls 11 high; walls built up to 12 high once a ladder has two rungs take it down within 40
   ticks, off the siege's list, no ladder item dropped.
+- QA (lane D, 2026-11-07): `QaLadderThrow1107dGameTests` (2): a guard whose feet are exactly two above the ladder's
+  foot, beside it, throws the finished ladder down within 40 ticks; a guard one above the foot (on a step), a farmer and
+  a guard's child on the walkway leave it up, and the climber gets over. Mutation: 8 of 8 mutants of the guard's check
+  (`Ladders.guardAt`) killed.
 
 - GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
   and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's

@@ -2,19 +2,23 @@ package io.github.jcondedata.aliveworkplace.test;
 
 import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.DROP;
 import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.GRINDSTONE;
+import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.POST_CHEST;
 import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.STOCK;
 import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.bag;
 import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.chest;
 import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.damageIn;
+import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.guard;
 import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.onGround;
 import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.reload;
 import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.weaponsmith;
 import static io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests.worn;
 
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -23,7 +27,7 @@ import net.minecraft.world.item.Items;
  * QA (2026-11-05) bug tests for the Weaponsmith's mending (README: "They mend what's worn in the chests by their
  * grindstone (drop your own worn gear there), by the guards' grindstones and at the other workers ... and put each piece
  * back where it was"). B970: a piece the smith is carrying was kept in their (invisible) bag when the grindstone went.
- * (B971's test, a reload mid-job putting the piece in the smith's own chest, stays on tests/smith-1105c till it's fixed.)
+ * B971: after a save and reload mid-job the piece was put in the smith's own chest, not back where it came from.
  */
 public class QaSmithScribe1105cBugTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
@@ -86,6 +90,60 @@ public class QaSmithScribe1105cBugTests implements FabricGameTest {
 			int iron = drop.countItem(Items.IRON_INGOT) + stock.countItem(Items.IRON_INGOT) + onGround(helper, Items.IRON_INGOT);
 			helper.assertTrue(swords == 1 && iron == 10, "reloaded, then the grindstone broken: swords in chests or on the ground " + swords
 				+ ", iron " + iron + " of 10; the smith's bag holds " + bag(smith[0]).stacks());
+		});
+	}
+
+	/**
+	 * B971: a worn helmet in a guard's chest, fetched by the smith, who is then saved and reloaded (as when the chunk
+	 * unloads or the server restarts) with the helmet in hand: it still ends up back in the guard's chest, mended, not in
+	 * the smith's own chests.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"qa1105cMendReload"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qa1105cMendReload")
+	public void qaASmithReloadedMidJobStillPutsTheGuardsHelmetBack(GameTestHelper helper) {
+		reloadedWithTheGuardsHelmet(helper, false);
+	}
+
+	/**
+	 * B971, later in the job: the smith is saved and reloaded on the way back, the helmet already mended in hand. It still
+	 * goes to the guard's chest.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"b971MendReloadReturning"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "b971MendReloadReturning")
+	public void b971ASmithReloadedOnTheWayBackStillPutsTheHelmetBack(GameTestHelper helper) {
+		reloadedWithTheGuardsHelmet(helper, true);
+	}
+
+	private static void reloadedWithTheGuardsHelmet(GameTestHelper helper, boolean mended) {
+		Leftovers.village(helper, 48);
+		Villager first = weaponsmith(helper);
+		Container stock = chest(helper, STOCK);
+		Container drop = chest(helper, DROP);
+		stock.setItem(0, new ItemStack(Items.IRON_INGOT, 3));
+		Villager guard = guard(helper, new BlockPos(18, 2, 18));
+		guard.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+		guard.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
+		Container guards = chest(helper, POST_CHEST);
+		guards.setItem(0, worn(Items.IRON_HELMET, 120)); // of 165: a quarter is 41, three ingots
+		Villager[] smith = {first};
+		boolean[] reloaded = {false};
+		helper.onEachTick(() -> {
+			boolean ready = mended
+				? bag(smith[0]).stacks().stream().anyMatch(s -> s.is(Items.IRON_HELMET) && s.getDamageValue() == 0)
+				: bag(smith[0]).count(Items.IRON_HELMET) == 1;
+			if (!reloaded[0] && ready) {
+				smith[0] = reload(helper, smith[0]);
+				reloaded[0] = true;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(reloaded[0], "the smith never took the helmet");
+			helper.assertTrue(stock.countItem(Items.IRON_HELMET) == 0 && drop.countItem(Items.IRON_HELMET) == 0,
+				"the guard's helmet ended in the smith's chests: damage in the stock chest " + damageIn(stock, Items.IRON_HELMET)
+					+ ", in the drop-off " + damageIn(drop, Items.IRON_HELMET) + " (-1: not there); in the guard's chest " + damageIn(guards, Items.IRON_HELMET));
+			int damage = damageIn(guards, Items.IRON_HELMET);
+			helper.assertTrue(damage == 0, "the helmet in the guard's chest has damage " + damage + " (-1: not there); the smith carries " + bag(smith[0]).stacks());
+			helper.assertTrue(stock.countItem(Items.IRON_INGOT) == 0, "iron left " + stock.countItem(Items.IRON_INGOT));
 		});
 	}
 }

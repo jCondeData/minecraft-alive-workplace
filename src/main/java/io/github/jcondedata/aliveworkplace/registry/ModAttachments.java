@@ -82,6 +82,10 @@ public final class ModAttachments {
 	public static final Attachment<io.github.jcondedata.aliveworkplace.craft.CrafterJob> CRAFTER_JOB = Attachment.saved("crafter_job",
 		io.github.jcondedata.aliveworkplace.craft.CrafterJob.CODEC);
 
+	/** A Weaponsmith's mending job in hand, saved so the piece still goes back where it was found after a restart (B971). */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.mend.MendJob> MEND_JOB = Attachment.saved("mend_job",
+		io.github.jcondedata.aliveworkplace.mend.MendJob.CODEC);
+
 	/** Which quarry a miner is digging. */
 	public static final Attachment<BuilderJob> MINER_JOB = Attachment.saved("miner_job", BuilderJob.CODEC);
 

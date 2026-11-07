@@ -278,7 +278,7 @@ Config file keys (`WorkplaceConfig`):
 |---|---|---|
 | `supplyRadius` | 8 | Chests and barrels this close to a workstation are that villager's supply chests |
 | `maxSiteDistance` | 128 | How far from its bench a Builder takes a build outside the village (anywhere in the village is in reach; also how far upkeep looks) |
-| `builderPaths` | true | Builders lay a dirt path from each finished building to the bell or hall |
+| `builderPaths` | true | Builders lay a dirt path from each finished building to the bell or hall; switched off, a builder also drops a path he had planned and lays no more of it |
 | `builderRepairs` | true | Idle Builders repair buildings they finished when blocks go missing |
 | `repairAsk` | true | Builders ask before a repair (Repair it? Yes / Not now) and repair only what was agreed; off: they repair by themselves. Threat damage is never asked about |
 

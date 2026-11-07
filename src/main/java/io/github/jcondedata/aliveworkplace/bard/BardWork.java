@@ -44,8 +44,11 @@ public class BardWork extends Behavior<Villager> {
 	private static final int PHRASE = 16;
 	/** How long a set lasts before the brain looks again (a song under way is always played to its end). */
 	private static final int SET = 1200;
-	/** Who's playing what right now (tests and the status line). */
-	private static final Map<Villager, Holder<JukeboxSong>> PLAYING = Collections.synchronizedMap(new WeakHashMap<>());
+	/** Who's playing what right now, and where (tests, the status line, and the stop when the bard is gone: B1003). */
+	private static final Map<Villager, Song> PLAYING = Collections.synchronizedMap(new WeakHashMap<>());
+
+	private record Song(Holder<JukeboxSong> song, BlockPos at) {
+	}
 
 	private final Walker walker = new Walker(SPEED);
 	@Nullable
@@ -70,7 +73,19 @@ public class BardWork extends Behavior<Villager> {
 	}
 
 	public static Optional<Holder<JukeboxSong>> playing(Villager villager) {
-		return Optional.ofNullable(PLAYING.get(villager));
+		return Optional.ofNullable(PLAYING.get(villager)).map(Song::song);
+	}
+
+	/**
+	 * B1003: the bard died, or left the level (discarded, unloaded with his chunk, through a portal). His behavior's stop()
+	 * never runs then (a dead or removed villager's brain no longer ticks), so the song he started is stopped here, at the
+	 * jukebox, once. Called from the platform's death and entity-unload events.
+	 */
+	public static void onGone(ServerLevel level, Villager villager) {
+		Song playing = PLAYING.remove(villager);
+		if (playing != null) {
+			level.levelEvent(1011, playing.at(), 0);
+		}
 	}
 
 	@Override
@@ -141,7 +156,7 @@ public class BardWork extends Behavior<Villager> {
 			song = next;
 			songTicks = 0;
 			songAt = stand.immutable();
-			PLAYING.put(villager, next);
+			PLAYING.put(villager, new Song(next, songAt));
 			int id = Lookup.registry(level.registryAccess(), Registries.JUKEBOX_SONG).getId(next.value());
 			level.levelEvent(null, 1010, stand, id);
 			villager.swing(InteractionHand.MAIN_HAND);
@@ -195,13 +210,14 @@ public class BardWork extends Behavior<Villager> {
 	}
 
 	private void stopSong(ServerLevel level, Villager villager) {
+		// the entry is gone when onGone already sent the stop: never twice
+		Song playing = PLAYING.remove(villager);
 		if (song != null) {
-			if (songAt != null) {
+			if (songAt != null && playing != null) {
 				level.levelEvent(1011, songAt, 0);
 			}
 			song = null;
 			songAt = null;
 		}
-		PLAYING.remove(villager);
 	}
 }

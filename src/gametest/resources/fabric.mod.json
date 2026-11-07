@@ -230,6 +230,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGranderHomes1107GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGranderHomes1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGranderHomes1107BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintUnlocksBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLibraryUnlocks1107cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGameTests",
@@ -621,6 +622,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderPathsOffGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderPaths1105GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderPathsOldPathGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWalkerGroundGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderRecheck1026GameTests",
@@ -1368,6 +1370,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGreatWall1104d4GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStruckAndTop1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStruckAndTop1104BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bBugTests",
@@ -1390,11 +1393,15 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterNewJob1107BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithBagSaves1107eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBagAfterNewJobSaves1107eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCellarTornDownSaves1107eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCrewSpareSaves1107eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithFiveSeconds1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithJobSaved1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBagNewJob1107cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBagNewJob1107cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrewPass1107bBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaPathsCrafterVerify1107bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaPathsCrafterVerify1107bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cGameTests"
 		]
 	},
 	"depends": {

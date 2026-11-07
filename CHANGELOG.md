@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- With Create, a Mechanic carrying a part from the village store (a cogwheel on the way to a broken machine) no longer loses it when he's killed, turned into a zombie villager or struck by lightning into a witch: the part goes back to the store, once. A worker struck by lightning on a machine trip (12 wheat on the way to the millstone) now drops the load where they stood, as a killed one already did (B959, B960).
+- A villager who sets off for a chair he can't reach (penned in, say) now gives it up after about 8 seconds of getting no closer, instead of holding it for 30 seconds while the villagers who could sit there wander off, and he leaves that chair alone for a minute so another villager sits on it (B967, B677).
+- A new Carpenter (or other crafter) who was carrying a builder's materials when the world was saved on an older version, and then lost his bench and took a lectern, now lets the request go and returns the materials like any other; before, he kept the job and the logs for good (B1018).
+- When lightning turns a Builder into a witch, his bag and blueprint no longer float over the spot where his Blueprint Table stood after it was broken or blown up (they fell and the message named the wrong spot), and they are no longer put in a sealed cave or room under him (in a wheat field, on a stair roof): they lie on ground you can walk to, at the spot the message names (B969, B973).
 - A lead Builder with no chest by his bench takes from a crewmate's bag only what the work ahead still needs, so no spare material is left on the ground when the job ends (B1019).
 - With the Blueprint unlocks switch off, the Blueprint Table no longer hands out a Blueprint of a Wonder when asked for one by id: Wonders are always raised from their Wonder Plan, never handed out, whatever the switch (B1002).
 - The Rancher (and the Shepherd and Herder) now feeds only two animals standing near each other, so they find each other and have young. Before, he could feed two at opposite ends of the pen, who never met: the golden carrots, hay or cactus were used up and no young was born.

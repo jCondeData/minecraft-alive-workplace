@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Hiring mercenaries (or relief riders arriving) no longer lowers the village's wellbeing and work pace: the hired help no longer counts as villagers without a bed or a meal, so the Village Hall's "Sleeping in a bed" line stays at what the village's own people have (2 of 2, not 2 of 5). A hired Guard still counts toward the village's guards.
 - A Bard no longer cuts a music disc off after a minute and skips to the next one: each disc now plays on until it ends or the Bard's morning or evening set is over. Breaking the jukebox while a Bard plays now stops the music, as a vanilla jukebox does, instead of letting the song play on where it stood.
 
 ## 0.151.7 — 2026-11-06

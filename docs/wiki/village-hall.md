@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990
 
 ## What a player sees
 
@@ -230,7 +230,10 @@ comes down for another, a story's or reform's step becomes the bread, started af
 **Needs set the pace.** Every grown villager eats once a day from the store (chests by the kitchens first, then by
 the Storehouses), wants a bed of their own, one guard for every ten villagers and light by the beds. How well that is
 met is the village's wellbeing, 0 to 100%. Work goes up to 25% faster in a well-kept village, at the usual pace at
-50%, and up to 20% slower in a badly kept one. Villages without a hall work at the usual pace.
+50%, and up to 20% slower in a badly kept one. Villages without a hall work at the usual pace. Only the village's own people
+count: hired mercenaries, relief riders and a story's visitor have no bed, meal or lamp of their own to want, so the
+Wellbeing button's "Sleeping in a bed", fed and villager counts leave them out, though a hired Guard still counts
+among the guards (B990, `QaBandBeds1107BugTests`).
 
 **Ranks.** Hamlet, then Village (10 villagers and 5 finished buildings), Town (20, 12, and 3 research levels), City
 (35, 25 and 7). A rank up means fireworks, a chronicle line, more caravans, more market traders, quests that pay a

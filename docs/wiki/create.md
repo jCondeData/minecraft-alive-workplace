@@ -483,8 +483,10 @@ tested (the GameTests use the table as the server does).
 Create's Mechanical Piston moves the mod's blocks with what is in them, as it moves chests (tested: Mailbox, Shop
 Counter, Drop Box, Blueprint Table), and a Mailbox, Shop Counter, Storehouse or grave keeps every saved field (owner,
 stock, orders, who lies there), also when the world is saved and loaded while it is in the air on the moving
-contraption; a Wonder's Foundation Stone stays put. What a moved Village Hall, Mailbox or
-Travel Post keeps of its place in the village, the post and the travel network is not tested.
+contraption; a Wonder's Foundation Stone stays put. A Village Hall pushed by the Mechanical Piston keeps its name,
+owner and chronicle (a renamed village keeps its name), but loses its Steward, its place in its realm, its open quests
+and, if never renamed, its made-up name (B989). A moved Mailbox loses its place in the post (B985) and a moved Travel
+Post its name and finder (B986).
 Create's funnels and chutes take nothing out of a Shop Counter or a Mailbox, and a funnel pushing into a counter,
 mailbox or drop box loses and doubles nothing (a counter refuses it). A Mechanical Drill breaking a Mailbox, Shop
 Counter, Drop Box, Builder's Bench, Blueprint Table or Village Hall drops what a player breaking it gets (a named

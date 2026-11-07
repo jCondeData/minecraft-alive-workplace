@@ -622,6 +622,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderPathsOffGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderPaths1105GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderPathsOldPathGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWalkerGroundGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderRecheck1026GameTests",
@@ -1399,7 +1400,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBagNewJob1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBagNewJob1107cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrewPass1107bBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaPathsCrafterVerify1107bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaPathsCrafterVerify1107bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cGameTests"
 		]
 	},
 	"depends": {

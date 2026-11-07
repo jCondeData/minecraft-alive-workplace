@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A new Weaponsmith (one who has never traded) carrying your worn sword no longer keeps it for good when his grindstone is broken and he takes another job (a lectern nearby) or the server restarted first: he drops the sword and the iron at his feet. A new Carpenter (or other crafter) who loses his bench while carrying a builder's wood and takes another job now lets the request go back to the builder and puts the wood back in the builder's chest.
 - In a siege, a gate put back in the breach after the ram broke it (by a builder's repair, or by hand) is rammed again and the raiders get in, instead of the ram standing idle and the raiders waiting outside a shut gate till dawn.
 - In a siege, a gateway walled up after the ram broke its gate (cobblestone or planks in the gap) now counts as shut: raiders with ladders or sand ramps climb over the walls instead of being sent "in" through the wall, and clearing the block opens the way again.
 - A Builder helping another builder no longer climbs the lead's scaffolding columns: he works from the ground and leaves the scaffolding to the lead.

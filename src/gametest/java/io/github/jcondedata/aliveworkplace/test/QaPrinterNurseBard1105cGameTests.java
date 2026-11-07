@@ -578,6 +578,9 @@ public class QaPrinterNurseBard1105cGameTests implements FabricGameTest {
 	/**
 	 * nurse.md: "Heals: hurt villagers and golems within 16 blocks". A hurt iron golem 8 blocks off is tended; a hurt pig
 	 * beside her isn't (not a villager or golem), nor a hurt villager 24 blocks off.
+	 *
+	 * <p>B991: she strolls about her station at work, and once she had wandered 8 blocks east the villager was within her
+	 * 16 (rightly tended): a fence pen round her station keeps her within 4 blocks of it, so he stays 20 or more off.
 	 */
 	//$ gametest_ticks_batch HUGE '500' '"qaNurseWhoIsTended1105c"'
 	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaNurseWhoIsTended1105c")
@@ -585,9 +588,16 @@ public class QaPrinterNurseBard1105cGameTests implements FabricGameTest {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
 		helper.setDayTime(2000);
+		for (int x = 0; x <= 7; x++) {
+			for (int z = 12; z <= 19; z++) {
+				if (x == 0 || x == 7 || z == 12 || z == 19) {
+					helper.setBlock(new BlockPos(x, 2, z), Blocks.OAK_FENCE);
+				}
+			}
+		}
 		BlockPos stand = new BlockPos(2, 2, 15);
 		helper.setBlock(stand, Blocks.BREWING_STAND);
-		hired(helper, stand.east(), Items.HONEY_BOTTLE, ModVillagers.NURSE);
+		Villager nurse = hired(helper, stand.east(), Items.HONEY_BOTTLE, ModVillagers.NURSE);
 		IronGolem golem = helper.spawn(EntityType.IRON_GOLEM, new BlockPos(10, 2, 15));
 		golem.setNoAi(true);
 		golem.setHealth(50f);
@@ -597,10 +607,25 @@ public class QaPrinterNurseBard1105cGameTests implements FabricGameTest {
 		Villager far = helper.spawn(EntityType.VILLAGER, new BlockPos(27, 2, 15));
 		far.setNoAi(true);
 		far.setHealth(4f);
+		double[] nearest = {Double.MAX_VALUE}; // the nearest the nurse came to the far villager, and where she was then
+		String[] nurseAt = {""};
+		String[] farHealed = {""}; // where she was when the far villager's health first rose
+		helper.onEachTick(() -> {
+			double d = Math.sqrt(nurse.distanceToSqr(far));
+			if (d < nearest[0]) {
+				nearest[0] = d;
+				nurseAt[0] = helper.relativeVec(nurse.position()).toString();
+			}
+			if (farHealed[0].isEmpty() && far.getHealth() > 4f) {
+				farHealed[0] = String.format(" (the nurse at %s, %.1f off, when it rose)", helper.relativeVec(nurse.position()), d);
+			}
+		});
 		helper.runAfterDelay(320, () -> {
-			helper.assertTrue(golem.getHealth() >= 54f, "the golem 8 blocks off is at " + golem.getHealth() + " of 100, from 50");
-			helper.assertTrue(pig.getHealth() == 5f, "the pig was healed to " + pig.getHealth());
-			helper.assertTrue(far.getHealth() == 4f, "the villager 24 blocks off was healed to " + far.getHealth());
+			String her = String.format("; golem %.1f, pig %.1f, far villager %.1f; the nurse came within %.1f of the far villager, at %s, and is at %s",
+				golem.getHealth(), pig.getHealth(), far.getHealth(), nearest[0], nurseAt[0], helper.relativeVec(nurse.position()));
+			helper.assertTrue(golem.getHealth() >= 54f, "the golem 8 blocks off is at " + golem.getHealth() + " of 100, from 50" + her);
+			helper.assertTrue(pig.getHealth() == 5f, "the pig was healed to " + pig.getHealth() + her);
+			helper.assertTrue(far.getHealth() == 4f, "the villager 24 blocks off was healed to " + far.getHealth() + farHealed[0] + her);
 			helper.succeed();
 		});
 	}

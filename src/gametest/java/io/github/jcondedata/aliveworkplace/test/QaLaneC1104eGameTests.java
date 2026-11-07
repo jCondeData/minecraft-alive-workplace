@@ -322,14 +322,21 @@ public class QaLaneC1104eGameTests implements FabricGameTest {
 		helper.setBlock(new BlockPos(15, 17, 3), Blocks.STONE);
 		helper.setBlock(new BlockPos(24, 17, 26), Blocks.STONE);
 		boolean[] fought = new boolean[2];
-		double[] startedAt = {-1, -1}; // how far the raider was when each conscript's fight began
+		// B978: how far the NEAREST raider was when each conscript's fight began (he goes for the nearest in range, so the
+		// far one, wandering, may turn on the near raider once he is within 24 of it), and where he stood.
+		double[] startedAt = {-1, -1};
+		String[] startedHow = {"", ""};
 		Villager[] watched = new Villager[2];
 		Zombie[] foes = new Zombie[2];
 		helper.onEachTick(() -> {
 			for (int i = 0; i < 2; i++) {
 				if (!fought[i] && watched[i] != null && MilitiaCombat.isFighting(watched[i])) {
 					fought[i] = true;
-					startedAt[i] = Math.sqrt(watched[i].distanceToSqr(foes[i]));
+					double toNear = Math.sqrt(watched[i].distanceToSqr(foes[0]));
+					double toFar = Math.sqrt(watched[i].distanceToSqr(foes[1]));
+					startedAt[i] = Math.min(toNear, toFar);
+					startedHow[i] = String.format("at %s, %.1f from the near raider and %.1f from the far one",
+						helper.relativeVec(watched[i].position()), toNear, toFar);
 				}
 			}
 		});
@@ -360,11 +367,14 @@ public class QaLaneC1104eGameTests implements FabricGameTest {
 				nearRaider.discard();
 				farRaider.discard();
 				VillageRaids.forget();
-				helper.assertTrue(armed, "not both conscripts in the raid");
-				helper.assertTrue(fought[0], String.format("a raider %.1f blocks away (%.1f above) never drew the conscript", n, nUp));
-				// The far conscript wanders (no pen: a pen would hide the raider): if he ever turns on his raider, he
-				// must have come within the 24 blocks first.
-				helper.assertTrue(!fought[1] || startedAt[1] <= 24.5, String.format("a raider %.1f blocks away (%.1f above) drew the conscript", startedAt[1], fUp));
+				helper.assertTrue(armed, "not both conscripts in the raid: near " + (Conscription.militia(near) != null)
+					+ ", far " + (Conscription.militia(far) != null));
+				helper.assertTrue(fought[0], String.format("a raider %.1f blocks away (%.1f above) never drew the conscript (now at %s)",
+					n, nUp, helper.relativeVec(near.position())));
+				// The far conscript wanders (no pen: a pen would hide the raider): if he ever turns on a raider, he must
+				// have come within the 24 blocks of one first.
+				helper.assertTrue(!fought[1] || startedAt[1] <= 24.5, String.format(
+					"the far conscript (raider %.1f away, %.1f above, at the start) was drawn with no raider within 24: %s", f, fUp, startedHow[1]));
 				helper.succeed();
 			});
 		});

@@ -501,6 +501,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaAttachmentKindsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatEdgesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLairGrowthGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLaddersLairs1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSurvivorsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCupBoutGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWarlordBandStaysGameTests",

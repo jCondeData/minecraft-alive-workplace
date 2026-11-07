@@ -81,7 +81,10 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   saved bag; the claim on the request is taken again);
 - lets the saved job go when its workstation has been gone for 600 ticks (`CrafterWork.benchlessTick`, every villager's
   AI step, B353): the claim released, `crafter_job` dropped and the bag emptied into the asker's chests (at the
-  villager's feet when those are gone or full). A bench put back or moved within that time carries the job on.
+  villager's feet when those are gone or full). A bench put back or moved within that time carries the job on. Another
+  job's workstation doesn't count (B1009): a novice who loses his bench is made jobless by vanilla and may take a free
+  lectern, so the saved job names the profession that took it (`profession`, a registry id; empty in older saves, which
+  count any job site as before) and is let go all the same once he's in another job.
 
 The builder's status (`BuilderStatusSync.supplyLines`) adds `JobShortages.line` under "Short of" while it waits:
 first up to two chains short of a raw material, else the crafted parts (something a crafting table, stonecutter,
@@ -196,6 +199,8 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `QaJobChainLetGoGameTests.aBenchBrokenBeforeAnythingWasCarriedLetsTheJobGoCleanly`: the bench broken while the
   Carpenter is still fetching, empty-handed: let go after half a minute, nothing taken, and the bench put back finishes
   the build (B353).
+- `QaCrafterNewJob1107BugTests.qaANewCarpenterWhoTakesAnotherJobLetsTheRequestAndTheWoodGo`: a 0-XP Carpenter carrying
+  the builder's logs loses his bench and may take a free lectern: the job and its claim let go, the bag emptied (B1009).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `QaStewardMaterials1031GameTests.aCarpenterNeverCraftsAwayLogsAnotherOpenBuildNeeds`: two builds sharing a chest,

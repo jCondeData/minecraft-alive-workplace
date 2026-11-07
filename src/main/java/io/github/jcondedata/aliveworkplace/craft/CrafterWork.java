@@ -455,7 +455,7 @@ public class CrafterWork extends Behavior<Villager> {
 			case DELIVERING -> CrafterJob.Phase.DELIVERING;
 			default -> CrafterJob.Phase.FETCHING;
 		};
-		saved = saved.withPhase(at);
+		saved = saved.withPhase(at).withProfession(professionId(villager));
 		for (int i = 0; i < step; i++) {
 			saved = saved.nextStep();
 		}
@@ -1041,14 +1041,17 @@ public class CrafterWork extends Behavior<Villager> {
 	/**
 	 * Every villager's AI step (mixin/VillagerMixin, B353): a crafter whose workstation has been gone for {@link #BENCHLESS_TICKS}
 	 * with a chain job saved lets the job go (its claim too) and the bag goes to the asker's chests, or at their feet when
-	 * those are gone or full. A bench put back (or moved) within that time, or a chunk reload, carries on with the job.
+	 * those are gone or full. A bench put back (or moved) within that time, or a chunk reload, carries on with the job. A
+	 * new job's workstation (a novice who lost the bench and took a lectern) isn't the bench: the job goes all the same (B1009).
 	 */
 	public static void benchlessTick(Villager villager) {
 		if (!(villager.level() instanceof ServerLevel level)) {
 			return;
 		}
 		CrafterJob saved = ModAttachments.CRAFTER_JOB.get(villager);
-		if (saved == null || Builders.benchPos(villager).isPresent()) {
+		// A job site counts only while he's still in the job that took the request: a Carpenter who lost his bench and took
+		// a lectern is a Librarian now, and no Librarian ever finishes a crafting job (B1009).
+		if (saved == null || Builders.benchPos(villager).isPresent() && saved.heldBy(professionId(villager))) {
 			synchronized (BENCHLESS) {
 				BENCHLESS.remove(villager);
 			}
@@ -1080,6 +1083,11 @@ public class CrafterWork extends Behavior<Villager> {
 				drop(level, villager.blockPosition(), rest);
 			}
 		}
+	}
+
+	/** {@code villager}'s profession as a registry id, as {@link CrafterJob#profession} keeps it. */
+	static String professionId(Villager villager) {
+		return String.valueOf(net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getKey(villager.getVillagerData().getProfession()));
 	}
 
 	/** How long a crafter's saved job outlasts its workstation (B353): time to put a bench back or move it. */

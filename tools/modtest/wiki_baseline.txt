@@ -8,7 +8,6 @@
 # Milestone 21: the texture rebuild and the item icons
 
 # Milestone 22: a showcase scene for every feature
-22.3
 
 # Milestone 23: every shipped build reviewed, village house looks
 23.10 23.10a

@@ -47,6 +47,7 @@ How everything in the mod works, in plain words: written for the owner first, th
   the cure round (31.18).
 - [The far herbs](far-herbs.md): eight rare plants planted only by story arcs, their biomes and ground, the Glowcap's shade, `herb_patch` and the Three-Herb Tonic (31.17).
 - [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
+- [The showcase](showcase.md): a filmed scene for every job, screen and feature, judged and published every night (22.3).
 - [The player guide](player-guide.md): the separate, plain-language site for players, published with the showcase (22.10).
 - [Trading at the board](board-trade.md): selling to a village and buying from it on the Prices tab, the treasury on the page and who collects it (33.5).
 - [Caravans that trade](caravan-trade.md): what a caravan takes to sell, how the other village pays, what comes home, and the Routes tab's earnings (33.6).

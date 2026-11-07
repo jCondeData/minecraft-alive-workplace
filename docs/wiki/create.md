@@ -494,7 +494,8 @@ hall keeps its name). A Deployer acts as a fake player: one a player placed acts
 becomes the owner of a hall it sets down and of an unowned Mailbox or Shop Counter it clicks (B843), and a stranger's
 deployer can place blocks in and rename the hall of a protected village (B844).
 From outside a protected village, Create's Mechanical Piston pushes blocks into it and its Mechanical Drill breaks
-blocks at its edge, which a vanilla piston can't (B993); a Mechanical Piston inside the village works there as usual.
+blocks at its edge, which a vanilla piston can't (B993); a Mechanical Piston inside the village works there as usual. A Create funnel outside on the side of a chest in the
+village's last column empties it (B994).
 
 ## Proof
 
@@ -540,6 +541,8 @@ blocks at its edge, which a vanilla piston can't (B993); a Mechanical Piston ins
   outside can't push a plank in (the calibration); with the village open a Mechanical Piston outside pushes a plank two
   steps in and a Mechanical Drill outside breaks the edge's stone (the controls for B993); a Mechanical Piston inside the
   protected village pushes a plank two steps there.
+  `QaCreateFunnelAtProtectedVillage1107eCompatTests` (lane E's QA, the control for B994): with the village open a brass
+  funnel outside on the side of a chest in its last column takes the chest's diamonds out.
   `QaCreateMovesOurBlocks1102eCompatTests` (lane E's QA): a Mechanical Piston pushes a Mailbox, a Shop Counter, a
   Drop Box and a Blueprint Table two steps and each keeps exactly what was in it (nothing doubled on the ground, nothing
   lost), while a Wonder's Foundation Stone isn't moved at all (a plank pushed by the same piston is the control).

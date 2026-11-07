@@ -10,6 +10,7 @@
 			"io.github.jcondedata.aliveworkplace.test.GameTestWatchdog"
 		],
 		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.test.QaCrewPass1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1101GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1101bGameTests",
@@ -230,6 +231,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGranderHomes1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGranderHomes1107BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintUnlocksBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLibraryUnlocks1107cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildReachGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanFramesGameTests",
@@ -1386,7 +1388,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSmithBagSaves1107eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBagAfterNewJobSaves1107eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithFiveSeconds1107cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSmithJobSaved1107cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSmithJobSaved1107cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCrewPass1107bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPathsCrafterVerify1107bGameTests"
 		]
 	},
 	"depends": {

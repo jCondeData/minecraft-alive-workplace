@@ -431,6 +431,11 @@ public final class TableServer {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.sold_only", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
 			return false;
 		}
+		if (!BlueprintUnlocks.ENABLED && io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.wonderOf(id).isPresent()) {
+			// B1002: Wonders are never handed out, whatever the switch (with it on, the state below says VIEW_ONLY).
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.wonder_only", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
+			return false;
+		}
 		if (!StarterBlueprints.offered(id)) {
 			// Not listed (B119): its expansion isn't open, so a request for it by id is refused as an unknown blueprint.
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.blueprint.unknown", id.toString()).withStyle(ChatFormatting.RED));

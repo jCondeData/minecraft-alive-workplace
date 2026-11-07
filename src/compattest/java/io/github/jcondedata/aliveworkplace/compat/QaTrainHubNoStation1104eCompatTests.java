@@ -232,8 +232,22 @@ public class QaTrainHubNoStation1104eCompatTests implements FabricGameTest {
 		int[] since = {0};
 		BlockPos[] late = {null};
 		BlockPos[] mined = {null};
+		// B939: both of the hub's trains were once found derailed in phase 1; note the first tick either is, where both
+		// were then and the tick before, for the failure messages (nothing here changes what the test asks)
+		String[] derail = {"neither train derailed"};
+		String[] before = {""};
+		java.util.UUID westId = CaravanTrains.railwayId(v.west(), v.hub());
+		java.util.UUID eastId = CaravanTrains.railwayId(v.east(), v.hub());
 		helper.onEachTick(() -> {
 			tick[0]++;
+			if (derail[0].startsWith("neither")) {
+				String now = "west train " + QaTrainHub1103eCompatTests.where(westId) + "; east train " + QaTrainHub1103eCompatTests.where(eastId);
+				if (now.contains("derailed true")) {
+					derail[0] = "first derailed at tick " + tick[0] + " (phase " + phase[0] + ", second station " + second(helper)
+						+ ", hub station " + helper.absolutePos(QaTrainHub1103eCompatTests.STATION_HUB) + "): " + now + "; the tick before: " + before[0];
+				}
+				before[0] = now;
+			}
 			if (tick[0] % 10 != 0) {
 				return;
 			}
@@ -250,7 +264,7 @@ public class QaTrainHubNoStation1104eCompatTests implements FabricGameTest {
 						phase[0] = 1;
 					} else if (tick[0] > 3200) {
 						helper.fail("the hub's two trains weren't both running in 3200 ticks: " + QaTrainHub1103eCompatTests.trains(level, v)
-							+ "; the hub's sites " + sites(level, v));
+							+ "; the hub's sites " + sites(level, v) + "; " + derail[0]);
 					}
 				}
 				case 1 -> { // the wheat aboard: the station mined (as a player breaking it, no drop kept)
@@ -262,7 +276,7 @@ public class QaTrainHubNoStation1104eCompatTests implements FabricGameTest {
 						phase[0] = 2;
 					} else if (tick[0] - since[0] > 1500) {
 						helper.fail("the second neighbor's wheat never got aboard its train in 1500 ticks: " + v.data().onTheRoad()
-							+ "; " + QaTrainHub1103eCompatTests.trains(level, v));
+							+ "; " + QaTrainHub1103eCompatTests.trains(level, v) + "; " + derail[0]);
 					}
 				}
 				default -> { // put back, and the wheat in
@@ -276,7 +290,7 @@ public class QaTrainHubNoStation1104eCompatTests implements FabricGameTest {
 					} else if (tick[0] - since[0] > 3500) {
 						helper.fail("with the second station mined, the wheat never reached the hub in 3500 ticks: " + left + "; second station now "
 							+ second + " (mined at " + mined[0] + "); " + QaTrainHub1103eCompatTests.trains(level, v) + "; the hub's sites "
-							+ sites(level, v) + "; the barrel holds " + ((Container) helper.getBlockEntity(BARREL)).countItem(station()) + " stations");
+							+ sites(level, v) + "; the barrel holds " + ((Container) helper.getBlockEntity(BARREL)).countItem(station()) + " stations; " + derail[0]);
 					}
 				}
 			}

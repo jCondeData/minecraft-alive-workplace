@@ -26,6 +26,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
@@ -164,6 +165,47 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 			a.discard();
 			b.discard();
 			helper.succeed();
+		});
+	}
+
+	/**
+	 * B957: the chair a villager is walking to is broken on the way. Within two of their seat checks (40 ticks) they head for
+	 * the other chair instead, and never sit down where the broken one stood (before the fix they walked on to the empty spot
+	 * and sat on thin air for a tick).
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '600' '"furniture_seat_broken_target"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 600, batch = "furniture_seat_broken_target")
+	public void aVillagerWhoseChairIsBrokenHeadsForAnotherAtOnce(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos nearRel = new BlockPos(6, 2, 4);
+		helper.setBlock(nearRel, block("handcrafted:oak_chair").defaultBlockState());
+		BlockPos near = helper.absolutePos(nearRel);
+		BlockPos otherRel = new BlockPos(13, 2, 10);
+		helper.setBlock(otherRel, block("handcrafted:oak_chair").defaultBlockState());
+		BlockPos other = helper.absolutePos(otherRel);
+		Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 10));
+		Runnable restore = clock(level);
+		setTime(level, FurnitureSeats.SUPPER + 300);
+		long[] brokenAt = {-1};
+		helper.onEachTick(() -> {
+			if (brokenAt[0] < 0 && near.equals(FurnitureSeats.walkingTo(v))) {
+				brokenAt[0] = helper.getTick();
+				helper.setBlock(nearRel, Blocks.AIR);
+			}
+			if (seatOf(v) != null && seatOf(v).blockPosition().equals(near)) {
+				helper.fail("the villager sat down where the broken chair stood on tick " + helper.getTick());
+			}
+			if (brokenAt[0] >= 0 && helper.getTick() - brokenAt[0] > 40 && seatOf(v) == null && !other.equals(FurnitureSeats.walkingTo(v))) {
+				helper.fail("40 ticks after their chair broke the villager isn't heading for the other one: " + FurnitureSeats.describe(level, v));
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(brokenAt[0] >= 0, "the villager never set off for the nearer chair: " + FurnitureSeats.describe(level, v));
+			helper.assertTrue(seatOf(v) != null && seatOf(v).blockPosition().equals(other), "the villager didn't sit on the other chair: "
+				+ FurnitureSeats.describe(level, v));
+			v.discard();
+			restore.run();
 		});
 	}
 

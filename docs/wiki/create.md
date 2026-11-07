@@ -221,7 +221,12 @@ one `TrackGraph` (`Create.RAILWAYS.trackNetworks`), three straight clear track b
 direction, a jobless adult villager within 24 blocks; then the station's enterAssemblyMode, assemble,
 exitAssemblyMode, and the train's schedule runtime with two `DestinationInstruction`s and `ScheduledDelay`s, cyclic.
 The train's owner is `CaravanTrains.railwayId` (a name-based UUID of the two halls), which is how the village finds its
-own train and never touches a player's. A shipment's `arrives` holds `BOARDING` (`Long.MAX_VALUE`) while it waits and
+own train and never touches a player's. B1001: Create's station assembly takes every bogey it finds along the
+straight track past the station, so for the village's assembly the station's three bogey lists (which Create's
+scan of the track fills only as far as they are long) are made as long as the
+village train's own bogeys and put back afterwards: another village's train blocks further along the line (a hub's two
+trains built before their Conductors came) or a player's carriage being built there are never taken as more carriages.
+A shipment's `arrives` holds `BOARDING` (`Long.MAX_VALUE`) while it waits and
 `ABOARD` while it rides; the train standing at the village's nearest station (`Train.currentStation`) moves it on, and
 at the other end sets `arrives` to now and unloads (`Caravans.trainIn`). Saved as before: nothing new in the save.
 
@@ -648,6 +653,10 @@ village's last column empties it (B994).
   A world from before B898 (the hub's one station facing Westmere, the Eastwick train already put together the old way
   with no way in): the builder puts up the second station, the old train's stop follows it, and Eastwick's wheat
   comes in by that train.
+- `QaTrainHubBothBuilt1107eBugCompatTests` (QA, B1001, with Create): a hub between two neighbors on one straight line,
+  both trains' blocks standing before any Conductor is hired: once three Conductors come, each train is put together
+  from its own blocks, one carriage each, and neither derails; a village train put together with a player's glued bogey
+  and plank 3 blocks past its blocks is one carriage and the player's bogey and plank stay on the track.
 - `QaTrainVillageRenamed1104eCompatTests` (QA, B894, with Create): with the Pine-Oakford train running, the middle
   village renamed Oakford with a name tag, or the far Oakford renamed Pine: the four stations keep four names and
   Pine's 32 logs reach the far village by train.

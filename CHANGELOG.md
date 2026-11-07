@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- With Create, a village between two train neighbors on one straight line whose two trains were both built before their Conductors were hired no longer gets both trains wrecked when the Conductors come: each train is put together from its own blocks only, one carriage, and they run without derailing. A village train put together on a line where a player is building a carriage further along also leaves the player's bogey and blocks alone (B1001, B939).
 - With Create, a Mechanic carrying a part from the village store (a cogwheel on the way to a broken machine) no longer loses it when he's killed, turned into a zombie villager or struck by lightning into a witch: the part goes back to the store, once. A worker struck by lightning on a machine trip (12 wheat on the way to the millstone) now drops the load where they stood, as a killed one already did (B959, B960).
 - A villager who sets off for a chair he can't reach (penned in, say) now gives it up after about 8 seconds of getting no closer, instead of holding it for 30 seconds while the villagers who could sit there wander off, and he leaves that chair alone for a minute so another villager sits on it (B967, B677).
 - A new Carpenter (or other crafter) who was carrying a builder's materials when the world was saved on an older version, and then lost his bench and took a lectern, now lets the request go and returns the materials like any other; before, he kept the job and the logs for good (B1018).

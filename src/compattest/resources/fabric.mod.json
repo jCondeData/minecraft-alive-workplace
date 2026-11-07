@@ -130,6 +130,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovesTheHall1107eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateIntoProtectedVillage1107eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelAtProtectedVillage1107eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelAtProtectedVillage1107eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovedSaved1103eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMachinesOnOurBlocks1102eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerOnOurThings1102eCompatTests",

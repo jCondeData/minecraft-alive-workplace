@@ -4,7 +4,7 @@ Eight builds that stopped at Level II get a Level III that is their Level II wit
 and a Smithy, Storehouse or Kitchen finished before its blueprint had a cellar (26.15) can have it dug now ("Dig the
 cellar"). Built the way the Level 4s' basements are ([Basements and cellars](basements.md)).
 
-Roadmap items: 36.7
+Roadmap items: 36.7, B974
 
 ## 1. What a player sees
 
@@ -85,6 +85,9 @@ Blueprints `aliveworkplace:inn_3`, `winery_3`, `farmstead_3`, `guildhall_3`, `ba
   needs only one new saved flag; no new item and no change to the blueprint item's data.
 - "Mostly ground" is over half of the basement's open spots solid: a cellar a player half dug by hand is still offered,
   one they dug out isn't.
+- "The building gone" (B974) is under a quarter of its blocks on and above the ground still standing (solid, whatever
+  the block): a building torn down by hand is gone, one with holes in its walls or its roof burned is still there. Its
+  finished record stays (a builder's repair can still put it back), so the check is made on the blocks each time.
 - The ladder goes under a closed hatch in the floor (as the Level 4s' do since B158) where the floor above is clear two
   blocks up and away from the workers' chests and job blocks.
 
@@ -105,7 +108,8 @@ Smithy II's plan digging the cellar too, and the trade gone after; `noOfferWhenT
 QA's `QaBuilderGaps1105bGameTests` (3 here: a Storehouse's and a Kitchen's "Dig the cellar" keep every chest above with its
 contents and a player's block, leave a closed hatch over a ladder down to the floor and say so once, and the trade goes
 after; a Storehouse dug by hand in another shape down to just over half solid is still offered and dug as drawn) and
-`QaBuilderGaps1105GameTests` (a Smithy's cellar dug beside waterlogged earth stays dry). Open: B974, a Smithy torn
-down by hand is still offered its dig.
+`QaBuilderGaps1105GameTests` (a Smithy's cellar dug beside waterlogged earth stays dry), and `QaBuilderGaps1105bBugTests`
+(B974: a Smithy torn down by hand is no longer sold, listed or dug, and the player is told; one with two of every five
+blocks above the ground broken is still sold, listed and dug).
 
 Showcase scenes: cellars

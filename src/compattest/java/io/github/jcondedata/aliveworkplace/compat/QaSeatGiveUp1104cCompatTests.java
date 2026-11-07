@@ -63,7 +63,7 @@ public class QaSeatGiveUp1104cCompatTests implements FabricGameTest {
 
 	/**
 	 * The nearest chair is walled in by a glass ring two blocks out (nobody can get within sitting reach of it); a second
-	 * chair a block farther away is open. The villager picks the walled one first (it's nearest), gives up on it, and then
+	 * chair three blocks farther away is open. The villager picks the walled one first (it's nearest), gives up on it, and then
 	 * sits on the open one: giving up on one seat isn't giving up on sitting down.
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '1300' '"qa1104c_seat_second_choice"'
@@ -86,8 +86,12 @@ public class QaSeatGiveUp1104cCompatTests implements FabricGameTest {
 		BlockPos openRel = CHAIR.south(9);
 		helper.setBlock(openRel, chair.defaultBlockState());
 		BlockPos open = helper.absolutePos(openRel);
-		// 4 blocks from the walled chair, 5 from the open one: the walled one is nearest.
-		Villager v = helper.spawn(EntityType.VILLAGER, CHAIR.south(4));
+		// 3 blocks from the walled chair, 6 from the open one: the walled one is nearest. He is held on that spot until he
+		// picks a chair, so a wander toward the open one before supper's pick can't swap which is nearest (seen 3 of 20
+		// repeats with 4 and 5 blocks and no hold, lane-c-1107-0952).
+		BlockPos start = CHAIR.south(3);
+		Villager v = helper.spawn(EntityType.VILLAGER, start);
+		net.minecraft.world.phys.Vec3 spot = v.position();
 		Runnable restore = clock(level);
 		setTime(level, FurnitureSeats.SUPPER + 100);
 		boolean[] pickedWalled = {false};
@@ -96,6 +100,9 @@ public class QaSeatGiveUp1104cCompatTests implements FabricGameTest {
 			if (!pickedWalled[0] && !v.isPassenger() && !FurnitureSeats.free(level, walled, null)) {
 				pickedWalled[0] = true;
 				pickedAt[0] = helper.getTick();
+			}
+			if (!pickedWalled[0] && FurnitureSeats.free(level, open, null) && !v.isPassenger()) {
+				v.teleportTo(spot.x, spot.y, spot.z); // held till he picks
 			}
 		});
 		helper.succeedWhen(() -> {

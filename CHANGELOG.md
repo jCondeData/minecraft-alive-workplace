@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.8 — 2026-11-07
+
 ### Fixed
 
 - With Create, a Mechanic carrying a part from the village store (a cogwheel on the way to a broken machine) no longer loses it when he's killed, turned into a zombie villager or struck by lightning into a witch: the part goes back to the store, once. A worker struck by lightning on a machine trip (12 wheat on the way to the millstone) now drops the load where they stood, as a killed one already did (B959, B960).

@@ -128,7 +128,11 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   name the village gave them, since a Create schedule stops at the nearest station of its name: a station whose village's
   name another station there already has (two villages of one name, a name tag or two made-up names alike) gets the
   village's name with its hall's position added, as `Oakford 120_64_-35`; one named before that, or whose network was
-  joined to another since, is renamed so while its train runs, and the train's stop follows it (B894). A Create station takes trains coming from one side only, so a village with a
+  joined to another since, is renamed so while its train runs, and the train's stop follows it (B894). Names a player
+  gave are never changed, so a player may give both stations one name ("Station"): Create would then count a train
+  standing at one as already at the other, and it would never leave. The hall's look at its train sends a train standing
+  at a namesake of its stop on to the stop's own station, found by the station's id rather than its name
+  (`CreateTrains.sendOn`), and Create's schedule goes on from there (B933). A Create station takes trains coming from one side only, so a village with a
   train neighbor on each side of one line uses a station facing each (`CaravanTrains.stationFor`: the nearest, unless it
   faces away and another neighbor's train comes in at it, so a village with one neighbor keeps its station whichever
   way it faces; else another station within 16 blocks of it facing that neighbor or not pointed yet); when every station faces another neighbor's train, a builder of

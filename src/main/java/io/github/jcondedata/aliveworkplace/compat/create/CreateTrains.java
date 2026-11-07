@@ -6,7 +6,9 @@ import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.graph.EdgePointType;
 import com.simibubi.create.content.trains.graph.TrackGraph;
+import com.simibubi.create.content.trains.graph.DiscoveredPath;
 import com.simibubi.create.content.trains.schedule.Schedule;
+import com.simibubi.create.content.trains.schedule.ScheduleRuntime;
 import com.simibubi.create.content.trains.schedule.ScheduleEntry;
 import com.simibubi.create.content.trains.schedule.condition.ScheduleWaitCondition;
 import com.simibubi.create.content.trains.schedule.condition.ScheduledDelay;
@@ -421,6 +423,38 @@ public final class CreateTrains implements CaravanTrains.Railway {
 					AliveWorkplace.LOG.info("Alive Workplace: the village train {} now stops at '{}' (was '{}')", train.id, now[i], text);
 				}
 			}
+		}
+		sendOn(train, schedule, new GlobalStation[] {there, home});
+	}
+
+	/**
+	 * B933: Create sends a train to the nearest station whose name fits the stop, so with both stations given one name (a
+	 * player's own, which the village never changes) a train standing at one counts as arrived for the stop at the other,
+	 * waits there and never leaves. A train of the village's schedule standing at a station that isn't its stop's (but
+	 * fits the stop's name) is sent on to the stop's own station, found by its id, the way Create's schedule starts a
+	 * trip; arriving there, Create's schedule goes on as before.
+	 */
+	private static void sendOn(Train train, Schedule schedule, GlobalStation[] stops) {
+		ScheduleRuntime runtime = train.runtime;
+		int entry = runtime.currentEntry;
+		if (runtime.paused || runtime.state != ScheduleRuntime.State.POST_TRANSIT || entry < 0 || entry >= stops.length
+			|| train.navigation.destination != null || train.currentStation == null || train.currentStation.equals(stops[entry].id)
+			|| !(schedule.entries.get(entry).instruction instanceof DestinationInstruction to)) {
+			return;
+		}
+		GlobalStation standing = train.getCurrentStation();
+		if (standing == null || !standing.name.matches(to.getFilterForRegex())) {
+			return; // not a namesake of the stop: the train stands where Create sent it for a reason of its own
+		}
+		DiscoveredPath path = train.navigation.findPathTo(stops[entry], Double.MAX_VALUE);
+		if (path == null || path.destination == null || !path.destination.id.equals(stops[entry].id)) {
+			return; // no way there now: Create's own schedule goes on, and the next look tries again
+		}
+		if (train.navigation.startNavigation(path) != -1) {
+			runtime.state = ScheduleRuntime.State.IN_TRANSIT;
+			runtime.ticksInTransit = 0;
+			AliveWorkplace.LOG.info("Alive Workplace: the village train {} stood at a namesake of its stop '{}'; sent on to the stop's station",
+				train.id, stops[entry].name);
 		}
 	}
 

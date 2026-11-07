@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A village train between two Create stations you gave the same name (both "Station", say) no longer stops for good with the caravan aboard: it now runs on to the other village's station and the goods arrive, whatever you call the stations.
 - Hiring mercenaries (or relief riders arriving) no longer lowers the village's wellbeing and work pace: the hired help no longer counts as villagers without a bed or a meal, so the Village Hall's "Sleeping in a bed" line stays at what the village's own people have (2 of 2, not 2 of 5). A hired Guard still counts toward the village's guards.
 - A Bard no longer cuts a music disc off after a minute and skips to the next one: each disc now plays on until it ends or the Bard's morning or evening set is over. Breaking the jukebox while a Bard plays now stops the music, as a vanilla jukebox does, instead of letting the song play on where it stood.
 

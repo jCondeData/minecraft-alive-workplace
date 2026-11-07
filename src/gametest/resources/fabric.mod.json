@@ -696,6 +696,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilders1102bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaApproachSpot1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFetch1107bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStorehouseFetch1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilders1102bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.ScanRebuildPlantsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanRebuild1102cBugTests",

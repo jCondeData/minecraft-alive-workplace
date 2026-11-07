@@ -126,6 +126,9 @@ public class QaCabinBedsHome1101GameTests implements net.fabricmc.fabric.api.gam
 	 * Two brown beds side by side in an older save's first session (a list from before B715), neither on its list: one has
 	 * {@code edge} (a campfire or a hay bale) exactly 10 blocks off, the other 11; the other camp pieces are close. Only the
 	 * one at 10 has the old camp's look (spec: campfire and hay within 10 blocks).
+	 *
+	 * <p>B978: asked in the tick the camp is set up. Three ticks later, as it was, the server's autosave (every 6,000
+	 * ticks) could fall between: saving the list ends the old look (B754, rightly), and the bed at 10 was then a home.
 	 */
 	private static void lookEdge(GameTestHelper helper, Block edge, Block close) {
 		QaVillageGuards1031GameTests.campArea(helper);
@@ -137,13 +140,17 @@ public class QaCabinBedsHome1101GameTests implements net.fabricmc.fabric.api.gam
 		helper.setBlock(new BlockPos(25, 2, 11), edge); // 10 from in, 11 from out
 		helper.setBlock(new BlockPos(15, 2, 13), close);
 		helper.setBlock(new BlockPos(15, 2, 15), ModBlocks.BLUEPRINT_TABLE);
-		helper.runAfterDelay(3, () -> {
-			boolean inWagon = CampBeds.isWagonBed(level, in);
-			boolean outWagon = CampBeds.isWagonBed(level, out);
-			helper.assertTrue(inWagon && CampBeds.Data.get(level).has(in), edge.getName().getString() + " at 10 blocks: the old camp's bedroll isn't known by its look");
-			helper.assertTrue(!outWagon && !CampBeds.Data.get(level).has(out), edge.getName().getString() + " at 11 blocks: the bed is taken for a wagon bed");
-			helper.succeed();
-		});
+		boolean inWagon = CampBeds.isWagonBed(level, in);
+		boolean outWagon = CampBeds.isWagonBed(level, out);
+		CampBeds.Data now = CampBeds.Data.get(level);
+		String state = String.format(" (in: wagon %b, listed %b; out: wagon %b, listed %b; the list %s, looks %b; %s at (25, 2, 11), %s at (15, 2, 13), %s at (15, 2, 15))",
+			inWagon, now.has(in), outWagon, now.has(out), now == list ? "the test's" : "replaced", now.looks(),
+			helper.getBlockState(new BlockPos(25, 2, 11)).getBlock().getName().getString(),
+			helper.getBlockState(new BlockPos(15, 2, 13)).getBlock().getName().getString(),
+			helper.getBlockState(new BlockPos(15, 2, 15)).getBlock().getName().getString());
+		helper.assertTrue(inWagon && now.has(in), edge.getName().getString() + " at 10 blocks: the old camp's bedroll isn't known by its look" + state);
+		helper.assertTrue(!outWagon && !now.has(out), edge.getName().getString() + " at 11 blocks: the bed is taken for a wagon bed" + state);
+		helper.succeed();
 	}
 
 	//$ gametest_ticks_batch HUGE '100' '"qaCb1101CampfireEdge"'

@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- A Bard no longer cuts a music disc off after a minute and skips to the next one: each disc now plays on until it ends or the Bard's morning or evening set is over. Breaking the jukebox while a Bard plays now stops the music, as a vanilla jukebox does, instead of letting the song play on where it stood.
+
 ## 0.151.7 — 2026-11-06
 
 ### Fixed

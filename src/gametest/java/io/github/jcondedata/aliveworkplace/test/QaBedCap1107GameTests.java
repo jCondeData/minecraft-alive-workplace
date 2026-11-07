@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.test;
 import io.github.jcondedata.aliveworkplace.camp.CampBeds;
 import io.github.jcondedata.aliveworkplace.camp.SettlersWagonItem;
 import io.github.jcondedata.aliveworkplace.hall.VillageGrowth;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
@@ -55,12 +56,18 @@ public class QaBedCap1107GameTests implements net.fabricmc.fabric.api.gametest.v
 		int hall = VillageHalls.RADIUS;
 		int inn = Innkeepers.RADIUS;
 		long stay = Innkeepers.STAY;
+		int every = VillageNeeds.CHECK_EVERY;
 		VillageHalls.RADIUS = 18;
 		Innkeepers.RADIUS = 18;
+		// Only the rounds a test runs (B997): the hall's own timed round falls on a tick set by where the test stands
+		// (its position's hash), and on some runs it came inside a test's few ticks, where a baby of its own took the
+		// bed the test had just freed.
+		VillageNeeds.CHECK_EVERY = Integer.MAX_VALUE;
 		Leftovers.after(helper, () -> {
 			VillageHalls.RADIUS = hall;
 			Innkeepers.RADIUS = inn;
 			Innkeepers.STAY = stay;
+			VillageNeeds.CHECK_EVERY = every;
 		});
 		BoundingBox box = BoundingBox.fromCorners(helper.absolutePos(new BlockPos(-2, 0, -2)), helper.absolutePos(new BlockPos(31, 12, 31)));
 		Leftovers.after(helper, () -> CampBeds.Data.get(helper.getLevel()).forget(box));
@@ -230,6 +237,39 @@ public class QaBedCap1107GameTests implements net.fabricmc.fabric.api.gametest.v
 				Villager next = VillageGrowth.grow(level, hall, HAPPY, 0);
 				helper.assertTrue(next != null && beds.get(0).equals(home(next)), "the next baby didn't get the freed bed: " + (next == null ? "no baby" : home(next)));
 				next.setNoAi(true);
+				helper.succeed();
+			});
+		});
+	}
+
+	/**
+	 * B997: the hall's own round (as every {@code VillageNeeds.CHECK_EVERY} ticks in play) gives a dead baby's freed bed
+	 * to the next baby: the bed counts free to the village's own growth too, and once taken the hall says full again.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaBedCap1107Round"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaBedCap1107Round")
+	public void qaTheHallsOwnRoundGivesADeadBabysBedToTheNext(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		radii(helper);
+		helper.setDayTime(1000);
+		ServerLevel level = helper.getLevel();
+		List<BlockPos> beds = new ArrayList<>();
+		village(helper, 1, beds);
+		BlockPos hall = helper.absolutePos(HALL);
+		helper.runAfterDelay(5, () -> {
+			stock(helper);
+			Villager baby = VillageGrowth.grow(level, hall, HAPPY, 0);
+			helper.assertTrue(baby != null && beds.get(0).equals(home(baby)), "setup: the baby didn't take the house bed");
+			baby.setNoAi(true);
+			baby.kill();
+			helper.assertTrue(!VillageHalls.census(level, hall).full(), "the hall still says full the tick the bed's baby died");
+			((VillageHallBlockEntity) level.getBlockEntity(hall)).setNeeds(null); // the hall's round on its next tick
+			helper.runAfterDelay(2, () -> {
+				List<Villager> babies = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && v.isBaby());
+				helper.assertTrue(babies.size() == 1 && beds.get(0).equals(home(babies.get(0))),
+					"the hall's own round didn't give the freed bed to a new baby: " + babies.stream().map(QaBedCap1107GameTests::home).toList());
+				babies.get(0).setNoAi(true);
+				helper.assertTrue(VillageHalls.census(level, hall).full(), "the hall doesn't say full once its own baby took the freed bed");
 				helper.succeed();
 			});
 		});

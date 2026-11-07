@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- The siege report's "Hero of the night" on a tie for the most kills is now the guard who reached that count first, not the one whose first kill came first.
+- Switching `builderPaths` off now also stops a path a builder had already planned: he lays no more of it and is free for other work.
 - A Bard killed, or taken away (despawned, or unloaded with his chunk), in the middle of a song now stops the music at his jukebox, instead of the disc playing on to its end for everyone nearby.
 - The questbook no longer sends you to the Village Hall's old "top row": the Food in the store and A bed for a newcomer quests now say to open the hall's Overview and hover the Food in store, Beds, Wellbeing and Villagers lines.
 - Mercenaries, relief riders and a story's visitors no longer count as the village's villagers: hiring a band no longer ranks a village up (and down again when it leaves), and the hall's "Villagers" count, the realm's tab, the festival's cost and the raid odds stay as they were while the help is there.

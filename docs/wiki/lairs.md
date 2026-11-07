@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709
+Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720
 
 ## What a player sees
 
@@ -131,6 +131,9 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - 32.3: the named lines use their own keys (`camp_named`, …) rather than changing today's, so the bandit camp reads as
   it always did while Milestone 32 is closed.
 - 32.3: the lines avoid "he" and "his", so a culture's list may hold any name.
+- B720: an operator's `/workplace threat start` by a village whose lair has its whole band out (or lost) brings no
+  raid and says so ("nobody left at their camp"): an order doesn't conjure raiders the lair hasn't got, so its band
+  count stays true. Wait for the band to come home, or `threat clear` and set a new camp down.
 
 ## Known limits
 
@@ -154,11 +157,30 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - `B208GameTests`: with the world refusing hostile mobs as MobsBeGone does, a camp's chief and band of 6 and a night
   attack's raiders are in the world, persistent, and still there 100 ticks later; with `forceThreatSpawns` off no camp is
   made or broken up, no raid begins, and the log says why; on Peaceful nothing spawns and a player near is told once.
+- `QaNightRefusals1104d2GameTests` (6): only zombies refused with forcing on, all come and are counted; the refusal
+  lifted or `forceThreatSpawns` switched off mid-night leaves the raid as it was; monsters refused only past the village
+  edge still come; a forced raider saves as persistent; the log line names the hall and the switch.
 - `QaRefusedCampBlocksBugTests` (B709): a camp whose chief is refused changes no block round it.
   `QaPeacefulToldBugTests` (B708): a Peaceful refusal 500 blocks from everyone, then one by a player: he is told once.
+  `QaThreatFixes1031GameTests`: a camp refused then allowed on the same ground stands with its chief alive and out of
+  every wall, and only one (B709); each of two players is told once a day, within 96 blocks and not at 97, and again
+  the next day (B708); on Peaceful the lair and start orders say so and leave nothing, then work on Normal (B704); the names
+  are suggested by path or whole id and nothing else, the lair order never the monsters (B705).
+  `QaPeacefulRadius1107dGameTests` (B708): a player exactly 96 blocks from a foe refused on Peaceful is told, one
+  96.05 blocks off is not.
+- `QaThreatOrderLairOut1031GameTests` (B720): a start order by a camp with nobody home is answered "nobody left at
+  their camp", not "found nowhere to gather", and brings nothing; the same camp with its band home sends the raid.
+  `QaThreatFixes1101GameTests` (B720): one bandit home brings a raid of him alone; once he is out too the order reads
+  the whole "nobody left at their camp by <village> to send" line; `threat end` brings the band home and the next order
+  brings a raid again.
 - `QaRefusedThreatsGameTests`: with the world refusing every hostile mob, `/workplace threat start` brings each of the
   seven cultures' raiders into the world, persistent, and ending the raid takes them away; a war camp, tomb camp, Blackstone
   Outpost and Coven Hut each have their captain and band in the world, still there 100 ticks on and not broken up.
+- `QaNightAttackRefusedGameTests` (QA, B216): a blocklist naming only zombies still lets a night attack on a village of
+  8 come whole (5 raiders, zombies among them, all in the world and persistent 100 ticks on; the log names the zombie as
+  placed directly); `/workplace threat start monsters` with every monster refused says "Monsters are raiding <village>:
+  N of them." with N the raiders in the world and the raid recorded; with `forceThreatSpawns` off the same command
+  brings nobody, records no raid, and the log says "forceThreatSpawns is off".
 - `B211GameTests`: with the world refusing iron golems, wolves, horses and llamas, the Golem Smith's golem, the Iron
   Pact's golem, a relief rider's horse (with its rider on it), a Beastmaster foal and wolf pup and a caravan llama are in
   the world and still there 100 ticks later; with `forceVillageSpawns` off they are left out and the log says why.

@@ -6,7 +6,9 @@ import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.graph.EdgePointType;
 import com.simibubi.create.content.trains.graph.TrackGraph;
+import com.simibubi.create.content.trains.graph.DiscoveredPath;
 import com.simibubi.create.content.trains.schedule.Schedule;
+import com.simibubi.create.content.trains.schedule.ScheduleRuntime;
 import com.simibubi.create.content.trains.schedule.ScheduleEntry;
 import com.simibubi.create.content.trains.schedule.condition.ScheduleWaitCondition;
 import com.simibubi.create.content.trains.schedule.condition.ScheduledDelay;
@@ -61,14 +63,32 @@ import org.jetbrains.annotations.Nullable;
 public final class CreateTrains implements CaravanTrains.Railway {
 	/** How long the train waits at each station (seconds, Create's "scheduled delay"). */
 	static final int WAIT_SECONDS = 10;
+	/** The name Create gives every new station ({@code GlobalStation}'s constructor). */
+	private static final String DEFAULT_NAME = "Track Station";
 
 	@Override
-	public boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name) {
+	public boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name, String apart) {
 		if (!(level.getBlockEntity(station) instanceof StationBlockEntity be)) {
 			return false;
 		}
 		if (be.edgePoint.hasValidTrack()) {
-			return be.getStation() != null;
+			GlobalStation known = be.getStation();
+			if (known != null && DEFAULT_NAME.equals(known.name) && !name.equals(known.name)) {
+				// B800: named from what is saved (the track set, Create's default name), not only from the in-memory map,
+				// so a server stopped between the round that aimed the station and the next still names it; a station a
+				// player renamed by hand keeps its name
+				pending.remove(station);
+				be.updateName(free(known, name, apart));
+			} else if (known != null && name.equals(known.name) && !apart.equals(name) && shared(known, name)) {
+				// B894: a station the village named that shares its name with another on the network (two villages of
+				// one name whose networks were joined, or named before B894): told apart, and the train's schedule
+				// follows it (follow)
+				pending.remove(station);
+				be.updateName(apart);
+				AliveWorkplace.LOG.info("Alive Workplace: the station at {} is now '{}' (another station on its network is also '{}')",
+					station.toShortString(), apart, name);
+			}
+			return known != null;
 		}
 		for (BlockPos offset : NEAR) {
 			BlockPos track = station.offset(offset);
@@ -82,21 +102,42 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			}
 			CompoundTag tag = be.saveWithoutMetadata(level.registryAccess());
 			tag.put("TargetTrack", NbtUtils.writeBlockPos(track.subtract(station)));
-			// Facing the other station: trains coming from there stop here, and the village train is put together on
-			// that side of it (found by trying both in CreateTrainCompatTests: facing away, no path is ever found)
-			Vec3 toward = Vec3.atLowerCornerOf(other.subtract(station));
-			// 39.7c: a station on a spur (its track ends on one side, runs on by a curve on the other) faces the way out
-			Direction plus = Direction.getNearest(axes.get(0).x, 0, axes.get(0).z);
-			boolean onPlus = runsOn(level, track, plus);
-			boolean onMinus = runsOn(level, track, plus.getOpposite());
-			tag.putBoolean("TargetDirection", onPlus != onMinus ? onPlus : axes.get(0).dot(toward) > 0);
+			tag.putBoolean("TargetDirection", wanted(level, station, track, axes.get(0), other));
 			be.loadWithComponents(tag, level.registryAccess());
 			be.setChanged();
 			be.notifyUpdate();
-			pending.put(station.immutable(), name); // named once Create knows it (its next tick)
+			pending.put(station.immutable(), new String[] {name, apart}); // named once Create knows it (its next tick)
 			return false;
 		}
 		return false;
+	}
+
+	/**
+	 * The way (positive along {@code axis} or not) a station beside {@code track} faces to take trains coming from
+	 * {@code other}: towards it, so trains coming from there stop here and the village train is put together on that side
+	 * (found by trying both in CreateTrainCompatTests: facing away, no path is ever found). 39.7c: a station on a spur (its
+	 * track ends on one side, runs on by a curve on the other) faces the way out.
+	 */
+	private static boolean wanted(ServerLevel level, BlockPos station, BlockPos track, Vec3 axis, BlockPos other) {
+		Direction plus = Direction.getNearest(axis.x, 0, axis.z);
+		boolean onPlus = runsOn(level, track, plus);
+		boolean onMinus = runsOn(level, track, plus.getOpposite());
+		return onPlus != onMinus ? onPlus : axis.dot(Vec3.atLowerCornerOf(other.subtract(station))) > 0;
+	}
+
+	@Override
+	public int facing(ServerLevel level, BlockPos station, BlockPos other) {
+		if (!level.isLoaded(station) || !(level.getBlockEntity(station) instanceof StationBlockEntity be) || !be.edgePoint.hasValidTrack()) {
+			return 0;
+		}
+		BlockPos track = be.edgePoint.getGlobalPosition();
+		BlockState state = be.edgePoint.getTrackBlockState();
+		List<Vec3> axes = ((ITrackBlock) state.getBlock()).getTrackAxes(level, track, state);
+		if (axes.size() != 1 || Math.abs(axes.get(0).y) > 1e-3) {
+			return 1; // a player's station on a curve or slope: taken as it is, as before B898
+		}
+		boolean positive = be.edgePoint.getTargetDirection() == Direction.AxisDirection.POSITIVE;
+		return positive == wanted(level, station, track, axes.get(0), other) ? 1 : -1;
 	}
 
 	/** Whether the straight track from {@code track} towards {@code way} runs on (a curve at its end, or 64 blocks of it) rather than ending (39.7c). */
@@ -122,7 +163,29 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		new BlockPos(0, 0, -1), new BlockPos(2, 0, 0), new BlockPos(-2, 0, 0), new BlockPos(0, 0, 2), new BlockPos(0, 0, -2)).toList();
 
 	/** Stations aimed by the village and the name they get once Create knows them. */
-	private final Map<BlockPos, String> pending = new java.util.concurrent.ConcurrentHashMap<>();
+	private final Map<BlockPos, String[]> pending = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/**
+	 * B894: {@code name}, or {@code apart} when another station on {@code station}'s network already has {@code name}
+	 * (a schedule stops at the nearest of the stations of its name, so a village's train would stop at the namesake).
+	 */
+	private static String free(GlobalStation station, String name, String apart) {
+		return shared(station, name) ? apart : name;
+	}
+
+	/** Whether a station other than {@code station} on its network is called {@code name}. */
+	private static boolean shared(GlobalStation station, String name) {
+		TrackGraph graph = graphOf(station);
+		if (graph == null) {
+			return false;
+		}
+		for (GlobalStation s : graph.getPoints(EdgePointType.STATION)) {
+			if (!s.id.equals(station.id) && name.equals(s.name)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	@Nullable
 	private GlobalStation station(ServerLevel level, BlockPos pos) {
@@ -130,11 +193,30 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			return null;
 		}
 		GlobalStation station = be.getStation();
-		String name = station == null ? null : pending.remove(pos);
+		String[] name = station == null ? null : pending.remove(pos);
 		if (name != null) {
-			be.updateName(name);
+			be.updateName(free(station, name[0], name[1]));
 		}
 		return station;
+	}
+
+	/**
+	 * The station at {@code pos}: from its block entity while its chunk is loaded (never loading it), else from Create's
+	 * railway, which keeps the station (its name too) with the chunk unloaded (B912).
+	 */
+	@Nullable
+	private GlobalStation known(ServerLevel level, @Nullable TrackGraph graph, BlockPos pos) {
+		if (level.isLoaded(pos)) {
+			return station(level, pos);
+		}
+		if (graph != null) {
+			for (GlobalStation s : graph.getPoints(EdgePointType.STATION)) {
+				if (pos.equals(s.getBlockEntityPos()) && level.dimension().equals(s.getBlockEntityDimension())) {
+					return s;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Nullable
@@ -259,8 +341,20 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			return null;
 		}
 		be.exitAssemblyMode();
+		// B913: Create's assembly keeps the carriages (the conductor with them) put away until the railway's next tick takes
+		// them out, and only then counts the conductor; a village that unloads first (the player walking off) would leave
+		// the train without conductors, standing there till he came back. Taken out and counted now, while it's loaded:
+		// Create keeps that count while the carriages are put away (unloaded), so the train runs on
+		for (Carriage carriage : train.carriages) {
+			carriage.manageEntities(level);
+			carriage.updateConductors();
+		}
 		train.name = Component.translatable("train.aliveworkplace.caravan", home.name, away.name);
 		train.runtime.setSchedule(schedule(away.name, home.name), false);
+		// Counted at once, the conductor would take the new train off on the railway's next tick; Create's own count a tick
+		// later finds none yet and holds it at the station for its schedule's cooldown (2 seconds), the moment the caravans
+		// waiting there board. Kept: without it they missed the first train and waited a whole round trip
+		train.runtime.startCooldown();
 		AliveWorkplace.LOG.info("Alive Workplace: the village train {} runs between {} and {}", train.id, home.name, away.name);
 		return train.id;
 	}
@@ -298,6 +392,70 @@ public final class CreateTrains implements CaravanTrains.Railway {
 	public boolean exists(ServerLevel level, UUID owner) {
 		Train train = train(owner);
 		return train != null && !train.derailed;
+	}
+
+	@Override
+	public void follow(ServerLevel level, UUID owner, BlockPos therePos, BlockPos homePos) {
+		Train train = train(owner);
+		if (train == null || train.graph == null) {
+			return;
+		}
+		Schedule schedule = train.runtime.getSchedule();
+		// B912: an end whose village isn't loaded (partners are up to 2048 blocks apart) is read from Create's railway,
+		// which keeps every station's name, so a station renamed there is followed from the other village
+		GlobalStation there = known(level, train.graph, therePos);
+		GlobalStation home = known(level, train.graph, homePos);
+		if (schedule == null || schedule.entries.size() != 2 || there == null || home == null) {
+			return; // not the schedule the village gave it (a player's own, or none): left alone
+		}
+		java.util.Set<String> names = new java.util.HashSet<>();
+		for (GlobalStation s : train.graph.getPoints(EdgePointType.STATION)) {
+			names.add(s.name);
+		}
+		String[] now = {there.name, home.name};
+		for (int i = 0; i < 2; i++) {
+			if (schedule.entries.get(i).instruction instanceof DestinationInstruction to) {
+				String text = to.getData().getString("Text");
+				if (!text.equals(now[i]) && (!names.contains(text) || now[i].startsWith(text + " "))) {
+					// a stop whose station was renamed: Create's schedule finds stations by name, so it would wait for good;
+					// B894: or told apart from a namesake (its name and a key), whose name the stop would still find
+					to.getData().putString("Text", now[i]);
+					AliveWorkplace.LOG.info("Alive Workplace: the village train {} now stops at '{}' (was '{}')", train.id, now[i], text);
+				}
+			}
+		}
+		sendOn(train, schedule, new GlobalStation[] {there, home});
+	}
+
+	/**
+	 * B933: Create sends a train to the nearest station whose name fits the stop, so with both stations given one name (a
+	 * player's own, which the village never changes) a train standing at one counts as arrived for the stop at the other,
+	 * waits there and never leaves. A train of the village's schedule standing at a station that isn't its stop's (but
+	 * fits the stop's name) is sent on to the stop's own station, found by its id, the way Create's schedule starts a
+	 * trip; arriving there, Create's schedule goes on as before.
+	 */
+	private static void sendOn(Train train, Schedule schedule, GlobalStation[] stops) {
+		ScheduleRuntime runtime = train.runtime;
+		int entry = runtime.currentEntry;
+		if (runtime.paused || runtime.state != ScheduleRuntime.State.POST_TRANSIT || entry < 0 || entry >= stops.length
+			|| train.navigation.destination != null || train.currentStation == null || train.currentStation.equals(stops[entry].id)
+			|| !(schedule.entries.get(entry).instruction instanceof DestinationInstruction to)) {
+			return;
+		}
+		GlobalStation standing = train.getCurrentStation();
+		if (standing == null || !standing.name.matches(to.getFilterForRegex())) {
+			return; // not a namesake of the stop: the train stands where Create sent it for a reason of its own
+		}
+		DiscoveredPath path = train.navigation.findPathTo(stops[entry], Double.MAX_VALUE);
+		if (path == null || path.destination == null || !path.destination.id.equals(stops[entry].id)) {
+			return; // no way there now: Create's own schedule goes on, and the next look tries again
+		}
+		if (train.navigation.startNavigation(path) != -1) {
+			runtime.state = ScheduleRuntime.State.IN_TRANSIT;
+			runtime.ticksInTransit = 0;
+			AliveWorkplace.LOG.info("Alive Workplace: the village train {} stood at a namesake of its stop '{}'; sent on to the stop's station",
+				train.id, stops[entry].name);
+		}
 	}
 
 	@Override

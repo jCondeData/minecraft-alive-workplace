@@ -15,6 +15,9 @@ import io.github.jcondedata.aliveworkplace.herb.HerbBlock;
 import io.github.jcondedata.aliveworkplace.herb.Herbs;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Lookup;
+import io.github.jcondedata.aliveworkplace.people.Families;
+import io.github.jcondedata.aliveworkplace.people.Traits;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -895,7 +898,11 @@ public final class ArcEffects {
 
 	// ---- roles and talk --------------------------------------------------------------------------------------------
 
-	/** Who plays the villager role {@code key}: a newcomer, any villager of the village, or one of a job. Null if nobody. */
+	/**
+	 * Who plays the villager role {@code key}: a newcomer, any villager of the village, one of a job, one with a trait
+	 * ({@code trait:cheerful}) or a mother ({@code mother}); alternatives split by {@code |}, the first someone can play.
+	 * Null if nobody.
+	 */
 	@Nullable
 	static Villager cast(ServerLevel level, BlockPos hall, Arcs.Arc arc, String key, Arcs.RoleSpec spec) {
 		Villager v;
@@ -922,6 +929,18 @@ public final class ArcEffects {
 			if (alt.startsWith("job:")) {
 				ResourceLocation job = ResourceLocation.tryParse(alt.substring(4));
 				all = everyone.stream().filter(x -> BuiltInRegistries.VILLAGER_PROFESSION.getKey(x.getVillagerData().getProfession()).equals(job)).toList();
+			} else if (alt.startsWith("trait:")) { // B632: "else a Cheerful villager"
+				Traits.Trait trait = Traits.Trait.valueOf(alt.substring(6).toUpperCase(java.util.Locale.ROOT));
+				all = everyone.stream().filter(x -> Traits.of(x).contains(trait)).toList();
+			} else if (alt.equals("mother")) { // B633: "else a mother", named as the mother of a villager of the village
+				Set<UUID> mothers = new java.util.HashSet<>();
+				for (Villager child : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Entity::isAlive)) {
+					Families.Parents parents = ModAttachments.PARENTS.get(child);
+					if (parents != null && parents.motherId() != null) {
+						mothers.add(parents.motherId());
+					}
+				}
+				all = everyone.stream().filter(x -> mothers.contains(x.getUUID())).toList();
 			}
 			if (!all.isEmpty()) {
 				break;
@@ -937,6 +956,35 @@ public final class ArcEffects {
 		return v;
 	}
 
+	/**
+	 * Whether {@code entity} plays {@code role} for the quest {@code q} of the village {@code e}: the villager or mob the
+	 * quest's own arc cast (by UUID, as the arc saved it), not anyone carrying a part of the same name for another arc or
+	 * another village (B711). A quest no arc posted has only the role tag to go by.
+	 */
+	static boolean plays(Stories.Entry e, Quest q, String role, Entity entity) {
+		if (!entity.getTags().contains(roleTag(role))) {
+			return false;
+		}
+		if (q.arc == null) {
+			return true;
+		}
+		ArcState s = Arcs.running(e).stream().filter(a -> a.id.equals(q.arc)).findFirst().orElse(null);
+		if (s == null) {
+			return false;
+		}
+		UUID id = entity.getUUID();
+		ArcState.Role r = s.roles.get(role);
+		if (r != null && r.who().isPresent() && r.who().get().equals(id)) {
+			return true;
+		}
+		for (ArcState.ArcMob m : s.mobs) {
+			if (id.equals(m.uuid) && GsonHelper.getAsString(m.spec, "role", m.key).equals(role)) {
+				return true; // (a lost mob taken back keeps its new UUID here, not in its role)
+			}
+		}
+		return (r == null || r.who().isEmpty()) && entity.getTags().contains(arcTag(s.id));
+	}
+
 	/** A right-click on a villager an arc's {@code talk} names: it counts, and they say their line. */
 	public static InteractionResult onTalk(Player player, Level world, InteractionHand hand, Entity entity) {
 		if (!(world instanceof ServerLevel level) || !(player instanceof ServerPlayer sp) || hand != InteractionHand.MAIN_HAND
@@ -947,7 +995,7 @@ public final class ArcEffects {
 		for (Map.Entry<BlockPos, Stories.Entry> en : List.copyOf(data.halls.entrySet())) {
 			for (Quest q : List.copyOf(en.getValue().quests)) {
 				int i = q.current();
-				if (q.arc != null && i >= 0 && q.objectives.get(i) instanceof Objectives.Talk talk && entity.getTags().contains(roleTag(talk.role()))
+				if (q.arc != null && i >= 0 && q.objectives.get(i) instanceof Objectives.Talk talk && plays(en.getValue(), q, talk.role(), entity)
 					&& level.getBlockEntity(en.getKey()) instanceof VillageHallBlockEntity hall) {
 					Component name = entity.getDisplayName();
 					Chat.chat(sp, talk.says().map(key -> Component.translatable("message.aliveworkplace.arc.says", name, Component.translatable(key)))

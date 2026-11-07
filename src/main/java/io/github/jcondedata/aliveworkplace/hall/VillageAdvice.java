@@ -99,7 +99,7 @@ public final class VillageAdvice {
 		if (villagers >= 5 && Decorations.beauty(level, hall) < 3) {
 			tips.add(new Tip("beauty", Items.FLOWER_POT));
 		}
-		List<ResourceLocation> built = BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
+		List<ResourceLocation> built = BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.map(BuildSiteManager.Finished::structure).toList();
 		if (wantsPokemonCenter(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon"),
 				VillageRanks.of(level, hall), built)) {
@@ -289,7 +289,7 @@ public final class VillageAdvice {
 	/** Finished buildings in the village whose next tier is a blueprint the server has (the "upgrade" tips, first {@link #MAX_UPGRADES}). */
 	public static List<BuildSiteManager.Finished> upgradable(ServerLevel level, BlockPos hall) {
 		List<BuildSiteManager.Finished> out = new ArrayList<>();
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
 			ResourceLocation up = BlueprintUpgrades.upgradeOf(f.structure());
 			if (!up.equals(f.structure()) && BlueprintLibrary.get(level, up).isPresent()) {
 				out.add(f);

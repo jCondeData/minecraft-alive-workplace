@@ -784,7 +784,7 @@ public final class SicknessStory {
 	 * workstation, or is dropped at their feet: the round doesn't swallow it.
 	 */
 	static void stow(ServerLevel level, Villager healer) {
-		ItemStack held = healer.getMainHandItem();
+		ItemStack held = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(healer); // a shown ware isn't stored (B776)
 		if (held.isEmpty() || held.is(ModItems.THREE_HERB_TONIC)) {
 			return;
 		}

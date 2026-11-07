@@ -317,7 +317,7 @@ public final class Founder {
 				case RANK -> true;
 				case LEGEND -> key.equals("chronicle.aliveworkplace.legend.settled");
 				case WEDDING -> !wedding;
-				case RAID -> key.equals("chronicle.aliveworkplace.raid_won");
+				case RAID -> key.equals("chronicle.aliveworkplace.raid_won") || key.equals("chronicle.aliveworkplace.raid_won.one"); // a raid of one (B833)
 				default -> false;
 			};
 			if (keep) {
@@ -353,7 +353,7 @@ public final class Founder {
 
 	/** The statues the village's builders finished round {@code hall}. */
 	public static List<BuildSiteManager.Finished> statues(ServerLevel level, BlockPos hall) {
-		return BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream().filter(f -> f.structure().equals(STATUE)).toList();
+		return BuildSiteManager.get(level).finishedInVillage(level, hall).stream().filter(f -> f.structure().equals(STATUE)).toList();
 	}
 
 	/**
@@ -591,7 +591,7 @@ public final class Founder {
 	/** The building styles of what the village's builders finished round {@code hall}, most used first. */
 	public static List<String> styles(ServerLevel level, BlockPos hall) {
 		Map<String, Integer> count = new LinkedHashMap<>();
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
 			BlueprintStyles.styleOf(f.structure()).ifPresent(s -> count.merge(s, 1, Integer::sum));
 		}
 		List<String> out = new ArrayList<>(count.keySet());

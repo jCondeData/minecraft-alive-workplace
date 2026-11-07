@@ -7,12 +7,12 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931
 
 ## 1. What a player sees
 
 A builder short of three barrels with only oak logs in the chest: the village's Carpenter fetches the logs, and at the
-bench the line above their head says "making 3 Barrel (step 1 of 3)", then step 2 (the slabs), then step 3; the barrels
+bench the line above their head says "making 3 Barrels (step 1 of 3)", then step 2 (the slabs), then step 3; the barrels
 go into the builder's chest and the build carries on. A Mason with a furnace by the stonecutter turns clay balls into
 brick stairs the same way (fired, laid, cut, a coal burnt for every eight fired). The Librarian makes the bookish parts,
 the Tinkerer the metal ones (raw iron fired into ingots, then bars or a lantern), the Toolsmith tools, the dyer dyed
@@ -23,8 +23,22 @@ A job only crafts from what no open build needs. When two builds share a chest o
 stocked for one are never turned into planks for the other: the Carpenter uses only what's left over once every other
 build's remaining list is counted, so neither build ends up waiting for a log that went into the other's planks (B696).
 
+What a job makes for a builder goes where that builder looks for materials: the chests by his Blueprint Table, or,
+when there are none, the village Storehouse (else another village-mate's chests he takes from). A builder with no
+chest anywhere he looks isn't crafted for, so nothing made for him is left lying by the crafter's bench (B721).
+A builder who has a chest of his own still gets it there, never in the Storehouse, and two chestless builders each get
+theirs.
+A job is only taken when what it makes fits in those chests as they are; with them full, the crafter waits and looks
+again later. If they fill up while he carries the job to them, he keeps it in his bag and tries again every two
+seconds (for up to two minutes, then takes it home), so nothing is dropped by a full Storehouse and nothing is made
+twice (B760). He only takes it home if the chests by his own bench have room for it; with none there, or full ones,
+he keeps carrying it and trying the Storehouse, so it never ends up on the ground by his bench (B773).
+What he took home isn't lost to the builder: while a builder still waits for something that lies in the chests by
+the crafter's own bench (and those aren't chests the builder takes from himself), the crafter carries it on to the
+builder's chests or the Storehouse as soon as they have room, before he makes any more of it (B778).
+
 When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
-under "Short of": "Can't be made yet: short of 4 Oak Logs to make 3 Barrels" (items named in the plural after a count above one, B426). When no job in the village makes a crafted
+under "Short of": "Can't be made yet: short of 4 Oak Logs to make 3 Barrels" (items named in the plural after a count above one, B426, for items that have a plural in the language file; every wood's logs and stems have one, "short of 2 Crimson Stems", and so do the countable things crafters run short of, such as sticks, nuggets, ingots, clay balls, feathers, diamonds, bricks, eggs and buckets, B920). When no job in the village makes a crafted
 part at all (oak stairs in a village with a Mason but no Carpenter), the line says "Nobody here makes: Oak Stairs".
 A Mason's kiln counts its fuel as a raw material too: twelve clay balls and one coal for three brick stairs (a coal
 for every eight fired) is "short of 1 Coal to make 3 Brick Stairs", and nothing is taken (B352).
@@ -67,12 +81,15 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   saved bag; the claim on the request is taken again);
 - lets the saved job go when its workstation has been gone for 600 ticks (`CrafterWork.benchlessTick`, every villager's
   AI step, B353): the claim released, `crafter_job` dropped and the bag emptied into the asker's chests (at the
-  villager's feet when those are gone or full). A bench put back or moved within that time carries the job on.
+  villager's feet when those are gone or full). A bench put back or moved within that time carries the job on. Another
+  job's workstation doesn't count (B1009): a novice who loses his bench is made jobless by vanilla and may take a free
+  lectern, so the saved job names the profession that took it (`profession`, a registry id; empty in older saves, which
+  count any job site as before) and is let go all the same once he's in another job.
 
 The builder's status (`BuilderStatusSync.supplyLines`) adds `JobShortages.line` under "Short of" while it waits:
 first up to two chains short of a raw material, else the crafted parts (something a crafting table, stonecutter,
 furnace or furniture bench makes) that no job has looked at in the last 600 ticks, once the site has waited that long.
-The cook, the luxury makers, the Weaponsmith and the Fletcher keep their old one-plan way.
+The cook, the luxury makers, the Weaponsmith and the Fletcher keep their old one-plan way. Their status lines name what they make in the plural after a count above one: "making 8 Spectral Arrows" (B916; bows, crossbows, shears and the stone and iron tools and swords have plurals too), and so do the cook's pies, cookies, cakes and stews ("cooking 2 Pumpkin Pies"). His Smoker dishes too: "cooking 4 Cooked Porkchops" and "cooking 8 Bowls of Beetroot Soup" (B931); the meats and fish that read as a mass ("4 Cooked Chicken", "8 Steak") keep their one form.
 
 The retired Crafter: `Crafters.tick` (every villager's AI step, from `VillagerMixin`) finds a villager whose profession is
 `aliveworkplace:crafter` and makes it jobless: the workbench's POI ticket let go, the `crafter_job` dropped (and its claim
@@ -88,7 +105,11 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 ## 4. Saved data
 
 - `crafter_job` on the villager (since 37.14, now on every crafting job's villager): the job in hand (who it's for, the
-  chain's steps, what it takes, the phase and the next step). None: no job in hand, as on every older save.
+  chain's steps, what it takes, the phase and the next step). None: no job in hand, as on every older save. A job
+  that names an item no loaded mod has any more (its target, a step's makings or what it takes; a mod taken out of
+  the pack) doesn't load and the villager has no job in hand; the bag still loads whole, and with no job its makings
+  go back into the chest by the workstation (`QaCrafterJobRemovedMod1102GameTests`,
+  `QaAttachmentRemovedModId1102GameTests`).
 - The bag (`builder_bag`) and items made (`items_crafted`) are the ones every crafting job already saves.
 - Nothing new is saved: the shortage notes are kept in memory and renewed every look.
 
@@ -119,6 +140,15 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - 37.16a: the Crafter's Workshop rule (`workplace_crafters_workshop`) is deleted; its condition
   `builders_short_of_parts` stays (a pack's rule may name it) and never holds, saying why.
 
+- B778 (lane-a-1101-1823): what a job took home after the long wait (B773) is carried on to the builder once his
+  chests or the Storehouse have room, as a job with nothing to make (`CrafterWork.carryOn`: up to what he still
+  misses, from the chests by the crafter's own bench that the builder doesn't already take from). Chosen over the two
+  other ways: carrying it for good (B773's no-room branch) would keep the crafter from all other work for as long as
+  the Storehouse stays full, and letting builders take from a crafter's chests (`Village.takesPart`) would change
+  every place that list is used (the job board, the hauler golems, enchanting, workplace rules) and let builders take
+  the crafter's own makings. Anything of the asked item in those chests is carried on, whoever put it there: they are
+  the crafter's, and nothing else takes from them.
+
 ## 7. Known limits
 
 - What's short is found along the first way down the recipes: with oak and spruce logs both short it names oak.
@@ -133,6 +163,15 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `JobChainGameTests.theMasonFiresLaysAndCutsBrickStairsFromClay`: a Mason's kiln chain, the fuel burnt.
 - `JobChainGameTests.aShortRawMaterialIsNamedOnTheBuildersLineAndNothingIsTaken`: a raw material short, said on the
   builder's line, nothing taken.
+- `QaLaneD1104GameTests.qaB426TheRealLackReadsOneAndTwoLogsRight` (QA, B426): from the real lack, "short of 1 Oak Log
+  to make 4 Oak Planks", "short of 2 Oak Logs to make 8 Oak Planks" and "short of 2 Oak Logs to make 1 Barrel"
+  (and since B920's fix two jungle, cherry, crimson or warped logs read in the plural too:
+  `QaLaneD1104GameTests.qaB426EveryWoodsLogsAreNamedInThePlural`).
+- `QaLaneC1104eGameTests` (QA, B878/B920/B931): 1 Stick, Egg or Cherry Log reads in the singular and 0, 2, 8 and 64
+  in the plural; "short of 2 Sticks, 1 Copper Ingot to make 1 Iron Pickaxe" and "short of 1 Crimson Stem to make 4
+  Crimson Planks"; every `plural.aliveworkplace.*` key in the language file names a real item or creature, isn't empty
+  and differs from the one-form (but for names already plural, "Fine Clothes", "Drowned"); every countable input and
+  output of the mod's luxury recipes has a plural.
 - `QaCrafterFurnitureBugTests.b352AMasonShortOfCoalSaysSoAndTakesNothing`: the kiln a coal short names the coal, not
   the bricks, and takes nothing (B352).
 - `QaJobChainBugGameTests.aTinkererWithOreButNoCoalNamesTheCoalAndTakesNothing`: the forge with the raw iron but no
@@ -160,12 +199,36 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `QaJobChainLetGoGameTests.aBenchBrokenBeforeAnythingWasCarriedLetsTheJobGoCleanly`: the bench broken while the
   Carpenter is still fetching, empty-handed: let go after half a minute, nothing taken, and the bench put back finishes
   the build (B353).
+- `QaCrafterNewJob1107BugTests.qaANewCarpenterWhoTakesAnotherJobLetsTheRequestAndTheWoodGo`: a 0-XP Carpenter carrying
+  the builder's logs loses his bench and may take a free lectern: the job and its claim let go, the bag emptied (B1009).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `QaStewardMaterials1031GameTests.aCarpenterNeverCraftsAwayLogsAnotherOpenBuildNeeds`: two builds sharing a chest,
   the logs there all B's: the Carpenter leaves them, and B finishes (B696);
   `aCarpenterStillCraftsFromALogNoOpenBuildNeeds`: one log more than B needs is crafted into A's planks, and both
   finish.
+- `QaCarpenterReserve1031GameTests.aCarpenterLeavesTheStorehouseLogsAnotherBuildNeeds`: the same with B's logs in the
+  village Storehouse, out of both benches' reach: the Carpenter leaves them and B finishes (B696);
+  `aCarpenterStillCraftsTheStorehousesSpareLog`: one log more there is crafted and brought to A's chest, and both finish.
+- `QaCarpenterChestlessBug1031Tests.aCarpentersPlanksForABuilderWithNoChestReachHim`: the same spare log for a builder
+  with no chest by his table: the planks go into the Storehouse, never onto the ground, and his row is built (B721).
+- `QaCarpenterStorehouse1101GameTests`: the same case counted at every tick, a log as 4 planks, with nothing lost or
+  made twice (`aChestlessBuildersPlanksAddUpExactlyThroughTheStorehouse`); a builder with his own chest gets them in it,
+  never in the Storehouse (`aBuilderWithHisOwnChestStillGetsThePlanksInIt`); two chestless builders both build
+  (`twoChestlessBuildersBothGetTheirPlanks`); the Storehouse chest broken mid-delivery loses no plank
+  (`theStorehouseChestBrokenMidDeliveryLosesNoPlanks`); no Storehouse and only the Carpenter's own chest leaves nothing
+  lying (`noStorehouseAndNoChestMeansNoPlanksLeftLying`); a save and reload on the way still delivers to the Storehouse,
+  once (`reloadedOnTheWayToTheStorehouseDeliversOnce`) (B721).
+- `QaCarpenterFullStorehouseBug1101Tests.aFullStorehouseNeverLeavesThePlanksOnTheGround`: with the Storehouse full, no
+  log is crafted and no plank lies on the ground (B760); `CarpenterFullStorehouseB760GameTests`:
+  `aFullStorehouseThatFreesUpGetsThePlanksThen` (one log used once there's room, the row built) and
+  `aStorehouseFilledOnTheWayIsWaitedFor` (held in the bag, put in once room comes back).
+- `QaVillageEconomySaves1101BugTests.aStorehouseThatStaysFullAfterHeSetOffLeavesNoPlanksLying`: a Storehouse that fills
+  while he carries the planks and stays full never leaves them on the ground, 3200 ticks on (B773).
+- `QaCarpenterFullStore1101cBugTests.planksTakenHomeStillReachTheBuilderWhoAsked`: planks taken home after the long
+  wait reach the chestless builder once a Storehouse slot frees, none on the ground and the wood adding up (B778);
+  `QaCarpenterHomePlanks1101GameTests.reloadedWhileCarryingHomePlanksOnStillFeedsTheBuilder`: the same with a save and
+  reload of the Carpenter on his way, the row built and no job left saved.
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.
 - `JobChainGameTests.theCarpenterMakesTheSlabsTheBuilderNeeds`, `theCarpenterFetchesTheOneLogItNeeds`,
   `oneCarpenterServesTwoBuilders`: one step, exactly one log, two askers.

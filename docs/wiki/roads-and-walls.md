@@ -4,7 +4,7 @@ The roads and the wall you draw on a City Plan get built by the village's builde
 steps, a road to each trading partner, and a wall once the village has been raided. Part of 1.1 (Villages that build
 themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18, B283
+Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18, B283, B752, B753
 
 ## What a player sees
 
@@ -29,7 +29,7 @@ Town replaces its palisade a piece at a time.
 
 **Finding the way.** For each approved road the Steward's hall searches a way over the ground (at most 600 steps of
 the search a tick per hall): it keeps the road's width clear, goes round buildings and anything a player placed, and
-climbs at most one block at a time. The way is saved on the road and cut into stretches of 24 blocks. Each stretch
+climbs at most one block at a time. A Wonder's ground counts as a building's: one laid out and waiting for a stage's goods, or finished (B753). The way is saved on the road and cut into stretches of 24 blocks. Each stretch
 becomes a small generated blueprint and an ordinary build site.
 
 **Roads wait their turn.** At most 2 stretches are open at once, and none while a building of the village waits for
@@ -56,6 +56,8 @@ whole segments between them, and a gate wherever a road of the plan crosses. Eac
 height. With no wall line drawn, the Steward draws one of his own, 4 blocks outside the zones on every side. At most 3 wall pieces
 are open at once, and never one on the spot of a piece still being built, at any height (B283: a tower with its roof
 on but its ladders not yet in had a second tower opened on top of it).
+Nor is a piece opened through a finished building or a Wonder's ground (finished, or laid out and waiting for its goods):
+the round skips it and opens the next piece on open ground (B752).
 If a piece's builder dies (in a raid, say), its site stays open with everything built so far, and the hall's
 next round hands it to the next free builder, who finishes it where it stands; new pieces wait until it has someone
 (B488: the half-built tower was forgotten and a second one went up on its roof).
@@ -108,13 +110,17 @@ The generated blueprints for stretches are saved the way the Shape Planner saves
 - A road between villages reaches 256 blocks at most by default, so far-apart villages get two halves and two
   milestones, not one road.
 - Roads are built only while no building waits for a builder, so in a busy village they come last.
-- Not checked for this page: how gates open and close (the README says they are shut at night).
+- How gates open and close is on [Sieges](sieges.md) ("Every night the guards shut the gates").
 
 ## Proof
 
 GameTests: `RoadGameTests` (12: a 40-block street three wide in stonework with stair steps, a player's fence left
 standing, save and reload mid-stretch, the rank left alone, a new building's lane, the two-stretch limit, the switch
 off), `CaravanRoadGameTests` (4), `WallGameTests` (9), `CityPlanRoadGameTests` (4).
+`RoadWonderGameTests` (2, B753: a street goes round a Wonder waiting for its goods and round a finished one, and straight
+once the Wonder is forgotten).
+`QaRoadWonderSmallRadius1103GameTests` (QA, B753): at the smallest village radius (16) a street still goes round a
+Wonder laid out about 16 blocks from the hall, and straight once it is forgotten.
 
 QA (27.15, 27.16): `QaRoadGameTests` (6: each shipped style's blocks and mix weights, broken style files skipped,
 stretches of at most 24 that never overlap, no two-block step, going round a finished building and a player's blocks,
@@ -129,7 +135,12 @@ starting from the end of the nearest street; both chronicle lines and the milest
 `QaWallGameTests` (9: raided 6 days ago still proposed; a bandit camp wants a wall and not once it's gone; the
 Steward's own line round the zones, on the plan and not built before approval; wall kit files refused whole when
 malformed and skipped without their mod; a gate for each crossing and none for a road inside; towers at least every
-28 blocks; each piece at its ground's height; at most 3 sites open; the desk and chronicle lines read as written).
+28 blocks; each piece at its ground's height; at most 3 sites open; the desk and chronicle lines read as written). `QaStewardWalls1101Tests` (4, B752: no wall piece through a finished
+Well, a finished Wonder or one waiting for its goods, each opening the next piece instead; control on open ground). `QaWallsRoadsAroundBuildings1101GameTests` (8, B752 and
+B753: a Well sharing one corner column holds a piece and one column clear doesn't; six held pieces in a row skipped to
+the first free one; held pieces still skipped after a restart; a piece opens once its Well is gone and its Wonder
+canceled; a street between two Wells goes round a waiting Wonder, a turned finished Wonder, and a waiting Wonder read
+back from its save).
 
 Showcase scenes: `roads` (a street between two houses), `bridges`, `caravan_road`, `walls` (a palisade going up),
 `city_plan_ground` (the plan on the ground).

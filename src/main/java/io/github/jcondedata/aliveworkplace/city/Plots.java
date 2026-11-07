@@ -14,6 +14,9 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.wonder.WonderManager;
+import io.github.jcondedata.aliveworkplace.wonder.WonderSite;
+import io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep;
 import io.github.jcondedata.aliveworkplace.wood.Trees;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -237,6 +240,9 @@ public final class Plots {
 		@Nullable
 		BuildSiteManager sites;
 		int changes;
+		@Nullable
+		WonderManager wonders;
+		int layouts;
 		long buildsAt = NEVER;
 		long buildsPart;
 		long tablesAt = NEVER;
@@ -254,7 +260,8 @@ public final class Plots {
 	private static int tableLookups;
 
 	/** The builds of one area as read at one tick, so the searches one planning second starts read them once. */
-	private record BuildsRead(BoundingBox area, long gameTime, BuildSiteManager sites, int changes, List<Build> builds) {
+	private record BuildsRead(BoundingBox area, long gameTime, BuildSiteManager sites, int changes, WonderManager wonders, int layouts,
+							  List<Build> builds) {
 	}
 
 	private static final Map<ServerLevel, BuildsRead> BUILDS_READ = new WeakHashMap<>();
@@ -345,7 +352,9 @@ public final class Plots {
 			s.planPart = plan.zones().hashCode() * 31L + plan.roads().hashCode();
 		}
 		BuildSiteManager sites = BuildSiteManager.get(level);
-		if (s.sites != sites || s.changes != sites.changes() || stale(s.buildsAt, now, BUILDS_EVERY)) {
+		WonderManager wonders = WonderManager.get(level);
+		if (s.sites != sites || s.changes != sites.changes() || s.wonders != wonders || s.layouts != wonders.layouts()
+			|| stale(s.buildsAt, now, BUILDS_EVERY)) {
 			int half = CityPlan.half();
 			BoundingBox area = new BoundingBox(hall.getX() - half - CLEAR, level.getMinBuildHeight(), hall.getZ() - half - CLEAR,
 				hall.getX() + half + CLEAR, level.getMaxBuildHeight(), hall.getZ() + half + CLEAR);
@@ -355,6 +364,8 @@ public final class Plots {
 			}
 			s.sites = sites;
 			s.changes = sites.changes();
+			s.wonders = wonders;
+			s.layouts = wonders.layouts();
 			s.buildsAt = now;
 			s.buildsPart = builds;
 		}
@@ -395,12 +406,14 @@ public final class Plots {
 	/** {@link #builds}, read once a tick for one area while no site or finished building comes or goes. */
 	static List<Build> buildsThisTick(ServerLevel level, BoundingBox area) {
 		BuildSiteManager sites = BuildSiteManager.get(level);
+		WonderManager wonders = WonderManager.get(level);
 		BuildsRead last = BUILDS_READ.get(level);
-		if (last != null && last.gameTime() == level.getGameTime() && last.area().equals(area) && last.sites() == sites && last.changes() == sites.changes()) {
+		if (last != null && last.gameTime() == level.getGameTime() && last.area().equals(area) && last.sites() == sites && last.changes() == sites.changes()
+			&& last.wonders() == wonders && last.layouts() == wonders.layouts()) {
 			return last.builds();
 		}
 		List<Build> builds = List.copyOf(builds(level, area));
-		BUILDS_READ.put(level, new BuildsRead(area, level.getGameTime(), sites, sites.changes(), builds));
+		BUILDS_READ.put(level, new BuildsRead(area, level.getGameTime(), sites, sites.changes(), wonders, wonders.layouts(), builds));
 		return builds;
 	}
 
@@ -428,7 +441,11 @@ public final class Plots {
 			p -> true, hall, reach, PoiManager.Occupancy.ANY).map(BlockPos::immutable).sorted(Comparator.comparingLong(BlockPos::asLong)).toList();
 	}
 
-	/** Build sites and finished buildings in this level whose box (grown by {@link #CLEAR}) meets {@code area}. */
+	/**
+	 * Build sites, finished buildings and Wonders' laid-out parts in this level whose box (grown by {@link #CLEAR}) meets
+	 * {@code area}. B747: a Wonder's parts are neither build sites while it waits for a stage's goods nor finished
+	 * buildings once it's done (B143), so every laid-out Wonder, going up or finished, is read from its saved placement.
+	 */
 	static List<Build> builds(ServerLevel level, BoundingBox area) {
 		ResourceLocation dim = Ids.of(level.dimension());
 		BuildSiteManager manager = BuildSiteManager.get(level);
@@ -440,6 +457,13 @@ public final class Plots {
 		}
 		for (BuildSiteManager.Finished f : manager.finishedIn(level)) {
 			add(level, out, area, f.structure(), f.placement());
+		}
+		for (WonderSite wonder : WonderManager.get(level).sites()) {
+			if (wonder.placement().isPresent() && wonder.placement().get().dimension().equals(dim)) {
+				for (WonderUpkeep.Part part : WonderUpkeep.parts(level, wonder)) {
+					add(level, out, area, part.plain(), part.placement());
+				}
+			}
 		}
 		return out;
 	}

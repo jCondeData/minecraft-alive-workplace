@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848, B876
 
 ## 1. What a player sees
 
@@ -20,13 +20,14 @@ Each mod at a glance (every one optional; the player guide's page is `docs/guide
 | Sophisticated Storage | Its chests and barrels are stores (always); the board's room line; a controller is one store for what it links | `moddedStorageNetworks` (the controller) | Vanilla chests only; off, each linked block is its own store |
 | Tom's Simple Storage | An inventory connector in the Storehouse is one store for its network; its terminal shows the village's goods | `moddedStorageNetworks` | Off, each chest on the network is its own store |
 
-With none of them installed, or `furnishedBuilds` off, every build is exactly the vanilla build; a building keeps the
-pieces it was built with whatever changes later, and a removed mod's pieces come back as vanilla pieces under upkeep.
+With none of them installed, or `furnishedBuilds` off, every build is exactly the vanilla build; a building, and a build
+already going up (over a restart too), keeps the pieces it began with whatever changes later, and a removed mod's pieces come back as vanilla pieces under upkeep.
 
 Nothing yet for players: the expansion's gate stays closed until 2.1. Behind it, a build started on a server with
 Handcrafted gets Handcrafted chairs, tables and fancy beds where the vanilla build had stair chairs, fence tables and
-beds (37.3); the Blueprint Table's preview, its supply report and the material list book show those pieces and cost
-their items, and so does the builder's shopping list.
+beds (37.3); the Blueprint Table's preview and its "All materials" list, the held Blueprint's preview, the supply
+report, the material list book and the Steward desk's "Needs most:" counts show those pieces and cost their items, and
+so does the builder's shopping list. They follow the order and the switch as soon as either changes (B893, B901, B902).
 
 Any mod's piece will do (37.13): a spruce chair is a spruce chair whichever furniture mod made it. The material list
 book shows the piece once, "Spruce Chair (any furniture mod)", with each mod's piece on hover, and counts any of them
@@ -70,7 +71,8 @@ lectern, the Print Shop a printer's desk by the press and its buyers' counter, V
 seven chairs (none in front of its doorway), and the Kitchen crockery on the worktop (in place of its potted fern). With Handcrafted and Beautify those become
 Handcrafted counters, desks, chairs, benches, shelves and crockery and Beautify picture frames, rose trellises and
 hanging pots of vines. The Healing Center's and Schoolhouse's desks are CobbleFurnies' Poké Ball desks whenever
-CobbleFurnies is in the list (the owner's answer). No piece ever stands on a job block, a bed or a chest: the
+CobbleFurnies is in the list (the owner's answer), in every style too: a city zone's style or one picked at the Table
+swaps only the wood and stone (B903). No piece ever stands on a job block, a bed or a chest: the
 workplaces' beds (the Healing Center's ward, the shopkeeper's, the cook's) stay vanilla beds, and every job still finds
 its block and exactly its own chests and barrels, because the furniture mods' pieces that hold items (Handcrafted's
 counters, desks, shelves, drawers, cupboards, nightstands and side tables, Cozy Home's storage counters, CobbleFurnies'
@@ -80,7 +82,8 @@ Villagers use the furniture (37.6). From supper (time 10500) until bed (12000), 
 evening meeting walks to the nearest free chair, stool, bench, couch or sofa of the furniture mods within 8 blocks and
 sits on it, as spectators sit in the Stadium's stands. They stand up for work, for bed, for danger (hurt, a hostile
 mob near, panicking or a raid), when the seat is broken, or with `furnishedBuilds` off. One seat holds one villager:
-a seat with anyone on it, or that another villager is already walking to, is passed over. Handcrafted's fancy beds are
+a seat with anyone on it, or that another villager is already walking to, is passed over. A villager who can't
+reach their seat in 30 seconds (penned in, say) gives up on it and leaves it to the others for a minute (B945). Handcrafted's fancy beds are
 real beds: villagers claim and sleep in them, and the house they stand in counts as their home (its grade, the Village
 Hall's list, free beds for a new baby). A home with a furniture mod's seat in it is a furnished home, worth 1 beauty
 to the people who sleep there (the "beauty near home" a Burgher or a Noble needs, M34). Vanilla stair chairs are not
@@ -90,7 +93,11 @@ A bed up a ladder is a bed like any other (B304). The Terrace is two homes under
 ladder: a villager without a bed takes a free one there, even next door to where he stands, and at bedtime he goes in
 by that home's door and climbs that home's ladder. Before, a villager could only claim a bed he could walk to, so the
 Terrace's beds stood free while villagers spent the night standing about its rooms (on a chest, say), and a villager
-coming in by the other home's door climbed the wrong ladder and gave his bed up.
+coming in by the other home's door climbed the wrong ladder and gave his bed up. A door between the ladder's top and
+the bed counts only if a villager can get through it, as vanilla's walking sees doors: a wooden one (he opens it) or
+any door standing open. A shut iron door is a wall to him, so a bed behind one up a ladder isn't claimed (B876). A villager
+without a bed who is already up in the wrong bedroom at bedtime (both its beds someone else's) takes a free bed next
+door too: he goes down his own ladder, along to the other home's door and up its ladder (B925).
 
 Every home of a multi-home build is furnished alike (B641): a Terrace or Terrace II furnished before B281 (its spots
 file then had no table and chair for the east kitchen, whose table stands against the party wall) kept spruce stand-ins
@@ -113,7 +120,9 @@ Storehouse chests with the gate closed (they always did, through the same item s
 gate (37.8): where a slot holds more than a stack, a stack upgrade or a limited barrel, the Storehouse board's info adds
 "Room for 6912 more items (some slots hold more than a stack)" under the usual "chests, items, empty slots" line ("1 chest", "1 item" and "1 empty slot" with one, B377 and B395), and
 porters keep filling such a store while any of its slots has room for another stack, even when no slot is empty. With
-only vanilla chests the board and the porters are exactly as before.
+only vanilla chests the board is exactly as before. Porters (and the Mechanic, the workers at Create's machines and
+builders putting their bag away) ask whether the goods they carry fit, so a vanilla chest with a part stack in every
+slot still takes more of what its stacks hold (B820); only a store with no room for those goods is full.
 
 A Sophisticated Storage controller (37.9, behind the gate and `moddedStorageNetworks`): put one in the Storehouse's area
 touching your Sophisticated barrels and chests, and the Storehouse treats everything it links as one store. The board
@@ -124,6 +133,10 @@ and the blocks are separate stores again, with everything still in them. A "Soph
 vanilla ones and a controller on top of the Storehouse block, touching the chests on both sides.
 A Sophisticated barrel or chest a builder adds to a controller's network joins it, even when it touches only another
 linked barrel, as it would if you placed it yourself (B238).
+A storage link counts what lies behind it once: linked to the controller with the Storage Tool, the storage behind it
+is the controller's; placed without the tool, or built by a builder, it links nothing, and the storage behind it is a
+store of its own. Break a linked link and that storage is a store of its own again, with its goods counted once (B257;
+`QaStorageHallCompat1104c3Tests`).
 Behind the gate (37.10), a Tom's Simple Storage inventory connector within the Storehouse's 8 blocks is one store for
 every inventory it joins: the chests, barrels and filing cabinets touching it (and touching those), and the one each
 cable connector on its cables faces. The board's first line counts the connector as one chest, and a second line says
@@ -405,8 +418,12 @@ rides, which can't be summoned.
   plant on a chain from a beam. The Kitchen is too small for a bench beside its table, oven, bed and larder hatch, and a
   block more in it made the chef's job test fail (B168), so its crockery takes the potted fern's place on the worktop.
 - The room in items is a line of its own, shown only where a slot holds more than a stack, so the board with vanilla
-  chests doesn't change (37.8). The porter's free stacks count a slot's room for more of what it holds; a load of
-  something else that doesn't fit stays in his bag and he waits, as with any full store.
+  chests doesn't change (37.8). A porter plans each trip from what of the worker's goods the store would take, tried
+  and undone (B820, as the Hauler Golem since B806), so room in a stack already there counts and he never fetches what
+  can't go in; a load of something else that doesn't fit stays in his bag and he waits, as with any full store.
+  Drop Boxes are looked at nearest first, and the first whose goods fit is emptied, so a nearer box whose goods have
+  no room never hides a farther one (B848, as the Hauler Golem since B847). A box whose goods only partly fit gives up
+  what fits and keeps the rest, and the farther boxes are emptied after it.
 - Seats (37.6): supper is the Village Hall's banquet hour (10500), and the evening runs till the villagers' schedule
   turns to rest (12000); vanilla villagers have no other meal hour, so "for meals" is supper. A villager's seat isn't
   saved: a villager sitting when the world is saved stands up after the load (the design note), so the seat is saved
@@ -416,7 +433,9 @@ rides, which can't be summoned.
 - The Grand style keeps its name and gains the Rechiseled rules rather than a new style, as the roadmap item names it
   (37.7); the rules are behind `furnishedBuilds`, so Grand on servers before 2.1 is unchanged. A Grand building half
   built when 2.1 turns the switch on gets its remaining floors and panels in Rechiseled
-  (not tested: whether a repair of a finished Grand building then swaps its floors).
+  A repair of a Grand building finished before the switch went on fills only the holes, in Rechiseled, and leaves
+  its standing vanilla floors alone, so the patched spots are Rechiseled among the old floors
+  (`QaGrandRepair1107CompatTests`).
 - A Tom's network is read through its connector only at the Storehouse (design note M37, rule 4): a worker's own
   chests on a network stay separate stores, as at 2.0 (37.10).
 - Lanes don't make review packages (sessions.md, 2026-10-04): the digest sends the design note as 37.1's package.
@@ -468,6 +487,11 @@ Handcrafted (compat) `TerraceSleepCompatTests.aVillagerWithoutABedTakesAFreeFanc
 `terrace_sleep` (B310: it moves the villagers in a server task after the one placing the Terrace, since the placed beds
 count as beds only once the tasks the placing queued have run; looked up in the same task, it found no beds and nobody
 moved in).
+B925: `QaTerraceUpstairs1104c2BugTests.qaAHomelessVillagerAlreadyUpInTheWrongBedroomTakesAFreeBedNextDoor` (failing
+before the fix).
+B876: `QaHallBeds1103cBugTests.aBedBehindAnIronDoorUpALadderIsNotClaimable` (failing before the fix),
+`QaHallBeds1103cBugTests.aBedBehindAnOpenIronDoorUpALadderIsClaimable` (open, then shut again) and
+`QaHallBeds1103cGameTests.aBedBehindAShutOakDoorUpALadderIsClaimable`.
 B300: `FloatingFurnishingsGameTests.noFurnishedBlueprintHasAFloatingPiece` (every furnished blueprint, vanilla and
 with one-block tables), `FloatingFurnishingsGameTests.aPotOnALowerTableSitsOnIt`,
 `FloatingFurnishingsGameTests.aBuiltFurnishedHomeHasNothingFloating`, `FloatingFurnishingsGameTests.aPieceLeftOnNothingIsSetDown`.
@@ -482,7 +506,33 @@ and a missing list, the list off the screen and in the saved file), `FurnishingC
 `FurnishingTableGameTests.withoutFurnitureModsTheBuildIsVanilla`,
 `FurnishingTableGameTests.theFirstModWithAFittingPieceIsChosen`, `FurnishingTableGameTests.switchedOffTheBuildIsVanilla`,
 `FurnishingTableGameTests.aSiteSavedMidBuildKeepsItsChoice`, `FurnishingTableGameTests.aRemovedModsPieceTurnsBackToVanilla`,
-`FurnishingTableGameTests.eachMistakeInAFurnishingTableIsNamed`;
+`FurnishingTableGameTests.eachMistakeInAFurnishingTableIsNamed`; QA's `QaFurnitureModGone1101GameTests` (3, the mod
+removed as a restarted server sees it: a finished nook's gone chair is put back by upkeep as its vanilla chair, which
+is what the repair asks for; a restart without the mod mid-build, after the chair went down, still ends with the vanilla
+chair; a site saved mid-build plans and lists the vanilla piece and saves again without the gone block; a two-block piece
+with one block gone is dropped whole while another mod's piece in the same choice is kept);
+QA's `QaFurnitureOrderMidBuild1101GameTests` (3: the order emptied, or the mod added, after a build began, then a
+restart: the nook still finishes with the chair it was begun with; a site saved before its first plan chooses when
+it is planned, one planned vanilla stays vanilla);
+QA's `QaFurnished1103fGameTests` (7: every furnished build in every style lists what its builder plans, pieces
+included, and a Dark Oak chair is a dark oak chair; the choice survives a save and reload at every stage with the order
+emptied or the switch off; the cottage in every turn and mirror gets its pieces on their spots at the same cost; a Dark
+Oak cottage with the pieces is built from exactly its materials, none left over; a player's block on a chair spot is
+left by the repair; a vanilla chair broken after the build is put back as it stood, for one stair; a nook begun with
+the switch off and switched on mid-build stays vanilla);
+QA's `QaBuildViews1103gGameTests` (2: with the switch off or no installed mod in the order, the Table's preview and
+materials and the Steward desk's needs are the vanilla build's; the held Blueprint's preview draws what a new site of
+it builds, as drawn and in Dark Oak);
+QA's `QaFurnishedViews1104cGameTests` (9, B893, B901, B902, B903: for every furnished build, and the cottage and the
+Healing Center in every style, the Table's list and preview and the desk's needs are exactly what a new builder's site
+plans; the switch turned off and on again and the order changed between two Table opens never leave a stale list,
+preview or count; a mod in the order that isn't installed is passed over; a build going up keeps its pieces after the
+order changes and over a save and reload while a new one follows the new order; every level of the Healing Center and
+Schoolhouse, in every style and a village-color style, has the Poké Ball desks and is furnished on the same spots as
+drawn);
+QA's `QaTableFurnished1104GameTests` (3, B893, B901: the Table's preview follows the order and the switch back and forth
+on one running server, never a preview cached a step before; with a mod first, the Table's "All materials" list is item
+for item the list of the site a builder gets for that blueprint, as drawn and in Dark Oak);
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.
@@ -507,6 +557,9 @@ barrels: before the tag the Print Shop's Handcrafted desk and counters counted a
 `FurnishedWorkplacesCompatTests.theHealingCenterAndSchoolhouseGetPokeBallDesks`. Showcase scene `furnished_workplaces`.
 37.8: `StorageRoomGameTests.vanillaRoomIsCountedAsBefore`,
 `StorageRoomGameTests.aFullVanillaStoreIsFullForPorters` (no mods: the vanilla counts and board unchanged);
+B820: `PorterGameTests.porterFillsAStoreWithAStackInEverySlot` (a cobblestone in each of the 27 slots: the miner's
+spare cobblestone still goes in) and `PorterGameTests.porterLeavesTheGoodsWhenTheStoreIsBrimFull` (every slot a full
+stack: nothing taken); B848: `QaDropBoxMixed1103GameTests` (2, QA: a nearer box of 32 cobblestone with no room and 8 logs with room gives up its logs and keeps the cobblestone, then the farther box's 32 logs come in, for the porter and the Hauler Golem), `QaLaneC1102eBugTests.qaB847APortersFartherDropBoxWhoseGoodsFitIsEmptiedPastANearerOneThatDont` (QA: past a nearer Drop Box of cobblestone with no room the porter brings a farther box's 32 logs in), `DropBoxFitOrderGameTests.thePorterEmptiesTheNearerDropBoxFirstWhenBothFit` and `DropBoxFitOrderGameTests.thePorterTakesNothingWhenNoDropBoxFits` (nothing taken or dropped for 1,200 ticks); `QaStackRoom1102cGameTests` (QA): with 63 cobblestone in every slot the porter carries exactly the 27 that fit and the miner keeps the rest; ender pearls, 16 to a stack, in every slot leave a Drop Box's 20 pearls where they are, and with 15 in every slot all 20 go in; `QaMechanicRoom1102cCompatTests` (QA): the Mechanic empties exactly as much flour as the store's flour stack has room for (all 32, or 14 with 18 left in the millstone) and reads full when only other kinds' part stacks are there; `QaDropBoxRoom1103cGameTests` (QA, B848): a porter goes back for the Drop Box he passed over once the Storehouse has room; an empty Drop Box never makes the porter say the storehouse chests are full.
 with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierStoresAndGivesItems` (all 36 blocks),
 `SophisticatedStorageCompatTests.porterFillsALimitedBarrelFromASophisticatedBarrel`,
 `SophisticatedStorageCompatTests.builderUsesAndLeavesSophisticatedStorage`,
@@ -541,7 +594,7 @@ Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, whi
 
 37.6 (no mods): `FurnitureSeatsGameTests.theSeatsTagLoadsWithoutTheFurnitureMods`; with Handcrafted (compat):
 `FurnitureSeatsCompatTests.aVillagerSitsOnAHandcraftedChairAtSupperAndGetsUpAtDawn`,
-`FurnitureSeatsCompatTests.aSeatInUseIsntTakenTwice`, `FurnitureSeatsCompatTests.aVillagerStandsUpWhenHurtAndNobodySitsWithTheSwitchOff`,
+`FurnitureSeatsCompatTests.aSeatInUseIsntTakenTwice`, `FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt` (B945), `QaSeatGiveUp1104cCompatTests` (3, QA, B945: after giving up he still sits on a farther open chair, sits on the same chair once the minute is over and it can be reached, and the chair stays free for a villager arriving during the minute), `FurnitureSeatsCompatTests.aVillagerStandsUpWhenHurtAndNobodySitsWithTheSwitchOff`,
 `FurnitureSeatsCompatTests.aSeatLoadedFromASaveLetsItsVillagerGo`,
 `FurnitureSeatsCompatTests.aVillagerClaimsAndSleepsInAFancyBedAndTheHouseIsTheirHome` (the fancy bed is a villager home
 point of interest, the villager claims and sleeps in it, the Starter Cottage it stands in is their home, and its chair

@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000
 
 ## What a player sees
 
@@ -13,7 +13,9 @@ and rank, villagers, beds, food in store, guards, wellbeing, requests, buildings
 (map, the Book of Edicts, the bell, mercenaries, the Chronicle, a festival, trade, "What next?", the bank). On the
 left a list: the page tabs, then everyone who lives within 64 blocks, each as their workstation (stacked as high as
 their level) with their name and job. The pane on the right reads out whatever is under the mouse, every line of it;
-with nothing there it shows the village's numbers "at a glance". Click a villager and they glow for ten seconds so you
+with nothing there it shows the village's numbers "at a glance". A button only ever reads its own lines: the item drawn on it (the iron sword on the Mercenaries and
+Guards buttons) never adds its attack damage or other item lines (B19). Counts read in the singular for one (B833): "1 kind of meal in the
+store" on the Food button, "1 mercenary is here until dawn" on the Mercenaries button. Click a villager and they glow for ten seconds so you
 can find them, and stay in the pane (the wheel scrolls a long one; × or Esc puts them away). Click a jobless villager
 to see the free workstations and give them one. Every page of the hall opens in the same screen. (Since Milestone 40
 the left side is the sidebar and the villagers are the People table; see below.)
@@ -38,7 +40,8 @@ empty section, season, day and year. The client (`VillageHallMenuScreen`, hooks 
 the open section's buttons, all as labeled rows, a plain sentence over the list when the section is empty (People
 with nobody, Homes & Food with no beds or food, Buildings with nothing going up, Defense with no guards, Quests with
 none open, Trade with no neighbor in range, Laws & Realm with no edict or realm), and with nothing hovered the advice
-tips (Overview; the advice button's lines carry every tip and how) or the section's one-line purpose. A sidebar click
+tips (Overview; the advice button's lines carry every tip and how, after a first line that counts them: "1 suggestion,
+first: ..." for one, "3 suggestions, first: ..." for more, B810) or the section's one-line purpose. A sidebar click
 is vanilla's menu-button click (`clickMenuButton(player, ordinal)`), which remembers the section per player while
 the server runs (`HallSections.last`, not saved) and lays the main page out again, from any page. A page opened from a
 section keeps the sidebar; its back button returns to the section. The Book of Edicts or a page opened on its own
@@ -77,16 +80,30 @@ Stonecutter" (counted over every free block, a shared block such as a lectern co
 named by the free blocks themselves, nearest kind first: "Carpenter · 1 free Carpenter's Bench, 1 free Crafting
 Table", B658), then the rest grayed: "Mason · place a Stonecutter first", a job above their class with the class it needs (34.8), "Librarian ·
 their job now". The Builder is one of them ("Builder · 1 free Blueprint Table"). Last, for a villager with a job, **No
-job**. Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
+job**. Hired mercenaries, relief riders and a story's visitor such as Doctor Wren aren't the village's to
+employ: their row shows their own job, they count as working, and Job ▾ offers nothing (B889), even once they have
+taken a block of their own, a mercenary a free guard post or Doctor Wren a brewing stand: a click says "Mercenary's job
+can't be changed here." (B895: `HallRetraining.canRetrain` refuses a `HallPeople.visitor`), and No job leaves
+Doctor Wren the Cleric she came as (B905). Sneak-clicking one with a job's item says the same (B906, `Stations.take`). Hovering a line shows where the nearest free block is, the price and what the click does. For a worker, a first
 click on a job sends the offer to chat and marks the line ("Click again to pay 20 emeralds: Dara becomes a Mason"); a
 second pays and retrains them through 36.18's `HallRetraining.retrain` (the price, the class check, "someone took that
 workstation first", not enough emeralds: nothing changes and the player is told how short), and the list closes on a
-row that says the new job. A builder hands his builds back (`Retraining.dropWork`). A jobless villager is given the
-block in one click, for nothing (`VillageHalls.assign`, as the free jobs page). No job is free, also two clicks: the
+row that says the new job. A builder hands his builds back (`Retraining.dropWork`); a Steward puts the
+City Plan he carries on his rounds down, as a dismissal does (`Stewards.stepDown`, B886), and the hall's place is free. A guard retrained or given No job on his way to a rung alarm bell stops running for it and doesn't answer the next ring (unless, jobless, he takes a guard's block back by himself), and a guard friend's "tools of my trade" request stays finishable after No job. A jobless villager is given the
+block in one click, for nothing (`VillageHalls.assign`, as the free jobs page). The block a jobless villager is walking
+to by himself, which vanilla holds for him on the way, is free on his own list and nobody else's (B807:
+`VillageHalls.freeStations(level, hall, villager)`, `Stations.walkingTo`). No job is free, also two clicks: the
 first says plainly that their trades and level go and their block is left free; the second takes the job away
-(`Retraining.unemploy`: the builds handed back, the block let go, profession none, level 1). They may then take a free
+(`Retraining.unemploy`: the builds handed back, the block let go, profession none, level 1). Either change closes a
+trade screen another player has open with the villager, since the old trades are gone (B899: before, it kept listing
+them while the server answered with the new job's). They may then take a free
 block nearby by themselves, as any jobless villager does. A grayed line's click says what's missing ("The Mason job
-needs a free Stonecutter: place one in the village first"). Children, nitwits and Legends get a grayed Job ▾; with
+needs a free Stonecutter: place one in the village first"). A retired elder's
+list is all grayed, its header and each line saying "Bram has retired and takes no job now: they mentor the young
+instead." whether or not a block is free, and a click says so too (B897); his own page, opened from his row, grays
+every free block with the same line (B896: not "Someone took that workstation first") (B885:
+`VillageHalls.assign` also refuses a retired villager before it takes the block, so a Stonecutter is never held for
+nobody). Children, nitwits and Legends get a grayed Job ▾; with
 `workplaceRetraining` off it's hidden on every row. No new packet: Job ▾ is a menu-button click of `HallJobs.OPEN`
 (100000) + the row's slot (again: closes), a job is `HallJobs.PICK` (200000) + its registry number (No job:
 `VillagerProfession.NONE`'s), `HallJobs.CLOSE` closes it; the list reaches the client inside the open person's button
@@ -175,7 +192,9 @@ says so ("No Builder can take the ...: none has a bench near it and room in thei
 Builder gets it queued "after the current build", once however often it is clicked. In a village somebody owns, only
 the owner and their friends can order one. The tab says how many builds can go up a level ("1 build", "2 builds").
 
-The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day), trade routes
+The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day, anywhere in the
+village: within its radius across and 32 blocks up or down, so a death on its rim up a hill is written too, B780;
+"(1 entry)" on its button for a chronicle of one, B744), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
 Book of Edicts, the calendar, Legends, the Festival Cup and Classes. The bell calls everyone home. A cake calls a
 festival. A named Name Tag used on the hall names the village (the tag isn't used up; like the City Plan, the Village Ledger and
@@ -183,6 +202,15 @@ the charter, it works from the off hand when the main hand is empty, B360); othe
 name such as Thornholm.
 
 ## How it works
+
+**The village's buildings are its claimed area (B620).** Whatever counts the village's own finished buildings (its
+beauty, the buildings its rank needs, its Market Square, Arena, Chapel, Manor ballroom, services, gates, towers, battle
+stations, defenses against a siege, signposts, waystone plazas, guildhalls, shrines, the rebuilds and the Founder's statues, the
+buildings fires and disasters strike, the advice's upgrade tips, class needs and the Steward's conditions) takes those
+whose middle lies in the hall's radius or in a cell painted into one of its City Plan zones, the same rule as the
+Repairs page (B616) and the builder's reach (36.20): a Topiary Garden in a zone past the radius adds its beauty, one in an
+unpainted corner as far away doesn't (`BuildSiteManager.finishedInVillage`, tested in `ZoneVillageBuildingsGameTests`).
+Lookups that mean a distance (free ground for a statue, roads, maps, a Wonder's overlap) still measure one.
 
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32
 up and down) belongs to it; its villagers and its beds are counted by that one circle, so a villager and the bed beside him are
@@ -202,21 +230,52 @@ comes down for another, a story's or reform's step becomes the bread, started af
 **Needs set the pace.** Every grown villager eats once a day from the store (chests by the kitchens first, then by
 the Storehouses), wants a bed of their own, one guard for every ten villagers and light by the beds. How well that is
 met is the village's wellbeing, 0 to 100%. Work goes up to 25% faster in a well-kept village, at the usual pace at
-50%, and up to 20% slower in a badly kept one. Villages without a hall work at the usual pace.
+50%, and up to 20% slower in a badly kept one. Villages without a hall work at the usual pace. Only the village's own people
+count: hired mercenaries, relief riders and a story's visitor have no bed, meal or lamp of their own to want, so the
+Wellbeing button's "Sleeping in a bed", fed and villager counts leave them out, though a hired Guard still counts
+among the guards (B990, `QaBandBeds1107BugTests`, `QaHiredHelp1107dGameTests`: relief riders too, and the growth cap; `QaHiredHelpCounts1107cGameTests`: fed and lit counts, a mercenary in a bed, the village's own Guard). The hall's own villager count leaves them out too (B999, B1000): the People button's "Villagers: N" title, the
+rank's round and its "next rank" line, what the realm's tab shows, whether a festival is held and its cost, raids and warnings,
+the Seer's and Observatory's raid odds, the advice tips and the Steward's checks all count only the village's own
+(`VillageHalls.Census.villagers()`); the People table still lists the help with their jobs (`Census.everyone()`, which
+also keeps the People section from reading empty when only hired help is about), and they still work, eat and guard
+(`QaHiredRank1107dBugTests`, `QaHiredHelpCounts1107cBugTests`, `QaHiredCounts1107aGameTests`: the census, the realm
+through the hall's real round, the Festival button's cost, the Steward's `villagers_at_least`).
 
 **Ranks.** Hamlet, then Village (10 villagers and 5 finished buildings), Town (20, 12, and 3 research levels), City
 (35, 25 and 7). A rank up means fireworks, a chronicle line, more caravans, more market traders, quests that pay a
 quarter more, and room for ten more villagers. Roads never count as buildings and a whole wall counts as one.
 
+**Food in store** is the meals in the store (the chests by the village's smokers, old Kitchen Stoves and Storehouses),
+counted the way growth counts them (`VillageHalls.food` is `VillageGrowth.meals`): food tagged
+`aliveworkplace:not_villager_food` (rotten flesh, spider eyes, golden food, pufferfish, chorus fruit, honey, cake, …)
+never shows, and a chest by none of those isn't counted (B153, `QaHealerFoodFireGameTests`).
+
 **Growth.** At most once a day, with a free bed, 16 meals in the store and wellbeing of 50% or more, the two
 villagers nearest the free bed have a baby (the family eats 8 meals), up to `villageGrowthCap`. The baby takes that
 bed at once (B206), so a second birth, an inn's traveler or vanilla breeding can't count the same bed free: a village
-with N free beds takes in at most N newcomers. With no bed free the Beds button says **The village is full: nobody new
+with N free beds takes in at most N newcomers, whichever way they come; a traveler who moves on frees the bed for the
+next one (travelers nobody hires move on two days after arriving, at the inn's round with no player within 24 blocks;
+while a player watches they stay and keep the bed), and so does a newcomer who dies. With no bed free the Beds button says **The village is full: nobody new
 moves in until a bed is free**.
 
-**Wagon beds are no homes** (B206, B207, `camp/CampBeds`). The bedrolls of a Settler's Wagon's camp or a Colony Camp
+**Wagon beds are no homes** (B206, B207, `camp/CampBeds`). The Beds button says how many it left out, in the singular for one ("Not counted: 1 wagon bed
+(for the road, not a home)", B787). The bedrolls of a Settler's Wagon's camp or a Colony Camp
 are listed when the camp is placed (`aliveworkplace_camp_beds`, per dimension); an older camp's are known by their
-look (a brown or green bed with a campfire and a hay bale within 10 blocks) and listed once seen. At each round the
+look (a brown or green bed with a campfire and a hay bale within 10 blocks and the camp's Blueprint Table, or an old
+camp's Builder's Bench, within 12) and listed once seen. A player's brown bed by a campfire and hay, with no camp's table,
+stays a home (B715); a list saved before that fix has its beds looked at once more, and a bed without the camp's look is
+let go. The look is only for a save that may hold camps placed before the list: in a world started with this version
+(its list saved as `complete`), only beds a camp placed are wagon beds, so a cabin's bed by a campfire, hay and the
+village's own builder's Blueprint Table stays a home (B730, B732). On an older save (a list from before B715, or
+none until after the world's first ticks) the look for unlisted beds lasts only until the list is first saved in the
+new format: the halls' first rounds list the old camps, and from then on a bed placed later, such as a cabin's by the
+builder's table on a long-running server, stays a home (B749). Such a list is saved at the first autosave (about five
+minutes after the server starts), which ends the look for the rest of that run too, not only after a restart (B754).
+Only a brown or green bed is ever a wagon bed; a wagon bed that is broken comes off the list at the hall's next round,
+and a new bed put on its spot comes off it at once, even before that round, so it is a home (B761); only during an
+older save's look (above, before its list is first saved) is a brown or green bed put back by the camp's campfire, hay
+and table found by its look and listed again (B852).
+At each round the
 hall moves out anyone homed in one (they wake and forget it, then find a bed in a house) and holds every wagon bed for
 nobody, so it is never claimed again. The census leaves them out of Beds and Free, and the Beds button says how many
 it left out ("Not counted: 2 wagon beds"). Before a hall stands, the settlers sleep in the wagon as before.
@@ -226,11 +285,16 @@ emerald), half in a badly kept village, half again in a well kept one, a quarter
 collects it. It holds up to a stack of emeralds a rank and counts at most 3 missed days.
 
 **Calendar.** Four seasons of `seasonDays` days each (16), the same for the whole world, counted from the overworld's
-day. Each season has a festival on its middle day. Festivals also come every 8 days where at least 6 villagers live.
+day. Each season has a festival on its middle day. At `seasonDays` 1 the calendar reads "Four seasons of 1 day" and "Day 3 of the year" (B727). Festivals also come every 8 days where at least 6 villagers live.
 
 **Protection.** The hall's owner (whoever placed it) can switch protection on by shift-clicking the hall's name
 icon. Then only the owner, their friends and operators may break or place blocks, open chests or hurt villagers in the
-hall's area. Anyone may still walk in, open doors, trade and ring the bell.
+hall's area, or empty or fill buckets there (judged where the bucket pours or scoops, so a stranger standing just
+outside can't pour lava in, B719). A block or a fire is judged where it would go, so clicking the inward face of a
+block just outside doesn't put one inside (B741). A stranger's landing doesn't trample the village's farmland (B742),
+and their arrows and tridents don't knock items out of item frames or break frames and paintings (B743). Anyone may still walk in, open doors, trade and ring the bell. A build, quarry or field that anyone else
+hands a Builder, Miner or Farmer, or a tree farm, orchard or berry plot handed to a Lumberjack, Orchard Keeper or Berry
+Breeder, is refused wherever its footprint reaches into the area, even when it was clicked outside it (B718, B731).
 
 **Page tabs (22.5).** The third row holds 9 tabs. Any feature adds a page with one registration call
 (`docs/agent/layout.md`); the mod's own later pages (Classes, Wonders, Free job blocks) give way to pages added by
@@ -243,7 +307,10 @@ have room (the same list a jobless villager's own page shows and Job ▾ counts)
 B635: the tag alone left the Carpenter's table out), and a beehive or bee nest nobody works at (B657: they keep no
 places, so "have room" never counted them; `Stations.freeAt`), each matched to the building whose outline holds it
 (finished builds, and builds going up). Who could take a block: a grown villager in the village without a job, not a
-nitwit or a Legend. One who has never worked takes any block; one who still has an old job's trades but lost the block
+nitwit, a Legend, a retired elder or a hired mercenary or relief rider (B892: `FreeJobsPage.canTake` leaves out whoever
+`VillageHalls.assign` refuses, so nobody is offered a block the click can't give; an elder who retires while the page is
+open is told why when picked, and the block stays free; an elder who hasn't retired is still offered one, and a guard
+post a mercenary held is free again, and offered, once his contract ends and he leaves). One who has never worked takes any block; one who still has an old job's trades but lost the block
 is offered only a block of that same job, because changing job is paid retraining (26.6). A job above a villager's
 class (34.8) is grayed with the class it needs. The pick is checked again on the click: if someone took the block
 meanwhile, or the villager found work, nothing changes, the action bar says why and the list comes back. The page
@@ -278,14 +345,17 @@ The first blocking spot is the one named. A room left empty in both levels (with
 isn't something the next level adds, so it isn't checked. While clearing, a Builder now leaves a bed a villager has
 claimed (its home point is taken) where the blueprint only wants air, so residents keep their beds through any
 upgrade, the Steward's and bought ones too. Ordering needs the right to build in the village (the owner, their friends
-or an operator; anyone in a village nobody owns), and is checked again on the click.
+or an operator; anyone in a village nobody owns), and is checked again on the click. With `workplaceBuilderOwnership`
+on, only a Builder the clicking player may command (one they hired, a friend's, or one nobody hired) is sent, on this page and
+when choosing a house's outside look (B880): if the only Builders near belong to someone else, nothing is ordered and the
+bar says whose they are and that they can add the player with `/workplace friend add`.
 
 ## Switches
 
 | Key | Default | What it does |
 |---|---|---|
 | `villageHallRadius` | 64 (16 to 160) | How far from a hall its village reaches |
-| `villageGrowthCap` | 40 (0 to 500) | The village stops having babies at this many villagers; 0: no growth (the hall says "Villages don't grow on this server") |
+| `villageGrowthCap` | 40 (0 to 500) | The village stops having babies at this many villagers; 0: no growth (the hall says "Villages don't grow on this server", and the rank's perks end "no growth on this server", never "grows to 0", B734) |
 | `villageTreasury` | on | Villages put by takings every morning |
 | `treasuryPerWorker` | 20 (0 to 500) | Hundredths of an emerald a worker a day |
 | `villageProtection` | on | Owners may protect their village; off: nobody can, on the whole server |
@@ -310,6 +380,9 @@ empty unless a default is given here:
   and `steward_desk`, `services`, `piece_looks`, `bannerBase` and `bannerPatterns` (the village's colors).
 - A saved quest that can't be read (a `kind` this version doesn't know, after going back to an older jar, or a hand
   edit) is left out with a warning in the log; the hall's other quests and data load as usual.
+- Likewise one damaged entry of `edicts`, `guilds`, `reforms`, `services` or `piece_looks`, a zone or road of `plan`,
+  or a level of `research` is left out with a warning, and the rest of that list loads (B796; before, the whole list
+  was lost without a word). The Steward's `steward` and `steward_desk` are still read whole (B821).
 
 The calendar keeps the last day it fired for with the overworld. Friends are saved in `aliveworkplace_friends`.
 Not saved: the census (counted again every 600 ticks) and the screen's layout. The Free job blocks page saves
@@ -373,6 +446,28 @@ point of interest, saved by Minecraft).
   before when it stood where the next level has air); a claimed bed where the next level puts a block is "in the way".
   The tab and rows use vanilla bricks, a barrier and scaffolding, no new art.
 - B37: the name icon's tooltip only offers "protect the village" to the player who may do it.
+- B718: a hand-over (blueprint, Quarry Marker, Field Marker) is checked against protection over its whole footprint
+  (`VillageProtection.keeper(level, player, BoundingBox)`: the box's column nearest each hall), at the hand-over only.
+  A build, quarry or field accepted before this keeps going: its owner may be a village's own builder (no player) and
+  a work-time check would also stop the Steward's and the village's own jobs. The landscaping ring round a build (natural
+  ground only) isn't counted.
+- B719: a bucket is checked where it acts, by the bucket's own raycast (`VillageProtection.mayUseBucket`): the block it
+  hits and the one beside the face it hits, either of which the bucket may fill or empty. A stranger outside can't
+  pour into or scoop out of the village; one inside its edge may pour just outside it.
+- B741: a click on a block is also checked where what's held would go (`VillageProtection.mayPlace`): a block item at
+  its placement cell (as vanilla picks it: the clicked cell when it can be replaced, else the one
+  beside the clicked face; a bed's head one further on), flint and steel or a fire charge at the cell beside the face.
+- B742: `FarmlandTrampleMixin` (on `FarmBlock.turnToDirt`, which only a landing calls with an entity) asks
+  `VillageProtection.mayTrample`: a player, or a mount a player steers, who may not change things there doesn't
+  trample; mobs on their own and the owner, friends and operators trample as in vanilla.
+- B743: item frames and paintings aren't living, so Fabric's damage event never sees them; `HangingHurtMixin` (on
+  `ItemFrame.hurt` and `BlockAttachedEntity.hurt`) asks `VillageProtection.mayBeHurt`, the same check the event uses:
+  a hit a player threw or shot is refused where they may not hurt what it hits.
+- B745: `PistonProtectionMixin` wraps the `PistonStructureResolver.resolve()` call in `PistonBaseBlock.moveBlocks`
+  (after vanilla clears a retracting head) and asks `VillageProtection.mayPistonMove`: for each loaded protected hall
+  whose area the piston isn't in, the move fails if the head's cell (extending), any pushed block or its destination,
+  or any block it would break is in that area. An extending piston then stays put; a sticky one retracts without
+  pulling. Halls further than reach + 14 columns away are skipped first; protection off skips it all.
 - Villages keep working with no player near (23.6, owner's call): see `keepVillagesWorking` on
   [Config switches](config-switches.md).
 
@@ -392,14 +487,50 @@ point of interest, saved by Minecraft).
 
 ## Proof
 
-GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
-`B301GameTests` (no clearing-out quest or step where nothing can be fought, bandits and wild Pokémon counting, the
-words, a stuck quest swapped after a save and reload, MobsBeGone's file read), compat `WildFoesCompatTests`,
+GameTests: `QaLaneC1102eGameTests` (QA, B833: the plurals beside the new singulars through the hall's buttons, "2
+mercenaries are here until dawn" and "3 kinds of meal in the store"), `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
+`QaOneEmerald1103d2GameTests` (6, QA, B406 without CobbleDollars: the treasury on the hall page and when collected at 1,
+1.5 and 2.5 emeralds and empty, a quest reward of 1 and 2, the purse, "short by" at 0 to 2, a trainer's +2 emeralds,
+and the mailbox's "Posted 1 item"/"2 items"), `B301GameTests` (no clearing-out quest or step where nothing can be fought, bandits and wild Pokémon counting, the
+words, a stuck quest swapped after a save and reload, MobsBeGone's file read), `QaSlayQuest1103dGameTests` (QA, B301: the real
+world and the real blocklist file, three of four night monsters listed still lets monsters come, all four in Cobbleverse's
+layout offers no clearing-out quest in 40 board seeds, Peaceful and back; a quest that can still be finished keeps its
+progress and words; the bread a stuck quest becomes is capped at 64, from both sides), compat `WildFoesCompatTests`,
 `WagonBedsGameTests` (B206, B207: settlers leave the wagon once the hall stands, an older camp's bedroll is mended,
 two free beds take in two newcomers and the hall says it's full, the inn takes a traveler only into a free house bed,
-the wagon-bed list and its save),
+the wagon-bed list and its save, an older list lets a cabin's bed go and keeps the camp's), `QaWagonBedsBug1031Tests`
+(B715: a cabin's brown bed by a campfire and hay is still a home),
+`QaCabinBedsHome1101GameTests` (B730, B732, B749: the old look's campfire and hay at 10 blocks, not 11, and table at 12,
+not 13; other colors never wagon beds; a cabin at the look's far edges and a bed a villager takes by itself stay homes
+in a new world; a real camp on a server with an older list keeps its wagon beds through a reload while a player's bed
+beside it is a home; an old list's bedroll survives the first save; a bed put back where a wagon bed stood is a home),
+`QaCabinBedsReplaceBug1101Tests` (B761: a bed put back at once where a wagon bed stood is a home),
+`QaWagonBedSingularBugTests` and `QaWagonBedCount1102GameTests` (B787: the Beds button's wagon line word for word with two
+bedrolls, "Not counted: 2 wagon beds (for the road, not homes)", and one, "Not counted: 1 wagon bed (for the road, not
+a home)"; with none left, no line),
+`QaVillageFixesVerify1102GameTests` (B761: a green bed put back at once stays a home after a restart; lying down in a
+bedroll or putting a bed elsewhere leaves the camp's bedrolls listed; the Bed list never offers a held bedroll and offers
+a bed put back on a bedroll's spot as free at once),
+`QaWagonBedsFirstSession1101BugTests` (B754: a cabin bed placed after an upgraded list's autosave, in the same run and
+after a restart, is a home),
 `HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
-`ProtectionSpecGameTests`, `HallProtectHintGameTests`, `ReadingFocusGameTests` (36.5: hovered, held on the way into
+`ProtectionSpecGameTests`, `HallProtectHintGameTests`, `QaProtectedBuildBug1031Tests`, `QaProtectedQuarryBug1031Tests`,
+`ProtectedHandOverGameTests` (B718: a stranger's build and quarry reaching in refused, his field refused with whose
+village it is; the owner's build and field reaching in, a build just outside and a quarry with protection off taken),
+`QaVillageGuardsBug1031Tests` (B731: a stranger's tree farm, orchard and berry plot reaching in refused with whose village it is),
+`QaVillageFixes1101GameTests` (B731: a stranger's tree farm exactly 16 from the hall refused and 17 off taken; a refused
+orchard leaves the old one and the marker in hand; the owner's own plot and orchard reaching in taken; protection off
+lets a stranger's in. B730/B732: a cabin's beds with a campfire, hay and the builder's table within 2 blocks stay homes),
+`QaProtectedBucketBug1031Tests` and `BucketProtectionGameTests` (B719: a stranger outside can't pour lava in or scoop
+water out and is told whose village it is; the owner, a friend and an operator pour in from outside; a stranger pours
+outside the village from either side of its edge), `QaProtectionEdge1031Tests` (B741: a stranger outside can't place
+TNT or light a fire just inside the edge through a block's inward face, but places outside; the owner and a friend
+place just inside from outside), `QaProtectionFixes1101Tests` (B741-B743 from both sides of the edge: a stranger
+places at x = reach + 1 and replaces grass or snow just outside, but not at reach, high up, or with a bed whose head
+reaches in; an operator, and anyone with protection off, place just inside; a stranger's landing tramples only
+outside, while zombies, riderless horses and operators trample inside and villagers don't; a stranger's trident,
+punch and real arrow in flight leave glow frames and paintings, and a frame just inside the edge, while the owner's
+and an operator's knock items out), `ReadingFocusGameTests` (36.5: hovered, held on the way into
 the pane, let go outside the panel for the pinned button; unpinning and page changes; the wheel and Shift),
 `FreeJobsPageGameTests` (36.9: the listing with job, building and distance, `aPickTakesTheFreeBlock`, a block claimed
 meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockSurvivesAReload`),
@@ -407,7 +538,7 @@ meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockS
 `aFreeUpgradeIsBuilt` by the village's Builder; `aBlockedUpgradeSaysWhatIsInTheWay` with another build's block, a
 fence, a path, then water (natural); `naturalGroundDoesNotBlockAnUpgrade`, all of it cleared;
 `residentsKeepTheirBedsThroughAnUpgrade`; `anOrderedUpgradeSurvivesAReload`; every sentence written).
-`HallPeopleGameTests` (40.2: the rows and counts of a village of 8 and of 60 scrolled to its last villager, the
+`QaHallFixes1103cGameTests` (B885, B886, B889-B891 beyond their repros: visitors and Doctor Wren never jobless or given a block, a hire ending, the level request called off for every helper and across a save, a scout given No job, a retired elder's forged picks, a new Steward after a retrained one), `QaHallMidActivity1103cGameTests` (job changes mid-alarm, mid-trade and with a tools request open). `QaLaneC1104eGameTests.theHallGivesNoJobToABabyOrANitwitButToAGrownVillager` (QA: the hall's hand-out refuses a baby who is no nitwit and a grown nitwit, the block staying free, and gives it to a grown villager beside them). `HallPeopleGameTests` (40.2: the rows and counts of a village of 8 and of 60 scrolled to its last villager, the
 details of a builder, a guard, a child and a nitwit and Job ▾ on the builder, a villager who dies or leaves while the
 screen is open; scene `hall_people`). `HallPeopleJobGameTests` (40.3, every case through Job ▾'s clicks:
 `aChangeThatWorks` (price on top, "Mason · 1 free Stonecutter", the offer, then paid), `aJobWithNoFreeBlock`,
@@ -422,6 +553,11 @@ Crafting Table", a jobless and a working villager made the Carpenter from Job �
 `QaBuilders1028GameTests` (B635, QA: a table broken while Job ▾ is open makes no Carpenter and the line then says to
 place one; an older save's table with no workstation record is offered once its chunk loads; tables 8 blocks from
 the hall are offered, 9 aren't).
+QA's `QaHallListsOneBadEntry1102BugTests` (B796: one empty entry first in each of the five lists, the two good ones
+still load), `B796GameTests` (one damaged plan zone and one damaged research level, the rest kept) and QA's
+`QaHallLenientLoad1102GameTests` (a clean hall writes the same tags after a load; one loaded with damage writes back
+only its good entries, which load the same again; a list saved as a string, a number or a compound loads empty and the
+hall keeps its owner).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end

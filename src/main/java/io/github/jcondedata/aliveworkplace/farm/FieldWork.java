@@ -190,7 +190,7 @@ public class FieldWork extends Behavior<Villager> {
 
 		// 3. Pick the nearest job that can be done with what we carry (or can fetch).
 		boolean hasSeeds = hasSeeds(bag, seed);
-		boolean hasHoe = isHoe(villager.getItemBySlot(EquipmentSlot.MAINHAND));
+		boolean hasHoe = isHoe(io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager)); // a shown ware is the display's (B776)
 		boolean hasBoneMeal = bag.has(Items.BONE_MEAL, 1);
 		if (current == null || !stillNeeded(level, field, current)) {
 			current = null;
@@ -873,7 +873,7 @@ public class FieldWork extends Behavior<Villager> {
 				}
 			}
 		} else {
-			ItemStack old = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+			ItemStack old = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager); // a shown ware isn't bagged (B776)
 			if (!old.isEmpty()) {
 				bag.add(old);
 			}

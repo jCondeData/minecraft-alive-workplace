@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.threat.CampCleanup;
+import io.github.jcondedata.aliveworkplace.threat.CampGround;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import net.minecraft.world.phys.AABB;
  */
 public class QaCampCleanup1031GameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
+	private static final String SMALL = "aliveworkplace_test:build_area";
 	private static final BlockPos HALL = new BlockPos(1, 2, 1);
 	/** Ticks till a broken camp is all gone, with a little to spare. */
 	private static final int GONE = CampCleanup.DELAY + CampCleanup.CLEAR_TICKS + 10;
@@ -216,6 +218,52 @@ public class QaCampCleanup1031GameTests implements FabricGameTest {
 				}
 				helper.succeed();
 			});
+		});
+	}
+
+	/**
+	 * B702: loot lying across a column's edge, half over a block of land that comes back, is set on top of it, not left
+	 * half in it (where vanilla's push out of blocks let it sink into the ground); loot only touching it, and loot whose
+	 * feet are in it, as before.
+	 */
+	//$ gametest_batch SMALL '"qaCampLiftEdge"'
+	@GameTest(template = SMALL, batch = "qaCampLiftEdge")
+	public void lootAcrossTheEdgeOfLandThatComesBackIsSetOnTopOfIt(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		Leftovers.after(helper, () -> level.getEntitiesOfClass(ItemEntity.class, helper.getBounds().inflate(2)).forEach(Entity::discard));
+		BlockPos land = helper.absolutePos(new BlockPos(3, 2, 2));
+		BlockPos deep = helper.absolutePos(new BlockPos(3, 2, 4));
+		helper.setBlock(new BlockPos(2, 2, 2), Blocks.AIR);
+		helper.setBlock(new BlockPos(3, 2, 2), Blocks.GRASS_BLOCK);
+		helper.setBlock(new BlockPos(2, 2, 4), Blocks.AIR);
+		helper.setBlock(new BlockPos(3, 2, 4), Blocks.GRASS_BLOCK);
+		helper.setBlock(new BlockPos(4, 2, 4), Blocks.AIR);
+		BlockPos from = helper.absolutePos(new BlockPos(2, 2, 2));
+		BlockPos to = helper.absolutePos(new BlockPos(4, 2, 4));
+		CampGround ground = CampGround.take(level, new net.minecraft.world.level.levelgen.structure.BoundingBox(from.getX(), from.getY(), from.getZ(), to.getX(), to.getY(), to.getZ()), 0);
+		helper.setBlock(new BlockPos(3, 2, 2), Blocks.AIR); // (the camp cut the land away)
+		helper.setBlock(new BlockPos(3, 2, 4), Blocks.AIR);
+		double floor = land.getY();
+		ItemEntity across = new ItemEntity(level, land.getX() - 0.01, floor, land.getZ() + 0.5, new ItemStack(Items.DIAMOND, 7)); // (its middle over the open column)
+		ItemEntity touching = new ItemEntity(level, land.getX() - 0.125, floor, land.getZ() + 0.5, new ItemStack(Items.EMERALD, 3)); // (its side on the edge)
+		ItemEntity in = new ItemEntity(level, deep.getX() + 0.5, floor, deep.getZ() + 0.5, new ItemStack(Items.GOLD_INGOT, 2)); // (its feet in the land)
+		for (ItemEntity e : List.of(across, touching, in)) {
+			e.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+			level.addFreshEntity(e);
+		}
+		ground.restore(level, Map.of(), java.util.Set.of());
+		helper.assertTrue(helper.getBlockState(new BlockPos(3, 2, 2)).is(Blocks.GRASS_BLOCK) && helper.getBlockState(new BlockPos(3, 2, 4)).is(Blocks.GRASS_BLOCK), "(setup) the land didn't come back");
+		helper.assertTrue(across.getY() == floor + 1 && level.noCollision(across), "the diamond across the edge is at y " + (across.getY() - floor) + " over the floor, in the land: " + !level.noCollision(across));
+		helper.assertTrue(in.getY() == floor + 1 && level.noCollision(in), "the gold in the land is at y " + (in.getY() - floor) + " over the floor");
+		helper.assertTrue(touching.getY() == floor, "the emerald only touching the land was moved to y " + (touching.getY() - floor) + " over the floor");
+		helper.runAfterDelay(20, () -> {
+			for (ItemEntity e : List.of(across, touching, in)) {
+				BlockPos at = e.blockPosition();
+				helper.assertTrue(e.isAlive() && !level.getBlockState(at).isCollisionShapeFullBlock(level, at) && level.noCollision(e) && e.getY() >= floor,
+					e.getItem() + " isn't lying on the land: at y " + (e.getY() - floor) + " over the floor, in " + level.getBlockState(at));
+			}
+			helper.succeed();
 		});
 	}
 

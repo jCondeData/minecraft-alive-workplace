@@ -72,6 +72,9 @@ public class CrafterWork extends Behavior<Villager> {
 	private static final int LOOK_EVERY = 100;
 	/** A request another crafter took is left to them this long. */
 	private static final long CLAIM_TICKS = 2400;
+	/** B760: with the job's chests full on arrival, how often we try again, and how long before taking it home instead. */
+	private static final int FULL_RETRY_TICKS = 40;
+	private static final int FULL_WAIT_TICKS = 2400;
 
 	private enum Phase { IDLE, FETCHING, CRAFTING, DELIVERING, TIDYING }
 
@@ -114,6 +117,9 @@ public class CrafterWork extends Behavior<Villager> {
 	private Phase phase = Phase.IDLE;
 	private int timer;
 	private int lookTimer;
+	/** B760: ticks until the next try at full chests, and how long we've waited for room so far. */
+	private int deliverWait;
+	private int fullFor;
 	/** The last look found nothing to do (so the line above the head says so). */
 	private boolean foundNothing = true;
 
@@ -201,6 +207,8 @@ public class CrafterWork extends Behavior<Villager> {
 				return;
 			}
 			toFetch = new LinkedHashMap<>(job.plan().takes());
+			deliverWait = 0;
+			fullFor = 0;
 			phase = Phase.FETCHING;
 			step = 0;
 			stepwise = chains() && stepwise(job.plan());
@@ -219,7 +227,7 @@ public class CrafterWork extends Behavior<Villager> {
 	private void fetch(ServerLevel level, Villager villager, BuilderBag bag) {
 		status(villager, Phase.FETCHING);
 		if (toFetch.isEmpty()) {
-			phase = Phase.CRAFTING;
+			phase = job.plan().steps().isEmpty() ? Phase.DELIVERING : Phase.CRAFTING; // B778: carried on from home, nothing to make
 			timer = -1;
 			save(villager);
 			return;
@@ -447,7 +455,7 @@ public class CrafterWork extends Behavior<Villager> {
 			case DELIVERING -> CrafterJob.Phase.DELIVERING;
 			default -> CrafterJob.Phase.FETCHING;
 		};
-		saved = saved.withPhase(at);
+		saved = saved.withPhase(at).withProfession(professionId(villager));
 		for (int i = 0; i < step; i++) {
 			saved = saved.nextStep();
 		}
@@ -482,6 +490,8 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 		});
 		timer = -1;
+		deliverWait = 0;
+		fullFor = 0;
 		foundNothing = false;
 		walker.reset();
 	}
@@ -564,18 +574,53 @@ public class CrafterWork extends Behavior<Villager> {
 		if (!walker.walkTo(level, villager, chests.get(0), REACH)) {
 			return;
 		}
+		if (deliverWait > 0) {
+			deliverWait--;
+			return;
+		}
 		int made = 0;
+		List<ItemStack> unplaced = new ArrayList<>();
 		for (ItemStack stack : bag.takeAll()) {
-			if (stack.is(job.plan().target())) {
-				made += stack.getCount();
-			}
 			ItemStack rest = SupplyContainers.insert(level, chests, finished(level, stack));
+			if (stack.is(job.plan().target())) {
+				made += stack.getCount() - rest.getCount();
+			}
 			if (!rest.isEmpty()) {
-				drop(level, chests.get(0).above(), rest);
+				unplaced.add(rest);
 			}
 		}
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, chests.get(0), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
+		if (!unplaced.isEmpty() && (fullFor < FULL_WAIT_TICKS || !roomAtHome(level, station, unplaced))) {
+			// B760: the chests filled up after we chose the job; dropped by them, the builder never found it. Hold on to
+			// it and try again, keeping the request ours so nobody makes it a second time. B773: after the long wait it
+			// only goes home if our own chests can take it; with none (or full ones) tidy() dropped it by our bench while
+			// the builder still waited, so we keep carrying it and keep trying here instead.
+			for (ItemStack rest : unplaced) {
+				ItemStack over = bag.add(rest);
+				if (!over.isEmpty()) {
+					drop(level, chests.get(0).above(), over);
+				}
+			}
+			if (made > 0) {
+				delivered(level, villager, job, made);
+			}
+			if (!job.claim().isEmpty()) {
+				claim(job.claim(), level.getGameTime());
+			}
+			deliverWait = FULL_RETRY_TICKS;
+			fullFor = Math.min(FULL_WAIT_TICKS, fullFor + FULL_RETRY_TICKS);
+			return;
+		}
+		// given up after a long wait: what's left goes home with tidy(), like a job whose chests are gone
+		for (ItemStack rest : unplaced) {
+			ItemStack over = bag.add(rest);
+			if (!over.isEmpty()) {
+				drop(level, chests.get(0).above(), over);
+			}
+		}
+		fullFor = 0;
+		deliverWait = 0;
 		delivered(level, villager, job, made);
 		if (!job.claim().isEmpty()) {
 			synchronized (CLAIMS) {
@@ -587,6 +632,44 @@ public class CrafterWork extends Behavior<Villager> {
 		save(villager);
 		lookTimer = 20;
 		walker.reset();
+	}
+
+	/**
+	 * B778: what of {@code item} (up to {@code count}) waits in the chests by our own workstation, {@code home}, as a plan
+	 * with nothing to make, to carry on to the builder's {@code deliverTo} while it has room; null for none. What a job
+	 * took home after the long wait for a full Storehouse (B773) lay there for good, since builders don't take from a
+	 * crafter's chests. Chests the builder already takes from (his own, the village stores) are left out.
+	 */
+	@Nullable
+	private Crafting.Plan carryOn(ServerLevel level, List<BlockPos> home, List<BlockPos> sources, BlockPos deliverTo, @Nullable BoundingBox area,
+		Item item, int count) {
+		if (home.isEmpty() || count <= 0) {
+			return null;
+		}
+		List<BlockPos> to = SupplyContainers.find(level, deliverTo, area);
+		int have = 0;
+		for (BlockPos chest : home) {
+			if (sources.contains(chest) || to.contains(chest)) {
+				continue;
+			}
+			for (ItemStack in : SupplyContainers.peekMatching(level, chest, s -> s.is(item) && fetchable(level, s))) {
+				have += in.getCount();
+			}
+		}
+		int n = Math.min(have, count);
+		if (n <= 0 || !roomFor(level, to, Map.of(item, n))) {
+			return null;
+		}
+		return new Crafting.Plan(item, n, List.of(), Map.of(item, n), Map.of(item, n));
+	}
+
+	/** Whether the chests by our workstation can take all of {@code stacks} (B773: with none, taking it home dropped it). */
+	private static boolean roomAtHome(ServerLevel level, BlockPos station, List<ItemStack> stacks) {
+		Map<Item, Integer> left = new LinkedHashMap<>();
+		for (ItemStack stack : stacks) {
+			left.merge(stack.getItem(), stack.getCount(), Integer::sum);
+		}
+		return roomFor(level, SupplyContainers.find(level, station, null), left);
 	}
 
 	/** {@code job} was carried to its chests with {@code made} of what it makes (a trade may count it off a request: 38.8a). */
@@ -610,6 +693,31 @@ public class CrafterWork extends Behavior<Villager> {
 		walker.reset();
 	}
 
+	/**
+	 * Whether everything {@code makes} fits in {@code chests} as they are now (B760): empty slots, and room left in stacks
+	 * of the same plain item. Counted low for a slot holding more than a stack, never high.
+	 */
+	static boolean roomFor(ServerLevel level, List<BlockPos> chests, Map<Item, Integer> makes) {
+		if (chests.isEmpty()) {
+			return false;
+		}
+		long freeSlots = SupplyContainers.freeSlots(level, chests);
+		for (Map.Entry<Item, Integer> e : makes.entrySet()) {
+			ItemStack plain = new ItemStack(e.getKey());
+			int max = Math.max(1, plain.getMaxStackSize());
+			long left = e.getValue();
+			for (BlockPos chest : chests) {
+				for (ItemStack in : SupplyContainers.peekMatching(level, chest, s -> ItemStack.isSameItemSameComponents(s, plain))) {
+					left -= Math.max(0, max - in.getCount());
+				}
+			}
+			if (left > 0) {
+				freeSlots -= (left + max - 1) / max;
+			}
+		}
+		return freeSlots >= 0;
+	}
+
 	/** The first builder near our workstation waiting for something we can make from what they can get at. */
 	@Nullable
 	protected Job choose(ServerLevel level, Villager villager, BlockPos station) {
@@ -624,6 +732,7 @@ public class CrafterWork extends Behavior<Villager> {
 		List<Villager> builders = level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(radius + 16),
 			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).map(p -> p.closerThan(station, radius)).orElse(false));
 		builders.sort((a, b) -> Double.compare(a.distanceToSqr(villager), b.distanceToSqr(villager)));
+		List<BlockPos> home = builders.isEmpty() ? List.of() : SupplyContainers.find(level, station, null);
 		for (Villager builder : builders) {
 			BuildSite site = Builders.activeSite(level, builder);
 			// B636: a builder short of something is served while he builds on, not only once he stands waiting
@@ -643,7 +752,17 @@ public class CrafterWork extends Behavior<Villager> {
 			Map<Item, Long> stock = new HashMap<>();
 			// B696: what the other open builds need stays out of the builder's own chests and the village stores too.
 			Map<Item, Integer> kept = new HashMap<>();
+			// B721: what we make goes where this builder looks for it: his own chests, or (with none by his table) the
+			// village's Storehouse, else another village-mate's chests he takes from; with none of those, nowhere he'd find it.
+			BlockPos deliverTo = sources.isEmpty() ? null : builderStation;
+			BlockPos mateStore = null;
 			for (Village.Stash stash : Village.stashes(level, builder, builderStation, area)) {
+				if (deliverTo == null && stash.job() == ModVillagers.PORTER) {
+					deliverTo = stash.station();
+				}
+				if (mateStore == null && stash.job() != ModVillagers.BUILDER && stash.job() != ModVillagers.PORTER) {
+					mateStore = stash.station();
+				}
 				if (stash.job() != ModVillagers.BUILDER) {
 					sources.addAll(stash.chests());
 					if (stash.job() == ModVillagers.PORTER) {
@@ -667,6 +786,12 @@ public class CrafterWork extends Behavior<Villager> {
 					guarded.put(chest, guard);
 				}
 				theirs.addAll(stash.chests());
+			}
+			if (deliverTo == null) {
+				deliverTo = mateStore;
+			}
+			if (deliverTo == null || SupplyContainers.find(level, deliverTo, area).isEmpty()) {
+				continue; // B721: nowhere this builder would find it; made anyway, it lay by our bench for ever
 			}
 			Builders.reservedIn(level, sources, site).forEach((item, n) -> kept.merge(item, n, Integer::sum));
 			Map<Item, Long> pooled = SupplyContainers.contents(level, sources);
@@ -705,6 +830,14 @@ public class CrafterWork extends Behavior<Villager> {
 						continue;
 					}
 				}
+				Crafting.Plan carried = carryOn(level, home, sources, deliverTo, area, want.getKey(), want.getValue());
+				if (carried != null) {
+					synchronized (CLAIMS) {
+						CLAIMS.put(claim, now + CLAIM_TICKS);
+					}
+					List<BlockPos> from = home.stream().filter(p -> !sources.contains(p)).toList();
+					return new Job(deliverTo, area, carried, claim, from);
+				}
 				Crafting.Plan made = planFor(level, want.getKey(), want.getValue(), usable);
 				if (!fits(made)) {
 					if (chains() && !Crafting.planningSpent(level)) {
@@ -715,13 +848,16 @@ public class CrafterWork extends Behavior<Villager> {
 					}
 					continue;
 				}
+				if (!roomFor(level, SupplyContainers.find(level, deliverTo, area), made.makes())) {
+					continue; // B760: his store is full; made anyway, it lay on the ground by it and was made again and again
+				}
 				if (chains()) {
 					JobShortages.covered(site.id(), want.getKey(), now);
 				}
 				synchronized (CLAIMS) {
 					CLAIMS.put(claim, now + CLAIM_TICKS);
 				}
-				return new Job(builderStation, area, made, claim, sources, guarded);
+				return new Job(deliverTo, area, made, claim, sources, guarded);
 			}
 		}
 		return chooseOrder(level, villager, station);
@@ -905,14 +1041,17 @@ public class CrafterWork extends Behavior<Villager> {
 	/**
 	 * Every villager's AI step (mixin/VillagerMixin, B353): a crafter whose workstation has been gone for {@link #BENCHLESS_TICKS}
 	 * with a chain job saved lets the job go (its claim too) and the bag goes to the asker's chests, or at their feet when
-	 * those are gone or full. A bench put back (or moved) within that time, or a chunk reload, carries on with the job.
+	 * those are gone or full. A bench put back (or moved) within that time, or a chunk reload, carries on with the job. A
+	 * new job's workstation (a novice who lost the bench and took a lectern) isn't the bench: the job goes all the same (B1009).
 	 */
 	public static void benchlessTick(Villager villager) {
 		if (!(villager.level() instanceof ServerLevel level)) {
 			return;
 		}
 		CrafterJob saved = ModAttachments.CRAFTER_JOB.get(villager);
-		if (saved == null || Builders.benchPos(villager).isPresent()) {
+		// A job site counts only while he's still in the job that took the request: a Carpenter who lost his bench and took
+		// a lectern is a Librarian now, and no Librarian ever finishes a crafting job (B1009).
+		if (saved == null || Builders.benchPos(villager).isPresent() && saved.heldBy(professionId(villager))) {
 			synchronized (BENCHLESS) {
 				BENCHLESS.remove(villager);
 			}
@@ -944,6 +1083,11 @@ public class CrafterWork extends Behavior<Villager> {
 				drop(level, villager.blockPosition(), rest);
 			}
 		}
+	}
+
+	/** {@code villager}'s profession as a registry id, as {@link CrafterJob#profession} keeps it. */
+	static String professionId(Villager villager) {
+		return String.valueOf(net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getKey(villager.getVillagerData().getProfession()));
 	}
 
 	/** How long a crafter's saved job outlasts its workstation (B353): time to put a bench back or move it. */
@@ -1095,14 +1239,15 @@ public class CrafterWork extends Behavior<Villager> {
 		Component title = Words.countedFirst("message.aliveworkplace." + who + ".title", ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0));
 		Component idle = phase == Phase.IDLE && job == null ? idleLine(villager) : null;
 		Component line = idle != null ? idle : job != null && phase != Phase.TIDYING
-			? (phase == Phase.FETCHING // "fetching what 1 Amethyst Ring takes"
-				? io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace." + lines + ".state.fetching", job.plan().count(), job.plan().count(),
-					job.plan().target().getDescription())
+			? (phase == Phase.FETCHING // "fetching what 1 Amethyst Ring takes", "fetching what 2 Amethyst Rings take"
+				? Words.counted("message.aliveworkplace." + lines + ".state.fetching", job.plan().count(), job.plan().count(),
+					Words.itemName(job.plan().target(), job.plan().count()))
+				// B878: "making 2 Amethyst Rings", "taking 3 Arrows to the guard": the item's plural after any count but one
 				: Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase(), job.plan().count(),
-					job.plan().target().getDescription()))
+					Words.itemName(job.plan().target(), job.plan().count())))
 			: Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase());
 		if (phase == Phase.CRAFTING && stepwise && job != null && job.plan().steps().size() > 1) {
-			// 37.14a: "making 3 Barrel (step 2 of 3)"
+			// 37.14a: "making 3 Barrels (step 2 of 3)"
 			line = Component.translatable("message.aliveworkplace.job_chain.step", line, Math.min(step + 1, job.plan().steps().size()), job.plan().steps().size());
 		}
 		WorkerStatus.set(villager, title, -1f, line.copy().withStyle(ChatFormatting.GRAY));

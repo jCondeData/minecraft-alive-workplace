@@ -3,7 +3,7 @@
 A seasoned Builder who runs a village from its City Plan: he decides what the village needs next, finds the plot and
 has the builders build it. Part of 1.1 (Villages that build themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B469, B471, B472, 36.20
+Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B468, B469, B471, B472, B503, 36.20, B747, B723
 
 ## What a player sees
 
@@ -55,7 +55,7 @@ blueprint's four turns and its mirror image. A spot is good only if the front fa
 footprint and a 2-block margin lie inside the zone and off the roads, the ground varies by at most 4 blocks, nothing
 stands there but natural ground, trees and the plants of the `steward_clearable` tag (a carved pumpkin is not one), and a builder's bench stands in the village (anywhere in it then reaches, 36.20) or is within `maxSiteDistance` of the spot. At most a tenth of
 the footprint may be over water and none of it over lava, it stays 2 blocks clear of every build site and finished
-building, and the same blueprint with the same mirroring is never put within 24 blocks of another, center to center (exactly 24 counts
+building (a laid-out Wonder counts, finished or waiting for its goods: exactly 2 free blocks beside it fit, 1 doesn't, and a search already made starts over when a Wonder is laid out), and the same blueprint with the same mirroring is never put within 24 blocks of another, center to center (exactly 24 counts
 as within; a turned twin counts, a mirrored one doesn't).
 
 **Open builds.** His level sets how many of his builds may be open at once (1, 2, 2, 3, 4 from Novice to Master),
@@ -73,7 +73,8 @@ approved by hand; a lane the Steward lays from a finished house's door and his h
 not, so a stretch of them that would run through a player's section waits instead (B520). A player placing or breaking a block inside a hall's
 area marks its 16×16×16 section, and only that one. His sites clear only natural blocks. His waiting builds (not a player's own) share one
 shopping list, the 8 most needed added up over all of them, on the desk, the Storehouse's requests board and in the
-caravans' wants ("30 Glass, 12 Oak Logs, 1 Torch"); the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
+caravans' wants ("30 Glass, 12 Oak Logs, 1 Torch"), each building material his blueprints use named in the plural
+from 2 up ("12 Spruce Logs, 6 Glass Panes, 4 Ladders", B723); the owner is told it once a day. While two of his builds have waited a whole day (one, or two for
 less, isn't enough) he proposes nothing new and the desk says so.
 
 **Old houses (27.20, 27.21).** In zones with "renew old houses" on he finds the houses no builder built (by their
@@ -81,7 +82,7 @@ beds and job blocks), never one with a chest, never one a player changed, never 
 counts when 85% or more of its blocks are village blocks (mossy, cracked and cobwebbed ones too) and it is at most
 2000 blocks and 20×16×20; beds, bells, signs, banners, campfires and job blocks may stay in it, any other container
 (a furnace, a hopper) rules it out. Trees that grew against a house are not part of it: a trunk by the wall and the
-leaves round the house's posts are left standing, and the house measures as its own blocks. The desk says "Old houses: 2, 1 can be renewed". One at a time, at most one every 2 days,
+leaves round the house's posts are left standing, and the house measures as its own blocks. The desk says "Old houses: 2, 1 can be renewed"; clicking it outlines them ("Showing 1 old house for 30 seconds" for one, B739). One at a time, at most one every 2 days,
 he proposes to renew one in the zone's style: builders take the old house down (its blocks go to the store) and
 build the new one on the plot, the first building on the list that fits the old footprint plus 3, its front where
 the old door was. A renewal list file that is broken, or a building it names that doesn't exist, is skipped. The sleepers get the new beds and the worker keeps the job. Two of them coming home
@@ -158,21 +159,25 @@ villagers are too few; a raid 6 days ago is within 7 and 7 days ago not; 2 child
 the Storehouse grows at 22 of 27 slots, not 21, on to III and no further). `QaStewardDeskJobsGameTests` (16, 27.8 and 27.9: a decline and an unanswered proposal both end at exactly 3 days,
 9 proposals and never a 10th, strangers answer nothing while a friend of the owner can, Approve all, Rest and
 `stewardSelfRun` off, one morning line, guards only while short, a baby gets no job, the research order against the spec).
-`QaCityPlanPaintGameTests` (7, 27.2 and 27.3: a dragged rectangle is one stroke and one undo, a deleted zone comes back
+`QaCityPlanZoneChecks1031GameTests` (3, B468 and B503: every listed style goes on a new zone and an edited one; a
+refused 33-letter name or made-up style leaves the zone, its undo step and its saved copy as they were, each refusal
+read as the bad_zone sentence; a gone style stays only with the zone that had it), `QaCityPlanPaintGameTests` (7, 27.2 and 27.3: a dragged rectangle is one stroke and one undo, a deleted zone comes back
 with its cells, strokes that change nothing take no undo step, a stranger's eraser and side panel are refused, the
 first painter's claim is saved, a block's zone comes from the nearest hall, an 8x8 cell at radius 128),
 `QaStewardRulesDataGameTests` (2, 27.6), `QaStewardPlotFitGameTests` (2, 27.7: the front faces the nearer road;
-clearable plants), `QaStewardDeskModesGameTests` (10, 27.8: mode buttons, operator and friend approvals, approving
+clearable plants), `QaWonderOverlap1101GameTests` (2 of 7, B747: the margin round a waiting Wonder from both sides, a
+kept search started over when a Wonder is laid out on its plot), `QaStewardDeskModesGameTests` (10, 27.8: mode buttons, operator and friend approvals, approving
 twice, Steward or hall gone, Run's morning line, save and reload, the desk's sentences, the Ledger, Show me's 30
 seconds), `QaWorkplaceCopiesGameTests` (4, 27.11), `QaSteward1031GameTests` (10, 27.1a and 27.19: one XP short of Journeyman refused and the next XP let in, Expert and Master
 qualify, a Steward moves halls, the recipe in any slots and with a lookalike, the half-way line to another hall, a stranger's
 protected village by hand, negative ledger sections saved, exactly 8 kinds listed, only his builds pause or are told), `QaStewardSafetyGameTests` (10, 27.19: a broken block marks its section,
 nothing outside a hall's area, one section only, per dimension, Keep Clear over the owner's approval, the 8 most
-needed, caravans, once a day, the pause's day from both sides, the sentences), `QaOldHousesGameTests` (12, 27.20: 85%
+needed, caravans, once a day, the pause's day from both sides, the sentences), `QaLaneC1104fGameTests` (5 of its 6, 27.19: the ledger marks only a real player's change: a stranger's break or placement refused by protection marks nothing and the owner's marks; with `villageProtection` off the stranger's break marks; a block placed by no player (an orchard's sapling) or a placement that fails marks nothing), `QaShoppingPlurals1031GameTests` (2, B698: 1 Torch then 2 Torches on the daily message, desk and board, and plurals that aren't the name plus an s, 40 Hay Bales, 3 Bowls of Rabbit Stew, 1000 Lanterns), `QaOldHousesGameTests` (12, 27.20: 85%
 from both sides, abandoned blocks, allowed block entities, containers, 2000 blocks and 20×16×20 from both sides, a
 finished build, placed leaves, the ledger, the desk line) and `QaRenewalGameTests` (9, 27.21: the switch, two days
 from both sides, a Fletcher's Lodge facing the old door, the sentences, a tight zone, broken lists, a building too big
-passed over, a zone not renewed), `QaStewardSameRangeGameTests` (1, B470: Wells 25 and 24.04 blocks apart are not within
+passed over, a zone not renewed), `QaRenewalTakeDown1102GameTests` (2, 27.21 and B789: the village's builder takes an
+approved old house down on foot, approved by the owner or by the Steward himself, and the rebuild follows), `QaStewardSameRangeGameTests` (1, B470: Wells 25 and 24.04 blocks apart are not within
 24) and `QaBuilderFixes1027bGameTests` (B470's two: 24 blocks off refused on all four sides and 25 not, diagonals 23.35
 and 23.77 refused and 24.04 not, a turned twin still counts and a mirrored one doesn't; the even Market Stall and the
 Hay Cart turned against an unturned one, half a block off on both axes, measured the same way).

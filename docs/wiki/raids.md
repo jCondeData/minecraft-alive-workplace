@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133
+Roadmap items: 32.2, 32.14, B133, B824, B856, B919
 
 ## What a player sees
 
@@ -14,6 +14,19 @@ its captain falls. Under that look:
   but the village no longer counted as raided and never got its "fought off" or "fled at dawn" line.
 - An attack is now **decided a day ahead**. At dusk each hall rolls whether raiders come the *next* night, so there is a
   day in which a warning can be given (below); a village with nobody keeping watch still hears the horn first.
+- The horn's chat line and the chronicle count the raiders in proper English: "1 drowned pirate wades ashore", "1 of
+  Captain Brine's warband marches on", "3 desert raiders march on" (B824: a raid of one used to read "1 ... wade"). Each
+  counted raid line has a `.one` key beside it in the language file; a culture's data file may leave it out.
+  A raid of one fought off reads "The village fought off the raid (1 monster)" in the chronicle, and still counts in
+  the Founder's story of the village (B833).
+- Two raided villages side by side keep their raids apart: a hall's round counts only its own raid's raiders, not a
+  raider standing within its reach but nearer another village with a raid under way (that raid's). So a village whose
+  raiders are all dead has fought its raid off even with the neighbor's raiders about, and when its raiders leave at
+  their hour the neighbor's stay (B856, the rule a call-off already used, B849).
+  Every raider belongs to exactly one raid: a village's reach is measured from where the raider stands (its feet),
+  RADIUS + 32 across and 48 blocks up or down from the hall, the same rule for who a village counts, whose raid a
+  raider is and a siege's raiders; of the raids that reach it, the nearest hall's (the first raided, on a tie). So one
+  raider 49 blocks below a second raided village no longer keeps both raids going (B915).
 
 ## A day's warning (32.14)
 
@@ -29,7 +42,9 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 - **Told at once.** Players in the village, and the hall's owner wherever they are online, read "Smoke on the north
   road: Warlord Harl's band will strike Oakvale tomorrow night." The chronicle has it; the guards icon says "Raiders
   tomorrow night, from the north" ("Raiders in 2 days" after a Seer's warning) and the Defense page's new slot shows
-  the attack, who and the side.
+  the attack, who and the side. While no attack is seen, that slot says who keeps watch, each in their own words: a
+  guard "keeps watch from a tower: a raid is seen a day ahead", a Seer "sees raids in visions, 2 days before they
+  come", the Lighthouse's keeper "watches the sea from the lighthouse" (B919).
 - **On the day.** From noon the gates shut and the portcullis of every gate build drops; at dusk the guards take their
   battle stations ([Sieges](sieges.md)) and the villagers go in, before the horn. The siege that begins takes the
   dropped bars over; if no attack came, the bars go up the next morning.
@@ -193,3 +208,22 @@ None.
   and the portcullis down at noon, the villagers in at dusk, the clock's raiders at the hour; with the Legends switch off no
   warning, then told when it's on again; every new sentence). Unchanged and passing: `SeerGameTests`,
   `WarningGameTests`, `LighthousePowerGameTests`, `LegendGuestsGameTests`.
+- B133 (QA, lane D): `QaLaneD1104GameTests` (2: a Seer's village isn't told of an attack three days off, is told the
+  next dawn, two days off, once, in the Seer's words, and the Defense page counts it down from "Attack in 2 days" to
+  "Attack tonight"; a Seer who is gone tells nothing and the page reads "No lookout"). The page's idle line for a Seer
+  once said they kept watch from a tower and saw a day ahead (B919, fixed).
+- B856: `QaRisingsVerify1102dGameTests.aVillagesRoundEndsItsRaidOnceItsOwnRaidersAreGoneThoughANeighboursAreNear`
+  (two desert raids 25 blocks apart; the first's raider killed, its round ends its raid though the second's raider
+  stands within its reach; the second's raid goes on) and `aVillagesRaidersLeavingAtTheirHourLeaveANeighboursRaiderBehind`
+  (the first's raiders leave at noon, the second's raider stays and its raid goes on).
+- B915: `QaRaidOwnership1104cBugTests.aRaider49BlocksBelowAnotherRaidedHallKeepsOnlyOneRaidGoing` (one raider 49
+  blocks below a second raided hall: after both halls' rounds only one raid is still under way), with
+  `QaRaidOwnership1104cGameTests`; unchanged and passing: `QaRaidVertical1103dGameTests`,
+  `QaRaidReachHeight1104dGameTests`, `QaRaidNeighbours1103dGameTests`, `QaRisingsVerify1102dGameTests`.
+- B915, B919 (QA, lane D): `QaThreatFixes1104dGameTests`. B915: a Ravager, a Husk and a Silverfish are each in a
+  hall's reach at 48 blocks above and below their feet and out at 49, and the raid-of check follows the same edge; two raided
+  villages with one raider between them (a tall and a short mob, 48 and 49 above and below the second hall) keep
+  exactly one raid going, the one that owns it, and the other is fought off; killing that raider ends only its own
+  raid. B919: the Seer's idle line word for word ("sees raids in visions, 2 days before they come", never a tower),
+  "a day before" for a one-day Seer and "3 days" for a three-day one, "No lookout" once the Seer is gone, and the
+  Lighthouse keeper's sea-watch line.

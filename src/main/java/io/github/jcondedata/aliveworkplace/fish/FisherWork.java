@@ -102,6 +102,9 @@ public class FisherWork extends Behavior<Villager> {
 	private boolean furnaceCalls;
 	private int waited;
 	private int biteAt;
+	/** The workplaceBuildDelay rule and the delay steps {@link #biteAt} was set from (B831). */
+	private int biteRule;
+	private int biteSteps;
 	private int catches;
 	/** The bobber on the water while casting (only for show). */
 	@Nullable
@@ -228,7 +231,7 @@ public class FisherWork extends Behavior<Villager> {
 		}
 
 		// 2. A rod in hand.
-		ItemStack rod = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		ItemStack rod = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager); // a shown rod is the display's (B776)
 		if (!isRod(rod) && boat != null) {
 			reelUp();
 			status(villager, Phase.ROWING);
@@ -365,10 +368,18 @@ public class FisherWork extends Behavior<Villager> {
 			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "cast", spot);
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, villager.blockPosition(), SoundEvents.FISHING_BOBBER_THROW, SoundSource.NEUTRAL, 0.5f, 0.4f + level.random.nextFloat() * 0.4f);
-			biteAt = BuilderLevels.delay(level, villager) * biteWait(level, villager, rod, level.random);
+			biteRule = BuilderLevels.rule(level);
+			biteSteps = biteWait(level, villager, rod, level.random);
+			biteAt = biteTicks(BuilderLevels.delay(biteRule, villager), biteSteps);
 			level.sendParticles(ParticleTypes.SPLASH, bobber.x, bobber.y, bobber.z, 6, 0.1, 0, 0.1, 0);
 			return;
 		}
+		// B831: the rule lowered mid-wait brings the bite closer now, not after the next cast
+		int rule = BuilderLevels.rule(level);
+		if (rule < biteRule) {
+			biteAt = Math.min(biteAt, biteTicks(BuilderLevels.delay(rule, villager), biteSteps));
+		}
+		biteRule = rule;
 		if (waited % 25 == 0) {
 			level.sendParticles(ParticleTypes.FISHING, bobber.x, bobber.y, bobber.z, 2, 0.05, 0, 0.05, 0);
 		}
@@ -383,6 +394,15 @@ public class FisherWork extends Behavior<Villager> {
 		reelIn(level, villager, bag, rod, bobber, open);
 		waited = 0;
 		catches++;
+	}
+
+	/**
+	 * The ticks to a bite: the fisher's delay times {@code steps}, taken in long and capped at {@link Integer#MAX_VALUE}.
+	 * As an int, a huge workplaceBuildDelay overflowed to 0 or below and every cast then bit after the 20-tick floor, so
+	 * fishermen caught faster the bigger the delay (B832). A bigger delay is never faster.
+	 */
+	public static int biteTicks(int delay, int steps) {
+		return (int) Math.min(Integer.MAX_VALUE, Math.max(0L, (long) delay * steps));
 	}
 
 	/**

@@ -102,6 +102,11 @@ public final class Miners {
 			tell(player, Component.translatable("message.aliveworkplace.assign.wrong_dimension"), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
+		// B718: a quarry whose rectangle runs into a protected village the player may not change is refused (both corners
+		// may lie outside it); he's told whose village it is
+		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(level, player, area.get())) {
+			return InteractionResult.CONSUME;
+		}
 		QuarrySite existing = activeSite(level, villager);
 		if (existing != null && existing.refills()) {
 			// 36.12: the Quarry build's pit waits while they dig the marked area; they go back to it after
@@ -126,11 +131,8 @@ public final class Miners {
 		BoundingBox box = data.isStripMine() ? full : withinLevel(full, BuilderLevels.level(villager), data.depth());
 		java.util.OptionalInt shaft = data.shaftTop(floor);
 		BlockPos center = box.getCenter();
-		// Down a shaft, the way there is straight down: only the distance across counts. A deep pit (36.22) is measured
-		// to the middle of its top, where the miner starts down it.
-		double distance = Math.sqrt(shaft.isPresent() ? new BlockPos(center.getX(), bench.get().getY(), center.getZ()).distSqr(bench.get())
-			: full.getYSpan() > QuarryData.ANY_LEVEL_DEPTH ? new BlockPos(center.getX(), full.maxY(), center.getZ()).distSqr(bench.get())
-			: center.distSqr(bench.get()));
+		// B665: only the distance across the ground counts (work/Reach), whatever the pit's depth or a shaft's
+		double distance = io.github.jcondedata.aliveworkplace.work.Reach.across(bench.get(), center);
 		if (distance > MAX_DISTANCE && !io.github.jcondedata.aliveworkplace.work.Reach.inSameVillage(level, bench.get(), center)) {
 			tell(player, io.github.jcondedata.aliveworkplace.work.Reach.refusal(level, bench.get(), "message.aliveworkplace.quarry.too_far", (int) Math.ceil(distance),
 				io.github.jcondedata.aliveworkplace.work.AreaJobs.workBlock(level, bench.get()), MAX_DISTANCE), ChatFormatting.RED);
@@ -383,7 +385,7 @@ public final class Miners {
 		for (ItemStack stack : load) {
 			deliver(level, supplies, bench, stack);
 		}
-		ItemStack tool = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		ItemStack tool = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager); // a shown ware isn't stored (B776)
 		if (!tool.isEmpty()) {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			store(level, supplies, bench, tool);
@@ -437,7 +439,16 @@ public final class Miners {
 
 	/** The village Storehouse's chests (or the Village Hall's store) near {@code bench}, other than the Miner's own. */
 	private static List<BlockPos> villageStore(ServerLevel level, List<BlockPos> supplies, BlockPos bench) {
-		return io.github.jcondedata.aliveworkplace.craft.LuxuryWork.store(level, bench).stream().filter(c -> !supplies.contains(c)).toList();
+		List<BlockPos> store = io.github.jcondedata.aliveworkplace.craft.LuxuryWork.store(level, bench);
+		java.util.Optional<BlockPos> hall = io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, bench);
+		// B834: a hall's store lists its kitchens' chests first (smokers, for meals); the rock and the finds go to the
+		// Storehouse's chests first, and into a kitchen's only when those are full (or the village has no Storehouse).
+		java.util.Set<BlockPos> ordered = new java.util.LinkedHashSet<>();
+		if (hall.isPresent()) {
+			ordered.addAll(io.github.jcondedata.aliveworkplace.hall.VillageNeeds.storehouses(level, hall.get()));
+		}
+		ordered.addAll(store);
+		return ordered.stream().filter(c -> !supplies.contains(c)).toList();
 	}
 
 	static void store(ServerLevel level, List<BlockPos> supplies, BlockPos near, ItemStack stack) {

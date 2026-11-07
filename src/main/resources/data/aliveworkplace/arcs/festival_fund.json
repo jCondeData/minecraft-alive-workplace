@@ -8,7 +8,7 @@
   },
   "roles": {
     "asker": {
-      "villager": "job:aliveworkplace:bard|any",
+      "villager": "job:aliveworkplace:bard|trait:cheerful|any",
       "name": {
         "translate": "arc.aliveworkplace.festival_fund.asker"
       }
@@ -20,13 +20,21 @@
         "translate": "arc.aliveworkplace.festival_fund.1"
       },
       "intro": [
-        "arc.aliveworkplace.festival_fund.1.intro.1"
+        {
+          "translate": "arc.aliveworkplace.festival_fund.1.intro.1",
+          "with": [
+            "@asker"
+          ]
+        }
       ],
       "quests": [
         {
           "id": "aliveworkplace:arc/festival_fund/ask",
           "name": {
-            "translate": "arc.aliveworkplace.festival_fund.ask"
+            "translate": "arc.aliveworkplace.festival_fund.ask",
+            "with": [
+              "@asker"
+            ]
           },
           "objectives": [
             {

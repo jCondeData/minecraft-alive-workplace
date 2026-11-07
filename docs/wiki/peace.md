@@ -4,7 +4,7 @@ How much trouble comes to villages, server-wide and village by village: the `thr
 the Defense page's **At peace**, and the operators' `/workplace threat` command. Part of Milestone 32 (1.6); the
 threat level and the command work with today's raids and bandit camps too.
 
-Roadmap items: 32.21, B134, B383, B704, B705
+Roadmap items: 32.21, B134, B383, B704, B705, B767
 
 ## What a player sees
 
@@ -40,6 +40,9 @@ Roadmap items: 32.21, B134, B383, B704, B705
     quiet village, sends the lair away in peace then and there rather than breaking it up (a captain who fell was
     told by `Lairs.onDeath` at once, so a player's kill just before still breaks the camp up; off a quiet village a
     captain gone still breaks it up, B364);
+  - a captain the game takes away on Peaceful is remembered as taken, not fallen (`Lairs.onRemoved`, saved with the
+    lairs): if the world is back on Normal before the hall's next round, the lair still leaves in peace rather than
+    being broken up as if he fell (B767);
   - a disaster under way ends at once, as when it is switched off; covens hex nobody;
   - no bounty is posted (`Bounties.mayPost` and the hall's bounty round ask `Threats.quiet`); open ones stay (B134).
   - no story arc marked `threat` starts (the Sickness's Gray Cough, the Bandit King): `Arcs.tryStart` and
@@ -58,11 +61,14 @@ Roadmap items: 32.21, B134, B383, B704, B705
 - **At peace is set like protection**: the hall's owner or an operator; a hall nobody owns becomes the clicker's. The
   chronicle notes who set it and who lifted it. The setting is on the hall, so it survives restarts.
 - **The dawn**: "next dawn" is the day turning over (`Chronicle.day`). At peace keeps the day it was set; for level 0
-  and Peaceful the hall's round remembers the first day it saw the village quiet (in memory).
+  and Peaceful the hall's round remembers the first day it saw the village quiet (in memory). A lair leaves at the first
+  dawn after both that day and the day it came (its saved `day`), so one set down by a village quiet since an earlier
+  day stands until the day turns over (B728).
 - **The command is an order**: it ignores the switches, the threat level and At peace (a lair set down by a quiet
   village still leaves at the next dawn). `start` refuses while a raid is under way, `lair` while a lair stands and for a
   culture without one, `disaster` while one is under way. `end` calls the raid off (the raiders go, the band's own back
-  to their lair, the gates open; nothing goes into the past attacks) and ends the disaster. `clear` does that, sends the
+  to their lair, the gates open; nothing goes into the past attacks) and ends the disaster. A neighbor village's own
+  raid goes on: its raiders, the ones nearer that village, stay, even within this one's reach (B849). `clear` does that, sends the
   lair away and empties the threat clock.
 
 ## Switches
@@ -111,6 +117,10 @@ Roadmap items: 32.21, B134, B383, B704, B705
   Peaceful work now.
 - Bandit King arcs and other story threats don't read the threat level.
 - At threat level 3 the fire, drought and plague chances are capped at 100% a day.
+- With two raided villages side by side, a hall's own round still counts every raider within its reach, the
+  neighbor's too (B856, open): one village's raiders leaving at dawn take the neighbor's desert raiders (hours until
+  noon) standing within its reach, and a raid whose own raiders are gone isn't fought off while the neighbor's stand
+  in its reach. `threat end` already follows the rule (B849).
 
 ## Proof
 
@@ -135,5 +145,21 @@ Roadmap items: 32.21, B134, B383, B704, B705
   `QaPeacefulLairGameTests.aChiefAPlayerKillsJustBeforePeacefulStillFell`,
   `QaPeacefulLairGameTests.aChiefGoneOutsidePeacefulStillBreaksTheCampUp` (B364): on Peaceful a standing camp leaves in
   peace (also after a save and load), a player's kill just before still counts as the chief falling, and a chief gone
-  off Peaceful still breaks the camp up.
+  off Peaceful still breaks the camp up. `aChiefPeacefulTookIsStillNoKillAfterASaveOnNormal` (B767): Peaceful for a
+  moment, then a save and load on Normal: the camp leaves in peace, no rest days.
+- `QaThreatCobbleVerify1101GameTests` (4, QA, B364, B767, through the hall's own round): Peaceful sends a standing camp
+  away in peace (no broken-up line, no rest days; what the player hears is counted from before Peaceful, as the hall's
+  timed round may come first, B770); at threat level 0 the camp still stands the same evening and leaves at the next
+  dawn, with no new camp for 3 days; back on Normal a chief a player kills still breaks the camp up; Peaceful for a
+  moment and back to Normal before the hall's round is no kill (B767).
+- `QaRisingsVerify1102dGameTests.aNeighbourVillagesCallOffLeavesTheOtherRaidsRaidersAndItGoesOn` (B849): `end` on one
+  of two villages side by side sends its own raider away, not the neighbor's standing within its reach, and the
+  neighbor's raid is still on after its round.
+- `QaRaidNeighbours1103dGameTests.aRaiderNearerAVillageWithNoRaidIsStillThisRaidsAndGoesWhenCalledOff` (QA, B849, the
+  rule's other side): a raider within this village's reach but nearer a village with no raid under way is this raid's,
+  and `end` sends it away.
+- `QaPeacefulLair1103dGameTests` (2, QA, B364): a plain camp taken by Peaceful is never told, chronicled, counted or
+  rewarded as broken up (it "packed up and left the village in peace" once, the leave message once, no
+  `village/camp_broken` advancement, no rest days); a chief a player only wounded before Peaceful took him is no kill
+  of that player's.
 - Showcase scenes: `at_peace`.

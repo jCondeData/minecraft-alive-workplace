@@ -197,6 +197,18 @@ worked out from the finished buildings already saved.
   `QaGranderHomesGameTests.noMoreThanThreeHouseholdsGetATip`, `QaGranderHomesGameTests.theTipReadsRightForEveryClassAndCount`,
   `QaGranderHomesGameTests.openingABuildersTradesAddsTheGranderHomesOnce`,
   `QaGranderHomesGameTests.onlyTheNearestHallsVillageBringsTheTownhouse`.
+- QA (2026-11-07): `QaGranderHomes1107GameTests` (8): a Novice builder doesn't sell the Artisan's House and the level-up
+  to Apprentice adds it once, for 10 emeralds; the village's rim from both sides (an Artisan or Burgher just outside
+  brings nothing, on the rim a Townhouse at 14 or a Manor at 20, Peasants nothing); each upgrade (Artisan's House,
+  Townhouse, Manor, II and III) only from the builder who finished the tier below, once, kept through a save; a
+  builder's level-ups from Novice to Master never put a grander home in the Blueprint Table, and the Table refuses one;
+  every bed of every tier, turned and mirrored, gives its grade (and the Manor's garden its beauty) before and after a
+  reload; an Artisan's House built across a save and reload ends finished with exactly its materials and its builder
+  sells the II. A builder up a hill on the village's rim sells no Townhouse (B988, test on `tests/grander-homes-rim-1107`).
+  `QaGranderHomes1107bGameTests` (4): the Townhouse I and the Manor I built across a save and reload mid-structure end
+  finished with exactly their materials, beds of grade II and III, and the finished build gives its builder the II; a
+  cherry Artisan's House built the same way sells the cherry II; every styled tier I and II leads to the next tier in
+  its own style, never the plain one, once.
 - B640: `B640GameTests.b640TheTerracesFrontPanesJoinTheirNeighbours` (a builder puts the Terrace up: each front pane
   of the bays and dormers joins both sides, and every pane, fence and wall in it is joined as the game joins it) and
   `B640GameTests.b640TheFrontPanesJoinAfterASaveAndReloadMidWindows` (the same, saved and loaded while the front glass

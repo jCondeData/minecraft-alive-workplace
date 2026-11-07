@@ -486,6 +486,38 @@ public class RaidHelperCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * Many helpers walking home save, load and save again to the same tag, in the same order (B782: with a hash map the
+	 * reloaded list came out shuffled once about 20 were on the way home).
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void manyHelpersHomewardSaveInOrder(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		java.util.Random random = new java.util.Random(782);
+		ListTag home = new ListTag();
+		List<UUID> ids = new ArrayList<>();
+		for (int i = 0; i < 25; i++) {
+			UUID id = new UUID(random.nextLong(), random.nextLong());
+			ids.add(id);
+			CompoundTag t = new CompoundTag();
+			t.putUUID("helper", id);
+			t.putLong("since", 1000L + i);
+			home.add(t);
+		}
+		CompoundTag tag = new CompoundTag();
+		tag.put("hires", new ListTag());
+		tag.put("homeward", home);
+		CompoundTag saved = RaidHelpers.Data.load(tag.copy(), level.registryAccess()).save(new CompoundTag(), level.registryAccess());
+		CompoundTag again = RaidHelpers.Data.load(saved.copy(), level.registryAccess()).save(new CompoundTag(), level.registryAccess());
+		helper.assertTrue(saved.equals(tag), "the homeward list didn't save in the order it was read: " + saved);
+		helper.assertTrue(again.equals(saved), "read back: " + again + " saved: " + saved);
+		ListTag back = again.getList("homeward", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		helper.assertTrue(back.size() == 25 && back.getCompound(24).getUUID("helper").equals(ids.get(24))
+			&& back.getCompound(24).getLong("since") == 1024L, "the 25th helper on the way home: " + back);
+		helper.succeed();
+	}
+
 	/** A raid Raid Dens no longer runs (gone from its list): the helpers' next look ends the hiring and they walk home. */
 	//$ gametest_batch 'CompatGameTests.AREA' '"raidHelpersGone"'
 	@GameTest(template = CompatGameTests.AREA, batch = "raidHelpersGone")

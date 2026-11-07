@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933
 
 ## What a player sees
 
@@ -32,8 +32,10 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   **chef** pours water into the basin under a mechanical mixer, adds wheat flour and takes out dough; the **miner**
   drops raw iron, copper or gold between two crushing wheels and gathers the crushed ore that falls out below. A
   machine is only fed while it turns ("the Millstone isn't turning" shows over the worker otherwise), and nothing is
-  fed once the chest holds enough of what it makes (64 flour, sheets or crushed ore, 32 dough) or has no free slot
-  ("the store is full: the Millstone waits"). A trip is short, and the job's own work picks up again after it. The
+  fed once the chest holds enough of what it makes (64 flour, sheets or crushed ore, 32 dough; counted over every stack,
+  so 64 means 64 in all and 63 still gets a batch) or has no room for it
+  ("the store is full: the Millstone waits"); a chest with a part stack of flour has room even when no slot is empty
+  (B820). A trip is short, and the job's own work picks up again after it. The
   Mechanic's round now covers the press, the mixer and the crushing wheels too. Only the village's own machines and
   chests are used (B243): a machine or a chest counts when it stands inside a building the village's builders
   finished (in a turned or flipped building, exactly the blocks its builders placed: one block past its walls, floor or
@@ -114,7 +116,31 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   round; Create drives it from then on. It is named "Thornholm - Ashford Caravan Train". A caravan on that line waits
   at the station until the train stands there, boards it (steam and the bell) and is unloaded the moment the train
   stands at the other village's station. A station the village points at its track faces the other village (Create's
-  stations are stopped at from one side). Without a free villager, before the train is put together, or after a player
+  stations are stopped at from one side). Each station is named after its village once Create knows it, also when the
+  server was restarted in between (B800); a station a player renamed by hand keeps the player's name, and the train's
+  schedule is made from the names the stations have when it is put together. A station renamed later, with Create's
+  station screen while the train runs, is followed: the hall's next look at its train points that stop at the new name
+  (`CreateTrains.follow`), so the train and its caravans keep coming (B900), also when the renamed station's village
+  isn't loaded any more (the player renamed it there and went home): the name is read from Create's railway, which
+  keeps every station with its chunk unloaded (B912). A train put together at a station whose village unloads soon
+  after (the player walking off) keeps its conductor and runs on (B913); it still waits two seconds at that station
+  first (Create's schedule cooldown), so the caravans waiting there board it. Stations on one track network never share a
+  name the village gave them, since a Create schedule stops at the nearest station of its name: a station whose village's
+  name another station there already has (two villages of one name, a name tag or two made-up names alike) gets the
+  village's name with its hall's position added, as `Oakford 120_64_-35`; one named before that, or whose network was
+  joined to another since, is renamed so while its train runs, and the train's stop follows it (B894). Names a player
+  gave are never changed, so a player may give both stations one name ("Station"): Create would then count a train
+  standing at one as already at the other, and it would never leave. The hall's look at its train sends a train standing
+  at a namesake of its stop on to the stop's own station, found by the station's id rather than its name
+  (`CreateTrains.sendOn`), and Create's schedule goes on from there (B933). A Create station takes trains coming from one side only, so a village with a
+  train neighbor on each side of one line uses a station facing each (`CaravanTrains.stationFor`: the nearest, unless it
+  faces away and another neighbor's train comes in at it, so a village with one neighbor keeps its station whichever
+  way it faces; else another station within 16 blocks of it facing that neighbor or not pointed yet); when every station faces another neighbor's train, a builder of
+  the village puts up a Create station from the bench's chests beside the same track, two blocks along it towards the
+  new neighbor (`CaravanTrains.secondStation`), named `Middleton (Eastwick)`, and a train still aimed at the first station is pointed
+  at it (B898). Till that station is up (no Create station in the bench's chests yet) that neighbor's caravans take
+  the timed trip, and a second station a player mines while its train runs is put back by the builder from the chests,
+  the goods aboard coming in once it stands. Without a free villager, before the train is put together, or after a player
   breaks it up, caravans take the timed trip above.
 - **One line, a built train, goods in its chest** (39.7b). The track a builder lays along a road follows
   `CaravanTrains.plan`: a straight piece (`xo`, `zo`) on each level node, an ascending piece (`an`, `as`, `ae`, `aw`) on
@@ -138,7 +164,8 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   station, rode the train or had its goods in its chest (B359): at its hall's next round it takes the timed trip and
   arrives with its goods. With the switch off, goods in the chest come back out of it (a train no longer there keeps
   them, as above); with Create gone the train and its chest went with Create, so the caravan's own record of its goods
-  is delivered.
+  is delivered. Switched on again, the train still standing on its track runs once more with its conductor and carries
+  the next caravan; no second train is put together (B904).
 - **The Conductor** (39.7d). A jobless villager next to a Create Train Station becomes the village's Conductor, in a
   maroon railwayman's cap with a gold braid band and badge, a maroon tunic with two rows of brass buttons, a gold watch
   chain, a ticket punch at the belt and black gloves. When the village puts its train together, the Conductor by its
@@ -230,7 +257,10 @@ plants) is missing. A build a builder is repairing is left to the builder. A bel
 build stands, so each segment finds its controller; one belt connector is used per belt. The round lists the millstones
 within 32 blocks, nearest first, and is looked up again each time it comes back to its start or a machine on it is
 gone. A millstone "turns" at 1 RPM or more, read by name (`Speed`) from its saved data. Create's machines, belts and
-toolboxes are no longer counted as anyone's supply chest (a millstone's wheat, a player's tools).
+toolboxes are no longer counted as anyone's supply chest (a millstone's wheat, a player's tools). The part in the
+Mechanic's hand is never saved as a job: a Mechanic loaded (a restart, his chunk unloading) still carrying one puts it
+in if its hole is still open, and otherwise takes it back to the store by the toolbox (at the toolbox's foot when the
+store is full); he also takes it back before fetching a different part, so a part is never lost from his hand (B884).
 
 **Machine work.** Each machine is a data file, `data/aliveworkplace/machine_work/<id>.json` (`millstone`, `press`,
 `mixer`, `crushing`), read on every load and `/reload`; a datapack can add or replace them. A file names the machine's
@@ -304,7 +334,9 @@ showcase catalog).
 - `mechanics` (39.2): the Mechanic job. Off: a jobless villager doesn't see a toolbox as a workstation, and
   Mechanics already hired stand idle. Off for players until 2.3 ships (the gate), and does nothing without Create.
 - `machineWork` (39.3): villagers (and the Mechanic) feed Create's machines. Off: nobody feeds a machine; a trip
-  already under way waits, saved, until it's on again. Off for players until 2.3 ships, and does nothing without Create.
+  already under way ends at once (B244): what the worker carried goes back into the village's store by their
+  workstation, or drops at their feet when it doesn't fit, and stays there when the switch is on again. Off for
+  players until 2.3 ships, and does nothing without Create.
 
 - `createBuilds` (39.4, 39.5, 39.8): the Watermill, the Windmill, the Workshop and 39.8's six builds at the Blueprint Table and in the creative
   tab, and the contraption order and turning check for builds started while it's on. Off: they aren't offered, and new
@@ -330,7 +362,8 @@ showcase catalog).
 - `machine_job`, an attachment on a worker (39.3): a trip to a machine under way: the machine's position, its file,
   the stage (`fetch`, `feed`, `return`) and what's carried. Every field is optional; without it the worker has no trip.
   A trip saved mid-way goes on after a load, so nothing carried is lost. In a world opened again after Create was taken
-  out of the pack the trip can't go on: what was carried goes back into the store by the workstation, or drops at the
+  out of the pack the trip still loads (a carried stack of Create's own, such as its flour, is dropped from the record,
+  B791) but can't go on: what was carried goes back into the store by the workstation, or drops at the
   worker's feet when there's none, and the record is cleared. (The design note's per-dimension `machines`
   list wasn't needed: workers find machines near their workstation in loaded chunks.)
 
@@ -451,6 +484,22 @@ blocked) gets no sign yet: the player starts it with an empty hand (39.4). A sch
 table opens may be read cut short and said so once; it's imported when the upload finishes and the table opens again
 (39.6). Whether Create's client keeps a written Schematic's right-click on the table for itself in a real game is not
 tested (the GameTests use the table as the server does).
+Create's Mechanical Piston moves the mod's blocks with what is in them, as it moves chests (tested: Mailbox, Shop
+Counter, Drop Box, Blueprint Table), and a Mailbox, Shop Counter, Storehouse or grave keeps every saved field (owner,
+stock, orders, who lies there), also when the world is saved and loaded while it is in the air on the moving
+contraption; a Wonder's Foundation Stone stays put. A Village Hall pushed by the Mechanical Piston keeps its name,
+owner and chronicle (a renamed village keeps its name), but loses its Steward, its place in its realm, its open quests
+and, if never renamed, its made-up name (B989). A moved Mailbox loses its place in the post (B985) and a moved Travel
+Post its name and finder (B986).
+Create's funnels and chutes take nothing out of a Shop Counter or a Mailbox, and a funnel pushing into a counter,
+mailbox or drop box loses and doubles nothing (a counter refuses it). A Mechanical Drill breaking a Mailbox, Shop
+Counter, Drop Box, Builder's Bench, Blueprint Table or Village Hall drops what a player breaking it gets (a named
+hall keeps its name). A Deployer acts as a fake player: one a player placed acts for him; one nobody placed still
+becomes the owner of a hall it sets down and of an unowned Mailbox or Shop Counter it clicks (B843), and a stranger's
+deployer can place blocks in and rename the hall of a protected village (B844).
+From outside a protected village, Create's Mechanical Piston pushes blocks into it and its Mechanical Drill breaks
+blocks at its edge, which a vanilla piston can't (B993); a Mechanical Piston inside the village works there as usual. A Create funnel outside on the side of a chest in the
+village's last column empties it (B994).
 
 ## Proof
 
@@ -492,6 +541,23 @@ tested (the GameTests use the table as the server does).
   mirrored from exactly the material list, go up whole and empty.
   `QaCreateStoresHeldCompatTests` (lane E's QA): the same for a millstone (holding wheat), a chute, an item vault, a
   mechanical crafter and a toolbox.
+  `QaCreateIntoProtectedVillage1107eCompatTests` (lane E's QA, 4): at a protected village's edge a vanilla piston
+  outside can't push a plank in (the calibration); with the village open a Mechanical Piston outside pushes a plank two
+  steps in and a Mechanical Drill outside breaks the edge's stone (the controls for B993); a Mechanical Piston inside the
+  protected village pushes a plank two steps there.
+  `QaCreateFunnelAtProtectedVillage1107eCompatTests` (lane E's QA, the control for B994): with the village open a brass
+  funnel outside on the side of a chest in its last column takes the chest's diamonds out.
+  `QaCreateMovesOurBlocks1102eCompatTests` (lane E's QA): a Mechanical Piston pushes a Mailbox, a Shop Counter, a
+  Drop Box and a Blueprint Table two steps and each keeps exactly what was in it (nothing doubled on the ground, nothing
+  lost), while a Wonder's Foundation Stone isn't moved at all (a plank pushed by the same piston is the control).
+  `QaCreateMovedSaved1103eCompatTests` (lane E's QA, 8): the same piston pushes a Mailbox, a Shop Counter, a
+  Storehouse and a grave, each set up (owner, items, orders, the dead villager and a funeral due); its saved data reads
+  the same two steps on, both plainly and with the moving contraption saved, removed and loaded back mid-push.
+  `QaCreateMachinesOnOurBlocks1102eCompatTests` (lane E's QA, 15): funnels and chutes on a counter, mailbox and drop
+  box, and a drill breaking each of the mod's item-holding blocks, each against a control (a chest, a player).
+  `QaCreateDeployerOnOurThings1102eCompatTests` (lane E's QA, 7): a deployer an owner placed sets down his hall, names a
+  hall and a villager, hands in an insignia once; a stranger's stick changes nothing. The failing cases (B843, B844)
+  are on `tests/create-deployer-1102`.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,
@@ -522,6 +588,24 @@ tested (the GameTests use the table as the server does).
   needed; a millstone turned by a creative motor gets the chest's wheat and its flour comes back, one that doesn't
   turn gets nothing; `mechanics` off, the toolbox is hidden from the jobless and nothing is mended; the round and the
   job survive a save and load.
+- `QaMechanicBeltController1103eCompatTests` (QA, with Create): a three-segment belt saved where its controller stood
+  elsewhere, gone from a finished build: every segment the Mechanic puts back names as its `Controller` the place where
+  the controller segment stands in this world, plain and turned a quarter.
+- `QaMechanicSavedMidMend1103eCompatTests` (QA, with Create, saves): a Mechanic saved and loaded on his way to the
+  store for a cogwheel takes one, not two; saved and loaded twice three ticks apart while carrying it, he puts it in
+  once: the hole filled, one cogwheel left of the store's two, nothing in his hand or on the ground.
+- `QaMechanicPartStruck1104eCompatTests` (QA, with Create, B928 kin): a Mechanic struck by lightning (a witch) with
+  empty hands, or right after he set the cogwheel in the hole, leaves the store and the mend as they were, nothing
+  dropped. Struck or killed with the store's cogwheel in hand, it vanishes (B959; and a machine trip's load when
+  struck, B960): their tests wait on `tests/mechanic-struck-1104`.
+- `QaContraptionLines1104eCompatTests` (QA, with Create, 39.5's lines): "its 1 moving part turns", two stuck parts
+  both named, four named with no "more", five reading four and "and 1 more", eleven "and 7 more", a part gone from its
+  spot "a missing part at x y z", and the Mechanic whose toolbox is in reach named as the one who checked.
+- `QaCreateZombified1104e2CompatTests` (QA, with Create, B928 kin): a farmer killed by a zombie on Hard mid machine
+  trip (a zombie villager now, no death loot) leaves his 12 wheat where he fell, and the zombie villager carries
+  neither the wheat nor the trip; cured, he is a farmer again with no trip and no second load. A Mechanic killed by a
+  zombie with the store's cogwheel in hand loses it, and a train driver turned by a zombie stops the train as B962's
+  do: those tests wait on `tests/mechanic-struck-1104`.
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is
@@ -552,11 +636,39 @@ tested (the GameTests use the table as the server does).
   Ashford's 64 logs always add up (none left in the train, none twice); a world saved with a caravan waiting to board and
   one in the chest, opened with the switch off and no train on the line: the first comes in with its 16 logs, the other is
   written off with one "broken up" line and its logs never arrive.
+- `QaTrainHubNoStation1104eCompatTests` (QA, B898, with Create): the hub's bench chests with no Create station: the
+  first neighbor's train runs, no second station appears, the second neighbor's 32 wheat come by the timed trip (64 in
+  the chests), and once a station is brought the builder puts it up and that train runs; the second station mined
+  while its train carries the wheat: the builder puts it back and the wheat comes in by train, none lost or doubled.
+  A world from before B898 (the hub's one station facing Westmere, the Eastwick train already put together the old way
+  with no way in): the builder puts up the second station, the old train's stop follows it, and Eastwick's wheat
+  comes in by that train.
+- `QaTrainVillageRenamed1104eCompatTests` (QA, B894, with Create): with the Pine-Oakford train running, the middle
+  village renamed Oakford with a name tag, or the far Oakford renamed Pine: the four stations keep four names and
+  Pine's 32 logs reach the far village by train.
+- `QaTrainStationSameName1104eCompatTests` (QA, B900, with Create): with the Ashford-Bramble train running, a player
+  names both stations "Station", swaps the two stations' names, or renames Bramble's "Harbor" and then, once the train
+  has followed that, "Port": each time Ashford's 32 logs ride the train to Bramble, none lost or doubled.
+- `QaTrainNamesakes1107eCompatTests` (QA, B933, with Create): a halt added halfway along the line and all three
+  stations named "Station" (the train stops at the halt, a namesake of its stop, and is sent on; fails without
+  CreateTrains.sendOn), the halt given the other village's station name, and only the sending village's station given the
+  other's name with Create's take-the-station-you-stand-at outcome forced: each time the 32 logs ride the train and
+  arrive, none lost or doubled.
+- `QaSecondStationWords1104eGameTests` (QA, B898, without Create): the second station's site reads "Second Train
+  Station" (the train's "Village Train") for halls at positive, negative and zero positions, the two villages' sites
+  never share an id, and the chronicle's line reads as written.
 
 - `MachineWorkCompatTests` (with Create): for each of the millstone, the press over a depot, the mixer over a basin
   and the crushing wheels, with the job's own worker: turned by a creative motor, the chest's input goes to the machine
   and what it makes comes back to the chest; standing still, nothing is taken; a full chest, nothing is taken; a worker
-  saved and loaded mid-trip with the input in hand finishes the job; `machineWork` off, nothing is fed.
+  saved and loaded mid-trip with the input in hand finishes the job; `machineWork` off, nothing is fed. B820: a store
+  chest with one item in each of its 27 slots (a flour among them) takes all 32 flour the Mechanic empties from a
+  millstone (`MachineWorkCompatTests.aStoreWithAStackInEverySlotTakesTheMechanicsOutput`) and the farmer still mills
+  its wheat (`MachineWorkCompatTests.aFarmerMillsForAStoreWithAStackInEverySlot`); every slot a full stack, the flour
+  stays in the millstone and seeing to it reads full (`MachineWorkCompatTests.aStoreFullToTheBrimTakesNothing`).
+  The same on the farmer's own trip to a turning millstone already holding 32 flour (`QaMachineFullOutput1103eCompatTests`,
+  QA): brim full, he never sets off, says "Machine work: the store is full: the Millstone waits" and the flour stays in
+  the millstone; with room in the flour's stack only, he brings all 32 into the store, none dropped.
 - `QaMachineTripCompatTests` (QA, B244, with Create): a miner carrying 10 raw iron to the crushing wheels when
   `machineWork` is switched off puts them back in the store, and after a save and load with the switch on again the iron
   still comes to 10; a Novice armorer who loses the job mid-trip puts the 8 iron back, and killed afterwards drops none.

@@ -70,8 +70,10 @@ public final class Retraining {
 	 */
 	static Optional<BlockPos> freeTable(ServerLevel level, Villager villager) {
 		BlockPos near = villager.blockPosition();
-		return level.getPoiManager().findClosest(ModVillagers.BUILDER.acquirableJobSite(), near, (int) Math.ceil(Stations.REACH),
-				PoiManager.Occupancy.HAS_SPACE)
+		// (the table a jobless villager is walking to on their own is held for them, and free for them (B803))
+		return Stations.nearer(near, level.getPoiManager().findClosest(ModVillagers.BUILDER.acquirableJobSite(), near, (int) Math.ceil(Stations.REACH),
+				PoiManager.Occupancy.HAS_SPACE), Stations.walkingTo(level, villager)
+				.filter(pos -> level.getPoiManager().getType(pos).filter(ModVillagers.BUILDER.acquirableJobSite()).isPresent()))
 			.filter(pos -> pos.distToCenterSqr(villager.position()) <= Stations.REACH * Stations.REACH);
 	}
 
@@ -143,6 +145,7 @@ public final class Retraining {
 	 * second click and the Village Hall's Change job (36.18) both end here.
 	 */
 	public static void retrain(ServerLevel level, ServerPlayer player, Villager villager, BlockPos station, VillagerProfession job) {
+		stopTrading(villager);
 		dropWork(level, player, villager);
 		villager.setVillagerData(villager.getVillagerData().setLevel(1)); // the old job's level goes (its trades go with the job)
 		villager.setVillagerXp(0);
@@ -155,6 +158,7 @@ public final class Retraining {
 	 * by themselves, as any jobless villager does.
 	 */
 	public static void unemploy(ServerLevel level, ServerPlayer player, Villager villager) {
+		stopTrading(villager);
 		dropWork(level, player, villager);
 		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).ifPresent(site -> Stations.releaseOld(level, villager, site));
 		villager.getBrain().eraseMemory(MemoryModuleType.JOB_SITE);
@@ -162,6 +166,17 @@ public final class Retraining {
 		villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE).setLevel(1));
 		villager.setVillagerXp(0);
 		villager.refreshBrain(level);
+	}
+
+	/**
+	 * Closes the trade screen a player has open with {@code villager}: their trades go with the job, and a screen left
+	 * open would list the old offers while the server answers with the new job's (B899).
+	 */
+	static void stopTrading(Villager villager) {
+		if (villager.getTradingPlayer() instanceof ServerPlayer trader) {
+			trader.closeContainer();
+		}
+		villager.setTradingPlayer(null);
 	}
 
 	/** How much more the player needs: "7 emeralds" or "650 CobbleDollars". */
@@ -180,6 +195,9 @@ public final class Retraining {
 	 * carries on from there, the steps already done skipped).
 	 */
 	static void dropWork(ServerLevel level, ServerPlayer player, Villager villager) {
+		if (io.github.jcondedata.aliveworkplace.city.Stewards.isSteward(villager)) {
+			io.github.jcondedata.aliveworkplace.city.Stewards.stepDown(villager); // the City Plan leaves his hand, as a dismissal takes it (B886)
+		}
 		for (BuildSite queued : Builders.queue(level, villager)) {
 			if (queued.wonder() != null) {
 				io.github.jcondedata.aliveworkplace.wonder.WonderCrews.handOn(level, queued, villager);

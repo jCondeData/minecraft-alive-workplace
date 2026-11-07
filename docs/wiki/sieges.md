@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432
 
 ## What a player sees
 
@@ -12,12 +12,22 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
 - **The gates shut at once**, whatever the hour and with or without guards, and the **portcullis drops**: iron bars
   come down across the gateway of every finished Gatehouse, under the drawn-up ones. Players can still open the fence
   gates by hand. Both open again at the first dawn after, once the raid is over.
+- **Every night the guards shut the gates** (no siege needed): in a village with a Village Hall and at least one guard,
+  the fence gates of every finished Gatehouse and Palisade Gate in the village shut at dusk (day time 12,500) and open
+  again just before dawn (23,500), on the hall's round, so within half a minute; the same every day, and for a gate
+  build turned or mirrored when it was placed. Without a guard they stay as they are. A gate you open by hand at night
+  is shut again on the next round; a gate you broke or replaced with something else is left as it is, and the others
+  still move. A gate build outside the hall's village is never touched.
 - **The ram goes for the gate** nearest the raiders' side: a ravager, or without one the raiders with axes. Every blow
   is heard, the block cracks a little more with each, and at the end it breaks: nothing drops. The chat says "The
   raiders have broken through a gate of Oakbrook!" The other raiders wait a few blocks behind the ram and walk in
   through the gap; the ram steps aside out of the gateway to let them past, then widens it. A raider a fight took
   round the side of the walls comes back round to the gateway and in, and one that strolls back out through the gap
   is sent in again.
+- **A gate put back in the breach is rammed again**: a builder mends the gates first in a siege, or you set the fence
+  gate back by hand, and the ram comes back and breaks it again (with fresh hit points) before the raiders walk in. A
+  gateway **walled up** with a solid block (cobblestone, planks) stays shut: rams don't break walls, so the raiders
+  climb ladders or sand ramps if they bring them and otherwise wait outside; clear the block and the way is open again.
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
 - **The defense upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
@@ -43,14 +53,16 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
   in their way and set a ladder up its outer face, a rung every half second, with the sound of a ladder being placed.
   When the first one stands the chat says "Ladders at the walls of Oakbrook! A guard on the wall can throw them down."
   They climb it, cross the wall's top and drop inside; the other raiders follow up the same ladder while the gate is
-  still shut.
+  still shut. Once the gate is open, one still on its way to a ladder turns and goes in by the gate instead.
 - **A guard on the walkway throws a ladder down** when he is within 2 blocks of its top: the whole ladder breaks away
   at once, whoever is on it falls, and the raiders need 10 seconds before they raise it again.
 - **Ladders go on any wall, yours too, but only into air**, and never against a gate. Grass, ferns, dead bushes and
   fallen snow (one layer) at the wall's foot count as air: the ladder goes up through them, and they are gone afterward
   (no seeds, grass or snowballs drop). Your flowers, saplings, blocks and snow piled deeper there still turn a ladder
   away. When the raid is over every
-  ladder is taken away; nothing else of the wall is touched and no ladder item is left behind.
+  ladder is taken away; nothing else of the wall is touched and no ladder item is left behind. A wall more than 10
+  blocks high gets no ladder, and if you build a wall up past that while a ladder stands against it, the ladder is
+  taken down within a second or two, nothing dropped.
 - **No raider appears inside the walls**: a siege gathers beyond the outermost finished wall on the side it comes from.
 - **Guards take battle stations** (32.6) when a siege begins, instead of rallying at the bell. Archers go up to the
   tops of finished Wall Towers and Lookout Towers and the walkways of the Gatehouse, Stone Wall and Palisade, on the
@@ -88,6 +100,10 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
   blocks are broken in a fixed order: the middle way through first, from the outside in (at a Gatehouse: the two
   dropped bars, then the fence gate), then the ways beside it, and last what hangs above head height (the drawn-up
   bars), which only the ram itself needs gone.
+- **The way after the gate went** (B966, B972): every director step looks again at each gate block that went. One a gate
+  stands in again is standing again with fresh hit points (the ram goes back to it first, being earlier in the order);
+  a block nothing walks through that isn't a gate counts as walled (`WALLED`, saved), which shuts the middle way as a
+  standing gate does but is never struck. `Sieges.openNow` (the ladder layers') reads the world for both at once.
 - **The cracks** are the block's destroy progress, 0 to 9, from the share of hit points gone, shown again every 10
   seconds because a client forgets them after 20.
 - **One director a siege**, every 20 ticks, asking for at most 4 paths a tick. It walks the rams to the block, has
@@ -115,7 +131,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B381, B432
     the foot.
   - A goal on the raider holds it to its ladder: it waits at the foot, climbs at a ladder's speed, walks across the
     top and is let go once it is past the wall's inner face, where it drops. The others (never the rams) are sent to
-    the nearest standing ladder while the breach is shut.
+    the nearest standing ladder while the breach is shut. One let go before it is on the ladder (the gate opened,
+    or its ladder went down) has its walk to the ladder stopped, so the director sends it to the gate (B907).
   - **Throwing down**: a grown guard, awake, standing on something at least 2 blocks above the ladder's foot, within
     2 blocks of its top rung. The rungs go (break particles, no drops) and the ladder is not raised again for 200
     ticks. A raider on it falls and takes the fall's damage.
@@ -287,6 +304,20 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 
 ## Proof
 
+- QA (lane D, 2026-11-03): `QaGates1103dGameTests` (4): the night gates shut at 12,500 and not at 12,499, open at 23,500
+  and not at 23,499, on day 0 and day 3; a Gatehouse turned a quarter and mirrored has its own gates shut; a broken gate
+  and one swapped for a fence are left alone while the third still shuts, a gate opened by hand at night is shut on the
+  next round and one left open stays open in the morning; a Gatehouse outside a hall's village is never touched (and is,
+  with the village wider). With the suite, mutation kills 22 of 23 mutants of `guard/Gates` (the survivor: the gate
+  sound left out).
+- QA (lane D, 2026-11-03): `QaLadderHeight1103dGameTests` (3): a pillager climber sets a ladder up walls exactly 10
+  high and not a rung up walls 11 high; walls built up to 12 high once a ladder has two rungs take it down within 40
+  ticks, off the siege's list, no ladder item dropped.
+- QA (lane D, 2026-11-07): `QaLadderThrow1107dGameTests` (2): a guard whose feet are exactly two above the ladder's
+  foot, beside it, throws the finished ladder down within 40 ticks; a guard one above the foot (on a step), a farmer and
+  a guard's child on the walkway leave it up, and the climber gets over. Mutation: 8 of 8 mutants of the guard's check
+  (`Ladders.guardAt`) killed.
+
 - GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
   and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's
   block breaking (the game's destroy call) never takes a hut block nor one of a build under way, while a wild ravager's does and a raider's on a
@@ -350,5 +381,22 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   together with `SiegeGameTests` and `LadderGameTests`; not checked for flakiness with the repeat generator, and not
   tested: Lookout Tower, Gatehouse, Stone Wall and Palisade stations in a GameTest (the scene uses a Gatehouse), a
   crossbow from a station, the damage an arrow does with the height bonus (only the factor), an offline player.
+- `QaBattleStationViewGameTests` (QA, B252 and B320, a Gatehouse with its gate the breach):
+  `theStationOverTheGateIsTheOneThatSeesMost` (a crenel over the gate, x 4 or 6 of the blueprint; it sees more of the
+  ground than the old merlon spot and at least as much as every other free station in reach),
+  `anArcherPushedOffHisStationsMiddleStepsBack` (pushed half a block aside, he is back within 0.25 of its middle and
+  still on it), `afterARestartHeTakesTheSameStationAgain` (the places forgotten as a stop forgets them: the same station
+  again) and `aRaiderComingAtTheGateIsShotOnTheWayIn` (held 19 out until the archer is up, then coming on: hit at least
+  2 blocks out from the gate's face, from the station).
 - Showcase scene `battle_stations`: two archers leaving their Guard Post for stations on a Gatehouse and a Wall Tower
   and shooting down at raiders hacking at the portcullis.
+- B907 (QA, lane D): `QaThreatFixes1104dGameTests`: a restart as the gate breaks open (siege and ladder state
+  forgotten) still sends the follower in by the gate, climbing no more than 2 blocks; the lead climber already up its
+  ladder when the gate breaks gets over the wall and inside. B934's fix: a follower 0.5-2 blocks from the foot turns
+  for the gate too (`QaThreatFixes1104dBugTests`, registered with it).
+- A gate set back mid-siege (QA, lane D, 2026-11-05): `QaSiegeRegateLadder1105dGameTests`: the follower that let go of
+  its ladder for the broken-open gate still gets in after the gate is put back, shut (4 of 4 runs). `QaSiegeOpenGate1105dGameTests`: a
+  middle gate a player opens by hand as the siege begins still lets the siege run its course: the pillager is through
+  within 600 ticks and nothing drops (2 of 2). Failing (B966): at
+  the Palisade Gate alone the ram never strikes the gate put back in the breach and nobody gets in,
+  QaSiegeRegate1105dGameTests on tests/siege-regate-1105d.

@@ -205,7 +205,9 @@ public final class FreeJobsPage {
 
 	static boolean canTake(Villager villager, VillagerProfession job) {
 		VillagerProfession had = villager.getVillagerData().getProfession();
-		return had == VillagerProfession.NONE || had == job;
+		// B892: nobody VillageHalls.assign refuses is offered: a retired elder (B885) or a hired band's or relief rider's man (B889)
+		return (had == VillagerProfession.NONE || had == job) && !HallPeople.visitor(villager)
+			&& !io.github.jcondedata.aliveworkplace.people.Retirement.refuses(villager, villager.getVillagerData().setProfession(job));
 	}
 
 	/** Gives {@code villager} the block: it's claimed for them and they walk to it. False if it was taken meanwhile. */
@@ -474,6 +476,14 @@ public final class FreeJobsPage {
 		Component job = Stations.name(station.profession());
 		if (isBuilder(villager) && station.profession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER) {
 			moveBuilder(menu, level, hall, station, villager, p);
+			return;
+		}
+		if (io.github.jcondedata.aliveworkplace.people.Retirement.refuses(villager, villager.getVillagerData().setProfession(station.profession()))) {
+			// B892: retired while the page was open: the real reason, not "found work" or "someone took it first"
+			Chat.actionBar(p, Component.translatable("message.aliveworkplace.job.retired", villager.getDisplayName()).withStyle(ChatFormatting.YELLOW));
+			level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);
+			renderBlock(menu, level, hall, station.pos(), station.profession(), p);
+			menu.broadcastChanges();
 			return;
 		}
 		boolean stillJobless = villager.isAlive() && jobless(level, hall).contains(villager) && canTake(villager, station.profession());

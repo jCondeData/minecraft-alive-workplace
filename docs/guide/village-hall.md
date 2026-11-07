@@ -82,7 +82,9 @@ the others are gray and say which block to place first ("Mason · place a Stonec
 the price, and again to pay: the job and the block are theirs at once, and they walk over. A builder who was building
 hands the build back, and its blueprint comes back to you, still placed, for another builder. **No job** at the bottom
 is free: click it twice and they stop working. A villager with no job is given a free block for nothing, in one click.
-Children and nitwits can't change jobs, and with the game rule `workplaceRetraining` off the button isn't there.
+A Steward who changes jobs or stops working puts the City Plan he carried down, and you can name a new Steward.
+A retired elder never works again: every job on their list is gray and says so. Children and nitwits can't change
+jobs, and with the game rule `workplaceRetraining` off the button isn't there.
 
 **Point at anything and the pane on the right tells you all about it.** Move the mouse on into the pane and it keeps
 reading the same thing, so you can scroll a long entry there with the mouse wheel without clicking it (or hold Shift
@@ -125,7 +127,8 @@ the next, where it is, what the next level costs in blocks, and whether there's 
 your Builder goes and builds the next level right over the old one. Grass, dirt, stone, trees, snow or water in the
 way don't matter: the Builder clears them as part of the job. A wall, a fence, a path, a chest or another building does,
 and the page tells you what's in the way and its exact spot, so you can move it and try again. The villagers who live
-in the house keep their beds the whole time.
+in the house keep their beds the whole time. If Builder ownership is on, only a Builder you hired (or a friend's) takes
+the order: another player's Builder won't, and the page tells you whose it is.
 
 ![The Upgrades page](https://jcondedata.github.io/minecraft-alive-workplace/hall_upgrade/still-1.jpg)
 

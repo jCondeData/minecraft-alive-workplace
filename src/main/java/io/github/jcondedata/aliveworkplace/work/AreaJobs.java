@@ -94,11 +94,16 @@ public final class AreaJobs {
 			return InteractionResult.CONSUME;
 		}
 		BoundingBox box = area.get();
-		double distance = Math.sqrt(box.getCenter().distSqr(station.get()));
+		double distance = Reach.across(station.get(), box.getCenter());
 		int reach = reach(kind);
 		if (!Reach.inReach(level, station.get(), box.getCenter(), reach)) {
 			tell(player, Reach.refusal(level, station.get(), "message.aliveworkplace." + kind + ".too_far", (int) Math.ceil(distance),
 				workBlock(level, station.get()), reach), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
+		// B731 (as B718 for a farmer's field): an area reaching into a protected village the player may not change is
+		// refused (its corners may lie outside it); he's told whose village it is
+		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(level, player, box)) {
 			return InteractionResult.CONSUME;
 		}
 		FieldJob old = type.get(villager);
@@ -115,7 +120,7 @@ public final class AreaJobs {
 		}
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
 		tell(player, Component.translatable("message.aliveworkplace." + kind + ".started", villager.getDisplayName(), box.getXSpan(), box.getZSpan(),
-			SupplyContainers.RADIUS), ChatFormatting.GREEN);
+			SupplyContainers.RADIUS, workBlock(level, station.get())), ChatFormatting.GREEN); // B737: the worker's own job block
 		return InteractionResult.SUCCESS;
 	}
 

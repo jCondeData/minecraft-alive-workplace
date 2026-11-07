@@ -52,7 +52,7 @@ public class LostCaravanGameTests implements FabricGameTest {
 	private static final BlockPos CHEST = new BlockPos(20, 2, 25);
 
 	/** Two villages 320 blocks apart, the sending one in the test area; the chance forced to 1 in 1. */
-	private static BlockPos[] begin(GameTestHelper helper) {
+	static BlockPos[] begin(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.players(helper);
 		ServerLevel level = helper.getLevel();
@@ -96,7 +96,7 @@ public class LostCaravanGameTests implements FabricGameTest {
 	}
 
 	/** The lost caravan's arc started by a forced loss of 32 logs and 12 bread from {@code a} to {@code b}. */
-	private static ArcState lose(GameTestHelper helper, BlockPos a, BlockPos b) {
+	static ArcState lose(GameTestHelper helper, BlockPos a, BlockPos b) {
 		ServerLevel level = helper.getLevel();
 		boolean lost = LostCaravanStory.lose(level, a, b, List.of(new ItemStack(Items.OAK_LOG, 32), new ItemStack(Items.BREAD, 12)), RandomSource.create(7));
 		helper.assertTrue(lost, "the forced caravan didn't go missing");
@@ -314,6 +314,85 @@ public class LostCaravanGameTests implements FabricGameTest {
 		level.setBlock(b.offset(2, 0, 2), Blocks.AIR.defaultBlockState(), 3);
 		level.setBlock(b.offset(2, 0, 0), Blocks.AIR.defaultBlockState(), 3);
 		me.discard();
+		helper.succeed();
+	}
+
+	/**
+	 * The receiving hall broken (B626, B625): a player carrying the goods there keeps them and is told the hall is gone;
+	 * the village's hall set up again nearby takes the story on: the goods go there and pay 50 standing at the new hall.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"lostCaravanBrokenHall"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "lostCaravanBrokenHall")
+	public void aBrokenReceivingHallTakesNothingUntilItsRebuilt(GameTestHelper helper) {
+		BlockPos[] ab = begin(helper);
+		BlockPos a = ab[0];
+		BlockPos b = ab[1];
+		ServerLevel level = helper.getLevel();
+		ArcState s = lose(helper, a, b);
+		helper.assertTrue(Arcs.next(level, a) && Arcs.next(level, a) && s.chapter == 2, "not in chapter 3: " + s.chapter);
+		List<QaLostCaravanGameTests.Seen> seen = new java.util.ArrayList<>();
+		ServerPlayer me = QaLostCaravanGameTests.listener(helper, seen, b.getX() + 3.5, b.getY(), b.getZ() + 0.5, "LcCarrier");
+		BlockPos rebuilt = b.offset(10, 0, 0);
+		Leftovers.after(helper, () -> level.setBlock(rebuilt, Blocks.AIR.defaultBlockState(), 3));
+		level.setBlock(b, Blocks.AIR.defaultBlockState(), 3); // the receiving hall broken
+		me.getInventory().add(new ItemStack(Items.OAK_LOG, 32));
+		me.getInventory().add(new ItemStack(Items.BREAD, 12));
+		LostCaravanStory.check(me);
+		helper.assertTrue(me.getInventory().countItem(Items.OAK_LOG) == 32 && me.getInventory().countItem(Items.BREAD) == 12, "the goods were taken at a broken hall");
+		List<String> bar = QaLostCaravanGameTests.texts(seen, true);
+		helper.assertTrue(bar.stream().anyMatch(t -> t.contains("Village Hall is gone")), "not told the hall is gone: " + bar);
+		QaLostCaravanGameTests.english(helper, bar);
+		level.setBlock(rebuilt, ModBlocks.VILLAGE_HALL.defaultBlockState(), 3); // set up again, 10 blocks on
+		LostCaravanStory.check(me);
+		helper.assertTrue(rebuilt.equals(LostCaravanStory.to(s)), "the story didn't move to the new hall: " + LostCaravanStory.to(s));
+		helper.assertTrue(me.getInventory().countItem(Items.OAK_LOG) == 0 && me.getInventory().countItem(Items.BREAD) == 0, "the new hall didn't take the goods");
+		helper.assertTrue(Reputation.points(level, rebuilt, me.getUUID()) == 50, "standing at the new hall: " + Reputation.points(level, rebuilt, me.getUUID()));
+		for (net.minecraft.world.entity.item.ItemEntity e : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new AABB(rebuilt).inflate(3))) {
+			e.discard(); // (no Storehouse there: set down on the hall)
+		}
+		helper.succeed();
+	}
+
+	/**
+	 * Freed on day 6 with the receiving hall broken (B624, B625): on day 7 he's still following, walking him to where
+	 * that hall stood doesn't end it, and walking him into the sending village does.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"lostCaravanFreedLate"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "lostCaravanFreedLate")
+	public void aFreedCarterGoesHomeToTheVillageThatStands(GameTestHelper helper) {
+		BlockPos[] ab = begin(helper);
+		BlockPos a = ab[0];
+		BlockPos b = ab[1];
+		ServerLevel level = helper.getLevel();
+		ArcState s = lose(helper, a, b);
+		helper.assertTrue(Arcs.next(level, a) && Arcs.next(level, a) && s.chapter == 2, "not in chapter 3: " + s.chapter);
+		ServerPlayer me = helper.makeMockServerPlayerInLevel();
+		me.setGameMode(GameType.SURVIVAL);
+		s.beganDay = Chronicle.day(level) - LostCaravanStory.RESCUE_DAYS + 1; // day 6
+		Villager tobin = LostCaravanStory.setUp(level, s, cage(helper, s));
+		helper.assertTrue(tobin != null, "no carter");
+		Leftovers.after(helper, () -> {
+			tobin.discard();
+			me.discard();
+		});
+		BlockPos door = helper.absolutePos(DOOR);
+		me.teleportTo(door.getX() + 0.5, door.getY(), door.getZ() - 2.5);
+		open(helper, true);
+		LostCaravanStory.tick(level);
+		helper.assertTrue(me.getUUID().equals(LostCaravanStory.leader(s)), "opening the cage didn't make him follow");
+		s.beganDay = Chronicle.day(level) - LostCaravanStory.RESCUE_DAYS - 1; // day 8
+		level.setBlock(b, Blocks.AIR.defaultBlockState(), 3);
+		tobin.teleportTo(b.getX() + 2.5, b.getY(), b.getZ() + 0.5);
+		me.teleportTo(b.getX() + 4.5, b.getY(), b.getZ() + 0.5);
+		LostCaravanStory.tick(level);
+		helper.assertTrue(Arcs.running(level, a) == s && tobin.isAlive() && !s.flags.containsKey(LostCaravanStory.TOBIN_HOME),
+			"on day 8 by the broken hall the story ended (running: " + (Arcs.running(level, a) != null) + ", alive: " + tobin.isAlive() + ")");
+		BlockPos by = helper.absolutePos(new BlockPos(3, 2, 5));
+		tobin.teleportTo(by.getX() + 0.5, by.getY(), by.getZ() + 1.5);
+		me.teleportTo(by.getX() + 0.5, by.getY(), by.getZ() + 0.5);
+		LostCaravanStory.tick(level);
+		helper.assertTrue(Arcs.running(level, a) != s, "walked into the sending village, the story goes on");
+		helper.assertTrue(tobin.isAlive() && ModAttachments.HEAD_START.getOrElse(tobin, 1) == LostCaravanStory.JOURNEYMAN, "he didn't join the sending village at Journeyman");
 		helper.succeed();
 	}
 

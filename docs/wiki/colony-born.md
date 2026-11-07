@@ -22,7 +22,10 @@ Renders, as drawn and in the five styles: `docs/media/colony-camp-front.png`, `-
 
 - The hall carries the name the charter was given in an anvil (or a made-up one), belongs to the mother village's
   owner, and its chronicle opens with "Founded on day 41 by settlers from Thornholm: Dara and Tomas". The mother's
-  chronicle says "Our settlers Dara and Tomas founded Newbrook, 612 blocks north-east".
+  chronicle says "Our settlers Dara and Tomas founded Newbrook, 612 blocks north-east". A colony founded by one settler
+  (the other died before they set out) reads in the singular: "Our settler Tomas founded Newbrook, ..." and, to the
+  owner, "Tomas has founded Newbrook, ..." (B841); the colony's own chronicle reads "Founded on day 41 by a settler from
+  Thornholm: Tomas" (B853).
 - The post is on the travel network under the colony's name, already known to the owner and their friends.
 - The settlers step out as they were: names, jobs, levels, trades and partners. The builder works at the camp's
   Blueprint Table; the others keep their trade until the colony has a workstation for it.
@@ -112,5 +115,15 @@ it and the owner hears it in chat. No colony is counted, so no wait before the n
   opens the chest's menu with the Village Hall and two blueprints; nothing on the chest blocks its lid),
   `theColonyCampTurnedClockwiseStillOpens`, `theColonyCampTurnedCounterClockwiseStillOpens` (every chest and barrel of
   the Colony camp turned a quarter either way).
+- `QaSettlersCampFacing1031GameTests` (4, B424): the Settler's Wagon used on open ground facing north, east, south and
+  west: the camp goes up, the camp.made line reads as en_us.json says, the wagon is used up, and the chest opens from a
+  standing spot with the Village Hall and two blueprints in it.
+- `QaColonyWords1102BugTests` (B841): a colony founded by one settler, Tomas, tells the owner "Tomas has founded
+  Newbrook, ..." and the mother's chronicle "Our settler Tomas founded ...", never "have" or "settlers"
+  (`qaOneSettlerFoundsAColonyInTheSingular`).
+- `QaColonyWordsVerify1103GameTests` (3, QA, B841): one settler reads "Tomas has founded Newbrook, ..." and "Our settler
+  Tomas founded Newbrook, ...", with the Founder's blessing "..., with the Founder's blessing" too, and Tomas and Dara stay
+  plural ("have founded", "Our settlers"); the colony's own chronicle reads "by a settler from Thornholm: Tomas" for one
+  and "by settlers from" for two (B853); no line shows a raw key or an unfilled %s.
 
 Showcase scenes: `colony`

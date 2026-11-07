@@ -44,6 +44,12 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 	private static final BlockPos HALL = new BlockPos(1, 2, 1);
 	private static final long DAY = 24000;
+	/**
+	 * B712: a config applied in a test sets VillageHalls.RADIUS from {@code villageHallRadius} (64 by default), undoing
+	 * village()'s 16; the raiders then gathered about 38 blocks out, partly beyond the loaded chunks round the test area,
+	 * and those spawns were refused ('found nowhere to gather' when all were). Every config here keeps the radius at 16.
+	 */
+	private static final String RADIUS_16 = "\"villageHallRadius\": 16";
 
 	static void at(ServerLevel level, long day, long time) {
 		level.setDayTime((day - 1) * DAY + time);
@@ -59,6 +65,11 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos hall = helper.absolutePos(HALL);
 		ThreatData.get(level).forgetPast(hall);
+		// B712: tests elsewhere put halls at this same spot; a lair one of them left on record here (its band out, so
+		// it has nobody to send) or a spawn refusal left switched on made an order fail "nowhere to gather" once.
+		Lairs.forget(level);
+		io.github.jcondedata.aliveworkplace.threat.HostileSpawns.REFUSED_FOR_TESTS = null;
+		io.github.jcondedata.aliveworkplace.threat.HostileSpawns.FORCE = true;
 		Leftovers.after(helper, () -> {
 			level.getEntitiesOfClass(Mob.class, helper.getBounds().inflate(48),
 				m -> m.getTags().contains(Lairs.TAG) || m.getTags().contains(BanditCamps.TAG) || m.getTags().contains(VillageRaids.TAG)).forEach(Mob::discard);
@@ -124,7 +135,9 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 		said.clear();
 		int sent = run(level, op, command);
 		helper.assertTrue(sent > 0 && ThreatData.get(level).raid(hall).map(r -> r.culture().equals(culture)).orElse(false),
-			when + ": '/" + command + "' started no raid by " + culture + " (returned " + sent + "): " + said);
+			when + ": '/" + command + "' started no raid by " + culture + " (returned " + sent + "): " + said + " (lair here: "
+				+ Lairs.of(level, hall, culture) + "; last gathering point: " + VillageRaids.lastGathering + "; last spawn warning: "
+				+ io.github.jcondedata.aliveworkplace.threat.HostileSpawns.lastWarning() + "; difficulty " + level.getDifficulty() + ")");
 		helper.assertTrue(!VillageRaids.raiders(level, hall).isEmpty(), when + ": the ordered raid has no raiders in the world: " + said);
 		helper.assertTrue(said.stream().anyMatch(s -> s.contains(" are raiding ") && s.endsWith(sent + " of them.")), when + ": what the command said: " + said);
 		for (int round = 0; round < 2; round++) {
@@ -150,7 +163,8 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 		helper.runAfterDelay(2, () -> {
 			at(level, 90, 15000);
 			CommandSourceStack op = op(level, hall, said);
-			WorkplaceConfig.parse("{\"villageRaids\": false, \"banditCamps\": false, \"raiderCultures\": {\"pillager_warband\": false}}").apply();
+			WorkplaceConfig.parse("{\"villageRaids\": false, \"banditCamps\": false, \"raiderCultures\": {\"pillager_warband\": false}, " + RADIUS_16 + "}").apply();
+			helper.assertTrue(VillageHalls.RADIUS == 16, "setup: the village radius is " + VillageHalls.RADIUS + ", not 16 (B712)");
 			helper.assertTrue(!VillageRaids.ENABLED && !BanditCamps.ENABLED && !Threats.enabled(AliveWorkplace.id("pillager_warband")),
 				"setup: the switches didn't go off");
 			ordered(helper, hall, op, said, "workplace threat start monsters", Threats.MONSTERS, "villageRaids off");
@@ -175,12 +189,13 @@ public class QaThreatOrders1031GameTests implements FabricGameTest {
 			helper.assertTrue(entity != null, "no hall");
 			at(level, 91, 15000);
 			CommandSourceStack op = op(level, hall, said);
-			WorkplaceConfig.parse("{\"threatLevel\": 0}").apply();
+			WorkplaceConfig.parse("{\"threatLevel\": 0, " + RADIUS_16 + "}").apply();
+			helper.assertTrue(VillageHalls.RADIUS == 16, "setup: the village radius is " + VillageHalls.RADIUS + ", not 16 (B712)");
 			helper.assertTrue(Threats.quiet(level, hall), "setup: not quiet at threat level 0");
 			ordered(helper, hall, op, said, "workplace threat start bandits", Threats.BANDITS, "threat level 0");
 			ordered(helper, hall, op, said, "workplace threat start monsters", Threats.MONSTERS, "threat level 0");
 
-			new WorkplaceConfig().apply();
+			WorkplaceConfig.parse("{" + RADIUS_16 + "}").apply();
 			entity.setAtPeace(true, Chronicle.day(level));
 			helper.assertTrue(Threats.quiet(level, hall), "setup: not quiet At peace");
 			ordered(helper, hall, op, said, "workplace threat start bandits", Threats.BANDITS, "At peace");

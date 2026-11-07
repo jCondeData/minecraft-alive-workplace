@@ -3,7 +3,7 @@
 Laws a village's owner proclaims at the Village Hall. Each gives the village a boost at a cost, and each has a reform
 that takes the cost away for good. Part of 1.4 (Edicts and civic items): switched on in 1.0 with every other expansion.
 
-Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327
+Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22, B327, B744, B772, B797, B917
 
 ## What a player sees
 
@@ -44,7 +44,8 @@ before it can be lifted. A village that drops a rank loses its newest edict.
 **One toolbox of effects.** Each effect has a type (`aliveworkplace:work_pace`, `aliveworkplace:mood`, and so on)
 and is read by exactly the system it changes: work speed by the pace rule, food by the hall's needs, births by
 village growth, raids by the raid code. The effects in force are added up per hall whenever its edicts change, so
-nothing is worked out every tick. Guilds, tonics and classes use the same toolbox.
+nothing is worked out every tick. Guilds, tonics and classes use the same toolbox. A pace for named trades reads
+"2 trades work 50% faster", or "1 trade works 50% faster" for one (B744).
 
 **Reforms.** Each step sits on the Quests page in the row below the daily quests (a book-and-quill icon), never
 expires and pays its emeralds as a quest does. The next step goes up the morning after the last one was done, so a
@@ -54,7 +55,8 @@ step falls back to slaying monsters when Cobblemon or a trainer is missing.
 
 **Reforms as stories (31.22).** With `storyArcs` on, each reform is told as a short side story of the same name
 (`data/aliveworkplace/arcs/<name>.json`, named by the reform's `arc`). When the edict is in force a villager of the
-fitting trade asks you for it: talk to them and the reform's three steps follow as the story's quests, the same items,
+fitting trade asks you for it in chat, in one pair of quotes (Toolsmith: "We hammer from dawn to dark ... gladly.",
+B914): talk to them and the reform's three steps follow as the story's quests, the same items,
 counts and pay, one a day; the villagers talk about it and the chronicle tells each chapter. The ending pays the new
 `reform_edict` reward (the edict reformed for that village, as the last step would) and leaves something lasting:
 
@@ -62,23 +64,34 @@ counts and pay, one a day; the villagers talk about it and the chronicle tells e
 |---|---|---|
 | The Shift Bell | the Toolsmith (else any smith) | a bell on two posts beside the hall, on natural ground, ringing at the start (tick 2000) and end (tick 9000) of the work day |
 | The Common Granary | a Farmer | a harvest supper at the hall the next evening: a festival's feast, no fireworks |
-| The Midwives | the Nurse (else anyone) | a midwife comes to stay, a Nurse at Journeyman |
+| The Midwives | the Nurse (else a mother, else anyone) | a midwife comes to stay, a Nurse at Journeyman |
 | The Watchful Gate | a Guard | an old soldier comes to stay, a Guard at Expert in iron armor with an iron sword |
-| The Festival Fund | the Bard (else anyone) | the next festival is grand: twice the fireworks, its good mood a day longer |
+| The Festival Fund | the Bard (else a Cheerful villager, else anyone) | the next festival is grand: twice the fireworks, its good mood a day longer |
 | The Fair Ledger | a Librarian or Scholar | "The Fair Ledger of <village>", a written book of the treasury's takings day by day for the last 7 days, for the hall's owner |
 | The Lamplighters | a Porter (else anyone) | two Street Lamp blueprints for whoever finished it, and a chronicle line on the first lamplit night |
-| The Militia Drill | a Guard | drill day: at noon the next day every grown villager spars at the village's Training Dummies (the guards alone with none), then a chronicle line |
+| The Militia Drill | a Guard | drill day: at noon the next day every grown villager spars at the village's Training Dummies (the guards alone with none, by the hall), then a chronicle line ("... sparred at the dummies.", or "... sparred by the hall." with no dummy) |
 
 Reform stories are `side` arcs: they run beside another story and don't count against `arcsAtOnce` or the cooldown.
-While one runs, its M30 step stays off the quest page. With `storyArcs` off, or when nobody of the trade lives there to
-ask, the steps go up on the quest page as before, and progress made either way carries over.
+While one runs, its M30 step stays off the quest page. With `storyArcs` off, the story listed in `disabledArcs`, or when nobody of the
+trade lives there to ask, the steps go up on the quest page as before, and progress made either way carries over, a half-done step too:
+with 10 of a step's 24 clocks handed in, switching the story off or on (or listing it in `disabledArcs`) leaves the step
+asking only the 14 left (B917). QA's
+`QaReformStories1104cGameTests` (10: wrong items, too few and the other village's hall never move a step; kills before
+the step or elsewhere don't count; a passed reform or edicts off start no story; a story switched off midway never
+doubles a step; the Granary and the Drill wait for their own trade; two stories side by side; a real restart at the ask;
+the ask and steps read exactly as written, in American English). QA's `QaLaneC1104fGameTests` (1 of its 6: the Fair Ledger finished by another player goes to the hall's owner, online elsewhere, not to the finisher). QA's `QaReformCarry1104cGameTests` (1: 10 of a step's 24 clocks handed to the story, the edict lifted and
+proclaimed again, and the step comes back holding the 10, once).
 
 **Curfew** overrules the villagers' schedule from dusk (tick 12000) to dawn for everyone but guards and
 mercenaries, and a monster can't hurt a villager asleep in bed. **Conscription** gives each conscript a stone sword
 made for the raid (never taken from a chest), which is gone when the raid ends and again whenever the villager
 loads, so a save in the middle of a raid can't leave a free sword. The sword stays in the conscript's hand all fight:
 vanilla's trade display (wares shown to a player standing by) leaves a hand holding it alone, and a hand emptied any
-other way takes the sword up again at once (B324, B327).
+other way takes the sword up again at once (B324, B327). A conscript goes for the nearest raider he can see within
+24 blocks, counting up and down as well as across, the same reach the reformed work stop uses: one on a wall or tower
+fights the raider at its foot (B926). A raider he can't get a block closer to in 5 seconds (no way down from his tower)
+he lets be for 10 seconds, so he isn't stuck at the edge all night; one within 4 blocks (behind a fence) he stands by,
+and one he let be that climbs or jumps up within 4 blocks of him he fights at once (B954).
 
 ## Switches
 
@@ -94,8 +107,8 @@ On the hall: `edicts` (each edict in force and the day it was proclaimed; empty 
 edict's progress and whether it is reformed; empty), `raidWorkUntil` (Conscription: when work may start again),
 `extraMeals` (Free Bread's part-meals carried over). The reform stories (31.22) keep `aliveworkplace_reform_stories`
 in the world's data: each village's Shift Bell, the days of a harvest supper, grand festival and drill, whether the
-first lamplit night is still to come, and the last 7 days of treasury takings for the Fair Ledger (all empty by
-default). The summed effects are not saved; they are added up again when
+first lamplit night is still to come, the last 7 days of treasury takings for the Fair Ledger, and the villagers who
+have drilled on a drill day (`drillers`, so a restart mid-drill keeps the chronicle's count; each new driller marks the file to be written, so a stop after the morning's autosave keeps them too (B772); all empty by default). The summed effects are not saved; they are added up again when
 the hall loads.
 
 ## Items, blocks, jobs, commands
@@ -128,8 +141,6 @@ the hall loads.
 ## Known limits
 
 - Reforms are per village: a second village reforms the same edict again.
-- 31.22: "else a mother" (the Midwives) and "else a Cheerful villager" (the Festival Fund) fall back to any grown
-  villager; the arc system casts roles by trade only.
 - 31.22: the Shift Bell needs a level 3 by 3 of natural ground 3 to 12 blocks from the hall; with none, the story
   still ends and the edict is reformed, without the bell.
 - The Tithe's price rise is rounded to whole emeralds, half an emerald up: trades under 5 emeralds don't change,
@@ -147,13 +158,28 @@ GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, ran
 `TreasuryEdictGameTests` (8), `QaEdictEffectsGameTests` (10: the QA lane's boundaries for 30.6 to 30.8),
 `QaEdictsGameTests` (14: the QA lane's boundaries for 30.3, 30.5, 30.9 to 30.11, 30.15 and 30.17),
 `QaPaceAndBookGameTests` (11: the QA lane's for 30.1a, 30.2, 30.4 and 30.21: the 300th bread, friends' and operators'
-clicks, the last day before lifting, the cap at 100 and 400), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `CivicTalkGameTests` (7),
+clicks, the last day before lifting, the cap at 100 and 400), `CurfewGameTests` (6), `ConscriptionGameTests` (9), `QaConscriptionBugs1104dGameTests` (4, B926: a raider 10 and 15 blocks below a
+conscript, 23.4 and 25 blocks away, a stranded conscript letting the raider be, edicts off), `QaConscriptReach1104d2GameTests` (4: a second raider on a
+stranded conscript's platform fought, the let-be over and a way down given, a raider 3 blocks off behind a fence never
+let be, a reachable raider 20 blocks across chased and struck), `QaConscriptReach1104d2BugTests` (1, B954: the raider
+he let be coming up 2 blocks from him is struck within 2 seconds), `QaConscriptLetBe1105dGameTests` (1: the raider he
+let be coming up only to 5 blocks off, across a gap, stays let be for the 10 seconds and is taken up after), QA's
+`QaLaneC1104eGameTests` (B926 from below: a raider 16 above and 12 across, 20 blocks away, fought, one 26.4 away not
+until the conscript comes within 24; the nearest of two raiders struck first; B917: a hall holding a step's whole count
+still shows the story's step one short of done until a hand-in), `CivicTalkGameTests` (7),
 `PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`, `ReformStoryGameTests` (10: each of the eight stories from
 the ask through M30's three steps to its ending and the edict reformed in that village only; `storyArcs` off; side
 arcs and `arcsAtOnce`), `QaReformStoryGameTests` (11: the QA lane's for 31.22: the fallback askers (any smith, a
 Scholar, anyone), no Guard leaving M30's step on the quest page, `storyArcs` off through the real quest page, a side arc
 beside a main arc in its cooldown, the blueprints only to the finisher, a reload with the asker dead, the bell only on
-natural ground, the ledger's seven days, every sentence). Showcase scene `reform_story`.
+natural ground, the ledger's seven days, every sentence), QA's `QaVillageFixesVerify1102GameTests` (B772: drill
+day across two restarts counts each driller once, one driller reads "1 villager", the next drill day counts afresh;
+with no dummies only the guards drill; a baby at the dummies doesn't), `QaReformStoryBugTests` (B632-B634: a Cheerful
+villager asks with no Bard, a mother with no Nurse, the ask names who asks), QA's `QaDrillNoDummiesBug1102Tests` (B797: with no dummy the drill line doesn't name dummies), QA's `QaDrillHallWords1102GameTests` (B797: "2 villagers sparred by the hall." and "1 villager" word for word, still "by the hall" across a restart mid-drill, and a village with a dummy still "at the dummies" across one) and QA's `QaReformAskers1102GameTests`
+(B632, B633 from the other side: the Bard asks though a Cheerful villager is about, the Nurse though a mother is; with
+neither, the story still starts and one villager asks; B634: the ask names the Farmer who asked, Bram, also after a
+restart).
+Showcase scene `reform_story`.
 
 A season under the edicts (30.22): `SEASON=true tools/packtest/run.sh` lays out a City of 35 with six farms, a kitchen
 and a store on the real pack server and runs it 4 days under Long Shifts, Free Bread, Large Families and Festival

@@ -308,7 +308,8 @@ public final class Builders {
 			return InteractionResult.CONSUME;
 		}
 		BoundingBox box = BlueprintOutline.bounds(placement.get(), blueprint.get().size());
-		double distance = Math.sqrt(box.getCenter().distSqr(bench.get()));
+		// B668: across the ground, the distance Reach measures (a tall build's height never counts)
+		double distance = Reach.across(bench.get(), box.getCenter());
 		if (!inReach(level, bench.get(), data.get().structure(), placement.get())) {
 			// B378: rounded up, so a refused spot never reads as within the reach (48.5 blocks: 49)
 			tell(player, Reach.refusal(level, bench.get(), "message.aliveworkplace.assign.too_far", (int) Math.ceil(distance), MAX_SITE_DISTANCE), ChatFormatting.RED);
@@ -321,6 +322,20 @@ public final class Builders {
 				tell(player, Component.translatable("message.aliveworkplace.assign.overlaps", Blueprints.displayName(other.structure())), ChatFormatting.RED);
 				return InteractionResult.CONSUME;
 			}
+		}
+		// B714: a Wonder begun but waiting for a stage's goods has no build sites yet; its saved layout still counts
+		Optional<io.github.jcondedata.aliveworkplace.wonder.WonderSite> wonder = io.github.jcondedata.aliveworkplace.wonder.WonderPlans
+			.wonderOver(level, placement.get().dimension(), box, io.github.jcondedata.aliveworkplace.wonder.WonderSite::goingUp);
+		// B750: only Wonders going up are asked about, so a finished one beside a waiting one never hides it
+		if (wonder.isPresent()) {
+			tell(player, Component.translatable("message.aliveworkplace.assign.overlaps",
+				io.github.jcondedata.aliveworkplace.wonder.Wonders.name(wonder.get().wonder())), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
+		// B718: a build (or take-down) reaching into a protected village the player may not change is refused, wherever
+		// its click lies; he's told whose village it is
+		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(level, player, box)) {
+			return InteractionResult.CONSUME;
 		}
 
 		Friends.hire(player, villager);
@@ -351,6 +366,12 @@ public final class Builders {
 			tell(player, Component.translatable("message.aliveworkplace.assign.started", villager.getDisplayName(),
 				Blueprints.displayName(site.structure()), SupplyContainers.RADIUS), ChatFormatting.GREEN);
 		}
+		if (!deconstruct) {
+			// B937: told up front that what pokes over the world's top (or under its bottom) won't be built
+			for (Component warning : heightWarnings(level, box, blueprint.get().basement(), Blueprints.displayName(site.structure()))) {
+				tell(player, warning, ChatFormatting.YELLOW);
+			}
+		}
 		Component later = existing == null ? io.github.jcondedata.aliveworkplace.work.Jobs.startsLater(villager) : null; // B220
 		if (later != null) {
 			tell(player, later, ChatFormatting.YELLOW);
@@ -361,6 +382,21 @@ public final class Builders {
 				Blueprints.displayName(site.structure()), Blueprints.displayName(existing.structure()), queued + 1), ChatFormatting.GREEN);
 		}
 		return InteractionResult.SUCCESS;
+	}
+
+	/**
+	 * B937: the hand-over's warnings for a build whose box ({@code box}, above ground; {@code basement} layers more under
+	 * it) reaches over the world's build limit or under its bottom: those blocks can't be built and are skipped.
+	 */
+	public static List<Component> heightWarnings(net.minecraft.world.level.Level level, BoundingBox box, int basement, Component name) {
+		List<Component> out = new java.util.ArrayList<>();
+		if (box.maxY() >= level.getMaxBuildHeight()) {
+			out.add(Component.translatable("message.aliveworkplace.assign.over_top", name, level.getMaxBuildHeight()));
+		}
+		if (box.minY() - basement < level.getMinBuildHeight()) {
+			out.add(Component.translatable("message.aliveworkplace.assign.under_bottom", name, level.getMinBuildHeight()));
+		}
+		return out;
 	}
 
 	/** Creates the site and gives the villager the job. Also used by tests and commands. */
@@ -534,7 +570,8 @@ public final class Builders {
 	private static Map<Item, Integer> needOf(ServerLevel level, List<BuildPlan.Step> upcoming) {
 		Map<Item, Integer> need = new LinkedHashMap<>();
 		for (BuildPlan.Step step : upcoming) {
-			if (!MaterialRules.matches(level.getBlockState(step.pos()), step.state())) {
+			// B937: a block over the world's build limit (or under its bottom) is skipped, so it needs nothing
+			if (!BuildPlan.outsideWorld(level, step) && !MaterialRules.matches(level.getBlockState(step.pos()), step.state())) {
 				for (MaterialRules.Requirement r : step.requirements()) {
 					need.merge(MaterialFamilies.key(r.item()), r.count(), Integer::sum);
 				}
@@ -1017,6 +1054,22 @@ public final class Builders {
 
 	/** The builder died: drop its bag and the blueprint where it fell, keep what was built. */
 	public static void onBuilderDeath(ServerLevel level, Villager villager) {
+		onBuilderGone(level, villager, "message.aliveworkplace.builder_died");
+	}
+
+	/**
+	 * The builder is gone, dead or turned into something else (a witch by lightning, B928): drop its bag and the
+	 * blueprint where it was, keep what was built, and tell the owner with {@code told} (the site, then x y z).
+	 */
+	public static void onBuilderGone(ServerLevel level, Villager villager, String told) {
+		onBuilderGone(level, villager, told, villager.blockPosition());
+	}
+
+	/**
+	 * The same, the owner told the drops are at {@code leftAt}: where they'll lie once the caller has moved them (a
+	 * builder struck by a real bolt, B952: out of its reach).
+	 */
+	public static void onBuilderGone(ServerLevel level, Villager villager, String told, BlockPos leftAt) {
 		for (BuildSite queued : queue(level, villager)) {
 			if (queued.wonder() != null) {
 				// 35.5: a Wonder's part waiting for this builder goes to another; its site stays (a part whose site is
@@ -1062,8 +1115,8 @@ public final class Builders {
 			}
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 			if (owner != null) {
-				BlockPos p = villager.blockPosition();
-				tell(owner, Component.translatable("message.aliveworkplace.builder_died", Blueprints.siteName(level, site), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
+				BlockPos p = leftAt;
+				tell(owner, Component.translatable(told, Blueprints.siteName(level, site), p.getX(), p.getY(), p.getZ()), ChatFormatting.RED);
 			}
 			ModAttachments.BUILDER_JOB.remove(villager);
 			if (keptForTheNext(site)) {

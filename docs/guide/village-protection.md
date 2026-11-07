@@ -29,9 +29,20 @@ protection on.
 Inside the hall's area, as far as its reach goes across the map and at any height, only the owner, their
 [friends](command-friend.md) and operators may:
 
-- break or place blocks, or empty buckets;
-- open chests and other blocks with a screen;
-- hurt the villagers, golems, animals, armor stands and item frames, by hand or with arrows, tridents and potions;
+- break or place blocks or light fires (what counts is where the block or fire would go, so a stranger can't click
+  the inward face of a block just outside to put one inside), or empty or fill buckets (wherever the bucket's user stands: what counts is where the water
+  or lava would go);
+- move blocks with pistons: a piston outside the village can't push blocks into it, pull them out of it or put its
+  head inside (pistons inside the village work as usual);
+- trample the fields: a stranger who jumps on the village's farmland (on foot or on a horse they ride) leaves it and
+  its crops alone;
+- open chests and other blocks with a screen, or mark them on a [Delivery Note](delivery-note.md) (a postman never
+  carries a stranger's route out of the village);
+- hurt the villagers, golems, animals, armor stands, item frames and paintings, by hand or with arrows, tridents and
+  potions (a stranger's arrow doesn't knock the item out of a frame or break it);
+- have their own villagers work there: a blueprint, [Quarry Marker](quarry-marker.md) or
+  [Field Marker](field-marker.md) (a farmer's field, a lumberjack's tree farm, an orchard or a berry plot) whose area
+  reaches into the village is refused, even when its corners were clicked outside it;
 - open the hall's screen with a Village Ledger.
 
 Anyone else is told whose village it is. **Still open to everyone:** walking in, opening doors and gates, pressing

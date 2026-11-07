@@ -1,10 +1,12 @@
 package io.github.jcondedata.aliveworkplace.threat;
 
+import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -28,8 +30,9 @@ import net.minecraft.world.phys.Vec3;
  * the tag {@link #RAISER_TAG}. While he lives, a mob of the raised kind that falls within the radius of him (not he
  * himself, nor one that rose already) rises once more after the delay, where it fell, at part of its health and in a
  * burst of sand: the same mob as it was (its gear, its raid, its role), with the tag {@link #RISEN_TAG}, so it never
- * rises twice. One whose Pharaoh is dead when it falls stays dead. Those waiting to rise are kept in memory only: a
- * restart within the three seconds loses them.
+ * rises twice. One whose Pharaoh is dead when it falls stays dead. A raider who fell in a raid stays dead if that raid
+ * is over before it would rise (called off, gone at its hour or fought off: B828). Those waiting to rise are kept in
+ * memory only: a restart within the three seconds loses them.
  */
 public final class Risings {
 	/** The tag of a captain who raises the fallen. */
@@ -37,7 +40,9 @@ public final class Risings {
 	/** The tag of one who rose already. */
 	public static final String RISEN_TAG = "aliveworkplace_risen";
 
-	private record Pending(ResourceKey<Level> dimension, EntityType<?> type, CompoundTag data, Vec3 pos, long due, double health) {
+	/** {@code raid}: the raid the fallen raider belonged to (null when it wasn't one), which must still be on when it rises. */
+	private record Pending(ResourceKey<Level> dimension, EntityType<?> type, CompoundTag data, Vec3 pos, long due, double health,
+		@org.jetbrains.annotations.Nullable ThreatData.Under raid) {
 	}
 
 	private static final List<Pending> PENDING = new ArrayList<>();
@@ -105,10 +110,28 @@ public final class Risings {
 		}
 		synchronized (Risings.class) {
 			PENDING.add(new Pending(level.dimension(), entity.getType(), data, entity.position(), level.getGameTime() + raise.get().delay(),
-				raise.get().health()));
+				raise.get().health(), raidOf(level, entity)));
 		}
 		level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.SAND.defaultBlockState()), entity.getX(), entity.getY() + 0.2,
 			entity.getZ(), 12, 0.3, 0.1, 0.3, 0.02);
+	}
+
+	/**
+	 * The raid a fallen raider ({@link VillageRaids#TAG}) belonged to, by the rule raids count their raiders with
+	 * ({@link VillageRaids#raidOf}). Null for one that isn't a raider.
+	 */
+	@org.jetbrains.annotations.Nullable
+	private static ThreatData.Under raidOf(ServerLevel level, LivingEntity entity) {
+		return entity.getTags().contains(VillageRaids.TAG) ? VillageRaids.raidOf(level, entity) : null;
+	}
+
+	/** Whether the raid {@code p}'s raider fell in is still the one under way on its village (true for one that wasn't a raider). */
+	private static boolean raidStillOn(ServerLevel level, Pending p) {
+		if (p.raid() == null) {
+			return true;
+		}
+		return ThreatData.get(level).raid(p.raid().hall()).map(now -> now.began() == p.raid().began() && now.culture().equals(p.raid().culture()))
+			.orElse(false);
 	}
 
 	private static void tick(ServerLevel level) {
@@ -131,8 +154,8 @@ public final class Risings {
 	}
 
 	private static void rise(ServerLevel level, Pending p) {
-		if (!level.isLoaded(net.minecraft.core.BlockPos.containing(p.pos()))) {
-			return;
+		if (!level.isLoaded(BlockPos.containing(p.pos())) || !raidStillOn(level, p)) {
+			return; // (a raider whose raid is over, called off, gone or fought off, stays dead: B828)
 		}
 		Entity made = p.type().create(level);
 		if (!(made instanceof Mob mob)) {

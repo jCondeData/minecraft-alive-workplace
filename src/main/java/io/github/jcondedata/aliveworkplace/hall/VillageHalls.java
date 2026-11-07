@@ -44,13 +44,22 @@ public final class VillageHalls {
 
 	/** The village at a glance. */
 	public record Census(List<Villager> workers, List<Villager> jobless, int children, int beds, int freeBeds, long food, int guards,
-						 List<Requests.Request> requests, List<Build> builds, int wagonBeds) {
+						 List<Requests.Request> requests, List<Build> builds, int wagonBeds, int visitors) {
 		/** B206: the village is full: no bed in its houses is free, so nobody new moves in. */
 		public boolean full() {
 			return freeBeds <= 0;
 		}
 
+		/**
+		 * The village's own villagers: everyone counted here but its {@link #visitors} (B999, B1000). The People title, the
+		 * rank, the realm, festivals, raids and the Steward's checks all count these, as the Wellbeing counts do (B990).
+		 */
 		public int villagers() {
+			return everyone() - visitors;
+		}
+
+		/** Everyone the hall lists, the hired help and story visitors ({@link HallPeople#visitor}) included. */
+		public int everyone() {
 			return workers.size() + jobless.size() + children;
 		}
 	}
@@ -61,6 +70,7 @@ public final class VillageHalls {
 		List<Villager> jobless = new ArrayList<>();
 		int children = 0;
 		int guards = 0;
+		int visitors = 0;
 		for (Villager v : villagers(level, hall)) {
 			if (CaravanSights.isParty(v)) {
 				continue; // a caravan's carter (33.7) is passing through: nobody's villager
@@ -70,6 +80,13 @@ public final class VillageHalls {
 				continue;
 			}
 			VillagerProfession job = v.getVillagerData().getProfession();
+			if (HallPeople.visitor(v)) {
+				visitors++; // listed, but not the village's own (B999, B1000)
+			}
+			if (HallPeople.visitor(v) && v.getVillagerData().getProfession() != VillagerProfession.NONE) {
+				workers.add(v); // a hired band, relief rider or story's visitor at work: not jobless, and not the village's own guards (B889)
+				continue;
+			}
 			if (job == VillagerProfession.NONE || job == VillagerProfession.NITWIT || v.getBrain().getMemory(MemoryModuleType.JOB_SITE).isEmpty()) {
 				jobless.add(v);
 			} else {
@@ -91,7 +108,7 @@ public final class VillageHalls {
 			requests.addAll(Requests.of(level, worker));
 		}
 		return new Census(List.copyOf(workers), List.copyOf(jobless), children, beds, freeBeds, food(level, hall), guards, requests,
-			builds(level, hall), wagonBeds);
+			builds(level, hall), wagonBeds, visitors);
 	}
 
 	/** How many kinds of meal the store has (see {@link io.github.jcondedata.aliveworkplace.people.Diet}). */
@@ -142,12 +159,23 @@ public final class VillageHalls {
 	 * never listed the Carpenter's Workshop's table and nobody could be made a Carpenter from it).
 	 */
 	public static List<FreeStation> freeStations(ServerLevel level, BlockPos hall) {
+		return freeStations(level, hall, null);
+	}
+
+	/**
+	 * As {@link #freeStations(ServerLevel, BlockPos)}, for {@code forWhom}: the block they're walking to on their own,
+	 * which vanilla holds for them on the way, is free for them too (B807: the only Stonecutter read "place a Stonecutter
+	 * first" for the jobless villager walking to it).
+	 */
+	public static List<FreeStation> freeStations(ServerLevel level, BlockPos hall, @org.jetbrains.annotations.Nullable Villager forWhom) {
+		Optional<BlockPos> theirs = forWhom == null ? Optional.empty() : io.github.jcondedata.aliveworkplace.work.Stations.walkingTo(level, forWhom);
 		List<FreeStation> out = new ArrayList<>();
 		// The job a kind of workstation gives, found once per kind rather than once per workstation (B103).
 		java.util.Map<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>, Optional<VillagerProfession>> jobs = new java.util.HashMap<>();
 		// A block with a free place, or a beehive nobody works at (B657: a beehive keeps no places, so it never had one).
 		level.getPoiManager().getInRange(VillageHalls::jobBlock, hall, RADIUS, PoiManager.Occupancy.ANY)
-			.filter(record -> record.hasSpace() || io.github.jcondedata.aliveworkplace.work.Stations.freeAt(level, record.getPos()))
+			.filter(record -> record.hasSpace() || io.github.jcondedata.aliveworkplace.work.Stations.freeAt(level, record.getPos())
+				|| theirs.filter(record.getPos()::equals).isPresent())
 			.forEach(record -> jobs.computeIfAbsent(record.getPoiType(), VillageHalls::firstJob)
 				.ifPresent(p -> out.add(new FreeStation(record.getPos().immutable(), p, record.getPoiType()))));
 		out.sort(Comparator.comparingDouble(f -> f.pos().distSqr(hall)));
@@ -206,14 +234,18 @@ public final class VillageHalls {
 
 	/** Gives {@code villager} the job at {@code station}, if it's still free and they can work (not a nitwit or a child). */
 	public static boolean assign(ServerLevel level, Villager villager, FreeStation station) {
-		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
-			return false;
+		if (!villager.isAlive() || villager.isBaby() || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT
+			|| HallPeople.visitor(villager) // a hired band's, relief rider's or story visitor's job isn't the village's to give (B889)
+			|| io.github.jcondedata.aliveworkplace.people.Retirement.refuses(villager, villager.getVillagerData().setProfession(station.profession()))) {
+			return false; // a retired elder takes no job: refused before the block is taken, or it's held for nobody (B885)
 		}
 		// The offered block first: if someone took it meanwhile, nothing changes and they keep their own block (bug B27).
 		// A beehive keeps no places (B657): it's theirs if nobody works there yet.
-		boolean taken = io.github.jcondedata.aliveworkplace.work.Stations.keepsNoCount(station.poi())
+		// The block they're walking to on their own is held for them already (B807): it's theirs, not held a second time.
+		boolean taken = io.github.jcondedata.aliveworkplace.work.Stations.walkingTo(level, villager).filter(station.pos()::equals).isPresent()
+			|| (io.github.jcondedata.aliveworkplace.work.Stations.keepsNoCount(station.poi())
 			? io.github.jcondedata.aliveworkplace.work.Stations.freeAt(level, station.pos())
-			: level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent();
+			: level.getPoiManager().take(h -> h.equals(station.poi()), (h, p) -> p.equals(station.pos()), station.pos(), 1).isPresent());
 		if (!taken) {
 			return false;
 		}

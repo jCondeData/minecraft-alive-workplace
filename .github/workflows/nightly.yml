@@ -283,6 +283,7 @@ jobs:
     outputs:
       since: ${{ steps.plan.outputs.since }}
       tests: ${{ steps.plan.outputs.tests }}
+      compat_tests: ${{ steps.plan.outputs.compat_tests }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -292,11 +293,13 @@ jobs:
           since=$(git rev-list -1 --before="24 hours ago" HEAD)
           if [ -n "$since" ]; then
             tests=$(python3 tools/modtest/newtests.py --since "$since" --csv)
+            compat_tests=$(python3 tools/modtest/newtests.py --since "$since" --csv --compat)
             python3 tools/modtest/mutate.py --since "$since" --max 20 --seed "$(date -u +%j)" --list || true
           fi
           echo "since=$since" >> "$GITHUB_OUTPUT"
           echo "tests=$tests" >> "$GITHUB_OUTPUT"
-          echo "Window starts at ${since:-nothing (no commit that old)}; new tests: ${tests:-none}" >> "$GITHUB_STEP_SUMMARY"
+          echo "compat_tests=$compat_tests" >> "$GITHUB_OUTPUT"
+          echo "Window starts at ${since:-nothing (no commit that old)}; new tests: ${tests:-none}; new compat tests: ${compat_tests:-none}" >> "$GITHUB_STEP_SUMMARY"
 
   mutants:
     needs: mutation-plan
@@ -337,7 +340,7 @@ jobs:
 
   repeats:
     needs: mutation-plan
-    if: needs.mutation-plan.outputs.tests != ''
+    if: needs.mutation-plan.outputs.tests != '' || needs.mutation-plan.outputs.compat_tests != ''
     runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
@@ -350,6 +353,7 @@ jobs:
             25
       - uses: gradle/actions/setup-gradle@v4
       - name: Every new GameTest, 10 times
+        if: needs.mutation-plan.outputs.tests != ''
         env:
           ALIVEWORKPLACE_REPEAT: ${{ needs.mutation-plan.outputs.tests }}
         run: |
@@ -359,6 +363,21 @@ jobs:
           ./gradlew ":$NODE:runGameTest" > build/nightly/repeats.log 2>&1 || true
           cp "versions/$NODE/build/junit.xml" build/nightly/repeats.xml || true
           tail -5 build/nightly/repeats.log
+          git checkout src/gametest/resources/fabric.mod.json
+      # The compat suite's new tests (Create, Cobblemon, storage mods...) 3 times each, in runCompatGameTest: the plain
+      # repeats above never run them (lane-e-1102-2213: no compat test had ever been repeated). Capped at 70 minutes.
+      - name: Every new compat GameTest, 3 times
+        if: needs.mutation-plan.outputs.compat_tests != ''
+        env:
+          ALIVEWORKPLACE_REPEAT: ${{ needs.mutation-plan.outputs.compat_tests }}
+          ALIVEWORKPLACE_REPEAT_TIMES: "3"
+        run: |
+          mkdir -p build/nightly
+          echo "$ALIVEWORKPLACE_REPEAT" | tr ',' '\n' > build/nightly/repeats-compat.txt
+          python3 tools/modtest/only_tests.py --compat RepeatNewTests
+          timeout 70m ./gradlew ":$NODE:runCompatGameTest" > build/nightly/repeats-compat.log 2>&1 || true
+          cp "versions/$NODE/build/junit-compat.xml" build/nightly/repeats-compat.xml || true
+          tail -5 build/nightly/repeats-compat.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:

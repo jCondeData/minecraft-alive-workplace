@@ -15,7 +15,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 /**
  * The village's Arena (ROADMAP 28.16), where the Festival Cup is fought: a finished Arena (any of its three tiers, any
- * style) within the hall's reach, and the spots in it the Cup uses. The spots are known offsets in our own templates
+ * style) in the village (its claimed area), and the spots in it the Cup uses. The spots are known offsets in our own templates
  * (tools/blueprints/arena.py; {@code ArenaGameTests} checks them against the files), turned with the build's rotation
  * and mirror, like {@link MarketDays#square}.
  */
@@ -96,7 +96,7 @@ public final class Arenas {
 	}
 
 	/**
-	 * The village's Arena: a finished one within the hall's reach in this dimension, the highest tier first (an upgraded
+	 * The village's Arena: a finished one in the village (its claimed area) in this dimension, the highest tier first (an upgraded
 	 * Arena is remembered as finished at every tier), then the nearest; empty if the village has none.
 	 */
 	public static Optional<Arena> find(ServerLevel level, BlockPos hall) {
@@ -104,7 +104,7 @@ public final class Arenas {
 		if (stadium.isPresent()) {
 			return stadium; // 35.24: a finished Stadium (tournament_host) is where its village's Cup is held
 		}
-		return BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
+		return BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.filter(f -> tier(f.structure()) > 0)
 			.min(Comparator.<BuildSiteManager.Finished>comparingInt(f -> -tier(f.structure()))
 				.thenComparingDouble(f -> f.placement().origin().distSqr(hall)))

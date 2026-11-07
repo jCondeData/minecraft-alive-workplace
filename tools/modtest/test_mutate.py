@@ -55,6 +55,23 @@ def unit_checks():
     for name, got, want in flag_cases:
         print(("ok   " if got == want else f"FAIL (got {got!r}) ") + name)
         bad += got != want
+    # a mutant that crashes the server leaves a log with no summary: a kill, even when the real code has a failing test
+    from pathlib import Path
+    with tempfile.TemporaryDirectory() as d:
+        log = Path(d, "build/run/compatGameTest/logs/latest.log")
+        summary_cases = [
+            ("no server log: can't tell, counts as finished", None, True),
+            ("a run that passed reached its summary", "[INFO] All 55 required tests passed :)\n", True),
+            ("a run with failing tests reached its summary", "[ERROR] 1 required test failed :(\n", True),
+            ("a server that crashed mid-run didn't", "Caused by: java.lang.NullPointerException\nType: Game test server\n", False),
+        ]
+        for name, text, want in summary_cases:
+            if text is not None:
+                log.parent.mkdir(parents=True, exist_ok=True)
+                log.write_text(text)
+            got = mutate.reached_summary(Path(d), 0)
+            print(("ok   " if got == want else f"FAIL (got {got!r}) ") + name)
+            bad += got != want
     return bad
 
 

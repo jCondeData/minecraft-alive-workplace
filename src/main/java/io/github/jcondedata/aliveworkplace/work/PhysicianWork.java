@@ -143,7 +143,7 @@ public class PhysicianWork extends Behavior<Villager> {
 
 	/** Takes a Remedy into hand from the chest by the stand, brewing one from its makings when there's none. */
 	public static boolean ready(ServerLevel level, Villager physician, BlockPos post) {
-		if (RemedyItem.isRemedy(physician.getMainHandItem())) {
+		if (RemedyItem.isRemedy(TradeDisplay.workHand(physician))) { // a Remedy on show is the display's, not his (B781)
 			return true;
 		}
 		List<BlockPos> chests = SupplyContainers.find(level, post, null);
@@ -218,7 +218,7 @@ public class PhysicianWork extends Behavior<Villager> {
 			ready(level, physician, post.get());
 		}
 		BuilderLevels.addXp(level, physician, XP_PER_VISIT, null);
-		ItemStack hand = physician.getMainHandItem();
+		ItemStack hand = TradeDisplay.workHand(physician); // never cures with the display's shown Remedy (B781)
 		if (RemedyItem.isRemedy(hand)) {
 			hand.shrink(1);
 			physician.setItemSlot(EquipmentSlot.MAINHAND, hand.isEmpty() ? ItemStack.EMPTY : hand);

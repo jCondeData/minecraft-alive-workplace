@@ -9,7 +9,7 @@ Needs: Cobblemon Raid Dens on the server
 Where: the Defense page of the Village Hall, a row of the dens near the village
 Raid helpers: up to 3 of the village's trainers, hired by a den, help you in its raid
 Cheer: each helper gives you an Attack, Defense or Heal Cheer once a raid
-Price: 5 emeralds a helper (or CobbleDollars), set by the server
+Price: 5 emeralds a helper (500 CobbleDollars when the server has them), set by the server
 categories: Village Hall, Defense, Pokémon
 related: defense-page.md, trainer-leader.md, village-hall.md
 ```
@@ -20,15 +20,17 @@ along to help you raid them. The village never raids a den on its own: the raid 
 ## The dens your village knows
 
 Open the [Village Hall](village-hall.md), click the guards icon and look at the [Defense page](defense-page.md): it
-lists the raid dens within about 160 blocks of the hall, nearest first, such as "Raid den, tier 3, Fire, active". A
+lists the raid dens within 160 blocks of the hall, nearest first, such as "Raid den, tier 3, Fire, active". A
 glowing icon means the den is active; "resting" means someone beat it and it hasn't come back yet. The village map
-marks the nearby ones with a magenta banner. A den shows up once someone has been close enough for it to load.
+marks the nearby ones with a magenta banner. A den shows up once someone has been close enough for it to load, and at once when a den crystal is placed near the
+hall or a hall is built by dens already there.
 
 ## Hiring raid helpers
 
 Under each active den on the Defense page there's a **Hire a raid helper** button. Each click hires one of the
 village's free trainers for that den, the best first (a [Trainer Leader](trainer-leader.md) or a Master before a
-Novice), for **5 emeralds** each (CobbleDollars when the server has them). You can have up to **3** helpers at once,
+Novice), for **5 emeralds** each (with CobbleDollars on the server, 100 CobbleDollars for each emerald of the price:
+**500 CobbleDollars**). You can have up to **3** helpers at once,
 for one den. The button's tooltip says how many you've hired and how many trainers are still free. With too little
 money you're told the price and nothing is taken.
 

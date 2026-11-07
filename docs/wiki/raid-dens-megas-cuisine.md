@@ -118,6 +118,7 @@ divider; the tab sits in the row's free slot before Routes and shows only while 
 dish with the Chef's level it needs, how many are asked for and how many the village's store holds; a click asks for 4
 more, shift-click 16, right-click takes the request down (at most 64 of a dish wait). Without a Chef in the village
 every dish is locked and the tab says a Chef is needed; a dish above the best Chef's level says which level it needs.
+The tab's own icon counts the dishes waiting in all ("1 dish waiting", "5 dishes waiting", B810).
 The village's Chef (the one whose stove's nearest hall it is) cooks the oldest request his level allows before his own
 menu, from the same makings, up to a batch of 8, and carries it to the village's Storehouse (the chests by his stove if
 it has none); what he delivers comes off the request. A request whose makings are missing waits. The requests are
@@ -227,8 +228,8 @@ the trainer to the step before the pedestal; there, the trainer waits for the cr
 work in the village has been at the crowd's spot once today, or 600 ticks since the gathering began, or the show's last
 100 ticks) and the show is held once a day per village, for everyone who came (kept in memory by villager id: the
 crowd's spot reaches up to 14 blocks from the pedestal, past the 12 of its watchers) and everyone off work (idle, meeting or playing, or seated, as `Festivals.gatherAt` gathers
-them) within 12 blocks; a villager at work there is left out (B420) (kept in memory: a restart
-mid-show may hold it again, and the mood is the same). The Mega Evolution is shown as light and sound at the pedestal,
+them) within 12 blocks; a villager at work there is left out (B420). Who came is kept in memory only;
+the day each show was held is saved (`MegaShrines.Data`, B501), so a restart mid-show doesn't hold it again. The Mega Evolution is shown as light and sound at the pedestal,
 not by a Pokémon sent out.
 
 ## How dens are found (38.2)
@@ -438,6 +439,13 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   don't; a Stadium visitor from a Town and a Hamlet's Master do; a City's Expert doesn't), `theBraceletsLinesReadRight`
   (both chat lines word for word, the progress line once for a Leader beaten twice) and
   `aFullInventoryStillGetsTheBracelet` (dropped at the player's feet, one).
+- `QaDenFoundLaterCompatTests` (QA, B190, nothing calling the detection by hand): `aDenSetDownLaterIsTheVillagesAt160NotAt161`
+  (dens set down 160 and 161 blocks from a hall standing long before: the first listed, the second not even recorded)
+  and `aHallSetDownLaterFindsTheDenAt160NotAt161` (the same, with the hall set down after the dens).
+- `QaMegaShrineWaitCompatTests` (QA, B215): `theTrainerWaitsAtMostWaitTicksForTheCrowd` (in real ticks: still waiting
+  590 ticks into the gathering with one villager never coming, held by 610; one off work who never came but stands
+  within 12 blocks of the pedestal gets the mood, one who never came standing beyond 12 doesn't) and
+  `theLastCallHoldsTheShowAtExactly100TicksLeft` (101 ticks before the hours end it still waits, at 100 it's held).
 - `MegaStoneGameTests` (without Mega Showdown): `withoutMegaShowdownNothingChanges`, `withoutMegaShowdownNoBracelet`,
   `aTagOutputWithAChooser` (the recipe format's new parts and their errors), `theText`.
 - `CuisineCompatTests` (38.8 and 38.8a, the real Cobblecuisine): `withoutAChefTheDishesAreLockedOnTheBoard`,

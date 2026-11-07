@@ -112,10 +112,15 @@ public final class Fields {
 			return InteractionResult.CONSUME;
 		}
 		BoundingBox box = area.get();
-		double distance = Math.sqrt(box.getCenter().distSqr(composter.get()));
+		double distance = io.github.jcondedata.aliveworkplace.work.Reach.across(composter.get(), box.getCenter());
 		if (!io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, composter.get(), box.getCenter(), MAX_DISTANCE)) {
 			tell(player, io.github.jcondedata.aliveworkplace.work.Reach.refusal(level, composter.get(), "message.aliveworkplace.field.too_far", (int) Math.ceil(distance),
 				AreaJobs.workBlock(level, composter.get()), MAX_DISTANCE), ChatFormatting.RED);
+			return InteractionResult.CONSUME;
+		}
+		// B718: a field reaching into a protected village the player may not change is refused (its corners may lie
+		// outside it); he's told whose village it is
+		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(level, player, box)) {
 			return InteractionResult.CONSUME;
 		}
 		FieldJob old = ModAttachments.FARM_FIELD.get(villager);
@@ -243,7 +248,7 @@ public final class Fields {
 		for (ItemStack stack : bag.takeAll()) {
 			store(level, supplies, composter, stack);
 		}
-		ItemStack tool = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		ItemStack tool = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager);
 		if (!tool.isEmpty()) {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			store(level, supplies, composter, tool);

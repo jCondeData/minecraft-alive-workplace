@@ -311,6 +311,7 @@ public final class Stories {
 			for (Quest q : List.copyOf(en.getValue().quests)) {
 				int i = q.current();
 				if (i >= 0 && q.objectives.get(i) instanceof Objectives.Kill kill && (here || kill.anywhere() || kill.role() != null) && kill.matches(killed)
+					&& (kill.role() == null || ArcEffects.plays(en.getValue(), q, kill.role(), killed)) // B711: this arc's own foe
 					&& level.getBlockEntity(en.getKey()) instanceof VillageHallBlockEntity entity && mayHelp(level, en.getKey(), q, player)) {
 					progress(level, en.getKey(), entity, q, i, 1, player);
 					break;
@@ -797,7 +798,11 @@ public final class Stories {
 					for (int j = 0; j < l.size(); j++) {
 						files.add(Nbt.stringAt(l, j));
 					}
-					e.done.put(UUID.fromString(player), files);
+					try {
+						e.done.put(UUID.fromString(player), files);
+					} catch (RuntimeException ex) {
+						AliveWorkplace.LOG.warn("Skipping finished quests saved for a player that can't be read: {}", ex.getMessage());
+					}
 				}
 				ListTag finished = Nbt.getList(h, "finished", Tag.TAG_STRING);
 				for (int j = 0; j < finished.size(); j++) {
@@ -805,9 +810,13 @@ public final class Stories {
 				}
 				ListTag moods = Nbt.getList(h, "mood_boosts", Tag.TAG_COMPOUND);
 				for (int j = 0; j < moods.size(); j++) {
-					CompoundTag t = Nbt.compoundAt(moods, j);
-					e.moods.add(new Mood(Nbt.getInt(t, "points"), Nbt.getLong(t, "until_day"),
-						Rewards.text(com.google.gson.JsonParser.parseString(Nbt.getString(t, "reason")))));
+					try {
+						CompoundTag t = Nbt.compoundAt(moods, j);
+						e.moods.add(new Mood(Nbt.getInt(t, "points"), Nbt.getLong(t, "until_day"),
+							Rewards.text(com.google.gson.JsonParser.parseString(Nbt.getString(t, "reason")))));
+					} catch (RuntimeException ex) {
+						AliveWorkplace.LOG.warn("Skipping a saved mood boost that can't be read: {}", ex.getMessage());
+					}
 				}
 				try {
 					if (h.contains("arc")) {
@@ -855,7 +864,15 @@ public final class Stories {
 			ListTag tracks = Nbt.getList(tag, "tracked", Tag.TAG_COMPOUND);
 			for (int i = 0; i < tracks.size(); i++) {
 				CompoundTag t = Nbt.compoundAt(tracks, i);
-				data.tracked.put(Nbt.getUuid(t, "player"), QuestTracker.Track.load(t));
+				if (!Nbt.hasUuid(t, "player")) {
+					AliveWorkplace.LOG.warn("Skipping a tracked quest saved without its player");
+					continue;
+				}
+				try {
+					data.tracked.put(Nbt.getUuid(t, "player"), QuestTracker.Track.load(t));
+				} catch (RuntimeException ex) {
+					AliveWorkplace.LOG.warn("Skipping a tracked quest that can't be read: {}", ex.getMessage());
+				}
 			}
 			return data;
 		}

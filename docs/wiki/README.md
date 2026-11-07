@@ -12,6 +12,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Job chains](crafter.md): every crafting job makes the builders' parts through whole recipe chains of its own kind, and the builder says what nobody can make (37.14a, which retired the Crafter).
 - [Blueprint library](blueprint-library.md): the Blueprint Table as a collection each village unlocks (26.10).
 - [Workplace looks](workplace-looks.md): the twelve workplaces, each its own building (26.11).
+- [Textures and item icons](textures.md): every texture drawn from a recipe in vanilla's style, and the item icons the owner picked (21.1, 21.1b).
 - [More decorations](more-decorations.md): fourteen small decorations that aren't houses, from a market cross to a footbridge (26.14).
 - [Basements and cellars](basements.md): the Level 4s with a basement dug under them, and the cellars from Level 1: the Butcher's freezer, the Smith's coal store, the Cook's larder, the Storehouse's vault (26.15).
 - [Cellars for the Level IIs and for old builds](cellars.md): eight Level IIIs, each its Level II with a cellar dug under it, and "Dig the cellar" for a Smithy, Storehouse or Kitchen built before it had one (36.7).
@@ -46,6 +47,7 @@ How everything in the mod works, in plain words: written for the owner first, th
   the cure round (31.18).
 - [The far herbs](far-herbs.md): eight rare plants planted only by story arcs, their biomes and ground, the Glowcap's shade, `herb_patch` and the Three-Herb Tonic (31.17).
 - [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
+- [The showcase](showcase.md): a filmed scene for every job, screen and feature, judged and published every night (22.3).
 - [The player guide](player-guide.md): the separate, plain-language site for players, published with the showcase (22.10).
 - [Trading at the board](board-trade.md): selling to a village and buying from it on the Prices tab, the treasury on the page and who collects it (33.5).
 - [Caravans that trade](caravan-trade.md): what a caravan takes to sell, how the other village pays, what comes home, and the Routes tab's earnings (33.6).
@@ -106,6 +108,8 @@ How everything in the mod works, in plain words: written for the owner first, th
 
 **For server owners**
 - [Config switches](config-switches.md): every setting and game rule with its default, and the expansion gate.
+- [Screens and words](screens-and-words.md): every screen readable at GUI scales 2 to 4, one name for each job,
+  block and item, American spelling, and the checks that keep them so (24.4, 24.5).
 - [Big villages stay smooth](performance.md): the benchmark, our own time a tick, and the limits on tree searches and
   build counts (25.1, 25.3).
 

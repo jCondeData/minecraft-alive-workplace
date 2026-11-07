@@ -56,14 +56,6 @@ public final class Fishers {
 		return ModAttachments.FISHER_JOB.getOrElse(villager, false);
 	}
 
-	/**
-	 * Whether {@code villager} is a hired fisher with their rod in hand: vanilla's trade display then leaves the hand alone
-	 * (it empties it otherwise, and the rod was lost the first time a player stood by).
-	 */
-	public static boolean holdsTheirRod(Villager villager) {
-		return isHired(villager) && FisherWork.isRod(villager.getItemBySlot(EquipmentSlot.MAINHAND));
-	}
-
 	/** Vanilla fisherman behaviour runs when not hired, or when there is no rod or no water to fish. */
 	public static boolean vanillaMayRun(Villager villager) {
 		return !isHired(villager) || FisherWork.isResting(villager);
@@ -105,7 +97,7 @@ public final class Fishers {
 
 	/** Hires the fisherman with {@code rod} in hand. Also used by tests. */
 	public static void start(ServerLevel level, Villager villager, ItemStack rod) {
-		ItemStack old = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		ItemStack old = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager); // a shown ware isn't bagged (B776)
 		if (!old.isEmpty()) {
 			ModAttachments.BUILDER_BAG.getOrCreate(villager).add(old);
 		}
@@ -125,7 +117,7 @@ public final class Fishers {
 		for (ItemStack stack : bag.takeAll()) {
 			store(level, supplies, barrel, stack);
 		}
-		ItemStack rod = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		ItemStack rod = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager);
 		if (!rod.isEmpty()) {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			store(level, supplies, barrel, rod);

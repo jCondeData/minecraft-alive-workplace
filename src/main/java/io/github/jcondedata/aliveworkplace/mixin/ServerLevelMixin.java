@@ -13,7 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Counts workstations going, before vanilla removes their record, so a stale memory of one can be told apart (bug B15);
+ * Counts workstations going, before vanilla removes their record, so a stale memory of one can be told apart (bug B15),
+ * and takes a settlers' bedroll's spot off the wagon-bed list when a new bed is put there (B761);
  * and, in GameTests only, refuses the entities {@link HostileSpawns#REFUSED_FOR_TESTS} names at {@code addEntity}, as
  * a mob blocklist such as MobsBeGone does (B208).
  */
@@ -22,6 +23,7 @@ public abstract class ServerLevelMixin {
 	@Inject(method = "onBlockStateChange", at = @At("HEAD"))
 	private void aliveworkplace$countWorkstationBreaks(BlockPos pos, BlockState old, BlockState now, CallbackInfo ci) {
 		JobSiteTickets.changed((ServerLevel) (Object) this, pos, old, now);
+		io.github.jcondedata.aliveworkplace.camp.CampBeds.changed((ServerLevel) (Object) this, pos, old, now); // a bed put where a bedroll stood leaves the list (B761)
 	}
 
 	@Inject(method = "addEntity", at = @At("HEAD"), cancellable = true)

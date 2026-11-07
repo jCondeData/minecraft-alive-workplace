@@ -18,7 +18,8 @@ import net.minecraft.world.entity.ai.village.poi.PoiRecord;
  * across, or in a cell painted into one of the City Plan's zones), wherever in the village the block stands; or, outside
  * it, within the job's long reach of the block (a config key each: {@code maxSiteDistance} for builds, {@code quarryReach},
  * {@code fieldReach}, {@code treeFarmReach}, {@code orchardAreaReach}, {@code berryPlotReach}). A block in no village
- * (no hall near) has only the long reach. Up and down never count against the village: a quarry's pit goes below it.
+ * (no hall near) has only the long reach. Up and down never count, against the village or the long reach: a quarry's pit
+ * goes below it and a tower above it, so every distance is measured across the ground ({@link #across}).
  */
 public final class Reach {
 	private Reach() {
@@ -64,9 +65,19 @@ public final class Reach {
 		return hall.isPresent() && claims(level, hall.get(), spot);
 	}
 
-	/** True if {@code spot} is within {@code reach} blocks (straight line) of {@code from}. */
+	/**
+	 * True if {@code spot} is within {@code reach} blocks of {@code from} across the ground ({@link #across}). B665/B668:
+	 * up and down never count, so a deep pit or a tall build is in reach wherever its middle is in height.
+	 */
 	public static boolean within(BlockPos from, BlockPos spot, int reach) {
-		return spot.distSqr(from) <= (double) reach * reach;
+		return across(from, spot) <= reach;
+	}
+
+	/** How far {@code spot} is from {@code from} across the ground (x and z only), the distance a refusal names. */
+	public static double across(BlockPos from, BlockPos spot) {
+		double dx = spot.getX() - from.getX();
+		double dz = spot.getZ() - from.getZ();
+		return Math.sqrt(dx * dx + dz * dz);
 	}
 
 	/**

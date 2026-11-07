@@ -7,7 +7,7 @@ image: https://jcondedata.github.io/minecraft-alive-workplace/lost_caravan/still
 caption: The wreck found by the road
 Starts: 1 caravan in 20 on a road longer than 300 blocks goes missing
 Chapters: Overdue, The tracks, The captive
-Time limit: 7 days to bring the carter home
+Time limit: 7 days to free the carter
 Side quest: carry the lost goods in for 8 emeralds
 Rewards: +150 standing in both villages, the honor Wayfinder
 categories: Story arcs, Trade
@@ -37,10 +37,14 @@ with axes and two with crossbows wait.
 ## The captive
 
 The carter is alive, locked in the stockade's cage. Flip the lever by the cage and the gate opens: "You came for me!
-Take me home, I'll keep up." He follows you like a rallied guard. Walk him to within 24 blocks of either village's hall.
+Take me home, I'll keep up." He follows you like a rallied guard. Walk him to within 24 blocks of either village's hall. Once he's out, there's no
+hurry: he keeps following until you get him home.
 
 The stockade's chest holds the lost goods. Carry every stack of them to the village they were going to and they go into
-its store, for 8 emeralds and a little standing there. You don't need to: the story goes on without them.
+its store, for 8 emeralds and a little standing there. You don't need to: the story goes on without them. If that
+village's hall has been broken, nobody there takes the goods (you keep them) and the carter can't come home there
+until a new hall stands in the village (put back on the same spot or nearby); meanwhile he can still be walked home to
+the village that sent him. Another village's hall doesn't count.
 
 ![Tobin follows the player home](https://jcondedata.github.io/minecraft-alive-workplace/lost_caravan/still-4.jpg)
 
@@ -49,7 +53,7 @@ its store, for 8 emeralds and a little standing there. You don't need to: the st
 The carter settles in the village he reached, ready to take a free workstation like any newcomer. Everyone who helped
 gains 150 standing in both villages and the honor **Wayfinder**, and the carter counts you as a friend.
 
-Nobody comes for him within 7 days and he slips away and finds his own way home with nothing: the goods are lost and
+Nobody opens his cage within 7 days and he slips away and finds his own way home with nothing: the goods are lost and
 the story ends badly.
 
 ## How it fits with the rest

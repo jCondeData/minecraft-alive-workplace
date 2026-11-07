@@ -34,6 +34,9 @@ the festival".
 
 Miss the deadline and every helper loses 30 friendship with them, they are glum for a day ("Let down: nobody helped
 in time" in their mood) and they ask nobody for anything for 3 days.
+A "Next level" request whose giver loses their job (No job at the hall) can't be done any more, so it is called off
+instead: the helpers read "Dara has no job now, so \"Next level before the festival\" is called off. No friendship is
+lost." and nobody is let down (B890).
 
 The six requests:
 
@@ -259,6 +262,10 @@ the letter or the map; `revive`, `pet_near_home` (at dawn), `schooled` and `buil
 - `QaStageSevenGameTests`: the letter carried with real clicks from either hand, sneaking or not, and a lost one
   written again (`aLetterCarriedWithRealClicksFromEitherHand`, `aSneakClickWithTheLetterStillDeliversIt`, B354,
   `aLostLetterIsWrittenAgainOnAnEmptyHandedClick`).
+- `QaVillageFixes1104c3GameTests.qaSneakClicksDeliverTheLetterAndReplyBesideALectern` (B354): with a lectern beside
+  each of them, a sneak-click delivers the letter to Mira and the reply to Dara (4 emeralds), and neither takes a job.
+  `qaASneakClickWithTheHeirloomHandsItBack`: the lost compass, found in its chest, sneak-clicked on Dara beside a
+  cartography table is handed back (8 emeralds) and she stays a farmer.
 - `PersonalRequestGameTests`: `PersonalRequestGameTests.aThreeHeartVillagerAsksAndATwoHeartOneDoesnt`,
   `PersonalRequestGameTests.theyWalkUpAndAskWithBothButtons`, `PersonalRequestGameTests.acceptAndDecline`,
   `PersonalRequestGameTests.theNextLevelPaysEveryHelper`, `PersonalRequestGameTests.aHomeOfTheirOwn`,

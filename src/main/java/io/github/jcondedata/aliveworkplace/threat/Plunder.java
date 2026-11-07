@@ -157,6 +157,16 @@ public final class Plunder {
 		return stack;
 	}
 
+	/**
+	 * The raid {@code raider} was in is called off (an operator's {@code /workplace threat end}, 32.21; B840): it goes
+	 * without taking anything, so what it carried falls where it stood, as when it dies.
+	 */
+	public static void dropCarried(Mob raider) {
+		if (!carried(raider).isEmpty()) {
+			raider.spawnAtLocation(takeOff(raider), 0.5f);
+		}
+	}
+
 	/** A plunderer died: what it carried falls where it did. */
 	static void dropOnDeath(ServerLevel level, LivingEntity entity) {
 		if (!(entity instanceof Mob mob) || carried(mob).isEmpty()) {

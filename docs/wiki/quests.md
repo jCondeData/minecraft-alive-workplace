@@ -49,12 +49,14 @@ Roadmap items: 31.2, 31.3
 
 | Key | Default | What it does |
 |---|---|---|
-| `villageQuests` | on | Off: no new quests are posted; open ones can still be tracked, counted and handed in |
+| `villageQuests` | on | Off: no new quests are posted; open ones can still be tracked, counted and handed in; story arcs and their chapters' quests carry on |
 
 ## Saved data
 
 - With each dimension: `aliveworkplace_stories`, the open quests keyed by hall, with each step's progress, who helped,
-  the dates, who tracks them and the place found. Every field has a default.
+  the dates, who tracks them and the place found. Every field has a default. An entry that can't be read (an open
+  quest, a story arc, a mood boost, a tracked quest without its player) is skipped with a warning in the log, and the
+  rest of the file loads (B763).
 
 ## Items, blocks, jobs, commands
 
@@ -79,4 +81,6 @@ Ledger, hand-ins to the goal and once, the boundaries of days, ticks and radius,
 broken, the command, the switch off, broken files, places and maps, every sentence) and `QaRealmLegendsJournal1031GameTests`
 (one tracked quest per player, the bar following each step in order, a hand-in through the hall moving the bar, the
 command from afar, the journal's lines) and `QaStoryEngine1031GameTests` (each condition on both sides of its edge, the rank factor, the due
-tick with the switch off, where a bring goes, once per player or repeatable, kills near the hall).
+tick with the switch off, where a bring goes, once per player or repeatable, kills near the hall) and
+`QaStoryVerify1103cGameTests` (two broken files each skipped with exactly one warning naming it, the real `/reload`, an
+arc's quest still going up and counting with the switch off).

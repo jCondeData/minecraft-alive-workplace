@@ -4,7 +4,6 @@ import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -39,7 +38,7 @@ public class DeliveryNoteItem extends Item {
 	 * B333: a chest's or barrel's own right-click (opening it) runs before an item's {@link #useOn}, so a note held
 	 * on a container or Pasture Block marks it here first, from the use-block event, and the container stays shut.
 	 * Sneaking skips the block's own right-click anyway (the note's clearing click), and a private container still
-	 * opens as before.
+	 * opens as before. In a protected village a stranger's note marks nothing ({@link #useOn} tells them whose it is).
 	 */
 	public static InteractionResult beforeBlock(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
 		ItemStack stack = player.getItemInHand(hand);
@@ -65,7 +64,7 @@ public class DeliveryNoteItem extends Item {
 		RouteData data = data(stack);
 		BlockPos pos = context.getClickedPos();
 		if (player.isShiftKeyDown()) {
-			stack.set(ModComponents.ROUTE, new RouteData(Optional.empty(), Optional.empty(), data.filter()));
+			stack.set(ModComponents.ROUTE, data.withEnds(Optional.empty(), Optional.empty(), Optional.empty()));
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.route.reset"));
 			return InteractionResult.SUCCESS;
 		}
@@ -78,11 +77,16 @@ public class DeliveryNoteItem extends Item {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.route.not_container").withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.FAIL;
 		}
+		// B717: a container in a protected village is as good as opened by a note that names it; a stranger is told whose
+		// village it is (and, from the use-block event, the click ends there: the chest stays shut)
+		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(context.getLevel(), player, pos)) {
+			return InteractionResult.FAIL;
+		}
 		if (data.from().isEmpty() || data.isComplete()) {
-			stack.set(ModComponents.ROUTE, new RouteData(Optional.of(pos), Optional.empty(), data.filter()));
+			stack.set(ModComponents.ROUTE, data.withEnds(Optional.of(pos), Optional.empty(), Optional.of(player.getUUID())));
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.route.from", pos.getX(), pos.getY(), pos.getZ()));
 		} else {
-			stack.set(ModComponents.ROUTE, new RouteData(data.from(), Optional.of(pos), data.filter()));
+			stack.set(ModComponents.ROUTE, data.withEnds(data.from(), Optional.of(pos), data.by()));
 			Chat.chat(player, Component.translatable("message.aliveworkplace.route.to", pos.getX(), pos.getY(), pos.getZ()));
 		}
 		return InteractionResult.SUCCESS;
@@ -123,10 +127,7 @@ public class DeliveryNoteItem extends Item {
 			BlockPos t = data.to().get();
 			tooltip.add(Component.translatable("tooltip.aliveworkplace.route.to", t.getX(), t.getY(), t.getZ()).withStyle(ChatFormatting.AQUA));
 		}
-		tooltip.add(data.filter().isEmpty()
-			? Component.translatable("tooltip.aliveworkplace.route.everything").withStyle(ChatFormatting.GRAY)
-			: Component.translatable("tooltip.aliveworkplace.route.only",
-				data.filter().stream().map(i -> i.getDescription().getString()).collect(Collectors.joining(", "))).withStyle(ChatFormatting.GRAY));
+		tooltip.add(data.filterText().copy().withStyle(ChatFormatting.GRAY));
 		tooltip.add(Component.translatable(data.isComplete() ? "tooltip.aliveworkplace.route.hand_over" : "tooltip.aliveworkplace.route.how")
 			.withStyle(ChatFormatting.DARK_GRAY));
 	}

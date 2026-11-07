@@ -21,7 +21,8 @@ Roadmap items: 31.4
   beside it. With none: "No story is unfolding here".
 - **The villagers** talk of the running chapter as village news.
 - **Talk.** A `talk` step asks the player to right-click the villager the arc named ("Talk to Ilse"); they say their
-  line. A villager of the village who isn't cast doesn't count.
+  line. A villager of the village who isn't cast doesn't count, and neither does one another arc (or the same arc in
+  another village) cast in a part of the same name; a `kill` of a `role:` foe counts only the one this arc cast too.
 - **Foes and builds.** A spawned foe has its name, gear, extra health and a boss bar, and keeps near its spot. A build
   out in the land goes up only once a player comes within 96 blocks of it, on natural ground and plants only (never on
   a floor or road someone laid), and only once; a map can lead there.
@@ -33,6 +34,10 @@ Roadmap items: 31.4
 - Arcs are data: `data/<namespace>/arcs/<id>.json`, one per file: a `trigger` (conditions, a chance a day, or an event),
   `roles` (villagers cast in parts), the `chapters` in order and an `ending`. A file that can't be read is skipped with a
   log line; the others load.
+- A role's `villager`: `new`, `any`, `job:<profession>`, `trait:<trait>` (such as `trait:cheerful`) or `mother` (a
+  villager named as the mother of someone in the village), alternatives split by `|`, the first someone can play. An
+  intro line or quest name written `{"translate": "...", "with": ["@asker"]}` names the villager cast as `asker`, so
+  a fallback asker is named, not the usual trade.
 - A chapter: `name`, `intro`, `on_start` effects, `quests` (ids or written inline), `complete` (`all`, `any` or a list
   of quest ids), `needs_flags`, `delay_days`, `time_limit_days` with `on_fail`, and `chatter`.
 - Effects: `announce`, `chronicle`, `place`, `spawn`, `give_map`, `village_mood`, `festival` (the next day, through the
@@ -41,7 +46,8 @@ Roadmap items: 31.4
 - One main arc runs in a village at a time; side arcs (the reforms) run beside it. The hall's round moves arcs on and
   rolls for a new one: it needs no main arc running there, `arcCooldownDays` passed since the last ended (8: an arc that
   ended on day 10 keeps the next away on day 17, and one may start on day 18), and fewer than `arcsAtOnce` main arcs on
-  the whole server (side arcs aren't counted). A `threat` arc doesn't start in a village At peace or at threat level 0.
+  the whole server (side arcs aren't counted). A `threat` arc doesn't start in a village At peace, at threat level 0 or
+  on Peaceful.
 - Every 40 ticks the engine checks waiting builds and spawned foes against the players' positions: a build is placed
   once a player is near; a foe comes once a player is near its spot, and one that's gone (its chunk unloaded and lost)
   is put back at its spot.
@@ -80,8 +86,9 @@ Roadmap items: 31.4
 
 ## Known limits
 
-- A `talk` step also counts a right-click on a villager cast in a part of the same name by another running arc, even in
-  another village (found by QA on 2026-10-31; its failing test waits on the branch tests/story-arcs-1031 for the fix).
+- When the same arc runs in two villages, killing one village's spawned `role:` foe also counts for the other
+  village's `kill` step while that village's own foe hasn't spawned yet (B724, found by QA on 2026-10-31; its failing
+  test waits on the branch tests/village-verify-1031 for the fix).
 
 ## Proof
 
@@ -91,4 +98,9 @@ reload mid-chapter with its foe put back, a removed file, a far build waiting fo
 with a side arc not counted and shown on the Story tab, a foe waiting for a player and coming with the 40-tick check, a
 far build never over paving and once across a reload, who hears an announcement, the `any` and named-list chapter endings, the flag, festival, extra quest and chronicle effects, the commands' edges),
 `QaDisabledArcsGameTests`, `QaThreatArcsPeace1031GameTests`, `QaStoryArcsPeace1031GameTests`,
-`QaRefusedArcMobs1031GameTests` and `QaHallStoryGameTests`. Showcase scene `story_arc`.
+`QaRefusedArcMobs1031GameTests`, `QaHallStoryGameTests`, `QaStoryArcEngineBug1031Tests`, `StoryArcCastGameTests`
+(a `talk` or `role:` kill counts only the one this arc cast in this village, across a reload) and
+`QaVillage1031VerifyGameTests` (a villager tagged by hand as the part is no stand-in) and `QaStoryVerify1103cGameTests`
+(a `threat` arc waiting while At peace, at level 0 and on Peaceful and starting once threatened, a removed file's one log
+line after a save and reload, the real `/reload` reading the arc files again, the commands refused to non-operators,
+every story sentence in American English). Showcase scene `story_arc`.

@@ -372,11 +372,20 @@ public class QaServiceJobs1031GameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 500, batch = "qaInnNoBed")
 	public void noFreeBedNoTravelerAndItSaysSo(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B871: the Innkeeper looks for a free bed 32 blocks round, far past this area, where an earlier batch's bed
+		// (outside its own area, never cleared) is a free bed for his guest. Here the inn's reach is the area alone.
+		int innRadius = Innkeepers.RADIUS;
+		Innkeepers.RADIUS = 10;
+		Leftovers.after(helper, () -> Innkeepers.RADIUS = innRadius);
 		helper.setDayTime(1500);
 		helper.setBlock(STATION, ModBlocks.SHOP_COUNTER);
 		Villager inn = picked(helper, StationsSpecGameTests.player(helper), STANDING, Items.RED_BED, ModVillagers.INNKEEPER);
 		helper.runAfterDelay(450, () -> {
-			helper.assertTrue(Innkeepers.guests(helper.getLevel(), helper.absolutePos(STATION)).isEmpty(), "a traveler came with no bed");
+			List<Villager> guests = Innkeepers.guests(helper.getLevel(), helper.absolutePos(STATION));
+			helper.assertTrue(guests.isEmpty(), "a traveler came with no bed: " + guests.stream()
+				.map(g -> g.getName().getString() + " at " + helper.relativePos(g.blockPosition()) + ", bed "
+					+ g.getBrain().getMemory(MemoryModuleType.HOME).map(h -> helper.relativePos(h.pos()).toString()).orElse("none"))
+				.toList());
 			helper.assertTrue(line(inn, helper).equals("needs a free bed for guests"), "status: " + line(inn, helper));
 			helper.assertTrue(title(inn, helper).equals("Innkeeper · 0 guests hosted"), "title: " + title(inn, helper));
 			helper.succeed();

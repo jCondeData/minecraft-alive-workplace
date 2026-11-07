@@ -8,8 +8,10 @@ import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.threat.Conditions;
 import io.github.jcondedata.aliveworkplace.threat.Culture;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
+import io.github.jcondedata.aliveworkplace.threat.Plunder;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import io.github.jcondedata.aliveworkplace.threat.Threats;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +24,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
@@ -157,14 +160,15 @@ public final class VillageRaids {
 
 	/**
 	 * The hall's round: a raid under way is checked on (and ended); the attack the clock set for tonight begins at its
-	 * hour; at dusk the clock rolls the next night's.
+	 * hour; at dusk the clock rolls the next night's. Only the raid's own raiders count ({@link #own}): a neighbor
+	 * village's, standing within this one's reach, neither keep this raid going nor leave with it (B856).
 	 */
 	public static void tick(ServerLevel level, BlockPos hall, int villagers, int guards, long lastRaidDay, java.util.function.LongConsumer raided) {
 		ThreatData data = ThreatData.get(level);
 		ThreatData.Under raid = data.raid(hall).orElse(null);
 		long time = level.getDayTime() % VillageNeeds.DAY;
 		if (raid != null) {
-			List<Mob> left = raiders(level, hall);
+			List<Mob> left = own(level, hall);
 			Optional<Culture> culture = Threats.get(raid.culture());
 			boolean sea = culture.map(c -> c.arrival() == Culture.Arrival.SHORE).orElse(false);
 			// Most raiders leave at dawn; a culture whose hours are until_noon stays through the morning.
@@ -272,10 +276,54 @@ public final class VillageRaids {
 		return Lairs.of(level, hall, culture).map(c -> Lairs.raidSize(c, size)).orElse(size);
 	}
 
-	/** The raiders still about in the village round {@code hall}. */
+	/** The raiders still about in the village round {@code hall}: those within its reach ({@link #reaches}). */
 	public static List<Mob> raiders(ServerLevel level, BlockPos hall) {
+		return level.getEntitiesOfClass(Mob.class, near(hall), m -> m.isAlive() && m.getTags().contains(TAG) && reaches(hall, m));
+	}
+
+	/** A box round {@code hall} that holds every mob {@link #reaches} it (a block wider, for the entity lookup). */
+	public static AABB near(BlockPos hall) {
 		int r = VillageHalls.RADIUS + 32;
-		return level.getEntitiesOfClass(Mob.class, new AABB(hall).inflate(r, 48, r), m -> m.isAlive() && m.getTags().contains(TAG));
+		return new AABB(hall).inflate(r + 1, 49, r + 1);
+	}
+
+	/**
+	 * Whether {@code mob} is within the reach of a raid on the village round {@code hall}: where it stands (its feet's
+	 * block) is at most {@code RADIUS + 32} across and 48 up or down from the hall. The one reach rule for raiders: who a
+	 * village counts ({@link #raiders}), whose raid a raider is ({@link #raidOf}) and a siege's raiders all use it (B915).
+	 */
+	public static boolean reaches(BlockPos hall, Entity mob) {
+		int r = VillageHalls.RADIUS + 32;
+		BlockPos at = mob.blockPosition();
+		return Math.abs(hall.getX() - at.getX()) <= r && Math.abs(hall.getZ() - at.getZ()) <= r && Math.abs(hall.getY() - at.getY()) <= 48;
+	}
+
+	/**
+	 * The raid under way that {@code mob} belongs to: of those whose {@link #reach} it touches, the one whose hall is
+	 * nearest, the first listed on a tie. The one rule that hands out raiders, used by {@link #own} and by a fallen
+	 * raider's raid (Risings), so every raider counts for exactly one raid (B828; B849; B915). Null when none reaches it.
+	 */
+	@Nullable
+	public static ThreatData.Under raidOf(ServerLevel level, Entity mob) {
+		BlockPos at = mob.blockPosition();
+		ThreatData.Under best = null;
+		for (ThreatData.Under raid : ThreatData.get(level).raids()) {
+			if (reaches(raid.hall(), mob) && (best == null || raid.hall().distSqr(at) < best.hall().distSqr(at))) {
+				best = raid;
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * The raiders of the raid on {@code hall}: those about it ({@link #raiders}) that {@link #raidOf} gives to it, not
+	 * the ones a nearer village's raid owns (B828; B849; B915).
+	 */
+	static List<Mob> own(ServerLevel level, BlockPos hall) {
+		return raiders(level, hall).stream().filter(m -> {
+			ThreatData.Under owner = raidOf(level, m);
+			return owner == null || owner.hall().equals(hall);
+		}).toList();
 	}
 
 	/**
@@ -409,19 +457,20 @@ public final class VillageRaids {
 		boolean portal = false;
 		boolean wading = false;
 		BlockPos gather = null;
-		if (foretold) {
+		// From a ship they wade ashore at the village's beach nearest it (32.8), not from the land side: also when the
+		// clock or a Seer set the side (B823: every real pirate raid passes one), since the side told is the ship's.
+		BlockPos beach = culture.arrival() == Culture.Arrival.SHORE
+			? camp.map(c -> io.github.jcondedata.aliveworkplace.threat.Ships.beach(level, hall, c.pos())).orElse(null) : null;
+		if (beach != null) {
+			gather = io.github.jcondedata.aliveworkplace.threat.Ships.wading(level, beach, camp.get().pos());
+			wading = true;
+			foretold = false; // (they come ashore together at the beach, not spread over the told side)
+		} else if (foretold) {
 			gather = foretoldPoint(level, hall, angle);
 		} else if (culture.arrival() == Culture.Arrival.LAIR) {
 			gather = camp.map(c -> gatheringPoint(level, hall, Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()), 0.5, random)).orElse(null);
 		} else if (culture.arrival() == Culture.Arrival.SHORE) {
-			// From a ship they wade ashore at the village's beach nearest it (32.8), not from the land side.
-			BlockPos beach = camp.map(c -> io.github.jcondedata.aliveworkplace.threat.Ships.beach(level, hall, c.pos())).orElse(null);
-			if (beach != null) {
-				gather = io.github.jcondedata.aliveworkplace.threat.Ships.wading(level, beach, camp.get().pos());
-				wading = true;
-			} else {
-				gather = shorePoint(level, hall);
-			}
+			gather = shorePoint(level, hall);
 		} else if (culture.arrival() == Culture.Arrival.PORTAL) {
 			// Out of their lair's own portal (32.10: the Blackstone Outpost's), else out of the village's.
 			gather = camp.map(c -> io.github.jcondedata.aliveworkplace.threat.Piglins.portal(level, c)).orElse(null);
@@ -541,7 +590,7 @@ public final class VillageRaids {
 			? Lairs.message(named.get(), "raid_led", false, spawned.size(), name, Lairs.captainName(named.get()))
 			: named.isPresent()
 			? Lairs.message(named.get(), "raid", true, spawned.size(), name, Lairs.captainName(named.get()))
-			: Component.translatable(culture.messages().key("raid", "message.aliveworkplace.raid.begins"), spawned.size(), name);
+			: Words.countedFirst(culture.messages().key("raid", "message.aliveworkplace.raid.begins"), spawned.size(), name);
 		for (ServerPlayer player : players(level, hall)) {
 			Chat.chat(player, said.copy().withStyle(ChatFormatting.RED));
 		}
@@ -549,7 +598,7 @@ public final class VillageRaids {
 			? Lairs.chronicle(named.get(), "raid_led", false, spawned.size(), Lairs.captainName(named.get()))
 			: named.isPresent()
 			? Lairs.chronicle(named.get(), "raid", true, spawned.size(), Lairs.captainName(named.get()))
-			: Component.translatable(culture.chronicle().key("raid", "chronicle.aliveworkplace.raid"), spawned.size()));
+			: Words.countedFirst(culture.chronicle().key("raid", "chronicle.aliveworkplace.raid"), spawned.size()));
 		Threats.tactics(culture).forEach(t -> t.begin(level, hall, culture, spawned));
 		return raid;
 	}
@@ -557,7 +606,10 @@ public final class VillageRaids {
 	/**
 	 * Calls off the raid under way on the village round {@code hall} (an operator's {@code /workplace threat end}, 32.21):
 	 * its raiders go at once (a captain back to his camp, the band's own back to their lair), its tactics end as when
-	 * raiders leave at dawn (the gates open again), and the village is told. Nothing goes into the list of past attacks.
+	 * raiders leave at dawn (the gates open again), and the village is told. Nothing goes into the list of past attacks,
+	 * and nothing is carried off: what a raider took falls where it stood (B840). A neighbour village's raiders stay,
+	 * even those standing within this village's reach: a raider nearer another village with a raid under way is that
+	 * raid's (B849).
 	 * False when no raid is under way.
 	 */
 	public static boolean callOff(ServerLevel level, BlockPos hall) {
@@ -566,10 +618,11 @@ public final class VillageRaids {
 		if (raid == null) {
 			return false;
 		}
-		List<Mob> left = raiders(level, hall);
+		List<Mob> left = own(level, hall);
 		int band = (int) left.stream().filter(m -> !m.getTags().contains(Threats.EXTRA_TAG) && !Lairs.leading(m)).count();
 		for (Mob m : left) {
 			level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, m.getX(), m.getY() + 0.5, m.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
+			Plunder.dropCarried(m); // called off, nothing is carried off: it falls where they stood (B840)
 			if (Lairs.leading(m)) {
 				Lairs.comeHome(level, m);
 			} else {
@@ -602,8 +655,8 @@ public final class VillageRaids {
 			Chat.chat(player, Component.translatable(fled ? "message.aliveworkplace.raid.fled" : "message.aliveworkplace.raid.won", name)
 				.withStyle(ChatFormatting.GREEN));
 		}
-		Chronicle.record(level, hall, Chronicle.Kind.RAID, Component.translatable(fled ? "chronicle.aliveworkplace.raid_fled" : "chronicle.aliveworkplace.raid_won",
-			raid.raiders()));
+		Chronicle.record(level, hall, Chronicle.Kind.RAID, fled ? Component.translatable("chronicle.aliveworkplace.raid_fled")
+			: Words.counted("chronicle.aliveworkplace.raid_won", raid.raiders(), raid.raiders())); // "(1 monster)" (B833)
 		if (!fled) {
 			level.playSound(null, hall, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1.5f, 1f);
 		}

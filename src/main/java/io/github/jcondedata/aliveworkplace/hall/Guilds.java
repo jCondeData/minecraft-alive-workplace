@@ -501,7 +501,7 @@ public final class Guilds implements ResourceManagerReloadListener {
 	 * founded set is worked out again (a Guildhall no longer finished: its guild waits).
 	 */
 	public static void round(ServerLevel level, BlockPos pos, VillageHallBlockEntity hall) {
-		List<BuildSiteManager.Finished> halls = BuildSiteManager.get(level).finishedNear(level, pos, VillageHalls.RADIUS).stream()
+		List<BuildSiteManager.Finished> halls = BuildSiteManager.get(level).finishedInVillage(level, pos).stream()
 			.filter(f -> isGuildhall(f.structure())).toList();
 		Set<BlockPos> standing = new HashSet<>();
 		halls.forEach(f -> standing.add(f.placement().origin()));

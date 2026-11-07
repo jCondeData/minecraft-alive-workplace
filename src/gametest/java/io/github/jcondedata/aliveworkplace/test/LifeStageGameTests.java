@@ -24,6 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.behavior.PositionTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -254,8 +255,8 @@ public class LifeStageGameTests implements FabricGameTest {
 			if (walked == 40) {
 				from[0] = bram.getZ();
 				from[1] = tom.getZ();
-				asked[0] = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(WalkTarget::getSpeedModifier).orElse(0f);
-				asked[1] = tom.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(WalkTarget::getSpeedModifier).orElse(0f);
+				asked[0] = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(WalkTarget::getSpeedModifier).orElse(0f) * paceOf(bram);
+				asked[1] = tom.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(WalkTarget::getSpeedModifier).orElse(0f) * paceOf(tom);
 			}
 			if (walked != 100) {
 				helper.assertTrue(start[0] >= 0 || ticks[0] < 40, "the two never stood on the ground");
@@ -726,6 +727,170 @@ public class LifeStageGameTests implements FabricGameTest {
 		return v;
 	}
 
+	/**
+	 * B771: an elder walks slower on vanilla's own walks too (a walk target at vanilla's 0.5, as its idle strolls, chats and
+	 * trips to bed set them), not only on the walks Walker asks for: his movement speed carries it, and with villagerAges
+	 * off it comes off again.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"b771VanillaWalk"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "b771VanillaWalk")
+	public void b771AnElderWalksSlowerOnVanillasOwnWalks(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.after(helper, () -> LifeStages.AGES = true);
+		LifeStages.AGES = true;
+		long today = Chronicle.day(helper.getLevel());
+		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
+		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
+		LifeStages.setAdultSince(bram, today - 1210);
+		LifeStages.setAdultSince(tom, today - 30);
+		Leftovers.after(helper, () -> {
+			bram.discard();
+			tom.discard();
+		});
+		LifeStages.pace(bram);
+		LifeStages.pace(tom);
+		helper.assertTrue(Math.abs(paceOf(bram) - LifeStages.ELDER_WALK) < 0.001f && paceOf(tom) == 1f, "movement speed: elder " + paceOf(bram) + ", younger " + paceOf(tom));
+		LifeStages.AGES = false;
+		LifeStages.pace(bram);
+		helper.assertTrue(paceOf(bram) == 1f, "the elder's movement speed with villagerAges off: " + paceOf(bram));
+		LifeStages.AGES = true;
+		LifeStages.pace(bram);
+		helper.assertTrue(Math.abs(paceOf(bram) - LifeStages.ELDER_WALK) < 0.001f, "the elder's movement speed, on again: " + paceOf(bram));
+		BlockPos[] goals = {helper.absolutePos(new BlockPos(4, 2, 20)), helper.absolutePos(new BlockPos(10, 2, 20))};
+		Villager[] both = {bram, tom};
+		walkSideBySide(helper, both, v -> {
+			// Vanilla's walk: its own speed, set again only when it has gone (as its behaviours do), never by Walker.
+			int i = v == bram ? 0 : 1;
+			var brain = v.getBrain();
+			if (brain.getMemory(MemoryModuleType.WALK_TARGET).filter(t -> t.getTarget().currentBlockPosition().equals(goals[i])).isEmpty()) {
+				brain.eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+				brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(goals[i], 0.5f, 1));
+			}
+		});
+	}
+
+	/**
+	 * B771, the elders scene's own walk: side by side, each asked tick after tick through Walker.requestWalk with its own
+	 * retry counter; compared while each is on his way, the elder walks about 15% slower. B949: six blocks apart, as the
+	 * other walks here. Two blocks apart (the scene's spacing once) they were in reach of vanilla's gossip
+	 * (TradeWithVillager sends both to each other every tick they stand within 2.24 blocks), or brushed shoulders, and
+	 * walked on as a pair at one pace: 92% and 100% in full runs, 1 in 8 alone. Three apart, vanilla's InteractWith
+	 * still drew them into that reach before the walk began (1 in 15).
+	 */
+	//$ gametest_ticks_batch AREA '200' '"b771SceneWalk"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "b771SceneWalk")
+	public void b771AnElderWalksSlowerSideBySideAsTheSceneAsks(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.after(helper, () -> LifeStages.AGES = true);
+		LifeStages.AGES = true;
+		long today = Chronicle.day(helper.getLevel());
+		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
+		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
+		LifeStages.setAdultSince(bram, today - 1210);
+		LifeStages.setAdultSince(tom, today - 30);
+		Leftovers.after(helper, () -> {
+			bram.discard();
+			tom.discard();
+		});
+		BlockPos[] goals = {helper.absolutePos(new BlockPos(4, 2, 20)), helper.absolutePos(new BlockPos(10, 2, 20))};
+		int[] retry = new int[2];
+		walkSideBySide(helper, new Villager[] {bram, tom}, v -> {
+			int i = v == bram ? 0 : 1;
+			retry[i] = Walker.requestWalk(v, goals[i], 0.5f, 1, retry[i]);
+		});
+	}
+
+	/**
+	 * B949: the same walk with vanilla's gossip set on it from the start (the elder's interaction target is the younger
+	 * villager, put back every tick it is dropped): six blocks apart it never holds them, and the elder still walks about
+	 * 15% slower. (Two blocks apart, 3 runs in 8 failed so, the younger villager standing a fifth of the walk.)
+	 */
+	//$ gametest_ticks_batch AREA '200' '"b949GossipWalk"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "b949GossipWalk")
+	public void b949AnElderWalksSlowerThoughVanillaWouldHaveThemGossip(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.after(helper, () -> LifeStages.AGES = true);
+		LifeStages.AGES = true;
+		long today = Chronicle.day(helper.getLevel());
+		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
+		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
+		LifeStages.setAdultSince(bram, today - 1210);
+		LifeStages.setAdultSince(tom, today - 30);
+		Leftovers.after(helper, () -> {
+			bram.discard();
+			tom.discard();
+		});
+		BlockPos[] goals = {helper.absolutePos(new BlockPos(4, 2, 20)), helper.absolutePos(new BlockPos(10, 2, 20))};
+		bram.getBrain().setMemory(MemoryModuleType.INTERACTION_TARGET, tom);
+		int[] retry = new int[2];
+		walkSideBySide(helper, new Villager[] {bram, tom}, v -> {
+			int i = v == bram ? 0 : 1;
+			if (i == 0 && !bram.getBrain().hasMemoryValue(MemoryModuleType.INTERACTION_TARGET)) {
+				bram.getBrain().setMemory(MemoryModuleType.INTERACTION_TARGET, tom);
+			}
+			retry[i] = Walker.requestWalk(v, goals[i], 0.5f, 1, retry[i]);
+		});
+	}
+
+	/**
+	 * Walks {@code both} (an elder, then a younger villager) with {@code walk} each tick from when both stand on the ground,
+	 * and checks over 60 ticks of it that the elder covers 78-92% of the younger villager's ground per tick on the way.
+	 */
+	private static void walkSideBySide(GameTestHelper helper, Villager[] both, java.util.function.Consumer<Villager> walk) {
+		int[] start = {-1};
+		int[] ticks = new int[1];
+		double[] from = new double[2];
+		int[] moving = new int[2];
+		StringBuilder trace = new StringBuilder();
+		helper.onEachTick(() -> {
+			ticks[0]++;
+			if (start[0] < 0 && both[0].onGround() && both[1].onGround()) {
+				start[0] = ticks[0];
+			}
+			int walked = start[0] < 0 ? -1 : ticks[0] - start[0];
+			if (walked < 0) {
+				helper.assertTrue(ticks[0] < 40, "the two never stood on the ground");
+				return;
+			}
+			if (walked <= 100) {
+				walk.accept(both[0]);
+				walk.accept(both[1]);
+			}
+			if (walked == 30) {
+				from[0] = both[0].getZ();
+				from[1] = both[1].getZ();
+			}
+			if (walked > 30 && walked <= 90) {
+				for (int i = 0; i < 2; i++) {
+					moving[i] += both[i].getNavigation().isDone() ? 0 : 1;
+				}
+				if (walked % 10 == 0 && trace.length() < 2000) {
+					// B949: how far apart they walk, and whether vanilla's gossip (an interaction target) has hold of either.
+					trace.append(" [").append(walked).append(": z ").append(Math.round((both[0].getZ() - from[0]) * 100) / 100.0)
+						.append(" / ").append(Math.round((both[1].getZ() - from[1]) * 100) / 100.0)
+						.append(", apart ").append(Math.round(both[0].distanceTo(both[1]) * 100) / 100.0);
+					for (Villager v : both) {
+						v.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET)
+							.ifPresent(e -> trace.append(", ").append(v.getName().getString()).append(" with ").append(e.getName().getString()));
+					}
+					trace.append(']');
+				}
+			}
+			if (walked != 90) {
+				return;
+			}
+			double elder = both[0].getZ() - from[0];
+			double young = both[1].getZ() - from[1];
+			double elderPace = elder / Math.max(1, moving[0]);
+			double youngPace = young / Math.max(1, moving[1]);
+			String went = "in 60 ticks the elder went " + elder + " blocks walking " + moving[0] + " ticks, the younger villager " + young + " walking "
+				+ moving[1] + " (" + Math.round(100 * elderPace / youngPace) + "% of his pace);" + trace;
+			helper.assertTrue(young > 3 && moving[1] > 30, "the younger villager hardly walked: " + went);
+			helper.assertTrue(elderPace < youngPace * 0.92 && elderPace > youngPace * 0.78, "the elder isn't about 15% slower: " + went);
+			helper.succeed();
+		});
+	}
+
 	/** A villager who can walk, looking down the area. */
 	private static Villager walker(GameTestHelper helper, BlockPos pos, String name) {
 		Villager v = helper.spawn(EntityType.VILLAGER, pos);
@@ -733,8 +898,17 @@ public class LifeStageGameTests implements FabricGameTest {
 		return v;
 	}
 
+	/**
+	 * The pace a villager's walk goes at, against a plain villager's: the walk target's speed times what their own
+	 * movement speed is multiplied by (B771: an elder's slower walk is on the movement speed, so every walk has it).
+	 */
 	private static float speed(Villager villager) {
-		return villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).orElseThrow().getSpeedModifier();
+		return villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).orElseThrow().getSpeedModifier() * paceOf(villager);
+	}
+
+	/** What {@code villager}'s movement speed is multiplied by (1 for anyone but an elder). */
+	static float paceOf(Villager villager) {
+		return (float) (villager.getAttributeValue(Attributes.MOVEMENT_SPEED) / villager.getAttributeBaseValue(Attributes.MOVEMENT_SPEED));
 	}
 
 	/** The hall after its first round, every cache asked again. */

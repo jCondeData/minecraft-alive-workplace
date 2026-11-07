@@ -33,7 +33,8 @@ found, a captive walked home. Some chapters have a time limit, and a story can e
 
 A village has one big story at a time, and at least 8 days pass between two of them (the first one waits 8 days too).
 Most big stories start by chance on a quiet day, once the village is big enough; the Lost Caravan starts when a caravan
-goes missing. At most three big stories run on the whole server at once.
+goes missing. At most three big stories run on the whole server at once. Stories about a danger (the Bandit King, the
+Sickness) don't start while the village is set At peace, its threat level is 0 or the world is on Peaceful.
 
 The eight **reform stories** are short side stories: each one starts when an [edict](edicts.md) is in force, and runs
 beside the big story without waiting its turn.

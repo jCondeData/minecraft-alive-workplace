@@ -53,7 +53,7 @@ public class QaHallScreenGameTests {
 	private static final BlockPos NEAR = new BlockPos(10, 2, 10);
 	private static final BlockPos FAR = new BlockPos(20, 2, 18);
 
-	private static void village(GameTestHelper helper) {
+	static void village(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		HallSections.forget();
 		HallJobs.forget();
@@ -75,14 +75,14 @@ public class QaHallScreenGameTests {
 		return v;
 	}
 
-	private static Villager villager(GameTestHelper helper, String name, BlockPos at) {
+	static Villager villager(GameTestHelper helper, String name, BlockPos at) {
 		Villager v = helper.spawn(EntityType.VILLAGER, at);
 		v.setNoAi(true);
 		v.setCustomName(Component.literal(name));
 		return v;
 	}
 
-	private static ServerPlayer payer(GameTestHelper helper, List<String> seen, int emeralds) {
+	static ServerPlayer payer(GameTestHelper helper, List<String> seen, int emeralds) {
 		ServerPlayer player = listeningPlayer(helper, seen);
 		if (emeralds > 0) {
 			player.getInventory().setItem(9, new ItemStack(Items.EMERALD, emeralds));
@@ -90,7 +90,7 @@ public class QaHallScreenGameTests {
 		return player;
 	}
 
-	private static ChoiceMenu openPeople(GameTestHelper helper, ServerPlayer player) {
+	static ChoiceMenu openPeople(GameTestHelper helper, ServerPlayer player) {
 		BlockPos hall = helper.absolutePos(HALL);
 		player.teleportTo(hall.getX() + 1.5, hall.getY(), hall.getZ() + 0.5);
 		helper.useBlock(HALL, player);
@@ -100,7 +100,7 @@ public class QaHallScreenGameTests {
 		return menu;
 	}
 
-	private static int slotOf(GameTestHelper helper, ChoiceMenu menu, Villager villager) {
+	static int slotOf(GameTestHelper helper, ChoiceMenu menu, Villager villager) {
 		for (int slot = 0; slot < ChoiceMenu.SIZE; slot++) {
 			CompoundTag row = HallPeople.row(menu.icon(slot));
 			if (row != null && row.getString("uuid").equals(villager.getStringUUID())) {
@@ -119,16 +119,16 @@ public class QaHallScreenGameTests {
 		return BuiltInRegistries.VILLAGER_PROFESSION.getId(job);
 	}
 
-	private static void jobDropdown(GameTestHelper helper, ServerPlayer player, ChoiceMenu menu, Villager villager) {
+	static void jobDropdown(GameTestHelper helper, ServerPlayer player, ChoiceMenu menu, Villager villager) {
 		helper.assertTrue(menu.clickMenuButton(player, HallJobs.OPEN + slotOf(helper, menu, villager)), "Job ▾ wasn't taken");
 		helper.assertTrue(row(helper, menu, villager).getBoolean("jobs_open"), "Job ▾ didn't open the list");
 	}
 
-	private static void pickJob(GameTestHelper helper, ServerPlayer player, ChoiceMenu menu, VillagerProfession job) {
+	static void pickJob(GameTestHelper helper, ServerPlayer player, ChoiceMenu menu, VillagerProfession job) {
 		helper.assertTrue(menu.clickMenuButton(player, HallJobs.PICK + id(job)), "the pick wasn't taken");
 	}
 
-	private static Optional<BlockPos> site(Villager villager) {
+	static Optional<BlockPos> site(Villager villager) {
 		return villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos);
 	}
 
@@ -137,7 +137,7 @@ public class QaHallScreenGameTests {
 	}
 
 	/** A red bed with its foot at {@code foot}, head to the south; returns its head, absolute. */
-	private static BlockPos bed(GameTestHelper helper, BlockPos foot) {
+	static BlockPos bed(GameTestHelper helper, BlockPos foot) {
 		helper.setBlock(foot, Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.SOUTH).setValue(BedBlock.PART, BedPart.FOOT));
 		helper.setBlock(foot.south(), Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.SOUTH).setValue(BedBlock.PART, BedPart.HEAD));
 		return helper.absolutePos(foot.south());
@@ -436,7 +436,7 @@ public class QaHallScreenGameTests {
 		});
 	}
 
-	private static ItemStack jobLine(GameTestHelper helper, List<ItemStack> lines, VillagerProfession job) {
+	static ItemStack jobLine(GameTestHelper helper, List<ItemStack> lines, VillagerProfession job) {
 		for (ItemStack line : lines) {
 			CompoundTag mark = HallJobs.mark(line);
 			if (mark != null && mark.getInt("id") == id(job) && !mark.getString("state").equals("header")) {
@@ -447,7 +447,7 @@ public class QaHallScreenGameTests {
 		return ItemStack.EMPTY;
 	}
 
-	private static List<String> lore(ItemStack stack) {
+	static List<String> lore(ItemStack stack) {
 		return stack.getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY).lines().stream()
 			.map(Component::getString).toList();
 	}

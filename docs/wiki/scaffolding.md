@@ -4,7 +4,7 @@ Builders put up vanilla scaffolding to reach blocks with nowhere to stand near t
 dome's crown) and take it down again afterwards. Part of Wonders (2.0), behind its expansion gate (`Expansions.M35`), which
 1.0 opens with every other expansion.
 
-Roadmap items: 35.6, 35.6a
+Roadmap items: 35.6, 35.6a, B929
 
 ## 1. What a player sees
 
@@ -33,7 +33,7 @@ materials are on). With too little on hand it hops as it always did, so builds w
 **Where.** Every place to stand from which the block is in reach (eye within 5 blocks of it) is tried: one whose feet
 and head are air and where the drawing leaves air or nothing. Under it a column runs down through air (again only
 where the drawing leaves air or nothing) to the ground, a floor, a wall top or a column already standing, at most 32
-blocks. The one needing the fewest new scaffolds wins (then the one nearest the builder), so a column already up is
+scaffolds (a column of exactly 32 counts, B929; a stand needing 33 is never scaffolded). The one needing the fewest new scaffolds wins (then the one nearest the builder), so a column already up is
 built on rather than a new one started.
 
 **Putting it up.** The builder fetches as many scaffolds as the column needs, up to 16 at a time so the column can
@@ -105,9 +105,12 @@ Vanilla scaffolding (`minecraft:scaffolding`). No new items, blocks or commands.
 - With `workplaceFreeMaterials` on, scaffolding is put up and taken down for nothing (none taken from or added to the
   chests).
 - A carpenter crafts for a build that is short of materials, whether the builder waits or is still building (B636).
-  Whether it makes scaffolding for a build that already skipped its step without it isn't tested; put scaffolding in
-  the chests to have such steps built.
-- Not tested here: a carpenter crafting it end to end (the recipe and the missing list are tested separately).
+  It also makes the scaffolding a build asked for after skipping its step without it, even once that build has
+  ended; the skipped part is built when the player starts the build again (`QaScaffolding1107GameTests`).
+- The bamboo and string may be in the village's Storehouse instead of the builder's chest: the carpenter fetches them
+  from there, makes the scaffolding into the builder's chest, and the player's next go builds the skipped top with it;
+  split between the two, he takes the builder's chest's bamboo first; with no string anywhere nothing is made and no
+  bamboo leaves the Storehouse (`QaScaffoldStorehouse1107GameTests`).
 
 ## 8. Proof
 
@@ -129,7 +132,23 @@ canceled (all 64 on the ground), the chest emptied mid-column (none lost), and a
 hurt, the chest as full as before). QA's `QaBuilderFixes1026GameTests.scaffoldingSwitchedOffWithScaffoldsUpStillTakesThemAllDown`
 (switched off with scaffolds up: all down, all 64 back in the chest) and
 `QaBuilderFixes1026GameTests.cancelWithTheChestFullDropsTheScaffoldingAndLosesNone` (canceled with the chest full: none
-left standing, none lost between the chest, the bag and the ground).
+left standing, none lost between the chest, the bag and the ground). QA's `QaScaffoldDelay1103eGameTests` (2, B831:
+`workplaceBuildDelay` raised to its largest value, 2147483647, while scaffolding goes up or comes down stops the builder;
+lowered back to 2 he carries on within 200 ticks without his work restarting, and the pillar ends finished with no
+scaffold standing and all 64 back). QA's `QaScaffoldShift1104GameTests` (4: night and a panic each put him down at the column's foot within 200 ticks, unhurt, and he finishes with none left standing and all 64 back; a save and reload with three scaffolds up builds on that column, never a second; the request for scaffolding goes within 1,200 ticks of the chest holding enough, none lost). QA's `QaScaffoldHeight1104GameTests` (3: a column of 31 is planned, one of 33 never, a low block gets the shortest column) and `QaScaffoldHeight1104BugTests.aColumnOfExactlyThirtyTwoScaffoldsIsPlanned` (B929: a block 38 over the floor gets a column of exactly 32, the builder standing 33 up). QA's `QaBasementFluids1104fGameTests` (B929 edges: a column of exactly 32 on scaffolding already standing, or on top slabs, is planned; none ever stands on a bottom slab). QA's `QaScaffolding1107GameTests` (6: a real Carpenter makes the
+scaffolding a build that skipped its step asked for, from bamboo and string by the recipe, nothing lost, and the build
+started again then finishes the pillar with all 6 back; a crew's helper never carries or climbs scaffolding; free
+materials leave the player's 64 in the chest every tick; the column's foot broken with the builder 5 up loses none and
+hurts nobody; every standing scaffold is on the site's list, at most 16 carried at once, none in landscaping, taken
+down from the top one a tick). QA's `QaScaffoldStorehouse1107GameTests` (4: the bamboo and string only in the village's
+Storehouse, a real Carpenter makes the scaffolding the build asked for into the builder's chest, the bamboo, string and
+scaffolding adding up at every tick and the bamboo used coming out of the Storehouse; the bamboo split between the
+builder's chest and the Storehouse, none lost or made twice; no string anywhere, nothing made, all 36 bamboo left in the
+Storehouse 3,000 ticks after the build ended, which skipped its top without waiting; and the build started again builds
+the skipped top on the Storehouse-made scaffolding, nothing skipped, all of it back). QA's `QaScaffoldClimb1107GameTests` (3, B1004: the lead
+is never put on a column's top in one jump, at every tick of the pillar; put down at the column's foot at night, he climbs
+back up it in the morning and finishes with nothing skipped; a crew's helper never stands in or on scaffolding yet
+still lays his share of the pillar).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks
 away at the builder's height, with stills of it up the scaffolding and taking it down).

@@ -500,7 +500,7 @@ public final class Colonies {
 			ChatFormatting.WHITE,
 			VillageHallScreen.line(wait > 0 ? io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.colonies.wait", wait, wait)
 				: Component.translatable("screen.aliveworkplace.colonies.no_wait"), wait > 0 ? ChatFormatting.YELLOW : ChatFormatting.GRAY),
-			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.colonies.wait_about", cooldownDays(level, hall)), ChatFormatting.DARK_GRAY)), null);
+			VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.colonies.wait_about", cooldownDays(level, hall), cooldownDays(level, hall)), ChatFormatting.DARK_GRAY)), null);
 
 		RealmData.Order order = data.orderOf(mother);
 		if (order != null) {

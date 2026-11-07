@@ -17,6 +17,431 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+
+- The questbook no longer sends you to the Village Hall's old "top row": the Food in the store and A bed for a newcomer quests now say to open the hall's Overview and hover the Food in store, Beds, Wellbeing and Villagers lines.
+- Mercenaries, relief riders and a story's visitors no longer count as the village's villagers: hiring a band no longer ranks a village up (and down again when it leaves), and the hall's "Villagers" count, the realm's tab, the festival's cost and the raid odds stay as they were while the help is there.
+- A new Weaponsmith (one who has never traded) carrying your worn sword no longer keeps it for good when his grindstone is broken and he takes another job (a lectern nearby) or the server restarted first: he drops the sword and the iron at his feet. A new Carpenter (or other crafter) who loses his bench while carrying a builder's wood and takes another job now lets the request go back to the builder and puts the wood back in the builder's chest.
+- In a siege, a gate put back in the breach after the ram broke it (by a builder's repair, or by hand) is rammed again and the raiders get in, instead of the ram standing idle and the raiders waiting outside a shut gate till dawn.
+- In a siege, a gateway walled up after the ram broke its gate (cobblestone or planks in the gap) now counts as shut: raiders with ladders or sand ramps climb over the walls instead of being sent "in" through the wall, and clearing the block opens the way again.
+- A Builder helping another builder no longer climbs the lead's scaffolding columns: he works from the ground and leaves the scaffolding to the lead.
+- A Weaponsmith who is saved and reloaded (a restart, or the chunk unloading) while mending a guard's worn armor no longer puts it in his own chest by the grindstone: he finishes mending it and takes it back to the chest it came from.
+- A Weaponsmith whose grindstone is broken while he carries your worn sword (or the iron to mend it) no longer keeps it in his bag for good: after a few seconds without a grindstone he drops what he carries at his feet, where you can pick it up.
+- A village train between two Create stations you gave the same name (both "Station", say) no longer stops for good with the caravan aboard: it now runs on to the other village's station and the goods arrive, whatever you call the stations.
+- Hiring mercenaries (or relief riders arriving) no longer lowers the village's wellbeing and work pace: the hired help no longer counts as villagers without a bed or a meal, so the Village Hall's "Sleeping in a bed" line stays at what the village's own people have (2 of 2, not 2 of 5). A hired Guard still counts toward the village's guards.
+- A Bard no longer cuts a music disc off after a minute and skips to the next one: each disc now plays on until it ends or the Bard's morning or evening set is over. Breaking the jukebox while a Bard plays now stops the music, as a vanilla jukebox does, instead of letting the song play on where it stood.
+
+## 0.151.7 — 2026-11-06
+
+### Fixed
+
+- A basement dug next to waterlogged blocks in the ground (glow lichen, dripstone or seagrass in a flooded cave, or an old waterlogged stair) no longer ends with up to 27 blocks of dirt standing in the room: the Builder now drains those blocks (keeping them) or plugs the seagrass, and clears away any water that already ran in, so the basement is finished open and dry as drawn.
+- A blueprint laid on a lone block at the very top of the world, where none of the building can stand, no longer leaves the Builder waiting for ever for cobblestone to fill a foundation under it: the build ends at once with nothing used and the blueprint comes back.
+- A Builder struck by lightning at the bottom of a deep pit, or on top of a tower, with his Blueprint Table close by no longer loses everything: his bag and the blueprint are now put down on the ground round the pit or at the tower's foot, out of the bolt's reach, as on flat ground.
+
+## 0.151.6 — 2026-11-04
+
+### Fixed
+
+- A villager without a bed who is already upstairs in the wrong bedroom of a Terrace at bedtime (both its beds someone else's) now goes down his ladder, takes a free bed in the home next door and sleeps in it, instead of standing about the bedroom all night.
+- In a siege, a raider walking to a ladder that is only a step or two from its foot when the gate is broken open now turns and goes in by the gate, as the others do, instead of climbing the whole ladder and going over the wall.
+- A Builder taking down a Lily Pond or a Footbridge leaves no water behind any more: he scoops the water up first, so it no longer floods the ground once the bank is gone, and the chests get back exactly the water buckets the build cost (they used to fill with extra buckets).
+- A Hauler Golem that starts right beside a lava pit sunk a block below the ground (out of a Drop Box or Golem
+  Smith next to it) no longer freezes at the edge with its load: it steps away from the lava, goes round and stores
+  it (B944).
+- A villager who can't reach the chair they picked (penned in, say) no longer keeps it from everyone: after giving
+  up on it they leave it alone for a minute, so a villager standing right beside it sits down (B945).
+- A villager turned into a witch by lightning is now handled as a death: the Book of Families dates it, their partner
+  is widowed, a Legend guest's place is freed, and a Legend's slot falls free 7 days later as after a death with no
+  grave, instead of being kept by someone who no longer exists (B943).
+- A conscript no longer ignores a raider he let be (one he couldn't get closer to) when it climbs or jumps up to
+  him: one within 4 blocks he fights at once, instead of after the 10-second let-be runs out (B954).
+- A blueprint whose top pokes over the world's build limit (or whose bottom is under the world's floor) no longer
+  asks, in its tooltip and Material List book, for the blocks that can't be placed there and need no materials (B953).
+- A worker turned into a witch by a real lightning bolt no longer loses his bag and blueprint to the same bolt's
+  next strikes: they are put down out of its reach, on his Blueprint Table or workstation or nearby ground (B952).
+- In a drought, farmland next to water now stays dry like the rest of the fields instead of soaking up the pond
+  again, so those fields need the Well Keeper's buckets too (B946).
+- Pitcher crops now grow at a quarter pace in a drought, like the other crops (B947).
+- The days without rain are now saved with the world, so restarting the server no longer resets the count and keeps
+  droughts away (B948).
+- A guard no longer rides off on a horse standing 25 blocks from their Guard Post: only a horse within 24 blocks of
+  the post, as the guide says, is theirs (B950).
+- A Builder now puts up scaffolding for a block that needs a column of exactly 32 scaffolds instead of skipping it
+  (B929).
+- A Builder digging a basement or a cellar next to water or lava in the earth (an aquifer, a buried pond, a lava
+  pocket) plugs it with dirt as he digs, so it no longer runs into the pit: he no longer gets stuck in the water for
+  good or burns to death in the lava, and the basement is finished dry (B923, B924).
+- A blueprint whose top pokes over the world's build limit (or whose basement reaches under the world's bottom) no
+  longer eats the materials of the blocks that can't stand there and then waits for more for ever: the builder skips
+  those blocks without taking anything, builds the rest and finishes, and the hand-over warns that they will be left
+  out (B937).
+- A Builder struck by lightning and turned into a witch drops his bag and the blueprint where he stood and tells his
+  owner, as when he dies; his materials no longer vanish and his build no longer waits for ever on a builder who is
+  gone. Any other worker turned that way drops what was in their bag, a tool that is yours and their area's marker
+  (B928).
+- A conscript on a wall, tower or cliff fights a raider at its foot up to 24 blocks away, as the edict says (he
+  only looked 8 blocks up and down before), and one with no way down lets that raider be after a few seconds instead
+  of standing stuck at the edge (B926).
+- Many things read in the plural after a count: a crafter "short of 2 Jungle Logs" (and Cherry Logs, Crimson and Warped
+  Stems, Sticks, Nuggets, Ingots, Clay Balls, Feathers, Diamonds, Bricks, Eggs, Buckets and more, B920), a Wonder's
+  Foundation Stone "2 Lanterns, 2 still to bring", as the Steward's list says it (B921), and a Chef "cooking 4 Cooked
+  Porkchops" or "2 Bowls of Beetroot Soup" (B931).
+- A village train put together at a far village's station keeps running when that village unloads right after (the
+  player walks away), instead of standing there without its conductor until he comes back; a new train still waits
+  two seconds at its station first, so the caravans waiting there board it (B913).
+- With Cobblemon, a Daycare Keeper's regional mother hatches her regional form: a female Alolan Ninetales hatches an
+  Alolan Vulpix, not a Kanto one, and a Kanto mother still hatches a Kanto Vulpix whatever the father (B854).
+- A village's Train Station renamed with Create's screen is followed by the train's schedule even when the player
+  then leaves that village and it unloads; before, the train stood at the other station for good (B912).
+- A Fletcher making spectral arrows for a guard reads "making 8 Spectral Arrows", not "8 Spectral Arrow"; bows,
+  crossbows, shears and the stone and iron tools and swords get their plurals too (B916).
+- With only a Seer as the village's lookout, the hall's Defense page no longer says they keep watch from a tower a
+  day ahead: it reads "sees raids in visions, 2 days before they come", and the Lighthouse's keeper has a line of their
+  own (B919).
+- Items handed in on half a reform step still count when the reform's story is switched off or on: 10 of the Shift
+  Bell's 24 clocks given to the story leave the quest page's step asking only the 14 left, and the other way round
+  (B917).
+- A raider on its way to follow the others up a siege ladder turns for the gate as soon as the gate is broken open,
+  instead of walking on to the ladder and climbing the wall anyway (B907).
+- Sneak-clicking a hired mercenary, relief rider or Doctor Wren with a job's item says "Mercenary's job can't be
+  changed here." even with no block of that job near, instead of sending you to fetch one only to be refused (B911).
+- One raider standing just below a second raided village (49 blocks under its hall) no longer keeps both villages'
+  raids going: every raider belongs to exactly one raid, so each can be fought off (B915).
+- A reform story's asker now speaks in one pair of quotes (Toolsmith: "We hammer ... gladly."), not two (B914).
+- A village with a train neighbor on each side of one Create line now gets both neighbors' goods by train: a Create
+  station only takes trains from one side, so when the village's station faces the first neighbor, one of its builders
+  puts up a second station beside the track (from a Create station by the bench), facing the second, and that
+  neighbor's train stops there instead of waiting at its own station for good (B898).
+- Two villages with the same name on one Create railway no longer get Train Stations of the same name: the second
+  one's station gets the village's name with its hall's position added, and stations already named alike in a world are
+  told apart on the next look, so a village train takes its goods to the village they were sent to instead of standing
+  at the namesake's station for good (B894).
+- With Builder ownership on, the Village Hall's Upgrades page and a house's new outside look no longer hand the order to a Builder another player hired; the page says whose Builder it is and how to be added as a friend (B880).
+
+## 0.151.5 — 2026-11-03
+
+### Fixed
+
+- A village train keeps running after a player renames one of its two Train Stations with Create's station screen:
+  its schedule follows the new name, so the caravans' goods still arrive instead of the train waiting at the other
+  station for good (B900).
+- A hired mercenary or Doctor Wren can no longer be given another job by sneak-right-clicking them with a job's item
+  either: "Doctor Wren's job can't be changed here." (B906; the hall's Job ▾ and No job already refuse her, B905).
+- Village Hall People table: a hired mercenary at a guard post, or Doctor Wren at a brewing stand, can no longer be
+  retrained (they'd have left with the village's new job at dawn); a retired elder's job list and page now say on every
+  line that he has retired, instead of "place a Blast Furnace first" or "Someone took that workstation first"; and
+  retraining a shopkeeper (or No job) closes a trade screen another player has open with him, so nobody buys from
+  trades they never saw (B895, B896, B897, B899).
+- With a furniture mod in `furnitureMods`, the Blueprint Table's materials list and 3D preview, and the Steward desk's
+  "Needs most:" counts, now show the furnished build the builder will actually ask for (its chairs and tables), not the
+  vanilla one, and update as soon as the order or `furnishedBuilds` changes. A Healing Center or Schoolhouse built in
+  a style keeps its CobbleFurnies Poké Ball desks (B893, B901, B902, B903).
+- A villager no longer claims a free bed up a ladder when a shut iron door stands between the ladder's top and the
+  bed: villagers can't open iron doors, so he climbed up, stood at the door and gave the bed up. Wooden doors, and an
+  iron door left open, still let him through (B876).
+- A Mechanic saved or reloaded (a restart, his chunk unloading) while carrying a part from the store no longer keeps
+  it in his hand when a player has filled the hole meanwhile, nor loses it when he next fetches another part: it goes
+  back to the store by his toolbox (with Create).
+- The Village Hall's Free job blocks page no longer offers a block to a retired elder or a hired mercenary (the hall
+  would refuse them, then say "Someone took that workstation first"); an elder who retires while the page is open is
+  told "Bram has retired and takes no job now: they mentor the young instead." when picked, and the block stays free
+  (B892).
+- Sand or gravel that falls into a hut's rooms while it goes up (its support broken mid-build) is dug out into the
+  Builder's chests before he calls the hut done, so a finished hut has no sand standing in it (B869).
+- A hired mercenary, a relief rider or Doctor Wren on the Village Hall's People table now shows their own job and
+  counts as working, with no job change offered: before, they were listed as jobless and one click made them a Mason
+  for free (B889).
+- Giving a friend No job at the hall now calls off their open "Next level before the festival" request ("Dara has no
+  job now, so ... is called off. No friendship is lost.") instead of leaving it to fail at its deadline (B890).
+- A scout retrained (or given No job) while looking through his spyglass puts it away, so he no longer holds it up
+  for good (B891).
+- A retired elder picked for a job on the Village Hall's People table is now refused with "Bram has retired and
+  takes no job now: they mentor the young instead." Before, you were told "Bram is now a Mason" while he stayed
+  jobless, and the Stonecutter stayed taken by nobody, so no one else could work there (B885).
+- A Steward given a new job or No job from the People table no longer keeps the City Plan in his hand for good: he
+  puts it down, as a dismissed Steward does (B886).
+- Clicking an old chat [Yes] to a Builder's repair question after mending the hole by hand now says the build
+  has nothing missing any more, instead of promising a repair that never starts (B879).
+- Powder snow a Builder builds from a powder snow bucket gives him the empty bucket back, as water and lava
+  buckets do, so a paid build no longer costs an iron bucket per block (B873).
+- A spot in a build's box that is filled again the moment the Builder digs it (sand dropped back, a cobblestone
+  generator, a player) no longer keeps him clearing for ever: after 16 digs it is left for later, then skipped, and
+  the build goes on (B868).
+- A maker's line above their head names many things in the plural: "making 2 Amethyst Rings", "fetching what 3
+  Barrels take", "taking 3 Arrows to the guard" (Crafter, Chef, Jeweler and the other luxury makers, Toolsmith,
+  Fletcher and Weaponsmith); one stays one (B878).
+- A courier route or Delivery Note that carried only items of a mod taken out of the pack no longer turns into "carry
+  everything" and empties its chest: it carries nothing of them, says "1 item no longer in the game", and the items
+  come back on it if the mod returns (B819).
+- A scanned soul sand elevator (or a magma block's sinking column) is built back with its water, so the bubbles rise
+  (or sink) again; each block costs a water bucket that comes back empty (B861).
+- A scanned melon or pumpkin on its grown stem is built back with the stem: it costs one melon or pumpkin seeds and is
+  planted as a fresh stem (B865).
+- A colony founded by a single settler now opens its chronicle with "Founded on day 1 by a settler from Thornholm:
+  Tomas" (the Founder's blessed line too) instead of "by settlers" (B853).
+- Under a huge `/gamerule workplaceBuildDelay`, a Builder no longer places one block straight away whenever his work
+  restarts (waking up, a reload, being re-hired): a restart keeps the wait he had, or starts a whole one (B845).
+- Hauler and Farmhand golems go straight to work instead of sometimes first wandering toward a nearby village (vanilla's
+  "move back to the village" stroll, which ranked the same as their work). That walk could take a hauler off a ledge it
+  couldn't climb back up, and it then stood there holding its load (B858).
+- The Nurse no longer turns you away after you waited out the minute she gave you because she slowed down meanwhile (a
+  bad mood, an illness): the wait is set when she treats you and only ever gets shorter (B864).
+- Handing a guard a Patrol Map with one marked point says "route of 1 point", not "1 points"; the operators'
+  `/workplace classes` lines read "1 villager lost their class and is given one", "1 of 1 villager has a class" and
+  "1 newcomer" (B862).
+- The Bandit King's tribute line says what the treasury lost the way the treasury writes it ("took 0.99 emeralds",
+  "33.33 emeralds", or "100 CobbleDollars" with CobbleDollars), no longer rounded down to whole emeralds (B866).
+- The Nurse no longer gives you your health back on every click while her Healing Machine is busy with another
+  player's team: she now treats nothing until it's free (your minute isn't used), and right after a treatment she says
+  to come back in 60 seconds, not 61 (B850, B851).
+- Raids: calling off one village's raid (`/workplace threat end`) no longer sends away the raiders of a neighbor
+  village's raid that stood within its reach; those nearer the other village stay, so that raid goes on instead of
+  counting as fought off, and its husks beside the Pharaoh still rise (B849).
+- Raids: with two raided villages side by side, a neighbor village's raiders no longer keep this village's raid going
+  after its own raiders are all dead: the hall's round counts only this raid's raiders, so the raid ends as fought off.
+  And when this village's raiders leave at their hour, the neighbor's raiders standing within its reach stay (B856).
+
+## 0.151.4 — 2026-11-02
+
+### Fixed
+- Colonies: a colony founded by a single settler (the other died before they set out) reads in the singular: "Tomas
+  has founded Newbrook" in chat and "Our settler Tomas founded Newbrook" in the mother village's chronicle (B841).
+- Bandit King: a tribute of one emerald reads "1 emerald", not "1 emeralds", in chat and in the chronicle (B842).
+- Piglin incursions: gold a piglin carried off a village chest no longer vanishes when an operator calls the raid off
+  (`/workplace threat end` or `clear`); it falls where the piglin stood (B840).
+- Builders: a build under a sand dune or a gravel cap is no longer called done with its rooms full of the sand or
+  gravel that fell in while the ground was cleared; the builder waits for it to land and digs it out (B837).
+- Builders: leveling the ground round a build no longer digs out the ground under the build next door, so a neighbor
+  standing on a stone pad is no longer left with its floor floating (B838).
+- Builders: a Builder now stops building when his working day ends and goes to bed, instead of placing blocks for
+  almost another hour in the dark (B839).
+- Builders: lowering `/gamerule workplaceBuildDelay` in the middle of a build takes effect at once; a Builder (or a
+  Fisherman waiting for a bite) no longer waits out the old, longer delay until his work restarts (B831).
+- Miners: in a village with a kitchen (a smoker with a chest beside it), the rock and finds a Miner brings home go
+  into the Storehouse again, not into the kitchen's chest; the kitchen gets them only when the Storehouse is full (B834).
+- Desert raids: a husk that fell beside the Pharaoh in the last seconds of a raid no longer gets up after the raid is
+  over (called off, gone at noon or fought off), left behind as a raider in a village with no raid on (B828).
+- Piglin incursions: a piglin that carried gold off a village chest keeps it when the Warlord's fall turns it
+  zombified, so killed it drops the gold and at dawn takes it home (counted in the siege report) (B829).
+- Hauler Golem: a golem no longer stands idle for good when the nearest worker's goods (or a Drop Box's) don't fit
+  in the Storehouse; it passes them over and hauls another worker's goods that do fit, as porters do (B830).
+- Hauler Golems and porters: a Drop Box whose goods have no room in the Storehouse no longer hides the other Drop Boxes.
+  They look at the boxes nearest first and empty the first one whose goods fit, so a farther box of logs comes in while
+  a nearer box of cobblestone waits for room (B847, B848).
+- Builder: a very large `workplaceBuildDelay` (over about 21 million ticks) no longer makes Builders place a block
+  every tick. The number overflowed and came out negative; now a bigger delay is always slower, up to the rule's
+  largest value (B822).
+- Fisherman: a very large `workplaceBuildDelay` (over about 36 million) no longer makes Fishermen catch a fish every
+  second. The wait for a bite overflowed; now it is capped, so a bigger delay always means a longer wait (B832).
+- Village Hall: one of a kind reads in the singular: "1 kind of meal in the store" on the Food button, "1 mercenary is
+  here until dawn" on the Mercenaries button, and "The village fought off the raid (1 monster)" in the chronicle (B833).
+- Raids: a raid of one reads in the singular in chat and in the chronicle, for every raider culture: "1 of Captain
+  Brine's drowned pirates wades ashore", "1 desert raider marches on", "1 of X's warband marches on", never "wade"
+  or "march" (B824).
+- Pirates: the raid the village's clock (or a Seer) sets now wades ashore at the beach nearest the ship, as 32.8 says.
+  The side the clock rolled used to win, so the crew appeared at the village's edge on that side, sometimes over the
+  water (B823).
+- A jobless villager on his way to a job block he picked himself can be given that block: sneak-right-clicked with
+  the job's item, he takes it instead of being told someone works at each one (B803), and the Village Hall's Job list
+  counts it free for him ("Mason · 1 free Stonecutter", not "place a Stonecutter first", B807).
+- Scan Tool rebuilds by the water: sugar cane by a pool is built three tall again (it went up before the pool's water and
+  was skipped, B816); sea pickles and living coral scanned under water are built waterlogged, so the pickles glow (B817,
+  each also costs a water bucket, given back empty); tall seagrass is built from a seagrass and a bone meal, as a player
+  grows it, instead of being left out without a word (B818).
+- Porters, the Mechanic and villagers at Create's machines: a store chest whose every slot holds something, but whose
+  stacks still have room, is no longer taken as full. A porter carried nothing to a Storehouse with a part stack in
+  every slot, and the Mechanic and the farmer left the millstone's flour waiting; they now ask whether the goods fit.
+  Builders putting their bag away use their own chests in the same case instead of walking to the Storehouse (B820).
+- Counts read in the singular for one: a postman's status says "1 parcel delivered · 1 courier route" (B809), the hall's
+  Advice button "1 suggestion, first: ..." and the board's Dishes tab "1 dish waiting" (B810).
+- Hauler Golems: a Storehouse whose every slot holds something, but whose stacks still have room, is no longer taken
+  as full. A busy Storehouse with a stack of every kind (or a stack-upgraded Sophisticated barrel) stopped its haulers
+  for good; they now bring the goods in while there's room for them, and put a load back only where it fits (B806).
+- Fisherman: cooked fish in the furnace by his barrel call him home whenever the barrel can take them, also when every
+  slot holds something but his cooked fish stack still has room. The fish used to wait for his next catch, or all
+  night (B802).
+- Hauler and Farmhand Golems: a golem at work finds the way round a long wall or lava trench, such as a village wall
+  with its gate off to the side. A hauler whose Storehouse lay behind a wall 17 blocks long walked up to the wall, stood
+  there and gave the Storehouse up with its load; it now looks as far for a way as a villager does (B815).
+- Hauler and Farmhand Golems: a golem at work no longer jumps into water two or more blocks below the bank, water it
+  can't climb back out of. A hauler whose nearest Storehouse is on an island in such a moat takes its load to another
+  Storehouse instead of floating in the moat with it for good (B813).
+- Hauler and Farmhand Golems: a golem at work going round a lava trench whose lava lies a block or more below the
+  ground no longer cuts the corner and falls in. Its way keeps a block clear of sunken lava and fire too (B814).
+- Scan Tool: a scanned big dripleaf on its stems is built back whole, stacked from the bottom leaf on leaf as a player
+  grows one; it was built as nothing at all, every piece skipped (B812).
+- Create trains: a server stopped between the village round that points the two stations at their track and the next
+  no longer leaves both stations named 'Track Station' for good; they are named after their villages either way (a
+  station a player renamed keeps its name) (B800).
+- Scan Tool: a scanned glow lichen or sculk vein now asks for one item per face it covers. A lichen on three faces was
+  listed as one glow lichen and built on all three, so shears took two lichen off it for free (B792).
+- Militia Drill: in a village with no Training Dummy, where the guards drill by the hall, the chronicle now reads
+  "Drill day in ...: 1 villager sparred by the hall." instead of speaking of dummies the village doesn't have (B797).
+- Village Hall: one damaged entry in a hall's save (a hand-edited file, or one a crash cut short) no longer repeals
+  every edict, disbands every guild, or forgets every reform's progress, found service, house furniture look, City Plan
+  zone or research level of that village. Only the bad entry is left out, with a warning in the log (B796).
+- Scan Tool: builders now build again a scanned cake with a candle on it (from a cake and the candle) and the full
+  length of scanned cave vines, weeping vines, twisting vines, kelp and big dripleaf stems (one glow berries, vine,
+  kelp or big dripleaf a block; hanging vines go up from the ceiling down). Before, these were silently left out (B793,
+  B794).
+- Scan Tool: a scanned pushed-out piston is built with its head, pushed out by its own redstone, instead of as a stuck
+  pushed-out base with nothing in front; without power in the build it stands retracted (B795).
+- Blueprint Table: a build's 3D preview now draws banners, decorated pots, signs and other blocks drawn by their block
+  entity (as their item), so a scan of a lone banner or pot no longer shows an empty picture (B798).
+- Saves: taking a mod out of the pack no longer empties a Builder's whole bag, a Hauler Golem's whole load, every
+  courier route a postman holds or a worker's whole machine trip when one item in it came from that mod. Only that item
+  is lost, as in a chest; the rest loads (B791).
+- Villages: buildings finished in a City Plan zone painted past the hall's radius now count for the village everywhere,
+  not only on the Repairs page: its beauty, its rank's buildings, its Market Square, Arena, Chapel and services, its gates,
+  towers and defenses, its signposts and plazas, fires and disasters, and the hall's advice (B620).
+- Village Hall: with one settlers' wagon bed in reach, the Beds button now reads "Not counted: 1 wagon bed (for the
+  road, not a home)" instead of "1 wagon beds" (B787).
+- Graveyards: a village no longer uses the next village's Graveyard standing near by as its own. Its Undertaker never
+  lays a grave there, and the graves in it aren't counted as resting in this village; a village without a Graveyard of
+  its own uses its plot near the hall (B788).
+
+## 0.151.3 — 2026-11-01
+
+### Fixed
+- Hauler Golems: a hauler in a pool or moat whose water lies a block below the banks (not filled to the brim) no
+  longer floats by the bank for good with its load. It swims to the bank nearest where it is going and climbs out, and
+  one whose only Storehouse is on an island in such a moat wades across and climbs up onto it (B783).
+- Hauler and Farmhand Golems: a golem at work going round a lava trench no longer cuts the corner and slips into the
+  lava. Its way now keeps a block clear of lava and fire (B784).
+- Saves: one damaged entry in the bounties, caravans or stories file (a claimed bounty id, a caravan village without
+  its name, a sale without its buyer, a mood boost or a tracked quest that can't be read) no longer loses the whole
+  file. The bad entry is skipped with a warning in the log, and every other bounty, caravan village, route, shipment,
+  quest and arc loads (B763).
+- Undertakers: an Undertaker no longer carries graves out of the next village into his own Graveyard. A grave that
+  lies in another village stays there; graves in his own village, and ones out in the wilds, are laid to rest as before.
+- Chronicle: a villager killed on the village's edge up a hill (inside the village, but far from the hall in a straight
+  line) now gets the usual death line in the hall's Chronicle, as they were already mourned and dated in the Book of
+  Families.
+- Physicians: a Remedy the Physician shows a player standing by with emeralds is no longer a free cure. He used the
+  shown copy on an ill villager and the Remedy in the chest by his brewing stand never went down; now he puts it away
+  and cures with a real Remedy from the chest (or brews one), else asks for one on the requests board.
+- Elders: an elder now walks 15% slower on every walk, the game's own strolls and trips to bed included, not only on
+  the walks a job asks for. Before, a walk the game set up or started again went at full speed, so an elder could
+  keep pace with a younger villager beside him.
+- Hauler Golems: a hauler whose nearest Storehouse is across water (an island in a deep moat) no longer sinks to
+  the bottom and stands there with its whole load for good. Hauler and Farmhand Golems now swim while at work, so they
+  cross the water or climb back out at the bank and get the load to a Storehouse.
+- Carpenters and other crafters: what a crafter took home after waiting a long time at a full Storehouse now reaches
+  the builder who asked for it. Once the builder's chests or the Storehouse have room, he carries it there before
+  making any more; before, it stayed in the crafter's chest and the builder waited for good.
+- The Lost Caravan: a carter you've freed keeps following you home however long the walk takes; he no longer vanishes
+  on the seventh day with the goods lost and "Nobody came for him". Where the receiving village's Village Hall was
+  broken, walking him there no longer ends the story, and carrying the goods there no longer takes them and drops
+  them on the ground: you keep them and are told the hall is gone. A new hall in that village takes the story on, and
+  the carter can always be walked home to the village that sent him.
+- Reform stories ask the right villager when the usual trade is missing: a village with no Bard has a Cheerful villager
+  ask for the Festival Fund, and one with no Nurse has a mother ask for the Midwives (anyone else only when there's
+  neither). The ask's quest and intro now name the villager who actually asks ("Talk to Ada about the curfew"), not a
+  Porter, Librarian, Nurse, Bard or Toolsmith who isn't there.
+- A ware a villager shows a player at the trade display (an emerald, bread, a painting, a rod) no longer becomes theirs
+  when work starts or after a restart: Shepherds, Farmers, Fishers, Miners and other workers let it go instead of
+  putting it in their bag or chest, so standing by no longer earns free emeralds or bread.
+- A server stopped in the middle of a Militia Drill day now remembers who already drilled even when its last autosave
+  came before the drill: the chronicle's "villagers sparred" count is the same as without the restart.
+- When the Storehouse fills up while the Carpenter carries a chestless builder's planks and stays full, he keeps
+  carrying them and trying again instead of dropping them on the ground by his bench.
+- A bed you put straight back where a settlers' wagon bedroll stood is now a home at once: before the Village Hall's
+  next round it was still taken for a wagon bed and its villager lost the home.
+- On a server upgraded from an older version of the mod, cabin beds by a campfire, hay and the builder's
+  Blueprint Table are homes again once the server has autosaved, not only after its next restart.
+- A Great Wall whose lost sentry is refused by another mod (with `forceVillageSpawns` off) no longer uses up four iron
+  blocks and a pumpkin every morning for a golem that never comes: the stockpile keeps them.
+- Ending a trade pact while the other village's caravan is on the road no longer gets its cargo free: a caravan that set
+  out under the pact is still paid at the pact's terms when it arrives.
+- Switching the world to Peaceful for a moment and back to Normal no longer breaks a bandit camp up as if its chief
+  fell: Peaceful took him away, so the camp now packs up and leaves in peace (no "Chief ... fell" line, no rest days).
+- A Farmer's hoe, a Shepherd's shears and any other worker's tool no longer vanish when a player stands beside them
+  after work: villagers showing their wares to a player now leave a worker's own tool in hand.
+- A Militia Drill's chronicle line ("drilled N villagers") counts everyone who drilled that day, even when the server
+  restarted in the middle of the drill: the villagers who already drilled are now saved with the village.
+- The Steward no longer opens a wall piece straight through a finished building or a Wonder (finished, or laid out and
+  waiting for its goods): he skips that piece and builds the next one on open ground. His roads go round a Wonder's
+  ground too.
+- A Carpenter no longer turns log after log into planks for a builder whose store (his chests or the village
+  Storehouse) is full, leaving them on the ground: he waits until there's room, then makes just what was asked; and
+  if the store fills up while he's on his way, he holds on to what he made and puts it in once there's space.
+- A Carpenter crafting for a builder with no chest by his Blueprint Table brings what he makes to the village
+  Storehouse, where the builder fetches it, instead of dropping it by his own bench while the builder waits for ever.
+- The Village Hall's Chronicle button reads "(1 entry)" for a chronicle of one, and a work-pace effect naming one trade
+  reads "1 trade works 50% faster" instead of "1 trades work".
+- The Steward's shopping list names the building materials his blueprints use in the plural: "12 Spruce Logs,
+  6 Glass Panes, 4 Ladders, 2 Oak Doors" on the desk, the Storehouse board and the daily message.
+- A Wonder Plan can no longer go down over a house that is still being built; it says which build stands there
+  ("It would stand over the Test Hut, a build in progress"), and the ground is free again once that build is canceled.
+- A builder now refuses a house that reaches over a Wonder going up even when a finished Wonder lies under it too.
+- The Steward no longer plans a building where a laid-out Wonder waiting for its goods will stand, and keeps his plots
+  two blocks clear of a finished Wonder, as of any other building.
+- A piston set down just outside a protected village can no longer push its blocks in, pull them out (sticky) or
+  put its head inside; pistons inside the village work as before.
+- A stranger standing outside a protected village can no longer place a block (such as TNT) or light a fire just inside
+  its edge by clicking the inward side of a block outside it; they're told whose village it is.
+- A stranger jumping on a protected village's fields (on foot or on horseback) no longer turns the farmland to dirt
+  and knocks the crops off; the owner, friends and operators still trample as before.
+- A stranger's arrows and tridents no longer knock items out of item frames, or break frames and paintings, inside a
+  protected village.
+- On a server that ran an earlier version, a brown or green bed you place by a campfire, a hay bale and the builder's
+  Blueprint Table is no longer taken for a settlers' wagon bedroll: its villager keeps the home and the hall counts
+  it (B749).
+
+## 0.151.2 — 2026-10-31
+
+### Fixed
+- `/workplace threat start` by a village whose camp has its whole band out now says the camp has nobody left to
+  send, instead of "found nowhere to gather".
+- A Wonder Plan can no longer be placed over another Wonder that is begun but waiting for a stage's goods, and a
+  builder no longer takes a house inside such a Wonder's ground.
+- A quiet village (threat level 0, At peace or Peaceful) no longer loses caravans to bandits (the Lost Caravan
+  story), and the Bandit King's storm brings no raid there; his raids come again once the village isn't quiet.
+- A stranger's tree farm, orchard or berry plot reaching into a protected village is now refused, saying whose
+  village it is, as a stranger's field already was.
+- Handing a Field Marker to a lumberjack or orchard keeper now names the block they really work at (a Chopping Block
+  or Fruit Basket), not always a fletching table or composter.
+- In a new world, a cabin's brown or green bed by a campfire and a hay bale is no longer taken for a settlers' wagon
+  bedroll when the village's own builder's Blueprint Table stands nearby: only beds a camp placed are wagon beds, so
+  its residents keep their homes and the hall counts it. Older saves still know camps from before the wagon-bed list
+  by their look (B730, B732).
+- Counts of one read in the singular: the Steward's desk says "Showing 1 old house", the calendar with one-day seasons
+  says "Four seasons of 1 day" and "Day 3 of the year", and the Colonies tab says "A village waits 1 day between
+  colonies". With `villageGrowthCap` 0 the hall's rank perks end "no growth on this server" instead of "grows to 0"
+  (B739, B727, B733, B734).
+- A camp an operator sets down with `/workplace threat lair` by a village that went quiet on an earlier day (At peace,
+  or threat level 0) now stands until the next dawn, as the command says. Before, it packed up at the hall's next
+  round, about half a minute later.
+- How far a quarry or a build is from its worker is now measured across the ground, so depth and height never count.
+  Before, a normal 64-deep quarry 125 blocks from the Miner's Bench was refused as "129 blocks" away (the same spot
+  marked deeper was fine), and a tall build centered 128 blocks from the Blueprint Table was refused too. Fields, tree
+  farms, orchards and berry plots are measured the same way.
+- A Hauler Golem now empties every worker's chest into the Storehouse. Before, one worker's chest was always
+  left full (with three lumberjacks, it hauled two and then stood idle), and a Golem Smith by the Storehouse didn't
+  count when it chose whose chests to haul.
+- A stranger standing just outside your protected village can't pour lava or water into it any more, or scoop
+  water out of it: a bucket is now checked where it empties or fills, not where he stands, and he's told whose village
+  it is. You, your friends and operators use buckets there as before, and anyone may still pour outside the village (B719).
+- A stranger can no longer have his own Builder, Miner or Farmer work inside your protected village from just outside
+  it: a blueprint, Quarry Marker or Field Marker whose area reaches into the village is refused, and he's told whose
+  village it is (before, only the clicked spot was checked, and clearing the site broke the owner's blocks). You, your
+  friends and operators hand over work there as before (B718).
+- In a protected village, a stranger's Delivery Note can't mark the owner's chests any more (they're told whose
+  village it is), and a postman's courier route that a stranger set up doesn't carry anything out of the village, routes
+  already saved included. The owner, their friends and operators set up routes there as before (B717).
+- A Shop Counter sells only from, and pays only into, its own chests: on a market street, a chest nearer another
+  player's Shop Counter is that shop's, so your shopkeeper no longer sells your neighbor's goods or drops your takings
+  in their chest. A chest exactly between two players' counters belongs to one of them, always the same one; your own
+  counters still share their chests (B716).
+- A brown or green bed in your own house is no longer taken for a settlers' wagon bedroll just because a campfire and a
+  hay bale stand nearby: the villager living there keeps it as their home, and the Village Hall counts it again (only
+  a real camp's bedrolls, with the camp's Blueprint Table, are wagon beds). Beds already mistaken in a saved world are
+  given back the first time the hall looks (B715).
+- A story arc's "Talk to ..." or "Defeat ..." step counts only the villager or foe that arc picked in that village:
+  right-clicking (or defeating) someone another village's story cast in a part of the same name no longer finishes it
+  (B711).
+- Loot spilled from a broken bandit camp's chests no longer sinks half into the ground when the land comes back: an
+  item lying across the edge of a block of land that returns is set on top of it, like one lying right on it (B702).
 - A Golem Smith with no room on the ground beside him (a roof too low for a golem all round) builds nothing and takes
   nothing until there is, instead of putting the golem on top of the roof (B628).
 - The Legends page's tab and header count only the Legends who live in the village: a guest no longer shows as

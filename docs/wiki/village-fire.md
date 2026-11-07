@@ -5,7 +5,7 @@ ROADMAP 32.16. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 chimney spark on a dry day or a raider's burning arrow. The fire spreads by the game's own rules but only through what
 the builders built, a new job, the **Firewarden**, puts it out, and the builders put back what burned.
 
-Roadmap items: 32.16, B218
+Roadmap items: 32.16, B218, B152
 
 ## What a player sees
 
@@ -21,6 +21,9 @@ Roadmap items: 32.16, B218
   "putting out a fire".
 - **The bucket brigade.** From Journeyman a Firewarden rings the village bell first, and two villagers who aren't at
   work within 24 blocks run to the fire with buckets, putting out a fire block every two seconds.
+  Each carries the bucket in the hand that held their tool or ware, which goes back in that hand once the fire is out
+  (wear and all; an empty hand stays empty, no bucket left over); if something else is in the hand by then, the kept
+  item drops at their feet, never lost (B152, also after a save mid-call).
 - **With Cobblemon**, Water-type Pokémon pastured near the grindstone help: every two seconds each uses a move on a
   fire in reach, with its own animation and Cobblemon's water splash, and the fire there goes out.
 - **When it's out**, players read "The fire in the Starter Cottage at Oakvale is out." and the hall's chronicle says
@@ -126,4 +129,7 @@ builders put it back after a restart too.
   `FireGameTests.theWaterCarriedSurvivesASave`, `FireGameTests.theBuilderPutsBackWhatBurned`,
   `FireGameTests.switchedOffAFirewardenStandsIdle`, `FireGameTests.everyNewSentenceHasItsText`.
 - `PastureCompatTests.pasturedWaterTypesDouseTheFire` (with Cobblemon): a Squirtle by the grindstone puts a fire out.
+- QA (`QaVillageFixes1104c3GameTests`, B390): a fire set against the outside of a finished hut's corner post is written
+  up under the hut's name; a fire on the ground two blocks from the hut is "Fire in the village", and a spot one block
+  further out than the wall, or two over the roof, belongs to no build.
 - Showcase scenes: `fire`.

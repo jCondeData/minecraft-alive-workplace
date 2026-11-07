@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971
 
 ## What a player sees
 
@@ -13,7 +13,15 @@ share gives one of its jobs at random, likeliest the one the village has fewest 
 **sneak-right-click them holding the job's item**. A villager already working there switches the same way, and the
 block's own job comes back with its own item (wheat for a Farmer, coal for an Armorer). You are told what happened
 ("Dara took the Miner job at the Blast Furnace."), or what is missing (no such block near, or every one taken).
-A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it.
+A hired mercenary, a relief rider or a story's visitor such as Doctor Wren isn't the village's to give a job, even at
+a block they took themselves: the item says "Doctor Wren's job can't be changed here." and nothing changes (B906, as
+the Village Hall's People table, B895), whatever blocks are near: never "needs a Stonecutter" or "taken" first (B911).
+A retired elder is told they have retired instead; an elder who hasn't retired takes the job like anyone.
+A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it
+(B201: the next jobless villager does, `QaVillagerFixes1104c2GameTests`).
+The block they are walking to counts as free for them (B803): handed its job's item, they take that one, while
+another villager is told it's taken. A free block of that kind nearer them still wins (and the one they were walking
+to is let go); one they walk to that is out of reach (over 4.5 blocks) isn't given, and they keep walking to it.
 Hold Shift over a workstation in your inventory to see its jobs and their items. A job whose switch is off (or that
 needs Cobblemon, without it) isn't listed. Such a job can't be picked by its item either (B688): without Cobblemon a gold block by a
 Training Post does nothing, and a book makes a Teacher if a lectern is near, or says the Teacher needs a Lectern. Nor
@@ -61,6 +69,14 @@ of them and the work goes into them. A line over a worker's head says what they 
 expeditions", in the singular at one, B444), and
 sneak-right-clicking a worker with an empty hand shows their status, ending with their level in their own job
 ("Apprentice Miner · 10/70 XP to the next level") and how fast that makes them.
+
+**A worker's tool stays in their hand (B766).** A Farmer's hoe, a Shepherd's shears, a Fisher's rod, a Miner's pickaxe,
+a Lumberjack's axe or a conscript's sword is never taken from them by vanilla's trade display, the way villagers show
+their wares when a player stands by: the display only shows a ware in an empty hand, and only puts away the wares it
+showed itself. The other way round too (B776): a ware on show is never the worker's. When work starts (or after a
+restart with a ware still in hand) the worker lets it go before picking up a tool, so a shown emerald, loaf or rod
+never ends up in their bag, their chest or on the ground, and is never used as a tool. The Physician's shown Remedy
+is never a cure either (B781): he puts it away and cures with a real Remedy from his chest.
 
 | Job | Workstation and item | Class |
 |---|---|---|
@@ -126,6 +142,15 @@ sneak-right-clicking a worker with an empty hand shows their status, ending with
 The Class column only counts once classes are on (see [Classes](classes.md)). Each job's own page or README section
 says what it does all day.
 
+**Daycare hatchlings (28.12, B854).** A Daycare Keeper's pair hatches the mother's base form in her regional form: a
+female Alolan Ninetales hatches an Alolan Vulpix, a Kanto mother a Kanto Vulpix whatever the father. The hatchling
+takes the pre-evolution form whose evolution leads to the mother's form (`CobblemonDaycareKeeper.preForm`); Cobbreeding's
+egg is made from the same hatchling and keeps the form (`form=galar` and the like). With Ditto, the parent that isn't
+Ditto counts as the mother. Regions Galar, Hisui and Paldea work the same (Perrserker a Galarian Meowth, Sneasler a
+Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with no regional form (Alolan Raichu,
+Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A Blaze Breed Tauros hatchling (with Ditto) turns Combat Breed after
+a reload (B955). Tested in `QaDaycareBugs1103dCompatTests` and `QaDaycareRegional1104d2CompatTests` (11).
+
 ## How it works
 
 **Job plates (B221).** The client already knows every villager's job and level (vanilla sends them, for the outfit
@@ -144,7 +169,16 @@ new hours apply at once (`BrainAccessor`). Outside their hours the hand-off is t
 hours (a night's hire sleeps first) and the player is told when the work starts (`Jobs.startsLater`).
 
 **A Miner keeps all they dig (B224).** Stone of every kind, gravel and dirt go into the chests by the blast furnace with
-the ores; with those chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
+the ores (a pit of stone as cobblestone, topped onto the stack already there, none left lying about); with those
+chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
+A kitchen's chest (a smoker's, in the hall's village) gets the finds only when the Storehouse's chests are full or the
+village has no Storehouse; a Storehouse with room in part stacks is filled first (B834, `QaLaneC1102eGameTests`).
+
+**A Fisherman comes back for cooked fish (B147, B802).** Fish done in a furnace or smoker by his barrel call him home
+when the barrel can take them: an empty slot, or a stack of the same fish with room (a barrel whose every slot holds
+something still takes cooked cod on its cooked cod stack). A barrel full to the brim doesn't call him
+(`QaFisherFurnace1102GameTests`). Meanwhile the cooked fish wait in the furnace, none dropped or lost, and he
+fetches them as soon as a slot is free (`QaVillagerFixes1104c2GameTests`).
 
 **Fewer job blocks (21.1a).** Related jobs share a block. A jobless villager by a vanilla block takes the vanilla
 job by itself, as in vanilla (since 36.17, one of the block's jobs at random: [Random jobs](random-jobs.md)); the
@@ -216,8 +250,9 @@ dug top-down, so deepening only adds layers at the end: the blocks already visit
 stair carries on down to the new floor. A quarry finished short of the marker's depth says so ("...stopped 64 blocks
 down: digging all 128 blocks needs Expert level. Hand them the marker again once they get there."), and the marker
 comes back with its depth. The level is checked against the real pit (a 128 marker cut off by the world's floor at
-90 deep only needs a Journeyman). A deep pit (more than 64) counts its distance to the bench from the middle of its
-top, where the miner starts down. The safety rules hold all the way down: blocks next to water or lava and blocks too
+90 deep only needs a Journeyman; a 96 marker over ground only 65 deep stops a Novice at 64 and asks for a Journeyman).
+Strip mines aren't held back by level: a Novice digs a ladder shaft to Y=-53 however far down that is. A pit's
+distance to the bench counts only across the ground, whatever its depth (B665). The safety rules hold all the way down: blocks next to water or lava and blocks too
 hard for the pickaxe are left standing.
 
 **Working with nobody near.** While anyone is online, every worker's workstation chunk stays loaded, so villages
@@ -250,6 +285,12 @@ whole lot (the owner took it back while you had the trades open, a hopper draine
 the goods don't appear for your payment, a click on them takes nothing, your emeralds stay in the slot and the offer
 shows as sold out. Talk to the shopkeeper again once the shop is restocked. Every sale still takes its goods out of
 the chests and puts the payment in.
+
+**A shop sells only from its own chests (B716).** On a market street, a chest that stands nearer another player's
+Shop Counter (one that reaches it too) belongs to that shop: your shopkeeper never sells its goods and never puts your
+takings in it. A chest exactly as far from two players' counters goes to the counter that comes first by position
+(lower, then further north, then further west), the same one whichever shop asks. Your own counters share their
+chests as before, and a lone shop's stock is still every chest within 8 blocks of it (4 up or down).
 
 **Hoppers stay out of the price list (B349).** A hopper under a Shop Counter pulls nothing out of it, and a hopper,
 dropper or pipe pointed at it pushes nothing in, so nobody can empty or change someone's prices with automation. Only
@@ -344,9 +385,17 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 - Older job blocks that still work where placed: Builder's Bench (`aliveworkplace:builders_bench`), Miner's Bench
   (`aliveworkplace:miners_bench`), Chopping Block (`aliveworkplace:chopping_block`).
 - Markers: Quarry Marker (`aliveworkplace:quarry_marker`), Field Marker (`aliveworkplace:field_marker`), Delivery
-  Note (`aliveworkplace:delivery_note`), Patrol Map (`aliveworkplace:patrol_map`). A Delivery Note marks the chest,
+  Note (`aliveworkplace:delivery_note`), Patrol Map (`aliveworkplace:patrol_map`; handed to a guard it says "will walk
+  your route of 1 point" or "of 3 points", B862). A Delivery Note marks the chest,
   barrel or Pasture Block it right-clicks without opening it (B333), and a note already carrying 9 kinds answers a
-  10th with `message.aliveworkplace.route.filter_full` and stays as it is (B334).
+  10th with `message.aliveworkplace.route.filter_full` and stays as it is (B334). In a protected village only the
+  owner, friends and operators may mark a container (anyone else gets `message.aliveworkplace.protection.denied`); the
+  note keeps who marked its source, and a postman doesn't take from a protected village that keeps that player (or,
+  for a route from before, the postman's employer) out (B717). A postman sneak-right-clicked with an empty hand gives
+  his status, each count in its own form: "Postman — 1 parcel delivered · 2 courier routes" (B809), then a line per
+  route. A route or note whose kinds belong to a mod taken out of the pack keeps them: it never turns into "carries
+  everything", the note says "Carries only: 1 item no longer in the game" (`tooltip.aliveworkplace.route.gone`), and
+  the kinds come back if the mod does (B819).
 - Texts: `message.aliveworkplace.job.chosen`, `message.aliveworkplace.job.needs_station`,
   `message.aliveworkplace.job.station_taken`, `message.aliveworkplace.job.class_needed`,
   `tooltip.aliveworkplace.station.hint`, `message.aliveworkplace.retrain.offer`, `.confirm`, `.short`, `.done`,
@@ -358,12 +407,24 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 - 21.1a (owner, 2026-09-30): not every villager needs a new custom table; items already in the game should give a
   villager their job. So jobs share vanilla blocks and are picked with an item.
 - 21.1c (owner, 2026-10-03): the Fossil Scientist works at Cobblemon's own Fossil Analyzer.
+- B766: the trade display marks each ware it shows (a tag in the stack's custom data) and touches only an empty hand or
+  its own marked ware, one rule for every worker instead of a check per tool.
+- B776: workers read their hand through `TradeDisplay.workHand`, which clears a marked ware first, wherever they take,
+  bag, store or use what they hold (Shepherd, Farmer, Fisher, Miner, Lumberjack, Mechanic, fire brigade, conscripts,
+  the Gray Cough's healer, and the Physician's Remedy hand since B781). A ware is never cleared on load: the next
+  worker step or display clears it.
+- B737: handing a Field Marker to a Lumberjack, Orchard Keeper or Berry Breeder names the block they really work at
+  ("within 8 blocks of their Chopping Block", or Fletching Table, Fruit Basket, Composter), since the Lumberjack and
+  Orchard Keeper may take either; the Berry Breeder's says "of her Composter". Tests: `AreaJobWorkBlockGameTests`,
+  `QaVillageFixes1101GameTests` (each started line in full).
 - 36.20 (owner, 2026-10-26, "village-wide"): a quarry, a field, a tree farm, an orchard or a berry plot may be anywhere
   in the village the worker's block stands in (within the hall's radius, or in a painted City Plan zone), and outside it
   within 128 blocks of the block, each job's own config key: `quarryReach`, `fieldReach`, `treeFarmReach`,
   `orchardAreaReach`, `berryPlotReach` (16 to 256). Past it, the refusal names the village: "That spot is outside
   Mapleridge and 140 blocks from the Miner's Bench the miner works at — keep it within 128." (`<kind>.too_far_village`).
-  A worker with no village round their block has only the 128. The worker walks out to a far area in legs
+  A worker with no village round their block has only the 128. The distance is the one across the ground, from the
+  block to the area's middle (B665: up and down never count, so a quarry is in reach at any depth; `work/Reach.across`;
+  `ReachAcrossGameTests`, QA's `QaFarReach1028BugTests`). The worker walks out to a far area in legs
   (`workerPathRange`) and waits there while its chunks aren't loaded.
 - B453: a Field Marker or Quarry Marker area too far from the worker is refused in that worker's own words, naming the
   block they work at: "That field is 143 blocks from the Composter the farmer works at — keep it within 128."
@@ -412,10 +473,39 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
   under the crosshair, as close as vanilla's reach. Jade or WTHIT tooltips don't get it (no compat yet).
 - A Miner makes only pickaxes, never their ladders or torches; the board asks for one missing material at a time.
 - This page lists how each job starts, not what it does: jobs without a wiki page yet are in the README.
+- B766: a ware a villager was showing when the world was saved before this fix carries no mark, so it stays in his hand
+  until a worker's job swaps it out.
+
+**A Weaponsmith who loses the grindstone drops what he carries (B970).** A worn piece the smith had taken to mend
+(and the iron for it) used to stay in his bag for good when the grindstone was broken before he mended it: the mending
+job (`MendingWork`) can't run without a job site, and nothing else emptied the bag. Now `MendingWork.stationlessTick`
+(every villager's tick) drops the bag at the smith's feet once he has been without a grindstone for 100 ticks (time to
+put one back), as a retired Crafter does; a crafting job in hand stays `CrafterWork.benchlessTick`'s. It also works
+after a save and reload (a Weaponsmith's bag counts even when nothing marks him as carrying), and for a smith who
+has never traded (0 XP), whom vanilla makes jobless with the grindstone: he is still marked as carrying. Only a
+Weaponsmith's job site counts as a grindstone, so such a smith who takes another free workstation within the 100 ticks
+(a lectern, as a Teacher or Scholar) drops the bag all the same (B1007). After a reload the in-memory mark is gone, so
+the mending job saved on him (B971) marks a carrier too: a novice reloaded with the sword in his bag, then made jobless
+with the grindstone, drops it as well (B1008). Nothing new is saved.
+
+**A Weaponsmith reloaded mid-job still puts the piece back (B971).** The mending job (where the piece came from, the
+material, how far it had got) lived only in the running `MendingWork`, so a smith saved and reloaded (a chunk unload or
+a restart) with a guard's worn helmet in hand found no job, only a full bag, and tidied the helmet into his own chests
+by the grindstone. Now the job is saved on the villager (the `mend_job` attachment, a `MendJob`: the piece, the chest it
+came from, the material and its chest, the phase) whenever it changes, and taken up again after a reload: he mends the
+piece and takes it back to the chest it came from. Removed when the job ends or the bag is dropped (B970). A smith
+saved before this fix has no job saved and tidies as before.
+
+**A Bard plays each disc to its end (B975, B976).** A set (`BardWork`) used to time out after 1,200 ticks, which
+stopped the song: every disc longer than a minute was cut off and the next one started. Now the set times out only
+between songs, and it ends with the Bard's work hours instead (the morning set at 3500 still stops the song). The Bard
+remembers the jukebox a song was started at and sends the stop there, so breaking the jukebox mid-song stops the music
+for players as vanilla's own jukebox does (the stop used to go to the Bard's workstation, already gone). Nothing new is
+saved: a song isn't resumed after a reload.
 
 ## Proof
 
-GameTests: `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
+GameTests: `QaSmithScribe1105cBugTests` (4; B970: the grindstone broken mid-job, with and without a reload first: the sword and the 10 iron end in a chest or on the ground; B971: the smith reloaded with a guard's worn helmet just fetched, or already mended on the way back: it ends mended in the guard's chest, none in the smith's chests), `QaSmithBagLeft1107GameTests` (2, B970 QA: a 0-XP smith made jobless with the grindstone still drops the sword and iron; with the grindstone back and the sword returned to the chest he mends it and puts it back, never two swords), `QaSmithBagLeft1107BugTests` (B1007: a 0-XP smith who takes a free lectern after losing the grindstone still gives up the sword and iron), `QaSmithBagSaves1107eGameTests` (2, B1008: a novice smith made jobless with the grindstone, with and without a reload first: the sword and iron end in a chest or on the ground), `QaSmithGrindstoneBack1107eGameTests` (2, B970 QA: the smith reloaded halfway through the wait after the grindstone broke still drops the sword, and a grindstone put back 20 ticks later loses nothing), `QaBardSet1107cGameTests` (6, B975, B976 QA: Pigstep past two set lengths, a song ending just before the evening set is stopped once, the jukebox mined or blown up mid-song, the disc taken mid-song, a jukebox rebuilt elsewhere), `QaPrinterNurseBard1105cBugTests` (3, B975, B976: Cat still the one song 2,400 ticks in, 11 played through and Mellohi straight after, the jukebox broken mid-song sends the stop and the disc stays in the chest), `QaTradeDisplayPhysician1101BugTests` (2, B781: the Physician's shown Remedy, from the real display or kept in hand, never cures; the chest's Remedy does), `B781GameTests` (3: a shown Remedy kept through a save never cures, an empty chest means no cure, his own Remedy in hand still cures), `QaTradeDisplayWares1101BugTests` (1, B776: a Shepherd's shown emerald never reaches her bag or chest), `QaTradeDisplayWares1101GameTests` (1: the display still shows and puts away its wares), `QaTradeDisplayWaresFarmer1101BugTests` (4, B776: the Farmer's shown bread and the Shepherd's shown painting stay out of bag and chest as the shift starts and after a restart), `TradeDisplayToolsGameTests` (2, B766: a Farmer keeps his hoe while a player holds the price of his trade; the display still shows its ware and puts it away), `QaToolsByTheTradeDisplay1101BugTests` and `QaToolsByTheTradeDisplay1101GameTests` (2 each: the Farmer's hoe, the Shepherd's shears, the Miner's pickaxe and the Lumberjack's axe outlast an evening with the owner beside them), `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits
@@ -439,7 +529,7 @@ pit, regrowth bottom up at the set rate with a player's block kept and nothing o
 day's worth, the weighted mix, save and reload of the site and mid-dig, the switch off, the Quarry Marker still works,
 the new sentences), `QaStageThreeBugTests` (B333: a survival player's right-click marks a chest, then a barrel, and
 neither opens; B334: a tenth kind on a full note), `QaStageThreeGameTests` (a sneak-click clears the note, a non-container
-is refused, up to 9 kinds). `ShopStockGameTests` (5, B348: the chest emptied while the trades are open sells
+is refused, up to 9 kinds). `ShopNeighboursGameTests` (4, B716: a lone shop sells and is paid into its own chest; with a stocked neighbor shop 6 blocks off, a sale on the trade screen and on the shop screen takes and pays only the shop's own chest; a chest midway between two players' counters is exactly one shop's, Frank's, every time; one owner's two counters share a chest until a stranger owns the other), `QaShopNeighboursBug1031Tests` (1, B716, QA: Frank's empty shop never sells Bob's cobblestone from the chest by Bob's counter). `ShopStockGameTests` (5, B348: the chest emptied while the trades are open sells
 nothing and shows sold out, emptied after the payment is in hands over nothing and keeps the emerald, less than a lot
 left isn't sold, a restocked shop sells again, a normal sale takes the goods from the chest), `ShopCounterHopperGameTests` (3,
 B349: a hopper under the counter pulls nothing out while one under a chest beside it does, a hopper on top pushes

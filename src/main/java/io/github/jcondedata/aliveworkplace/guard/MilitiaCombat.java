@@ -28,12 +28,23 @@ import org.jetbrains.annotations.Nullable;
  * sword, and when a raider (a foe by the guards' rules, {@link Guards#isFoe}) is within the {@code militia} effect's
  * range they wake, come out of hiding, close in and strike: its {@code damage} a blow, 15% more if Strong
  * ({@link Traits#strength}). Out of a raid the sword is put away.
+ *
+ * <p>B926: "in range" is the same sphere the reformed work stop counts ({@link Conscription#raiderNear}), up and down as
+ * well as across, so a conscript on a wall or tower fights the raider at its foot. One he can't get closer to (no way
+ * down, or round) for {@link #GIVE_UP_TICKS} is let be for {@link #IGNORE_TICKS}, so he isn't stuck at the edge all
+ * night; one right by him, behind a fence, he stands his ground by.
  */
 public class MilitiaCombat extends Behavior<Villager> {
 	private static final int SEARCH_EVERY = 10;
 	private static final int COOLDOWN = 14;
 	private static final double REACH_SQR = 2.6 * 2.6;
 	private static final float CHASE_SPEED = 0.75f;
+	/** Ticks a conscript tries to get a block closer to a raider out of reach before he lets it be. */
+	public static final int GIVE_UP_TICKS = 100;
+	/** Ticks a raider he gave up on stays let be (then he tries again, if it's still the nearest). */
+	public static final int IGNORE_TICKS = 200;
+	/** A raider this close (a fence or a cage between them) is never let be: the conscript stands his ground by it. */
+	private static final double NEXT_TO = 4;
 
 	/** Conscripts in a fight right now (their schedule waits, {@code mixin/BrainMixin}). */
 	private static final Set<Villager> FIGHTING = Collections.newSetFromMap(new WeakHashMap<>());
@@ -44,6 +55,13 @@ public class MilitiaCombat extends Behavior<Villager> {
 	private int range;
 	private int searchTimer;
 	private int cooldown;
+	/** The closest the conscript has come to {@link #target} in this fight, and when he last came closer. */
+	private double closest;
+	private long closerAt;
+	/** A raider he couldn't reach, let be till {@link #ignoredUntil}. */
+	@Nullable
+	private LivingEntity ignored;
+	private long ignoredUntil;
 
 	public MilitiaCombat() {
 		super(ImmutableMap.of(
@@ -72,7 +90,13 @@ public class MilitiaCombat extends Behavior<Villager> {
 		Conscription.arm(villager);
 		damage = militia.damage();
 		range = militia.range();
-		target = findFoe(level, villager, range);
+		// B954: the let-be ends once the raider comes within NEXT_TO (it climbed or jumped up to him), as one that close
+		// is never let be; it used to stay skipped for the whole IGNORE_TICKS however close it came.
+		if (ignored != null && (level.getGameTime() >= ignoredUntil || !ignored.isAlive()
+				|| ignored.level() != level || villager.distanceToSqr(ignored) <= NEXT_TO * NEXT_TO)) {
+			ignored = null;
+		}
+		target = findFoe(level, villager, range, ignored);
 		return target != null;
 	}
 
@@ -91,6 +115,8 @@ public class MilitiaCombat extends Behavior<Villager> {
 			FIGHTING.add(villager);
 		}
 		cooldown = 0;
+		closest = target == null ? 0 : villager.distanceTo(target);
+		closerAt = gameTime;
 		turnOut(villager);
 	}
 
@@ -135,11 +161,24 @@ public class MilitiaCombat extends Behavior<Villager> {
 			cooldown--;
 		}
 		if (villager.distanceToSqr(foe) > REACH_SQR || !villager.hasLineOfSight(foe)) {
+			double distance = villager.distanceTo(foe);
+			if (distance < closest - 1) {
+				closest = distance;
+				closerAt = gameTime;
+			} else if (gameTime - closerAt > GIVE_UP_TICKS && distance > NEXT_TO) {
+				// Out of reach (a raider at the foot of his tower, across a moat): let it be for a while.
+				ignored = foe;
+				ignoredUntil = gameTime + IGNORE_TICKS;
+				target = null;
+				return;
+			}
 			villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityTracker(foe, false), CHASE_SPEED, 1));
 			return;
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 		villager.getNavigation().stop();
+		closest = villager.distanceTo(foe);
+		closerAt = gameTime;
 		if (cooldown == 0) {
 			strike(level, villager, foe, damage);
 			cooldown = COOLDOWN;
@@ -155,12 +194,16 @@ public class MilitiaCombat extends Behavior<Villager> {
 		}
 	}
 
-	/** The nearest raider within {@code range} blocks that the conscript can see (or that is right next to them). */
+	/**
+	 * The nearest raider within {@code range} blocks that the conscript can see (or that is right next to them), but
+	 * {@code skip}. B926: the box reaches {@code range} up and down too, as {@link Conscription#raiderNear} does (it was
+	 * 8 blocks tall each way, so a raider seen 10 blocks below a tower was never fought).
+	 */
 	@Nullable
-	private static LivingEntity findFoe(ServerLevel level, Villager villager, int range) {
+	private static LivingEntity findFoe(ServerLevel level, Villager villager, int range, @Nullable LivingEntity skip) {
 		double r = (double) range * range;
-		return level.getEntitiesOfClass(LivingEntity.class, villager.getBoundingBox().inflate(range, 8, range),
-				e -> Guards.isFoe(e) && e.distanceToSqr(villager) <= r).stream()
+		return level.getEntitiesOfClass(LivingEntity.class, villager.getBoundingBox().inflate(range),
+				e -> e != skip && Guards.isFoe(e) && e.distanceToSqr(villager) <= r).stream()
 			.filter(e -> villager.hasLineOfSight(e) || villager.distanceToSqr(e) < 16)
 			.min(Comparator.comparingDouble(villager::distanceToSqr))
 			.orElse(null);

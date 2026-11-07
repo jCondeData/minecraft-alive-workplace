@@ -75,7 +75,7 @@ public final class NobleBalls {
 	 */
 	public static BlockPos venue(ServerLevel level, BlockPos hall) {
 		BlockPos best = null;
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
 			ResourceLocation base = io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(f.structure());
 			if (!io.github.jcondedata.aliveworkplace.city.StewardConditions.family(base).equals(MANOR)) {
 				continue;

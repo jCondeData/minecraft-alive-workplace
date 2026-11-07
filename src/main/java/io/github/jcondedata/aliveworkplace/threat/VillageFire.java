@@ -731,7 +731,7 @@ public final class VillageFire {
 		if (!drought || random.nextDouble() >= ignition.chimney() * factor(level, hall)) {
 			return Optional.empty();
 		}
-		List<BuildSiteManager.Finished> builds = BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS);
+		List<BuildSiteManager.Finished> builds = BuildSiteManager.get(level).finishedInVillage(level, hall);
 		if (builds.isEmpty()) {
 			return Optional.empty();
 		}
@@ -764,7 +764,7 @@ public final class VillageFire {
 
 	/** Sets alight the roof of the finished wooden build of the village nearest {@code near}. */
 	public static Optional<BlockPos> igniteNear(ServerLevel level, BlockPos hall, BlockPos near, RandomSource random) {
-		List<BuildSiteManager.Finished> builds = new ArrayList<>(BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS));
+		List<BuildSiteManager.Finished> builds = new ArrayList<>(BuildSiteManager.get(level).finishedInVillage(level, hall));
 		builds.sort(Comparator.comparingDouble(f -> f.placement().origin().distSqr(near)));
 		for (BuildSiteManager.Finished f : builds) {
 			Optional<BlockPos> fire = igniteRoof(level, f, near, random);

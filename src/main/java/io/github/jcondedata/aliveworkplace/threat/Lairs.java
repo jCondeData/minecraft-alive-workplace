@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -244,7 +245,8 @@ public final class Lairs {
 					// A captain who fell was told at once by onDeath, which broke the lair up; one gone without dying while
 					// the village is quiet was taken by Peaceful (the game removes monsters), not brought down: the camp,
 					// leaderless, packs up and leaves in peace now rather than being counted as broken up (B364).
-					if (quiet) {
+					// The same holds for a captain Peaceful took away even when the world is back on Normal by this round (B767).
+					if (quiet || data.takenByPeace.contains(lair.captain())) {
 						leave(level, lair);
 					} else {
 						breakUp(level, lair, null);
@@ -253,8 +255,9 @@ public final class Lairs {
 				}
 			}
 			if (quiet) {
-				// Nothing comes to a quiet village (32.21): a lair standing by it leaves at the next dawn.
-				if (Chronicle.day(level) > quietSince(level, hall)) {
+				// Nothing comes to a quiet village (32.21): a lair standing by it leaves at the next dawn, after both the day
+				// the village went quiet and the day the lair came (one an operator set down later stands that day, B728).
+				if (Chronicle.day(level) > Math.max(quietSince(level, hall), lair.day())) {
 					leave(level, lair);
 					return;
 				}
@@ -328,6 +331,7 @@ public final class Lairs {
 	public static void leave(ServerLevel level, Lair lair) {
 		Data data = Data.get(level);
 		data.lairs.remove(lair.hall());
+		data.takenByPeace.remove(lair.captain());
 		data.setDirty();
 		forgetEverywhere(level, lair);
 		CampCleanup.broken(level, lair); // the camp is packed up (B209)
@@ -887,6 +891,23 @@ public final class Lairs {
 		}
 	}
 
+	/**
+	 * An entity leaving the level: a lair's captain the game discards while the world is Peaceful (it removes monsters)
+	 * was taken away, not brought down, and is remembered so (saved): the lair then leaves in peace at the hall's round
+	 * even if the world is back on Normal by then, rather than being broken up as if he fell (B767).
+	 */
+	public static void onRemoved(ServerLevel level, Entity entity) {
+		if (entity.getRemovalReason() != Entity.RemovalReason.DISCARDED || level.getDifficulty() != net.minecraft.world.Difficulty.PEACEFUL
+			|| !(entity.getTags().contains(CAPTAIN_TAG) || entity.getTags().contains(BANDIT_CHIEF_TAG))) {
+			return;
+		}
+		Data data = Data.get(level);
+		if (data.lairs.values().stream().anyMatch(lair -> lair.captain().equals(entity.getUUID()))) {
+			data.takenByPeace.add(entity.getUUID());
+			data.setDirty();
+		}
+	}
+
 	/** What the village knew of a lair that is gone: its scouts' report of where it stood (B209). */
 	private static void forgetEverywhere(ServerLevel level, Lair lair) {
 		io.github.jcondedata.aliveworkplace.guard.Scouts.forgetLair(level, lair.hall());
@@ -896,6 +917,7 @@ public final class Lairs {
 	static void breakUp(ServerLevel level, Lair lair, @Nullable Entity by) {
 		Data data = Data.get(level);
 		data.lairs.remove(lair.hall());
+		data.takenByPeace.remove(lair.captain());
 		data.broken.put(lair.hall(), new Rest(Chronicle.day(level), REST_DAYS));
 		data.setDirty();
 		forgetEverywhere(level, lair);
@@ -933,14 +955,14 @@ public final class Lairs {
 	public static net.minecraft.network.chat.MutableComponent message(Lair lair, String event, boolean named, Object... args) {
 		Culture.Keys keys = Threats.get(lair.culture()).map(Culture::messages).orElse(lair.culture().equals(Threats.BANDITS) ? BANDIT_MESSAGES : Culture.Keys.NONE);
 		String which = named ? event + "_named" : event;
-		return Component.translatable(keys.key(which, "message.aliveworkplace.lair." + which), args);
+		return Words.countedFirst(keys.key(which, "message.aliveworkplace.lair." + which), args); // "1 of X's pirates wades" (B824)
 	}
 
 	/** A chronicle line about {@code lair}, as {@link #message}, from its culture's {@code chronicle} keys. */
 	public static net.minecraft.network.chat.MutableComponent chronicle(Lair lair, String event, boolean named, Object... args) {
 		Culture.Keys keys = Threats.get(lair.culture()).map(Culture::chronicle).orElse(lair.culture().equals(Threats.BANDITS) ? BANDIT_CHRONICLE : Culture.Keys.NONE);
 		String which = named ? event + "_named" : event;
-		return Component.translatable(keys.key(which, "chronicle.aliveworkplace.lair." + which), args);
+		return Words.countedFirst(keys.key(which, "chronicle.aliveworkplace.lair." + which), args);
 	}
 
 	private static List<ServerPlayer> players(ServerLevel level, BlockPos hall) {
@@ -987,6 +1009,7 @@ public final class Lairs {
 		data.clearing.clear();
 		data.unswept.clear();
 		data.grounds.clear();
+		data.takenByPeace.clear();
 		data.setDirty();
 		QUIET.clear();
 		Ships.forget(level);
@@ -1007,6 +1030,8 @@ public final class Lairs {
 		final java.util.Set<BlockPos> unswept = new java.util.LinkedHashSet<>();
 		/** The ground each standing lair on land covered before it was set down, by its middle (B225; none for older lairs). */
 		final Map<BlockPos, CampGround> grounds = new LinkedHashMap<>();
+		/** The standing lairs' captains the game took away on Peaceful, not brought down (B767; none before it). */
+		final java.util.Set<UUID> takenByPeace = new java.util.LinkedHashSet<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -1066,6 +1091,13 @@ public final class Lairs {
 				lands.add(c);
 			}
 			tag.put("grounds", lands);
+			ListTag taken = new ListTag();
+			for (UUID captain : takenByPeace) { // (each goes with its lair: leave, breakUp)
+				CompoundTag c = new CompoundTag();
+				Nbt.putUuid(c, "chief", captain);
+				taken.add(c);
+			}
+			tag.put("taken_by_peace", taken);
 			tag.putBoolean("b209", true);
 			return tag;
 		}
@@ -1089,6 +1121,7 @@ public final class Lairs {
 			clearing.clear();
 			unswept.clear();
 			grounds.clear();
+			takenByPeace.clear();
 			ListTag list = Nbt.getList(tag, "camps", Tag.TAG_COMPOUND);
 			for (int i = 0; i < list.size(); i++) {
 				CompoundTag c = Nbt.compoundAt(list, i);
@@ -1125,6 +1158,13 @@ public final class Lairs {
 				CampGround ground = CampGround.read(c);
 				if (ground != null) {
 					grounds.put(BlockPos.of(Nbt.getLong(c, "pos")), ground);
+				}
+			}
+			ListTag taken = Nbt.getList(tag, "taken_by_peace", Tag.TAG_COMPOUND); // (none before B767)
+			for (int i = 0; i < taken.size(); i++) {
+				CompoundTag c = Nbt.compoundAt(taken, i);
+				if (Nbt.hasUuid(c, "chief")) {
+					takenByPeace.add(Nbt.getUuid(c, "chief"));
 				}
 			}
 			if (Nbt.getBoolean(tag, "b209")) {

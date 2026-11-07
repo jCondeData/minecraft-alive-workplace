@@ -101,7 +101,7 @@ public final class ColossusPlaque {
 		}
 		return entity.chronicle().stream()
 			.filter(e -> e.kind() == Chronicle.Kind.FOUNDED)
-			.filter(e -> !(e.text().getContents() instanceof TranslatableContents t && t.getKey().equals("chronicle.aliveworkplace.colony.mother")))
+			.filter(e -> !(e.text().getContents() instanceof TranslatableContents t && (t.getKey().equals("chronicle.aliveworkplace.colony.mother") || t.getKey().equals("chronicle.aliveworkplace.colony.mother.one"))))
 			.mapToLong(Chronicle.Entry::day).min();
 	}
 

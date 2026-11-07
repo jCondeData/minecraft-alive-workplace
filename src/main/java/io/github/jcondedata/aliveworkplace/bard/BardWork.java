@@ -27,6 +27,7 @@ import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.JukeboxSong;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +42,8 @@ public class BardWork extends Behavior<Villager> {
 	private static final float[] SCALE = {0.5f, 0.561f, 0.63f, 0.749f, 0.841f, 1.0f, 1.122f, 1.26f, 1.498f, 1.682f, 2.0f};
 	private static final int NOTE_EVERY = 5;
 	private static final int PHRASE = 16;
+	/** How long a set lasts before the brain looks again (a song under way is always played to its end). */
+	private static final int SET = 1200;
 	/** Who's playing what right now (tests and the status line). */
 	private static final Map<Villager, Holder<JukeboxSong>> PLAYING = Collections.synchronizedMap(new WeakHashMap<>());
 
@@ -48,6 +51,11 @@ public class BardWork extends Behavior<Villager> {
 	@Nullable
 	private Holder<JukeboxSong> song;
 	private int songTicks;
+	/** Where the song was started: the stop goes there even when the jukebox is already gone (B976). */
+	@Nullable
+	private BlockPos songAt;
+	/** When this set is over: no new disc is started after it, so the brain gets to look again. */
+	private long setEnds;
 	private int nextDisc;
 	private int note;
 	private int step;
@@ -58,7 +66,7 @@ public class BardWork extends Behavior<Villager> {
 			MemoryModuleType.JOB_SITE, MemoryStatus.VALUE_PRESENT,
 			MemoryModuleType.WALK_TARGET, MemoryStatus.REGISTERED,
 			MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED
-		), 1200);
+		), SET);
 	}
 
 	public static Optional<Holder<JukeboxSong>> playing(Villager villager) {
@@ -72,13 +80,21 @@ public class BardWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
-		return !villager.isSleeping() && Builders.benchPos(villager).isPresent();
+		// the set ends with the shift: a song under way no longer times the set out (B975), so the schedule ends it
+		return !villager.isSleeping() && Builders.benchPos(villager).isPresent() && villager.getBrain().isActive(Activity.WORK);
 	}
 
 	@Override
 	protected void start(ServerLevel level, Villager villager, long gameTime) {
 		walker.reset();
 		note = SCALE.length / 2;
+		setEnds = gameTime + SET;
+	}
+
+	/** B975: never cut a disc off: the set times out only between songs. */
+	@Override
+	protected boolean timedOut(long gameTime) {
+		return song == null && super.timedOut(gameTime);
 	}
 
 	@Override
@@ -110,6 +126,9 @@ public class BardWork extends Behavior<Villager> {
 				return;
 			}
 			stopSong(level, villager);
+			if (gameTime > setEnds) {
+				return; // the set is over: the next disc waits for the next one
+			}
 		}
 		if (dedication != null) {
 			tune(level, villager);
@@ -121,6 +140,7 @@ public class BardWork extends Behavior<Villager> {
 		if (next != null) {
 			song = next;
 			songTicks = 0;
+			songAt = stand.immutable();
 			PLAYING.put(villager, next);
 			int id = Lookup.registry(level.registryAccess(), Registries.JUKEBOX_SONG).getId(next.value());
 			level.levelEvent(null, 1010, stand, id);
@@ -176,8 +196,11 @@ public class BardWork extends Behavior<Villager> {
 
 	private void stopSong(ServerLevel level, Villager villager) {
 		if (song != null) {
-			Builders.benchPos(villager).ifPresent(stand -> level.levelEvent(1011, stand, 0));
+			if (songAt != null) {
+				level.levelEvent(1011, songAt, 0);
+			}
 			song = null;
+			songAt = null;
 		}
 		PLAYING.remove(villager);
 	}

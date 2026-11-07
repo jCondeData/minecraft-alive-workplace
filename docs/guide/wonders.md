@@ -44,7 +44,8 @@ may.
 Hold it and you see the whole Wonder as see-through blocks. Right-click the ground to place it (its front faces you),
 sneak-right-click the ground to turn it, and sneak-right-click the air to pick it up again or, before placing, to
 mirror it. It must stand with its middle within 64 blocks of the hall and every corner within 96, and never over a
-finished building. A book and quill in your other hand writes down the whole Wonder's material list.
+finished building or another Wonder (even one whose Foundation Stone is set but that still waits for its goods, with
+nothing standing there yet; a builder won't take a house on that ground either). A book and quill in your other hand writes down the whole Wonder's material list.
 
 ## Laying the Foundation Stone
 
@@ -94,6 +95,9 @@ in yourself: right-click the stone holding them, or click the line on the board.
 Then, by day (at night it waits for the morning), the stage is **dedicated**: the bell rings, the villagers off work
 gather at the stone, the Bard plays and the guards stand in line, the goods are taken and the chronicle says so. Abandon
 the Wonder before that and the goods you handed in for the stage come back.
+
+The builders then raise the stage, a part at a time. Ask one of them (sneak and right-click him) and he says he is
+building, for example, "Stage 1 part of the Great Cathedral".
 
 ## When it's finished
 

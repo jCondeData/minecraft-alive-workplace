@@ -162,9 +162,9 @@ public final class Furnaces {
 
 	/**
 	 * Whether a furnace near {@code station} wants a worker's visit: something done waits in its output slot (and the
-	 * chests have room for it), or it stands empty while the chests hold {@code goods} it can cook. Workers who only
-	 * tend furnaces when they drop off use it to come back for what's done (B147: a fisher's cooked fish sat in the
-	 * furnace until his next catch came home, and all night once his shift ended).
+	 * chests have room for it: an empty slot, or a stack of it with room, B802), or it stands empty while the chests hold
+	 * {@code goods} it can cook. Workers who only tend furnaces when they drop off use it to come back for what's done
+	 * (B147: a fisher's cooked fish sat in the furnace until his next catch came home, and all night once his shift ended).
 	 */
 	public static boolean needsTending(ServerLevel level, BlockPos station, List<BlockPos> supplies, Predicate<Item> goods) {
 		if (supplies.isEmpty()) {
@@ -175,7 +175,7 @@ public final class Furnaces {
 			if (!(level.getBlockEntity(pos) instanceof AbstractFurnaceBlockEntity furnace)) {
 				continue;
 			}
-			if (!furnace.getItem(2).isEmpty() && SupplyContainers.freeSlots(level, supplies) > 0) {
+			if (SupplyContainers.fitsAny(level, supplies, furnace.getItem(2))) { // room in a stack counts too (B802)
 				return true;
 			}
 			if (furnace.getItem(0).isEmpty()) {

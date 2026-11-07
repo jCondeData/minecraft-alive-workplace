@@ -154,7 +154,7 @@ public final class GrandRebuild {
 		}
 		Set<ResourceLocation> never = never();
 		List<BuildSite> sites = List.copyOf(BuildSiteManager.get(level).all());
-		List<BuildSiteManager.Finished> finished = BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
+		List<BuildSiteManager.Finished> finished = BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.filter(f -> !never.contains(StewardConditions.family(f.structure())))
 			.filter(f -> sites.stream().noneMatch(s -> overlaps(level, s.structure(), s.placement(), f)))
 			.sorted(Comparator.comparing((BuildSiteManager.Finished f) -> StewardConditions.beds(level, f.structure()) > 0 ? 0 : 1))

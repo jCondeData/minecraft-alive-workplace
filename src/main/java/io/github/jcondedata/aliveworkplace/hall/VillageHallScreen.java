@@ -148,7 +148,8 @@ public final class VillageHallScreen {
 		VillageRanks.Rank next = rank.next();
 		List<Component> nameLore = new ArrayList<>();
 		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank", rank.title()), ChatFormatting.AQUA));
-		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank_perks", Math.round((VillageRanks.questRewardFactor(rank) - 1) * 100),
+		nameLore.add(line(Component.translatable(VillageRanks.growthCap(rank) > 0 ? "screen.aliveworkplace.hall.rank_perks"
+			: "screen.aliveworkplace.hall.rank_perks.no_growth", Math.round((VillageRanks.questRewardFactor(rank) - 1) * 100),
 			VillageRanks.caravanRoutes(rank), VillageRanks.marketTraders(rank), VillageRanks.growthCap(rank)), ChatFormatting.GRAY));
 		if (next != null) {
 			nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank_next", next.title(), next.villagers, score.villagers(), next.buildings,
@@ -222,7 +223,7 @@ public final class VillageHallScreen {
 			bedLines(level, hall, census)), null);
 		int kinds = VillageHalls.mealKinds(level, hall);
 		List<Component> foodLore = new ArrayList<>(List.of(line("screen.aliveworkplace.hall.food_where", ChatFormatting.GRAY),
-			line(Component.translatable("screen.aliveworkplace.hall.meal_kinds", kinds, io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS),
+			line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.meal_kinds", kinds, kinds, io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS),
 				kinds >= io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS ? ChatFormatting.GREEN : ChatFormatting.YELLOW)));
 		Component luxuries = ClassesPage.luxuriesLine(level, hall); // the luxuries in store (34.6), with classes on
 		if (luxuries != null) {
@@ -278,7 +279,7 @@ public final class VillageHallScreen {
 		menu.divider(1);
 		int lines = entity == null ? 0 : entity.chronicle().size();
 		menu.button(CHRONICLE, icon(Items.WRITTEN_BOOK, Component.translatable("screen.aliveworkplace.hall.chronicle"), ChatFormatting.WHITE,
-			line(Component.translatable("screen.aliveworkplace.hall.chronicle_hint", lines), ChatFormatting.GRAY)), p -> {
+			line(Words.counted("screen.aliveworkplace.hall.chronicle_hint", lines, lines), ChatFormatting.GRAY)), p -> {
 			renderChronicle(menu, level, hall);
 			menu.broadcastChanges();
 		});
@@ -297,8 +298,7 @@ public final class VillageHallScreen {
 		menu.button(PlayerBank.BUTTON, PlayerBank.tab(level, hall), p -> PlayerBank.open(menu, level, hall, p)); // the bank (29.17)
 		List<VillageAdvice.Tip> tips = VillageAdvice.tips(level, hall);
 		List<Component> adviceLore = new ArrayList<>();
-		adviceLore.add(line(tips.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none")
-			: Component.translatable("screen.aliveworkplace.hall.advice_count", tips.size(), tips.get(0).title()), ChatFormatting.GRAY));
+		adviceLore.add(line(adviceCount(tips), ChatFormatting.GRAY));
 		for (VillageAdvice.Tip tip : tips) { // every tip and how, read out on the Overview (40.1)
 			adviceLore.add(line(tip.title(), ChatFormatting.YELLOW));
 			adviceLore.add(line(tip.how(), ChatFormatting.GRAY));
@@ -331,7 +331,7 @@ public final class VillageHallScreen {
 		});
 		int band = io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).size();
 		menu.button(MERCENARIES, icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.hall.mercenaries"), ChatFormatting.WHITE,
-			line(band > 0 ? Component.translatable("screen.aliveworkplace.hall.mercenaries_here", band)
+			line(band > 0 ? io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.mercenaries_here", band, band)
 				: Component.translatable("screen.aliveworkplace.hall.mercenaries_hint", io.github.jcondedata.aliveworkplace.guard.Mercenaries.BAND,
 					io.github.jcondedata.aliveworkplace.work.Money.describe((long) io.github.jcondedata.aliveworkplace.guard.Mercenaries.price(level, hall)
 						* io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, io.github.jcondedata.aliveworkplace.guard.Mercenaries.price(level, hall))),
@@ -417,7 +417,7 @@ public final class VillageHallScreen {
 		}
 		// The sidebar's sections (40.1): every button marked with its sections, and which sections are empty.
 		boolean laws = entity != null && !entity.edicts().isEmpty() || realm != null;
-		HallSections.apply(menu, level, HallPages.shown(), new HallSections.Counts(census.villagers(), census.beds(), census.food(),
+		HallSections.apply(menu, level, HallPages.shown(), new HallSections.Counts(census.everyone(), census.beds(), census.food(),
 			census.builds().size(), census.guards(), quests.size(), !Caravans.neighbours(level, hall).isEmpty(), laws));
 	}
 
@@ -470,13 +470,17 @@ public final class VillageHallScreen {
 			}
 			Component job = Component.translatable("entity.minecraft.villager." + station.profession().name());
 			Item item = level.getBlockState(station.pos()).getBlock().asItem();
-			// A job above their class (34.8) is greyed, with the class it needs; a click says why.
-			Component refusal = io.github.jcondedata.aliveworkplace.people.ClassJobs.refusal(hall, villager, station.profession());
+			// A retired elder takes no job again (34.20, B896): every block is greyed with why, and a click says it (not
+			// "someone took that workstation first"). A job above their class (34.8) is greyed, with the class it needs.
+			boolean retired = io.github.jcondedata.aliveworkplace.people.Retirement.isRetired(villager);
+			Component refusal = retired ? Component.translatable("message.aliveworkplace.job.retired", villager.getDisplayName())
+				: io.github.jcondedata.aliveworkplace.people.ClassJobs.refusal(hall, villager, station.profession());
 			if (refusal != null) {
 				io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass need = io.github.jcondedata.aliveworkplace.people.ClassJobs.needed(station.profession());
+				Component why = retired || need == null ? refusal : Component.translatable("screen.aliveworkplace.hall.job_needs_class", need.name());
 				menu.button(slot++, icon(item == Items.AIR ? Items.PAPER : item, job.copy(), ChatFormatting.DARK_GRAY,
 					line(where(hall, station.pos()), ChatFormatting.GRAY),
-					line(Component.translatable("screen.aliveworkplace.hall.job_needs_class", need.name()), ChatFormatting.RED)), p -> {
+					line(why, ChatFormatting.RED)), p -> {
 					Chat.actionBar(p, refusal.copy().withStyle(ChatFormatting.YELLOW));
 					level.playSound(null, p.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);
 				});
@@ -1119,6 +1123,12 @@ public final class VillageHallScreen {
 		return line(Component.translatable(key), color);
 	}
 
+	/** The Advice button's first line (B810): "No suggestions", "1 suggestion, first: ..." or "3 suggestions, first: ...". */
+	public static Component adviceCount(List<VillageAdvice.Tip> tips) {
+		return tips.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none")
+			: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.hall.advice_count", tips.size(), tips.size(), tips.get(0).title());
+	}
+
 	/**
 	 * The Beds button's lines: the free beds, and (B206) that the village is full, nobody moving in until a bed is free;
 	 * (B207) the settlers' wagon beds, which aren't counted; then the cradles.
@@ -1131,7 +1141,7 @@ public final class VillageHallScreen {
 			lines.add(line(Component.translatable("screen.aliveworkplace.hall.full"), ChatFormatting.YELLOW));
 		}
 		if (census.wagonBeds() > 0) {
-			lines.add(line(Component.translatable("screen.aliveworkplace.hall.wagon_beds", census.wagonBeds()), ChatFormatting.GRAY));
+			lines.add(line(Words.counted("screen.aliveworkplace.hall.wagon_beds", census.wagonBeds(), census.wagonBeds()), ChatFormatting.GRAY));
 		}
 		lines.add(Cradles.status(level, hall));
 		return lines.toArray(Component[]::new);

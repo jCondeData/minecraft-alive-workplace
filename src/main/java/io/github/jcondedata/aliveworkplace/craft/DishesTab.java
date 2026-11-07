@@ -55,7 +55,7 @@ public final class DishesTab {
 		}
 		int waiting = DishRequests.get(level).of(hall).values().stream().mapToInt(Integer::intValue).sum();
 		if (waiting > 0) {
-			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.dishes.waiting_all", waiting), ChatFormatting.YELLOW));
+			lore.add(VillageHallScreen.line(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.dishes.waiting_all", waiting, waiting), ChatFormatting.YELLOW));
 		}
 		ItemStack icon = VillageHallScreen.icon(shown, Component.translatable("screen.aliveworkplace.dishes.title", VillageHalls.name(level, hall)),
 			ChatFormatting.GOLD, lore.toArray(Component[]::new));

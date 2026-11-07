@@ -149,6 +149,88 @@ public final class BuildSite {
 	 */
 	private final java.util.Set<BlockPos> leftOut = new java.util.HashSet<>();
 
+	/**
+	 * B837: how often CLEAR went back over its list for sand or gravel that fell into spots already cleared (a dune or a
+	 * gravel cap over the site). Saved; 0 in older saves.
+	 */
+	private int clearPasses;
+
+	/**
+	 * B868: how often each spot of the list the site is on was dug, by anyone, since the list began (or the spot was last
+	 * deferred for being refilled). A spot filled again the moment it is dug (sand dropped back, a cobblestone generator, a
+	 * player) would otherwise keep the lead at his cursor for ever. Not saved: after a load a spot gets its digs afresh.
+	 */
+	private final Map<BlockPos, Integer> digs = new java.util.HashMap<>();
+	/**
+	 * B868: the CLEAR spots given up because they were filled again each time they were dug (deferred, then skipped):
+	 * later passes over CLEAR (B837) pass them over, so they are counted in skipped once. Saved; empty in older saves.
+	 */
+	private final java.util.Set<BlockPos> refilled = new java.util.HashSet<>();
+
+	/** B868: the block at {@code pos} was dug out (a builder broke it for the list the site is on). */
+	public void dug(BlockPos pos) {
+		digs.merge(pos.immutable(), 1, Integer::sum);
+	}
+
+	/** B868: how often the spot at {@code pos} was dug on the list the site is on. */
+	public int digs(BlockPos pos) {
+		return digs.getOrDefault(pos, 0);
+	}
+
+	/**
+	 * B868: the current step's spot was filled again each time it was dug: deferred like any step that can't be done
+	 * yet (its digs start over for the retry); while retrying, skipped, and a CLEAR spot left for good.
+	 */
+	public void deferRefilled(BlockPos pos) {
+		digs.remove(pos);
+		if (retrying && stage == BuildPlan.Stage.CLEAR) {
+			refilled.add(pos.immutable());
+		}
+		defer();
+	}
+
+	/** Whether CLEAR gave the spot at {@code pos} up for being filled again each time it was dug (B868). */
+	public boolean refilled(BlockPos pos) {
+		return refilled.contains(pos);
+	}
+
+	/** How often CLEAR went back over its list for what fell in (B837). */
+	public int clearPasses() {
+		return clearPasses;
+	}
+
+	/** B837: back to the start of CLEAR, to dig out what fell into the spots already cleared. */
+	public void backOverClear() {
+		clearPasses++;
+		boolean onlyFallen = digOut;
+		backTo(BuildPlan.Stage.CLEAR, 0);
+		digOut = onlyFallen; // B869: a dig-out's next pass is a dig-out too
+	}
+
+	/**
+	 * B869: sand or gravel that fell into the build's rooms after CLEAR (its support broken mid-build) is dug out before
+	 * the build is called done. True while the build is back in CLEAR for that: only such blocks where the drawing has air
+	 * are dug, and the list running out goes straight back to LANDSCAPE. Saved; false in older saves.
+	 */
+	private boolean digOut;
+
+	/** Whether CLEAR is a dig-out of what fell into the built rooms (B869). */
+	public boolean digOut() {
+		return digOut;
+	}
+
+	/** B869: back over CLEAR to dig out what fell into the rooms (one of the build's {@link #clearPasses}). */
+	public void backToDigOut() {
+		clearPasses++;
+		backTo(BuildPlan.Stage.CLEAR, 0);
+		digOut = true;
+	}
+
+	/** B869: sand fallen into the rooms, still there once CLEAR's passes ran out: given up for good, counted once. */
+	public void leaveOut(BlockPos pos) {
+		leftOut.add(pos.immutable());
+	}
+
 	/** How often the build went back for blocks broken mid-build (B508). */
 	public int rechecks() {
 		return rechecks;
@@ -178,10 +260,12 @@ public final class BuildSite {
 		this.stage = stage;
 		cursor = index;
 		retrying = false;
+		digOut = false; // B869: set again by a dig-out
 		deferred.clear();
 		gaveUp.clear();
 		placedThisStage.clear();
 		placedStage = null;
+		digs.clear(); // B868
 		onChange.run();
 	}
 
@@ -586,11 +670,14 @@ public final class BuildSite {
 		if (!retrying && !deferred.isEmpty()) {
 			retrying = true;
 		} else {
-			stage = stage.next();
+			// B869: a dig-out of what fell into the rooms goes straight back to the end of the build
+			stage = digOut && stage == BuildPlan.Stage.CLEAR ? BuildPlan.Stage.LANDSCAPE : stage.next();
+			digOut = false;
 			retrying = false;
 			deferred.clear();
 			gaveUp.clear();
 		}
+		digs.clear(); // B868: a new list (or the retry of the deferred) counts its digs afresh
 		cursor = 0;
 		onChange.run();
 	}
@@ -796,6 +883,7 @@ public final class BuildSite {
 		refresh = from;
 		stage = BuildPlan.Stage.CLEAR;
 		cursor = 0;
+		digOut = false;
 		plan = null;
 		onChange.run();
 	}
@@ -989,8 +1077,17 @@ public final class BuildSite {
 		if (rechecks > 0) {
 			tag.putInt("rechecks", rechecks); // B508
 		}
+		if (clearPasses > 0) {
+			tag.putInt("clear_passes", clearPasses); // B837
+		}
+		if (digOut) {
+			tag.putBoolean("dig_out", true); // B869
+		}
 		if (!leftOut.isEmpty()) {
 			tag.putLongArray("left_out", leftOut.stream().mapToLong(BlockPos::asLong).toArray()); // B508
+		}
+		if (!refilled.isEmpty()) {
+			tag.putLongArray("refilled", refilled.stream().mapToLong(BlockPos::asLong).toArray()); // B868
 		}
 		if (furniture == null) {
 			tag.putBoolean("furniture_unchosen", true); // 37.3: a new site not yet planned chooses when it is
@@ -1047,8 +1144,13 @@ public final class BuildSite {
 		site.kineticOrder = Nbt.getBoolean(tag, "kinetic_order"); // 39.5: older saves build in today's order
 		site.kineticPasses = Nbt.getInt(tag, "kinetic_passes");
 		site.rechecks = Nbt.getInt(tag, "rechecks"); // B508: none in older saves
+		site.clearPasses = Nbt.getInt(tag, "clear_passes"); // B837: none in older saves
+		site.digOut = Nbt.getBoolean(tag, "dig_out"); // B869: none in older saves
 		for (long p : Nbt.getLongArray(tag, "left_out")) {
 			site.leftOut.add(BlockPos.of(p));
+		}
+		for (long p : Nbt.getLongArray(tag, "refilled")) { // B868: none in older saves
+			site.refilled.add(BlockPos.of(p));
 		}
 		// 37.3: older saves have neither, and build vanilla
 		site.furniture = Nbt.getBoolean(tag, "furniture_unchosen") ? null

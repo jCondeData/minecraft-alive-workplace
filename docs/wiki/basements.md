@@ -6,7 +6,7 @@ freezer, the Smith's coal store, the Cook's cold larder and the Storehouse's vau
 should also get basements in a new Level 4 version, but some buildings should get basements in general at any level,
 like a butcher maybe has a freezer").
 
-Roadmap items: 26.15
+Roadmap items: 26.15, B923, B924, B958
 
 ## 1. What a player sees
 
@@ -58,7 +58,14 @@ Cellars from Level 1:
   stands), it would otherwise have filled the room with cobblestone. Ground-floor blocks with no basement under them
   (a porch) get their footing as before.
 - Builders never break containers or the bench while clearing: a chest buried where a basement goes stays (its spot is
-  skipped). Water or lava met while digging is left alone, as in any clearing.
+  skipped). Water or lava in the earth beside the dig (an aquifer, a buried pond, a lava pocket) is plugged with
+  dirt the moment a spot below the ground is dug next to it (`BuilderWork.sealFluids`, B923, B924), before it can run
+  in, as a player digging down stops a leak: the room stays dry, the builder never stands in water or burns, and the
+  walls and floor go up as drawn. Only a fluid block is replaced, never where the drawing wants its own water or lava
+  or a spot of the room; above the ground nothing changes. The same holds for a Smithy's "Dig the cellar".
+  Waterlogged blocks in that earth (glow lichen, dripstone, a buried stair) are drained and kept, and seagrass or
+  kelp is plugged like water (B958); water that has already run into the room is taken away, never plugged with
+  dirt, so the room is left open as drawn. A waterlogged block the blueprint draws stays as drawn.
 - No job block in a basement but the job's own: casks are spruce or dark oak log ends, stock is in chests, so a cellar
   never hands a villager a job. The Butcher's Shop has the smoker upstairs.
 - Unlocks: the Level 4s come the way every upgrade does (the builder who finishes the III sells it; a builder's level-up
@@ -114,6 +121,6 @@ ground, the right size, a way down and a light, and each Level III's builder sel
 `levelFourDigsAndFinishesItsBasement`: Starter Cottage IV over a finished Cottage III on real ground;
 `butchersShopGoesUpWithItsFreezer`; `reloadMidDigCarriesOn`: saved and loaded mid-dig and mid-structure, the foundation
 never fills the dug room; `noMaterialsStillDigsAndKeepsContainers`; `cellarIsBuiltWithTheGroundLeftAlone`), and
-`BuilderGameTests.starterUpgradesKeepMostOfTheirBase`, `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`. QA's `QaBasementGameTests` (3, every build with a basement): its way down comes up through the ground floor; no spot on its floor is left dark (block light 0); it can be walked to from outside and back out, every chest down there within reach.
+`BuilderGameTests.starterUpgradesKeepMostOfTheirBase`, `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`. QA's `QaBasementGameTests` (3, every build with a basement): its way down comes up through the ground floor; no spot on its floor is left dark (block light 0); it can be walked to from outside and back out, every chest down there within reach. QA's `QaBasementGround1104GameTests` (2: a cave two deep under the floor leaves the basement's floor whole; a water source just under the floor stays under it, the basement dry). QA's `QaBasementGround1104BugTests` (3, B923, B924: water sources in the earth beside three of the Cottage IV's basement walls and under its floor leave no water in it and the builder alive; lava in the same spots with fire spread on burns nothing and kills no one; water beside an old Smithy's coal store leaves its cellar dig dry and the whole Smithy as drawn). QA's `QaBasementFluids1104fBugTests` (2, B958: waterlogged glow lichen, dripstone and seagrass, or waterlogged stairs, beside the basement leave it dry and built as drawn, with no dirt in the room). QA's `QaBasementFluids1104fGameTests` (water and lava pockets inside the room, a pond at the top of the ground beside it, water with a restart mid-dig, lava beside an old Smithy's cellar dig). QA's `QaBasementSeals1107bGameTests` (7: an aquifer all round the room, the front wall too, is plugged with dirt and the builder never stands in water; lava at the floor's own level and just under the ground; lava with a restart mid-dig; kelp beside the walls; a builder with no materials digs the room and it stays dry while he waits; a fresh Butcher's Shop beside water keeps its freezer dry and every packed ice; a fresh Storehouse beside lava keeps its vault and its chests unburnt).
 
 Showcase scenes: basement

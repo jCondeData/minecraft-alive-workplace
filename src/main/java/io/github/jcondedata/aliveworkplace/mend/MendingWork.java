@@ -34,6 +34,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
@@ -61,6 +62,12 @@ public class MendingWork extends Behavior<Villager> {
 	}
 
 	private static final Set<Villager> BUSY = Collections.newSetFromMap(new WeakHashMap<>());
+	/** Who has taken a worn piece into their bag (till the bag is empty again), for {@link #stationlessTick} (B970). */
+	private static final Set<Villager> CARRYING = Collections.newSetFromMap(new WeakHashMap<>());
+	/** When each smith with something in their bag was first seen without a grindstone (B970). */
+	private static final Map<Villager, Long> STATIONLESS = new WeakHashMap<>();
+	/** How long a smith's bag outlasts the grindstone before it's dropped (B970): time to put one back. */
+	static final long STATIONLESS_TICKS = 100;
 
 	private final Walker walker = new Walker(SPEED);
 	@Nullable
@@ -68,6 +75,10 @@ public class MendingWork extends Behavior<Villager> {
 	private Phase phase = Phase.IDLE;
 	private int lookTimer;
 	private int timer;
+	/** The job and phase last saved on the villager (B971), to save again only when they change. */
+	@Nullable
+	private Job savedJob;
+	private Phase savedPhase = Phase.IDLE;
 
 	public MendingWork() {
 		super(ImmutableMap.of(
@@ -84,8 +95,11 @@ public class MendingWork extends Behavior<Villager> {
 
 	public static boolean isBusy(Villager villager) {
 		synchronized (BUSY) {
-			return BUSY.contains(villager);
+			if (BUSY.contains(villager)) {
+				return true;
+			}
 		}
+		return ModAttachments.MEND_JOB.has(villager); // a job in hand from before a reload (B971)
 	}
 
 	private static void busy(Villager villager, boolean busy) {
@@ -132,7 +146,55 @@ public class MendingWork extends Behavior<Villager> {
 		if (station == null) {
 			return;
 		}
+		if (job == null) {
+			restore(villager);
+		}
+		work(level, villager, station);
+		save(villager);
+	}
+
+	/**
+	 * Picks up the job saved on the villager (B971): this behaviour is new after a chunk unload or a restart, but the piece
+	 * in the bag still goes back where it was found, not into our chests.
+	 */
+	private void restore(Villager villager) {
+		MendJob saved = ModAttachments.MEND_JOB.get(villager);
+		if (saved == null) {
+			return;
+		}
+		job = new Job(saved.item(), saved.from(), saved.material(), saved.units(), saved.materialChest());
+		phase = Phase.valueOf(saved.phase().name());
+		if (saved.material() == Items.AIR && (phase == Phase.MATERIAL || phase == Phase.MENDING)) {
+			phase = Phase.RETURNING; // the material's mod was removed: the piece goes back as it is
+		}
+		timer = -1;
+		walker.reset();
+		savedJob = job;
+		savedPhase = phase;
+	}
+
+	/** Saves the job in hand on the villager when it changed (B971); none saved once it's done. */
+	private void save(Villager villager) {
+		if (job == savedJob && phase == savedPhase) {
+			return;
+		}
+		savedJob = job;
+		savedPhase = phase;
+		MendJob.Phase saved = switch (phase) {
+			case FETCHING -> MendJob.Phase.FETCHING;
+			case MATERIAL -> MendJob.Phase.MATERIAL;
+			case MENDING -> MendJob.Phase.MENDING;
+			default -> MendJob.Phase.RETURNING;
+		};
+		ModAttachments.MEND_JOB.set(villager, job == null ? null
+			: new MendJob(job.item(), job.from(), job.material(), job.units(), job.materialChest(), saved));
+	}
+
+	private void work(ServerLevel level, Villager villager, BlockPos station) {
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
+		if (job != null && phase != Phase.FETCHING && bag.stacks().stream().noneMatch(this::isThePiece)) {
+			job = null; // the piece left the bag while we were away (dropped when the grindstone went, B970)
+		}
 		if (job == null) {
 			if (!bag.isEmpty()) {
 				tidy(level, villager, station, bag);
@@ -173,6 +235,9 @@ public class MendingWork extends Behavior<Villager> {
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, job.from(), SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
 		ItemStack rest = bag.add(found);
+		synchronized (CARRYING) {
+			CARRYING.add(villager);
+		}
 		if (!rest.isEmpty()) {
 			SupplyContainers.insert(level, List.of(job.from()), rest); // no room to carry it
 			job = null;
@@ -254,6 +319,59 @@ public class MendingWork extends Behavior<Villager> {
 		job = null;
 		lookTimer = 20;
 		walker.reset();
+	}
+
+	/**
+	 * Every villager's AI step (mixin/VillagerMixin), B970: a smith who lost the grindstone (broken, or taken by vanilla
+	 * when their job site went) while carrying a worn piece or its material can't work any more, so after
+	 * {@link #STATIONLESS_TICKS} they drop what they carry at their feet, where a player can pick it up, as a retired
+	 * Crafter does ({@code craft/Crafters#retire}). That holds whatever job they take next (B1007) and across a reload,
+	 * when the saved mending job marks the carrier (B1008). A crafting job in hand is {@code CrafterWork#benchlessTick}'s.
+	 */
+	public static void stationlessTick(Villager villager) {
+		if (!(villager.level() instanceof ServerLevel level)) {
+			return;
+		}
+		boolean carrying;
+		synchronized (CARRYING) {
+			carrying = CARRYING.contains(villager);
+		}
+		boolean smith = villager.getVillagerData().getProfession() == VillagerProfession.WEAPONSMITH;
+		// After a reload the in-memory set is empty: the mending job saved on him (B971) still says he carries a piece (B1008).
+		if (!carrying && !smith && !ModAttachments.MEND_JOB.has(villager)) {
+			return;
+		}
+		BuilderBag bag = ModAttachments.BUILDER_BAG.get(villager);
+		boolean empty = bag == null || bag.isEmpty();
+		// Only a Weaponsmith's job site is a grindstone: one who took a lectern (or any other job) never mends again, so his
+		// new workstation doesn't keep the piece in his bag (B1007).
+		boolean grindstone = smith && Builders.benchPos(villager).isPresent();
+		if (empty || grindstone || ModAttachments.CRAFTER_JOB.get(villager) != null) {
+			synchronized (CARRYING) {
+				STATIONLESS.remove(villager);
+				if (empty) {
+					CARRYING.remove(villager);
+				}
+			}
+			return;
+		}
+		long now = level.getGameTime();
+		long since;
+		synchronized (CARRYING) {
+			since = STATIONLESS.computeIfAbsent(villager, v -> now);
+		}
+		if (now - since < STATIONLESS_TICKS) {
+			return;
+		}
+		synchronized (CARRYING) {
+			STATIONLESS.remove(villager);
+			CARRYING.remove(villager);
+		}
+		for (ItemStack stack : bag.takeAll()) {
+			Block.popResource(level, villager.blockPosition(), stack);
+		}
+		ModAttachments.MEND_JOB.remove(villager); // the piece is on the ground now: no job to take up again (B971)
+		busy(villager, false);
 	}
 
 	/** The piece being mended, in the bag (never the material). */

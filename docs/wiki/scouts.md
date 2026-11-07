@@ -19,7 +19,8 @@ Roadmap items: 32.12, B368
 - **The trip.** The scout walks (or rides, if they're in the saddle of a cavalry horse) toward the lair, a stretch at a
   time over the ground, until they are **within 24 blocks** of it. There they stop, **raise the spyglass** (it moves
   into their hand, where a villager shows what they hold), look the camp over for 3 seconds with the spyglass's sound,
-  lower it and **come home** to their grindstone. Over their head while out: "scouting the lair: Bandit camp", then
+  lower it and **come home** to their grindstone. A scout retrained or given No job at the hall mid-mission has the
+  mission called off and puts a raised spyglass away (B891). Over their head while out: "scouting the lair: Bandit camp", then
   "watching the lair through the spyglass", then "coming home with a scouting report". The Defense page shows the
   scout out and for how long.
 - **Unseen.** A lair's band **never goes for a scout more than 8 blocks off**: they let them watch. Closer than that,

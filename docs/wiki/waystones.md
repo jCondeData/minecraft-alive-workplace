@@ -210,6 +210,18 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   first, six listed with "and 6 more" and the next six once the nearest leave; a village 1,500 blocks off whose chunks
   are unloaded, discovered by one player and not by another; the switch off after the stones stand (both stay listed,
   a broken one as broken). Every line read through `en_us.json`, no raw keys.
+- `QaWaystoneTravel1102dCompatTests` (compat suite, QA, 41.3): the caravan's own village's stone broken mid-trip, it
+  walks the whole road with its goods; a stone broken while a caravan is still on its way changes nothing until it is
+  due, and put back by then (as the builder sets it) the caravan steps out of it; a caravan due on the very tick it is
+  checked, the far stone broken, walks; a spot exactly as far from the other stone as from home is no nearer (the
+  settlers walk), one block past that they go through the stone; settlers for a spot on the far side of
+  home from the other stone walk the road from home (no stone, the walking journey); settlers whose own stone is broken
+  walk from home though the other stone stands nearer their spot.
+- `QaSettlersStepIn1102dCompatTests` (compat suite, QA, 41.3), with a player watching so nobody leaves unseen:
+  settlers going by waystone step in only once all of them stand at the stone (one three blocks short holds both back;
+  within two blocks, both go); settlers walking the road who stand by their stone don't step into it; with the far
+  stone broken while they wait at theirs, they don't step in and are sent out on the road; settlers held up short of
+  the stone still leave when their time is up, and not ten ticks before, called away from work all the while.
 - Scene `waystone_caravan` (showcase, with Waystones): Thornholm's caravan walks to its stone and steps in; Ashford's
   steps out of it, unloads and walks back in.
 - `VillageWaystonesGameTests` (main suite, no Waystones): the rule stands aside for the missing mod and no wish is the

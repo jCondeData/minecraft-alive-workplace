@@ -97,7 +97,7 @@ public final class MegaShrines {
 	 * pedestal is put back counts again.
 	 */
 	private static Optional<BuildSiteManager.Finished> finished(ServerLevel level, BlockPos hall) {
-		return BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
+		return BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.filter(f -> BlueprintStyles.base(f.structure()).equals(SHRINE))
 			.filter(f -> standing(level, Arenas.world(f.placement(), PEDESTAL_SPOT)))
 			.min(Comparator.comparingDouble(f -> f.placement().origin().distSqr(hall)));

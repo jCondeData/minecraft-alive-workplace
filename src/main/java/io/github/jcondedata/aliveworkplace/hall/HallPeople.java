@@ -69,6 +69,19 @@ public final class HallPeople {
 		menu.setState(HallSections.PEOPLE_FIRST, Math.min(Short.MAX_VALUE, first));
 	}
 
+	/**
+	 * Whether {@code villager} works here without being the village's to employ, B889: a hired mercenary or an allied
+	 * village's relief rider (a Guard with no guard post, gone at dawn), or a story's visitor in their own job with no
+	 * workstation (the Sickness story's Doctor Wren). The People table shows their job, counts them working and offers no
+	 * change of job; the hall never hands them a work block.
+	 */
+	public static boolean visitor(Villager villager) {
+		return io.github.jcondedata.aliveworkplace.guard.Mercenaries.isMercenary(villager)
+			|| io.github.jcondedata.aliveworkplace.guard.Relief.isRider(villager)
+			|| villager.getTags().contains(io.github.jcondedata.aliveworkplace.story.Arcs.MOB_TAG)
+				&& villager.getVillagerData().getProfession() != VillagerProfession.NONE;
+	}
+
 	public static Kind kind(Villager villager) {
 		if (villager.isBaby()) {
 			return Kind.CHILD;
@@ -76,6 +89,9 @@ public final class HallPeople {
 		VillagerProfession job = villager.getVillagerData().getProfession();
 		if (job == VillagerProfession.NITWIT) {
 			return Kind.NITWIT;
+		}
+		if (visitor(villager) && job != VillagerProfession.NONE) { // not the village's to employ: their own job, none offered (B889)
+			return job == io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD ? Kind.GUARD : Kind.WORKER;
 		}
 		if (job == VillagerProfession.NONE || villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isEmpty()) {
 			return Kind.JOBLESS;

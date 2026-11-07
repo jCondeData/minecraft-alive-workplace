@@ -4,6 +4,10 @@
 # --- ours, triggered on purpose by tests ---
 # B208GameTests and B211GameTests make the world refuse hostile mobs and village golems, wolves, horses and llamas, as Cobbleverse's MobsBeGone does, and set Peaceful, to prove each refusal is logged plainly.
 (Another mod refused to let minecraft:\S+ spawn for the|Could not spawn minecraft:\S+ for the) 
+# QaHostileSpawnsForced1101dGameTests gives a captain and a golem a living villager's UUID so the world refuses them even when placed directly (REFUSED_FORCED); vanilla warns of the clash.
+UUID of added entity already exists: (Vindicator|IronGolem)\['(Vindicator|Iron Golem)'
+# QaThreatFixes1031GameTests (B709) refuses the bandit camp's chief to prove the camp is then simply not made (and is made once allowed); the lair says why.
+made no camp near the village hall at BlockPos\{.*\}: its captain could not spawn
 # QaRoadGameTests ships three broken road style files in the test pack to prove each is skipped and the shipped styles still load (27.15).
 Skipping road style aliveworkplace_test:road_styles/qa_
 # QaRenewalGameTests loads five broken renewal lists through a fake resource manager to prove each is skipped and the good lists still load (27.21).
@@ -18,6 +22,12 @@ a test integration from test turned off
 Player test-mock-player just tried to change non-editable sign
 # MinerGameTests loads a quarry saved by a pre-0.45.0 bug to prove the repair stops it.
 Stopped quarry .* stretched over its Miner's Bench .* by a bug before 0\.45\.0
+# QaSavedDataOneBadEntry1101GameTests and its BugTests put one damaged entry in every saved list, to prove the bad entry is skipped and the rest of the file loads (B763).
+Skipping (a saved caravan (village|sale)|a saved claimed bounty id|a saved mood boost|a tracked quest|finished quests saved for a player)
+# QaRemovedModItems1102BugTests and RemovedModItemsGameTests load bags, loads, routes and trips naming a removed mod's item, to prove only that entry is dropped (B791).
+Dropped an entry of a saved (builder bag|golem load|route filter|courier route|machine trip) that no longer loads
+# QaHallListsOneBadEntry1102BugTests puts one empty entry in each of a Village Hall's saved lists, to prove only that entry is dropped (B796).
+Dropped an entry of a saved (edict|guild charter|reform|found service|furniture look|plan zone|plan road|research level) that no longer loads
 # QaBlockSaveKindsGameTests and QaEveryCodecGameTests load halls with quests that can't be read, to prove each is left out and the hall still loads (B509).
 Left out a saved village quest that can't be read
 # GemGrowerGameTests feeds the bed reader malformed files (from a test pack) to prove each is logged and skipped.

@@ -96,7 +96,7 @@ public class FireBrigade extends Behavior<Villager> {
 		if (villager.isSleeping()) {
 			villager.stopSleeping();
 		}
-		ItemStack hand = villager.getMainHandItem();
+		ItemStack hand = TradeDisplay.workHand(villager); // a shown ware isn't kept to give back (B776)
 		if (!hand.isEmpty() && !(hand.is(Items.WATER_BUCKET) && ModAttachments.BRIGADE_HELD.has(villager))) {
 			// Kept (and saved) to give back when the fire is out: the bucket used to replace it for good (B152).
 			ModAttachments.BRIGADE_HELD.set(villager, hand.copy());

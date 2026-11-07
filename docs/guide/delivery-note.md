@@ -28,6 +28,8 @@ Craft **paper**, a **feather** and an **ink sac** together, anywhere in the grid
 ## How it fits in
 
 - **Mail first.** The postman runs the route when there's no mail to deliver.
+- **Protected villages.** In someone else's [protected village](village-protection.md) the note can't mark their
+  chests, and a postman won't carry a route you set out of it, unless the owner made you a friend.
 - **Handy for** moving a farm's harvest to a kitchen, or a quarry's stone to a builder's chests.
 
 More in [Porters, post and services](jobs-services.md).

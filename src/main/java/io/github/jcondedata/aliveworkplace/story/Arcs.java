@@ -28,6 +28,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.PlainTextContents;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -211,8 +214,10 @@ public final class Arcs implements ResourceManagerReloadListener {
 				JsonObject o = r.getValue().getAsJsonObject();
 				String villager = GsonHelper.getAsString(o, "villager", "");
 				for (String alt : villager.split("\\|", -1)) { // "job:a|job:b|any": the first that someone can play (31.22)
-					if (!alt.equals("new") && !alt.equals("any") && !alt.startsWith("job:")) {
-						throw new IllegalArgumentException("role '" + r.getKey() + "': 'villager' must be new, any or job:<profession> (alternatives split by |)");
+					boolean trait = alt.startsWith("trait:") && java.util.Arrays.stream(io.github.jcondedata.aliveworkplace.people.Traits.Trait.values())
+						.anyMatch(t -> t.name().equalsIgnoreCase(alt.substring(6)));
+					if (!alt.equals("new") && !alt.equals("any") && !alt.equals("mother") && !alt.startsWith("job:") && !trait) {
+						throw new IllegalArgumentException("role '" + r.getKey() + "': 'villager' must be new, any, mother, job:<profession> or trait:<trait> (alternatives split by |)");
 					}
 				}
 				roles.put(r.getKey(), new RoleSpec(villager, o.has("name") ? Rewards.text(o.get("name")) : Component.literal(r.getKey())));
@@ -534,7 +539,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 		s.chatter.addAll(c.chatter());
 		Stories.Data.get(level).setDirty();
 		Component header = Component.translatable("message.aliveworkplace.arc.chapter", arc.name(), s.chapter + 1, c.name());
-		List<Component> lines = c.intro();
+		List<Component> lines = c.intro().stream().map(line -> named(s, line)).toList();
 		for (ServerPlayer player : ArcEffects.audience(level, hall)) {
 			Chat.chat(player, header.copy().withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
 			for (Component line : lines) {
@@ -583,9 +588,33 @@ public final class Arcs implements ResourceManagerReloadListener {
 		for (Objectives.Objective o : q.objectives) {
 			objectives.add(cast(s, o));
 		}
-		Quest out = new Quest(q.id, q.file, "arc", q.name, "", q.posted, -1, objectives, q.progress, q.rewards);
+		Quest out = new Quest(q.id, q.file, "arc", q.name.map(n -> named(s, n)), "", q.posted, -1, objectives, q.progress, q.rewards);
 		out.arc = s.id;
 		Stories.post(level, hall, out);
+		return out;
+	}
+
+	/**
+	 * Text with the arc's cast filled in (B634): a translation's argument {@code "@<role>"} (in the file,
+	 * {@code {"translate": "...", "with": ["@asker"]}}) becomes the name of the villager who plays that role, so a
+	 * fallback asker is named, not the usual trade. Anything else is left as it is.
+	 */
+	static Component named(ArcState s, Component text) {
+		if (!(text.getContents() instanceof TranslatableContents t) || t.getArgs().length == 0) {
+			return text;
+		}
+		Object[] args = t.getArgs().clone();
+		for (int i = 0; i < args.length; i++) {
+			String plain = args[i] instanceof String str ? str
+				: args[i] instanceof Component part && part.getContents() instanceof PlainTextContents literal && part.getSiblings().isEmpty() ? literal.text() : null;
+			if (plain != null && plain.startsWith("@") && s.roles.containsKey(plain.substring(1))) {
+				args[i] = s.roles.get(plain.substring(1)).name().copy();
+			} else if (args[i] instanceof Component part) {
+				args[i] = named(s, part);
+			}
+		}
+		MutableComponent out = Component.translatableWithFallback(t.getKey(), t.getFallback(), args).setStyle(text.getStyle());
+		text.getSiblings().forEach(sibling -> out.append(named(s, sibling)));
 		return out;
 	}
 
@@ -679,6 +708,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 	 * puff, and the village's cooldown starts. Placed builds stay.
 	 */
 	static void end(ServerLevel level, BlockPos hall, Stories.Entry e, ArcState s, @Nullable String how) {
+		ReformStories.arcEnds(level, hall, s); // B917: a reform story's half-done step is kept
 		takeDown(level, e, s, true);
 		ArcEffects.dismiss(level, s);
 		ProfessorsThesis.dismissThessaly(level, s); // (B663) stopped or switched off, not only published

@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.guard.BanditCamps;
 import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
@@ -57,7 +58,10 @@ public class QaPeacefulLairGameTests implements FabricGameTest {
 		};
 	}
 
-	/** A hall (village radius 16) with four villagers and a bandit camp by it; config, clock, difficulty and threats put back at the end. */
+	/**
+	 * A hall (village radius 16) with four villagers and a bandit camp by it; no hall rounds but the tests' own (and the
+	 * new hall's first); config, clock, difficulty and threats put back at the end.
+	 */
 	private static BlockPos village(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
@@ -67,6 +71,10 @@ public class QaPeacefulLairGameTests implements FabricGameTest {
 		long time = level.getDayTime();
 		boolean lairs = Lairs.ENABLED;
 		Difficulty difficulty = level.getDifficulty();
+		int every = VillageNeeds.CHECK_EVERY;
+		// Only the rounds the tests run (B855, as B799): the hall's own round (every CHECK_EVERY ticks, at a time set by
+		// the world clock) that fell in a test's 10 ticks on Peaceful sent the camp away before the test's save and load.
+		VillageNeeds.CHECK_EVERY = Integer.MAX_VALUE;
 		VillageHalls.RADIUS = 16;
 		Lairs.ENABLED = true;
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
@@ -84,6 +92,7 @@ public class QaPeacefulLairGameTests implements FabricGameTest {
 			ThreatData.get(level).forgetPast(hall);
 			ThreatData.get(level).forgetClock(hall);
 			VillageHalls.RADIUS = radius;
+			VillageNeeds.CHECK_EVERY = every;
 			Lairs.ENABLED = lairs;
 			level.setDayTime(time);
 			new WorkplaceConfig().apply();
@@ -197,6 +206,34 @@ public class QaPeacefulLairGameTests implements FabricGameTest {
 				helper.assertTrue(Lairs.near(level, hall).isEmpty(), "the camp lingers without its chief on Peaceful");
 				helper.assertTrue(last(entity).equals("The raiders of the Bandit camp packed up and left the village in peace") && Lairs.resting(level, hall) == 0,
 					"after a load, Peaceful: '" + last(entity) + "', resting " + Lairs.resting(level, hall));
+				helper.succeed();
+			});
+		});
+	}
+	/**
+	 * B767: Peaceful for a moment takes the chief away; the world is back on Normal and saved and loaded before the hall's
+	 * round. The camp remembers he was taken, not brought down: it leaves in peace, with no rest days.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"qaPeacefulLairBlipSaved"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaPeacefulLairBlipSaved")
+	public void aChiefPeacefulTookIsStillNoKillAfterASaveOnNormal(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		helper.runAfterDelay(2, () -> {
+			at(level, 95, 13000);
+			helper.assertTrue(BanditCamps.found(level, hall, helper.absolutePos(CAMP)) != null, "no camp");
+			java.util.UUID chief = Lairs.near(level, hall).orElseThrow().captain();
+			level.getServer().setDifficulty(Difficulty.PEACEFUL, true);
+			helper.runAfterDelay(10, () -> {
+				helper.assertTrue(level.getEntity(chief) == null, "Peaceful didn't take the chief away; the test proves nothing");
+				level.getServer().setDifficulty(Difficulty.NORMAL, true);
+				Lairs.Data.get(level).roundTrip(level.registryAccess());
+				helper.assertTrue(Lairs.near(level, hall).isPresent(), "the camp didn't load back");
+				Lairs.round(level, hall, true, always());
+				helper.assertTrue(Lairs.near(level, hall).isEmpty(), "the camp lingers without its chief");
+				helper.assertTrue(last(entity).equals("The raiders of the Bandit camp packed up and left the village in peace") && Lairs.resting(level, hall) == 0,
+					"Peaceful for a moment, saved, back on Normal: '" + last(entity) + "', resting " + Lairs.resting(level, hall));
 				helper.succeed();
 			});
 		});

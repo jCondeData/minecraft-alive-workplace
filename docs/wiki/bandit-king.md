@@ -4,7 +4,7 @@ The Bandit King's fort rises a stage a dawn out beyond a village, and the King w
 ROADMAP 31.15; the story that brings him, `arcs/bandit_king.json`, is 31.16. Builds on the arc engine's `place`
 (31.4), bandit camps (`BanditCamps`, 32.3's lairs) and the bounty captains' names (31.13). Part of the 1.5 expansion.
 
-Roadmap items: 31.15, 31.16, B659
+Roadmap items: 31.15, 31.16, B659, B738
 
 ## What a player sees
 
@@ -38,8 +38,11 @@ Roadmap items: 31.15, 31.16, B659
      camp; bring him 16 bread and he tells of the postern, which the keep leaves open, and joins the village after).
   3. **The storm**, once the keep stands: the allies come to the hall; raise a Rally Banner within 48 blocks of the fort
      and they follow it with your guards. His raiders (the village's bandit raid, half again as big) come every second
-     night until he falls. If he stands after 10 days, **the King's tribute**: he takes a third of the treasury and
-     rides off with his band, the fort is left a ruin, moods drop 10 for 3 days, and the story ends badly.
+     night until he falls, except while the village is quiet (threat level 0, At peace or Peaceful): then nobody
+     comes, and the raids return once it isn't quiet (B738). On a night a raid is already on, his raiders don't come on top of
+     it; they come once it ends, that same night. If he stands after 10 days, **the King's tribute**: he takes a third of the treasury and
+     rides off with his band ("The Bandit King took 1 emerald in tribute", never "1 emeralds", B842; the amount as the
+     treasury writes it, "0.99 emeralds" or "100 CobbleDollars", never rounded down, B866), the fort is left a ruin, moods drop 10 for 3 days, and the story ends badly.
   - **Ending**: his band leaves the fort (the treasure chest is yours), a festival the next evening, +150 reputation
     and the honor **Kingslayer** to everyone who fought in the storm, Pell joins the village (no job), the allies go
     home, and no bandit camps come for 10 days. Every chapter, banner, ally, raid and ending has its chronicle line.
@@ -120,8 +123,6 @@ horn) in their own entity data.
 
 ## Known limits
 
-- An arc marked `threat` should not start in a village set At peace or at threat level 0 (31.4), but today it
-  still does (B699; failing tests on the tests/threat-arcs-peace-1031 branch).
 - The camps, Pell and the fort are built or come only once a player is within 96 blocks, as every arc place.
 - With no fit ground within 16 blocks of the arc's column the fort isn't built (the arc logs it and its place is
   skipped).
@@ -142,4 +143,13 @@ horn) in their own entity data.
   the fort resumed from a save mid-arc, every sentence a player reads, and the chest's one enchanted weapon.
 - GameTests: `QaBanditKingBugTests`: the bar leaves a player who goes to the Nether
   (`qaKingsBarLeavesAPlayerWhoGoesToTheNether`, B659).
+- GameTests: `QaQuietVillageSweep1031GameTests` and `QaThreatFixes1101GameTests` (B738): a storm night brings no
+  raid At peace, at threat level 0 or on Peaceful; lifted the same night, the King's raid comes that night, as it does
+  on a later storm night.
+- GameTests: `QaKingRaidGolemSpot1101dGameTests` (QA): a storm night with a raid already on keeps that raid as it is,
+  and the King's raid comes that night once it is called off.
+- GameTests: `QaKingTribute1102dBugTests` (B842): a tribute of one emerald reads "took 1 emerald in tribute"
+  (`theKingsTributeOfOneEmeraldReadsInTheSingular`), two read "2 emeralds". `QaKingTribute1103dBugTests` and
+  `QaKingTribute1103dGameTests` (B866): 0.99 and 1.99 emeralds taken read as such in the chronicle and in chat, a
+  whole 3 reads "3 emeralds"; the compat test `QaKingTributeDollars1103dCompatTests` reads "100 CobbleDollars".
 - Showcase scenes `bandit_fort` and `bandit_king`.

@@ -1064,11 +1064,12 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		rank = VillageRanks.Rank.values()[Math.max(0, Math.min(VillageRanks.Rank.values().length - 1, r))];
 		research = io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("research"))
 			.result().orElse(io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
-		edicts = Edicts.InForce.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("edicts"))
+		// One damaged entry skips only itself, with a warning, and the rest of each list loads (B796, as B763 for the saved files).
+		edicts = io.github.jcondedata.aliveworkplace.mc.Lenient.list(Edicts.InForce.CODEC, "edict").parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("edicts"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
-		guilds = Guilds.Charter.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("guilds"))
+		guilds = io.github.jcondedata.aliveworkplace.mc.Lenient.list(Guilds.Charter.CODEC, "guild charter").parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("guilds"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
-		reforms = Reforms.Progress.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("reforms"))
+		reforms = io.github.jcondedata.aliveworkplace.mc.Lenient.list(Reforms.Progress.CODEC, "reform").parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("reforms"))
 			.result().map(java.util.List::copyOf).orElse(java.util.List.of());
 		civic = null;
 		extraMeals = Math.max(0, Math.min(99, Math.round(Nbt.getFloat(tag, "extraMeals") * 100f)));
@@ -1076,7 +1077,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		hornDay = tag.contains("hornDay") ? Nbt.getLong(tag, "hornDay") : -1;
 		rushUntil = Math.max(0, Nbt.getLong(tag, "rushUntil"));
 		services = !tag.contains("services") ? java.util.List.of()
-			: Services.Found.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("services")).result().map(java.util.List::copyOf)
+			: io.github.jcondedata.aliveworkplace.mc.Lenient.list(Services.Found.CODEC, "found service").parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("services")).result().map(java.util.List::copyOf)
 				.orElse(java.util.List.of());
 		servicesDay = Nbt.getLong(tag, "servicesDay");
 		stewardWishes = !tag.contains("steward") ? io.github.jcondedata.aliveworkplace.city.StewardWishes.State.EMPTY
@@ -1085,7 +1086,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		stewardDesk = !tag.contains("steward_desk") ? io.github.jcondedata.aliveworkplace.city.StewardDesk.State.EMPTY
 			: io.github.jcondedata.aliveworkplace.city.StewardDesk.State.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("steward_desk")).result().orElse(io.github.jcondedata.aliveworkplace.city.StewardDesk.State.EMPTY);
 		pieceLooks = !tag.contains("piece_looks") ? java.util.List.of()
-			: PieceLooks.Choice.CODEC.listOf().parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("piece_looks")).result().map(java.util.List::copyOf)
+			: io.github.jcondedata.aliveworkplace.mc.Lenient.list(PieceLooks.Choice.CODEC, "furniture look").parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("piece_looks")).result().map(java.util.List::copyOf)
 				.orElse(java.util.List.of());
 		berriesFound.clear();
 		net.minecraft.nbt.ListTag berries = Nbt.getList(tag, "berriesFound", net.minecraft.nbt.Tag.TAG_STRING);

@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
@@ -104,8 +105,16 @@ public final class Caravans {
 	 * ({@link io.github.jcondedata.aliveworkplace.city.CaravanTrains}); saved, false (it walks) in older saves.
 	 * {@code byWaystone} (41.3): it walked to its village's waystone and steps out at the other's when it {@code arrives}
 	 * ({@link VillageWaystones#linked}); saved, false in older saves.
+	 * {@code pact} (B768): it set out under a trade pact (with its sender's gifts off) that ended while it was on the road,
+	 * so it's still paid at the pact's terms when it arrives ({@link #payPact}); saved, false in older saves.
 	 */
-	public record Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back, boolean byTrain, boolean byWaystone) {
+	public record Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back, boolean byTrain, boolean byWaystone,
+		boolean pact) {
+		/** A caravan not marked as one under an ended pact (B768: {@code pact} false). */
+		public Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back, boolean byTrain, boolean byWaystone) {
+			this(from, to, goods, arrives, sale, back, byTrain, byWaystone, false);
+		}
+
 		/** A caravan that doesn't go by waystone (41.3: {@code byWaystone} false). */
 		public Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back, boolean byTrain) {
 			this(from, to, goods, arrives, sale, back, byTrain, false);
@@ -118,6 +127,11 @@ public final class Caravans {
 		/** A caravan that walks (39.7: {@code byTrain} false). */
 		public Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back) {
 			this(from, to, goods, arrives, sale, back, false);
+		}
+
+		/** This caravan with {@code pact} (B768), carried over when the caravan is rebuilt for the same trip. */
+		public Shipment pacted(boolean pact) {
+			return pact == this.pact ? this : new Shipment(from, to, goods, arrives, sale, back, byTrain, byWaystone, pact);
 		}
 	}
 
@@ -283,7 +297,7 @@ public final class Caravans {
 				long arrives = !stationed ? s.arrives()
 					: turn && s.arrives() == io.github.jcondedata.aliveworkplace.city.CaravanTrains.BOARDING ? now : now + walk.applyAsLong(s);
 				Shipment moved = turn ? new Shipment(hall, s.from(), List.copyOf(goods), arrives, List.of(), true, !stationed && s.byTrain())
-					: new Shipment(s.from(), s.to(), List.copyOf(goods), arrives, sale, s.back(), false);
+					: new Shipment(s.from(), s.to(), List.copyOf(goods), arrives, sale, s.back(), false).pacted(s.pact());
 				(turn ? home : next).add(moved);
 			}
 			onTheRoad.clear();
@@ -305,6 +319,11 @@ public final class Caravans {
 		/** The village's Create stations (39.7) as its hall's last round found them; empty without. */
 		public List<BlockPos> stations(BlockPos hall) {
 			return stations.getOrDefault(hall, List.of());
+		}
+
+		/** The villages with Create stations on the list (39.7, B898). */
+		public Set<BlockPos> stationHalls() {
+			return java.util.Collections.unmodifiableSet(stations.keySet());
 		}
 
 		/** Notes the village's stations (39.7); a village not on the list keeps none. */
@@ -470,9 +489,29 @@ public final class Caravans {
 			setDirty();
 		}
 
+		/**
+		 * B768: a pact between {@code from} and {@code to} ended with {@code from}'s gifts off: the caravans on the road from
+		 * {@code from} to {@code to} (not ones going home) set out under it, and are still paid at its terms when they
+		 * arrive. Returns how many.
+		 */
+		public int pactEnded(BlockPos from, BlockPos to) {
+			int[] n = {0};
+			onTheRoad.replaceAll(s -> {
+				if (!s.from().equals(from) || !s.to().equals(to) || s.back() || s.pact()) {
+					return s;
+				}
+				n[0]++;
+				return s.pacted(true);
+			});
+			if (n[0] > 0) {
+				setDirty();
+			}
+			return n[0];
+		}
+
 		/** Brings the caravans on the road to {@code hall} in now (tests: one waiting for room tries again at once). */
 		public void hurry(BlockPos hall) {
-			onTheRoad.replaceAll(s -> s.to().equals(hall) ? new Shipment(s.from(), s.to(), s.goods(), 0, s.sale(), s.back(), s.byTrain(), s.byWaystone()) : s);
+			onTheRoad.replaceAll(s -> s.to().equals(hall) ? new Shipment(s.from(), s.to(), s.goods(), 0, s.sale(), s.back(), s.byTrain(), s.byWaystone(), s.pact()) : s);
 			setDirty();
 		}
 
@@ -490,7 +529,7 @@ public final class Caravans {
 				from.add(s.from());
 				long arrives = io.github.jcondedata.aliveworkplace.city.CaravanTrains.waiting(s.arrives()) ? now + walk.applyAsLong(s) // 39.7a: never boarded
 					: Math.max(s.arrives(), now + walk.applyAsLong(s));
-				return new Shipment(s.from(), s.to(), s.goods(), arrives, s.sale(), s.back(), false);
+				return new Shipment(s.from(), s.to(), s.goods(), arrives, s.sale(), s.back(), false).pacted(s.pact());
 			});
 			if (!from.isEmpty()) {
 				setDirty();
@@ -510,7 +549,7 @@ public final class Caravans {
 					return s;
 				}
 				from.add(s.from());
-				return new Shipment(s.from(), s.to(), s.goods(), now + walk.applyAsLong(s), s.sale(), s.back(), false, false);
+				return new Shipment(s.from(), s.to(), s.goods(), now + walk.applyAsLong(s), s.sale(), s.back(), false, false, s.pact());
 			});
 			if (!from.isEmpty()) {
 				setDirty();
@@ -530,7 +569,7 @@ public final class Caravans {
 					return s;
 				}
 				n[0]++;
-				return new Shipment(s.from(), s.to(), s.goods(), arrives, s.sale(), s.back(), s.byTrain());
+				return new Shipment(s.from(), s.to(), s.goods(), arrives, s.sale(), s.back(), s.byTrain()).pacted(s.pact());
 			});
 			if (n[0] > 0) {
 				setDirty();
@@ -552,7 +591,7 @@ public final class Caravans {
 				n[0]++;
 				long stage = load.test(s.goods()) ? io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST
 					: io.github.jcondedata.aliveworkplace.city.CaravanTrains.ABOARD;
-				return new Shipment(s.from(), s.to(), s.goods(), stage, s.sale(), s.back(), s.byTrain());
+				return new Shipment(s.from(), s.to(), s.goods(), stage, s.sale(), s.back(), s.byTrain()).pacted(s.pact());
 			});
 			if (n[0] > 0) {
 				setDirty();
@@ -571,7 +610,7 @@ public final class Caravans {
 					return s;
 				}
 				n[0]++;
-				return new Shipment(s.from(), s.to(), List.copyOf(unload.apply(s.goods())), now, s.sale(), s.back(), s.byTrain());
+				return new Shipment(s.from(), s.to(), List.copyOf(unload.apply(s.goods())), now, s.sale(), s.back(), s.byTrain()).pacted(s.pact());
 			});
 			if (n[0] > 0) {
 				setDirty();
@@ -599,7 +638,7 @@ public final class Caravans {
 				if (back.isEmpty()) {
 					gone[0]++;
 				} else {
-					next.add(new Shipment(s.from(), s.to(), List.copyOf(back), arrives, s.sale(), s.back(), s.byTrain()));
+					next.add(new Shipment(s.from(), s.to(), List.copyOf(back), arrives, s.sale(), s.back(), s.byTrain()).pacted(s.pact()));
 				}
 			}
 			if (changed[0]) {
@@ -636,7 +675,7 @@ public final class Caravans {
 					gone.add(s.from().equals(hall) ? s.to() : s.from());
 					continue;
 				}
-				next.add(new Shipment(s.from(), s.to(), List.copyOf(goods), arrives.applyAsLong(s), s.sale(), s.back(), s.byTrain()));
+				next.add(new Shipment(s.from(), s.to(), List.copyOf(goods), arrives.applyAsLong(s), s.sale(), s.back(), s.byTrain()).pacted(s.pact()));
 			}
 			if (changed) {
 				onTheRoad.clear();
@@ -820,6 +859,9 @@ public final class Caravans {
 				if (s.byWaystone()) { // 41.3
 					t.putBoolean("byWaystone", true);
 				}
+				if (s.pact()) { // B768
+					t.putBoolean("pact", true);
+				}
 				road.add(t);
 			}
 			tag.put("road", road);
@@ -876,47 +918,51 @@ public final class Caravans {
 			Data data = new Data();
 			ListTag list = Nbt.getList(tag, "villages", Tag.TAG_COMPOUND);
 			for (int i = 0; i < list.size(); i++) {
-				CompoundTag t = Nbt.compoundAt(list, i);
-				BlockPos hall = BlockPos.of(Nbt.getLong(t, "hall"));
-				Component name = Component.Serializer.fromJson(Nbt.getString(t, "name"), registries);
-				List<Want> wants = new ArrayList<>();
-				ListTag wl = Nbt.getList(t, "wants", Tag.TAG_COMPOUND);
-				for (int j = 0; j < wl.size(); j++) {
-					ResourceLocation id = ResourceLocation.tryParse(Nbt.getString(Nbt.compoundAt(wl, j), "item"));
-					if (id != null && BuiltInRegistries.ITEM.containsKey(id)) {
-						wants.add(new Want(Lookup.value(BuiltInRegistries.ITEM, id), Nbt.getInt(Nbt.compoundAt(wl, j), "count")));
+				try {
+					CompoundTag t = Nbt.compoundAt(list, i);
+					BlockPos hall = BlockPos.of(Nbt.getLong(t, "hall"));
+					Component name = Component.Serializer.fromJson(Nbt.getString(t, "name"), registries);
+					List<Want> wants = new ArrayList<>();
+					ListTag wl = Nbt.getList(t, "wants", Tag.TAG_COMPOUND);
+					for (int j = 0; j < wl.size(); j++) {
+						ResourceLocation id = ResourceLocation.tryParse(Nbt.getString(Nbt.compoundAt(wl, j), "item"));
+						if (id != null && BuiltInRegistries.ITEM.containsKey(id)) {
+							wants.add(new Want(Lookup.value(BuiltInRegistries.ITEM, id), Nbt.getInt(Nbt.compoundAt(wl, j), "count")));
+						}
 					}
-				}
-				data.villages.put(hall, new Village(hall, name == null ? Component.empty() : name, List.copyOf(wants), Nbt.getLong(t, "lastCaravanDay")));
-				ListTag rl = Nbt.getList(t, "routes", Tag.TAG_COMPOUND);
-				for (int j = 0; j < rl.size(); j++) {
-					data.routes.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(Nbt.getLong(Nbt.compoundAt(rl, j), "to")));
-				}
-				ListTag hl = Nbt.getList(t, "halves", Tag.TAG_COMPOUND); // 27.17; older saves have none
-				for (int j = 0; j < hl.size(); j++) {
-					CompoundTag ht = Nbt.compoundAt(hl, j);
-					data.halves.computeIfAbsent(hall, k -> new LinkedHashMap<>()).put(BlockPos.of(Nbt.getLong(ht, "to")),
-						new Half(BlockPos.of(Nbt.getLong(ht, "end")), Nbt.getBoolean(ht, "finished"), Nbt.getBoolean(ht, "milestone"), Nbt.getBoolean(ht, "noted")));
-				}
-				CompoundTag lt = Nbt.getCompound(t, "leader"); // 28.17; older saves have none
-				if (lt.hasUUID("id")) {
-					data.leaders.put(hall, new Leader(lt.getUUID("id"), Nbt.getString(lt, "name"), Nbt.getInt(lt, "tier"), Nbt.getInt(lt, "xp"),
-						Nbt.getBoolean(lt, "leader")));
-				}
-				io.github.jcondedata.aliveworkplace.trade.Market market = io.github.jcondedata.aliveworkplace.trade.Market.load(t); // 33.2; older saves have none
-				if (!market.isEmpty()) {
-					data.markets.put(hall, market);
-				}
-				net.minecraft.world.item.DyeColor colour = net.minecraft.world.item.DyeColor.byName(Nbt.getString(t, "colour"), null); // 33.7; older saves have none
-				if (colour != null) {
-					data.colours.put(hall, colour);
-				}
-				long[] stationsHere = t.getLongArray("stations"); // 39.7; older saves have none
-				if (stationsHere.length > 0) {
-					data.stations.put(hall, java.util.Arrays.stream(stationsHere).mapToObj(BlockPos::of).toList());
-				}
-				for (long other : t.getLongArray("tracks")) { // 39.7; older saves have none
-					data.tracks.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(other));
+					data.villages.put(hall, new Village(hall, name == null ? Component.empty() : name, List.copyOf(wants), Nbt.getLong(t, "lastCaravanDay")));
+					ListTag rl = Nbt.getList(t, "routes", Tag.TAG_COMPOUND);
+					for (int j = 0; j < rl.size(); j++) {
+						data.routes.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(Nbt.getLong(Nbt.compoundAt(rl, j), "to")));
+					}
+					ListTag hl = Nbt.getList(t, "halves", Tag.TAG_COMPOUND); // 27.17; older saves have none
+					for (int j = 0; j < hl.size(); j++) {
+						CompoundTag ht = Nbt.compoundAt(hl, j);
+						data.halves.computeIfAbsent(hall, k -> new LinkedHashMap<>()).put(BlockPos.of(Nbt.getLong(ht, "to")),
+							new Half(BlockPos.of(Nbt.getLong(ht, "end")), Nbt.getBoolean(ht, "finished"), Nbt.getBoolean(ht, "milestone"), Nbt.getBoolean(ht, "noted")));
+					}
+					CompoundTag lt = Nbt.getCompound(t, "leader"); // 28.17; older saves have none
+					if (lt.hasUUID("id")) {
+						data.leaders.put(hall, new Leader(lt.getUUID("id"), Nbt.getString(lt, "name"), Nbt.getInt(lt, "tier"), Nbt.getInt(lt, "xp"),
+							Nbt.getBoolean(lt, "leader")));
+					}
+					io.github.jcondedata.aliveworkplace.trade.Market market = io.github.jcondedata.aliveworkplace.trade.Market.load(t); // 33.2; older saves have none
+					if (!market.isEmpty()) {
+						data.markets.put(hall, market);
+					}
+					net.minecraft.world.item.DyeColor colour = net.minecraft.world.item.DyeColor.byName(Nbt.getString(t, "colour"), null); // 33.7; older saves have none
+					if (colour != null) {
+						data.colours.put(hall, colour);
+					}
+					long[] stationsHere = t.getLongArray("stations"); // 39.7; older saves have none
+					if (stationsHere.length > 0) {
+						data.stations.put(hall, java.util.Arrays.stream(stationsHere).mapToObj(BlockPos::of).toList());
+					}
+					for (long other : t.getLongArray("tracks")) { // 39.7; older saves have none
+						data.tracks.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(other));
+					}
+				} catch (Exception e) {
+					AliveWorkplace.LOG.warn("Skipping a saved caravan village: {}", e.getMessage());
 				}
 			}
 			ListTag road = Nbt.getList(tag, "road", Tag.TAG_COMPOUND);
@@ -942,16 +988,20 @@ public final class Caravans {
 					}
 				}
 				data.onTheRoad.add(new Shipment(BlockPos.of(Nbt.getLong(t, "from")), BlockPos.of(Nbt.getLong(t, "to")), goods, Nbt.getLong(t, "arrives"),
-					sale, Nbt.getBoolean(t, "back"), Nbt.getBoolean(t, "byTrain"), Nbt.getBoolean(t, "byWaystone"))); // byTrain: 39.7, byWaystone: 41.3, false in older saves
+					sale, Nbt.getBoolean(t, "back"), Nbt.getBoolean(t, "byTrain"), Nbt.getBoolean(t, "byWaystone"), Nbt.getBoolean(t, "pact"))); // byTrain: 39.7, byWaystone: 41.3, pact: B768, false in older saves
 			}
 			ListTag sold = Nbt.getList(tag, "sales", Tag.TAG_COMPOUND); // 33.6; older saves have none
 			for (int i = 0; i < sold.size(); i++) {
-				CompoundTag t = Nbt.compoundAt(sold, i);
-				ResourceLocation good = ResourceLocation.tryParse(Nbt.getString(t, "good"));
-				Component buyer = Component.Serializer.fromJson(Nbt.getString(t, "buyer"), registries);
-				if (good != null) {
-					data.sales.add(new Sale(BlockPos.of(Nbt.getLong(t, "seller")), buyer == null ? Component.empty() : buyer, good, Nbt.getInt(t, "items"),
-						Nbt.getInt(t, "cents"), Nbt.getLong(t, "day"), Nbt.has(t, "buyerHall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(t, "buyerHall")) : null)); // buyerHall: B430
+				try {
+					CompoundTag t = Nbt.compoundAt(sold, i);
+					ResourceLocation good = ResourceLocation.tryParse(Nbt.getString(t, "good"));
+					Component buyer = Component.Serializer.fromJson(Nbt.getString(t, "buyer"), registries);
+					if (good != null) {
+						data.sales.add(new Sale(BlockPos.of(Nbt.getLong(t, "seller")), buyer == null ? Component.empty() : buyer, good, Nbt.getInt(t, "items"),
+							Nbt.getInt(t, "cents"), Nbt.getLong(t, "day"), Nbt.has(t, "buyerHall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(t, "buyerHall")) : null)); // buyerHall: B430
+					}
+				} catch (Exception e) {
+					AliveWorkplace.LOG.warn("Skipping a saved caravan sale: {}", e.getMessage());
 				}
 			}
 			ListTag owed = Nbt.getList(tag, "refunds", Tag.TAG_COMPOUND); // B430; older saves have none
@@ -1215,14 +1265,14 @@ public final class Caravans {
 			}
 			pay(level, s.from(), s.back() ? 0 : paid);
 			if (!s.back()) {
-				payPact(level, hall, s.from(), delivered, data); // 33.18
+				payPact(level, hall, s.from(), delivered, data, s.pact()); // 33.18; B768: one that set out under a pact since ended
 			}
 			// 33.6: the goods it brought to sell; what there's no room for waits on the road with the rest, what isn't paid for goes home
 			io.github.jcondedata.aliveworkplace.trade.CaravanTrade.Outcome sold = s.sale().isEmpty()
 				? io.github.jcondedata.aliveworkplace.trade.CaravanTrade.Outcome.NONE
 				: io.github.jcondedata.aliveworkplace.trade.CaravanTrade.sell(level, hall, s, chests, data);
 			if (!left.isEmpty() || !sold.waiting().isEmpty()) {
-				data.ship(new Shipment(s.from(), s.to(), left, level.getGameTime() + VillageNeeds.CHECK_EVERY, sold.waiting(), s.back()));
+				data.ship(new Shipment(s.from(), s.to(), left, level.getGameTime() + VillageNeeds.CHECK_EVERY, sold.waiting(), s.back()).pacted(s.pact()));
 			}
 			// 33.7: a caravan that came in (not one still waiting on the road for room) is seen coming, when someone is there
 			if (count(left) + sold.waiting().stream().mapToInt(Lot::count).sum() < count(s.goods()) + s.sale().stream().mapToInt(Lot::count).sum()) {
@@ -1282,9 +1332,19 @@ public final class Caravans {
 	 * treasury goes; the seller books it as a sale. Nothing when the sender gives, between friends, or with pacts off.
 	 */
 	public static int payPact(ServerLevel level, BlockPos hall, BlockPos from, List<ItemStack> delivered, Data data) {
-		if (delivered.isEmpty() || io.github.jcondedata.aliveworkplace.realm.Pacts.pact(level, from, hall) == null
-			|| io.github.jcondedata.aliveworkplace.realm.Pacts.gives(level, from, hall)
-			|| !(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
+		return payPact(level, hall, from, delivered, data, false);
+	}
+
+	/**
+	 * {@link #payPact} for a caravan that set out under a pact that has since ended ({@code underPact}, B768: its sender's
+	 * gifts were off then): still paid at the pact's terms, as the pact was in force when it left. A pact standing now
+	 * decides by its own terms.
+	 */
+	public static int payPact(ServerLevel level, BlockPos hall, BlockPos from, List<ItemStack> delivered, Data data, boolean underPact) {
+		io.github.jcondedata.aliveworkplace.realm.Pacts.Pact pact = io.github.jcondedata.aliveworkplace.realm.Pacts.pact(level, from, hall);
+		boolean pays = pact != null ? !io.github.jcondedata.aliveworkplace.realm.Pacts.gives(level, from, hall)
+			: underPact && io.github.jcondedata.aliveworkplace.realm.Pacts.ENABLED;
+		if (delivered.isEmpty() || !pays || !(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			return 0;
 		}
 		Village buyer = data.village(hall);

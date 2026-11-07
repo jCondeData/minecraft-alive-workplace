@@ -82,6 +82,10 @@ public final class ModAttachments {
 	public static final Attachment<io.github.jcondedata.aliveworkplace.craft.CrafterJob> CRAFTER_JOB = Attachment.saved("crafter_job",
 		io.github.jcondedata.aliveworkplace.craft.CrafterJob.CODEC);
 
+	/** A Weaponsmith's mending job in hand, saved so the piece still goes back where it was found after a restart (B971). */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.mend.MendJob> MEND_JOB = Attachment.saved("mend_job",
+		io.github.jcondedata.aliveworkplace.mend.MendJob.CODEC);
+
 	/** Which quarry a miner is digging. */
 	public static final Attachment<BuilderJob> MINER_JOB = Attachment.saved("miner_job", BuilderJob.CODEC);
 
@@ -350,7 +354,7 @@ public final class ModAttachments {
 	public static final Attachment<Integer> SHOP_SALES = Attachment.saved("shop_sales", com.mojang.serialization.Codec.INT);
 
 	/** A postman's courier routes (from Delivery Notes). */
-	public static final Attachment<java.util.List<io.github.jcondedata.aliveworkplace.mail.RouteData>> COURIER_ROUTES = Attachment.saved("courier_routes", io.github.jcondedata.aliveworkplace.mail.RouteData.CODEC.listOf());
+	public static final Attachment<java.util.List<io.github.jcondedata.aliveworkplace.mail.RouteData>> COURIER_ROUTES = Attachment.saved("courier_routes", io.github.jcondedata.aliveworkplace.mc.Lenient.list(io.github.jcondedata.aliveworkplace.mail.RouteData.CODEC, "courier route"));
 
 	/** How many battles a trainer has fought (shown above its head). */
 	public static final Attachment<Integer> TRAINER_BATTLES = Attachment.saved("trainer_battles", com.mojang.serialization.Codec.INT);

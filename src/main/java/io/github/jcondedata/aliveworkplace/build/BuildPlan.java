@@ -162,7 +162,12 @@ public final class BuildPlan {
 		foundation.sort(order(bounds, false));
 		structure.sort(order(bounds, false));
 		decoration.sort(order(bounds, false));
-		List<Step> landscape = level != null && landscapeMargin > 0 ? landscape(level, above, landscapeMargin) : List.of();
+		hangingLast(decoration, bounds);
+		// B965: a build wholly over the world's top (or under its bottom) leaves nothing standing, so no ground is levelled
+		// round it either: the build ends at once with nothing used
+		boolean anyInside = level == null || structure.stream().anyMatch(s -> !outsideWorld(level, s))
+			|| decoration.stream().anyMatch(s -> !outsideWorld(level, s));
+		List<Step> landscape = level != null && landscapeMargin > 0 && anyInside ? landscape(level, above, landscapeMargin) : List.of();
 		BuildPlan plan = new BuildPlan(List.copyOf(clear), List.copyOf(foundation), List.copyOf(structure), List.copyOf(decoration),
 			List.copyOf(landscape), List.of(), bounds);
 		List<EntityStep> entities = new ArrayList<>();
@@ -323,8 +328,8 @@ public final class BuildPlan {
 	}
 
 	/**
-	 * Plan for taking the build down: every block the blueprint places, decorations first (so nothing
-	 * pops off and drops), then the rest from the top down. Blocks that are not what the blueprint says
+	 * Plan for taking the build down: every block the blueprint places, its poured liquids first (B961), then the
+	 * decorations (so nothing pops off and drops), then the rest from the top down. Blocks that are not what the blueprint says
 	 * are left alone.
 	 */
 	public static BuildPlan deconstruct(Blueprint blueprint, BlueprintData.Placement placement) {
@@ -334,7 +339,19 @@ public final class BuildPlan {
 		List<Step> structure = new ArrayList<>(build.structure);
 		decorations.sort(order(bounds, true));
 		structure.sort(order(bounds, true));
-		List<Step> steps = new ArrayList<>(decorations);
+		// B961: the water (any poured liquid) first of all, while every block round it still holds it: taken away after
+		// its bank or a plant beside it, it ran out over the ground, and the sources beside a hole filled it again
+		List<Step> steps = new ArrayList<>();
+		for (Step s : decorations) {
+			if (MaterialRules.isPouredLiquid(s.state())) {
+				steps.add(s);
+			}
+		}
+		for (Step s : decorations) {
+			if (!MaterialRules.isPouredLiquid(s.state())) {
+				steps.add(s);
+			}
+		}
 		steps.addAll(structure);
 		return new BuildPlan(List.of(), List.of(), List.of(), List.of(), List.of(), List.copyOf(steps), bounds);
 	}
@@ -411,8 +428,20 @@ public final class BuildPlan {
 		return state.is(net.minecraft.tags.BlockTags.CROPS) || state.getBlock() instanceof net.minecraft.world.level.block.CropBlock;
 	}
 
+	/**
+	 * B937: whether {@code step}'s block, or its other half (a door's top, a bed's head), lies over the world's build limit
+	 * or under its bottom, where nothing can be placed: a blueprint on a mountain top whose roof pokes over y 320, a deep
+	 * basement dug down past bedrock. The builder skips such a step without taking its materials.
+	 */
+	public static boolean outsideWorld(Level level, Step step) {
+		return level.isOutsideBuildHeight(step.pos()) || step.secondaryPos() != null && level.isOutsideBuildHeight(step.secondaryPos());
+	}
+
 	/** Whether {@code step}'s block is gone: the spot is open (air, water, plants) and not already what it should be. */
 	static boolean missing(Level level, Step step) {
+		if (outsideWorld(level, step)) {
+			return false; // B937: nothing can stand there, so it's never gone either
+		}
 		BlockState world = level.getBlockState(step.pos());
 		return !step.state().isAir() && world.canBeReplaced() && !MaterialRules.matches(world, step.state());
 	}
@@ -455,6 +484,9 @@ public final class BuildPlan {
 			// The bottom layer; with a basement (26.15) also the ground floor where no basement is under it (a porch)
 			if (top.getY() != bottom && top.getY() != ground || step.state().getCollisionShape(level, top).isEmpty() || inTopHalf(step.state())) {
 				continue;
+			}
+			if (outsideWorld(level, step)) {
+				continue; // B965: a block over the world's top is never built (B937), so there is nothing to hold up under it
 			}
 			BlockState fill = foundationBlock(level, top, step.state());
 			for (int depth = 1; depth <= maxDepth; depth++) {
@@ -515,6 +547,18 @@ public final class BuildPlan {
 	}
 
 	/** Layer by layer; within a layer, row by row in a snake so the builder does not zig-zag. */
+	/**
+	 * B794: what hangs from the block above it (cave and weeping vines, stalactites) goes last and top-down, so each piece
+	 * has the one above it to hang from; bottom-up, a vine three long had nothing under its ceiling piece to start from.
+	 * A plan with nothing hanging keeps its order (a site saved mid-build goes on where it was).
+	 */
+	private static void hangingLast(List<Step> decoration, BoundingBox bounds) {
+		List<Step> hanging = new ArrayList<>();
+		decoration.removeIf(s -> MaterialRules.hangsDown(s.state()) && hanging.add(s));
+		hanging.sort(order(bounds, true));
+		decoration.addAll(hanging);
+	}
+
 	private static Comparator<Step> order(BoundingBox bounds, boolean topDown) {
 		return (a, b) -> {
 			int ay = a.pos().getY(), by = b.pos().getY();
@@ -605,6 +649,25 @@ public final class BuildPlan {
 			solid = set;
 		}
 		return solid.contains(pos);
+	}
+
+	private java.util.Set<BlockPos> drawnAir;
+
+	/**
+	 * B958: whether the drawing has air at {@code pos} (a spot of a room the dig clears), which {@link #targets()} never
+	 * holds: only the blocks a build places are there.
+	 */
+	public synchronized boolean drawnAirAt(BlockPos pos) {
+		if (drawnAir == null) {
+			java.util.Set<BlockPos> set = new java.util.HashSet<>();
+			for (Step s : clear) {
+				if (s.state().isAir() && !targets.containsKey(s.pos())) {
+					set.add(s.pos());
+				}
+			}
+			drawnAir = set;
+		}
+		return drawnAir.contains(pos);
 	}
 
 	/**

@@ -229,23 +229,60 @@ public final class BuildSiteManager extends SavedData {
 		return out;
 	}
 
-	/** Every finished building in {@code level}. */
 	/**
 	 * The finished buildings in the village round {@code hall}: its claimed area (36.20's rule, {@link
 	 * io.github.jcondedata.aliveworkplace.work.Reach#claims}: the hall's radius or a painted City Plan zone), each measured
-	 * from the spot the builder's reach is ({@link Builders#spot}). B616: the Repairs page listed only those within the
-	 * radius, so a build kept up in a zone past it never showed there.
+	 * from the spot the builder's reach is ({@link Builders#spot}) or from its origin corner (B620: the lists that went by
+	 * the corner keep every building they counted). B616: the Repairs page listed only those within the
+	 * radius, so a build kept up in a zone past it never showed there; B620: every village-wide list of the village's
+	 * buildings (services, beauty, rank, market, defences, …) uses this too. The hall's plan is read once and each
+	 * building's spot is remembered for a minute (B620: these lists run on the hall's rounds and villagers' looks).
 	 */
 	public List<Finished> finishedInVillage(ServerLevel level, net.minecraft.core.BlockPos hall) {
 		List<Finished> out = new java.util.ArrayList<>();
+		io.github.jcondedata.aliveworkplace.city.CityPlan plan = level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity
+			? entity.plan() : null;
+		long radius = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
 		for (Finished f : finishedIn(level)) {
-			if (io.github.jcondedata.aliveworkplace.work.Reach.claims(level, hall, Builders.spot(level, f.structure(), f.placement()))) {
+			// its corner (what the lists went by before B620, so nothing that counted stops counting) or its middle
+			if (claims(hall, plan, radius, f.placement().origin()) || claims(hall, plan, radius, spot(level, f))) {
 				out.add(f);
 			}
 		}
 		return out;
 	}
 
+	/** Reach.claims with the hall's plan read once. */
+	private static boolean claims(net.minecraft.core.BlockPos hall, @Nullable io.github.jcondedata.aliveworkplace.city.CityPlan plan, long radius,
+			net.minecraft.core.BlockPos pos) {
+		long dx = pos.getX() - hall.getX();
+		long dz = pos.getZ() - hall.getZ();
+		return dx * dx + dz * dz <= radius * radius
+			|| plan != null && plan.zoneAt(hall, new net.minecraft.core.BlockPos(pos.getX(), hall.getY(), pos.getZ())).isPresent();
+	}
+
+	/**
+	 * Builders.spot of each finished building, kept a minute (a blueprint reload may change a size). Static, and so
+	 * never part of the saved data: the spot follows from the building's blueprint and placement alone.
+	 */
+	private static final Map<Finished, net.minecraft.core.BlockPos> SPOTS = new java.util.HashMap<>();
+	private static long spotsMinute = Long.MIN_VALUE;
+
+	private static net.minecraft.core.BlockPos spot(ServerLevel level, Finished f) {
+		long minute = level.getGameTime() / 1200;
+		if (minute != spotsMinute) {
+			SPOTS.clear();
+			spotsMinute = minute;
+		}
+		net.minecraft.core.BlockPos known = SPOTS.get(f);
+		if (known == null) {
+			known = Builders.spot(level, f.structure(), f.placement());
+			SPOTS.put(f, known);
+		}
+		return known;
+	}
+
+	/** Every finished building in {@code level}. */
 	public List<Finished> finishedIn(ServerLevel level) {
 		List<Finished> out = new java.util.ArrayList<>();
 		ResourceLocation dimension = Ids.of(level.dimension());
@@ -270,6 +307,63 @@ public final class BuildSiteManager extends SavedData {
 			}
 		}
 		return java.util.Optional.empty();
+	}
+
+	/** A build's box: a site under way or a finished building, and where it was placed. */
+	private record Footprint(BlueprintData.Placement placement, net.minecraft.world.level.levelgen.structure.BoundingBox box) {
+	}
+
+	/** The boxes, worked out at {@code at} game time for {@code changes}. Not saved, and kept outside the manager's fields. */
+	private static final class Footprints {
+		List<Footprint> list = List.of();
+		int changes = -1;
+		long at = Long.MIN_VALUE;
+	}
+
+	/** Per manager, held outside its fields so the saved-data checks (which read every field) don't take it for data. */
+	private static final java.util.Map<BuildSiteManager, Footprints> FOOTPRINTS = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
+
+	/**
+	 * B838: whether {@code pos} lies in or under the box of a build other than the one placed at {@code self}: a site under
+	 * way or a finished building, its basement too. Levelling round a build leaves that ground alone (a hut's ring dug
+	 * out the stone pad its neighbor's floor stood on). The boxes are worked out again when a site or building comes or
+	 * goes, and at most every few seconds otherwise (a blueprint that loads late).
+	 */
+	public boolean underAnotherBuild(ServerLevel level, BlueprintData.Placement self, net.minecraft.core.BlockPos pos) {
+		long now = level.getGameTime();
+		Footprints cache = FOOTPRINTS.computeIfAbsent(this, m -> new Footprints());
+		if (cache.changes != changes || now - cache.at >= 100 || now < cache.at) {
+			List<Footprint> out = new java.util.ArrayList<>();
+			for (BuildSite site : sites.values()) {
+				box(level, site.structure(), site.placement()).ifPresent(b -> out.add(new Footprint(site.placement(), b)));
+			}
+			for (Finished f : finishedIn(level)) {
+				box(level, f.structure(), f.placement()).ifPresent(b -> out.add(new Footprint(f.placement(), b)));
+			}
+			cache.list = out;
+			cache.changes = changes;
+			cache.at = now;
+		}
+		for (Footprint f : cache.list) {
+			net.minecraft.world.level.levelgen.structure.BoundingBox b = f.box();
+			if (pos.getX() >= b.minX() && pos.getX() <= b.maxX() && pos.getZ() >= b.minZ() && pos.getZ() <= b.maxZ()
+				&& pos.getY() <= b.maxY() && !f.placement().equals(self)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static java.util.Optional<net.minecraft.world.level.levelgen.structure.BoundingBox> box(ServerLevel level, ResourceLocation structure,
+																										BlueprintData.Placement placement) {
+		if (!placement.dimension().equals(Ids.of(level.dimension()))) {
+			return java.util.Optional.empty();
+		}
+		return io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, structure).map(b -> {
+			net.minecraft.world.level.levelgen.structure.BoundingBox above = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(placement, b.size());
+			return new net.minecraft.world.level.levelgen.structure.BoundingBox(above.minX(), above.minY() - b.basement(), above.minZ(),
+				above.maxX(), above.maxY(), above.maxZ());
+		});
 	}
 
 	public static BuildSiteManager get(ServerLevel level) {

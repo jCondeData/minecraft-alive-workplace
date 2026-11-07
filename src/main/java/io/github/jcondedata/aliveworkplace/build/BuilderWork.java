@@ -37,6 +37,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -44,6 +45,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -75,6 +77,20 @@ public class BuilderWork extends Behavior<Villager> {
 	private static final int SKIP_BUDGET = 256;
 	/** B508: how many times a build goes back over its structure and decoration for blocks broken since they were laid. */
 	static final int MOST_RECHECKS = 2;
+	/**
+	 * B837: how many times CLEAR goes back over its list for sand or gravel that fell in from above (each pass takes the
+	 * box's height off a dune over it, so this digs out one about 16 times as tall as the build).
+	 */
+	static final int MOST_CLEAR_PASSES = 16;
+	/**
+	 * B868: how many times one spot is dug on a list before it counts as filled again each time it is dug (sand dropped
+	 * back, a cobblestone generator, a player): then it is deferred like any step that can't be done yet, and skipped if
+	 * it is still at it on the retry. Ordinary digging takes a spot once (sand coming down from a dune over the box a few
+	 * times), so a normal build never gets near it.
+	 */
+	static final int MOST_REDIGS = 16;
+	/** B837: how far over the box a falling block is still on its way into it. */
+	private static final int FALL_LOOK_UP = 16;
 	private static final int STUCK_TICKS = 100;
 	/** How long a builder with no path to where it's going waits before hopping there. */
 	private static final int NO_PATH_TICKS = 30;
@@ -105,6 +121,10 @@ public class BuilderWork extends Behavior<Villager> {
 	private static final double INSIDE_MARGIN = 0.05;
 
 	private int workTimer;
+	/** The workplaceBuildDelay rule {@link #workTimer} was set from (B831). */
+	private int workTimerRule;
+	/** B845: whether {@link #workTimer} has been set yet (a fresh brain, as after a load or a re-hire, has not). */
+	private boolean workTimerSet;
 	/** This builder's bag, this tick. */
 	@Nullable
 	private BuilderBag bagNow;
@@ -202,12 +222,20 @@ public class BuilderWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
-		return !villager.isSleeping() && Builders.workSite(level, villager) != null;
+		// B839: the brain keeps ticking a running behavior after its activity ends, so stop when the schedule leaves
+		// WORK (dusk, bedtime, a raid) instead of building on into the night until the 1200-tick stint runs out.
+		return !villager.isSleeping() && villager.getBrain().isActive(Activity.WORK) && Builders.workSite(level, villager) != null;
 	}
 
 	@Override
 	protected void start(ServerLevel level, Villager villager, long gameTime) {
-		workTimer = 0;
+		// B845: a restart never gives a free block. The same brain (he woke, a new stint) keeps the wait in hand (the
+		// tick cuts it if the rule went down meanwhile); a fresh one (a load, re-hired) starts a whole wait at today's rule.
+		if (!workTimerSet) {
+			workTimerRule = BuilderLevels.rule(level);
+			workTimer = Math.max(0, BuilderLevels.delay(workTimerRule, villager) - 1);
+			workTimerSet = true;
+		}
 		waitTimer = 0;
 		stuckTimer = 0;
 		reachTicks = 0;
@@ -375,6 +403,16 @@ public class BuilderWork extends Behavior<Villager> {
 					setStatus(site, BuildSite.Status.WORKING);
 					return; // B254: a member is laying a block the lead gave up on: the stage waits for it, not for long
 				}
+				if (site.endsStage() && site.stage() == BuildPlan.Stage.CLEAR && stillFalling(level, plan)) {
+					setStatus(site, BuildSite.Status.WORKING);
+					return; // B837: sand or gravel from above is still coming down into the box: CLEAR waits for it to land
+				}
+				if (site.endsStage() && site.stage() == BuildPlan.Stage.CLEAR && fellIn(level, site, plan, bench)) {
+					continue; // B837: it fell into spots already cleared: back over the list to dig it out
+				}
+				if (site.endsStage() && site.stage() == BuildPlan.Stage.LANDSCAPE && fellIntoRooms(level, site, plan, bench)) {
+					continue; // B869: sand or gravel fell into the rooms after CLEAR: dug out before the build is called done
+				}
 				if (site.endsStage() && site.stage() == BuildPlan.Stage.LANDSCAPE && backToBroken(level, site, plan)) {
 					continue; // B508: a block laid earlier is gone (broken by a player, a mob, an explosion): put back first
 				}
@@ -387,9 +425,15 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			action = actionFor(level, site, candidate, bench);
-			if (action == Action.NONE || crew && site.placedThisStage(candidate.pos()) || site.rechecks() > 0 && site.leftOut(candidate.pos())) {
-				// (B508: going back for broken blocks, the ones given up earlier stay given up)
+			if (action == Action.NONE || crew && site.placedThisStage(candidate.pos()) || site.rechecks() > 0 && site.leftOut(candidate.pos())
+				|| site.stage() == BuildPlan.Stage.CLEAR && site.refilled(candidate.pos())) {
+				// (B508: going back for broken blocks, the ones given up earlier stay given up; B868: so do CLEAR's refilled spots
+				// on a later pass for what fell in)
 				site.advance(); // (B139: a crew member placed it, and it has changed by itself since: it stays)
+			} else if (action == Action.BREAK && site.digs(candidate.pos()) >= MOST_REDIGS) {
+				// B868: filled again each time it was dug (the lead stayed on it for ever, the cursor never moving): it can't
+				// be done now, like any such step: comes round once more at the end of the list, then is left (skipped)
+				site.deferRefilled(candidate.pos());
 			} else if (action == Action.PLACE && outForLandscape(level, site, candidate, bag)) {
 				site.defer(); // nothing to fill it with: comes round once more at the end, then is left
 			} else if (crew && action == Action.SKIP && site.isRetrying() && !standingStill && crewHasWork(level, site, plan, bench)) {
@@ -550,6 +594,12 @@ public class BuilderWork extends Behavior<Villager> {
 
 		// 4. Do the work, one block per workplaceBuildDelay ticks.
 		if (workTimer > 0) {
+			// B831: the rule lowered mid-wait shortens the wait now, not after his work restarts
+			int rule = BuilderLevels.rule(level);
+			workTimer = BuilderLevels.rewait(workTimer, workTimerRule, rule, () -> BuilderLevels.delay(rule, villager) - 1);
+			workTimerRule = rule;
+		}
+		if (workTimer > 0) {
 			workTimer--;
 			return;
 		}
@@ -557,11 +607,15 @@ public class BuilderWork extends Behavior<Villager> {
 			return; // 25.3: the level's block changes for this tick are spent; try again next tick
 		}
 		// B515: this tick is the first of the delay, so the next block comes exactly delay ticks later (not delay + 1)
-		workTimer = Math.max(0, BuilderLevels.delay(level, villager) - 1);
+		workTimerRule = BuilderLevels.rule(level);
+		workTimer = Math.max(0, BuilderLevels.delay(workTimerRule, villager) - 1);
 		if (action == Action.BREAK && site.stage() == BuildPlan.Stage.DECONSTRUCT) {
-			takeDown(level, villager, site, bag, bench, step);
+			takeDown(level, villager, site, plan, bag, bench, step);
+			site.dug(step.pos()); // B868
 		} else if (action == Action.BREAK) {
 			breakBlock(level, villager, bag, bench, plan, step.pos());
+			sealFluids(level, site, plan, step.pos());
+			site.dug(step.pos()); // B868
 		} else {
 			place(level, villager, site, plan, bag, step, requirements, free);
 		}
@@ -590,8 +644,8 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			Action a = actionFor(level, site, candidate, bench);
-			if (a != Action.BREAK && a != Action.PLACE) {
-				continue;
+			if (a != Action.BREAK && a != Action.PLACE || a == Action.BREAK && site.digs(pos) >= MOST_REDIGS) {
+				continue; // (B868: a spot filled again each time it's dug is the lead's to defer)
 			}
 			if (pos.equals(claimed)) {
 				pick = candidate;
@@ -692,8 +746,8 @@ public class BuilderWork extends Behavior<Villager> {
 				continue; // 39.5: a kinetic part waits for the lead to reach its group
 			}
 			Action a = actionFor(level, site, s, bench);
-			if (a != Action.BREAK && a != Action.PLACE) {
-				continue;
+			if (a != Action.BREAK && a != Action.PLACE || a == Action.BREAK && site.digs(s.pos()) >= MOST_REDIGS) {
+				continue; // (B868: a spot filled again each time it's dug is the lead's to defer)
 			}
 			int y = s.pos().getY();
 			if (layered(site) && (topDown ? y < layer - CREW_LAYERS : y > layer + CREW_LAYERS)) {
@@ -887,6 +941,104 @@ public class BuilderWork extends Behavior<Villager> {
 		return false;
 	}
 
+	/**
+	 * B837: whether sand, gravel or the like is on its way down into the build's box: a falling block over its columns, or
+	 * one on the layer just over the box that is about to drop (its fall is scheduled). A dune over the site comes down
+	 * into each layer CLEAR takes, after the layer is done.
+	 */
+	static boolean stillFalling(ServerLevel level, BuildPlan plan) {
+		net.minecraft.world.level.levelgen.structure.BoundingBox box = plan.bounds();
+		net.minecraft.world.phys.AABB columns = new net.minecraft.world.phys.AABB(box.minX(), box.minY(), box.minZ(),
+			box.maxX() + 1, box.maxY() + 1 + FALL_LOOK_UP, box.maxZ() + 1);
+		if (!level.getEntitiesOfClass(net.minecraft.world.entity.item.FallingBlockEntity.class, columns).isEmpty()) {
+			return true;
+		}
+		BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+		for (int x = box.minX(); x <= box.maxX(); x++) {
+			for (int z = box.minZ(); z <= box.maxZ(); z++) {
+				at.set(x, box.maxY() + 1, z);
+				BlockState state = level.getBlockState(at);
+				if (state.getBlock() instanceof net.minecraft.world.level.block.FallingBlock
+					&& level.getBlockTicks().hasScheduledTick(at, state.getBlock())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * B837: the end of CLEAR. If sand or gravel (a falling block) has come down into a spot CLEAR had already taken
+	 * (one left empty, or a wall's or roof's, whose hole would let the rest of it into the rooms later), the lead goes back over the list (at most {@link #MOST_CLEAR_PASSES} times a build), what's
+	 * clear passed straight over. After that, what's still there is counted as skipped, never claimed done. True if it
+	 * went back.
+	 */
+	static boolean fellIn(ServerLevel level, BuildSite site, BuildPlan plan, BlockPos bench) {
+		int left = 0;
+		for (BuildPlan.Step step : plan.steps(BuildPlan.Stage.CLEAR)) {
+			if (site.refilled(step.pos())) {
+				continue; // B868: given up for being filled again each time it was dug, and counted in skipped already
+			}
+			if (level.getBlockState(step.pos()).getBlock() instanceof net.minecraft.world.level.block.FallingBlock && actionFor(level, site, step, bench) == Action.BREAK) {
+				if (site.clearPasses() < MOST_CLEAR_PASSES) {
+					site.backOverClear();
+					return true;
+				}
+				left++;
+			}
+		}
+		if (left > 0 && !site.digOut()) {
+			site.leftBroken(left); // (B869: a dig-out's leftovers are counted once, by fellIntoRooms)
+		}
+		return false;
+	}
+
+	/**
+	 * B869: the end of the build (once LANDSCAPE has run out). Sand or gravel that fell into the build's rooms after CLEAR
+	 * (a prop under a pile broken mid-build) stands where the drawing has air: the lead goes back over CLEAR digging out
+	 * only such blocks ({@link BuildSite#digOut}), then straight back to the end of LANDSCAPE. It shares CLEAR's
+	 * {@link #MOST_CLEAR_PASSES}, and a spot refilled each time it is dug is given up as in CLEAR (B868), so it always
+	 * ends; what's still there after that is counted as skipped once and left for the repair round. True if it went back.
+	 */
+	static boolean fellIntoRooms(ServerLevel level, BuildSite site, BuildPlan plan, BlockPos bench) {
+		if (site.isDeconstruction() || site.isRepair()) {
+			return false; // a repair only fills the holes it was made for
+		}
+		int left = 0;
+		for (BuildPlan.Step step : plan.steps(BuildPlan.Stage.CLEAR)) {
+			if (site.leftOut(step.pos()) || site.refilled(step.pos()) || !fallenIn(level, site, step, bench)) {
+				continue; // (given up earlier, and counted then)
+			}
+			if (site.clearPasses() < MOST_CLEAR_PASSES) {
+				site.backToDigOut();
+				return true;
+			}
+			site.leaveOut(step.pos()); // counted once, however often the build comes back here (B508)
+			left++;
+		}
+		if (left > 0) {
+			site.leftBroken(left);
+		}
+		return false;
+	}
+
+	/**
+	 * B869: whether the step's spot, air in the drawing, holds sand, gravel, concrete powder or the like (a falling block;
+	 * an anvil or a dragon egg is a player's, and stays) that the builder may dig (a Steward's site keeps a player's).
+	 */
+	private static boolean fallenIn(ServerLevel level, BuildSite site, BuildPlan.Step step, BlockPos bench) {
+		if (!step.state().isAir()) {
+			return false;
+		}
+		BlockPos pos = step.pos();
+		BlockState world = level.getBlockState(pos);
+		return world.getBlock() instanceof net.minecraft.world.level.block.FallingBlock
+			&& !(world.getBlock() instanceof net.minecraft.world.level.block.AnvilBlock)
+			&& !(world.getBlock() instanceof net.minecraft.world.level.block.DragonEggBlock)
+			&& !isProtected(level, pos, world, bench)
+			&& !(site.isSteward() && StewardSafety.playersBlock(level, pos, world));
+	}
+
 	/** A step can't be done now. The lead retries it at the end of the stage; a helper leaves it to the lead. */
 	private void defer(BuildSite site, Villager villager, BlockPos pos) {
 		Set<BlockPos> leave = site.gaveUp(pos) ? retakeFailed : avoid; // B254: a given-up block is tried once more each
@@ -919,6 +1071,13 @@ public class BuilderWork extends Behavior<Villager> {
 		BlockPos pos = step.pos();
 		BlockState world = level.getBlockState(pos);
 		BlockState wanted = step.state();
+		if (BuildPlan.outsideWorld(level, step)) {
+			// B937: over the world's build limit or under its bottom nothing can be placed (the materials vanished and the
+			// build waited for more for ever): a block to place there is skipped (deferred once, then counted in skipped),
+			// and there is nothing to dig, level or take down
+			boolean placing = stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.STRUCTURE || stage == BuildPlan.Stage.DECORATION;
+			return placing && !wanted.isAir() ? Action.SKIP : Action.NONE;
+		}
 		if (stage == BuildPlan.Stage.DECONSTRUCT) {
 			// Take down only what the blueprint put there; leave containers and anything else alone.
 			return MaterialRules.matches(world, wanted) && !isProtected(level, pos, world, bench) ? Action.BREAK : Action.NONE;
@@ -929,6 +1088,9 @@ public class BuilderWork extends Behavior<Villager> {
 		boolean worldEmpty = world.isAir() || world.getBlock() instanceof LiquidBlock;
 
 		if (stage == BuildPlan.Stage.LANDSCAPE) {
+			if (BuildSiteManager.get(level).underAnotherBuild(level, site.placement(), pos)) {
+				return Action.NONE; // B838: the ground in and under a neighboring build is that build's, dug or filled
+			}
 			if (wanted.isAir()) {
 				// Dig away natural ground only; whatever else has turned up there since stays.
 				return !worldEmpty && BuildPlan.isTerrain(world) && !isProtected(level, pos, world, bench) ? Action.BREAK : Action.NONE;
@@ -940,6 +1102,9 @@ public class BuilderWork extends Behavior<Villager> {
 		if (stage == BuildPlan.Stage.CLEAR) {
 			if (worldEmpty) {
 				return Action.NONE;
+			}
+			if (site.digOut()) {
+				return fallenIn(level, site, step, bench) ? Action.BREAK : Action.NONE; // B869: only what fell into the rooms
 			}
 			boolean wantedEmpty = wanted.isAir();
 			// The top of a door or the head of a bed isn't placed on its own, but it needs the spot free: an upgrade
@@ -1015,9 +1180,9 @@ public class BuilderWork extends Behavior<Villager> {
 			reachTicks = 0;
 			stillTicks = 0;
 			lastWalkPos = null;
-			approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5);
+			approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5, false, helping);
 		}
-		if (approachSpot != null && scaffolds.climbTo(level, villager, site, approachSpot)) {
+		if (approachSpot != null && !helping && scaffolds.climbTo(level, villager, site, approachSpot)) {
 			stuckTimer = 0; // 35.6: climbing one of the site's columns to stand on its top
 			reachTicks = 0;
 			stillTicks = 0;
@@ -1051,7 +1216,7 @@ public class BuilderWork extends Behavior<Villager> {
 			// neighbouring site, or a player) may have filled it since: a landscaping hole filled with dirt put the builder
 			// inside the ground. Look again rather than hop into a block.
 			if (approachSpot != null && !canStandAt(level, approachSpot)) {
-				approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5);
+				approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5, false, helping);
 			}
 			// 35.6a: rather than hop onto the pillar it's building (into its gaps, onto its top) or up onto the cap over it,
 			// scaffolding goes up beside the work and the builder climbs it. Only with scaffolding on hand; else as before.
@@ -1061,12 +1226,12 @@ public class BuilderWork extends Behavior<Villager> {
 				&& scaffolds.planInsteadOfHop(level, villager, site, plan, target, reach, scaffoldingOnHand(level, site, plan))) {
 				return false;
 			}
-			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3);
+			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3, false, helping);
 			if (spot == null) {
 				// rc.11 playtest: nowhere else to stand, as for the campfire on a chimney's top, well above any floor: the roof beside
 				// it will do (a builder on the slope of its stairs). Without it, the campfire was skipped every time, and
 				// every repair came for it again: out of the chest, over to the chimney, back in the chest, for good.
-				spot = findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3, true);
+				spot = findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3, true, helping);
 			}
 			if (spot != null) {
 				hop(level, villager, spot);
@@ -1123,6 +1288,16 @@ public class BuilderWork extends Behavior<Villager> {
 	@Nullable
 	static BlockPos findStandingSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos target, BlockPos from, @Nullable AABB avoid,
 									 double maxEyeDistance, boolean roofs) {
+		return findStandingSpot(level, plan, target, from, avoid, maxEyeDistance, roofs, false);
+	}
+
+	/**
+	 * ... and, with {@code offScaffolding}, never in or on scaffolding (B1004: a helper stays on the ground; the columns are
+	 * the lead's, and a helper given a column's top as its spot climbed it).
+	 */
+	@Nullable
+	static BlockPos findStandingSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos target, BlockPos from, @Nullable AABB avoid,
+									 double maxEyeDistance, boolean roofs, boolean offScaffolding) {
 		BlockPos best = null;
 		double bestScore = Double.MAX_VALUE;
 		BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
@@ -1131,6 +1306,10 @@ public class BuilderWork extends Behavior<Villager> {
 				for (int dz = -4; dz <= 4; dz++) {
 					p.set(target.getX() + dx, target.getY() + dy, target.getZ() + dz);
 					if (!canStandAt(level, p, roofs)) {
+						continue;
+					}
+					if (offScaffolding && (level.getBlockState(p).is(net.minecraft.world.level.block.Blocks.SCAFFOLDING)
+						|| level.getBlockState(p.below()).is(net.minecraft.world.level.block.Blocks.SCAFFOLDING))) {
 						continue;
 					}
 					Vec3 eye = new Vec3(p.getX() + 0.5, p.getY() + 1.62, p.getZ() + 0.5);
@@ -1880,23 +2059,28 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	private void deposit(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench) {
-		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
-		if (supplies.isEmpty() || SupplyContainers.freeSlots(level, supplies) == 0) {
-			List<BlockPos> store = Builders.storehouseChests(level, villager, bench, plan.supplyExclude());
-			if (!store.isEmpty() && SupplyContainers.freeSlots(level, store) > 0) {
-				supplies = store;
-			}
-		}
-		BlockPos target = supplies.isEmpty() ? bench : supplies.get(0);
-		if (!moveInReach(level, villager, site, plan, target, CONTAINER_REACH, false)) {
-			return;
-		}
 		Set<Item> keep = new HashSet<>();
 		boolean keepNothing = helping || site.stage() == BuildPlan.Stage.DECONSTRUCT;
 		for (BuildPlan.Step s : keepNothing ? List.<BuildPlan.Step>of() : ahead(site, plan)) {
 			for (MaterialRules.Requirement r : s.requirements()) {
 				keep.add(r.item());
 			}
+		}
+		// What goes in (B820): our chests are full when none of it fits, not when no slot is empty
+		List<ItemStack> going = bag.stacks().stream().filter(s -> !keep.contains(s.getItem())).toList();
+		if (going.isEmpty()) {
+			going = bag.stacks();
+		}
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
+		if (!SupplyContainers.fitsAnyOf(level, supplies, going)) {
+			List<BlockPos> store = Builders.storehouseChests(level, villager, bench, plan.supplyExclude());
+			if (SupplyContainers.fitsAnyOf(level, store, going)) {
+				supplies = store;
+			}
+		}
+		BlockPos target = supplies.isEmpty() ? bench : supplies.get(0);
+		if (!moveInReach(level, villager, site, plan, target, CONTAINER_REACH, false)) {
+			return;
 		}
 		List<ItemStack> junk = bag.takeAllExcept(keep);
 		if (junk.isEmpty()) {
@@ -1948,12 +2132,69 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	/**
+	 * B923, B924: a spot dug below the ground (a basement or a cellar) that opens onto water or lava in the earth beside
+	 * it (an aquifer, a buried pond, a lava pocket) has that fluid plugged with earth in the same tick, before it can run
+	 * in, as a player digging down stops a leak: the pit stays dry, the builder never stands in water or burns, and the
+	 * room is walled and floored as drawn. Only a fluid where the drawing wants no fluid of its own is plugged (a pool
+	 * the drawing has stays), and nothing but a fluid block is ever replaced. Done with the break, so no saved state.
+	 * <p>
+	 * B958: a waterlogged block in the earth (glow lichen, dripstone, a buried stair) is drained and kept, and a water
+	 * plant that is all water (seagrass, kelp) is plugged like water. Fluid that has already run into a spot of the room
+	 * (drawn air, {@link BuildPlan#drawnAirAt}) is taken away, never plugged with earth, and the spots round it are
+	 * sealed in turn, so no dirt is left standing in the room where the drawing is open.
+	 */
+	static void sealFluids(ServerLevel level, BuildSite site, BuildPlan plan, BlockPos dug) {
+		int ground = site.placement().origin().getY();
+		if (dug.getY() >= ground) {
+			return; // above the ground a dug spot is a wall or a floor of the house, as before
+		}
+		java.util.ArrayDeque<BlockPos> open = new java.util.ArrayDeque<>();
+		Set<BlockPos> seen = new HashSet<>();
+		open.add(dug);
+		seen.add(dug);
+		int budget = 256; // the spots of the room opened this tick that are looked round; a flooded room is a few dozen
+		while (!open.isEmpty() && budget-- > 0) {
+			BlockPos at = open.poll();
+			for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+				BlockPos n = at.relative(d);
+				if (n.getY() >= ground || !level.isLoaded(n)) {
+					continue;
+				}
+				BlockState there = level.getBlockState(n);
+				if (there.getFluidState().isEmpty()) {
+					continue;
+				}
+				BlockState wanted = plan.targets().get(n);
+				if (wanted != null && !wanted.getFluidState().isEmpty()) {
+					continue; // the drawing's own pool or waterlogged block
+				}
+				boolean logged = there.hasProperty(BlockStateProperties.WATERLOGGED) && there.getValue(BlockStateProperties.WATERLOGGED);
+				if (logged) {
+					level.setBlock(n, there.setValue(BlockStateProperties.WATERLOGGED, false), Block.UPDATE_ALL);
+				} else if (wanted == null && plan.drawnAirAt(n)) {
+					// a spot of the room: the water that ran in goes, as the dig takes it, and what feeds it is sealed
+					level.setBlock(n, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+					if (seen.add(n)) {
+						open.add(n);
+					}
+				} else {
+					level.setBlock(n, net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Deconstruction: removes the block and keeps exactly what it cost to build (glass comes back as
 	 * glass, a potted flower as a pot and a flower), like a careful builder rather than a pickaxe.
 	 */
-	private void takeDown(ServerLevel level, Villager villager, BuildSite site, BuilderBag bag, BlockPos bench, BuildPlan.Step step) {
+	private void takeDown(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench, BuildPlan.Step step) {
 		BlockPos pos = step.pos();
 		BlockState state = level.getBlockState(pos);
+		if (MaterialRules.isPouredLiquid(state)) {
+			scoop(level, villager, site, plan, bag, bench, step, state);
+			return;
+		}
 		if (step.secondaryPos() != null) {
 			level.setBlock(step.secondaryPos(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 		}
@@ -1961,7 +2202,37 @@ public class BuilderWork extends Behavior<Villager> {
 		level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
 		level.levelEvent(2001, pos, Block.getId(state)); // break particles and sound
 		level.gameEvent(villager, GameEvent.BLOCK_DESTROY, pos);
-		for (MaterialRules.Requirement r : step.requirements()) {
+		giveBack(level, villager, site, bag, bench, step.requirements());
+	}
+
+	/**
+	 * B961: a poured liquid taken down is scooped up as a player would, with an empty bucket (from his bag, else the
+	 * bench's chests): its pouring left that bucket empty, so he gets the full one back and nothing more. Without an empty
+	 * bucket he takes the liquid away and gets nothing (a bucket is never made from nothing). Nothing round it is told the
+	 * source is gone, so the sources beside it don't fill the hole again and nothing flows (its bank still stands: the
+	 * take-down plan takes liquids first).
+	 */
+	private void scoop(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench,
+					   BuildPlan.Step step, BlockState state) {
+		BlockPos pos = step.pos();
+		level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+		level.playSound(null, pos, state.getFluidState().is(net.minecraft.tags.FluidTags.LAVA) ? SoundEvents.BUCKET_FILL_LAVA : SoundEvents.BUCKET_FILL,
+			net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+		level.gameEvent(villager, GameEvent.FLUID_PICKUP, pos);
+		boolean bucket = bag.remove(net.minecraft.world.item.Items.BUCKET, 1) == 1;
+		if (!bucket && bench != null) {
+			bucket = SupplyContainers.extract(level, SupplyContainers.find(level, bench, plan.supplyExclude()), net.minecraft.world.item.Items.BUCKET, 1) == 1;
+		}
+		if (bucket) {
+			MaterialLedger.used(net.minecraft.world.item.Items.BUCKET, 1);
+			giveBack(level, villager, site, bag, bench, step.requirements());
+		} else {
+			giveBack(level, villager, site, bag, bench, List.of());
+		}
+	}
+
+	private void giveBack(ServerLevel level, Villager villager, BuildSite site, BuilderBag bag, BlockPos bench, List<MaterialRules.Requirement> requirements) {
+		for (MaterialRules.Requirement r : requirements) {
 			MaterialLedger.gained(r.item(), r.count());
 			int rest = bag.addAll(r.item(), r.count());
 			if (rest > 0) {
@@ -2016,7 +2287,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private void place(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BuildPlan.Step step,
 					   List<MaterialRules.Requirement> requirements, boolean free) {
 		BlockPos pos = step.pos();
-		BlockState state = step.state();
+		BlockState state = MaterialRules.grownAs(level, pos, step.state()); // B812: a big dripleaf column grows leaf on leaf
 
 		// Two-block blocks need their second spot free.
 		if (step.secondaryPos() != null) {
@@ -2033,7 +2304,7 @@ public class BuilderWork extends Behavior<Villager> {
 			// yet: the builder tills it again, as a farmer would, rather than leave the field bare
 			level.setBlock(under, net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState(), Block.UPDATE_ALL);
 		}
-		if (!state.canSurvive(level, pos)) {
+		if (!MaterialRules.canStand(level, pos, state)) {
 			defer(site, villager, pos); // nothing to attach to yet; retried at the end of the stage
 			return;
 		}
@@ -2067,8 +2338,9 @@ public class BuilderWork extends Behavior<Villager> {
 		if (!free) {
 			for (MaterialRules.Requirement r : requirements) {
 				MaterialLedger.used(r.item(), bag.remove(r.item(), r.count()));
-				// What's left over goes back in the bag (the empty bucket after pouring water).
-				ItemStack leftover = r.item().getCraftingRemainingItem() == null ? ItemStack.EMPTY : new ItemStack(r.item().getCraftingRemainingItem(), r.count());
+				// What's left over goes back in the bag (the empty bucket after pouring water or powder snow, B873).
+				net.minecraft.world.item.Item emptied = MaterialRules.leftAfterPlacing(r.item());
+				ItemStack leftover = emptied == null ? ItemStack.EMPTY : new ItemStack(emptied, r.count());
 				if (!leftover.isEmpty()) {
 					MaterialLedger.gained(leftover);
 					ItemStack rest = bag.add(leftover);

@@ -98,12 +98,13 @@ compattest?.let { loom.createRemapConfigurations(it) }
 // The GameTest watchdog (B114: fails a run whose server thread stops ticking, with every thread's stack) and the
 // mock-player sweep (B210: without it the compat suite kept every test's mock player, about 120 by batch 266, and ran
 // out of a 2 GB heap at batch megaSwitchOff) run in the compat tests too: their files, copied from the gametest
-// sources into the compattest source set.
+// sources into the compattest source set. So does RepeatNewTests (no tests unless ALIVEWORKPLACE_REPEAT is set).
 compattest?.let { set ->
     val watchdogSource = tasks.register<Sync>("compatWatchdogSource") {
         from(rootProject.file("src/gametest/java")) {
             include("**/test/GameTestWatchdog.java")
             include("**/test/MockPlayerSweep.java")
+            include("**/test/RepeatNewTests.java") // the nightly's repeats of the compat suite's new tests (22.7)
         }
         into(layout.buildDirectory.dir("generated/compatWatchdog"))
     }
@@ -182,6 +183,10 @@ fabricApi {
 // A JUnit report of the game tests, by test name, for tools/modtest/results.py (the baseline, flaky tests).
 loom.runs.matching { it.name == "gameTest" }.configureEach {
     vmArg("-Dfabric-api.gametest.report-file=${layout.buildDirectory.get().asFile}/junit.xml")
+    // The full suite (7,000+ tests) outgrew the JVM's default heap, a quarter of RAM: 1.75 GB in the 7 GB dev
+    // container, where it died of OutOfMemoryError half way (B987); GitHub's runner gives it about 4 GB and is left
+    // as it is. A full run passed with 3 GB here. -PgametestHeap=N to override, on CI too.
+    (findProperty("gametestHeap") ?: if (System.getenv("CI") == null) "3g" else null)?.let { vmArg("-Xmx$it") }
 }
 
 /** A jar's Fabric mod id and version (from its fabric.mod.json), or null for a plain library. */
@@ -463,7 +468,9 @@ tasks {
     withType<ProcessResources>().configureEach {
         val props = resourceProps
         props.forEach { (k, v) -> inputs.property(k, v) }
-        filesMatching("fabric.mod.json") { expand(props) }
+        // Only a fabric.mod.json with ${...} placeholders is expanded: Groovy's template engine refuses a file over
+        // 64K characters, and the GameTest one (no placeholders, one line per test class) grew past that.
+        filesMatching("fabric.mod.json") { if (file.readText().contains("\${")) expand(props) }
         val variants = resourceVariants(if (name == "processResources") "main" else
             name.removePrefix("process").removeSuffix("Resources").replaceFirstChar { it.lowercase() })
         inputs.property("resourceVariants", variants.toString())

@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461, B707
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461, B707, B748, B750, B755, B921
 
 ## What a player sees
 
@@ -32,7 +32,10 @@ hall's owner, their friends and operators may. Before that, a click says what's 
   the air to pick it up again or, not placed, open the style screen, where it can only be mirrored (each Wonder keeps
   its own blocks);
 - it goes down only with its center within the hall's reach (64 blocks), every corner within 96 blocks of the hall, and
-  not over a finished building or another Wonder; otherwise it says why ("It would stand over the finished Chapel");
+  not over a finished building, a build in progress or another Wonder; otherwise it says why ("It would stand over the
+  finished Chapel"). A single shared column counts as over; one block clear is free.
+  Another Wonder counts from the moment its Foundation Stone is set, even while it waits for a stage's goods and
+  nothing stands there yet, and a builder won't take a house inside its ground either;
 - a Book and Quill in the other hand writes the whole Wonder's material list.
 
 **The Foundation Stone** (35.4): right-click a builder of the village (their bench within 64 blocks of the hall) with
@@ -45,7 +48,9 @@ the builder has no bench or works for another village or another player, the cap
 room for the stone.
 
 - **Right-click the stone**: "The Test Folly of Testholm", "Stage 1 of 3, The Ground Story: 34% built", then the
-  stage's material list, each line "40 Stone Bricks, 12 still to bring" or "… all there", what's still to bring first.
+  stage's material list, each line "40 Stone Bricks, 12 still to bring" or "… all there", what's still to bring first,
+  each block named in the plural after a count above one, as the Steward's list names it ("2 Lanterns, 2 still to
+  bring", B921).
 - **Each stage starts when every part of the one before is done and its own goods are dedicated**, and the builder it
   was handed to takes it on (the owner reads "Stage 2 of 3 of the Test Folly is next: The Upper Story. It begins once
   its goods are in").
@@ -58,7 +63,9 @@ room for the stone.
   and a part whose Wonder is not on a stage (not started, or past its last) gets no line.
 - **A part goes by its Wonder's name** (B703): everywhere a building's name would show (the builder's status when you
   sneak-right-click him, the words over his head, the Village Hall's list of buildings going up, the waiting-for-materials
-  line and his material list), a part reads "Stage 1 part of the Test Folly", never "Stage 1 0".
+  line and his material list, the owner's `/workplace sites`, and the "Next up" and "waiting until ... is finished" lines
+  of a part waiting behind another build), a part reads "Stage 1 part of the Test Folly", never "Stage 1 0". A part's
+  builder who dies drops no blueprint and sends no "Your builder died" line; the part stays for the next builder.
 - **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` with the Wonder's id (the stone's screen
   has an **[Abandon this Wonder]** link that puts it in the chat; works at any stage, also while it waits for its goods,
   B462) or a part's id to abandon the Wonder: what's built stays, the goods handed in for a stage not yet dedicated
@@ -301,7 +308,7 @@ Wine (Vintner).
 
 Each factor is kept between 1/16 and 16. Damaged (or with Wonders off) all four are off; nothing of them is saved.
 
-**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 15,000 blocks, on
+**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 14,600 blocks, on
 a square terrace of smooth stone with a garden in each corner (azalea hedges, flowers, a bench and a lamp) behind a
 diorite balustrade. A grand stair of three quartz steps climbs to a portico of six quartz columns (a wider bay before
 the door) under a low pediment with a round window. Behind it the rotunda, 19 across, rises above four wings of
@@ -421,7 +428,8 @@ and the Golem Smith (or 4 iron golems and a Master Tinkerer while Legends are of
   next morning (the hall's round before 2000 ticks of the day) by the village's Golem Smith, or a Tinkerer standing in,
   from 4 iron blocks and a pumpkin (or a carved one) in the stockpile, the chests round the Foundation Stone; the
   chronicle says "Tibbs made a new sentry for the Great Wall from four iron blocks and a pumpkin". Without the iron,
-  or nobody to make it, nobody comes.
+  or nobody to make it, nobody comes. The iron and pumpkin are taken only once the golem stands: a golem refused by
+  another mod (with `forceVillageSpawns` off) leaves them in the stockpile (B755).
 - **The Great Gate** shuts at nightfall and opens in the morning with the village's gates (guards or none), and stays
   shut through a siege.
 
@@ -447,7 +455,7 @@ their marks for when it's repaired, and nobody is replaced.
 Damaged (or with Wonders off) both are paused: the search waits, the map button draws only the village map and the
 calendar has no Coming days; what was found stays in the hall.
 
-**The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot, 31 high to its treetops,
+**The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot (a 47 by 43 site with the ramp's foot and the pool), 31 high to its treetops,
 about 16,200 blocks. Four terraces 6 high, each 4 in from the one below (39, 31, 23 and 15 across), each faced all
 round with an arcade of 3-wide arches on cut sandstone columns with chiseled capitals, under a terracotta band and a
 cut sandstone coping; behind each arcade a gallery runs round the terrace under its garden, lit by glow berries
@@ -876,6 +884,11 @@ every requirement type holds and fails, `legend` falls back to its stand-in, the
 second and a City can, the same kind twice, one going up, `wonderServerLimit 1`, disabled, off), `/workplace wonders`,
 the switches and the gate, and the saved sites.
 
+`QaWonderPartLines1031GameTests` (3, B703 and B138): `theOwnersSiteListNamesAPartByItsWonder` (/workplace sites
+reads "Builder — Stage 1 part of the Test Folly — 0%"), `aPartWaitingBehindAnotherBuildIsNamedByItsWonder` ("Next up:
+Stage 1 part of the Test Folly" and "... waiting until Test Hut is finished"), `aPartsBuilderDyingDropsAndTellsNoBlueprint`
+(no builder_died line, no blueprint on the ground, the part's site kept).
+
 GameTests in `WonderPlanGameTests` (35.3): the folly's three parts merge into the tower as drawn (compared block by
 block with the drawing), no part sets air over an earlier stage's block, parts are at most 48 a side, the whole
 blueprint is cached and never on the Blueprint Table; the page's card ticks every line and offers the plans, one unmet
@@ -990,6 +1003,13 @@ CobbleDollars only; a resting villager stays out of the stands, the +5 lasts unt
 line in each form. A failing test on the tests/stadium-thesis-1028 branch (until fixed): a file
 with one visitor reads "1 visiting trainers".
 
+QA compat GameTests in `QaStadiumDays1104CompatTests` (35.24): thirty Stadium Days in a row each bring two to four
+visitors (every count seen, the file's every 2 days with 2 to 4); with no realm or partner only travelers of rank 3 to 5
+(each seen), called "the Traveler" and a Trainer a player can challenge; the server's own clock brings them on an even
+afternoon and the odd day's afternoon has none; five fans by three seats seat three, only they "watched a Stadium Day"
+(+5); a village with no trainer of its own fights no bout, the visitors stay until dusk; a visitor's own trainer at home
+gains a battle and XP from the visitor's bout.
+
 GameTests in `ColossusPowerGameTests` (35.22): a villager at home 12 happier with "proud of the Colossus", one in a
 village off its routes not at all, then with a caravan route 8 happier with "the realm's Colossus", its 8 beauty;
 damaged all back as before, repaired on again, Wonders off off; the inn one traveler a morning and two at most
@@ -1053,3 +1073,26 @@ a stranger refused and the stone's [Abandon this Wonder] link; with none in; aft
 `QaBuilderFixes1027bGameTests` (3: a stack of 64 candles offered twice comes back as exactly 64 and one plan, and a
 second cancel gives nothing more; an operator who isn't the owner ends it and the goods and plan go to the owner, not
 the operator; a wrong id leaves the Wonder and its handed-in goods alone).
+
+QA GameTests for B714 in `QaVillageFixes1101GameTests` (3): a Wonder Plan sharing just one column with a Wonder
+waiting for its goods is refused ("It would stand over another Wonder") and goes down one column clear; a house sharing
+that edge column is refused ("That spot overlaps another build in progress (Test Folly).") and one column clear is
+taken; a Wonder begun but not laid out yet (no Foundation Stone) stops no house.
+
+A Wonder Plan is refused over any build in progress, an ordinary house as well as a Wonder's part (B748: "It would
+stand over the Test Hut, a build in progress"), and the ground is free again once that build is canceled; finished, it
+counts as a finished building. A builder refuses a house over any Wonder going up, even when a finished Wonder lies
+under it as well (B750). GameTests: `WonderPlanOverSiteGameTests` (2) and QA's `QaWonderPlanOverSite1101BugTests` and
+`QaWonderHouseTwoWonders1101BugTests`. The edges hold from both sides: a house or plan sharing one column with the other
+is refused and one block clear is allowed, a house hanging high above a waiting Wonder is refused too (a Wonder holds its
+whole columns), and a turned Wonder holds the ground it turned onto (QA's `QaWonderOverlap1101GameTests`).
+
+QA GameTests in `QaWonders1101GameTests` (16; 35.3 with the real designs, 35.9, 35.11, 35.13, 35.15, 35.17): for each
+of the five Wonders, its whole blueprint (`wonder/<id>`, the one its plan carries) holds exactly the blocks its stages
+leave standing, of the same kinds (Cathedral 14,252, Lighthouse 5,011, Library 14,574, Wall 12,338, Observatory 8,438)
+and its plan carries that size; its plan goes down centered on the hall in all four turns, mirrored or not, and is
+refused once its center is past the hall's 64 blocks ("Its center must be in Testville, within 64 blocks of the
+hall ..."); its file asks a Town, its Legend with the stand-in its item names and its other requirement, with the
+Master Architect added by the loader, in four stages titled as the items title them. Drawing up the plans with 31
+emeralds takes nothing and says "The plans cost 32 emeralds, and neither the treasury (0 emeralds) nor you have them";
+with exactly 32 the plan is the player's and no emerald is left.

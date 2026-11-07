@@ -173,6 +173,10 @@ public class PorterGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "porter_strangers")
 	public void porterLeavesStrangersWorkersAlone(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B736: work hours. The porter takes his storehouse owner's side only while working (PorterWork, WORK schedule
+		// 2000-9000), and the clock is wherever the last batch left it: after a batch ending at night he never worked,
+		// so his employer stayed null and the "took nothing" check proved nothing either.
+		helper.setDayTime(2000);
 		Leftovers.village(helper, 48);
 		Villager miner = miner(helper);
 		ModAttachments.BUILDER_EMPLOYER.set(miner, new Employer(UUID.randomUUID(), "Bea"));
@@ -188,6 +192,60 @@ public class PorterGameTests implements FabricGameTest {
 			helper.assertTrue(boss != null && boss.id().equals(al), "the porter should work for the storehouse's owner, not " + boss);
 			helper.assertTrue(minersChest.countItem(Items.RAW_IRON) == 40, "the porter took from a stranger's miner");
 			Village.RADIUS = 0;
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B820: the store chest holds one cobblestone in each of its 27 slots (no slot empty, room for 1,701 more). The porter
+	 * still carries the miner's spare cobblestone into it.
+	 */
+	//$ gametest_ticks_batch AREA '1600' '"porter_store_stack_room"'
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "porter_store_stack_room")
+	public void porterFillsAStoreWithAStackInEverySlot(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000); // work hours
+		Leftovers.village(helper, 48);
+		miner(helper);
+		Container minersChest = helper.getBlockEntity(MINERS_CHEST);
+		minersChest.setItem(0, new ItemStack(Items.COBBLESTONE, 64));
+		minersChest.setItem(1, new ItemStack(Items.COBBLESTONE, 64));
+		Villager porter = porter(helper);
+		Container store = helper.getBlockEntity(STORE_CHEST);
+		for (int i = 0; i < store.getContainerSize(); i++) {
+			store.setItem(i, new ItemStack(Items.COBBLESTONE, 1));
+		}
+		int before = store.getContainerSize();
+		helper.assertTrue(SupplyContainers.freeSlots(helper.getLevel(), List.of(helper.absolutePos(STORE_CHEST))) == 0, "setup: the store chest has an empty slot");
+		helper.succeedWhen(() -> {
+			helper.assertTrue(store.countItem(Items.COBBLESTONE) == before + 128 - Porters.KEEP_FILLER,
+				"the store (a cobblestone in every slot) holds " + store.countItem(Items.COBBLESTONE) + " cobblestone, not " + (before + 128 - Porters.KEEP_FILLER));
+			helper.assertTrue(minersChest.countItem(Items.COBBLESTONE) == Porters.KEEP_FILLER, "the miner has " + minersChest.countItem(Items.COBBLESTONE) + " cobblestone");
+			helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(porter).isEmpty(), "the porter still carries " + ModAttachments.BUILDER_BAG.getOrCreate(porter).stacks());
+		});
+	}
+
+	/** B820, the other side: every slot of the store chest holds a full stack: the porter takes nothing from the miner. */
+	//$ gametest_ticks_batch AREA '600' '"porter_store_brim_full"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "porter_store_brim_full")
+	public void porterLeavesTheGoodsWhenTheStoreIsBrimFull(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.setDayTime(2000); // work hours
+		Leftovers.village(helper, 48);
+		miner(helper);
+		Container minersChest = helper.getBlockEntity(MINERS_CHEST);
+		minersChest.setItem(0, new ItemStack(Items.COBBLESTONE, 64));
+		minersChest.setItem(1, new ItemStack(Items.COBBLESTONE, 64));
+		Villager porter = porter(helper);
+		Container store = helper.getBlockEntity(STORE_CHEST);
+		for (int i = 0; i < store.getContainerSize(); i++) {
+			store.setItem(i, new ItemStack(Items.COBBLESTONE, 64));
+		}
+		helper.runAfterDelay(500, () -> {
+			helper.assertTrue(minersChest.countItem(Items.COBBLESTONE) == 128, "the porter took " + (128 - minersChest.countItem(Items.COBBLESTONE))
+				+ " cobblestone for a brim-full store");
+			helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(porter).isEmpty(), "the porter carries " + ModAttachments.BUILDER_BAG.getOrCreate(porter).stacks());
+			helper.assertTrue(store.countItem(Items.COBBLESTONE) == 64 * 27, "the store holds " + store.countItem(Items.COBBLESTONE));
 			helper.succeed();
 		});
 	}

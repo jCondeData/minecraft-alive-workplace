@@ -86,15 +86,16 @@ public final class Postmen {
 
 	public static void sendStatus(Player player, Villager postman) {
 		List<RouteData> routes = routes(postman);
-		MutableComponent text = Component.translatable("message.aliveworkplace.route.header", postman.getDisplayName(),
-			ModAttachments.MAIL_DELIVERED.getOrElse(postman, 0), routes.size()).withStyle(ChatFormatting.GOLD);
+		int delivered = ModAttachments.MAIL_DELIVERED.getOrElse(postman, 0);
+		// B809: "1 parcel delivered · 1 courier route", each count picking its own form
+		MutableComponent text = io.github.jcondedata.aliveworkplace.work.Words.countedTwo("message.aliveworkplace.route.header", delivered, routes.size(),
+			postman.getDisplayName(), delivered, routes.size()).withStyle(ChatFormatting.GOLD);
 		for (RouteData r : routes) {
 			BlockPos f = r.from().orElse(BlockPos.ZERO);
 			BlockPos t = r.to().orElse(BlockPos.ZERO);
 			text.append(Component.literal("\n  "));
 			text.append(Component.translatable("message.aliveworkplace.route.line", f.getX(), f.getY(), f.getZ(), t.getX(), t.getY(), t.getZ(),
-				r.filter().isEmpty() ? Component.translatable("tooltip.aliveworkplace.route.everything")
-					: Component.literal(r.filter().stream().map(i -> i.getDescription().getString()).reduce((a, b) -> a + ", " + b).orElse("")))
+				r.filterNames())
 				.withStyle(ChatFormatting.GRAY));
 		}
 		if (!routes.isEmpty()) {

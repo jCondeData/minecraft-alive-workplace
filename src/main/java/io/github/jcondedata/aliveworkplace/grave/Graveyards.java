@@ -60,8 +60,11 @@ public final class Graveyards {
 		return List.copyOf(out);
 	}
 
-	/** Where the graves of the village round {@code pos} rest: its Graveyards (nearest the hall first), then the hall plot. */
-	public record Resting(List<BoundingBox> yards, List<BlockPos> slots) {
+	/**
+	 * Where the graves of the village round {@code pos} rest: its Graveyards (nearest the hall first), then the hall plot.
+	 * {@code hall} is the village's hall, null round a table with no hall.
+	 */
+	public record Resting(@Nullable BlockPos hall, List<BoundingBox> yards, List<BlockPos> slots) {
 		public boolean holds(BlockPos grave) {
 			return slots.contains(grave) || yards.stream().anyMatch(b -> b.isInside(grave));
 		}
@@ -77,7 +80,8 @@ public final class Graveyards {
 
 	/**
 	 * The resting places of the village {@code from} is in (its hall's, or round {@code from} without a hall): every slot
-	 * of its finished Graveyards, and the hall plot's when there is a hall and no Graveyard.
+	 * of its finished Graveyards, and the hall plot's when there is a hall and no Graveyard. A Graveyard that lies in
+	 * another village ({@link #ownYard}) is that village's, never this one's (B788).
 	 */
 	public static Resting resting(ServerLevel level, BlockPos from) {
 		return resting(level, from, true);
@@ -89,7 +93,7 @@ public final class Graveyards {
 		BlockPos centre = hall.orElse(from);
 		List<BuildSiteManager.Finished> yards = new ArrayList<>();
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, centre, VillageHalls.RADIUS + 16)) {
-			if (isGraveyard(f.structure())) {
+			if (isGraveyard(f.structure()) && ownYard(level, f, hall.orElse(null))) {
 				yards.add(f);
 			}
 		}
@@ -105,7 +109,18 @@ public final class Graveyards {
 		if (withPlot && yards.isEmpty() && hall.isPresent()) {
 			slots.addAll(plot(level, hall.get()));
 		}
-		return new Resting(boxes, slots);
+		return new Resting(hall.orElse(null), boxes, slots);
+	}
+
+	/**
+	 * Whether the Graveyard {@code yard} belongs to the village of {@code hall} (null: no hall): its middle lies in that
+	 * village ({@link VillageHalls#containing}) or in no village. One whose middle lies in another hall's village is that
+	 * village's, though it stands within reach of this hall (B788), as a grave is (B779, {@link #ours}).
+	 */
+	static boolean ownYard(ServerLevel level, BuildSiteManager.Finished yard, @Nullable BlockPos hall) {
+		BlockPos middle = BlueprintOutline.bounds(yard.placement(), SIZE).getCenter();
+		Optional<BlockPos> village = VillageHalls.containing(level, middle);
+		return village.isEmpty() || village.get().equals(hall);
 	}
 
 	static BlockPos toWorld(BlueprintData.Placement placement, BlockPos local) {
@@ -183,15 +198,25 @@ public final class Graveyards {
 		return null;
 	}
 
-	/** The graves round {@code table} within {@code radius} that don't rest in the village's graveyard yet, nearest first. */
+	/**
+	 * Of {@code graves}, those that don't rest in the village's graveyard yet and lie in this village, nearest first. A grave
+	 * in another village ({@link VillageHalls#containing}, another hall) is that village's and is never moved here (B779);
+	 * one in no village (out in the wilds) is.
+	 */
 	public static List<BlockPos> strays(ServerLevel level, List<BlockPos> graves, Resting resting) {
 		List<BlockPos> out = new ArrayList<>();
 		for (BlockPos g : graves) {
-			if (!resting.holds(g)) {
+			if (!resting.holds(g) && ours(level, g, resting)) {
 				out.add(g);
 			}
 		}
 		return out;
+	}
+
+	/** Whether the grave at {@code grave} lies in no village or in the village of {@code resting} (B779). */
+	static boolean ours(ServerLevel level, BlockPos grave, Resting resting) {
+		Optional<BlockPos> village = VillageHalls.containing(level, grave);
+		return village.isEmpty() || village.get().equals(resting.hall());
 	}
 
 	/** The graves that rest in the village's graveyard (to be revived from there as from anywhere). */

@@ -175,6 +175,9 @@ public final class ReformStories {
 			return; // done before the story began: the chapter has nothing to ask
 		}
 		Reforms.Step step = reform.steps().get(n).resolve(level, hall);
+		for (VillageQuests.Quest m30 : entity.quests()) { // B917: what was handed in on M30's step counts here
+			m30.reform().filter(r -> r.edict().equals(edict)).ifPresent(r -> Reforms.carry(entity, edict, r.step(), m30.progress()));
+		}
 		JsonObject objective = new JsonObject();
 		switch (step.kind()) {
 			case BRING -> {
@@ -206,11 +209,49 @@ public final class ReformStories {
 			rewards.add(money);
 		}
 		q.add("rewards", rewards);
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(arc.id().getNamespace(), "arc/" + arc.id().getPath() + "/step_" + (n + 1));
+		ResourceLocation id = stepFile(arc, n);
 		Quest quest = Arcs.quest(level, hall, s, new Arcs.QuestRef(id, QuestFiles.read(id, q)));
 		if (quest != null) {
+			int handed = Math.min(Reforms.handed(entity, edict, n), step.count() - 1); // B917: never done before a hand-in
+			if (quest.progress.length > 0 && handed > quest.progress[0]) {
+				quest.progress[0] = handed;
+			}
 			s.quests.add(new ArcState.ChapterQuest(quest.id, id.toString()));
 			Stories.Data.get(level).setDirty();
+		}
+	}
+
+	/** The quest file id of {@code arc}'s chapter quest for the reform's step {@code n} (0 for the first). */
+	static ResourceLocation stepFile(Arcs.Arc arc, int n) {
+		return ResourceLocation.fromNamespaceAndPath(arc.id().getNamespace(), "arc/" + arc.id().getPath() + "/step_" + (n + 1));
+	}
+
+	/**
+	 * B917: how far the story's quest for the edict {@code edict}'s step {@code step} has got in the village round
+	 * {@code hall} is kept on the hall ({@link Reforms#carry}), so M30's step asks only the rest when the story is
+	 * switched off. Run before M30 puts the step up, and when a story arc ends.
+	 */
+	public static void keep(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, String edict, int step) {
+		Optional<String> named = Reforms.of(edict).flatMap(Reforms.Reform::arc);
+		Arcs.Arc arc = named.flatMap(Arcs::find).orElse(null);
+		Stories.Entry e = Stories.Data.get(level).halls.get(hall);
+		if (arc == null || e == null) {
+			return;
+		}
+		ResourceLocation file = stepFile(arc, step);
+		for (Quest q : e.quests) {
+			if (arc.id().toString().equals(q.arc) && file.equals(q.file) && q.progress.length > 0) {
+				Reforms.carry(entity, edict, step, q.progress[0]);
+			}
+		}
+	}
+
+	/** B917: a story arc that tells a reform ends (switched off, stopped): its half-done step is kept first. */
+	static void arcEnds(ServerLevel level, BlockPos hall, ArcState s) {
+		Arcs.Arc arc = Arcs.find(s.id).orElse(null);
+		String edict = arc == null ? null : edictOf(arc);
+		if (edict != null && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+			keep(level, hall, entity, edict, Reforms.progress(entity, edict).step());
 		}
 	}
 
@@ -517,11 +558,15 @@ public final class ReformStories {
 			}
 			if (e.drillDay == today && !e.drillDone && t >= DRILL_START) {
 				if (t < DRILL_END) {
-					drill(level, hall, e);
+					drill(level, hall, data, e);
 				} else {
 					e.drillDone = true;
 					data.setDirty();
-					line(level, hall, Chronicle.Kind.STORY, io.github.jcondedata.aliveworkplace.work.Words.counted("chronicle.aliveworkplace.reform_story.drilled", e.drillers.size(),
+					// With no Training Dummy the guards drilled by the hall: the line mustn't name dummies (B797). The list
+					// isn't saved, so a drill that spanned a restart looks again.
+					List<BlockPos> found = e.dummies != null ? e.dummies : dummies(level, hall);
+					String key = found.isEmpty() ? "chronicle.aliveworkplace.reform_story.drilled_hall" : "chronicle.aliveworkplace.reform_story.drilled";
+					line(level, hall, Chronicle.Kind.STORY, io.github.jcondedata.aliveworkplace.work.Words.counted(key, e.drillers.size(),
 						VillageHalls.name(level, hall), e.drillers.size()));
 					e.drillers.clear();
 				}
@@ -541,7 +586,7 @@ public final class ReformStories {
 	}
 
 	/** One beat of the drill: every grown villager (the guards alone with no dummies) goes to a dummy and spars. */
-	static void drill(ServerLevel level, BlockPos hall, Entry e) {
+	static void drill(ServerLevel level, BlockPos hall, Data data, Entry e) {
 		if (e.dummies == null) {
 			e.dummies = dummies(level, hall);
 		}
@@ -559,6 +604,8 @@ public final class ReformStories {
 					level.playSound(null, target, SoundEvents.PLAYER_ATTACK_WEAK, SoundSource.NEUTRAL, 0.6f, 1f);
 				}
 				if (e.drillers.add(v.getUUID())) {
+					// A new driller is saved state: without this a stop mid-drill after the last autosave forgot them (B772).
+					data.setDirty();
 					DRILLED.incrementAndGet();
 				}
 			} else {
@@ -627,6 +674,14 @@ public final class ReformStories {
 					takings[i++] = d.getValue();
 				}
 				t.putLongArray("takings", takings);
+				// The villagers who drilled today, as (most, least) pairs: the chronicle counts them at the drill's end (B762).
+				long[] drillers = new long[e.drillers.size() * 2];
+				int k = 0;
+				for (UUID id : e.drillers) {
+					drillers[k++] = id.getMostSignificantBits();
+					drillers[k++] = id.getLeastSignificantBits();
+				}
+				t.putLongArray("drillers", drillers);
 				list.add(t);
 			}
 			tag.put("halls", list);
@@ -649,6 +704,11 @@ public final class ReformStories {
 				long[] takings = Nbt.getLongArray(t, "takings");
 				for (int j = 0; j + 1 < takings.length; j += 2) {
 					e.takings.put(takings[j], takings[j + 1]);
+				}
+				// Saves from before B762 have no "drillers": an empty array, so nobody has drilled yet.
+				long[] drillers = Nbt.getLongArray(t, "drillers");
+				for (int j = 0; j + 1 < drillers.length; j += 2) {
+					e.drillers.add(new UUID(drillers[j], drillers[j + 1]));
 				}
 			}
 			return data;

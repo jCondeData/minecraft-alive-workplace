@@ -5,7 +5,7 @@ ROADMAP 32.9. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is an old tomb, and who get over
 walls with sand where pillagers use ladders (see [Drowned pirates](pirates.md) for the culture before it).
 
-Roadmap items: 32.9, B382, B437
+Roadmap items: 32.9, B382, B437, B828
 
 ## What a player sees
 
@@ -18,12 +18,14 @@ Roadmap items: 32.9, B382, B437
 - **The Pharaoh.** A husk in a golden helmet and chestplate with a golden sword and 50 more health, his name over his
   head (one of twenty: "Pharaoh Khaemhet the Undying"). He leads the raids on a City himself. **While he lives, a
   husk that falls within 24 blocks of him gets up again** three seconds later, where it fell, at half health and in a
-  burst of sand. It rises only once, and none rises once he is dead.
+  burst of sand. It rises only once, and none rises once he is dead. A raider whose raid is over by then (called
+  off, gone at noon or fought off) stays dead.
 - **The raiders**, all called "Desert raider": husks (55%), husks in gold armor with iron swords (25%) and skeleton
   archers in gold helmets (20%).
 - **Sand ramps.** Where pillagers set ladders, the plain husks pile sand against the wall: a block every half second,
   one up for one out, so the ramp rises step by step against the wall until it is level with the top. Then the
-  raiders walk up it and drop inside. Chat says so ("Sand is piled against the walls of Thornholm!"). When the raid is
+  raiders walk up it and drop inside. Chat says so ("Sand is piled against the walls of Thornholm!"). A wall more than 8 blocks high, or one with a ledge or gallery jutting
+  out over its foot two above its top, gets no ramp. When the raid is
   over every block of the ramp is gone; nothing else is touched and nothing drops. The ramp buries dead bushes, grass
   and snow at the wall's foot (they are gone after the raid), but never your flowers or blocks: a flower in its way
   moves the ramp along the wall, and the flower stays. A ramp standing when the world is saved and loaded again is
@@ -44,7 +46,8 @@ Roadmap items: 32.9, B382, B437
   dying within the radius of a living one is brought back after the delay as the same mob (its gear, its raid, its
   role), tagged `aliveworkplace_risen` so it never rises twice.
 - **Sand ramps** (`threat/SandRamps`, tactic `sand_ramps`): a raider with the role `climber` whose path to the hall
-  ends at a wall (two to 8 blocks high, not a gate) starts a ramp there. Every block of the ramp goes only into air
+  ends at a wall (two to 8 blocks high, not a gate; with no room for a raider to stand on the ramp's top, for instance
+  under a ledge or gallery over the wall's foot, none) starts a ramp there. Every block of the ramp goes only into air
   or a wild plant it buries (the same rule as ladders, `threat/Buriable`), or sand already there (any sand, the `minecraft:sand` block tag: plain, red or suspicious, B437), on solid ground; the blocks go on in stages (each stage a whole ramp one higher than the last), every 10 ticks while
   the climber is near. At most 2 ramps a siege. Once the ramp stands, the raiders go up it and over.
   A raider is let go to fight once it is down inside on its feet, no higher than a step above the ramp's foot (a
@@ -105,6 +108,15 @@ Roadmap items: 32.9, B382, B437
   ramp's foot, behind a wall four high, is let go there (B330).
 - `DesertRaiderGameTests.aHuskComingDownOntoARaisedTerraceIsLetGo`: a husk coming down onto a terrace two above the
   ramp's foot behind the wall is let go there (B331).
+- `QaSandRampSteps1103d2GameTests` (5, QA, B330, B331): a husk standing still inside the wall is let go as over it on
+  a bottom slab one up (foot + 1.5), on a stair's lower step, on a top slab one up (foot + 2) and on a full block in the
+  first column past the wall; one still outside on the ground is never counted over the wall.
+- `QaSandRampHeight1103dGameTests` (3, QA lane D): against walls exactly 8 high a husk climber begins a ramp; against
+  walls 9 high, and against walls 4 high with a ledge all round two above their top, no ramp is begun and no sand is
+  piled in 500 ticks of siege.
 - `DesertRaiderGameTests.noSandWithMobGriefingOff`.
 - `DesertRaiderGameTests.theDesertSiegeIsStillOnAtMidMorningAndOverAtNoon`.
+- `QaRisings1102dBugTests` (B828): a husk that fell just before the raid was called off, before the raiders left at
+  noon, or before the Pharaoh (the last raider) was killed never rises after the raid; one that falls while the raid
+  is still on rises as a raider of it.
 - Showcase scene `desert_raiders`: the tomb camp, a sand ramp rising against a Stone Wall and a husk getting up again.

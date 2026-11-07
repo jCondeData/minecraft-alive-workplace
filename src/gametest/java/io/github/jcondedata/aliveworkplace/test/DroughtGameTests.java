@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.threat.Disaster;
 import io.github.jcondedata.aliveworkplace.threat.Disasters;
 import io.github.jcondedata.aliveworkplace.threat.Drought;
+import io.github.jcondedata.aliveworkplace.threat.RainLedger;
 import io.github.jcondedata.aliveworkplace.work.Stations;
 import io.github.jcondedata.aliveworkplace.work.WellKeeperWork;
 import java.util.List;
@@ -370,6 +371,26 @@ public class DroughtGameTests implements FabricGameTest {
 			"chronicle.aliveworkplace.drought.end", "mood.aliveworkplace.reason.drought")) {
 			helper.assertTrue(lang.has(key), "no text for " + key);
 		}
+		helper.succeed();
+	}
+
+	/**
+	 * B948: the last day it rained is saved with the world, so a restart doesn't reset the days without rain; an old
+	 * save without it loads and counts from that day, and a day set back starts the count again.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void theDaysWithoutRainAreSaved(GameTestHelper helper) {
+		var registries = helper.getLevel().registryAccess();
+		RainLedger old = RainLedger.load(new CompoundTag(), registries);
+		helper.assertTrue(old.dryDays(40) == 0, "an old save counts from today, not " + old.dryDays(40));
+		helper.assertTrue(old.dryDays(43) == 3, "then 3 days later: " + old.dryDays(43));
+		RainLedger ledger = new RainLedger();
+		ledger.rainedOn(10);
+		helper.assertTrue(ledger.isDirty(), "a new rain day isn't marked to be saved");
+		RainLedger loaded = RainLedger.load(ledger.save(new CompoundTag(), registries), registries);
+		helper.assertTrue(loaded.dryDays(16) == 6, "after a save and load, 6 days without rain read " + loaded.dryDays(16));
+		helper.assertTrue(loaded.dryDays(5) == 0, "the time set back before the last rain: " + loaded.dryDays(5));
 		helper.succeed();
 	}
 }

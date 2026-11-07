@@ -406,8 +406,8 @@ public class QaPokemonLegendsCompatTests implements FabricGameTest {
 	 * The reach from both sides, along one axis on the hall's floor: an Alpha 95 blocks from the hall counts, one 97
 	 * blocks away doesn't; and a wild Pokémon 63 blocks away may be befriended, one 66 away may not.
 	 */
-	//$ gametest_ticks_batch AREA '400' '"qa_legends_reach"'
-	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_legends_reach")
+	//$ gametest_ticks_batch AREA 'REACH_TICKS' '"qa_legends_reach"'
+	@GameTest(template = AREA, timeoutTicks = REACH_TICKS, batch = "qa_legends_reach")
 	public void alphaReach96AndBefriendReach64(GameTestHelper helper) {
 		setUp(helper);
 		ServerLevel level = helper.getLevel();
@@ -418,14 +418,40 @@ public class QaPokemonLegendsCompatTests implements FabricGameTest {
 		BlockPos at66 = HALL.offset(0, 0, 66);
 		forceChunks(helper, at95, at97, at63, at66);
 		// A newly forced chunk takes a few ticks to take entities; until then addFreshEntity drops them unseen.
-		whenReady(helper, 0, () -> reach(helper, hall, at95, at97, at63, at66), at95, at97, at63, at66);
+		whenReady(helper, 0, System.nanoTime(), () -> reach(helper, hall, at95, at97, at63, at66), at95, at97, at63, at66);
 	}
 
-	private static void whenReady(GameTestHelper helper, int waited, Runnable then, BlockPos... relative) {
+	/** How long {@link #whenReady} waits for the far chunks, by the clock (B857's fix, ported). */
+	private static final long READY_MS = 30_000L;
+	/** The server thread's pause on each tick still waiting, so READY_MS takes at most READY_MS / PAUSE_MS ticks. */
+	private static final long PAUSE_MS = 5L;
+	/** The reach test's timeout: the 300 ticks it had after the wait, plus the longest wait in ticks. */
+	private static final int REACH_TICKS = 300 + (int) (READY_MS / PAUSE_MS);
+
+	/**
+	 * Runs {@code then} once every spot's chunk ticks entities and has loaded its own (B713: on CI a far chunk once
+	 * wasn't ready within 200 ticks; its entities load off the server thread). B857 found a tick count is no wait at
+	 * all on the GameTest server, which doesn't wait between ticks, so a busy runner can race through 600 ticks in
+	 * under a second while the chunks are still queued on worker and IO threads: the wait is by the clock (30 s), each
+	 * waiting tick pausing the server thread 5 ms, and the failure says what the chunk was still missing.
+	 */
+	private static void whenReady(GameTestHelper helper, int waited, long started, Runnable then, BlockPos... relative) {
+		ServerLevel level = helper.getLevel();
 		for (BlockPos p : relative) {
-			if (!helper.getLevel().isPositionEntityTicking(helper.absolutePos(p))) {
-				helper.assertTrue(waited < 200, "the chunk at " + p + " never took entities");
-				helper.runAfterDelay(1, () -> whenReady(helper, waited + 1, then, relative));
+			BlockPos abs = helper.absolutePos(p);
+			boolean ticking = level.isPositionEntityTicking(abs);
+			boolean loaded = level.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong(abs));
+			if (!ticking || !loaded) {
+				long ms = (System.nanoTime() - started) / 1_000_000L;
+				helper.assertTrue(ms < READY_MS, "the chunk at " + p + " never took entities (after " + waited + " ticks, "
+					+ ms + " ms: entity ticking " + ticking + ", entities loaded " + loaded
+					+ ", chunk present " + level.hasChunk(abs.getX() >> 4, abs.getZ() >> 4) + ")");
+				try {
+					Thread.sleep(PAUSE_MS);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+				helper.runAfterDelay(1, () -> whenReady(helper, waited + 1, started, then, relative));
 				return;
 			}
 		}

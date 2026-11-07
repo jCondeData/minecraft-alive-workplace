@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.threat;
 
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mixin.MobAccessor;
+import io.github.jcondedata.aliveworkplace.mixin.PathNavigationAccessor;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.ArrayList;
@@ -94,6 +95,9 @@ public final class Ladders {
 		final Direction into;
 		/** The raiders of this siege who are over the wall (shared by its ladders). */
 		final Set<UUID> over;
+		/** The siege's memory and its hall, so a climb can let go of a follower the tick the gate opens (B934). */
+		final Storm storm;
+		final BlockPos hall;
 		/** The height a climber's feet must reach to get over; the rungs go from the foot to one below it. */
 		int top;
 		/** How many blocks in from the foot the ground inside is. */
@@ -101,10 +105,12 @@ public final class Ladders {
 		int rungs;
 		long downUntil;
 
-		Site(BlockPos foot, Direction into, Set<UUID> over) {
+		Site(BlockPos foot, Direction into, Storm storm, BlockPos hall) {
 			this.foot = foot.immutable();
 			this.into = into;
-			this.over = over;
+			this.storm = storm;
+			this.hall = hall.immutable();
+			this.over = storm.over;
 			this.top = foot.getY();
 		}
 
@@ -274,7 +280,7 @@ public final class Ladders {
 		Set<UUID> alive = new HashSet<>();
 		int paths = 0;
 		int n = raiders.size();
-		boolean shut = siege.breach == null || !Sieges.open(siege);
+		boolean shut = siege.breach == null || !Sieges.openNow(level, siege);
 		for (int i = 0; i < n; i++) {
 			Mob mob = raiders.get((storm.cursor + i) % n);
 			UUID id = mob.getUUID();
@@ -287,7 +293,11 @@ public final class Ladders {
 			Site site = storm.assigned.get(id);
 			boolean climber = role == Culture.Role.CLIMBER;
 			if (site != null && !climber && !onIt(mob, site) && (siege.breach != null && !site.standing() || !shut)) {
-				release(storm, id); // (back to the others at the gate: its ladder went down, or the gate is open)
+				// Back to the others at the gate: its ladder went down, or the gate is open. The walk to the ladder that Ladders
+				// gave it stops too, with the rework of that path a changed block (the gate broken open) asked for: the director
+				// paths only a raider standing still, so it walked on to the foot and climbed the ladder the vanilla way before
+				// it turned for the open gate (B907).
+				turnBack(storm, mob);
 				continue;
 			}
 			if (site == null) {
@@ -377,6 +387,32 @@ public final class Ladders {
 		storm.most = Math.max(storm.most, paths);
 	}
 
+	/** Lets go of {@code mob} for the others at the gate, and stops the walk to the ladder that Ladders gave it. */
+	private static void turnBack(Storm storm, Mob mob) {
+		UUID id = mob.getUUID();
+		BlockPos going = storm.sent.get(id);
+		release(storm, id);
+		if (going != null && going.equals(mob.getNavigation().getTargetPos())) {
+			mob.getNavigation().stop();
+			((PathNavigationAccessor) mob.getNavigation()).aliveworkplace$setDelayedRecomputation(false);
+		}
+	}
+
+	/**
+	 * Whether {@code mob}, one who only follows, should turn for the gate now: the gate of its siege is broken open and it
+	 * hasn't started up the ladder yet. Asked every tick of the climb, of the gate as the world has it, not only on the
+	 * ladders' own step or once the director noticed the gate gone: a follower on the ground near the foot when the gate
+	 * goes would otherwise be half a block up before then, and climb on over the wall (B934). One already up keeps
+	 * climbing (B907).
+	 */
+	private static boolean turnsForTheGate(ServerLevel level, Mob mob, Site site) {
+		if (Threats.role(mob) == Culture.Role.CLIMBER || onIt(mob, site)) {
+			return false;
+		}
+		Optional<ThreatData.Siege> siege = ThreatData.get(level).siege(site.hall);
+		return siege.isPresent() && !siege.get().over && siege.get().breach != null && Sieges.openNow(level, siege.get());
+	}
+
 	private static void release(Storm storm, UUID id) {
 		if (storm.assigned.remove(id) != null) {
 			CLIMBS.remove(id);
@@ -402,7 +438,7 @@ public final class Ladders {
 				data.setDirty();
 				continue;
 			}
-			Site site = new Site(foot, state.getValue(LadderBlock.FACING).getOpposite(), storm.over);
+			Site site = new Site(foot, state.getValue(LadderBlock.FACING).getOpposite(), storm, siege.hall);
 			site.rungs = column.size();
 			storm.sites.add(site);
 		}
@@ -545,7 +581,7 @@ public final class Ladders {
 			if (height < 2) {
 				continue; // (not a wall, or no getting over it here)
 			}
-			Site site = new Site(foot, into, storm.over);
+			Site site = new Site(foot, into, storm, siege.hall);
 			site.top = foot.getY() + height;
 			site.inside = inside(level, site);
 			storm.sites.add(site);
@@ -641,6 +677,10 @@ public final class Ladders {
 		public void tick() {
 			Site site = CLIMBS.get(mob.getUUID());
 			if (site == null) {
+				return;
+			}
+			if (mob.level() instanceof ServerLevel level && turnsForTheGate(level, mob, site)) {
+				turnBack(site.storm, mob);
 				return;
 			}
 			double cx = site.foot.getX() + 0.5;

@@ -50,10 +50,10 @@ public final class Decorations {
 		return POINTS.getOrDefault(io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(blueprint), 0);
 	}
 
-	/** The beauty of the village round the hall at {@code hall}: the points of the decorations finished within its reach. */
+	/** The beauty of the village round the hall at {@code hall}: the points of the decorations finished in its claimed area (B620: zones past the radius count). */
 	public static int beauty(ServerLevel level, BlockPos hall) {
 		int beauty = 0;
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
 			beauty += points(f.structure());
 		}
 		beauty += io.github.jcondedata.aliveworkplace.city.Roads.lamps(level, hall) * POINTS.get(StarterBlueprints.STREET_LAMP.id()); // the roads' lamps (27.16)

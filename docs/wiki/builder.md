@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965
 
 ## 1. What a player sees
 
@@ -21,6 +21,14 @@ free Builder, who takes away what the old drawing left (floating or invisible pi
 chests) and puts in the new pieces, as a repair. Chests and what's in them, beds villagers sleep in, job blocks and
 blocks a player put there or changed stay. With no Builder free it waits until one is. Builders get
 better with each building: they level up like villagers you trade with, and each level makes them faster.
+A Builder who dies, or whom lightning turns into a witch (B928), drops his bag and the blueprint where he was, keeps
+what was built and tells you where (`message.aliveworkplace.builder_died`, `message.aliveworkplace.builder_struck`).
+Any other worker struck that way drops what is in their bag, a tool that is yours and their area's marker. A real bolt
+keeps striking around it for a moment, so what a struck worker leaves is put down out of its reach (B952): on top of
+their workstation (a Builder's Blueprint Table) when that is 4 or more blocks from the bolt, else on the nearest open
+ground at least 4 blocks away, looked for within 8 blocks sideways and 8 under or over his feet (B964: so a builder deep
+in a basement pit, or on top of a tower, within 3 blocks of his bench still has it put on the ground round the pit or
+at the tower's foot); the message names that spot. Where there is none, it is dropped where he stood. On Peaceful lightning makes no witch and nothing is dropped.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
@@ -49,6 +57,27 @@ A scan keeps the box's item frames, glow item frames, paintings and armor stands
 villager, a mob, a dropped item or a minecart with its load is never copied. The builder puts them up last, as it does a
 starter build's frames, each paid with its item from the chests; one with no item there is left out. Scans saved before
 this have none and load as before.
+Blocks with no item of their own are built from what a player would use (B793, B794): a cake with a candle on it costs
+a cake and that candle; the middle pieces of cave vines, weeping vines, twisting vines, kelp and a big dripleaf's stem
+each cost one glow berries, weeping vines, twisting vines, kelp or big dripleaf. What hangs from the block above it
+(cave and weeping vines, stalactites) goes up last and top-down, so a vine three long is built three long. A big
+dripleaf grows from the bottom as a player stacks one leaf on another: each stem goes down as a leaf and turns into
+a stem when the next piece goes on top (B812), so a big dripleaf on two stems is built three tall. A piston
+scanned pushed out is built retracted and pushed out by its own redstone, with its head (B795); one with no power in
+the build stands retracted, never a pushed-out base with nothing in front.
+A melon's or pumpkin's grown stem costs one melon or pumpkin seeds and is planted as a fresh stem beside its fruit
+(B865). A bubble column is the water a player poured on soul sand or magma: each of its blocks costs a water bucket
+(the bucket comes back) and is poured once the soul sand or magma is down, and the bubbles rise (or sink) again, so a
+scanned soul sand elevator works when it is built back (B861).
+Powder snow costs a powder snow bucket, and the empty bucket comes back to the Builder as it does for a player
+(B873), like the water and lava buckets he pours.
+Glow lichen and sculk vein cost one item per face they cover (B792), as shears count them: a lichen on three faces
+is listed as three glow lichen, so breaking the build gives back no more than was paid.
+Water plants are built the way a player grows them: sugar cane goes up with the decoration, after the pool beside its
+foot is poured (B816), so a cane three tall by the water stands three tall again. Sea pickles and living coral scanned
+under water are built waterlogged (each costs a water bucket as well, which comes back empty), so pickles glow and
+coral stays alive (B817); other waterlogged blocks, such as stairs and slabs, are still built dry. Tall seagrass costs a
+seagrass and a bone meal, as a player plants seagrass and uses bone meal on it (B818), and is built both halves tall.
 
 ## 2. How it works
 
@@ -57,9 +86,30 @@ Builder knows about it lives in that record, and the record is saved, so a Build
 stopped, chunk unloaded, Builder asleep) and carry on exactly where it was. `BuilderWork` is written to be
 restartable at any tick for this reason.
 
+**Working hours.** A Builder works from early morning (1000) to dusk (11000), longer than vanilla villagers, then
+idles and goes to bed at 12000. He stops building as soon as his schedule leaves work, puts his tool away and heads
+for bed; he doesn't build on into the night (B839). In the morning he carries on where he stopped, also when the
+world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
+
 **Stages, in order:** CLEAR (top-down), FOUNDATION, STRUCTURE (bottom-up), DECORATION, LANDSCAPE, DONE.
 - CLEAR takes away what is in the way, but never breaks containers, its own bench or any other Builder's Bench (a
-  neighbor's bench inside the build's box stays, and the build finishes round it, B132).
+  neighbor's bench inside the build's box stays, and the build finishes round it, B132). Sand or gravel standing over
+  the box (a dune, a gravel cap on a hill) falls into each layer as it is taken: at the end of CLEAR the builder waits
+  for what is still coming down, then goes back over the list and digs out what fell in, up to 16 times a build (B837;
+  saved as `clear_passes`, 0 in older saves).
+- A spot filled again each time it is dug (sand dropped back, a cobblestone generator, a player putting a block back)
+  no longer keeps the builder in CLEAR for ever: once he has dug one spot 16 times on a list it is deferred like any
+  step that can't be done yet, and if it is still being refilled on the retry it is left, counted once in skipped, and
+  the build goes on (B868; the spots left so are saved as `refilled`, none in older saves, so a later pass over CLEAR
+  leaves them be). Ordinary terrain is still all dug out: a sand column standing over one spot (even one 24 high,
+  more than 16 digs of it) is dug out with nothing skipped.
+- Sand or gravel that falls into the rooms later (a prop under a pile broken mid-build) is dug out before the build is
+  called done: once LANDSCAPE has run out, the builder goes back over CLEAR in a dig-out that takes only sand, gravel,
+  concrete powder and the like standing where the drawing has air (never a block of the build, an anvil, a dragon egg or
+  a player's block on a Steward's site), into his chests, then straight back to the end of the build (B869; saved as
+  `dig_out`, false in older saves). Dig-outs share CLEAR's 16 passes, and a spot refilled each time it is dug is left
+  as in CLEAR (B868), so the build always ends; what is still there after that is counted in skipped once and left for
+  the repair round. Sand a player puts in a room mid-build is dug out with it (never lost); on a finished hut it stays.
 - FOUNDATION fills under a build standing on uneven ground. How deep is the `workplaceFoundationDepth` rule.
 - STRUCTURE goes bottom-up so every block has something to stand on. A block a player puts mid-build where the
   drawing has another is taken out into the builder's chests and the drawn block laid (a Steward's build keeps the
@@ -70,9 +120,24 @@ restartable at any tick for this reason.
 - LANDSCAPE digs away ground above the floor and fills holes with dirt, but never above the land just beyond the
   leveled ring (B280): a build standing a block above the lawn round it leaves the lawn as it is, where it once got a
   raised band of dirt round it. A blueprint clicked onto a flower or tall grass stands on the ground under the plant.
+- LANDSCAPE leaves the ground in and under a neighboring build alone (B838): a site under way or a finished
+  building whose box the leveled ring reaches, its basement too, is neither dug nor filled, so two builds side by side
+  don't dig the pad out from under each other (test `QaBuilderMidJob1102BugTests`; with a save and load just before
+  the ring is leveled, `QaSavesAfterFixes1103eGameTests`).
 - FOUNDATION and LANDSCAPE depend on the terrain, so a site loaded in the middle of those stages makes its list
   again from the terrain; steps already done are skipped.
 - A step that cannot be done yet is put off once, then skipped (counted in `skipped`).
+- A block over the world's build limit (y 320 in the Overworld) or under its bottom (y -64) can't be placed: a
+  blueprint on a mountain top whose roof pokes over the limit, or a deep basement dug past the bottom. The builder
+  skips such a block like any step that can't be done (counted in `skipped`), takes no material for it and never
+  waits for one, so the rest is built and the build ends (B937; a door whose top half would be over the limit is
+  skipped whole). The hand-over warns of it in yellow ("The top of Test Hut reaches over the world's build limit
+  (y 320)..."). The held blueprint's supply report and its Material List book leave those blocks out too (B953).
+  A blueprint laid wholly over the top ends at once with nothing used and the blueprint back in the chests, on
+  ground as high as the world or on a lone block at y 319: no foundation goes under a block that will never be built,
+  and no ground is leveled round a build of which nothing can stand (B965).
+  Tests `QaBuildHeightLimit1104BugTests`, `BuildHeightLimitGameTests` (with a save and load mid-build), `B953GameTests`,
+  `QaStruckAndTop1104GameTests`, `QaStruckAndTop1104BugTests`, `QaBuilderGaps1105GameTests` (a roof on y 319).
 - "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors
   (a fence's connections, a stair's corner shape). Without that a finished wall could look unfinished forever.
 - Nobody is built into a block: before a block goes down the builder checks there is room for it as it will
@@ -114,16 +179,30 @@ that village's store, so the village's own Builder on a village build (or none) 
 village's 48 blocks from his table (the distance it gives is rounded up, so one just past the reach reads past it:
 48.3 blocks says 49, B355), someone else's, or no chest round it he can read.
 
-**Speed.** Exactly `workplaceBuildDelay` ticks per block (default 8; B515: it was one tick more) times a share by Builder level 1 to 5:
-100%, 100%, 85%, 70%, 55%, 40% (index 0 is unused). Then the village's mood, traits, edicts and so on change it
-(`work/Pace`). XP: 1 per 5 blocks placed and 10 for finishing a build (`BuilderLevels`).
+**Speed.** Exactly `workplaceBuildDelay` ticks per block (default 8; B515: it was one tick more) times a share by Builder level,
+Novice to Master: 100%, 85%, 70%, 55%, 40%, rounded to whole ticks (at 30, a Novice places a block every 30 ticks and a
+Master every 12), and never faster than a block a tick. Then the village's mood, traits, edicts and so on change it
+(`work/Pace`). A bigger delay is never faster and a higher level never slower, up to the rule's largest value,
+2147483647 (B822: over about 21 million it used to overflow and build every tick). The Fisherman waits the same rule's
+delay 15 to 60 times for a bite (`FisherWork.biteTicks`, capped at the largest value), so a huge rule all but stops
+him too (B832: past about 36 million it used to overflow and he caught a fish every second). `/gamerule` refuses values under 1.
+A raised rule counts from the next block. A lowered one cuts the wait in hand at once to the new delay
+(`BuilderLevels.rewait`, for blocks, scaffolding and a Fisherman's bite), so a Builder in the middle of a huge delay
+builds again at the new speed without his work restarting (B831: he used to wait out the old delay). A restart of his
+work never gives a free block: waking or a new stint keeps the wait in hand, and a fresh start (a reload, re-hired)
+begins a whole wait at the rule (B845: under a huge rule he used to place one block straight away; `BuildDelayChangeGameTests`). XP: 1 per 5 blocks placed and 10 for finishing a build (`BuilderLevels`).
 
 **Queue and crew.** A Builder takes up to 5 more blueprints on top of its current one (`MAX_QUEUE`). Up to 3 idle
 Builders (`MAX_HELPERS`; Guilds can change this) help one site, each claiming steps ahead of the lead. A helper that dies drops only its bag; the steps it claimed go back to the crew and the lead finishes the build (B516). The owner
 asked that time shrink with each Builder: tested at 2 builders = 50%, 4 = 29% of the time alone (ROADMAP 23.1a).
 
 **Who may order.** With `workplaceBuilderOwnership` on, a Builder takes orders only from the player who hired it,
-their friends (`/workplace friend add|remove|list`) and operators.
+their friends (`/workplace friend add|remove|list`) and operators. That includes orders from the Village Hall: the
+Upgrades page and a house's new outside look go only to a Builder the clicking player may command (B880): his own
+Builder is picked even when it is farther away or busy (the upgrade is queued behind its job), a Builder nobody hired
+takes anyone's order, and an operator may send any. A refused order leaves the other player's Builder, its job and its
+queue exactly as they were; a friend removed with `/workplace friend remove` is refused again
+(`QaBuilderOwnership1104bGameTests`, 9).
 
 **Upkeep and paths.** An idle Builder looks over buildings it (or its employer) finished anywhere in the village his
 table stands in, or outside it within `maxSiteDistance` (36.20), every 1200 ticks, and fills only the holes with its usual materials; things players put there
@@ -136,7 +215,7 @@ Repair it? [Yes] [Not now]". The Village Hall's **Repairs** tab (an anvil, one o
 village's damaged builds, the questions waiting first, then repairs going on, agreed ones waiting for a free Builder,
 paused ones and those left for now. A click on one opens it: **Yes, repair it** and **Not now** while it waits, **Pause**
 and **Stop the repair** while a Builder repairs it, **Carry on** when paused. Yes sets the nearest free Builder who looks
-after it to it at once. Not now leaves it as it is, and it is asked about again only once more goes missing (put right by hand meanwhile,
+after it to it at once; a Yes for a build already put right by hand says nothing is missing any more and takes it off the list. Not now leaves it as it is, and it is asked about again only once more goes missing (put right by hand meanwhile,
 it comes off the list, and the next damage is asked about afresh); Pause
 leaves it until Carry on. Pausing or stopping ends the repair there and then (what is put back stays, no blueprint is
 handed out) and the Builder goes straight on to the next job in its queue. Handing a Builder a blueprint mid-repair
@@ -233,10 +312,19 @@ sites are remembered). Each site (`BuildSite.save`) holds:
   not waiting) and `player_blocks` (0): used by Stewards (27.19).
 - `rechecks` (0): how often the build went back for blocks broken mid-build; `left_out` (empty): the structure and
   decoration blocks given up for good, which that look leaves be (B508; older saves have neither).
+- `clear_passes` (0): CLEAR's passes for what fell in, dig-outs included (B837); `dig_out` (absent: false): the build is
+  back in CLEAR only to dig out sand fallen into its rooms (B869).
 
 On the villager (attachments in `registry/ModAttachments`):
 - `builder_job` (`BuilderJob`): `site` and `helper` (false by default).
-- `builder_bag`: the 27-slot bag, empty by default.
+- `builder_bag`: the 27-slot bag, empty by default. A stack of an item no loaded mod has any more (a mod taken out of
+  the pack) is dropped with a warning in the log and the rest of the bag loads, as a chest keeps its other slots; the
+  same goes for a Hauler Golem's load, a postman's courier routes (a route keeps its ends and its other filter items)
+  and a worker's machine trip, which keeps its machine and stage even when every stack it carried is gone (B791,
+  `RemovedModItemsGameTests`, `QaRemovedModItems1102BugTests`; QA `QaVillageVerify1102GameTests`: gone stacks first,
+  in the middle and last drop out with the others kept in order, a bag of only gone stacks loads empty and the
+  villager's other saved data stays, a named, damaged tool keeps its components, a bag saved again is the old save
+  minus the gone stacks, a golem load with several gone keys or only gone keys).
 - `builder_employer`: who the Builder works for (fields not listed here).
 
 Per finished building (36.15): `repair_ask` (`asked`, `yes`, `not_now` or `paused`; absent: never asked, as in every
@@ -252,7 +340,7 @@ claims and trip counts.
 - Block: Builder's Bench (`aliveworkplace:builders_bench`), the job block. Profession: Builder (`entity.minecraft.villager.builder`).
 - Items: Blueprint (`aliveworkplace:blueprint`; "Blueprint: %s" when named), Blank Blueprint (`aliveworkplace:blank_blueprint`, bought from
   villagers for emeralds), Builder's Tea (`aliveworkplace:builders_tea`). The Blueprint Table makes and uploads blueprints.
-- Hand over: right-click the Builder with a Blueprint. Sneak-right-click with an empty hand: status. A placed Blueprint sneak-handed over its finished building: take it down (a busy Builder queues it and says so: "Builder will take down Test Hut after Cottage (number 1 in line). It needs no materials.", B514). A Blueprint, a Book and Quill or a
+- Hand over: right-click the Builder with a Blueprint. Sneak-right-click with an empty hand: status. A placed Blueprint sneak-handed over its finished building: take it down (a busy Builder queues it and says so: "Builder will take down Test Hut after Cottage (number 1 in line). It needs no materials.", B514). Water (or lava) in it is scooped up first, while its bank still holds it, with empty buckets from the Builder's bag or the bench's chests (the ones its pouring left): nothing runs out over the ground and the buckets come back full, one per bucket it cost. Short of empty buckets he still takes the liquid away but fills only the buckets he has; a bucket is never made from nothing (B961). A water bucket left over from the build (a source that filled itself before he poured it) stays as it was. A Blueprint, a Book and Quill or a
   Wonder Plan in the off hand works too when the main hand is empty.
 - Commands: `/workplace blueprints`, `/workplace blueprint`, `/workplace import`, `/workplace sites`,
   `/workplace cancel <site>` (the blueprint stays placed; hand it back to carry on; a canceled take-down says "Canceled the
@@ -343,11 +431,13 @@ claims and trip counts.
   one of the City Plan's zones, the table itself standing in either (a table in a zone painted in the plan's corner,
   past the radius, reaches the whole village too; B550, B557; QA's `QaReachZoneCornerGameTests` and
   `QaVillageReachBugTests`). Outside the village, a build's middle must be within `maxSiteDistance` (128) of the
-  table. A spot past it is refused with its distance rounded up, so one just past the reach reads past it, and naming the
+  table, measured across the ground (B668: a tall build's height never counts; `ReachAcrossGameTests`, QA's
+  `QaFarReach1028bBugTests`). A spot past it is refused with its distance rounded up, so one just past the reach reads past it, and naming the
   village when the table stands in one: "That spot is outside Mapleridge and 140 blocks from the builder's Blueprint
   Table — keep it within 128." (`assign.too_far_village`; with no village round the table, `assign.too_far`: "That spot
   is 140 blocks from the builder's Blueprint Table — keep it within 128."; B378). Farmers', Miners' and other area jobs'
-  spots follow the same rule and say it the same way. A far site in chunks nobody has loaded waits until someone does:
+  spots follow the same rule, and their refusal names the worker's own block instead of the table ("That field is 129
+  blocks from the Composter the farmer works at — keep it within 128."; B453). A far site in chunks nobody has loaded waits until someone does:
   nothing loads chunks for it. A world from before keeps its sites, and a config file holding the old default 48 moves to
   128 (format 5); any other number stays.
 - Blocks on the never-placed list (spawners, portals, bedrock, command blocks...) are skipped, not substituted.
@@ -375,6 +465,31 @@ claims and trip counts.
 
 ## 8. Proof
 
+`B928GameTests` (3: a builder struck into a witch mid-job, then a save and load of the build sites: the site stays
+closed, one blueprint on the ground and no material lost; on Peaceful he keeps his bag, his site and his blueprint; a
+struck worker drops their bag, the owner's axe and the tree farm's marker, and a block a builder only holds for the look
+isn't made). QA's `QaBuilderConverted1104GameTests` (1: a zombie's bite on Hard drops the bag and one blueprint, nothing
+doubled) and `QaBuilderConverted1104BugTests` (1: struck by lightning mid-job, nothing lost and the build left).
+QA's `QaStruckAndTop1104GameTests` (9: real bolts on a builder by lava with his bench covered, on two builders at once and
+twice on one spot leave every bag and blueprint on safe ground; a real bolt, a save and load and a second builder finish
+the hut with nothing lost; a hut whose floor is the world's bottom layer is built whole with no warning; the held
+blueprint's lists exactly at the top and the bottom ask for everything; a hut sunk under the bottom saved and loaded
+mid-build ends with nothing lost; a blueprint wholly over the top uses nothing and comes back).
+`B952GameTests` (3: one and two real bolts on a builder mid-job leave one blueprint and his whole bag; a real bolt on any
+other worker leaves their bag and the owner's axe).
+`QaStruckAndTop1104BugTests` (QA, B964: a real bolt on a builder at the bottom of a 4-deep pit with his bench on the rim,
+and on top of a 5-high tower over his bench, leaves his whole bag and one blueprint).
+`QaBuilderGaps1105GameTests` (QA, 10: a Smithy's cellar dug beside waterlogged stairs, seagrass and kelp, a basement
+beside a bubble column and a kelp column, water where the basement's own walls and floor go, and a save and load mid-dig
+beside waterlogged earth all end dry and as drawn; a real bolt with the bench 4 blocks off puts the bag on the bench, 3
+blocks off on the ground, atop a tower at its foot and in a pond on the dry bank, each at the spot the message names; on
+Peaceful a bolt makes no witch and drops nothing; a hut whose roof is the world's top layer is built whole). Open: B969, a
+struck builder whose bench is gone has his bag put over the empty spot, so it falls and the message names mid-air.
+`QaBuilderGaps1105bGameTests` (QA, 2 here: a builder struck on grass over a sealed cave gets his bag on the surface; on a
+bridge over a sealed flat-roofed room, on its roof under the sky). Open: B973, struck in a wheat field (or over a stair
+roof) above a sealed cave or room, the bag is put inside it, where a player must dig to reach it.
+`QaLaneC1102eGameTests` (QA, B832): six real fishermen catch nothing in 1500 ticks at workplaceBuildDelay 35791395 (the
+first delay whose 60-step bite passes the int range) and at 2147483647, and the same pond at the default 8 still catches.
 `B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not
 waiting); a click there hands one over and it's off the board; after a save and reload it's listed again while he builds
 on, and a torch put in the chest takes it off before the hut is done.
@@ -416,9 +531,10 @@ GameTests (`src/gametest/java/.../test/`): `BlueprintsStayGameTests.everyBluepri
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbor's bench outlasts a build;
 a bench put down and employed at in one command is held),
 `TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `QaJobBuildsGameTests` and `QaJobBuildsCompatTests` (28.13: each job's Journeyman sells their build and a Novice or an Apprentice doesn't; in all ten builds the job block takes a villager sneak-clicked with the job's item), `QaStageFiveGameTests.madeUpPreviewIdsAreNotRemembered` (B340: 5000 made-up preview ids remembered as 0, a real one
-answered, its repeat at once ignored and answered after 100 ticks), `TablePreviewGameTests` (7, the table's
+answered, its repeat at once ignored and answered after 100 ticks), `TablePreviewGameTests` (9, the table's
 3D preview data; 36.1: Starter Cottage IV's preview has cells below the ground and its fitted height counts them, and
-at scale 2 no cellar block shares a cell with a ground-floor block), `DoorwayHeadroomGameTests` (7, B173: a villager
+at scale 2 no cellar block shares a cell with a ground-floor block; B798: a banner, wall banner, decorated pot, sign and
+head alone in a blueprint each get a preview cell, a barrier none, and a scanned lone banner has its cell on the Table), `DoorwayHeadroomGameTests` (7, B173: a villager
 walks in by the Healing Center's front door onto its carpet, and by the Manor's front door onto the stair right inside:
 `DoorwayHeadroomGameTests.aVillagerWalksInByTheHealingCentersFrontDoor`,
 `DoorwayHeadroomGameTests.aVillagerWalksInByTheManorsFrontDoorOntoItsStair`; B178: three villagers walk from the War
@@ -450,6 +566,8 @@ every stage and after a save and reload, `everyStageAndAfterAReload`; a finished
 `QaOffHandBookGameTests` (2, QA on B394: an off-hand Book and Quill doesn't stop the Postal Desk handing out waiting
 parcels, `anOffHandBookDoesNotStopThePostalDeskHandingOutParcels`; on a bench with no build it says so and is kept,
 `anOffHandBookOnABenchWithNoBuildSaysSoAndIsKept`).
+`QaBuildReserve1104bGameTests` (7, QA of B84's build reserve at its edges: only what lies beyond a build's shortfall is ever free, `onlyWhatIsBeyondTheShortfallIsFree`; the bench's own chests lower the hold item for item, `benchChestsLowerTheShareItemForItem`, but a shared store never counts as one, `theStoreNeverCountsAsTheBenchsOwnChest`; two benches add up, `twoBenchesSharingOneStoreKeepBackTheSum`; a builder's bag counts once across his queued builds, `oneBuildersBagCountsOnceForHisQueuedBuilds`, and nobody else's counts, `anotherVillagersBagDoesntCount`; holding back one item never holds back another, `oneKeptBackItemNeverHoldsBackAnother`).
+`QaBenchMovesCellars1104bGameTests` (6, QA of B290 and 36.7: a Builder moved to another table mid-structure finishes from the new table's chests and never touches the old one's again, every material accounted for (`aMoveMidStructureLeavesTheOldTablesChestUntouched`); he carries on when the old table is broken after the move (`theOldTableBrokenAfterTheMoveDoesntStopTheBuild`); moved there and back, his build and his queued builds return to the first table (`aMoveThereAndBackLeavesEverythingAtTheFirstTable`); digging an old build's cellar leaves every container above ground with exactly what it held (`aCellarDigLeavesTheContainersAboveGroundAndTheirContents`) and a player's chest in the half-dug cellar with its contents (`aChestInTheHalfDugCellarSurvivesTheDig`); builds with no basement are never offered "Dig the cellar" (`aBuildWithNoBasementIsNeverOfferedACellar`)).
 `B290GameTests` (6, B290: a hired Builder at a workshop table 34 blocks from the village's unowned Storehouse, in a
 village whose hall his employer owns, counts its stone overhead, in the list and the status and builds from it,
 `aHiredBuilderAtAWorkshopTableBuildsFromTheVillageStorehouse`; a player's Storehouse feeds the village's own Builder on
@@ -538,10 +656,36 @@ Apprentice to Master tells the owner the level_up sentence with the new level's 
 amethyst between cobblestone asks only for the cobblestone and is finished with none of the three placed). `QaBlueprintHandlingGameTests` (3: place, four quarter turns back to the
 start, pick up, the leveling switch off/on/off kept through placing, turning and the hand-over; a building taken down
 with the chest full loses nothing; an upgrade lines up over its own finished building, turned or not, never when
-sneaking and never over another kind of building). `QaTakeDownGameTests` (8: a camp, a turned and mirrored hut and a hut with its table broken come down losing no block; a plain hand-over leaves the building standing; a stranger can't have it taken down; a take-down handed to a busy Builder waits its turn; one canceled halfway carries on when its blueprint is handed back as it came; the placed blueprint's tooltip tells how) and `QaTakeDownBugTests` (2: a canceled take-down's blueprint comes back still placed, B513; a queued take-down is announced as one, with no materials sentence, B514). `TakeDownCancelGameTests` (2, B526: a take-down canceled halfway says it's a take-down, its blueprint goes through a save and comes back to a plain hand-back carrying on the take-down; the take-down mark is kept at its spot and through a save, dropped when moved, and an old blueprint reads as plain) and QA's `QaBuilderFixes1026BugTests` (1: handed back as the cancel line says, the take-down carries on). QA's `QaBuilderFixes1026GameTests` (5: the lead killed while two helpers work ends the build once, one blueprint on the ground, builder_died with the hut and the spot, the helpers stop and nothing is doubled or lost; a helper killed then a save and load still finishes the hut whole, no blueprint dropped, no builder_died; a queued take-down and a queued build each say their own exact line; and two scaffolding cases, on its page). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
+sneaking and never over another kind of building). QA's `QaTakeDown1105GameTests` (9, B961: the Lily Pond taken down across a save and reload, with no empty bucket, with four, with some in the bag and some in a chest, turned and mirrored, and beside a player's own pool he leaves alone; the Fountain, the Well and the Gem Grotto's lava: none of it left, every item back, the buckets neither made nor lost). `QaTakeDownGameTests` (8: a camp, a turned and mirrored hut and a hut with its table broken come down losing no block; a plain hand-over leaves the building standing; a stranger can't have it taken down; a take-down handed to a busy Builder waits its turn; one canceled halfway carries on when its blueprint is handed back as it came; the placed blueprint's tooltip tells how) and `QaTakeDownBugTests` (2: a canceled take-down's blueprint comes back still placed, B513; a queued take-down is announced as one, with no materials sentence, B514). `TakeDownCancelGameTests` (2, B526: a take-down canceled halfway says it's a take-down, its blueprint goes through a save and comes back to a plain hand-back carrying on the take-down; the take-down mark is kept at its spot and through a save, dropped when moved, and an old blueprint reads as plain) and QA's `QaBuilderFixes1026BugTests` (1: handed back as the cancel line says, the take-down carries on). QA's `QaBuilderFixes1026GameTests` (5: the lead killed while two helpers work ends the build once, one blueprint on the ground, builder_died with the hut and the spot, the helpers stop and nothing is doubled or lost; a helper killed then a save and load still finishes the hut whole, no blueprint dropped, no builder_died; a queued take-down and a queued build each say their own exact line; and two scaffolding cases, on its page). `QaShapePlannerBugTests` (2, B379: drawing without a Blank Blueprint and a failed save each speak of the shape, never of a scan). `QaShapePlannerGameTests` (6, the Shape Planner's screen clicked as the client
 does: each side 1 to 32, no Blank Blueprint or no block draws nothing and takes nothing, two draws give the same build
 for two blanks, a hollow and a solid box of one size are two builds, a blank in the first slot is used and a full bag
-gets the blueprint at the player's feet, a builder builds a drawn box from the chest). `QaScanRoundTripGameTests` (1, from
+gets the blueprint at the player's feet, a builder builds a drawn box from the chest). `ScanRebuildPlantsGameTests` (6, B793-B795, scanned with real clicks and built again: a cake with a red candle is
+listed as a cake and a red candle and built from them, and with no candle the builder waits for one and builds no bare
+cake; cave and weeping vines three long under a ceiling, and twisting vines three tall, are listed one item a block and
+built that long with nothing skipped; a pushed-out sticky piston is built with its head, and without its redstone it
+stands retracted). `QaScanRebuild1102dBugTests` (3, QA, B816-B818: sugar cane three tall on sand by a pool is built
+three tall; three sea pickles at the bottom of a pool are built as three, waterlogged; tall seagrass in a pool is built
+again, both halves, with nothing skipped). `QaScanRebuild1102fGameTests` (10, QA, B816-B818: cane one and three tall on dirt, grass, sand and red sand by one channel, cane with water only a diagonal away skipped and never floating, cane by the world's own water, a chest short of cane waits then builds it, a save and reload mid-decoration; one and four pickles glow under water, dry pickles stay dry, living coral stays alive; tall seagrass costs one seagrass and one bone meal a plant, seagrass one deep is plain seagrass). `QaBuilderLeftovers1102GameTests` (9, QA, B820: a Builder's leftovers fill the part stacks of his own chest, go to the Storehouse when every slot holds another item or the chest is brim-full, the one that doesn't fit goes on, after a save and reload too, and at the end of a job; a Hauler Golem leaves named logs and an enchanted, damaged axe untouched, also after a reload). `QaBuilderTerrain1102GameTests` (6, QA: a box full of sand dug out, a pond by the doorway leaves no water in the hut, lava pools with fire spread on burn nothing and kill no one, a crack under the floor is filled to the bottom and the build ends with no dirt in the chest, an oak through the footprint leaves no log or leaf, snow, grass and flowers are cleared and never asked for; every material adds up). `B868GameTests` (4, B868: sand put back the tick after each dig ends CLEAR with the spot counted once in skipped and the hut finished, also through a save and reload mid-CLEAR; sand put back only three times is dug out with nothing skipped; the `refilled` spots survive a save and an older site loads with none). `QaBuilderRestartClear1103bBugTests` (3, QA and B869: sand fallen into the room mid-STRUCTURE is dug out before the hut is done, also with a save and load in the middle of that dig-out, the hut as drawn and every material kept; sand in the room put back each time it is dug in the dig-out, for ever, still lets the hut finish, counted in skipped). `QaBuilderDigOut1103GameTests` (7, QA, B869: gravel and concrete powder in the room dug out into his chests, sand a player puts in the room mid-build dug out and never lost, an anvil in the room never dug and the hut still finishes, sand on the lawn and the roof outside the drawing's air left, a wall broken and sand in the room both put right in either order, the dig-out only ever in CLEAR, ending in LANDSCAPE and taking nothing built). `QaRefilledSpots1103eGameTests` (5, QA, B868: a sand column 24 high over a dirt-filled box, more than 16 digs of one spot but ordinary, all dug out with nothing skipped or lost; a spot refilled for ever saved and loaded at its 16th dig and in the middle of its retry, two spots refilled at once, and two helpers on the site: CLEAR ends with each spot counted once and the hut finished). `QaClearPassesSaved1103eGameTests` (2, QA, B837's `clear_passes`: the count of CLEAR passes survives a save and an older site loads with none; on a loaded site one pass short of the 16 sand in a cleared spot sends the builder back over CLEAR, and at 16 it is counted as left, so a reload never gives a site its passes back). `QaBuilderTerrain1102BugTests` (2, QA, B837: a sand dune over the whole site and a gravel cap over dirt, reloaded mid-CLEAR, are all dug out of the hut, nothing left falling, every material adds up). `QaBuilderMidJob1102GameTests` (6, QA: a builder killed mid-structure is followed at his bench with nothing doubled, the bench mined and put straight back, a player's block in the room neither holds the build nor is lost, two reloads three ticks apart, a builder asleep builds nothing and finishes in the morning, two touching huts on flat ground). `QaBuilderMindChange1102GameTests` (7, QA: a player who changes their mind mid-job: a build canceled mid-structure and moved is built at the new spot with the half left as it stood and nothing lost; a second blueprint mid-build is lined up and built after the first; chests emptied mid-structure make the builder wait and say "is waiting for materials", then he finishes when they're refilled; wall planks mined during decoration are laid again; a Scan Tool scan of the half-built hut holds exactly what stood and the build carries on; a canceled build stays canceled over a save and load, its bag back in the chests; a build canceled mid-decoration and handed straight back carries on with nothing doubled). `QaBuildDelay1102gGameTests` (6, QA, B832 and B834: six fishermen at `workplaceBuildDelay` 2147483647 and at 35,791,395, Masters included, catch nothing in 1,500 ticks while at 1 they still fish; a Miner's finds go to his hall's Storehouse, not a nearer kitchen, across reloads and with two kitchens, and into the kitchen's chest only when the Storehouse is full). `QaBuilderFixes1103GameTests` (11, QA, verifying B837-B839: red sand under a concrete powder dune, a sand column taller than the box on a dirt lid, and a dune reloaded every 200 ticks of CLEAR are all dug out with every block kept; sand a player puts in the finished hut is left alone; leveling leaves the pad of a finished neighbor, of a turned neighbor site still in CLEAR and of a neighbor touching only at a corner, while a plain hill in the ring is still leveled; a Builder stops within 200 ticks of dusk, stays still after a reload at night and finishes in the morning, and keeps building at midday). `QaBuilders1102bBugTests` (5, QA: a glow lichen scanned on three faces is listed as three lichen and
+built on no more faces than were paid, B792; a candle cake, three-long hanging vines, a pushed-out piston and a lone
+banner's preview). `QaScanRebuild1102cGameTests` (9, the tester's, B793-B795: a lit cake with a red candle is paid
+once from the chest and built; kelp three tall in a glass tank, a stalactite three long, a spore blossom, hanging roots
+and a hanging sign under a ceiling are built again; a pushed-out sticky piston built turned a quarter faces south with
+its head; a lever-pushed piston is never left stuck (lever on with the head, or off and retracted); cave vines whose
+site is saved and loaded every 7 ticks still end three long). A big dripleaf's stem isn't built yet (B812).
+`QaBuilderFixes1103cGameTests` (12, QA, B868, B873, B879: a CLEAR spot refilled 16 or 20 times and then left is dug on
+the retry with nothing skipped; a spot given up for being refilled stays given up through a save and a later CLEAR
+pass, counted once in skipped; two refilled spots give skipped 2 and the build finishes; water and powder snow paid
+from a chest or the bag give one empty bucket back per pour, and stone leaves nothing extra; a Yes after one of two
+holes was mended is still agreed and repaired; a wall mended by hand leaves the list after Yes or Not now, and new
+damage is asked about afresh; damage done before the Yes is repaired; the Repairs page's Yes on a mended wall promises
+no repair). `QaBuilderSurvivors1103cGameTests` (4, QA, B865, B831: a fresh melon or pumpkin stem counts as the grown
+stem of its own kind only; scanned grown stems are planted once, one seed each, and never dug or replanted; a stem
+already growing where the grown stem is drawn is left standing and costs nothing; a scaffold wait with one tick left
+ends at once when the delay is lowered to zero).
+`QaScanRebuild1102dGameTests` (6, the tester's: a lily pad on a pool, a scaffolding tower that is part of the scan,
+four pink petals, three turtle eggs, a full water cauldron, and farmland with wheat beside a dirt path, each scanned and
+built again whole with nothing skipped and asked for as a player places them).
+`QaScanRoundTripGameTests` (1, from
 the Scan Tool's guide page: a hand-built room with two double chests lying either way, a door, a bed, a wall torch, a
 hanging lantern, an upside-down stair and a ladder, scanned with real clicks and built again a quarter turned, comes out
 block for block turned, the chests still double, `aScannedRoomIsBuiltAgainTurnedWithEveryPieceWhole`). `QaScanPotGameTests`

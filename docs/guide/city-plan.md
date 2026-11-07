@@ -36,7 +36,7 @@ Right-click the air to open it. You see the village map as it is today (the hall
 on it) under a grid of 32 by 32 cells. A cell is 4 by 4 blocks with the default **Village Hall Reach** of 64, and the
 grid is centered on the hall. Cells nearer another village's hall are left out.
 
-- **+ New** makes a zone: give it a name, a **kind** ([the zones](plan-zones.md)), a building **style** (or As drawn)
+- **+ New** makes a zone: give it a name (1 to 32 letters), a **kind** ([the zones](plan-zones.md)), a building **style** (or As drawn)
   and the **Renew** switch ([old houses](old-house-renewal.md)).
 - **Brush** paints cells one by one (drag to paint more), **Area** paints a rectangle, **Erase** takes cells out of
   every zone (right-click erases with any tool), and **Undo** steps back up to 10 times.

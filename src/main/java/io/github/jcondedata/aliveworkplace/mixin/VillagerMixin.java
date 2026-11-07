@@ -11,6 +11,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** Builders keep longer hours than other villagers (see {@link ModVillagers#BUILDER_SCHEDULE}). */
 @Mixin(Villager.class)
 abstract class VillagerMixin {
+	/**
+	 * B928: struck by lightning, a villager becomes a witch without dying, so no death hook sees it: the worker's bag,
+	 * blueprint and site are left as a death leaves them, here, once the witch is in the world and before the villager goes
+	 * (out of the bolt's reach, B952).
+	 */
+	@Inject(method = "thunderHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/npc/Villager;releaseAllPois()V"))
+	private void aliveworkplace$struckIntoWitch(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.LightningBolt bolt, CallbackInfo ci) {
+		io.github.jcondedata.aliveworkplace.build.BuilderEvents.onStruckIntoWitch(level, (Villager) (Object) this, bolt);
+	}
+
 	/** A shopkeeper's offers are whatever the shop has in stock right now. */
 	@Inject(method = "mobInteract", at = @At("HEAD"))
 	private void aliveworkplace$shopStock(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand,
@@ -61,6 +71,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.city.Stewards.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.craft.Crafters.tick((Villager) (Object) this); // the retired Crafter (37.14a)
 		io.github.jcondedata.aliveworkplace.craft.CrafterWork.benchlessTick((Villager) (Object) this); // a job outliving its bench (B353)
+		io.github.jcondedata.aliveworkplace.mend.MendingWork.stationlessTick((Villager) (Object) this); // a smith's bag outliving the grindstone (B970)
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Legends.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Gifted.tick((Villager) (Object) this);
@@ -68,6 +79,9 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.people.Retirement.tick((Villager) (Object) this); // shadows and mentors (34.20)
 		io.github.jcondedata.aliveworkplace.furnish.FurnitureSeats.tick((Villager) (Object) this); // sitting on the furniture (37.6)
 		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.tickTrip((Villager) (Object) this); // a machine trip that can't go on (B244)
+		if (((Villager) (Object) this).tickCount % 20 == 0) {
+			io.github.jcondedata.aliveworkplace.people.LifeStages.pace((Villager) (Object) this); // an elder's slower walk (B771)
+		}
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();
 			return;

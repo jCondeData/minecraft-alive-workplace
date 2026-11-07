@@ -76,9 +76,13 @@ public final class ThreatData extends SavedData {
 	public record Past(long day, ResourceLocation culture, int came, int fell, boolean fled) {
 	}
 
-	/** How a gate block in a siege stands: whole or damaged, broken by the rams, or gone some other way (a player took it). */
+	/**
+	 * How a gate block in a siege stands: whole or damaged, broken by the rams, gone some other way (a player took it), or
+	 * walled up: a solid block put in its place after it went, which shuts the way there and which rams don't break (B972).
+	 * A gate set back where one went stands again (B966).
+	 */
 	public enum GateState {
-		STANDING, BROKEN, GONE;
+		STANDING, BROKEN, GONE, WALLED;
 
 		static GateState parse(String name) {
 			for (GateState state : values()) {

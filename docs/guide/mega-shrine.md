@@ -30,10 +30,14 @@ show there:
 - the villagers off work gather in front of the shrine instead of at the square;
 - a village [trainer](trainer.md) climbs to the pedestal (one who can Mega Evolve first, else the nearest) and Mega
   Evolves their ace: a flash, a burst of light and a beacon chord, and the players near read it in chat;
-- every villager watching within 12 blocks gets **+3 mood** ("watched a Mega Evolution at the shrine") for as long as
-  a festival's good mood lasts.
+- the trainer waits at the pedestal until every villager off work has come to the shrine (at most half a minute, and
+  never past the end of the show's hours), so the crowd sees it;
+- everyone who came to watch, even one who has wandered off again, and every villager off work within 12 blocks gets
+  **+3 mood** ("watched a Mega Evolution at the shrine") for as long as a festival's good mood lasts. A villager busy
+  at their work nearby gets nothing.
 
-The show is held once a festival. Afterwards the crowd goes back to the square for the dancing and the fireworks.
+The show is held once a festival. The crowd stays by the shrine until the hour and a half is over, then goes back to
+the square for the dancing and the fireworks.
 
 The pedestal has to be standing: if it is broken, the shrine holds no show until it is put back.
 

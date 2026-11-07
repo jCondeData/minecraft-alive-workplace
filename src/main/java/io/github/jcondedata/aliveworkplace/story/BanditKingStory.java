@@ -500,7 +500,10 @@ public final class BanditKingStory {
 		ArcState s = r.state();
 		long today = Chronicle.day(level);
 		if ((today - s.chapterDay) % 2 != 0 || level.getDayTime() % 24000 < VillageRaids.DUSK || s.flag(RAID_NIGHT, today)
-			|| !VillageRaids.ENABLED || VillageRaids.active(r.hall()).isPresent()) {
+			|| !VillageRaids.ENABLED || VillageRaids.active(r.hall()).isPresent()
+			// A quiet village (threat level 0, At peace, Peaceful) gets no raiders, even from a storm already running
+			// (B738); the night isn't spent, so the raids come again once the village stops being quiet.
+			|| Threats.quiet(level, r.hall())) {
 			return;
 		}
 		s.flags.put(RAID_NIGHT, today);
@@ -578,8 +581,11 @@ public final class BanditKingStory {
 		}
 		sendHome(level, hall);
 		level.playSound(null, hall, SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 1f, 0.7f);
-		tell(level, hall, "tribute", ChatFormatting.RED, taken / 100);
-		chronicle(level, hall, "tribute", taken / 100);
+		// What the treasury lost, as the hall's treasury reads it: "0.99 emeralds", "1 emerald", "100 CobbleDollars" (B866).
+		// (New keys: chronicle lines already saved keep the old tribute keys and their whole-emerald number.)
+		Component amount = io.github.jcondedata.aliveworkplace.trade.TradePage.money(taken);
+		tell(level, hall, "tribute_taken", ChatFormatting.RED, amount);
+		chronicle(level, hall, "tribute_taken", amount);
 	}
 
 	/** The fort is left a ruin: a share of what it was built of falls (fixed by where it stands, so it reads the same twice). */

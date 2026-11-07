@@ -80,7 +80,7 @@ public final class StewardConditions {
 
 		public List<BuildSiteManager.Finished> finished() {
 			if (finished == null) {
-				finished = BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS);
+				finished = BuildSiteManager.get(level).finishedInVillage(level, hall);
 			}
 			return finished;
 		}

@@ -200,7 +200,10 @@ public final class VillageNeeds {
 		return taken;
 	}
 
-	/** How the village round {@code hall} is doing right now (nothing eaten). */
+	/**
+	 * How the village round {@code hall} is doing right now (nothing eaten): its own people only, not hired help or a
+	 * story's visitor ({@link HallPeople#visitor}, B990), though a hired Guard counts among its guards.
+	 */
 	public static Needs count(ServerLevel level, BlockPos hall) {
 		long now = level.getGameTime();
 		int adults = 0;
@@ -214,6 +217,14 @@ public final class VillageNeeds {
 		// The village's households by class (34.7): its Nobles' wellbeing, and the Burghers' routes and traders.
 		io.github.jcondedata.aliveworkplace.people.ClassPerks.Sums classes = io.github.jcondedata.aliveworkplace.people.ClassPerks.tally(level, hall, everyone);
 		for (Villager villager : everyone) {
+			if (HallPeople.visitor(villager)) {
+				// B990: hired help (a mercenary band, relief riders) and a story's visitor aren't the village's own: no bed,
+				// meal or lamp of theirs counts for or against it. A hired Guard still stands guard over it.
+				if (!villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.GUARD) {
+					guards++;
+				}
+				continue;
+			}
 			villagers++;
 			if (!villager.isBaby()) {
 				adults++;
@@ -293,7 +304,14 @@ public final class VillageNeeds {
 		poi.findAll(h -> h.is(ModVillagers.KITCHEN_STOVE_POI) || h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER), p -> true, hall,
 			VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
 			.forEach(stove -> chests.addAll(SupplyContainers.find(level, stove.immutable(), null)));
-		poi.findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
+		chests.addAll(storehouses(level, hall));
+		return new ArrayList<>(chests);
+	}
+
+	/** The chests of the Storehouses in {@code hall}'s village: {@link #store} without the kitchens' (B834). */
+	public static List<BlockPos> storehouses(ServerLevel level, BlockPos hall) {
+		Set<BlockPos> chests = new LinkedHashSet<>();
+		level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, hall, VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
 			.forEach(storehouse -> chests.addAll(SupplyContainers.find(level, storehouse.immutable(), null)));
 		return new ArrayList<>(chests);
 	}

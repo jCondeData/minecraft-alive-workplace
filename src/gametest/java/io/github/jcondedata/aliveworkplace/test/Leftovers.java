@@ -266,34 +266,70 @@ final class Leftovers {
 		after(helper, () -> io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0);
 	}
 
-	/** Runs {@code reset} when the test ends, passed or failed (a setting the test changed for itself). */
+	/**
+	 * Runs {@code reset} when the test ends, passed or failed (a setting the test changed for itself), before the
+	 * runner hears of the end.
+	 *
+	 * <p>B977/B765: the runner's own listener is on the test from the start, and when the batch's last test ends it
+	 * un-forces every chunk and lays out the next batch, forcing that batch's area chunks, right there inside the same
+	 * call. A reset heard after it ran after the next batch was laid out: a test that let go of a chunk it had forced
+	 * (QaCampCleanup1031's camp ring) un-forced a chunk the next batch's area stood in, and that test waited for its
+	 * chunks forever (vanilla counts no timeout until they all tick). So every reset goes ahead of the runner's
+	 * listener, in the order the test added them, and a reset that throws never keeps the runner from going on.
+	 */
 	static void after(GameTestHelper helper, Runnable reset) {
 		try {
 			java.lang.reflect.Field field = GameTestHelper.class.getDeclaredField("testInfo");
 			field.setAccessible(true);
 			net.minecraft.gametest.framework.GameTestInfo info = (net.minecraft.gametest.framework.GameTestInfo) field.get(helper);
-			info.addListener(new net.minecraft.gametest.framework.GameTestListener() {
-				@Override
-				public void testStructureLoaded(net.minecraft.gametest.framework.GameTestInfo test) {
-				}
-
-				@Override
-				public void testPassed(net.minecraft.gametest.framework.GameTestInfo test, net.minecraft.gametest.framework.GameTestRunner runner) {
-					reset.run();
-				}
-
-				@Override
-				public void testFailed(net.minecraft.gametest.framework.GameTestInfo test, net.minecraft.gametest.framework.GameTestRunner runner) {
-					reset.run();
-				}
-
-				@Override
-				public void testAddedForRerun(net.minecraft.gametest.framework.GameTestInfo old, net.minecraft.gametest.framework.GameTestInfo test,
-						net.minecraft.gametest.framework.GameTestRunner runner) {
-				}
-			});
+			java.lang.reflect.Field listeners = net.minecraft.gametest.framework.GameTestInfo.class.getDeclaredField("listeners");
+			listeners.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			java.util.List<net.minecraft.gametest.framework.GameTestListener> list =
+				(java.util.List<net.minecraft.gametest.framework.GameTestListener>) listeners.get(info);
+			int at = 0;
+			while (at < list.size() && list.get(at) instanceof Reset) {
+				at++;
+			}
+			list.add(at, new Reset(reset));
 		} catch (ReflectiveOperationException e) {
 			throw new IllegalStateException(e);
+		}
+	}
+
+	/** One test's {@link #after} reset. */
+	static final class Reset implements net.minecraft.gametest.framework.GameTestListener {
+		private final Runnable reset;
+
+		Reset(Runnable reset) {
+			this.reset = reset;
+		}
+
+		private void run(net.minecraft.gametest.framework.GameTestInfo test) {
+			try {
+				reset.run();
+			} catch (RuntimeException e) {
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.error("A reset after the test {} failed", test.getTestName(), e);
+			}
+		}
+
+		@Override
+		public void testStructureLoaded(net.minecraft.gametest.framework.GameTestInfo test) {
+		}
+
+		@Override
+		public void testPassed(net.minecraft.gametest.framework.GameTestInfo test, net.minecraft.gametest.framework.GameTestRunner runner) {
+			run(test);
+		}
+
+		@Override
+		public void testFailed(net.minecraft.gametest.framework.GameTestInfo test, net.minecraft.gametest.framework.GameTestRunner runner) {
+			run(test);
+		}
+
+		@Override
+		public void testAddedForRerun(net.minecraft.gametest.framework.GameTestInfo old, net.minecraft.gametest.framework.GameTestInfo test,
+				net.minecraft.gametest.framework.GameTestRunner runner) {
 		}
 	}
 

@@ -61,6 +61,12 @@ public class MendingWork extends Behavior<Villager> {
 	}
 
 	private static final Set<Villager> BUSY = Collections.newSetFromMap(new WeakHashMap<>());
+	/** Who has taken a worn piece into their bag (till the bag is empty again), for {@link #stationlessTick} (B970). */
+	private static final Set<Villager> CARRYING = Collections.newSetFromMap(new WeakHashMap<>());
+	/** When each smith with something in their bag was first seen without a grindstone (B970). */
+	private static final Map<Villager, Long> STATIONLESS = new WeakHashMap<>();
+	/** How long a smith's bag outlasts the grindstone before it's dropped (B970): time to put one back. */
+	static final long STATIONLESS_TICKS = 100;
 
 	private final Walker walker = new Walker(SPEED);
 	@Nullable
@@ -133,6 +139,9 @@ public class MendingWork extends Behavior<Villager> {
 			return;
 		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
+		if (job != null && phase != Phase.FETCHING && bag.stacks().stream().noneMatch(this::isThePiece)) {
+			job = null; // the piece left the bag while we were away (dropped when the grindstone went, B970)
+		}
 		if (job == null) {
 			if (!bag.isEmpty()) {
 				tidy(level, villager, station, bag);
@@ -173,6 +182,9 @@ public class MendingWork extends Behavior<Villager> {
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, job.from(), SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
 		ItemStack rest = bag.add(found);
+		synchronized (CARRYING) {
+			CARRYING.add(villager);
+		}
 		if (!rest.isEmpty()) {
 			SupplyContainers.insert(level, List.of(job.from()), rest); // no room to carry it
 			job = null;
@@ -254,6 +266,52 @@ public class MendingWork extends Behavior<Villager> {
 		job = null;
 		lookTimer = 20;
 		walker.reset();
+	}
+
+	/**
+	 * Every villager's AI step (mixin/VillagerMixin), B970: a smith who lost the grindstone (broken, or taken by vanilla
+	 * when their job site went) while carrying a worn piece or its material can't work any more, so after
+	 * {@link #STATIONLESS_TICKS} they drop what they carry at their feet, where a player can pick it up, as a retired
+	 * Crafter does ({@code craft/Crafters#retire}). A crafting job in hand is {@code CrafterWork#benchlessTick}'s.
+	 */
+	public static void stationlessTick(Villager villager) {
+		if (!(villager.level() instanceof ServerLevel level)) {
+			return;
+		}
+		boolean carrying;
+		synchronized (CARRYING) {
+			carrying = CARRYING.contains(villager);
+		}
+		if (!carrying && villager.getVillagerData().getProfession() != VillagerProfession.WEAPONSMITH) {
+			return;
+		}
+		BuilderBag bag = ModAttachments.BUILDER_BAG.get(villager);
+		boolean empty = bag == null || bag.isEmpty();
+		if (empty || Builders.benchPos(villager).isPresent() || ModAttachments.CRAFTER_JOB.get(villager) != null) {
+			synchronized (CARRYING) {
+				STATIONLESS.remove(villager);
+				if (empty) {
+					CARRYING.remove(villager);
+				}
+			}
+			return;
+		}
+		long now = level.getGameTime();
+		long since;
+		synchronized (CARRYING) {
+			since = STATIONLESS.computeIfAbsent(villager, v -> now);
+		}
+		if (now - since < STATIONLESS_TICKS) {
+			return;
+		}
+		synchronized (CARRYING) {
+			STATIONLESS.remove(villager);
+			CARRYING.remove(villager);
+		}
+		for (ItemStack stack : bag.takeAll()) {
+			Block.popResource(level, villager.blockPosition(), stack);
+		}
+		busy(villager, false);
 	}
 
 	/** The piece being mended, in the bag (never the material). */

@@ -30,7 +30,8 @@ A villager without a job takes a free **grindstone** as a Weaponsmith, as in van
 - **Mending.** A tool, weapon or piece of armor with a quarter or more of its durability used up counts as worn. The
   weaponsmith finds worn gear in the chests by the grindstone, by the guards' posts and at the other workers, mends it
   the way an anvil does (each ingot, plank, diamond or bit of leather puts back a quarter) and takes it back where it
-  was. **Drop your own worn gear in their chest** and it comes back mended.
+  was. **Drop your own worn gear in their chest** and it comes back mended. If the grindstone is broken while they carry a piece, they drop it
+  (and its material) at their feet after a few seconds, so nothing is lost.
 - **Swords.** A guard of the village with no weapon and none in their chest gets a sword, iron from the storehouse or
   the smelters, else stone, brought to the chest by their post.
 

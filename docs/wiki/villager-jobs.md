@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970
 
 ## What a player sees
 
@@ -476,6 +476,13 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 - B766: a ware a villager was showing when the world was saved before this fix carries no mark, so it stays in his hand
   until a worker's job swaps it out.
 
+**A Weaponsmith who loses the grindstone drops what he carries (B970).** A worn piece the smith had taken to mend
+(and the iron for it) used to stay in his bag for good when the grindstone was broken before he mended it: the mending
+job (`MendingWork`) can't run without a job site, and nothing else emptied the bag. Now `MendingWork.stationlessTick`
+(every villager's tick) drops the bag at the smith's feet once he has been without a grindstone for 100 ticks (time to
+put one back), as a retired Crafter does; a crafting job in hand stays `CrafterWork.benchlessTick`'s. It also works
+after a save and reload (a Weaponsmith's bag counts even when nothing marks him as carrying). Nothing new is saved.
+
 **A Bard plays each disc to its end (B975, B976).** A set (`BardWork`) used to time out after 1,200 ticks, which
 stopped the song: every disc longer than a minute was cut off and the next one started. Now the set times out only
 between songs, and it ends with the Bard's work hours instead (the morning set at 3500 still stops the song). The Bard
@@ -485,7 +492,7 @@ saved: a song isn't resumed after a reload.
 
 ## Proof
 
-GameTests: `QaPrinterNurseBard1105cBugTests` (3, B975, B976: Cat still the one song 2,400 ticks in, 11 played through and Mellohi straight after, the jukebox broken mid-song sends the stop and the disc stays in the chest), `QaTradeDisplayPhysician1101BugTests` (2, B781: the Physician's shown Remedy, from the real display or kept in hand, never cures; the chest's Remedy does), `B781GameTests` (3: a shown Remedy kept through a save never cures, an empty chest means no cure, his own Remedy in hand still cures), `QaTradeDisplayWares1101BugTests` (1, B776: a Shepherd's shown emerald never reaches her bag or chest), `QaTradeDisplayWares1101GameTests` (1: the display still shows and puts away its wares), `QaTradeDisplayWaresFarmer1101BugTests` (4, B776: the Farmer's shown bread and the Shepherd's shown painting stay out of bag and chest as the shift starts and after a restart), `TradeDisplayToolsGameTests` (2, B766: a Farmer keeps his hoe while a player holds the price of his trade; the display still shows its ware and puts it away), `QaToolsByTheTradeDisplay1101BugTests` and `QaToolsByTheTradeDisplay1101GameTests` (2 each: the Farmer's hoe, the Shepherd's shears, the Miner's pickaxe and the Lumberjack's axe outlast an evening with the owner beside them), `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
+GameTests: `QaSmithScribe1105cBugTests` (2, B970: the grindstone broken mid-job, with and without a reload first: the sword and the 10 iron end in a chest or on the ground), `QaPrinterNurseBard1105cBugTests` (3, B975, B976: Cat still the one song 2,400 ticks in, 11 played through and Mellohi straight after, the jukebox broken mid-song sends the stop and the disc stays in the chest), `QaTradeDisplayPhysician1101BugTests` (2, B781: the Physician's shown Remedy, from the real display or kept in hand, never cures; the chest's Remedy does), `B781GameTests` (3: a shown Remedy kept through a save never cures, an empty chest means no cure, his own Remedy in hand still cures), `QaTradeDisplayWares1101BugTests` (1, B776: a Shepherd's shown emerald never reaches her bag or chest), `QaTradeDisplayWares1101GameTests` (1: the display still shows and puts away its wares), `QaTradeDisplayWaresFarmer1101BugTests` (4, B776: the Farmer's shown bread and the Shepherd's shown painting stay out of bag and chest as the shift starts and after a restart), `TradeDisplayToolsGameTests` (2, B766: a Farmer keeps his hoe while a player holds the price of his trade; the display still shows its ware and puts it away), `QaToolsByTheTradeDisplay1101BugTests` and `QaToolsByTheTradeDisplay1101GameTests` (2 each: the Farmer's hoe, the Shepherd's shears, the Miner's pickaxe and the Lumberjack's axe outlast an evening with the owner beside them), `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits

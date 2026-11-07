@@ -43,6 +43,10 @@ public abstract class RanchWork extends Behavior<Villager> {
 	/** Animals of a kind kept: no breeding at this many. */
 	public static final int CAP = 8;
 	protected static final double REACH = 2.5;
+	/** How far apart two animals in love may stand and still find each other: vanilla's breeding partner range (B979). */
+	static final double MATE_RANGE = 8.0;
+	/** Pairs are picked a little closer than {@link #MATE_RANGE}, so a step while the food is fetched doesn't part them. */
+	static final double PICK_RANGE = 7.0;
 
 	/** Animals of a kind {@code villager} breeds up to: {@link #CAP}, 4 more in a founded Herders' Guild (30.19). */
 	public static int cap(Villager villager) {
@@ -264,7 +268,10 @@ public abstract class RanchWork extends Behavior<Villager> {
 			.stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(station.getCenter()))).orElse(null);
 	}
 
-	/** Two animals of a kind that's short, ready to breed, and food for them in the chests. */
+	/**
+	 * Two animals of a kind that's short, ready to breed, standing near enough to find each other once in love, and food for
+	 * them in the chests. Two that stand further apart are never fed: they'd never meet and the food would be wasted (B979).
+	 */
 	private boolean pickPair(ServerLevel level, Villager villager, BlockPos station, List<BlockPos> own) {
 		List<Animal> all = animals(level, station);
 		int cap = cap(villager);
@@ -273,20 +280,55 @@ public abstract class RanchWork extends Behavior<Villager> {
 			if (ofKind.size() >= cap) {
 				continue;
 			}
-			List<Animal> ready = ofKind.stream().filter(a -> a.getAge() == 0 && a.canFallInLove() && !a.isInLove() && mayBreed(a)).toList();
-			if (ready.size() < 2) {
+			List<Animal> ready = ofKind.stream().filter(this::ready).toList();
+			Animal[] pair = closestPair(ready);
+			if (pair == null) {
 				continue;
 			}
 			for (var e : SupplyContainers.contents(level, own).entrySet()) {
-				if (e.getValue() >= 2 && breedsWith(ready.get(0), new ItemStack(e.getKey()))) {
-					target = ready.get(0);
-					mate = ready.get(1);
+				if (e.getValue() >= 2 && breedsWith(pair[0], new ItemStack(e.getKey()))) {
+					target = pair[0];
+					mate = pair[1];
 					food = e.getKey();
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	/** Not a baby, not resting after breeding, not in love yet, and allowed to breed by the job. */
+	private boolean ready(Animal animal) {
+		return animal.isAlive() && animal.getAge() == 0 && animal.canFallInLove() && !animal.isInLove() && mayBreed(animal);
+	}
+
+	/** The two of {@code ready} that stand closest together, if that's within {@link #PICK_RANGE}. */
+	@Nullable
+	private static Animal[] closestPair(List<Animal> ready) {
+		Animal[] best = null;
+		double bestDistance = PICK_RANGE * PICK_RANGE;
+		for (int i = 0; i < ready.size(); i++) {
+			for (int j = i + 1; j < ready.size(); j++) {
+				double d = ready.get(i).distanceToSqr(ready.get(j));
+				if (d <= bestDistance) {
+					bestDistance = d;
+					best = new Animal[] {ready.get(i), ready.get(j)};
+				}
+			}
+		}
+		return best;
+	}
+
+	/** Another ready animal of {@code inLove}'s kind it can find, for when its mate walked off or died after it was fed. */
+	@Nullable
+	private Animal newMate(ServerLevel level, Animal inLove) {
+		return level.getEntitiesOfClass(Animal.class, inLove.getBoundingBox().inflate(MATE_RANGE),
+				a -> a != inLove && a.getType() == inLove.getType() && ready(a) && nearEnough(a, inLove) && food != null && breedsWith(a, new ItemStack(food)))
+			.stream().min(Comparator.comparingDouble(a -> a.distanceToSqr(inLove))).orElse(null);
+	}
+
+	private static boolean nearEnough(Animal a, Animal b) {
+		return a.distanceToSqr(b) <= MATE_RANGE * MATE_RANGE;
 	}
 
 	/** Takes the food, then feeds the two. */
@@ -302,11 +344,29 @@ public abstract class RanchWork extends Behavior<Villager> {
 			}
 			return;
 		}
-		Animal next = target instanceof Animal a && a.isAlive() && !a.isInLove() ? a : mate != null && mate.isAlive() && !mate.isInLove() ? mate : null;
-		if (next == null) {
+		Animal first = target instanceof Animal a && a.isAlive() ? a : null;
+		Animal second = mate != null && mate.isAlive() ? mate : null;
+		boolean firstFed = first != null && first.isInLove();
+		boolean secondFed = second != null && second.isInLove();
+		if (firstFed && secondFed) {
 			BuilderLevels.addXp(level, villager, 1, null);
 			done();
 			return;
+		}
+		// The one still to feed, and the partner it has to find once in love (B979).
+		Animal next = firstFed ? second : first;
+		Animal partner = firstFed ? first : second;
+		if (partner == null || next == null || next.isInLove() || !nearEnough(next, partner)) {
+			Animal waiting = firstFed ? first : secondFed ? second : null;
+			Animal other = waiting == null ? null : newMate(level, waiting);
+			if (other == null) {
+				// Nobody fed yet (no food spent), or nobody left near the one in love: don't feed one who can't find the other.
+				done();
+				return;
+			}
+			target = waiting;
+			mate = other;
+			next = other;
 		}
 		if (reach(level, villager, next)) {
 			if (next.getAge() == 0 && next.canFallInLove() && bag.remove(food, 1) == 1) {

@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979
 
 ## What a player sees
 
@@ -173,6 +173,13 @@ the ores (a pit of stone as cobblestone, topped onto the stack already there, no
 chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
 A kitchen's chest (a smoker's, in the hall's village) gets the finds only when the Storehouse's chests are full or the
 village has no Storehouse; a Storehouse with room in part stacks is filled first (B834, `QaLaneC1102eGameTests`).
+
+**Only pairs that can meet are fed (B979).** An animal in love looks for a partner within 8 blocks (vanilla's range), so
+the Rancher, Shepherd and Herder (`RanchWork.pickPair`) feed the two ready animals of a kind that stand closest
+together, and only when they're within 7 blocks of each other (a block of room for a step while the food is fetched).
+Two that have drifted more than 8 apart before the first is fed cost nothing; if the second walks off or dies after the
+first was fed, the nearest ready one within 8 blocks of the first is fed instead, or none. Tests:
+`RancherGameTests.rancherSkipsAPairTooFarApart`, `rancherFeedsThePairThatCanMeet`.
 
 **A Fisherman comes back for cooked fish (B147, B802).** Fish done in a furnace or smoker by his barrel call him home
 when the barrel can take them: an empty slot, or a stack of the same fish with room (a barrel whose every slot holds
@@ -486,7 +493,10 @@ has never traded (0 XP), whom vanilla makes jobless with the grindstone: he is s
 Weaponsmith's job site counts as a grindstone, so such a smith who takes another free workstation within the 100 ticks
 (a lectern, as a Teacher or Scholar) drops the bag all the same (B1007). After a reload the in-memory mark is gone, so
 the mending job saved on him (B971) marks a carrier too: a novice reloaded with the sword in his bag, then made jobless
-with the grindstone, drops it as well (B1008). Nothing new is saved.
+with the grindstone, drops it as well (B1008). Nothing new is saved. QA (`QaBagAfterNewJobSaves1107eGameTests`, 5): a
+novice smith or carpenter saved and reloaded before or right after taking a lectern job still gives back the sword, the
+iron or the logs (exactly one sword in the world; the request goes back and a new carpenter builds it), and a smith
+with XP reloaded mid-carry keeps mending.
 
 **A Weaponsmith reloaded mid-job still puts the piece back (B971).** The mending job (where the piece came from, the
 material, how far it had got) lived only in the running `MendingWork`, so a smith saved and reloaded (a chunk unload or

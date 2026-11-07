@@ -30,7 +30,8 @@ potato picks the [Chef](chef.md), a lead the [Butcher](butcher.md).) Put a chest
   until it gives in.
 - **Saddles and armor.** Tame ones get the saddles from the chests, and horse armor or llama carpets if you leave some.
 - **Breeding.** Pairs are bred until there are 8 of a kind: horses and donkeys with golden carrots or golden apples,
-  llamas with hay bales, camels with cactus.
+  llamas with hay bales, camels with cactus. Only two standing near each other are fed (within about 7 blocks), so
+  keep the herd together; two far apart would never find each other and the food would be wasted.
 - **Grooming (with Cobblemon).** The Pokémon in Pasture Blocks nearby are groomed once a day, and their friendship goes
   up (a little more when there's a berry for them in the chests). A pasture by the ranch is where a Pokémon that
   evolves by friendship grows fond of you.

@@ -937,6 +937,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWagonBedsCapGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBedCap1107GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBandBeds1107BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHiredHelp1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWagonBedSingularBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScoutGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPortalThreatBugTests",

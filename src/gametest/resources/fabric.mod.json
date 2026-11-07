@@ -58,6 +58,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ImportGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TablePreviewGameTests",
+			"io.github.jcondedata.aliveworkplace.test.B1020GameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableSearchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableLibraryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintUnlocksGameTests",

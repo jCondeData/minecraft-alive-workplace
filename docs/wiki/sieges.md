@@ -269,8 +269,6 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 
 ## Known limits
 
-- Ladders (32.5, B934, open): a follower already within about 2 blocks of a ladder's foot when the gate breaks open
-  still climbs the whole ladder and goes over by it instead of turning for the gate.
 - Battle stations (32.6): a station only counts if the guard can get within 3.5 blocks of its foot. Merlons can
   hide a foe from an archer standing behind one; he shoots when he has a line of sight. Stations are chosen without
   regard to their view: on the Gatehouse the station picked is behind a merlon, and from the Gatehouse's walkway and

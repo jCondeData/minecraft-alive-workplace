@@ -493,6 +493,12 @@ under it, gets his bag on solid ground at the spot the message names).
 bridge over a sealed flat-roofed room, on its roof under the sky). `QaBuilderGaps1105bBugTests` (QA, B973, 2 here: struck
 in a wheat field over a sealed cave, or on a bridge over a sealed stair-roofed room, the bag lies where a player can
 walk to it, not inside).
+`QaBuilderFixes1107dGameTests` (QA, B969, B973, B1002, B1019, 12: a bench swapped for a carpet, a bottom slab or stone,
+or broken on a pillar in a lava lake, leaves the bag on solid ground at the spot the message names, none burnt; struck
+over a room shut by a door or by fence gates, or on a causeway over lava, the bag lies where a player can get to; with
+the unlocks switch off an ordinary build is still handed out and no Wonder is, plain, styled or in creative, the blank
+kept; a lead takes from a crewmate only what the row still needs, each material on its own, nothing left on the ground,
+and finishes once a short crewmate gets more).
 `QaLaneC1102eGameTests` (QA, B832): six real fishermen catch nothing in 1500 ticks at workplaceBuildDelay 35791395 (the
 first delay whose 60-step bite passes the int range) and at 2147483647, and the same pond at the default 8 still catches.
 `B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not

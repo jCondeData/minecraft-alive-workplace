@@ -245,7 +245,8 @@ never shows, and a chest by none of those isn't counted (B153, `QaHealerFoodFire
 villagers nearest the free bed have a baby (the family eats 8 meals), up to `villageGrowthCap`. The baby takes that
 bed at once (B206), so a second birth, an inn's traveler or vanilla breeding can't count the same bed free: a village
 with N free beds takes in at most N newcomers, whichever way they come; a traveler who moves on frees the bed for the
-next one. With no bed free the Beds button says **The village is full: nobody new
+next one (travelers nobody hires move on two days after arriving, at the inn's round with no player within 24 blocks;
+while a player watches they stay and keep the bed), and so does a newcomer who dies. With no bed free the Beds button says **The village is full: nobody new
 moves in until a bed is free**.
 
 **Wagon beds are no homes** (B206, B207, `camp/CampBeds`). The Beds button says how many it left out, in the singular for one ("Not counted: 1 wagon bed

@@ -305,6 +305,10 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 - QA (lane D, 2026-11-03): `QaLadderHeight1103dGameTests` (3): a pillager climber sets a ladder up walls exactly 10
   high and not a rung up walls 11 high; walls built up to 12 high once a ladder has two rungs take it down within 40
   ticks, off the siege's list, no ladder item dropped.
+- QA (lane D, 2026-11-07): `QaLadderThrow1107dGameTests` (2): a guard whose feet are exactly two above the ladder's
+  foot, beside it, throws the finished ladder down within 40 ticks; a guard one above the foot (on a step), a farmer and
+  a guard's child on the walkway leave it up, and the climber gets over. Mutation: 8 of 8 mutants of the guard's check
+  (`Ladders.guardAt`) killed.
 
 - GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
   and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's

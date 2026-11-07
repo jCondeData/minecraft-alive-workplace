@@ -1371,6 +1371,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSmithGrindstoneBack1107eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBardSet1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBardSet1107cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBardGone1107cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHiredRank1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDietLaneC1107GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHomeGradeFilesLaneC1107GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryPortersLaneC1107GameTests",

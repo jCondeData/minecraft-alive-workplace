@@ -1921,7 +1921,18 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!close && !moveInReach(level, villager, site, plan, mate.blockPosition(), CONTAINER_REACH, false)) {
 				return true;
 			}
-			int take = Math.min(Math.min(spare, needed + (helping ? 3 : 32)), bag.spaceFor(item));
+			// From a mate's bag only what the work ahead still needs, never the chests' margin: a lead with no chest
+			// to empty into dropped the rest on the ground when the job ended (B1019).
+			int ahead = 0;
+			for (BuildPlan.Step s : ahead(site, plan)) {
+				if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
+					for (MaterialRules.Requirement r : s.requirements()) {
+						ahead += r.item() == item ? r.count() : 0;
+					}
+				}
+			}
+			int want = Math.max(needed, Math.min(needed + (helping ? 3 : 32), ahead - bag.count(item)));
+			int take = Math.min(Math.min(spare, want), bag.spaceFor(item));
 			if (take > 0) {
 				mateBag.remove(item, take);
 				bag.addAll(item, take);

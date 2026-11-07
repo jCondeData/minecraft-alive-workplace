@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A lead Builder with no chest by his bench takes from a crewmate's bag only what the work ahead still needs, so no spare material is left on the ground when the job ends (B1019).
 - With the Blueprint unlocks switch off, the Blueprint Table no longer hands out a Blueprint of a Wonder when asked for one by id: Wonders are always raised from their Wonder Plan, never handed out, whatever the switch (B1002).
 - The Rancher (and the Shepherd and Herder) now feeds only two animals standing near each other, so they find each other and have young. Before, he could feed two at opposite ends of the pen, who never met: the golden carrots, hay or cactus were used up and no young was born.
 - A Smithy, Storehouse or Kitchen torn down by hand is no longer offered "Dig the cellar": the builders stop selling it, the Village Hall stops listing it, and a dig bought before says there's no cellar to dig any more instead of starting work under the empty plot. A building that is only damaged is still offered.

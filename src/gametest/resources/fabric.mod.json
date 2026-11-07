@@ -1002,6 +1002,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStoreSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainBugGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTestResetOrderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWallTowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTinkererShortGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatsLateGameTests",

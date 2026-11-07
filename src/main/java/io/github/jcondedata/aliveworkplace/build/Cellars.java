@@ -43,12 +43,19 @@ public final class Cellars {
 	public static final int PRICE = 4;
 	/** Most times the job can be bought before the builder restocks. */
 	static final int MAX_USES = 2;
+	/**
+	 * B974: the share (%) of a build's blocks on and above the ground that must still stand for it to count as there: under
+	 * it, the build is gone (torn down by hand, say), and there is no cellar to dig under it. A building merely damaged (a
+	 * creeper's hole, a roof burned) stays well over it and is still offered.
+	 */
+	static final int STANDING = 25;
 	/** The job's name, "Dig the cellar: <build>", by which a trade or a bought job is known as one ({@link #isJob}). */
 	private static final String JOB_NAME = "item.aliveworkplace.blueprint.cellar";
 
 	/**
 	 * Whether the finished {@code structure} at {@code placement} has a cellar still to dig: its blueprint reaches under the
-	 * ground, and more than half of the open spots of its basement are solid in the world (unloaded: no).
+	 * ground, more than half of the open spots of its basement are solid in the world, and the build above still stands
+	 * ({@link #stands}; unloaded: no).
 	 */
 	public static boolean needsDigging(ServerLevel level, ResourceLocation structure, BlueprintData.Placement placement) {
 		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, structure);
@@ -71,7 +78,28 @@ public final class Cellars {
 				solid++;
 			}
 		}
-		return open > 0 && solid * 2 > open;
+		return open > 0 && solid * 2 > open && stands(level, blueprint.get(), placement);
+	}
+
+	/**
+	 * B974: whether the build of {@code blueprint} at {@code placement} still stands: at least {@link #STANDING}% of the
+	 * blocks it is drawn with on and above the ground are solid in the world. Its finished record outlives it (a builder's
+	 * repair can still put it back), so a build torn down by hand is told from one merely damaged here.
+	 */
+	static boolean stands(ServerLevel level, Blueprint blueprint, BlueprintData.Placement placement) {
+		int drawn = 0;
+		int standing = 0;
+		for (Blueprint.Entry e : blueprint.blocks()) {
+			if (e.pos().getY() < 0 || e.state().isAir()) {
+				continue;
+			}
+			drawn++;
+			BlockState there = level.getBlockState(world(placement, e.pos()));
+			if (!there.isAir() && !there.canBeReplaced()) {
+				standing++;
+			}
+		}
+		return drawn == 0 || standing * 100 >= drawn * STANDING;
 	}
 
 	/** {@link #needsDigging(ServerLevel, ResourceLocation, BlueprintData.Placement)} for a finished building. */

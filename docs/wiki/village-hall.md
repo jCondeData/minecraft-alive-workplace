@@ -239,7 +239,10 @@ the Seer's and Observatory's raid odds, the advice tips and the Steward's checks
 (`VillageHalls.Census.villagers()`); the People table still lists the help with their jobs (`Census.everyone()`, which
 also keeps the People section from reading empty when only hired help is about), and they still work, eat and guard
 (`QaHiredRank1107dBugTests`, `QaHiredHelpCounts1107cBugTests`, `QaHiredCounts1107aGameTests`: the census, the realm
-through the hall's real round, the Festival button's cost, the Steward's `villagers_at_least`).
+through the hall's real round, the Festival button's cost, the Steward's `villagers_at_least`; `QaHiredRank1107cGameTests`: a Village
+keeps its rank and its one Chronicle line while a band comes and goes, 9 of its own and a band stay a Hamlet reading "(9 now)"
+while a 10th of its own makes a Village, a band doesn't hold the rank once one of its own is gone, and the People table
+lists the band while the title reads "Villagers: 2").
 
 **Ranks.** Hamlet, then Village (10 villagers and 5 finished buildings), Town (20, 12, and 3 research levels), City
 (35, 25 and 7). A rank up means fireworks, a chronicle line, more caravans, more market traders, quests that pay a

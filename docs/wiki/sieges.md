@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983
 
 ## What a player sees
 
@@ -171,7 +171,7 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **The report** (`threat/SiegeReport`, 32.6): every death of a raider (the raid's tag) within the village's radius
   plus 64 blocks of a hall under siege is counted in the siege's saved data: to a guard and which, to a player, or to
   anything else (golems, mercenaries, falls). The hero is the guard with the most kills, the first to get there on a
-  tie (the kills are kept in order of each guard's latest kill, so a tied guard who got there first comes first). The report is written when the siege lifts. `Tactic.end`'s `fled` decides "won".
+  tie (the kills are kept, and saved, in order of each guard's latest kill, so a tied guard who got there first comes first). The report is written when the siege lifts. `Tactic.end`'s `fled` decides "won".
 - **Defenses first**: `build/Upkeep` sorts a builder's finished builds so the walls and gates family comes first
   while his bench is in a village under siege or within 48000 ticks after one.
 - **Ramparts**: the siege notes the factor (2 or 1) when it begins, so research finished in mid-siege changes the

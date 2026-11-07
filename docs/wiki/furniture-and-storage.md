@@ -83,7 +83,7 @@ evening meeting walks to the nearest free chair, stool, bench, couch or sofa of 
 sits on it, as spectators sit in the Stadium's stands. They stand up for work, for bed, for danger (hurt, a hostile
 mob near, panicking or a raid), when the seat is broken, or with `furnishedBuilds` off. One seat holds one villager:
 a seat with anyone on it, or that another villager is already walking to, is passed over. A villager who can't
-reach their seat in 30 seconds, or gets no closer to it for 8 seconds (penned in, say), gives up on it and leaves it to the others for a minute (B945, B967, B677). Handcrafted's fancy beds are
+reach their seat in 30 seconds, or gets no closer to it for 8 seconds (penned in, say), gives up on it and leaves it to the others for a minute (B945, B967, B677). A villager whose seat is broken or taken while they walk to it picks another one at once (B957). Handcrafted's fancy beds are
 real beds: villagers claim and sleep in them, and the house they stand in counts as their home (its grade, the Village
 Hall's list, free beds for a new baby). A home with a furniture mod's seat in it is a furnished home, worth 1 beauty
 to the people who sleep there (the "beauty near home" a Burgher or a Noble needs, M34). Vanilla stair chairs are not

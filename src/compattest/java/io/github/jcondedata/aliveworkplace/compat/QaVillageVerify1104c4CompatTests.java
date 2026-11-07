@@ -118,7 +118,7 @@ public class QaVillageVerify1104c4CompatTests implements FabricGameTest {
 			helper.assertTrue(broken[0], "the villager never set off for the nearer chair");
 			FurnitureSeat seat = seatOf(v);
 			helper.assertTrue(seat != null && seat.blockPosition().equals(far), "the villager didn't take the other chair: seated " + (seat != null)
-				+ (seat == null ? "" : " at " + seat.blockPosition()));
+				+ (seat == null ? "" : " at " + seat.blockPosition()) + "; " + FurnitureSeats.describe(level, v));
 			helper.assertTrue(seats(helper, near).isEmpty(), "a seat was left where the broken chair stood");
 			v.discard();
 			restore.run();

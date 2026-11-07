@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  * meeting walks to the nearest free seat within {@link #REACH} blocks and sits on it ({@link FurnitureSeat}, as in the
  * Stadium's stands); they stand up for work, danger (hurt, a hostile near, panic or a raid) or bed, and when the switch
  * ({@link Furnishings#ENABLED}) is off. A seat with someone on it, or that another villager is walking to, isn't taken
- * twice, and a villager who can't reach their seat in {@link #GIVE_UP} ticks, or gets no closer to it for {@link #STUCK}
+ * twice; a villager whose seat is broken or taken on the way picks another at once; and a villager who can't reach their seat in {@link #GIVE_UP} ticks, or gets no closer to it for {@link #STUCK}
  * ticks (penned in, say), leaves it to the others for {@link #SKIP_FOR} ticks. A home with seats in it is furnished, and counts {@link #FURNISHED_BEAUTY} towards its people's
  * beauty need (M34's {@code beauty}, {@link io.github.jcondedata.aliveworkplace.people.ClassNeeds#beauty}).
  */
@@ -102,7 +102,8 @@ public final class FurnitureSeats {
 			SKIPPED.put(villager, new Skip(target.pos(), level.getGameTime() + SKIP_FOR));
 			TARGETS.remove(villager);
 			target = null;
-		} else if (target != null && !free(level, target.pos(), villager)) {
+		} else if (target != null && (!level.getBlockState(target.pos()).is(SEATS) || !free(level, target.pos(), villager))) {
+			// Taken, or broken on the way (B957): pick another seat now, not walk on to where the chair stood.
 			TARGETS.remove(villager);
 			target = null;
 		}

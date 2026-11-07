@@ -1360,7 +1360,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryPortersLaneC1107GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSchoolLaneC1107GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithBagLeft1107GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSmithBagLeft1107BugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSmithBagLeft1107BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCrafterNewJob1107BugTests"
 		]
 	},
 	"depends": {

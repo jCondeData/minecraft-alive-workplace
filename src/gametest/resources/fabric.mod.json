@@ -1356,6 +1356,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPrinterNurseBard1105cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPrinterNurseBard1105cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSmithGrindstoneBack1107eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBardSet1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDietLaneC1107GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHomeGradeFilesLaneC1107GameTests",

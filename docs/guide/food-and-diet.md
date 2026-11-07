@@ -23,7 +23,7 @@ after those, the chests by its **Storehouses**. A villager who hasn't eaten for 
 plain to eat will do: bread, baked potatoes, cooked fish, pies, apples, carrots. Golden food, food that makes you ill,
 and berries kept back for Pokémon don't count as a meal. Food a builder still needs for a build nearby is left alone.
 
-The hall's top row shows how much food is in store, and its food icon how many kinds of meal there are. It counts
+The hall's Overview (and its Homes & Food section) shows how much food is in store ("Food in store", beside the bread), and hovering that line tells how many kinds of meal there are. It counts
 only meals, the same food that lets a baby come: rotten flesh, spider eyes, golden food, pufferfish, honey and the like
 in the chests never show.
 

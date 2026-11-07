@@ -13,7 +13,7 @@ related: village-hall.md, food-and-diet.md, decorations.md, work-pace.md
 ```
 
 A village with a [Village Hall](village-hall.md) has needs, and how well they're met is its **wellbeing**, from 0 to
-100%. The hall's top row shows it, along with the villagers, beds, food in store and guards.
+100%. The hall's Overview shows it ("Wellbeing", beside the cake), along with the villagers, beds, food in store and guards.
 
 ## What a village needs
 

@@ -233,7 +233,7 @@ met is the village's wellbeing, 0 to 100%. Work goes up to 25% faster in a well-
 50%, and up to 20% slower in a badly kept one. Villages without a hall work at the usual pace. Only the village's own people
 count: hired mercenaries, relief riders and a story's visitor have no bed, meal or lamp of their own to want, so the
 Wellbeing button's "Sleeping in a bed", fed and villager counts leave them out, though a hired Guard still counts
-among the guards (B990, `QaBandBeds1107BugTests`, `QaHiredHelpCounts1107cGameTests`). The People button's "Villagers: N" title still counts them for now (B1000, open).
+among the guards (B990, `QaBandBeds1107BugTests`, `QaHiredHelp1107dGameTests`: relief riders too, and the growth cap; `QaHiredHelpCounts1107cGameTests`: fed and lit counts, a mercenary in a bed, the village's own Guard). The People button's "Villagers: N" title still counts them for now (B1000, open).
 
 **Ranks.** Hamlet, then Village (10 villagers and 5 finished buildings), Town (20, 12, and 3 research levels), City
 (35, 25 and 7). A rank up means fireworks, a chronicle line, more caravans, more market traders, quests that pay a

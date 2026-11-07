@@ -520,8 +520,8 @@ public final class BuilderEvents {
 	/**
 	 * What a worker leaves behind when they're gone, dead or turned into something else: a builder's bag, blueprint and
 	 * site (the owner told with {@code builderTold}, naming {@code leftAt}), a miner's quarry, the markers of a field, tree
-	 * farm, orchard or berry plot, a guild they led and the Pokémon in a rancher's or daycare keeper's care. Runs before a
-	 * grave keeps the villager.
+	 * farm, orchard or berry plot, a guild they led, the Pokémon in a rancher's or daycare keeper's care, a machine trip's
+	 * load and a Mechanic's part from the store (B959, B960). Runs before a grave keeps the villager.
 	 */
 	private static void workLeft(ServerLevel level, Villager villager, String builderTold, BlockPos leftAt) {
 		Builders.onBuilderGone(level, villager, builderTold, leftAt);
@@ -533,6 +533,9 @@ public final class BuilderEvents {
 		io.github.jcondedata.aliveworkplace.hall.Guilds.onDeath(level, villager);
 		io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager);
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.onDeath(level, villager);
+		// what a worker carries that isn't in a bag: a machine trip's load (B960), a Mechanic's part from the store (B959)
+		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.onWorkerGone(villager);
+		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.onWorkerGone(level, villager);
 	}
 
 	/**

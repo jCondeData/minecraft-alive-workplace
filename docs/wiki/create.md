@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B959, B960
 
 ## What a player sees
 
@@ -285,7 +285,9 @@ doesn't fit, or finds no store, drops at their feet. A broken machine, or a file
 brings the load back on foot: a worker whose machine is broken on the way turns back at once and shows "the Millstone
 is gone: bringing the load back to the store" (the machine is named from its file, never from what now stands at its
 spot, B506), and a Mechanic whose machine is broken while she walks to it says "the Millstone is gone" and goes on
-with her round, and a worker killed mid-trip drops it where they fell. The chef's water is poured straight into the basin's tank (a bucket's
+with her round, and a worker killed, turned into a zombie villager or struck by lightning into a witch mid-trip drops
+it where they were, once (B960); a Mechanic gone the same way with a part from the store in hand puts it back in the
+store (B959). The chef's water is poured straight into the basin's tank (a bucket's
 worth, 1000 mB), the way villages draw water anywhere; no bucket is used up. Items go in and out through Fabric's item
 and fluid transfer, which Create's port exposes; a depot, basin or crusher is never anyone's supply chest. The
 Mechanic's round uses the same files and the same work done on the spot.
@@ -596,16 +598,19 @@ village's last column empties it (B994).
   once: the hole filled, one cogwheel left of the store's two, nothing in his hand or on the ground.
 - `QaMechanicPartStruck1104eCompatTests` (QA, with Create, B928 kin): a Mechanic struck by lightning (a witch) with
   empty hands, or right after he set the cogwheel in the hole, leaves the store and the mend as they were, nothing
-  dropped. Struck or killed with the store's cogwheel in hand, it vanishes (B959; and a machine trip's load when
-  struck, B960): their tests wait on `tests/mechanic-struck-1104`.
+  dropped.
+- `QaMechanicPartStruck1104eBugCompatTests` (B959) and `QaMachineTripStruck1104eBugCompatTests` (B960): struck or
+  killed with the store's cogwheel in hand, the Mechanic leaves both cogwheels in the store or on the ground; a farmer
+  struck mid-trip leaves all 12 wheat.
 - `QaContraptionLines1104eCompatTests` (QA, with Create, 39.5's lines): "its 1 moving part turns", two stuck parts
   both named, four named with no "more", five reading four and "and 1 more", eleven "and 7 more", a part gone from its
   spot "a missing part at x y z", and the Mechanic whose toolbox is in reach named as the one who checked.
 - `QaCreateZombified1104e2CompatTests` (QA, with Create, B928 kin): a farmer killed by a zombie on Hard mid machine
   trip (a zombie villager now, no death loot) leaves his 12 wheat where he fell, and the zombie villager carries
   neither the wheat nor the trip; cured, he is a farmer again with no trip and no second load. A Mechanic killed by a
-  zombie with the store's cogwheel in hand loses it, and a train driver turned by a zombie stops the train as B962's
-  do: those tests wait on `tests/mechanic-struck-1104`.
+  zombie with the store's cogwheel in hand puts it back, the zombie villager holding none
+  (`QaCreateZombified1104e2BugCompatTests`, B959); a train driver turned by a zombie stops the train as B962's do:
+  that test waits on `tests/mechanic-struck-1104`.
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is

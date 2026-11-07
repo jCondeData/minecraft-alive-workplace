@@ -25,6 +25,9 @@ import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -142,13 +145,34 @@ public final class Paths {
 		for (int dy : new int[] {0, 1, -1}) {
 			BlockPos feet = pos.above(dy);
 			BlockState ground = level.getBlockState(feet.below());
-			if (ground.isFaceSturdy(level, feet.below(), Direction.UP) && open(level, feet) && open(level, feet.above())
+			if (standOn(level, feet.below(), ground) && open(level, feet) && open(level, feet.above())
 				&& !ground.is(BlockTags.LEAVES) && level.getFluidState(feet.below()).isEmpty()) {
 				return feet.immutable();
 			}
 		}
 		return null;
 	}
+
+	/**
+	 * Whether a villager can stand on {@code ground} at {@code pos}: a full top, or a top a little lower than a block and
+	 * flat all across (B981: dirt path and farmland, 15/16 high; mud, soul sand and deep snow, 14/16). A vanilla village's
+	 * own dirt paths are walked over as they are; a lectern, a chest or an enchanting table is not ground.
+	 */
+	public static boolean standOn(ServerLevel level, BlockPos pos, BlockState ground) {
+		if (ground.isFaceSturdy(level, pos, Direction.UP)) {
+			return true;
+		}
+		VoxelShape shape = ground.getCollisionShape(level, pos);
+		if (shape.isEmpty()) {
+			return false;
+		}
+		double top = shape.max(Direction.Axis.Y);
+		// the top sixteenth all filled, edge to edge: nothing to fall into or catch on
+		return top >= LOW_TOP && top < 1.0 && !Shapes.joinIsNotEmpty(Shapes.box(0, top - 1.0 / 16, 0, 1, top, 1), shape, BooleanOp.ONLY_FIRST);
+	}
+
+	/** The lowest top that still counts as ground ({@link #standOn}): mud's and soul sand's 14/16, not an enchanting table's 12/16. */
+	private static final double LOW_TOP = 13.0 / 16;
 
 	private static boolean open(ServerLevel level, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);

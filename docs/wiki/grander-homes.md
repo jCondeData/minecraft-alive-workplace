@@ -4,7 +4,7 @@ What a home is worth to the [classes](classes.md): every home has a grade, and t
 Burghers and the Nobles the homes their class asks for: the Artisan's House, the Burgher's Townhouse and the Noble's
 Manor. Part of Classes and luxuries (1.8).
 
-Roadmap items: 34.15, 34.15a, 34.15b, 34.16, B106, B640
+Roadmap items: 34.15, 34.15a, 34.15b, 34.16, B106, B640, B988
 
 ## What a player sees
 
@@ -14,7 +14,7 @@ click makes one theirs at once, the old bed freed (see `village-hall.md`, 40.4).
 grade, follow from the building it's in, as below.
 
 Three new houses, all **sold by builders only** (not in the Blueprint Table): a builder sells the Artisan's House from
-Apprentice on, the Townhouse once the village round the nearest hall has a household of Artisans or higher and the
+Apprentice on, the Townhouse once the builder's village has a household of Artisans or higher and the
 Noble's Manor once it has a household of Burghers or higher, and each upgrade comes from the builder who finishes the
 tier below:
 
@@ -88,8 +88,8 @@ everything that class needs except the home. Up to three of them get a tip on "W
 `advice.aliveworkplace.grand_home_rise` and `advice.aliveworkplace.grand_home_rise_one`. With classes off there are no
 such tips.
 
-**Builders sell them.** A builder from Apprentice up sells the Artisan's House (10 emeralds); once the village round
-the nearest hall has a household of Artisans or a higher class, every builder there sells the Townhouse (14
+**Builders sell them.** A builder from Apprentice up sells the Artisan's House (10 emeralds); once the builder's
+village has a household of Artisans or a higher class, every builder in it (even one on its edge up a hill) sells the Townhouse (14
 emeralds); once it has a household of Burghers or a higher class, every builder there sells the Manor (20
 emeralds). The offers are added when the builder levels up or a player opens their trades, never twice. The Burghers'
 traveling class trader on market days (34.7) can also bring the Townhouse or the Manor.

@@ -212,6 +212,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `QaBagNewJob1107cBugTests.qaACarpenterFromAnOldSaveWhoBecomesAScholarFreesTheRequest1107c`: the same with the job
   loaded from a save made before B1009 (no profession in it): he becomes a Scholar and still lets the request and the
   logs go (B1018).
+- `QaOldSaveCrafter1107cGameTests` (8, QA, B1018): an old save's job on a jobless novice, a novice, an experienced Carpenter
+  with his bench, and after another reload carries on when the bench is put back (early, late, or moved); a new save's
+  job the same, as controls.
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `QaStewardMaterials1031GameTests.aCarpenterNeverCraftsAwayLogsAnotherOpenBuildNeeds`: two builds sharing a chest,

@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.151.8 — 2026-11-07
+
 ### Fixed
 
 - The Blueprint Table's 3D preview no longer crashes the game on a build with another mod's tinted furniture (Cozy Home's chairs and sofas): those blocks get their color from the build and the biome you stand in, and a block another mod can't draw is shown untinted or left out instead. A held blueprint's ghost blocks are guarded the same way (B1020).

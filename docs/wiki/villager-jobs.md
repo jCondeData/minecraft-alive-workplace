@@ -486,7 +486,10 @@ has never traded (0 XP), whom vanilla makes jobless with the grindstone: he is s
 Weaponsmith's job site counts as a grindstone, so such a smith who takes another free workstation within the 100 ticks
 (a lectern, as a Teacher or Scholar) drops the bag all the same (B1007). After a reload the in-memory mark is gone, so
 the mending job saved on him (B971) marks a carrier too: a novice reloaded with the sword in his bag, then made jobless
-with the grindstone, drops it as well (B1008). Nothing new is saved.
+with the grindstone, drops it as well (B1008). Nothing new is saved. QA (`QaBagAfterNewJobSaves1107eGameTests`, 5): a
+novice smith or carpenter saved and reloaded before or right after taking a lectern job still gives back the sword, the
+iron or the logs (exactly one sword in the world; the request goes back and a new carpenter builds it), and a smith
+with XP reloaded mid-carry keeps mending.
 
 **A Weaponsmith reloaded mid-job still puts the piece back (B971).** The mending job (where the piece came from, the
 material, how far it had got) lived only in the running `MendingWork`, so a smith saved and reloaded (a chunk unload or

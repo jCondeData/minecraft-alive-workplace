@@ -649,6 +649,11 @@ village's last column empties it (B994).
 - `QaTrainStationSameName1104eCompatTests` (QA, B900, with Create): with the Ashford-Bramble train running, a player
   names both stations "Station", swaps the two stations' names, or renames Bramble's "Harbor" and then, once the train
   has followed that, "Port": each time Ashford's 32 logs ride the train to Bramble, none lost or doubled.
+- `QaTrainNamesakes1107eCompatTests` (QA, B933, with Create): a halt added halfway along the line and all three
+  stations named "Station" (the train stops at the halt, a namesake of its stop, and is sent on; fails without
+  CreateTrains.sendOn), the halt given the other village's station name, and only the sending village's station given the
+  other's name with Create's take-the-station-you-stand-at outcome forced: each time the 32 logs ride the train and
+  arrive, none lost or doubled.
 - `QaSecondStationWords1104eGameTests` (QA, B898, without Create): the second station's site reads "Second Train
   Station" (the train's "Village Train") for halls at positive, negative and zero positions, the two villages' sites
   never share an id, and the chronicle's line reads as written.

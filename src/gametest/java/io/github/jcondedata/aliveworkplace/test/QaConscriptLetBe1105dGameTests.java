@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.phys.Vec3;
@@ -21,6 +22,10 @@ import net.minecraft.world.phys.Vec3;
  * he can't cross, is still let be: he doesn't take it up again before the 10 seconds are out, and does after (then he
  * walks to his platform's edge, within 4 blocks of it, and stands by it there). Helpers are
  * {@link QaConscriptReach1104d2GameTests}'.
+ *
+ * <p>B978: the platform's corner is 2 blocks from the raider's pillar, so a conscript strolling about his platform while
+ * he lets it be came within 4 blocks of it himself, and one that close is never let be (rightly): 7 CI runs failed so.
+ * He is held where he stands (no speed) for the let-be, so the raider stays the 5 blocks off this test is about.
  */
 public class QaConscriptLetBe1105dGameTests implements FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
@@ -40,21 +45,37 @@ public class QaConscriptLetBe1105dGameTests implements FabricGameTest {
 		int[] moved = {-1};
 		int[] hurtAt = {-1};
 		int[] fightingAt = {-1};
+		double[] speed = {-1};
+		double[] closest = {Double.MAX_VALUE}; // the nearest the two came in the let-be
+		String[] when = {"", ""}; // where both stood when the raider was first struck, and when he first took it up
 		helper.onEachTick(() -> {
 			watch.tick();
 			if (watch.stopped >= 0 && moved[0] < 0 && watch.now - watch.stopped >= 5) {
 				Vec3 him = helper.absoluteVec(new Vec3(4.5, 12, 4.5));
 				watch.villager.teleportTo(him.x, him.y, him.z);
+				watch.villager.getNavigation().stop();
+				speed[0] = watch.villager.getAttributeBaseValue(Attributes.MOVEMENT_SPEED);
+				watch.villager.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0);
 				Vec3 it = helper.absoluteVec(new Vec3(8.5, 12, 7.5));
 				raider[0].teleportTo(it.x, it.y, it.z);
 				moved[0] = watch.now;
 			}
 			if (moved[0] >= 0) {
+				int letBeEnds = watch.stopped + MilitiaCombat.IGNORE_TICKS;
+				if (speed[0] >= 0 && watch.now >= letBeEnds) {
+					watch.villager.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(speed[0]); // free to walk to the edge
+					speed[0] = -1;
+				}
+				if (watch.now < letBeEnds) {
+					closest[0] = Math.min(closest[0], Math.sqrt(watch.villager.distanceToSqr(raider[0])));
+				}
 				if (hurtAt[0] < 0 && raider[0].getHealth() < raider[0].getMaxHealth()) {
 					hurtAt[0] = watch.now;
+					when[0] = where(helper, watch.villager, raider[0]);
 				}
 				if (fightingAt[0] < 0 && MilitiaCombat.isFighting(watch.villager)) {
 					fightingAt[0] = watch.now;
+					when[1] = where(helper, watch.villager, raider[0]);
 				}
 			}
 		});
@@ -75,15 +96,21 @@ public class QaConscriptLetBe1105dGameTests implements FabricGameTest {
 				helper.assertTrue(watch.stopped >= 0, "the conscript never let the unreachable raider below be");
 				helper.assertTrue(moved[0] >= 0, "the raider was never moved up");
 				helper.assertTrue(farmer.getY() > helper.absolutePos(new BlockPos(0, 11, 0)).getY(), "the conscript left his platform: " + farmer.position());
-				helper.assertTrue(hurtAt[0] < 0 || hurtAt[0] >= letBeEnds - 5, "the raider 5 blocks off across a gap was struck " + (hurtAt[0] - moved[0])
-					+ " ticks after it came up, inside the let-be");
+				helper.assertTrue(hurtAt[0] < 0 || hurtAt[0] >= letBeEnds - 5, String.format(
+					"the raider 5 blocks off across a gap was struck %d ticks after it came up, inside the let-be (%s; nearest in the let-be %.1f)",
+					hurtAt[0] - moved[0], when[0], closest[0]));
 				helper.assertTrue(fightingAt[0] < 0 || fightingAt[0] >= letBeEnds - 5, String.format(
-					"the conscript took up the let-be raider %.1f blocks off across a gap %d ticks after it came up, %d ticks before the 10 s were out",
-					d, fightingAt[0] - moved[0], letBeEnds - fightingAt[0]));
+					"the conscript took up the let-be raider %d ticks after it came up, %d ticks before the 10 s were out (%s; nearest in the let-be %.1f, %.1f at the end)",
+					fightingAt[0] - moved[0], letBeEnds - fightingAt[0], when[1], closest[0], d));
 				helper.assertTrue(fightingAt[0] >= 0, "after the let-be ran out the conscript never took the raider 5 blocks off up again (moved at "
 					+ moved[0] + ", let-be ends " + letBeEnds + ", now " + watch.now + ")");
 				helper.succeed();
 			});
 		});
+	}
+
+	private static String where(GameTestHelper helper, Villager villager, Zombie raider) {
+		return String.format("the conscript at %s, the raider at %s, %.1f apart", helper.relativeVec(villager.position()),
+			helper.relativeVec(raider.position()), Math.sqrt(villager.distanceToSqr(raider)));
 	}
 }

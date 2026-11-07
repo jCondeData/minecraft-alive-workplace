@@ -43,8 +43,11 @@ public class QaDenFoundLaterCompatTests implements FabricGameTest {
 	private static List<BlockPos> keep(GameTestHelper helper, List<BlockPos> spots) {
 		ServerLevel level = helper.getLevel();
 		List<BlockPos> placed = new ArrayList<>();
+		List<BlockPos> forced = new ArrayList<>(); // only the chunks this test forced are let go after (B992)
 		for (BlockPos p : spots) {
-			level.setChunkForced(p.getX() >> 4, p.getZ() >> 4, true);
+			if (level.setChunkForced(p.getX() >> 4, p.getZ() >> 4, true)) {
+				forced.add(p);
+			}
 		}
 		PartnerShowsCompatTests.after(helper, () -> {
 			for (BlockPos p : placed) {
@@ -53,7 +56,7 @@ public class QaDenFoundLaterCompatTests implements FabricGameTest {
 			for (BlockPos p : placed) {
 				RaidDens.near(level, p);
 			}
-			for (BlockPos p : spots) {
+			for (BlockPos p : forced) {
 				level.setChunkForced(p.getX() >> 4, p.getZ() >> 4, false);
 			}
 		});

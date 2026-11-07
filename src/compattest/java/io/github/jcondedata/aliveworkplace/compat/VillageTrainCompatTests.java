@@ -68,35 +68,12 @@ public class VillageTrainCompatTests implements FabricGameTest {
 	private static final net.minecraft.server.level.TicketType<net.minecraft.world.level.ChunkPos> TICKET =
 		net.minecraft.server.level.TicketType.create("aliveworkplace_village_train_test", java.util.Comparator.comparingLong(net.minecraft.world.level.ChunkPos::toLong));
 
-	/** Runs {@code reset} when the test ends, passed or failed. */
+	/**
+	 * Runs {@code reset} when the test ends, passed or failed, before the runner lays out the next batch (B992: its
+	 * blocks 140 blocks north and its chunk tickets must go before the next batch's area stands there).
+	 */
 	private static void after(GameTestHelper helper, Runnable reset) {
-		try {
-			java.lang.reflect.Field field = GameTestHelper.class.getDeclaredField("testInfo");
-			field.setAccessible(true);
-			net.minecraft.gametest.framework.GameTestInfo info = (net.minecraft.gametest.framework.GameTestInfo) field.get(helper);
-			info.addListener(new net.minecraft.gametest.framework.GameTestListener() {
-				@Override
-				public void testStructureLoaded(net.minecraft.gametest.framework.GameTestInfo test) {
-				}
-
-				@Override
-				public void testPassed(net.minecraft.gametest.framework.GameTestInfo test, net.minecraft.gametest.framework.GameTestRunner runner) {
-					reset.run();
-				}
-
-				@Override
-				public void testFailed(net.minecraft.gametest.framework.GameTestInfo test, net.minecraft.gametest.framework.GameTestRunner runner) {
-					reset.run();
-				}
-
-				@Override
-				public void testAddedForRerun(net.minecraft.gametest.framework.GameTestInfo old, net.minecraft.gametest.framework.GameTestInfo test,
-						net.minecraft.gametest.framework.GameTestRunner runner) {
-				}
-			});
-		} catch (ReflectiveOperationException e) {
-			throw new IllegalStateException(e);
-		}
+		PartnerShowsCompatTests.after(helper, reset);
 	}
 
 	/**

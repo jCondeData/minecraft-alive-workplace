@@ -93,32 +93,69 @@ public class PartnerShowsCompatTests implements FabricGameTest {
 		});
 	}
 
-	/** Runs {@code reset} when the test ends, passed or failed. */
+	/**
+	 * Runs {@code reset} when the test ends, passed or failed, before the runner hears of the end (as the main suite's
+	 * {@code Leftovers.after}).
+	 *
+	 * <p>B992 (B977 in the compat suite): the runner's own listener is on the test from the start, and when the batch's
+	 * last test ends it un-forces every chunk and lays out the next batch, forcing that batch's area chunks, inside the
+	 * same call. A reset heard after it ran after the next batch was laid out: QaDenFoundLaterCompatTests let go of the
+	 * chunks 160 blocks off that it had forced, one of them a chunk of the next batch's area (defaultBatch), whose tests
+	 * then waited for their chunks forever (vanilla counts no timeout until they all tick) until the watchdog failed the
+	 * run. So every reset goes ahead of the runner's listener, in the order the test added them, and a reset that throws
+	 * never keeps the runner from going on.
+	 */
 	static void after(GameTestHelper helper, Runnable reset) {
 		try {
 			java.lang.reflect.Field field = GameTestHelper.class.getDeclaredField("testInfo");
 			field.setAccessible(true);
-			((GameTestInfo) field.get(helper)).addListener(new GameTestListener() {
-				@Override
-				public void testStructureLoaded(GameTestInfo test) {
-				}
-
-				@Override
-				public void testPassed(GameTestInfo test, GameTestRunner runner) {
-					reset.run();
-				}
-
-				@Override
-				public void testFailed(GameTestInfo test, GameTestRunner runner) {
-					reset.run();
-				}
-
-				@Override
-				public void testAddedForRerun(GameTestInfo old, GameTestInfo test, GameTestRunner runner) {
-				}
-			});
+			GameTestInfo info = (GameTestInfo) field.get(helper);
+			java.lang.reflect.Field listeners = GameTestInfo.class.getDeclaredField("listeners");
+			listeners.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			List<GameTestListener> list = (List<GameTestListener>) listeners.get(info);
+			int at = 0;
+			while (at < list.size() && list.get(at) instanceof Reset) {
+				at++;
+			}
+			list.add(at, new Reset(reset));
 		} catch (ReflectiveOperationException e) {
 			throw new IllegalStateException(e);
+		}
+	}
+
+	/** One test's {@link #after} reset. */
+	static final class Reset implements GameTestListener {
+		private final Runnable reset;
+
+		Reset(Runnable reset) {
+			this.reset = reset;
+		}
+
+		private void run(GameTestInfo test) {
+			try {
+				reset.run();
+			} catch (RuntimeException e) {
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.error("A reset after the test {} failed", test.getTestName(), e);
+			}
+		}
+
+		@Override
+		public void testStructureLoaded(GameTestInfo test) {
+		}
+
+		@Override
+		public void testPassed(GameTestInfo test, GameTestRunner runner) {
+			run(test);
+		}
+
+		@Override
+		public void testFailed(GameTestInfo test, GameTestRunner runner) {
+			run(test);
+		}
+
+		@Override
+		public void testAddedForRerun(GameTestInfo old, GameTestInfo test, GameTestRunner runner) {
 		}
 	}
 

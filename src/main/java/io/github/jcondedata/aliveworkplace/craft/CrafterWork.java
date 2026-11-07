@@ -1049,6 +1049,12 @@ public class CrafterWork extends Behavior<Villager> {
 			return;
 		}
 		CrafterJob saved = ModAttachments.CRAFTER_JOB.get(villager);
+		if (saved != null && saved.profession().isEmpty()) {
+			// A job saved before B1009 names no profession, so any job site would count as his bench for good: it's his
+			// profession's from the first look after loading (jobless too), and a new job later lets it go (B1018).
+			saved = saved.withProfession(professionId(villager));
+			ModAttachments.CRAFTER_JOB.set(villager, saved);
+		}
 		// A job site counts only while he's still in the job that took the request: a Carpenter who lost his bench and took
 		// a lectern is a Librarian now, and no Librarian ever finishes a crafting job (B1009).
 		if (saved == null || Builders.benchPos(villager).isPresent() && saved.heldBy(professionId(villager))) {

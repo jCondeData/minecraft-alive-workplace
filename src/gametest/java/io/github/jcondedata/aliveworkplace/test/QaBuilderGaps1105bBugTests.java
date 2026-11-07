@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.test;
 
 import static io.github.jcondedata.aliveworkplace.test.QaBasementGround1104GameTests.BENCH;
+import static io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bGameTests.*;
 import static io.github.jcondedata.aliveworkplace.test.QaBasementGround1104GameTests.LOGGER;
 import static io.github.jcondedata.aliveworkplace.test.QaBasementGround1104GameTests.ORIGIN;
 import static io.github.jcondedata.aliveworkplace.test.QaBasementGround1104GameTests.TALL_AREA;
@@ -37,14 +38,19 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.FarmBlock;
 
 /**
  * QA (2026-11-05, second pass): the builder's gaps. Written from docs/wiki/cellars.md ("Dig the cellar" goes once "the
  * building [is] gone"): an old Smithy torn down by hand was still sold and dug (B974); one merely damaged is still
- * offered. B973's two tests (a struck builder's bag in a sealed cave) are on tests/builder-gaps-1105b, to come in with
- * their fix.
+ * offered. Written from docs/wiki/builder.md (a struck builder's bag "on the nearest open ground at least 4 blocks
+ * away"): a bag landed in a sealed cave under a wheat field, or shut in a sealed room under a stair roof, where a player
+ * had to dig blind to the message's coordinates (B973). Helpers are {@link QaBuilderGaps1105bGameTests}'s.
  */
 public class QaBuilderGaps1105bBugTests implements FabricGameTest {
+	private static final String HUGE = "aliveworkplace_test:huge_area";
+
 	/**
 	 * The wiki: "the trade goes again once there is no cellar to dig (... the building gone ...)", and one bought before
 	 * starts nothing ("There's no cellar to dig under the Smithy any more"), the player keeping it. An old Smithy torn down
@@ -142,5 +148,34 @@ public class QaBuilderGaps1105bBugTests implements FabricGameTest {
 		sites.forEach(s -> BuildSiteManager.get(level).remove(s.id()));
 		helper.assertTrue(dig, "the job given to the builder started no cellar dig under the damaged Smithy: " + QaBuilderEdges1104bGameTests.texts(c.seen()));
 		helper.succeed();
+	}
+
+	/**
+	 * A builder struck in his wheat field (farmland under ripe wheat, 16 by 15), his Table 3 blocks east in the field, a
+	 * sealed cave 4 to 6 blocks under the field: nothing can lie on the crops, so it all goes to the nearest open ground
+	 * a player can walk to (the grass round the field), not into the cave under it.
+	 */
+	//$ gametest_ticks_batch HUGE '400' '"qaGapsBField"'
+	@GameTest(template = HUGE, timeoutTicks = 400, batch = "qaGapsBField")
+	public void aBuilderStruckInAWheatFieldOverASealedCaveGetsHisBagWhereAPlayerCanReachIt(GameTestHelper helper) {
+		QaBuilderGaps1105GameTests.struck(helper, new BlockPos(13, SURFACE, 10), new BlockPos(10, SURFACE, 10), h -> {
+			earth(h, (x, z) -> field(x, z) ? Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, 7) : Blocks.GRASS_BLOCK.defaultBlockState(),
+				(x, z) -> field(x, z) ? Blocks.WHEAT.defaultBlockState().setValue(CropBlock.AGE, 7) : null);
+			cave(h);
+		}, h -> {
+		}, (told, lying) -> reachable(helper, told));
+	}
+	/**
+	 * As the bridge, but the sealed room under its end has a roof of stone-brick stairs (nothing can lie on it): it still
+	 * all lies where a player can walk to it, not shut in the room under the roof.
+	 */
+	//$ gametest_ticks_batch HUGE '400' '"qaGapsBStairRoof"'
+	@GameTest(template = HUGE, timeoutTicks = 400, batch = "qaGapsBStairRoof")
+	public void aBuilderStruckOnABridgeOverAStairRoofedRoomGetsHisBagWhereAPlayerCanReachIt(GameTestHelper helper) {
+		QaBuilderGaps1105GameTests.struck(helper, new BlockPos(13, 8, 10), new BlockPos(10, 8, 10), h -> bridgeAndRoom(h, true), h -> {
+		}, (told, lying) -> {
+			reachable(helper, told);
+			helper.assertFalse(inRoom(rel(helper, told)), "the message names " + rel(helper, told).toShortString() + ", inside the sealed room");
+		});
 	}
 }

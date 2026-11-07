@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018
 
 ## 1. What a player sees
 
@@ -84,10 +84,10 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   villager's feet when those are gone or full). A bench put back or moved within that time carries the job on. Another
   job's workstation doesn't count (B1009): a novice who loses his bench is made jobless by vanilla and may take a free
   lectern, so the saved job names the profession that took it (`profession`, a registry id; empty in older saves, which
-  count any job site as before) and is let go all the same once he's in another job that doesn't craft (a Scholar or
-  Teacher): the logs go back and another Carpenter takes the request. Every crafting job picks up a saved job at its own
-  workstation, so one who became a Librarian finishes the barrels and takes them to the builder himself. An older
-  save's job loaded and left unstamped (the bench broken before he works again) is still kept by a lectern.
+  are stamped with his profession at the first look after loading, jobless too, B1018) and is let go all the same once
+  he's in another job that doesn't craft (a Scholar or Teacher): the logs go back and another Carpenter takes the
+  request. Every crafting job picks up a saved job at its own workstation, so one who became a Librarian finishes the
+  barrels and takes them to the builder himself.
 
 The builder's status (`BuilderStatusSync.supplyLines`) adds `JobShortages.line` under "Short of" while it waits:
 first up to two chains short of a raw material, else the crafted parts (something a crafting table, stonecutter,
@@ -209,6 +209,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   Carpenter with the builder's logs made a Scholar after a reload: the job let go, a second Carpenter takes the request
   before the claim would run out, the barrels made once; made a Librarian: the barrels still made once, no log left in a
   bag; a job from an older save (no `profession`) with no lectern near: still let go, nothing lost.
+- `QaBagNewJob1107cBugTests.qaACarpenterFromAnOldSaveWhoBecomesAScholarFreesTheRequest1107c`: the same with the job
+  loaded from a save made before B1009 (no profession in it): he becomes a Scholar and still lets the request and the
+  logs go (B1018).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `QaStewardMaterials1031GameTests.aCarpenterNeverCraftsAwayLogsAnotherOpenBuildNeeds`: two builds sharing a chest,

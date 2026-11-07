@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B981, B1019
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019
 
 ## 1. What a player sees
 
@@ -28,7 +28,10 @@ keeps striking around it for a moment, so what a struck worker leaves is put dow
 their workstation (a Builder's Blueprint Table) when that is 4 or more blocks from the bolt, else on the nearest open
 ground at least 4 blocks away, looked for within 8 blocks sideways and 8 under or over his feet (B964: so a builder deep
 in a basement pit, or on top of a tower, within 3 blocks of his bench still has it put on the ground round the pit or
-at the tower's foot); the message names that spot. Where there is none, it is dropped where he stood. On Peaceful lightning makes no witch and nothing is dropped.
+at the tower's foot); the message names that spot. The Table counts only while it still stands (B969: one broken or
+blown up while he worked away from it is passed over, and everything goes on the ground nearest its old spot). Ground a
+player can walk or climb to, open to the sky or joined to where he stood, comes before a nearer spot shut in a sealed
+cave or room under him (B973: struck in a wheat field or on a stair roof). Where there is none, it is dropped where he stood. On Peaceful lightning makes no witch and nothing is dropped.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
@@ -483,11 +486,13 @@ and on top of a 5-high tower over his bench, leaves his whole bag and one bluepr
 beside a bubble column and a kelp column, water where the basement's own walls and floor go, and a save and load mid-dig
 beside waterlogged earth all end dry and as drawn; a real bolt with the bench 4 blocks off puts the bag on the bench, 3
 blocks off on the ground, atop a tower at its foot and in a pond on the dry bank, each at the spot the message names; on
-Peaceful a bolt makes no witch and drops nothing; a hut whose roof is the world's top layer is built whole). Open: B969, a
-struck builder whose bench is gone has his bag put over the empty spot, so it falls and the message names mid-air.
+Peaceful a bolt makes no witch and drops nothing; a hut whose roof is the world's top layer is built whole).
+`QaBuilderGaps1105BugTests` (QA, B969, 2: a builder struck with his bench broken a tick before, or blown up with a crater
+under it, gets his bag on solid ground at the spot the message names).
 `QaBuilderGaps1105bGameTests` (QA, 2 here: a builder struck on grass over a sealed cave gets his bag on the surface; on a
-bridge over a sealed flat-roofed room, on its roof under the sky). Open: B973, struck in a wheat field (or over a stair
-roof) above a sealed cave or room, the bag is put inside it, where a player must dig to reach it.
+bridge over a sealed flat-roofed room, on its roof under the sky). `QaBuilderGaps1105bBugTests` (QA, B973, 2 here: struck
+in a wheat field over a sealed cave, or on a bridge over a sealed stair-roofed room, the bag lies where a player can
+walk to it, not inside).
 `QaLaneC1102eGameTests` (QA, B832): six real fishermen catch nothing in 1500 ticks at workplaceBuildDelay 35791395 (the
 first delay whose 60-step bite passes the int range) and at 2147483647, and the same pond at the default 8 still catches.
 `B636GameTests`: a hut short only of its torch has the torch on the Storehouse board while the walls go up (not

@@ -9,6 +9,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * QA (lane-e-1107-0713, Create trains 39.7a/39.7b/39.7d and B898; the cause of B939): a village between two train
@@ -100,6 +103,61 @@ public class QaTrainHubBothBuilt1107eBugCompatTests implements FabricGameTest {
 				helper.fail("the hub's two trains weren't both running 1200 ticks after the Conductors came: "
 					+ QaTrainHub1103eCompatTests.trains(level, v) + " (carriages: west " + carriages(westId) + ", east " + carriages(eastId) + ")");
 			}
+		});
+	}
+
+	/**
+	 * The same with a player's train being built on the village's line (the wiki's Create page: the village "never
+	 * touches a player's" train): the village train's blocks at its station, and further along the track past their
+	 * end a player's bogey with a plank glued on it (a carriage of their own). Put together, the village train is its own drawn train, one carriage, and
+	 * the player's bogey and plank still stand where they were.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"qaTrainPlayersBogey"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qaTrainPlayersBogey")
+	public void aVillageTrainPutTogetherLeavesAPlayersBogeyFurtherAlongTheTrack(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.assertTrue(CaravanTrains.RAILWAY.present(), "nothing fills in Create's trains with Create installed");
+		CreateTrainCompatTests.line(helper);
+		BlockPos a = helper.absolutePos(new BlockPos(6, 2, 13));
+		BlockPos b = helper.absolutePos(new BlockPos(23, 2, 13));
+		UUID owner = UUID.randomUUID();
+		Villager driver = CreateTrainCompatTests.conductor(helper, new BlockPos(6, 2, 16));
+		int[] tick = {0};
+		helper.onEachTick(() -> {
+			tick[0]++;
+			CaravanTrains.Railway r = CreateTrainCompatTests.railway();
+			boolean aimed = r.aim(level, a, b, "Alpha") & r.aim(level, b, a, "Beta");
+			if (!aimed || !r.linked(level, a, b)) {
+				if (tick[0] > 200) {
+					helper.fail("setup: Create's railway doesn't know both stations on one network after 200 ticks");
+				}
+				return;
+			}
+			java.util.Map<BlockPos, BlockState> parts = r.train(level, a, b);
+			helper.assertTrue(parts != null, "setup: no room for the village train's blocks past the station");
+			parts.forEach((pos, state) -> level.setBlockAndUpdate(pos, state));
+			java.util.Map.Entry<BlockPos, BlockState> bogey = parts.entrySet().stream()
+				.filter(e -> net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(e.getValue().getBlock()).getPath().endsWith("bogey"))
+				.findFirst().orElseThrow();
+			int dir = Integer.signum(bogey.getKey().getX() - a.getX());
+			int end = parts.keySet().stream().mapToInt(p -> p.getX() * dir).max().orElseThrow() * dir;
+			BlockPos players = new BlockPos(end + 3 * dir, bogey.getKey().getY(), bogey.getKey().getZ());
+			helper.assertTrue(Math.abs(players.getX() - b.getX()) >= 1 && level.getBlockState(players).isAir(),
+				"setup: no room on the track for the player's bogey at " + players + " (the other station at " + b + ")");
+			level.setBlockAndUpdate(players, bogey.getValue());
+			level.setBlockAndUpdate(players.above(), Blocks.OAK_PLANKS.defaultBlockState());
+			// glued to its bogey, as a player builds a carriage (Create refuses a bogey with nothing attached)
+			level.addFreshEntity(new com.simibubi.create.content.contraptions.glue.SuperGlueEntity(level,
+				net.minecraft.world.phys.AABB.encapsulatingFullBlocks(players, players.above())));
+			helper.assertTrue(r.assemble(level, a, b, owner, driver) != null, "the station didn't put the village train together");
+			int n = carriages(owner);
+			boolean bogeyStands = level.getBlockState(players).is(bogey.getValue().getBlock());
+			boolean plankStands = level.getBlockState(players.above()).is(Blocks.OAK_PLANKS);
+			r.scrap(level, owner);
+			helper.assertTrue(n == 1 && bogeyStands && plankStands, "the village train took a player's bogey: " + n
+				+ " carriages (the village train is one), the player's bogey " + (bogeyStands ? "still there" : "gone") + ", the plank on it "
+				+ (plankStands ? "still there" : "gone"));
+			helper.succeed();
 		});
 	}
 }

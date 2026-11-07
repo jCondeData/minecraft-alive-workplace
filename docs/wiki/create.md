@@ -493,6 +493,8 @@ Counter, Drop Box, Builder's Bench, Blueprint Table or Village Hall drops what a
 hall keeps its name). A Deployer acts as a fake player: one a player placed acts for him; one nobody placed still
 becomes the owner of a hall it sets down and of an unowned Mailbox or Shop Counter it clicks (B843), and a stranger's
 deployer can place blocks in and rename the hall of a protected village (B844).
+From outside a protected village, Create's Mechanical Piston pushes blocks into it and its Mechanical Drill breaks
+blocks at its edge, which a vanilla piston can't (B993); a Mechanical Piston inside the village works there as usual.
 
 ## Proof
 
@@ -534,6 +536,10 @@ deployer can place blocks in and rename the hall of a protected village (B844).
   mirrored from exactly the material list, go up whole and empty.
   `QaCreateStoresHeldCompatTests` (lane E's QA): the same for a millstone (holding wheat), a chute, an item vault, a
   mechanical crafter and a toolbox.
+  `QaCreateIntoProtectedVillage1107eCompatTests` (lane E's QA, 4): at a protected village's edge a vanilla piston
+  outside can't push a plank in (the calibration); with the village open a Mechanical Piston outside pushes a plank two
+  steps in and a Mechanical Drill outside breaks the edge's stone (the controls for B993); a Mechanical Piston inside the
+  protected village pushes a plank two steps there.
   `QaCreateMovesOurBlocks1102eCompatTests` (lane E's QA): a Mechanical Piston pushes a Mailbox, a Shop Counter, a
   Drop Box and a Blueprint Table two steps and each keeps exactly what was in it (nothing doubled on the ground, nothing
   lost), while a Wonder's Foundation Stone isn't moved at all (a plank pushed by the same piston is the control).

@@ -79,7 +79,8 @@ The village then has a few days' peace.
 - **Patrol Map** (a map and red dye): right-click the ground at up to eight places, then sneak-right-click a guard with
   it. By day they walk your route.
 - **Mercenaries**: short of guards? Click the iron sword on the hall's screen: for 12 emeralds, three mercenaries in iron
-  come and fight for the village until the next dawn.
+  come and fight for the village until the next dawn. They aren't the village's own: they don't count toward its
+  villagers, its rank, its beds or the festival's cost.
 
 ## Walls and gates
 

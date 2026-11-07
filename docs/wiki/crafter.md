@@ -84,7 +84,8 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   villager's feet when those are gone or full). A bench put back or moved within that time carries the job on. Another
   job's workstation doesn't count (B1009): a novice who loses his bench is made jobless by vanilla and may take a free
   lectern, so the saved job names the profession that took it (`profession`, a registry id; empty in older saves, which
-  are stamped with his profession at the first look after loading, jobless too, B1018) and is let go all the same once
+  are stamped with his profession at the first look after loading, jobless too, B1018; his work on it stamps it
+  again, so one who was jobless when saved and gets his bench back in time carries on) and is let go all the same once
   he's in another job that doesn't craft (a Scholar or Teacher): the logs go back and another Carpenter takes the
   request. Every crafting job picks up a saved job at its own workstation, so one who became a Librarian finishes the
   barrels and takes them to the builder himself.
@@ -212,6 +213,11 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `QaBagNewJob1107cBugTests.qaACarpenterFromAnOldSaveWhoBecomesAScholarFreesTheRequest1107c`: the same with the job
   loaded from a save made before B1009 (no profession in it): he becomes a Scholar and still lets the request and the
   logs go (B1018).
+- `QaOldSaveBench1107eGameTests` (3, B1018 and B353 QA): a novice Carpenter whose job was loaded from a save made
+  before B1009 finishes the builder's three barrels himself when his bench stands (the job stamped
+  `aliveworkplace:carpenter`); one saved while jobless (the bench broken first, so the job is stamped `minecraft:none`)
+  whose bench is put back 560 ticks after the load carries on with the job and makes the barrels once, as from a newer
+  save: his work on the job stamps it again with the job he holds then.
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `QaStewardMaterials1031GameTests.aCarpenterNeverCraftsAwayLogsAnotherOpenBuildNeeds`: two builds sharing a chest,

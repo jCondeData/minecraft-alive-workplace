@@ -602,6 +602,10 @@ village's last column empties it (B994).
 - `QaMechanicPartStruck1104eBugCompatTests` (B959) and `QaMachineTripStruck1104eBugCompatTests` (B960): struck or
   killed with the store's cogwheel in hand, the Mechanic leaves both cogwheels in the store or on the ground; a farmer
   struck mid-trip leaves all 12 wheat.
+- `QaCarriedPartsGone1107eCompatTests` (4, QA for B959 and B960): a player kills the Mechanic with the store's cogwheel
+  in hand while vanilla's own hand drop comes up: 2 cogwheels in the store or on the ground, never 3; reloaded with the
+  cogwheel in hand, then struck into a witch: both still there; reloaded and left alone: he mends the hole, his hand
+  ends empty and the store keeps 1; a farmer reloaded mid machine trip, then struck: his 12 wheat fall once.
 - `QaContraptionLines1104eCompatTests` (QA, with Create, 39.5's lines): "its 1 moving part turns", two stuck parts
   both named, four named with no "more", five reading four and "and 1 more", eleven "and 7 more", a part gone from its
   spot "a missing part at x y z", and the Mechanic whose toolbox is in reach named as the one who checked.

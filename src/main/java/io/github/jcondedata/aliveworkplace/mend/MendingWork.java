@@ -34,6 +34,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
@@ -163,6 +164,9 @@ public class MendingWork extends Behavior<Villager> {
 		}
 		job = new Job(saved.item(), saved.from(), saved.material(), saved.units(), saved.materialChest());
 		phase = Phase.valueOf(saved.phase().name());
+		if (saved.material() == Items.AIR && (phase == Phase.MATERIAL || phase == Phase.MENDING)) {
+			phase = Phase.RETURNING; // the material's mod was removed: the piece goes back as it is
+		}
 		timer = -1;
 		walker.reset();
 		savedJob = job;

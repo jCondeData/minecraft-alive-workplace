@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018
 
 ## 1. What a player sees
 
@@ -84,7 +84,8 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   villager's feet when those are gone or full). A bench put back or moved within that time carries the job on. Another
   job's workstation doesn't count (B1009): a novice who loses his bench is made jobless by vanilla and may take a free
   lectern, so the saved job names the profession that took it (`profession`, a registry id; empty in older saves, which
-  count any job site as before) and is let go all the same once he's in another job.
+  are stamped with his profession at the first look after loading, jobless too, B1018) and is let go all the same once
+  he's in another job.
 
 The builder's status (`BuilderStatusSync.supplyLines`) adds `JobShortages.line` under "Short of" while it waits:
 first up to two chains short of a raw material, else the crafted parts (something a crafting table, stonecutter,
@@ -201,6 +202,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   the build (B353).
 - `QaCrafterNewJob1107BugTests.qaANewCarpenterWhoTakesAnotherJobLetsTheRequestAndTheWoodGo`: a 0-XP Carpenter carrying
   the builder's logs loses his bench and may take a free lectern: the job and its claim let go, the bag emptied (B1009).
+- `QaBagNewJob1107cBugTests.qaACarpenterFromAnOldSaveWhoBecomesAScholarFreesTheRequest1107c`: the same with the job
+  loaded from a save made before B1009 (no profession in it): he becomes a Scholar and still lets the request and the
+  logs go (B1018).
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `QaStewardMaterials1031GameTests.aCarpenterNeverCraftsAwayLogsAnotherOpenBuildNeeds`: two builds sharing a chest,

@@ -18,7 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- In a siege, a gate put back in the breach after the ram broke it (by a builder's repair, or by hand) is rammed again and the raiders get in, instead of the ram standing idle and the raiders waiting outside a shut gate till dawn.
+- In a siege, a gateway walled up after the ram broke its gate (cobblestone or planks in the gap) now counts as shut: raiders with ladders or sand ramps climb over the walls instead of being sent "in" through the wall, and clearing the block opens the way again.
 - A Builder helping another builder no longer climbs the lead's scaffolding columns: he works from the ground and leaves the scaffolding to the lead.
+- A Weaponsmith who is saved and reloaded (a restart, or the chunk unloading) while mending a guard's worn armor no longer puts it in his own chest by the grindstone: he finishes mending it and takes it back to the chest it came from.
 - A Weaponsmith whose grindstone is broken while he carries your worn sword (or the iron to mend it) no longer keeps it in his bag for good: after a few seconds without a grindstone he drops what he carries at his feet, where you can pick it up.
 - A village train between two Create stations you gave the same name (both "Station", say) no longer stops for good with the caravan aboard: it now runs on to the other village's station and the goods arrive, whatever you call the stations.
 - Hiring mercenaries (or relief riders arriving) no longer lowers the village's wellbeing and work pace: the hired help no longer counts as villagers without a bed or a meal, so the Village Hall's "Sleeping in a bed" line stays at what the village's own people have (2 of 2, not 2 of 5). A hired Guard still counts toward the village's guards.

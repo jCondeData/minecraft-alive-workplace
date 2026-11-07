@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Bard killed, or taken away (despawned, or unloaded with his chunk), in the middle of a song now stops the music at his jukebox, instead of the disc playing on to its end for everyone nearby.
 - The questbook no longer sends you to the Village Hall's old "top row": the Food in the store and A bed for a newcomer quests now say to open the hall's Overview and hover the Food in store, Beds, Wellbeing and Villagers lines.
 - Mercenaries, relief riders and a story's visitors no longer count as the village's villagers: hiring a band no longer ranks a village up (and down again when it leaves), and the hall's "Villagers" count, the realm's tab, the festival's cost and the raid odds stay as they were while the help is there.
 - A new Weaponsmith (one who has never traded) carrying your worn sword no longer keeps it for good when his grindstone is broken and he takes another job (a lectern nearby) or the server restarted first: he drops the sword and the iron at his feet. A new Carpenter (or other crafter) who loses his bench while carrying a builder's wood and takes another job now lets the request go back to the builder and puts the wood back in the builder's chest.

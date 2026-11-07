@@ -92,8 +92,15 @@ public final class BuilderEvents {
 				|| io.github.jcondedata.aliveworkplace.guard.Guards.block(villager, source, amount))));
 		// A lair's captain the game takes away on Peaceful is remembered as taken, not fallen (B767).
 		Platform.get().onEntityUnload((entity, level) -> io.github.jcondedata.aliveworkplace.threat.Lairs.onRemoved(level, entity));
+		// B1003: a Bard killed, discarded or unloaded mid-song: the song stops at the jukebox
+		Platform.get().onEntityUnload((entity, level) -> {
+			if (entity instanceof Villager villager) {
+				io.github.jcondedata.aliveworkplace.bard.BardWork.onGone(level, villager);
+			}
+		});
 		Platform.get().afterDeath((entity, source) -> {
 			if (entity instanceof Villager villager && entity.level() instanceof ServerLevel level) {
+				io.github.jcondedata.aliveworkplace.bard.BardWork.onGone(level, villager); // B1003
 				workLeft(level, villager, "message.aliveworkplace.builder_died", villager.blockPosition());
 				io.github.jcondedata.aliveworkplace.people.FamilyBook.onDeath(level, villager); // the Book of Families dates them (34.21)
 				io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);

@@ -44,13 +44,22 @@ public final class VillageHalls {
 
 	/** The village at a glance. */
 	public record Census(List<Villager> workers, List<Villager> jobless, int children, int beds, int freeBeds, long food, int guards,
-						 List<Requests.Request> requests, List<Build> builds, int wagonBeds) {
+						 List<Requests.Request> requests, List<Build> builds, int wagonBeds, int visitors) {
 		/** B206: the village is full: no bed in its houses is free, so nobody new moves in. */
 		public boolean full() {
 			return freeBeds <= 0;
 		}
 
+		/**
+		 * The village's own villagers: everyone counted here but its {@link #visitors} (B999, B1000). The People title, the
+		 * rank, the realm, festivals, raids and the Steward's checks all count these, as the Wellbeing counts do (B990).
+		 */
 		public int villagers() {
+			return everyone() - visitors;
+		}
+
+		/** Everyone the hall lists, the hired help and story visitors ({@link HallPeople#visitor}) included. */
+		public int everyone() {
 			return workers.size() + jobless.size() + children;
 		}
 	}
@@ -61,6 +70,7 @@ public final class VillageHalls {
 		List<Villager> jobless = new ArrayList<>();
 		int children = 0;
 		int guards = 0;
+		int visitors = 0;
 		for (Villager v : villagers(level, hall)) {
 			if (CaravanSights.isParty(v)) {
 				continue; // a caravan's carter (33.7) is passing through: nobody's villager
@@ -70,6 +80,9 @@ public final class VillageHalls {
 				continue;
 			}
 			VillagerProfession job = v.getVillagerData().getProfession();
+			if (HallPeople.visitor(v)) {
+				visitors++; // listed, but not the village's own (B999, B1000)
+			}
 			if (HallPeople.visitor(v) && v.getVillagerData().getProfession() != VillagerProfession.NONE) {
 				workers.add(v); // a hired band, relief rider or story's visitor at work: not jobless, and not the village's own guards (B889)
 				continue;
@@ -95,7 +108,7 @@ public final class VillageHalls {
 			requests.addAll(Requests.of(level, worker));
 		}
 		return new Census(List.copyOf(workers), List.copyOf(jobless), children, beds, freeBeds, food(level, hall), guards, requests,
-			builds(level, hall), wagonBeds);
+			builds(level, hall), wagonBeds, visitors);
 	}
 
 	/** How many kinds of meal the store has (see {@link io.github.jcondedata.aliveworkplace.people.Diet}). */

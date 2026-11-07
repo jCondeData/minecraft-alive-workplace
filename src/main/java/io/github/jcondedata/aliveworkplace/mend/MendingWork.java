@@ -325,7 +325,8 @@ public class MendingWork extends Behavior<Villager> {
 	 * Every villager's AI step (mixin/VillagerMixin), B970: a smith who lost the grindstone (broken, or taken by vanilla
 	 * when their job site went) while carrying a worn piece or its material can't work any more, so after
 	 * {@link #STATIONLESS_TICKS} they drop what they carry at their feet, where a player can pick it up, as a retired
-	 * Crafter does ({@code craft/Crafters#retire}). A crafting job in hand is {@code CrafterWork#benchlessTick}'s.
+	 * Crafter does ({@code craft/Crafters#retire}). That holds whatever job they take next (B1007) and across a reload,
+	 * when the saved mending job marks the carrier (B1008). A crafting job in hand is {@code CrafterWork#benchlessTick}'s.
 	 */
 	public static void stationlessTick(Villager villager) {
 		if (!(villager.level() instanceof ServerLevel level)) {
@@ -335,12 +336,17 @@ public class MendingWork extends Behavior<Villager> {
 		synchronized (CARRYING) {
 			carrying = CARRYING.contains(villager);
 		}
-		if (!carrying && villager.getVillagerData().getProfession() != VillagerProfession.WEAPONSMITH) {
+		boolean smith = villager.getVillagerData().getProfession() == VillagerProfession.WEAPONSMITH;
+		// After a reload the in-memory set is empty: the mending job saved on him (B971) still says he carries a piece (B1008).
+		if (!carrying && !smith && !ModAttachments.MEND_JOB.has(villager)) {
 			return;
 		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.get(villager);
 		boolean empty = bag == null || bag.isEmpty();
-		if (empty || Builders.benchPos(villager).isPresent() || ModAttachments.CRAFTER_JOB.get(villager) != null) {
+		// Only a Weaponsmith's job site is a grindstone: one who took a lectern (or any other job) never mends again, so his
+		// new workstation doesn't keep the piece in his bag (B1007).
+		boolean grindstone = smith && Builders.benchPos(villager).isPresent();
+		if (empty || grindstone || ModAttachments.CRAFTER_JOB.get(villager) != null) {
 			synchronized (CARRYING) {
 				STATIONLESS.remove(villager);
 				if (empty) {

@@ -417,7 +417,7 @@ public final class VillageHallScreen {
 		}
 		// The sidebar's sections (40.1): every button marked with its sections, and which sections are empty.
 		boolean laws = entity != null && !entity.edicts().isEmpty() || realm != null;
-		HallSections.apply(menu, level, HallPages.shown(), new HallSections.Counts(census.villagers(), census.beds(), census.food(),
+		HallSections.apply(menu, level, HallPages.shown(), new HallSections.Counts(census.everyone(), census.beds(), census.food(),
 			census.builds().size(), census.guards(), quests.size(), !Caravans.neighbours(level, hall).isEmpty(), laws));
 	}
 

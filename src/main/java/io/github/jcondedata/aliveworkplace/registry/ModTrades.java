@@ -1016,7 +1016,7 @@ public final class ModTrades {
 
 	/**
 	 * The grander homes a builder sells (ROADMAP 34.15): the Artisan's House from Apprentice on, and the Burgher's
-	 * Townhouse once the village round them (the nearest hall's) has a household of Artisans or higher, and the Noble's
+	 * Townhouse once the village they are in has a household of Artisans or higher, and the Noble's
 	 * Manor (34.16) once it has a household of Burghers or higher. Added when they
 	 * level up and when a player opens their trades (the mixin's hooks on {@code increaseMerchantCareer} and
 	 * {@code updateSpecialPrices}) rather than listed with the level's trades, which show two picked at random; never
@@ -1041,18 +1041,20 @@ public final class ModTrades {
 		io.github.jcondedata.aliveworkplace.build.Cellars.offer(level, villager); // 36.7: "Dig the cellar" for the village's old builds
 	}
 
-	/** Whether the village round the hall nearest {@code pos} has a household of Artisans or a higher class. */
+	/** Whether the village {@code pos} is in has a household of Artisans or a higher class. */
 	public static boolean hasArtisans(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos) {
 		return hasClass(level, pos, ARTISAN);
 	}
 
-	/** Whether the village round the hall nearest {@code pos} has a household of class {@code id} or a higher class. */
+	/** Whether the village {@code pos} is in ({@code VillageHalls.containing}) has a household of class {@code id} or a higher class. */
 	public static boolean hasClass(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.resources.ResourceLocation id) {
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass social = io.github.jcondedata.aliveworkplace.people.SocialClasses.get(id);
 		if (!io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED || social == null) {
 			return false;
 		}
-		return io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, pos)
+		// B988: the hall whose village (a circle with a height) holds pos, not the nearest in a ball, which misses a
+		// builder on the village's rim up a hill
+		return io.github.jcondedata.aliveworkplace.hall.VillageHalls.containing(level, pos)
 			.map(hall -> io.github.jcondedata.aliveworkplace.hall.ClassesPage.households(level, hall).stream().anyMatch(p -> p.social().tier() >= social.tier()))
 			.orElse(false);
 	}

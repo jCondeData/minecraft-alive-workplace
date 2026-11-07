@@ -433,7 +433,9 @@ rides, which can't be summoned.
 - The Grand style keeps its name and gains the Rechiseled rules rather than a new style, as the roadmap item names it
   (37.7); the rules are behind `furnishedBuilds`, so Grand on servers before 2.1 is unchanged. A Grand building half
   built when 2.1 turns the switch on gets its remaining floors and panels in Rechiseled
-  (not tested: whether a repair of a finished Grand building then swaps its floors).
+  A repair of a Grand building finished before the switch went on fills only the holes, in Rechiseled, and leaves
+  its standing vanilla floors alone, so the patched spots are Rechiseled among the old floors
+  (`QaGrandRepair1107CompatTests`).
 - A Tom's network is read through its connector only at the Storehouse (design note M37, rule 4): a worker's own
   chests on a network stay separate stores, as at 2.0 (37.10).
 - Lanes don't make review packages (sessions.md, 2026-10-04): the digest sends the design note as 37.1's package.

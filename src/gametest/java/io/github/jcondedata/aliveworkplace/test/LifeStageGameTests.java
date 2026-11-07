@@ -770,8 +770,12 @@ public class LifeStageGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * B771, the elders scene's own walk: side by side, two blocks apart, each asked tick after tick through
-	 * Walker.requestWalk with its own retry counter; compared while each is on his way, the elder walks about 15% slower.
+	 * B771, the elders scene's own walk: side by side, each asked tick after tick through Walker.requestWalk with its own
+	 * retry counter; compared while each is on his way, the elder walks about 15% slower. B949: six blocks apart, as the
+	 * other walks here. Two blocks apart (the scene's spacing once) they were in reach of vanilla's gossip
+	 * (TradeWithVillager sends both to each other every tick they stand within 2.24 blocks), or brushed shoulders, and
+	 * walked on as a pair at one pace: 92% and 100% in full runs, 1 in 8 alone. Three apart, vanilla's InteractWith
+	 * still drew them into that reach before the walk began (1 in 15).
 	 */
 	//$ gametest_ticks_batch AREA '200' '"b771SceneWalk"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "b771SceneWalk")
@@ -781,17 +785,49 @@ public class LifeStageGameTests implements FabricGameTest {
 		LifeStages.AGES = true;
 		long today = Chronicle.day(helper.getLevel());
 		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
-		Villager tom = walker(helper, new BlockPos(6, 2, 2), "Tom");
+		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
 		LifeStages.setAdultSince(bram, today - 1210);
 		LifeStages.setAdultSince(tom, today - 30);
 		Leftovers.after(helper, () -> {
 			bram.discard();
 			tom.discard();
 		});
-		BlockPos[] goals = {helper.absolutePos(new BlockPos(4, 2, 20)), helper.absolutePos(new BlockPos(6, 2, 20))};
+		BlockPos[] goals = {helper.absolutePos(new BlockPos(4, 2, 20)), helper.absolutePos(new BlockPos(10, 2, 20))};
 		int[] retry = new int[2];
 		walkSideBySide(helper, new Villager[] {bram, tom}, v -> {
 			int i = v == bram ? 0 : 1;
+			retry[i] = Walker.requestWalk(v, goals[i], 0.5f, 1, retry[i]);
+		});
+	}
+
+	/**
+	 * B949: the same walk with vanilla's gossip set on it from the start (the elder's interaction target is the younger
+	 * villager, put back every tick it is dropped): six blocks apart it never holds them, and the elder still walks about
+	 * 15% slower. (Two blocks apart, 3 runs in 8 failed so, the younger villager standing a fifth of the walk.)
+	 */
+	//$ gametest_ticks_batch AREA '200' '"b949GossipWalk"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "b949GossipWalk")
+	public void b949AnElderWalksSlowerThoughVanillaWouldHaveThemGossip(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.after(helper, () -> LifeStages.AGES = true);
+		LifeStages.AGES = true;
+		long today = Chronicle.day(helper.getLevel());
+		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
+		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
+		LifeStages.setAdultSince(bram, today - 1210);
+		LifeStages.setAdultSince(tom, today - 30);
+		Leftovers.after(helper, () -> {
+			bram.discard();
+			tom.discard();
+		});
+		BlockPos[] goals = {helper.absolutePos(new BlockPos(4, 2, 20)), helper.absolutePos(new BlockPos(10, 2, 20))};
+		bram.getBrain().setMemory(MemoryModuleType.INTERACTION_TARGET, tom);
+		int[] retry = new int[2];
+		walkSideBySide(helper, new Villager[] {bram, tom}, v -> {
+			int i = v == bram ? 0 : 1;
+			if (i == 0 && !bram.getBrain().hasMemoryValue(MemoryModuleType.INTERACTION_TARGET)) {
+				bram.getBrain().setMemory(MemoryModuleType.INTERACTION_TARGET, tom);
+			}
 			retry[i] = Walker.requestWalk(v, goals[i], 0.5f, 1, retry[i]);
 		});
 	}
@@ -829,8 +865,15 @@ public class LifeStageGameTests implements FabricGameTest {
 					moving[i] += both[i].getNavigation().isDone() ? 0 : 1;
 				}
 				if (walked % 10 == 0 && trace.length() < 2000) {
+					// B949: how far apart they walk, and whether vanilla's gossip (an interaction target) has hold of either.
 					trace.append(" [").append(walked).append(": z ").append(Math.round((both[0].getZ() - from[0]) * 100) / 100.0)
-						.append(" / ").append(Math.round((both[1].getZ() - from[1]) * 100) / 100.0).append(']');
+						.append(" / ").append(Math.round((both[1].getZ() - from[1]) * 100) / 100.0)
+						.append(", apart ").append(Math.round(both[0].distanceTo(both[1]) * 100) / 100.0);
+					for (Villager v : both) {
+						v.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET)
+							.ifPresent(e -> trace.append(", ").append(v.getName().getString()).append(" with ").append(e.getName().getString()));
+					}
+					trace.append(']');
 				}
 			}
 			if (walked != 90) {

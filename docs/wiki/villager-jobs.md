@@ -151,6 +151,13 @@ Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with
 Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A Blaze Breed Tauros hatchling (with Ditto) turns Combat Breed after
 a reload (B955). Tested in `QaDaycareBugs1103dCompatTests` and `QaDaycareRegional1104d2CompatTests` (11).
 
+**Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
+Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last
+five for the Village Hall. Only wild Pokémon count: a player's own shiny standing by her pasture isn't a sighting. An
+Alpha is a Pokémon with Cobblemon's "alpha" aspect (Cobblemon 1.8). Her Poké Snacks are set out the way a player
+places one: only on a spot a block can go (never into a solid block) and only from a Poké Snack. Tested in
+`HabitatKeeperCompatTests`, `QaHabitatKeeperCompatTests` and `QaHabitatWild1107dCompatTests`.
+
 ## How it works
 
 **Job plates (B221).** The client already knows every villager's job and level (vanilla sends them, for the outfit

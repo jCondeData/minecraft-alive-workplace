@@ -197,6 +197,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B120GameTests",
 			"io.github.jcondedata.aliveworkplace.test.ScaffoldingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScaffoldingGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScaffolding1107GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScaffoldShift1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScaffoldHeight1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScaffoldHeight1104BugTests",
@@ -1346,7 +1347,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBedsHauler1105cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPrinterNurseBard1105cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaPrinterNurseBard1105cBugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaPrinterNurseBard1105cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDietLaneC1107GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHomeGradeFilesLaneC1107GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLuxuryPortersLaneC1107GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSchoolLaneC1107GameTests"
 		]
 	},
 	"depends": {

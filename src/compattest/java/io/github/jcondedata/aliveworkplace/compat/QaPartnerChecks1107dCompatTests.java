@@ -81,7 +81,7 @@ public class QaPartnerChecks1107dCompatTests implements FabricGameTest {
 	}
 
 	/** A pastured Wooloo is pastured; a wild one, a sheep and a cow aren't. */
-	//$ gametest AREA
+	//$ gametest_ticks AREA '200'
 	@GameTest(template = AREA, timeoutTicks = 200)
 	public void onlyAPokemonInAPastureIsPastured(GameTestHelper helper) {
 		BlockPos pasture = PastureCompatTests.pasture(helper, new BlockPos(10, 2, 10));

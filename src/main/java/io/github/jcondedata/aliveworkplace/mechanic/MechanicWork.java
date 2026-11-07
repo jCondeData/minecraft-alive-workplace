@@ -596,6 +596,18 @@ public class MechanicWork extends Behavior<Villager> {
 		stash(level, villager);
 	}
 
+	/**
+	 * B959: the Mechanic is gone (killed, turned into a zombie villager, or struck by lightning into a witch) with a part
+	 * from the store in hand: it goes back to the store as when his work stops, never lost with him (vanilla drops a held
+	 * item only on a player's kill, and a conversion or strike keeps none). Run by the one hook for a worker who leaves
+	 * their work ({@code BuilderEvents.workLeft}); the hand is emptied, so the part comes back once.
+	 */
+	public static void onWorkerGone(ServerLevel level, Villager villager) {
+		if (isMechanic(villager)) {
+			stash(level, villager);
+		}
+	}
+
 	/** Whether {@code held} is a part the Mechanic carries (a Create item). */
 	private static boolean isPart(ItemStack held) {
 		return !held.isEmpty() && "create".equals(BuiltInRegistries.ITEM.getKey(held.getItem()).getNamespace());

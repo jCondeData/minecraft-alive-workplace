@@ -1368,6 +1368,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGreatWall1104d4GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStruckAndTop1104GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStruckAndTop1104BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bBugTests",
@@ -1393,6 +1394,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSmithFiveSeconds1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithJobSaved1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBagNewJob1107cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBagNewJob1107cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrewPass1107bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPathsCrafterVerify1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cGameTests"

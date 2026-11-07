@@ -52,6 +52,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -656,6 +657,7 @@ public final class Sieges {
 		}
 		director.steps++;
 		List<Mob> raiders = director.raiders.stream().filter(m -> m.isAlive() && !m.isRemoved()).toList();
+		look(level, data, siege);
 		ThreatData.Gate target = siege.breach == null ? null : next(level, data, siege);
 		long now = level.getGameTime();
 		int paths = 0;
@@ -822,17 +824,51 @@ public final class Sieges {
 			if (isGate(level.getBlockState(gate.pos))) {
 				return gate;
 			}
-			gate.state = ThreatData.GateState.GONE; // someone else took it (a player, most likely): the way is open there
+			// Someone else took it (a player, most likely): the way is open there, unless they put a wall in its place.
+			gate.state = walls(level.getBlockState(gate.pos)) ? ThreatData.GateState.WALLED : ThreatData.GateState.GONE;
 			level.destroyBlockProgress(crackId(gate.pos), gate.pos, -1);
 			data.setDirty();
 		}
 		return null;
 	}
 
-	/** Whether the first way through the breach is open: none of its blocks at walking height still stands. */
+	/**
+	 * Brings the siege's gate blocks that went up to what stands in their place now. A gate set back where one went (a
+	 * builder mends the gates first in a siege, or a player's hand) stands again, with fresh hit points, and the rams go
+	 * for it again (B966): remembered as broken, the way counted open and the raiders were sent in through a shut gate.
+	 * A solid block put there walls the way up (B972): rams don't break walls, so the way stays shut there (ladders and
+	 * sand ramps go on) until it is cleared again.
+	 */
+	private static void look(ServerLevel level, ThreatData data, ThreatData.Siege siege) {
+		for (ThreatData.Gate gate : siege.gates) {
+			if (gate.state == ThreatData.GateState.STANDING || !level.isLoaded(gate.pos)) {
+				continue;
+			}
+			BlockState state = level.getBlockState(gate.pos);
+			if (isGate(state)) {
+				gate.state = ThreatData.GateState.STANDING;
+				gate.hp = hitPoints(state) * siege.hpFactor;
+				data.gateMended(siege.hall, gate.pos);
+				data.setDirty();
+			} else if (walls(state) != (gate.state == ThreatData.GateState.WALLED)) {
+				gate.state = walls(state) ? ThreatData.GateState.WALLED : ThreatData.GateState.GONE;
+				data.setDirty();
+			}
+		}
+	}
+
+	/** Whether {@code state}, where a gate block was, walls the way up: something no raider walks through and no ram breaks. */
+	private static boolean walls(BlockState state) {
+		return !isGate(state) && !state.isPathfindable(PathComputationType.LAND);
+	}
+
+	/**
+	 * Whether the first way through the breach is open: none of its blocks at walking height still stands, nor was walled
+	 * up after it went.
+	 */
 	public static boolean open(ThreatData.Siege siege) {
 		for (ThreatData.Gate gate : siege.gates) {
-			if (gate.lane == 0 && !gate.high && gate.state == ThreatData.GateState.STANDING) {
+			if (gate.lane == 0 && !gate.high && (gate.state == ThreatData.GateState.STANDING || gate.state == ThreatData.GateState.WALLED)) {
 				return false;
 			}
 		}
@@ -841,12 +877,16 @@ public final class Sieges {
 
 	/**
 	 * Whether the first way through the breach is open in the world right now: as {@link #open}, but a gate block broken
-	 * by someone else counts at once, not only when the director next notices it (up to {@link #EVERY} ticks later).
+	 * by someone else counts at once, not only when the director next notices it (up to {@link #EVERY} ticks later), and
+	 * so does one set back or walled up where a gate went (B966, B972).
 	 */
 	public static boolean openNow(ServerLevel level, ThreatData.Siege siege) {
 		for (ThreatData.Gate gate : siege.gates) {
-			if (gate.lane == 0 && !gate.high && gate.state == ThreatData.GateState.STANDING && isGate(level.getBlockState(gate.pos))) {
-				return false;
+			if (gate.lane == 0 && !gate.high) {
+				BlockState state = level.getBlockState(gate.pos);
+				if (isGate(state) || walls(state)) {
+					return false;
+				}
 			}
 		}
 		return true;

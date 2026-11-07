@@ -159,6 +159,24 @@ public class QaTrainHub1103eCompatTests implements FabricGameTest {
 		}
 	}
 
+	/**
+	 * Where the village train with this owner is (B939's look): each carriage's entity position, the train's speed and
+	 * whether it's derailed; "no train" without one.
+	 */
+	static String where(UUID owner) {
+		for (com.simibubi.create.content.trains.entity.Train train : com.simibubi.create.Create.RAILWAYS.trains.values()) {
+			if (owner.equals(train.owner) && !train.invalid) {
+				StringBuilder b = new StringBuilder("speed " + String.format(java.util.Locale.ROOT, "%.3f", train.speed) + ", derailed " + train.derailed + ", carriages");
+				for (com.simibubi.create.content.trains.entity.Carriage c : train.carriages) {
+					net.minecraft.world.entity.Entity e = c.anyAvailableEntity();
+					b.append(' ').append(e == null ? "(no entity)" : String.format(java.util.Locale.ROOT, "(%.2f, %.2f, %.2f)", e.getX(), e.getY(), e.getZ()));
+				}
+				return b.toString();
+			}
+		}
+		return "no train";
+	}
+
 	static String trains(ServerLevel level, Three v) {
 		CaravanTrains.Railway r = CreateTrainCompatTests.railway();
 		return "west train: " + r.status(level, CaravanTrains.railwayId(v.west(), v.hub())) + "; east train: "

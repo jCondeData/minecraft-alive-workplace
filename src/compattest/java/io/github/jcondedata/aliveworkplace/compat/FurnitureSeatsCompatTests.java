@@ -170,7 +170,8 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 	/**
 	 * B945 (QA lane-c-1104-1254): a villager penned in glass 4 blocks from a chair picks it but can't reach it; a villager
 	 * then comes right beside the chair. Once the penned one gives up ({@code GIVE_UP}, 600 ticks) they leave the chair
-	 * alone for a while, so the one beside it sits: a chair nobody can reach isn't kept from everyone for good.
+	 * alone for a while, so the one beside it sits: a chair nobody can reach isn't kept from everyone for good. The one beside
+	 * it is fenced in with the chair (B967: wandering off past {@code REACH} while the chair was held made the test flaky).
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '1600' '"qa1104c4_penned_walker"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 1600, batch = "qa1104c4_penned_walker")
@@ -178,17 +179,8 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos chair = chair(helper);
-		BlockPos pen = CHAIR.west(4);
-		for (int dx = -1; dx <= 1; dx++) {
-			for (int dz = -1; dz <= 1; dz++) {
-				for (int y = 2; y <= 4; y++) {
-					if (dx != 0 || dz != 0 || y == 4) {
-						helper.setBlock(pen.offset(dx, y - 2, dz), net.minecraft.world.level.block.Blocks.GLASS);
-					}
-				}
-			}
-		}
-		Villager penned = helper.spawn(EntityType.VILLAGER, pen);
+		Villager penned = penned(helper);
+		yard(helper);
 		Runnable restore = clock(level);
 		setTime(level, FurnitureSeats.SUPPER + 300);
 		Villager[] beside = {null};
@@ -203,7 +195,85 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 			helper.assertTrue(beside[0] != null, "setup: the penned villager never picked the chair");
 			helper.assertFalse(penned.isPassenger(), "setup: the penned villager reached the chair");
 			helper.assertTrue(seatOf(beside[0]) != null, "the villager right beside the chair hasn't sat " + (helper.getTick() - pickedAt[0])
-				+ " ticks after the penned villager (who can't reach it) picked it; the chair is free: " + FurnitureSeats.free(level, chair, beside[0]));
+				+ " ticks after the penned villager (who can't reach it) picked it; the chair at " + chair.toShortString() + " is free: "
+				+ FurnitureSeats.free(level, chair, beside[0]) + ", day time " + level.getDayTime() % 24000 + "; beside: "
+				+ FurnitureSeats.describe(level, beside[0]) + "; penned: " + FurnitureSeats.describe(level, penned));
+			penned.discard();
+			beside[0].discard();
+			restore.run();
+		});
+	}
+
+	/** A glass penned villager 4 blocks west of the chair: he can see it but never reach it. */
+	private static Villager penned(GameTestHelper helper) {
+		BlockPos pen = CHAIR.west(4);
+		for (int dx = -1; dx <= 1; dx++) {
+			for (int dz = -1; dz <= 1; dz++) {
+				for (int y = 2; y <= 4; y++) {
+					if (dx != 0 || dz != 0 || y == 4) {
+						helper.setBlock(pen.offset(dx, y - 2, dz), net.minecraft.world.level.block.Blocks.GLASS);
+					}
+				}
+			}
+		}
+		return helper.spawn(EntityType.VILLAGER, pen);
+	}
+
+	/** A 3x3 yard walled in glass round the chair, so a villager put beside it stays within reach of it. */
+	private static void yard(GameTestHelper helper) {
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				if (Math.abs(dx) == 2 || Math.abs(dz) == 2) {
+					for (int y = 0; y <= 1; y++) {
+						helper.setBlock(CHAIR.offset(dx, y, dz), net.minecraft.world.level.block.Blocks.GLASS);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * B677: a villager penned where he can't reach a chair gives up on it soon ({@code STUCK}: he gets no closer) and then
+	 * leaves it alone for the whole skip ({@code SKIP_FOR}) instead of picking it again at once, and the villager beside the
+	 * chair sits on it.
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '1400' '"furniture_seat_unreachable_skip"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 1400, batch = "furniture_seat_unreachable_skip")
+	public void aVillagerWhoGaveUpOnAChairHeCantReachLeavesItAloneAndTheOneBesideItSits(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos chair = chair(helper);
+		Villager penned = penned(helper);
+		yard(helper);
+		Runnable restore = clock(level);
+		setTime(level, FurnitureSeats.SUPPER + 300);
+		Villager[] beside = {null};
+		long[] at = {-1, -1};
+		String[] broken = {null};
+		helper.onEachTick(() -> {
+			boolean walking = chair.equals(FurnitureSeats.walkingTo(penned));
+			if (at[0] < 0 && walking) {
+				at[0] = helper.getTick();
+				beside[0] = helper.spawn(EntityType.VILLAGER, CHAIR.south());
+			} else if (at[0] >= 0 && at[1] < 0 && !walking) {
+				at[1] = helper.getTick();
+			} else if (at[1] >= 0 && walking && broken[0] == null) {
+				broken[0] = "the penned villager picked the chair he can't reach again " + (helper.getTick() - at[1])
+					+ " ticks after giving up on it; " + FurnitureSeats.describe(level, penned);
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(at[0] >= 0, "setup: the penned villager never set off for the chair; " + FurnitureSeats.describe(level, penned));
+			helper.assertFalse(penned.isPassenger(), "setup: the penned villager reached the chair");
+			helper.assertTrue(at[1] >= 0, "the penned villager is still walking to the chair he can't reach " + (helper.getTick() - at[0])
+				+ " ticks after setting off; " + FurnitureSeats.describe(level, penned));
+			helper.assertTrue(at[1] - at[0] < 400, "the penned villager took " + (at[1] - at[0])
+				+ " ticks to give up on a chair he got no closer to");
+			helper.assertTrue(broken[0] == null, broken[0]);
+			helper.assertTrue(seatOf(beside[0]) != null, "the villager beside the chair hasn't sat " + (helper.getTick() - at[1])
+				+ " ticks after the penned one gave it up; the chair is free: " + FurnitureSeats.free(level, chair, beside[0]) + "; beside: "
+				+ FurnitureSeats.describe(level, beside[0]) + "; penned: " + FurnitureSeats.describe(level, penned));
+			helper.assertTrue(helper.getTick() - at[1] >= 600, "watching the penned villager for half his skip");
 			penned.discard();
 			beside[0].discard();
 			restore.run();

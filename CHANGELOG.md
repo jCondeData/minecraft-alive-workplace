@@ -18,7 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Smithy, Storehouse or Kitchen torn down by hand is no longer offered "Dig the cellar": the builders stop selling it, the Village Hall stops listing it, and a dig bought before says there's no cellar to dig any more instead of starting work under the empty plot. A building that is only damaged is still offered.
+- A builder anywhere in the village, even on its edge up a hill, now sells the Burgher's Townhouse and the Noble's Manor when the village has the households for them; before, one far up a slope at the edge sold neither.
 - The siege report's "Hero of the night" on a tie for the most kills is now the guard who reached that count first, not the one whose first kill came first.
+- A builder's new path to the bell now crosses old dirt paths (a vanilla village's own, or one laid for an earlier house), farmland, mud and soul sand instead of stopping at them, and reaches a bell that stands in a square of dirt path; a Steward's roads cross them too.
 - Switching `builderPaths` off now also stops a path a builder had already planned: he lays no more of it and is free for other work.
 - A Bard killed, or taken away (despawned, or unloaded with his chunk), in the middle of a song now stops the music at his jukebox, instead of the disc playing on to its end for everyone nearby.
 - The questbook no longer sends you to the Village Hall's old "top row": the Food in the store and A bed for a newcomer quests now say to open the hall's Overview and hover the Food in store, Beds, Wellbeing and Villagers lines.

@@ -74,6 +74,10 @@ public class MendingWork extends Behavior<Villager> {
 	private Phase phase = Phase.IDLE;
 	private int lookTimer;
 	private int timer;
+	/** The job and phase last saved on the villager (B971), to save again only when they change. */
+	@Nullable
+	private Job savedJob;
+	private Phase savedPhase = Phase.IDLE;
 
 	public MendingWork() {
 		super(ImmutableMap.of(
@@ -90,8 +94,11 @@ public class MendingWork extends Behavior<Villager> {
 
 	public static boolean isBusy(Villager villager) {
 		synchronized (BUSY) {
-			return BUSY.contains(villager);
+			if (BUSY.contains(villager)) {
+				return true;
+			}
 		}
+		return ModAttachments.MEND_JOB.has(villager); // a job in hand from before a reload (B971)
 	}
 
 	private static void busy(Villager villager, boolean busy) {
@@ -138,6 +145,48 @@ public class MendingWork extends Behavior<Villager> {
 		if (station == null) {
 			return;
 		}
+		if (job == null) {
+			restore(villager);
+		}
+		work(level, villager, station);
+		save(villager);
+	}
+
+	/**
+	 * Picks up the job saved on the villager (B971): this behaviour is new after a chunk unload or a restart, but the piece
+	 * in the bag still goes back where it was found, not into our chests.
+	 */
+	private void restore(Villager villager) {
+		MendJob saved = ModAttachments.MEND_JOB.get(villager);
+		if (saved == null) {
+			return;
+		}
+		job = new Job(saved.item(), saved.from(), saved.material(), saved.units(), saved.materialChest());
+		phase = Phase.valueOf(saved.phase().name());
+		timer = -1;
+		walker.reset();
+		savedJob = job;
+		savedPhase = phase;
+	}
+
+	/** Saves the job in hand on the villager when it changed (B971); none saved once it's done. */
+	private void save(Villager villager) {
+		if (job == savedJob && phase == savedPhase) {
+			return;
+		}
+		savedJob = job;
+		savedPhase = phase;
+		MendJob.Phase saved = switch (phase) {
+			case FETCHING -> MendJob.Phase.FETCHING;
+			case MATERIAL -> MendJob.Phase.MATERIAL;
+			case MENDING -> MendJob.Phase.MENDING;
+			default -> MendJob.Phase.RETURNING;
+		};
+		ModAttachments.MEND_JOB.set(villager, job == null ? null
+			: new MendJob(job.item(), job.from(), job.material(), job.units(), job.materialChest(), saved));
+	}
+
+	private void work(ServerLevel level, Villager villager, BlockPos station) {
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (job != null && phase != Phase.FETCHING && bag.stacks().stream().noneMatch(this::isThePiece)) {
 			job = null; // the piece left the bag while we were away (dropped when the grindstone went, B970)
@@ -311,6 +360,7 @@ public class MendingWork extends Behavior<Villager> {
 		for (ItemStack stack : bag.takeAll()) {
 			Block.popResource(level, villager.blockPosition(), stack);
 		}
+		ModAttachments.MEND_JOB.remove(villager); // the piece is on the ground now: no job to take up again (B971)
 		busy(villager, false);
 	}
 

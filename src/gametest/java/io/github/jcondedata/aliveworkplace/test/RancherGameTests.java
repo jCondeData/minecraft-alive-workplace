@@ -57,6 +57,65 @@ public class RancherGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		});
 	}
 
+	/**
+	 * Two tamed horses 12 blocks apart could never find each other in love (vanilla looks within 8 blocks), so the rancher
+	 * spends no golden carrots on them (B979). They're held still so they can't wander together.
+	 */
+	//$ gametest_ticks_batch AREA '1000' '"rancherSkipsAPairTooFarApart"'
+	@GameTest(template = AREA, timeoutTicks = 1000, batch = "rancherSkipsAPairTooFarApart")
+	public void rancherSkipsAPairTooFarApart(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Horse west = stillHorse(helper, new BlockPos(4, 2, 11));
+		Horse east = stillHorse(helper, new BlockPos(16, 2, 11));
+		helper.assertTrue(west.distanceTo(east) > 11.5, "the horses stand " + west.distanceTo(east) + " apart");
+		rancher(helper, new ItemStack(Items.GOLDEN_CARROT, 2));
+		helper.onEachTick(() -> {
+			if (west.isInLove() || east.isInLove()) {
+				helper.fail("a horse too far from the other was fed");
+			}
+		});
+		helper.runAtTickTime(800, () -> {
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.GOLDEN_CARROT) == 2, "golden carrots left: " + chest.countItem(Items.GOLDEN_CARROT));
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Of three ready horses, the two standing together are fed and have a foal; the one far off (held still, and spawned
+	 * first so it would be the first one found) gets no carrot (B979).
+	 */
+	//$ gametest_ticks_batch AREA '2000' '"rancherFeedsThePairThatCanMeet"'
+	@GameTest(template = AREA, timeoutTicks = 2000, batch = "rancherFeedsThePairThatCanMeet")
+	public void rancherFeedsThePairThatCanMeet(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Horse loner = stillHorse(helper, new BlockPos(3, 2, 4));
+		for (int i = 0; i < 2; i++) {
+			Horse horse = helper.spawn(EntityType.HORSE, new BlockPos(16, 2, 13 + i * 2));
+			horse.setTamed(true);
+		}
+		rancher(helper, new ItemStack(Items.GOLDEN_CARROT, 4));
+		helper.onEachTick(() -> {
+			if (loner.isInLove()) {
+				helper.fail("the horse far from the others was fed");
+			}
+		});
+		helper.succeedWhen(() -> {
+			long foals = helper.getEntities(EntityType.HORSE).stream().filter(Horse::isBaby).count();
+			helper.assertTrue(foals >= 1, "no foal");
+			Container chest = helper.getBlockEntity(CHEST);
+			helper.assertTrue(chest.countItem(Items.GOLDEN_CARROT) == 2, "golden carrots left: " + chest.countItem(Items.GOLDEN_CARROT));
+		});
+	}
+
+	/** A tamed horse that stays where it's put (no AI), so the distance between two can't change on its own. */
+	private static Horse stillHorse(GameTestHelper helper, BlockPos pos) {
+		Horse horse = helper.spawn(EntityType.HORSE, pos);
+		horse.setTamed(true);
+		horse.setNoAi(true);
+		return horse;
+	}
+
 	/** A tamed llama gets a carpet from the chest. */
 	//$ gametest_ticks_batch AREA '1600' '"rancherPutsACarpetOnALlama"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "rancherPutsACarpetOnALlama")

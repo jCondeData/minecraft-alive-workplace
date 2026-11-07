@@ -183,6 +183,10 @@ fabricApi {
 // A JUnit report of the game tests, by test name, for tools/modtest/results.py (the baseline, flaky tests).
 loom.runs.matching { it.name == "gameTest" }.configureEach {
     vmArg("-Dfabric-api.gametest.report-file=${layout.buildDirectory.get().asFile}/junit.xml")
+    // The full suite (7,000+ tests) outgrew the JVM's default heap, a quarter of RAM: 1.75 GB in the 7 GB dev
+    // container, where it died of OutOfMemoryError half way (B987); GitHub's runner gives it about 4 GB and is left
+    // as it is. A full run passed with 3 GB here. -PgametestHeap=N to override, on CI too.
+    (findProperty("gametestHeap") ?: if (System.getenv("CI") == null) "3g" else null)?.let { vmArg("-Xmx$it") }
 }
 
 /** A jar's Fabric mod id and version (from its fabric.mod.json), or null for a plain library. */

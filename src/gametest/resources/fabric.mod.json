@@ -1347,7 +1347,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPrinterNurseBard1105cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDietLaneC1107GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHomeGradeFilesLaneC1107GameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaLuxuryPortersLaneC1107GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaLuxuryPortersLaneC1107GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSchoolLaneC1107GameTests"
 		]
 	},
 	"depends": {

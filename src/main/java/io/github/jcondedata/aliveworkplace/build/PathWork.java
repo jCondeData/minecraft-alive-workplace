@@ -35,7 +35,17 @@ public class PathWork extends Behavior<Villager> {
 		), 2400);
 	}
 
+	/**
+	 * Whether {@code villager} still has a planned path to lay. With the {@code builderPaths} switch off ({@link
+	 * Paths#ENABLED}) a plan left from before is dropped here, so he lays no more of it and is free for other work.
+	 */
 	static boolean hasPath(Villager villager) {
+		if (!Paths.ENABLED) {
+			if (ModAttachments.PATH.has(villager)) {
+				ModAttachments.PATH.remove(villager);
+			}
+			return false;
+		}
 		return !ModAttachments.PATH.getOrElse(villager, List.of()).isEmpty();
 	}
 

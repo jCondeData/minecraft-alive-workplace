@@ -98,6 +98,10 @@ public class PathLedgerGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	public void aSectionMarkedAfterThePlanIsSkippedWhenLaying(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = QaBenchMovePathsPaceGameTests.prepare(helper, 2);
+		// builderPaths on (GameTests start with it off): with it off a planned path is dropped, not laid (B982)
+		boolean was = Paths.ENABLED;
+		Paths.ENABLED = true;
+		Leftovers.after(helper, () -> Paths.ENABLED = was);
 		BlockPos a = helper.absolutePos(BlockPos.ZERO);
 		BoundingBox area = new BoundingBox(a.getX() - 20, level.getMinBuildHeight(), a.getZ() - 20, a.getX() + 50, level.getMaxBuildHeight(), a.getZ() + 50);
 		PlayerBuilt ledger = PlayerBuilt.get(level);

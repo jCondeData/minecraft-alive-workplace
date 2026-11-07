@@ -20,11 +20,20 @@ as a vanilla villager does at its trade screen, so he can't walk out of reach an
 - Offers are the same all day for everyone and change every in-game day (seeded by the trader and the day). A Novice
   has 1 offer (levels 5 to 15) and a Master 3 (levels 50 to 70, a shiny one time in ten); Experts and Masters add a
   special request for one particular evolution line. The screen shows up to four cards, the most a trader ever has.
+  Higher tiers offer later forms: Novices and Apprentices a line's first form, Journeymen an evolved or single-stage
+  Pokémon, Experts and Masters only final forms. Only a Master's regular offers are ever shiny (the special request is
+  shiny one time in four).
 - A Pokémon fits when it is tradeable, of the wanted type (or evolution line) and at the wanted level or higher.
-- Each player makes one trade per trader per in-game day. The trader gains 6 experience per trade.
+- Each player makes one trade per trader per in-game day (another player can still trade with him that day; you can
+  again the next day). The trader gains 6 experience per trade.
+- Never offered or asked for: legendary, mythical, Ultra Beast or Paradox Pokémon. Each offer wants a type the offered
+  Pokémon doesn't have; any of your Pokémon's types counts (a Water/Ground fits "any Ground"). An untradeable Pokémon
+  is refused ("can't be traded").
 - A pick waiting for its second click is dropped if that Pokémon leaves your party first, or if the day turns and the
   offers change; clicking again and again trades only once.
-- A held item comes back to you. If your party is full afterwards, the new Pokémon goes to your PC.
+- The Pokémon you get has the trader as its original trainer, like an in-game NPC trade. A held item comes back to
+  you. Your Pokémon leaves the party before the trader's joins, so even a full party of six trades, and the new one
+  takes its place (the PC is only a fallback if the party can't take it).
 - The screen closes if you walk more than 8 blocks away, or the trader dies or falls asleep. It won't open during a
   battle.
 - The screen (28.23) is drawn like the Village Hall's: textures/gui/pokemon_trader.png, from tools/textures/art/gui.py.
@@ -56,7 +65,9 @@ The Trade Board (workstation), the Pokémon Trader profession.
 
 GameTests: `PokemonTradeScreenCompatTests` (opens from a right-click and trades, refuses what the player can't pay,
 remembers the day's trade after a save and load, `tradeScreenHoldsTheTrader` keeps him by the player), `CobblemonCompatTests.traderSwapsPokemonOnceADay`,
-`traderOffersChangeDaily`, `expertTradersMakeASpecialRequest`. QA: `QaPokemonTradeScreenCompatTests` (the cards match the
+`traderOffersChangeDaily`, `expertTradersMakeASpecialRequest`. QA: `QaTraderOffers1107dCompatTests` (no legends offered or asked for, every tier's counts and levels, a special request takes
+the whole line, a second type fits, untradeable refused, a full party trades with the trader as original trainer, one trade a day per
+player, later forms at higher tiers, only Masters' offers shiny). `QaPokemonTradeScreenCompatTests` (the cards match the
 real offers with name, level, ball, shiny mark and cost; the level boundary from both sides and the held item coming back;
 a Pokémon leaving the party between the clicks; click spam and the used-up screen; yesterday's offer refused after the day
 turns; walking away and a dead trader closing the screen; every sentence through en_us.json). Showcase scene `trader`.

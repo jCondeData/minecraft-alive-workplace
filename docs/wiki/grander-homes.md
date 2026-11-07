@@ -204,11 +204,17 @@ worked out from the finished buildings already saved.
   builder's level-ups from Novice to Master never put a grander home in the Blueprint Table, and the Table refuses one;
   every bed of every tier, turned and mirrored, gives its grade (and the Manor's garden its beauty) before and after a
   reload; an Artisan's House built across a save and reload ends finished with exactly its materials and its builder
-  sells the II. A builder up a hill on the village's rim sells no Townhouse (B988, test on `tests/grander-homes-rim-1107`).
+  sells the II.
   `QaGranderHomes1107bGameTests` (4): the Townhouse I and the Manor I built across a save and reload mid-structure end
   finished with exactly their materials, beds of grade II and III, and the finished build gives its builder the II; a
   cherry Artisan's House built the same way sells the cherry II; every styled tier I and II leads to the next tier in
   its own style, never the plain one, once.
+- B988: `QaGranderHomes1107BugTests` (2): a builder up a hill on the village's rim (in its circle, farther than the radius
+  in a straight line) sells the Townhouse as one on flat ground does; one just outside the circle, on the ground or up a
+  hill, sells neither home. QA's `QaBuilderFixes1107bGameTests` (4 here): a builder exactly on the circle and 7 up, with
+  a Burgher household, sells the Manor and the Townhouse; one 7 below a hall up a hill sells the Townhouse (not the
+  Manor, with only Artisans); a Novice on the rim up a hill has the Townhouse at his level-up to Apprentice; on the rim
+  with only Peasants, neither home (the Artisan's House still).
 - B640: `B640GameTests.b640TheTerracesFrontPanesJoinTheirNeighbours` (a builder puts the Terrace up: each front pane
   of the bays and dormers joins both sides, and every pane, fence and wall in it is joined as the game joins it) and
   `B640GameTests.b640TheFrontPanesJoinAfterASaveAndReloadMidWindows` (the same, saved and loaded while the front glass

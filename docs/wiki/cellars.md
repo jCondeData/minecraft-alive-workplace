@@ -110,6 +110,9 @@ contents and a player's block, leave a closed hatch over a ladder down to the fl
 after; a Storehouse dug by hand in another shape down to just over half solid is still offered and dug as drawn) and
 `QaBuilderGaps1105GameTests` (a Smithy's cellar dug beside waterlogged earth stays dry), and `QaBuilderGaps1105bBugTests`
 (B974: a Smithy torn down by hand is no longer sold, listed or dug, and the player is told; one with two of every five
-blocks above the ground broken is still sold, listed and dug).
+blocks above the ground broken is still sold, listed and dug). QA's `QaBuilderFixes1107bGameTests` (1 here, B974's
+quarter from both sides: a Smithy torn down to a fifth of its blocks, put back as cobblestone, with grass and snow over
+the rest, is neither sold nor listed when a player opens the builder's trades; cobblestone put back to three in ten
+makes it stand again, and the trade and the hall's advice come back).
 
 Showcase scenes: cellars

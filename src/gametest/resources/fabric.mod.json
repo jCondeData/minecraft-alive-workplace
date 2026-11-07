@@ -230,6 +230,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGranderHomes1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGranderHomes1107BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintUnlocksBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLibraryUnlocks1107cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBasementGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildReachGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanFramesGameTests",

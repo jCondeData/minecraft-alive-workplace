@@ -84,7 +84,10 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   villager's feet when those are gone or full). A bench put back or moved within that time carries the job on. Another
   job's workstation doesn't count (B1009): a novice who loses his bench is made jobless by vanilla and may take a free
   lectern, so the saved job names the profession that took it (`profession`, a registry id; empty in older saves, which
-  count any job site as before) and is let go all the same once he's in another job.
+  count any job site as before) and is let go all the same once he's in another job that doesn't craft (a Scholar or
+  Teacher): the logs go back and another Carpenter takes the request. Every crafting job picks up a saved job at its own
+  workstation, so one who became a Librarian finishes the barrels and takes them to the builder himself. An older
+  save's job loaded and left unstamped (the bench broken before he works again) is still kept by a lectern.
 
 The builder's status (`BuilderStatusSync.supplyLines`) adds `JobShortages.line` under "Short of" while it waits:
 first up to two chains short of a raw material, else the crafted parts (something a crafting table, stonecutter,
@@ -201,6 +204,11 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   the build (B353).
 - `QaCrafterNewJob1107BugTests.qaANewCarpenterWhoTakesAnotherJobLetsTheRequestAndTheWoodGo`: a 0-XP Carpenter carrying
   the builder's logs loses his bench and may take a free lectern: the job and its claim let go, the bag emptied (B1009).
+- `QaBagNewJob1107cGameTests` (5, B1007-B1009 QA): a novice Weaponsmith with your sword made a Librarian (after a
+  reload) or a Scholar the moment vanilla takes his job: one sword and the 10 iron in a chest or on the ground; a novice
+  Carpenter with the builder's logs made a Scholar after a reload: the job let go, a second Carpenter takes the request
+  before the claim would run out, the barrels made once; made a Librarian: the barrels still made once, no log left in a
+  bag; a job from an older save (no `profession`) with no lectern near: still let go, nothing lost.
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `QaStewardMaterials1031GameTests.aCarpenterNeverCraftsAwayLogsAnotherOpenBuildNeeds`: two builds sharing a chest,

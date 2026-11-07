@@ -1180,9 +1180,9 @@ public class BuilderWork extends Behavior<Villager> {
 			reachTicks = 0;
 			stillTicks = 0;
 			lastWalkPos = null;
-			approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5);
+			approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5, false, helping);
 		}
-		if (approachSpot != null && scaffolds.climbTo(level, villager, site, approachSpot)) {
+		if (approachSpot != null && !helping && scaffolds.climbTo(level, villager, site, approachSpot)) {
 			stuckTimer = 0; // 35.6: climbing one of the site's columns to stand on its top
 			reachTicks = 0;
 			stillTicks = 0;
@@ -1216,7 +1216,7 @@ public class BuilderWork extends Behavior<Villager> {
 			// neighbouring site, or a player) may have filled it since: a landscaping hole filled with dirt put the builder
 			// inside the ground. Look again rather than hop into a block.
 			if (approachSpot != null && !canStandAt(level, approachSpot)) {
-				approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5);
+				approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5, false, helping);
 			}
 			// 35.6a: rather than hop onto the pillar it's building (into its gaps, onto its top) or up onto the cap over it,
 			// scaffolding goes up beside the work and the builder climbs it. Only with scaffolding on hand; else as before.
@@ -1226,12 +1226,12 @@ public class BuilderWork extends Behavior<Villager> {
 				&& scaffolds.planInsteadOfHop(level, villager, site, plan, target, reach, scaffoldingOnHand(level, site, plan))) {
 				return false;
 			}
-			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3);
+			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3, false, helping);
 			if (spot == null) {
 				// rc.11 playtest: nowhere else to stand, as for the campfire on a chimney's top, well above any floor: the roof beside
 				// it will do (a builder on the slope of its stairs). Without it, the campfire was skipped every time, and
 				// every repair came for it again: out of the chest, over to the chimney, back in the chest, for good.
-				spot = findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3, true);
+				spot = findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3, true, helping);
 			}
 			if (spot != null) {
 				hop(level, villager, spot);
@@ -1288,6 +1288,16 @@ public class BuilderWork extends Behavior<Villager> {
 	@Nullable
 	static BlockPos findStandingSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos target, BlockPos from, @Nullable AABB avoid,
 									 double maxEyeDistance, boolean roofs) {
+		return findStandingSpot(level, plan, target, from, avoid, maxEyeDistance, roofs, false);
+	}
+
+	/**
+	 * ... and, with {@code offScaffolding}, never in or on scaffolding (B1004: a helper stays on the ground; the columns are
+	 * the lead's, and a helper given a column's top as its spot climbed it).
+	 */
+	@Nullable
+	static BlockPos findStandingSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos target, BlockPos from, @Nullable AABB avoid,
+									 double maxEyeDistance, boolean roofs, boolean offScaffolding) {
 		BlockPos best = null;
 		double bestScore = Double.MAX_VALUE;
 		BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
@@ -1296,6 +1306,10 @@ public class BuilderWork extends Behavior<Villager> {
 				for (int dz = -4; dz <= 4; dz++) {
 					p.set(target.getX() + dx, target.getY() + dy, target.getZ() + dz);
 					if (!canStandAt(level, p, roofs)) {
+						continue;
+					}
+					if (offScaffolding && (level.getBlockState(p).is(net.minecraft.world.level.block.Blocks.SCAFFOLDING)
+						|| level.getBlockState(p.below()).is(net.minecraft.world.level.block.Blocks.SCAFFOLDING))) {
 						continue;
 					}
 					Vec3 eye = new Vec3(p.getX() + 0.5, p.getY() + 1.62, p.getZ() + 0.5);

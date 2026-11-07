@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Builder helping another builder no longer climbs the lead's scaffolding columns: he works from the ground and leaves the scaffolding to the lead.
 - A Weaponsmith whose grindstone is broken while he carries your worn sword (or the iron to mend it) no longer keeps it in his bag for good: after a few seconds without a grindstone he drops what he carries at his feet, where you can pick it up.
 - A village train between two Create stations you gave the same name (both "Station", say) no longer stops for good with the caravan aboard: it now runs on to the other village's station and the goods arrive, whatever you call the stations.
 - Hiring mercenaries (or relief riders arriving) no longer lowers the village's wellbeing and work pace: the hired help no longer counts as villagers without a bed or a meal, so the Village Hall's "Sleeping in a bed" line stays at what the village's own people have (2 of 2, not 2 of 5). A hired Guard still counts toward the village's guards.

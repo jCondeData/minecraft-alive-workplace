@@ -191,7 +191,10 @@ first was fed, the nearest ready one within 8 blocks of the first is fed instead
 apart fed, 7.07 not; the closest of three; foals and resting ones passed over; the drift and mate-lost cases; the
 Shepherd's and Herder's pairs). A pair is picked only with food for both in the chests (2 or more), and he takes both
 before feeding; once the first is fed, the one left in hand is enough for the second, so exactly 2 foods feed the pair
-(B1021, `QaRanchPairs1107cBugTests`). Saved and loaded mid-pair, he forgets the pair: the food in his bag goes back to the chest (none lost), an animal
+(B1021, `QaRanchPairs1107cBugTests`). A single food feeds nobody, and 3 feed one pair and keep the last in the chest;
+if the mate dies after the first is fed, the one in hand goes to the nearest ready third, and if the fed one dies, it
+comes back to the chest (`QaRanchTwoFood1108cGameTests`, which also feeds a Shepherd's sheep and a Herder's pigs with
+exactly 2). Saved and loaded mid-pair, he forgets the pair: the food in his bag goes back to the chest (none lost), an animal
 already fed stays in love till it wears off, and the pair is fed again once both are ready and the chests hold 2
 (`QaRanchPairSaves1108eGameTests`).
 

@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- With CobbleDollars, bounties now say the CobbleDollars they pay ("Paid 1,500 CobbleDollars for the insignia of ...") on the posting, the Wanted Poster, the hand-in and win messages and the chronicle, instead of "emeralds"; the Pokémon Daycare's info names its collection price the same way (B1060).
 - With Cobblemon 1.8, a Daycare pair whose mother has a regional or other special form (an Alolan Ninetales, a Blaze Breed Tauros, a striped Basculin) hatches its baby again instead of failing with an error (B1059).
 - A drowned pirate's trident no longer breaks the pointed-dripstone spikes on top of a finished palisade; a wild drowned's or a player's trident still does (B1052).
 - A raid's last raider led out of the village's reach (kited away, or chasing someone) no longer lets the raid be booked as fought off while it lives, and it now leaves at dawn with its raid instead of staying in the world for good (B1055).

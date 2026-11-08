@@ -191,7 +191,9 @@ first was fed, the nearest ready one within 8 blocks of the first is fed instead
 apart fed, 7.07 not; the closest of three; foals and resting ones passed over; the drift and mate-lost cases; the
 Shepherd's and Herder's pairs). A pair is picked only with food for both in the chests (2 or more), and he takes both
 before feeding; once the first is fed, the one left in hand is enough for the second, so exactly 2 foods feed the pair
-(B1021, `QaRanchPairs1107cBugTests`).
+(B1021, `QaRanchPairs1107cBugTests`). Saved and loaded mid-pair, he forgets the pair: the food in his bag goes back to the chest (none lost), an animal
+already fed stays in love till it wears off, and the pair is fed again once both are ready and the chests hold 2
+(`QaRanchPairSaves1108eGameTests`).
 
 **A Fisherman comes back for cooked fish (B147, B802).** Fish done in a furnace or smoker by his barrel call him home
 when the barrel can take them: an empty slot, or a stack of the same fish with room (a barrel whose every slot holds

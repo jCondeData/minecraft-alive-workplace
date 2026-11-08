@@ -1423,7 +1423,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRandomJobsReach1108cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldSaveCrafter1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107dGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSiegePot1108aGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSiegePot1108aGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRaiderDrowns1108dBugTests"
 		]
 	},
 	"depends": {

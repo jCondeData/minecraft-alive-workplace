@@ -50,6 +50,7 @@
 		"ThreatGriefMixin",
 		"ThreatPortalMixin",
 		"ThreatPotMixin",
+		"ThreatDripstoneMixin",
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",
 		"VillagerMixin",

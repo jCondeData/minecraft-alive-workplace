@@ -27,6 +27,9 @@ its captain falls. Under that look:
   RADIUS + 32 across and 48 blocks up or down from the hall, the same rule for who a village counts, whose raid a
   raider is and a siege's raiders; of the raids that reach it, the nearest hall's (the first raided, on a tie). So one
   raider 49 blocks below a second raided village no longer keeps both raids going (B915).
+  A raider led out of every raided village's reach (a player kiting it away, or it chasing someone) still belongs to
+  the raid whose hall is nearest: that raid isn't fought off while it lives, and at the raid's hour it leaves with the
+  others, wherever it is (B1055: the raid used to be booked as fought off, and the raider stayed in the world for good).
 
 ## A day's warning (32.14)
 
@@ -227,3 +230,5 @@ None.
   raid. B919: the Seer's idle line word for word ("sees raids in visions, 2 days before they come", never a tower),
   "a day before" for a one-day Seer and "3 days" for a three-day one, "No lookout" once the Seer is gone, and the
   Lighthouse keeper's sea-watch line.
+- B1055: `QaRaiderLedAway1108dBugTests.aRaiderLedOutOfTheVillagesReachIsNotFoughtOffAndLeavesAtDawn` (a raid's
+  last raider one block past the reach: the night round keeps the raid going, and the morning round sends it away).

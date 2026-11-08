@@ -1005,6 +1005,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaClassPerksBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOneEmeraldBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPersonalRequestsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPersonalAsks1108cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PluralSweepGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestJournalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestJournalBugTests",
@@ -1388,7 +1389,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderStruckStaleLightGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStruckLight1108BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSignCommands1108BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPoweredHopper1108bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStuckStates1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTakeDownCampfire1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJournalBook1108bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderWrittenBookGameTests",
@@ -1431,6 +1434,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaOldSaveCrafter1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePot1108aGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRaiderLedAway1108dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeDripstone1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotSite1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotVerify1108bGameTests"
 		]

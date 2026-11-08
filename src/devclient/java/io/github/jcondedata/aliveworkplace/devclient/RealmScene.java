@@ -128,6 +128,13 @@ final class RealmScene {
 		// The arms: a banner clicked on them; the County's tab.
 		if (tick == 580) {
 			server.execute(() -> {
+				// B1058: a hall's round between ticks 521 and 580 counts the staged Town a Hamlet again, and the realm falls
+				// back to a Barony; the Town staged again and the realm counted again, as the round would after a real growth.
+				town(server);
+				RealmData.Realm realm = RealmData.get(server).realmOf(at(server, hall));
+				if (realm != null) {
+					Realms.recount(server, realm);
+				}
 				openTab(server);
 				ServerPlayer player = player(server);
 				if (player.containerMenu instanceof ChoiceMenu menu) {

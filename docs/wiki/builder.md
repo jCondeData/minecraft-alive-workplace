@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023
 
 ## 1. What a player sees
 
@@ -31,7 +31,7 @@ in a basement pit, or on top of a tower, within 3 blocks of his bench still has 
 at the tower's foot); the message names that spot. The Table counts only while it still stands (B969: one broken or
 blown up while he worked away from it is passed over, and everything goes on the ground nearest its old spot). Ground a
 player can walk or climb to, open to the sky or joined to where he stood, comes before a nearer spot shut in a sealed
-cave or room under him (B973: struck in a wheat field or on a stair roof). Where there is none, it is dropped where he stood. On Peaceful lightning makes no witch and nothing is dropped.
+cave or room under him (B973: struck in a wheat field or on a stair roof; B1023: even a cave or room sealed moments before). Where there is none, it is dropped where he stood. On Peaceful lightning makes no witch and nothing is dropped.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
@@ -492,7 +492,8 @@ under it, gets his bag on solid ground at the spot the message names).
 `QaBuilderGaps1105bGameTests` (QA, 2 here: a builder struck on grass over a sealed cave gets his bag on the surface; on a
 bridge over a sealed flat-roofed room, on its roof under the sky). `QaBuilderGaps1105bBugTests` (QA, B973, 2 here: struck
 in a wheat field over a sealed cave, or on a bridge over a sealed stair-roofed room, the bag lies where a player can
-walk to it, not inside).
+walk to it, not inside). `BuilderStruckStaleLightGameTests` (B1023, 1: struck in a wheat field the tick the sealed cave
+under it was made, before the light has caught up, the bag still lies on the surface).
 `QaBuilderFixes1107dGameTests` (QA, B969, B973, B1002, B1019, 12: a bench swapped for a carpet, a bottom slab or stone,
 or broken on a pillar in a lava lake, leaves the bag on solid ground at the spot the message names, none burnt; struck
 over a room shut by a door or by fence gates, or on a causeway over lava, the bag lies where a player can get to; with

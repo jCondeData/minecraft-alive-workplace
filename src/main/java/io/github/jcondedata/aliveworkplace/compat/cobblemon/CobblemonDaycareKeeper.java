@@ -29,6 +29,7 @@ import io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import io.github.jcondedata.aliveworkplace.work.Words;
@@ -61,7 +62,9 @@ import org.jetbrains.annotations.Nullable;
  * The Daycare Keeper's Pokémon (ROADMAP 28.12, see {@link DaycareKeepers}): her screen (row 1 your pair, how well they
  * get along and the eggs waiting; row 3 your party, click one then another to leave them as a pair), how well a pair
  * gets along by Cobblemon's species data, and the eggs: a real Cobbreeding egg (its own {@code givepokemonegg}
- * command) when Cobbreeding is installed, else the hatchling itself.
+ * command) when Cobbreeding is installed, else the hatchling itself. The screen is the list screen (ROADMAP 42.2): the
+ * money at the top, your pair, how well they get along, the eggs (Collect) and Take back as rows, then a row per party
+ * member (Pick, then Pair).
  */
 public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 	public static final int INFO = 0;
@@ -85,15 +88,33 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 		}
 		DaycareKeepers.dawn(Players.level(player), keeper, keeper.getRandom());
 		State state = new State();
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.daycare_keeper", keeper.getDisplayName()),
+		ChoiceMenu.openList(player, Component.translatable("screen.aliveworkplace.daycare_keeper", keeper.getDisplayName()),
 			p -> keeper.isAlive() && p.isAlive() && p.distanceTo(keeper) <= REACH,
-			menu -> render(menu, player, keeper, state));
+			menu -> {
+				render(menu, player, keeper, state);
+				watch(menu, player, keeper, state);
+			});
 	}
 
 	// The screen without showing it (tests).
 	public static ChoiceMenu menuForTest(ServerPlayer player, Villager keeper) {
 		State state = new State();
-		return ChoiceMenu.detached(player, menu -> render(menu, player, keeper, state));
+		return ChoiceMenu.detached(player, menu -> {
+			render(menu, player, keeper, state);
+			watch(menu, player, keeper, state);
+		});
+	}
+
+	// The party or the money changed while the screen is open: lay it out again (42.2, as the Tutor's).
+	private static void watch(ChoiceMenu menu, ServerPlayer player, Villager keeper, State state) {
+		String[] shown = {CobblemonTutors.shownFor(player)};
+		menu.everyTick(() -> {
+			String now = CobblemonTutors.shownFor(player);
+			if (!now.equals(shown[0])) {
+				shown[0] = now;
+				render(menu, player, keeper, state);
+			}
+		});
 	}
 
 	@Override
@@ -457,6 +478,10 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			Component.translatable("screen.aliveworkplace.daycare_keeper.odds", DaycareKeepers.chance(keeper, DaycareKeepers.VERY_WELL),
 				DaycareKeepers.chance(keeper, DaycareKeepers.WELL),
 				DaycareKeepers.chance(keeper, DaycareKeepers.SO_SO)).withStyle(ChatFormatting.DARK_GRAY)));
+		// The list screen's own line (42.2): the money at the top (its tooltip is this one's), the hint, the headings.
+		ChoiceList.info(info, Money.balance(player), Component.translatable("screen.aliveworkplace.daycare_keeper.list_hint"),
+			List.of(Component.translatable("screen.aliveworkplace.daycare.column_pokemon"), Component.translatable("screen.aliveworkplace.daycare.column_state"),
+				Component.translatable("message.aliveworkplace.tutor.column_price")));
 		menu.button(INFO, info, null);
 		// Row 1: your pair
 		DaycareKeepers.Pair mine = pairs.stream().filter(p -> p.owner().equals(player.getUUID())).findFirst().orElse(null);
@@ -464,10 +489,14 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			Pokemon a = load(level, mine.first());
 			Pokemon b = load(level, mine.second());
 			if (a != null && b != null) {
-				menu.button(FIRST, icon(a), null);
-				menu.button(SECOND, icon(b), null);
+				Component inCare = Component.translatable("screen.aliveworkplace.daycare_keeper.in_care");
+				menu.button(FIRST, ChoiceList.row(icon(a), inCare, null, null, false, false), null);
+				menu.button(SECOND, ChoiceList.row(icon(b), inCare, null, null, false, false), null);
 				int along = getAlong(a, b);
-				menu.button(GET_ALONG, getAlongIcon(along, keeper), null);
+				ItemStack alongIcon = getAlongIcon(along, keeper);
+				ChoiceList.row(alongIcon, Component.translatable("screen.aliveworkplace.daycare_keeper.chance", DaycareKeepers.chance(keeper, along))
+					.withStyle(ChatFormatting.GRAY), null, null, false, false);
+				menu.button(GET_ALONG, alongIcon, null);
 				int price = DaycareKeepers.EGG_PRICE * mine.eggs();
 				ItemStack eggs = named(Items.EGG, Component.translatable("screen.aliveworkplace.daycare_keeper.eggs", mine.eggs()));
 				eggs.setCount(Math.max(1, mine.eggs()));
@@ -475,6 +504,13 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 					? Component.translatable("screen.aliveworkplace.daycare_keeper.no_eggs").withStyle(ChatFormatting.GRAY)
 					: Component.translatable("screen.aliveworkplace.daycare_keeper.collect",
 						Money.describe((long) price * Money.DOLLARS_PER_EMERALD, price)).withStyle(ChatFormatting.GREEN)));
+				// The list row: no eggs yet (gray), or what one costs (red when the player can't pay for one) and Collect.
+				long eggDollars = (long) DaycareKeepers.EGG_PRICE * Money.DOLLARS_PER_EMERALD;
+				boolean affordable = Money.canAfford(player, eggDollars, DaycareKeepers.EGG_PRICE);
+				ChoiceList.row(eggs, mine.eggs() == 0 ? Component.translatable("screen.aliveworkplace.daycare_keeper.no_eggs") : null,
+					mine.eggs() == 0 ? null : Component.translatable("screen.aliveworkplace.daycare_keeper.each",
+						Money.describe(eggDollars, DaycareKeepers.EGG_PRICE)).withStyle(affordable ? ChatFormatting.GREEN : ChatFormatting.RED),
+					mine.eggs() == 0 ? null : Component.translatable("screen.aliveworkplace.daycare.button_collect"), mine.eggs() == 0, false);
 				menu.button(EGGS, eggs, mine.eggs() == 0 ? null : p -> {
 					Chat.chat(p, collect(p, keeper));
 					render(menu, player, keeper, state);
@@ -483,6 +519,9 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 				back.set(DataComponents.LORE, lore(mine.eggs() > 0
 					? Component.translatable("screen.aliveworkplace.daycare_keeper.collect_first").withStyle(ChatFormatting.RED)
 					: Component.translatable("screen.aliveworkplace.daycare_keeper.take_back.lore").withStyle(ChatFormatting.GRAY)));
+				ChoiceList.row(back, mine.eggs() > 0 ? Component.translatable("screen.aliveworkplace.daycare_keeper.collect_first")
+						: Component.translatable("screen.aliveworkplace.daycare_keeper.to_party"), null,
+					mine.eggs() > 0 ? null : Component.translatable("screen.aliveworkplace.daycare_keeper.button_take_back"), mine.eggs() > 0, false);
 				menu.button(TAKE_BACK, back, mine.eggs() > 0 ? null : p -> {
 					Chat.chat(p, takeBack(p, keeper));
 					render(menu, player, keeper, state);
@@ -522,6 +561,15 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			if (pending) {
 				icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 			}
+			// The list row: the tooltip's line beside the name (why not, picked, or how they'd get along with the one
+			// picked), and Pick, Unpick or Pair; gray when no pair can be left.
+			Component second = refusal != null ? refusal : pending ? Component.translatable("screen.aliveworkplace.daycare_keeper.picked_short")
+				: pendingPokemon != null ? Component.translatable("screen.aliveworkplace.daycare_keeper.with_short",
+					Component.translatable("screen.aliveworkplace.daycare_keeper.get_along." + DaycareKeepers.GET_ALONG[getAlong(pendingPokemon, pokemon)]))
+					.withStyle(getAlong(pendingPokemon, pokemon) == DaycareKeepers.NOT_AT_ALL ? ChatFormatting.RED : ChatFormatting.GREEN)
+				: Component.translatable("screen.aliveworkplace.daycare.in_party");
+			ChoiceList.row(icon, second, null, refusal != null ? null : Component.translatable(pending ? "screen.aliveworkplace.daycare_keeper.button_unpick"
+				: pendingPokemon != null ? "screen.aliveworkplace.daycare_keeper.button_pair" : "screen.aliveworkplace.daycare_keeper.button_pick"), refusal != null, pending);
 			menu.button(FIRST_PARTY_SLOT + i, icon, refusal != null ? null : p -> {
 				if (state.pending == null || pokemon.getUuid().equals(state.pending)) {
 					state.pending = pokemon.getUuid().equals(state.pending) ? null : pokemon.getUuid();

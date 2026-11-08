@@ -159,5 +159,8 @@ edit, a damaged file) is skipped with a warning in the log, and the rest of the 
   saved and loaded, nothing spawned). Compat GameTests: `RogueCompatTests` (species, level and name by biome and rank,
   size or Alpha, through a save; a win pays once; a capture pays once and the catcher keeps it, named; the glow for
   takers within 32 blocks only).
+- GameTests: `QaBountyMoneySaves1108eGameTests` (B1060 without CobbleDollars: the posting ends "Reward: 18 emeralds.",
+  the poster and journal read "Reward: 18 emeralds"; chronicle lines saved by 0.151.8 under the old keys read as before
+  after a load; the new `.money` lines, "1 emerald" for one, read the same after a save and a load).
 - Showcase scene `bounty_rogue` (Cobblemon): the rogue's poster in the Bounties tab, the glowing Rogue Ursaring, the win paid.
 - Showcase scene `bounty`: the board with two posters, the poster in the Bounties tab, the captain and his band, the claim.

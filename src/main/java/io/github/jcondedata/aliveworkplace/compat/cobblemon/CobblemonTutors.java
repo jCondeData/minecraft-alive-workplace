@@ -149,7 +149,8 @@ public final class CobblemonTutors {
 		});
 	}
 
-	private static String shownFor(ServerPlayer player) {
+	// What a screen showing the party and the money was laid out for (the Professor and the daycares use it too, 42.2).
+	static String shownFor(ServerPlayer player) {
 		StringBuilder out = new StringBuilder();
 		for (Pokemon pokemon : Cobblemon.INSTANCE.getStorage().getParty(player)) {
 			out.append(pokemon.getUuid()).append(',');

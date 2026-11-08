@@ -19,6 +19,7 @@ asks for the steps, `latest.log` and any crash report).
 ### Added
 
 - The Move Tutor's lessons are a list in the Village Hall's look instead of a gray chest: your money at the top, your party as tabs, each move a row with its type, price and a Teach button (Confirm to pay), gray rows for moves the tutor can't teach yet; the screen follows your party and money while it's open (42.1).
+- The Pokémon Professor's hints, the Rancher's Daycare and the Daycare Keeper's screen are lists in the same look: your money at the top, each Pokémon a row with a button (Note it, Leave and Confirm, Collect, Pick and Pair, Take back), the Professor's evolution stone a row with its price and Buy, prices red when you can't pay them, gray rows that say why something can't be done; they follow your party and money while open (42.2).
 
 ### Fixed
 

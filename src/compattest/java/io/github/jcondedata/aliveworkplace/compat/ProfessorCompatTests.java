@@ -66,7 +66,7 @@ public class ProfessorCompatTests implements FabricGameTest {
 	private static final BlockPos HALL = new BlockPos(15, 2, 15);
 
 	/** A hall in the middle of the area (radius 14), Legend needs off, everything put back afterwards. */
-	private static void setUp(GameTestHelper helper) {
+	static void setUp(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		level.getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(8)).forEach(e -> e.discard());
 		level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(8)).forEach(e -> e.discard());
@@ -100,7 +100,7 @@ public class ProfessorCompatTests implements FabricGameTest {
 		return Legends.get(PokemonProfessor.ID).orElseThrow(() -> new AssertionError("pokemon_professor.json didn't load with Cobblemon"));
 	}
 
-	private static Villager professor(GameTestHelper helper, BlockPos at) {
+	static Villager professor(GameTestHelper helper, BlockPos at) {
 		Villager v = helper.spawn(EntityType.VILLAGER, at);
 		v.setNoAi(true);
 		Legends.make(helper.getLevel(), v, legend(), "test");
@@ -113,7 +113,7 @@ public class ProfessorCompatTests implements FabricGameTest {
 	}
 
 	/** The village's Pokédex research at these levels (by topic id). */
-	private static void research(GameTestHelper helper, Map<String, Integer> levels) {
+	static void research(GameTestHelper helper, Map<String, Integer> levels) {
 		Map<String, Integer> map = new HashMap<>();
 		levels.forEach((k, v) -> map.put(tree().key() + "/" + k, v));
 		hall(helper).setResearch(new Research.State(Map.copyOf(map), Optional.empty(), 0, false));

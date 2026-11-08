@@ -149,8 +149,13 @@ egg is made from the same hatchling and keeps the form (`form=galar` and the lik
 Ditto counts as the mother. Regions Galar, Hisui and Paldea work the same (Perrserker a Galarian Meowth, Sneasler a
 Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with no regional form (Alolan Raichu,
 Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A form picked by a choice feature rather than a flag (a Blaze or Aqua Breed Tauros, "blaze-breed" being
-`bull_breed=blaze`) is set as that feature, so it survives a save and load (B955). Tested in `QaDaycareBugs1103dCompatTests`,
-`QaDaycareRegional1104d2CompatTests` (11) and `QaDaycareRegional1104d2BugCompatTests`.
+`bull_breed=blaze`) is set as that feature, so it survives a save and load (B955): an East Sea Gastrodon hatches East Sea
+Shellos, a Blue Florges a Blue Flabébé (two steps back), a Sensu Oricorio a Sensu, a Blue-Striped Basculin Blue-Striped,
+and a male Basculegion with Ditto a White-Striped Basculin. Known gaps (bugs): a West Sea or Baile mother (a random
+default) hatches a random sea or style that shows after a reload (B1039), a female Basculegion hatches Red-Striped
+(B1040), and a Blaze Breed Tauros's Cobbreeding egg hatches Combat Breed (B1041). Tested in
+`QaDaycareBugs1103dCompatTests`, `QaDaycareRegional1104d2CompatTests` (11), `QaDaycareRegional1104d2BugCompatTests`
+and `QaDaycareChoiceForms1108dCompatTests` (5).
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last

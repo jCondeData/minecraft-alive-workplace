@@ -218,6 +218,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   `aliveworkplace:carpenter`); one saved while jobless (the bench broken first, so the job is stamped `minecraft:none`)
   whose bench is put back 560 ticks after the load carries on with the job and makes the barrels once, as from a newer
   save: his work on the job stamps it again with the job he holds then.
+- `QaOldSaveCrafter1107cGameTests` (8, QA, B1018): an old save's job on a jobless novice, a novice, an experienced Carpenter
+  with his bench, and after another reload carries on when the bench is put back (early, late, or moved); a new save's
+  job the same, as controls.
 - `JobChainGameTests.whatNoJobMakesIsNamedOnTheBuildersLine`: "Nobody here makes".
 - `JobChainGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
 - `QaStewardMaterials1031GameTests.aCarpenterNeverCraftsAwayLogsAnotherOpenBuildNeeds`: two builds sharing a chest,

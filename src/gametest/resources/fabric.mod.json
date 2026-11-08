@@ -58,6 +58,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ImportGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TablePreviewGameTests",
+			"io.github.jcondedata.aliveworkplace.test.B1020GameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableSearchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableLibraryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintUnlocksGameTests",
@@ -1404,6 +1405,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCrewPass1107bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPathsCrafterVerify1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaOldSaveCrafter1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107dGameTests"
 		]
 	},

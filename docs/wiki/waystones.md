@@ -177,6 +177,12 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   play where the stone's chunk is loaded. The scene `waystone_caravan` films it; the compat tests check the trip, not
   the party's walk.
 
+- (41.3) A caravan by waystone due at a village whose chunks are unloaded (the usual case on a server, villages far
+  apart) waits on the road with its goods until that village loads again; its hall's first round then brings it in
+  through the stone. Sending it doesn't load the far village, and an unloaded stone still counts as standing (asked of
+  Waystones' saved list), one broken before its village unloaded doesn't. Settlers step out at an unloaded village's
+  stone when their time is up (QA, `QaWaystoneFarAway1107dCompatTests`, a village 1,600 blocks off).
+
 - (41.3) A village whose hall is gone while its plaza and stone stand is off the Map, but its stone is still kept (no hall
   round runs to forget it), so settlers for a spot beyond it may still go through that stone (QA, 2026-10-26).
 
@@ -224,6 +230,10 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   the stone still leave when their time is up, and not ten ticks before, called away from work all the while.
 - Scene `waystone_caravan` (showcase, with Waystones): Thornholm's caravan walks to its stone and steps in; Ashford's
   steps out of it, unloads and walks back in.
+- `QaWaystoneFarAway1107dCompatTests` (compat suite, QA): the other village 1,600 blocks off and unloaded: a caravan
+  there by waystone waits due with its 32 logs and steps out when it loads (control: kept loaded, it steps out on
+  time); one from it saved and reloaded mid-trip steps out at home; its stone broken before it unloaded, the caravan
+  walks; settlers step out at its stone, and walk the whole road when it breaks mid-trip.
 - `VillageWaystonesGameTests` (main suite, no Waystones): the rule stands aside for the missing mod and no wish is the
   plaza; the hall's Map lists no network.
 - Showcase scenes `village_waystone` and `hall_waystones` (41.2: the Map's network, one village of each state).

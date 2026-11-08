@@ -3,16 +3,26 @@ package io.github.jcondedata.aliveworkplace.client;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import io.github.jcondedata.aliveworkplace.table.PreviewView;
+import io.github.jcondedata.aliveworkplace.table.SafeRender;
 import io.github.jcondedata.aliveworkplace.table.TablePayloads;
+import io.github.jcondedata.aliveworkplace.table.TableServer;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -26,8 +36,11 @@ final class TablePreview {
 	private static final float TURN_DEGREES_PER_SECOND = 14f;
 	private static final long RESUME_AFTER_DRAG_MS = 2500;
 
-	private record Cell(float x, float y, float z, BlockState state) {
+	private record Cell(float x, float y, float z, BlockPos pos, BlockState state) {
 	}
+
+	/** B1020: the preview's blocks as a little level, so other mods' tint providers never get a null one. */
+	private final PreviewView view;
 
 	private final List<Cell> cells = new ArrayList<>();
 	/** Ground-plane colours: a faint fill and a brighter rim (ARGB). */
@@ -51,9 +64,14 @@ final class TablePreview {
 		this.scale = preview.scale();
 		int[] b = preview.blocks();
 		List<BlockState> palette = preview.palette().stream().map(Block::stateById).toList();
+		Minecraft mc = Minecraft.getInstance();
+		this.view = new PreviewView(mc.level != null && mc.player != null ? mc.level.getBiome(mc.player.blockPosition()).value() : null);
 		for (int i = 0; i + 3 < b.length; i += 4) {
 			if (b[i + 3] >= 0 && b[i + 3] < palette.size()) {
-				cells.add(new Cell(b[i] * scale, b[i + 1] * scale, b[i + 2] * scale, palette.get(b[i + 3])));
+				BlockPos pos = new BlockPos(b[i], b[i + 1], b[i + 2]);
+				BlockState state = palette.get(b[i + 3]);
+				cells.add(new Cell(b[i] * scale, b[i + 1] * scale, b[i + 2] * scale, pos, state));
+				view.put(pos, state);
 			}
 		}
 	}
@@ -110,15 +128,8 @@ final class TablePreview {
 			if (scale != 1f) {
 				pose.scale(scale, scale, scale);
 			}
-			if (io.github.jcondedata.aliveworkplace.table.TableServer.drawnAsItem(c.state())) {
-				// B798: a banner, decorated pot or sign has no block model (its block entity draws it): drawn as its item
-				pose.translate(0.5f, 0.5f, 0.5f);
-				Minecraft.getInstance().getItemRenderer().renderStatic(new net.minecraft.world.item.ItemStack(c.state().getBlock()),
-					net.minecraft.world.item.ItemDisplayContext.NONE, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, pose, g.bufferSource(),
-					Minecraft.getInstance().level, 0);
-			} else {
-				blocks.renderSingleBlock(c.state(), pose, g.bufferSource(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
-			}
+			// B1020: another mod's block that fails to draw is left out (logged once), never a crash
+			SafeRender.draw(c.state(), () -> drawCell(blocks, c, pose, g.bufferSource()));
 			pose.popPose();
 		}
 		g.flush();
@@ -128,6 +139,32 @@ final class TablePreview {
 		}
 		pose.popPose();
 		g.disableScissor();
+	}
+
+	/**
+	 * One block of the build. Like {@code BlockRenderDispatcher.renderSingleBlock}, but the tint is asked with the
+	 * preview's own little level (B1020: Cozy Home's tinted furniture crashes on the null one vanilla passes), and a
+	 * tint provider that still throws leaves the block untinted.
+	 */
+	private void drawCell(BlockRenderDispatcher blocks, Cell c, PoseStack pose, MultiBufferSource buffers) {
+		BlockState state = c.state();
+		if (TableServer.drawnAsItem(state)) {
+			// B798: a banner, decorated pot or sign has no block model (its block entity draws it): drawn as its item
+			pose.translate(0.5f, 0.5f, 0.5f);
+			Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(state.getBlock()), ItemDisplayContext.NONE,
+				LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, pose, buffers, Minecraft.getInstance().level, 0);
+			return;
+		}
+		if (state.getRenderShape() != RenderShape.MODEL) {
+			// invisible, or drawn by its block-entity item renderer (no tint lookup there)
+			blocks.renderSingleBlock(state, pose, buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+			return;
+		}
+		BlockColors colors = Minecraft.getInstance().getBlockColors();
+		int tint = SafeRender.tint(state, () -> colors.getColor(state, view, c.pos(), 0));
+		float r = (tint >> 16 & 255) / 255f, gr = (tint >> 8 & 255) / 255f, b = (tint & 255) / 255f;
+		blocks.getModelRenderer().renderModel(pose.last(), buffers.getBuffer(ItemBlockRenderTypes.getRenderType(state, false)), state,
+			blocks.getBlockModel(state), r, gr, b, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
 	}
 
 	/** The ground plane at y = 0: a faint quad over the footprint (and a little past it) with a brighter rim. */

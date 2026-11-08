@@ -226,6 +226,10 @@ straight track past the station, so for the village's assembly the station's thr
 scan of the track fills only as far as they are long) are made as long as the
 village train's own bogeys and put back afterwards: another village's train blocks further along the line (a hub's two
 trains built before their Conductors came) or a player's carriage being built there are never taken as more carriages.
+A player's bogey not glued to anything yet further along doesn't stop the village train either. A player's carriage on
+the very next block after the village train's last block can't be kept apart by Create (the station answers "not
+connected in order"), so the village train waits until it is moved; it is never taken. A player who later puts their
+own train together at that station gets every carriage, as Create does elsewhere.
 A shipment's `arrives` holds `BOARDING` (`Long.MAX_VALUE`) while it waits and
 `ABOARD` while it rides; the train standing at the village's nearest station (`Train.currentStation`) moves it on, and
 at the other end sets `arrives` to now and unloads (`Caravans.trainIn`). Saved as before: nothing new in the save.
@@ -661,6 +665,10 @@ village's last column empties it (B994).
   both trains' blocks standing before any Conductor is hired: once three Conductors come, each train is put together
   from its own blocks, one carriage each, and neither derails; a village train put together with a player's glued bogey
   and plank 3 blocks past its blocks is one carriage and the player's bogey and plank stay on the track.
+- `QaTrainOwnBlocks1108eCompatTests` (QA, B1001's corners, with Create): a player's unglued bogey 3 blocks past the
+  village train's blocks: the village train is put together, one carriage, and the bogey stays; a player's carriage on
+  the next block after them: it is never taken (the village train waits, then goes together once it is moved off); a
+  player's two-carriage train put together at the station after the village train was there keeps both carriages.
 - `QaTrainVillageRenamed1104eCompatTests` (QA, B894, with Create): with the Pine-Oakford train running, the middle
   village renamed Oakford with a name tag, or the far Oakford renamed Pine: the four stations keep four names and
   Pine's 32 logs reach the far village by train.

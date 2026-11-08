@@ -197,6 +197,8 @@ client receives.
 
 `B1020GameTests` (3): a Cozy-Home-like color provider that refuses a null level gets the viewer's biome grass color through the preview's level (and plain white without a biome); a provider that throws (a null, a missing method) falls back to no tint and is logged once, a block whose drawing throws is skipped, and working ones are kept; the preview's level holds only the build's blocks, fully lit, with no block entities. The real Cozy Home can't load in the dev environment, so its furniture is checked in game.
 
+`QaPreviewSafe1108GameTests` (4, QA): a connected sofa's provider sees its partner beside it and the floor under it in the preview's level, a basement block under y = 0 is there too; typed block-entity lookups are empty, the glowstone's own light reads 15, the light engine answers without throwing, a box holds just the build's blocks; the viewer's biome grass, foliage and water colors reach a provider (all white without a biome); a provider casting the level to a world or reading a missing block entity draws untinted and is logged. The `table_preview_safe` scene does it in the real client: with Cozy-Home-like providers on the cottage's spruce stairs and brown carpet and always-failing ones on its fence and glass, the held blueprint's ghosts and the Table's 3D preview keep drawing, the Cozy-like ones are only ever asked with a level holding that very block, and only the failing ones are logged.
+
 Showcase scene `table_library` (36.13): the Stored tab empty, Store All with the counts, Take One Out counting the
 cottage down, and the cottage back in hand.
 

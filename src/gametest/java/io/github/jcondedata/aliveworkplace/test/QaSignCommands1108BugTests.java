@@ -44,7 +44,8 @@ import java.io.IOException;
  * workplaceAllowUploads, on by default: any player may upload a blueprint file at a Blueprint Table). Vanilla lets only
  * operators set a sign's data from an item (SignBlockEntity.onlyOpCanSetNbt) because a sign's words can carry a
  * run_command click event, which runs with permission level 2 for whoever clicks the sign. An uploaded file is any
- * player's data, so a sign built from it must keep its words but not run a command when clicked.
+ * player's data, so a sign built from it must keep its words but not run a command when clicked (B1044), nor work out
+ * an nbt, selector or score part with that permission, nor hold longer lines than a player can write (B1047).
  */
 public class QaSignCommands1108BugTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
@@ -137,7 +138,6 @@ public class QaSignCommands1108BugTests implements net.fabricmc.fabric.api.gamet
 		player.setGameMode(GameType.SURVIVAL);
 		BlockPos stand = helper.absolutePos(new BlockPos(27, 2, 27));
 		player.teleportTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5);
-		String x = Integer.toString(stand.getX());
 
 		helper.setBlock(SRC, Blocks.OAK_SIGN);
 		SignBlockEntity source = (SignBlockEntity) helper.getBlockEntity(SRC);
@@ -183,9 +183,81 @@ public class QaSignCommands1108BugTests implements net.fabricmc.fabric.api.gamet
 			helper.assertTrue(built instanceof SignBlockEntity, "no sign built: " + helper.getBlockState(ORIGIN));
 			String shown = ((SignBlockEntity) built).getFrontText().getMessage(0, false).getString();
 			helper.assertTrue(shown.startsWith("Base:"), "the built sign lost its words: '" + shown + "'");
-			helper.assertTrue(!shown.contains(x), "the sign a builder built from an uploaded file shows a player's position, worked out"
-				+ " with permission level 2: '" + shown + "' (the player stands at x " + x + ")");
+			// "Base: " has no digit, so any digit is the worked-out position (large ones print as 1.1E7d)
+			helper.assertTrue(!shown.matches(".*\\d.*"), "the sign a builder built from an uploaded file shows a player's position, worked out"
+				+ " with permission level 2: '" + shown + "' (the player stands at " + stand.toShortString() + ")");
 			player.discard();
+		});
+	}
+
+	/**
+	 * A player can write at most 384 characters on a sign's line (vanilla trims each line to that when a sign is
+	 * edited, ServerGamePacketListenerImpl.updateSignText); a file's data has no such limit (up to 64 KB a line). Signs
+	 * that big make the chunk's packet too large to send, so whoever comes near can't stay connected. The builder writes
+	 * a sign's words as a player could: each line at most 384 characters.
+	 */
+	//$ gametest_ticks_batch HUGE '2400' '"qaSignCommands1108c"'
+	@GameTest(template = HUGE, timeoutTicks = 2400, batch = "qaSignCommands1108c")
+	public void aSignFromAnUploadedFileHoldsNoMoreWordsThanAPlayerCouldWrite(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(SRC, Blocks.OAK_SIGN);
+		SignBlockEntity source = (SignBlockEntity) helper.getBlockEntity(SRC);
+		String huge = "W".repeat(60000);
+		net.minecraft.world.level.block.entity.SignText text = source.getFrontText();
+		for (int line = 0; line < 4; line++) {
+			text = text.setMessage(line, Component.literal(huge));
+		}
+		source.setText(text, true);
+		source.setText(text, false);
+		source.setWaxed(true);
+		StructureTemplate template = new StructureTemplate();
+		template.fillFromWorld(level, helper.absolutePos(SRC), new Vec3i(1, 1, 1), false, Blocks.STRUCTURE_VOID);
+		byte[] bytes;
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			NbtIo.writeCompressed(template.save(new CompoundTag()), out);
+			bytes = out.toByteArray();
+		} catch (IOException e) {
+			throw new GameTestAssertException("(setup) couldn't write the file: " + e);
+		}
+		helper.setBlock(SRC, Blocks.AIR);
+		ResourceLocation id;
+		try {
+			id = BlueprintImporter.importBytes(level.getServer(), "uploads/qa_signer",
+				"long_words_" + Long.toHexString(level.getGameTime()) + ".nbt", bytes).id();
+		} catch (Exception e) {
+			throw new GameTestAssertException("(setup) the upload didn't import (" + bytes.length + " bytes): " + e);
+		}
+
+		level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(true, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		Leftovers.after(helper, () -> level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(false, level.getServer()));
+		helper.setDayTime(2000);
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, BENCH.east());
+		Builders.employ(level, builder, helper.absolutePos(BENCH));
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(ORIGIN), Rotation.NONE, Mirror.NONE);
+		BuildSite site = Builders.start(level, builder, null, id, placement);
+		if (site == null) {
+			throw new GameTestAssertException(id + " didn't start");
+		}
+		helper.succeedWhen(() -> {
+			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "still building: " + site.stage() + " " + site.status() + " missing " + site.missing());
+			BlockEntity built = level.getBlockEntity(helper.absolutePos(ORIGIN));
+			helper.assertTrue(built instanceof SignBlockEntity, "no sign built: " + helper.getBlockState(ORIGIN));
+			SignBlockEntity sign = (SignBlockEntity) built;
+			int longest = 0;
+			for (boolean front : new boolean[] {true, false}) {
+				for (Component line : (front ? sign.getFrontText() : sign.getBackText()).getMessages(false)) {
+					longest = Math.max(longest, line.getString().length());
+				}
+			}
+			int sent = sign.getUpdateTag(level.registryAccess()).toString().length();
+			helper.assertTrue(longest > 0, "the built sign lost all its words");
+			helper.assertTrue(longest <= 384, "a sign a builder built from an uploaded file has a line of " + longest
+				+ " characters (a player can write at most 384); its data sent to every player near is about " + sent + " characters");
 		});
 	}
 

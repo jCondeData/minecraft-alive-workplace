@@ -22,6 +22,8 @@ import com.simibubi.create.content.trains.track.TrackBlockEntity;
 import com.simibubi.create.content.trains.track.TrackMaterial;
 import com.simibubi.create.content.trains.track.TrackPropagator;
 import com.simibubi.create.content.trains.entity.Carriage;
+import com.simibubi.create.content.trains.entity.CarriageContraption;
+import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -475,6 +477,50 @@ public final class CreateTrains implements CaravanTrains.Railway {
 	public boolean exists(ServerLevel level, UUID owner) {
 		Train train = train(owner);
 		return train != null && !train.derailed;
+	}
+
+	@Override
+	public boolean driven(ServerLevel level, UUID owner) {
+		Train train = train(owner);
+		return train == null || train.hasForwardConductor() || train.hasBackwardConductor();
+	}
+
+	@Override
+	public boolean seat(ServerLevel level, UUID owner, java.util.function.Function<BlockPos, Villager> pick) {
+		Train train = train(owner);
+		if (train == null) {
+			return false;
+		}
+		for (Carriage carriage : train.carriages) {
+			CarriageContraptionEntity entity = carriage.anyAvailableEntity();
+			if (entity == null || !entity.isAlive() || entity.level() != level || !(entity.getContraption() instanceof CarriageContraption cc)) {
+				continue; // put away (not loaded): Create keeps its count of the conductors, and nobody can get on
+			}
+			Map<UUID, Integer> mapping = cc.getSeatMapping();
+			List<net.minecraft.world.entity.Entity> riders = List.copyOf(entity.getPassengers());
+			for (net.minecraft.world.entity.Entity rider : riders) {
+				if (!(rider instanceof net.minecraft.world.entity.player.Player) && !mapping.containsKey(rider.getUUID())) {
+					rider.stopRiding(); // riding in no seat: the zombie villager the driver became (vanilla's convertTo)
+				}
+			}
+			// the seats of those no longer riding (the driver dead, or a witch now) are free again
+			mapping.keySet().removeIf(id -> riders.stream().noneMatch(r -> r.getUUID().equals(id)));
+			List<BlockPos> seats = cc.getSeats();
+			for (int i = 0; i < seats.size(); i++) {
+				if (!cc.conductorSeats.containsKey(seats.get(i)) || mapping.containsValue(i)) {
+					continue;
+				}
+				Villager driver = pick.apply(BlockPos.containing(entity.toGlobalVector(Vec3.atCenterOf(seats.get(i)), 1)));
+				if (driver == null) {
+					break; // nobody free by the train
+				}
+				entity.addSittingPassenger(driver, i);
+				AliveWorkplace.LOG.info("Alive Workplace: {} takes the seat of the village train {}", driver.getName().getString(), train.id);
+				break;
+			}
+			carriage.updateConductors();
+		}
+		return driven(level, owner);
 	}
 
 	@Override

@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962
 
 ## What a player sees
 
@@ -176,7 +176,10 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   without one seats a jobless villager as before, and a villager with another job is never taken. As the train comes
   in at a station, the Conductor riding it calls the stop once, over his head and in the chat of players within 24
   blocks of the station: "Ada: Now arriving at Ashford! All change, mind the gap." (a train driven by a jobless
-  villager comes in quietly). Off the train he stands at his station like any villager at their workstation. He
+  villager comes in quietly). If the train's driver dies, is struck by lightning into a witch or is turned by
+  a zombie, the train can't move: the Conductor or a jobless villager by the train takes the empty seat (a zombie
+  villager left riding is put off), and while nobody is free there, the caravans waiting for the train or riding it
+  take the timed trip with their goods instead, so they still arrive (B962). Off the train he stands at his station like any villager at their workstation. He
   trades coal and emeralds for rails, Create track, powered rails, train schedules, track signals, railway casing and,
   as a Master, train controls.
 
@@ -625,8 +628,12 @@ village's last column empties it (B994).
   trip (a zombie villager now, no death loot) leaves his 12 wheat where he fell, and the zombie villager carries
   neither the wheat nor the trip; cured, he is a farmer again with no trip and no second load. A Mechanic killed by a
   zombie with the store's cogwheel in hand puts it back, the zombie villager holding none
-  (`QaCreateZombified1104e2BugCompatTests`, B959); a train driver turned by a zombie stops the train as B962's do:
-  that test waits on `tests/mechanic-struck-1104`.
+  (`QaCreateZombified1104e2BugCompatTests`, B959); a train driver turned by a zombie no longer leaves the caravan
+  waiting (`QaTrainDriverZombified1104e2BugCompatTests`, B962).
+- `QaTrainDriverLost1104eBugCompatTests` (QA, with Create, B962): the village train's driver killed, or struck by
+  lightning into a witch, with nobody else by the train: the day's 32 logs still reach the other village (the timed
+  trip), all 64 kept. `TrainDriverCompatTests`: with a villager free by the train, he takes the dead driver's seat and
+  the caravan rides the train all the way.
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is

@@ -186,6 +186,23 @@ public final class CaravanTrains {
 		boolean exists(ServerLevel level, UUID owner);
 
 		/**
+		 * B962: whether the village train with this owner has someone in its seat to drive it (Create counts its
+		 * conductors). False once its driver died, was struck into a witch or turned by a zombie: it never moves again.
+		 */
+		default boolean driven(ServerLevel level, UUID owner) {
+			return true;
+		}
+
+		/**
+		 * B962: sits a new driver in the empty seat of the village train with this owner, while its carriage is loaded:
+		 * whoever {@code pick} finds near the seat's position (null: nobody). Anyone riding the carriage without a seat
+		 * (a zombie villager the driver became) is put off first. Returns whether the train has a driver now.
+		 */
+		default boolean seat(ServerLevel level, UUID owner, java.util.function.Function<BlockPos, Villager> pick) {
+			return driven(level, owner);
+		}
+
+		/**
 		 * B900: the village train's schedule kept on the two stations' current names (it goes by name, and a player may
 		 * rename a station with Create's screen once the train runs): a stop whose station no longer has its name is
 		 * pointed at {@code there} (the first stop) or {@code home} (the second) under the name it has now. B912: either
@@ -254,7 +271,14 @@ public final class CaravanTrains {
 			UUID id = railwayId(hall, other);
 			boolean exists = RAILWAY.call(r -> r.exists(level, id), false);
 			long timed = now + trainTrip(Caravans.trip(level, hall, other, data));
-			if (!exists || data.stations(other).isEmpty()) {
+			// B962: a train whose driver is gone stands for good: a villager by it takes the seat, and while nobody does,
+			// the caravans that wait for it, or ride it with their goods in its chest, take the timed trip
+			boolean stuck = exists && stuck(level, id, now);
+			if (stuck) {
+				data.retime(hall, other, BOARDING, timed);
+				data.retime(hall, other, ABOARD, timed);
+			}
+			if (!exists || stuck || data.stations(other).isEmpty()) {
 				// 39.7b: our goods in the chest of a train that's gone or can't come in: what's still in it (a derailed
 				// train keeps its chest) comes back out for the timed trip; a train broken up keeps them in its chest
 				int left = data.recover(hall, other, timed, goods -> RAILWAY.call(r -> r.unload(level, id, goods), List.<ItemStack>of()));
@@ -315,6 +339,44 @@ public final class CaravanTrains {
 				Caravans.trainIn(level, hall);
 			}
 		}
+	}
+
+	/** B962: how long (ticks) a village train goes without a driver before its caravans take the timed trip. */
+	static final long DRIVERLESS_WAIT = 100;
+	/** B962: how long (ticks) a village train goes without a driver before a villager is sat in its seat. */
+	static final long SEAT_WAIT = 20;
+	/** B962: since when (game time) each village train, by owner, has had no driver; not saved (a restart waits again). */
+	private static final Map<UUID, Long> DRIVERLESS = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/**
+	 * B962: whether the village train with this owner has stood without a driver for {@link #DRIVERLESS_WAIT} ticks. A
+	 * train without one first gets a new driver if a villager stands by its seat (the village's Conductor, else a jobless
+	 * one: {@link #conductorFor}). The wait covers Create's own count of the conductors, which finds none for a moment
+	 * while a newly assembled train's carriage is taken out.
+	 */
+	static boolean stuck(ServerLevel level, UUID owner, long now) {
+		if (RAILWAY.call(r -> r.driven(level, owner), true)) {
+			DRIVERLESS.remove(owner);
+			return false;
+		}
+		Long since = DRIVERLESS.get(owner);
+		if (since == null || since > now) {
+			DRIVERLESS.put(owner, now); // first seen without one (or another world's time)
+			return false;
+		}
+		if (now - since < SEAT_WAIT) {
+			return false; // perhaps Create's count of a carriage just taken out: its driver is on his way to the seat
+		}
+		if (RAILWAY.call(r -> r.seat(level, owner, pos -> conductorFor(level, pos)), false)) {
+			DRIVERLESS.remove(owner);
+			AliveWorkplace.LOG.info("Alive Workplace: the village train {} lost its driver; a villager took the seat", owner);
+			return false;
+		}
+		if (now - since >= DRIVERLESS_WAIT && now - since < DRIVERLESS_WAIT + SERVE_EVERY) {
+			AliveWorkplace.LOG.info("Alive Workplace: the village train {} has no driver and nobody by it to take the seat; its caravans take the timed trip ({})",
+				owner, RAILWAY.call(r -> r.status(level, owner), "-"));
+		}
+		return now - since >= DRIVERLESS_WAIT;
 	}
 
 	/**

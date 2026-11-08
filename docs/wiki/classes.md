@@ -82,7 +82,9 @@ luxury the Burghers need every 7 days, the Illuminated Book the one the Nobles w
 book (right-click): the Gazette is printed from the hall that day (the newest chronicle entries, the open quests and
 what they pay, the next festival and market day, the week's births, weddings and households that rose), the
 Illuminated Book is the whole chronicle. The hall quest **Spread the news** (a Printer and a caravan route) pays 6
-emeralds for this week's Gazette handed in at the hall of the village at the other end of the route.
+emeralds for this week's Gazette handed in at the hall of the village at the other end of the route. "This week's" is
+printed that day or in the 6 days before (7 days old is old news); one copy of a stack is taken, and another village's
+Gazette, a third village's hall or a second copy once the quest is paid take nothing (`QaSpreadNews1108cGameTests`).
 
 ## How it works
 

@@ -52,7 +52,10 @@ public class NurseBusyMachineCompatTests implements FabricGameTest {
 				b.seen().clear();
 				b.player().setHealth(5);
 				QaNurseMachine1102dCompatTests.rightClick(b, nurse);
-				helper.assertTrue(QaNurseMachine1102dCompatTests.said(b, "Come back in 60 seconds"), "right after B's treatment: " + b.seen());
+				// a minute at her pace (60 seconds at a pace of 1; traits and mood move it a few seconds, B867)
+				String wait = "Come back in " + io.github.jcondedata.aliveworkplace.nurse.Nurses.secondsLeft(
+					io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(io.github.jcondedata.aliveworkplace.nurse.Nurses.COOLDOWN, nurse)) + " seconds";
+				helper.assertTrue(QaNurseMachine1102dCompatTests.said(b, wait), "right after B's treatment: " + b.seen() + ", not \"" + wait + "\"");
 				helper.assertTrue(b.player().getHealth() == 5f, "B was treated twice in a minute");
 				treated[0] = true; // only once every check passed: a failed check fails again on the next try
 			}

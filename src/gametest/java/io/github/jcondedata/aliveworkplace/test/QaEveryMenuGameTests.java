@@ -52,6 +52,9 @@ public class QaEveryMenuGameTests implements FabricGameTest {
 		pairs.put(ModBlocks.POKEMON_TRADER_MENU, new Pair(
 			() -> ChoiceMenu.openOn(ModBlocks.POKEMON_TRADER_MENU, player, Component.literal("qa"), p -> true, m -> {}),
 			(id, inv) -> ModBlocks.POKEMON_TRADER_MENU.create(id, inv)));
+		pairs.put(ModBlocks.CHOICE_LIST_MENU, new Pair(
+			() -> ChoiceMenu.openList(player, Component.literal("qa"), p -> true, m -> {}),
+			(id, inv) -> ModBlocks.CHOICE_LIST_MENU.create(id, inv)));
 		BlockPos boxAt = new BlockPos(2, 2, 2);
 		pairs.put(ModBlocks.MAILBOX_MENU, new Pair(
 			() -> {

@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+
+- The Move Tutor's lessons are a list in the Village Hall's look instead of a gray chest: your money at the top, your party as tabs, each move a row with its type, price and a Teach button (Confirm to pay), gray rows for moves the tutor can't teach yet; the screen follows your party and money while it's open (42.1).
+
 ### Fixed
 
 - A raider's burning arrow still sets a builder's wooden roof alight when the raider who shot it left, was killed or was unloaded while the arrow flew. Arrows from anyone but a raider still never do (B1071).

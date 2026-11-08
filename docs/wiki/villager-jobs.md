@@ -148,8 +148,9 @@ takes the pre-evolution form whose evolution leads to the mother's form (`Cobble
 egg is made from the same hatchling and keeps the form (`form=galar` and the like). With Ditto, the parent that isn't
 Ditto counts as the mother. Regions Galar, Hisui and Paldea work the same (Perrserker a Galarian Meowth, Sneasler a
 Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with no regional form (Alolan Raichu,
-Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A Blaze Breed Tauros hatchling (with Ditto) turns Combat Breed after
-a reload (B955). Tested in `QaDaycareBugs1103dCompatTests` and `QaDaycareRegional1104d2CompatTests` (11).
+Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A form picked by a choice feature rather than a flag (a Blaze or Aqua Breed Tauros, "blaze-breed" being
+`bull_breed=blaze`) is set as that feature, so it survives a save and load (B955). Tested in `QaDaycareBugs1103dCompatTests`,
+`QaDaycareRegional1104d2CompatTests` (11) and `QaDaycareRegional1104d2BugCompatTests`.
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last
@@ -188,7 +189,9 @@ Two that have drifted more than 8 apart before the first is fed cost nothing; if
 first was fed, the nearest ready one within 8 blocks of the first is fed instead, or none. Tests:
 `RancherGameTests.rancherSkipsAPairTooFarApart`, `rancherFeedsThePairThatCanMeet`, and `QaRanchPairs1107cGameTests` (7
 apart fed, 7.07 not; the closest of three; foals and resting ones passed over; the drift and mate-lost cases; the
-Shepherd's and Herder's pairs).
+Shepherd's and Herder's pairs). A pair is picked only with food for both in the chests (2 or more), and he takes both
+before feeding; once the first is fed, the one left in hand is enough for the second, so exactly 2 foods feed the pair
+(B1021, `QaRanchPairs1107cBugTests`).
 
 **A Fisherman comes back for cooked fish (B147, B802).** Fish done in a furnace or smoker by his barrel call him home
 when the barrel can take them: an empty slot, or a stack of the same fish with room (a barrel whose every slot holds

@@ -333,17 +333,6 @@ public abstract class RanchWork extends Behavior<Villager> {
 
 	/** Takes the food, then feeds the two. */
 	private void breed(ServerLevel level, Villager villager, List<BlockPos> own, BuilderBag bag) {
-		if (bag.count(food) < 2) {
-			if (walker.walkTo(level, villager, own.get(0), 3.0)) {
-				int got = SupplyContainers.extract(level, own, food, 2 - bag.count(food));
-				bag.addAll(food, got);
-				if (bag.count(food) < 2) {
-					done();
-				}
-				walker.reset();
-			}
-			return;
-		}
 		Animal first = target instanceof Animal a && a.isAlive() ? a : null;
 		Animal second = mate != null && mate.isAlive() ? mate : null;
 		boolean firstFed = first != null && first.isInLove();
@@ -351,6 +340,20 @@ public abstract class RanchWork extends Behavior<Villager> {
 		if (firstFed && secondFed) {
 			BuilderLevels.addXp(level, villager, 1, null);
 			done();
+			return;
+		}
+		// Food for the ones still to feed: both before the first is fed, one after (B1021: wanting 2 after feeding the first
+		// sent him back to an empty chest with exactly 2, and the second was never fed).
+		int need = firstFed || secondFed ? 1 : 2;
+		if (bag.count(food) < need) {
+			if (walker.walkTo(level, villager, own.get(0), 3.0)) {
+				int got = SupplyContainers.extract(level, own, food, need - bag.count(food));
+				bag.addAll(food, got);
+				if (bag.count(food) < need) {
+					done();
+				}
+				walker.reset();
+			}
 			return;
 		}
 		// The one still to feed, and the partner it has to find once in love (B979).

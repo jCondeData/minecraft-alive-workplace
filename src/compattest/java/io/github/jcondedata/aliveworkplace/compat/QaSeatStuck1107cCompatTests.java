@@ -10,6 +10,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -160,7 +161,9 @@ public class QaSeatStuck1107cCompatTests implements FabricGameTest {
 
 	/**
 	 * A villager sets off for a chair 6 blocks away and the furnishings switch is turned off on the way: for the next 200
-	 * ticks he doesn't sit and the chair isn't held for him. With the switch on again he sits on it.
+	 * ticks he doesn't sit, the chair isn't held for him and he stops walking to it (B1024). With the switch on again he
+	 * sits on it. An idle villager strolls in those 200 ticks, sometimes past the 8 blocks a villager looks for a seat in
+	 * (B1024: 2 of 10 runs ended 17 blocks off), so he is put back where he started when the switch comes back on.
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '900' '"qa1107c_seat_switch_off"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 900, batch = "qa1107c_seat_switch_off")
@@ -170,9 +173,14 @@ public class QaSeatStuck1107cCompatTests implements FabricGameTest {
 		helper.setBlock(CHAIR, oakChair(helper).defaultBlockState());
 		BlockPos chair = helper.absolutePos(CHAIR);
 		Villager v = helper.spawn(EntityType.VILLAGER, CHAIR.west(6));
+		Vec3 spot = v.position();
 		Runnable restore = clock(level);
-		setTime(level, FurnitureSeats.SUPPER + 300);
 		boolean wasOn = Furnishings.ENABLED;
+		PartnerShowsCompatTests.after(helper, () -> {
+			Furnishings.ENABLED = wasOn;
+			restore.run();
+		});
+		setTime(level, FurnitureSeats.SUPPER + 300);
 		helper.assertTrue(wasOn, "setup: furnishings are off before the test");
 		int[] step = {0};
 		long[] at = {-1, -1};
@@ -183,6 +191,9 @@ public class QaSeatStuck1107cCompatTests implements FabricGameTest {
 				at[0] = helper.getTick();
 				Furnishings.ENABLED = false;
 				helper.runAfterDelay(200, () -> {
+					if (!v.isPassenger()) {
+						v.teleportTo(spot.x, spot.y, spot.z); // back within reach of the chair after his stroll
+					}
 					Furnishings.ENABLED = wasOn;
 					step[0] = 2;
 					at[1] = helper.getTick();
@@ -190,6 +201,10 @@ public class QaSeatStuck1107cCompatTests implements FabricGameTest {
 			} else if (step[0] == 1 && broken[0] == null) {
 				if (v.isPassenger()) {
 					broken[0] = "the villager sat down " + (helper.getTick() - at[0]) + " ticks after the switch went off";
+				} else if (helper.getTick() - at[0] > 40 && v.getBrain().getMemory(MemoryModuleType.WALK_TARGET)
+						.filter(w -> w.getTarget().currentBlockPosition().equals(chair)).isPresent()) {
+					broken[0] = "the villager still walks to the chair " + (helper.getTick() - at[0]) + " ticks after the switch went off; "
+						+ FurnitureSeats.describe(level, v);
 				} else if (helper.getTick() - at[0] > 40 && !FurnitureSeats.free(level, chair, null)) {
 					broken[0] = "the chair was still held " + (helper.getTick() - at[0]) + " ticks after the switch went off; "
 						+ FurnitureSeats.describe(level, v);

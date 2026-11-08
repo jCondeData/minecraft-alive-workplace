@@ -85,7 +85,7 @@ public final class FurnitureSeats {
 			return;
 		}
 		if (!Furnishings.ENABLED || !wantsToSit(level, villager)) {
-			TARGETS.remove(villager);
+			drop(villager);
 			return;
 		}
 		long now = level.getGameTime();
@@ -100,10 +100,10 @@ public final class FurnitureSeats {
 		if (target != null && (now - target.since() > GIVE_UP || now - target.closerAt() > STUCK)) {
 			// Couldn't reach it: leave it to the others for a while instead of picking it again at once (B945).
 			SKIPPED.put(villager, new Skip(target.pos(), level.getGameTime() + SKIP_FOR));
-			TARGETS.remove(villager);
+			drop(villager);
 			target = null;
 		} else if (target != null && !free(level, target.pos(), villager)) {
-			TARGETS.remove(villager);
+			drop(villager);
 			target = null;
 		}
 		if (target == null) {
@@ -118,6 +118,18 @@ public final class FurnitureSeats {
 			sit(level, villager, target.pos());
 		} else {
 			villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(target.pos(), 0.5f, 1));
+		}
+	}
+
+	/**
+	 * {@code villager} no longer goes to the seat they were walking to (B1024): forgets it, and stops the walk there if it
+	 * is still the brain's walk target, so with the switch off nobody walks on to a chair and stands in it.
+	 */
+	private static void drop(Villager villager) {
+		Target target = TARGETS.remove(villager);
+		if (target != null && villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET)
+				.filter(w -> w.getTarget().currentBlockPosition().equals(target.pos())).isPresent()) {
+			villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 		}
 	}
 

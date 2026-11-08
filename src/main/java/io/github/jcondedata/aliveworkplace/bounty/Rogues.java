@@ -220,7 +220,7 @@ public final class Rogues {
 		Component name = b.name(level);
 		Component where = VillageHallScreen.where(hall, spot);
 		for (ServerPlayer player : Bounties.players(level, hall)) {
-			Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.posted", VillageHalls.name(level, hall), name, where, b.reward)
+			Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.posted", VillageHalls.name(level, hall), name, where, Bounties.reward(b.reward))
 				.withStyle(ChatFormatting.GOLD));
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.BOUNTY, Component.translatable("chronicle.aliveworkplace.bounty.posted", name, b.quirkName(), where));
@@ -403,9 +403,9 @@ public final class Rogues {
 			Bounties.pay(player, b.reward);
 			Reputation.add(level, b.hall, player, Reputation.BOUNTY);
 			Chat.chat(player, Component.translatable(caught ? "message.aliveworkplace.bounty.rogue_caught" : "message.aliveworkplace.bounty.rogue_beaten",
-				name, b.reward).withStyle(ChatFormatting.GREEN));
-			Chronicle.record(level, b.hall, Chronicle.Kind.BOUNTY, Component.translatable(caught ? "chronicle.aliveworkplace.bounty.rogue_caught"
-				: "chronicle.aliveworkplace.bounty.rogue_beaten", player.getDisplayName(), name, b.reward));
+				name, Bounties.reward(b.reward)).withStyle(ChatFormatting.GREEN));
+			Chronicle.record(level, b.hall, Chronicle.Kind.BOUNTY, Component.translatable(caught ? "chronicle.aliveworkplace.bounty.rogue_caught.money"
+				: "chronicle.aliveworkplace.bounty.rogue_beaten.money", player.getDisplayName(), name, Bounties.reward(b.reward)));
 			player.serverLevel().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.8f, 1.2f);
 			Bounties.refreshBoards(level);
 			return true;

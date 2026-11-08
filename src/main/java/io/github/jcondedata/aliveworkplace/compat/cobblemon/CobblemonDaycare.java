@@ -64,6 +64,9 @@ public final class CobblemonDaycare {
 		menu.clearButtons();
 		ItemStack info = named(Items.HAY_BLOCK, Component.translatable("screen.aliveworkplace.daycare", rancher.getDisplayName()));
 		info.set(DataComponents.LORE, lore(Component.translatable("screen.aliveworkplace.daycare.info", Daycare.MAX_PER_PLAYER).withStyle(ChatFormatting.GRAY),
+			// What collecting costs, in the money in use (B1060: it said "an emerald" while charging CobbleDollars)
+			Component.translatable("screen.aliveworkplace.daycare.price", Money.describe(Money.DOLLARS_PER_EMERALD, 1))
+				.withStyle(ChatFormatting.GRAY),
 			Component.translatable("screen.aliveworkplace.daycare.pace", rancher.getVillagerData().getLevel() > 1
 				? Component.translatable("screen.aliveworkplace.daycare.faster", Math.round(25 * (rancher.getVillagerData().getLevel() - 1)))
 				: Component.empty()).withStyle(ChatFormatting.DARK_GRAY)));

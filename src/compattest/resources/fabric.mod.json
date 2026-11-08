@@ -99,6 +99,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainHubBothBuilt1107eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainOwnBlocks1108eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainVillageRenamed1104eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaTrainGlobRenames1108eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TrainHubCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainStationRenamedLater1103eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainRenamedFarAway1104eCompatTests",

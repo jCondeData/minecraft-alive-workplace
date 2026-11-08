@@ -685,6 +685,11 @@ village's last column empties it (B994).
   characters, backslashes, a lone `*` or `?`) is found by its own stop and by no other; a station named with every glob
   character and a backslash gets the caravan; a stop saved before the fix (the bracketed name as it is) is re-pointed
   and the logs arrive.
+- `QaTrainGlobRenames1108eCompatTests` (QA, B938, with Create): villages renamed with a name tag after their train
+  already runs: the far village from "Oakford" to "Oakford [East]", then on to "Oak {North} [2]"; the far and the
+  middle village both named "Oak [E]" (B894 keeps their stations apart); the sending village renamed "Pine*" and then
+  "Pine?". Each time Pine's 32 logs reach the far village by train, none lost or doubled, and the four stations keep
+  four names.
 - `QaTrainNamesakes1107eCompatTests` (QA, B933, with Create): a halt added halfway along the line and all three
   stations named "Station" (the train stops at the halt, a namesake of its stop, and is sent on; fails without
   CreateTrains.sendOn), the halt given the other village's station name, and only the sending village's station given the

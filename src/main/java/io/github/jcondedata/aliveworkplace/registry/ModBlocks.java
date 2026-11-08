@@ -62,6 +62,16 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("pokemon_trader"),
 			new net.minecraft.world.inventory.MenuType<>(io.github.jcondedata.aliveworkplace.trader.PokemonTradeView::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
 
+	/**
+	 * The list screen (ROADMAP 42.1): a ChoiceMenu on the server, drawn by the client as a list of rows with a button on
+	 * each, tabs over it and the money at the top ({@link io.github.jcondedata.aliveworkplace.work.ChoiceList}). Every
+	 * menu moved off the plain chest opens on this one type.
+	 */
+	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.work.ChoiceView> CHOICE_LIST_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("choice_list"),
+			new net.minecraft.world.inventory.MenuType<>((id, inventory) -> new io.github.jcondedata.aliveworkplace.work.ChoiceView(ModBlocks.CHOICE_LIST_MENU, id, inventory),
+				net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
+
 	/** Workstation for the Postman profession: they collect and deliver mail within 64 blocks of it. */
 	public static final BuildersBenchBlock POSTAL_DESK = Reg.block("postal_desk", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE));
 

@@ -26,6 +26,12 @@ public final class ThreatDamage {
 	/** Set while a siege's ram breaks the gate block it is allowed to break. */
 	private static boolean ramming;
 
+	/**
+	 * Carried by a projectile a raider shot (B1066, B1064), saved with it: its owner reads as null once that raider is
+	 * discarded, killed or unloaded, and the shot must stay a threat's.
+	 */
+	public static final String SHOT_TAG = "aliveworkplace_raider_shot";
+
 	/** Whether {@code entity} is a threat's: a raider ({@link Threats#RAIDER_TAG}) or what one shot. */
 	public static boolean isThreat(@Nullable Entity entity) {
 		if (entity == null) {
@@ -34,7 +40,29 @@ public final class ThreatDamage {
 		if (entity.getTags().contains(Threats.RAIDER_TAG)) {
 			return true;
 		}
-		return entity instanceof Projectile p && p.getOwner() != null && p.getOwner() != entity && p.getOwner().getTags().contains(Threats.RAIDER_TAG);
+		if (!(entity instanceof Projectile p)) {
+			return false;
+		}
+		if (p.getTags().contains(SHOT_TAG)) {
+			return true;
+		}
+		Entity owner = p.getOwner();
+		return owner != null && owner != entity && owner.getTags().contains(Threats.RAIDER_TAG);
+	}
+
+	/**
+	 * {@code projectile} was given {@code owner} (shot, thrown, or deflected to a new owner): a raider's shot carries
+	 * {@link #SHOT_TAG} from then on, saved with it; a shot taken over by anyone else drops it.
+	 */
+	public static void shot(Projectile projectile, @Nullable Entity owner) {
+		if (projectile.level().isClientSide()) {
+			return;
+		}
+		if (owner != null && owner != projectile && owner.getTags().contains(Threats.RAIDER_TAG)) {
+			projectile.addTag(SHOT_TAG);
+		} else {
+			projectile.removeTag(SHOT_TAG);
+		}
 	}
 
 	/** Whether the block at {@code pos} is the builders': a finished build's block as drawn, or inside a build under way. */

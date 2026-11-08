@@ -51,6 +51,7 @@
 		"ThreatPortalMixin",
 		"ThreatPotMixin",
 		"ThreatDripstoneMixin",
+		"ThreatShotMixin",
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",
 		"VillagerMixin",

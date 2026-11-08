@@ -13,6 +13,7 @@ import com.cobblemon.mod.common.pokemon.Pokemon;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.tutor.Tutors;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -98,13 +99,15 @@ public final class CobblemonTutors {
 		return false;
 	}
 
-	// What's on the screen: whose moves, which page, and a lesson waiting for the second click.
+	// What's on the screen: whose moves, which page, a lesson waiting for the second click, and what the screen was laid
+	// out for (the party and the money, 42.1: when either changes while it's open, it's laid out again).
 	private static final class State {
 		@Nullable
 		UUID pokemon;
 		int page;
 		@Nullable
 		String pending;
+		String shownFor = "";
 	}
 
 	public static void open(ServerPlayer player, Villager tutor) {
@@ -118,20 +121,46 @@ public final class CobblemonTutors {
 			return;
 		}
 		State state = new State();
-		ChoiceMenu.open(player, Tutors.title(tutor),
+		// The list screen (42.1): the party as tabs, the lessons as rows with a Teach button, the money at the top.
+		ChoiceMenu.openList(player, Tutors.title(tutor),
 			p -> tutor.isAlive() && !tutor.isSleeping() && p.isAlive() && p.distanceTo(tutor) <= Tutors.REACH,
-			menu -> render(menu, player, tutor, state));
+			menu -> {
+				render(menu, player, tutor, state);
+				watch(menu, player, tutor, state);
+			});
 	}
 
 	// The lesson screen without showing it (tests).
 	public static ChoiceMenu menuForTest(ServerPlayer player, Villager tutor) {
 		State state = new State();
-		return ChoiceMenu.detached(player, menu -> render(menu, player, tutor, state));
+		return ChoiceMenu.detached(player, menu -> {
+			render(menu, player, tutor, state);
+			watch(menu, player, tutor, state);
+		});
+	}
+
+	// The party or the money changed while the screen is open (a Pokémon caught, sent to the PC, a lesson paid elsewhere):
+	// lay it out again, so the tabs, rows and prices never show what's gone.
+	private static void watch(ChoiceMenu menu, ServerPlayer player, Villager tutor, State state) {
+		menu.everyTick(() -> {
+			if (!shownFor(player).equals(state.shownFor)) {
+				render(menu, player, tutor, state);
+			}
+		});
+	}
+
+	private static String shownFor(ServerPlayer player) {
+		StringBuilder out = new StringBuilder();
+		for (Pokemon pokemon : Cobblemon.INSTANCE.getStorage().getParty(player)) {
+			out.append(pokemon.getUuid()).append(',');
+		}
+		return out.append(io.github.jcondedata.aliveworkplace.work.Money.balance(player).getString()).toString();
 	}
 
 	// Row 1: the party. Row 2: a divider. Rows 3–5: the chosen Pokémon's lessons. Row 6: pages and info.
 	private static void render(ChoiceMenu menu, ServerPlayer player, Villager tutor, State state) {
 		menu.clearButtons();
+		state.shownFor = shownFor(player);
 		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
 		List<Pokemon> members = new ArrayList<>();
 		for (Pokemon pokemon : party) {
@@ -162,6 +191,7 @@ public final class CobblemonTutors {
 			if (pokemon == chosen) {
 				icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 			}
+			ChoiceList.tab(icon, pokemon == chosen);
 			menu.button(i, icon, p -> {
 				state.pokemon = pokemon.getUuid();
 				state.page = 0;
@@ -195,14 +225,14 @@ public final class CobblemonTutors {
 				});
 		}
 		if (state.page > 0) {
-			menu.button(PREVIOUS, named(Items.ARROW, Component.translatable("message.aliveworkplace.tutor.previous")), p -> {
+			menu.button(PREVIOUS, ChoiceList.page(named(Items.ARROW, Component.translatable("message.aliveworkplace.tutor.previous")), false), p -> {
 				state.page--;
 				state.pending = null;
 				render(menu, player, tutor, state);
 			});
 		}
 		if (state.page < pages - 1) {
-			menu.button(NEXT, named(Items.ARROW, Component.translatable("message.aliveworkplace.tutor.next")), p -> {
+			menu.button(NEXT, ChoiceList.page(named(Items.ARROW, Component.translatable("message.aliveworkplace.tutor.next")), true), p -> {
 				state.page++;
 				state.pending = null;
 				render(menu, player, tutor, state);
@@ -214,6 +244,10 @@ public final class CobblemonTutors {
 			Component.translatable("message.aliveworkplace.tutor.info_money", io.github.jcondedata.aliveworkplace.work.Money.balance(player))
 				.withStyle(ChatFormatting.GREEN),
 			lessons.isEmpty() ? null : Component.translatable("message.aliveworkplace.tutor.info_page", state.page + 1, pages).withStyle(ChatFormatting.DARK_GRAY)));
+		ChoiceList.info(info, io.github.jcondedata.aliveworkplace.work.Money.balance(player),
+			Component.translatable("message.aliveworkplace.tutor.list_hint"),
+			List.of(Component.translatable("message.aliveworkplace.tutor.column_move"), Component.translatable("message.aliveworkplace.tutor.column_type"),
+				Component.translatable("message.aliveworkplace.tutor.column_price")));
 		menu.button(INFO, info, null);
 	}
 
@@ -252,6 +286,21 @@ public final class CobblemonTutors {
 		if (pending) {
 			icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 		}
+		// The list screen's row (42.1): the type and kind beside the name, the price (or the rank it needs), Teach or Confirm.
+		MutableComponent second = move.getElementalType().getDisplayName().copy().withColor(move.getElementalType().getHue())
+			.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY))
+			.append(move.getDamageCategory().getDisplayName().copy().withStyle(ChatFormatting.GRAY));
+		if (lesson.egg()) {
+			second.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY))
+				.append(Component.translatable("message.aliveworkplace.tutor.egg_move").withStyle(ChatFormatting.LIGHT_PURPLE));
+		}
+		Component price = canTeach
+			? io.github.jcondedata.aliveworkplace.work.Money.describe(lesson.dollars(tutor), lesson.price(tutor)).copy()
+				.withStyle(affordable ? ChatFormatting.GREEN : ChatFormatting.RED)
+			: Component.translatable("message.aliveworkplace.tutor.needs_tier_short", BuilderLevels.levelName(lesson.grade()));
+		Component button = !canTeach ? null
+			: Component.translatable(pending ? "message.aliveworkplace.tutor.button_confirm" : "message.aliveworkplace.tutor.button_teach");
+		ChoiceList.row(icon, second, price, button, !canTeach, pending);
 		return icon;
 	}
 

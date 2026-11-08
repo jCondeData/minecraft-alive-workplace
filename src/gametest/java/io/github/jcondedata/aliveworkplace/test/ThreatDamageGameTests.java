@@ -17,6 +17,7 @@ import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.locale.Language;
@@ -25,9 +26,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Pillager;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.monster.Vindicator;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
@@ -300,6 +303,36 @@ public class ThreatDamageGameTests implements FabricGameTest {
 			"the builderRepairs tooltip doesn't say threats' damage is still repaired");
 		helper.assertTrue(lang.getOrDefault("aliveworkplace.config.siegeDamage.tooltip").contains("only the gate blocks"),
 			"the siegeDamage tooltip doesn't say only gate blocks break");
+		helper.succeed();
+	}
+
+	/**
+	 * A raider's arrow stays a threat's after its pillager is gone and the arrow was saved and loaded (B1066, B1064);
+	 * a villager's arrow never is, and a raider's arrow deflected to a villager no longer is.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aRaidersShotStaysAThreatsAfterItsShooterIsGoneAndAReload(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Pillager raider = EntityType.PILLAGER.create(level);
+		Villager villager = EntityType.VILLAGER.create(level);
+		Arrow shot = EntityType.ARROW.create(level);
+		Arrow other = EntityType.ARROW.create(level);
+		helper.assertTrue(raider != null && villager != null && shot != null && other != null, "setup: no entities");
+		raider.addTag(Threats.RAIDER_TAG);
+		shot.setOwner(raider);
+		other.setOwner(villager);
+		helper.assertTrue(!ThreatDamage.isThreat(other), "a villager's arrow counts as a threat's");
+		CompoundTag saved = shot.saveWithoutId(new CompoundTag());
+		raider.discard();
+		Arrow loaded = EntityType.ARROW.create(level);
+		helper.assertTrue(loaded != null, "setup: no arrow to load into");
+		loaded.load(saved);
+		helper.assertTrue(loaded.getOwner() == null, "setup: the loaded arrow still finds its gone pillager");
+		helper.assertTrue(ThreatDamage.isThreat(shot), "a raider's arrow stopped counting as a threat's once its pillager was gone");
+		helper.assertTrue(ThreatDamage.isThreat(loaded), "a raider's arrow stopped counting as a threat's after a save and reload");
+		loaded.setOwner(villager);
+		helper.assertTrue(!ThreatDamage.isThreat(loaded), "a raider's arrow deflected to a villager still counts as a threat's");
 		helper.succeed();
 	}
 }

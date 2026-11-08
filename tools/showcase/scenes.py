@@ -416,8 +416,10 @@ SCENES = [
        ("04_workers_cup_page", "The Workers' Cup's rules"), ("08_grand_cup_fair", "The Grand Cup's fair")], cobblemon=True),
     S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer Leader took the challenge", 90,
       [("01_leader", "At the podium"), ("02_leader_battle", "The battle starts")], cobblemon=True),
-    S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson screen opened", 60,
-      [("01_tutor_screen", "Lessons"), ("02_tutor_lesson", "A lesson")], cobblemon=True),
+    # The list screen (ROADMAP 42.1): the party as tabs, the lessons as rows with a Teach button, the money at the top
+    S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson list opened and Teach chose a lesson", 60,
+      [("01_tutor_screen", "The lesson list"), ("02_tutor_lesson", "A lesson chosen: Confirm to pay"),
+       ("03_tutor_tooltip", "A lesson's details")], cobblemon=True),
     S("smith", "Ball Smith", "A Ball Smith at work", "the ball smith made balls", 150,
       [("01_smith_working", "At the smithing table"), ("02_smith_done", "Balls made")], cobblemon=True),
     S("smith_orders", "Ball Smith", "Choosing which balls to make", "the orders screen opened", 60,

@@ -382,6 +382,7 @@
 			"io.github.jcondedata.aliveworkplace.test.VillageBannerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.EdictBookGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallUiGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ChoiceListGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformStoryGameTests",
@@ -541,6 +542,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDamage1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRisingsWall1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLairBounty1108dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBountyCamp1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBanditFortGround1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlagueCarrier1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGates1103dGameTests",
@@ -556,7 +558,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCampBlend1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFireIgnition1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovenHexBlink1107dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCovens1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWarlordBand1107dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPiglins1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPeacefulRadius1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderThrow1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShipsRisings1106dGameTests",
@@ -1399,6 +1403,8 @@
 			"io.github.jcondedata.aliveworkplace.test.BuilderStruckStaleLightGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStruckLight1108BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignCommands1108BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSignCommandsLenient1108eBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSignChunkSize1108eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignCommandForms1108eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPoweredHopper1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStuckStates1108bGameTests",
@@ -1452,7 +1458,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDripstoneEdges1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotSite1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotVerify1108bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1108GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1108GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatOwnerGone1108dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSpikeGoneThrower1108dBugTests"
 		]
 	},
 	"depends": {

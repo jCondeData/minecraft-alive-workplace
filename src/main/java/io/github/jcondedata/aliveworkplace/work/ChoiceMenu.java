@@ -22,8 +22,13 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A screen of buttons shown as a six-row chest: every slot holds an icon, and clicking one runs code on
  * the server. Nothing can be taken out or put in (the player's own inventory is locked while it's open),
- * so the client needs no screen of its own. Used by jobs that offer choices (the Move Tutor's lessons). The Village
- * Hall's opens with {@link #openHall} on its own drawn screen.
+ * so the client needs no screen of its own. Used by jobs that offer choices. The Village Hall's opens with
+ * {@link #openHall} on its own drawn screen.
+ *
+ * <p>The list screen (ROADMAP 42.1): {@link #openList} shows the same buttons as a list of rows, each with a button,
+ * under a tab row and the player's money, with a footer hint. The slots and clicks are a chest's still; how each icon is
+ * drawn there is marked on it with {@link ChoiceList} (row, tab, page arrow, the menu's own line). The Move Tutor opens
+ * on it; the other menus move to it one by one (42.2 to 42.4) by opening with {@link #openList} and marking their icons.
  */
 public class ChoiceMenu extends ChestMenu {
 	public static final int ROWS = 6;
@@ -36,6 +41,8 @@ public class ChoiceMenu extends ChestMenu {
 	private final Map<Integer, Consumer<ServerPlayer>> actions = new HashMap<>();
 	/** What to do when the screen closes, however it closes. */
 	private final List<Runnable> onClose = new ArrayList<>();
+	/** What to check every tick while it's open ({@link #everyTick}). */
+	private final List<Runnable> ticks = new ArrayList<>();
 	/** Whether the button being pressed was shift-clicked (buttons that count up or down take bigger steps). */
 	private boolean shift;
 	/** Whether the button being pressed was right-clicked (the price board buys on a right click, 33.5). */
@@ -98,6 +105,12 @@ public class ChoiceMenu extends ChestMenu {
 		return open(io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL_MENU, player, title, valid, fill);
 	}
 
+	/** The same, shown as the list screen (ROADMAP 42.1; the icons marked with {@link ChoiceList}). */
+	@Nullable
+	public static ChoiceMenu openList(ServerPlayer player, Component title, Predicate<Player> valid, Consumer<ChoiceMenu> fill) {
+		return open(io.github.jcondedata.aliveworkplace.registry.ModBlocks.CHOICE_LIST_MENU, player, title, valid, fill);
+	}
+
 	/** The same, shown on the screen registered for {@code type} (the Pokémon Trader's, 28.23). */
 	@Nullable
 	public static ChoiceMenu openOn(MenuType<?> type, ServerPlayer player, Component title, Predicate<Player> valid, Consumer<ChoiceMenu> fill) {
@@ -121,6 +134,24 @@ public class ChoiceMenu extends ChestMenu {
 		ChoiceMenu menu = new ChoiceMenu(MenuType.GENERIC_9x6, 0, player.getInventory(), new SimpleContainer(SIZE), p -> true);
 		fill.accept(menu);
 		return menu;
+	}
+
+	/**
+	 * Runs {@code check} on the server every tick while the screen is open (after a click too), so a menu can lay itself
+	 * out again when what it shows changes under it (the Tutor's party, 42.1). Keep it cheap.
+	 */
+	public void everyTick(Runnable check) {
+		ticks.add(check);
+	}
+
+	@Override
+	public void broadcastChanges() {
+		if (viewer != null && !ticks.isEmpty()) {
+			for (Runnable check : List.copyOf(ticks)) {
+				check.run();
+			}
+		}
+		super.broadcastChanges();
 	}
 
 	/** Runs {@code then} when the screen closes: the player shut it, walked off, logged out or opened another. */

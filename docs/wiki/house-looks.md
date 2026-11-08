@@ -110,5 +110,9 @@ through a finished rebuild, who may choose in an unowned and an owned hall)), an
 look of the 5th waiting build, a full queue explained as full), and `QaHouseLookSaves1108eGameTests` (the same three with
 the world saved and loaded between the pick and the next one: the 5th waiting look changed through the hall's page, the
 same look picked again, a full queue; and a remembered look kept over the restart for a house then torn down).
+`QaHouseLooksVerify1108bGameTests` (through the page: a torn-down house whose remembered look survived a save and load is
+gone and takes no material, a house stripped of its outside with its room standing and a torn-down house with an open
+rebuild are still there, the 5th waiting build changed in place or picked again, the full-queue line word for word, an
+idle builder out of reach beside a full one, a second builder with room taking the pick).
 
 Showcase scenes: `piece_look` (the Builds button, the Guard House's five outsides, and the desert one rebuilt).

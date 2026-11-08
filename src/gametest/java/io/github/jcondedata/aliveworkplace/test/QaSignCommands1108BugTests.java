@@ -261,6 +261,75 @@ public class QaSignCommands1108BugTests implements net.fabricmc.fabric.api.gamet
 		});
 	}
 
+	/**
+	 * The same sign made by an operator (a server's /spawn or reward sign) and scanned by any player with the Scan Tool:
+	 * the copy a builder builds for that player must not run the operator's command either.
+	 */
+	//$ gametest_ticks_batch HUGE '2400' '"qaSignCommands1108d"'
+	@GameTest(template = HUGE, timeoutTicks = 2400, batch = "qaSignCommands1108d")
+	public void aScannedCommandSignIsBuiltWithoutItsCommand(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(SRC, Blocks.OAK_SIGN);
+		commandSign((SignBlockEntity) helper.getBlockEntity(SRC), helper.absolutePos(BUILT_MARK));
+		java.util.List<Component> seen = new java.util.ArrayList<>();
+		ServerPlayer player = QaStageThreeGameTests.listener(helper, seen);
+		player.setGameMode(GameType.SURVIVAL);
+		player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.SCAN_TOOL));
+		player.getInventory().add(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.BLANK_BLUEPRINT, 1));
+		QaStageThreeGameTests.click(helper, player, SRC.below());
+		QaStageThreeGameTests.click(helper, player, SRC.east(1));
+		player.setShiftKeyDown(true);
+		QaStageThreeGameTests.clickAir(helper, player);
+		player.setShiftKeyDown(false);
+		helper.assertTrue(QaStageThreeGameTests.last(seen).equals("message.aliveworkplace.scan.saved"), "the scan said " + QaStageThreeGameTests.last(seen));
+		ItemStack blueprint = ItemStack.EMPTY;
+		for (ItemStack s : player.getInventory().items) {
+			if (s.is(io.github.jcondedata.aliveworkplace.registry.ModItems.BLUEPRINT)) {
+				blueprint = s;
+			}
+		}
+		helper.assertTrue(!blueprint.isEmpty(), "the scan gave no blueprint");
+		ResourceLocation id = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(blueprint).orElseThrow().structure();
+		// control: this player's click on the operator's own sign runs it, so a click in this test reaches a sign's commands
+		click(helper, player, SRC);
+		helper.assertTrue(helper.getBlockState(BUILT_MARK).is(Blocks.GOLD_BLOCK), "(setup) clicking the operator's sign ran nothing: " + helper.getBlockState(BUILT_MARK));
+		helper.setBlock(BUILT_MARK, Blocks.AIR);
+		helper.setBlock(SRC, Blocks.AIR);
+
+		level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(true, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		Leftovers.after(helper, () -> level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(false, level.getServer()));
+		helper.setDayTime(2000);
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, BENCH.east());
+		Builders.employ(level, builder, helper.absolutePos(BENCH));
+		BlockPos origin = ORIGIN.below();
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(origin), Rotation.NONE, Mirror.NONE);
+		BuildSite site = Builders.start(level, builder, null, id, placement);
+		if (site == null) {
+			throw new GameTestAssertException(id + " didn't start");
+		}
+		helper.succeedWhen(() -> {
+			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "still building: " + site.stage() + " " + site.status() + " missing " + site.missing());
+			BlockPos signAt = null;
+			for (BlockPos p : BlockPos.betweenClosed(helper.absolutePos(origin), helper.absolutePos(origin).offset(1, 2, 1))) {
+				if (level.getBlockEntity(p) instanceof SignBlockEntity) {
+					signAt = p.immutable();
+				}
+			}
+			helper.assertTrue(signAt != null, "no sign built from the scan");
+			String words = ((SignBlockEntity) level.getBlockEntity(signAt)).getFrontText().getMessage(0, false).getString();
+			helper.assertTrue(words.equals("Free gold"), "the built sign lost its words: '" + words + "'");
+			click(helper, player, helper.relativePos(signAt));
+			helper.assertTrue(!helper.getBlockState(BUILT_MARK).is(Blocks.GOLD_BLOCK),
+				"clicking the sign a builder built from a scan of an operator's command sign ran the command with permission level 2"
+					+ " for the non-operator who scanned it (a gold block appeared)");
+			player.discard();
+		});
+	}
+
 	/** Both sides say "Free gold"; the words run /setblock at {@code mark} on a click. Waxed, as a map maker leaves them. */
 	private static void commandSign(SignBlockEntity sign, BlockPos mark) {
 		String command = "/setblock " + mark.getX() + " " + mark.getY() + " " + mark.getZ() + " minecraft:gold_block";

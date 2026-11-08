@@ -229,6 +229,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.PokemonTradeScreenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPokemonTradeScreenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTraderOffers1107dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaTrainerTraining1108dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ProfessorCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ThesisCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RangerCompatTests",

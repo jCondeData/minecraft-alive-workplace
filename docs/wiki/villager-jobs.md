@@ -152,7 +152,7 @@ Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A form picked by a choice 
 `bull_breed=blaze`) is set as that feature, so it survives a save and load (B955): an East Sea Gastrodon hatches East Sea
 Shellos, a Blue Florges a Blue Flabébé (two steps back), a Sensu Oricorio a Sensu, a Blue-Striped Basculin Blue-Striped,
 and a male Basculegion with Ditto a White-Striped Basculin. Known gaps (bugs): a West Sea or Baile mother (a random
-default) hatches a random sea or style that shows after a reload (B1039), a female Basculegion hatches Red-Striped
+default) hatches a random sea or style that shows after a reload (B1031), a female Basculegion hatches Red-Striped
 (B1040), and a Blaze Breed Tauros's Cobbreeding egg hatches Combat Breed (B1041). Tested in
 `QaDaycareBugs1103dCompatTests`, `QaDaycareRegional1104d2CompatTests` (11), `QaDaycareRegional1104d2BugCompatTests`
 and `QaDaycareChoiceForms1108dCompatTests` (5).

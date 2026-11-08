@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A raid's last raider led out of the village's reach (kited away, or chasing someone) no longer lets the raid be booked as fought off while it lives, and it now leaves at dawn with its raid instead of staying in the world for good (B1055).
 - A sign built from a blueprint file anyone uploaded (or from a scan of an operator's command sign) no longer runs a command when clicked, no longer shows other players' positions, inventories or scores, and holds no more than the 384 characters a line a player could write: built signs and names keep their words, colors and glow only (B1044, B1047).
 - A blueprint scanned while a pressure plate was stood on, a button pressed, a big dripleaf tipped or a sculk sensor was hearing something is no longer built stuck that way for good (a door beside the plate held open, a leaf you fall through, a deaf sensor): Builders put those down at rest, as you would place them, and the same for observers, detector rails, tripwires, lightning rods, lecterns and target blocks caught mid-pulse.
 - Food you're cooking on a build's campfire comes back when a Builder takes that build down (into his bag, or on the ground by his bench when the bag is full), as when you break the campfire yourself: it used to vanish.

@@ -168,7 +168,8 @@ public final class VillageRaids {
 		ThreatData.Under raid = data.raid(hall).orElse(null);
 		long time = level.getDayTime() % VillageNeeds.DAY;
 		if (raid != null) {
-			List<Mob> left = own(level, hall);
+			List<Mob> near = own(level, hall);
+			List<Mob> left = withStrays(level, hall, near); // a raider led out of every raid's reach is still about (B1055)
 			Optional<Culture> culture = Threats.get(raid.culture());
 			boolean sea = culture.map(c -> c.arrival() == Culture.Arrival.SHORE).orElse(false);
 			// Most raiders leave at dawn; a culture whose hours are until_noon stays through the morning.
@@ -191,7 +192,7 @@ public final class VillageRaids {
 				});
 				end(level, hall, raid, true, band);
 			} else {
-				culture.ifPresent(c -> Threats.tactics(c).forEach(t -> t.round(level, hall, c, left)));
+				culture.ifPresent(c -> Threats.tactics(c).forEach(t -> t.round(level, hall, c, near)));
 			}
 			return;
 		}
@@ -324,6 +325,38 @@ public final class VillageRaids {
 			ThreatData.Under owner = raidOf(level, m);
 			return owner == null || owner.hall().equals(hall);
 		}).toList();
+	}
+
+	/**
+	 * {@code own} (the raid's raiders within its reach, {@link #own}) and its strays: the living raiders in loaded ground
+	 * that no raid's reach holds (led away by a player, or chasing someone), each given to the raid under way whose hall
+	 * is nearest, the first listed on a tie. A raid isn't fought off while one of its raiders lives out there, and those
+	 * alive at dawn leave with it, wherever they are (B1055). Within a reach, {@link #raidOf} alone hands raiders out, so
+	 * every raider still counts for exactly one raid (B915).
+	 */
+	static List<Mob> withStrays(ServerLevel level, BlockPos hall, List<Mob> own) {
+		List<ThreatData.Under> raids = ThreatData.get(level).raids();
+		List<? extends Mob> strays = level.getEntities(net.minecraft.world.level.entity.EntityTypeTest.forClass(Mob.class),
+			m -> m.isAlive() && m.getTags().contains(TAG) && !reaches(hall, m) && raidOf(level, m) == null && hall.equals(nearest(raids, m)));
+		if (strays.isEmpty()) {
+			return own;
+		}
+		List<Mob> all = new ArrayList<>(own);
+		all.addAll(strays);
+		return all;
+	}
+
+	/** The hall of the raid in {@code raids} nearest {@code mob}, the first listed on a tie; null when there is none. */
+	@Nullable
+	private static BlockPos nearest(List<ThreatData.Under> raids, Entity mob) {
+		BlockPos at = mob.blockPosition();
+		BlockPos best = null;
+		for (ThreatData.Under raid : raids) {
+			if (best == null || raid.hall().distSqr(at) < best.distSqr(at)) {
+				best = raid.hall();
+			}
+		}
+		return best;
 	}
 
 	/**
@@ -618,7 +651,7 @@ public final class VillageRaids {
 		if (raid == null) {
 			return false;
 		}
-		List<Mob> left = own(level, hall);
+		List<Mob> left = withStrays(level, hall, own(level, hall)); // (its strays go too, B1055)
 		int band = (int) left.stream().filter(m -> !m.getTags().contains(Threats.EXTRA_TAG) && !Lairs.leading(m)).count();
 		for (Mob m : left) {
 			level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, m.getX(), m.getY() + 0.5, m.getZ(), 10, 0.3, 0.5, 0.3, 0.02);

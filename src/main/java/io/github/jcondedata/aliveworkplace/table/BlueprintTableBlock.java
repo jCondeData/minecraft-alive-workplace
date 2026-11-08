@@ -83,7 +83,9 @@ public class BlueprintTableBlock extends HorizontalDirectionalBlock implements E
 		}
 		// B337: a builder's workstation is this Table, so a Book and Quill on it gets the list of his build as on the
 		// Builder's Bench (B279). A Table no builder works at opens as usual.
+		// B1042: a written one in the off hand (the player's notes) is left alone and the Table opens as for an empty hand.
 		if (stack.is(net.minecraft.world.item.Items.WRITABLE_BOOK) && level instanceof ServerLevel server
+			&& (hand == InteractionHand.MAIN_HAND || io.github.jcondedata.aliveworkplace.build.SiteList.isBlankBook(stack))
 			&& io.github.jcondedata.aliveworkplace.build.SiteList.isBuildersBench(server, pos)) {
 			io.github.jcondedata.aliveworkplace.build.SiteList.answerAtBench(server, player, pos, hand);
 			return ItemInteractionResult.SUCCESS;

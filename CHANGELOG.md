@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Food you're cooking on a build's campfire comes back when a Builder takes that build down (into his bag, or on the ground by his bench when the bag is full), as when you break the campfire yourself: it used to vanish.
+- A Book and Quill you've written in is no longer turned into a Builder's material list (from the Builder, his Blueprint Table, a Builder's Bench or a blueprint): only a blank one is. With your notes in the off hand, a plain right-click on a Builder trades as usual; from the main hand he tells you a blank one is needed and your pages stay as they were.
 - A pillager's arrow in a siege no longer cracks or breaks a decorated pot in a finished build: like every other builder's block, it stands (your own pots still break as in the game).
 - With Create, a village train whose driver dies, is struck by lightning or is turned by a zombie no longer stands still for good with its caravans waiting at the station: the Conductor or a jobless villager by the train takes the empty seat, and while nobody can, the caravans take the timed trip with their goods.
 - A village train station you name with brackets or braces, like "Bramble [East]", "Platform {2}" or "Main [", now gets the village train: it used to wait at the other station for good with the caravan aboard. Trains already stuck that way start running again.

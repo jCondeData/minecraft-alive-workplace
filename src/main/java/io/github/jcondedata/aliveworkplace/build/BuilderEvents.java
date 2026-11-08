@@ -496,7 +496,10 @@ public final class BuilderEvents {
 			return level.isClientSide() ? InteractionResult.SUCCESS
 				: io.github.jcondedata.aliveworkplace.wonder.WonderStages.handOver((ServerPlayer) player, villager, held);
 		}
-		if (held.is(net.minecraft.world.item.Items.WRITABLE_BOOK)) { // B279: the material list of the build under way
+		// B1042: a Book and Quill with the player's notes, kept in the off hand, doesn't take a plain click (it trades);
+		// from the main hand, the player is told a blank one is needed (SiteList.write).
+		if (held.is(net.minecraft.world.item.Items.WRITABLE_BOOK) && (hand == InteractionHand.MAIN_HAND || SiteList.isBlankBook(held))) {
+			// B279: the material list of the build under way
 			if (!level.isClientSide()) {
 				SiteList.write((ServerLevel) level, player, Builders.activeSite((ServerLevel) level, villager), villager, hand);
 			}

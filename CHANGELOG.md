@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.152.0 — 2026-11-08
+
 ### Added
 
 - The Move Tutor's lessons are a list in the Village Hall's look instead of a gray chest: your money at the top, your party as tabs, each move a row with its type, price and a Teach button (Confirm to pay), gray rows for moves the tutor can't teach yet; the screen follows your party and money while it's open (42.1).

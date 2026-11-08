@@ -46,6 +46,11 @@ at most). While they're there they gain experience, twice as fast with a Master 
 emerald plus one for every level they gained (or the same in CobbleDollars). If the rancher dies, your Pokémon go to
 your PC.
 
+The daycare opens as a list: your money at the top right, then a row for each of yours in the rancher's care (the
+level it would come back at, the price, red if you can't pay it, and a **Collect** button), then a row for each Pokémon
+in your party with a **Leave** button (click **Confirm** to leave it). A Pokémon that can't be left is a gray row that
+says why. Point at a row for its details, or at your money for what the daycare does and costs.
+
 ## How the rancher fits in
 
 - **Feeds:** a tame, saddled horse left free near a [Guard](guard.md)'s post is one the guard rides on patrol.

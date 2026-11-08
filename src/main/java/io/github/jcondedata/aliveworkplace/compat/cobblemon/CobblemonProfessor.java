@@ -20,6 +20,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.legend.PokemonCensus;
 import io.github.jcondedata.aliveworkplace.legend.PokemonProfessor;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import java.util.ArrayList;
@@ -45,7 +46,9 @@ import net.minecraft.world.item.component.ItemLore;
 
 // The Pokémon Professor (ROADMAP 29.21) with Cobblemon: the census of the village's Pasture Blocks, and the hints
 // screen. Row 0: what the Professor does, the village Pokédex and (with Evolution Studies) the day's evolution stone;
-// row 2: the player's party, each Pokémon's hints in its tooltip, and a click puts them in chat to keep.
+// row 2: the player's party, each Pokémon's hints in its tooltip, and a click puts them in chat to keep. Shown as the list
+// screen (ROADMAP 42.2): the money at the top, the Pokédex, the stone with its price and a Buy button, and a row per
+// Pokémon with its nature beside the name and a Note it button.
 public final class CobblemonProfessor implements PokemonCensus {
 	public static final int INFO = 0;
 	public static final int POKEDEX = 4;
@@ -79,14 +82,32 @@ public final class CobblemonProfessor implements PokemonCensus {
 
 	@Override
 	public void openHints(ServerPlayer player, Villager professor) {
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.professor", professor.getDisplayName()),
+		ChoiceMenu.openList(player, Component.translatable("screen.aliveworkplace.professor", professor.getDisplayName()),
 			p -> professor.isAlive() && p.isAlive() && p.distanceTo(professor) <= REACH,
-			menu -> render(menu, player, professor));
+			menu -> {
+				render(menu, player, professor);
+				watch(menu, player, professor);
+			});
 	}
 
 	// The screen without showing it (tests).
 	public static ChoiceMenu menuForTest(ServerPlayer player, Villager professor) {
-		return ChoiceMenu.detached(player, menu -> render(menu, player, professor));
+		return ChoiceMenu.detached(player, menu -> {
+			render(menu, player, professor);
+			watch(menu, player, professor);
+		});
+	}
+
+	// The party or the money changed while the screen is open: lay it out again (42.2, as the Tutor's).
+	private static void watch(ChoiceMenu menu, ServerPlayer player, Villager professor) {
+		String[] shown = {CobblemonTutors.shownFor(player)};
+		menu.everyTick(() -> {
+			String now = CobblemonTutors.shownFor(player);
+			if (!now.equals(shown[0])) {
+				shown[0] = now;
+				render(menu, player, professor);
+			}
+		});
 	}
 
 	// ---- the hints ----
@@ -146,9 +167,14 @@ public final class CobblemonProfessor implements PokemonCensus {
 	private static void render(ChoiceMenu menu, ServerPlayer player, Villager professor) {
 		menu.clearButtons();
 		boolean exact = PokemonProfessor.exact(professor);
-		menu.button(INFO, named(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.professor", professor.getDisplayName()),
+		ItemStack info = named(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.professor", professor.getDisplayName()),
 			Component.translatable("screen.aliveworkplace.professor.info").withStyle(ChatFormatting.GRAY),
-			Component.translatable(exact ? "screen.aliveworkplace.professor.exact" : "screen.aliveworkplace.professor.words").withStyle(ChatFormatting.DARK_GRAY)), null);
+			Component.translatable(exact ? "screen.aliveworkplace.professor.exact" : "screen.aliveworkplace.professor.words").withStyle(ChatFormatting.DARK_GRAY));
+		// The list screen's own line (42.2): the money at the top (its tooltip is this book's), the hint, the headings.
+		ChoiceList.info(info, Money.balance(player), Component.translatable("screen.aliveworkplace.professor.list_hint"),
+			List.of(Component.translatable("screen.aliveworkplace.professor.column_name"), Component.translatable("screen.aliveworkplace.professor.column_notes"),
+				Component.translatable("message.aliveworkplace.tutor.column_price")));
+		menu.button(INFO, info, null);
 		ServerLevel level = (ServerLevel) professor.level();
 		VillageHalls.nearest(level, professor.blockPosition()).ifPresent(hall -> {
 			if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
@@ -163,6 +189,13 @@ public final class CobblemonProfessor implements PokemonCensus {
 					sold ? Component.translatable("screen.aliveworkplace.professor.stone_sold").withStyle(ChatFormatting.GRAY)
 						: Component.translatable("screen.aliveworkplace.professor.stone_buy",
 							Money.describe((long) PokemonProfessor.STONE_PRICE * Money.DOLLARS_PER_EMERALD, PokemonProfessor.STONE_PRICE)).withStyle(ChatFormatting.GREEN));
+				// The list row: one a day, its price (red when the player can't pay it) and Buy; gray once sold today.
+				long dollars = (long) PokemonProfessor.STONE_PRICE * Money.DOLLARS_PER_EMERALD;
+				boolean affordable = Money.canAfford(player, dollars, PokemonProfessor.STONE_PRICE);
+				ChoiceList.row(icon, Component.translatable("screen.aliveworkplace.professor.stone_second"),
+					sold ? Component.translatable("screen.aliveworkplace.professor.stone_sold_short")
+						: Money.describe(dollars, PokemonProfessor.STONE_PRICE).copy().withStyle(affordable ? ChatFormatting.GREEN : ChatFormatting.RED),
+					sold ? null : Component.translatable("screen.aliveworkplace.professor.button_buy"), sold, false);
 				menu.button(STONE, icon, sold ? null : p -> {
 					Chat.chat(p, PokemonProfessor.buyStone(p, professor));
 					render(menu, player, professor);
@@ -175,7 +208,8 @@ public final class CobblemonProfessor implements PokemonCensus {
 			party.add(pokemon);
 		}
 		if (party.isEmpty()) {
-			menu.button(FIRST_PARTY_SLOT, named(Items.BARRIER, Component.translatable("screen.aliveworkplace.professor.no_party")), null);
+			menu.button(FIRST_PARTY_SLOT, ChoiceList.row(named(Items.BARRIER, Component.translatable("screen.aliveworkplace.professor.no_party")),
+				null, null, null, true, false), null);
 			return;
 		}
 		for (int i = 0; i < party.size() && i < 6; i++) {
@@ -187,6 +221,8 @@ public final class CobblemonProfessor implements PokemonCensus {
 			List<Component> lore = new ArrayList<>(hints);
 			lore.add(Component.translatable("screen.aliveworkplace.professor.click").withStyle(ChatFormatting.DARK_GRAY));
 			icon.set(DataComponents.LORE, lore(lore.toArray(Component[]::new)));
+			// The list row: the nature beside the name (the rest in the tooltip, as before) and Note it.
+			ChoiceList.row(icon, hints.get(0), null, Component.translatable("screen.aliveworkplace.professor.button_note"), false, false);
 			menu.button(FIRST_PARTY_SLOT + i, icon, p -> {
 				Chat.chat(p, Component.translatable("message.aliveworkplace.professor.says", professor.getDisplayName(), pokemon.getDisplayName(false))
 					.withStyle(ChatFormatting.GOLD));

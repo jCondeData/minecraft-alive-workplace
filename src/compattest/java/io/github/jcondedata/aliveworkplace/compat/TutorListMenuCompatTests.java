@@ -71,7 +71,7 @@ public class TutorListMenuCompatTests implements FabricGameTest {
 	}
 
 	/** A logged-in survival player whose chat and action-bar lines land in {@code seen}; logged out when the test ends. */
-	private static ServerPlayer player(GameTestHelper helper, List<String> seen) {
+	static ServerPlayer player(GameTestHelper helper, List<String> seen) {
 		ServerLevel level = helper.getLevel();
 		UUID uuid = UUID.randomUUID();
 		var cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(new com.mojang.authlib.GameProfile(uuid, "listTutor"), false);

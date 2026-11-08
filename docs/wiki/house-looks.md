@@ -107,6 +107,8 @@ GameTests: `PieceLooksGameTests` (`ownerGivesAHouseANewOutside`, `onlyTheLeaderC
 `withOwnershipOffAnotherPlayersBuilderTakesALook`), and `QaHouseLooks1108cGameTests` (a house torn down after the
 listing, the 128/129-block reach, a queue of 4 and of 5 waiting builds, every chest item, the job block and the bed kept
 through a finished rebuild, who may choose in an unowned and an owned hall)), and `QaHouseLooks1108cBugTests` (a torn-down house with a remembered look, changing the
-look of the 5th waiting build, a full queue explained as full).
+look of the 5th waiting build, a full queue explained as full), and `QaHouseLookSaves1108eGameTests` (the same three with
+the world saved and loaded between the pick and the next one: the 5th waiting look changed through the hall's page, the
+same look picked again, a full queue; and a remembered look kept over the restart for a house then torn down).
 
 Showcase scenes: `piece_look` (the Builds button, the Guard House's five outsides, and the desert one rebuilt).

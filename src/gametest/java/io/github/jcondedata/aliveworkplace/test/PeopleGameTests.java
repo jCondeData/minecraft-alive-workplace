@@ -193,12 +193,16 @@ public class PeopleGameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 5));
 		int well = BuilderLevels.delay(100, villager);
+		// Twice the pace is the well delay of twice the work, rounded once: 2 x delay(100) rounds twice and is off by one
+		// whenever the villager's pace factor (traits, mood) isn't a round number (B980: 193 against 2 x 97).
+		int wellTwice = BuilderLevels.delay(200, villager);
 		float chance = io.github.jcondedata.aliveworkplace.people.Sickness.dailyChance(level, villager);
 		ModAttachments.LAST_MEAL.set(villager, level.getGameTime() - 2 * VillageNeeds.DAY);
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.dailyChance(level, villager) > chance, "hunger doesn't matter");
 		io.github.jcondedata.aliveworkplace.people.Sickness.fallIll(level, villager);
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager), "not ill");
-		helper.assertTrue(BuilderLevels.delay(100, villager) == 2 * well, "ill pace: " + BuilderLevels.delay(100, villager) + " vs " + well);
+		helper.assertTrue(BuilderLevels.delay(100, villager) == wellTwice, "ill pace: " + BuilderLevels.delay(100, villager) + " vs " + well
+			+ " well (" + wellTwice + " for twice the work)");
 		helper.assertTrue(villager.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN), "not slowed");
 		io.github.jcondedata.aliveworkplace.people.Sickness.round(level, villager, 40);
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager), "got well at once");

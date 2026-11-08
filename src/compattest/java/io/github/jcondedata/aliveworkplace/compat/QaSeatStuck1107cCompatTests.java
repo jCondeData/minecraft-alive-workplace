@@ -163,7 +163,8 @@ public class QaSeatStuck1107cCompatTests implements FabricGameTest {
 	 * A villager sets off for a chair 6 blocks away and the furnishings switch is turned off on the way: for the next 200
 	 * ticks he doesn't sit, the chair isn't held for him and he stops walking to it (B1024). With the switch on again he
 	 * sits on it. An idle villager strolls in those 200 ticks, sometimes past the 8 blocks a villager looks for a seat in
-	 * (B1024: 2 of 10 runs ended 17 blocks off), so he is put back where he started when the switch comes back on.
+	 * (B1024: 2 of 10 runs ended 17 blocks off), so he is put back where he started when the switch comes back on. He is
+	 * held where he started till he picks the chair, at the start and again then (B1028).
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '900' '"qa1107c_seat_switch_off"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 900, batch = "qa1107c_seat_switch_off")
@@ -198,6 +199,14 @@ public class QaSeatStuck1107cCompatTests implements FabricGameTest {
 					step[0] = 2;
 					at[1] = helper.getTick();
 				});
+			} else if ((step[0] == 0 || step[0] == 2) && !v.isPassenger() && FurnitureSeats.walkingTo(v) == null) {
+				// Held where he started till he picks the chair (B1028). At the start, a stroll before his first seat check
+				// could take him within reach of the chair, and he picked and sat on it in one tick; after the switch,
+				// teleportTo doesn't end the stroll he was on, and walking on west for a few ticks took him past the 8
+				// blocks a villager looks for a seat in, never to come back.
+				v.getNavigation().stop();
+				v.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+				v.teleportTo(spot.x, spot.y, spot.z);
 			} else if (step[0] == 1 && broken[0] == null) {
 				if (v.isPassenger()) {
 					broken[0] = "the villager sat down " + (helper.getTick() - at[0]) + " ticks after the switch went off";

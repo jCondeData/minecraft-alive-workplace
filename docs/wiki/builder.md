@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023
 
 ## 1. What a player sees
 
@@ -31,7 +31,7 @@ in a basement pit, or on top of a tower, within 3 blocks of his bench still has 
 at the tower's foot); the message names that spot. The Table counts only while it still stands (B969: one broken or
 blown up while he worked away from it is passed over, and everything goes on the ground nearest its old spot). Ground a
 player can walk or climb to, open to the sky or joined to where he stood, comes before a nearer spot shut in a sealed
-cave or room under him (B973: struck in a wheat field or on a stair roof). Where there is none, it is dropped where he stood. On Peaceful lightning makes no witch and nothing is dropped.
+cave or room under him (B973: struck in a wheat field or on a stair roof; B1023: even a cave or room sealed moments before). Where there is none, it is dropped where he stood. On Peaceful lightning makes no witch and nothing is dropped.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
 recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
@@ -492,7 +492,8 @@ under it, gets his bag on solid ground at the spot the message names).
 `QaBuilderGaps1105bGameTests` (QA, 2 here: a builder struck on grass over a sealed cave gets his bag on the surface; on a
 bridge over a sealed flat-roofed room, on its roof under the sky). `QaBuilderGaps1105bBugTests` (QA, B973, 2 here: struck
 in a wheat field over a sealed cave, or on a bridge over a sealed stair-roofed room, the bag lies where a player can
-walk to it, not inside).
+walk to it, not inside). `BuilderStruckStaleLightGameTests` (B1023, 1: struck in a wheat field the tick the sealed cave
+under it was made, before the light has caught up, the bag still lies on the surface).
 `QaBuilderFixes1107dGameTests` (QA, B969, B973, B1002, B1019, 12: a bench swapped for a carpet, a bottom slab or stone,
 or broken on a pillar in a lava lake, leaves the bag on solid ground at the spot the message names, none burnt; struck
 over a room shut by a door or by fence gates, or on a causeway over lava, the bag lies where a player can get to; with
@@ -538,6 +539,7 @@ exactly their material list holding no lava). `BuiltEmptyGameTests.aFluidHeldInB
 Create: Create's, Forge's and Fabric's saved fluids are dropped, the tank's size and capacity kept).
 
 GameTests (`src/gametest/java/.../test/`): `BlueprintsStayGameTests.everyBlueprintKeepsItsLampsPathsAndBeds` (B537-B539: in every shipped blueprint no standing lantern, candle or torch is on a top that can't hold it, no dirt path or farmland under a solid block, no half bed; with QaWonderDesignsGameTests' qaWonderStagesStand and qaWonderBedsWhole now run for the Great Library, the Hanging Gardens and the Observatory too), `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3), `PathLedgerGameTests` (2, B575: the path to the bell keeps out of a section a player built in, planned or laid), `QaBuilderPathsOldPathGameTests` (5, B981: a new path crosses a row of old dirt path and reaches a bell standing in a square of dirt path; routes and a Steward's road cross dirt path, farmland, mud and soul sand; a lectern, enchanting table, chest, fence or cauldron is never ground), QA's `QaBuilderFixes1107bGameTests` (2 here, B981: a finished hut's path crosses bands of farmland, mud and soul sand right across the way, turns none of them into path and reaches the bell; a Steward's road crosses mud and old dirt path but lays none over farmland or soul sand), `QaBuilderPaths1105GameTests` (7, QA: the ground kinds, a pond in the way, the bench fallback, a nearer hall, plants on the path, a planned path through a restart), `QaLedgerFramesHaulGameTests` (QA: the same with the section marked by a player really breaking or placing a block beside a Village Hall, the path's goal; and every blueprint of the mod that hangs a frame or painting, in all four turns plain and mirrored, hangs each one on its wall facing the right way, B439),
+QA's `QaWalkerGroundGameTests` and `QaWalkerGround1108GameTests` (B1017: a worker's spot and a builder's path take the same 56 grounds for ground: every snow depth, slabs, stairs and trapdoors both ways up, mud, soul sand and soil, dirt path and farmland; not a lectern, chest, enchanting table, honey block, powder snow, carpet, composter, cauldron or hopper; a big dripleaf and an end portal frame still differ, B1030).
 `BuilderChaosGameTests` (5 seeds, stuck recovery), `QaBuilderStuckGameTests` (6, 23.2: a 3-deep hole, an iron-door room, a deep well of water, a lava moat, a fence pen with a shut gate, and the hole through a restart, each three times: out within 600 ticks, nothing placed or of the trap broken, the build whole), `B185GameTests` (6, villagers let out of a block), `QaBuilderBugs1031GameTests` (QA, 8: B185's let-out for a stone put down on a villager, a fence gate shut on one, one loaded inside a block, lava pits round it, a villager on a carpet never moved; B124's level line read through a sneak-click for a Miner and a Builder, and every registered job at every level), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbor's bench outlasts a build;
 a bench put down and employed at in one command is held),

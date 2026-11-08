@@ -420,9 +420,40 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		return schedule;
 	}
 
+	/**
+	 * B938: Create reads a stop's text as a glob (catnip's {@code Glob.toRegexPattern}: {@code *}, {@code ?},
+	 * {@code [..]} and {@code {a,b}} mean something), so a station named "Bramble [East]" or "Main [" isn't found by a stop
+	 * that holds its name as it is. Glob takes a backslash before any of {@code \ * ? [ {} as that character itself, so
+	 * the stop's text is the name with those escaped, and matches exactly that name.
+	 */
+	public static String stopText(String station) {
+		StringBuilder out = new StringBuilder(station.length() + 4);
+		for (int i = 0; i < station.length(); i++) {
+			char c = station.charAt(i);
+			if ("\\*?[{".indexOf(c) >= 0) {
+				out.append('\\');
+			}
+			out.append(c);
+		}
+		return out.toString();
+	}
+
+	/** The station name a stop's text was written for: {@link #stopText} undone (a text with no escapes is itself). */
+	public static String stationOf(String text) {
+		StringBuilder out = new StringBuilder(text.length());
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c == '\\' && i + 1 < text.length()) {
+				c = text.charAt(++i);
+			}
+			out.append(c);
+		}
+		return out.toString();
+	}
+
 	private static ScheduleEntry stop(String station) {
 		DestinationInstruction to = new DestinationInstruction();
-		to.getData().putString("Text", station);
+		to.getData().putString("Text", stopText(station));
 		ScheduledDelay wait = new ScheduledDelay();
 		wait.getData().putInt("Value", WAIT_SECONDS);
 		List<List<ScheduleWaitCondition>> conditions = new ArrayList<>();
@@ -468,10 +499,15 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		for (int i = 0; i < 2; i++) {
 			if (schedule.entries.get(i).instruction instanceof DestinationInstruction to) {
 				String text = to.getData().getString("Text");
-				if (!text.equals(now[i]) && (!names.contains(text) || now[i].startsWith(text + " "))) {
+				String want = stopText(now[i]);
+				// B938: the stop's text is the station's name with glob characters escaped; a stop written before that
+				// holds the name as it is, so it's read as either
+				String was = text.equals(now[i]) ? now[i] : stationOf(text);
+				if (!text.equals(want) && (was.equals(now[i]) || !names.contains(was) || now[i].startsWith(was + " "))) {
 					// a stop whose station was renamed: Create's schedule finds stations by name, so it would wait for good;
-					// B894: or told apart from a namesake (its name and a key), whose name the stop would still find
-					to.getData().putString("Text", now[i]);
+					// B894: or told apart from a namesake (its name and a key), whose name the stop would still find;
+					// B938: or written before glob characters were escaped, which the name's own pattern wouldn't find
+					to.getData().putString("Text", want);
 					AliveWorkplace.LOG.info("Alive Workplace: the village train {} now stops at '{}' (was '{}')", train.id, now[i], text);
 				}
 			}

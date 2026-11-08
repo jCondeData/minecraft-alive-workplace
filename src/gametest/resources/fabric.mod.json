@@ -176,6 +176,7 @@
 			"io.github.jcondedata.aliveworkplace.test.TailorGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PrinterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSpreadNews1108cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBlueprintSafety1108cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryWorkshopsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.AnsweringHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.AgelessElderGameTests",

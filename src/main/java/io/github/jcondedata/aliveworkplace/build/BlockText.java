@@ -23,16 +23,21 @@ import java.util.Map;
  * keep only what a player could write by hand: the letters, colors and glow. Gone are click events (a sign runs a
  * run_command with permission level 2 for whoever clicks it), the nbt, selector and score parts the game works out with
  * permission level 2 when a sign loads (they show other players' data), and lines longer than the 384 characters a player
- * can write on a sign (huge lines make the chunk's packet too big to send). Works on the text's saved JSON, so it covers
- * every mod's text the same way.
+ * can write on a sign or whose saved JSON is far bigger than a player's line (huge lines make the chunk's packet too big to
+ * send, B1065). Works on the text's saved JSON, read with the same lenient reader the game uses (it skips comments and
+ * a {@code )]}'} prefix, B1062), so it covers every mod's text the same way.
  */
 final class BlockText {
 	/** The most characters a player can write on a sign's line (vanilla trims each edited line to this). */
 	static final int MAX_LINE = 384;
 	/** A name keeps at most as many characters as a sign's line. */
 	static final int MAX_NAME = MAX_LINE;
-	/** A line's saved JSON longer than this many characters a letter is cut back to its plain words. */
-	private static final int JSON_PER_CHAR = 40;
+	/**
+	 * A line's (or name's) saved JSON longer than this is cut back to its plain words (B1065): room for a player's longest
+	 * line with every letter escaped, plus a little style. A sign then carries at most about 16 KB (16 lines with the back
+	 * and the filtered copies), near what a player's sign can, so a chunk full of them stays far under a packet's limit.
+	 */
+	static final int MAX_JSON = 2 * MAX_LINE + 256;
 	private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
 	/** Cleans every text in {@code tag}, at any depth, in place. */
@@ -78,9 +83,8 @@ final class BlockText {
 	 * no JSON, or not a text component, comes back as it was.
 	 */
 	static String clean(String text, int max) {
-		String trimmed = text.trim();
-		boolean structured = trimmed.startsWith("{") || trimmed.startsWith("[");
-		if (!structured && max < 0) {
+		// A text component's object or array needs one of these; a string without them can only be plain words
+		if (max < 0 && text.indexOf('{') < 0 && text.indexOf('[') < 0) {
 			return text;
 		}
 		JsonElement json;
@@ -92,10 +96,13 @@ final class BlockText {
 		if (json == null || json.isJsonNull()) {
 			return text;
 		}
+		// what the game's lenient reader makes of the line decides, not its first character (B1062): a line can start with a
+		// comment or a )]}' prefix and still be read as a component
+		boolean structured = json.isJsonObject() || json.isJsonArray();
 		boolean changed = structured && strip(json);
 		if (max >= 0) {
 			String plain = plain(json);
-			if (plain.length() > max || text.length() > (long) max * JSON_PER_CHAR) {
+			if (plain.length() > max || text.length() > MAX_JSON) {
 				return GSON.toJson(new JsonPrimitive(plain.substring(0, Math.min(max, plain.length()))));
 			}
 		}

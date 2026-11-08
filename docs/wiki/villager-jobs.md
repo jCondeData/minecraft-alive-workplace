@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955
 
 ## What a player sees
 
@@ -149,13 +149,14 @@ egg is made from the same hatchling and keeps the form (`form=galar` and the lik
 Ditto counts as the mother. Regions Galar, Hisui and Paldea work the same (Perrserker a Galarian Meowth, Sneasler a
 Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with no regional form (Alolan Raichu,
 Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A form picked by a choice feature rather than a flag (a Blaze or Aqua Breed Tauros, "blaze-breed" being
-`bull_breed=blaze`) is set as that feature, so it survives a save and load (B955): an East Sea Gastrodon hatches East Sea
-Shellos, a Blue Florges a Blue Flabébé (two steps back), a Sensu Oricorio a Sensu, a Blue-Striped Basculin Blue-Striped,
-and a male Basculegion with Ditto a White-Striped Basculin. Known gaps (bugs): a West Sea or Baile mother (a random
-default) hatches a random sea or style that shows after a reload (B1031), a female Basculegion hatches Red-Striped
-(B1040), and a Blaze Breed Tauros's Cobbreeding egg hatches Combat Breed (B1041). Tested in
-`QaDaycareBugs1103dCompatTests`, `QaDaycareRegional1104d2CompatTests` (11), `QaDaycareRegional1104d2BugCompatTests`
-and `QaDaycareChoiceForms1108dCompatTests` (5).
+`bull_breed=blaze`; a Blue- or White-Striped Basculin) is set as that feature, so it survives a save and load, and a
+Combat Breed stays Combat (B955): an East Sea Gastrodon hatches East Sea Shellos, a Blue Florges a Blue Flabébé (two
+steps back), a Sensu Oricorio a Sensu, and a male Basculegion with Ditto a White-Striped Basculin. Known gaps (bugs): a
+West Sea or Baile mother (a random default) hatches a random sea or style that shows after a reload (B1031), a female
+Basculegion hatches Red-Striped (B1040), and a Blaze Breed Tauros's Cobbreeding egg hatches Combat Breed (B1041).
+Tested in `QaDaycareBugs1103dCompatTests`, `QaDaycareRegional1104d2CompatTests` (11),
+`QaDaycareRegional1104d2BugCompatTests`, `QaDaycareChoiceForms1108cCompatTests` and
+`QaDaycareChoiceForms1108dCompatTests` (5).
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last
@@ -199,7 +200,9 @@ before feeding; once the first is fed, the one left in hand is enough for the se
 (B1021, `QaRanchPairs1107cBugTests`). A single food feeds nobody, and 3 feed one pair and keep the last in the chest;
 if the mate dies after the first is fed, the one in hand goes to the nearest ready third, and if the fed one dies, it
 comes back to the chest (`QaRanchTwoFood1108cGameTests`, which also feeds a Shepherd's sheep and a Herder's pigs with
-exactly 2).
+exactly 2). Saved and loaded mid-pair, he forgets the pair: the food in his bag goes back to the chest (none lost), an animal
+already fed stays in love till it wears off, and the pair is fed again once both are ready and the chests hold 2
+(`QaRanchPairSaves1108eGameTests`).
 
 **A Fisherman comes back for cooked fish (B147, B802).** Fish done in a furnace or smoker by his barrel call him home
 when the barrel can take them: an empty slot, or a stack of the same fish with room (a barrel whose every slot holds

@@ -1418,10 +1418,12 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPathsCrafterVerify1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRanchPairSaves1108eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRanchTwoFood1108cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRandomJobsReach1108cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldSaveCrafter1107cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107dGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegePot1108aGameTests"
 		]
 	},
 	"depends": {

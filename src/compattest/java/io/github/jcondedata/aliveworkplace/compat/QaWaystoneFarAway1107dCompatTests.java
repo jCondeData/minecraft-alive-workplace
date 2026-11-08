@@ -141,6 +141,11 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 
 		/** Polls {@code ready} every 5 ticks for up to {@code ticks}, then runs {@code then}; fails with {@code fail} if it never is. */
 		void waitFor(BooleanSupplier ready, int ticks, Supplier<String> fail, Runnable then) {
+			waitFor(ready, ticks, 5, fail, then);
+		}
+
+		/** The same, polling every {@code step} ticks (1: a state that may last a tick or two is seen). */
+		void waitFor(BooleanSupplier ready, int ticks, int step, Supplier<String> fail, Runnable then) {
 			guarded(() -> {
 				if (ready.getAsBoolean()) {
 					then.run();
@@ -149,7 +154,7 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 				if (ticks <= 0) {
 					throw new GameTestAssertException(fail.get());
 				}
-				helper.runAfterDelay(5, () -> waitFor(ready, ticks - 5, fail, then));
+				helper.runAfterDelay(step, () -> waitFor(ready, ticks - step, step, fail, then));
 			});
 		}
 
@@ -523,7 +528,9 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 			onTheRoad(run, people, () -> {
 				RealmData.Order o = order(helper).orElseThrow();
 				RealmData.get(level.getServer()).putOrder(o.withState(RealmData.ON_ROAD, o.leaves(), level.getGameTime())); // their time is up
-				run.waitFor(() -> order(helper).map(x -> !x.state().equals(RealmData.ON_ROAD) || x.arrives() > level.getGameTime()).orElse(true), 100,
+				// polled every tick: stepped out, the order is ARRIVING only until the spot's chunks wake and the camp is
+				// pitched, which can be within 5 ticks (seen: 3 of 7 runs found the order already gone)
+				run.waitFor(() -> order(helper).map(x -> !x.state().equals(RealmData.ON_ROAD) || x.arrives() > level.getGameTime()).orElse(true), 100, 1,
 					() -> "their time up, the settlers' order didn't move on: " + order(helper).map(x -> x.state() + " arrives " + x.arrives()).orElse("gone"), () -> {
 						RealmData.Order now = order(helper).orElseThrow(() -> new GameTestAssertException("the settlers' order is gone at the step-out"));
 						RealmData.get(level.getServer()).removeOrder(now.mother()); // (no camp built 1,900 blocks off)
@@ -550,9 +557,16 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 			List<Villager> people = new ArrayList<>();
 			settlers(helper, run, people);
 			onTheRoad(run, people, () -> {
+				// B1035: the visit is a player at Farbrook: its chunks loaded and ticked before the stone is broken. Broken in the
+				// very tick a bare setBlock loads the chunk, the Waystones block entity isn't bound to its waystone yet (Balm runs
+				// its onLoad at the next block-entity tick), so the mod never takes the stone off its saved list.
+				run.forceLoad();
+				run.waitFor(() -> level.isLoaded(run.far.stone()) && VillageWaystones.standing(level, run.far.hall()), 200,
+					() -> "setup: at the visit Farbrook's stone doesn't stand as a working waystone (loaded " + level.isLoaded(run.far.stone()) + ")", () -> {
 				level.setBlock(run.far.stone().above(), Blocks.AIR.defaultBlockState(), 3);
 				level.setBlock(run.far.stone(), Blocks.AIR.defaultBlockState(), 3);
-				run.whenUnloaded(() -> {
+				helper.assertFalse(VillageWaystones.standing(level, run.far.hall()), "setup: Farbrook's stone, broken at the visit, still stands");
+				run.leave(() -> {
 					RealmData.Order o = order(helper).orElseThrow(() -> new GameTestAssertException("the settlers' order is gone mid-trip"));
 					RealmData.get(level.getServer()).putOrder(o.withState(RealmData.ON_ROAD, o.leaves(), level.getGameTime()));
 					long at = level.getGameTime();
@@ -568,6 +582,7 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 							helper.assertTrue(said(level, a(helper), "chronicle.aliveworkplace.settlers_walked"), "Ashford's chronicle doesn't say the settlers walk");
 							run.pass("Farbrook's stone broken mid-trip, then unloaded: the settlers walk the whole road ({} ticks)", walk);
 						});
+				});
 				});
 			});
 		}));

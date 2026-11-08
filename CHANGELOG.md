@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A village train station you name with brackets or braces, like "Bramble [East]", "Platform {2}" or "Main [", now gets the village train: it used to wait at the other station for good with the caravan aboard. Trains already stuck that way start running again.
 - A Builder struck by lightning over a sealed cave or room no longer has his bag put inside it now and then (when the cave was sealed moments before, or the server was busy): it always lies where a player can walk to it.
 - With Cobblemon, a Daycare Keeper's Blaze Breed or Aqua Breed Paldean Tauros hatchling stays that breed after a save and load (in the party or PC after a restart), instead of turning Combat Breed.
 - With exactly 2 breeding foods in the chest, the Rancher, Shepherd and Herder now feed both animals of a pair, instead of feeding one, walking back to an empty chest for a second food and leaving the other unfed (no young, and one food wasted).

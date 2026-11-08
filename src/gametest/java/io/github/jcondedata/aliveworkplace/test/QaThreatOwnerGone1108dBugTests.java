@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.DecoratedPotBlock;
  * guard, or unloaded with its chunk. The spec (docs/wiki/sieges.md, "What threats may damage"): a threat is a raider or
  * a projectile one shot; nothing a threat does breaks a builder's block. The shots go through the blocks' own
  * projectile-hit entry points and the blast through the level's explosion, the ones the game calls.
+ * The bug: B1066 (the commit before this one says B1065 by mistake).
  */
 public class QaThreatOwnerGone1108dBugTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";

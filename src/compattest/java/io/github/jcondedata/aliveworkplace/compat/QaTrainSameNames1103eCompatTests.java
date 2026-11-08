@@ -70,6 +70,7 @@ public class QaTrainSameNames1103eCompatTests implements FabricGameTest {
 		helper.setBlock(STATION_DUN, create("track_station"));
 		Caravans.Data data = Caravans.Data.get(level);
 		Four v = new Four(helper.absolutePos(HALL_PINE), helper.absolutePos(HALL_MID), helper.absolutePos(HALL_FAR), helper.absolutePos(HALL_DUN), data);
+		awayFromLeftovers(helper, v.halls());
 		for (BlockPos hall : v.halls()) {
 			data.remove(hall);
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
@@ -95,6 +96,35 @@ public class QaTrainSameNames1103eCompatTests implements FabricGameTest {
 		helper.assertTrue(CaravanTrains.rides(data, v.pine(), v.far()) && CaravanTrains.rides(data, v.mid(), v.dun()),
 			"setup: the two pairs aren't on a railway");
 		return v;
+	}
+
+	/**
+	 * B1026, B1034: takes away the Storehouses and Village Halls an earlier batch left outside this area (never cleared)
+	 * within a village's reach of these halls. Every hall unloads into, and loads its caravans from, the chests by any
+	 * Storehouse within {@code VillageHalls.RADIUS} (Caravans.storehouse): with one left 34 blocks off, a train's 32 logs
+	 * were found there or its chest's 32 logs came into these four (96 of 64), and a hall left nearby loads its own
+	 * caravans from these chests (39 of 64). As CreateTrainCompatTests.villages does for its two halls. The tests that
+	 * call this run alone in their batch (batches run one after another), so nothing of a running test is taken.
+	 */
+	static void awayFromLeftovers(GameTestHelper helper, List<BlockPos> halls) {
+		ServerLevel level = helper.getLevel();
+		net.minecraft.world.phys.AABB own = helper.getBounds();
+		int reach = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
+		java.util.Set<BlockPos> gone = new java.util.LinkedHashSet<>();
+		for (BlockPos hall : halls) {
+			// a hall reaches the Storehouses within its radius, and a hall left within twice that reaches one of ours
+			level.getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI)
+					|| h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.VILLAGE_HALL_POI),
+				p -> !own.contains(net.minecraft.world.phys.Vec3.atCenterOf(p)), hall, 2 * reach,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).forEach(p -> gone.add(p.immutable()));
+		}
+		Caravans.Data data = Caravans.Data.get(level);
+		for (BlockPos pos : gone) {
+			if (level.getBlockEntity(pos) instanceof VillageHallBlockEntity) {
+				data.remove(pos);
+			}
+			level.removeBlock(pos, false);
+		}
 	}
 
 	private static boolean own(Caravans.Data data, BlockPos hall, BlockPos station) {

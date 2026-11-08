@@ -150,7 +150,7 @@ Ditto counts as the mother. Regions Galar, Hisui and Paldea work the same (Perrs
 Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with no regional form (Alolan Raichu,
 Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A form picked by a choice feature rather than a flag (a Blaze or Aqua Breed Tauros, "blaze-breed" being
 `bull_breed=blaze`; a Blue- or White-Striped Basculin) is set as that feature, so it survives a save and load, and a
-Combat Breed stays Combat (B955): an East Sea Gastrodon hatches East Sea Shellos, a Blue Florges a Blue Flabébé (two
+Combat Breed stays Combat (B955). The feature's choices come from `examples()`, which Cobblemon 1.7.3 and 1.8 both have (1.8 removed `ChoiceSpeciesFeatureProvider.getChoices()`, which threw `NoSuchMethodError` on every such hatch, B1059), and 1.8's weighted choice features are read by reflection: an East Sea Gastrodon hatches East Sea Shellos, a Blue Florges a Blue Flabébé (two
 steps back), a Sensu Oricorio a Sensu, and a male Basculegion with Ditto a White-Striped Basculin. Known gaps (bugs): a
 West Sea or Baile mother (a random default) hatches a random sea or style that shows after a reload (B1031), a female
 Basculegion hatches Red-Striped (B1040), and a Blaze Breed Tauros's Cobbreeding egg hatches Combat Breed (B1041).

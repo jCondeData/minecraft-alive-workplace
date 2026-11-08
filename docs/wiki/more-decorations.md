@@ -26,8 +26,8 @@ Roadmap items: 26.14, 36.4, B186
 | Footbridge | 7 x 4 x 7 | 2 | a spruce bridge with rails over a stone-curbed channel of water with lily pads, a lantern at each end |
 
 All are in the Blueprint Table with the other decorations. The Flower Planters are unlocked from the start; the rest
-start locked ("A market-day trader"): a traveling trader on market day may sell any of them, and a builder's level-up
-unlocks locked builds too.
+start locked ("A market-day trader"): a traveling trader on market day may sell any of them, a builder's level-up
+unlocks locked builds too, and a blueprint of one found or bought elsewhere, used on the Table, unlocks it there.
 
 ## 2. How it works
 
@@ -95,7 +95,13 @@ village renamed at the next dawn; a Dark Oak signpost gets words too; B186: the 
 its record unfiled is never named, and a village on the diagonal is named on one board only), `QaSignpostGameTests` (QA: a village 999 or 1,000 blocks away is named, 1,001 is
 not; nothing either way says the village's name and "Welcome" on all four boards; a player can't dye or edit a
 written board; a build pulled down and a new nearer neighbor are both picked up at the next dawn; reloaded boards
-keep their words).
+keep their words), `QaDecorations1104fGameTests` (QA: each built from exactly what the held blueprint's Material List
+asks for, nothing skipped; the Signpost's boards read as words; a Fire Pit taken down leaves no fire; a Footbridge over a
+real stream and a Lily Pond on a hillside keep their water in), `QaDecorations1108GameTests` (QA: a village's Table
+lists all fourteen by name, in American English, with a size, materials a survival player can get and a way to get
+them, and each has its "built" advancement; a found Hay Cart blueprint used on the Table unlocks it and the Table then
+hands it out for a Blank Blueprint; a Lily Pond survives a server restart mid-build; Flower Planters short of their
+lanterns make the builder wait, nothing hung in their place, and finish when the lanterns arrive).
 
 Showcase scenes: `decor` (every decoration placed side by side), `signpost` (a signpost at a crossroads between two
 villages, each board up close).

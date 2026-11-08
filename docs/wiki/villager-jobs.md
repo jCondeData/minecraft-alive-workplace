@@ -188,7 +188,9 @@ Two that have drifted more than 8 apart before the first is fed cost nothing; if
 first was fed, the nearest ready one within 8 blocks of the first is fed instead, or none. Tests:
 `RancherGameTests.rancherSkipsAPairTooFarApart`, `rancherFeedsThePairThatCanMeet`, and `QaRanchPairs1107cGameTests` (7
 apart fed, 7.07 not; the closest of three; foals and resting ones passed over; the drift and mate-lost cases; the
-Shepherd's and Herder's pairs).
+Shepherd's and Herder's pairs). A pair is picked only with food for both in the chests (2 or more), and he takes both
+before feeding; once the first is fed, the one left in hand is enough for the second, so exactly 2 foods feed the pair
+(B1021, `QaRanchPairs1107cBugTests`).
 
 **A Fisherman comes back for cooked fish (B147, B802).** Fish done in a furnace or smoker by his barrel call him home
 when the barrel can take them: an empty slot, or a stack of the same fish with room (a barrel whose every slot holds

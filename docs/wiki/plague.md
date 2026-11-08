@@ -43,7 +43,8 @@ Roadmap items: 32.18
   engine's plain rule). `Disasters.start` gives it a first case; `Disasters.contagion` calls
   `Plague.spread` (one roll a round per well villager near the ill; the Physician's seen reach only their house, a bed
   within 6 blocks of theirs). `carried` starts it from a hexed villager (`Covens.hexNight`) or a far traveler
-  (`Innkeepers.arrive`), by chance only (never in GameTests).
+  (`Innkeepers.arrive`), by chance only (GameTests switch the daily rolls off; `QaPlagueCarrier1108dGameTests`
+  switches them on for its own calls).
 - `people/Sickness`: a third illness kind, `plague`, beside the ordinary one and the hex. In the hall's round a
   plague-ill villager doesn't recover while the plague is under way (`Plague.underway`), and after two days is walked
   to their bed and put to sleep there (`Plague.toBed`); `PlagueBedMixin` stops the brain waking them while their bed
@@ -124,4 +125,7 @@ game). All new fields are optional, so old saves load unchanged.
   (`aNewCaseKeepsThePlagueOn`); after a save and load the ill keep the tick they fell ill and pass it on, and the
   Remedy's protection holds (`aPlagueSurvivesARestart`); `plague: false` mid-plague ends it at the next round, passes
   nothing on, and the ill get well after the usual three days (`switchedOffMidPlague`).
+- `QaPlagueCarrier1108dGameTests` (QA, 2026-11-08): a carrier who rolls 1 in 10 or better brings the plague to a
+  Town as its first case, an unlucky one brings nothing; a lucky one brings nothing to a Village, with `plague: false`,
+  during a drought or 6 days after the last disaster, and brings it again 7 days after.
 - Showcase scene: `plague`.

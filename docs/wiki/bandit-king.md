@@ -152,4 +152,8 @@ horn) in their own entity data.
   (`theKingsTributeOfOneEmeraldReadsInTheSingular`), two read "2 emeralds". `QaKingTribute1103dBugTests` and
   `QaKingTribute1103dGameTests` (B866): 0.99 and 1.99 emeralds taken read as such in the chronicle and in chat, a
   whole 3 reads "3 emeralds"; the compat test `QaKingTributeDollars1103dCompatTests` reads "100 CobbleDollars".
+- GameTests: `QaBanditFortGround1108dGameTests` (QA): the fort fits over copper, iron or coal ore showing in its
+  ground; a dirt block a player set in its box refuses it; its ground is taken 32 blocks below the hall and not 33;
+  each stage's men stand on their spots (the yard's four, a pillager on each watchtower); and a man saved with an older
+  home tag that has no radius keeps to the fort's 17 blocks.
 - Showcase scenes `bandit_fort` and `bandit_king`.

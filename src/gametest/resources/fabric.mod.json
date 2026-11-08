@@ -1411,7 +1411,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldSaveCrafter1107cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107dGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeDamage1108dBugTests"
 		]
 	},
 	"depends": {

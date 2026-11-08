@@ -629,6 +629,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderPaths1105GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderPathsOldPathGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWalkerGroundGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWalkerGround1108GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderRecheck1026GameTests",
@@ -1380,6 +1381,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.BuilderStruckStaleLightGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBedsHauler1105cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPrinterNurseBard1105cGameTests",
@@ -1414,6 +1416,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRanchPairSaves1108eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRanchTwoFood1108cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRandomJobsReach1108cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldSaveCrafter1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107dGameTests"
 		]

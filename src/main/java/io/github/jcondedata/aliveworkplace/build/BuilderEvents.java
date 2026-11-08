@@ -604,6 +604,7 @@ public final class BuilderEvents {
 	 * B969: the workstation counts only while it still stands with a top to rest on (the worker remembers the spot of a
 	 * Table that was broken or blown up, and what was put over it fell). B973: a spot a player can reach (open to the sky,
 	 * or joined to where the worker stood, without breaking a block) wins over a nearer one shut in a sealed cave or room.
+	 * B1023: "open to the sky" by the heightmap, never the sky light, which lags behind block changes.
 	 */
 	static BlockPos outOfReach(ServerLevel level, Villager villager, Entity bolt) {
 		BlockPos stood = villager.blockPosition();
@@ -657,7 +658,7 @@ public final class BuilderEvents {
 			queue.add(stood);
 		}
 		for (BlockPos p : BlockPos.betweenClosed(minX, minY, minZ, maxX, maxY, maxZ)) {
-			if (level.canSeeSky(p) && passable(level, p)) {
+			if (underSky(level, p) && passable(level, p)) {
 				BlockPos q = p.immutable();
 				if (seen.add(q)) {
 					queue.add(q);
@@ -677,6 +678,16 @@ public final class BuilderEvents {
 			}
 		}
 		return seen;
+	}
+
+	/**
+	 * B1023: nothing above {@code p} stops a player coming down to it: it is at or over the top of its column (the
+	 * heightmap, which every block change updates at once). Not {@code canSeeSky}, which reads the sky light: the light
+	 * engine works that out a few ticks later (later still on a busy server), so a cave or room sealed moments before
+	 * still read as open to the sky and won as the nearest spot (B973 back, now and then).
+	 */
+	private static boolean underSky(ServerLevel level, BlockPos p) {
+		return p.getY() >= level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, p.getX(), p.getZ());
 	}
 
 	/** A player passes through {@code p} without breaking it: nothing solid there, or a door. */

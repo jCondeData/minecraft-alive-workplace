@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B959, B960
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960
 
 ## What a player sees
 
@@ -122,7 +122,10 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   station screen while the train runs, is followed: the hall's next look at its train points that stop at the new name
   (`CreateTrains.follow`), so the train and its caravans keep coming (B900), also when the renamed station's village
   isn't loaded any more (the player renamed it there and went home): the name is read from Create's railway, which
-  keeps every station with its chunk unloaded (B912). A train put together at a station whose village unloads soon
+  keeps every station with its chunk unloaded (B912). Any name works, brackets and all ("Bramble [East]", "Platform {2}", "Main ["): Create reads a
+  stop's text as a pattern (`*`, `?`, `[..]` and `{a,b}` mean something), so the stop holds the name with a backslash
+  before each of `\ * ? [ {` (`CreateTrains.stopText`) and finds exactly that station; a stop saved before that, holding
+  the name as it is, is re-pointed on the hall's next look (B938). A train put together at a station whose village unloads soon
   after (the player walking off) keeps its conductor and runs on (B913); it still waits two seconds at that station
   first (Create's schedule cooldown), so the caravans waiting there board it. Stations on one track network never share a
   name the village gave them, since a Create schedule stops at the nearest station of its name: a station whose village's
@@ -675,6 +678,13 @@ village's last column empties it (B994).
 - `QaTrainStationSameName1104eCompatTests` (QA, B900, with Create): with the Ashford-Bramble train running, a player
   names both stations "Station", swaps the two stations' names, or renames Bramble's "Harbor" and then, once the train
   has followed that, "Port": each time Ashford's 32 logs ride the train to Bramble, none lost or doubled.
+- `QaTrainStationGlobNames1104eCompatTests` (QA, B938, with Create): the other village's station named "Bramble [East]",
+  "Platform {2}" or "Main [", the sending village's own named "Ashford [West]", or the village itself named
+  "Bramble [East]" with a name tag: each time the 32 logs ride the train and arrive, none lost or doubled.
+- `TrainStationGlobNamesCompatTests` (B938, with Create): through Create's own reading of a stop, each of 19 names (glob
+  characters, backslashes, a lone `*` or `?`) is found by its own stop and by no other; a station named with every glob
+  character and a backslash gets the caravan; a stop saved before the fix (the bracketed name as it is) is re-pointed
+  and the logs arrive.
 - `QaTrainNamesakes1107eCompatTests` (QA, B933, with Create): a halt added halfway along the line and all three
   stations named "Station" (the train stops at the halt, a namesake of its stop, and is sent on; fails without
   CreateTrains.sendOn), the halt given the other village's station name, and only the sending village's station given the

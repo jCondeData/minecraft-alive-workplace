@@ -103,22 +103,29 @@ public class QaVillageVerify1104c4CompatTests implements FabricGameTest {
 		BlockPos near = chair(helper, nearRel);
 		BlockPos far = chair(helper, new BlockPos(13, 2, 10));
 		Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 10));
+		net.minecraft.world.phys.Vec3 spot = v.position();
 		Runnable restore = supper(level);
 		boolean[] broken = {false};
 		helper.onEachTick(() -> {
+			if (!broken[0] && !v.isPassenger() && FurnitureSeats.walkingTo(v) == null) {
+				// Held where he spawned till his first seat check (B957): an idle stroll east before it made the other chair
+				// the nearer one, and he walked to it and sat down before the chair this test breaks was ever his.
+				v.getNavigation().stop();
+				v.teleportTo(spot.x, spot.y, spot.z);
+			}
 			if (!broken[0] && !v.isPassenger() && !FurnitureSeats.free(level, near, null)) {
 				broken[0] = true; // they're walking to it
 				helper.setBlock(nearRel, Blocks.AIR);
 			}
 			if (!broken[0] && v.isPassenger()) {
-				helper.fail("setup: the villager sat down before the chair they walked to could be broken");
+				helper.fail("setup: the villager sat down before the chair they walked to could be broken; " + FurnitureSeats.describe(level, v));
 			}
 		});
 		helper.succeedWhen(() -> {
-			helper.assertTrue(broken[0], "the villager never set off for the nearer chair");
+			helper.assertTrue(broken[0], "the villager never set off for the nearer chair; " + FurnitureSeats.describe(level, v));
 			FurnitureSeat seat = seatOf(v);
 			helper.assertTrue(seat != null && seat.blockPosition().equals(far), "the villager didn't take the other chair: seated " + (seat != null)
-				+ (seat == null ? "" : " at " + seat.blockPosition()));
+				+ (seat == null ? "" : " at " + seat.blockPosition()) + "; " + FurnitureSeats.describe(level, v));
 			helper.assertTrue(seats(helper, near).isEmpty(), "a seat was left where the broken chair stood");
 			v.discard();
 			restore.run();

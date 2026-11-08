@@ -136,8 +136,13 @@ final class EldersScene {
 		// The same walk, side by side: Bram falls behind.
 		if (tick == 215) {
 			server.execute(() -> {
-				bram.moveTo(-6.5, -60, 1.5, -90f, 0f);
-				tom.moveTo(-6.5, -60, 3.5, -90f, 0f);
+				// Six blocks apart (B949): two apart they stood inside vanilla's gossip reach, and two villagers brushing
+				// shoulders walk on at one pace, so the check measured gossip, not age.
+				bram.moveTo(-6.5, -60, -1.5, -90f, 0f);
+				tom.moveTo(-6.5, -60, 4.5, -90f, 0f);
+				// A step back so both walkers, six blocks apart, are in the picture.
+				ServerPlayer player = player(server);
+				player.teleportTo(server.overworld(), 0.5, -60, 12.5, 180f, 8f);
 				for (Villager v : List.of(bram, tom)) {
 					// A fresh start for both: no walk or failed path left from before they were moved (B187).
 					v.getNavigation().stop();
@@ -150,8 +155,8 @@ final class EldersScene {
 		if (tick >= 220 && tick < WALK_FROM + 75) {
 			server.execute(() -> {
 				// Asked the way every worker asks: with its own retry counter (B187: Tom once had no walk target at all).
-				bramRetry = Walker.requestWalk(bram, new BlockPos(10, -60, 1), 0.5f, 1, bramRetry);
-				tomRetry = Walker.requestWalk(tom, new BlockPos(10, -60, 3), 0.5f, 1, tomRetry);
+				bramRetry = Walker.requestWalk(bram, new BlockPos(10, -60, -2), 0.5f, 1, bramRetry);
+				tomRetry = Walker.requestWalk(tom, new BlockPos(10, -60, 4), 0.5f, 1, tomRetry);
 				if (bramFrom != 0 && walkTicks >= 0) {
 					walkTicks++;
 					stood[0] += bram.getNavigation().isDone() ? 1 : 0;

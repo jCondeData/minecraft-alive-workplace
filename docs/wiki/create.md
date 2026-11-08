@@ -634,6 +634,10 @@ village's last column empties it (B994).
   lightning into a witch, with nobody else by the train: the day's 32 logs still reach the other village (the timed
   trip), all 64 kept. `TrainDriverCompatTests`: with a villager free by the train, he takes the dead driver's seat and
   the caravan rides the train all the way.
+- `QaTrainDriverEdges1108eCompatTests` (QA, with Create, B962): the driver killed with the caravan's 32 logs already
+  in the train's chest and nobody free: the logs come back out and arrive once by the timed trip, none left in the chest,
+  never doubled; the new driver killed too: a third villager takes the seat and the train still brings the caravan;
+  only a baby and a grown Farmer by the train: neither is sat in the seat, and the caravan takes the timed trip.
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is

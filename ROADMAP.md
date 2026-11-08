@@ -6324,7 +6324,7 @@ Each item: GameTests through the player's own clicks (`QaEveryMenuGameTests` mus
 the harness and `tools/showcase/scenes.py`, `sessions.py done <id> --review`. Text in American English. Lane C builds
 it, in order (42.1 first: the others use its pieces). Depends on: nothing open.
 
-- [ ] **42.1** **The list menu, first on the Move Tutor.** A `ChoiceTableScreen` list mode for the menus opened with
+- [x] **42.1** (review: pending 2026-11-08) **The list menu, first on the Move Tutor.** A `ChoiceTableScreen` list mode for the menus opened with
   `ChoiceMenu.open(...)` (a vanilla 6-row chest today): the title and the player's money at the top, a tab row
   (the Tutor's party), a list of rows (name, second line, price) with a button on each, gray rows for what can't be
   picked, a footer hint, as `docs/design/M42/menu_a.png`. Moves `ChoiceMenu.open` callers to it one by one through
@@ -6393,6 +6393,16 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
   attributes and look sleek and unified; if we are making a UI it should follow the same steps". Read as: every screen
   the mod opens (other mods' own screens stay theirs). Filed as Milestones 42 (lane C), 43 (lane D) and 44 (lane E);
   mockups in `docs/design/M42/`. He approves each screen from its showcase stills.
+
+- 2026-11-08 (lane-c-1108-1852, 42.1): **the list screen's design**, for 42.2-42.4 and lanes D/E. One menu type for
+  every list menu (`aliveworkplace:choice_list`, `ChoiceMenu.openList`); the server menu stays a `ChoiceMenu` with chest
+  clicks, and what each icon is travels as a mark in its custom data (`work/ChoiceList`: `row(icon, second, price,
+  button, off, on)`, `tab(icon, on)`, `page(icon, next)`, `info(icon, money, hint, columns)`; texts as components, so
+  colors and translations survive). An unmarked button is a plain row. `ChoiceMenu.everyTick` lets a menu re-lay itself
+  when what it shows changes (the Tutor's party and money). Drawing pieces: `TableStyle`'s "shared list-menu pieces"
+  (`button`, `tab`, `listColumns`, `columnHeadings`, `listRow`, `footerHint`, `money`). Moves a Pokémon already knows
+  stay off the Tutor's list (its QA test requires it), so the mockup's gray "Already knows" row isn't shown; gray rows
+  are lessons beyond the tutor's rank. Type and kind sit in a column, as in the mockup.
 
 - 2026-11-07 (lane-e-1107-1612, QA, saves, the pack with Create): **B1007, B1008, B1009 verified across saves**: QaBagAfterNewJobSaves1107eGameTests (5, 3 of 3 runs and the full build; with the fix reverted the 4 bug cases fail, the control passes): a novice smith or carpenter saved and reloaded before or right after taking a lectern job gives back the sword, iron or logs, one sword in the world, the request freed and built by a new carpenter; a 10-XP smith reloaded mid-carry still mends. **Update rehearsal 0.151.7 (today's release) to main 78fd3e856 with Create passed** ([report](docs/owner/rehearsal-0.151.7-to-main-create.md)): every villager, job, rank, container (2,013 items in 37), parcel and build site kept, takings equal to the control, seeding p95 29.9 ms, log audit clean of ours. langcheck clean. B967 seen again: FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt failed once in this lane's local full build (1 of 1217 compat); a first full build was OOM-killed (exit 137) with two leftover Kotlin compile daemons from the subagent's runs, green-running after `--stop`.
 - 2026-11-07 (lane-e-1107-1313, QA, Create, the pack and saves): **B966/B972 verified across saves** (QaSiegeGatewaySaves1107eGameTests, 5, 4 of 4 runs). Design question for the owner, not a bug by sieges.md: with the middle gate walled up the ram moves on to a side gate, but `Sieges.open` reads only the middle way, so a side gate the ram breaks leaves a real gap the raiders are never sent through (they wait outside till dawn). Untested. **B1015** filed: Create's Mechanical Saw and Mechanical Arm outside a protected village reach in (B993/B994 kin), and a Deployer outside places there (B844's path); bug tests on tests/create-more-machines-1107e, controls on main. Not yet tested: Bearing/Gantry contraptions and the Portable Storage Interface at the edge. B967 seen again: FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt failed once in this lane's local full build (main 8d70756bc, 1 of 1213 compat), passed on a rerun of the compat suite.

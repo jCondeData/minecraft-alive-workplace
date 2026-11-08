@@ -294,6 +294,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicRoom1102cCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaFossilScientist1102dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMoveTutor1102dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.TutorListMenuCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaNurseMachine1102dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaKingTributeDollars1103dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaNurseMachine1102dBugTests",

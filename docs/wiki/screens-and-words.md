@@ -11,7 +11,8 @@ Roadmap items: 24.4, 24.5
 Each screen fits its window at GUI scales 2 to 4, with no title or line running past the edge of its panel. The
 Village Hall and the Storehouse board are drawn in the Blueprint Table's style: a gold title, a list on the left and a
 pane on the right that reads out whatever is under the mouse, scrolled when it is long. The mailbox is a vanilla-style
-container drawn in vanilla's container colors. The shop and the research screen are six-row chest screens of buttons.
+container drawn in vanilla's container colors. The shop and the research screen are six-row chest screens of buttons; the Move Tutor's lessons are the
+[list screen](list-screen.md) (42.1), where the other chest menus are moving.
 
 The words match: a job is called what the README's job table ("All the jobs at a glance") calls it, a block or item of
 ours is written with the same capitals everywhere ("the Travel Post", never "the travel post"), and spelling is

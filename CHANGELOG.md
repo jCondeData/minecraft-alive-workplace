@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+
+- The Move Tutor's lessons are a list in the Village Hall's look instead of a gray chest: your money at the top, your party as tabs, each move a row with its type, price and a Teach button (Confirm to pay), gray rows for moves the tutor can't teach yet; the screen follows your party and money while it's open (42.1).
+
 ### Fixed
 
 - A house torn down by a player is no longer rebuilt as a bare outside on its empty lot when its look was chosen before: picking a look for it now says "That house isn't there any more." and starts nothing; a half-rebuilt house whose room stands can still be given a look (B1050).

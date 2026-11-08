@@ -24,9 +24,10 @@ gold picks the [Trainer Leader](trainer-leader.md).)
 
 ## Lessons
 
-Right-click the tutor with an empty hand (sneak to trade instead). Pick one of your Pokémon: you see how many moves it can
-learn here, each with its power, accuracy and price, and which ones need a more experienced tutor. Click a move once to
-choose it, again to pay and teach it. If your Pokémon already knows four moves, the new one waits on the moves page of its
+Right-click the tutor with an empty hand (sneak to trade instead). The lessons open as a list, with your money at the top
+right. Pick one of your Pokémon from the tabs: each move it can learn here is a row with its type and price (red when
+you can't pay it yet); point at a row for its power and accuracy. Moves that need a more experienced tutor are grayed
+out. Click **Teach** to choose a move, then **Confirm** to pay and teach it. If your Pokémon already knows four moves, the new one waits on the moves page of its
 summary for you to swap in.
 
 A new tutor teaches weaker moves. Every lesson they give earns them experience, and as they rank up they teach stronger

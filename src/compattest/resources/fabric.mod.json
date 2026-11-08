@@ -270,6 +270,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaSophisticatedDouble1108CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCobblemonThreatsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaBountyDollars1108dBugTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaRogueOrCaptain1108dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCuisineCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMegaShrineGapsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMachineGoneCompatTests",

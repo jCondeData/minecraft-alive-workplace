@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- A villager on the way to a chair stops walking to it when furnished builds are switched off (or when they give up on it), instead of walking on and standing in the chair.
+
 ## 0.151.8 — 2026-11-07
 
 ### Fixed

@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A pillager's arrow in a siege no longer cracks or breaks a decorated pot in a finished build: like every other builder's block, it stands (your own pots still break as in the game).
 - With Create, a village train whose driver dies, is struck by lightning or is turned by a zombie no longer stands still for good with its caravans waiting at the station: the Conductor or a jobless villager by the train takes the empty seat, and while nobody can, the caravans take the timed trip with their goods.
 - A village train station you name with brackets or braces, like "Bramble [East]", "Platform {2}" or "Main [", now gets the village train: it used to wait at the other station for good with the caravan aboard. Trains already stuck that way start running again.
 - A Builder struck by lightning over a sealed cave or room no longer has his bag put inside it now and then (when the cave was sealed moments before, or the server was busy): it always lies where a player can walk to it.

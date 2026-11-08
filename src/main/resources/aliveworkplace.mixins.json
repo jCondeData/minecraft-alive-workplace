@@ -49,6 +49,7 @@
 		"ThreatDoorMixin",
 		"ThreatGriefMixin",
 		"ThreatPortalMixin",
+		"ThreatPotMixin",
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",
 		"VillagerMixin",

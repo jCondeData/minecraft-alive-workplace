@@ -3676,6 +3676,7 @@
   "message.aliveworkplace.site_list.idle": "%s has no build under way, so there is no list to write. Hand them a placed blueprint.",
   "message.aliveworkplace.site_list.all_built": "Every block of the %s is in place. Nothing is left to bring.",
   "message.aliveworkplace.site_list.taking_down": "%s is taking a building down. That needs no materials.",
+  "message.aliveworkplace.site_list.blank_book_needed": "This Book and Quill has your writing in it. Use a blank one for the material list.",
   "message.aliveworkplace.site_list.no_build_at_bench": "No build is under way from this bench. Hand its builder a placed blueprint.",
   "furniture_mod.aliveworkplace.handcrafted": "Handcrafted",
   "furniture_mod.aliveworkplace.cozyhome": "Lucky's Cozy Home",

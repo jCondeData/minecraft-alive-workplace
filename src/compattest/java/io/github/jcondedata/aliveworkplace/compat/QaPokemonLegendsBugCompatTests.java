@@ -94,8 +94,8 @@ public class QaPokemonLegendsBugCompatTests implements FabricGameTest {
 	 * blocks, and not within 95. The reach was measured from the hall block's center (half a block above the floor), so it
 	 * missed by 0.0013.
 	 */
-	//$ gametest_ticks_batch AREA '1200' '"qa_legends_bug_edge"'
-	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qa_legends_bug_edge")
+	//$ gametest_ticks_batch AREA '21200' '"qa_legends_bug_edge"'
+	@GameTest(template = AREA, timeoutTicks = 21200, batch = "qa_legends_bug_edge")
 	public void anAlphaExactly96BlocksAwayCounts(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		level.getEntitiesOfClass(PokemonEntity.class, helper.getBounds().inflate(110)).forEach(e -> e.discard());
@@ -129,19 +129,20 @@ public class QaPokemonLegendsBugCompatTests implements FabricGameTest {
 	}
 
 	/**
-	 * Runs {@code then} once the entities of the chunk at {@code pos} have loaded (checked each tick, for up to 1000: B682,
-	 * 200 ran out once on a busy CI runner while the IO thread was behind).
+	 * Runs {@code then} once the chunk at {@code pos} is running with its entities loaded (checked each tick). B682: 200
+	 * ticks ran out once on a busy CI runner while the IO thread was behind, and so did 1000 (B1036, build 3457): the
+	 * loading is real time and the suite ticks flat out, so the wait is on the clock ({@link ChunkWaits}).
 	 */
 	private static void whenEntitiesLoaded(GameTestHelper helper, ServerLevel level, BlockPos pos, Runnable then) {
-		whenEntitiesLoaded(helper, level, pos, then, 0);
+		whenEntitiesLoaded(helper, level, pos, then, ChunkWaits.start(level));
 	}
 
-	private static void whenEntitiesLoaded(GameTestHelper helper, ServerLevel level, BlockPos pos, Runnable then, int waited) {
-		if (level.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong(pos))) {
+	private static void whenEntitiesLoaded(GameTestHelper helper, ServerLevel level, BlockPos pos, Runnable then, ChunkWaits.Clock clock) {
+		if (ChunkWaits.running(level, pos)) {
 			then.run();
 		} else {
-			helper.assertTrue(waited < 1000, "the chunk 96 blocks east never loaded its entities (waited " + waited + " ticks)");
-			helper.runAfterDelay(1, () -> whenEntitiesLoaded(helper, level, pos, then, waited + 1));
+			helper.assertFalse(clock.overdue(), "the chunk 96 blocks east never loaded its entities (" + ChunkWaits.state(level, pos) + ", waited " + clock + ")");
+			helper.runAfterDelay(1, () -> whenEntitiesLoaded(helper, level, pos, then, clock));
 		}
 	}
 }

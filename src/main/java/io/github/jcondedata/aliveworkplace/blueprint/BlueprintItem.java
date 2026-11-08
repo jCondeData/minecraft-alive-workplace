@@ -238,6 +238,9 @@ public class BlueprintItem extends Item {
 
 	/** Turns one Book and Quill in {@code bookHand} into {@code data}'s material list, a written book. */
 	public static boolean writeMaterialList(ServerLevel level, Player player, BlueprintData data, InteractionHand bookHand) {
+		if (!io.github.jcondedata.aliveworkplace.build.SiteList.refuseWrittenBook(player, player.getItemInHand(bookHand))) {
+			return false; // B1042: the player's own writing is never written over
+		}
 		Optional<ItemStack> book = io.github.jcondedata.aliveworkplace.build.MaterialList.write(level, data, player.getName().getString());
 		if (book.isEmpty()) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.blueprint.unknown", data.structure().toString()).withStyle(ChatFormatting.RED));

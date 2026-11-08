@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.ranch.Daycare;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import java.util.ArrayList;
@@ -31,7 +32,9 @@ import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
 
 // The daycare's screen and Pokémon (see {@link Daycare}): row 1 your Pokémon in the rancher's care, with the level they'd
-// come back at and the price (click to collect); row 3 your party (click twice to leave one).
+// come back at and the price (click to collect); row 3 your party (click twice to leave one). Shown as the list screen
+// (ROADMAP 42.2): the money at the top, a row per Pokémon in the rancher's care (Collect), then a row per party member
+// (Leave, then Confirm; gray with the reason when it can't be left).
 public final class CobblemonDaycare {
 	public static final int INFO = 0;
 	public static final int FIRST_BOARDER_SLOT = 2;
@@ -49,15 +52,33 @@ public final class CobblemonDaycare {
 			return;
 		}
 		State state = new State();
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.daycare", rancher.getDisplayName()),
+		ChoiceMenu.openList(player, Component.translatable("screen.aliveworkplace.daycare", rancher.getDisplayName()),
 			p -> rancher.isAlive() && p.isAlive() && p.distanceTo(rancher) <= REACH,
-			menu -> render(menu, player, rancher, state));
+			menu -> {
+				render(menu, player, rancher, state);
+				watch(menu, player, rancher, state);
+			});
 	}
 
 	// The screen without showing it (tests).
 	public static ChoiceMenu menuForTest(ServerPlayer player, Villager rancher) {
 		State state = new State();
-		return ChoiceMenu.detached(player, menu -> render(menu, player, rancher, state));
+		return ChoiceMenu.detached(player, menu -> {
+			render(menu, player, rancher, state);
+			watch(menu, player, rancher, state);
+		});
+	}
+
+	// The party or the money changed while the screen is open: lay it out again (42.2, as the Tutor's).
+	private static void watch(ChoiceMenu menu, ServerPlayer player, Villager rancher, State state) {
+		String[] shown = {CobblemonTutors.shownFor(player)};
+		menu.everyTick(() -> {
+			String now = CobblemonTutors.shownFor(player);
+			if (!now.equals(shown[0])) {
+				shown[0] = now;
+				render(menu, player, rancher, state);
+			}
+		});
 	}
 
 	private static void render(ChoiceMenu menu, ServerPlayer player, Villager rancher, State state) {
@@ -70,6 +91,10 @@ public final class CobblemonDaycare {
 			Component.translatable("screen.aliveworkplace.daycare.pace", rancher.getVillagerData().getLevel() > 1
 				? Component.translatable("screen.aliveworkplace.daycare.faster", Math.round(25 * (rancher.getVillagerData().getLevel() - 1)))
 				: Component.empty()).withStyle(ChatFormatting.DARK_GRAY)));
+		// The list screen's own line (42.2): the money at the top (its tooltip is this one's), the hint, the headings.
+		ChoiceList.info(info, Money.balance(player), Component.translatable("screen.aliveworkplace.daycare.list_hint"),
+			List.of(Component.translatable("screen.aliveworkplace.daycare.column_pokemon"), Component.translatable("screen.aliveworkplace.daycare.column_state"),
+				Component.translatable("message.aliveworkplace.tutor.column_price")));
 		menu.button(INFO, info, null);
 		// Row 1: yours in the rancher's care
 		List<Daycare.Boarder> boarders = Daycare.boarders(rancher);
@@ -91,6 +116,11 @@ public final class CobblemonDaycare {
 				Component.translatable("screen.aliveworkplace.daycare.levels", pokemon.getLevel(), levelAfter).withStyle(ChatFormatting.AQUA),
 				Component.translatable("screen.aliveworkplace.daycare.collect", Money.describe((long) price * Money.DOLLARS_PER_EMERALD, price))
 					.withStyle(ChatFormatting.GREEN)));
+			// The list row: the levels it'd come back at, the price (red when the player can't pay it) and Collect.
+			boolean affordable = Money.canAfford(player, (long) price * Money.DOLLARS_PER_EMERALD, price);
+			ChoiceList.row(icon, Component.translatable("screen.aliveworkplace.daycare.levels", pokemon.getLevel(), levelAfter).withStyle(ChatFormatting.AQUA),
+				Money.describe((long) price * Money.DOLLARS_PER_EMERALD, price).copy().withStyle(affordable ? ChatFormatting.GREEN : ChatFormatting.RED),
+				Component.translatable("screen.aliveworkplace.daycare.button_collect"), false, false);
 			menu.button(FIRST_BOARDER_SLOT + shown, icon, p -> {
 				Chat.chat(p, collect(p, rancher, boarder));
 				render(menu, player, rancher, state);
@@ -119,6 +149,11 @@ public final class CobblemonDaycare {
 			if (pending) {
 				icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 			}
+			// The list row: in your party (or why it can't stay here), Leave then Confirm; gray when it can't be left.
+			ChoiceList.row(icon, refusal != null ? refusal.copy().withStyle(ChatFormatting.RED)
+					: Component.translatable("screen.aliveworkplace.daycare.in_party"), null,
+				refusal != null ? null : Component.translatable(pending ? "message.aliveworkplace.tutor.button_confirm" : "screen.aliveworkplace.daycare.button_leave"),
+				refusal != null, pending);
 			menu.button(FIRST_PARTY_SLOT + i, icon, refusal != null ? null : p -> {
 				if (!pokemon.getUuid().equals(state.pending)) {
 					state.pending = pokemon.getUuid();

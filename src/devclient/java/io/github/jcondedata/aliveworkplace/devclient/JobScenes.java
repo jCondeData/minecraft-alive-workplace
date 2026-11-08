@@ -4742,7 +4742,9 @@ final class JobScenes {
 			},
 			List.of(step("01_daycare_screen", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.INFO, 6),
 				step("02_daycare_boarder", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.FIRST_BOARDER_SLOT, 6)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu && io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(subject).size() == 1));
+			// 42.2: the daycare is the list screen (the boarder a row with its levels, price and Collect), not a chest
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(subject).size() == 1));
 		SCREENS.put("daycare_keeper", new Screen("the daycare keeper took a pair of Eevee and two eggs were collected", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				// ROADMAP 28.12: Cobblemon's Pasture Block picked with an egg; two Eevee (mother and father) and a Bulbasaur
@@ -4785,7 +4787,9 @@ final class JobScenes {
 							m.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.EGGS, player);
 						}
 					}, 25)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu && io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject).size() == 1
+			// 42.2: the keeper's screen is the list screen (the pair, how well they get along, the eggs and Take back as rows)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject).size() == 1
 				&& io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject).get(0).eggs() == 0));
 		SCREENS.put("smith_orders", new Screen("the orders screen opened and a Poké Ball was picked", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
@@ -6018,6 +6022,53 @@ final class JobScenes {
 						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TAB_SLOTS[1]).is(Items.SPYGLASS), "the Pokédex opened on its own tab");
 				}, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// The Professor's hints as the list screen (ROADMAP 42.2, Cobblemon): the money at the top, the village Pokédex, today's
+		// evolution stone (Evolution Studies) with its price and Buy, and a row per party member with its nature and Note it.
+		SCREENS.put("professor", new Screen("the Pokémon Professor's hints on the list screen: the party's rows with their natures, a Pokémon's hints in its tooltip, and today's evolution stone bought with Buy",
+			new Vec3(0.5, -58.0, 6.5), new Vec3(0.5, -59.5, 0.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				var legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.ID).orElseThrow();
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setYRot(0);
+				subject.setYHeadRot(0);
+				ScreenshotHarness.fileRecords(level, STATION, 8);
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, subject, legend, "showcase");
+				io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+				List<String> species = new java.util.ArrayList<>();
+				for (String s : List.of("bulbasaur", "charmander", "squirtle", "pikachu", "eevee", "machop", "geodude", "pidgey", "rattata", "oddish")) {
+					species.add("cobblemon:" + s);
+				}
+				hall.logPokedex(species);
+				// Evolution Studies researched: the Professor sells today's stone
+				var tree = io.github.jcondedata.aliveworkplace.research.ResearchTrees.get(io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.TREE).orElseThrow();
+				hall.setResearch(new io.github.jcondedata.aliveworkplace.research.Research.State(
+					Map.of(tree.key() + "/" + io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.EVOLUTION_STUDIES, 1), java.util.Optional.empty(), 0, false));
+				io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+				party(player, "bulbasaur level=12 nature=adamant ability=chlorophyll", "pikachu level=8 nature=timid", "eevee level=5 nature=hardy");
+				io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 5000);
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 6000L);
+				player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+				io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.open(player, subject);
+			},
+			List.of(new Step("01_professor_list", -1, 6, (level, player) ->
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+						&& !m.icon(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonProfessor.STONE).isEmpty(),
+						"the hints opened as the list screen, with today's stone"), 25),
+				new Step("02_professor_hints", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonProfessor.FIRST_PARTY_SLOT, 6, null, 25),
+				new Step("03_professor_stone", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonProfessor.STONE, 6, (level, player) -> {
+					// Buy: the stone in the inventory, the row gray "Sold today"
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonProfessor.STONE, player);
+					}
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.soldToday(subject), "Buy sold today's stone");
+				}, 25)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.soldToday(subject)));
 		// The Professor's Thesis (ROADMAP 31.21, Cobblemon): an Expert Scholar, Professor Alder, by the hall asks for field
 		// notes on Life in the Cold; a Snorunt caught in the snow counts; Thessaly beaten, the thesis is published as a book.
 		SCREENS.put("professors_thesis", new Screen("the Professor's Thesis: Professor Alder by the hall asking for help with a thesis on Life in the Cold, the chapter's intro in chat; a Snorunt caught in a snowy biome going in the field notes; then the published thesis, the book 'Professor Alder: Life in the Cold' open on its cover page with the player as co-author",

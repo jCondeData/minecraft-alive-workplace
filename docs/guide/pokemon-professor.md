@@ -25,8 +25,9 @@ morning.
 
 ## What they do
 
-- **Hints.** Right-click them with an empty hand: for each Pokémon in your party, every stat's IV in words ("Fantastic",
-  "Best"), the stats its nature raises and lowers, whether it has its hidden ability, and its EVs.
+- **Hints.** Right-click them with an empty hand: a list with your money at the top and a row for each Pokémon in your
+  party, its nature beside its name. Point at a row for every stat's IV in words ("Fantastic", "Best"), the stats its
+  nature raises and lowers, whether it has its hidden ability, and its EVs; **Note it** puts them in chat to keep.
 - **The village Pokédex.** Every species kept in your pastures is logged in the hall. The more species, the more of the
   Professor's own research tree, the **Pokédex**, opens on the research screen: Field Notes (partners help 5% more a
   level) at 15 species, Kinship Studies (one more partner per worker) at 25, Berry Science (orchard keepers pick one

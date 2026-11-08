@@ -6335,7 +6335,7 @@ it, in order (42.1 first: the others use its pieces). Depends on: nothing open.
   `openOn(<menu type>)` like the Storehouse; the Move Tutor (`CobblemonTutors`, `Tutors`) moves first. Done when:
   GameTests for teaching a move, too little money, a Pokemon that already knows it, the party changing while open;
   scene `tutor` shows the new look.
-- [ ] **42.2** **The Cobblemon menus as lists:** Pokemon Professor, Daycare (Rancher), Daycare Keeper. Done when:
+- [x] **42.2** (review: pending 2026-11-08) **The Cobblemon menus as lists:** Pokemon Professor, Daycare (Rancher), Daycare Keeper. Done when:
   GameTests for each menu's actions; scenes `daycare`, `daycare_keeper` and a new `professor` scene.
 - [ ] **42.3** **The job menus as lists:** Ball Smith, Gem Grower, Habitat Keeper and Berry Breeder orders, the
   Innkeeper, a Legend guest's terms, and the Research screen (Scholar and Legend trees: the tree may stay a grid of

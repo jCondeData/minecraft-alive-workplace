@@ -234,11 +234,13 @@ SCENES = [
         [("04_hire_screen", "Hire a traveler")]),
     job("teacher", "Teacher", "Lessons for the village children", "the teacher schooled the children", 180),
     job("rancher", "Rancher", "Breaking in a horse", "the rancher tamed and saddled the horse"),
-    S("daycare", "Rancher", "Pokémon daycare", "the daycare screen opened with a boarder", 75,
-      [("01_daycare_screen", "Daycare"), ("02_daycare_boarder", "A boarder")], cobblemon=True),
+    # The list screen (ROADMAP 42.2): the boarders and the party as rows with Collect and Leave, the money at the top
+    S("daycare", "Rancher", "Pokémon daycare", "the daycare list opened with a boarder", 75,
+      [("01_daycare_screen", "The daycare list (the money's tooltip)"), ("02_daycare_boarder", "A boarder: levels, price, Collect")], cobblemon=True),
+    # The list screen (ROADMAP 42.2): Pick, then Pair; the pair, how well they get along, the eggs and Take back as rows
     S("daycare_keeper", "Daycare Keeper", "A pair left at the daycare, eggs collected",
-      "the daycare keeper took a pair of Eevee and two eggs were collected", 90,
-      [("01_daycare_keeper_screen", "The daycare"), ("03_daycare_keeper_pair", "How well they get along"), ("04_daycare_keeper_eggs", "Eggs waiting"),
+      "the daycare keeper's list took a pair of Eevee and two eggs were collected", 90,
+      [("01_daycare_keeper_screen", "The daycare list"), ("03_daycare_keeper_pair", "How well they get along"), ("04_daycare_keeper_eggs", "Eggs waiting: Collect"),
        ("05_daycare_keeper_collected", "Collected")], cobblemon=True),
     # Fisherman
     S("fish", "Fisherman", "Fishing from the shore", "the fisherman caught a fish", 120,
@@ -717,6 +719,10 @@ SCENES = [
       "the Pokémon Professor in a white lab coat by the hall, hints about the player's party, and the Pokédex research tab", 50,
       [("01_professor", "The Professor by the hall"), ("02_professor_hints", "Hints: IVs in words, nature, hidden ability, EVs"),
        ("03_pokedex_tab", "The Pokédex tab")], cobblemon=True),
+    # The Professor's hints as the list screen (ROADMAP 42.2, Cobblemon): the party's rows, a Pokémon's hints, today's stone bought
+    S("professor", "Legends", "The Pokémon Professor's hints as a list",
+      "the Professor's hints on the list screen: the party's rows with their natures, a Pokémon's hints, and today's evolution stone bought", 50,
+      [("01_professor_list", "The hints list"), ("02_professor_hints", "A Pokémon's hints"), ("03_professor_stone", "Today's stone bought")], cobblemon=True),
     # The Professor's Thesis (ROADMAP 31.21, Cobblemon): the request, a catch counting, the published thesis
     S("professors_thesis", "Village Hall", "The Professor's Thesis: the request, a catch, the published book",
       "the Professor's Thesis: Professor Alder by the hall asking for help with a thesis on Life in the Cold, the chapter's intro in chat; a Snorunt caught in a snowy biome going in the field notes; then the published thesis, the book 'Professor Alder: Life in the Cold' open on its cover page with the player as co-author", 50,

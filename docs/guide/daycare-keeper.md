@@ -27,9 +27,11 @@ paddock round a pasture for her.
 
 ## Leaving a pair
 
-Right-click her with an empty hand (sneak to trade) to open the daycare. Click a Pokémon in your party, then its
-partner: the screen says how well they'd get along, and the chance of an egg at dawn. Each player may leave one pair,
-and she looks after three at most. Keep at least one Pokémon with you.
+Right-click her with an empty hand (sneak to trade) to open the daycare, a list with your money at the top. Click
+**Pick** on a Pokémon in your party, then **Pair** on its partner: each row says how well they'd get along with the one
+you picked (**Unpick** changes your mind). Once they're with her, your pair, how well they get along (and the chance of
+an egg at dawn), the eggs waiting (**Collect**, with the price of each) and **Take back** are rows at the top. Each
+player may leave one pair, and she looks after three at most. Keep at least one Pokémon with you.
 
 How well a pair gets along:
 

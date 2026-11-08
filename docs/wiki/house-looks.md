@@ -31,6 +31,8 @@ Roadmap items: 23.10a, 23.10
   - "No builder of yours can rebuild the <house>: the village's builders work for <owner>. Hire one of your own, or ask
     them to run /workplace friend add <you>."
   - "That house isn't there any more."
+  - "<Builder> already has 5 blueprints lined up. Hire another builder, or wait." (every builder of yours that reaches
+    the house has a full queue)
 - The rebuild is an ordinary build site, so it shows in the hall's count of buildings going up. Its blueprint is named
   "<House>: <Style> outside".
 - The village's Chronicle (the Plans kind) keeps "<player> had the <house> rebuilt with the <style> outside".
@@ -43,12 +45,14 @@ Roadmap items: 23.10a, 23.10
 - **The builder.** The village's builders are the Builders within the hall's radius that have a bench. The nearest
   idle one whose bench reaches the house (128 blocks) takes it; if none is idle, the one with the shortest queue
   (at most 5 waiting builds) gets it queued. If the only builders who reach it belong to another player and the game
-  rule below is on, the chooser is told "No builder of yours..." rather than "No builder of this village...".
+  rule below is on, the chooser is told "No builder of yours..." rather than "No builder of this village...". If the
+  builders of yours that reach it all have full queues, the chooser is told so ("already has 5 blueprints lined up").
 - **What is built.** An "outside" blueprint of the house (`aliveworkplace:outside/<style>/<house>`) is built over
   the house like an upgrade: the old outside's pieces come out, the new ones go in, and the room, bed, job block and
   chests stay. The ground round it is not leveled, so the street and gardens stay as they are.
 - **Changing your mind.** Choosing another style while a rebuild runs calls the first off and starts the new one; the
-  house ends with the last pick, its room kept. Choosing the style that is already being built is refused
+  house ends with the last pick, its room kept. A rebuild still waiting in a queue is replaced the same way, and
+  doesn't count against that queue, so even the 5th waiting build can be changed. Choosing the style that is already being built is refused
   ("already being rebuilt"). Choosing the outside the house already has is refused ("already has"), though the choice is
   still remembered.
 - **Remembered.** The hall keeps a list of the choices (the house's spot, its turn, its house, the style it was built
@@ -91,9 +95,7 @@ No new items, blocks or commands. The page is the Village Hall's Builds button; 
 - The page has room for the houses that fit its rows; a village with more houses shows the nearest ones.
 - The rebuild needs the materials like any build and waits ("Waiting for ...") until the store has them.
 - A builder needs a bench within 128 blocks of the house (exactly 128 reaches, 129 doesn't), and takes at most 5
-  waiting builds; a 5th waiting build is still queued, a 6th is refused.
-- Open bugs: a look waiting as the builder's 5th queued build can't be changed, and a full queue is told as the
-  out-of-reach line (B1051).
+  waiting builds; a 5th waiting build is still queued, a 6th is refused with the full-queue line (B1051).
 
 ## 8. Proof
 
@@ -104,6 +106,7 @@ GameTests: `PieceLooksGameTests` (`ownerGivesAHouseANewOutside`, `onlyTheLeaderC
 (`aLookGoesToThePlayersOwnFartherBuilderNotANearerForeignOne`, `aRefusedLookLeavesAnotherPlayersRebuildRunning`,
 `withOwnershipOffAnotherPlayersBuilderTakesALook`), and `QaHouseLooks1108cGameTests` (a house torn down after the
 listing, the 128/129-block reach, a queue of 4 and of 5 waiting builds, every chest item, the job block and the bed kept
-through a finished rebuild, who may choose in an unowned and an owned hall).
+through a finished rebuild, who may choose in an unowned and an owned hall)), and `QaHouseLooks1108cBugTests` (a torn-down house with a remembered look, changing the
+look of the 5th waiting build, a full queue explained as full).
 
 Showcase scenes: `piece_look` (the Builds button, the Guard House's five outsides, and the desert one rebuilt).

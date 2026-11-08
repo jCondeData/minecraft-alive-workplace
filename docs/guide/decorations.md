@@ -68,7 +68,11 @@ of thing:
 - **Footbridge**: a little plank bridge over a channel of water with lily pads.
 
 The rest start locked at the Blueprint Table: a traveling trader on [market day](market-days.md) may sell any of them,
-and each time one of your builders levels up, the village unlocks a few more builds.
+each time one of your builders levels up the village unlocks a few more builds, and a blueprint of one you find or buy,
+used on the Table, unlocks it there.
+
+If you're short of something on the Material List (the lanterns, say), your builder stops and waits for it rather than
+putting something else in its place, and carries on as soon as it's in his chest.
 
 ## What beauty does
 

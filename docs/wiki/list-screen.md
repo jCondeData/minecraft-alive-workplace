@@ -79,5 +79,8 @@ none (the screen keeps nothing; the lessons, prices and tutor ranks are the Move
 (Cobblemon), `ChoiceListGameTests.listMenuOpensOnItsOwnTypeAndClicksStayChestClicks`,
 `ChoiceListGameTests.listMarksTravelWithTheIcon`, `ChoiceListGameTests.listMenuChecksEveryTickWhileOpen` and
 `QaEveryMenuGameTests.everyServerMenuAndItsClientCopyAgreeSlotForSlot`.
+QA's `QaTutorListEdges1108eCompatTests` (4, Cobblemon: the party reordered between Teach and Confirm keeps the lesson
+on its Pokémon and teaches it once; money spent between them turns the price red and Confirm teaches and takes nothing;
+money paid in turns a red price green with no click; a move learned elsewhere before Confirm is not sold).
 
 Showcase scenes: `tutor`

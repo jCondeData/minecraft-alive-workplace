@@ -278,6 +278,13 @@ building. The same holds when its chunk
 unloads, or the server restarts, while it is trapped. Tests: `BuilderChaosGameTests` (five seeds, a new trap every 150
 to 300 ticks through the starter cottage) and `QaBuilderStuckGameTests` (each harder trap three times through a build).
 
+**Signs from a file (B1044, B1047, B1062, B1065).** A sign built from an uploaded or scanned file keeps its words and
+their colors, but no click command, no score, selector or block-data part, and no line longer than 384 letters. Every
+line the game would read as text is cleaned, also one that starts with a comment or Gson's `)]}'` prefix, so nothing
+hidden that way runs when the sign is clicked. A line or name whose saved text runs past 1,024 characters keeps only
+its plain words (a player's longest line, fully styled, stays under that), so a chunk full of such signs stays far
+under what a client accepts.
+
 ## 3. Switches
 
 Config file keys (`WorkplaceConfig`):

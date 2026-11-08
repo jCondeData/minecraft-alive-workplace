@@ -490,6 +490,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaProtectionEdge1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaProtectedFarmland1031Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaProtectedFrames1031Tests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatFrames1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaProtectionFixes1101Tests",
 			"io.github.jcondedata.aliveworkplace.test.QaWagonBeds1031bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWagonBeds1031bBugTests",

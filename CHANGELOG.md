@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A raider's blast or shot (a raider creeper, a ghast's fireball, TNT it lit, an arrow) no longer knocks the builders' item frames off a finished guildhall or traveller camp, where no builder could hang them again. You can still take one down yourself, and frames on your own walls break as before (B1053).
 - A raider that turns into another mob, such as a desert husk drowning in your moat and coming back up as a zombie or a skeleton freezing into a stray in powder snow, is still a raider: the raid no longer ends as beaten while it walks the village, it leaves at dawn with the others, and it no longer breaks builders' work. The same holds for lair, bandit camp, bounty and rogue mobs (B1054).
 - A raider left over from an older raid, standing somewhere far off in loaded ground, no longer keeps the next raid on any village going after its players kill every raider: that raid is fought off and celebrated again. Each raider now belongs to the raid it came with, and a raider you lead far away still counts for its own raid (B1063).
 - A raider's arrow, trident or fireball still in the air when its raider leaves at dawn, is killed by a guard or walks out of loaded chunks no longer breaks a builder's pot, chorus flower, dripstone spike or wool: the shot stays a raider's shot to the end, even across a save and reload (B1066, B1064).

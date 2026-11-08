@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053
 
 ## What a player sees
 
@@ -45,8 +45,10 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **Nothing else of the builders' work breaks under a threat** (32.16a, the owner's rule): a raider's creeper or a
   ghast's fireball blows a hole in your own blocks but leaves every block the builders placed standing, a ravager
   doesn't trample a builder's roof, a raiding vindicator or zombie doesn't break down a house's door, and a pillager's
-  arrow doesn't crack or break a builder's decorated pot (your own pots break as in the game). A build still
-  under way is spared too, so no builder's progress is ever lost.
+  arrow doesn't crack or break a builder's decorated pot (your own pots break as in the game). The item frames the
+  builders hang on a finished build (the guildhalls, the traveller camp) stay on the wall too, through a raider's
+  blast or shot (B1053); you can still take one down yourself. A build still under way is spared too, so no
+  builder's progress is ever lost.
 - **The builders always put back what threats took**: the gates rams broke and the blocks a village fire burned, even
   with `builderRepairs` off (then those are the only repairs they make). The list is saved, so a restart forgets
   nothing.
@@ -193,7 +195,10 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   killed or unloaded, when `getOwner()` reads null; a shot deflected to a new owner loses the tag); a "builder's block" is a finished build's block as drawn (`VillageFire.builderMade`) or
   any block inside the outline of a build site under way. Three hooks keep threats off them: `ThreatGriefMixin` on
   `Level.destroyBlock` (the ravager's leaf-breaking and any other mob breaking with itself as the breaker),
-  `ThreatDoorMixin` on `BreakDoorGoal` (it doesn't start, or stops, at a builder's door) and `ExplosionMixin` (a
+  `ThreatDoorMixin` on `BreakDoorGoal` (it doesn't start, or stops, at a builder's door), `HangingHurtMixin` (B1053:
+  `ThreatDamage.sparesHanging` refuses a threat's hurt, direct or causing entity, to an item frame or painting whose
+  supporting block is a builder's block; repairs can't re-hang entities, so the frame is spared rather than put back;
+  no shipped blueprint places armor stands) and `ExplosionMixin` (a
   threat's blast, direct or indirect, leaves those blocks out of what it blows up), plus `ThreatPotMixin` on
   `DecoratedPotBlock.onProjectileHit` (B1032: vanilla cracks the pot before it breaks it, and a cracked pot no
   longer matches the build as drawn, so the hit is refused before the crack), and `ThreatDripstoneMixin` on
@@ -325,6 +330,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   a guard's child on the walkway leave it up, and the climber gets over. Mutation: 8 of 8 mutants of the guard's check
   (`Ladders.guardAt`) killed.
 
+- GameTests (B1053): `QaThreatFrames1108dBugTests`: a raider creeper's blast inside a finished log hut leaves the builders'
+  item frame on its wall; a player's hit still breaks it; the same blast still breaks a frame on a hut that isn't the builders'.
 - GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
   and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's
   block breaking (the game's destroy call) never takes a hut block nor one of a build under way, while a wild ravager's does and a raider's on a

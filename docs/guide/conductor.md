@@ -34,7 +34,7 @@ villager without a job drives it, as before; a villager with another job is neve
 took the seat.
 
 If the driver dies, is struck by lightning or is turned by a zombie, the train can't move on its own. The Conductor,
-or a villager without a job, standing by the train takes the empty seat. While nobody is free there, the caravans
+or a grown-up villager without a job, standing by the train takes the empty seat. While nobody is free there, the caravans
 waiting for that train set out without it and arrive with their goods, as they did before the village had its own
 train, so nothing is stuck at the station.
 

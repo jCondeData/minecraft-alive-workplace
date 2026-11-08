@@ -46,7 +46,7 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   ghast's fireball blows a hole in your own blocks but leaves every block the builders placed standing, a ravager
   doesn't trample a builder's roof, a raiding vindicator or zombie doesn't break down a house's door, and a pillager's
   arrow doesn't crack or break a builder's decorated pot (your own pots break as in the game). The item frames the
-  builders hang on a finished build (the guildhalls, the traveller camp) stay on the wall too, through a raider's
+  builders hang on a finished build (the guildhalls, the traveler camp) stay on the wall too, through a raider's
   blast or shot (B1053); you can still take one down yourself. A build still under way is spared too, so no
   builder's progress is ever lost.
 - **The builders always put back what threats took**: the gates rams broke and the blocks a village fire burned, even

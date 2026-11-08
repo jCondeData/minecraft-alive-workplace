@@ -1415,6 +1415,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRanchPairs1107cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRanchTwoFood1108cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRandomJobsReach1108cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldSaveCrafter1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107dGameTests"
 		]

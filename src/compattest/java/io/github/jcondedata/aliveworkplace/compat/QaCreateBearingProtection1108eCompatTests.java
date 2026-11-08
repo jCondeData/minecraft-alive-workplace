@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * reaching east (x = 13, 14, 15). Half a turn puts the plank at x = 11, inside. When the arm is half way round the test
  * stops the bearing (Create's own {@code disassemble}, what stopping its rotation does in the default "place when
  * stopped" mode), which sets the blocks down where they are. The open village is the control (here); with protection on
- * the plank is set down inside all the same: B1032, in the unregistered QaCreateBearingProtection1108eBugCompatTests on
+ * the plank is set down inside all the same: B1033, in the unregistered QaCreateBearingProtection1108eBugCompatTests on
  * tests/create-bearing-1108e.
  */
 public class QaCreateBearingProtection1108eCompatTests implements FabricGameTest {

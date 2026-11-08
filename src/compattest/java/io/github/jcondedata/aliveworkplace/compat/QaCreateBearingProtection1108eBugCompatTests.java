@@ -11,7 +11,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 
 /**
- * QA (lane-e-1108-0413): a failing test for B1032 (B993's kind). NOT registered in the compat test mod's fabric.mod.json
+ * QA (lane-e-1108-0413): a failing test for B1033 (B993's kind). NOT registered in the compat test mod's fabric.mod.json
  * (main stays green); the builder registers it with the fix. A stranger's Mechanical Bearing outside a protected village
  * swings its arm half a turn and, stopped there, sets an oak plank down in the village's last column, as it does with the
  * village open (the control, in {@link QaCreateBearingProtection1108eCompatTests}).

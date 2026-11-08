@@ -6307,7 +6307,88 @@ Depends on: nothing open.
   compat GameTests for a caravan and a settler going through, a stone broken mid-trip (they walk), save and reload
   mid-trip; text; wiki; scene `waystone_caravan`.
 
+## Milestone 42: One look for every screen (menus)
+
+The owner, 2026-11-08 (morning digest, from the mockups in `docs/design/M42/`): **every screen the mod opens uses the
+Village Hall's look** (`TableStyle`: dark panel, slate-blue edge, gold titles, white names over grey-blue second lines,
+framed cells, gold for the chosen one), "sleek and unified; if we are making a UI it follows the same steps". He picked
+**option A, a list** (`docs/design/M42/menu_a.png`) for the menus that open as a plain gray chest today, and
+**option A, the Hall page** (`trainer_a.png`) for the Trainer. Nothing a menu does today may be lost (every button,
+price, tooltip, sound and refusal); only how it looks changes. Shared pieces (a list row with a button, a tab row, a
+details box, a small card) go into `TableStyle`/`ChoiceTableScreen` in their own section, so lanes D and E reuse them.
+Each item: GameTests through the player's own clicks (`QaEveryMenuGameTests` must still pass), the screen's scene in
+the harness and `tools/showcase/scenes.py`, `sessions.py done <id> --review`. Text in American English. Lane C builds
+it, in order (42.1 first: the others use its pieces). Depends on: nothing open.
+
+- [ ] **42.1** **The list menu, first on the Move Tutor.** A `ChoiceTableScreen` list mode for the menus opened with
+  `ChoiceMenu.open(...)` (a vanilla 6-row chest today): the title and the player's money at the top, a tab row
+  (the Tutor's party), a list of rows (name, second line, price) with a button on each, gray rows for what can't be
+  picked, a footer hint, as `docs/design/M42/menu_a.png`. Moves `ChoiceMenu.open` callers to it one by one through
+  `openOn(<menu type>)` like the Storehouse; the Move Tutor (`CobblemonTutors`, `Tutors`) moves first. Done when:
+  GameTests for teaching a move, too little money, a Pokemon that already knows it, the party changing while open;
+  scene `tutor` shows the new look.
+- [ ] **42.2** **The Cobblemon menus as lists:** Pokemon Professor, Daycare (Rancher), Daycare Keeper. Done when:
+  GameTests for each menu's actions; scenes `daycare`, `daycare_keeper` and a new `professor` scene.
+- [ ] **42.3** **The job menus as lists:** Ball Smith, Gem Grower, Habitat Keeper and Berry Breeder orders, the
+  Innkeeper, a Legend guest's terms, and the Research screen (Scholar and Legend trees: the tree may stay a grid of
+  framed cells in the Hall's colors if a list loses its shape; write the choice in the Notes). Done when: GameTests
+  for each; scenes `smith_orders` and one per menu without a scene.
+- [ ] **42.4** **The builder tools and shops as lists:** Shape Planner, Style picker, Price Tag, and the Shop and Ferry
+  menus (CobbleDollars). Shape and style pickers may keep icon cells in the list rows. Done when: GameTests for each;
+  scenes `shapes`, `style_menu`, `shop`, `ferry_menu`.
+- [ ] **42.5** **The status card.** The job-status chat lines (sneak + empty hand on a Builder, Miner, Fisher, Farmer,
+  Lumberjack, Orchard keeper, Postman) open a small card in the Hall's look instead (as `trainer_c.png`'s size): the
+  villager's name, job and level, what they're doing, what they need, and a button to their Hall page. Done when:
+  GameTests for each job's card; a scene `status_card`.
+
+## Milestone 43: One look for every screen (Pokemon)
+
+Same decision as Milestone 42 (owner, 2026-11-08). Lane D builds it, in order; it uses `TableStyle` as it is and
+42.1's shared pieces once they land (until then, add what's missing to `TableStyle` in its own section). Cobblemon's
+own battle screen stays Cobblemon's. Depends on: nothing open.
+
+- [ ] **43.1** **The Trainer screen** (`docs/design/M42/trainer_a.png`). An empty hand on a Trainer or Trainer Leader
+  opens it instead of starting the battle at once: on the left the trainer's name, title and rank, the villager's
+  portrait, record, today's state and the rules (singles, the RCT level cap); on the right the reward, the trainer's
+  team (the real Pokemon models; the ones not seen yet hidden until the player beats them once), the player's party
+  with a line for each (ready, fainted, over the cap and scaled), and **Challenge**, **Trade** and **Close**.
+  Challenge does what a click does today (`Trainers.challenge`); every refusal of today (away at the Cup, asleep,
+  busy, no team, not the leader, come back tomorrow, no Cobblemon) shows on the screen with the button grayed out.
+  Trade opens today's trades. Done when: compat GameTests for the challenge, each refusal, the team revealed after a
+  win, Trade, save and reload; scenes `leader` and `battle` show it.
+- [ ] **43.2** **The Pokemon Trader screen** (`PokemonTradeScreen`) in the Hall's look. Done when: today's
+  `QaPokemonTradeScreenCompatTests` pass; scene `trader`.
+- [ ] **43.3** **Cards for the Nurse and the Fossil Scientist**, with 42.5's card: the Nurse shows the party's health
+  and a Heal button (what a click does today); the Fossil Scientist shows each fossil's progress and a Hand over
+  button. Done when: compat GameTests for each; scenes `nurse` and `fossil`.
+
+## Milestone 44: One look for every screen (the rest)
+
+Same decision as Milestone 42 (owner, 2026-11-08). Lane E builds it, in order, with `TableStyle` and 42.1's pieces as
+in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay theirs. Depends on: nothing open.
+
+- [ ] **44.1** **The Mailbox, the Drop Box and the Shop Counter** in the Hall's look around their real item slots
+  (the player's inventory included, framed like the Hall's cells). Done when: GameTests that slots, shift-clicks
+  and the counter's sales still work; scenes `mail`, `counter` and a new `drop_box`.
+- [ ] **44.2** **The trading screen of the mod's own jobs** (Shopkeeper and Ferryman without CobbleDollars, the
+  crafters, the retirees, the sneak-click trades of every mod job) in the Hall's look; vanilla's own professions keep
+  vanilla's screen. Done when: GameTests that every trade, the offer refresh (`VillagerMixin`) and the level bar
+  still work; scene `shop` (sneak) and a new `crafter_trades`.
+- [ ] **44.3** **The City Plan and the Colony Charter** in the Hall's colors (the map and its zone paint stay; the
+  frame, title, buttons and lists change). Done when: `CityPlanScreenGameTests` and the charter's tests pass; scenes
+  `city_plan` and `colony_charter`.
+- [ ] **44.4** **The Guide and the Settings screen** in the Hall's look (the Guide keeps its pictures and pages,
+  with the Hall's sidebar for its chapters). Done when: GameTests for opening each page and changing a setting;
+  scenes `guide` and `config`.
+
 ## Notes / blocked
+
+- 2026-11-08 (digest-1108-1353, owner): Jesse approved B854, B962 and B1032, and asked for **custom UI for everything
+  that has a UI, such as the Pokemon Trainer, in the same style as the other UIs**. From mockups he picked the Trainer's
+  option A (Hall page) and option A (list) for the chest menus, and said "the entire pack should use the same UI
+  attributes and look sleek and unified; if we are making a UI it should follow the same steps". Read as: every screen
+  the mod opens (other mods' own screens stay theirs). Filed as Milestones 42 (lane C), 43 (lane D) and 44 (lane E);
+  mockups in `docs/design/M42/`. He approves each screen from its showcase stills.
 
 - 2026-11-07 (lane-e-1107-1612, QA, saves, the pack with Create): **B1007, B1008, B1009 verified across saves**: QaBagAfterNewJobSaves1107eGameTests (5, 3 of 3 runs and the full build; with the fix reverted the 4 bug cases fail, the control passes): a novice smith or carpenter saved and reloaded before or right after taking a lectern job gives back the sword, iron or logs, one sword in the world, the request freed and built by a new carpenter; a 10-XP smith reloaded mid-carry still mends. **Update rehearsal 0.151.7 (today's release) to main 78fd3e856 with Create passed** ([report](docs/owner/rehearsal-0.151.7-to-main-create.md)): every villager, job, rank, container (2,013 items in 37), parcel and build site kept, takings equal to the control, seeding p95 29.9 ms, log audit clean of ours. langcheck clean. B967 seen again: FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt failed once in this lane's local full build (1 of 1217 compat); a first full build was OOM-killed (exit 137) with two leftover Kotlin compile daemons from the subagent's runs, green-running after `--stop`.
 - 2026-11-07 (lane-e-1107-1313, QA, Create, the pack and saves): **B966/B972 verified across saves** (QaSiegeGatewaySaves1107eGameTests, 5, 4 of 4 runs). Design question for the owner, not a bug by sieges.md: with the middle gate walled up the ram moves on to a side gate, but `Sieges.open` reads only the middle way, so a side gate the ram breaks leaves a real gap the raiders are never sent through (they wait outside till dawn). Untested. **B1015** filed: Create's Mechanical Saw and Mechanical Arm outside a protected village reach in (B993/B994 kin), and a Deployer outside places there (B844's path); bug tests on tests/create-more-machines-1107e, controls on main. Not yet tested: Bearing/Gantry contraptions and the Portable Storage Interface at the edge. B967 seen again: FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt failed once in this lane's local full build (main 8d70756bc, 1 of 1213 compat), passed on a rerun of the compat suite.

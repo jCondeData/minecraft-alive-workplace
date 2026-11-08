@@ -22,6 +22,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- With Cobblemon, a Daycare Keeper's West Sea Gastrodon, Baile Oricorio, Green Squawkabilly or Curly Tatsugiri hatches babies that keep that form after a save and load, instead of turning into a random sea, style, color or shape.
+- With Cobblemon, a Daycare Keeper's female Basculegion hatches a White-Striped Basculin, like the male, instead of a Red-Striped one.
+- With Cobbreeding, a Daycare Keeper's egg from a Blaze Breed or Aqua Breed Tauros hatches that breed instead of a Combat Breed.
 - A raider's burning arrow still sets a builder's wooden roof alight when the raider who shot it left, was killed or was unloaded while the arrow flew. Arrows from anyone but a raider still never do (B1071).
 - A raider's blast or shot (a raider creeper, a ghast's fireball, TNT it lit, an arrow) no longer knocks the builders' item frames off a finished guildhall or traveller camp, where no builder could hang them again. You can still take one down yourself, and frames on your own walls break as before (B1053).
 - A raider that turns into another mob, such as a desert husk drowning in your moat and coming back up as a zombie or a skeleton freezing into a stray in powder snow, is still a raider: the raid no longer ends as beaten while it walks the village, it leaves at dawn with the others, and it no longer breaks builders' work. The same holds for lair, bandit camp, bounty and rogue mobs (B1054).

@@ -6355,7 +6355,7 @@ Same decision as Milestone 42 (owner, 2026-11-08). Lane D builds it, in order; i
 42.1's shared pieces once they land (until then, add what's missing to `TableStyle` in its own section). Cobblemon's
 own battle screen stays Cobblemon's. Depends on: nothing open.
 
-- [ ] **43.1** **The Trainer screen** (`docs/design/M42/trainer_a.png`). An empty hand on a Trainer or Trainer Leader
+- [x] **43.1** (review: pending 2026-11-08) **The Trainer screen** (`docs/design/M42/trainer_a.png`). An empty hand on a Trainer or Trainer Leader
   opens it instead of starting the battle at once: on the left the trainer's name, title and rank, the villager's
   portrait, record, today's state and the rules (singles, the RCT level cap); on the right the reward, the trainer's
   team (the real Pokemon models; the ones not seen yet hidden until the player beats them once), the player's party
@@ -6407,6 +6407,17 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
   (`button`, `tab`, `listColumns`, `columnHeadings`, `listRow`, `footerHint`, `money`). Moves a Pokémon already knows
   stay off the Tutor's list (its QA test requires it), so the mockup's gray "Already knows" row isn't shown; gray rows
   are lessons beyond the tutor's rank. Type and kind sit in a column, as in the mockup.
+
+- 2026-11-08 (lane-d-1108-2208, 43.1): **the Trainer screen's choices**. A menu without slots
+  (`aliveworkplace:trainer`, `TrainerMenu`) opened with a `TrainerView` (the platform's menu-with-data), buttons as
+  vanilla menu-button clicks; Challenge calls `Trainers.challenge` unchanged, Trade the villager's own interaction.
+  `Trainers.refusal` mirrors challenge's checks without side effects; Cobblemon's half (`TrainerBattles.refusal`,
+  `sides`) fills the team and party. "Not seen yet" = the second half of the team until the player's first win (a
+  per-Pokémon "seen in battle" record would need Cobblemon's battle events). The party's "over the cap" line names the
+  cap but no scaling: our battles never scaled the player's Pokémon (only the trainer's team comes down), and changing
+  that is a battle-rule change for the owner. A fainted Pokémon is no refusal (the battle heals the party, as before;
+  its line says so). Trade is gray when the trainer has nothing to sell (a sneak-click only shakes the head then). New
+  saved field `trainer_records` (wins, losses, last day per player); older saves read as no battles.
 
 - 2026-11-07 (lane-e-1107-1612, QA, saves, the pack with Create): **B1007, B1008, B1009 verified across saves**: QaBagAfterNewJobSaves1107eGameTests (5, 3 of 3 runs and the full build; with the fix reverted the 4 bug cases fail, the control passes): a novice smith or carpenter saved and reloaded before or right after taking a lectern job gives back the sword, iron or logs, one sword in the world, the request freed and built by a new carpenter; a 10-XP smith reloaded mid-carry still mends. **Update rehearsal 0.151.7 (today's release) to main 78fd3e856 with Create passed** ([report](docs/owner/rehearsal-0.151.7-to-main-create.md)): every villager, job, rank, container (2,013 items in 37), parcel and build site kept, takings equal to the control, seeding p95 29.9 ms, log audit clean of ours. langcheck clean. B967 seen again: FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt failed once in this lane's local full build (1 of 1217 compat); a first full build was OOM-killed (exit 137) with two leftover Kotlin compile daemons from the subagent's runs, green-running after `--stop`.
 - 2026-11-07 (lane-e-1107-1313, QA, Create, the pack and saves): **B966/B972 verified across saves** (QaSiegeGatewaySaves1107eGameTests, 5, 4 of 4 runs). Design question for the owner, not a bug by sieges.md: with the middle gate walled up the ram moves on to a side gate, but `Sieges.open` reads only the middle way, so a side gate the ram breaks leaves a real gap the raiders are never sent through (they wait outside till dawn). Untested. **B1015** filed: Create's Mechanical Saw and Mechanical Arm outside a protected village reach in (B993/B994 kin), and a Deployer outside places there (B844's path); bug tests on tests/create-more-machines-1107e, controls on main. Not yet tested: Bearing/Gantry contraptions and the Portable Storage Interface at the edge. B967 seen again: FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt failed once in this lane's local full build (main 8d70756bc, 1 of 1213 compat), passed on a rerun of the compat suite.

@@ -29,6 +29,7 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE_MENU, StorehouseScreen::new);
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.POKEMON_TRADER_MENU, PokemonTradeScreen::new);
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.CHOICE_LIST_MENU, ChoiceListScreen::new);
+		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.TRAINER_MENU, TrainerScreen::new);
 		net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(io.github.jcondedata.aliveworkplace.registry.ModEntities.FISHING_BOBBER,
 			BobberRenderer::new);
 		net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(io.github.jcondedata.aliveworkplace.registry.ModEntities.CRADLE_SEAT,

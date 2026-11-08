@@ -8905,7 +8905,7 @@ final class JobScenes {
 				}, 40),
 				new Step("02_tree_exclusive", io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[7], 6, null, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
-		SCREENS.put("leader",new Screen("the Trainer Leader took the challenge and the battle started", new Vec3(-4.5, -57.5, 11.5),
+		SCREENS.put("leader",new Screen("the Trainer screen opened on the Leader and its Challenge started the battle", new Vec3(-4.5, -57.5, 11.5),
 			new Vec3(0.5, -59, 5.5),
 			(level, player) -> {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, level.getServer());
@@ -8916,13 +8916,20 @@ final class JobScenes {
 				party(player, "snorlax level=100", "blissey level=100", "skarmory level=100", "tyranitar level=100", "dragonite level=100",
 					"garchomp level=100");
 			},
-			List.of(new Step("01_leader", -1, 0, null, 40),
+			// 43.1: an empty hand on the Leader opens the Trainer screen (the mouse on Challenge); its Challenge starts the battle.
+			List.of(new Step("01_leader", io.github.jcondedata.aliveworkplace.trainer.TrainerMenu.CHALLENGE, 0, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.trainer.TrainerScreens.open(player, subject);
+					Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.trainer.TrainerMenu m && m.view().canChallenge(),
+						"the Trainer screen opened with Challenge ready");
+				}, 40),
 				new Step("02_leader_battle", -1, 0, (level, player) -> {
 					player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
 					player.getAbilities().flying = false;
 					player.onUpdateAbilities();
+					if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.trainer.TrainerMenu menu) {
+						menu.clickMenuButton(player, io.github.jcondedata.aliveworkplace.trainer.TrainerMenu.CHALLENGE); // the screen's Challenge
+					}
 					player.teleportTo(level, 0.5, -60, -0.5, 0, 10);
-					io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(player, subject);
 				}, 160)),
 			(level, player) -> com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer(player) != null));
 	}

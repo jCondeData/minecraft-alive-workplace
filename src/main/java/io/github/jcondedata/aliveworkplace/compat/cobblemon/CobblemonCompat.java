@@ -198,7 +198,22 @@ public final class CobblemonCompat {
 				CobblemonDaycare.returnAll(level, rancher);
 			}
 		});
-		TrainerBattles.EXTENSION.register("cobblemon", CobblemonTrainers::challenge);
+		TrainerBattles.EXTENSION.register("cobblemon", new TrainerBattles() {
+			@Override
+			public void challenge(net.minecraft.server.level.ServerPlayer player, Villager trainer) {
+				CobblemonTrainers.challenge(player, trainer);
+			}
+
+			@Override
+			public net.minecraft.network.chat.Component refusal(net.minecraft.server.level.ServerPlayer player, Villager trainer) {
+				return CobblemonTrainers.refusal(player, trainer);
+			}
+
+			@Override
+			public io.github.jcondedata.aliveworkplace.trainer.TrainerView.Sides sides(net.minecraft.server.level.ServerPlayer player, Villager trainer) {
+				return CobblemonTrainers.sides(player, trainer);
+			}
+		});
 		PokemonTrades.EXTENSION.register("cobblemon", CobblemonTraders::open);
 		MoveLessons.EXTENSION.register("cobblemon", CobblemonTutors::open);
 		PokemonHealing.EXTENSION.register("cobblemon", new PokemonHealing() {

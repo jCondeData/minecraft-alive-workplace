@@ -88,34 +88,21 @@ public final class Trainers {
 		return best;
 	}
 
-	/** Right-click on a trainer: challenge them. */
+	/**
+	 * Challenge (the Trainer screen's button, ROADMAP 43.1; a click on the trainer before it): start the battle, or say in
+	 * the action bar why not.
+	 */
 	public static void challenge(ServerPlayer player, Villager trainer) {
-		Component away = io.github.jcondedata.aliveworkplace.cup.CupDays.noChallenge((ServerLevel) trainer.level(), trainer);
-		if (away != null) { // 28.19: a Leader away at the Cup, or a delegate there for it
-			Chat.actionBar(player, away.copy().withStyle(ChatFormatting.YELLOW));
-			return;
-		}
-		if (!COBBLEMON) {
-			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.no_cobblemon").withStyle(ChatFormatting.GRAY));
-			return;
-		}
-		if (trainer.isSleeping()) {
-			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.asleep", trainer.getDisplayName()).withStyle(ChatFormatting.GRAY));
+		Component refused = earlyRefusal(player, trainer);
+		if (refused != null) {
+			Chat.actionBar(player, refused);
 			return;
 		}
 		if (isLeader(trainer)) {
-			Villager senior = seniorLeader(trainer);
-			if (senior != trainer) {
-				Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.not_the_leader", senior.getDisplayName())
-					.withStyle(ChatFormatting.YELLOW));
-				return;
-			}
 			long day = trainer.level().getDayTime() / 24000L;
-			Long last = ModAttachments.LEADER_CHALLENGES.getOrElse(trainer, Map.<UUID, Long>of()).get(player.getUUID());
 			io.github.jcondedata.aliveworkplace.hall.VillageQuests.onTrainerBeaten((ServerLevel) trainer.level(), trainer, player);
-			if (last != null && last == day) {
-				Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.leader_tomorrow", trainer.getDisplayName())
-					.withStyle(ChatFormatting.YELLOW));
+			if (challengedToday(player, trainer)) {
+				Chat.actionBar(player, tomorrow(trainer));
 				return;
 			}
 			Map<UUID, Long> seen = new HashMap<>(ModAttachments.LEADER_CHALLENGES.getOrElse(trainer, Map.of()));
@@ -123,6 +110,87 @@ public final class Trainers {
 			ModAttachments.LEADER_CHALLENGES.set(trainer, Map.copyOf(seen));
 		}
 		TrainerBattles.EXTENSION.run(battles -> battles.challenge(player, trainer));
+	}
+
+	/**
+	 * Why {@code player} can't challenge {@code trainer} right now, as {@link #challenge} would say it (away at the Cup, no
+	 * Cobblemon, asleep, not the village's leader, come back tomorrow, busy, no team), or null when they can. Changes
+	 * nothing: the Trainer screen asks it to gray out its Challenge button (43.1).
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static Component refusal(ServerPlayer player, Villager trainer) {
+		Component early = earlyRefusal(player, trainer);
+		if (early != null) {
+			return early;
+		}
+		if (isLeader(trainer) && challengedToday(player, trainer)) {
+			return tomorrow(trainer);
+		}
+		return TrainerBattles.EXTENSION.call(battles -> battles.refusal(player, trainer), null);
+	}
+
+	/** The refusals checked before anything else: away at the Cup, no Cobblemon, asleep, not the village's leader. */
+	@org.jetbrains.annotations.Nullable
+	private static Component earlyRefusal(ServerPlayer player, Villager trainer) {
+		Component away = io.github.jcondedata.aliveworkplace.cup.CupDays.noChallenge((ServerLevel) trainer.level(), trainer);
+		if (away != null) { // 28.19: a Leader away at the Cup, or a delegate there for it
+			return away.copy().withStyle(ChatFormatting.YELLOW);
+		}
+		if (!COBBLEMON) {
+			return Component.translatable("message.aliveworkplace.trainer.no_cobblemon").withStyle(ChatFormatting.GRAY);
+		}
+		if (trainer.isSleeping()) {
+			return Component.translatable("message.aliveworkplace.trainer.asleep", trainer.getDisplayName()).withStyle(ChatFormatting.GRAY);
+		}
+		if (isLeader(trainer)) {
+			Villager senior = seniorLeader(trainer);
+			if (senior != trainer) {
+				return Component.translatable("message.aliveworkplace.trainer.not_the_leader", senior.getDisplayName()).withStyle(ChatFormatting.YELLOW);
+			}
+		}
+		return null;
+	}
+
+	/** Whether {@code player} has challenged this Trainer Leader today (one challenge a day). */
+	public static boolean challengedToday(ServerPlayer player, Villager leader) {
+		long day = leader.level().getDayTime() / 24000L;
+		Long last = ModAttachments.LEADER_CHALLENGES.getOrElse(leader, Map.<UUID, Long>of()).get(player.getUUID());
+		return last != null && last == day;
+	}
+
+	private static Component tomorrow(Villager leader) {
+		return Component.translatable("message.aliveworkplace.trainer.leader_tomorrow", leader.getDisplayName()).withStyle(ChatFormatting.YELLOW);
+	}
+
+	/** Whether {@code player} has been paid for beating {@code trainer} today (the prize is once a day). */
+	public static boolean paidToday(UUID player, Villager trainer) {
+		long day = trainer.level().getDayTime() / 24000L;
+		Long last = ModAttachments.TRAINER_REWARDS.getOrElse(trainer, Map.of()).get(player);
+		return last != null && last == day;
+	}
+
+	/** {@code player}'s record against {@code trainer}: wins, losses and the day of their last battle (-1: never). */
+	public static long[] record(UUID player, Villager trainer) {
+		java.util.List<Long> r = ModAttachments.TRAINER_RECORDS.getOrElse(trainer, Map.of()).get(player);
+		return new long[]{r != null && r.size() > 0 ? r.get(0) : 0, r != null && r.size() > 1 ? r.get(1) : 0, r != null && r.size() > 2 ? r.get(2) : -1};
+	}
+
+	private static void addToRecord(Villager trainer, UUID player, boolean won) {
+		long[] r = record(player, trainer);
+		Map<UUID, java.util.List<Long>> records = new HashMap<>(ModAttachments.TRAINER_RECORDS.getOrElse(trainer, Map.of()));
+		records.put(player, java.util.List.of(r[0] + (won ? 1 : 0), r[1] + (won ? 0 : 1), trainer.level().getDayTime() / 24000L));
+		ModAttachments.TRAINER_RECORDS.set(trainer, Map.copyOf(records));
+	}
+
+	/** The prize for beating {@code trainer} now: CobbleDollars and (without CobbleDollars) emeralds. */
+	public static int[] prize(Villager trainer) {
+		return prize(tier(trainer), isLeader(trainer));
+	}
+
+	private static int[] prize(int tier, boolean leader) {
+		int i = Math.max(0, Math.min(4, tier - 1));
+		int factor = leader ? LEADER_PRIZE_FACTOR : 1;
+		return new int[]{PRIZE[i] * factor, EMERALDS[i] * factor};
 	}
 
 	/** The experience a battle earns {@code trainer}: more for a win, a quarter more with the Trainers' Guild founded (30.20). */
@@ -140,6 +208,7 @@ public final class Trainers {
 		int tierBefore = tier(trainer);
 		ModAttachments.TRAINER_BATTLES.set(trainer, ModAttachments.TRAINER_BATTLES.getOrElse(trainer, 0) + 1);
 		BuilderLevels.addXp((ServerLevel) trainer.level(), trainer, battleXp(trainer, playerWon), null);
+		addToRecord(trainer, playerId, playerWon); // the Trainer screen's record (43.1)
 		if (player == null) {
 			return;
 		}
@@ -167,10 +236,9 @@ public final class Trainers {
 	}
 
 	private static void pay(MinecraftServer server, ServerPlayer player, int tier, Villager trainer) {
-		int i = Math.max(0, Math.min(4, tier - 1));
-		int factor = isLeader(trainer) ? LEADER_PRIZE_FACTOR : 1;
-		int dollars = PRIZE[i] * factor;
-		int emeralds = EMERALDS[i] * factor;
+		int[] prize = prize(tier, isLeader(trainer));
+		int dollars = prize[0];
+		int emeralds = prize[1];
 		io.github.jcondedata.aliveworkplace.work.Money.pay(player, dollars, emeralds);
 		player.sendSystemMessage(io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars()
 			? Component.translatable("message.aliveworkplace.trainer.won_dollars", trainer.getDisplayName(), dollars).withStyle(ChatFormatting.GREEN)

@@ -343,10 +343,10 @@ public final class BuilderEvents {
 			return InteractionResult.PASS;
 		}
 		if (io.github.jcondedata.aliveworkplace.trainer.Trainers.isTrainer(villager)) {
-			// Right-click with an empty hand: battle. Sneak to trade instead.
+			// Right-click with an empty hand: the Trainer screen (43.1), whose Challenge starts the battle. Sneak to trade instead.
 			if (held.isEmpty() && !player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge((ServerPlayer) player, villager);
+					io.github.jcondedata.aliveworkplace.trainer.TrainerScreens.open((ServerPlayer) player, villager);
 				}
 				return InteractionResult.SUCCESS;
 			}

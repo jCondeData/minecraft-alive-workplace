@@ -3360,7 +3360,20 @@ public class ScreenshotHarness implements ClientModInitializer {
 			server.execute(() -> server.getPlayerList().getPlayers().get(0).teleportTo(server.overworld(), 0.5, -60, -6.5, 0, 10));
 		}
 		if (tick == 80) {
-			server.execute(() -> io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(server.getPlayerList().getPlayers().get(0), battleTrainer));
+			// The Trainer screen first (43.1): an empty hand on the trainer opens it; its Challenge starts the battle.
+			server.execute(() -> io.github.jcondedata.aliveworkplace.trainer.TrainerScreens.open(server.getPlayerList().getPlayers().get(0), battleTrainer));
+		}
+		if (tick == 92) {
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.TrainerScreen, "the Trainer screen opened");
+			pointAt(mc, io.github.jcondedata.aliveworkplace.trainer.TrainerMenu.CHALLENGE);
+		}
+		if (tick == 96) {
+			shot(mc, "00_trainer_screen");
+		}
+		if (tick == 100) {
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.TrainerScreen screen) {
+				screen.press(io.github.jcondedata.aliveworkplace.trainer.TrainerMenu.CHALLENGE); // the button's own click
+			}
 		}
 		if (tick > 80 && tick % 4 == 0) {
 			server.execute(() -> {
@@ -3564,6 +3577,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 			// The hall's screen and the Storehouse board, drawn like the Blueprint Table (26.12), put their buttons in a
 			// strip and a list, not on a chest's grid.
 			int[] at = hall.centre(slot);
+			setMouse(mc, at[0] * scale, at[1] * scale);
+			return;
+		}
+		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.TrainerScreen trainer) {
+			// The Trainer screen (43.1): its buttons by id (TrainerMenu.CHALLENGE, TRADE, CLOSE).
+			int[] at = trainer.centre(slot);
 			setMouse(mc, at[0] * scale, at[1] * scale);
 			return;
 		}

@@ -55,6 +55,16 @@ public class QaEveryMenuGameTests implements FabricGameTest {
 		pairs.put(ModBlocks.CHOICE_LIST_MENU, new Pair(
 			() -> ChoiceMenu.openList(player, Component.literal("qa"), p -> true, m -> {}),
 			(id, inv) -> ModBlocks.CHOICE_LIST_MENU.create(id, inv)));
+		BlockPos trainerAt = new BlockPos(4, 2, 4);
+		io.github.jcondedata.aliveworkplace.trainer.TrainerView[] sent = new io.github.jcondedata.aliveworkplace.trainer.TrainerView[1];
+		pairs.put(ModBlocks.TRAINER_MENU, new Pair(
+			() -> {
+				net.minecraft.world.entity.npc.Villager trainer = helper.spawn(net.minecraft.world.entity.EntityType.VILLAGER, trainerAt);
+				io.github.jcondedata.aliveworkplace.trainer.TrainerScreens.open(player, trainer);
+				sent[0] = ((io.github.jcondedata.aliveworkplace.trainer.TrainerMenu) player.containerMenu).view();
+				return player.containerMenu;
+			},
+			(id, inv) -> new io.github.jcondedata.aliveworkplace.trainer.TrainerMenu(id, inv, sent[0])));
 		BlockPos boxAt = new BlockPos(2, 2, 2);
 		pairs.put(ModBlocks.MAILBOX_MENU, new Pair(
 			() -> {

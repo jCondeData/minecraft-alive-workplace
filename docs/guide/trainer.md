@@ -8,7 +8,7 @@ Needs: Cobblemon
 Workstation: Training Post
 Recipe: a target block on planks
 Pick it: a villager without a job takes a Training Post by themselves (or a Poké Ball)
-Battle: right-click them with an empty hand
+Battle: right-click them with an empty hand, then Challenge
 Prize: CobbleDollars (emeralds without CobbleDollars), once a day per trainer
 Teams: two young Pokémon at Novice, six fully evolved at Master
 Build: the Trainer's House
@@ -27,9 +27,16 @@ Trainer. A villager already at a Training Post becomes one with a **Poké Ball**
 
 ## Battling
 
-Right-click a trainer with an empty hand to challenge them; over their head you see "right-click to battle" and how
-many battles they've fought. Your Pokémon need to be healthy to start. Trainers sleep at night ("come back in the
-morning").
+Right-click a trainer with an empty hand and their page opens (over their head you see "right-click to battle" and how
+many battles they've fought). On the left: their name and rank, your record against them, whether you've battled today
+and the rules. On the right: the prize, their team with the real Pokémon models (only half of it until you beat them
+once, the rest "???"), your party with a line each (ready, fainted, or over your level cap), and three buttons.
+**Challenge** starts the battle; **Trade** opens their trades (as sneaking and right-clicking does); **Close** closes.
+When they can't battle you right now, Challenge is gray and the reason is under it: they're asleep ("come back in the
+morning"), busy with someone else, or away at the Cup, or you have no Pokémon with you. The battle heals your team
+first.
+
+![The Trainer screen](https://jcondedata.github.io/minecraft-alive-workplace/battle/still-1.jpg)
 
 Every trainer starts as a **Novice** with two young Pokémon and ranks up as people battle them (more when the trainer
 wins), until a **Master** fields six fully evolved Pokémon and plays smart. Beating one pays **CobbleDollars**

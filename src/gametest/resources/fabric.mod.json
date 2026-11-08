@@ -383,6 +383,7 @@
 			"io.github.jcondedata.aliveworkplace.test.EdictBookGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallUiGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ChoiceListGameTests",
+			"io.github.jcondedata.aliveworkplace.test.TrainerScreenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReformStoryGameTests",

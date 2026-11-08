@@ -19,6 +19,7 @@ asks for the steps, `latest.log` and any crash report).
 ### Added
 
 - The Move Tutor's lessons are a list in the Village Hall's look instead of a gray chest: your money at the top, your party as tabs, each move a row with its type, price and a Teach button (Confirm to pay), gray rows for moves the tutor can't teach yet; the screen follows your party and money while it's open (42.1).
+- Right-clicking a Trainer or Trainer Leader with an empty hand opens their page in the Village Hall's look instead of starting the battle at once: their rank and village, your record against them, today's state and the rules on the left; the prize, their team with the real Pokémon models (half of it hidden until you beat them once), your party with a line each (ready, fainted, over the level cap) and Challenge, Trade and Close on the right. Challenge starts the battle as the click did; when they can't battle you it's gray with the reason under it (43.1).
 
 ### Fixed
 

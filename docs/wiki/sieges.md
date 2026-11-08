@@ -188,7 +188,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **Repair**: a broken gate block is a hole in a finished build, which a builder's upkeep fills like any other; the
   list on the Defense page drops a block once something stands there again.
 - **What threats may damage** (32.16a, `threat/ThreatDamage`): a "threat" is a raider (`aliveworkplace_raider` tag)
-  or a projectile one shot; a "builder's block" is a finished build's block as drawn (`VillageFire.builderMade`) or
+  or a projectile one shot (B1066, B1064: `ThreatShotMixin` on `Projectile.setOwner` tags a raider's shot
+  `aliveworkplace_raider_shot` when it is shot, saved with it, so it stays a threat's after its raider is discarded,
+  killed or unloaded, when `getOwner()` reads null; a shot deflected to a new owner loses the tag); a "builder's block" is a finished build's block as drawn (`VillageFire.builderMade`) or
   any block inside the outline of a build site under way. Three hooks keep threats off them: `ThreatGriefMixin` on
   `Level.destroyBlock` (the ravager's leaf-breaking and any other mob breaking with itself as the breaker),
   `ThreatDoorMixin` on `BreakDoorGoal` (it doesn't start, or stops, at a builder's door) and `ExplosionMixin` (a

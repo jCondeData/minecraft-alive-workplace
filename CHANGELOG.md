@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A raider's arrow, trident or fireball still in the air when its raider leaves at dawn, is killed by a guard or walks out of loaded chunks no longer breaks a builder's pot, chorus flower, dripstone spike or wool: the shot stays a raider's shot to the end, even across a save and reload (B1066, B1064).
 - Signs built from an uploaded blueprint file can no longer hide a click command behind a comment or a `)]}'` prefix at the start of a line, and a line styled letter by letter is trimmed to its plain words, so a wall of such signs can no longer make a chunk that disconnects every player who comes near (B1062, B1065).
 - A house torn down by a player is no longer rebuilt as a bare outside on its empty lot when its look was chosen before: picking a look for it now says "That house isn't there any more." and starts nothing; a half-rebuilt house whose room stands can still be given a look (B1050).
 - House looks: a look rebuild waiting as the builder's 5th queued build can now be changed to another style, and a pick refused because the builder's queue is full now says so instead of telling you to move the bench closer (B1051).

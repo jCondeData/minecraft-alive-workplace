@@ -336,6 +336,9 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   goal running against a real door (only the rule it asks), a ghast's fireball.
 - GameTests (B1052): `QaSiegeDripstone1108dBugTests`: a drowned pirate's trident leaves a finished palisade's
   dripstone spike standing; a wild drowned's trident breaks it.
+  `QaSiegeDripstoneVerify1108bGameTests`: a raider's trident really thrown through the air, on a hanging spike and on a
+  build under way leaves the builders' spike; a raider's trident still breaks a player's own spike (not with mobGriefing
+  off), and a player's trident breaks the builders' spike.
 - GameTests (B1032): `QaSiegePot1108aGameTests`: a raider's arrow on a finished build's decorated pot leaves it whole
   and uncracked, the same arrow breaks a player's own pot and a wild skeleton's breaks the builders' pot; a player's
   arrow breaks the builders' pot, and with mobGriefing off a raider's arrow leaves a player's pot alone.

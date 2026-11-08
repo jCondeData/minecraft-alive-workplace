@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052
 
 ## What a player sees
 
@@ -194,7 +194,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   `ThreatDoorMixin` on `BreakDoorGoal` (it doesn't start, or stops, at a builder's door) and `ExplosionMixin` (a
   threat's blast, direct or indirect, leaves those blocks out of what it blows up), plus `ThreatPotMixin` on
   `DecoratedPotBlock.onProjectileHit` (B1032: vanilla cracks the pot before it breaks it, and a cracked pot no
-  longer matches the build as drawn, so the hit is refused before the crack). The ram's own blow runs through
+  longer matches the build as drawn, so the hit is refused before the crack), and `ThreatDripstoneMixin` on
+  `PointedDripstoneBlock.onProjectileHit` (B1052: a trident breaks the spike with a destroyBlock call that names no
+  entity, so `ThreatGriefMixin` was never asked). The ram's own blow runs through
   `ThreatDamage.asRam`, the one break allowed. Every gate a ram broke (not the dropped bars) and every builder's block
   a village fire burned goes on `ThreatData.damaged`; `Upkeep` repairs any finished build holding one of them even with
   `builderRepairs` off (`Upkeep.THREATS`, off in GameTests like `Upkeep.ENABLED`), and drops an entry once a block
@@ -330,6 +332,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   Palisade Gate's fence gate and every other block of the build still stands; the gate is on the saved list through a
   save and load and a builder puts it back with `builderRepairs` off. Not tested in a GameTest: a vindicator's door
   goal running against a real door (only the rule it asks), a ghast's fireball.
+- GameTests (B1052): `QaSiegeDripstone1108dBugTests`: a drowned pirate's trident leaves a finished palisade's
+  dripstone spike standing; a wild drowned's trident breaks it.
 - GameTests (B1032): `QaSiegePot1108aGameTests`: a raider's arrow on a finished build's decorated pot leaves it whole
   and uncracked, the same arrow breaks a player's own pot and a wild skeleton's breaks the builders' pot; a player's
   arrow breaks the builders' pot, and with mobGriefing off a raider's arrow leaves a player's pot alone.

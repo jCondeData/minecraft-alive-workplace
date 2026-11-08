@@ -123,6 +123,72 @@ public class QaSignCommands1108BugTests implements net.fabricmc.fabric.api.gamet
 		});
 	}
 
+	/**
+	 * A sign's words can also hold computed parts (nbt, selector, score) that vanilla works out when the sign loads, with
+	 * permission level 2 (SignBlockEntity.loadLines). From an uploaded file that lets any player read what only an
+	 * operator could: here another player's position. The built sign must not show it.
+	 */
+	//$ gametest_ticks_batch HUGE '2400' '"qaSignCommands1108b"'
+	@GameTest(template = HUGE, timeoutTicks = 2400, batch = "qaSignCommands1108b")
+	public void aSignFromAnUploadedFileDoesNotRevealAPlayersPosition(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.setGameMode(GameType.SURVIVAL);
+		BlockPos stand = helper.absolutePos(new BlockPos(27, 2, 27));
+		player.teleportTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5);
+		String x = Integer.toString(stand.getX());
+
+		helper.setBlock(SRC, Blocks.OAK_SIGN);
+		SignBlockEntity source = (SignBlockEntity) helper.getBlockEntity(SRC);
+		Component words = Component.literal("Base: ").append(Component.nbt("Pos", false, java.util.Optional.empty(),
+			new net.minecraft.network.chat.contents.EntityDataSource("@p")));
+		source.setText(source.getFrontText().setMessage(0, words), true);
+		source.setWaxed(true);
+		StructureTemplate template = new StructureTemplate();
+		template.fillFromWorld(level, helper.absolutePos(SRC), new Vec3i(1, 1, 1), false, Blocks.STRUCTURE_VOID);
+		byte[] bytes;
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			NbtIo.writeCompressed(template.save(new CompoundTag()), out);
+			bytes = out.toByteArray();
+		} catch (IOException e) {
+			throw new GameTestAssertException("(setup) couldn't write the file: " + e);
+		}
+		helper.setBlock(SRC, Blocks.AIR);
+		ResourceLocation id;
+		try {
+			id = BlueprintImporter.importBytes(level.getServer(), "uploads/qa_signer",
+				"where_" + Long.toHexString(level.getGameTime()) + ".nbt", bytes).id();
+		} catch (Exception e) {
+			throw new GameTestAssertException("(setup) the upload didn't import: " + e);
+		}
+
+		level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(true, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		Leftovers.after(helper, () -> level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(false, level.getServer()));
+		helper.setDayTime(2000);
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, BENCH.east());
+		Builders.employ(level, builder, helper.absolutePos(BENCH));
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(ORIGIN), Rotation.NONE, Mirror.NONE);
+		BuildSite site = Builders.start(level, builder, null, id, placement);
+		if (site == null) {
+			throw new GameTestAssertException(id + " didn't start");
+		}
+		helper.succeedWhen(() -> {
+			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "still building: " + site.stage() + " " + site.status() + " missing " + site.missing());
+			BlockEntity built = level.getBlockEntity(helper.absolutePos(ORIGIN));
+			helper.assertTrue(built instanceof SignBlockEntity, "no sign built: " + helper.getBlockState(ORIGIN));
+			String shown = ((SignBlockEntity) built).getFrontText().getMessage(0, false).getString();
+			helper.assertTrue(shown.startsWith("Base:"), "the built sign lost its words: '" + shown + "'");
+			helper.assertTrue(!shown.contains(x), "the sign a builder built from an uploaded file shows a player's position, worked out"
+				+ " with permission level 2: '" + shown + "' (the player stands at x " + x + ")");
+			player.discard();
+		});
+	}
+
 	/** Both sides say "Free gold"; the words run /setblock at {@code mark} on a click. Waxed, as a map maker leaves them. */
 	private static void commandSign(SignBlockEntity sign, BlockPos mark) {
 		String command = "/setblock " + mark.getX() + " " + mark.getY() + " " + mark.getZ() + " minecraft:gold_block";

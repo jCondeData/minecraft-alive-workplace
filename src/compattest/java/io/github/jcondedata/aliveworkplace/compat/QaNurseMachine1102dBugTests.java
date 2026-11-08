@@ -54,7 +54,11 @@ public class QaNurseMachine1102dBugTests implements FabricGameTest {
 		QaNurseMachine1102dCompatTests.rightClick(v, nurse);
 		v.seen().clear();
 		QaNurseMachine1102dCompatTests.rightClick(v, nurse);
-		helper.assertTrue(QaNurseMachine1102dCompatTests.said(v, "Come back in 60 seconds"), "right after a treatment she says " + v.seen());
+		// Her minute is 1,200 ticks at her pace (traits and mood move it a few seconds, B867): 60 seconds at a pace of 1,
+		// and never one second more than her minute, rounded up.
+		String wait = "Come back in " + io.github.jcondedata.aliveworkplace.nurse.Nurses.secondsLeft(
+			io.github.jcondedata.aliveworkplace.build.BuilderLevels.delay(io.github.jcondedata.aliveworkplace.nurse.Nurses.COOLDOWN, nurse)) + " seconds";
+		helper.assertTrue(QaNurseMachine1102dCompatTests.said(v, wait), "right after a treatment she says " + v.seen() + ", not \"" + wait + "\"");
 		helper.succeed();
 	}
 }

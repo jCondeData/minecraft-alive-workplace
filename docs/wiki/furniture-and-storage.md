@@ -564,7 +564,8 @@ with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierS
 `SophisticatedStorageCompatTests.porterFillsALimitedBarrelFromASophisticatedBarrel`,
 `SophisticatedStorageCompatTests.builderUsesAndLeavesSophisticatedStorage`,
 `SophisticatedStorageCompatTests.aStackUpgradeShowsItsRealRoomOnTheBoard`, and the older
-`PackModsCompatTests.packStorageWorksAsSupplyChests`.
+`PackModsCompatTests.packStorageWorksAsSupplyChests`; QA's `QaSophisticatedDouble1108CompatTests` (two Sophisticated chests a
+player places side by side are one double chest at a builder's bench: 10 planks counted once, exactly 10 taken).
 37.9 (compat, Sophisticated Storage): `SophisticatedControllerCompatTests.aControllerMakesThreeBarrelsOneStore` (counted
 once, a delivery put away and a builder's take through the controller, the board's line, three stores again once it
 breaks), `SophisticatedControllerCompatTests.aPorterDeliversThroughTheController`,

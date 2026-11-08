@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A raider that turns into another mob, such as a desert husk drowning in your moat and coming back up as a zombie or a skeleton freezing into a stray in powder snow, is still a raider: the raid no longer ends as beaten while it walks the village, it leaves at dawn with the others, and it no longer breaks builders' work. The same holds for lair, bandit camp, bounty and rogue mobs (B1054).
 - A raider left over from an older raid, standing somewhere far off in loaded ground, no longer keeps the next raid on any village going after its players kill every raider: that raid is fought off and celebrated again. Each raider now belongs to the raid it came with, and a raider you lead far away still counts for its own raid (B1063).
 - A raider's arrow, trident or fireball still in the air when its raider leaves at dawn, is killed by a guard or walks out of loaded chunks no longer breaks a builder's pot, chorus flower, dripstone spike or wool: the shot stays a raider's shot to the end, even across a save and reload (B1066, B1064).
 - Signs built from an uploaded blueprint file can no longer hide a click command behind a comment or a `)]}'` prefix at the start of a line, and a line styled letter by letter is trimmed to its plain words, so a wall of such signs can no longer make a chunk that disconnects every player who comes near (B1062, B1065).

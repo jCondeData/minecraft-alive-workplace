@@ -246,6 +246,13 @@ public final class Piglins {
 		if (turned == null || !HostileSpawns.keep(level, turned, "band of a fallen Piglin Warlord")) {
 			return null;
 		}
+		// Every conversion carries the mod's tags over (ConvertedMobs, B1054); a band that zombifies is no lair's any
+		// more, so only those listed above stay.
+		for (String tag : List.copyOf(turned.getTags())) {
+			if (tag.startsWith(ConvertedMobs.PREFIX) && !tags.contains(tag)) {
+				turned.removeTag(tag);
+			}
+		}
 		tags.forEach(turned::addTag);
 		if (!plunder.isEmpty()) {
 			ModAttachments.PLUNDER.set(turned, plunder);

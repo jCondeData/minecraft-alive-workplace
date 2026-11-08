@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962
 
 ## What a player sees
 
@@ -122,7 +122,10 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   station screen while the train runs, is followed: the hall's next look at its train points that stop at the new name
   (`CreateTrains.follow`), so the train and its caravans keep coming (B900), also when the renamed station's village
   isn't loaded any more (the player renamed it there and went home): the name is read from Create's railway, which
-  keeps every station with its chunk unloaded (B912). A train put together at a station whose village unloads soon
+  keeps every station with its chunk unloaded (B912). Any name works, brackets and all ("Bramble [East]", "Platform {2}", "Main ["): Create reads a
+  stop's text as a pattern (`*`, `?`, `[..]` and `{a,b}` mean something), so the stop holds the name with a backslash
+  before each of `\ * ? [ {` (`CreateTrains.stopText`) and finds exactly that station; a stop saved before that, holding
+  the name as it is, is re-pointed on the hall's next look (B938). A train put together at a station whose village unloads soon
   after (the player walking off) keeps its conductor and runs on (B913); it still waits two seconds at that station
   first (Create's schedule cooldown), so the caravans waiting there board it. Stations on one track network never share a
   name the village gave them, since a Create schedule stops at the nearest station of its name: a station whose village's
@@ -173,7 +176,10 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   without one seats a jobless villager as before, and a villager with another job is never taken. As the train comes
   in at a station, the Conductor riding it calls the stop once, over his head and in the chat of players within 24
   blocks of the station: "Ada: Now arriving at Ashford! All change, mind the gap." (a train driven by a jobless
-  villager comes in quietly). Off the train he stands at his station like any villager at their workstation. He
+  villager comes in quietly). If the train's driver dies, is struck by lightning into a witch or is turned by
+  a zombie, the train can't move: the Conductor or a jobless villager by the train takes the empty seat (a zombie
+  villager left riding is put off), and while nobody is free there, the caravans waiting for the train or riding it
+  take the timed trip with their goods instead, so they still arrive (B962). Off the train he stands at his station like any villager at their workstation. He
   trades coal and emeralds for rails, Create track, powered rails, train schedules, track signals, railway casing and,
   as a Master, train controls.
 
@@ -221,7 +227,16 @@ one `TrackGraph` (`Create.RAILWAYS.trackNetworks`), three straight clear track b
 direction, a jobless adult villager within 24 blocks; then the station's enterAssemblyMode, assemble,
 exitAssemblyMode, and the train's schedule runtime with two `DestinationInstruction`s and `ScheduledDelay`s, cyclic.
 The train's owner is `CaravanTrains.railwayId` (a name-based UUID of the two halls), which is how the village finds its
-own train and never touches a player's. A shipment's `arrives` holds `BOARDING` (`Long.MAX_VALUE`) while it waits and
+own train and never touches a player's. B1001: Create's station assembly takes every bogey it finds along the
+straight track past the station, so for the village's assembly the station's three bogey lists (which Create's
+scan of the track fills only as far as they are long) are made as long as the
+village train's own bogeys and put back afterwards: another village's train blocks further along the line (a hub's two
+trains built before their Conductors came) or a player's carriage being built there are never taken as more carriages.
+A player's bogey not glued to anything yet further along doesn't stop the village train either. A player's carriage on
+the very next block after the village train's last block can't be kept apart by Create (the station answers "not
+connected in order"), so the village train waits until it is moved; it is never taken. A player who later puts their
+own train together at that station gets every carriage, as Create does elsewhere.
+A shipment's `arrives` holds `BOARDING` (`Long.MAX_VALUE`) while it waits and
 `ABOARD` while it rides; the train standing at the village's nearest station (`Train.currentStation`) moves it on, and
 at the other end sets `arrives` to now and unloads (`Caravans.trainIn`). Saved as before: nothing new in the save.
 
@@ -285,7 +300,9 @@ doesn't fit, or finds no store, drops at their feet. A broken machine, or a file
 brings the load back on foot: a worker whose machine is broken on the way turns back at once and shows "the Millstone
 is gone: bringing the load back to the store" (the machine is named from its file, never from what now stands at its
 spot, B506), and a Mechanic whose machine is broken while she walks to it says "the Millstone is gone" and goes on
-with her round, and a worker killed mid-trip drops it where they fell. The chef's water is poured straight into the basin's tank (a bucket's
+with her round, and a worker killed, turned into a zombie villager or struck by lightning into a witch mid-trip drops
+it where they were, once (B960); a Mechanic gone the same way with a part from the store in hand puts it back in the
+store (B959). The chef's water is poured straight into the basin's tank (a bucket's
 worth, 1000 mB), the way villages draw water anywhere; no bucket is used up. Items go in and out through Fabric's item
 and fluid transfer, which Create's port exposes; a depot, basin or crusher is never anyone's supply chest. The
 Mechanic's round uses the same files and the same work done on the spot.
@@ -596,16 +613,31 @@ village's last column empties it (B994).
   once: the hole filled, one cogwheel left of the store's two, nothing in his hand or on the ground.
 - `QaMechanicPartStruck1104eCompatTests` (QA, with Create, B928 kin): a Mechanic struck by lightning (a witch) with
   empty hands, or right after he set the cogwheel in the hole, leaves the store and the mend as they were, nothing
-  dropped. Struck or killed with the store's cogwheel in hand, it vanishes (B959; and a machine trip's load when
-  struck, B960): their tests wait on `tests/mechanic-struck-1104`.
+  dropped.
+- `QaMechanicPartStruck1104eBugCompatTests` (B959) and `QaMachineTripStruck1104eBugCompatTests` (B960): struck or
+  killed with the store's cogwheel in hand, the Mechanic leaves both cogwheels in the store or on the ground; a farmer
+  struck mid-trip leaves all 12 wheat.
+- `QaCarriedPartsGone1107eCompatTests` (4, QA for B959 and B960): a player kills the Mechanic with the store's cogwheel
+  in hand while vanilla's own hand drop comes up: 2 cogwheels in the store or on the ground, never 3; reloaded with the
+  cogwheel in hand, then struck into a witch: both still there; reloaded and left alone: he mends the hole, his hand
+  ends empty and the store keeps 1; a farmer reloaded mid machine trip, then struck: his 12 wheat fall once.
 - `QaContraptionLines1104eCompatTests` (QA, with Create, 39.5's lines): "its 1 moving part turns", two stuck parts
   both named, four named with no "more", five reading four and "and 1 more", eleven "and 7 more", a part gone from its
   spot "a missing part at x y z", and the Mechanic whose toolbox is in reach named as the one who checked.
 - `QaCreateZombified1104e2CompatTests` (QA, with Create, B928 kin): a farmer killed by a zombie on Hard mid machine
   trip (a zombie villager now, no death loot) leaves his 12 wheat where he fell, and the zombie villager carries
   neither the wheat nor the trip; cured, he is a farmer again with no trip and no second load. A Mechanic killed by a
-  zombie with the store's cogwheel in hand loses it, and a train driver turned by a zombie stops the train as B962's
-  do: those tests wait on `tests/mechanic-struck-1104`.
+  zombie with the store's cogwheel in hand puts it back, the zombie villager holding none
+  (`QaCreateZombified1104e2BugCompatTests`, B959); a train driver turned by a zombie no longer leaves the caravan
+  waiting (`QaTrainDriverZombified1104e2BugCompatTests`, B962).
+- `QaTrainDriverLost1104eBugCompatTests` (QA, with Create, B962): the village train's driver killed, or struck by
+  lightning into a witch, with nobody else by the train: the day's 32 logs still reach the other village (the timed
+  trip), all 64 kept. `TrainDriverCompatTests`: with a villager free by the train, he takes the dead driver's seat and
+  the caravan rides the train all the way.
+- `QaTrainDriverEdges1108eCompatTests` (QA, with Create, B962): the driver killed with the caravan's 32 logs already
+  in the train's chest and nobody free: the logs come back out and arrive once by the timed trip, none left in the chest,
+  never doubled; the new driver killed too: a third villager takes the seat and the train still brings the caravan;
+  only a baby and a grown Farmer by the train: neither is sat in the seat, and the caravan takes the timed trip.
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is
@@ -643,12 +675,32 @@ village's last column empties it (B994).
   A world from before B898 (the hub's one station facing Westmere, the Eastwick train already put together the old way
   with no way in): the builder puts up the second station, the old train's stop follows it, and Eastwick's wheat
   comes in by that train.
+- `QaTrainHubBothBuilt1107eBugCompatTests` (QA, B1001, with Create): a hub between two neighbors on one straight line,
+  both trains' blocks standing before any Conductor is hired: once three Conductors come, each train is put together
+  from its own blocks, one carriage each, and neither derails; a village train put together with a player's glued bogey
+  and plank 3 blocks past its blocks is one carriage and the player's bogey and plank stay on the track.
+- `QaTrainOwnBlocks1108eCompatTests` (QA, B1001's corners, with Create): a player's unglued bogey 3 blocks past the
+  village train's blocks: the village train is put together, one carriage, and the bogey stays; a player's carriage on
+  the next block after them: it is never taken (the village train waits, then goes together once it is moved off); a
+  player's two-carriage train put together at the station after the village train was there keeps both carriages.
 - `QaTrainVillageRenamed1104eCompatTests` (QA, B894, with Create): with the Pine-Oakford train running, the middle
   village renamed Oakford with a name tag, or the far Oakford renamed Pine: the four stations keep four names and
   Pine's 32 logs reach the far village by train.
 - `QaTrainStationSameName1104eCompatTests` (QA, B900, with Create): with the Ashford-Bramble train running, a player
   names both stations "Station", swaps the two stations' names, or renames Bramble's "Harbor" and then, once the train
   has followed that, "Port": each time Ashford's 32 logs ride the train to Bramble, none lost or doubled.
+- `QaTrainStationGlobNames1104eCompatTests` (QA, B938, with Create): the other village's station named "Bramble [East]",
+  "Platform {2}" or "Main [", the sending village's own named "Ashford [West]", or the village itself named
+  "Bramble [East]" with a name tag: each time the 32 logs ride the train and arrive, none lost or doubled.
+- `TrainStationGlobNamesCompatTests` (B938, with Create): through Create's own reading of a stop, each of 19 names (glob
+  characters, backslashes, a lone `*` or `?`) is found by its own stop and by no other; a station named with every glob
+  character and a backslash gets the caravan; a stop saved before the fix (the bracketed name as it is) is re-pointed
+  and the logs arrive.
+- `QaTrainGlobRenames1108eCompatTests` (QA, B938, with Create): villages renamed with a name tag after their train
+  already runs: the far village from "Oakford" to "Oakford [East]", then on to "Oak {North} [2]"; the far and the
+  middle village both named "Oak [E]" (B894 keeps their stations apart); the sending village renamed "Pine*" and then
+  "Pine?". Each time Pine's 32 logs reach the far village by train, none lost or doubled, and the four stations keep
+  four names.
 - `QaTrainNamesakes1107eCompatTests` (QA, B933, with Create): a halt added halfway along the line and all three
   stations named "Station" (the train stops at the halt, a namesake of its stop, and is sent on; fails without
   CreateTrains.sendOn), the halt given the other village's station name, and only the sending village's station given the

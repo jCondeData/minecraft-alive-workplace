@@ -22,6 +22,8 @@ import com.simibubi.create.content.trains.track.TrackBlockEntity;
 import com.simibubi.create.content.trains.track.TrackMaterial;
 import com.simibubi.create.content.trains.track.TrackPropagator;
 import com.simibubi.create.content.trains.entity.Carriage;
+import com.simibubi.create.content.trains.entity.CarriageContraption;
+import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -330,7 +332,13 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		level.addFreshEntity(glue);
 		SeatBlock.sitDown(level, seat, conductor);
 		be.enterAssemblyMode(null);
-		be.assemble(owner);
+		int bogeys = (int) parts.values().stream().filter(s -> BuiltInRegistries.BLOCK.getKey(s.getBlock()).getPath().endsWith("bogey")).count();
+		Object[] kept = ownBogeysOnly(be, bogeys);
+		try {
+			be.assemble(owner);
+		} finally {
+			restore(be, kept);
+		}
 		Train train = home.getPresentTrain();
 		if (train == null) {
 			AliveWorkplace.LOG.warn("Alive Workplace: the village train at {} didn't assemble: {}", stationPos.toShortString(),
@@ -359,6 +367,52 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		return train.id;
 	}
 
+	/** The station's bogey lists, filled by its assembly's scan of the track ({@code StationBlockEntity.refreshAssemblyInfo}). */
+	private static final String[] BOGEY_FIELDS = {"bogeyLocations", "bogeyTypes", "upsideDownBogeys"};
+
+	/**
+	 * B1001: a station's assembly takes every bogey it finds along the straight track past it (up to Create's longest
+	 * train), not only the village train's: another village's train blocks standing further along the line (two neighbors'
+	 * trains at a hub, built before their Conductors came) or a player's carriage being built there became more carriages
+	 * of this train, and the other train, put together on top of them, derailed both. Create's scan fills the station's
+	 * bogey lists only as far as they are long and makes them only when there are none, so for this one assembly they are
+	 * as long as the village train's own bogeys (the first ones past the station): the scan stops there and nothing
+	 * further along the track is touched. Returns the station's own lists, put back by {@link #restore} (a player's
+	 * assembly at this station later scans as Create does); null when they couldn't be reached (Create changed), which
+	 * leaves Create's assembly as it is.
+	 */
+	@Nullable
+	private static Object[] ownBogeysOnly(StationBlockEntity be, int bogeys) {
+		try {
+			Object[] kept = new Object[BOGEY_FIELDS.length];
+			for (int i = 0; i < BOGEY_FIELDS.length; i++) {
+				java.lang.reflect.Field field = StationBlockEntity.class.getDeclaredField(BOGEY_FIELDS[i]);
+				field.setAccessible(true);
+				kept[i] = field.get(be);
+				field.set(be, java.lang.reflect.Array.newInstance(field.getType().getComponentType(), Math.max(1, bogeys)));
+			}
+			return kept;
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			AliveWorkplace.LOG.warn("Alive Workplace: couldn't keep the village train's assembly to its own blocks: {}", e.toString());
+			return null;
+		}
+	}
+
+	private static void restore(StationBlockEntity be, @Nullable Object[] kept) {
+		if (kept == null) {
+			return;
+		}
+		try {
+			for (int i = 0; i < BOGEY_FIELDS.length; i++) {
+				java.lang.reflect.Field field = StationBlockEntity.class.getDeclaredField(BOGEY_FIELDS[i]);
+				field.setAccessible(true);
+				field.set(be, kept[i]);
+			}
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			AliveWorkplace.LOG.warn("Alive Workplace: couldn't put back the station's bogey lists: {}", e.toString());
+		}
+	}
+
 	/** Round and round: to {@code there}, wait, back {@code home}, wait. */
 	static Schedule schedule(String there, String home) {
 		Schedule schedule = new Schedule();
@@ -368,9 +422,40 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		return schedule;
 	}
 
+	/**
+	 * B938: Create reads a stop's text as a glob (catnip's {@code Glob.toRegexPattern}: {@code *}, {@code ?},
+	 * {@code [..]} and {@code {a,b}} mean something), so a station named "Bramble [East]" or "Main [" isn't found by a stop
+	 * that holds its name as it is. Glob takes a backslash before any of {@code \ * ? [ {} as that character itself, so
+	 * the stop's text is the name with those escaped, and matches exactly that name.
+	 */
+	public static String stopText(String station) {
+		StringBuilder out = new StringBuilder(station.length() + 4);
+		for (int i = 0; i < station.length(); i++) {
+			char c = station.charAt(i);
+			if ("\\*?[{".indexOf(c) >= 0) {
+				out.append('\\');
+			}
+			out.append(c);
+		}
+		return out.toString();
+	}
+
+	/** The station name a stop's text was written for: {@link #stopText} undone (a text with no escapes is itself). */
+	public static String stationOf(String text) {
+		StringBuilder out = new StringBuilder(text.length());
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c == '\\' && i + 1 < text.length()) {
+				c = text.charAt(++i);
+			}
+			out.append(c);
+		}
+		return out.toString();
+	}
+
 	private static ScheduleEntry stop(String station) {
 		DestinationInstruction to = new DestinationInstruction();
-		to.getData().putString("Text", station);
+		to.getData().putString("Text", stopText(station));
 		ScheduledDelay wait = new ScheduledDelay();
 		wait.getData().putInt("Value", WAIT_SECONDS);
 		List<List<ScheduleWaitCondition>> conditions = new ArrayList<>();
@@ -395,6 +480,50 @@ public final class CreateTrains implements CaravanTrains.Railway {
 	}
 
 	@Override
+	public boolean driven(ServerLevel level, UUID owner) {
+		Train train = train(owner);
+		return train == null || train.hasForwardConductor() || train.hasBackwardConductor();
+	}
+
+	@Override
+	public boolean seat(ServerLevel level, UUID owner, java.util.function.Function<BlockPos, Villager> pick) {
+		Train train = train(owner);
+		if (train == null) {
+			return false;
+		}
+		for (Carriage carriage : train.carriages) {
+			CarriageContraptionEntity entity = carriage.anyAvailableEntity();
+			if (entity == null || !entity.isAlive() || entity.level() != level || !(entity.getContraption() instanceof CarriageContraption cc)) {
+				continue; // put away (not loaded): Create keeps its count of the conductors, and nobody can get on
+			}
+			Map<UUID, Integer> mapping = cc.getSeatMapping();
+			List<net.minecraft.world.entity.Entity> riders = List.copyOf(entity.getPassengers());
+			for (net.minecraft.world.entity.Entity rider : riders) {
+				if (!(rider instanceof net.minecraft.world.entity.player.Player) && !mapping.containsKey(rider.getUUID())) {
+					rider.stopRiding(); // riding in no seat: the zombie villager the driver became (vanilla's convertTo)
+				}
+			}
+			// the seats of those no longer riding (the driver dead, or a witch now) are free again
+			mapping.keySet().removeIf(id -> riders.stream().noneMatch(r -> r.getUUID().equals(id)));
+			List<BlockPos> seats = cc.getSeats();
+			for (int i = 0; i < seats.size(); i++) {
+				if (!cc.conductorSeats.containsKey(seats.get(i)) || mapping.containsValue(i)) {
+					continue;
+				}
+				Villager driver = pick.apply(BlockPos.containing(entity.toGlobalVector(Vec3.atCenterOf(seats.get(i)), 1)));
+				if (driver == null) {
+					break; // nobody free by the train
+				}
+				entity.addSittingPassenger(driver, i);
+				AliveWorkplace.LOG.info("Alive Workplace: {} takes the seat of the village train {}", driver.getName().getString(), train.id);
+				break;
+			}
+			carriage.updateConductors();
+		}
+		return driven(level, owner);
+	}
+
+	@Override
 	public void follow(ServerLevel level, UUID owner, BlockPos therePos, BlockPos homePos) {
 		Train train = train(owner);
 		if (train == null || train.graph == null) {
@@ -416,10 +545,15 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		for (int i = 0; i < 2; i++) {
 			if (schedule.entries.get(i).instruction instanceof DestinationInstruction to) {
 				String text = to.getData().getString("Text");
-				if (!text.equals(now[i]) && (!names.contains(text) || now[i].startsWith(text + " "))) {
+				String want = stopText(now[i]);
+				// B938: the stop's text is the station's name with glob characters escaped; a stop written before that
+				// holds the name as it is, so it's read as either
+				String was = text.equals(now[i]) ? now[i] : stationOf(text);
+				if (!text.equals(want) && (was.equals(now[i]) || !names.contains(was) || now[i].startsWith(was + " "))) {
 					// a stop whose station was renamed: Create's schedule finds stations by name, so it would wait for good;
-					// B894: or told apart from a namesake (its name and a key), whose name the stop would still find
-					to.getData().putString("Text", now[i]);
+					// B894: or told apart from a namesake (its name and a key), whose name the stop would still find;
+					// B938: or written before glob characters were escaped, which the name's own pattern wouldn't find
+					to.getData().putString("Text", want);
 					AliveWorkplace.LOG.info("Alive Workplace: the village train {} now stops at '{}' (was '{}')", train.id, now[i], text);
 				}
 			}

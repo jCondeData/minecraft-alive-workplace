@@ -18,6 +18,40 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Food you're cooking on a build's campfire comes back when a Builder takes that build down (into his bag, or on the ground by his bench when the bag is full), as when you break the campfire yourself: it used to vanish.
+- A Book and Quill you've written in is no longer turned into a Builder's material list (from the Builder, his Blueprint Table, a Builder's Bench or a blueprint): only a blank one is. With your notes in the off hand, a plain right-click on a Builder trades as usual; from the main hand he tells you a blank one is needed and your pages stay as they were.
+- A pillager's arrow in a siege no longer cracks or breaks a decorated pot in a finished build: like every other builder's block, it stands (your own pots still break as in the game).
+- With Create, a village train whose driver dies, is struck by lightning or is turned by a zombie no longer stands still for good with its caravans waiting at the station: the Conductor or a jobless villager by the train takes the empty seat, and while nobody can, the caravans take the timed trip with their goods.
+- A village train station you name with brackets or braces, like "Bramble [East]", "Platform {2}" or "Main [", now gets the village train: it used to wait at the other station for good with the caravan aboard. Trains already stuck that way start running again.
+- A Builder struck by lightning over a sealed cave or room no longer has his bag put inside it now and then (when the cave was sealed moments before, or the server was busy): it always lies where a player can walk to it.
+- With Cobblemon, a Daycare Keeper's Blaze Breed or Aqua Breed Paldean Tauros hatchling stays that breed after a save and load (in the party or PC after a restart), instead of turning Combat Breed.
+- With exactly 2 breeding foods in the chest, the Rancher, Shepherd and Herder now feed both animals of a pair, instead of feeding one, walking back to an empty chest for a second food and leaving the other unfed (no young, and one food wasted).
+- A villager on the way to a chair stops walking to it when furnished builds are switched off (or when they give up on it), instead of walking on and standing in the chair.
+- A villager whose chair is broken while he walks to it now heads for another chair at once, instead of walking on to the empty spot and sitting down on thin air for a moment (B957).
+
+### Dev
+
+- Three furniture-seat tests hold their villager in place until he picks a chair, so an idle stroll at the start (or one he was still on after being put back) can no longer take him to the other chair or out of reach; one of them failed a build on `main` (B1028, B957).
+
+## 0.151.8 — 2026-11-07
+
+### Fixed
+
+- The Blueprint Table's 3D preview no longer crashes the game on a build with another mod's tinted furniture (Cozy Home's chairs and sofas): those blocks get their color from the build and the biome you stand in, and a block another mod can't draw is shown untinted or left out instead. A held blueprint's ghost blocks are guarded the same way (B1020).
+- With Create, a village between two train neighbors on one straight line whose two trains were both built before their Conductors were hired no longer gets both trains wrecked when the Conductors come: each train is put together from its own blocks only, one carriage, and they run without derailing. A village train put together on a line where a player is building a carriage further along also leaves the player's bogey and blocks alone (B1001, B939).
+- With Create, a Mechanic carrying a part from the village store (a cogwheel on the way to a broken machine) no longer loses it when he's killed, turned into a zombie villager or struck by lightning into a witch: the part goes back to the store, once. A worker struck by lightning on a machine trip (12 wheat on the way to the millstone) now drops the load where they stood, as a killed one already did (B959, B960).
+- A villager who sets off for a chair he can't reach (penned in, say) now gives it up after about 8 seconds of getting no closer, instead of holding it for 30 seconds while the villagers who could sit there wander off, and he leaves that chair alone for a minute so another villager sits on it (B967, B677).
+- A new Carpenter (or other crafter) who was carrying a builder's materials when the world was saved on an older version, and then lost his bench and took a lectern, now lets the request go and returns the materials like any other; before, he kept the job and the logs for good (B1018).
+- When lightning turns a Builder into a witch, his bag and blueprint no longer float over the spot where his Blueprint Table stood after it was broken or blown up (they fell and the message named the wrong spot), and they are no longer put in a sealed cave or room under him (in a wheat field, on a stair roof): they lie on ground you can walk to, at the spot the message names (B969, B973).
+- A lead Builder with no chest by his bench takes from a crewmate's bag only what the work ahead still needs, so no spare material is left on the ground when the job ends (B1019).
+- With the Blueprint unlocks switch off, the Blueprint Table no longer hands out a Blueprint of a Wonder when asked for one by id: Wonders are always raised from their Wonder Plan, never handed out, whatever the switch (B1002).
+- The Rancher (and the Shepherd and Herder) now feeds only two animals standing near each other, so they find each other and have young. Before, he could feed two at opposite ends of the pen, who never met: the golden carrots, hay or cactus were used up and no young was born.
+- A Smithy, Storehouse or Kitchen torn down by hand is no longer offered "Dig the cellar": the builders stop selling it, the Village Hall stops listing it, and a dig bought before says there's no cellar to dig any more instead of starting work under the empty plot. A building that is only damaged is still offered.
+- A builder anywhere in the village, even on its edge up a hill, now sells the Burgher's Townhouse and the Noble's Manor when the village has the households for them; before, one far up a slope at the edge sold neither.
+- The siege report's "Hero of the night" on a tie for the most kills is now the guard who reached that count first, not the one whose first kill came first.
+- A builder's new path to the bell now crosses old dirt paths (a vanilla village's own, or one laid for an earlier house), farmland, mud and soul sand instead of stopping at them, and reaches a bell that stands in a square of dirt path; a Steward's roads cross them too.
+- Switching `builderPaths` off now also stops a path a builder had already planned: he lays no more of it and is free for other work.
+- A Bard killed, or taken away (despawned, or unloaded with his chunk), in the middle of a song now stops the music at his jukebox, instead of the disc playing on to its end for everyone nearby.
 - The questbook no longer sends you to the Village Hall's old "top row": the Food in the store and A bed for a newcomer quests now say to open the hall's Overview and hover the Food in store, Beds, Wellbeing and Villagers lines.
 - Mercenaries, relief riders and a story's visitors no longer count as the village's villagers: hiring a band no longer ranks a village up (and down again when it leaves), and the hall's "Villagers" count, the realm's tab, the festival's cost and the raid odds stay as they were while the help is there.
 - A new Weaponsmith (one who has never traded) carrying your worn sword no longer keeps it for good when his grindstone is broken and he takes another job (a lectern nearby) or the server restarted first: he drops the sword and the iron at his feet. A new Carpenter (or other crafter) who loses his bench while carrying a builder's wood and takes another job now lets the request go back to the builder and puts the wood back in the builder's chest.

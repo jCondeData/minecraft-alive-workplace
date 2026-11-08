@@ -88,20 +88,20 @@ public class MachineWork extends Behavior<Villager> {
 		), 2400);
 	}
 
-	/** A worker killed mid-trip drops what they carried where they fell (it's never lost with them). */
-	public static void init() {
-		Platform.get().afterDeath((entity, source) -> {
-			if (entity instanceof Villager villager && villager.level() instanceof ServerLevel level) {
-				MachineJob job = ModAttachments.MACHINE_JOB.get(villager);
-				if (job == null) {
-					return;
-				}
-				ModAttachments.MACHINE_JOB.remove(villager);
-				for (ItemStack stack : job.carried()) {
-					villager.spawnAtLocation(stack.copy(), 0.5f);
-				}
-			}
-		});
+	/**
+	 * A worker gone mid-trip drops what they carried where they were (it's never lost with them): killed, turned into a
+	 * zombie villager, or struck by lightning into a witch (B960). Run by the one hook for a worker who leaves their work
+	 * ({@code BuilderEvents.workLeft}); the trip is removed first, so its load falls only once.
+	 */
+	public static void onWorkerGone(Villager villager) {
+		MachineJob job = ModAttachments.MACHINE_JOB.get(villager);
+		if (job == null) {
+			return;
+		}
+		ModAttachments.MACHINE_JOB.remove(villager);
+		for (ItemStack stack : job.carried()) {
+			villager.spawnAtLocation(stack.copy(), 0.5f);
+		}
 	}
 
 	/**

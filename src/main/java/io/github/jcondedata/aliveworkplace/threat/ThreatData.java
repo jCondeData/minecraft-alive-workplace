@@ -150,7 +150,10 @@ public final class ThreatData extends SavedData {
 		public int toGuards;
 		public int toPlayers;
 		public int toOthers;
-		/** Each guard's kills in this siege, and the guards' names as they were at their last kill. */
+		/**
+		 * Each guard's kills in this siege, in order of each guard's latest kill (SiegeReport.hero breaks ties by it), and
+		 * the guards' names as they were at their last kill.
+		 */
 		public final Map<java.util.UUID, Integer> kills = new LinkedHashMap<>();
 		public final Map<java.util.UUID, String> names = new LinkedHashMap<>();
 		/** The players who fought: who killed a raider of this siege. */

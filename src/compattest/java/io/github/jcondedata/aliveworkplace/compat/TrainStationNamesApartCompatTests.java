@@ -221,7 +221,7 @@ public class TrainStationNamesApartCompatTests implements FabricGameTest {
 				for (BlockPos h : v.halls()) {
 					logs += ((Container) level.getBlockEntity(h.east(3).north(2))).countItem(Items.OAK_LOG);
 				}
-				helper.assertTrue(logs == 64, "logs were lost or doubled on the way: " + logs + " of 64 in the four chests");
+				helper.assertTrue(logs == 64, "logs were lost or doubled on the way: " + logs + " of 64 in the four chests" + where(helper, v, train));
 				QaTrainSameNames1103eCompatTests.tidy(level, v, train);
 				helper.succeed();
 			} else if (tick[0] >= deadline) {
@@ -229,5 +229,36 @@ public class TrainStationNamesApartCompatTests implements FabricGameTest {
 					+ CreateTrainCompatTests.railway().status(level, train) + "; " + QaTrainSameNames1103eCompatTests.names(helper));
 			}
 		});
+	}
+
+	/** Where the logs are (for the failure message): each chest, the caravans of these villages, the line's trains and their chests. */
+	private static String where(GameTestHelper helper, QaTrainSameNames1103eCompatTests.Four v, UUID train) {
+		ServerLevel level = helper.getLevel();
+		StringBuilder b = new StringBuilder(" (chests");
+		for (BlockPos h : v.halls()) {
+			b.append(' ').append(((Container) level.getBlockEntity(h.east(3).north(2))).countItem(Items.OAK_LOG));
+		}
+		b.append("; caravans ").append(v.data().onTheRoad().stream().filter(s -> v.halls().contains(s.from()) || v.halls().contains(s.to())).toList());
+		b.append("; trains of the line ").append(com.simibubi.create.Create.RAILWAYS.trains.values().stream().filter(t -> train.equals(t.owner))
+			.map(t -> t.id + (t.invalid ? " invalid" : "") + (t.derailed ? " derailed" : "")).toList());
+		b.append(", its chest ").append(CreateTrainCompatTests.railway().cargo(level, train));
+		int loose = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, helper.getBounds().inflate(8),
+			e -> e.getItem().is(Items.OAK_LOG)).stream().mapToInt(e -> e.getItem().getCount()).sum();
+		b.append(", on the ground ").append(loose);
+		b.append("; other villages by them ").append(v.data().villages().stream().map(Caravans.Village::hall)
+			.filter(h -> !v.halls().contains(h) && h.closerThan(v.pine(), 160)).map(BlockPos::toShortString).toList());
+		java.util.Set<BlockPos> ours = new java.util.HashSet<>();
+		v.halls().forEach(h -> ours.add(h.east(3).north(2)));
+		java.util.Set<BlockPos> others = new java.util.LinkedHashSet<>();
+		for (BlockPos h : v.halls()) {
+			for (BlockPos c : Caravans.storehouse(level, h)) {
+				if (!ours.contains(c)) {
+					others.add(c);
+				}
+			}
+		}
+		b.append("; other storehouse chests in reach ").append(others.stream().map(c -> c.toShortString() + "="
+			+ (level.getBlockEntity(c) instanceof Container k ? k.countItem(Items.OAK_LOG) : -1)).toList());
+		return b.append(')').toString();
 	}
 }

@@ -92,8 +92,15 @@ public final class BuilderEvents {
 				|| io.github.jcondedata.aliveworkplace.guard.Guards.block(villager, source, amount))));
 		// A lair's captain the game takes away on Peaceful is remembered as taken, not fallen (B767).
 		Platform.get().onEntityUnload((entity, level) -> io.github.jcondedata.aliveworkplace.threat.Lairs.onRemoved(level, entity));
+		// B1003: a Bard killed, discarded or unloaded mid-song: the song stops at the jukebox
+		Platform.get().onEntityUnload((entity, level) -> {
+			if (entity instanceof Villager villager) {
+				io.github.jcondedata.aliveworkplace.bard.BardWork.onGone(level, villager);
+			}
+		});
 		Platform.get().afterDeath((entity, source) -> {
 			if (entity instanceof Villager villager && entity.level() instanceof ServerLevel level) {
+				io.github.jcondedata.aliveworkplace.bard.BardWork.onGone(level, villager); // B1003
 				workLeft(level, villager, "message.aliveworkplace.builder_died", villager.blockPosition());
 				io.github.jcondedata.aliveworkplace.people.FamilyBook.onDeath(level, villager); // the Book of Families dates them (34.21)
 				io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);
@@ -489,7 +496,10 @@ public final class BuilderEvents {
 			return level.isClientSide() ? InteractionResult.SUCCESS
 				: io.github.jcondedata.aliveworkplace.wonder.WonderStages.handOver((ServerPlayer) player, villager, held);
 		}
-		if (held.is(net.minecraft.world.item.Items.WRITABLE_BOOK)) { // B279: the material list of the build under way
+		// B1042: a Book and Quill with the player's notes, kept in the off hand, doesn't take a plain click (it trades);
+		// from the main hand, the player is told a blank one is needed (SiteList.write).
+		if (held.is(net.minecraft.world.item.Items.WRITABLE_BOOK) && (hand == InteractionHand.MAIN_HAND || SiteList.isBlankBook(held))) {
+			// B279: the material list of the build under way
 			if (!level.isClientSide()) {
 				SiteList.write((ServerLevel) level, player, Builders.activeSite((ServerLevel) level, villager), villager, hand);
 			}
@@ -513,8 +523,8 @@ public final class BuilderEvents {
 	/**
 	 * What a worker leaves behind when they're gone, dead or turned into something else: a builder's bag, blueprint and
 	 * site (the owner told with {@code builderTold}, naming {@code leftAt}), a miner's quarry, the markers of a field, tree
-	 * farm, orchard or berry plot, a guild they led and the Pokémon in a rancher's or daycare keeper's care. Runs before a
-	 * grave keeps the villager.
+	 * farm, orchard or berry plot, a guild they led, the Pokémon in a rancher's or daycare keeper's care, a machine trip's
+	 * load and a Mechanic's part from the store (B959, B960). Runs before a grave keeps the villager.
 	 */
 	private static void workLeft(ServerLevel level, Villager villager, String builderTold, BlockPos leftAt) {
 		Builders.onBuilderGone(level, villager, builderTold, leftAt);
@@ -526,6 +536,9 @@ public final class BuilderEvents {
 		io.github.jcondedata.aliveworkplace.hall.Guilds.onDeath(level, villager);
 		io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager);
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.onDeath(level, villager);
+		// what a worker carries that isn't in a bag: a machine trip's load (B960), a Mechanic's part from the store (B959)
+		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.onWorkerGone(villager);
+		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.onWorkerGone(level, villager);
 	}
 
 	/**
@@ -590,17 +603,25 @@ public final class BuilderEvents {
 	 * else the open, solid-floored spot nearest to it (or to the worker, without one) at least 4 blocks from the bolt, up
 	 * to {@link #SAFE_SEARCH} above or below the worker's feet (B964: a pit's rim, a tower's foot). A
 	 * second bolt in the same place doesn't reach it either. Where nothing is found, where the worker stood.
+	 * <p>
+	 * B969: the workstation counts only while it still stands with a top to rest on (the worker remembers the spot of a
+	 * Table that was broken or blown up, and what was put over it fell). B973: a spot a player can reach (open to the sky,
+	 * or joined to where the worker stood, without breaking a block) wins over a nearer one shut in a sealed cave or room.
+	 * B1023: "open to the sky" by the heightmap, never the sky light, which lags behind block changes.
 	 */
 	static BlockPos outOfReach(ServerLevel level, Villager villager, Entity bolt) {
 		BlockPos stood = villager.blockPosition();
 		java.util.Optional<BlockPos> bench = Builders.benchPos(villager);
-		if (bench.isPresent() && outOfReach(bolt, bench.get().above()) && open(level, bench.get().above())) {
+		if (bench.isPresent() && outOfReach(bolt, bench.get().above()) && open(level, bench.get().above())
+			&& !level.getBlockState(bench.get()).isAir() && level.getBlockState(bench.get()).isFaceSturdy(level, bench.get(), Direction.UP)) {
 			return bench.get().above();
 		}
 		BlockPos toward = bench.orElse(stood);
 		BlockPos best = null;
 		double bestDistance = Double.MAX_VALUE;
 		BlockPos at = bolt.blockPosition();
+		Set<BlockPos> reachable = reachable(level, at, stood);
+		boolean bestReachable = false;
 		for (int dx = -SAFE_SEARCH; dx <= SAFE_SEARCH; dx++) {
 			for (int dz = -SAFE_SEARCH; dz <= SAFE_SEARCH; dz++) {
 				// B964: as far up and down as sideways, so a worker deep in a pit or atop a tower still finds the ground
@@ -611,14 +632,71 @@ public final class BuilderEvents {
 						continue;
 					}
 					double d = p.distSqr(toward) + p.distSqr(stood) * 0.001; // nearest the bench, ties nearest where he stood
-					if (d < bestDistance) {
+					boolean canReach = reachable.contains(p);
+					// B973: a spot a player can get to beats any shut in; among the same kind, the nearest
+					if ((canReach && !bestReachable) || (canReach == bestReachable && d < bestDistance)) {
 						bestDistance = d;
 						best = p;
+						bestReachable = canReach;
 					}
 				}
 			}
 		}
 		return best != null ? best : stood;
+	}
+
+	/**
+	 * B973: the spots round the bolt (the search's box, a block wider) a player can get to without breaking a block:
+	 * every passable spot (nothing solid, or a door) joined through passable spots to one open to the sky or to where the
+	 * worker stood.
+	 */
+	private static Set<BlockPos> reachable(ServerLevel level, BlockPos at, BlockPos stood) {
+		int r = SAFE_SEARCH + 1;
+		int minX = at.getX() - r, maxX = at.getX() + r, minZ = at.getZ() - r, maxZ = at.getZ() + r;
+		int minY = stood.getY() - r, maxY = stood.getY() + r;
+		Set<BlockPos> seen = new java.util.HashSet<>();
+		java.util.ArrayDeque<BlockPos> queue = new java.util.ArrayDeque<>();
+		if (passable(level, stood)) {
+			seen.add(stood);
+			queue.add(stood);
+		}
+		for (BlockPos p : BlockPos.betweenClosed(minX, minY, minZ, maxX, maxY, maxZ)) {
+			if (underSky(level, p) && passable(level, p)) {
+				BlockPos q = p.immutable();
+				if (seen.add(q)) {
+					queue.add(q);
+				}
+			}
+		}
+		while (!queue.isEmpty()) {
+			BlockPos p = queue.poll();
+			for (Direction d : Direction.values()) {
+				BlockPos n = p.relative(d);
+				if (n.getX() < minX || n.getX() > maxX || n.getY() < minY || n.getY() > maxY || n.getZ() < minZ || n.getZ() > maxZ
+					|| seen.contains(n) || !passable(level, n)) {
+					continue;
+				}
+				seen.add(n);
+				queue.add(n);
+			}
+		}
+		return seen;
+	}
+
+	/**
+	 * B1023: nothing above {@code p} stops a player coming down to it: it is at or over the top of its column (the
+	 * heightmap, which every block change updates at once). Not {@code canSeeSky}, which reads the sky light: the light
+	 * engine works that out a few ticks later (later still on a busy server), so a cave or room sealed moments before
+	 * still read as open to the sky and won as the nearest spot (B973 back, now and then).
+	 */
+	private static boolean underSky(ServerLevel level, BlockPos p) {
+		return p.getY() >= level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, p.getX(), p.getZ());
+	}
+
+	/** A player passes through {@code p} without breaking it: nothing solid there, or a door. */
+	private static boolean passable(ServerLevel level, BlockPos p) {
+		net.minecraft.world.level.block.state.BlockState state = level.getBlockState(p);
+		return state.getCollisionShape(level, p).isEmpty() || state.getBlock() instanceof net.minecraft.world.level.block.DoorBlock;
 	}
 
 	/** Whether an item lying in {@code p} is out of the bolt's reach (its box, a quarter block wide, clear of it on x or z). */

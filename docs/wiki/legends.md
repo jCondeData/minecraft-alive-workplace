@@ -330,6 +330,9 @@ middle, never half in a wall (`QaKingRaidGolemSpot1101dGameTests`); a guest Lege
 nothing; a farmhand picks and replants ripe wheat, carrots and nether wart and leaves unripe wheat, a melon and a
 poppy alone; a Wall Sentry kills a foe 4 blocks off its post within its leash and leaves one 7 blocks off alone, and
 one without a Patrol Map goes after a zombie 10 blocks away like any golem.
+`QaSentryLeash1108dGameTests` (4, QA): a Wall Sentry 2.5 blocks off its post with no foe walks back to it; inside
+its leash with a foe 4 blocks from the post it stays to fight; exactly 3 blocks off is inside the leash and 3.1 is past
+it; walking back it hands the fight its legs only within 2 blocks of the post.
 `QaSeerGameTests` (4): a Seer on strike or with Legends off foretells nothing; the blessing's mood on day 7 and gone on
 day 8, through a save, and the early baby once; the dawn's lines in English ("in 2 days", "tomorrow", the raiders'
 side, no guest); the foretelling through a save, an empty one writing nothing.

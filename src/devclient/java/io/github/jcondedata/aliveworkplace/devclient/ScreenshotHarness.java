@@ -181,6 +181,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<ModdedStorehouseScene> moddedStorehouse = new Lazy<>(() -> new ModdedStorehouseScene());
 	private final Lazy<CarvedStylesScene> carvedStyles = new Lazy<>(() -> new CarvedStylesScene());
 	private final Lazy<ModdedLibraryScene> moddedLibrary = new Lazy<>(() -> new ModdedLibraryScene());
+	private final Lazy<TablePreviewSafeScene> tablePreviewSafe = new Lazy<>(() -> new TablePreviewSafeScene());
 	private final Lazy<StorageHallScene> storageHall = new Lazy<>(() -> new StorageHallScene());
 	private final Lazy<VillageHallBuildScene> villageHallBuild = new Lazy<>(() -> new VillageHallBuildScene());
 	private final Lazy<BuildFixesScene> buildFixes = new Lazy<>(() -> new BuildFixesScene());
@@ -239,6 +240,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("table_library".equals(System.getProperty("aliveworkplace.scene"))) {
 			tableLibrary.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("table_preview_safe".equals(System.getProperty("aliveworkplace.scene"))) {
+			tablePreviewSafe.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("table_preview".equals(System.getProperty("aliveworkplace.scene"))) {

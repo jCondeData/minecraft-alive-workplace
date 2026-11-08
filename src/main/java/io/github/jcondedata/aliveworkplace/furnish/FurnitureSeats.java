@@ -25,8 +25,8 @@ import org.jetbrains.annotations.Nullable;
  * meeting walks to the nearest free seat within {@link #REACH} blocks and sits on it ({@link FurnitureSeat}, as in the
  * Stadium's stands); they stand up for work, danger (hurt, a hostile near, panic or a raid) or bed, and when the switch
  * ({@link Furnishings#ENABLED}) is off. A seat with someone on it, or that another villager is walking to, isn't taken
- * twice, and a villager who can't reach their seat in {@link #GIVE_UP} ticks leaves it to the others for
- * {@link #SKIP_FOR} ticks. A home with seats in it is furnished, and counts {@link #FURNISHED_BEAUTY} towards its people's
+ * twice; a villager whose seat is broken or taken on the way picks another at once; and a villager who can't reach their seat in {@link #GIVE_UP} ticks, or gets no closer to it for {@link #STUCK}
+ * ticks (penned in, say), leaves it to the others for {@link #SKIP_FOR} ticks. A home with seats in it is furnished, and counts {@link #FURNISHED_BEAUTY} towards its people's
  * beauty need (M34's {@code beauty}, {@link io.github.jcondedata.aliveworkplace.people.ClassNeeds#beauty}).
  */
 public final class FurnitureSeats {
@@ -42,6 +42,13 @@ public final class FurnitureSeats {
 	static final double SIT_REACH = 2.0;
 	/** How long a villager walks to a seat before giving up on it, in ticks. */
 	static final int GIVE_UP = 600;
+	/**
+	 * How long a villager walking to a seat may get no closer to it before giving up early, in ticks (B967, B677): one penned
+	 * in where they can't reach it lets it go in seconds, before the villagers who could sit on it have wandered off.
+	 */
+	static final int STUCK = 160;
+	/** How much closer a villager must get to their seat (blocks) to count as getting there. */
+	private static final double PROGRESS = 0.5;
 	/** How long a villager leaves a seat they gave up on alone, in ticks, so others can have it (B945). */
 	static final int SKIP_FOR = 1200;
 	/** The beauty a furnished home is worth to the people who sleep in it. */
@@ -53,7 +60,8 @@ public final class FurnitureSeats {
 	/** The seat each villager last gave up on and until when they leave it alone (not saved). */
 	private static final Map<Villager, Skip> SKIPPED = new WeakHashMap<>();
 
-	private record Target(BlockPos pos, long since) {
+	/** A seat walked to: since when, the closest the villager has come to it and when they last came closer. */
+	private record Target(BlockPos pos, long since, double closest, long closerAt) {
 	}
 
 	private record Skip(BlockPos pos, long until) {
@@ -77,17 +85,26 @@ public final class FurnitureSeats {
 			return;
 		}
 		if (!Furnishings.ENABLED || !wantsToSit(level, villager)) {
-			TARGETS.remove(villager);
+			drop(villager);
 			return;
 		}
+		long now = level.getGameTime();
 		Target target = TARGETS.get(villager);
-		if (target != null && level.getGameTime() - target.since() > GIVE_UP) {
+		if (target != null) {
+			double d = villager.position().distanceTo(Vec3.atBottomCenterOf(target.pos()));
+			if (d < target.closest() - PROGRESS) {
+				target = new Target(target.pos(), target.since(), d, now);
+				TARGETS.put(villager, target);
+			}
+		}
+		if (target != null && (now - target.since() > GIVE_UP || now - target.closerAt() > STUCK)) {
 			// Couldn't reach it: leave it to the others for a while instead of picking it again at once (B945).
 			SKIPPED.put(villager, new Skip(target.pos(), level.getGameTime() + SKIP_FOR));
-			TARGETS.remove(villager);
+			drop(villager);
 			target = null;
-		} else if (target != null && !free(level, target.pos(), villager)) {
-			TARGETS.remove(villager);
+		} else if (target != null && (!level.getBlockState(target.pos()).is(SEATS) || !free(level, target.pos(), villager))) {
+			// Taken, or broken on the way (B957): pick another seat now, not walk on to where the chair stood.
+			drop(villager);
 			target = null;
 		}
 		if (target == null) {
@@ -95,7 +112,7 @@ public final class FurnitureSeats {
 			if (found == null) {
 				return;
 			}
-			target = new Target(found, level.getGameTime());
+			target = new Target(found, now, villager.position().distanceTo(Vec3.atBottomCenterOf(found)), now);
 			TARGETS.put(villager, target);
 		}
 		if (villager.position().closerThan(Vec3.atBottomCenterOf(target.pos()), SIT_REACH)) {
@@ -103,6 +120,25 @@ public final class FurnitureSeats {
 		} else {
 			villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(target.pos(), 0.5f, 1));
 		}
+	}
+
+	/**
+	 * {@code villager} no longer goes to the seat they were walking to (B1024): forgets it, and stops the walk there if it
+	 * is still the brain's walk target, so with the switch off nobody walks on to a chair and stands in it.
+	 */
+	private static void drop(Villager villager) {
+		Target target = TARGETS.remove(villager);
+		if (target != null && villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET)
+				.filter(w -> w.getTarget().currentBlockPosition().equals(target.pos())).isPresent()) {
+			villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+		}
+	}
+
+	/** The seat {@code villager} is walking to, or null. */
+	@Nullable
+	public static BlockPos walkingTo(Villager villager) {
+		Target target = TARGETS.get(villager);
+		return target == null ? null : target.pos();
 	}
 
 	/** Seat {@code villager} on the furniture at {@code pos}; whether they sat. */
@@ -184,6 +220,23 @@ public final class FurnitureSeats {
 		}
 		return level.getEntitiesOfClass(Entity.class, new AABB(pos), e -> e != asking && e.isAlive()
 			&& (e instanceof FurnitureSeat || e.isVehicle() || e instanceof net.minecraft.world.entity.LivingEntity)).isEmpty();
+	}
+
+	/**
+	 * What {@code villager} is doing about seats, for logs and test messages: where they stand, their activity, the seat they
+	 * walk to (and for how long), the seat they leave alone (and till when), their walk target and whether they'd sit now.
+	 */
+	public static String describe(ServerLevel level, Villager villager) {
+		Target target = TARGETS.get(villager);
+		Skip skip = SKIPPED.get(villager);
+		long now = level.getGameTime();
+		return "villager " + villager.getId() + " at " + villager.blockPosition().toShortString() + " ("
+			+ villager.getBrain().getActiveNonCoreActivity().map(Activity::getName).orElse("none") + ", wants to sit: "
+			+ wantsToSit(level, villager) + ", riding: " + villager.isPassenger() + "), walking to seat "
+			+ (target == null ? "none" : target.pos().toShortString() + " for " + (now - target.since()) + " ticks") + ", skipping "
+			+ (skip == null ? "none" : skip.pos().toShortString() + " for " + (skip.until() - now) + " more ticks") + ", walk target "
+			+ villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(w -> w.getTarget().currentBlockPosition().toShortString())
+				.orElse("none");
 	}
 
 	/** Whether {@code box} (a home) holds a seat: a furnished room. */

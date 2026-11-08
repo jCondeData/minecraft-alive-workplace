@@ -59,7 +59,10 @@ public final class SiegeReport {
 		Entity killer = source.getEntity();
 		if (killer instanceof Villager guard && !guard.isBaby() && guard.getVillagerData().getProfession() == ModVillagers.GUARD) {
 			siege.toGuards++;
-			siege.kills.merge(guard.getUUID(), 1, Integer::sum);
+			// Moved to the end on every kill, so the map runs in order of each guard's latest kill: among guards tied on
+			// the most kills, the first in it is the one who got there first (hero()).
+			Integer had = siege.kills.remove(guard.getUUID());
+			siege.kills.put(guard.getUUID(), had == null ? 1 : had + 1);
 			siege.names.put(guard.getUUID(), guard.getName().getString());
 		} else if (killer instanceof ServerPlayer player) {
 			siege.toPlayers++;
@@ -70,7 +73,11 @@ public final class SiegeReport {
 		data.setDirty();
 	}
 
-	/** The guard with the most kills in {@code siege} (the first to get there on a tie), or null when no guard made one. */
+	/**
+	 * The guard with the most kills in {@code siege} (the first to get there on a tie), or null when no guard made one.
+	 * The kills map runs in order of each guard's latest kill, and a tied guard's latest kill is when he reached the top
+	 * count, so the first with the most is the one who got there first.
+	 */
 	@Nullable
 	public static UUID hero(ThreatData.Siege siege) {
 		UUID hero = null;

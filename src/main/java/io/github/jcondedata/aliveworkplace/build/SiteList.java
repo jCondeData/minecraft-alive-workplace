@@ -119,10 +119,38 @@ public final class SiteList {
 	}
 
 	/**
+	 * B1042: whether {@code stack} is a blank Book and Quill, the only kind a material list is written into: no pages, or
+	 * only empty ones (a book opened and closed again unwritten). One with the player's own writing (their notes,
+	 * coordinates, plans) is never written over.
+	 */
+	public static boolean isBlankBook(ItemStack stack) {
+		if (!stack.is(net.minecraft.world.item.Items.WRITABLE_BOOK)) {
+			return false;
+		}
+		net.minecraft.world.item.component.WritableBookContent content = stack.get(net.minecraft.core.component.DataComponents.WRITABLE_BOOK_CONTENT);
+		return content == null || content.pages().stream().allMatch(page -> page.raw().isBlank());
+	}
+
+	/**
+	 * B1042: true when {@code book} is blank and may become a list; otherwise false, the player told a blank Book and
+	 * Quill is needed and the book left as it is.
+	 */
+	public static boolean refuseWrittenBook(Player player, ItemStack book) {
+		if (isBlankBook(book)) {
+			return true;
+		}
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.site_list.blank_book_needed").withStyle(ChatFormatting.YELLOW));
+		return false;
+	}
+
+	/**
 	 * Turns one Book and Quill in {@code bookHand} into the list of {@code builder}'s build (or {@code site}'s, from its
 	 * bench, when {@code builder} isn't known). False, the book untouched and the player told why, when there's no list.
 	 */
 	public static boolean write(ServerLevel level, Player player, @Nullable BuildSite site, @Nullable Villager builder, InteractionHand bookHand) {
+		if (!refuseWrittenBook(player, player.getItemInHand(bookHand))) {
+			return false;
+		}
 		Component who = builder != null ? builder.getDisplayName() : Component.translatable("message.aliveworkplace.status.builder");
 		BlueprintSupplies.Checklist list = site == null ? null : checklist(level, site, builder);
 		Component nothing = nothingToList(level, site, who, list);

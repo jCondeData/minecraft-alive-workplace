@@ -97,6 +97,12 @@ SCENES = [
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,
       [("01_preview_house", "A starter house"), ("03_preview_style", "Picked in Sandstone"),
        ("04_preview_large", "A large build, scaled to fit"), ("06_preview_imported", "An uploaded build")]),
+    # B1020 QA: another mod's tinted furniture (Cozy Home's chairs) can't crash the held blueprint's ghosts or the table's 3D preview
+    S("table_preview_safe", "Builder", "Blueprint Table: other mods' furniture can't crash the preview",
+      "with color providers like Cozy Home's (they refuse a missing level) and ones that always fail on the cottage's own blocks, the held cottage blueprint's ghosts and the table's 3D preview kept drawing: the furniture tinted from the preview's own blocks, the failing ones drawn untinted and logged once", 35,
+      [("01_ghosts_with_a_throwing_provider", "Held blueprint ghosts, one block's color failing"),
+       ("02_preview_with_throwing_providers", "The table's preview, furniture tinted, a failing block untinted"),
+       ("03_preview_dragged", "Turned round, still drawing")]),
     # 36.4: the Signpost's boards name the villages and builds each way
     S("signpost", "Builder", "The Signpost's boards say where things are",
       "a Signpost at a crossroads between two villages had its four boards written as it was finished: Millford east, Ashford west, the Well south, Welcome north", 40,

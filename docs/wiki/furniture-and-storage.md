@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848, B876
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848, B876, B945, B967, B677, B957, B1028, B1024
 
 ## 1. What a player sees
 
@@ -83,7 +83,7 @@ evening meeting walks to the nearest free chair, stool, bench, couch or sofa of 
 sits on it, as spectators sit in the Stadium's stands. They stand up for work, for bed, for danger (hurt, a hostile
 mob near, panicking or a raid), when the seat is broken, or with `furnishedBuilds` off. One seat holds one villager:
 a seat with anyone on it, or that another villager is already walking to, is passed over. A villager who can't
-reach their seat in 30 seconds (penned in, say) gives up on it and leaves it to the others for a minute (B945). Handcrafted's fancy beds are
+reach their seat in 30 seconds, or gets no closer to it for 8 seconds (penned in, say), gives up on it and leaves it to the others for a minute (B945, B967, B677). A villager whose seat is broken or taken while they walk to it picks another one at once (B957), and never walks on to stand where a broken chair was or sits on what replaced it (a table, say). A broken chair put back is sat on again; it isn't one they gave up on. With `furnishedBuilds` turned off while a villager walks to a seat, they stop walking to it (B1024). Handcrafted's fancy beds are
 real beds: villagers claim and sleep in them, and the house they stand in counts as their home (its grade, the Village
 Hall's list, free beds for a new baby). A home with a furniture mod's seat in it is a furnished home, worth 1 beauty
 to the people who sleep there (the "beauty near home" a Burgher or a Noble needs, M34). Vanilla stair chairs are not
@@ -564,7 +564,8 @@ with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierS
 `SophisticatedStorageCompatTests.porterFillsALimitedBarrelFromASophisticatedBarrel`,
 `SophisticatedStorageCompatTests.builderUsesAndLeavesSophisticatedStorage`,
 `SophisticatedStorageCompatTests.aStackUpgradeShowsItsRealRoomOnTheBoard`, and the older
-`PackModsCompatTests.packStorageWorksAsSupplyChests`.
+`PackModsCompatTests.packStorageWorksAsSupplyChests`; QA's `QaSophisticatedDouble1108CompatTests` (two Sophisticated chests a
+player places side by side are one double chest at a builder's bench: 10 planks counted once, exactly 10 taken).
 37.9 (compat, Sophisticated Storage): `SophisticatedControllerCompatTests.aControllerMakesThreeBarrelsOneStore` (counted
 once, a delivery put away and a builder's take through the controller, the board's line, three stores again once it
 breaks), `SophisticatedControllerCompatTests.aPorterDeliversThroughTheController`,
@@ -594,7 +595,7 @@ Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, whi
 
 37.6 (no mods): `FurnitureSeatsGameTests.theSeatsTagLoadsWithoutTheFurnitureMods`; with Handcrafted (compat):
 `FurnitureSeatsCompatTests.aVillagerSitsOnAHandcraftedChairAtSupperAndGetsUpAtDawn`,
-`FurnitureSeatsCompatTests.aSeatInUseIsntTakenTwice`, `FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt` (B945), `QaSeatGiveUp1104cCompatTests` (3, QA, B945: after giving up he still sits on a farther open chair, sits on the same chair once the minute is over and it can be reached, and the chair stays free for a villager arriving during the minute), `FurnitureSeatsCompatTests.aVillagerStandsUpWhenHurtAndNobodySitsWithTheSwitchOff`,
+`FurnitureSeatsCompatTests.aSeatInUseIsntTakenTwice`, `FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt` (B945), `FurnitureSeatsCompatTests.aVillagerWhoGaveUpOnAChairHeCantReachLeavesItAloneAndTheOneBesideItSits` (B677, B967: he gives up within 400 ticks and doesn't pick the chair again for 600), `QaSeatGiveUp1104cCompatTests` (3, QA, B945: after giving up he still sits on a farther open chair, sits on the same chair once the minute is over and it can be reached, and the chair stays free for a villager arriving during the minute), `QaSeatStuck1107cCompatTests` (3, QA, B677/B967: a villager walking round a wall to his chair, away from it first, doesn't give it up; one whose way was blocked for a moment still sits; turning the switch off mid-walk frees the chair at once), `FurnitureSeatsCompatTests.aVillagerStandsUpWhenHurtAndNobodySitsWithTheSwitchOff`,
 `FurnitureSeatsCompatTests.aSeatLoadedFromASaveLetsItsVillagerGo`,
 `FurnitureSeatsCompatTests.aVillagerClaimsAndSleepsInAFancyBedAndTheHouseIsTheirHome` (the fancy bed is a villager home
 point of interest, the villager claims and sleeps in it, the Starter Cottage it stands in is their home, and its chair

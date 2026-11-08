@@ -4,7 +4,7 @@ What a home is worth to the [classes](classes.md): every home has a grade, and t
 Burghers and the Nobles the homes their class asks for: the Artisan's House, the Burgher's Townhouse and the Noble's
 Manor. Part of Classes and luxuries (1.8).
 
-Roadmap items: 34.15, 34.15a, 34.15b, 34.16, B106, B640
+Roadmap items: 34.15, 34.15a, 34.15b, 34.16, B106, B640, B988
 
 ## What a player sees
 
@@ -14,7 +14,7 @@ click makes one theirs at once, the old bed freed (see `village-hall.md`, 40.4).
 grade, follow from the building it's in, as below.
 
 Three new houses, all **sold by builders only** (not in the Blueprint Table): a builder sells the Artisan's House from
-Apprentice on, the Townhouse once the village round the nearest hall has a household of Artisans or higher and the
+Apprentice on, the Townhouse once the builder's village has a household of Artisans or higher and the
 Noble's Manor once it has a household of Burghers or higher, and each upgrade comes from the builder who finishes the
 tier below:
 
@@ -88,8 +88,8 @@ everything that class needs except the home. Up to three of them get a tip on "W
 `advice.aliveworkplace.grand_home_rise` and `advice.aliveworkplace.grand_home_rise_one`. With classes off there are no
 such tips.
 
-**Builders sell them.** A builder from Apprentice up sells the Artisan's House (10 emeralds); once the village round
-the nearest hall has a household of Artisans or a higher class, every builder there sells the Townhouse (14
+**Builders sell them.** A builder from Apprentice up sells the Artisan's House (10 emeralds); once the builder's
+village has a household of Artisans or a higher class, every builder in it (even one on its edge up a hill) sells the Townhouse (14
 emeralds); once it has a household of Burghers or a higher class, every builder there sells the Manor (20
 emeralds). The offers are added when the builder levels up or a player opens their trades, never twice. The Burghers'
 traveling class trader on market days (34.7) can also bring the Townhouse or the Manor.
@@ -204,11 +204,17 @@ worked out from the finished buildings already saved.
   builder's level-ups from Novice to Master never put a grander home in the Blueprint Table, and the Table refuses one;
   every bed of every tier, turned and mirrored, gives its grade (and the Manor's garden its beauty) before and after a
   reload; an Artisan's House built across a save and reload ends finished with exactly its materials and its builder
-  sells the II. A builder up a hill on the village's rim sells no Townhouse (B988, test on `tests/grander-homes-rim-1107`).
+  sells the II.
   `QaGranderHomes1107bGameTests` (4): the Townhouse I and the Manor I built across a save and reload mid-structure end
   finished with exactly their materials, beds of grade II and III, and the finished build gives its builder the II; a
   cherry Artisan's House built the same way sells the cherry II; every styled tier I and II leads to the next tier in
   its own style, never the plain one, once.
+- B988: `QaGranderHomes1107BugTests` (2): a builder up a hill on the village's rim (in its circle, farther than the radius
+  in a straight line) sells the Townhouse as one on flat ground does; one just outside the circle, on the ground or up a
+  hill, sells neither home. QA's `QaBuilderFixes1107bGameTests` (4 here): a builder exactly on the circle and 7 up, with
+  a Burgher household, sells the Manor and the Townhouse; one 7 below a hall up a hill sells the Townhouse (not the
+  Manor, with only Artisans); a Novice on the rim up a hill has the Townhouse at his level-up to Apprentice; on the rim
+  with only Peasants, neither home (the Artisan's House still).
 - B640: `B640GameTests.b640TheTerracesFrontPanesJoinTheirNeighbours` (a builder puts the Terrace up: each front pane
   of the bays and dormers joins both sides, and every pane, fence and wall in it is joined as the game joins it) and
   `B640GameTests.b640TheFrontPanesJoinAfterASaveAndReloadMidWindows` (the same, saved and loaded while the front glass

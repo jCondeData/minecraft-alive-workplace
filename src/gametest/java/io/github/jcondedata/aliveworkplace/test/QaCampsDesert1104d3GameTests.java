@@ -356,7 +356,15 @@ public class QaCampsDesert1104d3GameTests implements FabricGameTest {
 			helper.setBlock(new BlockPos(2 + i, 2, 4), Blocks.GLOWSTONE);
 			helper.setBlock(new BlockPos(2 + i, 2, 2), Blocks.GLOWSTONE);
 		}
-		helper.runAfterDelay(4, () -> {
+		// B1016: the light engine runs on its own thread, so on a busy machine the glowstone's light can reach the
+		// villagers later than 4 ticks after it was set (CI run 42379869857: lit=0). Wait for it, then check once.
+		helper.startSequence().thenIdle(4).thenWaitUntil(() -> {
+			for (int i = 0; i < 4; i++) {
+				BlockPos at = helper.absolutePos(new BlockPos(2 + i, 2, 3));
+				int light = level.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, at);
+				helper.assertTrue(light >= 8, "setup: the glowstone's light hasn't reached the villager at " + (2 + i) + " 2 3 yet (light " + light + ")");
+			}
+		}).thenExecute(() -> {
 			rank(level, hall, VillageRanks.Rank.VILLAGE);
 			at(level, 70, 1000);
 			float raid = VillageRaids.chance(level, hall, 12);
@@ -374,11 +382,9 @@ public class QaCampsDesert1104d3GameTests implements FabricGameTest {
 			helper.assertTrue(Math.abs(VillageRaids.chance(level, hall, 12) - raid) < 1e-5, "the raid chance after the chief fell: " + VillageRaids.chance(level, hall, 12));
 			helper.assertTrue(Math.abs(VillageNeeds.count(level, hall).wellbeing() - before.wellbeing()) < 1e-4,
 				"the wellbeing after the chief fell: " + VillageNeeds.count(level, hall).wellbeing() + ", was " + before.wellbeing());
-		});
-		helper.runAfterDelay(4 + CampCleanup.DELAY + CampCleanup.CLEAR_TICKS + 20, () -> {
+		}).thenExecuteAfter(CampCleanup.DELAY + CampCleanup.CLEAR_TICKS + 20, () -> {
 			helper.assertTrue(CampCleanup.clearing(level).isEmpty(), "the camp is still coming down");
-			helper.succeed();
-		});
+		}).thenSucceed();
 	}
 
 	/**

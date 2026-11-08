@@ -34,7 +34,9 @@ with tailors off) gives that one.
 **The rule.** Each job gets the weight `1 / (1 + n)`, where `n` is how many villagers within 48 blocks of the block
 (the default village radius of the worker cap) already do it. A new village draws evenly; a job the village has 10 of
 weighs 1/11 against a missing job's 1. So villages fill out their jobs instead of piling up farmers, yet any job can
-still come up. The draw uses the villager's own random.
+still come up. The draw uses the villager's own random. "Within 48 blocks" is a box round the block: a worker 48
+blocks off along any side counts, one 49 off doesn't, and the drawing villager never counts himself
+(`QaRandomJobsReach1108cGameTests`).
 
 **Every block that offers several jobs** (the block's own, vanilla, job first; in brackets the ones that need a
 switch or a mod):

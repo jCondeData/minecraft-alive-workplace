@@ -95,7 +95,7 @@ range is in brackets.
 | `villageRadius` | 48 (0 to 128) |  | Workers whose workstations are this close together are one village and share their chests. |
 | `villageHallRadius` | 64 (16 to 160) |  | How far from a Village Hall its village reaches. |
 | `keepVillagesWorking` | on |  | Villages keep working while no player is near them (their chunks stay loaded while anyone is online). |
-| `builderPaths` | on |  | Whether builders lay a dirt path from each finished building to the village's bell or hall. |
+| `builderPaths` | on |  | Whether builders lay a dirt path from each finished building to the village's bell or hall. Switched off, a path a builder had already planned is dropped: no more of it is laid. |
 | `villageGrowthCap` | 40 (0 to 500) |  | A village with a hall stops having babies at this many villagers (0: villages don't grow, and the hall says so). |
 | `villagerNames` | on |  | Villagers in a village with a Village Hall get names. |
 | `villagerTraits` | on |  | Villagers have traits (diligent, lazy, nimble...). |

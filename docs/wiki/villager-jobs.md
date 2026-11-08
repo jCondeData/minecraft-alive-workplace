@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955
 
 ## What a player sees
 
@@ -148,8 +148,22 @@ takes the pre-evolution form whose evolution leads to the mother's form (`Cobble
 egg is made from the same hatchling and keeps the form (`form=galar` and the like). With Ditto, the parent that isn't
 Ditto counts as the mother. Regions Galar, Hisui and Paldea work the same (Perrserker a Galarian Meowth, Sneasler a
 Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with no regional form (Alolan Raichu,
-Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A Blaze Breed Tauros hatchling (with Ditto) turns Combat Breed after
-a reload (B955). Tested in `QaDaycareBugs1103dCompatTests` and `QaDaycareRegional1104d2CompatTests` (11).
+Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A form picked by a choice feature rather than a flag (a Blaze or Aqua Breed Tauros, "blaze-breed" being
+`bull_breed=blaze`; a Blue- or White-Striped Basculin) is set as that feature, so it survives a save and load, and a
+Combat Breed stays Combat (B955): an East Sea Gastrodon hatches East Sea Shellos, a Blue Florges a Blue Flabébé (two
+steps back), a Sensu Oricorio a Sensu, and a male Basculegion with Ditto a White-Striped Basculin. Known gaps (bugs): a
+West Sea or Baile mother (a random default) hatches a random sea or style that shows after a reload (B1031), a female
+Basculegion hatches Red-Striped (B1040), and a Blaze Breed Tauros's Cobbreeding egg hatches Combat Breed (B1041).
+Tested in `QaDaycareBugs1103dCompatTests`, `QaDaycareRegional1104d2CompatTests` (11),
+`QaDaycareRegional1104d2BugCompatTests`, `QaDaycareChoiceForms1108cCompatTests` and
+`QaDaycareChoiceForms1108dCompatTests` (5).
+
+**Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
+Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last
+five for the Village Hall. Only wild Pokémon count: a player's own shiny standing by her pasture isn't a sighting. An
+Alpha is a Pokémon with Cobblemon's "alpha" aspect (Cobblemon 1.8). Her Poké Snacks are set out the way a player
+places one: only on a spot a block can go (never into a solid block) and only from a Poké Snack. Tested in
+`HabitatKeeperCompatTests`, `QaHabitatKeeperCompatTests` and `QaHabitatWild1107dCompatTests`.
 
 ## How it works
 
@@ -173,6 +187,22 @@ the ores (a pit of stone as cobblestone, topped onto the stack already there, no
 chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
 A kitchen's chest (a smoker's, in the hall's village) gets the finds only when the Storehouse's chests are full or the
 village has no Storehouse; a Storehouse with room in part stacks is filled first (B834, `QaLaneC1102eGameTests`).
+
+**Only pairs that can meet are fed (B979).** An animal in love looks for a partner within 8 blocks (vanilla's range), so
+the Rancher, Shepherd and Herder (`RanchWork.pickPair`) feed the two ready animals of a kind that stand closest
+together, and only when they're within 7 blocks of each other (a block of room for a step while the food is fetched).
+Two that have drifted more than 8 apart before the first is fed cost nothing; if the second walks off or dies after the
+first was fed, the nearest ready one within 8 blocks of the first is fed instead, or none. Tests:
+`RancherGameTests.rancherSkipsAPairTooFarApart`, `rancherFeedsThePairThatCanMeet`, and `QaRanchPairs1107cGameTests` (7
+apart fed, 7.07 not; the closest of three; foals and resting ones passed over; the drift and mate-lost cases; the
+Shepherd's and Herder's pairs). A pair is picked only with food for both in the chests (2 or more), and he takes both
+before feeding; once the first is fed, the one left in hand is enough for the second, so exactly 2 foods feed the pair
+(B1021, `QaRanchPairs1107cBugTests`). A single food feeds nobody, and 3 feed one pair and keep the last in the chest;
+if the mate dies after the first is fed, the one in hand goes to the nearest ready third, and if the fed one dies, it
+comes back to the chest (`QaRanchTwoFood1108cGameTests`, which also feeds a Shepherd's sheep and a Herder's pigs with
+exactly 2). Saved and loaded mid-pair, he forgets the pair: the food in his bag goes back to the chest (none lost), an animal
+already fed stays in love till it wears off, and the pair is fed again once both are ready and the chests hold 2
+(`QaRanchPairSaves1108eGameTests`).
 
 **A Fisherman comes back for cooked fish (B147, B802).** Fish done in a furnace or smoker by his barrel call him home
 when the barrel can take them: an empty slot, or a stack of the same fish with room (a barrel whose every slot holds
@@ -484,9 +514,12 @@ put one back), as a retired Crafter does; a crafting job in hand stays `CrafterW
 after a save and reload (a Weaponsmith's bag counts even when nothing marks him as carrying), and for a smith who
 has never traded (0 XP), whom vanilla makes jobless with the grindstone: he is still marked as carrying. Only a
 Weaponsmith's job site counts as a grindstone, so such a smith who takes another free workstation within the 100 ticks
-(a lectern, as a Teacher or Scholar) drops the bag all the same (B1007). After a reload the in-memory mark is gone, so
+(a lectern, as a Teacher, Scholar or Librarian) gives up the bag all the same, at his feet or in a chest (B1007). After a reload the in-memory mark is gone, so
 the mending job saved on him (B971) marks a carrier too: a novice reloaded with the sword in his bag, then made jobless
-with the grindstone, drops it as well (B1008). Nothing new is saved.
+with the grindstone, drops it as well (B1008). Nothing new is saved. QA (`QaBagAfterNewJobSaves1107eGameTests`, 5): a
+novice smith or carpenter saved and reloaded before or right after taking a lectern job still gives back the sword, the
+iron or the logs (exactly one sword in the world; the request goes back and a new carpenter builds it), and a smith
+with XP reloaded mid-carry keeps mending.
 
 **A Weaponsmith reloaded mid-job still puts the piece back (B971).** The mending job (where the piece came from, the
 material, how far it had got) lived only in the running `MendingWork`, so a smith saved and reloaded (a chunk unload or
@@ -494,7 +527,9 @@ a restart) with a guard's worn helmet in hand found no job, only a full bag, and
 by the grindstone. Now the job is saved on the villager (the `mend_job` attachment, a `MendJob`: the piece, the chest it
 came from, the material and its chest, the phase) whenever it changes, and taken up again after a reload: he mends the
 piece and takes it back to the chest it came from. Removed when the job ends or the bag is dropped (B970). A smith
-saved before this fix has no job saved and tidies as before.
+saved before this fix has no job saved and tidies as before. A job whose material's mod has been removed since the
+save takes the piece back unmended (the gone material loads as air, so there is nothing to fetch); a chest the piece
+came from that is gone by then leaves the piece in the smith's own chests.
 
 **A Bard plays each disc to its end (B975, B976).** A set (`BardWork`) used to time out after 1,200 ticks, which
 stopped the song: every disc longer than a minute was cut off and the next one started. Now the set times out only
@@ -503,14 +538,21 @@ remembers the jukebox a song was started at and sends the stop there, so breakin
 for players as vanilla's own jukebox does (the stop used to go to the Bard's workstation, already gone). Nothing new is
 saved: a song isn't resumed after a reload.
 
+**A Bard who is gone stops his song (B1003).** A Bard killed, discarded or unloaded with his chunk mid-song used to
+leave the disc playing to its end (about 5 minutes for Cat): his set's stop never runs once he is dead or removed.
+Now the mod's death and entity-unload events (through `Platform`) stop the song at the jukebox he started it at, once,
+and he is no longer listed as playing. GameTests: `QaBardSet1107cBugTests` (2: killed, discarded), `QaBardGone1107cGameTests` (4: of two bards
+only the killed one's song stops; a bard killed after his set ended leaves a player's own disc playing in that jukebox;
+unloaded with his chunk; killed just after his jukebox was mined: one stop, never two).
+
 ## Proof
 
-GameTests: `QaSmithScribe1105cBugTests` (4; B970: the grindstone broken mid-job, with and without a reload first: the sword and the 10 iron end in a chest or on the ground; B971: the smith reloaded with a guard's worn helmet just fetched, or already mended on the way back: it ends mended in the guard's chest, none in the smith's chests), `QaSmithBagLeft1107GameTests` (2, B970 QA: a 0-XP smith made jobless with the grindstone still drops the sword and iron; with the grindstone back and the sword returned to the chest he mends it and puts it back, never two swords), `QaSmithBagLeft1107BugTests` (B1007: a 0-XP smith who takes a free lectern after losing the grindstone still gives up the sword and iron), `QaSmithBagSaves1107eGameTests` (2, B1008: a novice smith made jobless with the grindstone, with and without a reload first: the sword and iron end in a chest or on the ground), `QaSmithGrindstoneBack1107eGameTests` (2, B970 QA: the smith reloaded halfway through the wait after the grindstone broke still drops the sword, and a grindstone put back 20 ticks later loses nothing), `QaBardSet1107cGameTests` (6, B975, B976 QA: Pigstep past two set lengths, a song ending just before the evening set is stopped once, the jukebox mined or blown up mid-song, the disc taken mid-song, a jukebox rebuilt elsewhere), `QaPrinterNurseBard1105cBugTests` (3, B975, B976: Cat still the one song 2,400 ticks in, 11 played through and Mellohi straight after, the jukebox broken mid-song sends the stop and the disc stays in the chest), `QaTradeDisplayPhysician1101BugTests` (2, B781: the Physician's shown Remedy, from the real display or kept in hand, never cures; the chest's Remedy does), `B781GameTests` (3: a shown Remedy kept through a save never cures, an empty chest means no cure, his own Remedy in hand still cures), `QaTradeDisplayWares1101BugTests` (1, B776: a Shepherd's shown emerald never reaches her bag or chest), `QaTradeDisplayWares1101GameTests` (1: the display still shows and puts away its wares), `QaTradeDisplayWaresFarmer1101BugTests` (4, B776: the Farmer's shown bread and the Shepherd's shown painting stay out of bag and chest as the shift starts and after a restart), `TradeDisplayToolsGameTests` (2, B766: a Farmer keeps his hoe while a player holds the price of his trade; the display still shows its ware and puts it away), `QaToolsByTheTradeDisplay1101BugTests` and `QaToolsByTheTradeDisplay1101GameTests` (2 each: the Farmer's hoe, the Shepherd's shears, the Miner's pickaxe and the Lumberjack's axe outlast an evening with the owner beside them), `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
+GameTests: `QaSmithScribe1105cBugTests` (4; B970: the grindstone broken mid-job, with and without a reload first: the sword and the 10 iron end in a chest or on the ground; B971: the smith reloaded with a guard's worn helmet just fetched, or already mended on the way back: it ends mended in the guard's chest, none in the smith's chests), `QaSmithBagLeft1107GameTests` (2, B970 QA: a 0-XP smith made jobless with the grindstone still drops the sword and iron; with the grindstone back and the sword returned to the chest he mends it and puts it back, never two swords), `QaSmithBagLeft1107BugTests` (B1007: a 0-XP smith who takes a free lectern after losing the grindstone still gives up the sword and iron), `QaSmithBagSaves1107eGameTests` (2, B1008: a novice smith made jobless with the grindstone, with and without a reload first: the sword and iron end in a chest or on the ground), `QaBagNewJob1107cGameTests` (5, B1007-B1009 QA: a novice smith who takes a lectern as a Librarian after a reload, or as a Scholar: exactly one sword and the 10 iron in a chest or on the ground), `QaSmithGrindstoneBack1107eGameTests` (2, B970 QA: the smith reloaded halfway through the wait after the grindstone broke still drops the sword, and a grindstone put back 20 ticks later loses nothing), `QaSmithFiveSeconds1107cGameTests` (2, B970 QA: still carried 99 ticks without a grindstone, on the ground at 100; never dropped by his grindstone), `QaBagTimers1107eGameTests` (2, B970 and B353 QA: a jobless villager loaded with a mending job and the helmet in his bag still holds it at tick 99 and drops it at tick 100; one with a crafting job and 6 logs lets it go at tick 600, not 599 or 601), `QaSmithJobSaved1107cGameTests` (3, B971 QA: reloaded on the way to the iron with the iron's mod gone, the helmet goes back unmended; the guard's chest broken while he carries the mended helmet, it ends in his chests; a finished job leaves no saved job through a reload), `QaBardGone1107cGameTests` (4, B1003 QA: two bards, a player's disc after the set, unloaded with his chunk, the jukebox mined first), `QaBardSet1107cGameTests` (6, B975, B976 QA: Pigstep past two set lengths, a song ending just before the evening set is stopped once, the jukebox mined or blown up mid-song, the disc taken mid-song, a jukebox rebuilt elsewhere), `QaPrinterNurseBard1105cBugTests` (3, B975, B976: Cat still the one song 2,400 ticks in, 11 played through and Mellohi straight after, the jukebox broken mid-song sends the stop and the disc stays in the chest), `QaTradeDisplayPhysician1101BugTests` (2, B781: the Physician's shown Remedy, from the real display or kept in hand, never cures; the chest's Remedy does), `B781GameTests` (3: a shown Remedy kept through a save never cures, an empty chest means no cure, his own Remedy in hand still cures), `QaTradeDisplayWares1101BugTests` (1, B776: a Shepherd's shown emerald never reaches her bag or chest), `QaTradeDisplayWares1101GameTests` (1: the display still shows and puts away its wares), `QaTradeDisplayWaresFarmer1101BugTests` (4, B776: the Farmer's shown bread and the Shepherd's shown painting stay out of bag and chest as the shift starts and after a restart), `TradeDisplayToolsGameTests` (2, B766: a Farmer keeps his hoe while a player holds the price of his trade; the display still shows its ware and puts it away), `QaToolsByTheTradeDisplay1101BugTests` and `QaToolsByTheTradeDisplay1101GameTests` (2 each: the Farmer's hoe, the Shepherd's shears, the Miner's pickaxe and the Lumberjack's axe outlast an evening with the owner beside them), `QaTooFarWordsBugTests` (3, B453: the farmer, the miner and the lumberjack refuse a far area naming their own block), `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits
 refuse, save and reload, the switch off), `HallPeopleJobGameTests` (10, 40.3: the hall's Job ▾, see
-[The Village Hall](village-hall.md)), `StationsCompatTests` (11, the Pokémon jobs), `B688GameTests` (4: without Cobblemon a book or a gold block by a Training Post gives no job and leaves the post free, a book by a Training Post and a lectern makes a Teacher, a pickaxe still makes a Miner), `OutfitGameTests`, `ConfigGameTests`,
+[The Village Hall](village-hall.md)), `StationsCompatTests` (11, the Pokémon jobs), `QaTrainerTraining1108dCompatTests` (3, QA: a Trainer's team by tier: Novices and Apprentices field first stages with no EVs or held item, a Journeyman's every IV is 15 or more, evolved or never-evolving, with middle stages among them, an Expert's 25 or more and a Master's 31 with 252 EVs in Speed and the better attacking stat, Adamant or Modest to match, a held item and only fully evolved Pokémon; a Festival Cup team is trained by the trainer's tier as at home), `B688GameTests` (4: without Cobblemon a book or a gold block by a Training Post gives no job and leaves the post free, a book by a Training Post and a lectern makes a Teacher, a pickaxe still makes a Miner), `OutfitGameTests`, `ConfigGameTests`,
 `HandOffGameTests` (5, B220: a fisherman handed a rod and a builder handed a blueprint are at work within 10 ticks,
 mid-shift and late in it; before the shift and at night they say when they start, and a night's hire stays in bed),
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,

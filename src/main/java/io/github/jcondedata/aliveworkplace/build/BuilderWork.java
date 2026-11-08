@@ -1921,7 +1921,18 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!close && !moveInReach(level, villager, site, plan, mate.blockPosition(), CONTAINER_REACH, false)) {
 				return true;
 			}
-			int take = Math.min(Math.min(spare, needed + (helping ? 3 : 32)), bag.spaceFor(item));
+			// From a mate's bag only what the work ahead still needs, never the chests' margin: a lead with no chest
+			// to empty into dropped the rest on the ground when the job ended (B1019).
+			int ahead = 0;
+			for (BuildPlan.Step s : ahead(site, plan)) {
+				if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
+					for (MaterialRules.Requirement r : s.requirements()) {
+						ahead += r.item() == item ? r.count() : 0;
+					}
+				}
+			}
+			int want = Math.max(needed, Math.min(needed + (helping ? 3 : 32), ahead - bag.count(item)));
+			int take = Math.min(Math.min(spare, want), bag.spaceFor(item));
 			if (take > 0) {
 				mateBag.remove(item, take);
 				bag.addAll(item, take);
@@ -2198,11 +2209,33 @@ public class BuilderWork extends Behavior<Villager> {
 		if (step.secondaryPos() != null) {
 			level.setBlock(step.secondaryPos(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 		}
+		keepWhatsOn(level, bag, bench, pos);
 		level.removeBlockEntity(pos);
 		level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
 		level.levelEvent(2001, pos, Block.getId(state)); // break particles and sound
 		level.gameEvent(villager, GameEvent.BLOCK_DESTROY, pos);
 		giveBack(level, villager, site, bag, bench, step.requirements());
+	}
+
+	/**
+	 * B1043: what a player left on a block a take-down removes (the food cooking on a campfire, the only block with
+	 * items in it that a take-down doesn't leave standing, {@link MaterialRules#isProtected}) goes into his bag, or by
+	 * the bench when the bag is full, as a player breaking it gets it back. Taken off first, so removing the block
+	 * entity can't lose it.
+	 */
+	private static void keepWhatsOn(ServerLevel level, BuilderBag bag, BlockPos bench, BlockPos pos) {
+		if (!(level.getBlockEntity(pos) instanceof net.minecraft.world.level.block.entity.CampfireBlockEntity campfire)) {
+			return;
+		}
+		for (ItemStack food : campfire.getItems()) {
+			if (!food.isEmpty()) {
+				ItemStack rest = bag.add(food.copy());
+				if (!rest.isEmpty()) {
+					Builders.dropNear(level, bench, rest);
+				}
+			}
+		}
+		campfire.clearContent();
 	}
 
 	/**

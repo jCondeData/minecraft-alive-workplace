@@ -16,6 +16,12 @@ Skipping renewal list qa:steward_renewal/(bad_job|no_buildings|array|broken|no_k
 Skipping furniture spots aliveworkplace_test:blueprint_furniture/broken\.json
 # FurnitureAnyModGameTests ships a broken equivalents file in the test pack to prove it is logged with its path and skipped (37.13).
 Skipping furniture equivalents aliveworkplace_test:furniture_equivalents/broken\.json
+# B1020GameTests gives the preview a color provider and a block drawing that throw, to prove each is logged once and drawn without it.
+Preview: (the color of|drawing) minecraft:bamboo_mosaic(_stairs|_slab)? failed in another mod's renderer
+# The table_preview_safe scene (B1020 QA) gives the fence and glass pane providers that always throw, to prove the ghosts and the preview survive them.
+Preview: the color of minecraft:(spruce_fence|glass_pane) failed in another mod's renderer
+# QaPreviewSafe1108GameTests gives cherry blocks providers that cast the preview's level to a world or read a missing block entity.
+Preview: the color of minecraft:cherry_(fence|trapdoor) failed in another mod's renderer
 # OptionalModsGameTests feeds an integration a missing method to prove it switches itself off.
 a test integration from test turned off
 # QaSignpostGameTests has a mock player try to edit a waxed signpost board, to prove it can't (36.4).

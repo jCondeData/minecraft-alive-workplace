@@ -33,6 +33,11 @@ When the village puts its own train together at the station, the Conductor takes
 villager without a job drives it, as before; a villager with another job is never taken off it. The chronicle says who
 took the seat.
 
+If the driver dies, is struck by lightning or is turned by a zombie, the train can't move on its own. The Conductor,
+or a grown-up villager without a job, standing by the train takes the empty seat. While nobody is free there, the caravans
+waiting for that train set out without it and arrive with their goods, as they did before the village had its own
+train, so nothing is stuck at the station.
+
 As the train pulls in at a station, the Conductor calls the stop, once, over their head and in the chat of anyone
 standing near the station:
 

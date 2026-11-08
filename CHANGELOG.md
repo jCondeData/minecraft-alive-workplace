@@ -22,6 +22,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A lair's captain who turns into another mob, such as the desert raiders' Pharaoh drowning into a zombie and then a drowned, is still the captain: killing him breaks the camp up and pays the bounty on him, instead of the camp breaking up by itself at the next round with nobody credited. A bounty's band and a story's foes keep their place the same way (B1072).
 - With Cobblemon, a Daycare Keeper's West Sea Gastrodon, Baile Oricorio, Green Squawkabilly or Curly Tatsugiri hatches babies that keep that form after a save and load, instead of turning into a random sea, style, color or shape.
 - With Cobblemon, a Daycare Keeper's female Basculegion hatches a White-Striped Basculin, like the male, instead of a Red-Striped one.
 - With Cobbreeding, a Daycare Keeper's egg from a Blaze Breed or Aqua Breed Tauros hatches that breed instead of a Combat Breed.

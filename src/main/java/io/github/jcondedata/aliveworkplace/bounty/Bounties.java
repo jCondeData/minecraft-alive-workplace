@@ -800,6 +800,31 @@ public final class Bounties implements ResourceManagerReloadListener {
 		}
 	}
 
+	/**
+	 * A mob that turned into another in vanilla (a zombie drowning, a skeleton freezing; {@code ConvertedMobs}): the new
+	 * mob takes the old one's place as a bounty's captain or one of his band, so killing it still ends the bounty (B1072).
+	 * True if a bounty changed.
+	 */
+	public static boolean converted(ServerLevel level, UUID before, UUID after) {
+		Data data = Data.get(level);
+		boolean changed = false;
+		for (Bounty b : data.bounties.values()) {
+			if (before.equals(b.captain)) {
+				b.captain = after;
+				changed = true;
+			}
+			int at = b.band.indexOf(before);
+			if (at >= 0) {
+				b.band.set(at, after);
+				changed = true;
+			}
+		}
+		if (changed) {
+			data.setDirty();
+		}
+		return changed;
+	}
+
 	/** A lair whose captain is posted falls: the bounty is paid to his killer. */
 	static void lairBroken(ServerLevel level, Lairs.Lair lair, @Nullable Entity by) {
 		Data data = Data.get(level);

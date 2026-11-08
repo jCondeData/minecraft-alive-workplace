@@ -1,7 +1,11 @@
 package io.github.jcondedata.aliveworkplace.threat;
 
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.bounty.Bounties;
+import io.github.jcondedata.aliveworkplace.story.Arcs;
 import java.util.List;
+import java.util.UUID;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 
 /**
@@ -14,6 +18,10 @@ import net.minecraft.world.entity.Mob;
  *
  * <p>Every one of the mod's tags ({@link #PREFIX}) goes over to the new mob, before it is added to the world. Mobs
  * without them are left as vanilla has them.
+ *
+ * <p>The new mob also gets a new UUID, and what tracks a mob by its UUID lost it (B1072): a lair's captain, a bounty's
+ * captain and band, an arc's mob and role. The new mob takes the old one's place in each ({@link #swap}), so killing it
+ * still breaks the lair up, ends the bounty or counts in the arc.
  */
 public final class ConvertedMobs {
 	/** Every tag the mod puts on an entity starts with this. */
@@ -32,6 +40,21 @@ public final class ConvertedMobs {
 			if (tag.startsWith(PREFIX)) {
 				after.addTag(tag);
 			}
+		}
+		if (after.level() instanceof ServerLevel level) {
+			swap(level, before.getUUID(), after.getUUID(), before.getTags().contains(Arcs.MOB_TAG));
+		}
+	}
+
+	/** {@code after} takes {@code before}'s place wherever the mod keeps a mob by its UUID ({@code arc}: an arc's mob). */
+	public static void swap(ServerLevel level, UUID before, UUID after, boolean arc) {
+		if (before.equals(after)) {
+			return;
+		}
+		Lairs.converted(level, before, after);
+		Bounties.converted(level, before, after);
+		if (arc) {
+			Arcs.converted(level, before, after);
 		}
 	}
 

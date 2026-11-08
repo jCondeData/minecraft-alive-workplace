@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720
+Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720, B1072
 
 ## What a player sees
 
@@ -21,7 +21,9 @@ Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720
   than the camp has at home. Those alive when the raid ends go back and rejoin; the dead are gone, and so is anyone you
   kill at the camp. After a costly night the camp is weak, and a camp with nobody left sends no raid until it grows.
 - **Kill the captain** and the camp is broken up: the band scatters, the chest (the culture's loot table) is yours, the
-  chronicle names who did it, and no camp comes for 5 days.
+  chronicle names who did it, and no camp comes for 5 days. A captain who turns into another mob in vanilla (the
+  Pharaoh, a husk, drowning into a zombie and then a drowned) is still the captain: killing what he became breaks the
+  camp up the same way (B1072).
 - **The broken camp comes down** (B209, `threat/CampCleanup`). Its record, the scouts' report of it and its Defense page
   row go at once; 40 ticks later its blocks above the ground layer go, top down over 100 ticks, with smoke. Only the
   camp's own blocks still as the blueprint set them (`MaterialRules.matches`) go: a block a player put there or changed
@@ -195,5 +197,8 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   is as it was; a camp whose record was saved without its ground (before B225) is blended: grass on every top, no
   trampled earth, gravel, cobblestone or fire, no step over one block, each column within 2 of the slope; grass crept
   over the camp's bare fill and floor while it stood still goes (B288).
+- B1072: `B1072GameTests`: the desert raiders' Pharaoh drowned into a zombie and then a drowned is still the lair's
+  captain (the lair otherwise unchanged), the hall's round leaves the lair standing, and killing the drowned breaks it
+  up; a bounty on him moves to the drowned and pays his killer; a zombie nobody tracks drowning changes no lair.
 - Showcase scene `camp_cleared`: a bandit camp on a grassy rise, its chief falling, the camp coming down and the rise
   back as it was.

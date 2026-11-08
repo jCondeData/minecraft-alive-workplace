@@ -892,6 +892,28 @@ public final class Lairs {
 	}
 
 	/**
+	 * A mob that turned into another in vanilla (a zombie drowning, a skeleton freezing; {@link ConvertedMobs}): when
+	 * {@code before} was a lair's captain, {@code after} is now, so killing him still breaks the lair up (B1072). True if
+	 * a lair's captain changed.
+	 */
+	public static boolean converted(ServerLevel level, UUID before, UUID after) {
+		Data data = Data.get(level);
+		boolean changed = false;
+		for (Lair lair : List.copyOf(data.lairs.values())) {
+			if (lair.captain().equals(before)) {
+				data.put(new Lair(lair.pos(), lair.hall(), after, lair.day(), lair.culture(), lair.strength(), lair.grown(), lair.out(),
+					lair.lost(), lair.name()));
+				changed = true;
+			}
+		}
+		if (data.takenByPeace.remove(before)) {
+			data.takenByPeace.add(after);
+			data.setDirty();
+		}
+		return changed;
+	}
+
+	/**
 	 * An entity leaving the level: a lair's captain the game discards while the world is Peaceful (it removes monsters)
 	 * was taken away, not brought down, and is remembered so (saved): the lair then leaves in peace at the hall's round
 	 * even if the world is back on Normal by then, rather than being broken up as if he fell (B767).

@@ -108,5 +108,9 @@ GameTests: `PieceLooksGameTests` (`ownerGivesAHouseANewOutside`, `onlyTheLeaderC
 listing, the 128/129-block reach, a queue of 4 and of 5 waiting builds, every chest item, the job block and the bed kept
 through a finished rebuild, who may choose in an unowned and an owned hall)), and `QaHouseLooks1108cBugTests` (a torn-down house with a remembered look, changing the
 look of the 5th waiting build, a full queue explained as full).
+`QaHouseLooksVerify1108bGameTests` (through the page: a torn-down house whose remembered look survived a save and load is
+gone and takes no material, a house stripped of its outside with its room standing and a torn-down house with an open
+rebuild are still there, the 5th waiting build changed in place or picked again, the full-queue line word for word, an
+idle builder out of reach beside a full one, a second builder with room taking the pick).
 
 Showcase scenes: `piece_look` (the Builds button, the Guard House's five outsides, and the desert one rebuilt).

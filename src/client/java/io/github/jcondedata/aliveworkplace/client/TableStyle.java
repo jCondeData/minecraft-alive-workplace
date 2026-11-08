@@ -255,6 +255,59 @@ public final class TableStyle {
 		return w;
 	}
 
+	// --- shared small-card pieces (ROADMAP 43.3; 42.5's job-status cards reuse them) -----------------------------------
+	// A small card ({@link StatusCardScreen}, as {@code docs/design/M42/trainer_c.png}): the name in gold with a tag on the
+	// right, a grey-blue line, a gold heading over labeled lines with an icon, a value and a bar, then a button row
+	// ({@link #button}) and a footer hint ({@link #footerHint}). The caller lays out and takes the clicks.
+
+	/** A small card's width, its padding and a labeled line's height (a 16-pixel icon, its text and a bar under it). */
+	public static final int CARD_W = 200;
+	public static final int CARD_PAD = 8;
+	public static final int CARD_LINE = 18;
+	/** A bar's empty part. */
+	public static final int BAR_BG = 0xFF0C1016;
+
+	/** A card's top line: {@code title} in gold at the left, {@code tag} in grey-blue right-aligned, both cut to fit. */
+	public static void cardHeader(GuiGraphics g, Font font, Component title, Component tag, int x, int y, int w) {
+		int tagW = tag.getString().isEmpty() ? 0 : Math.min(font.width(tag), w / 2);
+		g.drawString(font, trim(font, title, w - tagW - (tagW > 0 ? 8 : 0)), x, y, TITLE, false);
+		if (tagW > 0) {
+			String text = trim(font, tag.getString(), tagW);
+			g.drawString(font, text, x + w - font.width(text), y, SUBTITLE, false);
+		}
+	}
+
+	/** A thin bar {@code fraction} full (0 to 1) in {@code color}, framed in the edge color. */
+	public static void bar(GuiGraphics g, int x, int y, int w, int h, float fraction, int color) {
+		g.fill(x, y, x + w, y + h, PANEL_EDGE);
+		g.fill(x + 1, y + 1, x + w - 1, y + h - 1, BAR_BG);
+		int inner = Math.round((w - 2) * Math.max(0f, Math.min(1f, fraction)));
+		if (inner > 0) {
+			g.fill(x + 1, y + 1, x + 1 + inner, y + h - 1, color);
+		}
+	}
+
+	/**
+	 * A card's labeled line ({@code y} its top, {@link #CARD_LINE} tall): the icon (if any) in a framed cell, the label in
+	 * white, the value right-aligned in {@code color}, and when {@code bar} is 0 to 1 a bar that full under the text.
+	 */
+	public static void cardLine(GuiGraphics g, Font font, net.minecraft.world.item.ItemStack icon, Component label, Component value, int color,
+		float bar, int x, int y, int w) {
+		int tx = x;
+		if (!icon.isEmpty()) {
+			g.renderItem(icon, x, y + 1);
+			tx = x + 20;
+		}
+		int valueW = Math.min(font.width(value), (x + w - tx) / 2);
+		int textY = bar >= 0 ? y + 2 : y + 5;
+		g.drawString(font, trim(font, label, x + w - tx - valueW - 6), tx, textY, NAME, false);
+		String v = trim(font, value.getString(), valueW);
+		g.drawString(font, v, x + w - font.width(v), textY, color, false);
+		if (bar >= 0) {
+			bar(g, tx, y + 12, x + w - tx, 4, bar, color);
+		}
+	}
+
 	private TableStyle() {
 	}
 }

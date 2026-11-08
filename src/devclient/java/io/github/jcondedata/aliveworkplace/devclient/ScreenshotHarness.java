@@ -3580,6 +3580,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 			setMouse(mc, at[0] * scale, at[1] * scale);
 			return;
 		}
+		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StatusCardScreen card) {
+			// A status card (43.3, the Nurse's and the Fossil Scientist's): its buttons by id (NurseCard.HEAL, FossilCard.HAND_OVER).
+			int[] at = card.centre(slot);
+			setMouse(mc, at[0] * scale, at[1] * scale);
+			return;
+		}
 		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.TrainerScreen trainer) {
 			// The Trainer screen (43.1): its buttons by id (TrainerMenu.CHALLENGE, TRADE, CLOSE).
 			int[] at = trainer.centre(slot);

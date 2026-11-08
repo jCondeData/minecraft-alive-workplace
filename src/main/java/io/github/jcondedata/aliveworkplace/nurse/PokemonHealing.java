@@ -32,4 +32,14 @@ public interface PokemonHealing {
 	/** Tops up the Healing Machine at {@code machine} (a nurse on shift there keeps it charged). */
 	default void charge(ServerLevel level, BlockPos machine) {
 	}
+
+	/** Whether the Healing Machine at {@code machine} is healing a team now, asked without touching it (the Nurse's card, 43.3). */
+	default boolean machineBusy(ServerLevel level, BlockPos machine) {
+		return false;
+	}
+
+	/** A line per Pokémon in {@code player}'s party for the Nurse's card (43.3): its icon, name, HP and a health bar. */
+	default java.util.List<io.github.jcondedata.aliveworkplace.card.StatusCard.Line> party(ServerPlayer player) {
+		return java.util.List.of();
+	}
 }

@@ -30,6 +30,12 @@ you how many minutes of their work it will take. They revive it while they work,
 the Pokémon joins your party (or your PC) when it's done, or the next time you're online. It's Cobblemon's own revival:
 the same Pokémon its machine would give.
 
+Right-click them with an empty hand and their card opens: the price, how many fossils they're working on, and a line
+for each of yours with how far along it is ("Dome Fossil: 40%") or "Ready". **Hand over** gives you every Pokémon
+that's ready (it's gray while none is, with the reason under it). Sneak to trade instead.
+
+![The Fossil Scientist's card](https://jcondedata.github.io/minecraft-alive-workplace/fossil/still-4.jpg)
+
 Over their head: whose fossil they're reviving, or "hand me a fossil to revive".
 
 ## How the fossil scientist fits in

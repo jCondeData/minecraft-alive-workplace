@@ -236,6 +236,16 @@ public final class CobblemonCompat {
 			public void charge(ServerLevel level, BlockPos machine) {
 				CobblemonNurse.charge(level, machine);
 			}
+
+			@Override
+			public boolean machineBusy(ServerLevel level, BlockPos machine) {
+				return CobblemonNurse.machineBusy(level, machine);
+			}
+
+			@Override
+			public java.util.List<io.github.jcondedata.aliveworkplace.card.StatusCard.Line> party(ServerPlayer player) {
+				return CobblemonNurse.party(player);
+			}
 		});
 		CobblemonTrainers.init();
 		io.github.jcondedata.aliveworkplace.berry.BerryChains.BerryData.EXTENSION.register("cobblemon", new CobblemonBerries()); // 28.9

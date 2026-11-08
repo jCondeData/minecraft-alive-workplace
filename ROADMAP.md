@@ -6366,7 +6366,7 @@ own battle screen stays Cobblemon's. Depends on: nothing open.
   win, Trade, save and reload; scenes `leader` and `battle` show it.
 - [x] **43.2** (review: pending 2026-11-08) **The Pokemon Trader screen** (`PokemonTradeScreen`) in the Hall's look. Done when: today's
   `QaPokemonTradeScreenCompatTests` pass; scene `trader`.
-- [ ] **43.3** **Cards for the Nurse and the Fossil Scientist**, with 42.5's card: the Nurse shows the party's health
+- [x] **43.3** (review: pending 2026-11-08) **Cards for the Nurse and the Fossil Scientist**, with 42.5's card: the Nurse shows the party's health
   and a Heal button (what a click does today); the Fossil Scientist shows each fossil's progress and a Hand over
   button. Done when: compat GameTests for each; scenes `nurse` and `fossil`.
 
@@ -6391,6 +6391,16 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
 
 ## Notes / blocked
 
+- 2026-11-08 (lane-d-1108-2208, 43.3): **the small card is built, for 42.5 to reuse.** 42.5's status card wasn't there
+  yet, so 43.3 built it as a shared piece, as the Milestone 43 intro says: `card/StatusCard` (what a card shows: title
+  and tag, a gray line, a heading over lines with an icon, a value in its color and a bar, buttons each with the reason
+  it's grayed, a footer hint), `card/StatusCardMenu` (menu type `aliveworkplace:status_card`, `StatusCardMenu.open(player,
+  villager, card, action)`; a button closes the card and runs the action, `CLOSE` only closes), the client's
+  `StatusCardScreen`, and the "small-card pieces" section of `TableStyle` (`CARD_W`, `cardHeader`, `cardLine`, `bar`),
+  sized as `trainer_c.png`. Lane C: build 42.5's job cards on it (a `StatusCard` per job, the Hall-page button as a card
+  button), not a second card. Decided too: the empty-hand click opens the card and its first button does what the click
+  did; the click tests that went through the old click now press that button (`QaNurseWait1103d`, `QaNurseMachine1102d`,
+  `QaFossilScientist1102d`, `QaStageFour`, `QaStageSix`), with every assertion unchanged.
 - 2026-11-08 (digest-1108-1353, owner): Jesse approved B854, B962 and B1032, and asked for **custom UI for everything
   that has a UI, such as the Pokemon Trainer, in the same style as the other UIs**. From mockups he picked the Trainer's
   option A (Hall page) and option A (list) for the chest menus, and said "the entire pack should use the same UI

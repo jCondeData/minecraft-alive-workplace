@@ -353,7 +353,8 @@ public final class BuilderEvents {
 			return InteractionResult.PASS;
 		}
 		if (io.github.jcondedata.aliveworkplace.fossil.FossilScientists.isScientist(villager)) {
-			// Right-click holding a fossil: hand it over. With an empty hand: collect what's ready. Sneak to trade instead.
+			// Right-click holding a fossil: hand it over. With an empty hand: their card (43.3), whose Hand over collects
+			// what's ready (without Cobblemon, the line saying they need it). Sneak to trade instead.
 			if (io.github.jcondedata.aliveworkplace.fossil.FossilScientists.isFossil(held)) {
 				if (!level.isClientSide()) {
 					io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver((ServerPlayer) player, villager);
@@ -362,7 +363,11 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && !player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.fossil.FossilScientists.check((ServerPlayer) player, villager);
+					if (io.github.jcondedata.aliveworkplace.fossil.FossilScientists.COBBLEMON) {
+						io.github.jcondedata.aliveworkplace.fossil.FossilCard.open((ServerPlayer) player, villager);
+					} else {
+						io.github.jcondedata.aliveworkplace.fossil.FossilScientists.check((ServerPlayer) player, villager);
+					}
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -416,10 +421,10 @@ public final class BuilderEvents {
 			return InteractionResult.PASS;
 		}
 		if (io.github.jcondedata.aliveworkplace.nurse.Nurses.isNurse(villager)) {
-			// Right-click with an empty hand: get treated. Sneak to trade instead.
+			// Right-click with an empty hand: her card (43.3), whose Heal treats you as the click did. Sneak to trade instead.
 			if (held.isEmpty() && !player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.nurse.Nurses.treat((ServerPlayer) player, villager);
+					io.github.jcondedata.aliveworkplace.nurse.NurseCard.open((ServerPlayer) player, villager);
 				}
 				return InteractionResult.SUCCESS;
 			}

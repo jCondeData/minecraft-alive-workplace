@@ -73,6 +73,15 @@ public final class ModBlocks {
 				net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
 
 	/**
+	 * A small status card (ROADMAP 43.3: the Nurse's and the Fossil Scientist's; 42.5's job cards next): a menu without
+	 * slots, opened with what it shows ({@code StatusCard}); its buttons are menu-button clicks.
+	 */
+	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.card.StatusCardMenu> STATUS_CARD_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("status_card"),
+			io.github.jcondedata.aliveworkplace.platform.Platform.get().menuWithData(
+				(id, inventory, card) -> new io.github.jcondedata.aliveworkplace.card.StatusCardMenu(id, inventory, card),
+				io.github.jcondedata.aliveworkplace.card.StatusCard.STREAM_CODEC));
+	/**
 	 * The Trainer screen (ROADMAP 43.1): a menu without slots, opened with what it shows ({@code TrainerView}); its
 	 * Challenge, Trade and Close are menu-button clicks.
 	 */

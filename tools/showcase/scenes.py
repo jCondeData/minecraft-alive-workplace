@@ -342,7 +342,9 @@ SCENES = [
     S("guard_pokemon", "Guard", "A guard with Pokémon at his side", "the guard and the Pokémon killed the husks", 180,
       [("10_guard_armor", "In armor"), ("frame_*@middle", "Pokémon join in"), ("50_guard_done", "Husks down")],
       cobblemon=True),
-    job("nurse", "Nurse", "Healing and curing villagers", "the nurse healed and cured the villagers"),
+    # Then her card (ROADMAP 43.3): the player's health and poison, the party's HP with bars, Heal
+    job("nurse", "Nurse", "Healing and curing villagers", "the nurse healed and cured the villagers, then her card showed the player and the party with Heal ready",
+        170, [("04_nurse_card", "Her card: your health and your party")], cobblemon=True),
     S("pokemon_center", "Nurse", "The Pokémon Center",
       "both tiers stand in all three looks, and the nurse put the team in her Healing Machine and every Pokémon came out full", 70,
       [("02_pokemon_center_2", "Pokémon Center II"),
@@ -429,7 +431,9 @@ SCENES = [
     S("trader", "Pokémon Trader", "The Pokémon Trader's trade screen, in the Village Hall's look", "the trade screen opened", 60,
       [("01_trader_offer", "The day's offers as a list"), ("02_trader_party", "A Pokémon that fits"), ("04_trader_confirm", "Click again to trade"), ("05_trader_traded", "Traded: come back tomorrow")],
       cobblemon=True),
-    job("fossil", "Fossil Scientist", "Reviving a fossil", "the fossil scientist revived the fossil", 150, cobblemon=True),
+    # Then their card (ROADMAP 43.3): each fossil's progress with a bar, Hand over
+    job("fossil", "Fossil Scientist", "Reviving a fossil", "the fossil scientist revived the fossil, then their card showed a ready fossil and one under way with Hand over ready",
+        160, [("04_fossil_card", "Their card: each fossil's progress")], cobblemon=True),
     job("berry_breeder", "Berry Breeder", "Breeding a Lum Berry", "the berry breeder bred a Lum Berry from Oran and Cheri", 150,
         [("04_berry_book", "The berry book")], cobblemon=True),
     job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,

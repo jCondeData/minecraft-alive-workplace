@@ -6,7 +6,9 @@ import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
 import com.cobblemon.mod.common.battles.BattleRegistry;
 import com.cobblemon.mod.common.block.entity.HealingMachineBlockEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+import io.github.jcondedata.aliveworkplace.card.StatusCard;
 import io.github.jcondedata.aliveworkplace.nurse.PokemonHealing;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,6 +66,37 @@ public final class CobblemonNurse {
 		if (level.getBlockEntity(pos) instanceof HealingMachineBlockEntity machine && machine.getHealingCharge() < machine.getMaxCharge()) {
 			machine.setHealingCharge(machine.getMaxCharge());
 		}
+	}
+
+	// The Nurse's card (43.3): is the machine healing a team now? Asked without charging or starting it.
+	public static boolean machineBusy(ServerLevel level, BlockPos pos) {
+		return level.getBlockEntity(pos) instanceof HealingMachineBlockEntity machine && machine.isInUse();
+	}
+
+	// The Nurse's card (43.3): a line per Pokémon in the party, its HP in green (full), orange (hurt) or red (fainted)
+	// over a health bar.
+	public static java.util.List<StatusCard.Line> party(ServerPlayer player) {
+		java.util.List<StatusCard.Line> lines = new java.util.ArrayList<>();
+		for (Pokemon pokemon : Cobblemon.INSTANCE.getStorage().getParty(player)) {
+			if (pokemon == null) {
+				continue;
+			}
+			int max = Math.max(1, pokemon.getMaxHealth());
+			int hp = Math.max(0, Math.min(max, pokemon.getCurrentHealth()));
+			Component value;
+			int color;
+			if (pokemon.isFainted() || hp == 0) {
+				value = Component.translatable("screen.aliveworkplace.card.nurse.fainted");
+				color = StatusCard.RED;
+			} else {
+				value = Component.translatable("screen.aliveworkplace.card.nurse.hp", hp, max);
+				color = pokemon.canBeHealed() ? StatusCard.ORANGE : StatusCard.GREEN;
+			}
+			lines.add(new StatusCard.Line(com.cobblemon.mod.common.item.PokemonItem.from(pokemon),
+				Component.translatable("screen.aliveworkplace.card.nurse.pokemon", pokemon.getDisplayName(false), pokemon.getLevel()),
+				value, color, (float) hp / max));
+		}
+		return lines;
 	}
 
 	private CobblemonNurse() {

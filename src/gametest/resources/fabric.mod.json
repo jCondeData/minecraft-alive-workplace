@@ -1406,6 +1406,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSignCommandsLenient1108eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignChunkSize1108eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignLenientForms1108bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPotSherds1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignCommandForms1108eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPoweredHopper1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStuckStates1108bGameTests",

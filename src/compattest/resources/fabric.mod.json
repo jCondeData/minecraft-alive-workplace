@@ -287,6 +287,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareInheritance1103dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareBugs1103dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareRegional1104d2CompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaDaycareRegional1104d2BugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaStorageHallCompat1104c3Tests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystonePlaza1104d4CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaRoguePokemon1104d4CompatTests",

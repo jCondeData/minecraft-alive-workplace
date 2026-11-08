@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- With Cobblemon, a Daycare Keeper's Blaze Breed or Aqua Breed Paldean Tauros hatchling stays that breed after a save and load (in the party or PC after a restart), instead of turning Combat Breed.
 - With exactly 2 breeding foods in the chest, the Rancher, Shepherd and Herder now feed both animals of a pair, instead of feeding one, walking back to an empty chest for a second food and leaving the other unfed (no young, and one food wasted).
 - A villager on the way to a chair stops walking to it when furnished builds are switched off (or when they give up on it), instead of walking on and standing in the chair.
 

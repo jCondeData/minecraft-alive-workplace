@@ -11,6 +11,10 @@ import com.cobblemon.mod.common.api.pokemon.PokemonPropertyExtractor;
 import com.cobblemon.mod.common.api.pokemon.egg.EggGroup;
 import com.cobblemon.mod.common.api.pokemon.evolution.Evolution;
 import com.cobblemon.mod.common.api.pokemon.evolution.PreEvolution;
+import com.cobblemon.mod.common.api.pokemon.feature.ChoiceSpeciesFeatureProvider;
+import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatureProvider;
+import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatures;
+import com.cobblemon.mod.common.api.pokemon.feature.StringSpeciesFeature;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
 import com.cobblemon.mod.common.battles.BattleRegistry;
@@ -161,10 +165,12 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			form = preForm(form, pre);
 			species = pre.getSpecies();
 		}
-		// The form's aspects (an Alolan Vulpix's "alolan") pick the form, and stay with the hatchling when it's saved
+		// The form's aspects (an Alolan Vulpix's "alolan") pick the form, and stay with the hatchling when it's saved. An
+		// aspect made by a choice feature (a Blaze Breed Tauros's "blaze-breed" is bull_breed=blaze) is set as that
+		// feature, or the saved feature keeps its default and picks the default form again on load (B955)
 		StringBuilder properties = new StringBuilder(species.getResourceIdentifier().toString());
 		for (String aspect : form.getAspects()) {
-			properties.append(' ').append(aspect);
+			properties.append(' ').append(choiceFeature(species, aspect));
 		}
 		Pokemon baby = PokemonProperties.Companion.parse(properties + " level=1", " ", "=").create();
 		if (form != baby.getForm() && species.getForms().contains(form)) {
@@ -214,6 +220,25 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 		}
 		baby.heal();
 		return baby;
+	}
+
+	/**
+	 * {@code aspect} as a property Cobblemon parses: {@code key=choice} when one of {@code species}' choice features
+	 * gives that aspect ("blaze-breed" is "bull_breed=blaze"), else the aspect itself (a flag such as "alolan").
+	 */
+	private static String choiceFeature(Species species, String aspect) {
+		for (SpeciesFeatureProvider<?> provider : SpeciesFeatures.getFeaturesFor(species)) {
+			if (!(provider instanceof ChoiceSpeciesFeatureProvider choice) || !choice.isAspect()) {
+				continue;
+			}
+			for (String value : choice.getChoices()) {
+				StringSpeciesFeature feature = choice.fromString(value);
+				if (feature != null && aspect.equals(choice.getAspect(feature))) {
+					return feature.getName() + "=" + value;
+				}
+			}
+		}
+		return aspect;
 	}
 
 	/**

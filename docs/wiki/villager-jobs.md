@@ -148,8 +148,9 @@ takes the pre-evolution form whose evolution leads to the mother's form (`Cobble
 egg is made from the same hatchling and keeps the form (`form=galar` and the like). With Ditto, the parent that isn't
 Ditto counts as the mother. Regions Galar, Hisui and Paldea work the same (Perrserker a Galarian Meowth, Sneasler a
 Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with no regional form (Alolan Raichu,
-Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A Blaze Breed Tauros hatchling (with Ditto) turns Combat Breed after
-a reload (B955). Tested in `QaDaycareBugs1103dCompatTests` and `QaDaycareRegional1104d2CompatTests` (11).
+Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A form picked by a choice feature rather than a flag (a Blaze or Aqua Breed Tauros, "blaze-breed" being
+`bull_breed=blaze`) is set as that feature, so it survives a save and load (B955). Tested in `QaDaycareBugs1103dCompatTests`,
+`QaDaycareRegional1104d2CompatTests` (11) and `QaDaycareRegional1104d2BugCompatTests`.
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last

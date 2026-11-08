@@ -150,8 +150,13 @@ Ditto counts as the mother. Regions Galar, Hisui and Paldea work the same (Perrs
 Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with no regional form (Alolan Raichu,
 Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A form picked by a choice feature rather than a flag (a Blaze or Aqua Breed Tauros, "blaze-breed" being
 `bull_breed=blaze`; a Blue- or White-Striped Basculin) is set as that feature, so it survives a save and load, and a
-Combat Breed stays Combat (B955). Tested in `QaDaycareBugs1103dCompatTests`,
-`QaDaycareRegional1104d2CompatTests` (11), `QaDaycareRegional1104d2BugCompatTests` and `QaDaycareChoiceForms1108cCompatTests`.
+Combat Breed stays Combat (B955): an East Sea Gastrodon hatches East Sea Shellos, a Blue Florges a Blue Flabébé (two
+steps back), a Sensu Oricorio a Sensu, and a male Basculegion with Ditto a White-Striped Basculin. Known gaps (bugs): a
+West Sea or Baile mother (a random default) hatches a random sea or style that shows after a reload (B1031), a female
+Basculegion hatches Red-Striped (B1040), and a Blaze Breed Tauros's Cobbreeding egg hatches Combat Breed (B1041).
+Tested in `QaDaycareBugs1103dCompatTests`, `QaDaycareRegional1104d2CompatTests` (11),
+`QaDaycareRegional1104d2BugCompatTests`, `QaDaycareChoiceForms1108cCompatTests` and
+`QaDaycareChoiceForms1108dCompatTests` (5).
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last

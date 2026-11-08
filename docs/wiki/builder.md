@@ -68,6 +68,11 @@ dripleaf grows from the bottom as a player stacks one leaf on another: each stem
 a stem when the next piece goes on top (B812), so a big dripleaf on two stems is built three tall. A piston
 scanned pushed out is built retracted and pushed out by its own redstone, with its head (B795); one with no power in
 the build stands retracted, never a pushed-out base with nothing in front.
+A block a scan caught in the middle of a moment is built at rest, as a player's freshly placed one is (B1038): a
+pressure plate someone stood on goes down up, a pressed button out, a tipped big dripleaf level, a sculk sensor (or a
+calibrated one) that just heard a step listening, and a shrieker quiet; an observer, detector rail, tripwire, tripwire
+hook, lightning rod or lectern caught pulsing goes down unpowered and a target block gives no signal. A plate stepped on
+or a leaf tipped since still counts as built.
 A melon's or pumpkin's grown stem costs one melon or pumpkin seeds and is planted as a fresh stem beside its fruit
 (B865). A bubble column is the water a player poured on soul sand or magma: each of its blocks costs a water bucket
 (the bucket comes back) and is poured once the soul sand or magma is down, and the bubbles rise (or sink) again, so a

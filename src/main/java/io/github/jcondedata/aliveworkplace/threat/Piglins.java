@@ -233,7 +233,8 @@ public final class Piglins {
 		}
 		List<String> tags = new ArrayList<>();
 		for (String tag : mob.getTags()) {
-			if (tag.equals(Threats.RAIDER_TAG) || tag.equals(Threats.EXTRA_TAG) || tag.startsWith("aliveworkplace_role_") || tag.equals(Plunder.SHOWN_TAG)) {
+			if (tag.equals(Threats.RAIDER_TAG) || tag.equals(Threats.EXTRA_TAG) || tag.startsWith("aliveworkplace_role_") || tag.equals(Plunder.SHOWN_TAG)
+				|| tag.startsWith(io.github.jcondedata.aliveworkplace.guard.VillageRaids.RAID_STAMP)) {
 				tags.add(tag);
 			}
 		}

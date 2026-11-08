@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133, B824, B856, B919
+Roadmap items: 32.2, 32.14, B133, B824, B856, B919, B1063
 
 ## What a player sees
 
@@ -30,6 +30,10 @@ its captain falls. Under that look:
   A raider led out of every raided village's reach (a player kiting it away, or it chasing someone) still belongs to
   the raid whose hall is nearest: that raid isn't fought off while it lives, and at the raid's hour it leaves with the
   others, wherever it is (B1055: the raid used to be booked as fought off, and the raider stayed in the world for good).
+  Out there, a raider only counts for the raid it came with (B1063): each raider is stamped with its raid (the hall and
+  the moment it began) when it spawns and whenever that raid holds it in its reach, so a leftover of an older raid (one
+  that stood in unloaded ground when its raid ended) never keeps a later raid going, however near or far it is. A raider
+  with no stamp (from a save made before this) counts only within 64 blocks beyond the reach of the nearest raided hall.
 
 ## A day's warning (32.14)
 
@@ -232,3 +236,6 @@ None.
   Lighthouse keeper's sea-watch line.
 - B1055: `QaRaiderLedAway1108dBugTests.aRaiderLedOutOfTheVillagesReachIsNotFoughtOffAndLeavesAtDawn` (a raid's
   last raider one block past the reach: the night round keeps the raid going, and the morning round sends it away).
+- B1063: `QaRaidOrphan1108dBugTests` (an unstamped leftover 200 blocks off doesn't keep a new raid going) and
+  `QaRaidStamp1108aGameTests` (a raid's own raider led 200 blocks off still keeps it going; a leftover stamped by an
+  ended raid, 40 blocks off, doesn't).

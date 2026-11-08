@@ -64,6 +64,16 @@ public final class VillageRaids {
 	public static final int REST_DAYS = 3;
 	/** The tag every raider carries. */
 	public static final String TAG = "aliveworkplace_raider";
+	/**
+	 * The start of the tag that ties a raider to the raid it is one of ({@link #stamp}): the raid's hall and the game time
+	 * it began, so a raider left over from a raid that ended can't be taken for one of a later raid's (B1063).
+	 */
+	public static final String RAID_STAMP = "aliveworkplace_raid_of_";
+	/**
+	 * How far beyond a village's reach a stray raider that carries no raid's stamp (one from a save made before
+	 * B1063, or set loose by a command) still counts for the raid on it: RADIUS + 32 + this, each way.
+	 */
+	static final int UNSTAMPED_STRAY_REACH = 64;
 	/** Most raiders in one raid. */
 	static final int MAX_RAIDERS = 16;
 	/** The time of day (18:00) from which a hall's round rolls the next night's attack. */
@@ -111,6 +121,7 @@ public final class VillageRaids {
 	 */
 	public static Raid track(ServerLevel level, BlockPos hall, Culture culture, List<Mob> raiders) {
 		Raid raid = begin(level, hall, culture.id(), raiders.size());
+		ThreatData.get(level).raid(hall).ifPresent(under -> raiders.forEach(m -> stamp(m, under)));
 		Threats.tactics(culture).forEach(t -> t.begin(level, hall, culture, raiders));
 		return raid;
 	}
@@ -169,6 +180,7 @@ public final class VillageRaids {
 		long time = level.getDayTime() % VillageNeeds.DAY;
 		if (raid != null) {
 			List<Mob> near = own(level, hall);
+			near.forEach(m -> stamp(m, raid)); // whoever this raid holds now is its own, should it stray later (B1063)
 			List<Mob> left = withStrays(level, hall, near); // a raider led out of every raid's reach is still about (B1055)
 			Optional<Culture> culture = Threats.get(raid.culture());
 			boolean sea = culture.map(c -> c.arrival() == Culture.Arrival.SHORE).orElse(false);
@@ -333,17 +345,65 @@ public final class VillageRaids {
 	 * is nearest, the first listed on a tie. A raid isn't fought off while one of its raiders lives out there, and those
 	 * alive at dawn leave with it, wherever they are (B1055). Within a reach, {@link #raidOf} alone hands raiders out, so
 	 * every raider still counts for exactly one raid (B915).
+	 *
+	 * <p>A stray is only a raid's when it came with it (B1063): one stamped with a raid ({@link #stamp}) is that raid's
+	 * alone, and no raid's once that raid is over (a leftover whose chunk was unloaded at dawn); one with no stamp (from
+	 * an older save) is the nearest raid's only within {@link #UNSTAMPED_STRAY_REACH} beyond its reach.
 	 */
 	static List<Mob> withStrays(ServerLevel level, BlockPos hall, List<Mob> own) {
 		List<ThreatData.Under> raids = ThreatData.get(level).raids();
+		ThreatData.Under raid = ThreatData.get(level).raid(hall).orElse(null);
+		String mine = raid == null ? null : stampOf(raid);
 		List<? extends Mob> strays = level.getEntities(net.minecraft.world.level.entity.EntityTypeTest.forClass(Mob.class),
-			m -> m.isAlive() && m.getTags().contains(TAG) && !reaches(hall, m) && raidOf(level, m) == null && hall.equals(nearest(raids, m)));
+			m -> m.isAlive() && m.getTags().contains(TAG) && !reaches(hall, m) && raidOf(level, m) == null && straysFor(m, hall, mine, raids));
 		if (strays.isEmpty()) {
 			return own;
 		}
 		List<Mob> all = new ArrayList<>(own);
 		all.addAll(strays);
 		return all;
+	}
+
+	/** Whether the stray {@code mob} is the raid's on {@code hall} (stamped {@code mine}), as {@link #withStrays} says. */
+	private static boolean straysFor(Mob mob, BlockPos hall, @Nullable String mine, List<ThreatData.Under> raids) {
+		String stamp = stampOn(mob);
+		if (stamp != null) {
+			return stamp.equals(mine);
+		}
+		int r = VillageHalls.RADIUS + 32 + UNSTAMPED_STRAY_REACH;
+		BlockPos at = mob.blockPosition();
+		return Math.abs(hall.getX() - at.getX()) <= r && Math.abs(hall.getZ() - at.getZ()) <= r && Math.abs(hall.getY() - at.getY()) <= 48 + UNSTAMPED_STRAY_REACH
+			&& hall.equals(nearest(raids, mob));
+	}
+
+	/** The stamp of the raid {@code raid}: its hall and the game time it began. */
+	public static String stampOf(ThreatData.Under raid) {
+		BlockPos h = raid.hall();
+		return RAID_STAMP + h.getX() + "_" + h.getY() + "_" + h.getZ() + "_" + raid.began();
+	}
+
+	/** The raid stamp {@code mob} carries, or null when it carries none. */
+	@Nullable
+	public static String stampOn(Entity mob) {
+		for (String tag : mob.getTags()) {
+			if (tag.startsWith(RAID_STAMP)) {
+				return tag;
+			}
+		}
+		return null;
+	}
+
+	/** Ties {@code mob} to {@code raid} (in place of any raid it was tied to before), so it strays as that raid's alone (B1063). */
+	public static void stamp(Entity mob, ThreatData.Under raid) {
+		String stamp = stampOf(raid);
+		String old = stampOn(mob);
+		if (stamp.equals(old)) {
+			return;
+		}
+		if (old != null) {
+			mob.removeTag(old);
+		}
+		mob.addTag(stamp);
 	}
 
 	/** The hall of the raid in {@code raids} nearest {@code mob}, the first listed on a tie; null when there is none. */
@@ -611,6 +671,7 @@ public final class VillageRaids {
 			spawned.add(leader);
 		}
 		Raid raid = begin(level, hall, culture.id(), spawned.size());
+		ThreatData.get(level).raid(hall).ifPresent(under -> spawned.forEach(m -> stamp(m, under))); // (B1063)
 		if (camp.isPresent()) {
 			Lairs.sent(level, hall, band);
 		}

@@ -16,6 +16,7 @@ import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatureProvider;
 import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatures;
 import com.cobblemon.mod.common.api.pokemon.feature.StringSpeciesFeature;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
+import com.cobblemon.mod.common.api.properties.CustomPokemonPropertyType;
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore;
 import com.cobblemon.mod.common.battles.BattleRegistry;
 import com.cobblemon.mod.common.item.PokemonItem;
@@ -225,20 +226,45 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 	/**
 	 * {@code aspect} as a property Cobblemon parses: {@code key=choice} when one of {@code species}' choice features
 	 * gives that aspect ("blaze-breed" is "bull_breed=blaze"), else the aspect itself (a flag such as "alolan").
+	 * <p>
+	 * The choices come from {@code examples()}, which both Cobblemon 1.7.3 and 1.8 have (1.8 dropped
+	 * {@code ChoiceSpeciesFeatureProvider.getChoices()} for a generic one, B1059). 1.8's weighted choice features
+	 * (Dudunsparce's segments, Maushold's family) aren't a {@code ChoiceSpeciesFeatureProvider}, so their aspect is read
+	 * by reflection; anything that fails to link keeps the aspect itself.
 	 */
 	private static String choiceFeature(Species species, String aspect) {
 		for (SpeciesFeatureProvider<?> provider : SpeciesFeatures.getFeaturesFor(species)) {
-			if (!(provider instanceof ChoiceSpeciesFeatureProvider choice) || !choice.isAspect()) {
+			if (!(provider instanceof CustomPokemonPropertyType<?> type)) {
 				continue;
 			}
-			for (String value : choice.getChoices()) {
-				StringSpeciesFeature feature = choice.fromString(value);
-				if (feature != null && aspect.equals(choice.getAspect(feature))) {
-					return feature.getName() + "=" + value;
+			try {
+				for (String value : type.examples()) {
+					if (type.fromString(value) instanceof StringSpeciesFeature feature
+							&& aspect.equals(aspectOf(provider, feature))) {
+						return feature.getName() + "=" + value;
+					}
 				}
+			} catch (RuntimeException | LinkageError e) {
+				// A provider this version doesn't link with: try the next one, else keep the aspect
 			}
 		}
 		return aspect;
+	}
+
+	/** The aspect {@code provider} gives {@code feature}, or null when it gives none (or isn't a choice feature). */
+	private static @Nullable String aspectOf(SpeciesFeatureProvider<?> provider, StringSpeciesFeature feature) {
+		if (provider instanceof ChoiceSpeciesFeatureProvider choice) {
+			return choice.isAspect() ? choice.getAspect(feature) : null;
+		}
+		try {
+			if (!Boolean.TRUE.equals(provider.getClass().getMethod("isAspect").invoke(provider))) {
+				return null;
+			}
+			Object aspect = provider.getClass().getMethod("getAspect", StringSpeciesFeature.class).invoke(provider, feature);
+			return aspect instanceof String s ? s : null;
+		} catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+			return null;
+		}
 	}
 
 	/**

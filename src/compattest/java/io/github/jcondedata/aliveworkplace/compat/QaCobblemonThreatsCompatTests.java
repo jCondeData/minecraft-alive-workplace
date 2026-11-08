@@ -232,7 +232,9 @@ public class QaCobblemonThreatsCompatTests implements FabricGameTest {
 		helper.assertTrue(lines.get(2).startsWith("Last seen ") && lines.get(2).length() > "Last seen ".length() && !lines.get(2).contains("%"),
 			"where it was last seen: " + lines.get(2));
 		helper.assertTrue(b.reward == Math.round(Rogues.REWARD * VillageRanks.questRewardFactor(VillageRanks.Rank.VILLAGE)), "the reward: " + b.reward);
-		helper.assertTrue(lines.get(3).equals("Reward: " + b.reward + " emeralds"), "the poster's reward: " + lines.get(3));
+		// B1060: the reward in the money it is paid in ("Reward: 1,500 CobbleDollars" where CobbleDollars keeps the money)
+		String paid = Money.describe((long) b.reward * Money.DOLLARS_PER_EMERALD, b.reward).getString();
+		helper.assertTrue(lines.get(3).equals("Reward: " + paid), "the poster's reward: " + lines.get(3));
 		String hover = Bounties.poster(level, b).getHoverName().getString();
 		helper.assertTrue(hover.contains("Rogue Tauros"), "the poster item's name: " + hover);
 		VillageHallBlockEntity entity = (VillageHallBlockEntity) helper.getBlockEntity(HALL);
@@ -244,14 +246,14 @@ public class QaCobblemonThreatsCompatTests implements FabricGameTest {
 			"chronicle.aliveworkplace.bounty.rogue_beaten", "chronicle.aliveworkplace.bounty.rogue_caught", "tooltip.aliveworkplace.wanted_poster.seen")) {
 			helper.assertTrue(lang.has(key), "no English for " + key);
 		}
-		String caught = Component.translatable("message.aliveworkplace.bounty.rogue_caught", b.name(level), b.reward).getString();
-		helper.assertTrue(caught.equals("You caught Rogue Tauros! It's yours to keep, and so is the bounty: " + b.reward + " emeralds."), "the capture line: " + caught);
-		String beaten = Component.translatable("message.aliveworkplace.bounty.rogue_beaten", b.name(level), b.reward).getString();
-		helper.assertTrue(beaten.equals("You beat Rogue Tauros! The bounty is yours: " + b.reward + " emeralds."), "the win line: " + beaten);
+		String caught = Component.translatable("message.aliveworkplace.bounty.rogue_caught", b.name(level), paid).getString();
+		helper.assertTrue(caught.equals("You caught Rogue Tauros! It's yours to keep, and so is the bounty: " + paid + "."), "the capture line: " + caught);
+		String beaten = Component.translatable("message.aliveworkplace.bounty.rogue_beaten", b.name(level), paid).getString();
+		helper.assertTrue(beaten.equals("You beat Rogue Tauros! The bounty is yours: " + paid + "."), "the win line: " + beaten);
 		ServerPlayer player = player(helper);
 		PokemonEntity rogue = spawn(helper, b);
 		CobblemonRogues.beaten(level.getServer(), rogue.getPokemon(), player, true);
-		helper.assertTrue(entity.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.BOUNTY && e.text().getString().contains("caught Rogue Tauros and was paid " + b.reward + " emeralds")),
+		helper.assertTrue(entity.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.BOUNTY && e.text().getString().contains("caught Rogue Tauros and was paid " + paid + ".")),
 			"no chronicle line for the capture");
 		helper.succeed();
 	}

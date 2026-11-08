@@ -124,8 +124,11 @@ public final class PieceLooks {
 			}
 		} else {
 			Optional<VillagePieces.Piece> standing = VillagePieces.at(level, piece.placement());
-			if (standing.isEmpty() && chosen(level, hall, piece).isEmpty()) {
-				return Outcome.GONE; // (a house with a chosen look may stand half rebuilt: it's still there)
+			// A house with a chosen look may stand half of one outside and half of the other, which no style's outside
+			// matches: it's still there while its room stands (an outside rebuild never touches the room). B1050: a
+			// remembered look alone isn't enough, or a torn-down house got a bare outside on its empty lot.
+			if (standing.isEmpty() && (chosen(level, hall, piece).isEmpty() || !VillagePieces.roomStands(level, piece))) {
+				return Outcome.GONE;
 			}
 			if (standing.isPresent() && standing.get().look().equals(look)) {
 				keep(entity, piece, look);

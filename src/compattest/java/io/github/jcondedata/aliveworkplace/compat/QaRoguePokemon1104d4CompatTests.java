@@ -174,7 +174,7 @@ public class QaRoguePokemon1104d4CompatTests implements FabricGameTest {
 
 	/**
 	 * Pays 20 emeralds in a Village, 24 in a Town, 28 in a City, and +40 standing with that village, once; the chronicle
-	 * says "<player> caught Rogue Onix and was paid 24 emeralds." and the catcher reads the capture line.
+	 * says "<player> caught Rogue Onix and was paid <24 emeralds' worth>." (B1060: in CobbleDollars when they are on) and the catcher reads the capture line.
 	 */
 	//$ gametest_ticks_batch AREA '200' '"qa_rogue_pay_1104d4"'
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "qa_rogue_pay_1104d4")
@@ -209,10 +209,11 @@ public class QaRoguePokemon1104d4CompatTests implements FabricGameTest {
 			helper.assertTrue(!CobblemonRogues.beaten(level.getServer(), pokemon, player, caught), ranks[i] + ": paid twice");
 			helper.assertTrue(Reputation.points(level, hall, player.getUUID()) - standing == 40, ranks[i] + ": standing twice");
 			if (caught) {
-				String line = "Hunter1 caught Rogue Onix and was paid 24 emeralds.";
+				String paid = Money.describe(24L * Money.DOLLARS_PER_EMERALD, 24).getString();
+				String line = "Hunter1 caught Rogue Onix and was paid " + paid + ".";
 				helper.assertTrue(entity.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.BOUNTY && e.text().getString().equals(line)),
 					"the chronicle doesn't say '" + line + "': " + entity.chronicle().stream().map(e -> e.text().getString()).toList());
-				String told = "You caught Rogue Onix! It's yours to keep, and so is the bounty: 24 emeralds.";
+				String told = "You caught Rogue Onix! It's yours to keep, and so is the bounty: " + paid + ".";
 				helper.assertTrue(seen.stream().anyMatch(c -> c.getString().equals(told)), "the catcher read " + seen.stream().map(Component::getString).toList());
 			}
 		}

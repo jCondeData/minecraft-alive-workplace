@@ -73,7 +73,9 @@ Roadmap items: 31.13, 31.14, B134
 - **Posters**: boards are remembered when placed or clicked; their `posters` block state (0 to 4) follows the open
   bounties of their nearest hall.
 - **Reward**: fixed when posted, `12 × VillageRanks.questRewardFactor(rank)` (a rogue: 16 ×). Paid in emeralds, or
-  in CobbleDollars (100 a emerald) where that mod keeps the money.
+  in CobbleDollars (100 an emerald) where that mod keeps the money. Every line about it (the posting, the poster's
+  "Reward:", the hand-in and win messages, the chronicle) names the money paid through `Bounties.reward`
+  (`Money.describe`): "15 emeralds", or "1,500 CobbleDollars".
 - **Rogues**: `bounty/Rogues`. The hall's round posts a rogue instead of a captain half the time when
   `Rogues.available()` (the switch, the board's switch, and a filling for the extension point `story/RoguePokemon`).
   Biome groups are `data/<namespace>/bounties/rogues/<id>.json`: `biomes` (a string or a list of biome ids and
@@ -125,6 +127,9 @@ edit, a damaged file) is skipped with a warning in the log, and the rest of the 
   Pokémon, battleable and catchable) at the spot, rather than waiting for Cobblemon's spawner to roll that species.
 - 31.14: bounty rewards are paid in CobbleDollars where that mod keeps the money (the 31.13 insignia paid 0 dollars
   with CobbleDollars installed; fixed with this item).
+- B1060: with CobbleDollars every bounty line said "emeralds" while paying CobbleDollars; they now name the money paid.
+  The chronicle and poster lines use new `.money` keys, so lines saved before keep the old "%s emeralds" wording. The
+  Pokémon Daycare's info names its collection price the same way.
 - B134: "quiet" is 32.21's own `Threats.quiet` (At peace, threat level 0 or Peaceful), so Peaceful posts none too; a
   quiet village posts no rogue (31.14) or lair captain's bounty either, since both are bounties on a threat.
 - B134: open bounties stay when a village turns quiet (they can still be taken and paid), as the switch off keeps them.

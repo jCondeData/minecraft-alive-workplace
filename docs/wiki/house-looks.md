@@ -53,7 +53,9 @@ Roadmap items: 23.10a, 23.10
   still remembered.
 - **Remembered.** The hall keeps a list of the choices (the house's spot, its turn, its house, the style it was built
   in and the look chosen), so a house shows on the page even while it stands half of one outside and half of the other
-  and can't be recognized by its blocks.
+  and can't be recognized by its blocks. That counts only while the house's room still stands (or its rebuild is
+  open): a house torn down, its room gone, is "That house isn't there any more." and nothing starts, even when its
+  look was chosen before.
 
 ## 3. Switches
 
@@ -90,8 +92,8 @@ No new items, blocks or commands. The page is the Village Hall's Builds button; 
 - The rebuild needs the materials like any build and waits ("Waiting for ...") until the store has them.
 - A builder needs a bench within 128 blocks of the house (exactly 128 reaches, 129 doesn't), and takes at most 5
   waiting builds; a 5th waiting build is still queued, a 6th is refused.
-- Open bugs: a torn-down house whose look was ever chosen gets a bare outside on its empty lot (B1050); a look waiting
-  as the builder's 5th queued build can't be changed, and a full queue is told as the out-of-reach line (B1051).
+- Open bugs: a look waiting as the builder's 5th queued build can't be changed, and a full queue is told as the
+  out-of-reach line (B1051).
 
 ## 8. Proof
 

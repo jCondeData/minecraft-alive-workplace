@@ -10,7 +10,6 @@
 # Milestone 22: a showcase scene for every feature
 
 # Milestone 23: every shipped build reviewed, village house looks
-23.10 23.10a
 
 # Milestone 24: visual bugs, screens, words
 24.3

@@ -568,3 +568,5 @@ from the pane without a click, then the Storehouse board), `hall_jobs` (the Free
 takers, Dara picked as its Porter), `hall_upgrade` (the Upgrades page: the Starter Cottage free, the Stone House II
 blocked by a garden fence, a click sending Bram to build the Starter Cottage II), `hall_people_job` (40.3: Job ▾ on
 Dara's row, Mason clicked once for the price, then paid).
+
+See also: [House looks](house-looks.md), the page the Builds button opens.

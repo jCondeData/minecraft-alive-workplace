@@ -537,6 +537,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSentryLeash1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDamage1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRisingsWall1108dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLairBounty1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBanditFortGround1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlagueCarrier1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGates1103dGameTests",

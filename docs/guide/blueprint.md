@@ -32,8 +32,8 @@ A Blueprint is a building on paper. Hand one to a Builder and they build it for 
 3. **Check the materials.** Hold Shift over it for the full list, several to a line ("64 Oak Planks · 32 Cobblestone").
    A very big build lists as many as fit in about 20 lines and then says how many more there are; the
    [Blueprint Table](blueprint-table.md) shows all of them. Once it's placed, its tooltip shows only what the builder's
-   chests are still missing, the same way. With a Book and Quill in your other hand, right-click to write the list
-   into the book.
+   chests are still missing, the same way. With a blank Book and Quill in your other hand, right-click to write the list
+   into the book (one you've written in is left as it is).
 4. **Hand it over.** Right-click a Builder with it. Sneak while you hand it over and they take the building down
    instead, putting the blocks back in the chests.
 

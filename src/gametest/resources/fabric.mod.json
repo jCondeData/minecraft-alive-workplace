@@ -1390,6 +1390,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaTakeDownCampfire1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJournalBook1108bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderWrittenBookGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBookCampfireVerify1108GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBedsHauler1105cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSmithScribe1105cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPrinterNurseBard1105cGameTests",

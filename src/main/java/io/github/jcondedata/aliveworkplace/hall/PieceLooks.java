@@ -56,7 +56,9 @@ public final class PieceLooks {
 
 	/** What choosing a look came to. */
 	public enum Outcome {
-		STARTED, QUEUED, SAME, BUILDING, NOT_ALLOWED, NO_LEADER, NO_BUILDER, NOT_YOURS, GONE;
+		STARTED, QUEUED, SAME, BUILDING, NOT_ALLOWED, NO_LEADER, NO_BUILDER, NOT_YOURS, GONE,
+		/** B1051: every builder in reach the player may command has a full queue. */
+		QUEUE_FULL;
 
 		public boolean ok() {
 			return this == STARTED || this == QUEUED;
@@ -135,10 +137,14 @@ public final class PieceLooks {
 				return Outcome.SAME;
 			}
 		}
-		Optional<Villager> builder = builderFor(level, hall, piece, v -> Friends.mayCommand(player, v));
+		// B1051: the rebuild being replaced is called off below, so it doesn't count against its builder's queue
+		Optional<Villager> builder = builderFor(level, hall, piece, v -> Friends.mayCommand(player, v), open);
 		if (builder.isEmpty()) {
+			if (!reachable(level, hall, piece, v -> Friends.mayCommand(player, v)).isEmpty()) {
+				return Outcome.QUEUE_FULL; // B1051: in reach, but every one has a full queue
+			}
 			// B880: with workplaceBuilderOwnership on, another player's hired Builder takes no orders from this one
-			return builderFor(level, hall, piece, v -> true).isPresent() ? Outcome.NOT_YOURS : Outcome.NO_BUILDER;
+			return !reachable(level, hall, piece, v -> true).isEmpty() ? Outcome.NOT_YOURS : Outcome.NO_BUILDER;
 		}
 		if (open != null) {
 			Builders.cancel(level, open);
@@ -168,25 +174,36 @@ public final class PieceLooks {
 	 * nearest idle one whose bench reaches it, else the one with the shortest queue.
 	 */
 	static Optional<Villager> builderFor(ServerLevel level, BlockPos hall, VillagePieces.Piece piece, Predicate<Villager> allowed) {
-		BlockPos centre = piece.placement().origin().offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
-			new BlockPos(4, 0, 5), Mirror.NONE, piece.placement().rotation(), BlockPos.ZERO));
+		return builderFor(level, hall, piece, allowed, null);
+	}
+
+	/** As {@link #builderFor(ServerLevel, BlockPos, VillagePieces.Piece, Predicate)}, not counting {@code replacing} (to be called off). */
+	static Optional<Villager> builderFor(ServerLevel level, BlockPos hall, VillagePieces.Piece piece, Predicate<Villager> allowed,
+			@Nullable BuildSite replacing) {
 		Villager best = null;
 		int bestQueue = Integer.MAX_VALUE;
-		List<Villager> builders = level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)).stream()
-			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()))).toList();
-		for (Villager v : builders) {
-			BlockPos bench = Builders.benchPos(v).orElseThrow();
-			if (!io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, bench, centre, Builders.MAX_SITE_DISTANCE)) {
-				continue;
-			}
+		for (Villager v : reachable(level, hall, piece, allowed)) {
 			int queue = Builders.activeSite(level, v) == null ? 0 : 1 + Builders.queue(level, v).size();
+			if (replacing != null && v.getUUID().equals(replacing.builder())) {
+				queue--;
+			}
 			if (queue <= Builders.MAX_QUEUE && queue < bestQueue) {
 				best = v;
 				bestQueue = queue;
 			}
 		}
 		return Optional.ofNullable(best);
+	}
+
+	/** The village's builders among those {@code allowed} whose bench reaches {@code piece}, nearest it first, busy or not. */
+	static List<Villager> reachable(ServerLevel level, BlockPos hall, VillagePieces.Piece piece, Predicate<Villager> allowed) {
+		BlockPos centre = piece.placement().origin().offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
+			new BlockPos(4, 0, 5), Mirror.NONE, piece.placement().rotation(), BlockPos.ZERO));
+		List<Villager> builders = level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
+				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)).stream()
+			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()))).toList();
+		return builders.stream().filter(v -> io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).orElseThrow(),
+			centre, Builders.MAX_SITE_DISTANCE)).toList();
 	}
 
 	/** What to tell the player after {@code outcome}. */
@@ -216,6 +233,9 @@ public final class PieceLooks {
 				player != null ? UpgradesPage.othersEmployer(level, hall, player) : "", player != null ? player.getGameProfile().getName() : "")
 				.withStyle(ChatFormatting.RED);
 			case GONE -> Component.translatable("message.aliveworkplace.piece_look.gone").withStyle(ChatFormatting.RED);
+			case QUEUE_FULL -> Component.translatable("message.aliveworkplace.queue.full",
+				reachable(level, hall, piece, v -> player == null || Friends.mayCommand(player, v)).stream().findFirst()
+					.<Component>map(Villager::getDisplayName).orElse(builder), Builders.MAX_QUEUE).withStyle(ChatFormatting.YELLOW);
 		};
 	}
 

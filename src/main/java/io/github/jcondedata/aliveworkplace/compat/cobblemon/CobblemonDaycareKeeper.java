@@ -34,7 +34,9 @@ import io.github.jcondedata.aliveworkplace.work.Money;
 import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -169,9 +171,19 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 		// The form's aspects (an Alolan Vulpix's "alolan") pick the form, and stay with the hatchling when it's saved. An
 		// aspect made by a choice feature (a Blaze Breed Tauros's "blaze-breed" is bull_breed=blaze) is set as that
 		// feature, or the saved feature keeps its default and picks the default form again on load (B955)
-		StringBuilder properties = new StringBuilder(species.getResourceIdentifier().toString());
+		Map<String, String> picked = new LinkedHashMap<>();
 		for (String aspect : form.getAspects()) {
-			properties.append(' ').append(choiceFeature(species, aspect));
+			String property = choiceFeature(species, aspect);
+			int eq = property.indexOf('=');
+			picked.put(eq < 0 ? property : property.substring(0, eq), property);
+		}
+		// The mother's own choice features the hatchling's species has too (a West Sea Gastrodon's sea=west for a
+		// Shellos): a form without aspects (West Sea, Baile, Green) is a feature whose default may be random, and
+		// without it Cobblemon rolls one that picks the form again on load (B1031)
+		choiceFeatures(species, mother).forEach((name, value) -> picked.putIfAbsent(name, name + "=" + value));
+		StringBuilder properties = new StringBuilder(species.getResourceIdentifier().toString());
+		for (String property : picked.values()) {
+			properties.append(' ').append(property);
 		}
 		Pokemon baby = PokemonProperties.Companion.parse(properties + " level=1", " ", "=").create();
 		if (form != baby.getForm() && species.getForms().contains(form)) {
@@ -251,6 +263,38 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 		return aspect;
 	}
 
+	/**
+	 * {@code pokemon}'s choice features (name to value) that {@code species} has a choice feature of the same name for,
+	 * with a value that species takes: a Gastrodon's sea=west for a Shellos, a Tauros's bull_breed=blaze.
+	 */
+	static Map<String, String> choiceFeatures(Species species, Pokemon pokemon) {
+		Map<String, String> out = new LinkedHashMap<>();
+		for (var owned : pokemon.getFeatures()) {
+			if (!(owned instanceof StringSpeciesFeature feature) || feature.getValue() == null) {
+				continue;
+			}
+			for (SpeciesFeatureProvider<?> provider : SpeciesFeatures.getFeaturesFor(species)) {
+				if (!(provider instanceof CustomPokemonPropertyType<?> type)) {
+					continue;
+				}
+				try {
+					boolean named = false;
+					for (String key : type.getKeys()) {
+						named |= key.equalsIgnoreCase(feature.getName());
+					}
+					if (named && type.fromString(feature.getValue()) instanceof StringSpeciesFeature valid
+							&& valid.getName().equals(feature.getName()) && aspectOf(provider, valid) != null) {
+						out.put(feature.getName(), feature.getValue());
+						break;
+					}
+				} catch (RuntimeException | LinkageError e) {
+					// A provider this version doesn't link with: skip it
+				}
+			}
+		}
+		return out;
+	}
+
 	/** The aspect {@code provider} gives {@code feature}, or null when it gives none (or isn't a choice feature). */
 	private static @Nullable String aspectOf(SpeciesFeatureProvider<?> provider, StringSpeciesFeature feature) {
 		if (provider instanceof ChoiceSpeciesFeatureProvider choice) {
@@ -282,11 +326,11 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			}
 		}
 		Set<String> aspects = new HashSet<>(form.getAspects());
-		List<FormData> leading = new ArrayList<>();
-		for (FormData candidate : forms) {
-			if (evolvesInto(candidate, form, aspects)) {
-				leading.add(candidate);
-			}
+		List<FormData> leading = leading(forms, form, aspects);
+		// A gender form (a female Basculegion's "female") comes from the gender, not the evolution: without the gender
+		// aspects, White-Striped Basculin evolves into Basculegion (B1040)
+		if (leading.isEmpty() && aspects.removeAll(GENDER_ASPECTS)) {
+			leading = leading(forms, form, aspects);
 		}
 		FormData resolved = pre.getForm();
 		if (leading.contains(resolved) || leading.isEmpty() && aspects.isEmpty()) {
@@ -301,6 +345,19 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			}
 		}
 		return resolved;
+	}
+
+	/** Cobblemon's gender aspects. */
+	private static final Set<String> GENDER_ASPECTS = Set.of("male", "female");
+
+	private static List<FormData> leading(List<FormData> forms, FormData form, Set<String> aspects) {
+		List<FormData> out = new ArrayList<>();
+		for (FormData candidate : forms) {
+			if (evolvesInto(candidate, form, aspects)) {
+				out.add(candidate);
+			}
+		}
+		return out;
 	}
 
 	private static boolean evolvesInto(FormData from, FormData to, Set<String> aspects) {
@@ -351,10 +408,12 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			// Run as the player at full permission, aimed at @s (a UUID isn't taken as a player by its selector)
 			var source = player.createCommandSourceStack().withSuppressedOutput().withPermission(4);
 			int before = countEggs(player);
-			String command = "givepokemonegg @s " + properties.asString(" ");
+			// With the hatchling's choice features (bull_breed=blaze): the form alone hatches the feature's default (B1041)
+			StringBuilder command = new StringBuilder("givepokemonegg @s ").append(properties.asString(" "));
+			choiceFeatures(baby.getSpecies(), baby).forEach((name, value) -> command.append(' ').append(name).append('=').append(value));
 			String failure = "";
 			try {
-				server.getCommands().getDispatcher().execute(command, source);
+				server.getCommands().getDispatcher().execute(command.toString(), source);
 			} catch (com.mojang.brigadier.exceptions.CommandSyntaxException | RuntimeException e) {
 				failure = e.getMessage();
 			}

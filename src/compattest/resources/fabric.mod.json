@@ -307,6 +307,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareRegional1104d2BugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareChoiceForms1108dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareChoiceForms1108eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaDaycareChoiceForms1108dBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaDaycareChoiceForms1108eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateBearingProtection1108eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaStorageHallCompat1104c3Tests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystonePlaza1104d4CompatTests",

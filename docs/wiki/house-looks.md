@@ -79,7 +79,7 @@ No new items, blocks or commands. The page is the Village Hall's Builds button; 
   swaps which one a house wears.
 - The room and its chests are never touched, so a choice is safe to make on a working house.
 - **23.10 (owner, 2026-10-04, process work):** every shipped build was reviewed in a gallery package per build family
-  (houses, workshops, defences, decorations, village pieces in five styles), each shown front and back, and vetoed
+  (houses, workshops, defenses, decorations, village pieces in five styles), each shown front and back, and vetoed
   builds were redrawn. The five outsides a leader can choose from are those reviewed style variants.
 
 ## 7. Known limits

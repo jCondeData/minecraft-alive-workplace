@@ -1008,6 +1008,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaOneEmeraldBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPersonalRequestsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPersonalAsks1108cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGiverConditionLists1108cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallGuardCount1108cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PluralSweepGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestJournalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestJournalBugTests",

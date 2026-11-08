@@ -158,14 +158,48 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 			});
 		}
 
+		/**
+		 * Polls {@code ready} every tick until it is, then runs {@code then}; fails with {@code fail} once {@code clock} is
+		 * overdue after at least {@code minTicks} ticks (B1036: chunks load and unload on other threads, in real time).
+		 */
+		void waitOnChunks(BooleanSupplier ready, ChunkWaits.Clock clock, int minTicks, Supplier<String> fail, Runnable then) {
+			guarded(() -> {
+				if (ready.getAsBoolean()) {
+					then.run();
+					return;
+				}
+				if (clock.overdue(minTicks)) {
+					throw new GameTestAssertException(fail.get() + " (waited " + clock + ")");
+				}
+				helper.runAfterDelay(1, () -> waitOnChunks(ready, clock, minTicks, fail, then));
+			});
+		}
+
 		/** Waits until the far village's chunks are no longer loaded (its spots), then runs {@code then}. */
 		void whenUnloaded(Runnable then) {
 			ServerLevel level = helper.getLevel();
-			long start = level.getGameTime();
-			waitFor(() -> far.spots().stream().noneMatch(level::isLoaded), UNLOAD_TICKS,
+			ChunkWaits.Clock clock = ChunkWaits.start(level);
+			waitOnChunks(() -> far.spots().stream().noneMatch(level::isLoaded), clock, UNLOAD_TICKS,
 				() -> "setup: the far village's chunks never unloaded (loaded: " + far.spots().stream().filter(level::isLoaded).map(BlockPos::toShortString).toList() + ")",
 				() -> {
-					LOGGER.info("QA 41.3 far: the far village at {} unloaded after {} ticks", far.hall().toShortString(), level.getGameTime() - start);
+					LOGGER.info("QA 41.3 far: the far village at {} unloaded after {}", far.hall().toShortString(), clock);
+					then.run();
+				});
+		}
+
+		/**
+		 * Once Farbrook's chunk (loaded by the test: forced, or a block set in it) is running, its hall's block entity
+		 * ticking (B1036: its neighbours and entities load on other threads after the forcing), runs {@code then}.
+		 */
+		void whenRunning(Runnable then) {
+			ServerLevel level = helper.getLevel();
+			ChunkWaits.Clock clock = ChunkWaits.start(level);
+			waitOnChunks(() -> ChunkWaits.running(level, far.hall()), clock, ChunkWaits.MIN_TICKS,
+				() -> "setup: Farbrook's chunk never started running (" + ChunkWaits.state(level, far.hall()) + ")",
+				() -> {
+					if (clock.ticks() > 0) {
+						LOGGER.info("QA 41.3 far: Farbrook's chunk running after {}", clock);
+					}
 					then.run();
 				});
 		}
@@ -187,8 +221,9 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 		 */
 		void settled(Runnable then) {
 			ServerLevel level = helper.getLevel();
-			waitFor(() -> level.isLoaded(far.hall()) && Caravans.Data.get(level).village(far.hall()) != null, 200,
-				() -> "setup: Farbrook's hall never had its first round while loaded (loaded " + level.isLoaded(far.hall()) + ")", then);
+			// its first round is its first tick (VillageHallBlockEntity.serverTick), so 200 ticks of a running chunk are plenty
+			whenRunning(() -> waitFor(() -> level.isLoaded(far.hall()) && Caravans.Data.get(level).village(far.hall()) != null, 200,
+				() -> "setup: Farbrook's hall never had its first round while its chunk was running (" + ChunkWaits.state(level, far.hall()) + ")", then));
 		}
 
 		/** The player leaves the far village: its chunks no longer forced; once they've unloaded, {@code then}. */
@@ -326,8 +361,8 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		BlockPos far = run.far.hall();
 		Caravans.Data data = Caravans.Data.get(level);
-		run.waitFor(() -> level.isLoaded(far) && road(data, a(helper), far).isEmpty(), 600,
-			() -> "Farbrook loaded again (" + level.isLoaded(far) + "), but the caravan never came in: still on the road " + road(data, a(helper), far)
+		run.whenRunning(() -> run.waitFor(() -> level.isLoaded(far) && road(data, a(helper), far).isEmpty(), 600,
+			() -> "Farbrook loaded again (" + ChunkWaits.state(level, far) + "), but the caravan never came in: still on the road " + road(data, a(helper), far)
 				+ " (now " + level.getGameTime() + ")",
 			() -> {
 				int there = logs(level, run.far.chest());
@@ -338,7 +373,7 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 					helper.assertFalse(came.endsWith("waystone_came") && said(level, far, "chronicle.aliveworkplace.waystone_walked"), "it walked with both stones standing");
 				}
 				run.pass(what + ": 32 logs in Farbrook's chest, 32 left at Ashford, none on the road, chronicle '{}'", came);
-			});
+			}));
 	}
 
 	/**
@@ -347,8 +382,8 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 	 * and steps out there when Farbrook loads again (its hall's first round): the logs in Farbrook's chest, none lost or
 	 * doubled.
 	 */
-	//$ gametest_ticks_batch AREA '2400' '"qaWaystoneFarCaravan1107d"'
-	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qaWaystoneFarCaravan1107d")
+	//$ gametest_ticks_batch AREA '22400' '"qaWaystoneFarCaravan1107d"'
+	@GameTest(template = AREA, timeoutTicks = 22400, batch = "qaWaystoneFarCaravan1107d")
 	public void aCaravanToAFarUnloadedVillageGoesByWaystoneAndStepsOutWhenItLoads(GameTestHelper helper) {
 		Run run = villages(helper, 0, true);
 		ServerLevel level = helper.getLevel();
@@ -378,8 +413,8 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 	}
 
 	/** Control: the same with Farbrook kept loaded (forced) all along: by waystone, and out of Farbrook's stone. */
-	//$ gametest_ticks_batch AREA '600' '"qaWaystoneFarCaravanLoaded1107d"'
-	@GameTest(template = AREA, timeoutTicks = 600, batch = "qaWaystoneFarCaravanLoaded1107d")
+	//$ gametest_ticks_batch AREA '20600' '"qaWaystoneFarCaravanLoaded1107d"'
+	@GameTest(template = AREA, timeoutTicks = 20600, batch = "qaWaystoneFarCaravanLoaded1107d")
 	public void controlACaravanToAFarVillageKeptLoadedStepsOutThere(GameTestHelper helper) {
 		Run run = villages(helper, 40, true);
 		ServerLevel level = helper.getLevel();
@@ -401,8 +436,8 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 	 * unloads (the player is at Ashford). When it's due, it steps out of Ashford's stone (Farbrook's stone known unloaded):
 	 * 32 logs in Ashford's chest, none lost on the reload, none still on the road; Farbrook's chest keeps the other 32.
 	 */
-	//$ gametest_ticks_batch AREA '2400' '"qaWaystoneFarCaravanIn1107d"'
-	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qaWaystoneFarCaravanIn1107d")
+	//$ gametest_ticks_batch AREA '22400' '"qaWaystoneFarCaravanIn1107d"'
+	@GameTest(template = AREA, timeoutTicks = 22400, batch = "qaWaystoneFarCaravanIn1107d")
 	public void aCaravanFromAFarVillageSavedMidTripStepsOutAtHomeWithThatVillageUnloaded(GameTestHelper helper) {
 		Run run = villages(helper, 80, false);
 		ServerLevel level = helper.getLevel();
@@ -446,8 +481,8 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 	 * Farbrook's stone broken (while Farbrook is loaded), then Farbrook unloads: Ashford's caravan walks the road (the
 	 * chronicle says it left by road), and when it's due and Farbrook loads it comes in with all 32 logs.
 	 */
-	//$ gametest_ticks_batch AREA '2400' '"qaWaystoneFarBroken1107d"'
-	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qaWaystoneFarBroken1107d")
+	//$ gametest_ticks_batch AREA '22400' '"qaWaystoneFarBroken1107d"'
+	@GameTest(template = AREA, timeoutTicks = 22400, batch = "qaWaystoneFarBroken1107d")
 	public void aFarStoneBrokenBeforeItsVillageUnloadsTheCaravanWalks(GameTestHelper helper) {
 		Run run = villages(helper, 120, true);
 		ServerLevel level = helper.getLevel();
@@ -517,8 +552,8 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 	 * (the real colony tick) they step out there and arrive, not sent back to walk the whole road, and Ashford's chronicle
 	 * says nothing of walking.
 	 */
-	//$ gametest_ticks_batch AREA '2400' '"qaWaystoneFarSettlers1107d"'
-	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qaWaystoneFarSettlers1107d")
+	//$ gametest_ticks_batch AREA '22400' '"qaWaystoneFarSettlers1107d"'
+	@GameTest(template = AREA, timeoutTicks = 22400, batch = "qaWaystoneFarSettlers1107d")
 	public void settlersThroughAFarUnloadedVillagesStoneStepOutThere(GameTestHelper helper) {
 		Run run = villages(helper, 160, true);
 		ServerLevel level = helper.getLevel();
@@ -548,8 +583,8 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 	 * Settlers on the road through Farbrook's stone; Farbrook's stone is broken meanwhile (a visit), and Farbrook unloads
 	 * again. When their time is up they walk the whole road from Ashford (Ashford's chronicle says so), all of them.
 	 */
-	//$ gametest_ticks_batch AREA '3600' '"qaWaystoneFarSettlersBroken1107d"'
-	@GameTest(template = AREA, timeoutTicks = 3600, batch = "qaWaystoneFarSettlersBroken1107d")
+	//$ gametest_ticks_batch AREA '23600' '"qaWaystoneFarSettlersBroken1107d"'
+	@GameTest(template = AREA, timeoutTicks = 23600, batch = "qaWaystoneFarSettlersBroken1107d")
 	public void settlersWhoseFarStoneBreaksMidTripWalkTheWholeRoad(GameTestHelper helper) {
 		Run run = villages(helper, 200, true);
 		ServerLevel level = helper.getLevel();
@@ -561,8 +596,8 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 				// very tick a bare setBlock loads the chunk, the Waystones block entity isn't bound to its waystone yet (Balm runs
 				// its onLoad at the next block-entity tick), so the mod never takes the stone off its saved list.
 				run.forceLoad();
-				run.waitFor(() -> level.isLoaded(run.far.stone()) && VillageWaystones.standing(level, run.far.hall()), 200,
-					() -> "setup: at the visit Farbrook's stone doesn't stand as a working waystone (loaded " + level.isLoaded(run.far.stone()) + ")", () -> {
+				run.whenRunning(() -> run.waitFor(() -> level.isLoaded(run.far.stone()) && VillageWaystones.standing(level, run.far.hall()), 200,
+					() -> "setup: at the visit Farbrook's stone doesn't stand as a working waystone (" + ChunkWaits.state(level, run.far.stone()) + ")", () -> {
 				level.setBlock(run.far.stone().above(), Blocks.AIR.defaultBlockState(), 3);
 				level.setBlock(run.far.stone(), Blocks.AIR.defaultBlockState(), 3);
 				helper.assertFalse(VillageWaystones.standing(level, run.far.hall()), "setup: Farbrook's stone, broken at the visit, still stands");
@@ -583,7 +618,7 @@ public class QaWaystoneFarAway1107dCompatTests implements FabricGameTest {
 							run.pass("Farbrook's stone broken mid-trip, then unloaded: the settlers walk the whole road ({} ticks)", walk);
 						});
 				});
-				});
+				}));
 			});
 		}));
 	}

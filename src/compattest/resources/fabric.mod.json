@@ -165,6 +165,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelCounterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelMailboxCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTomsPrivateBoxesCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaTomsNetworks1108cCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainSiteRaceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainSiteHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPastureCopyCompatTests",

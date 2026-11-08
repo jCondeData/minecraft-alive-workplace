@@ -1,6 +1,5 @@
 package io.github.jcondedata.aliveworkplace.client;
 
-import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.trader.PokemonTradeView;
 import io.github.jcondedata.aliveworkplace.work.ChoiceView;
 import java.util.List;
@@ -8,32 +7,26 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * The Pokémon Trader's own screen (ROADMAP 28.23), drawn like the Village Hall's (30.4a) and vanilla's workstation screens
- * (textures/gui/pokemon_trader.png, drawn by tools/textures/art/gui.py): the day's offers as cards down a sunken panel on
- * the left, each with the Pokémon on its button, its name, level and shiny mark, what it costs and the ball it comes in;
- * the player's party on the right, a Pokémon that won't do greyed out and the one waiting for the second click pressed
- * in; and a line saying what to do next. With no offers the panel says so. The clicks are the server's
- * {@code ChoiceMenu} ones, and the texts are the server's (an icon's name), so nothing here decides a trade.
+ * The Pokémon Trader's own screen (ROADMAP 28.23), in the Village Hall's look since 43.2 ({@link TableStyle}, as the
+ * Trainer screen and the list menus): a dark panel with a slate-blue edge and the trader's name in gold, the trader's
+ * book in a framed cell beside it; the day's offers as rows down a dark list on the left, each with the Pokémon in a
+ * framed cell, its name in white (a gold star when shiny), what it costs on a grey-blue second line and the ball it
+ * comes in at the row's end, the picked offer's row and cell in gold; the player's party on the right under a gold
+ * heading, two rows of three framed cells (a Pokémon that won't do greyed out by the server, the one waiting for the
+ * second click in gold), the status lines under a thin rule, and a footer hint. With no offers the list says so.
+ * A click anywhere on an offer's row picks it, as a click on its cell does. The clicks are the server's
+ * {@code ChoiceMenu} ones and the texts are the server's (an icon's name), so nothing here decides a trade.
  */
 public class PokemonTradeScreen extends AbstractContainerScreen<PokemonTradeView> {
-	public static final ResourceLocation TEXTURE = AliveWorkplace.id("textures/gui/pokemon_trader.png");
-	public static final int WIDTH = 256;
-	public static final int HEIGHT = 156;
-	private static final int BUTTON_V = 176;
-	private static final int CARD_V = 194;
-	private static final int CARD_W = 150;
-	private static final int CARD_H = 30;
-	private static final int TEXT = 0xFF404040;
-	private static final int SOFT = 0xFF606060;
-	private static final int GOLD = 0xFFB07A00;
-	private static final int ON_DEEP = 0xFFE0E0E0;
+	public static final int WIDTH = PokemonTradeView.WIDTH;
+	public static final int HEIGHT = PokemonTradeView.HEIGHT;
 	private static final String STAR = "★";
 
 	public PokemonTradeScreen(PokemonTradeView menu, Inventory inventory, Component title) {
@@ -41,7 +34,7 @@ public class PokemonTradeScreen extends AbstractContainerScreen<PokemonTradeView
 		imageWidth = WIDTH;
 		imageHeight = HEIGHT;
 		titleLabelX = 8;
-		titleLabelY = 6;
+		titleLabelY = 8;
 	}
 
 	private ItemStack icon(int slot) {
@@ -52,31 +45,54 @@ public class PokemonTradeScreen extends AbstractContainerScreen<PokemonTradeView
 		return Boolean.TRUE.equals(icon.get(DataComponents.ENCHANTMENT_GLINT_OVERRIDE));
 	}
 
+	/** The offer row under the mouse with an offer on it, or -1. */
+	private int rowAt(double mouseX, double mouseY) {
+		int row = PokemonTradeView.offerAt((int) Math.floor(mouseX) - leftPos, (int) Math.floor(mouseY) - topPos);
+		return row >= 0 && ChoiceView.shown(icon(PokemonTradeView.OFFERS + row)) ? row : -1;
+	}
+
 	@Override
 	protected void renderBg(GuiGraphics g, float partialTick, int mouseX, int mouseY) {
-		g.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+		int left = leftPos;
+		int top = topPos;
+		TableStyle.panel(g, left, top, WIDTH, HEIGHT);
+		TableStyle.listBackground(g, left + PokemonTradeView.LIST_X, top + PokemonTradeView.LIST_Y, PokemonTradeView.LIST_W,
+			PokemonTradeView.LIST_H);
+		int over = rowAt(mouseX, mouseY);
 		for (int i = 0; i < PokemonTradeView.MAX_OFFERS; i++) {
 			ItemStack offer = icon(PokemonTradeView.OFFERS + i);
-			if (ChoiceView.shown(offer)) {
-				g.blit(TEXTURE, leftPos + PokemonTradeView.CARD_X, topPos + PokemonTradeView.cardY(i), 0, CARD_V + (picked(offer) ? CARD_H : 0),
-					CARD_W, CARD_H);
+			if (!ChoiceView.shown(offer)) {
+				continue;
+			}
+			int x = left + PokemonTradeView.CARD_X;
+			int y = top + PokemonTradeView.cardY(i);
+			if (picked(offer)) {
+				g.fill(x, y, x + PokemonTradeView.CARD_W, y + PokemonTradeView.ROW_H, TableStyle.ROW_ON);
+			} else if (over == i) {
+				g.fill(x, y, x + PokemonTradeView.CARD_W, y + PokemonTradeView.ROW_H, TableStyle.ROW_OVER);
+			}
+			if (i + 1 < PokemonTradeView.MAX_OFFERS && ChoiceView.shown(icon(PokemonTradeView.OFFERS + i + 1))) {
+				TableStyle.rule(g, x + 4, y + PokemonTradeView.ROW_H, PokemonTradeView.CARD_W - 8);
 			}
 		}
+		TableStyle.rule(g, left + PokemonTradeView.PARTY_X, top + PokemonTradeView.STATUS_Y - 4, PokemonTradeView.SIDE_W);
 		for (Slot slot : menu.slots) {
 			int index = slot.index;
 			boolean ball = index >= PokemonTradeView.BALLS && index < PokemonTradeView.BALLS + PokemonTradeView.MAX_OFFERS;
 			if (slot.isActive() && !ball) {
-				boolean hovered = isHovering(slot.x, slot.y, 16, 16, mouseX, mouseY);
-				boolean pressed = index >= PokemonTradeView.PARTY && picked(slot.getItem());
-				g.blit(TEXTURE, leftPos + slot.x - 1, topPos + slot.y - 1, pressed ? 36 : hovered ? 18 : 0, BUTTON_V, 18, 18);
+				boolean offer = index >= PokemonTradeView.OFFERS && index < PokemonTradeView.OFFERS + PokemonTradeView.MAX_OFFERS;
+				boolean hovered = isHovering(slot.x, slot.y, 16, 16, mouseX, mouseY) || offer && over == index - PokemonTradeView.OFFERS;
+				boolean on = index != PokemonTradeView.INFO && picked(slot.getItem());
+				TableStyle.cell(g, leftPos + slot.x - 1, topPos + slot.y - 1, on, hovered);
 			}
 		}
 	}
 
 	@Override
 	protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
-		g.drawString(font, title, titleLabelX, titleLabelY, TEXT, false);
-		g.drawString(font, Component.translatable("screen.aliveworkplace.pokemon_trader.party"), 166, 18, TEXT, false);
+		g.drawString(font, TableStyle.trim(font, title.getString(), WIDTH - 16 - 26), titleLabelX, titleLabelY, TableStyle.TITLE, false);
+		g.drawString(font, Component.translatable("screen.aliveworkplace.pokemon_trader.party"), PokemonTradeView.PARTY_X + 2,
+			PokemonTradeView.PARTY_Y + 2, TableStyle.TITLE, false);
 		boolean any = false;
 		for (int i = 0; i < PokemonTradeView.MAX_OFFERS; i++) {
 			ItemStack offer = icon(PokemonTradeView.OFFERS + i);
@@ -84,29 +100,32 @@ public class PokemonTradeScreen extends AbstractContainerScreen<PokemonTradeView
 				continue;
 			}
 			any = true;
-			int x = PokemonTradeView.CARD_X + 26;
+			int x = PokemonTradeView.CARD_X + 28;
 			int y = PokemonTradeView.cardY(i);
+			int room = PokemonTradeView.CARD_W - 28 - 26;
 			String name = offer.getHoverName().getString();
 			boolean shiny = name.endsWith(STAR);
 			if (shiny) {
 				name = name.substring(0, name.length() - STAR.length()).stripTrailing();
 			}
-			int room = 102 - (shiny ? 10 : 0);
-			name = fit(name, room);
-			g.drawString(font, name, x, y + 6, TEXT, false);
+			name = TableStyle.trim(font, name, room - (shiny ? 10 : 0));
+			boolean on = picked(offer);
+			g.drawString(font, name, x, y + 6, on ? TableStyle.TITLE : TableStyle.NAME, false);
 			if (shiny) {
-				g.drawString(font, STAR, x + font.width(name) + 3, y + 6, GOLD, false);
+				g.drawString(font, STAR, x + font.width(name) + 3, y + 6, TableStyle.TITLE, false);
 			}
 			ItemStack cost = icon(PokemonTradeView.COSTS + i);
 			if (!cost.isEmpty()) {
-				g.drawString(font, fit(cost.getHoverName().getString(), 102), x, y + 17, SOFT, false);
+				g.drawString(font, TableStyle.trim(font, cost.getHoverName().getString(), room), x, y + 17, TableStyle.SUBLINE, false);
 			}
 		}
 		if (!any) {
-			List<FormattedCharSequence> lines = font.split(Component.translatable("screen.aliveworkplace.pokemon_trader.no_offers"), 140);
-			int y = 83 - lines.size() * 5;
+			int cx = PokemonTradeView.LIST_X + PokemonTradeView.LIST_W / 2;
+			List<FormattedCharSequence> lines = font.split(Component.translatable("screen.aliveworkplace.pokemon_trader.no_offers"),
+				PokemonTradeView.LIST_W - 20);
+			int y = PokemonTradeView.LIST_Y + PokemonTradeView.LIST_H / 2 - lines.size() * 5;
 			for (FormattedCharSequence line : lines) {
-				g.drawString(font, line, 83 - font.width(line) / 2, y, ON_DEEP, false);
+				g.drawString(font, line, cx - font.width(line) / 2, y, TableStyle.SUBLINE, false);
 				y += 10;
 			}
 		}
@@ -115,37 +134,55 @@ public class PokemonTradeScreen extends AbstractContainerScreen<PokemonTradeView
 			party |= ChoiceView.shown(icon(PokemonTradeView.PARTY + i));
 		}
 		if (!party && any) {
-			List<FormattedCharSequence> lines = font.split(Component.translatable("screen.aliveworkplace.pokemon_trader.no_party"), 80);
-			int y = 54 - lines.size() * 5;
+			int cx = PokemonTradeView.PARTY_X + PokemonTradeView.SIDE_W / 2;
+			List<FormattedCharSequence> lines = font.split(Component.translatable("screen.aliveworkplace.pokemon_trader.no_party"),
+				PokemonTradeView.SIDE_W - 8);
+			int y = PokemonTradeView.PARTY_Y + 36 - lines.size() * 5;
 			for (FormattedCharSequence line : lines) {
-				g.drawString(font, line, 207 - font.width(line) / 2, y, ON_DEEP, false);
+				g.drawString(font, line, cx - font.width(line) / 2, y, TableStyle.SUBLINE, false);
 				y += 10;
 			}
 		}
 		ItemStack status = icon(PokemonTradeView.STATUS);
 		if (!status.isEmpty()) {
-			int y = 90;
-			for (FormattedCharSequence line : font.split(Component.literal(status.getHoverName().getString()), 84)) {
-				if (y > 120) {
+			int y = PokemonTradeView.STATUS_Y;
+			for (FormattedCharSequence line : font.split(Component.literal(status.getHoverName().getString()), PokemonTradeView.SIDE_W - 4)) {
+				if (y + 9 > PokemonTradeView.STATUS_BOTTOM) {
 					break;
 				}
-				g.drawString(font, line, 166, y, TEXT, false);
+				g.drawString(font, line, PokemonTradeView.PARTY_X + 2, y, TableStyle.BODY, false);
 				y += 10;
 			}
 		}
-	}
-
-	private String fit(String text, int width) {
-		if (font.width(text) <= width) {
-			return text;
-		}
-		return font.plainSubstrByWidth(text, width - font.width("…")) + "…";
+		TableStyle.footerHint(g, font, Component.translatable("screen.aliveworkplace.pokemon_trader.hint"), 8, HEIGHT - 12, WIDTH - 16);
 	}
 
 	@Override
 	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		super.render(g, mouseX, mouseY, partialTick);
+		if (hoveredSlot == null) {
+			// Over an offer's row but not its cell: the offer's own tooltip, as over the cell.
+			int row = rowAt(mouseX, mouseY);
+			if (row >= 0) {
+				ItemStack offer = icon(PokemonTradeView.OFFERS + row);
+				g.renderTooltip(font, getTooltipFromContainerItem(offer), offer.getTooltipImage(), mouseX, mouseY);
+				return;
+			}
+		}
 		renderTooltip(g, mouseX, mouseY);
+	}
+
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (hoveredSlot == null || !hoveredSlot.isActive()) {
+			int row = rowAt(mouseX, mouseY);
+			if (row >= 0) {
+				Slot slot = menu.slots.get(PokemonTradeView.OFFERS + row);
+				slotClicked(slot, slot.index, button, ClickType.PICKUP);
+				return true;
+			}
+		}
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	/** Where button {@code slot}'s middle is on the screen, in GUI pixels (the screenshot harness points at it). */

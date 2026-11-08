@@ -3587,7 +3587,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 			return;
 		}
 		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.PokemonTradeScreen trades) {
-			// The Pokémon Trader's own screen (28.23): cards and a party panel, not a chest's grid.
+			// The Pokémon Trader's own screen (28.23, the Hall's look since 43.2): offer rows and party cells, not a chest's grid.
 			int[] at = trades.centre(slot);
 			setMouse(mc, at[0] * scale, at[1] * scale);
 			return;

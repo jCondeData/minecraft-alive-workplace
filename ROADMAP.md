@@ -6364,7 +6364,7 @@ own battle screen stays Cobblemon's. Depends on: nothing open.
   busy, no team, not the leader, come back tomorrow, no Cobblemon) shows on the screen with the button grayed out.
   Trade opens today's trades. Done when: compat GameTests for the challenge, each refusal, the team revealed after a
   win, Trade, save and reload; scenes `leader` and `battle` show it.
-- [ ] **43.2** **The Pokemon Trader screen** (`PokemonTradeScreen`) in the Hall's look. Done when: today's
+- [x] **43.2** (review: pending 2026-11-08) **The Pokemon Trader screen** (`PokemonTradeScreen`) in the Hall's look. Done when: today's
   `QaPokemonTradeScreenCompatTests` pass; scene `trader`.
 - [ ] **43.3** **Cards for the Nurse and the Fossil Scientist**, with 42.5's card: the Nurse shows the party's health
   and a Heal button (what a click does today); the Fossil Scientist shows each fossil's progress and a Hand over

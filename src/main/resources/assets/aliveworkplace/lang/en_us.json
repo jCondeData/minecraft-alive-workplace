@@ -804,6 +804,7 @@
   "screen.aliveworkplace.pokemon_trader.pick": "Pick an offer, then one of your Pokémon that fits it.",
   "screen.aliveworkplace.pokemon_trader.no_offers": "No offers today. Come back tomorrow!",
   "screen.aliveworkplace.pokemon_trader.no_party": "You have no Pokémon with you.",
+  "screen.aliveworkplace.pokemon_trader.hint": "Hover a Pokémon for its details · new offers every day",
   "screen.aliveworkplace.pokemon_trader.ball": "Comes in a %s",
   "screen.aliveworkplace.pokemon_trader.ball.an": "Comes in an %s",
   "screen.aliveworkplace.pokemon_trader.cost": "For: any %s, Lv. %s+",

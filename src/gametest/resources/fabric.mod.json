@@ -1440,8 +1440,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaOldSaveCrafter1107cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePot1108aGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatOwnerGone1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaiderLedAway1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDripstone1108dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRaidStrays1108dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeDripstoneEdges1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotSite1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotVerify1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1108GameTests"

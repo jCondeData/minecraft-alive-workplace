@@ -195,7 +195,9 @@ public final class MaterialRules {
 		// Cobblemon (ROADMAP 28.7): a Healing Machine charges by itself, a PC or Pasture Block lights up while in use
 		"charge", "on",
 		// Cobblemon (ROADMAP 28.13): a Campfire Pot's lid, which its cook shuts and opens
-		"lid"
+		"lid",
+		// B1038: a big dripleaf tipping under someone, a sculk sensor hearing, a shrieker shrieking (built at rest, atRest)
+		"tilt", "sculk_sensor_phase", "shrieking"
 	);
 
 	/**
@@ -509,6 +511,7 @@ public final class MaterialRules {
 				state = emptyValue(state, property);
 			}
 		}
+		state = atRest(state);
 		if (state.getBlock() instanceof net.minecraft.world.level.block.PitcherCropBlock && state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER) {
 			// B560: a pitcher crop is planted as vanilla plants a pod, one block tall (age 0); its top grows by itself, so
 			// a ripe crop's upper half is no block of its own (not placed, not charged)
@@ -520,6 +523,50 @@ public final class MaterialRules {
 			state = state.setValue(BlockStateProperties.LIT, false);
 		}
 		return state;
+	}
+
+	/**
+	 * B1038: a block caught in the middle of a moment by a scan (fillFromWorld) is built at rest, as a player's freshly
+	 * placed one is: a wooden or weighted pressure plate up, a button out, a big dripleaf level, a sculk sensor (and a
+	 * calibrated one) listening, a shrieker quiet, an observer, detector rail, tripwire, tripwire hook, lightning rod or
+	 * lectern not pulsing, a target block giving no signal. The game springs each back with a tick it scheduled at that
+	 * moment; a saved blueprint keeps the state but not the tick, so built as drawn it stayed that way for good (a door by
+	 * the plate held open, a leaf a player falls through, a deaf sensor). Each property goes back to the block's own
+	 * default value, by block class, so a modded block built on these behaves the same. A tripwire hook keeps its attached
+	 * (that depends on the wire, not a moment). All of these are volatile in {@link #matches}, so a plate stepped on later
+	 * still counts as built.
+	 */
+	private static final Map<Class<? extends Block>, List<Property<?>>> MOMENTARY = Map.ofEntries(
+		Map.entry(net.minecraft.world.level.block.BasePressurePlateBlock.class, List.of(BlockStateProperties.POWERED, BlockStateProperties.POWER)),
+		Map.entry(net.minecraft.world.level.block.ButtonBlock.class, List.of(BlockStateProperties.POWERED)),
+		Map.entry(net.minecraft.world.level.block.BigDripleafBlock.class, List.of(BlockStateProperties.TILT)),
+		Map.entry(net.minecraft.world.level.block.SculkSensorBlock.class, List.of(BlockStateProperties.SCULK_SENSOR_PHASE, BlockStateProperties.POWER)),
+		Map.entry(net.minecraft.world.level.block.SculkShriekerBlock.class, List.of(BlockStateProperties.SHRIEKING)),
+		Map.entry(net.minecraft.world.level.block.ObserverBlock.class, List.of(BlockStateProperties.POWERED)),
+		Map.entry(net.minecraft.world.level.block.DetectorRailBlock.class, List.of(BlockStateProperties.POWERED)),
+		Map.entry(net.minecraft.world.level.block.TripWireBlock.class, List.of(BlockStateProperties.POWERED)),
+		Map.entry(net.minecraft.world.level.block.TripWireHookBlock.class, List.of(BlockStateProperties.POWERED)),
+		Map.entry(net.minecraft.world.level.block.LightningRodBlock.class, List.of(BlockStateProperties.POWERED)),
+		Map.entry(net.minecraft.world.level.block.LecternBlock.class, List.of(BlockStateProperties.POWERED)),
+		Map.entry(net.minecraft.world.level.block.TargetBlock.class, List.of(BlockStateProperties.POWER)));
+
+	/** The state with every momentary property (see {@link #MOMENTARY}) at the block's resting value. */
+	public static BlockState atRest(BlockState state) {
+		Block block = state.getBlock();
+		for (Map.Entry<Class<? extends Block>, List<Property<?>>> e : MOMENTARY.entrySet()) {
+			if (e.getKey().isInstance(block)) {
+				for (Property<?> property : e.getValue()) {
+					if (state.hasProperty(property)) {
+						state = restingValue(state, block.defaultBlockState(), property);
+					}
+				}
+			}
+		}
+		return state;
+	}
+
+	private static <T extends Comparable<T>> BlockState restingValue(BlockState state, BlockState rest, Property<T> property) {
+		return rest.hasProperty(property) ? state.setValue(property, rest.getValue(property)) : state;
 	}
 
 	/**

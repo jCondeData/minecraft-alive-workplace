@@ -19,7 +19,8 @@ import org.jetbrains.annotations.Nullable;
  * Decides which block-entity data from a blueprint a builder copies onto a block it places. Looks
  * (sign text, banner patterns, a way sign's arms, a blackboard drawing) are copied; anything that would
  * hand out free items or mobs is not — chest contents, a jar's cookies, an item shelf's sword, a caged
- * mob, a safe's owner, the lava in a Create tank. Works for blocks from any mod, not just vanilla.
+ * mob, a safe's owner, the lava in a Create tank. Words keep their looks but never a command or a worked-out part
+ * ({@link BlockText}). Works for blocks from any mod, not just vanilla.
  */
 public final class BlockEntityData {
 	/** Keys that hold items, loot, mobs or ownership in vanilla and common mods. */
@@ -51,7 +52,7 @@ public final class BlockEntityData {
 				return null;
 			}
 			CompoundTag named = new CompoundTag();
-			named.putString("CustomName", Nbt.getString(nbt, "CustomName"));
+			named.putString("CustomName", BlockText.clean(Nbt.getString(nbt, "CustomName"), BlockText.MAX_NAME));
 			return named;
 		}
 		CompoundTag tag = nbt.copy();
@@ -63,6 +64,10 @@ public final class BlockEntityData {
 			// empty, it starts dark, as it does when placed fresh
 			tag.remove("Luminosity");
 		}
+		// B1044, B1047: words (a sign's lines, a banner's name, any mod's text) keep their looks only: no click command,
+		// no nbt, selector or score part the game would work out with operator permission, no line longer than a player
+		// could write
+		BlockText.cleanAll(tag);
 		return tag;
 	}
 

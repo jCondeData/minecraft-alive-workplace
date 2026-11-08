@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A drowned pirate's trident no longer breaks the pointed-dripstone spikes on top of a finished palisade; a wild drowned's or a player's trident still does (B1052).
+- A raid's last raider led out of the village's reach (kited away, or chasing someone) no longer lets the raid be booked as fought off while it lives, and it now leaves at dawn with its raid instead of staying in the world for good (B1055).
+- A sign built from a blueprint file anyone uploaded (or from a scan of an operator's command sign) no longer runs a command when clicked, no longer shows other players' positions, inventories or scores, and holds no more than the 384 characters a line a player could write: built signs and names keep their words, colors and glow only (B1044, B1047).
+- A blueprint scanned while a pressure plate was stood on, a button pressed, a big dripleaf tipped or a sculk sensor was hearing something is no longer built stuck that way for good (a door beside the plate held open, a leaf you fall through, a deaf sensor): Builders put those down at rest, as you would place them, and the same for observers, detector rails, tripwires, lightning rods, lecterns and target blocks caught mid-pulse.
 - Food you're cooking on a build's campfire comes back when a Builder takes that build down (into his bag, or on the ground by his bench when the bag is full), as when you break the campfire yourself: it used to vanish.
 - A Book and Quill you've written in is no longer turned into a Builder's material list (from the Builder, his Blueprint Table, a Builder's Bench or a blueprint): only a blank one is. With your notes in the off hand, a plain right-click on a Builder trades as usual; from the main hand he tells you a blank one is needed and your pages stay as they were.
 - A pillager's arrow in a siege no longer cracks or breaks a decorated pot in a finished build: like every other builder's block, it stands (your own pots still break as in the game).

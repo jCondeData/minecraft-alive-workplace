@@ -15,7 +15,8 @@ Roadmap items: 31.13, 31.14, B134
   corners) is a notice board on two posts. Its face shows one poster for each open bounty of its village, up to four.
   A right-click opens the **Bounties** tab of the nearest hall's journal; the tab is in the hall's journal anyway.
 - **Taking a bounty**: click it in the tab. You get a **Wanted Poster** (its tooltip: his name, his quirk, where he was
-  last seen and the reward) and a map with a red X on his hideout. Each player gets them once per bounty.
+  last seen and the reward) and a map with a red X on his hideout. Each player gets them once per bounty;
+  with a full bag they land at your feet.
 - **The hideout** is the bandit camp, 120 to 200 blocks from the hall, with his own banner on a spruce pole by the
   fire. It is built (by the arc engine's `place`) when a player first comes within 96 blocks, with him and a band of 2
   or 3 bandits in it.

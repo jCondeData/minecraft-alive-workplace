@@ -176,6 +176,7 @@
 			"io.github.jcondedata.aliveworkplace.test.TailorGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PrinterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSpreadNews1108cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBlueprintSafety1108cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryWorkshopsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.AnsweringHousesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.AgelessElderGameTests",
@@ -537,6 +538,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSentryLeash1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDamage1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRisingsWall1108dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLairBounty1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBanditFortGround1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlagueCarrier1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGates1103dGameTests",
@@ -1436,7 +1438,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRaiderLedAway1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDripstone1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotSite1108dGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaSiegePotVerify1108bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaSiegePotVerify1108bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1108GameTests"
 		]
 	},
 	"depends": {

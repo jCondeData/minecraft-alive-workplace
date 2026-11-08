@@ -567,7 +567,8 @@ BUG_MILESTONES = (26,)
 QUICK_MILESTONES = (36,)
 # Owner, 2026-10-26: the new Village Hall (40) goes to lane c, Waystones (41) to lane d; lane e keeps bug-testing
 # (40's items build on each other, and two lanes on one milestone with no claims would collide).
-BIG_ORDER = {"c": (40, 37, 38, 39), "d": (41, 38, 37, 39), "e": (39, 37, 38)}
+# Owner, 2026-11-08: one look for every screen, Milestone 42 to lane c, 43 to lane d, 44 to lane e.
+BIG_ORDER = {"c": (42, 40, 37, 38, 39), "d": (43, 41, 38, 37, 39), "e": (44, 39, 37, 38)}
 
 
 def lane_of(who):

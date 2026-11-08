@@ -10,7 +10,7 @@ Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002
 - **Unlocked builds** show in color, first in the list, and Get Blueprint works as before (for a Blank Blueprint).
 - **Locked builds** show grayed out with a line saying how to get one ("Sold by a Journeyman Builder", "A market-day
   trader", "A questbook reward", "Found in chests", "Sold by a builder once the tier below stands", "Sold by a
-  villager of its trade"). Their 3D preview is still drawn, dimmed, with the materials; Get Blueprint is grayed out. A block drawn by its block entity (a banner, a decorated pot, a sign) shows in a preview as its item, so a scan of one banner is never an empty picture (B798).
+  villager of its trade"). Their 3D preview is still drawn, dimmed, with the materials; Get Blueprint is grayed out. A block drawn by its block entity (a banner, a decorated pot, a sign) shows in a preview as its item, so a scan of one banner is never an empty picture (B798). Another mod's block never crashes the preview (B1020): tinted blocks (Cozy Home's chairs and sofas) get their color from the preview's own blocks and the biome you stand in, a block whose color still fails is drawn untinted, and one that can't be drawn at all is left out, logged once. The ghost of a held blueprint is guarded the same way.
 - **Rare builds** (the builder-only grander homes, the Wonders, and `rare.json`'s Chapel, Market Square, Map Room,
   Bandstand, Guildhall, Nether Gate and Library III) are a dark **???** at the end of the list, with no name, preview or
   materials, until the village unlocks one.
@@ -194,6 +194,8 @@ another block), two tables kept apart through a reload, a second player taking o
 tabs and spaces, a name word with a job, a query only a level's id matches, each job of a shared job block; every
 basement build's preview depth, floor division at scales 1 to 3, and the "and 4 below ground" line from the preview a
 client receives.
+
+`B1020GameTests` (3): a Cozy-Home-like color provider that refuses a null level gets the viewer's biome grass color through the preview's level (and plain white without a biome); a provider that throws (a null, a missing method) falls back to no tint and is logged once, a block whose drawing throws is skipped, and working ones are kept; the preview's level holds only the build's blocks, fully lit, with no block entities. The real Cozy Home can't load in the dev environment, so its furniture is checked in game.
 
 Showcase scene `table_library` (36.13): the Stored tab empty, Store All with the counts, Take One Out counting the
 cottage down, and the cottage back in hand.

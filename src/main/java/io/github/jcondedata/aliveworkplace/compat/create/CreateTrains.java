@@ -330,7 +330,13 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		level.addFreshEntity(glue);
 		SeatBlock.sitDown(level, seat, conductor);
 		be.enterAssemblyMode(null);
-		be.assemble(owner);
+		int bogeys = (int) parts.values().stream().filter(s -> BuiltInRegistries.BLOCK.getKey(s.getBlock()).getPath().endsWith("bogey")).count();
+		Object[] kept = ownBogeysOnly(be, bogeys);
+		try {
+			be.assemble(owner);
+		} finally {
+			restore(be, kept);
+		}
 		Train train = home.getPresentTrain();
 		if (train == null) {
 			AliveWorkplace.LOG.warn("Alive Workplace: the village train at {} didn't assemble: {}", stationPos.toShortString(),
@@ -357,6 +363,52 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		train.runtime.startCooldown();
 		AliveWorkplace.LOG.info("Alive Workplace: the village train {} runs between {} and {}", train.id, home.name, away.name);
 		return train.id;
+	}
+
+	/** The station's bogey lists, filled by its assembly's scan of the track ({@code StationBlockEntity.refreshAssemblyInfo}). */
+	private static final String[] BOGEY_FIELDS = {"bogeyLocations", "bogeyTypes", "upsideDownBogeys"};
+
+	/**
+	 * B1001: a station's assembly takes every bogey it finds along the straight track past it (up to Create's longest
+	 * train), not only the village train's: another village's train blocks standing further along the line (two neighbors'
+	 * trains at a hub, built before their Conductors came) or a player's carriage being built there became more carriages
+	 * of this train, and the other train, put together on top of them, derailed both. Create's scan fills the station's
+	 * bogey lists only as far as they are long and makes them only when there are none, so for this one assembly they are
+	 * as long as the village train's own bogeys (the first ones past the station): the scan stops there and nothing
+	 * further along the track is touched. Returns the station's own lists, put back by {@link #restore} (a player's
+	 * assembly at this station later scans as Create does); null when they couldn't be reached (Create changed), which
+	 * leaves Create's assembly as it is.
+	 */
+	@Nullable
+	private static Object[] ownBogeysOnly(StationBlockEntity be, int bogeys) {
+		try {
+			Object[] kept = new Object[BOGEY_FIELDS.length];
+			for (int i = 0; i < BOGEY_FIELDS.length; i++) {
+				java.lang.reflect.Field field = StationBlockEntity.class.getDeclaredField(BOGEY_FIELDS[i]);
+				field.setAccessible(true);
+				kept[i] = field.get(be);
+				field.set(be, java.lang.reflect.Array.newInstance(field.getType().getComponentType(), Math.max(1, bogeys)));
+			}
+			return kept;
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			AliveWorkplace.LOG.warn("Alive Workplace: couldn't keep the village train's assembly to its own blocks: {}", e.toString());
+			return null;
+		}
+	}
+
+	private static void restore(StationBlockEntity be, @Nullable Object[] kept) {
+		if (kept == null) {
+			return;
+		}
+		try {
+			for (int i = 0; i < BOGEY_FIELDS.length; i++) {
+				java.lang.reflect.Field field = StationBlockEntity.class.getDeclaredField(BOGEY_FIELDS[i]);
+				field.setAccessible(true);
+				field.set(be, kept[i]);
+			}
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			AliveWorkplace.LOG.warn("Alive Workplace: couldn't put back the station's bogey lists: {}", e.toString());
+		}
 	}
 
 	/** Round and round: to {@code there}, wait, back {@code home}, wait. */

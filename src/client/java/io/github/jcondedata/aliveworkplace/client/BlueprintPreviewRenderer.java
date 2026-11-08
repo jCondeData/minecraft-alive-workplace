@@ -186,7 +186,8 @@ public final class BlueprintPreviewRenderer {
 					faces |= 1 << d.ordinal();
 				}
 			}
-			int tint = mc.getBlockColors().getColor(state, level, pos, 0);
+			// B1020: another mod's color provider that throws leaves its ghost untinted, never a crash
+			int tint = io.github.jcondedata.aliveworkplace.table.SafeRender.tint(state, () -> mc.getBlockColors().getColor(state, level, pos, 0));
 			float r = tint == -1 ? 1f : (tint >> 16 & 255) / 255f;
 			float g = tint == -1 ? 1f : (tint >> 8 & 255) / 255f;
 			float b = tint == -1 ? 1f : (tint & 255) / 255f;
@@ -219,14 +220,17 @@ public final class BlueprintPreviewRenderer {
 			pose.scale(0.98f, 0.98f, 0.98f);
 			pose.translate(-0.5, -0.5, -0.5);
 			long seed = d.state().getSeed(p);
-			for (Direction dir : DIRECTIONS) {
-				if ((d.faces() & 1 << dir.ordinal()) != 0) {
-					random.setSeed(seed);
-					quads(consumer, pose.last(), d, d.model().getQuads(d.state(), dir, random));
+			// B1020: another mod's model that throws leaves its ghost out (logged once), never a crash
+			io.github.jcondedata.aliveworkplace.table.SafeRender.draw(d.state(), () -> {
+				for (Direction dir : DIRECTIONS) {
+					if ((d.faces() & 1 << dir.ordinal()) != 0) {
+						random.setSeed(seed);
+						quads(consumer, pose.last(), d, d.model().getQuads(d.state(), dir, random));
+					}
 				}
-			}
-			random.setSeed(seed);
-			quads(consumer, pose.last(), d, d.model().getQuads(d.state(), null, random));
+				random.setSeed(seed);
+				quads(consumer, pose.last(), d, d.model().getQuads(d.state(), null, random));
+			});
 			pose.popPose();
 			if (++drawn >= MAX_DRAWN) {
 				break;

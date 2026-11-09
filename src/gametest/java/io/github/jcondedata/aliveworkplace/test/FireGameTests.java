@@ -37,6 +37,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
@@ -458,6 +459,66 @@ public class FireGameTests implements FabricGameTest {
 			helper.assertTrue(lit > 3 && lit < 37, "the raider's arrows lit the roof " + lit + " times in 40, not about 1 in 4 (more with the wood)");
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * B1071: a raider's burning arrow whose shooter was discarded (left at dawn, a call-off) while it flew still lights
+	 * the roof, as the arrow itself is what {@code BurningArrowMixin} passes; a skeleton's arrow that isn't a raider's,
+	 * with its shooter gone too, and an arrow nobody shot never do.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"fireArrowShooterGone"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "fireArrowShooterGone")
+	public void aRaidersBurningArrowLightsTheRoofAfterItsShooterIsGone(GameTestHelper helper) {
+		Hut hut = hut(helper, "arrow_gone");
+		helper.runAfterDelay(2, () -> {
+			ServerLevel level = hut.level();
+			level.getGameRules().getRule(GameRules.RULE_MOBGRIEFING).set(true, level.getServer());
+			Skeleton raider = helper.spawn(EntityType.SKELETON, new BlockPos(5, 2, 18));
+			raider.setNoAi(true);
+			raider.addTag(Threats.RAIDER_TAG);
+			Skeleton stray = helper.spawn(EntityType.SKELETON, new BlockPos(7, 2, 18));
+			stray.setNoAi(true);
+			Arrow shot = burning(helper, raider);
+			Arrow strayShot = burning(helper, stray);
+			Arrow nobodys = burning(helper, null);
+			raider.discard();
+			stray.discard();
+			helper.assertTrue(shot.getOwner() == null && strayShot.getOwner() == null, "setup: the shooters are still there");
+			BlockPos roof = helper.absolutePos(new BlockPos(15, 4, 15));
+			BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(roof).add(0, 0.5, 0), Direction.UP, roof, false);
+			RandomSource never = RandomSource.create(7L);
+			for (int i = 0; i < 40; i++) {
+				helper.assertTrue(VillageFire.arrow(level, strayShot, hit, never).isEmpty(), "a stray skeleton's arrow lit the roof after the skeleton was gone");
+				helper.assertTrue(VillageFire.arrow(level, nobodys, hit, never).isEmpty(), "an arrow nobody shot lit the roof");
+			}
+			int lit = 0;
+			RandomSource random = RandomSource.create(42L);
+			for (int i = 0; i < 40; i++) {
+				Optional<BlockPos> f = VillageFire.arrow(level, shot, hit, random);
+				if (f.isPresent()) {
+					helper.assertTrue(f.get().equals(roof.above()), "the arrow's fire isn't where it hit: " + f.get());
+					lit++;
+					level.removeBlock(f.get(), false);
+				}
+			}
+			helper.assertTrue(lit > 3 && lit < 37, "a raider's arrow whose shooter was gone lit the roof " + lit + " times in 40, not about 1 in 4");
+			level.getGameRules().getRule(GameRules.RULE_MOBGRIEFING).set(false, level.getServer());
+			for (int i = 0; i < 40; i++) {
+				helper.assertTrue(VillageFire.arrow(level, shot, hit, random).isEmpty(), "a raider's arrow lit the roof with mobGriefing off");
+			}
+			helper.succeed();
+		});
+	}
+
+	/** A burning arrow shot by {@code owner} (or nobody), not added to the level. */
+	private static Arrow burning(GameTestHelper helper, Skeleton owner) {
+		Arrow arrow = EntityType.ARROW.create(helper.getLevel());
+		helper.assertTrue(arrow != null, "setup: no arrow");
+		if (owner != null) {
+			arrow.setOwner(owner);
+		}
+		arrow.igniteForSeconds(5f);
+		return arrow;
 	}
 
 	/**

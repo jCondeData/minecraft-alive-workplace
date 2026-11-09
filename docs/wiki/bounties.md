@@ -4,7 +4,7 @@ Villages post bounties on named bandit captains; players take them, hunt the cap
 insignia for the reward; with Cobblemon, half the posters are on a rogue Pokémon instead. ROADMAP 31.13 and 31.14; builds on the quest journal (31.3), the arc engine's `place` (31.4), lairs
 (32.3) and reputation (31.11). Part of the 1.5 expansion: switched on when Milestone 31 is complete.
 
-Roadmap items: 31.13, 31.14, B134
+Roadmap items: 31.13, 31.14, B134, B1072
 
 ## What a player sees
 
@@ -32,7 +32,9 @@ Roadmap items: 31.13, 31.14, B134
   captains are posted while the village is at peace or threats are off." Bounties already open stay up until they are
   paid or their 7 days run out (B134, from 31.13 and 32.21).
 - **Lairs**: a captain holding a lair (32.3) near a village of Village rank is posted too, with his name and his lair's
-  place; when he falls his bounty is paid straight to his killer.
+  place; when he falls his bounty is paid straight to his killer. A captain or band member who turns into another mob
+  in vanilla (a husk drowning into a zombie, a zombie into a drowned, a skeleton freezing into a stray) keeps his place
+  on the bounty: the new mob's UUID takes the old one's in `captain` and `band` (B1072, `threat/ConvertedMobs`).
 - **Gossip**: villagers say where a wanted captain was seen ("They say Grimwald the Red was seen 160 blocks
   north-east."), or a rogue ("Big as a cart, and twice as angry.").
 

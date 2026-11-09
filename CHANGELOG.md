@@ -16,15 +16,26 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.152.0 — 2026-11-08
+
 ### Added
 
 - Right-clicking a Nurse or a Fossil Scientist with an empty hand opens a small card in the Village Hall's look. The Nurse's shows your health, the bad effects she'd clear and (with Cobblemon) each Pokémon's HP with a bar, and Heal treats you as the click did; the Fossil Scientist's shows how far along each of your fossils is, and Hand over brings you the ones that are ready. When they can't help right now the button is gray with the reason under it. A fossil in hand is still handed over at once (43.3).
 - The Move Tutor's lessons are a list in the Village Hall's look instead of a gray chest: your money at the top, your party as tabs, each move a row with its type, price and a Teach button (Confirm to pay), gray rows for moves the tutor can't teach yet; the screen follows your party and money while it's open (42.1).
 - Right-clicking a Trainer or Trainer Leader with an empty hand opens their page in the Village Hall's look instead of starting the battle at once: their rank and village, your record against them, today's state and the rules on the left; the prize, their team with the real Pokémon models (half of it hidden until you beat them once), your party with a line each (ready, fainted, over the level cap) and Challenge, Trade and Close on the right. Challenge starts the battle as the click did; when they can't battle you it's gray with the reason under it (43.1).
 - The Pokémon Trader's screen is in the Village Hall's look: the day's offers as rows in a dark list (click anywhere on a row to pick it), your party in framed cells, gold for the picked offer and the Pokémon waiting for its second click, and a hint along the bottom. Every offer, price, tooltip and refusal is as before (43.2).
+- The Pokémon Professor's hints, the Rancher's Daycare and the Daycare Keeper's screen are lists in the same look: your money at the top, each Pokémon a row with a button (Note it, Leave and Confirm, Collect, Pick and Pair, Take back), the Professor's evolution stone a row with its price and Buy, prices red when you can't pay them, gray rows that say why something can't be done; they follow your party and money while open (42.2).
 
 ### Fixed
 
+- A lair's captain who turns into another mob, such as the desert raiders' Pharaoh drowning into a zombie and then a drowned, is still the captain: killing him breaks the camp up and pays the bounty on him, instead of the camp breaking up by itself at the next round with nobody credited. A bounty's band and a story's foes keep their place the same way (B1072).
+- With Cobblemon, a Daycare Keeper's West Sea Gastrodon, Baile Oricorio, Green Squawkabilly or Curly Tatsugiri hatches babies that keep that form after a save and load, instead of turning into a random sea, style, color or shape.
+- With Cobblemon, a Daycare Keeper's female Basculegion hatches a White-Striped Basculin, like the male, instead of a Red-Striped one.
+- With Cobbreeding, a Daycare Keeper's egg from a Blaze Breed or Aqua Breed Tauros hatches that breed instead of a Combat Breed.
+- A raider's burning arrow still sets a builder's wooden roof alight when the raider who shot it left, was killed or was unloaded while the arrow flew. Arrows from anyone but a raider still never do (B1071).
+- A raider's blast or shot (a raider creeper, a ghast's fireball, TNT it lit, an arrow) no longer knocks the builders' item frames off a finished guildhall or traveller camp, where no builder could hang them again. You can still take one down yourself, and frames on your own walls break as before (B1053).
+- A raider that turns into another mob, such as a desert husk drowning in your moat and coming back up as a zombie or a skeleton freezing into a stray in powder snow, is still a raider: the raid no longer ends as beaten while it walks the village, it leaves at dawn with the others, and it no longer breaks builders' work. The same holds for lair, bandit camp, bounty and rogue mobs (B1054).
+- A raider left over from an older raid, standing somewhere far off in loaded ground, no longer keeps the next raid on any village going after its players kill every raider: that raid is fought off and celebrated again. Each raider now belongs to the raid it came with, and a raider you lead far away still counts for its own raid (B1063).
 - A raider's arrow, trident or fireball still in the air when its raider leaves at dawn, is killed by a guard or walks out of loaded chunks no longer breaks a builder's pot, chorus flower, dripstone spike or wool: the shot stays a raider's shot to the end, even across a save and reload (B1066, B1064).
 - Signs built from an uploaded blueprint file can no longer hide a click command behind a comment or a `)]}'` prefix at the start of a line, and a line styled letter by letter is trimmed to its plain words, so a wall of such signs can no longer make a chunk that disconnects every player who comes near (B1062, B1065).
 - A house torn down by a player is no longer rebuilt as a bare outside on its empty lot when its look was chosen before: picking a look for it now says "That house isn't there any more." and starts nothing; a half-rebuilt house whose room stands can still be given a look (B1050).

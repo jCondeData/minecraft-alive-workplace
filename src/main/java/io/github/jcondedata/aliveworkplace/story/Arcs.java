@@ -832,6 +832,36 @@ public final class Arcs implements ResourceManagerReloadListener {
 		}
 	}
 
+	/**
+	 * An arc mob turned into another in vanilla (a zombie drowning, a skeleton freezing; {@code ConvertedMobs}): the new
+	 * one is that mob and plays its role, so killing it still counts (B1072). True if an arc changed.
+	 */
+	public static boolean converted(ServerLevel level, UUID before, UUID after) {
+		Stories.Data data = Stories.Data.get(level);
+		boolean changed = false;
+		for (Stories.Entry e : data.halls.values()) {
+			for (ArcState s : running(e)) {
+				for (ArcState.ArcMob m : s.mobs) {
+					if (before.equals(m.uuid)) {
+						ArcEffects.dropBar(before);
+						m.uuid = after;
+						changed = true;
+					}
+				}
+				for (Map.Entry<String, ArcState.Role> r : s.roles.entrySet()) {
+					if (r.getValue().who().filter(before::equals).isPresent()) {
+						r.setValue(new ArcState.Role(Optional.of(after), r.getValue().name()));
+						changed = true;
+					}
+				}
+			}
+		}
+		if (changed) {
+			data.setDirty();
+		}
+		return changed;
+	}
+
 	private Arcs() {
 	}
 }

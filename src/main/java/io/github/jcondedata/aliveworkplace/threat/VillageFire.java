@@ -740,11 +740,13 @@ public final class VillageFire {
 	}
 
 	/**
-	 * A burning arrow hit a block: shot by a raider ({@link Threats#RAIDER_TAG}) with {@code mobGriefing} on, at a
-	 * builder's wooden block in a village, by the {@code burning_arrow} chance it catches. Returns the fire, if set.
+	 * A burning arrow hit a block: a raider's ({@link ThreatDamage#isThreat}: {@code by} is the arrow or its shooter, and
+	 * an arrow a raider shot stays a raider's after its shooter was discarded, killed or unloaded mid-flight, B1071) with
+	 * {@code mobGriefing} on, at a builder's wooden block in a village, by the {@code burning_arrow} chance it catches.
+	 * Returns the fire, if set.
 	 */
-	public static Optional<BlockPos> arrow(ServerLevel level, @Nullable Entity shooter, BlockHitResult hit, RandomSource random) {
-		if (!live() || shooter == null || !shooter.getTags().contains(Threats.RAIDER_TAG)
+	public static Optional<BlockPos> arrow(ServerLevel level, @Nullable Entity by, BlockHitResult hit, RandomSource random) {
+		if (!live() || !ThreatDamage.isThreat(by)
 			|| !level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
 			return Optional.empty();
 		}

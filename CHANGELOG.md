@@ -47,6 +47,10 @@ asks for the steps, `latest.log` and any crash report).
 - A sign line from an uploaded blueprint file that goes through the game's own translations (whose words repeat what is
   put in them, or are just long) is now measured by the words the sign really shows and cut to the 384 letters a player
   could write, so it can no longer show over a million letters and freeze every client near it (B1088).
+- A sign line or chest name from an uploaded blueprint file nested thousands of levels deep no longer crashes the server
+  when a builder reaches it: it is built with just its plain words (B1099).
+- A sign line from an uploaded blueprint file made of key-binding parts is measured by the words a player's game shows for
+  them, so it is cut to the 384 letters a player could write instead of showing thousands (B1100).
 - Village Hall: one damaged entry in a hall's saved Book of Families (a hand-edited file, or one a crash cut short) no
   longer empties the village's whole family book (every person, parent, partner and trade, the Family Tree page and
   the family names). Only the bad entry is left out, with a warning in the log (B827).

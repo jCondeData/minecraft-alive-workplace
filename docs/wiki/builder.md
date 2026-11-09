@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100
 
 ## 1. What a player sees
 
@@ -278,7 +278,7 @@ building. The same holds when its chunk
 unloads, or the server restarts, while it is trapped. Tests: `BuilderChaosGameTests` (five seeds, a new trap every 150
 to 300 ticks through the starter cottage) and `QaBuilderStuckGameTests` (each harder trap three times through a build).
 
-**Signs from a file (B1044, B1047, B1062, B1065, B1074, B1088).** A sign built from an uploaded or scanned file keeps its words and
+**Signs from a file (B1044, B1047, B1062, B1065, B1074, B1088, B1099, B1100).** A sign built from an uploaded or scanned file keeps its words and
 their colors, but no click command, no score, selector or block-data part, and no line longer than 384 letters. Every
 line the game would read as text is cleaned, also one that starts with a comment or Gson's `)]}'` prefix, so nothing
 hidden that way runs when the sign is clicked. A line or name whose saved text runs past 1,024 characters keeps only
@@ -289,7 +289,10 @@ from 333 characters) is cut to its first 384 letters too and no client freezes d
 the game's own text for its key (a vanilla key whose text uses its argument three times showed over a million letters
 when only the key was counted). A key no language knows is measured by its fallback text, which is what the game shows
 then, and a placeholder the game can't read (a %d, an argument number past the list) leaves the translation's text as
-written, in the game and in the count. Test: QA's
+written, in the game and in the count. A keybind is measured by the language's text for its name, which a client shows
+when no key is bound under that name (B1100). A line or name nested more than 256 levels deep (no player's text comes
+close; a file can hold 30,000) keeps only its plain words, found without walking the nesting, so copying it can no
+longer crash the server (B1099). Test: QA's
 `QaSignTranslationRepeat1108bBugTests`, `QaSignLanguageKeys1109BugTests` and `QaUploads1109GameTests` (an uploaded line of exactly 384 letters, plain,
 colored or through a repeated argument, stays whole; 386 is cut to 384), and `QaUploadTextEdges1109bGameTests` (3: a
 fallback repeating its argument ten times, six deep, is cut to 384 letters and a short one shows as written; unreadable

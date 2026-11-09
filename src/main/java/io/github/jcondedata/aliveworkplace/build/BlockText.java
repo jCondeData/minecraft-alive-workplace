@@ -15,6 +15,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -99,6 +100,14 @@ final class BlockText {
 		if (json == null || json.isJsonNull()) {
 			return text;
 		}
+		// A line nested deeper than any player's (B1099: 30,000 arrays fit one NBT string) is never walked recursively, here
+		// or by the game when it loads the copy: it becomes its plain words, found without recursion. The reader above
+		// keeps its own stack, so it reads any depth.
+		if (opens(text) > MAX_DEPTH && depth(json) > MAX_DEPTH) {
+			String words = words(json);
+			int cut = max >= 0 ? max : MAX_LINE;
+			return GSON.toJson(new JsonPrimitive(words.substring(0, Math.min(cut, words.length()))));
+		}
 		// what the game's lenient reader makes of the line decides, not its first character (B1062): a line can start with a
 		// comment or a )]}' prefix and still be read as a component
 		boolean structured = json.isJsonObject() || json.isJsonArray();
@@ -161,6 +170,86 @@ final class BlockText {
 	}
 
 	/**
+	 * The deepest nesting a line keeps as it is (B1099). Far past any text a player or a mod writes (a translation nested ten
+	 * deep is about 30), and shallow enough that the walks below and the game's own reading of the copy stay small.
+	 */
+	static final int MAX_DEPTH = 256;
+
+	/** How many objects and arrays {@code text} opens, counted on its characters: never less than its nesting. */
+	private static int opens(String text) {
+		int count = 0;
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c == '[' || c == '{') {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	/** How deep {@code json} nests, measured without recursion. */
+	private static int depth(JsonElement json) {
+		ArrayDeque<JsonElement> elements = new ArrayDeque<>();
+		ArrayDeque<Integer> depths = new ArrayDeque<>();
+		elements.push(json);
+		depths.push(0);
+		int deepest = 0;
+		while (!elements.isEmpty()) {
+			JsonElement element = elements.pop();
+			int depth = depths.pop();
+			deepest = Math.max(deepest, depth);
+			if (deepest > MAX_DEPTH) {
+				return deepest;
+			}
+			Iterable<JsonElement> children = element instanceof JsonArray array ? array
+				: element instanceof JsonObject object ? object.asMap().values() : java.util.List.of();
+			for (JsonElement child : children) {
+				elements.push(child);
+				depths.push(depth + 1);
+			}
+		}
+		return deepest;
+	}
+
+	/**
+	 * The plain words of an over-deep {@code json} (B1099), in order and without recursion: its text, the language's text of
+	 * its keybinds and translations (without their arguments) and the parts after it. Click events and worked-out parts show
+	 * nothing. Stops a little past {@link #LIMIT}.
+	 */
+	private static String words(JsonElement json) {
+		StringBuilder out = new StringBuilder();
+		ArrayDeque<JsonElement> todo = new ArrayDeque<>();
+		todo.push(json);
+		while (!todo.isEmpty() && out.length() <= LIMIT) {
+			JsonElement element = todo.pop();
+			if (element instanceof JsonPrimitive primitive) {
+				out.append(primitive.getAsString());
+			} else if (element instanceof JsonArray array) {
+				for (int i = array.size() - 1; i >= 0; i--) {
+					todo.push(array.get(i));
+				}
+			} else if (element instanceof JsonObject object) {
+				if (isString(object.get("text"))) {
+					out.append(object.get("text").getAsString());
+				}
+				if (isString(object.get("keybind"))) {
+					String name = object.get("keybind").getAsString();
+					out.append(Language.getInstance().getOrDefault(name, name));
+				}
+				if (isString(object.get("translate"))) {
+					String key = object.get("translate").getAsString();
+					String fallback = isString(object.get("fallback")) ? object.get("fallback").getAsString() : key;
+					out.append(Language.getInstance().getOrDefault(key, fallback));
+				}
+				if (object.get("extra") instanceof JsonArray extra) {
+					todo.push(extra);
+				}
+			}
+		}
+		return out.length() > LIMIT ? out.substring(0, LIMIT) : out.toString();
+	}
+
+	/**
 	 * About the words {@code json} shows: its text, keybinds and translations with their arguments, and the parts after
 	 * it. A translation shows an argument once for each {@code %s} that uses it, as the game does (B1074: ten {@code %1$s}
 	 * nested five deep show 100,000 letters from a short line), so arguments are counted the same way, through the
@@ -190,10 +279,14 @@ final class BlockText {
 				plain(element, out);
 			}
 		} else if (json instanceof JsonObject object) {
-			for (String key : new String[] {"text", "keybind"}) {
-				if (isString(object.get(key))) {
-					out.append(object.get(key).getAsString());
-				}
+			if (isString(object.get("text"))) {
+				out.append(object.get("text").getAsString());
+			}
+			if (isString(object.get("keybind"))) {
+				// a client shows the binding's key, or the language's text for the name when no binding has it (B1100:
+				// KeyMapping.createNameSupplier), so the longer of the two counts
+				String name = object.get("keybind").getAsString();
+				out.append(Language.getInstance().getOrDefault(name, name));
 			}
 			if (isString(object.get("translate"))) {
 				String key = object.get("translate").getAsString();

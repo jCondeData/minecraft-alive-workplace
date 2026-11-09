@@ -6542,6 +6542,12 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
+- 2026-11-09 (lane-c-1109-1852, 45.2/45.3): **45.1 and 45.2 pushed after a local suite that ran out of heap** at about 6,290 of
+  ~7,900 batches (twice this run, once last run) with no test failing before it; CI's full build is their check. **45.3 (the
+  Mover) is on `wip/lane-c-1109-1852`**: job, Mover's Crate (art, recipe, tab), outfit, MoveSite/MoverWork and 6
+  MoverGameTests that compile but were never run. Left: run MoverGameTests and GoalPackagesMixinGameTests, fix, the
+  `movers` config switch, full build, merge. Open question for the owner (45.3's "full Storehouse" line): the Mover's
+  crates are the move's saved record, so the Storehouse is never used and can't fill; decided for now to keep crates.
 - 2026-11-09 (lane-c-1109-0353, 42.5): **the job-status cards are on 43.3's card**, not a second one. `card/JobCards`
   builds the card for the seven jobs (what they're doing and what they need are the Hall's own `doing` and
   `Requests.of`); its buttons are In chat (first: a card's first button does what the click did), Hall page

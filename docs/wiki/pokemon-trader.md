@@ -83,6 +83,6 @@ turns; walking away and a dead trader closing the screen; every sentence through
 row picks that row and nowhere else does, the status lines' room, the panel fits a 320x240 screen, the hint's text).
 QA (lane D, 2026-11-09, 43.2): `QaTradeRows1109dGameTests` asks every pixel of the panel and 20 round it which row it
 picks: each row's whole card, first pixel to last on all four edges, picks that row (30x176 pixels each), and nothing else does; every
-card is inside the offers list and clear of the party's box. It kills three hand mutants of `offerAt` (the card's right
+card is inside the offers list and clear of the party's box. It kills three hand mutants of PokemonTradeView.offerAt (the card's right
 edge, its last row of pixels, its first), two of which the layout test lets through.
 Showcase scene `trader`.

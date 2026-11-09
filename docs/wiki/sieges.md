@@ -336,6 +336,15 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   item frame on its wall; a player's hit still breaks it; the same blast still breaks a frame on a hut that isn't the builders'.
 - GameTests (B1080): `QaThreatSpare1109bBugTests#aRaidersBlastLeavesTheBuildersArmorStandOrItIsPutBack`: a raider
   creeper's blast beside the armor stand of a finished hut leaves it standing.
+- QA (lane D, 2026-11-09, B1080): `QaArmorStand1109dGameTests` (10): a raider creeper's blast leaves the builders'
+  armor stand on its spot (not pushed) with the helmet and chestplate a player put on it; so does TNT a raider lit (the
+  blast's direct source is the TNT) and a raider's arrow, also one whose pillager was killed while it flew; a stand in a
+  carpet the builders laid over the player's own floor is spared ("on or in"), and so is one in a build still under way;
+  the same raider's blast breaks a stand in a hut that is no build, and a wild creeper's blast, a wild pillager's arrow
+  and a player's two punches still break the builders' stand. Mutants: 6 of 8 by `mutate.py` plus 4 by hand (TNT's
+  direct-or-igniter check, the stand's own block or the one under it alone, the ignore-explosion hook off) killed; left
+  `sparesStand(DamageSource)`'s `||` as `&&`, equivalent: an arrow whose shooter is gone names itself as the cause, and
+  of the hits that can break a stand only a player's has a cause other than what hit it.
 - QA (lane B, 2026-11-09, B1053, B1066): `QaThreatSpare1109bGameTests` (5): a real arrow of a raider already killed
   flies into the builders' frame and leaves its diamond in it, while the same arrow knocks the diamond out of a frame on
   a wall that is no build's; a raider's creeper blast leaves a painting on a finished build's wall and a frame (with

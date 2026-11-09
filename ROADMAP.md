@@ -6372,7 +6372,7 @@ it, in order (42.1 first: the others use its pieces). Depends on: nothing open.
   Innkeeper, a Legend guest's terms, and the Research screen (Scholar and Legend trees: the tree may stay a grid of
   framed cells in the Hall's colors if a list loses its shape; write the choice in the Notes). Done when: GameTests
   for each; scenes `smith_orders` and one per menu without a scene.
-- [x] **42.4** (review: pending 2026-11-09) **The builder tools and shops as lists:** Shape Planner, Style picker, Price Tag, and the Shop and Ferry
+- [x] **42.4** (review: pending 2026-11-09) (verified 2026-11-09: QaBuilderToolLists1109bGameTests now 16 [7 new: solid/hollow counts and Draw sentence, block row building blocks only max 9, off hand for planner and tag, mirror kept on style choice, Wonder picker one row, Price Tag ends] + BuilderToolListsGameTests green; 3 of 3 hand mutants killed; Shop/Ferry by ShopListMenusCompatTests [build green, 1395 compat] and shop/ferry_menu scenes not failing on the 2163d3b showcase) **The builder tools and shops as lists:** Shape Planner, Style picker, Price Tag, and the Shop and Ferry
   menus (CobbleDollars). Shape and style pickers may keep icon cells in the list rows. Done when: GameTests for each;
   scenes `shapes`, `style_menu`, `shop`, `ferry_menu`.
 - [x] **42.5** (review: pending 2026-11-09) **The status card.** The job-status chat lines (sneak + empty hand on a Builder, Miner, Fisher, Farmer,

@@ -96,7 +96,7 @@ public class QaConvertRevive1109cGameTests implements FabricGameTest {
 			CompoundTag tag = zombie.saveWithoutId(new CompoundTag());
 			tag.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.ZOMBIE_VILLAGER).toString());
 			UUID id = zombie.getUUID();
-			zombie.discard();
+			zombie.remove(Entity.RemovalReason.UNLOADED_TO_CHUNK); // unloaded with its chunk (discarded is gone for good: B1097)
 			helper.runAfterDelay(2, () -> {
 				Entity loaded = EntityType.loadEntityRecursive(tag, level, e -> e);
 				helper.assertTrue(loaded instanceof ZombieVillager && loaded.getUUID().equals(id), "setup: the zombie villager didn't load back: " + loaded);

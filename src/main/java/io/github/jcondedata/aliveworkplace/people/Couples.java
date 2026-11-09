@@ -222,6 +222,7 @@ public final class Couples {
 
 	public static void init() {
 		io.github.jcondedata.aliveworkplace.platform.Platform.get().onMobConversion(Couples::onConversion);
+		io.github.jcondedata.aliveworkplace.platform.Platform.get().onEntityUnload(Couples::onGone);
 	}
 
 	/**
@@ -231,17 +232,37 @@ public final class Couples {
 	 * death hooks run, and their partner stays theirs ({@link #onConversion}).
 	 */
 	public static void onDeath(ServerLevel level, net.minecraft.world.entity.LivingEntity villager) {
-		Partner p = ModAttachments.PARTNER.get(villager);
-		if (p == null || villager.isRemoved()) {
+		if (!villager.isRemoved()) {
+			widow(level, villager, false);
+		}
+	}
+
+	/**
+	 * B1097: a zombie villager the game takes away for good without its dying (discarded: on Peaceful, or despawned far
+	 * from every player, as one that never traded does) can never be cured, so their partner is widowed as by its death.
+	 * One cured is discarded too, but its partner was re-pointed at the cured villager first ({@link #onConversion}), so
+	 * they no longer name it; one unloaded with its chunk, or gone through a portal, isn't gone.
+	 */
+	static void onGone(Entity entity, ServerLevel level) {
+		if (entity instanceof net.minecraft.world.entity.monster.ZombieVillager zombie && entity.getRemovalReason() == Entity.RemovalReason.DISCARDED) {
+			widow(level, zombie, true);
+		}
+	}
+
+	/** {@code gone}'s partner, if loaded, mourns them; with {@code onlyTheirs}, only while the partner still names them. */
+	private static void widow(ServerLevel level, net.minecraft.world.entity.LivingEntity gone, boolean onlyTheirs) {
+		Partner p = ModAttachments.PARTNER.get(gone);
+		if (p == null) {
 			return;
 		}
 		Entity other = level.getEntity(p.id());
+		Partner theirs = other == null ? null : ModAttachments.PARTNER.get(other);
 		// B1093: a partner who is a zombie villager just now is widowed too (they carry the record to their cure)
-		if ((other instanceof Villager || other instanceof net.minecraft.world.entity.monster.ZombieVillager) && ModAttachments.PARTNER.has(other)) {
-			Entity partner = other;
-			ModAttachments.PARTNER.remove(partner);
-			ModAttachments.WIDOWED_DAY.set(partner, Chronicle.day(level));
-			ModAttachments.LATE_PARTNER.set(partner, new LatePartner(villager.getUUID(), villager.getDisplayName().copy())); // who they lost (31.7)
+		if ((other instanceof Villager || other instanceof net.minecraft.world.entity.monster.ZombieVillager) && theirs != null
+			&& (!onlyTheirs || theirs.id().equals(gone.getUUID()))) {
+			ModAttachments.PARTNER.remove(other);
+			ModAttachments.WIDOWED_DAY.set(other, Chronicle.day(level));
+			ModAttachments.LATE_PARTNER.set(other, new LatePartner(gone.getUUID(), gone.getDisplayName().copy())); // who they lost (31.7)
 		}
 	}
 

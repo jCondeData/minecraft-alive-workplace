@@ -161,7 +161,9 @@ public final class Upkeep {
 
 	/**
 	 * The builders' blocks threats took that are still missing (32.16a); those back in place, or no longer in any
-	 * finished building, come off the saved list.
+	 * finished building, come off the saved list. One back while a repair of its building is under way stays listed
+	 * until that repair ends (B1095): a restart mid-repair rebuilds the repair's plan, and the list is how it knows the
+	 * item frame or painting on that block fell with it ({@code BuildPlan.lostItsWall}).
 	 */
 	static java.util.List<BlockPos> threatDamage(ServerLevel level) {
 		io.github.jcondedata.aliveworkplace.threat.ThreatData data = io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level);
@@ -171,8 +173,12 @@ public final class Upkeep {
 				out.add(pos); // (can't tell yet)
 				continue;
 			}
-			boolean inBuild = io.github.jcondedata.aliveworkplace.threat.VillageFire.buildAt(level, pos).isPresent();
-			if (!inBuild || !level.getBlockState(pos).canBeReplaced()) {
+			Optional<BuildSiteManager.Finished> build = io.github.jcondedata.aliveworkplace.threat.VillageFire.buildAt(level, pos);
+			if (build.isPresent() && !level.getBlockState(pos).canBeReplaced()
+				&& BuildSiteManager.get(level).all().stream().anyMatch(s -> s.isRepair() && s.placement().equals(build.get().placement()))) {
+				continue; // (back, but its repair is still going: listed until it ends)
+			}
+			if (build.isEmpty() || !level.getBlockState(pos).canBeReplaced()) {
 				data.repaired(pos);
 			} else {
 				out.add(pos);

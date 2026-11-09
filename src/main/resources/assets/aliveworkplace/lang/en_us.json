@@ -1019,6 +1019,8 @@
   "screen.aliveworkplace.storehouse.you_have_none": "You have none",
   "message.aliveworkplace.storehouse.gave": "Gave %s %s to the %s's chests",
   "message.aliveworkplace.storehouse.none": "You have no %s to give (or their chests are full)",
+  "message.aliveworkplace.storehouse.gave_one": "Gave %s to the %s's chests",
+  "message.aliveworkplace.storehouse.none_named": "You don't have %s to give (or their chests are full)",
   "request.aliveworkplace.pickaxe": "A pickaxe",
   "request.aliveworkplace.axe": "An axe",
   "request.aliveworkplace.fishing_rod": "A fishing rod",

@@ -75,20 +75,20 @@ public final class CobblemonTrainers {
 		return BATTLES.values().stream().anyMatch(c -> c.trainer().equals(trainer.getUUID()));
 	}
 
-	// Starts a battle between {@code player} and {@code trainer}.
-	public static void challenge(ServerPlayer player, Villager trainer) {
+	// Starts a battle between {@code player} and {@code trainer}; whether it started.
+	public static boolean challenge(ServerPlayer player, Villager trainer) {
 		if (BattleRegistry.getBattleByParticipatingPlayer(player) != null) {
-			return;
+			return false;
 		}
 		if (isBattling(trainer)) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.busy", trainer.getDisplayName()).withStyle(ChatFormatting.YELLOW));
-			return;
+			return false;
 		}
 		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
 		List<BattlePokemon> mine = party.toBattleTeam(false, true, null);
 		if (mine.isEmpty()) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.no_team").withStyle(ChatFormatting.YELLOW));
-			return;
+			return false;
 		}
 		int tier = Trainers.tier(trainer);
 		List<Pokemon> team = teamOf(trainer);
@@ -109,9 +109,10 @@ public final class CobblemonTrainers {
 			BATTLES.put(started.getBattle().getBattleId(), new Challenge(trainer.getUUID(), player.getUUID()));
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.challenge", Trainers.title(trainer), theirs.size())
 				.withStyle(ChatFormatting.GOLD));
-		} else {
-			Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.cant_start").withStyle(ChatFormatting.RED));
+			return true;
 		}
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.trainer.cant_start").withStyle(ChatFormatting.RED));
+		return false;
 	}
 
 	// Why challenge() would refuse now, or null (the Trainer screen grays its Challenge button, 43.1): the player already

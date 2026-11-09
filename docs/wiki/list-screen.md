@@ -210,6 +210,14 @@ exactly that one; the Keeper's Pick stays on its Pokémon when another takes its
 `JobListMenusGameTests.legendTermsAsAList`, `JobListMenusGameTests.researchAsAList`;
 `JobListMenusCompatTests.smithOrdersAsAList`, `JobListMenusCompatTests.berryBookAsAList`,
 `JobListMenusCompatTests.habitatLuresAsAList` (Cobblemon).
+QA's `QaJobListEdges1109eGameTests` (3, 42.3: one emerald short of a traveler's price Hire is red and a click takes
+nothing, one more emerald turns it green while open and hires for all of it; Swift Hands at its top reads "Level 3 of 3",
+"Fully researched" in green, gray with no button, and a click starts nothing; research paid for and half done reads
+"Researching ...: 50%" and Under way after the hall is saved and loaded, and another topic is refused as busy).
+QA's `QaJobLists1109cGameTests` (9, 42.3 without Cobblemon: the hire price turns red when money leaves while open and
+Hire then takes nothing; exactly the price hires; a Gifted traveler's doubled price; a second player can't hire a
+traveler already hired and their screen closes; a second Research click on a topic under way restarts nothing; Under
+way survives a save; the Great Library's rows; a Legend tree's tab; every list line's text in American English).
 
 42.4: `BuilderToolListsGameTests.theShapePlannerIsAList`, `BuilderToolListsGameTests.theStylePickerIsAList`,
 `BuilderToolListsGameTests.thePriceTagIsAList`; `ShopListMenusCompatTests.theShopIsAList`,

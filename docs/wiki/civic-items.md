@@ -113,4 +113,7 @@ the crops within 32 blocks of it grow 25% faster, and golden sparkles rise from 
 - QA (B826): `QaVillageBannerRemovedPattern1102eBugTests`: a three-layer design whose middle pattern is renamed to a
   removed mod's id loads with the other two layers, like a vanilla banner with the same design, and that banner still
   counts as the village's colors.
+- QA (B826, lane E 11-09): `QaHallLenientSaves1109eGameTests`: every layer from removed mods leaves the red base with no
+  layers, the first layer gone keeps the other two in their order, a layer whose color doesn't read is the only one
+  dropped; each time the hall's design equals what a vanilla banner kept, and a design loaded so saves and loads again unchanged.
 - Showcase scenes: `cradle`, `village_banner`, `harvest_idol`.

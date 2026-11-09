@@ -1526,6 +1526,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeConverts1109dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.B1085GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderOver1109dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSandRampConverts1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploads1109GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignLanguageKeys1109BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploadTextEdges1109bGameTests",

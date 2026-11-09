@@ -301,6 +301,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.TrainerScreenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StatusCardCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPokemonScreens1109dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaWildBattleWins1109dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaThesisBall1109dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonListMenusCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.JobListMenusCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ShopListMenusCompatTests",

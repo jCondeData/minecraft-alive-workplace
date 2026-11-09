@@ -214,6 +214,12 @@ exactly that one; the Keeper's Pick stays on its Pokémon when another takes its
 42.4: `BuilderToolListsGameTests.theShapePlannerIsAList`, `BuilderToolListsGameTests.theStylePickerIsAList`,
 `BuilderToolListsGameTests.thePriceTagIsAList`; `ShopListMenusCompatTests.theShopIsAList`,
 `ShopListMenusCompatTests.theFerryIsAList` (CobbleDollars).
+QA (lane B, 2026-11-09, 42.4): `QaBuilderToolLists1109bGameTests` (9): every builder tool sentence in American English
+and the Price Tag's steps read "Steps of 1,000 / 100 / 10 / 1"; shape sizes stop at 1 and at 32; with no blocks the
+Shape Planner says "no blocks" and refuses to draw; forged clicks (slots out of range, button-only rows, swap, throw
+and clone clicks) change nothing; each of the 7 shapes is picked by its cell and an arch has no solid/hollow row; the
+shape, style and price survive a save and reach the blueprint or the tag; the Style picker's first and last rows; the
+screens stop answering once the item leaves the hand. Mutants: 6 of 6 caught.
 
 Showcase scenes: `shapes`, `style_menu`, `shop`, `ferry_menu` (42.4, and the Price Tag in `counter`), `tutor`, `professor`, `daycare`, `daycare_keeper`, `smith_orders`, `gem_orders`, `habitat_lures` (and the
 list in `scholar`'s research still, `innkeeper`'s hire still, `berry_breeder`'s book still and `legend_guest`'s terms)

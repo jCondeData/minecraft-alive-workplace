@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720
+Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720, B1072
 
 ## What a player sees
 
@@ -21,7 +21,9 @@ Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720
   than the camp has at home. Those alive when the raid ends go back and rejoin; the dead are gone, and so is anyone you
   kill at the camp. After a costly night the camp is weak, and a camp with nobody left sends no raid until it grows.
 - **Kill the captain** and the camp is broken up: the band scatters, the chest (the culture's loot table) is yours, the
-  chronicle names who did it, and no camp comes for 5 days.
+  chronicle names who did it, and no camp comes for 5 days. A captain who turns into another mob in vanilla (the
+  Pharaoh, a husk, drowning into a zombie and then a drowned) is still the captain: killing what he became breaks the
+  camp up the same way (B1072).
 - **The broken camp comes down** (B209, `threat/CampCleanup`). Its record, the scouts' report of it and its Defense page
   row go at once; 40 ticks later its blocks above the ground layer go, top down over 100 ticks, with smoke. Only the
   camp's own blocks still as the blueprint set them (`MaterialRules.matches`) go: a block a player put there or changed
@@ -190,10 +192,26 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   the chests' loot lies on the ground; a new camp is made after and stands; with `campRuins` the camp stays, its fire
   out; a save and reload before and halfway through the clearing carries on; a save from before B209 with a broken
   camp still standing is swept by the hall's round (not while its chief is alive), and only once.
+- QA (lane D, 2026-11-09): `QaCampSweep1109dGameTests`: the sweep's ring includes both its edges: an old camp whose fire
+  is exactly the inner or the outer distance from the hall (20 blocks) is found, one a block inside or outside isn't. A
+  mutation run of CampCleanup (8 mutants against the 6 camp test classes) killed 3; this kills the inner edge's
+  survivor and a hand mutant on the outer. Left: the smoke's every-20-ticks and a particle's place (looks only), the
+  loaded check's third corner (all ground loaded in a GameTest), and a standing lair within 24 blocks marking the camp
+  in use (masked: a lair's band nearby already guards it; the lairs list isn't reachable from the tests).
+- QA (lane D, 2026-11-09): `QaCampInUse1109dGameTests` closes that gap through the save file: with the band all out on
+  a raid (no man near to guard it), an old camp within 24 blocks of a standing lair (on its fire, exactly 24 east or
+  north) is not swept and one 25 blocks off is; a bounty's hideout keeps its camp the same way, by its spot or its
+  origin within 24 blocks, and once the bounty is gone the camp goes. Four hand mutants on those checks killed.
 - `B225GameTests`: a camp on a grassy slope taken down leaves every block round it as it was before the camp; the same
   after a save and reload before and halfway through the clearing; with `campRuins` the tents stay and every open column
   is as it was; a camp whose record was saved without its ground (before B225) is blended: grass on every top, no
   trampled earth, gravel, cobblestone or fire, no step over one block, each column within 2 of the slope; grass crept
   over the camp's bare fill and floor while it stood still goes (B288).
+- B1072: `B1072GameTests`: the desert raiders' Pharaoh drowned into a zombie and then a drowned is still the lair's
+  captain (the lair otherwise unchanged), the hall's round leaves the lair standing, and killing the drowned breaks it
+  up; a bounty on him moves to the drowned and pays his killer; a zombie nobody tracks drowning changes no lair.
+  `QaConvertedCaptainSaves1109eGameTests`: the same through a restart (the lairs' and bounties' saved data written and
+  read back, the zombie reloaded): the swap marks both to be saved, he is still the captain and the bounty's man, a
+  round after the load neither breaks the lair up nor posts him again, and his death pays his killer once.
 - Showcase scene `camp_cleared`: a bandit camp on a grassy rise, its chief falling, the camp coming down and the rise
   back as it was.

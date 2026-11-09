@@ -1,18 +1,21 @@
 # The Pokémon Trader
 
-Needs Cobblemon. ROADMAP 28.x (the trader), 28.23 (its own trade screen).
+Needs Cobblemon. ROADMAP 28.x (the trader), 28.23 (its own trade screen), 43.2 (the screen in the Village Hall's look).
 
-Roadmap items: 28.23, B312
+Roadmap items: 28.23, B312, 43.2
 
 ## What a player sees
 
 A villager working at a Trade Board becomes a Pokémon Trader. Right-click one with an empty hand and their trade screen
-opens (sneak to see their ordinary item trades instead). On the left, the day's offers, one card each: the Pokémon on
-its button with its name, level and a gold ★ if it's shiny, the ball it comes in at the card's right end, and what the
-trader wants for it ("For: any Water, Lv. 20+", or for a special request "For: a Pikachu line, Lv. 25+"). On the right,
-your party. Click a card to pick that offer; your Pokémon that won't do are grayed out. Click one that fits and it
-presses in while the screen asks you to click again; the second click makes the trade. If a trader has nothing to offer,
-the panel says "No offers today. Come back tomorrow!". While the screen is open the trader stays by you and faces you,
+opens, in the Village Hall's look (43.2): a dark panel with a slate-blue edge, the trader's name in gold at the top and
+their book (hover it for the rules of the day) in a framed cell beside it. On the left, a dark list of the day's offers,
+one row each: the Pokémon in a framed cell, its name and level in white with a gold ★ if it's shiny, what the trader
+wants for it on a gray-blue line under it ("For: any Water, Lv. 20+", or for a special request "For: a Pikachu line,
+Lv. 25+") and the ball it comes in at the row's end. On the right, "Your party" in gold over two rows of three framed
+cells, and under a thin line what to do next. Click a row (anywhere on it) to pick that offer: its row and cell turn
+gold; your Pokémon that won't do are grayed out. Click one that fits and its cell turns gold while the screen asks you
+to click again; the second click makes the trade. If a trader has nothing to offer, the list says "No offers today.
+Come back tomorrow!". A hint along the bottom says to hover a Pokémon for its details. While the screen is open the trader stays by you and faces you,
 as a vanilla villager does at its trade screen, so he can't walk out of reach and close it mid-trade (B312).
 
 ## How it works
@@ -36,8 +39,10 @@ as a vanilla villager does at its trade screen, so he can't walk out of reach an
   takes its place (the PC is only a fallback if the party can't take it).
 - The screen closes if you walk more than 8 blocks away, or the trader dies or falls asleep. It won't open during a
   battle.
-- The screen (28.23) is drawn like the Village Hall's: textures/gui/pokemon_trader.png, from tools/textures/art/gui.py.
-  The server lays out the buttons and decides every click; the screen only draws them.
+- The screen (28.23, 43.2) is drawn with the Village Hall's `TableStyle` (no texture of its own since 43.2:
+  `textures/gui/pokemon_trader.png` is gone). `PokemonTradeView` holds the layout (a fixed 300x174 panel, which fits
+  the smallest screen), and `PokemonTradeView.offerAt` turns a click anywhere on a row into a click on its offer's
+  cell. The server decides every click; the screen only draws them.
 
 ## Switches
 
@@ -56,6 +61,9 @@ The Trade Board (workstation), the Pokémon Trader profession.
 
 - 28.23 (owner, 2026-10-05): its own screen instead of a chest of icons, like the Village Hall's (30.4a). The two-click
   confirm stays, shown as a pressed-in button and a line of text.
+- 43.2 (owner, 2026-11-08, Milestone 43): the screen uses the Village Hall's look like every other screen. The offers
+  became list rows (as the list menus of 42.1) and the waiting Pokémon's cell turns gold instead of pressing in; the
+  panel stays a fixed size so the server's button positions stay put.
 
 ## Known limits
 
@@ -70,4 +78,11 @@ the whole line, a second type fits, untradeable refused, a full party trades wit
 player, later forms at higher tiers, only Masters' offers shiny). `QaPokemonTradeScreenCompatTests` (the cards match the
 real offers with name, level, ball, shiny mark and cost; the level boundary from both sides and the held item coming back;
 a Pokémon leaving the party between the clicks; click spam and the used-up screen; yesterday's offer refused after the day
-turns; walking away and a dead trader closing the screen; every sentence through en_us.json). Showcase scene `trader`.
+turns; walking away and a dead trader closing the screen; every sentence through en_us.json).
+`PokemonTradeLayoutGameTests` (43.2: every button inside the panel and no two cells overlapping, a click anywhere on a
+row picks that row and nowhere else does, the status lines' room, the panel fits a 320x240 screen, the hint's text).
+QA (lane D, 2026-11-09, 43.2): `QaTradeRows1109dGameTests` asks every pixel of the panel and 20 round it which row it
+picks: each row's whole card, first pixel to last on all four edges, picks that row (30x176 pixels each), and nothing else does; every
+card is inside the offers list and clear of the party's box. It kills three hand mutants of PokemonTradeView.offerAt (the card's right
+edge, its last row of pixels, its first), two of which the layout test lets through.
+Showcase scene `trader`.

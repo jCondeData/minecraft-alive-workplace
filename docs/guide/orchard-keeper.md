@@ -33,7 +33,8 @@ can't get to after a while is left alone for a bit.
 **An orchard of your own.** Mark ground with a **Field Marker** (a stick, wheat seeds and paper) and hand it to them.
 They keep it planted from the chests: sweet berry bushes two blocks apart, and with Cobblemon apricorn trees three apart
 and berry plants. They pick what grows there even beyond their usual 16 blocks. Sneak-right-click them with an empty hand
-to see the orchard and a **[Stop the orchard]** button: the marker comes back, the plants stay.
+for their status card (the orchard, the fruit picked, the saplings planted, what they need); **In chat** shows the
+orchard in chat with a **[Stop the orchard]** button: the marker comes back, the plants stay.
 
 Over their head: how much they've picked, and whether they're picking, planting, taking the harvest in or waiting for
 fruit to ripen.

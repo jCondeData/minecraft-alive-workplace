@@ -378,7 +378,32 @@ public final class BuildPlan {
 		List<Step> decoration = build.decoration.stream().filter(s -> !gaveUp.contains(s.pos()) && !isCrop(s.state()) && missing(level, s)).toList();
 		BuildPlan out = new BuildPlan(List.of(), List.of(), structure, decoration, List.of(), List.of(), build.bounds);
 		out.standing = true;
+		if (level instanceof net.minecraft.server.level.ServerLevel server) {
+			out.entities = build.entities.stream().filter(e -> lostItsWall(server, e)).toList();
+		}
 		return out;
+	}
+
+	/**
+	 * B1083: whether the item frame or painting of {@code step} lost the block it hangs on, so it fell with it and goes up
+	 * again with the repair (from the chests, {@link BuildEntities#placeAll}): its wall is gone now, or a threat took it
+	 * and it isn't back on the threats' list yet ({@code ThreatData#damaged}: a village fire burned it; still listed
+	 * after a reload mid-repair, when the wall may already be back). A frame a player took down from a standing wall
+	 * stays down.
+	 */
+	private static boolean lostItsWall(net.minecraft.server.level.ServerLevel level, EntityStep step) {
+		if (!level.isLoaded(BlockPos.containing(step.pos()))) {
+			return false;
+		}
+		net.minecraft.world.entity.Entity entity = BuildEntities.create(level, step).orElse(null);
+		if (!(entity instanceof net.minecraft.world.entity.decoration.HangingEntity hanging)) {
+			return false;
+		}
+		BlockPos wall = hanging.getPos().relative(hanging.getDirection().getOpposite());
+		if (io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).damaged().contains(wall)) {
+			return true; // (one still hanging falls within a few seconds; placeAll skips any still there when the repair ends)
+		}
+		return !BuildEntities.isPresent(level, step) && !hanging.survives();
 	}
 
 	/** Every block the plan puts, by where (the second halves of doors and beds too). */

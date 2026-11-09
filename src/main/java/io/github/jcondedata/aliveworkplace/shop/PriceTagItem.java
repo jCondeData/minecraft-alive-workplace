@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.shop;
 
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -55,14 +56,21 @@ public class PriceTagItem extends Item {
 	static final int[] STEPS = {-1000, -100, -10, -1, 0, 1, 10, 100, 1000};
 	/** Slot of the first button (the price itself sits in the middle of the row). */
 	public static final int FIRST_STEP_SLOT = 18;
-	static final int DONE_SLOT = 40;
+	public static final int DONE_SLOT = 40;
+	/**
+	 * The list screen's step rows (ROADMAP 42.4): one per size of step (1,000, 100, 10, 1), each with its take-off and
+	 * add-on buttons as cells in it; the buttons keep their slots and clicks.
+	 */
+	public static final int FIRST_STEP_ROW = 27;
+	/** The price's own row (the middle of the old button row). */
+	public static final int PRICE_SLOT = FIRST_STEP_SLOT + 4;
 
 	@Override
 	public net.minecraft.world.InteractionResultHolder<ItemStack> use(net.minecraft.world.level.Level level, net.minecraft.world.entity.player.Player player,
 																	  net.minecraft.world.InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 		if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-			io.github.jcondedata.aliveworkplace.work.ChoiceMenu.open(serverPlayer, Component.translatable("screen.aliveworkplace.price_tag.title"),
+			io.github.jcondedata.aliveworkplace.work.ChoiceMenu.openList(serverPlayer, Component.translatable("screen.aliveworkplace.price_tag.title"),
 				p -> p.isAlive() && p.getItemInHand(hand).is(ModItems.PRICE_TAG), menu -> render(menu, serverPlayer, hand));
 		}
 		return net.minecraft.world.InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
@@ -81,16 +89,31 @@ public class PriceTagItem extends Item {
 		shown.set(DataComponents.CUSTOM_NAME, (price > 0
 			? Component.translatable("screen.aliveworkplace.price_tag.price", price, Money.describe(price, emeralds(price)))
 			: Component.translatable("screen.aliveworkplace.price_tag.none")).copy().withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GOLD)));
-		menu.button(4, shown.copy(), null);
+		// The list (42.4): the price at the top right (the tag's full line its tooltip) and the hint at the foot; the price's
+		// row, then a row per size of step with - and + in it, then Done.
+		menu.button(4, ChoiceList.info(shown.copy(), (price > 0 ? Money.describe(price, emeralds(price)) : Component.translatable("screen.aliveworkplace.price_tag.none"))
+			.copy().withStyle(ChatFormatting.GOLD), Component.translatable("screen.aliveworkplace.price_tag.list_hint"), List.of()), null);
+		for (int i = 0; i < 4; i++) {
+			int size = -STEPS[i];
+			ItemStack row = new ItemStack(ModItems.PRICE_TAG);
+			row.set(DataComponents.CUSTOM_NAME, Component.translatable("screen.aliveworkplace.price_tag.steps", String.format(java.util.Locale.ROOT, "%,d", size))
+				.withStyle(style -> style.withItalic(false).withColor(ChatFormatting.WHITE)));
+			menu.button(FIRST_STEP_ROW + i, ChoiceList.cells(ChoiceList.row(row, null, null, null, false, false),
+				FIRST_STEP_SLOT + i, FIRST_STEP_SLOT + STEPS.length - 1 - i), null);
+		}
 		for (int i = 0; i < STEPS.length; i++) {
 			int step = STEPS[i];
 			if (step == 0) {
-				menu.button(FIRST_STEP_SLOT + i, shown.copy(), null);
+				ItemStack row = shown.copy();
+				row.set(DataComponents.LORE, new net.minecraft.world.item.component.ItemLore(List.of(Component.translatable("tooltip.aliveworkplace.price_tag.use")
+					.withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GRAY)))));
+				menu.button(FIRST_STEP_SLOT + i, ChoiceList.row(row, null, null, null, false, false), null);
 				continue;
 			}
 			ItemStack icon = new ItemStack(step < 0 ? net.minecraft.world.item.Items.RED_DYE : net.minecraft.world.item.Items.LIME_DYE);
 			icon.set(DataComponents.CUSTOM_NAME, Component.literal((step > 0 ? "+" : "") + step)
 				.withStyle(style -> style.withItalic(false).withColor(step < 0 ? ChatFormatting.RED : ChatFormatting.GREEN)));
+			ChoiceList.cell(icon, Component.literal((step > 0 ? "+" : "") + step), false);
 			menu.button(FIRST_STEP_SLOT + i, icon, p -> {
 				ItemStack tag = p.getItemInHand(hand);
 				if (tag.is(ModItems.PRICE_TAG)) {
@@ -102,7 +125,7 @@ public class PriceTagItem extends Item {
 		ItemStack done = new ItemStack(net.minecraft.world.item.Items.PAPER);
 		done.set(DataComponents.CUSTOM_NAME, Component.translatable("screen.aliveworkplace.price_tag.done")
 			.withStyle(style -> style.withItalic(false).withColor(ChatFormatting.WHITE)));
-		menu.button(DONE_SLOT, done, net.minecraft.server.level.ServerPlayer::closeContainer);
+		menu.button(DONE_SLOT, ChoiceList.row(done, null, null, null, false, false), net.minecraft.server.level.ServerPlayer::closeContainer);
 	}
 
 	/**

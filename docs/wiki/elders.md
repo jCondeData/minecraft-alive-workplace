@@ -7,7 +7,7 @@ with every other expansion. It covers: ages, the slower walk, the "quiet old age
 Families, the Family page and the Printer's family tree (34.21), and the seeding of everyone's age when classes switch
 on (34.22, [Classes](classes.md)).
 
-Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187, B380, B442, B885
+Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187, B380, B442, B885, B827, B1087
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -113,6 +113,12 @@ village with a hall a death is as before. Only family inside the village's circl
 standing farther off, out in the corners of the square round the hall, don't (B549). The Book of Families likewise
 writes in only the villagers inside the circle, and only couples inside it court, wed and count as courting.
 
+A villager a zombie turns hasn't died: nobody is told, nobody grieves, and the Book of Families keeps them alive. Cure
+them and they are the same person in the book (born the same day, the same family), still their children's parent and
+their partner's husband or wife. A zombie villager that is never cured (killed, or gone: despawned, or taken away on
+Peaceful), or that turns into something no cure brings back (drowned in water), is dated dead in the book that day,
+without the village being told or grieving again (it lost them when they were turned; B1087).
+
 ## How it works
 
 - **Age.** `adult_since` is the `Chronicle.day` a villager grew up. It is written when a child grows up in a hall's
@@ -176,7 +182,12 @@ writes in only the villagers inside the circle, and only couples inside it court
   (every 30 seconds) writes everyone living in the village into it (not mercenaries, inn guests or a caravan's carter);
   a death dates their entry; someone an Undertaker brings back is alive in it again. It holds 400: beyond that the
   longest dead are forgotten first (if nobody is dead, the first written in). Partners stay after a death (the widowed
-  one's late partner is kept).
+  one's late partner is kept). B1087: a villager a zombie turns, or a zombie villager cured, is a new entity with a
+  new UUID (`Mob.convertTo`); on the conversion their entry, and every entry and living villager in the village naming
+  them as a parent or partner, take the new id, and the book remembers the old id's new one (saved with the hall), so a
+  child or partner away at the time is put right by the next round. The death hooks skip a villager already removed
+  by their conversion (`FamilyBook.onDeath`, `Mourning.onDeath`); a zombie villager's death, or its discard without a
+  conversion, dates their entry.
 - **Family names.** 60 names (`family_name.aliveworkplace.1` to `.60`). A founder's is picked from their UUID; a baby
   takes the first parent's at birth (the one the village's birth picks first; the other parent's if the first has
   none), and the round gives anyone still without one their parent's, else founds one. The name is only a number on the
@@ -236,8 +247,11 @@ On a grave: `funeral` (36.16; absent: no funeral due, as for every grave from be
 
 On the hall: `families`, the Book of Families, a list of {`id`, `name`, `family`, `born`, `born_here`, `died` (absent
 for the living), `mother`, `father`, `partner` (each absent when unknown), `trade`}; and `familiesNoted`, the families
-whose third generation the chronicle noted. Both absent in halls saved before: the book starts empty and fills at the
-next round.
+whose third generation the chronicle noted; and `familiesTurned` (B1087), a list of {`from`, `to`}: the ids people
+turned or cured had before, to the next. All absent in halls saved before: the book starts empty and fills at the
+next round (no turns are known).
+One person in `families` that can't be read (a hand-edited or damaged file) is left out with a warning in the log, and
+the rest of the book loads (B827; before, the whole book was lost without a word).
 
 The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.16); an older version reads an unknown kind as `FOUNDED`.
 
@@ -342,6 +356,8 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
   a reload, an older save's villager, an elder made ageless before this version (`aReloadKeepsTheDay`); a child grown up
   in the hall's own round, and an elder noted by it (`aChildGrowingUpIsGrownFromToday`); `villagerAges` off and on again
   (`withVillagerAgesOffNobodyIsAnElder`).
+- QA (B827): `QaHallFamiliesOneBadEntry1102eBugTests`: a hall's two saved people come back after an empty entry is put
+  first in its saved `families`.
 - Showcase scene: `elders` (the day Bram becomes one, his card, his line, the walk beside young Tom).
 - GameTests: `AgelessElderGameTests`: the recipe, tooltip and config (`theCharmIsCraftedAndExplainsItself`); a Master
   through the sneak-right-click, then a Gifted villager, a Legend and a 20-happy-day elder, the charm used up, the gold

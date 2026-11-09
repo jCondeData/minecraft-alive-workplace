@@ -185,6 +185,10 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	@Override
 	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+		if (listMode()) {
+			renderListMode(g, mouseX, mouseY, partialTick);
+			return;
+		}
 		layout();
 		renderBlurredBackground(partialTick);
 		renderMenuBackground(g);
@@ -254,6 +258,11 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	/** Whether every button shown is a list row, the strip rows' too (no by default). */
 	protected boolean rowsOnly() {
+		return false;
+	}
+
+	/** Whether the screen is the list screen (ROADMAP 42.1; {@link #renderListMode}) in place of the strip, list and pane (no by default). */
+	protected boolean listMode() {
 		return false;
 	}
 
@@ -572,6 +581,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
+		if (listMode()) {
+			return listClicked(mx, my, button);
+		}
 		layout();
 		if (sidebarClicked(mx, my, button)) {
 			return true;
@@ -611,6 +623,15 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	@Override
 	public boolean mouseDragged(double mx, double my, int button, double dx, double dy) {
+		if (draggingBar && listMode()) {
+			listLayout();
+			int max = lmMaxScroll();
+			int content = lmRows.size() * TableStyle.LIST_ROW + 4;
+			int bar = Math.max(32, Math.min(lmH - 8, lmH * lmH / Math.max(1, content)));
+			double per = Math.max(1.0, (double) max / Math.max(1, lmH - bar));
+			lmScroll = (int) Math.max(0, Math.min(max, lmScroll + dy * per));
+			return true;
+		}
 		if (draggingBar) {
 			int max = maxListScroll();
 			int content = rows.size() * TableStyle.ROW + 4;
@@ -624,6 +645,14 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	@Override
 	public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
+		if (listMode()) {
+			listLayout();
+			if (mx >= lmX && mx < lmX + lmW && my >= lmY && my < lmY + lmH) {
+				lmScroll = Math.max(0, Math.min(lmMaxScroll(), lmScroll - (int) Math.round(scrollY * TableStyle.LIST_ROW / 2.0)));
+				return true;
+			}
+			return false;
+		}
 		layout();
 		if (customBody()) {
 			return bodyScrolled(mx, my, scrollY);
@@ -678,6 +707,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	/** Where button {@code slot}'s middle is on the screen, in GUI pixels (the screenshot harness points at it); a list row is scrolled into view. */
 	public int[] centre(int slot) {
+		if (listMode()) {
+			return listCentre(slot);
+		}
 		layout();
 		for (int[] cell : cells) {
 			if (cell[0] == slot) {
@@ -705,7 +737,328 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	/** Buttons in the list, in order (for the screenshot harness). */
 	public List<Integer> listSlots() {
+		if (listMode()) {
+			listLayout();
+			return List.copyOf(lmRows);
+		}
 		layout();
 		return List.copyOf(rows);
+	}
+
+	// --- list mode (ROADMAP 42.1) --------------------------------------------------------------------------------------
+	// The list screen for the menus that were a plain chest (ChoiceMenu.openList): the title and the money at the top,
+	// a tab row, a list of rows (icon, name, second line, price) with a button on each, gray rows that can't be picked,
+	// a footer hint with the page arrows. What each icon is comes from its mark (work/ChoiceList); a shown button without
+	// one is a plain row. Every click is still the chest click the server's menu takes, on the same slot; every icon's
+	// tooltip shows when it's pointed at. The drawing pieces are TableStyle's shared list-menu section.
+
+	/** The tabs, the rows and the page arrows (button slots), and the menu's own line's slot (-1: none). */
+	private final List<Integer> lmTabs = new ArrayList<>();
+	private final List<Integer> lmRows = new ArrayList<>();
+	private final List<Integer> lmPages = new ArrayList<>();
+	private int lmInfo = -1;
+	/** Where each tab and page arrow is: slot, x, y, width, height. */
+	private final List<int[]> lmBoxes = new ArrayList<>();
+	/** The list's box, how tall its headings are, its scroll and the buttons' width. */
+	private int lmX, lmY, lmW, lmH, lmHead, lmScroll, lmButtonW;
+	/** The money line's box (pointing at it shows the menu's own tooltip). */
+	private int lmMoneyX, lmMoneyW;
+
+	private void listLayout() {
+		lmTabs.clear();
+		lmRows.clear();
+		lmPages.clear();
+		lmBoxes.clear();
+		lmInfo = -1;
+		lmButtonW = 0;
+		for (int slot = 0; slot < ChoiceMenu.SIZE; slot++) {
+			ItemStack stack = icon(slot);
+			if (!shown(stack) || !showSlot(slot)) {
+				continue;
+			}
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(stack);
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.Kind kind = mark == null ? io.github.jcondedata.aliveworkplace.work.ChoiceList.Kind.ROW : mark.kind();
+			switch (kind) {
+				case TAB -> lmTabs.add(slot);
+				case PAGE -> lmPages.add(slot);
+				case INFO -> lmInfo = lmInfo < 0 ? slot : lmInfo;
+				case CELL -> {
+					// (drawn inside the row that names it, 42.4)
+				}
+				default -> {
+					lmRows.add(slot);
+					int[] cells = io.github.jcondedata.aliveworkplace.work.ChoiceList.cells(stack);
+					if (cells.length > 0) {
+						lmButtonW = Math.max(lmButtonW, cellsWidth(cells));
+					} else if (mark != null && mark.button() != null) {
+						lmButtonW = Math.max(lmButtonW, TableStyle.buttonWidth(font, mark.button()));
+					}
+				}
+			}
+		}
+		// Rows with an order go where it says (ROADMAP 42.3), slot order among equals (the sort is stable).
+		lmRows.sort(java.util.Comparator.comparingInt(slot -> {
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark m = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(slot));
+			return m == null ? 0 : m.order();
+		}));
+		int x = left + 8;
+		int y = top + 22;
+		int right = left + panelW - 8;
+		for (int slot : lmTabs) {
+			Component label = icon(slot).getHoverName();
+			int w = TableStyle.tabWidth(font, label, true, Math.max(40, (panelW - 16) / Math.max(1, Math.min(lmTabs.size(), 6)) - 4));
+			if (x + w > right && x > left + 8) {
+				x = left + 8;
+				y += TableStyle.TAB_H + 3;
+			}
+			lmBoxes.add(new int[]{slot, x, y, w, TableStyle.TAB_H});
+			x += w + 4;
+		}
+		lmX = left + 8;
+		lmY = lmTabs.isEmpty() ? top + 22 : y + TableStyle.TAB_H + 5;
+		lmW = panelW - 16;
+		lmH = top + panelH - 18 - lmY;
+		io.github.jcondedata.aliveworkplace.work.ChoiceList.Info info = lmInfo < 0 ? null : io.github.jcondedata.aliveworkplace.work.ChoiceList.info(icon(lmInfo));
+		lmHead = info != null && !info.columns().isEmpty() ? 13 : 0;
+		// The page arrows at the footer's right, the next one last.
+		int px = right;
+		List<Integer> pages = new ArrayList<>(lmPages);
+		pages.sort(java.util.Comparator.comparing(this::pageNext)); // the previous one first
+		for (int i = pages.size() - 1; i >= 0; i--) {
+			int slot = pages.get(i);
+			int w = TableStyle.buttonWidth(font, icon(slot).getHoverName());
+			px -= w;
+			lmBoxes.add(new int[]{slot, px, top + panelH - 16, w, 13});
+			px -= 4;
+		}
+		lmScroll = Math.max(0, Math.min(lmScroll, lmMaxScroll()));
+	}
+
+	private boolean pageNext(int slot) {
+		io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(slot));
+		return mark != null && mark.on();
+	}
+
+	private int lmMaxScroll() {
+		return Math.max(0, lmHead + lmRows.size() * TableStyle.LIST_ROW + 4 - lmH);
+	}
+
+	private int lmRowTop(int index) {
+		return lmY + 2 + lmHead + index * TableStyle.LIST_ROW - lmScroll;
+	}
+
+	private int[] lmColumns() {
+		return TableStyle.listColumns(lmX, lmW - 6, lmButtonW);
+	}
+
+	/** The button under the mouse in list mode: a tab, a page arrow or a row (-1: none). */
+	private int listSlotAt(double mx, double my) {
+		for (int[] box : lmBoxes) {
+			if (mx >= box[1] && mx < box[1] + box[3] && my >= box[2] && my < box[2] + box[4]) {
+				return box[0];
+			}
+		}
+		if (mx >= lmX && mx < lmX + lmW - 6 && my >= lmY + lmHead + 2 && my < lmY + lmH) {
+			for (int i = 0; i < lmRows.size(); i++) {
+				int t = lmRowTop(i);
+				if (my >= t && my < t + TableStyle.LIST_ROW) {
+					for (int[] cell : cellBoxes(lmRows.get(i), t)) {
+						if (mx >= cell[1] && mx < cell[1] + cell[3] && my >= cell[2] && my < cell[2] + cell[4]) {
+							return cell[0];
+						}
+					}
+					return lmRows.get(i);
+				}
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Draws the list screen: the panel, the gold title and the money, the tabs, the list with its column headings and
+	 * rows, the footer hint and page arrows, and the tooltip of whatever is under the mouse.
+	 */
+	private void renderListMode(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+		listLayout();
+		renderBlurredBackground(partialTick);
+		renderMenuBackground(g);
+		TableStyle.panel(g, left, top, panelW, panelH);
+		io.github.jcondedata.aliveworkplace.work.ChoiceList.Info info = lmInfo < 0 ? null : io.github.jcondedata.aliveworkplace.work.ChoiceList.info(icon(lmInfo));
+		Component money = info == null || info.money() == null ? Component.empty() : info.money();
+		lmMoneyW = money.getString().isEmpty() ? 0 : font.width(money);
+		lmMoneyX = left + panelW - 8 - lmMoneyW;
+		TableStyle.header(g, font, headerTitle(), Component.empty(), left, top, panelW - (lmMoneyW > 0 ? lmMoneyW + 8 : 0));
+		if (lmMoneyW > 0) {
+			TableStyle.money(g, font, money, left + panelW - 8, top + 8);
+		}
+		int hovered = listSlotAt(mouseX, mouseY);
+		for (int[] box : lmBoxes) {
+			int slot = box[0];
+			ItemStack stack = icon(slot);
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(stack);
+			if (lmTabs.contains(slot)) {
+				TableStyle.tab(g, font, stack.getHoverName(), box[1], box[2], box[3], true, mark != null && mark.on(), slot == hovered);
+				g.renderItem(stack, box[1] + 3, box[2] + 1);
+			} else {
+				TableStyle.button(g, font, stack.getHoverName(), box[1], box[2], box[3], box[4], false, slot == hovered, false);
+			}
+		}
+		TableStyle.listBackground(g, lmX, lmY, lmW, lmH);
+		int[] columns = lmColumns();
+		if (lmHead > 0) {
+			TableStyle.columnHeadings(g, font, info.columns(), columns, lmY + 4);
+		}
+		if (lmRows.isEmpty()) {
+			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.choice.empty"), lmX + 6, lmY + lmHead + 6, lmW - 12, TableStyle.LOADING);
+		}
+		g.enableScissor(lmX, lmY + lmHead, lmX + lmW, lmY + lmH);
+		for (int i = 0; i < lmRows.size(); i++) {
+			int t = lmRowTop(i);
+			if (t + TableStyle.LIST_ROW < lmY || t > lmY + lmH) {
+				continue;
+			}
+			int slot = lmRows.get(i);
+			ItemStack stack = icon(slot);
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(stack);
+			boolean off = mark != null && mark.off();
+			boolean on = mark != null && mark.on();
+			Component second = mark != null ? mark.second() : firstLine(stack).isEmpty() ? null : Component.literal(firstLine(stack));
+			TableStyle.listRow(g, font, columns, lmX + lmW - 8, t, stack.getHoverName(), second, mark == null ? null : mark.price(), off, on, slot == hovered);
+			g.renderItem(stack, columns[0], t + 2);
+			List<int[]> cellBoxes = cellBoxes(slot, t);
+			if (!cellBoxes.isEmpty()) {
+				for (int[] cell : cellBoxes) {
+					drawCell(g, cell, cell[0] == hovered, off);
+				}
+			} else if (mark != null && mark.button() != null) {
+				TableStyle.button(g, font, mark.button(), columns[4], t + 3, lmButtonW, TableStyle.BUTTON_H, on, slot == hovered, off);
+			}
+		}
+		g.disableScissor();
+		TableStyle.scrollbar(g, lmX + lmW - 6, lmY, lmH, lmScroll, lmMaxScroll(), lmHead + lmRows.size() * TableStyle.LIST_ROW + 4);
+		Component hint = info != null && info.hint() != null ? info.hint() : Component.translatable("screen.aliveworkplace.list.hint");
+		int pagesW = 0;
+		for (int[] box : lmBoxes) {
+			if (lmPages.contains(box[0])) {
+				pagesW = Math.max(pagesW, left + panelW - 8 - box[1] + 6);
+			}
+		}
+		TableStyle.footerHint(g, font, hint, left + 8, top + panelH - 13, panelW - 16 - pagesW);
+		// The tooltip of whatever is under the mouse, as the chest showed it: a row, a tab, a page arrow, or the menu's
+		// own (the money line).
+		if (hovered >= 0) {
+			g.renderTooltip(font, icon(hovered), mouseX, mouseY);
+		} else if (lmInfo >= 0 && lmMoneyW > 0 && mouseX >= lmMoneyX && mouseX < lmMoneyX + lmMoneyW && mouseY >= top + 6 && mouseY < top + 18) {
+			g.renderTooltip(font, icon(lmInfo), mouseX, mouseY);
+		}
+	}
+
+	private boolean listClicked(double mx, double my, int button) {
+		listLayout();
+		if (button == 0 && lmMaxScroll() > 0 && mx >= lmX + lmW - 6 && mx < lmX + lmW && my >= lmY && my < lmY + lmH) {
+			draggingBar = true;
+			return true;
+		}
+		int slot = listSlotAt(mx, my);
+		if (slot >= 0 && (button == 0 || button == 1)) {
+			// The chest click as before (a gray row's too: the server decides, as it did for the chest's icon).
+			press(slot, button, button == 0 && hasShiftDown());
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(slot));
+			if (mark == null || !mark.off()) {
+				net.minecraft.client.Minecraft.getInstance().getSoundManager().play(
+					net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
+			}
+			return true;
+		}
+		return mx >= left && mx < left + panelW && my >= top && my < top + panelH;
+	}
+
+	// A row's cells (ROADMAP 42.4, ChoiceList.cells): small buttons inside the row at its right, each its own slot.
+
+	/** How wide cell {@code slot} is: a small text button, or an icon cell when it has no label. */
+	private int cellWidth(int slot) {
+		io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(slot));
+		return mark != null && mark.button() != null ? Math.max(TableStyle.CELL, font.width(mark.button()) + 10) : TableStyle.CELL - 2;
+	}
+
+	private int cellsWidth(int[] cells) {
+		int w = 0;
+		for (int cell : cells) {
+			w += cellWidth(cell) + 3;
+		}
+		return Math.max(0, w - 3);
+	}
+
+	/** The shown cells of row {@code row} whose top is {@code t}: slot, x, y, width, height. */
+	private List<int[]> cellBoxes(int row, int t) {
+		List<int[]> out = new ArrayList<>();
+		int x = lmColumns()[4];
+		for (int cell : io.github.jcondedata.aliveworkplace.work.ChoiceList.cells(icon(row))) {
+			if (cell < 0 || cell >= ChoiceMenu.SIZE || !shown(icon(cell))) {
+				continue;
+			}
+			int w = cellWidth(cell);
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(cell));
+			boolean text = mark != null && mark.button() != null;
+			out.add(new int[]{cell, x, text ? t + 3 : t + 1, w, text ? TableStyle.BUTTON_H : TableStyle.CELL - 2});
+			x += w + 3;
+		}
+		return out;
+	}
+
+	/** Draws a row's cell (box from {@link #cellBoxes}): its label as a small button, or its icon in a framed cell. */
+	private void drawCell(GuiGraphics g, int[] box, boolean over, boolean off) {
+		ItemStack stack = icon(box[0]);
+		io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(stack);
+		boolean on = mark != null && mark.on();
+		if (mark != null && mark.button() != null) {
+			TableStyle.button(g, font, mark.button(), box[1], box[2], box[3], box[4], on, over, off);
+		} else {
+			TableStyle.cell(g, box[1], box[2], on, over);
+			g.renderItem(stack, box[1] + 1, box[2] + 1);
+		}
+	}
+
+	/** Where button {@code slot}'s middle is in list mode (a row's button if it has one); a row is scrolled into view. */
+	private int[] listCentre(int slot) {
+		listLayout();
+		for (int[] box : lmBoxes) {
+			if (box[0] == slot) {
+				return new int[]{box[1] + box[3] / 2, box[2] + box[4] / 2};
+			}
+		}
+		int i = lmRows.indexOf(slot);
+		int inRow = -1;
+		for (int r = 0; i < 0 && r < lmRows.size(); r++) {
+			for (int cell : io.github.jcondedata.aliveworkplace.work.ChoiceList.cells(icon(lmRows.get(r)))) {
+				if (cell == slot) {
+					i = r;
+					inRow = lmRows.get(r);
+				}
+			}
+		}
+		if (i >= 0) {
+			int t = lmRowTop(i);
+			if (t < lmY + lmHead || t + TableStyle.LIST_ROW > lmY + lmH) {
+				lmScroll = Math.max(0, Math.min(lmMaxScroll(), i * TableStyle.LIST_ROW - (lmH - lmHead - TableStyle.LIST_ROW) / 2));
+				t = lmRowTop(i);
+			}
+			if (inRow >= 0) {
+				for (int[] cell : cellBoxes(inRow, t)) {
+					if (cell[0] == slot) {
+						return new int[]{cell[1] + cell[3] / 2, cell[2] + cell[4] / 2};
+					}
+				}
+			}
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(slot));
+			int[] columns = lmColumns();
+			return mark != null && mark.button() != null
+				? new int[]{columns[4] + lmButtonW / 2, t + 3 + TableStyle.BUTTON_H / 2}
+				: new int[]{columns[1] + 10, t + TableStyle.LIST_ROW / 2};
+		}
+		if (slot == lmInfo && lmMoneyW > 0) {
+			return new int[]{lmMoneyX + lmMoneyW / 2, top + 12};
+		}
+		return new int[]{left + panelW / 2, top + panelH - 6};
 	}
 }

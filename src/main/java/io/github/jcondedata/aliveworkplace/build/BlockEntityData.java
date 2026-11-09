@@ -10,7 +10,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +21,8 @@ import org.jetbrains.annotations.Nullable;
  * Decides which block-entity data from a blueprint a builder copies onto a block it places. Looks
  * (sign text, banner patterns, a way sign's arms, a blackboard drawing) are copied; anything that would
  * hand out free items or mobs is not — chest contents, a jar's cookies, an item shelf's sword, a caged
- * mob, a safe's owner, the lava in a Create tank. Works for blocks from any mod, not just vanilla.
+ * mob, a safe's owner, the lava in a Create tank. Words keep their looks but never a command or a worked-out part
+ * ({@link BlockText}). Works for blocks from any mod, not just vanilla.
  */
 public final class BlockEntityData {
 	/** Keys that hold items, loot, mobs or ownership in vanilla and common mods. */
@@ -51,7 +54,7 @@ public final class BlockEntityData {
 				return null;
 			}
 			CompoundTag named = new CompoundTag();
-			named.putString("CustomName", Nbt.getString(nbt, "CustomName"));
+			named.putString("CustomName", BlockText.clean(Nbt.getString(nbt, "CustomName"), BlockText.MAX_NAME));
 			return named;
 		}
 		CompoundTag tag = nbt.copy();
@@ -63,7 +66,88 @@ public final class BlockEntityData {
 			// empty, it starts dark, as it does when placed fresh
 			tag.remove("Luminosity");
 		}
+		// B1044, B1047: words (a sign's lines, a banner's name, any mod's text) keep their looks only: no click command,
+		// no nbt, selector or score part the game would work out with operator permission, no line longer than a player
+		// could write
+		BlockText.cleanAll(tag);
+		if (blockEntity instanceof BannerBlockEntity) {
+			// B1073: a banner keeps no more pattern layers than a player's loom gives it (6); a file's thousands of layers
+			// would make the chunk's packet too big for any client to accept
+			capList(tag, "patterns", BannerBlockEntity.MAX_PATTERNS);
+		}
+		if (blockEntity instanceof SkullBlockEntity) {
+			capProfile(tag);
+		}
 		return tag;
+	}
+
+	/** The longest name a player's profile can have (the game's player-name codec refuses longer). */
+	static final int MAX_PROFILE_NAME = 16;
+	/** The longest skin a head keeps: a real player's signed "textures" value is well under a kilobyte, base64. */
+	static final int MAX_TEXTURE = 4096;
+	/** The longest signature a head keeps: a real one is 684 characters, base64. */
+	static final int MAX_SIGNATURE = 1024;
+
+	/**
+	 * B1077: a head keeps no more of its "profile" (the skin it shows) than a player's head could carry: a name, an id and
+	 * one "textures" property of a few kilobytes at most. A file's head with many or huge properties keeps only its name
+	 * and id (the game then looks the skin up as it does for a head a player names), so a chunk full of them stays far
+	 * under the packet size a client accepts.
+	 */
+	private static void capProfile(CompoundTag tag) {
+		if (Nbt.has(tag, "profile", Tag.TAG_STRING)) {
+			// the short form: just a player's name
+			if (Nbt.getString(tag, "profile").length() > MAX_PROFILE_NAME) {
+				tag.remove("profile");
+			}
+			return;
+		}
+		if (!Nbt.has(tag, "profile", Tag.TAG_COMPOUND)) {
+			return;
+		}
+		CompoundTag profile = Nbt.getCompound(tag, "profile");
+		CompoundTag kept = new CompoundTag();
+		if (Nbt.has(profile, "name", Tag.TAG_STRING) && Nbt.getString(profile, "name").length() <= MAX_PROFILE_NAME) {
+			kept.putString("name", Nbt.getString(profile, "name"));
+		}
+		if (Nbt.hasUuid(profile, "id")) {
+			kept.put("id", profile.get("id").copy());
+		}
+		CompoundTag texture = onlyTexture(profile.get("properties"));
+		if (texture != null) {
+			ListTag properties = new ListTag();
+			properties.add(texture);
+			kept.put("properties", properties);
+		}
+		tag.put("profile", kept);
+	}
+
+	/** The profile's one "textures" property if it has exactly that and it's no bigger than a real one, else null. */
+	@Nullable
+	private static CompoundTag onlyTexture(@Nullable Tag properties) {
+		if (!(properties instanceof ListTag list) || list.size() != 1 || !(list.get(0) instanceof CompoundTag property)) {
+			return null;
+		}
+		if (!Nbt.has(property, "name", Tag.TAG_STRING) || !Nbt.getString(property, "name").equals("textures")
+			|| !Nbt.has(property, "value", Tag.TAG_STRING) || Nbt.getString(property, "value").length() > MAX_TEXTURE) {
+			return null;
+		}
+		CompoundTag kept = new CompoundTag();
+		kept.putString("name", "textures");
+		kept.putString("value", Nbt.getString(property, "value"));
+		if (Nbt.has(property, "signature", Tag.TAG_STRING) && Nbt.getString(property, "signature").length() <= MAX_SIGNATURE) {
+			kept.putString("signature", Nbt.getString(property, "signature"));
+		}
+		return kept;
+	}
+
+	/** Keeps only the first {@code max} entries of the list under {@code key}, if there is one. */
+	private static void capList(CompoundTag tag, String key, int max) {
+		if (tag.get(key) instanceof ListTag list) {
+			while (list.size() > max) {
+				list.remove(list.size() - 1);
+			}
+		}
 	}
 
 	private static boolean isStorage(ServerLevel level, BlockPos pos, BlockState state, BlockEntity blockEntity) {

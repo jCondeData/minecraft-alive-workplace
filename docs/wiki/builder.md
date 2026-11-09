@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088
 
 ## 1. What a player sees
 
@@ -68,6 +68,11 @@ dripleaf grows from the bottom as a player stacks one leaf on another: each stem
 a stem when the next piece goes on top (B812), so a big dripleaf on two stems is built three tall. A piston
 scanned pushed out is built retracted and pushed out by its own redstone, with its head (B795); one with no power in
 the build stands retracted, never a pushed-out base with nothing in front.
+A block a scan caught in the middle of a moment is built at rest, as a player's freshly placed one is (B1038): a
+pressure plate someone stood on goes down up, a pressed button out, a tipped big dripleaf level, a sculk sensor (or a
+calibrated one) that just heard a step listening, and a shrieker quiet; an observer, detector rail, tripwire, tripwire
+hook, lightning rod or lectern caught pulsing goes down unpowered and a target block gives no signal. A plate stepped on
+or a leaf tipped since still counts as built.
 A melon's or pumpkin's grown stem costs one melon or pumpkin seeds and is planted as a fresh stem beside its fruit
 (B865). A bubble column is the water a player poured on soul sand or magma: each of its blocks costs a water bucket
 (the bucket comes back) and is poured once the soul sand or magma is down, and the bubbles rise (or sink) again, so a
@@ -155,7 +160,7 @@ down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing 
 needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
 other carried; B519: a helper at the chests puts back what its stretch no longer needs, such as the walls' last
 planks once the crew is on the lanterns), and empties the bag at the chests when it finishes or
-stops helping. A build placed mirrored (the mirror button, or a Steward's street mirroring its houses) keeps its double chests whole: each half swaps left and right with the mirror, whichever way the chest faces (B438). The mod's own facing blocks turn and mirror with the build as vanilla's do: a Storehouse built turned a quarter has its Storehouse block facing the way the building faces, and the same goes for the Village Hall, Mailbox, Shop Counter and Grave blocks (B448). One built facing the old way, in a turned build from before, still counts as built: it is never broken or repaired, so what it holds stays. Item frames, glow item frames, paintings and armor stands are put up turned and mirrored with the build too: each hangs on the wall the blueprint hangs it on and faces the way the turned, mirrored blueprint faces it, so a Guildhall placed mirrored and turned a quarter gets its item frame, a two-wide painting hangs where it was drawn, and an armor stand faces the way it was scanned (B439). Builders never copy what is inside containers, nor what a block holds in its look (B429, B434, B449): a scanned lava or powder snow cauldron is built as an empty cauldron (it asks only a cauldron), a ready composter at level 0, a full beehive or bee nest with no honey, a charged respawn anchor uncharged, a chiseled bookshelf or brewing stand showing no books or bottles, and a grave empty (never the dead villager it held). A fluid a block keeps in its data is never copied either (B486): a scanned Create fluid tank, spout, basin or item drain holding lava, honey, chocolate or a potion, or any mod's tank, is built empty, keeping its size and windows as drawn. Crops are planted, never built ripe: wheat and other crops, stems, nether wart, a sweet berry bush and cocoa go in at age 0, a pitcher crop one block tall as a planted pod (B560), cave vines without glow berries; a lectern or jukebox shows no book or disc, a Mailbox shows no mail and gives no comparator signal (B536), a furnace, smoker or blast furnace is built cold (a campfire stays lit as drawn), and a bee nest or hive holds no bees (B493-B496). A crop that grew, a furnace lit or a Mailbox given mail since still counts as built. A water cauldron is still built full, as the shipped blueprints have it (water is free in vanilla). One filled by a player since still counts as built. The blueprint's tooltip and a Book and Quill list what
+stops helping. A build placed mirrored (the mirror button, or a Steward's street mirroring its houses) keeps its double chests whole: each half swaps left and right with the mirror, whichever way the chest faces (B438). The mod's own facing blocks turn and mirror with the build as vanilla's do: a Storehouse built turned a quarter has its Storehouse block facing the way the building faces, and the same goes for the Village Hall, Mailbox, Shop Counter and Grave blocks (B448). One built facing the old way, in a turned build from before, still counts as built: it is never broken or repaired, so what it holds stays. Item frames, glow item frames, paintings and armor stands are put up turned and mirrored with the build too: each hangs on the wall the blueprint hangs it on and faces the way the turned, mirrored blueprint faces it, so a Guildhall placed mirrored and turned a quarter gets its item frame, a two-wide painting hangs where it was drawn, and an armor stand faces the way it was scanned (B439). Builders never copy what is inside containers, nor what a block holds in its look (B429, B434, B449): a scanned lava or powder snow cauldron is built as an empty cauldron (it asks only a cauldron), a ready composter at level 0, a full beehive or bee nest with no honey, a charged respawn anchor uncharged, a chiseled bookshelf or brewing stand showing no books or bottles, and a grave empty (never the dead villager it held). A fluid a block keeps in its data is never copied either (B486): a scanned Create fluid tank, spout, basin or item drain holding lava, honey, chocolate or a potion, or any mod's tank, is built empty, keeping its size and windows as drawn. Words a build carries keep only what a player could write by hand (B1044, B1047): a sign keeps its words, colors and glow, and a banner, chest or any mod's block keeps its name, but a click command (a sign that runs /give or /gamemode when clicked), a part the game works out (another player's position or inventory, a list of players, a score) and anything past 384 characters a line are dropped, whether the blueprint was uploaded, scanned from an operator's sign or came from a Create schematic (`BlockText`). A line is cleaned whenever the game would read it as styled text, even one a hand-written file starts with a comment or a `)]}'` prefix (B1062), and a line or name whose saved text runs past 1,024 characters (a style on every letter) keeps only its plain words, so a sign holds about what a player's can and a chunk full of signs from one file never grows too big to send (B1065). Crops are planted, never built ripe: wheat and other crops, stems, nether wart, a sweet berry bush and cocoa go in at age 0, a pitcher crop one block tall as a planted pod (B560), cave vines without glow berries; a lectern or jukebox shows no book or disc, a Mailbox shows no mail and gives no comparator signal (B536), a furnace, smoker or blast furnace is built cold (a campfire stays lit as drawn), and a bee nest or hive holds no bees (B493-B496). A crop that grew, a furnace lit or a Mailbox given mail since still counts as built. A water cauldron is still built full, as the shipped blueprints have it (water is free in vanilla). One filled by a player since still counts as built. The blueprint's tooltip and a Book and Quill list what
 is still missing (the blueprint and the book in either hand, B365). A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
 repair counts them (`BuildPlan.supplyExclude`, B261): the building stands, so a Storehouse Shed being repaired, or a
 shed the bench's chests stand in, hands the Builder what its chests hold.
@@ -272,6 +277,39 @@ top of its own build, in the tests within a few seconds (about 1.5 s for each of
 building. The same holds when its chunk
 unloads, or the server restarts, while it is trapped. Tests: `BuilderChaosGameTests` (five seeds, a new trap every 150
 to 300 ticks through the starter cottage) and `QaBuilderStuckGameTests` (each harder trap three times through a build).
+
+**Signs from a file (B1044, B1047, B1062, B1065, B1074, B1088).** A sign built from an uploaded or scanned file keeps its words and
+their colors, but no click command, no score, selector or block-data part, and no line longer than 384 letters. Every
+line the game would read as text is cleaned, also one that starts with a comment or Gson's `)]}'` prefix, so nothing
+hidden that way runs when the sign is clicked. A line or name whose saved text runs past 1,024 characters keeps only
+its plain words (a player's longest line, fully styled, stays under that), so a chunk full of such signs stays far
+under what a client accepts. A line is measured by the letters it shows, counting a translation's argument once for each
+`%s` that uses it as the game does, so a short line that repeats its words through nested translations (100,000 letters
+from 333 characters) is cut to its first 384 letters too and no client freezes drawing it. A translation is measured by
+the game's own text for its key (a vanilla key whose text uses its argument three times showed over a million letters
+when only the key was counted). A key no language knows is measured by its fallback text, which is what the game shows
+then, and a placeholder the game can't read (a %d, an argument number past the list) leaves the translation's text as
+written, in the game and in the count. Test: QA's
+`QaSignTranslationRepeat1108bBugTests`, `QaSignLanguageKeys1109BugTests` and `QaUploads1109GameTests` (an uploaded line of exactly 384 letters, plain,
+colored or through a repeated argument, stays whole; 386 is cut to 384), and `QaUploadTextEdges1109bGameTests` (3: a
+fallback repeating its argument ten times, six deep, is cut to 384 letters and a short one shows as written; unreadable
+placeholders neither stop the build nor grow the line, and a %% shows one percent sign; 384 letters through a red
+translation stay whole and red, 385 are cut to 384).
+
+**Banners from a file (B1073).** A banner built from an uploaded or scanned file keeps its first 6 pattern layers, the
+most a loom gives a banner; a file's extra layers are left off, so a chunk full of banners stays under what a client
+accepts. Test: QA's `QaBannerChunkSize1108bBugTests` (48 banners of 5,000 layers from one upload) and
+`BlockDataSizeGameTests.aBannerFromAFileKeepsALoomsLayersAndNoMore` (3 and 6 layers are kept whole), and
+`QaUploads1109GameTests` (an uploaded banner of 7 layers keeps its first 6 in order, through a save and load).
+
+**Heads from a file (B1077).** A mob or player head built from an uploaded or scanned file keeps what a player's head
+could carry: the owner's name (up to 16 letters), their id and one signed skin (`textures`, up to 4,096 characters, as
+a real player's skin is). A head whose file gives it more skin entries, or a bigger one, keeps only the name and id, and
+the game looks the skin up by name as it does for a head a player names. Test: QA's `QaHeadChunkSize1108eBugTests` (48
+zombie heads with four 60,000-character entries each),
+`BlockDataSizeGameTests.aHeadFromAFileKeepsARealSkinButNotAHugeOne` and `QaUploads1109GameTests` (uploaded heads: a real
+signed skin kept through a save and load, a 16-letter name kept and a 17-letter one not, two skins or a non-skin entry
+dropped).
 
 ## 3. Switches
 
@@ -633,7 +671,8 @@ in the Storehouse; B166, a saved bed spot loads only with a bed villagers sleep 
 with a book, a decorated pot of diamonds, a campfire cooking beef, a sign and a named chest of gold, built by a Builder:
 every block comes out empty, the sign keeps its words and the chest its name,
 `aBuildOfBlocksHoldingItemsComesOutEmptyWithItsWordsAndNames`).
-QA's `QaJournalBook1108bBugTests` (1, B1042: an off-hand Book and Quill with the player's notes is left as it was by a click on the Builder) and `BuilderWrittenBookGameTests` (2: from the main hand the notes are kept and `message.aliveworkplace.site_list.blank_book_needed` is said; a book with only an empty page still becomes the list). `QaBuilderClicksGameTests` (8, QA from B279/B335/B337/B342/B344's specs: a Book and Quill on the Builder's Blueprint
+QA's `QaSignCommands1108BugTests` (4, B1044, B1047: a sign from an uploaded file keeps its words but runs no command when clicked, shows no player's position worked out with operator permission and holds no line longer than 384 characters; a scanned operator's command sign is built without its command). `QaSignCommandsLenient1108eBugTests` (2, B1062: a command hidden behind a comment or a `)]}'` prefix runs nothing) and `QaSignChunkSize1108eBugTests` (1, B1065: 48 rainbow signs from one file make a chunk packet under the 8 MiB a client accepts). `QaSignLenientForms1108bGameTests` (1, B1062: one sign in loose JSON, keys without quotes, values in single quotes and a comment between keys, runs neither command, and a translation's selector argument and a later nbt part show no player's name or position). `QaPotSherds1108bGameTests` (1: a decorated pot whose file names four diamond blocks as its sides, which a pot loaded with that data shatters into, is built as a plain pot and shatters into its 4 bricks).
+QA's `QaJournalBook1108bBugTests` (1, B1042: an off-hand Book and Quill with the player's notes is left as it was by a click on the Builder) and `BuilderWrittenBookGameTests` (2: from the main hand the notes are kept and `message.aliveworkplace.site_list.blank_book_needed` is said; a book with only an empty page still becomes the list). QA's `QaBookCampfireVerify1108GameTests` (11, verifying B1042 and B1043: no pages or one page of a space is blank, one letter or writing only on the third page is kept byte for byte with the line, from the main hand on the Builder, Bench and Table; from the off hand the Builder and Bench leave it alone and the Table opens; a blueprint with the book in either hand and a Wonder Plan refuse it and write a blank one; four foods on a lit campfire, a soul campfire, an unlit one, a full bag and chest (the food lies by the bench) and a save and reload mid take-down each bring every food back exactly once). `QaBuilderClicksGameTests` (8, QA from B279/B335/B337/B342/B344's specs: a Book and Quill on the Builder's Blueprint
 Table writes the exact list less the table's chest, `aBookAndQuillOnTheBuildersTableWritesTheListLessItsChest`; a table
 with no build or no Builder keeps the book, `aTableWithNoBuildOrNoBuilderKeepsTheBook`; the book from the off hand,
 `aBookAndQuillFromTheOffHandOnTheBuilder`; the list after a save and reload mid-structure, book and chat,

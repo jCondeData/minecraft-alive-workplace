@@ -49,6 +49,8 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   `stonecutter.properties.toml`. `COBBLEMON18=true tools/screenshots/run.sh` films a Pokémon scene with 1.8.1, and a
   hand-started showcase run with the `cobblemon18` box ticked films every Pokémon scene with it (never published).
   The nightly runs the suite both ways (job `compat-cobblemon18`). 1.8-only features ask `work/PokemonFeatures`.
+  Tests only reach the lines they run, so `python3 tools/modtest/apiscan.py versions/1.21.1/build/classes/java/main
+  <cobblemon-1.8.1 jar>` lists every Cobblemon class, method and field our compiled code uses that 1.8.1 lacks (B1059).
 - `PERF_STACK=true SCENE=<name> tools/screenshots/run.sh` — the screenshot client with Cobbleverse's performance mods
   (Sodium, Lithium, C2ME, FerriteCore, ModernFix, EntityCulling, ImmediatelyFast, Krypton, ScalableLux; the pack's
   versions, `tests.screenshot_perf`), for ROADMAP 25.4. The server side already has them in `tools/packtest/run.sh`.

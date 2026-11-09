@@ -92,6 +92,9 @@ final class JobScenes {
 	static volatile String timeoutWhy;
 
 	static final java.util.concurrent.ConcurrentLinkedQueue<String> SHOTS = new java.util.concurrent.ConcurrentLinkedQueue<>();
+	/** The nurse and fossil scenes' villager, for the card shown after the work (43.3). */
+	private static Villager sceneNurse;
+	private static Villager sceneScientist;
 
 	/** One step of a screen scene: optionally act on the server, then point at {@code slot} (-1: nowhere) and shoot. */
 	/** B329: what a Golem Smith's golem is up to, for a scene's timeout message. */
@@ -807,6 +810,10 @@ final class JobScenes {
 
 	private static Job job(String what, int maxTicks, Stage stage) {
 		return new Job(what, maxTicks, CAMERA, TARGET, stage, null);
+	}
+
+	private static Job job(String what, int maxTicks, Stage stage, After after) {
+		return new Job(what, maxTicks, CAMERA, TARGET, stage, after);
 	}
 
 	private static BlockPos chestPos() {
@@ -2980,9 +2987,24 @@ final class JobScenes {
 			Villager ill = EntityType.VILLAGER.spawn(level, new BlockPos(-2, -60, -3), MobSpawnType.COMMAND);
 			ill.setNoAi(true);
 			io.github.jcondedata.aliveworkplace.people.Sickness.fallIll(level, ill);
+			sceneNurse = nurse;
 			return l -> hurt.getHealth() >= hurt.getMaxHealth() - 0.5f && !io.github.jcondedata.aliveworkplace.people.Sickness.isIll(ill)
 				&& n(ModAttachments.VILLAGERS_CURED, nurse) >= 1;
-		}));
+		}, new After("04_nurse_card", (level, player) -> {
+			// 43.3: the player, hurt and poisoned with a hurt and a fainted Pokémon, right-clicks her: her card, the mouse on Heal
+			player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+			player.setHealth(9f);
+			player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.POISON, 2400));
+			party(player, "pikachu level=24", "eevee level=18", "bulbasaur level=12");
+			var team = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player);
+			team.get(0).setCurrentHealth(Math.max(1, team.get(0).getMaxHealth() / 3));
+			team.get(2).setCurrentHealth(0);
+			player.teleportTo(level, sceneNurse.getX() + 1.5, sceneNurse.getY(), sceneNurse.getZ() + 2, 150, 15);
+			io.github.jcondedata.aliveworkplace.nurse.NurseCard.open(player, sceneNurse);
+			Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m
+				&& m.card().lines().size() == 5 && m.card().button(io.github.jcondedata.aliveworkplace.nurse.NurseCard.HEAL).usable(),
+				"the Nurse's card showed the player, the poison and the three Pokémon, with Heal ready");
+		}, io.github.jcondedata.aliveworkplace.nurse.NurseCard.HEAL, 1)));
 		SCENES.put("smelter", job("the armorer smelted the raw iron into ingots", 2400, (level, player) -> {
 			Villager a = worker(level, STATION, Blocks.BLAST_FURNACE, PoiTypes.ARMORER, VillagerProfession.ARMORER);
 			Container c = chest(level, chestPos(), new ItemStack(Items.RAW_IRON, 4), new ItemStack(Items.COAL, 2));
@@ -4089,8 +4111,25 @@ final class JobScenes {
 			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(cobblemonItem("dome_fossil")));
 			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver(player, sci);
 			ScreenshotHarness.hoverLookingAt(player, CAMERA, TARGET);
+			sceneScientist = sci;
 			return l -> n(ModAttachments.FOSSILS_REVIVED, sci) >= 1;
-		}));
+		}, new After("04_fossil_card", (level, player) -> {
+			// 43.3: two more fossils handed over (one done while the player was away, one under way); her card, the mouse on Hand over
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(cobblemonItem("helix_fossil")));
+			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver(player, sceneScientist);
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(cobblemonItem("old_amber_fossil")));
+			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver(player, sceneScientist);
+			var queue = io.github.jcondedata.aliveworkplace.fossil.FossilScientists.queue(sceneScientist);
+			if (queue.size() == 2) {
+				ModAttachments.FOSSIL_REVIVALS.set(sceneScientist, List.of(queue.get(0).worked(queue.get(0).total()),
+					queue.get(1).worked(queue.get(1).total() * 2 / 5)));
+			}
+			player.teleportTo(level, sceneScientist.getX() + 1.5, sceneScientist.getY(), sceneScientist.getZ() + 2, 150, 15);
+			io.github.jcondedata.aliveworkplace.fossil.FossilCard.open(player, sceneScientist);
+			Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m && m.card().lines().size() == 2
+				&& m.card().button(io.github.jcondedata.aliveworkplace.fossil.FossilCard.HAND_OVER).usable(),
+				"the Fossil Scientist's card showed a ready fossil and one at 40%, with Hand over ready");
+		}, io.github.jcondedata.aliveworkplace.fossil.FossilCard.HAND_OVER, 1)));
 		SCENES.put("camp_cook", job("the camp cook cooked a Poké Snack in the Campfire Pot", 2400, (level, player) -> {
 			// ROADMAP 28.8: Cobblemon's campfire with a red pot on it, picked with Hearty Grains; the makings of a Poké
 			// Snack in the chest beside it. She fills the pot, shuts the lid, and the snack comes out into the chest.
@@ -4743,7 +4782,9 @@ final class JobScenes {
 			},
 			List.of(step("01_daycare_screen", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.INFO, 6),
 				step("02_daycare_boarder", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycare.FIRST_BOARDER_SLOT, 6)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu && io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(subject).size() == 1));
+			// 42.2: the daycare is the list screen (the boarder a row with its levels, price and Collect), not a chest
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& io.github.jcondedata.aliveworkplace.ranch.Daycare.boarders(subject).size() == 1));
 		SCREENS.put("daycare_keeper", new Screen("the daycare keeper took a pair of Eevee and two eggs were collected", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				// ROADMAP 28.12: Cobblemon's Pasture Block picked with an egg; two Eevee (mother and father) and a Bulbasaur
@@ -4786,7 +4827,9 @@ final class JobScenes {
 							m.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonDaycareKeeper.EGGS, player);
 						}
 					}, 25)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu && io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject).size() == 1
+			// 42.2: the keeper's screen is the list screen (the pair, how well they get along, the eggs and Take back as rows)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject).size() == 1
 				&& io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.pairs(subject).get(0).eggs() == 0));
 		SCREENS.put("smith_orders", new Screen("the orders screen opened and a Poké Ball was picked", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
@@ -4807,7 +4850,57 @@ final class JobScenes {
 						}
 					}
 				}, 25)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu && !io.github.jcondedata.aliveworkplace.smith.BallSmiths.orders(subject).isEmpty()));
+			// 42.3: the orders are the list screen (a row per ball with Pick, the picked one gold with Unpick), not a chest
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& !io.github.jcondedata.aliveworkplace.smith.BallSmiths.orders(subject).isEmpty()));
+		// The Gem Grower's orders as the list screen (ROADMAP 42.3): which beds she keeps at the top, a row per bed with what
+		// it's planted with and Pick; the amethyst bed picked turns gold with Unpick.
+		SCREENS.put("gem_orders", new Screen("the gem grower's orders on the list screen: a row per bed, the amethyst bed picked", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				subject = picked(level, player, STATION, Blocks.STONECUTTER, Items.AMETHYST_SHARD);
+				subject.setNoAi(true);
+				chest(level, chestPos(), new ItemStack(Items.AMETHYST_SHARD, 6));
+				player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+				io.github.jcondedata.aliveworkplace.gem.GemGrowers.openOrders(player, subject);
+			},
+			List.of(new Step("01_gem_orders_screen", 4, 6, (level, player) ->
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU,
+						"the orders opened as the list screen"), 25),
+				new Step("02_gem_orders_picked", io.github.jcondedata.aliveworkplace.gem.GemGrowers.FIRST_BED_SLOT, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.gem.GemGrowers.FIRST_BED_SLOT, player);
+					}
+				}, 25)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& !io.github.jcondedata.aliveworkplace.gem.GemGrowers.orders(subject).isEmpty()));
+		// The Habitat Keeper's lures as the list screen (ROADMAP 42.3, Cobblemon): her lure now at the top, "Any snack" first,
+		// a row per type and egg group with the berries that season it and Choose; Fire chosen turns gold.
+		SCREENS.put("habitat_lures", new Screen("the habitat keeper's lures on the list screen: Any snack first, a row per lure with its berries, Fire chosen",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				net.minecraft.world.level.block.Block pasture = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.PASTURE_BLOCK);
+				BlockState bottom = pastureHalf(ScreenshotHarness.standing(pasture.defaultBlockState()), "bottom");
+				if (bottom.hasProperty(BlockStateProperties.WATERLOGGED)) {
+					bottom = bottom.setValue(BlockStateProperties.WATERLOGGED, false);
+				}
+				subject = picked(level, player, STATION, bottom, Items.HONEY_BOTTLE);
+				level.setBlockAndUpdate(STATION.above(), pastureHalf(bottom, "top"));
+				subject.setNoAi(true);
+				player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+				io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.openLures(player, subject);
+			},
+			List.of(new Step("01_lures_screen", io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ANY_SLOT, 6, (level, player) ->
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU,
+						"the lures opened as the list screen"), 25),
+				new Step("02_lures_fire", Math.max(0, io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.lures().indexOf("typing/fire")), 6, (level, player) -> {
+					int fire = io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.lures().indexOf("typing/fire");
+					if (player.containerMenu instanceof ChoiceMenu m && fire >= 0 && fire < 45) {
+						m.press(fire, player);
+					}
+				}, 25)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& "typing/fire".equals(io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.lure(subject))));
 		SCREENS.put("ferry_menu", new Screen("the ferryman's ticket screen opened with the Far Shore's fare", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				subject = worker(level, STATION, ModBlocks.TRAVEL_POST, ModVillagers.TRAVEL_POST_POI, ModVillagers.FERRYMAN);
@@ -4825,8 +4918,44 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.travel.Ferrymen.FIRST_DESTINATION_SLOT, player);
 					}
 				}, 25)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu m
+			// 42.4: the ferry is the list screen (the money at the top, the Far Shore's row with its fare and Buy, gold Confirm)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
 				&& m.icon(io.github.jcondedata.aliveworkplace.travel.Ferrymen.FIRST_DESTINATION_SLOT).is(ModItems.TRAVEL_TICKET)));
+		// 42.5: a builder's status card (sneak-right-click with an empty hand): his site with its progress bar, Experience,
+		// what he's short of, In chat / Hall page / Close; then Hall page opens the Village Hall on his own page.
+		SCREENS.put("status_card", new Screen("a builder's status card showed his site, experience and what he needs, and Hall page opened the hall on his page",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setDayTime(2000);
+				BlockPos hall = STATION.offset(-4, 0, 1);
+				level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+				io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+				level.setBlockAndUpdate(STATION, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				Villager mason = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+				mason.setNoAi(true);
+				Builders.employ(level, mason, STATION);
+				mason.setCustomName(net.minecraft.network.chat.Component.literal("Mason"));
+				mason.setVillagerData(mason.getVillagerData().setLevel(2));
+				mason.setVillagerXp(40);
+				chest(level, chestPos(), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.OAK_PLANKS, 20));
+				BuildSite site = Builders.start(level, mason, player, StarterBlueprints.STONE_HOUSE.id(), new BlueprintData.Placement(
+					level.dimension().location(), STATION.offset(3, 0, -12), net.minecraft.world.level.block.Rotation.NONE,
+					net.minecraft.world.level.block.Mirror.NONE));
+				Showcase.check(site != null, "the builder took the stone house on");
+				subject = mason;
+				io.github.jcondedata.aliveworkplace.card.JobCards.open(player, mason, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.BUILDER);
+				Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m
+					&& m.card().lines().size() >= 3 && m.card().lines().stream().anyMatch(l -> l.label().getString().startsWith("Needs "))
+					&& m.card().button(io.github.jcondedata.aliveworkplace.card.JobCards.HALL).usable(),
+					"the card showed the site, his experience and what he needs, with Hall page ready");
+			},
+			List.of(step("01_status_card", io.github.jcondedata.aliveworkplace.card.JobCards.HALL, 0),
+				new Step("02_status_card_hall", -1, 6, (level, player) -> {
+					if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m) {
+						m.clickMenuButton(player, io.github.jcondedata.aliveworkplace.card.JobCards.HALL);
+					}
+				}, 25)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("shapes", new Screen("the Shape Planner opened with stone bricks to build in", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				player.getInventory().setItem(1, new ItemStack(Items.STONE_BRICKS, 64));
@@ -4835,7 +4964,8 @@ final class JobScenes {
 			},
 			List.of(step("01_shapes_screen", io.github.jcondedata.aliveworkplace.blueprint.Shapes.FIRST_KIND + 1, 6),
 				step("02_shapes_info", io.github.jcondedata.aliveworkplace.blueprint.Shapes.INFO, 6)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu m
+			// 42.4: the planner is the list screen (the shapes and blocks as icon cells in their rows, - and + by each size)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
 				&& m.icon(io.github.jcondedata.aliveworkplace.blueprint.Shapes.FIRST_MATERIAL).is(Items.STONE_BRICKS)));
 		SCREENS.put("style_menu", new Screen("the style picker opened, dark oak was chosen and the build mirrored", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
@@ -4854,7 +4984,9 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.blueprint.StylePicker.MIRROR, player);
 					}
 				}, 25)),
-			(level, player) -> BlueprintItem.data(player.getMainHandItem()).map(d -> d.mirrored() && d.structure().equals(
+			// 42.4: the style picker is the list screen (Mirror first, a row per style with Choose)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& BlueprintItem.data(player.getMainHandItem()).map(d -> d.mirrored() && d.structure().equals(
 				io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(StarterBlueprints.STONE_HOUSE.id(), "dark_oak"))).orElse(false)));
 		// The Scan Tool (ROADMAP 22.3): two corners of a little hut marked (the purple box shows while it's held), then
 		// sneak-use saves it as a blueprint.
@@ -6019,6 +6151,53 @@ final class JobScenes {
 						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TAB_SLOTS[1]).is(Items.SPYGLASS), "the Pokédex opened on its own tab");
 				}, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// The Professor's hints as the list screen (ROADMAP 42.2, Cobblemon): the money at the top, the village Pokédex, today's
+		// evolution stone (Evolution Studies) with its price and Buy, and a row per party member with its nature and Note it.
+		SCREENS.put("professor", new Screen("the Pokémon Professor's hints on the list screen: the party's rows with their natures, a Pokémon's hints in its tooltip, and today's evolution stone bought with Buy",
+			new Vec3(0.5, -58.0, 6.5), new Vec3(0.5, -59.5, 0.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				var legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.ID).orElseThrow();
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setYRot(0);
+				subject.setYHeadRot(0);
+				ScreenshotHarness.fileRecords(level, STATION, 8);
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, subject, legend, "showcase");
+				io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+				List<String> species = new java.util.ArrayList<>();
+				for (String s : List.of("bulbasaur", "charmander", "squirtle", "pikachu", "eevee", "machop", "geodude", "pidgey", "rattata", "oddish")) {
+					species.add("cobblemon:" + s);
+				}
+				hall.logPokedex(species);
+				// Evolution Studies researched: the Professor sells today's stone
+				var tree = io.github.jcondedata.aliveworkplace.research.ResearchTrees.get(io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.TREE).orElseThrow();
+				hall.setResearch(new io.github.jcondedata.aliveworkplace.research.Research.State(
+					Map.of(tree.key() + "/" + io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.EVOLUTION_STUDIES, 1), java.util.Optional.empty(), 0, false));
+				io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+				party(player, "bulbasaur level=12 nature=adamant ability=chlorophyll", "pikachu level=8 nature=timid", "eevee level=5 nature=hardy");
+				io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsBank.add(player, 5000);
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 6000L);
+				player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+				io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.open(player, subject);
+			},
+			List.of(new Step("01_professor_list", -1, 6, (level, player) ->
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+						&& !m.icon(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonProfessor.STONE).isEmpty(),
+						"the hints opened as the list screen, with today's stone"), 25),
+				new Step("02_professor_hints", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonProfessor.FIRST_PARTY_SLOT, 6, null, 25),
+				new Step("03_professor_stone", io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonProfessor.STONE, 6, (level, player) -> {
+					// Buy: the stone in the inventory, the row gray "Sold today"
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonProfessor.STONE, player);
+					}
+					Showcase.check(io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.soldToday(subject), "Buy sold today's stone");
+				}, 25)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& io.github.jcondedata.aliveworkplace.legend.PokemonProfessor.soldToday(subject)));
 		// The Professor's Thesis (ROADMAP 31.21, Cobblemon): an Expert Scholar, Professor Alder, by the hall asks for field
 		// notes on Life in the Cold; a Snorunt caught in the snow counts; Thessaly beaten, the thesis is published as a book.
 		SCREENS.put("professors_thesis", new Screen("the Professor's Thesis: Professor Alder by the hall asking for help with a thesis on Life in the Cold, the chapter's intro in chat; a Snorunt caught in a snowy biome going in the field notes; then the published thesis, the book 'Professor Alder: Life in the Cold' open on its cover page with the player as co-author",
@@ -8906,7 +9085,7 @@ final class JobScenes {
 				}, 40),
 				new Step("02_tree_exclusive", io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[7], 6, null, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
-		SCREENS.put("leader",new Screen("the Trainer Leader took the challenge and the battle started", new Vec3(-4.5, -57.5, 11.5),
+		SCREENS.put("leader",new Screen("the Trainer screen opened on the Leader and its Challenge started the battle", new Vec3(-4.5, -57.5, 11.5),
 			new Vec3(0.5, -59, 5.5),
 			(level, player) -> {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, level.getServer());
@@ -8917,13 +9096,20 @@ final class JobScenes {
 				party(player, "snorlax level=100", "blissey level=100", "skarmory level=100", "tyranitar level=100", "dragonite level=100",
 					"garchomp level=100");
 			},
-			List.of(new Step("01_leader", -1, 0, null, 40),
+			// 43.1: an empty hand on the Leader opens the Trainer screen (the mouse on Challenge); its Challenge starts the battle.
+			List.of(new Step("01_leader", io.github.jcondedata.aliveworkplace.trainer.TrainerMenu.CHALLENGE, 0, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.trainer.TrainerScreens.open(player, subject);
+					Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.trainer.TrainerMenu m && m.view().canChallenge(),
+						"the Trainer screen opened with Challenge ready");
+				}, 40),
 				new Step("02_leader_battle", -1, 0, (level, player) -> {
 					player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
 					player.getAbilities().flying = false;
 					player.onUpdateAbilities();
+					if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.trainer.TrainerMenu menu) {
+						menu.clickMenuButton(player, io.github.jcondedata.aliveworkplace.trainer.TrainerMenu.CHALLENGE); // the screen's Challenge
+					}
 					player.teleportTo(level, 0.5, -60, -0.5, 0, 10);
-					io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(player, subject);
 				}, 160)),
 			(level, player) -> com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer(player) != null));
 	}

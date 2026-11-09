@@ -231,6 +231,12 @@ public final class VillagePieces {
 		return look;
 	}
 
+	/** Whether {@code piece}'s room (its house in the style it was built in) still stands at its spot, whatever its outside. */
+	public static boolean roomStands(ServerLevel level, Piece piece) {
+		return BlueprintLibrary.get(level.getServer(), piece.template())
+			.map(b -> match(level, b, piece.placement(), true) > ROOM_MATCH).orElse(false);
+	}
+
 	/** The style whose outside stands best at {@code placement} now (empty if none stands well enough, or no house of ours is there). */
 	public static Optional<String> lookAt(ServerLevel level, BlueprintData.Placement placement) {
 		return at(level, placement).map(Piece::look);

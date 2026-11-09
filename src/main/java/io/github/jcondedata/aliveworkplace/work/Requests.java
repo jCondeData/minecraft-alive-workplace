@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
@@ -166,6 +167,24 @@ public final class Requests {
 		synchronized (POSTS) {
 			POSTS.put(villager, new Post(icon, count, what, accepts, villager.level().getGameTime()));
 		}
+	}
+
+	/**
+	 * Request names written to stand alone in the Hall's lists, capitalized ("A pickaxe"), each with a mid-sentence form
+	 * under the same key plus {@code .in_sentence} ("a pickaxe"; B1096).
+	 */
+	private static final Set<String> STANDALONE_NAMES = Set.of("request.aliveworkplace.pickaxe", "request.aliveworkplace.axe",
+		"request.aliveworkplace.fishing_rod", "request.aliveworkplace.seeds");
+
+	/**
+	 * {@code what} as it reads inside a sentence ("Needs a pickaxe", "Waiting for 12 Oak Planks, a pickaxe"), not at
+	 * the start of a line: a request name that stands alone capitalized gets its lower-case form; any other is unchanged.
+	 */
+	public static Component inSentence(Component what) {
+		if (what.getContents() instanceof TranslatableContents t && STANDALONE_NAMES.contains(t.getKey())) {
+			return Component.translatable(t.getKey() + ".in_sentence", t.getArgs()).setStyle(what.getStyle());
+		}
+		return what;
 	}
 
 	/** A tool: one of whatever {@code accepts}, shown as {@code icon} and called {@code key} ("a pickaxe"). */

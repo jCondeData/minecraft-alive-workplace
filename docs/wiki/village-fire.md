@@ -5,7 +5,7 @@ ROADMAP 32.16. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 chimney spark on a dry day or a raider's burning arrow. The fire spreads by the game's own rules but only through what
 the builders built, a new job, the **Firewarden**, puts it out, and the builders put back what burned.
 
-Roadmap items: 32.16, B218, B152
+Roadmap items: 32.16, B218, B152, B1071, B1083, B1095
 
 ## What a player sees
 
@@ -31,7 +31,10 @@ Roadmap items: 32.16, B218, B152
   "the Firewarden put it out"; or "the bucket brigade put it out", or "before it burned out"). A fire on a build's
   roof or against its wall is named after that build; only one in no build is "Fire in the village".
 - **The builders put back what burned** on their next look round the village's buildings, once the fire is out,
-  even with `builderRepairs` off (32.16a, see [Sieges](sieges.md)): a fire never destroys a build for good.
+  even with `builderRepairs` off (32.16a, see [Sieges](sieges.md)): a fire never destroys a build for good. An item
+  frame or painting that fell when its wall burned is hung again with the wall, from one in the builder's chests
+  (B1083), even when the server restarts in the middle of that repair (B1095); one you took down from a wall that
+  still stands stays down.
 
 ## How it works
 
@@ -44,7 +47,9 @@ Roadmap items: 32.16, B218, B152
 - **Lightning** (a mixin on the bolt's strike): a real, not visual-only, bolt in a village while it thunders rolls the
   chance; the roof of the finished build nearest the strike catches, on top of its highest wooden block still
   standing. **Burning arrows** (a mixin where an arrow hits a block): only from a raider of a culture (the gunners of
-  the pirates, 32.8), only with the mobGriefing game rule on, and only on a builder's wooden block. **The chimney
+  the pirates, 32.8), only with the mobGriefing game rule on, and only on a builder's wooden block. An arrow a raider
+  shot stays a raider's until it lands, even when its shooter left, was killed or was unloaded while it flew (B1071).
+  **The chimney
   spark** is rolled in the hall's round, once a day.
 - **Builders' blocks.** A block counts as the builders' when a finished build's blueprint has a block there and the
   world still holds it (the same rule as rams at gates, `MaterialRules.matches`). In a village the fire's burn and
@@ -125,6 +130,7 @@ builders put it back after a restart too.
   them, are all still there after 400 ticks.
 - `FireGameTests.withSiegeDamageOffNothingBurns`, `FireGameTests.theJobStartsFromAGrindstoneAndAWaterBucket`,
   `FireGameTests.lightningSetsTheRoofAlight`, `FireGameTests.aRaidersBurningArrowLightsTheRoof`,
+  `FireGameTests.aRaidersBurningArrowLightsTheRoofAfterItsShooterIsGone`,
   `FireGameTests.aJourneymanCallsABucketBrigade`, `FireGameTests.anEmptyFirewardenRefillsAtWater`,
   `FireGameTests.theWaterCarriedSurvivesASave`, `FireGameTests.theBuilderPutsBackWhatBurned`,
   `FireGameTests.switchedOffAFirewardenStandsIdle`, `FireGameTests.everyNewSentenceHasItsText`.
@@ -132,4 +138,23 @@ builders put it back after a restart too.
 - QA (`QaVillageFixes1104c3GameTests`, B390): a fire set against the outside of a finished hut's corner post is written
   up under the hut's name; a fire on the ground two blocks from the hut is "Fire in the village", and a spot one block
   further out than the wall, or two over the roof, belongs to no build.
+- GameTests (B1083): `QaThreatSpare1109bBugTests.aFrameUnderARoofPlankTheFireBurnedIsHungAgainWithThePlank`: a fire
+  burns the roof plank a finished hut's item frame hangs under; the builder puts the plank back and hangs the frame
+  again from the one in his chest.
+- QA (lane D, 2026-11-09, B1083): `QaFireFrames1109dGameTests` (3): with one roof plank burned and the frame under
+  another taken down by a player, the repair hangs the burned one's frame again and leaves the player's down, using one
+  item frame from the chest; a painting that fell with its burned post goes back up with it (one painting used, the
+  frames that never fell neither doubled nor lost); with no item frame in any chest the plank still goes back, no frame
+  is conjured and the plank comes off the threats' list. Hand mutants killed: the finished repair's placeAll call
+  dropped, the "can it hang" check dropped, the repair's frame filter dropped. Survivor: the damaged-list check, which
+  led to B1095 (a restart mid-repair after another builder's look loses the frame; test on `tests/fire-frames-1109d`).
+- QA (lane B, 2026-11-09, B1083): `QaBuilderFixes1109bGameTests` (4): a burned frame's wall is repaired with exactly
+  one frame from the chest (4 become 3); with no frame in the chests the plank comes back and no frame is made from
+  nothing; a frame the player took down from a standing wall stays down through a repair; a burned frame is still hung
+  after a save and reload mid-repair.
+- GameTests (B1095): `QaFireFrames1109dBugTests` (3): a burned block that is back stays on the threats' list while a
+  repair of its building is under way (`Upkeep.threatDamage`), so a restart mid-repair, after another builder's look,
+  still hangs the frame that fell with it; a frame a player took down from a standing roof plank still isn't hung by
+  that restarted repair; with no restart and a second builder looking all along, the frame goes up once and the plank
+  comes off the list after the repair ends.
 - Showcase scenes: `fire`.

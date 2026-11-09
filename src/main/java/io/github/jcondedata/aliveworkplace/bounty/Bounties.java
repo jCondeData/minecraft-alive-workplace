@@ -469,7 +469,7 @@ public final class Bounties implements ResourceManagerReloadListener {
 		Component name = b.name(level);
 		Component where = VillageHallScreen.where(hall, spot);
 		for (ServerPlayer player : players(level, hall)) {
-			Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.posted", VillageHalls.name(level, hall), name, where, b.reward)
+			Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.posted", VillageHalls.name(level, hall), name, where, reward(b.reward))
 				.withStyle(ChatFormatting.GOLD));
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.BOUNTY, Component.translatable("chronicle.aliveworkplace.bounty.posted", name, b.quirkName(), where));
@@ -740,7 +740,7 @@ public final class Bounties implements ResourceManagerReloadListener {
 		out.add(plain(Component.translatable("tooltip.aliveworkplace.wanted_poster.name", b.name(level)), ChatFormatting.WHITE));
 		out.add(plain(Component.translatable("tooltip.aliveworkplace.wanted_poster.quirk", b.quirkName()), ChatFormatting.RED));
 		out.add(plain(Component.translatable("tooltip.aliveworkplace.wanted_poster.seen", VillageHallScreen.where(b.hall, b.hideout.spot)), ChatFormatting.GRAY));
-		out.add(plain(Component.translatable("tooltip.aliveworkplace.wanted_poster.reward", b.reward), ChatFormatting.GREEN));
+		out.add(plain(Component.translatable("tooltip.aliveworkplace.wanted_poster.reward.money", reward(b.reward)), ChatFormatting.GREEN));
 		return out;
 	}
 
@@ -800,6 +800,31 @@ public final class Bounties implements ResourceManagerReloadListener {
 		}
 	}
 
+	/**
+	 * A mob that turned into another in vanilla (a zombie drowning, a skeleton freezing; {@code ConvertedMobs}): the new
+	 * mob takes the old one's place as a bounty's captain or one of his band, so killing it still ends the bounty (B1072).
+	 * True if a bounty changed.
+	 */
+	public static boolean converted(ServerLevel level, UUID before, UUID after) {
+		Data data = Data.get(level);
+		boolean changed = false;
+		for (Bounty b : data.bounties.values()) {
+			if (before.equals(b.captain)) {
+				b.captain = after;
+				changed = true;
+			}
+			int at = b.band.indexOf(before);
+			if (at >= 0) {
+				b.band.set(at, after);
+				changed = true;
+			}
+		}
+		if (changed) {
+			data.setDirty();
+		}
+		return changed;
+	}
+
 	/** A lair whose captain is posted falls: the bounty is paid to his killer. */
 	static void lairBroken(ServerLevel level, Lairs.Lair lair, @Nullable Entity by) {
 		Data data = Data.get(level);
@@ -812,8 +837,8 @@ public final class Bounties implements ResourceManagerReloadListener {
 				if (by instanceof ServerPlayer player) {
 					pay(player, b.reward);
 					io.github.jcondedata.aliveworkplace.story.Reputation.add(level, b.hall, player, io.github.jcondedata.aliveworkplace.story.Reputation.BOUNTY);
-					Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.paid", b.reward, name).withStyle(ChatFormatting.GREEN));
-					Chronicle.record(level, b.hall, Chronicle.Kind.BOUNTY, Component.translatable("chronicle.aliveworkplace.bounty.claimed", player.getDisplayName(), name, b.reward));
+					Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.paid", reward(b.reward), name).withStyle(ChatFormatting.GREEN));
+					Chronicle.record(level, b.hall, Chronicle.Kind.BOUNTY, Component.translatable("chronicle.aliveworkplace.bounty.claimed.money", player.getDisplayName(), name, reward(b.reward)));
 				}
 				refreshBoards(level);
 			}
@@ -849,8 +874,8 @@ public final class Bounties implements ResourceManagerReloadListener {
 		data.setDirty();
 		pay(player, b.reward);
 		io.github.jcondedata.aliveworkplace.story.Reputation.add(level, hall, player, io.github.jcondedata.aliveworkplace.story.Reputation.BOUNTY);
-		Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.paid", b.reward, name).withStyle(ChatFormatting.GREEN));
-		Chronicle.record(level, hall, Chronicle.Kind.BOUNTY, Component.translatable("chronicle.aliveworkplace.bounty.claimed", player.getDisplayName(), name, b.reward));
+		Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.paid", reward(b.reward), name).withStyle(ChatFormatting.GREEN));
+		Chronicle.record(level, hall, Chronicle.Kind.BOUNTY, Component.translatable("chronicle.aliveworkplace.bounty.claimed.money", player.getDisplayName(), name, reward(b.reward)));
 		level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1f);
 		refreshBoards(level);
 		return Claim.PAID;
@@ -859,6 +884,11 @@ public final class Bounties implements ResourceManagerReloadListener {
 	/** Pays a bounty: {@code emeralds}, or as many CobbleDollars' worth where that mod keeps the money. */
 	static void pay(ServerPlayer player, int emeralds) {
 		Money.pay(player, (long) emeralds * Money.DOLLARS_PER_EMERALD, emeralds);
+	}
+
+	/** A bounty's reward as the player reads it: "15 emeralds", or "1,500 CobbleDollars" where that mod keeps the money (B1060). */
+	static Component reward(int emeralds) {
+		return Money.describe((long) emeralds * Money.DOLLARS_PER_EMERALD, emeralds);
 	}
 
 	/** Hands in the first insignia {@code player} carries. */

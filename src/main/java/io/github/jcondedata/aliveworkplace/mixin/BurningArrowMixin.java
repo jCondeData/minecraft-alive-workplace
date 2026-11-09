@@ -12,7 +12,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** A raider's burning arrow may light the builder's wooden block it hits (ROADMAP 32.16, the pirate gunners of 32.8). */
+/**
+ * A raider's burning arrow may light the builder's wooden block it hits (ROADMAP 32.16, the pirate gunners of 32.8).
+ * The arrow itself is passed, not its live owner, so a raider's shot still counts after its shooter is gone (B1071).
+ */
 @Mixin(AbstractArrow.class)
 public abstract class BurningArrowMixin extends Projectile {
 	protected BurningArrowMixin(EntityType<? extends Projectile> type, Level level) {
@@ -22,7 +25,7 @@ public abstract class BurningArrowMixin extends Projectile {
 	@Inject(method = "onHitBlock", at = @At("HEAD"))
 	private void aliveworkplace$lightsTheRoof(BlockHitResult hit, CallbackInfo ci) {
 		if (isOnFire() && level() instanceof ServerLevel level) {
-			VillageFire.arrow(level, getOwner(), hit, level.random);
+			VillageFire.arrow(level, this, hit, level.random);
 		}
 	}
 }

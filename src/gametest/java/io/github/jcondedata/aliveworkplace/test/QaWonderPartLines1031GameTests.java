@@ -96,6 +96,9 @@ public class QaWonderPartLines1031GameTests implements net.fabricmc.fabric.api.g
 		v.owner().teleportTo(v.builder().getX() + 1, v.builder().getY(), v.builder().getZ());
 		net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.invoker().interact(v.owner(), v.level(), InteractionHand.MAIN_HAND, v.builder(), null);
 		v.owner().setShiftKeyDown(false);
+		// 42.5: the click opens his status card; its first button, In chat, sends the status lines, pressed as a player does
+		helper.assertTrue(v.owner().containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu, "no status card opened");
+		JobCardGameTests.inChat(v.owner());
 		List<String> lines = new ArrayList<>(strings(v.heard()));
 		lines.addAll(run(v, "workplace sites"));
 		AliveWorkplace.LOG.info("QA B703 queued part (part builder {}, queued {}, hut active {}): {}", part.builder(), part.isQueued(),

@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049
 
 ## What a player sees
 
@@ -87,7 +87,9 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   Jesse): Imported aliveworkplace:create_schematics/jesse/riverside_kiosk (5 × 5 × 5)". A written Schematic used on
   the table imports its own file there and then (the same line), then the table opens. Blocks of mods the server
   doesn't have are counted and named, as for every import ("... 1 block from a mod that isn't installed became air:
-  steamworks:brass_gauge."). A schematic uploaded again under the same name replaces its blueprint. A Schematic whose
+  steamworks:brass_gauge."). A schematic uploaded again under the same name replaces its blueprint; a builder half-way
+  through the old one keeps building it until the server restarts, then starts the new one's lists from the top (what
+  already stands as drawn is skipped), so it never ends with holes (B1049). A Schematic whose
   file is gone says so ("The schematic file hut.nbt isn't among Jesse's uploads on this server. Upload it again at a
   Schematic Table."), a blank one says to write it first, and one naming a file outside the uploads is refused.
   A Schematic written without its size (by a command or another mod) gets it from its file when it is used on the
@@ -393,6 +395,11 @@ showcase catalog).
 - On the caravans' list (`aliveworkplace_caravans`, 39.7): each village's `stations` (positions) and `tracks` (the
   villages it has laid track towards), both absent in older saves (none), and a shipment's `byTrain` (absent: false,
   it walks). A village taken off the list takes its stations and the track towards it with it.
+
+- On every build site (B1049): `blueprint_hash`, a fingerprint of the blueprint its stage and cursor point into (its size
+  and every block). A load whose blueprint differs (a schematic uploaded again under its name) starts its lists again
+  and drops what was deferred; absent in older saves, which keep their place and record it on their first plan. A
+  deferred step past the end of today's list (an older save of a since-shrunk blueprint) is dropped, never read.
 
 Nothing is saved for schematics (39.6): imports are ordinary blueprints in the world's generated structures, and what's
 been imported is found again from the files' times.
@@ -743,5 +750,15 @@ village's last column empties it (B994).
   checked.
 - `CreateBuildsGameTests.noContraptionsWithoutCreate` (without Create): no parts, no order, nothing checked; the new
   saved fields' defaults and round trips; the lines' text.
+- `QaReplacedMidBuild1108GameTests.aBlueprintReplacedHalfWayAndReloadedIsBuiltWhole` (QA, B1049): a builder half-way
+  through a 5x1x5 stone brick pad imported as a Create schematic id, the file uploaded again as a 3x2x3 oak plank block
+  and the server restarted: the build ends with all 18 planks standing.
+- `ReplacedBlueprintGameTests` (3, B1049): the fingerprint is saved and an unchanged blueprint keeps its stage and
+  cursor after a load; a changed one goes back to the first list with nothing deferred; an older save (no fingerprint)
+  retrying a deferred step far past the end of the list drops it and goes on with the valid one, nothing thrown.
+- `QaBuilderFixes1109bGameTests` (QA, lane B, 2026-11-09, B1049; 5): a schematic replaced half-way and the server
+  restarted is built whole whether the new one is the same size (25 planks, no old bricks left), bigger (5x2x5, all 50)
+  or smaller (3x1x3 of the same bricks); the same file uploaded again is harmless (all 25 bricks); replaced with no
+  restart, the old pad is finished whole.
 
 Showcase scenes: `mechanic`, `create_mill`, `create_builds`, `create_contraption` (all filmed with Create).

@@ -200,7 +200,10 @@ public class QaSeatDrop1108cCompatTests implements FabricGameTest {
 		String[] seen = {null};
 		helper.onEachTick(() -> {
 			if (at[0] < 0) {
-				if (chair.equals(FurnitureSeats.walkingTo(v)) && !v.isPassenger()) {
+				// B1076: he really walks there (on his feet, the brain's walk set to the chair). A villager can pick the
+				// chair on his first tick, before he lands; vanilla can't path in the air, says "can't reach" and erases
+				// the walk, so the walk set here next would be erased by vanilla too, not by the dropped seat.
+				if (chair.equals(FurnitureSeats.walkingTo(v)) && walkTargetIs(v, chair) && v.onGround() && !v.isPassenger()) {
 					at[0] = helper.getTick();
 					v.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(elsewhere, 0.5f, 1));
 					Furnishings.ENABLED = false;

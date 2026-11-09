@@ -70,7 +70,8 @@ all they need: they may come", you only have to wait.
 ## Guests, and settling
 
 A visiting or found Legend arrives as a **guest** and stays up to three days. Right-click them for their terms: what
-they would bring and what they want to stay. The moment every need is met they settle: they take the free bed in a
+they would bring and what they want to stay (a list: who they are, what they bring, how many of their wants are met,
+how long they stay; point at a row for every line). The moment every need is met they settle: they take the free bed in a
 tier III home and their trade as a Master. If not, they leave on the third evening, and the chronicle says what they
 missed. Legends without a trade of their own (the Old Sage, the Seer, the Merchant Prince, the two Pokémon Legends)
 take the **Legend** job, which needs no workstation.

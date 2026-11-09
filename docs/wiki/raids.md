@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133, B824, B856, B919
+Roadmap items: 32.2, 32.14, B133, B824, B856, B919, B1063, B1054
 
 ## What a player sees
 
@@ -27,6 +27,19 @@ its captain falls. Under that look:
   RADIUS + 32 across and 48 blocks up or down from the hall, the same rule for who a village counts, whose raid a
   raider is and a siege's raiders; of the raids that reach it, the nearest hall's (the first raided, on a tie). So one
   raider 49 blocks below a second raided village no longer keeps both raids going (B915).
+  A raider led out of every raided village's reach (a player kiting it away, or it chasing someone) still belongs to
+  the raid whose hall is nearest: that raid isn't fought off while it lives, and at the raid's hour it leaves with the
+  others, wherever it is (B1055: the raid used to be booked as fought off, and the raider stayed in the world for good).
+  Out there, a raider only counts for the raid it came with (B1063): each raider is stamped with its raid (the hall and
+  the moment it began) when it spawns and whenever that raid holds it in its reach, so a leftover of an older raid (one
+  that stood in unloaded ground when its raid ended) never keeps a later raid going, however near or far it is. A raider
+  with no stamp (from a save made before this) counts only within 64 blocks beyond the reach of the nearest raided hall,
+  across and up or down (so out to RADIUS + 96 across and 112 blocks above or below the hall).
+  A raider that turns into another mob the vanilla way (a husk drowning in a moat becomes a zombie, a zombie a drowned,
+  a skeleton in powder snow a stray) is still that raid's raider (B1054): every tag the mod put on it (raider, stamp,
+  role, and a lair's, bandit camp's, bounty's or rogue's mark) goes over to the new mob, so the raid isn't booked as
+  fought off while it walks the village, it leaves at dawn, and builders' blocks are spared from it as before. A
+  fallen Warlord's band that zombifies stays the raid's but is no lair's any more (32.10).
 
 ## A day's warning (32.14)
 
@@ -227,3 +240,27 @@ None.
   raid. B919: the Seer's idle line word for word ("sees raids in visions, 2 days before they come", never a tower),
   "a day before" for a one-day Seer and "3 days" for a three-day one, "No lookout" once the Seer is gone, and the
   Lighthouse keeper's sea-watch line.
+- B1055: `QaRaiderLedAway1108dBugTests.aRaiderLedOutOfTheVillagesReachIsNotFoughtOffAndLeavesAtDawn` (a raid's
+  last raider one block past the reach: the night round keeps the raid going, and the morning round sends it away).
+- B1063: `QaRaidOrphan1108dBugTests` (an unstamped leftover 200 blocks off doesn't keep a new raid going) and
+  `QaRaidStamp1108aGameTests` (a raid's own raider led 200 blocks off still keeps it going; a leftover stamped by an
+  ended raid, 40 blocks off, doesn't).
+- QA (lane D, 2026-11-09, B1063): `QaRaidStampEdges1109dGameTests` (7): with two raids under way, one raid's stray
+  standing nearer the other raided hall keeps only its own raid going; a leftover stamped by the same hall's raid one
+  tick older, or by a hall one block over, keeps no new raid going and isn't sent away; an unstamped stray counts at 64
+  blocks beyond the reach and not at 65, across and up; a stamped stray still counts after the stray and the raids are
+  saved and loaded; a leftover the new raid holds in its reach takes its stamp (one stamp, not two) and counts when led
+  out again; at dawn the raid's own far stray leaves with it; and a raider's arrow keeps its mark through bounces and a
+  save, loses it to a real new owner and doesn't get it back. Mutants killed: 4 of 4 (strays to the nearest hall, 65
+  for 64, the old stamp kept, the mark dropped on a null owner).
+- B1054: `QaRaiderDrowns1108dBugTests` (a raider husk held under water turns into a zombie that is still a raider) and
+  `ConvertedMobsGameTests` (a raider skeleton frozen into a stray keeps its raider tag, stamp and role; a bandit zombie
+  that drowns keeps its band's tags; a skeleton the mod never touched converts with no tag of ours; a zombified lair
+  piglin keeps the raid but not the lair).
+- B1054, B1071, B1072 (QA): `QaConvertedThreats1109dGameTests` (a skeleton frozen in powder snow keeps the raid going
+  until killed; a drowned raid zombie leaves at dawn; a converted raider counts only for its own village's raid and still
+  spares builders' blocks; every threat tag survives conversion; a raider's burning arrow still lights a roof after its
+  shooter is killed, unloaded or converted; a drowned lair captain goes home as captain and survives a restart; a
+  converted band member leaves with the band). `QaSiegeConverts1109dGameTests`: a climber that drowns finishes its
+  ladder; killing it ends the siege and takes the ladder away. A raider that converts after getting through the gate is
+  walked back toward it (B1085, open).

@@ -8,7 +8,10 @@ import io.github.jcondedata.aliveworkplace.mc.Ids;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Explosion;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +29,12 @@ public final class ThreatDamage {
 	/** Set while a siege's ram breaks the gate block it is allowed to break. */
 	private static boolean ramming;
 
+	/**
+	 * Carried by a projectile a raider shot (B1066, B1064), saved with it: its owner reads as null once that raider is
+	 * discarded, killed or unloaded, and the shot must stay a threat's.
+	 */
+	public static final String SHOT_TAG = "aliveworkplace_raider_shot";
+
 	/** Whether {@code entity} is a threat's: a raider ({@link Threats#RAIDER_TAG}) or what one shot. */
 	public static boolean isThreat(@Nullable Entity entity) {
 		if (entity == null) {
@@ -34,7 +43,31 @@ public final class ThreatDamage {
 		if (entity.getTags().contains(Threats.RAIDER_TAG)) {
 			return true;
 		}
-		return entity instanceof Projectile p && p.getOwner() != null && p.getOwner() != entity && p.getOwner().getTags().contains(Threats.RAIDER_TAG);
+		if (!(entity instanceof Projectile p)) {
+			return false;
+		}
+		if (p.getTags().contains(SHOT_TAG)) {
+			return true;
+		}
+		Entity owner = p.getOwner();
+		return owner != null && owner != entity && owner.getTags().contains(Threats.RAIDER_TAG);
+	}
+
+	/**
+	 * {@code projectile} was given {@code owner} (shot, thrown, or deflected to a new owner): a raider's shot carries
+	 * {@link #SHOT_TAG} from then on, saved with it; a shot taken over by anyone else drops it. A null owner is no
+	 * take-over (B1079): vanilla ignores {@code setOwner(null)}, and {@code deflect} passes the arrow's own
+	 * {@code getOwner()}, null once its raider is gone, so a bounced raider's shot stays a raider's.
+	 */
+	public static void shot(Projectile projectile, @Nullable Entity owner) {
+		if (projectile.level().isClientSide() || owner == null) {
+			return;
+		}
+		if (owner != projectile && owner.getTags().contains(Threats.RAIDER_TAG)) {
+			projectile.addTag(SHOT_TAG);
+		} else {
+			projectile.removeTag(SHOT_TAG);
+		}
 	}
 
 	/** Whether the block at {@code pos} is the builders': a finished build's block as drawn, or inside a build under way. */
@@ -70,6 +103,45 @@ public final class ThreatDamage {
 			return;
 		}
 		toBlow.removeIf(pos -> !level.getBlockState(pos).isAir() && builders(level, pos));
+	}
+
+	/**
+	 * Whether a threat's {@code source} must leave {@code hanging} on its wall (B1053): a raider's blast or shot (its
+	 * direct or causing entity a threat's) never breaks an item frame or painting hung on the builders' work, as a
+	 * repair can't hang it again. Players' and anything else's damage breaks it as before.
+	 */
+	public static boolean sparesHanging(ServerLevel level, HangingEntity hanging, DamageSource source) {
+		if (!isThreat(source.getDirectEntity()) && !isThreat(source.getEntity())) {
+			return false;
+		}
+		BlockPos on = hanging.getPos().relative(hanging.getDirection().getOpposite());
+		return !level.getBlockState(on).isAir() && builders(level, on);
+	}
+
+	/**
+	 * Whether a threat's {@code source} must leave {@code stand} standing (B1080): as with the frames (B1053), a raider's
+	 * blast or shot never breaks an armor stand on the builders' work (Scan Tool blueprints carry them, B441), so the
+	 * builders' finished build keeps it, and whatever a player hung on it. Players' and anything else's damage breaks it
+	 * as before, and one a player takes away stays away.
+	 */
+	public static boolean sparesStand(ServerLevel level, ArmorStand stand, DamageSource source) {
+		return (isThreat(source.getDirectEntity()) || isThreat(source.getEntity())) && onBuilders(level, stand);
+	}
+
+	/** {@link #sparesStand(ServerLevel, ArmorStand, DamageSource)} for a threat's {@code explosion}: it neither breaks nor pushes the stand. */
+	public static boolean sparesStand(ServerLevel level, ArmorStand stand, Explosion explosion) {
+		return (isThreat(explosion.getDirectSourceEntity()) || isThreat(explosion.getIndirectSourceEntity())) && onBuilders(level, stand);
+	}
+
+	/** Whether {@code stand} stands on (or in, a slab or carpet) a builder's block. */
+	private static boolean onBuilders(ServerLevel level, ArmorStand stand) {
+		BlockPos at = stand.blockPosition();
+		for (BlockPos pos : List.of(at, at.below())) {
+			if (!level.getBlockState(pos).isAir() && builders(level, pos)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Runs {@code blow} as a ram's: the gate block it breaks is the one break a threat is allowed. */

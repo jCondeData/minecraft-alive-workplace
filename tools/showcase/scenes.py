@@ -118,11 +118,17 @@ SCENES = [
       "the table's library showed Starter Cottage IV with its cellar under a faint ground plane, turning, then the Storehouse and its vault, each size line saying how deep it goes", 45,
       [("01_cottage_cellar", "Starter Cottage IV and its cellar"), ("02_cottage_turned", "Turned"),
        ("03_storehouse_vault", "The Storehouse and its vault"), ("04_storehouse_turned", "Turned")]),
-    S("shapes", "Builder", "Shape Planner", "the Shape Planner screen opened with its materials", 45,
+    # 42.5: the job-status card (sneak-right-click with an empty hand on a Builder, Miner, Fisher, Farmer, Lumberjack, Orchard
+    # keeper or Postman): name, job and level, what they're doing, their work, what they need; Hall page opens their page
+    S("status_card", "Builder", "A worker's status card",
+      "a builder's status card showed his site with its progress, his experience and what he needs, and Hall page opened the Village Hall on his page", 45,
+      [("01_status_card", "The status card"), ("02_status_card_hall", "Hall page: his page in the Village Hall")]),
+    # 42.4: the builder tools are the list screen: the shapes and blocks as icon cells in their rows, - and + by each size
+    S("shapes", "Builder", "Shape Planner", "the Shape Planner opened as the list screen: the shapes and the stone bricks as icon cells in their rows, - and + by each size, Draw", 45,
       [("01_shapes_screen", "Shape Planner"), ("02_shapes_info", "Size and blocks")]),
     S("scan", "Builder", "The Scan Tool: your own build as a blueprint", "a hut was marked with the Scan Tool and saved as a blueprint", 30,
       [("01_scan_marked", "Two corners marked"), ("02_scan_saved", "Saved as a blueprint")]),
-    S("style_menu", "Builder", "Build it in a style", "the style picker opened, a style was chosen and the build mirrored", 50,
+    S("style_menu", "Builder", "Build it in a style", "the style picker opened as the list screen (Mirror first, a row per style with Choose), dark oak was chosen (gold) and the build mirrored", 50,
       [("01_style_screen", "Style picker"), ("02_style_chosen", "Dark oak chosen"), ("03_style_mirrored", "Mirrored")]),
     # Miner
     S("quarry", "Miner", "A miner digs out a quarry", "the miner dug out the whole quarry", 420,
@@ -234,11 +240,13 @@ SCENES = [
         [("04_hire_screen", "Hire a traveler")]),
     job("teacher", "Teacher", "Lessons for the village children", "the teacher schooled the children", 180),
     job("rancher", "Rancher", "Breaking in a horse", "the rancher tamed and saddled the horse"),
-    S("daycare", "Rancher", "Pokémon daycare", "the daycare screen opened with a boarder", 75,
-      [("01_daycare_screen", "Daycare"), ("02_daycare_boarder", "A boarder")], cobblemon=True),
+    # The list screen (ROADMAP 42.2): the boarders and the party as rows with Collect and Leave, the money at the top
+    S("daycare", "Rancher", "Pokémon daycare", "the daycare list opened with a boarder", 75,
+      [("01_daycare_screen", "The daycare list (the money's tooltip)"), ("02_daycare_boarder", "A boarder: levels, price, Collect")], cobblemon=True),
+    # The list screen (ROADMAP 42.2): Pick, then Pair; the pair, how well they get along, the eggs and Take back as rows
     S("daycare_keeper", "Daycare Keeper", "A pair left at the daycare, eggs collected",
-      "the daycare keeper took a pair of Eevee and two eggs were collected", 90,
-      [("01_daycare_keeper_screen", "The daycare"), ("03_daycare_keeper_pair", "How well they get along"), ("04_daycare_keeper_eggs", "Eggs waiting"),
+      "the daycare keeper's list took a pair of Eevee and two eggs were collected", 90,
+      [("01_daycare_keeper_screen", "The daycare list"), ("03_daycare_keeper_pair", "How well they get along"), ("04_daycare_keeper_eggs", "Eggs waiting: Collect"),
        ("05_daycare_keeper_collected", "Collected")], cobblemon=True),
     # Fisherman
     S("fish", "Fisherman", "Fishing from the shore", "the fisherman caught a fish", 120,
@@ -342,7 +350,9 @@ SCENES = [
     S("guard_pokemon", "Guard", "A guard with Pokémon at his side", "the guard and the Pokémon killed the husks", 180,
       [("10_guard_armor", "In armor"), ("frame_*@middle", "Pokémon join in"), ("50_guard_done", "Husks down")],
       cobblemon=True),
-    job("nurse", "Nurse", "Healing and curing villagers", "the nurse healed and cured the villagers"),
+    # Then her card (ROADMAP 43.3): the player's health and poison, the party's HP with bars, Heal
+    job("nurse", "Nurse", "Healing and curing villagers", "the nurse healed and cured the villagers, then her card showed the player and the party with Heal ready",
+        170, [("04_nurse_card", "Her card: your health and your party")], cobblemon=True),
     S("pokemon_center", "Nurse", "The Pokémon Center",
       "both tiers stand in all three looks, and the nurse put the team in her Healing Machine and every Pokémon came out full", 70,
       [("02_pokemon_center_2", "Pokémon Center II"),
@@ -350,17 +360,19 @@ SCENES = [
        ("06_plaza", "Sunny Plaza look, both tiers"),
        ("03_healing", "In the Healing Machine")], cobblemon=True),
     # Shopkeeper
-    S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,
+    # 42.4: the shop and the ferry (CobbleDollars) are the list screen: the money at the top, a row per lot with its price and Buy
+    S("shop", "Shopkeeper", "The shop", "the shop opened as the list screen: the money at the top, a row per lot with its stock, its price and Buy", 60,
       [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),
     S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list, the owner's sales log and a Price Tag's screen opened", 55,
       [("01_counter_screen", "Price list"), ("02_counter_price", "A price"), ("03_counter_sales", "Sales log"), ("04_price_tag", "Price Tag")]),
     # Ferryman
-    S("ferry_menu", "Ferryman", "Buying a travel ticket", "the ferryman's ticket screen opened", 45,
+    S("ferry_menu", "Ferryman", "Buying a travel ticket", "the ferryman's tickets opened as the list screen: the Far Shore's row with its fare and Buy, then gold Confirm", 45,
       [("01_ferry_screen", "Destinations"), ("02_ferry_confirm", "Confirm the fare")]),
     job("bard", "Bard", "Playing at the jukebox", "the bard played music"),
     # Cobblemon
-    S("battle", "Trainer", "A battle with a Master trainer", "the battle ran to the end and a Mega Evolution happened", 420,
-      [("battle_*@first", "Battle starts"), ("battle_*@middle", "Mid-battle"), ("99_battle_end", "Battle over")],
+    # The Trainer screen (ROADMAP 43.1) first: its Challenge starts the battle
+    S("battle", "Trainer", "A battle with a Master trainer", "the Trainer screen opened, its Challenge started the battle, the battle ran to the end and a Mega Evolution happened", 420,
+      [("00_trainer_screen", "The Trainer screen"), ("battle_*@first", "Battle starts"), ("battle_*@middle", "Mid-battle"), ("99_battle_end", "Battle over")],
       cobblemon=True, mega=True),
     # Mega Stones from the village (ROADMAP 38.6): a Journeyman Jeweller cuts a Mega Stone for the village's Master
     job("mega_jeweller", "Jeweler", "Mega Stones: the Jeweler cuts one for the village's Master",
@@ -414,18 +426,24 @@ SCENES = [
       "each of the eight themes' Cup page shows its card and rules, and its fair sells its wares", 50,
       [("0*_page@spread", "The themes' Cup pages"), ("01_blossom_cup_fair", "The Blossom Cup's fair"),
        ("04_workers_cup_page", "The Workers' Cup's rules"), ("08_grand_cup_fair", "The Grand Cup's fair")], cobblemon=True),
-    S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer Leader took the challenge", 90,
-      [("01_leader", "At the podium"), ("02_leader_battle", "The battle starts")], cobblemon=True),
-    S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson screen opened", 60,
-      [("01_tutor_screen", "Lessons"), ("02_tutor_lesson", "A lesson")], cobblemon=True),
+    # The Trainer screen (ROADMAP 43.1) on the Leader: who they are, the team half hidden, the party, Challenge
+    S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer screen opened on the Leader and its Challenge started the battle", 90,
+      [("01_leader", "The Trainer screen"), ("02_leader_battle", "The battle starts")], cobblemon=True),
+    # The list screen (ROADMAP 42.1): the party as tabs, the lessons as rows with a Teach button, the money at the top
+    S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson list opened and Teach chose a lesson", 60,
+      [("01_tutor_screen", "The lesson list"), ("02_tutor_lesson", "A lesson chosen: Confirm to pay"),
+       ("03_tutor_tooltip", "A lesson's details")], cobblemon=True),
     S("smith", "Ball Smith", "A Ball Smith at work", "the ball smith made balls", 150,
       [("01_smith_working", "At the smithing table"), ("02_smith_done", "Balls made")], cobblemon=True),
-    S("smith_orders", "Ball Smith", "Choosing which balls to make", "the orders screen opened", 60,
-      [("01_orders_screen", "Orders"), ("02_orders_picked", "A ball picked")], cobblemon=True),
-    S("trader", "Pokémon Trader", "The Pokémon Trader's own trade screen", "the trade screen opened", 60,
-      [("01_trader_offer", "The offers as cards"), ("02_trader_party", "A Pokémon that fits"), ("04_trader_confirm", "Click again to trade"), ("05_trader_traded", "Traded: come back tomorrow")],
+    # The list screen (ROADMAP 42.3): a row per ball with Pick, the picked one gold with Unpick
+    S("smith_orders", "Ball Smith", "Choosing which balls to make", "the orders list opened and a Poké Ball was picked", 60,
+      [("01_orders_screen", "The orders list (what she makes, at the top)"), ("02_orders_picked", "A ball picked: gold, Unpick")], cobblemon=True),
+    S("trader", "Pokémon Trader", "The Pokémon Trader's trade screen, in the Village Hall's look", "the trade screen opened", 60,
+      [("01_trader_offer", "The day's offers as a list"), ("02_trader_party", "A Pokémon that fits"), ("04_trader_confirm", "Click again to trade"), ("05_trader_traded", "Traded: come back tomorrow")],
       cobblemon=True),
-    job("fossil", "Fossil Scientist", "Reviving a fossil", "the fossil scientist revived the fossil", 150, cobblemon=True),
+    # Then their card (ROADMAP 43.3): each fossil's progress with a bar, Hand over
+    job("fossil", "Fossil Scientist", "Reviving a fossil", "the fossil scientist revived the fossil, then their card showed a ready fossil and one under way with Hand over ready",
+        160, [("04_fossil_card", "Their card: each fossil's progress")], cobblemon=True),
     job("berry_breeder", "Berry Breeder", "Breeding a Lum Berry", "the berry breeder bred a Lum Berry from Oran and Cheri", 150,
         [("04_berry_book", "The berry book")], cobblemon=True),
     job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,
@@ -455,9 +473,15 @@ SCENES = [
         cobblemon=True),
     job("gem_grower", "Gem Grower", "A ripe amethyst cluster picked, the budding block kept",
         "the gem grower picked the ripe amethyst cluster and left the budding amethyst", 150),
+    # The list screen (ROADMAP 42.3): a row per bed with what it's planted with and Pick
+    S("gem_orders", "Gem Grower", "Choosing which gem beds she keeps", "the gem grower's orders list opened and the amethyst bed was picked", 60,
+      [("01_gem_orders_screen", "The orders list (which beds she keeps, at the top)"), ("02_gem_orders_picked", "A bed picked: gold, Unpick")]),
     job("jeweller", "Jeweler", "Making amethyst rings at the stonecutter", "the jeweler made amethyst rings at the stonecutter"),
     job("habitat_keeper", "Habitat Keeper", "A snack set out, a log slathered, a shiny spotted",
         "the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 150, cobblemon=True),
+    # The list screen (ROADMAP 42.3): her lure now at the top, Any snack first, a row per lure with its berries and Choose
+    S("habitat_lures", "Habitat Keeper", "Choosing the habitat keeper's lure", "the lures list opened and the Fire type was chosen", 60,
+      [("01_lures_screen", "The lures list (her lure now, at the top)"), ("02_lures_fire", "Fire chosen: gold, Chosen")], cobblemon=True),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),
@@ -715,6 +739,10 @@ SCENES = [
       "the Pokémon Professor in a white lab coat by the hall, hints about the player's party, and the Pokédex research tab", 50,
       [("01_professor", "The Professor by the hall"), ("02_professor_hints", "Hints: IVs in words, nature, hidden ability, EVs"),
        ("03_pokedex_tab", "The Pokédex tab")], cobblemon=True),
+    # The Professor's hints as the list screen (ROADMAP 42.2, Cobblemon): the party's rows, a Pokémon's hints, today's stone bought
+    S("professor", "Legends", "The Pokémon Professor's hints as a list",
+      "the Professor's hints on the list screen: the party's rows with their natures, a Pokémon's hints, and today's evolution stone bought", 50,
+      [("01_professor_list", "The hints list"), ("02_professor_hints", "A Pokémon's hints"), ("03_professor_stone", "Today's stone bought")], cobblemon=True),
     # The Professor's Thesis (ROADMAP 31.21, Cobblemon): the request, a catch counting, the published thesis
     S("professors_thesis", "Village Hall", "The Professor's Thesis: the request, a catch, the published book",
       "the Professor's Thesis: Professor Alder by the hall asking for help with a thesis on Life in the Cold, the chapter's intro in chat; a Snorunt caught in a snowy biome going in the field notes; then the published thesis, the book 'Professor Alder: Life in the Cold' open on its cover page with the player as co-author", 50,

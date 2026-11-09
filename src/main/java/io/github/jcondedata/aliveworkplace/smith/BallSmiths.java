@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.build.Friends;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,7 +26,8 @@ import net.minecraft.world.item.component.ItemLore;
 
 /**
  * Orders for a Ball Smith: sneak-right-click them to pick which balls they make. With none picked they make whatever
- * their chests have the makings for (taking turns); with some picked, only those.
+ * their chests have the makings for (taking turns); with some picked, only those. Shown as the list screen (ROADMAP 42.3):
+ * what she makes at the top, a row per ball (whether it's asked for, the level it needs) with Pick or Unpick.
  */
 public final class BallSmiths {
 	/** First slot of the ball buttons (the top row explains). */
@@ -69,7 +71,7 @@ public final class BallSmiths {
 			return;
 		}
 		Friends.hire(player, villager);
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.ball_smith.orders", villager.getDisplayName()),
+		ChoiceMenu.openList(player, Component.translatable("screen.aliveworkplace.ball_smith.orders", villager.getDisplayName()),
 			p -> villager.isAlive() && p.isAlive() && p.distanceTo(villager) <= 8,
 			menu -> render(menu, villager));
 	}
@@ -87,6 +89,11 @@ public final class BallSmiths {
 		info.set(DataComponents.LORE, new ItemLore(List.of(
 			Component.translatable(orders(villager).isEmpty() ? "screen.aliveworkplace.ball_smith.anything" : "screen.aliveworkplace.ball_smith.only")
 				.withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GRAY)))));
+		// The list screen's own line (42.3): what she makes at the top right (this book's tooltip on it), the hint, headings.
+		ChoiceList.info(info, Component.translatable(orders(villager).isEmpty() ? "screen.aliveworkplace.ball_smith.mode_any" : "screen.aliveworkplace.ball_smith.mode_only"),
+			Component.translatable("screen.aliveworkplace.ball_smith.list_hint"),
+			List.of(Component.translatable("screen.aliveworkplace.ball_smith.column_ball"), Component.translatable("screen.aliveworkplace.orders.column_order"),
+				Component.translatable("screen.aliveworkplace.ball_smith.column_level")));
 		menu.button(INFO_SLOT, info, null);
 		int tier = BuilderLevels.level(villager);
 		int slot = FIRST_BALL_SLOT;
@@ -106,6 +113,10 @@ public final class BallSmiths {
 					Component.translatable("merchant.level." + recipe.tier())).withStyle(style -> style.withItalic(false).withColor(ChatFormatting.YELLOW)));
 			}
 			icon.set(DataComponents.LORE, new ItemLore(lore));
+			// The list row: asked for or not, the level it needs (yellow while she's below it), Pick or Unpick; gold when picked.
+			ChoiceList.row(icon, Component.translatable(on ? "screen.aliveworkplace.ball_smith.on" : "screen.aliveworkplace.ball_smith.off"),
+				recipe.tier() > tier ? Component.translatable("merchant.level." + recipe.tier()).withStyle(ChatFormatting.YELLOW) : null,
+				Component.translatable(on ? "screen.aliveworkplace.orders.button_unpick" : "screen.aliveworkplace.orders.button_pick"), false, on);
 			menu.button(slot++, icon, p -> {
 				toggle(villager, ball);
 				render(menu, villager);

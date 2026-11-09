@@ -26,8 +26,9 @@ Some villages already have a **Leader's Hall**.
 
 ## Challenging the leader
 
-Right-click the leader with an empty hand to battle. A leader battles at **Expert** strength from the very start, pays **three times** a trainer's prize, and takes **one challenge a day** from each player ("come
-back tomorrow!").
+Right-click the leader with an empty hand: their page opens (see [Trainer](trainer.md)), and **Challenge** starts the
+battle. A leader battles at **Expert** strength from the very start, pays **three times** a trainer's prize, and takes **one challenge a day** from each player: after that,
+Challenge is gray with "come back tomorrow!" and Today says the day's challenge is used.
 
 A village has one leader: if there's another leader within 64 blocks with more experience, they take the challenges, and
 the other tells you to go to them.

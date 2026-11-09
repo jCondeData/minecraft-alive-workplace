@@ -114,6 +114,57 @@ public final class CobblemonTrainers {
 		}
 	}
 
+	// Why challenge() would refuse now, or null (the Trainer screen grays its Challenge button, 43.1): the player already
+	// in a battle (a click then did nothing), the trainer busy with someone else, or no Pokémon in the party. Changes
+	// nothing (toBattleTeam would heal the party, so it isn't asked here).
+	public static Component refusal(ServerPlayer player, Villager trainer) {
+		if (BattleRegistry.getBattleByParticipatingPlayer(player) != null) {
+			return Component.translatable("message.aliveworkplace.trainer.in_battle").withStyle(ChatFormatting.YELLOW);
+		}
+		if (isBattling(trainer)) {
+			return Component.translatable("message.aliveworkplace.trainer.busy", trainer.getDisplayName()).withStyle(ChatFormatting.YELLOW);
+		}
+		if (!Cobblemon.INSTANCE.getStorage().getParty(player).iterator().hasNext()) { // challenge() heals the party for the battle, so only none at all refuses
+			return Component.translatable("message.aliveworkplace.trainer.no_team").withStyle(ChatFormatting.YELLOW);
+		}
+		return null;
+	}
+
+	// The Trainer screen's Pokémon (43.1): the team as challenge() would field it against this player (brought down to
+	// their RCT level cap), each with its real model as an icon, and a line for each of the player's party.
+	public static io.github.jcondedata.aliveworkplace.trainer.TrainerView.Sides sides(ServerPlayer player, Villager trainer) {
+		java.util.OptionalInt cap = io.github.jcondedata.aliveworkplace.compat.rct.RctLevelCaps.levelCap(player);
+		List<Pokemon> team = teamOf(trainer);
+		List<Integer> before = team.stream().map(Pokemon::getLevel).toList();
+		if (cap.isPresent()) {
+			team = scaleToCap(team, Trainers.tier(trainer), cap.getAsInt());
+		}
+		List<io.github.jcondedata.aliveworkplace.trainer.TrainerView.TeamSlot> slots = new ArrayList<>();
+		for (int i = 0; i < team.size(); i++) {
+			Pokemon pokemon = team.get(i);
+			slots.add(new io.github.jcondedata.aliveworkplace.trainer.TrainerView.TeamSlot(com.cobblemon.mod.common.item.PokemonItem.from(pokemon),
+				pokemon.getLevel(), pokemon.getLevel() < before.get(i)));
+		}
+		List<io.github.jcondedata.aliveworkplace.trainer.TrainerView.PartyLine> party = new ArrayList<>();
+		for (Pokemon pokemon : Cobblemon.INSTANCE.getStorage().getParty(player)) {
+			Component state;
+			int color;
+			if (pokemon.isFainted()) {
+				state = Component.translatable("screen.aliveworkplace.trainer.party.fainted");
+				color = io.github.jcondedata.aliveworkplace.trainer.TrainerView.RED;
+			} else if (cap.isPresent() && pokemon.getLevel() > cap.getAsInt()) {
+				state = Component.translatable("screen.aliveworkplace.trainer.party.over_cap", cap.getAsInt());
+				color = io.github.jcondedata.aliveworkplace.trainer.TrainerView.ORANGE;
+			} else {
+				state = Component.translatable("screen.aliveworkplace.trainer.party.ready");
+				color = io.github.jcondedata.aliveworkplace.trainer.TrainerView.GREEN;
+			}
+			party.add(new io.github.jcondedata.aliveworkplace.trainer.TrainerView.PartyLine(com.cobblemon.mod.common.item.PokemonItem.from(pokemon),
+				pokemon.getDisplayName(false), pokemon.getLevel(), state, color));
+		}
+		return new io.github.jcondedata.aliveworkplace.trainer.TrainerView.Sides(List.copyOf(slots), List.copyOf(party), cap.orElse(-1));
+	}
+
 	// The trainer's team at this tier: always the same for the same trainer and tier (seeded by the
 	// villager), never legendaries; young Pokémon for beginners, fully evolved ones at the top.
 	public static List<Pokemon> team(UUID trainer, int tier) {

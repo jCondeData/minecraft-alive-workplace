@@ -36,7 +36,9 @@ They take turns between the kinds they can make and stop making a kind once the 
 all turned into one ball.
 
 **Orders.** Sneak-right-click them to pick which balls they make. With none picked they make whatever the chests have
-the makings for; with some picked, only those.
+the makings for; with some picked, only those. The orders are a list: what she makes at the top ("Makes any ball" or
+"Makes the picked balls"), then a row per ball with **Pick** (the picked ones gold, with **Unpick**) and, for a ball
+beyond her level, the level it needs.
 
 ![Choosing which balls to make](https://jcondedata.github.io/minecraft-alive-workplace/smith_orders/still-1.jpg)
 

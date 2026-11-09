@@ -3,7 +3,7 @@
 ```infobox
 type: Job
 image: https://jcondedata.github.io/minecraft-alive-workplace/trader/still-1.jpg
-caption: The offers as cards
+caption: The day's offers as a list
 Needs: Cobblemon
 Workstation: Shop Counter
 Pick it with: a Poké Ball
@@ -26,7 +26,7 @@ have a **Trade Hall**.
 
 ## Trading Pokémon
 
-Right-click the trader to see today's offers, one card each: "my Tinkaton, level 62, for any Fighting type, level 55 or
+Right-click the trader to see today's offers, one row each: "my Tinkaton, level 62, for any Fighting type, level 55 or
 higher", or now and then a special request for one kind of Pokémon (or its evolutions). Pick an offer and you see which
 of your Pokémon would do; click one, then click again to swap. A held item comes back to you.
 

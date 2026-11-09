@@ -2312,6 +2312,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick == 100) {
 			shot(mc, "01_shop_menu");
 			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>, "the shop screen opened");
+			// 42.4: as the list screen (the money at the top, a row per lot with its stock, price and Buy)
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceListScreen, "the shop opened as the list screen");
 		}
 		if (tick == 105) {
 			mc.setScreen(null);
@@ -3105,18 +3107,39 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 90) {
 			mc.getToasts().clear();
-			pointAt(mc, 13); // an empty slot, so no tooltip covers the screen
+			pointAt(mc, 13); // nothing there (the footer), so no tooltip covers the screen
 		}
 		if (tick == 100) {
 			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>, "the lesson screen opened");
+			// 42.1: the list screen in the Village Hall's look, not a chest: the party as tabs, the lessons as rows.
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceListScreen, "the lessons are the list screen: " + mc.screen);
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen list) {
+				Showcase.check(!list.listSlots().isEmpty() && list.listSlots().get(0) == io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.FIRST_MOVE_SLOT,
+					"the lessons are the list's rows: " + list.listSlots());
+			}
 			shot(mc, "01_tutor_screen");
-			pointAt(mc, 19); // the second lesson: its tooltip
+		}
+		if (tick == 105 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen list) {
+			// Teach on the second lesson: the row turns gold and its button says Confirm (nothing paid yet).
+			list.press(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.FIRST_MOVE_SLOT + 1, 0, false);
+		}
+		if (tick == 112) {
+			pointAt(mc, 13);
 		}
 		if (tick == 120) {
 			mc.getToasts().clear();
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen list
+				&& io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(list.getMenu().slots
+					.get(io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.FIRST_MOVE_SLOT + 1).getItem()) instanceof io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark m
+				&& m.on(), "Teach chose the lesson (gold, Confirm)");
 			shot(mc, "02_tutor_lesson");
+			pointAt(mc, io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTutors.FIRST_MOVE_SLOT + 2); // the third lesson: its tooltip
 		}
-		if (tick == 130) {
+		if (tick == 135) {
+			mc.getToasts().clear();
+			shot(mc, "03_tutor_tooltip");
+		}
+		if (tick == 145) {
 			mc.stop();
 		}
 	}
@@ -3339,7 +3362,20 @@ public class ScreenshotHarness implements ClientModInitializer {
 			server.execute(() -> server.getPlayerList().getPlayers().get(0).teleportTo(server.overworld(), 0.5, -60, -6.5, 0, 10));
 		}
 		if (tick == 80) {
-			server.execute(() -> io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(server.getPlayerList().getPlayers().get(0), battleTrainer));
+			// The Trainer screen first (43.1): an empty hand on the trainer opens it; its Challenge starts the battle.
+			server.execute(() -> io.github.jcondedata.aliveworkplace.trainer.TrainerScreens.open(server.getPlayerList().getPlayers().get(0), battleTrainer));
+		}
+		if (tick == 92) {
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.TrainerScreen, "the Trainer screen opened");
+			pointAt(mc, io.github.jcondedata.aliveworkplace.trainer.TrainerMenu.CHALLENGE);
+		}
+		if (tick == 96) {
+			shot(mc, "00_trainer_screen");
+		}
+		if (tick == 100) {
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.TrainerScreen screen) {
+				screen.press(io.github.jcondedata.aliveworkplace.trainer.TrainerMenu.CHALLENGE); // the button's own click
+			}
 		}
 		if (tick > 80 && tick % 4 == 0) {
 			server.execute(() -> {
@@ -3546,8 +3582,20 @@ public class ScreenshotHarness implements ClientModInitializer {
 			setMouse(mc, at[0] * scale, at[1] * scale);
 			return;
 		}
+		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StatusCardScreen card) {
+			// A status card (43.3, the Nurse's and the Fossil Scientist's): its buttons by id (NurseCard.HEAL, FossilCard.HAND_OVER).
+			int[] at = card.centre(slot);
+			setMouse(mc, at[0] * scale, at[1] * scale);
+			return;
+		}
+		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.TrainerScreen trainer) {
+			// The Trainer screen (43.1): its buttons by id (TrainerMenu.CHALLENGE, TRADE, CLOSE).
+			int[] at = trainer.centre(slot);
+			setMouse(mc, at[0] * scale, at[1] * scale);
+			return;
+		}
 		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.PokemonTradeScreen trades) {
-			// The Pokémon Trader's own screen (28.23): cards and a party panel, not a chest's grid.
+			// The Pokémon Trader's own screen (28.23, the Hall's look since 43.2): offer rows and party cells, not a chest's grid.
 			int[] at = trades.centre(slot);
 			setMouse(mc, at[0] * scale, at[1] * scale);
 			return;

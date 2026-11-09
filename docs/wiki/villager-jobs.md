@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041
 
 ## What a player sees
 
@@ -150,13 +150,19 @@ Ditto counts as the mother. Regions Galar, Hisui and Paldea work the same (Perrs
 Hisuian Sneasel, Clodsire a Paldean Wooper); a regional evolution of a baby with no regional form (Alolan Raichu,
 Mr. Rime, Hisuian Typhlosion) hatches the plain baby. A form picked by a choice feature rather than a flag (a Blaze or Aqua Breed Tauros, "blaze-breed" being
 `bull_breed=blaze`; a Blue- or White-Striped Basculin) is set as that feature, so it survives a save and load, and a
-Combat Breed stays Combat (B955): an East Sea Gastrodon hatches East Sea Shellos, a Blue Florges a Blue Flabébé (two
-steps back), a Sensu Oricorio a Sensu, and a male Basculegion with Ditto a White-Striped Basculin. Known gaps (bugs): a
-West Sea or Baile mother (a random default) hatches a random sea or style that shows after a reload (B1031), a female
-Basculegion hatches Red-Striped (B1040), and a Blaze Breed Tauros's Cobbreeding egg hatches Combat Breed (B1041).
+Combat Breed stays Combat (B955). The feature's choices come from `examples()`, which Cobblemon 1.7.3 and 1.8 both have (1.8 removed `ChoiceSpeciesFeatureProvider.getChoices()`, which threw `NoSuchMethodError` on every such hatch, B1059), and 1.8's weighted choice features are read by reflection: an East Sea Gastrodon hatches East Sea Shellos, a Blue Florges a Blue Flabébé (two
+steps back), a Sensu Oricorio a Sensu, and a male Basculegion with Ditto a White-Striped Basculin. The mother's own
+choice features that the baby's species shares are copied too (`CobblemonDaycareKeeper.choiceFeatures`), so a form
+without aspects whose feature defaults to random (a West Sea Gastrodon, a Baile Oricorio, a Green Squawkabilly, a Curly
+Tatsugiri) hatches that form and keeps it after a reload instead of a rolled one (B1031, B1039). A gender form's
+`male`/`female` aspects are left out when looking for the form that evolves into it, so a female Basculegion hatches a
+White-Striped Basculin like the male (B1040). Cobbreeding's `givepokemonegg` gets the hatchling's choice features as
+well as its form, so a Blaze Breed Tauros's egg hatches a Blaze Breed (B1041).
 Tested in `QaDaycareBugs1103dCompatTests`, `QaDaycareRegional1104d2CompatTests` (11),
 `QaDaycareRegional1104d2BugCompatTests`, `QaDaycareChoiceForms1108cCompatTests` and
-`QaDaycareChoiceForms1108dCompatTests` (5).
+`QaDaycareChoiceForms1108dCompatTests` (5), and `QaDaycareFormsVerify1109dCompatTests` (14: Oricorio, Burmy,
+Wormadam, Deerling, Sawsbuck, Lycanroc, Polteageist, Sinistcha and every Tauros breed, as hatchlings and Cobbreeding eggs,
+through reloads). In the pack, Mega Showdown renames Oricorio's styles to `pom-pom` and `pau` (form "Pa’u").
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last

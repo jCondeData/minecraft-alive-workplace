@@ -325,4 +325,18 @@ public class BanditFortGameTests implements FabricGameTest {
 		}
 		helper.succeed();
 	}
+
+	/** B660: every fort site lies 110 to 150 blocks (straight-line, across the ground) from the hall, for 1000 seeds. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void fortSiteLies110To150Out(GameTestHelper helper) {
+		BlockPos hall = new BlockPos(1000, 64, -2000);
+		for (long seed = 0; seed < 1000; seed++) {
+			BlockPos column = BanditFort.column(hall, BanditFort.NEAR, BanditFort.FAR, net.minecraft.util.RandomSource.create(seed));
+			double out = Math.sqrt(Math.pow(column.getX() - hall.getX(), 2) + Math.pow(column.getZ() - hall.getZ(), 2));
+			helper.assertTrue(out >= BanditFort.NEAR && out <= BanditFort.FAR,
+					"seed " + seed + ": the fort's site is " + out + " blocks from the hall, not " + BanditFort.NEAR + " to " + BanditFort.FAR);
+		}
+		helper.succeed();
+	}
 }

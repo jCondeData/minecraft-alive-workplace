@@ -112,6 +112,10 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.story.SicknessStory.onDeath(level, villager); // a killed Doctor Wren isn't put back: another is sent for (B618)
 			} else if (entity.level() instanceof ServerLevel level) {
 				io.github.jcondedata.aliveworkplace.legend.LegendSlots.onDeath(level, entity, null); // a Legend as a zombie villager
+				if (entity instanceof net.minecraft.world.entity.monster.ZombieVillager zombie) {
+					io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, zombie); // B1081: never cured, their partner is widowed
+					io.github.jcondedata.aliveworkplace.people.FamilyBook.onLost(level, zombie); // B1087: never cured, the book dates their death
+				}
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
 				io.github.jcondedata.aliveworkplace.threat.SiegeReport.onDeath(level, entity, source); // a siege counts its dead (32.6)
 				io.github.jcondedata.aliveworkplace.guard.BanditCamps.onDeath(level, entity, source);
@@ -226,7 +230,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.mine.Miners.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.MINER); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -297,7 +301,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.orchard.Orchards.orchard(villager) != null) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.orchard.Orchards.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.ORCHARD); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -310,7 +314,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.wood.TreeFarms.farm(villager) != null) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.wood.TreeFarms.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.LUMBERJACK); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -323,7 +327,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.farm.Fields.hasField(villager)) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.farm.Fields.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.FARMER); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -336,24 +340,25 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.mail.Postmen.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.POSTMAN); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
 			return InteractionResult.PASS;
 		}
 		if (io.github.jcondedata.aliveworkplace.trainer.Trainers.isTrainer(villager)) {
-			// Right-click with an empty hand: battle. Sneak to trade instead.
+			// Right-click with an empty hand: the Trainer screen (43.1), whose Challenge starts the battle. Sneak to trade instead.
 			if (held.isEmpty() && !player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge((ServerPlayer) player, villager);
+					io.github.jcondedata.aliveworkplace.trainer.TrainerScreens.open((ServerPlayer) player, villager);
 				}
 				return InteractionResult.SUCCESS;
 			}
 			return InteractionResult.PASS;
 		}
 		if (io.github.jcondedata.aliveworkplace.fossil.FossilScientists.isScientist(villager)) {
-			// Right-click holding a fossil: hand it over. With an empty hand: collect what's ready. Sneak to trade instead.
+			// Right-click holding a fossil: hand it over. With an empty hand: their card (43.3), whose Hand over collects
+			// what's ready (without Cobblemon, the line saying they need it). Sneak to trade instead.
 			if (io.github.jcondedata.aliveworkplace.fossil.FossilScientists.isFossil(held)) {
 				if (!level.isClientSide()) {
 					io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver((ServerPlayer) player, villager);
@@ -362,7 +367,11 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && !player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.fossil.FossilScientists.check((ServerPlayer) player, villager);
+					if (io.github.jcondedata.aliveworkplace.fossil.FossilScientists.COBBLEMON) {
+						io.github.jcondedata.aliveworkplace.fossil.FossilCard.open((ServerPlayer) player, villager);
+					} else {
+						io.github.jcondedata.aliveworkplace.fossil.FossilScientists.check((ServerPlayer) player, villager);
+					}
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -416,10 +425,10 @@ public final class BuilderEvents {
 			return InteractionResult.PASS;
 		}
 		if (io.github.jcondedata.aliveworkplace.nurse.Nurses.isNurse(villager)) {
-			// Right-click with an empty hand: get treated. Sneak to trade instead.
+			// Right-click with an empty hand: her card (43.3), whose Heal treats you as the click did. Sneak to trade instead.
 			if (held.isEmpty() && !player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.nurse.Nurses.treat((ServerPlayer) player, villager);
+					io.github.jcondedata.aliveworkplace.nurse.NurseCard.open((ServerPlayer) player, villager);
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -483,7 +492,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.fish.Fishers.isHired(villager)) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.fish.Fishers.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.FISHER); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -513,7 +522,7 @@ public final class BuilderEvents {
 		}
 		if (held.isEmpty() && player.isShiftKeyDown()) {
 			if (!level.isClientSide()) {
-				Builders.sendStatus(player, villager);
+				io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.BUILDER); // 42.5: the status card
 			}
 			return InteractionResult.SUCCESS;
 		}

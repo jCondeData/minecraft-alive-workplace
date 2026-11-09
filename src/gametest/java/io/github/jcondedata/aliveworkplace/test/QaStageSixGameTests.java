@@ -141,6 +141,15 @@ public class QaStageSixGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	 * them and then the plain click, stopping when something answered (a line shown or a screen opened).
 	 */
 	static void clickVillager(ServerPlayer p, Villager v, List<Component> seen) {
+		click(p, v, seen);
+		// 43.3: an empty-hand click opens the villager's card; its first button does what the click did, pressed as the client sends it
+		if (p.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu card) {
+			p.connection.handleContainerButtonClick(new net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket(
+				card.containerId, card.card().buttons().get(0).id()));
+		}
+	}
+
+	private static void click(ServerPlayer p, Villager v, List<Component> seen) {
 		p.moveTo(v.getX() + 1.5, v.getY(), v.getZ(), 90f, 0f);
 		for (InteractionHand hand : InteractionHand.values()) {
 			int before = seen.size();

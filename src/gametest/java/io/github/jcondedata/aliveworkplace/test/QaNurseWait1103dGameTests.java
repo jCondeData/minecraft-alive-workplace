@@ -68,6 +68,11 @@ public class QaNurseWait1103dGameTests implements FabricGameTest {
 		if (v.seen().size() == before && player.containerMenu == player.inventoryMenu) {
 			player.connection.handleInteract(ServerboundInteractPacket.createInteractionPacket(villager, false, InteractionHand.MAIN_HAND));
 		}
+		// 43.3: an empty-hand click opens the villager's card; its first button does what the click did, pressed as the client sends it
+		if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu card) {
+			player.connection.handleContainerButtonClick(new net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket(
+				card.containerId, card.card().buttons().get(0).id()));
+		}
 		return List.copyOf(v.seen().subList(before, v.seen().size()));
 	}
 

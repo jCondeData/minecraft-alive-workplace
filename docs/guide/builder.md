@@ -47,9 +47,13 @@ they're short of and which chest they're taking from.
 ![What a build is still missing](https://jcondedata.github.io/minecraft-alive-workplace/missing/still-2.jpg)
 
 **What does the build still need?** Once the blueprint is handed over, right-click the builder (or the Blueprint Table
-they work at) with a Book and Quill: it becomes the whole list for the rest of the build, with what's already in place left
-off and what the chests, the builder's bag and the village storehouse hold ticked off. Sneak-right-click the builder with
-an empty hand to see the same list in chat. A builder with nothing left to place, or no build at all, just tells you so.
+they work at) with a blank Book and Quill: it becomes the whole list for the rest of the build, with what's already in place left
+off and what the chests, the builder's bag and the village storehouse hold ticked off. A Book and Quill you've written in
+is never written over: use a blank one. Sneak-right-click the builder with
+an empty hand for their **status card**: their name, job and level, what they're doing, the build with a bar for how far
+along it is, their experience, and the first things the build is short of. **In chat** puts the whole status and the
+same list in chat (with the **[Cancel]** link), and **Hall page** opens the Village Hall on their own page (gray, with
+the reason, when there's no Village Hall near them or the village's protection keeps you out). A builder with nothing left to place, or no build at all, just says so on the card.
 
 **Moving a builder to another table.** Stand next to the builder and sneak-right-click the other Blueprint Table with an
 empty hand: they work there from now on, with their build, and the old table stays where it is, free for someone else.
@@ -59,7 +63,7 @@ them) says which table they work at.
 ![The rest of the build, as a book](https://jcondedata.github.io/minecraft-alive-workplace/builder_list/still-3.jpg)
 
 **Changed your mind?** Place the blueprint over the finished building and **sneak** while you hand it to a builder: they
-take it down and put the blocks back in the chests.
+take it down and put the blocks back in the chests. Food you left cooking on one of its campfires comes back too.
 
 **Building in a hillside?** Right-click the air with a placed blueprint to switch off the leveling for that build.
 
@@ -177,6 +181,8 @@ list changes with it. In the sneak-click screen the **Mirror** button flips the 
   size, solid or hollow, and a block you carry, then draw it as a blueprint. Great for walls, towers and domes.
 - **Builds from the internet:** at the Blueprint Table, **Upload a File** lists the build files in your `blueprints`
   folder. Download a build as a `.litematic` or `.schem` file, drop it in, and upload it for everyone on the server.
+  A build from a file holds no more than your own blocks could: a sign keeps up to 384 letters a line, a banner up to
+  6 patterns, and a head its owner's name and one skin.
 
 ![Shape Planner](https://jcondedata.github.io/minecraft-alive-workplace/shapes/still-1.jpg)
 

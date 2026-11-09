@@ -21,9 +21,10 @@ Craft a [Blank Blueprint](blank-blueprint.md) and a **compass** together, anywhe
 
 ## Using it
 
-Right-click to open it. Pick a **box**, **cylinder**, **dome**, **sphere**, **cone**, **pyramid** or **arch**, its
-size, solid or hollow, and a block you're carrying to build it in. Then draw it: you get a [Blueprint](blueprint.md),
-and it takes a Blank Blueprint. The tooltip reminds you of the last shape you set up.
+Right-click to open it: a list with the shapes in one row and the blocks you're carrying in the next. Pick a **box**,
+**cylinder**, **dome**, **sphere**, **cone**, **pyramid** or **arch** and a block to build it in, set the width, height
+and depth with **-** and **+** (shift-click for 5), click the solid or hollow row to switch, then **Draw**: you get a
+[Blueprint](blueprint.md), and it takes a Blank Blueprint. The count of blocks it takes is at the top right. The tooltip reminds you of the last shape you set up.
 
 ## How it fits in
 

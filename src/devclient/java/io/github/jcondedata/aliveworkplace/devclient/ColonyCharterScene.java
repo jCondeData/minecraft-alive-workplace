@@ -72,7 +72,10 @@ final class ColonyCharterScene {
 			server.execute(() -> {
 				ServerPlayer player = player(server);
 				city(server); // a hall's round since the staging counts a village of two farmers a Hamlet again
-				VillageHallScreen.open(player, hall);
+				// B1057: the player stands on the heightmap 3 blocks south of the hall, which is a house's roof in some
+				// villages (more than 8 blocks from the hall), so a near-only screen closed before the check: opened as from
+				// a Village Ledger, as RealmScene does (B128). The price is still paid from the player's own inventory.
+				VillageHallScreen.openRemote(player, hall);
 				if (player.containerMenu instanceof ChoiceMenu menu) {
 					menu.press(VillageHallScreen.ROUTES, player);
 					menu.press(TradePage.Tab.COLONIES.slot(), player);

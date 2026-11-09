@@ -160,6 +160,7 @@ public final class Graves {
 		io.github.jcondedata.aliveworkplace.legend.LegendSlots.onRevived(level, was, villager); // a Legend back as they were
 		io.github.jcondedata.aliveworkplace.people.LifeStages.onRevived(level, villager); // an elder whose time had come has 400 more days (34.19a, 36.16)
 		io.github.jcondedata.aliveworkplace.story.RequestErrands.onRevived(level, was, villager); // "Bring back my love" (31.10)
+		io.github.jcondedata.aliveworkplace.people.Couples.onRevived(level, was, villager); // their partner agrees, or they're single (B1082)
 		return villager;
 	}
 

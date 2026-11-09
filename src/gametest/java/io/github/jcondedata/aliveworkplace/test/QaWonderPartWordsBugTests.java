@@ -59,6 +59,7 @@ public class QaWonderPartWordsBugTests implements net.fabricmc.fabric.api.gamete
 		// the game's own use-entity event, as the server fires it for a right-click on an entity
 		net.fabricmc.fabric.api.event.player.UseEntityCallback.EVENT.invoker().interact(v.owner(), v.level(), InteractionHand.MAIN_HAND, v.builder(), null);
 		v.owner().setShiftKeyDown(false);
+		JobCardGameTests.inChat(v.owner()); // 42.5: the click opens the status card; its In chat sends the status lines
 		List<String> lines = strings(v.heard());
 		io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("QA B138 status: {}", lines);
 		helper.assertTrue(!lines.isEmpty(), "sneak-right-clicking the builder told the owner nothing");

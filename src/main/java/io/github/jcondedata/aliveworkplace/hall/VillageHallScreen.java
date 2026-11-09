@@ -114,6 +114,24 @@ public final class VillageHallScreen {
 			menu -> render(menu, level, hall, 0));
 	}
 
+	/**
+	 * The screen opened on {@code villager}'s own page (a worker's page, with Find and Change job; a jobless villager's,
+	 * with the free workstations), from a job-status card's Hall page button (ROADMAP 42.5). Like the Ledger's, it stays
+	 * open while the hall stands; Back goes to the people list.
+	 */
+	public static void openWorker(ServerPlayer player, BlockPos hall, Villager villager) {
+		ServerLevel level = Players.level(player);
+		ChoiceMenu.openHall(player, Component.translatable("screen.aliveworkplace.hall.title", VillageHalls.name(level, hall)),
+			p -> p.isAlive() && p.level() == level && level.isLoaded(hall) && level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL),
+			menu -> {
+				if (VillageHalls.census(level, hall).jobless().contains(villager)) {
+					renderJobs(menu, level, hall, villager, 0);
+				} else {
+					HallRetraining.renderWorker(menu, level, hall, villager, 0);
+				}
+			});
+	}
+
 	/** The same screen, not shown to anyone (tests). */
 	public static ChoiceMenu forTest(ServerPlayer player, BlockPos hall) {
 		return ChoiceMenu.detached(player, menu -> render(menu, Players.level(player), hall, 0));
@@ -965,7 +983,7 @@ public final class VillageHallScreen {
 	}
 
 	/** What a villager is doing: their build or quarry, their job's status, or just where they are in the day. */
-	static List<Component> doing(ServerLevel level, Villager villager) {
+	public static List<Component> doing(ServerLevel level, Villager villager) {
 		if (villager.isSleeping()) {
 			return List.of(line("screen.aliveworkplace.hall.sleeping", ChatFormatting.GRAY));
 		}
@@ -999,7 +1017,8 @@ public final class VillageHallScreen {
 			if (i > 0) {
 				out.append(", ");
 			}
-			out.append(r.count() > 1 ? Component.translatable("screen.aliveworkplace.hall.count", r.count(), r.what()) : r.what());
+			Component what = Requests.inSentence(r.what()); // B1096: "Waiting for 12 Oak Planks, a pickaxe"
+			out.append(r.count() > 1 ? Component.translatable("screen.aliveworkplace.hall.count", r.count(), what) : what);
 		}
 		if (requests.size() > 3) {
 			out.append(Component.translatable("screen.aliveworkplace.hall.and_more", requests.size() - 3));

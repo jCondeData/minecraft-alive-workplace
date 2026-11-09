@@ -36,7 +36,7 @@ hall's owner, their friends and operators may. Before that, a click says what's 
   finished Chapel"). A single shared column counts as over; one block clear is free.
   Another Wonder counts from the moment its Foundation Stone is set, even while it waits for a stage's goods and
   nothing stands there yet, and a builder won't take a house inside its ground either;
-- a Book and Quill in the other hand writes the whole Wonder's material list.
+- a blank Book and Quill in the other hand writes the whole Wonder's material list (one with the player's writing is left as it was, B1042).
 
 **The Foundation Stone** (35.4): right-click a builder of the village (their bench within 64 blocks of the hall) with
 the placed plan. A **Foundation Stone**, a carved stone with a brass plaque, goes down just outside the Wonder's front

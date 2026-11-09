@@ -365,6 +365,12 @@ public final class ModAttachments {
 	/** Player → the in-game day they last challenged this Trainer Leader (one challenge a day). */
 	public static final Attachment<java.util.Map<java.util.UUID, Long>> LEADER_CHALLENGES = Attachment.saved("leader_challenges", com.mojang.serialization.Codec.unboundedMap(net.minecraft.core.UUIDUtil.STRING_CODEC, com.mojang.serialization.Codec.LONG));
 
+	/**
+	 * Player → their record against this trainer: wins, losses and the in-game day of their last battle (ROADMAP 43.1,
+	 * the Trainer screen's record and today's line; a team is shown whole once the player has won).
+	 */
+	public static final Attachment<java.util.Map<java.util.UUID, java.util.List<Long>>> TRAINER_RECORDS = Attachment.saved("trainer_records", com.mojang.serialization.Codec.unboundedMap(net.minecraft.core.UUIDUtil.STRING_CODEC, com.mojang.serialization.Codec.LONG.listOf()));
+
 	/** Lessons a Move Tutor has given. */
 	public static final Attachment<Integer> TUTOR_LESSONS = Attachment.saved("tutor_lessons", com.mojang.serialization.Codec.INT);
 

@@ -4,7 +4,7 @@ Villages post bounties on named bandit captains; players take them, hunt the cap
 insignia for the reward; with Cobblemon, half the posters are on a rogue Pokémon instead. ROADMAP 31.13 and 31.14; builds on the quest journal (31.3), the arc engine's `place` (31.4), lairs
 (32.3) and reputation (31.11). Part of the 1.5 expansion: switched on when Milestone 31 is complete.
 
-Roadmap items: 31.13, 31.14, B134
+Roadmap items: 31.13, 31.14, B134, B1072
 
 ## What a player sees
 
@@ -15,7 +15,8 @@ Roadmap items: 31.13, 31.14, B134
   corners) is a notice board on two posts. Its face shows one poster for each open bounty of its village, up to four.
   A right-click opens the **Bounties** tab of the nearest hall's journal; the tab is in the hall's journal anyway.
 - **Taking a bounty**: click it in the tab. You get a **Wanted Poster** (its tooltip: his name, his quirk, where he was
-  last seen and the reward) and a map with a red X on his hideout. Each player gets them once per bounty.
+  last seen and the reward) and a map with a red X on his hideout. Each player gets them once per bounty;
+  with a full bag they land at your feet.
 - **The hideout** is the bandit camp, 120 to 200 blocks from the hall, with his own banner on a spruce pole by the
   fire. It is built (by the arc engine's `place`) when a player first comes within 96 blocks, with him and a band of 2
   or 3 bandits in it.
@@ -31,7 +32,9 @@ Roadmap items: 31.13, 31.14, B134
   captains are posted while the village is at peace or threats are off." Bounties already open stay up until they are
   paid or their 7 days run out (B134, from 31.13 and 32.21).
 - **Lairs**: a captain holding a lair (32.3) near a village of Village rank is posted too, with his name and his lair's
-  place; when he falls his bounty is paid straight to his killer.
+  place; when he falls his bounty is paid straight to his killer. A captain or band member who turns into another mob
+  in vanilla (a husk drowning into a zombie, a zombie into a drowned, a skeleton freezing into a stray) keeps his place
+  on the bounty: the new mob's UUID takes the old one's in `captain` and `band` (B1072, `threat/ConvertedMobs`).
 - **Gossip**: villagers say where a wanted captain was seen ("They say Grimwald the Red was seen 160 blocks
   north-east."), or a rogue ("Big as a cart, and twice as angry.").
 
@@ -72,7 +75,9 @@ Roadmap items: 31.13, 31.14, B134
 - **Posters**: boards are remembered when placed or clicked; their `posters` block state (0 to 4) follows the open
   bounties of their nearest hall.
 - **Reward**: fixed when posted, `12 × VillageRanks.questRewardFactor(rank)` (a rogue: 16 ×). Paid in emeralds, or
-  in CobbleDollars (100 a emerald) where that mod keeps the money.
+  in CobbleDollars (100 an emerald) where that mod keeps the money. Every line about it (the posting, the poster's
+  "Reward:", the hand-in and win messages, the chronicle) names the money paid through `Bounties.reward`
+  (`Money.describe`): "15 emeralds", or "1,500 CobbleDollars".
 - **Rogues**: `bounty/Rogues`. The hall's round posts a rogue instead of a captain half the time when
   `Rogues.available()` (the switch, the board's switch, and a filling for the extension point `story/RoguePokemon`).
   Biome groups are `data/<namespace>/bounties/rogues/<id>.json`: `biomes` (a string or a list of biome ids and
@@ -124,6 +129,9 @@ edit, a damaged file) is skipped with a warning in the log, and the rest of the 
   Pokémon, battleable and catchable) at the spot, rather than waiting for Cobblemon's spawner to roll that species.
 - 31.14: bounty rewards are paid in CobbleDollars where that mod keeps the money (the 31.13 insignia paid 0 dollars
   with CobbleDollars installed; fixed with this item).
+- B1060: with CobbleDollars every bounty line said "emeralds" while paying CobbleDollars; they now name the money paid.
+  The chronicle and poster lines use new `.money` keys, so lines saved before keep the old "%s emeralds" wording. The
+  Pokémon Daycare's info names its collection price the same way.
 - B134: "quiet" is 32.21's own `Threats.quiet` (At peace, threat level 0 or Peaceful), so Peaceful posts none too; a
   quiet village posts no rogue (31.14) or lair captain's bounty either, since both are bounties on a threat.
 - B134: open bounties stay when a village turns quiet (they can still be taken and paid), as the switch off keeps them.
@@ -151,5 +159,15 @@ edit, a damaged file) is skipped with a warning in the log, and the rest of the 
   saved and loaded, nothing spawned). Compat GameTests: `RogueCompatTests` (species, level and name by biome and rank,
   size or Alpha, through a save; a win pays once; a capture pays once and the catcher keeps it, named; the glow for
   takers within 32 blocks only).
+- GameTests: `QaBountyMoneySaves1108eGameTests` (B1060 without CobbleDollars: the posting ends "Reward: 18 emeralds.",
+  the poster and journal read "Reward: 18 emeralds"; chronicle lines saved by 0.151.8 under the old keys read as before
+  after a load; the new `.money` lines, "1 emerald" for one, read the same after a save and a load).
+- QA (lane D, 2026-11-09): `QaWildBattleWins1109dCompatTests` posts Cobblemon's own `BATTLE_VICTORY` with real
+  actors (the player's side, the wild side), which no test did before: a won battle against the rogue pays the bounty
+  once (CobbleDollars adds its own few hundred for any won battle, so the test compares against a plain wild win), and
+  the same win reported again pays no second bounty; a capture's battle (also a victory) pays nothing through the
+  battle and leaves the bounty up for the capture to pay; a battle the player lost pays nothing; for the village's
+  "Defeat 8 wild Pokémon" quest, two wild Pokémon beaten in one won battle count 2, a capture counts 1 (its victory
+  nothing more), a lost battle and a win over another player count nothing.
 - Showcase scene `bounty_rogue` (Cobblemon): the rogue's poster in the Bounties tab, the glowing Rogue Ursaring, the win paid.
 - Showcase scene `bounty`: the board with two posters, the poster in the Bounties tab, the captain and his band, the claim.

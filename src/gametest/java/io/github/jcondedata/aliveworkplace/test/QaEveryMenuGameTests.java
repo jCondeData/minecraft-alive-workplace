@@ -52,6 +52,29 @@ public class QaEveryMenuGameTests implements FabricGameTest {
 		pairs.put(ModBlocks.POKEMON_TRADER_MENU, new Pair(
 			() -> ChoiceMenu.openOn(ModBlocks.POKEMON_TRADER_MENU, player, Component.literal("qa"), p -> true, m -> {}),
 			(id, inv) -> ModBlocks.POKEMON_TRADER_MENU.create(id, inv)));
+		pairs.put(ModBlocks.CHOICE_LIST_MENU, new Pair(
+			() -> ChoiceMenu.openList(player, Component.literal("qa"), p -> true, m -> {}),
+			(id, inv) -> ModBlocks.CHOICE_LIST_MENU.create(id, inv)));
+		BlockPos trainerAt = new BlockPos(4, 2, 4);
+		io.github.jcondedata.aliveworkplace.trainer.TrainerView[] sent = new io.github.jcondedata.aliveworkplace.trainer.TrainerView[1];
+		pairs.put(ModBlocks.TRAINER_MENU, new Pair(
+			() -> {
+				net.minecraft.world.entity.npc.Villager trainer = helper.spawn(net.minecraft.world.entity.EntityType.VILLAGER, trainerAt);
+				io.github.jcondedata.aliveworkplace.trainer.TrainerScreens.open(player, trainer);
+				sent[0] = ((io.github.jcondedata.aliveworkplace.trainer.TrainerMenu) player.containerMenu).view();
+				return player.containerMenu;
+			},
+			(id, inv) -> new io.github.jcondedata.aliveworkplace.trainer.TrainerMenu(id, inv, sent[0])));
+		BlockPos cardAt = new BlockPos(6, 2, 4);
+		io.github.jcondedata.aliveworkplace.card.StatusCard[] card = new io.github.jcondedata.aliveworkplace.card.StatusCard[1];
+		pairs.put(ModBlocks.STATUS_CARD_MENU, new Pair(
+			() -> {
+				net.minecraft.world.entity.npc.Villager nurse = helper.spawn(net.minecraft.world.entity.EntityType.VILLAGER, cardAt);
+				io.github.jcondedata.aliveworkplace.nurse.NurseCard.open(player, nurse);
+				card[0] = ((io.github.jcondedata.aliveworkplace.card.StatusCardMenu) player.containerMenu).card();
+				return player.containerMenu;
+			},
+			(id, inv) -> new io.github.jcondedata.aliveworkplace.card.StatusCardMenu(id, inv, card[0])));
 		BlockPos boxAt = new BlockPos(2, 2, 2);
 		pairs.put(ModBlocks.MAILBOX_MENU, new Pair(
 			() -> {

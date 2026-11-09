@@ -144,6 +144,172 @@ public final class TableStyle {
 		g.fill(x, barY, x + 3, barY + barH, 0xFF8090A8);
 	}
 
+	// --- shared list-menu pieces (ROADMAP 42.1) ----------------------------------------------------------------------
+	// The list screen's parts ({@link ChoiceTableScreen#listMode}), for every screen drawn in this look that shows a list
+	// with buttons: the Move Tutor's today, the other menus (42.2 to 42.4) and the Trainer screen (lanes D and E) next.
+	// Each draws in the box given and returns nothing it doesn't have to; the caller lays out and takes the clicks.
+
+	/** A list-menu row's height (one line of text and a 16-pixel icon). */
+	public static final int LIST_ROW = 20;
+	/** A text button's height. */
+	public static final int BUTTON_H = 14;
+	/** A tab's height. */
+	public static final int TAB_H = 18;
+	/** A row under the mouse, and a chosen row (waiting for the second click), behind its text. */
+	public static final int ROW_OVER = 0x30FFFFFF;
+	public static final int ROW_ON = 0x40FFD66B;
+	/** A text button's inside, lighter under the mouse; a gray (unusable) one's text. */
+	public static final int BUTTON_BG = 0xFF1C2430;
+	public static final int BUTTON_OVER_BG = 0xFF2A3546;
+	public static final int OFF = 0xFF5E6B7C;
+
+	/** How wide a text button with {@code label} is (at least 44 pixels). */
+	public static int buttonWidth(Font font, Component label) {
+		return Math.max(44, font.width(label) + 12);
+	}
+
+	/**
+	 * A text button (the list's Teach, a footer's page arrow): a framed box in the edge color, lighter under the mouse,
+	 * gold with a brown inside when {@code on}, gray text when {@code off}; its label centered.
+	 */
+	public static void button(GuiGraphics g, Font font, Component label, int x, int y, int w, int h, boolean on, boolean over, boolean off) {
+		g.fill(x, y, x + w, y + h, on ? TITLE : over && !off ? CELL_HOVER : PANEL_EDGE);
+		g.fill(x + 1, y + 1, x + w - 1, y + h - 1, on ? CELL_ON_BG : over && !off ? BUTTON_OVER_BG : BUTTON_BG);
+		String text = trim(font, label.getString(), w - 6);
+		g.drawString(font, text, x + (w - font.width(text)) / 2, y + (h - 8) / 2, off ? OFF : on ? TITLE : NAME, false);
+	}
+
+	/** How wide a tab with {@code label} (and an icon, if {@code icon}) is, at most {@code max}. */
+	public static int tabWidth(Font font, Component label, boolean icon, int max) {
+		return Math.min(max, font.width(label) + 12 + (icon ? 18 : 0));
+	}
+
+	/**
+	 * A tab over a list (the Tutor's party): a framed box {@link #TAB_H} tall, gold when it's the open one, lighter under
+	 * the mouse; its label (cut to fit) after the icon's room when {@code iconRoom}. The caller draws the icon at
+	 * {@code x + 3, y + 1}.
+	 */
+	public static void tab(GuiGraphics g, Font font, Component label, int x, int y, int w, boolean iconRoom, boolean on, boolean over) {
+		g.fill(x, y, x + w, y + TAB_H, on ? TITLE : over ? CELL_HOVER : PANEL_EDGE);
+		g.fill(x + 1, y + 1, x + w - 1, y + TAB_H - 1, on ? CELL_ON_BG : over ? BUTTON_OVER_BG : BUTTON_BG);
+		int tx = x + 6 + (iconRoom ? 16 : 0);
+		g.drawString(font, trim(font, label.getString(), x + w - 4 - tx), tx, y + 5, on ? TITLE : NAME, false);
+	}
+
+	/**
+	 * Where a list-menu row's columns start in a list from {@code x}, {@code w} wide, with buttons {@code buttonW} wide
+	 * (0: none): the icon, the name, the second line, the price and the button.
+	 */
+	public static int[] listColumns(int x, int w, int buttonW) {
+		int button = buttonW > 0 ? x + w - 10 - buttonW : x + w - 6;
+		int inner = button - (x + 26);
+		return new int[]{x + 4, x + 26, x + 26 + inner * 46 / 100, x + 26 + inner * 72 / 100, button};
+	}
+
+	/** The column headings over a list-menu's rows, in the second line's grey-blue, at the columns {@link #listColumns} gave. */
+	public static void columnHeadings(GuiGraphics g, Font font, java.util.List<Component> headings, int[] columns, int y) {
+		for (int i = 0; i < headings.size() && i + 1 < columns.length - 1; i++) {
+			int w = columns[i + 2] - columns[i + 1] - 6;
+			g.drawString(font, trim(font, headings.get(i).getString(), w), columns[i + 1], y, SUBTITLE, false);
+		}
+	}
+
+	/**
+	 * A list-menu row's band and text ({@code y} its top, {@link #LIST_ROW} tall): gold behind it when {@code on}, light
+	 * under the mouse; the name in white (or its own colors), the second line and the price at their columns in their own
+	 * colors (grey-blue where they have none); everything gray when {@code off}. The caller draws the icon and the button.
+	 */
+	public static void listRow(GuiGraphics g, Font font, int[] columns, int x1, int y, Component name, Component second, Component price,
+		boolean off, boolean on, boolean over) {
+		if (on) {
+			g.fill(columns[0] - 2, y, x1, y + LIST_ROW, ROW_ON);
+		} else if (over) {
+			g.fill(columns[0] - 2, y, x1, y + LIST_ROW, ROW_OVER);
+		}
+		int ty = y + 6;
+		// A row with no second line and no price has the room up to the button for its name (42.4: the Shape Planner's rows).
+		boolean alone = (second == null || second.getString().isEmpty()) && (price == null || price.getString().isEmpty());
+		cell(g, font, name, columns[1], ty, (alone ? columns[4] : columns[2]) - columns[1] - 6, off, NAME);
+		cell(g, font, second, columns[2], ty, columns[3] - columns[2] - 6, off, SUBLINE);
+		cell(g, font, price, columns[3], ty, columns[4] - columns[3] - 6, off, BODY);
+	}
+
+	private static void cell(GuiGraphics g, Font font, Component text, int x, int y, int w, boolean off, int color) {
+		if (text == null || text.getString().isEmpty() || w <= 0) {
+			return;
+		}
+		if (off) {
+			g.drawString(font, trim(font, text.getString(), w), x, y, OFF, false);
+		} else {
+			g.drawString(font, trim(font, text, w), x, y, color, false);
+		}
+	}
+
+	/** The footer hint at a panel's foot ({@code y}), in faint grey-blue, cut to {@code w}. */
+	public static void footerHint(GuiGraphics g, Font font, Component hint, int x, int y, int w) {
+		g.drawString(font, trim(font, hint.getString(), w), x, y, FAINT, false);
+	}
+
+	/** The money line, right-aligned to {@code right} at the panel's top ({@code y}); returns its width (for pointing at it). */
+	public static int money(GuiGraphics g, Font font, Component money, int right, int y) {
+		int w = font.width(money);
+		g.drawString(font, money, right - w, y, BODY, false);
+		return w;
+	}
+
+	// --- shared small-card pieces (ROADMAP 43.3; 42.5's job-status cards reuse them) -----------------------------------
+	// A small card ({@link StatusCardScreen}, as {@code docs/design/M42/trainer_c.png}): the name in gold with a tag on the
+	// right, a grey-blue line, a gold heading over labeled lines with an icon, a value and a bar, then a button row
+	// ({@link #button}) and a footer hint ({@link #footerHint}). The caller lays out and takes the clicks.
+
+	/** A small card's width, its padding and a labeled line's height (a 16-pixel icon, its text and a bar under it). */
+	public static final int CARD_W = 200;
+	public static final int CARD_PAD = 8;
+	public static final int CARD_LINE = 18;
+	/** A bar's empty part. */
+	public static final int BAR_BG = 0xFF0C1016;
+
+	/** A card's top line: {@code title} in gold at the left, {@code tag} in grey-blue right-aligned, both cut to fit. */
+	public static void cardHeader(GuiGraphics g, Font font, Component title, Component tag, int x, int y, int w) {
+		int tagW = tag.getString().isEmpty() ? 0 : Math.min(font.width(tag), w / 2);
+		g.drawString(font, trim(font, title, w - tagW - (tagW > 0 ? 8 : 0)), x, y, TITLE, false);
+		if (tagW > 0) {
+			String text = trim(font, tag.getString(), tagW);
+			g.drawString(font, text, x + w - font.width(text), y, SUBTITLE, false);
+		}
+	}
+
+	/** A thin bar {@code fraction} full (0 to 1) in {@code color}, framed in the edge color. */
+	public static void bar(GuiGraphics g, int x, int y, int w, int h, float fraction, int color) {
+		g.fill(x, y, x + w, y + h, PANEL_EDGE);
+		g.fill(x + 1, y + 1, x + w - 1, y + h - 1, BAR_BG);
+		int inner = Math.round((w - 2) * Math.max(0f, Math.min(1f, fraction)));
+		if (inner > 0) {
+			g.fill(x + 1, y + 1, x + 1 + inner, y + h - 1, color);
+		}
+	}
+
+	/**
+	 * A card's labeled line ({@code y} its top, {@link #CARD_LINE} tall): the icon (if any) in a framed cell, the label in
+	 * white, the value right-aligned in {@code color}, and when {@code bar} is 0 to 1 a bar that full under the text.
+	 */
+	public static void cardLine(GuiGraphics g, Font font, net.minecraft.world.item.ItemStack icon, Component label, Component value, int color,
+		float bar, int x, int y, int w) {
+		int tx = x;
+		if (!icon.isEmpty()) {
+			g.renderItem(icon, x, y + 1);
+			tx = x + 20;
+		}
+		int valueW = Math.min(font.width(value), (x + w - tx) / 2);
+		int textY = bar >= 0 ? y + 2 : y + 5;
+		g.drawString(font, trim(font, label, x + w - tx - valueW - 6), tx, textY, NAME, false);
+		String v = trim(font, value.getString(), valueW);
+		g.drawString(font, v, x + w - font.width(v), textY, color, false);
+		if (bar >= 0) {
+			bar(g, tx, y + 12, x + w - tx, 4, bar, color);
+		}
+	}
+
 	private TableStyle() {
 	}
 }

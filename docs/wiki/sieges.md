@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080
 
 ## What a player sees
 
@@ -45,8 +45,10 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **Nothing else of the builders' work breaks under a threat** (32.16a, the owner's rule): a raider's creeper or a
   ghast's fireball blows a hole in your own blocks but leaves every block the builders placed standing, a ravager
   doesn't trample a builder's roof, a raiding vindicator or zombie doesn't break down a house's door, and a pillager's
-  arrow doesn't crack or break a builder's decorated pot (your own pots break as in the game). A build still
-  under way is spared too, so no builder's progress is ever lost.
+  arrow doesn't crack or break a builder's decorated pot (your own pots break as in the game). The item frames the
+  builders hang on a finished build (the guildhalls, the traveler camp) stay on the wall too, through a raider's
+  blast or shot (B1053), and so does an armor stand standing in one (B1080); you can still take either away yourself. A build still under way is spared too, so no
+  builder's progress is ever lost.
 - **The builders always put back what threats took**: the gates rams broke and the blocks a village fire burned, even
   with `builderRepairs` off (then those are the only repairs they make). The list is saved, so a restart forgets
   nothing.
@@ -188,13 +190,22 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **Repair**: a broken gate block is a hole in a finished build, which a builder's upkeep fills like any other; the
   list on the Defense page drops a block once something stands there again.
 - **What threats may damage** (32.16a, `threat/ThreatDamage`): a "threat" is a raider (`aliveworkplace_raider` tag)
-  or a projectile one shot; a "builder's block" is a finished build's block as drawn (`VillageFire.builderMade`) or
+  or a projectile one shot (B1066, B1064: `ThreatShotMixin` on `Projectile.setOwner` tags a raider's shot
+  `aliveworkplace_raider_shot` when it is shot, saved with it, so it stays a threat's after its raider is discarded,
+  killed or unloaded, when `getOwner()` reads null; a shot deflected to a new owner loses the tag, but a bounce with no owner, which `deflect` passes once the raider is gone, keeps it, B1079); a "builder's block" is a finished build's block as drawn (`VillageFire.builderMade`) or
   any block inside the outline of a build site under way. Three hooks keep threats off them: `ThreatGriefMixin` on
   `Level.destroyBlock` (the ravager's leaf-breaking and any other mob breaking with itself as the breaker),
-  `ThreatDoorMixin` on `BreakDoorGoal` (it doesn't start, or stops, at a builder's door) and `ExplosionMixin` (a
+  `ThreatDoorMixin` on `BreakDoorGoal` (it doesn't start, or stops, at a builder's door), `HangingHurtMixin` (B1053:
+  `ThreatDamage.sparesHanging` refuses a threat's hurt, direct or causing entity, to an item frame or painting whose
+  supporting block is a builder's block, so the frame is spared rather than put back), `ArmorStandThreatMixin` (B1080:
+  `ThreatDamage.sparesStand` refuses a threat's hurt to an armor stand standing on or in a builder's block, and makes a
+  threat's explosion pass it by (its ignore-explosion check), so it isn't pushed off its spot; armor stands bypass the living-damage
+  event, and Scan Tool blueprints carry them, B441) and `ExplosionMixin` (a
   threat's blast, direct or indirect, leaves those blocks out of what it blows up), plus `ThreatPotMixin` on
   `DecoratedPotBlock.onProjectileHit` (B1032: vanilla cracks the pot before it breaks it, and a cracked pot no
-  longer matches the build as drawn, so the hit is refused before the crack). The ram's own blow runs through
+  longer matches the build as drawn, so the hit is refused before the crack), and `ThreatDripstoneMixin` on
+  `PointedDripstoneBlock.onProjectileHit` (B1052: a trident breaks the spike with a destroyBlock call that names no
+  entity, so `ThreatGriefMixin` was never asked). The ram's own blow runs through
   `ThreatDamage.asRam`, the one break allowed. Every gate a ram broke (not the dropped bars) and every builder's block
   a village fire burned goes on `ThreatData.damaged`; `Upkeep` repairs any finished build holding one of them even with
   `builderRepairs` off (`Upkeep.THREATS`, off in GameTests like `Upkeep.ENABLED`), and drops an entry once a block
@@ -321,6 +332,28 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   a guard's child on the walkway leave it up, and the climber gets over. Mutation: 8 of 8 mutants of the guard's check
   (`Ladders.guardAt`) killed.
 
+- GameTests (B1053): `QaThreatFrames1108dBugTests`: a raider creeper's blast inside a finished log hut leaves the builders'
+  item frame on its wall; a player's hit still breaks it; the same blast still breaks a frame on a hut that isn't the builders'.
+- GameTests (B1080): `QaThreatSpare1109bBugTests#aRaidersBlastLeavesTheBuildersArmorStandOrItIsPutBack`: a raider
+  creeper's blast beside the armor stand of a finished hut leaves it standing.
+- QA (lane D, 2026-11-09, B1080): `QaArmorStand1109dGameTests` (10): a raider creeper's blast leaves the builders'
+  armor stand on its spot (not pushed) with the helmet and chestplate a player put on it; so does TNT a raider lit (the
+  blast's direct source is the TNT) and a raider's arrow, also one whose pillager was killed while it flew; a stand in a
+  carpet the builders laid over the player's own floor is spared ("on or in"), and so is one in a build still under way;
+  the same raider's blast breaks a stand in a hut that is no build, and a wild creeper's blast, a wild pillager's arrow
+  and a player's two punches still break the builders' stand. Mutants: 6 of 8 by `mutate.py` plus 4 by hand (TNT's
+  direct-or-igniter check, the stand's own block or the one under it alone, the ignore-explosion hook off) killed; left
+  `sparesStand(DamageSource)`'s `||` as `&&`, equivalent: an arrow whose shooter is gone names itself as the cause, and
+  of the hits that can break a stand only a player's has a cause other than what hit it.
+- QA (lane B, 2026-11-09, B1053, B1066): `QaThreatSpare1109bGameTests` (5): a real arrow of a raider already killed
+  flies into the builders' frame and leaves its diamond in it, while the same arrow knocks the diamond out of a frame on
+  a wall that is no build's; a raider's creeper blast leaves a painting on a finished build's wall and a frame (with
+  its diamond and its log) inside a build still under way, and takes the same frame when no build is there. Mutants
+  killed: 2 of 2 (ThreatDamage.sparesHanging off, the shot's tag ignored). B1079, B1080 and B1083 were found here and are fixed.
+- QA (lane B, 2026-11-09, B1080): `QaBuilderFixes1109bGameTests` (5): a raider's creeper blast between two stands
+  spares the one in the builders' hut and breaks a player's own on plain ground; a stand inside a build still under
+  way is spared; a player's own hits still break the builders' stand; a live raider's arrow leaves the builders' stand
+  and breaks a player's own.
 - GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
   and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's
   block breaking (the game's destroy call) never takes a hut block nor one of a build under way, while a wild ravager's does and a raider's on a
@@ -330,6 +363,11 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   Palisade Gate's fence gate and every other block of the build still stands; the gate is on the saved list through a
   save and load and a builder puts it back with `builderRepairs` off. Not tested in a GameTest: a vindicator's door
   goal running against a real door (only the rule it asks), a ghast's fireball.
+- GameTests (B1052): `QaSiegeDripstone1108dBugTests`: a drowned pirate's trident leaves a finished palisade's
+  dripstone spike standing; a wild drowned's trident breaks it.
+  `QaSiegeDripstoneVerify1108bGameTests`: a raider's trident really thrown through the air, on a hanging spike and on a
+  build under way leaves the builders' spike; a raider's trident still breaks a player's own spike (not with mobGriefing
+  off), and a player's trident breaks the builders' spike.
 - GameTests (B1032): `QaSiegePot1108aGameTests`: a raider's arrow on a finished build's decorated pot leaves it whole
   and uncracked, the same arrow breaks a player's own pot and a wild skeleton's breaks the builders' pot; a player's
   arrow breaks the builders' pot, and with mobGriefing off a raider's arrow leaves a player's pot alone.

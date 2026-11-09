@@ -200,8 +200,8 @@ public final class CobblemonCompat {
 		});
 		TrainerBattles.EXTENSION.register("cobblemon", new TrainerBattles() {
 			@Override
-			public void challenge(net.minecraft.server.level.ServerPlayer player, Villager trainer) {
-				CobblemonTrainers.challenge(player, trainer);
+			public boolean challenge(net.minecraft.server.level.ServerPlayer player, Villager trainer) {
+				return CobblemonTrainers.challenge(player, trainer);
 			}
 
 			@Override

@@ -10,8 +10,11 @@ import org.jetbrains.annotations.Nullable;
 public interface TrainerBattles {
 	Extension<TrainerBattles> EXTENSION = new Extension<>("trainer battles");
 
-	/** {@code player} challenges {@code trainer} to a battle. */
-	void challenge(ServerPlayer player, Villager trainer);
+	/**
+	 * {@code player} challenges {@code trainer} to a battle. Returns whether the battle started (false when it was refused:
+	 * either side already battling, no Pokémon able to fight, or the battle failed to start; the player is told why).
+	 */
+	boolean challenge(ServerPlayer player, Villager trainer);
 
 	/** Why {@link #challenge} would refuse now (the player or the trainer already battling, no Pokémon able to fight), or null. */
 	@Nullable

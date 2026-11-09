@@ -140,4 +140,8 @@ builders put it back after a restart too.
 - GameTests (B1083): `QaThreatSpare1109bBugTests.aFrameUnderARoofPlankTheFireBurnedIsHungAgainWithThePlank`: a fire
   burns the roof plank a finished hut's item frame hangs under; the builder puts the plank back and hangs the frame
   again from the one in his chest.
+- QA (lane B, 2026-11-09, B1083): `QaBuilderFixes1109bGameTests` (4): a burned frame's wall is repaired with exactly
+  one frame from the chest (4 become 3); with no frame in the chests the plank comes back and no frame is made from
+  nothing; a frame the player took down from a standing wall stays down through a repair; a burned frame is still hung
+  after a save and reload mid-repair.
 - Showcase scenes: `fire`.

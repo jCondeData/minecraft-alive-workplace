@@ -756,5 +756,9 @@ village's last column empties it (B994).
 - `ReplacedBlueprintGameTests` (3, B1049): the fingerprint is saved and an unchanged blueprint keeps its stage and
   cursor after a load; a changed one goes back to the first list with nothing deferred; an older save (no fingerprint)
   retrying a deferred step far past the end of the list drops it and goes on with the valid one, nothing thrown.
+- `QaBuilderFixes1109bGameTests` (QA, lane B, 2026-11-09, B1049; 5): a schematic replaced half-way and the server
+  restarted is built whole whether the new one is the same size (25 planks, no old bricks left), bigger (5x2x5, all 50)
+  or smaller (3x1x3 of the same bricks); the same file uploaded again is harmless (all 25 bricks); replaced with no
+  restart, the old pad is finished whole.
 
 Showcase scenes: `mechanic`, `create_mill`, `create_builds`, `create_contraption` (all filmed with Create).

@@ -1481,6 +1481,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaArmorStand1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTradeRows1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFireFrames1109dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCampSweep1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpare1109bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1109bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaiderLedAway1108dBugTests",

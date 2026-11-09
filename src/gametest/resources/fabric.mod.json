@@ -1491,7 +1491,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSpikeGoneThrower1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConvertedThreats1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeConverts1109dGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaUploads1109GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaUploads1109GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSignLanguageKeys1109BugTests"
 		]
 	},
 	"depends": {

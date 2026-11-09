@@ -28,7 +28,8 @@ Cobblemon's battle opens. When the trainer can't battle you now, Challenge is gr
 at the Cup (or a Cup delegate), asleep, busy with another player, you're already in a battle, you have no Pokémon, not
 the village's Leader (it names the one to challenge), one challenge a day (Leaders), or no Cobblemon. Only a
 challenge that starts a battle uses up a Leader's one a day: a refused one (busy, already in a battle, no Pokémon)
-leaves it for later. **Trade** opens
+leaves it for later the same day. A Leader's day turns over at sunrise (day time a multiple of 24000).
+**Trade** opens
 the trainer's trades, as a sneak-click does; it is gray while they're asleep or have nothing to sell. **Close** closes.
 Sneak-click still goes straight to the trades.
 
@@ -119,3 +120,12 @@ Cup today; the senior Leader may challenge; come back tomorrow ends the next day
 outlasts the day and stays with its own trainer; hidden slots carry no model, level or scaled mark; forged, stale,
 grayed-out and far-off button presses do nothing; the screen closes when the player walks 30 blocks off or the
 trainer dies; a Leader's day and a loss survive a reload; the screen's labels are American English.
+
+QA (lane D, 2026-11-09, third run, verifying B1091 and B1102): `QaLeaderVerify1109dCompatTests` (4) and
+`QaLeaderVerify1109dGameTests` (3): each refusal on its own (no Pokémon, already in a battle with another trainer, the
+Leader busy with another player) writes nothing on the Leader, even after a reload, and a later press the same day
+starts the battle; after a battle a press on the day's last tick is refused with "Come back tomorrow!" and one on the
+next day's first tick starts; presses, refusals and losses count 0 for the battle quest, each win 1, still 2 for two
+wins two seconds later; a win counts for the trainer's own village only, and for none when the trainer stands outside
+every village; two wins over an ordinary trainer in a day count 2; without Cobblemon a press spends and counts nothing.
+Mutants killed 3/3: the day spent on any press, a loss counted, the day boundary one tick early.

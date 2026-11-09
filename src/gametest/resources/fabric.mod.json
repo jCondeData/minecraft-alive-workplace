@@ -1476,6 +1476,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRaidStrays1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidOrphan1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidStamp1108aGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRaidStampEdges1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDripstoneEdges1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotSite1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotVerify1108bGameTests",

@@ -70,6 +70,12 @@ public final class BuildSite {
 	/** The lead builder's bench: where the supply chests are, for helpers too. Null in pre-0.6 saves. */
 	@Nullable
 	private BlockPos bench;
+	/**
+	 * B1049: the {@link #fingerprint} of the blueprint the saved stage and cursor point into; a load whose blueprint differs
+	 * starts its lists again. Null until the first plan (and in older saves, which keep their cursor and record it then).
+	 */
+	@Nullable
+	private Integer drawnHash;
 
 	// Transient, recomputed as needed
 	@Nullable
@@ -388,6 +394,17 @@ public final class BuildSite {
 				progressFromCursor = false;
 				shownProgress = Math.max(shownProgress, oldSaveProgress(plan));
 			}
+			int drawnNow = fingerprint(drawn);
+			if (drawnHash != null && drawnHash != drawnNow) {
+				// B1049: the blueprint was replaced under the site (a schematic uploaded again under its name): the saved
+				// stage and cursor point into the old one's lists, so start this one's from the top (what stands is skipped).
+				restartLists();
+			}
+			if (drawnHash == null || drawnHash != drawnNow) {
+				drawnHash = drawnNow;
+				onChange.run();
+			}
+			dropStaleDeferred(plan);
 			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE || refresh != null) {
 				// (36.21: a refresh's lists are worked out from what stands too)
 				// The foundation and landscaping lists depend on the terrain, which we have been changing:
@@ -399,6 +416,56 @@ public final class BuildSite {
 			}
 		}
 		return plan;
+	}
+
+	/**
+	 * B1049: a fingerprint of the blueprint as drawn (its size and every block and where it stands), saved with the site so
+	 * a load can tell the blueprint was replaced since. Built from stable hashes only, so it is the same in every run.
+	 */
+	static int fingerprint(Blueprint blueprint) {
+		int h = 31 * 31 * blueprint.size().getX() + 31 * blueprint.size().getY() + blueprint.size().getZ();
+		for (Blueprint.Entry entry : blueprint.blocks()) {
+			h = 31 * h + Long.hashCode(entry.pos().asLong());
+			h = 31 * h + entry.state().toString().hashCode();
+		}
+		return h;
+	}
+
+	/** B1049: back to the first list of this kind of job, with nothing deferred, given up or left out of the old plan. */
+	private void restartLists() {
+		stage = deconstruct ? BuildPlan.Stage.DECONSTRUCT : repair && refresh == null ? BuildPlan.Stage.STRUCTURE : BuildPlan.Stage.CLEAR;
+		cursor = 0;
+		retrying = false;
+		deferred.clear();
+		gaveUp.clear();
+		leftOut.clear();
+		refilled.clear();
+		digs.clear();
+		digOut = false;
+	}
+
+	/**
+	 * B1049: deferred indexes past the end of the current list (saved against a longer plan of an older blueprint, in a
+	 * save without a fingerprint) are dropped, so {@link #current} and {@link #ahead} never read past it.
+	 */
+	private void dropStaleDeferred(BuildPlan plan) {
+		int size = plan.steps(stage).size();
+		int kept = 0;
+		int before = 0;
+		for (int i = 0; i < deferred.size(); i++) {
+			if (deferred.get(i) >= 0 && deferred.get(i) < size) {
+				deferred.set(kept++, deferred.get(i));
+			} else if (i < cursor) {
+				before++;
+			}
+		}
+		if (kept < deferred.size()) {
+			deferred.subList(kept, deferred.size()).clear();
+			if (retrying) {
+				cursor = Math.max(0, cursor - before);
+			}
+			onChange.run();
+		}
 	}
 
 	/**
@@ -437,6 +504,9 @@ public final class BuildSite {
 		List<BuildPlan.Step> list = plan.steps(stage);
 		if (!retrying) {
 			return cursor < list.size() ? list.get(cursor) : null;
+		}
+		while (cursor < deferred.size() && deferred.get(cursor) >= list.size()) {
+			cursor++; // B1049: never read past the list (dropStaleDeferred clears these on the plan's first look)
 		}
 		return cursor < deferred.size() ? list.get(deferred.get(cursor)) : null;
 	}
@@ -1046,6 +1116,9 @@ public final class BuildSite {
 		if (bench != null) {
 			tag.putLong("bench", bench.asLong());
 		}
+		if (drawnHash != null) {
+			tag.putInt("blueprint_hash", drawnHash); // B1049
+		}
 		if (stewardHall != null) {
 			tag.putBoolean("steward", true);
 			tag.putLong("hall", stewardHall.asLong());
@@ -1130,6 +1203,7 @@ public final class BuildSite {
 		site.cellarOnly = Nbt.getBoolean(tag, "cellar_only"); // 36.7: none in older saves
 		site.levelGround = !Nbt.getBoolean(tag, "no_level_ground");
 		site.bench = Nbt.has(tag, "bench", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "bench")) : null;
+		site.drawnHash = Nbt.has(tag, "blueprint_hash", Tag.TAG_INT) ? Nbt.getInt(tag, "blueprint_hash") : null; // B1049: none in older saves
 		site.stewardHall = Nbt.getBoolean(tag, "steward") && Nbt.has(tag, "hall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "hall")) : null;
 		site.waitingSince = Nbt.has(tag, "waiting_since", Tag.TAG_LONG) ? Nbt.getLong(tag, "waiting_since") : NOT_WAITING;
 		site.playerBlocks = Nbt.getInt(tag, "player_blocks");

@@ -24,6 +24,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A banner built from an uploaded blueprint file keeps at most the 6 pattern layers a loom gives one, so a wall of banners with thousands of layers each can no longer make a chunk that disconnects every player who comes near (B1073).
 - Village Hall: one damaged entry in a hall's saved Book of Families (a hand-edited file, or one a crash cut short) no
   longer empties the village's whole family book (every person, parent, partner and trade, the Family Tree page and
   the family names). Only the bad entry is left out, with a warning in the log (B827).

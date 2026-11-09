@@ -10,6 +10,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
@@ -68,7 +69,21 @@ public final class BlockEntityData {
 		// no nbt, selector or score part the game would work out with operator permission, no line longer than a player
 		// could write
 		BlockText.cleanAll(tag);
+		if (blockEntity instanceof BannerBlockEntity) {
+			// B1073: a banner keeps no more pattern layers than a player's loom gives it (6); a file's thousands of layers
+			// would make the chunk's packet too big for any client to accept
+			capList(tag, "patterns", BannerBlockEntity.MAX_PATTERNS);
+		}
 		return tag;
+	}
+
+	/** Keeps only the first {@code max} entries of the list under {@code key}, if there is one. */
+	private static void capList(CompoundTag tag, String key, int max) {
+		if (tag.get(key) instanceof ListTag list) {
+			while (list.size() > max) {
+				list.remove(list.size() - 1);
+			}
+		}
 	}
 
 	private static boolean isStorage(ServerLevel level, BlockPos pos, BlockState state, BlockEntity blockEntity) {

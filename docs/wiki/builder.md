@@ -285,6 +285,11 @@ hidden that way runs when the sign is clicked. A line or name whose saved text r
 its plain words (a player's longest line, fully styled, stays under that), so a chunk full of such signs stays far
 under what a client accepts.
 
+**Banners from a file (B1073).** A banner built from an uploaded or scanned file keeps its first 6 pattern layers, the
+most a loom gives a banner; a file's extra layers are left off, so a chunk full of banners stays under what a client
+accepts. Test: QA's `QaBannerChunkSize1108bBugTests` (48 banners of 5,000 layers from one upload) and
+`BlockDataSizeGameTests.aBannerFromAFileKeepsALoomsLayersAndNoMore` (3 and 6 layers are kept whole).
+
 ## 3. Switches
 
 Config file keys (`WorkplaceConfig`):

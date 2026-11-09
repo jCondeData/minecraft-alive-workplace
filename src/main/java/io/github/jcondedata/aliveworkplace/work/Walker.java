@@ -10,6 +10,9 @@ import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -230,14 +233,39 @@ public final class Walker {
 		if (hurts(level.getBlockState(feet))) {
 			return false;
 		}
-		BlockState below = level.getBlockState(feet.below());
-		boolean ground = below.isFaceSturdy(level, feet.below(), Direction.UP)
-			|| below.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || below.is(net.minecraft.world.level.block.Blocks.DIRT_PATH);
 		// (Waterlogged ground is still ground: a mangrove's roots, a slab in a stream.)
-		return ground
+		return isGround(level, feet.below(), level.getBlockState(feet.below()))
 			&& passable(level, feet) && (level.getFluidState(feet).isEmpty() || shallowWater(level, feet))
 			&& passable(level, feet.above()) && level.getFluidState(feet.above()).isEmpty();
 	}
+
+	/**
+	 * The one ground rule for workers ({@link #canStand}) and builders' paths and the Steward's roads (B1017, B1030:
+	 * {@code Paths.standOn}): a sturdy top, farmland, a dirt path, or a top a little lower than a block and flat all across
+	 * (B981: 13/16 to 15/16, the top sixteenth filled edge to edge, like an end portal frame). A big dripleaf is never
+	 * ground: it tips whoever stands on it into the gap below. A lectern, a chest or an enchanting table is not ground.
+	 */
+	public static boolean isGround(ServerLevel level, BlockPos pos, BlockState ground) {
+		if (ground.isFaceSturdy(level, pos, Direction.UP)) {
+			return true;
+		}
+		if (ground.getBlock() instanceof net.minecraft.world.level.block.FarmBlock || ground.is(net.minecraft.world.level.block.Blocks.DIRT_PATH)) {
+			return true;
+		}
+		if (ground.getBlock() instanceof net.minecraft.world.level.block.BigDripleafBlock) {
+			return false;
+		}
+		VoxelShape shape = ground.getCollisionShape(level, pos);
+		if (shape.isEmpty()) {
+			return false;
+		}
+		double top = shape.max(Direction.Axis.Y);
+		// the top sixteenth all filled, edge to edge: nothing to fall into or catch on
+		return top >= LOW_TOP && top < 1.0 && !Shapes.joinIsNotEmpty(Shapes.box(0, top - 1.0 / 16, 0, 1, top, 1), shape, BooleanOp.ONLY_FIRST);
+	}
+
+	/** The lowest top that still counts as ground ({@link #isGround}): mud's and soul sand's 14/16, an end portal frame's 13/16, not an enchanting table's 12/16. */
+	private static final double LOW_TOP = 13.0 / 16;
 
 	/** Water up to the knees, head in the air: fine to stand in (a swamp, a stream). */
 	private static boolean shallowWater(ServerLevel level, BlockPos feet) {

@@ -163,6 +163,43 @@ public final class SandRamps {
 		return storm != null && storm.over.contains(mob);
 	}
 
+	/**
+	 * A mob that turned into another in vanilla ({@link ConvertedMobs}): {@code after} takes {@code before}'s place among
+	 * the raiders over the wall and at their ramps (B1085), so it isn't sent to the ramp again. True if anything changed.
+	 */
+	public static boolean converted(ServerLevel level, UUID before, UUID after) {
+		boolean changed = false;
+		for (Map.Entry<Key, Storm> entry : STORMS.entrySet()) {
+			if (!entry.getKey().dimension().equals(level.dimension())) {
+				continue;
+			}
+			Storm storm = entry.getValue();
+			if (storm.over.remove(before)) {
+				storm.over.add(after);
+				changed = true;
+			}
+			Site site = storm.assigned.remove(before);
+			if (site != null) {
+				storm.assigned.put(after, site);
+				changed = true;
+			}
+			Long next = storm.nextTry.remove(before);
+			if (next != null) {
+				storm.nextTry.put(after, next);
+			}
+			Long sentAt = storm.sentAt.remove(before);
+			if (sentAt != null) {
+				storm.sentAt.put(after, sentAt);
+			}
+		}
+		Site climb = CLIMBS.remove(before);
+		if (climb != null) {
+			CLIMBS.put(after, climb);
+			changed = true;
+		}
+		return changed;
+	}
+
 	/** Takes every sand ramp of {@code siege} away: each recorded block that is still sand becomes air, nothing drops. */
 	public static void takeAway(ServerLevel level, ThreatData data, ThreatData.Siege siege) {
 		Storm storm = STORMS.remove(new Key(level.dimension(), siege.hall));

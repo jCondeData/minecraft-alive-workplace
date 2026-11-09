@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Explosion;
@@ -115,6 +116,32 @@ public final class ThreatDamage {
 		}
 		BlockPos on = hanging.getPos().relative(hanging.getDirection().getOpposite());
 		return !level.getBlockState(on).isAir() && builders(level, on);
+	}
+
+	/**
+	 * Whether a threat's {@code source} must leave {@code stand} standing (B1080): as with the frames (B1053), a raider's
+	 * blast or shot never breaks an armor stand on the builders' work (Scan Tool blueprints carry them, B441), so the
+	 * builders' finished build keeps it, and whatever a player hung on it. Players' and anything else's damage breaks it
+	 * as before, and one a player takes away stays away.
+	 */
+	public static boolean sparesStand(ServerLevel level, ArmorStand stand, DamageSource source) {
+		return (isThreat(source.getDirectEntity()) || isThreat(source.getEntity())) && onBuilders(level, stand);
+	}
+
+	/** {@link #sparesStand(ServerLevel, ArmorStand, DamageSource)} for a threat's {@code explosion}: it neither breaks nor pushes the stand. */
+	public static boolean sparesStand(ServerLevel level, ArmorStand stand, Explosion explosion) {
+		return (isThreat(explosion.getDirectSourceEntity()) || isThreat(explosion.getIndirectSourceEntity())) && onBuilders(level, stand);
+	}
+
+	/** Whether {@code stand} stands on (or in, a slab or carpet) a builder's block. */
+	private static boolean onBuilders(ServerLevel level, ArmorStand stand) {
+		BlockPos at = stand.blockPosition();
+		for (BlockPos pos : List.of(at, at.below())) {
+			if (!level.getBlockState(pos).isAir() && builders(level, pos)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Runs {@code blow} as a ram's: the gate block it breaks is the one break a threat is allowed. */

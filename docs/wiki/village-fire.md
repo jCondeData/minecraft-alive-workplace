@@ -5,7 +5,7 @@ ROADMAP 32.16. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 chimney spark on a dry day or a raider's burning arrow. The fire spreads by the game's own rules but only through what
 the builders built, a new job, the **Firewarden**, puts it out, and the builders put back what burned.
 
-Roadmap items: 32.16, B218, B152, B1071, B1079
+Roadmap items: 32.16, B218, B152, B1071, B1079, B1083
 
 ## What a player sees
 
@@ -31,7 +31,9 @@ Roadmap items: 32.16, B218, B152, B1071, B1079
   "the Firewarden put it out"; or "the bucket brigade put it out", or "before it burned out"). A fire on a build's
   roof or against its wall is named after that build; only one in no build is "Fire in the village".
 - **The builders put back what burned** on their next look round the village's buildings, once the fire is out,
-  even with `builderRepairs` off (32.16a, see [Sieges](sieges.md)): a fire never destroys a build for good.
+  even with `builderRepairs` off (32.16a, see [Sieges](sieges.md)): a fire never destroys a build for good. An item
+  frame or painting that fell when its wall burned is hung again with the wall, from one in the builder's chests
+  (B1083); one you took down from a wall that still stands stays down.
 
 ## How it works
 
@@ -141,4 +143,7 @@ builders put it back after a restart too.
 - QA (`QaVillageFixes1104c3GameTests`, B390): a fire set against the outside of a finished hut's corner post is written
   up under the hut's name; a fire on the ground two blocks from the hut is "Fire in the village", and a spot one block
   further out than the wall, or two over the roof, belongs to no build.
+- GameTests (B1083): `QaThreatSpare1109bBugTests.aFrameUnderARoofPlankTheFireBurnedIsHungAgainWithThePlank`: a fire
+  burns the roof plank a finished hut's item frame hangs under; the builder puts the plank back and hangs the frame
+  again from the one in his chest.
 - Showcase scenes: `fire`.

@@ -6546,6 +6546,11 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
+- 2026-11-09 (lane-c-1109-2152, 45.4): **45.4 (residents move too) is written on `wip/lane-c-1109-2152`** but never
+  compiled or run (the run's time went to 45.3's full build, which found 5 gaps, all fixed). Left: compile, run
+  MoverResidentsGameTests and MoverGameTests and the saved-data checks (they will see the new `residents` and
+  `homecomings` lists), Refresh active project, full build, tick, merge. B1120 (lane: c) is the Mover's own crate
+  inside the building he moves.
 - 2026-11-09 (lane-c-1109-1852 and lane-c-1109-2152, 45.3): **45.3 (the Mover) is merged into `main`** from
   `wip/lane-c-1109-1852`, with the `movers` config switch and its 8 MoverGameTests run and passing. 45.1 and 45.2 were
   pushed after a local suite that ran out of heap at about 6,290 of ~7,900 batches with no test failing before it; CI's

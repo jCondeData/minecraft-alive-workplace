@@ -99,17 +99,19 @@ public final class Trainers {
 			return;
 		}
 		if (isLeader(trainer)) {
-			long day = trainer.level().getDayTime() / 24000L;
 			io.github.jcondedata.aliveworkplace.hall.VillageQuests.onTrainerBeaten((ServerLevel) trainer.level(), trainer, player);
 			if (challengedToday(player, trainer)) {
 				Chat.actionBar(player, tomorrow(trainer));
 				return;
 			}
+		}
+		boolean started = TrainerBattles.EXTENSION.call(battles -> battles.challenge(player, trainer), false);
+		if (started && isLeader(trainer)) { // only a challenge that starts a battle uses up the day (B1091)
+			long day = trainer.level().getDayTime() / 24000L;
 			Map<UUID, Long> seen = new HashMap<>(ModAttachments.LEADER_CHALLENGES.getOrElse(trainer, Map.of()));
 			seen.put(player.getUUID(), day);
 			ModAttachments.LEADER_CHALLENGES.set(trainer, Map.copyOf(seen));
 		}
-		TrainerBattles.EXTENSION.run(battles -> battles.challenge(player, trainer));
 	}
 
 	/**

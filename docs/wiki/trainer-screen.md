@@ -5,7 +5,7 @@ at once: who the trainer is, your record against them, the rules, the prize, the
 Challenge, Trade and Close. Cobblemon's own battle screen is unchanged. Part of Milestone 43 (One look for every screen,
 Pokémon).
 
-Roadmap items: 43.1
+Roadmap items: 43.1, B1091
 
 ## What a player sees
 
@@ -26,7 +26,9 @@ orange with RCT.
 Then the buttons. **Challenge** (gold) starts the battle exactly as a click did before; the screen closes and
 Cobblemon's battle opens. When the trainer can't battle you now, Challenge is gray and the reason sits under it: away
 at the Cup (or a Cup delegate), asleep, busy with another player, you're already in a battle, you have no Pokémon, not
-the village's Leader (it names the one to challenge), one challenge a day (Leaders), or no Cobblemon. **Trade** opens
+the village's Leader (it names the one to challenge), one challenge a day (Leaders), or no Cobblemon. Only a
+challenge that starts a battle uses up a Leader's one a day: a refused one (busy, already in a battle, no Pokémon)
+leaves it for later. **Trade** opens
 the trainer's trades, as a sneak-click does; it is gray while they're asleep or have nothing to sell. **Close** closes.
 Sneak-click still goes straight to the trades.
 

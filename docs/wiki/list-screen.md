@@ -170,6 +170,10 @@ exactly that one; the Keeper's Pick stays on its Pokémon when another takes its
 `JobListMenusGameTests.legendTermsAsAList`, `JobListMenusGameTests.researchAsAList`;
 `JobListMenusCompatTests.smithOrdersAsAList`, `JobListMenusCompatTests.berryBookAsAList`,
 `JobListMenusCompatTests.habitatLuresAsAList` (Cobblemon).
+QA's `QaJobListEdges1109eGameTests` (3, 42.3: one emerald short of a traveler's price Hire is red and a click takes
+nothing, one more emerald turns it green while open and hires for all of it; Swift Hands at its top reads "Level 3 of 3",
+"Fully researched" in green, gray with no button, and a click starts nothing; research paid for and half done reads
+"Researching ...: 50%" and Under way after the hall is saved and loaded, and another topic is refused as busy).
 
 Showcase scenes: `tutor`, `professor`, `daycare`, `daycare_keeper`, `smith_orders`, `gem_orders`, `habitat_lures` (and the
 list in `scholar`'s research still, `innkeeper`'s hire still, `berry_breeder`'s book still and `legend_guest`'s terms)

@@ -113,50 +113,73 @@ public final class Upkeep {
 			finished.sort(java.util.Comparator.comparingInt(f -> io.github.jcondedata.aliveworkplace.threat.Sieges.isDefence(f.structure()) ? 0 : 1));
 		}
 		for (BuildSiteManager.Finished f : finished) {
-			if (!looksAfter(level, builder, f.owner()) || manager.all().stream().anyMatch(s -> s.placement().equals(f.placement()))) {
-				continue;
+			BuildSite site = repair(level, builder, bench, f, manager, taken);
+			if (site != null) {
+				return site;
 			}
-			if (io.github.jcondedata.aliveworkplace.threat.VillageFire.nearestFire(level, f.placement().origin(), 16).isPresent()) {
-				continue; // still burning (32.16): what burned goes back once the fire is out
-			}
-			io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = manager.furniture(f.placement());
-			// 37.3: what it was built with; a piece whose mod is gone was dropped, so its vanilla piece goes back
-			Optional<Blueprint> blueprint = BlueprintLibrary.get(level, f.structure()).map(b -> furniture.apply(b, f.structure()));
-			if (blueprint.isEmpty()) {
-				continue;
-			}
-			net.minecraft.world.level.levelgen.structure.BoundingBox box = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(),
-				blueprint.get().size());
-			boolean threatened = taken.stream().anyMatch(box::isInside);
-			if (!ENABLED && !threatened) {
-				continue; // builderRepairs off: only what threats took (32.16a).
-			}
-			// (what an earlier repair couldn't put back stays out: it would only be fetched, skipped and taken back again)
-			int missing = BuildPlan.repair(blueprint.get(), f.placement(), level, manager.gaveUp(f.placement())).size();
-			if (missing == 0) {
-				manager.setRepairAsk(f.placement(), null); // (put right some other way: off the Repairs page)
-				continue;
-			}
-			if (ASK && !threatened && !RepairAsks.mayStart(level, manager, f, missing, builder)) {
-				continue; // 36.15: asked, or waiting for an answer
-			}
-			if (threatened) {
-				manager.setRepairAsk(f.placement(), null); // what threats took is repaired without asking: a question from before is moot
-			}
-			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(f.owner());
-			BuildSite site = manager.create(f.owner(), owner != null ? owner.getGameProfile().getName() : "", f.structure(), f.placement());
-			site.setRepair();
-			site.setFurniture(furniture);
-			site.setBuilder(builder.getUUID());
-			site.setBench(bench);
-			ModAttachments.BUILDER_JOB.set(builder, new BuilderJob(site.id()));
-			if (owner != null) {
-				Builders.tell(owner, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.repairing", missing, builder.getDisplayName(), Blueprints.displayName(f.structure()),
-					missing), ChatFormatting.AQUA);
-			}
-			return site;
 		}
 		return null;
+	}
+
+	/**
+	 * B1110: {@code builder} sets about the repair of {@code f} now, if it may be repaired (agreed to, or what a threat took)
+	 * and is within their reach; returns the repair, or null.
+	 */
+	@Nullable
+	static BuildSite repairNow(ServerLevel level, Villager builder, BuildSiteManager.Finished f) {
+		BlockPos bench = Builders.benchPos(builder).orElse(null);
+		if (bench == null || !ENABLED && !THREATS || !Builders.inReach(level, bench, f.structure(), f.placement())) {
+			return null;
+		}
+		return repair(level, builder, bench, f, BuildSiteManager.get(level), threatDamage(level));
+	}
+
+	/** {@code builder} starts the repair of {@code f} if it is damaged and may be repaired now; returns it, or null. */
+	@Nullable
+	private static BuildSite repair(ServerLevel level, Villager builder, BlockPos bench, BuildSiteManager.Finished f, BuildSiteManager manager,
+									java.util.List<BlockPos> taken) {
+		if (!looksAfter(level, builder, f.owner()) || manager.all().stream().anyMatch(s -> s.placement().equals(f.placement()))) {
+			return null;
+		}
+		if (io.github.jcondedata.aliveworkplace.threat.VillageFire.nearestFire(level, f.placement().origin(), 16).isPresent()) {
+			return null; // still burning (32.16): what burned goes back once the fire is out
+		}
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = manager.furniture(f.placement());
+		// 37.3: what it was built with; a piece whose mod is gone was dropped, so its vanilla piece goes back
+		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, f.structure()).map(b -> furniture.apply(b, f.structure()));
+		if (blueprint.isEmpty()) {
+			return null;
+		}
+		net.minecraft.world.level.levelgen.structure.BoundingBox box = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(),
+			blueprint.get().size());
+		boolean threatened = taken.stream().anyMatch(box::isInside);
+		if (!ENABLED && !threatened) {
+			return null; // builderRepairs off: only what threats took (32.16a).
+		}
+		// (what an earlier repair couldn't put back stays out: it would only be fetched, skipped and taken back again)
+		int missing = BuildPlan.repair(blueprint.get(), f.placement(), level, manager.gaveUp(f.placement())).size();
+		if (missing == 0) {
+			manager.setRepairAsk(f.placement(), null); // (put right some other way: off the Repairs page)
+			return null;
+		}
+		if (ASK && !threatened && !RepairAsks.mayStart(level, manager, f, missing, builder)) {
+			return null; // 36.15: asked, or waiting for an answer
+		}
+		if (threatened) {
+			manager.setRepairAsk(f.placement(), null); // what threats took is repaired without asking: a question from before is moot
+		}
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(f.owner());
+		BuildSite site = manager.create(f.owner(), owner != null ? owner.getGameProfile().getName() : "", f.structure(), f.placement());
+		site.setRepair();
+		site.setFurniture(furniture);
+		site.setBuilder(builder.getUUID());
+		site.setBench(bench);
+		ModAttachments.BUILDER_JOB.set(builder, new BuilderJob(site.id()));
+		if (owner != null) {
+			Builders.tell(owner, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.repairing", missing, builder.getDisplayName(), Blueprints.displayName(f.structure()),
+				missing), ChatFormatting.AQUA);
+		}
+		return site;
 	}
 
 	/**

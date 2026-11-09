@@ -26,6 +26,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Choosing a job on the Village Hall's Upgrades or Repairs page while every builder is busy no longer does nothing: a builder helping on another build leaves it for the new job (that build keeps its lead and goes on), and with no helper to spare the hall says plainly that every builder is busy and none can be spared (B1110).
 - Crafters no longer stop making things for a builder whose Storehouse is full. The Mason and the Carpenter count the slot their ingredients free, take what they make to another store the builder uses when his is full, and no longer both count on the same empty slot; with no room anywhere, the builder's line says "No room to bring Chest: the chests he takes from are full" instead of "Nobody here makes" (B1111, B1112).
 - Workers no longer go to stand on a magma block, and a builder's path or a Steward's road no longer runs over one: its top is solid, but it burns whoever stands on it (B1105).
 - A builder's path to the village and a Steward's road no longer end on a big dripleaf, which tips whoever stands on it into the gap below, and workers now stand on an end portal frame just as paths always did: workers and paths share one rule for what counts as ground.

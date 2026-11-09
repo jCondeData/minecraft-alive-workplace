@@ -157,4 +157,9 @@ builders put it back after a restart too.
   still hangs the frame that fell with it; a frame a player took down from a standing roof plank still isn't hung by
   that restarted repair; with no restart and a second builder looking all along, the frame goes up once and the plank
   comes off the list after the repair ends.
+- QA (lane B, 2026-11-09, B1095): `QaFireRepairList1109bGameTests` (3): a repair whose site is gone before it finishes
+  lets the next look take the plank that is back off the list; the hut's repair keeps no block of another building
+  listed (a shed's plank a player put back comes off); two restarts with another builder's look between them still
+  hang the frame. Hand mutants killed: any repair site (not its building's) keeps a block listed; any site at all; a
+  block that is back always kept.
 - Showcase scenes: `fire`.

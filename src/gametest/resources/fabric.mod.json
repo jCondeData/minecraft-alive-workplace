@@ -293,6 +293,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B224GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B208GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B301GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLeaderBeatenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B209GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B225GameTests",
 			"io.github.jcondedata.aliveworkplace.test.M38MutantGameTests",
@@ -1486,6 +1487,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaTradeRows1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFireFrames1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFireFrames1109dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFireRepairList1109bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderCardNeeds1109bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampSweep1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampInUse1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSpare1109bBugTests",
@@ -1495,6 +1498,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ConvertedMobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B1072GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobCard1109cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.StorehouseBoardWordsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDripstone1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDripstoneVerify1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidStrays1108dGameTests",
@@ -1511,7 +1515,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeConverts1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploads1109GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignLanguageKeys1109BugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaUploadTextEdges1109bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaUploadTextEdges1109bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaUploadTextEdges1109bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaUploadStandLooks1109bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.BlockTextDepthGameTests"
 		]
 	},
 	"depends": {

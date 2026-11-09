@@ -5,7 +5,7 @@ field, on a doorstep. Now the village's Undertaker takes each one to the village
 there. The villager can still be brought back from the Graveyard. A village without a Graveyard gets a small plot near
 its hall instead (owner's decision, 2026-10-19).
 
-Roadmap items: B222, B788, B1081, B1082, B1093
+Roadmap items: B222, B788, B1081, B1082, B1093, B1094
 
 <!-- Lanes: add each id to the line above in the commit that builds it, and put the new config keys, saved fields,
      tests and scenes in backticks so wikicheck.py checks them. -->
@@ -25,7 +25,8 @@ and no Graveyard gets a **plot near the hall**: three rows of four graves, a gra
 When a golden apple (or a healing potion or totem) is in the chest, the Undertaker brings the villager back from the
 Graveyard as from anywhere: same name, job, level and trades. Their partner, widowed by the death, marries them again
 (a second wedding, as the "Bring back my love" request has it) if still alone; one who has married someone else
-since, or mourns someone else, stays with them, and the one brought back is single (B1082).
+since, or mourns someone else, stays with them, and the one brought back is single (B1082). A couple who both died
+and are both brought back are married again (or courting again) once the second is back (B1094).
 
 Graves that old saves left scattered round the village are moved the same way, one at a time.
 
@@ -59,7 +60,9 @@ them: it passes on when they're bitten, as at a death, and a cured former Guild 
   a partner still widowed by this villager and alone marries them again through `RequestErrands.remarry` (the village's
   wedding at the hall of the partner's village, else just married again), a courting one courts them again; a partner
   with someone else, or mourning someone else, keeps that, and the revived villager's saved partner is cleared. A
-  partner not loaded was never widowed and still names them, so nothing changes (B1082).
+  partner not loaded was never widowed and still names them, so nothing changes (B1082). One brought back with no
+  partner, widowed before they died, whose late partner is back already and still names them, is with that partner
+  again as before, their mourning over (B1094: a couple who both died, revived one after the other).
 - Graves already in a Graveyard's walls, or on the hall plot, stay put. Graves in the Graveyard are tended wherever it
   lies in the village, even beyond the Undertaker's usual 32 blocks.
 
@@ -121,6 +124,8 @@ Nothing new. A moved grave keeps its block entity (`villager`, `name`, `professi
 - B1093: QA's `QaConvertRevive1109cBugTests.aVillagerCuredAfterTheirSpouseDiedIsNotStillMarriedToTheDead` (Bea killed
   while Ada is a zombie villager: cured Ada is no longer with Bea) and `QaConvertRevive1109cBugTests.aCuredGuildMasterHasPassedTheGuildOn`
   (the guild isn't kept through a bite); the controls in `QaConvertRevive1109cGameTests`.
+- B1094: QA's `QaConvertRevive1109cBugTests.aCoupleWhoBothDiedAndAreBothBroughtBackAgree` (Ada and Bea both died,
+  revived Ada first: married to each other again).
 - B1082: QA's `QaRevivedPartner1109eBugTests.aRevivedWifeAndHerWidowerAgreeWhetherTheyAreMarried` (revived Ada and
   her widow Bea married to each other again) and `QaRevivedPartner1109eBugTests.aRevivedWifeWhoseWidowerRemarriedIsNotStillHisWife`
   (Bea married Carl meanwhile: revived Ada is single).

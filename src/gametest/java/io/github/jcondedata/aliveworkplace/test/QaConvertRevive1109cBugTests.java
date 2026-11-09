@@ -50,6 +50,38 @@ public class QaConvertRevive1109cBugTests implements FabricGameTest {
 	}
 
 	/**
+	 * Ada and Bea, married, both die, and an Undertaker brings back both, Ada first: the two agree, married to each other
+	 * again, or neither naming the other.
+	 */
+	//$ gametest_ticks_batch AREA '140' '"qaRev1109cBothDied"'
+	@GameTest(template = AREA, timeoutTicks = 140, batch = "qaRev1109cBothDied")
+	public void aCoupleWhoBothDiedAndAreBothBroughtBackAgree(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.graves(helper);
+		ServerLevel level = helper.getLevel();
+		Villager ada = QaCuredVillager1109eGameTests.farmer(helper, new BlockPos(2, 2, 2), "Ada");
+		Villager bea = QaCuredVillager1109eGameTests.farmer(helper, new BlockPos(6, 2, 2), "Bea");
+		QaCuredVillager1109eGameTests.marry(ada, bea, 3);
+		helper.runAfterDelay(2, () -> {
+			ada.kill();
+			bea.kill();
+			helper.runAfterDelay(30, () -> { // both bodies gone; the Undertaker comes
+				Villager adaBack = QaConvertRevive1109cGameTests.revive(helper, level, new BlockPos(2, 2, 2));
+				Villager beaBack = QaConvertRevive1109cGameTests.revive(helper, level, new BlockPos(6, 2, 2));
+				Couples.Partner hers = ModAttachments.PARTNER.get(adaBack);
+				Couples.Partner his = ModAttachments.PARTNER.get(beaBack);
+				boolean married = hers != null && his != null && hers.id().equals(beaBack.getUUID()) && his.id().equals(adaBack.getUUID());
+				boolean apart = (hers == null || !(hers.id().equals(beaBack.getUUID()) || hers.id().equals(bea.getUUID())))
+					&& (his == null || !(his.id().equals(adaBack.getUUID()) || his.id().equals(ada.getUUID())));
+				helper.assertTrue(married || apart, "both brought back, Ada and Bea disagree: Ada's partner " + describe(hers, ada, bea, adaBack, beaBack)
+					+ ", Bea's " + describe(his, ada, bea, adaBack, beaBack) + "; Bea widowed " + ModAttachments.WIDOWED_DAY.has(beaBack)
+					+ ", can court: Ada " + QaConvertRevive1109cGameTests.single(adaBack) + ", Bea " + QaConvertRevive1109cGameTests.single(beaBack));
+				helper.succeed();
+			});
+		});
+	}
+
+	/**
 	 * B1081's report named "guild master" among what a cured villager keeps; B1093 left it to the bug lane, which decided
 	 * (lane-a-1109-0625) as for the rest of the work a bitten villager held: being turned lets the guild go, as a death
 	 * does (Guilds.onDeath: the most experienced member takes over, guilds.md), so a guild never waits on a zombie

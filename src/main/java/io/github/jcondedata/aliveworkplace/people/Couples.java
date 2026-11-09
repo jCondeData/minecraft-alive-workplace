@@ -254,7 +254,11 @@ public final class Couples {
 	 */
 	public static void onRevived(ServerLevel level, UUID was, Villager back) {
 		Partner p = ModAttachments.PARTNER.get(back);
-		if (p == null || !(level.getEntity(p.id()) instanceof Villager other)) {
+		if (p == null) {
+			rejoin(level, was, back);
+			return;
+		}
+		if (!(level.getEntity(p.id()) instanceof Villager other)) {
 			return;
 		}
 		Partner theirs = ModAttachments.PARTNER.get(other);
@@ -277,6 +281,28 @@ public final class Couples {
 			ModAttachments.LATE_PARTNER.remove(other);
 			ModAttachments.WIDOWED_DAY.remove(other);
 			ModAttachments.PARTNER.set(other, new Partner(back.getUUID(), back.getDisplayName(), p.since(), false));
+		}
+	}
+
+	/**
+	 * B1094: {@code back}, brought back without a partner, was widowed before they died, and the late partner they lost was
+	 * brought back first (with the partner their grave kept: {@code back}, as {@code was}, who wasn't loaded to agree). The
+	 * two are together again as they were; {@code back} mourns no more.
+	 */
+	private static void rejoin(ServerLevel level, UUID was, Villager back) {
+		LatePartner late = ModAttachments.LATE_PARTNER.get(back);
+		if (late == null || !(level.getEntity(late.id()) instanceof Villager other) || !other.isAlive()) {
+			return;
+		}
+		Partner theirs = ModAttachments.PARTNER.get(other);
+		if (theirs == null || !(theirs.id().equals(was) || theirs.id().equals(back.getUUID()))) {
+			return;
+		}
+		ModAttachments.LATE_PARTNER.remove(back);
+		ModAttachments.WIDOWED_DAY.remove(back);
+		ModAttachments.PARTNER.set(back, new Partner(other.getUUID(), other.getDisplayName().copy(), theirs.since(), theirs.married()));
+		if (!theirs.id().equals(back.getUUID())) { // came back under a new id
+			ModAttachments.PARTNER.set(other, new Partner(back.getUUID(), theirs.name(), theirs.since(), theirs.married()));
 		}
 	}
 

@@ -114,6 +114,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.legend.LegendSlots.onDeath(level, entity, null); // a Legend as a zombie villager
 				if (entity instanceof net.minecraft.world.entity.monster.ZombieVillager zombie) {
 					io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, zombie); // B1081: never cured, their partner is widowed
+					io.github.jcondedata.aliveworkplace.people.FamilyBook.onLost(level, zombie); // B1087: never cured, the book dates their death
 				}
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
 				io.github.jcondedata.aliveworkplace.threat.SiegeReport.onDeath(level, entity, source); // a siege counts its dead (32.6)

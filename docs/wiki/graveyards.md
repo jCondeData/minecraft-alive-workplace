@@ -5,7 +5,7 @@ field, on a doorstep. Now the village's Undertaker takes each one to the village
 there. The villager can still be brought back from the Graveyard. A village without a Graveyard gets a small plot near
 its hall instead (owner's decision, 2026-10-19).
 
-Roadmap items: B222, B788
+Roadmap items: B222, B788, B1081, B1082
 
 <!-- Lanes: add each id to the line above in the commit that builds it, and put the new config keys, saved fields,
      tests and scenes in backticks so wikicheck.py checks them. -->
@@ -23,9 +23,17 @@ and no Graveyard gets a **plot near the hall**: three rows of four graves, a gra
 6 to 20 blocks from the hall.
 
 When a golden apple (or a healing potion or totem) is in the chest, the Undertaker brings the villager back from the
-Graveyard as from anywhere: same name, job, level, trades and partner.
+Graveyard as from anywhere: same name, job, level and trades. Their partner, widowed by the death, marries them again
+(a second wedding, as the "Bring back my love" request has it) if still alone; one who has married someone else
+since, or mourns someone else, stays with them, and the one brought back is single (B1082).
 
 Graves that old saves left scattered round the village are moved the same way, one at a time.
+
+A villager a zombie turns into a zombie villager leaves no grave: cure them the vanilla way instead. Cured, they are
+the same villager to the mod too: their class, family name, friendship with players, partner (still married, the
+partner never widowed by the bite), Legend place and the rest come back with them. Only the work they held (a
+builder's site, a field, a quarry) is let go when they're bitten, as a death lets it go. A zombie villager that is
+killed instead of cured leaves their partner widowed then (B1081).
 
 ## How it works
 
@@ -41,6 +49,14 @@ Graves that old saves left scattered round the village are moved the same way, o
   used (B788).
 - Moving copies the grave's block entity as it is (the villager's saved data, the epitaph, the day they died). The new
   grave is laid before the old one is cleared, so a save at any moment keeps exactly one grave.
+- A villager or zombie villager that vanilla converts (`Mob.convertTo`) is a new entity with a new UUID. The platform
+  layer carries every attachment the mod saved on the old one over to the new one; for a villager a zombie killed,
+  after the death hooks have let go of their work. `Couples` points the partner at the new UUID (B1081).
+- After a revival (`Graves.revive`, after the request's own remarriage), `Couples.onRevived` makes both sides agree:
+  a partner still widowed by this villager and alone marries them again through `RequestErrands.remarry` (the village's
+  wedding at the hall of the partner's village, else just married again), a courting one courts them again; a partner
+  with someone else, or mourning someone else, keeps that, and the revived villager's saved partner is cleared. A
+  partner not loaded was never widowed and still names them, so nothing changes (B1082).
 - Graves already in a Graveyard's walls, or on the hall plot, stay put. Graves in the Graveyard are tended wherever it
   lies in the village, even beyond the Undertaker's usual 32 blocks.
 
@@ -96,4 +112,10 @@ Nothing new. A moved grave keeps its block entity (`villager`, `name`, `professi
 - QA (B788's edges): `QaGraveyardRim1102GameTests`: a Graveyard whose middle lies exactly on this village's rim is
   this village's only; one block further out, inside the next village's circle, it is the next village's only; where
   two circles overlap, each Graveyard goes to the hall nearer its middle.
+- B1081: QA's `QaCuredVillager1109eBugTests.aCuredVillagerKeepsHisClassFamilyNameAndFriends` (a Burgher of family 7
+  with 500 friendship points, turned and cured, keeps all three) and `QaCuredVillager1109eBugTests.aCuredWifeIsStillMarried`
+  (cured Ada and Bea still married to each other, Bea never widowed); the controls in `QaCuredVillager1109eGameTests`.
+- B1082: QA's `QaRevivedPartner1109eBugTests.aRevivedWifeAndHerWidowerAgreeWhetherTheyAreMarried` (revived Ada and
+  her widow Bea married to each other again) and `QaRevivedPartner1109eBugTests.aRevivedWifeWhoseWidowerRemarriedIsNotStillHisWife`
+  (Bea married Carl meanwhile: revived Ada is single).
 - Showcase scene: `undertaker_graveyard`.

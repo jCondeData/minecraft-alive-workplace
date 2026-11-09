@@ -882,6 +882,9 @@ public final class Builders {
 					}
 				}
 				BuildSiteManager.get(level).gaveUp(site.placement(), left);
+				// B1083: an item frame or painting that fell with its wall (a block a village fire burned) goes up again
+				// with it, from the chests, as on the first build
+				BuildEntities.placeAll(level, plan, supplies);
 			}
 			level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.8, villager.getZ(), 12, 0.5, 0.5, 0.5, 0.0);
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());

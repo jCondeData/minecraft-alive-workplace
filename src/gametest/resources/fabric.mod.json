@@ -1518,6 +1518,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotSite1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegePotVerify1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1108GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderRules1109GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatOwnerGone1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSpikeGoneThrower1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConvertedThreats1109dGameTests",

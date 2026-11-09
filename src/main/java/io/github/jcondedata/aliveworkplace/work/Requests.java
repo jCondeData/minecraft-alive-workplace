@@ -176,6 +176,11 @@ public final class Requests {
 	private static final Set<String> STANDALONE_NAMES = Set.of("request.aliveworkplace.pickaxe", "request.aliveworkplace.axe",
 		"request.aliveworkplace.fishing_rod", "request.aliveworkplace.seeds");
 
+	/** Whether {@code what} is a request name written to stand alone ("A pickaxe"), with a mid-sentence form (B1098). */
+	public static boolean standsAlone(Component what) {
+		return what.getContents() instanceof TranslatableContents t && STANDALONE_NAMES.contains(t.getKey());
+	}
+
 	/**
 	 * {@code what} as it reads inside a sentence ("Needs a pickaxe", "Waiting for 12 Oak Planks, a pickaxe"), not at
 	 * the start of a line: a request name that stands alone capitalized gets its lower-case form; any other is unchanged.

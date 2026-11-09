@@ -1492,6 +1492,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ConvertedMobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B1072GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobCard1109cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.StorehouseBoardWordsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDripstone1108dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDripstoneVerify1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidStrays1108dGameTests",

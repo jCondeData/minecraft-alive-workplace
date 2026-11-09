@@ -259,7 +259,8 @@ list and the stock orders "at a glance" on the right, and a request under the mo
 over what you have, as before, and the request drops by that much at once, so a quick second click hands
 nothing more than is still needed (B344). What the click says reads as a sentence: "Gave 25 Cobblestone to the
 Builder's chests", "Gave a pickaxe to the Miner's chests" and "You don't have a pickaxe to give", never "Gave 1 A
-pickaxe" (B1098, `StorehouseBoardWordsGameTests`). On the stock orders page, the item in your hand (the off hand's when the
+pickaxe" (B1098, `StorehouseBoardWordsGameTests`; `QaUploadFixesVerify1109GameTests`: the Miner's,
+Lumberjack's, Fisherman's and Farmer's requests, one and many). On the stock orders page, the item in your hand (the off hand's when the
 main hand is empty, B351) gets the "Order" button.
 
 **Miners make their own pickaxe (36.11).** A Miner whose pickaxe wore out, or who has none, first looks in their own

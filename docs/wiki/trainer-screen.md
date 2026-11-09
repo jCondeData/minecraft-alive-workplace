@@ -84,6 +84,8 @@ none
 - With RCT, the team and the cap are worked out when the screen opens; a cap that rises while it is open shows on the
   next open.
 - A very small window (a big GUI scale) cuts the longer lines with "…".
+- B1091 (open): a Challenge a Trainer Leader refuses after the day check (she is already battling someone, the player
+  is in a battle, the party is empty) still uses up that player's challenge for the day.
 
 ## Proof
 
@@ -94,5 +96,12 @@ none
 `TrainerScreenCompatTests.refusedUntilTomorrowByALeader`, `TrainerScreenCompatTests.refusedAwayAtTheCup`,
 `TrainerScreenCompatTests.recordAndRevealSurviveAReload` (Cobblemon), `TrainerScreenGameTests.withoutCobblemonTheScreenSaysSo`
 and `QaEveryMenuGameTests.everyServerMenuAndItsClientCopyAgreeSlotForSlot`.
+
+QA (lane D, 2026-11-09): `QaPokemonScreens1109dCompatTests` (trainer part, 9): a screen left open while the trainer
+fell asleep, started a battle with another player or died, or after the player walked away, starts no battle when
+Challenge is pressed; Challenge pressed twice starts one battle; each party line says the Pokémon's state (no false
+"over the cap" without RCT); the team a player revealed by winning stays hidden for another player; a Leader's rules
+line reads "Singles · no level cap" without RCT; every refusal reads as English, no raw key. Mutant killed: the early
+refusal (asleep, away, busy) skipped on Challenge.
 
 Showcase scenes: `leader`, `battle`

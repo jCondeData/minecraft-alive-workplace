@@ -33,7 +33,8 @@ its captain falls. Under that look:
   Out there, a raider only counts for the raid it came with (B1063): each raider is stamped with its raid (the hall and
   the moment it began) when it spawns and whenever that raid holds it in its reach, so a leftover of an older raid (one
   that stood in unloaded ground when its raid ended) never keeps a later raid going, however near or far it is. A raider
-  with no stamp (from a save made before this) counts only within 64 blocks beyond the reach of the nearest raided hall.
+  with no stamp (from a save made before this) counts only within 64 blocks beyond the reach of the nearest raided hall,
+  across and up or down (so out to RADIUS + 96 across and 112 blocks above or below the hall).
   A raider that turns into another mob the vanilla way (a husk drowning in a moat becomes a zombie, a zombie a drowned,
   a skeleton in powder snow a stray) is still that raid's raider (B1054): every tag the mod put on it (raider, stamp,
   role, and a lair's, bandit camp's, bounty's or rogue's mark) goes over to the new mob, so the raid isn't booked as
@@ -244,6 +245,14 @@ None.
 - B1063: `QaRaidOrphan1108dBugTests` (an unstamped leftover 200 blocks off doesn't keep a new raid going) and
   `QaRaidStamp1108aGameTests` (a raid's own raider led 200 blocks off still keeps it going; a leftover stamped by an
   ended raid, 40 blocks off, doesn't).
+- QA (lane D, 2026-11-09, B1063): `QaRaidStampEdges1109dGameTests` (7): with two raids under way, one raid's stray
+  standing nearer the other raided hall keeps only its own raid going; a leftover stamped by the same hall's raid one
+  tick older, or by a hall one block over, keeps no new raid going and isn't sent away; an unstamped stray counts at 64
+  blocks beyond the reach and not at 65, across and up; a stamped stray still counts after the stray and the raids are
+  saved and loaded; a leftover the new raid holds in its reach takes its stamp (one stamp, not two) and counts when led
+  out again; at dawn the raid's own far stray leaves with it; and a raider's arrow keeps its mark through bounces and a
+  save, loses it to a real new owner and doesn't get it back. Mutants killed: 4 of 4 (strays to the nearest hall, 65
+  for 64, the old stamp kept, the mark dropped on a null owner).
 - B1054: `QaRaiderDrowns1108dBugTests` (a raider husk held under water turns into a zombie that is still a raider) and
   `ConvertedMobsGameTests` (a raider skeleton frozen into a stray keeps its raider tag, stamp and role; a bandit zombie
   that drowns keeps its band's tags; a skeleton the mod never touched converts with no tag of ours; a zombified lair

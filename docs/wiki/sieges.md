@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1080
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080
 
 ## What a player sees
 
@@ -340,9 +340,9 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   flies into the builders' frame and leaves its diamond in it, while the same arrow knocks the diamond out of a frame on
   a wall that is no build's; a raider's creeper blast leaves a painting on a finished build's wall and a frame (with
   its diamond and its log) inside a build still under way, and takes the same frame when no build is there. Mutants
-  killed: 2 of 2 (ThreatDamage.sparesHanging off, the shot's tag ignored). Open: B1079 (a raider's arrow whose shooter is gone
-  loses its mark when it bounces off a spared frame) and B1080 (a raider's blast breaks an armor stand of a Scan Tool
-  build) and B1083 (a fire-burned block comes back without the frame that hung on it), tests on
+  killed: 2 of 2 (ThreatDamage.sparesHanging off, the shot's tag ignored). B1079 (a raider's arrow whose shooter is gone
+  lost its mark when it bounced off a spared frame) and B1080 (a raider's blast broke an armor stand of a
+  Scan Tool build) are fixed; open: B1083 (a fire-burned block comes back without the frame that hung on it), tests on
   `tests/threat-spare-1109`.
 - GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
   and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's

@@ -89,4 +89,10 @@ none (the cards read the Fossil Scientist's saved queue and save nothing)
 the click tests of `QaNurseWait1103dGameTests`, `QaNurseMachine1102dCompatTests` and `QaFossilScientist1102dCompatTests`
 (now through the card's button) and `QaEveryMenuGameTests.everyServerMenuAndItsClientCopyAgreeSlotForSlot`.
 
+QA (lane D, 2026-11-09): `QaPokemonScreens1109dCompatTests` (cards part, 9): Heal with everyone at full health; Heal
+pressed after the Nurse fell asleep with the card open (refused, nothing healed); Heal from a player who walked away;
+Heal pressed twice heals once; Hand over with something else in hand, with another fossil, twice in a row and with a
+full party loses and duplicates nothing; a fossil's progress near and after its end. Mutant killed: the Nurse's asleep
+check skipped.
+
 Showcase scenes: `nurse`, `fossil`

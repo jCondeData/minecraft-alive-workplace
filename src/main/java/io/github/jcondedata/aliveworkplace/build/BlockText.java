@@ -16,6 +16,8 @@ import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Cleans the words a blueprint's block data carries (a sign's lines, a banner's or a chest's name, any mod's text saved
@@ -157,14 +159,27 @@ final class BlockText {
 		return json instanceof JsonPrimitive primitive && primitive.isString();
 	}
 
-	/** About the words {@code json} shows: its text, translation keys and their arguments, and the parts after it. */
+	/**
+	 * About the words {@code json} shows: its text, keybinds and translations with their arguments, and the parts after
+	 * it. A translation shows an argument once for each {@code %s} that uses it, as the game does (B1074: ten {@code %1$s}
+	 * nested five deep show 100,000 letters from a short line), so arguments are counted the same way. The count stops a
+	 * little past {@link #LIMIT}, so a line built to show billions of letters costs no more to measure than a long one.
+	 */
 	private static String plain(JsonElement json) {
 		StringBuilder out = new StringBuilder();
 		plain(json, out);
-		return out.toString();
+		return out.length() > LIMIT ? out.substring(0, LIMIT) : out.toString();
 	}
 
+	/** More letters than any line or name keeps, so a cut-off count still tells a too-long line from one that fits. */
+	private static final int LIMIT = 4 * MAX_LINE;
+	/** A translation's placeholders, as the game's TranslatableContents reads them. */
+	private static final Pattern FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
+
 	private static void plain(JsonElement json, StringBuilder out) {
+		if (out.length() > LIMIT) {
+			return;
+		}
 		if (json instanceof JsonPrimitive primitive) {
 			out.append(primitive.getAsString());
 		} else if (json instanceof JsonArray array) {
@@ -172,17 +187,60 @@ final class BlockText {
 				plain(element, out);
 			}
 		} else if (json instanceof JsonObject object) {
-			for (String key : new String[] {"text", "translate", "keybind"}) {
+			for (String key : new String[] {"text", "keybind"}) {
 				if (isString(object.get(key))) {
 					out.append(object.get(key).getAsString());
 				}
 			}
-			for (String key : new String[] {"with", "extra"}) {
-				if (object.get(key) instanceof JsonArray parts) {
-					plain(parts, out);
-				}
+			if (isString(object.get("translate"))) {
+				translate(object.get("translate").getAsString(),
+					object.get("with") instanceof JsonArray with ? with : new JsonArray(), out);
+			} else if (object.get("with") instanceof JsonArray with) {
+				plain(with, out);
+			}
+			if (object.get("extra") instanceof JsonArray extra) {
+				plain(extra, out);
 			}
 		}
+	}
+
+	/** The words a translation shows when its key has no text in the language (the key is its own format, as in the game). */
+	private static void translate(String key, JsonArray with, StringBuilder out) {
+		// each argument's words are worked out once and repeated, so nesting costs no more than the letters shown
+		String[] args = new String[with.size()];
+		Matcher matcher = FORMAT.matcher(key);
+		int next = 0;
+		int start = 0;
+		StringBuilder shown = new StringBuilder();
+		while (matcher.find(start) && shown.length() + out.length() <= LIMIT) {
+			shown.append(key, start, matcher.start());
+			start = matcher.end();
+			String type = matcher.group(2);
+			if ("%".equals(type) && matcher.group(0).equals("%%")) {
+				shown.append('%');
+				continue;
+			}
+			if (!"s".equals(type)) {
+				// the game can't format this key and shows it as it is
+				out.append(key);
+				return;
+			}
+			int index = matcher.group(1) != null ? Integer.parseInt(matcher.group(1)) - 1 : next++;
+			if (index < 0 || index >= args.length) {
+				out.append(key);
+				return;
+			}
+			if (args[index] == null) {
+				StringBuilder arg = new StringBuilder();
+				plain(with.get(index), arg);
+				args[index] = arg.length() > LIMIT ? arg.substring(0, LIMIT + 1) : arg.toString();
+			}
+			shown.append(args[index]);
+		}
+		if (shown.length() + out.length() <= LIMIT) {
+			shown.append(key, start, key.length());
+		}
+		out.append(shown);
 	}
 
 	private BlockText() {

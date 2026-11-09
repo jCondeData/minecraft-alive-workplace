@@ -428,8 +428,9 @@ SCENES = [
        ("03_tutor_tooltip", "A lesson's details")], cobblemon=True),
     S("smith", "Ball Smith", "A Ball Smith at work", "the ball smith made balls", 150,
       [("01_smith_working", "At the smithing table"), ("02_smith_done", "Balls made")], cobblemon=True),
-    S("smith_orders", "Ball Smith", "Choosing which balls to make", "the orders screen opened", 60,
-      [("01_orders_screen", "Orders"), ("02_orders_picked", "A ball picked")], cobblemon=True),
+    # The list screen (ROADMAP 42.3): a row per ball with Pick, the picked one gold with Unpick
+    S("smith_orders", "Ball Smith", "Choosing which balls to make", "the orders list opened and a Poké Ball was picked", 60,
+      [("01_orders_screen", "The orders list (what she makes, at the top)"), ("02_orders_picked", "A ball picked: gold, Unpick")], cobblemon=True),
     S("trader", "Pokémon Trader", "The Pokémon Trader's trade screen, in the Village Hall's look", "the trade screen opened", 60,
       [("01_trader_offer", "The day's offers as a list"), ("02_trader_party", "A Pokémon that fits"), ("04_trader_confirm", "Click again to trade"), ("05_trader_traded", "Traded: come back tomorrow")],
       cobblemon=True),
@@ -465,9 +466,15 @@ SCENES = [
         cobblemon=True),
     job("gem_grower", "Gem Grower", "A ripe amethyst cluster picked, the budding block kept",
         "the gem grower picked the ripe amethyst cluster and left the budding amethyst", 150),
+    # The list screen (ROADMAP 42.3): a row per bed with what it's planted with and Pick
+    S("gem_orders", "Gem Grower", "Choosing which gem beds she keeps", "the gem grower's orders list opened and the amethyst bed was picked", 60,
+      [("01_gem_orders_screen", "The orders list (which beds she keeps, at the top)"), ("02_gem_orders_picked", "A bed picked: gold, Unpick")]),
     job("jeweller", "Jeweler", "Making amethyst rings at the stonecutter", "the jeweler made amethyst rings at the stonecutter"),
     job("habitat_keeper", "Habitat Keeper", "A snack set out, a log slathered, a shiny spotted",
         "the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 150, cobblemon=True),
+    # The list screen (ROADMAP 42.3): her lure now at the top, Any snack first, a row per lure with its berries and Choose
+    S("habitat_lures", "Habitat Keeper", "Choosing the habitat keeper's lure", "the lures list opened and the Fire type was chosen", 60,
+      [("01_lures_screen", "The lures list (her lure now, at the top)"), ("02_lures_fire", "Fire chosen: gold, Chosen")], cobblemon=True),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),

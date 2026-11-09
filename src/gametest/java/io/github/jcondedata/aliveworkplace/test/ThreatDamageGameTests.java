@@ -308,7 +308,8 @@ public class ThreatDamageGameTests implements FabricGameTest {
 
 	/**
 	 * A raider's arrow stays a threat's after its pillager is gone and the arrow was saved and loaded (B1066, B1064);
-	 * a villager's arrow never is, and a raider's arrow deflected to a villager no longer is.
+	 * a villager's arrow never is, a raider's arrow bounced to no owner still is (B1079), and a raider's arrow deflected
+ * to a villager no longer is.
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
@@ -331,6 +332,8 @@ public class ThreatDamageGameTests implements FabricGameTest {
 		helper.assertTrue(loaded.getOwner() == null, "setup: the loaded arrow still finds its gone pillager");
 		helper.assertTrue(ThreatDamage.isThreat(shot), "a raider's arrow stopped counting as a threat's once its pillager was gone");
 		helper.assertTrue(ThreatDamage.isThreat(loaded), "a raider's arrow stopped counting as a threat's after a save and reload");
+		shot.setOwner(null);
+		helper.assertTrue(ThreatDamage.isThreat(shot), "a raider's arrow bounced with no owner (B1079) stopped counting as a threat's");
 		loaded.setOwner(villager);
 		helper.assertTrue(!ThreatDamage.isThreat(loaded), "a raider's arrow deflected to a villager still counts as a threat's");
 		helper.succeed();

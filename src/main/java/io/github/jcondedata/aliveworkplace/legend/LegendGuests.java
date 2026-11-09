@@ -15,6 +15,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.people.Homes;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.rules.Condition;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -602,10 +603,12 @@ public final class LegendGuests {
 	public static final int BRINGS_SLOT = 12;
 	public static final int WANTS_SLOT = 14;
 	public static final int DAYS_SLOT = 16;
+	/** The list screen's own line (42.3): how long they stay at the top right, the hint. */
+	public static final int TERMS_INFO = 4;
 
 	/** A guest's terms, right-clicked: who they are, what they would bring, what they want (ticks and crosses), days left. */
 	public static void openTerms(ServerPlayer player, Villager guest) {
-		ChoiceMenu.open(player, guest.getDisplayName(), p -> p.isAlive() && guest.isAlive() && isGuest(guest) && p.distanceToSqr(guest) < 64,
+		ChoiceMenu.openList(player, guest.getDisplayName(), p -> p.isAlive() && guest.isAlive() && isGuest(guest) && p.distanceToSqr(guest) < 64,
 			menu -> render(menu, guest));
 	}
 
@@ -632,17 +635,23 @@ public final class LegendGuests {
 		List<Component> who = new ArrayList<>();
 		who.add(LegendText.rarityLine(legend));
 		who.add(legend.loreText().copy().withStyle(ChatFormatting.GRAY));
-		menu.button(WHO_SLOT, icon(Items.NETHER_STAR, LegendText.name(guest.getDisplayName(), legend), who), null);
+		// The list screen (42.3): four rows, each its first line beside its name and every line in its tooltip, as before.
+		menu.button(WHO_SLOT, row(icon(Items.NETHER_STAR, LegendText.name(guest.getDisplayName(), legend), who), LegendText.rarityLine(legend)), null);
 		List<Component> brings = new ArrayList<>(LegendText.powerLines(legend, false));
 		if (brings.isEmpty()) {
 			brings.add(Component.translatable("screen.aliveworkplace.legend_terms.brings_nothing").withStyle(ChatFormatting.GRAY));
 		}
-		menu.button(BRINGS_SLOT, icon(Items.ENCHANTED_BOOK, Component.translatable("screen.aliveworkplace.legend_terms.brings")
-			.withStyle(ChatFormatting.YELLOW), brings), null);
+		menu.button(BRINGS_SLOT, row(icon(Items.ENCHANTED_BOOK, Component.translatable("screen.aliveworkplace.legend_terms.brings")
+			.withStyle(ChatFormatting.YELLOW), brings), brings.get(0)), null);
 		List<Component> wants = new ArrayList<>(LegendText.needLines(legend, shown));
 		wants.add(Component.translatable("screen.aliveworkplace.legend_terms.settle_hint").withStyle(ChatFormatting.GRAY));
-		menu.button(WANTS_SLOT, icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.legend_terms.wants")
-			.withStyle(ChatFormatting.AQUA), wants), null);
+		// How many of the wants are met (green once all are), the ticks and crosses in its tooltip.
+		int needs = 2 + (legend.luxury().isPresent() ? 1 : 0);
+		int met = (LegendText.met(shown, LegendText.HOME) ? 1 : 0) + (LegendText.met(shown, LegendText.HAPPY) ? 1 : 0)
+			+ (legend.luxury().isPresent() && LegendText.met(shown, LegendText.LUXURY) ? 1 : 0);
+		menu.button(WANTS_SLOT, row(icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.legend_terms.wants")
+			.withStyle(ChatFormatting.AQUA), wants), Component.translatable("screen.aliveworkplace.legend_terms.met", met, needs)
+				.withStyle(met >= needs ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
 		long left = daysLeft(level, shown);
 		// B588: from their last evening on (kept by a player nearby) the terms don't name a day already gone
 		boolean over = stayOver(level, shown);
@@ -650,8 +659,16 @@ public final class LegendGuests {
 			: Component.translatable(left == 1 ? "screen.aliveworkplace.legend_terms.last_day" : "screen.aliveworkplace.legend_terms.days_left", left);
 		Component leaves = over ? Component.translatable("screen.aliveworkplace.legend_terms.leaves_unwatched")
 			: Component.translatable("screen.aliveworkplace.legend_terms.leaves", shown.lastDay());
-		menu.button(DAYS_SLOT, icon(Items.CLOCK, days.copy().withStyle(ChatFormatting.LIGHT_PURPLE),
-			List.of(leaves.copy().withStyle(ChatFormatting.GRAY))), null);
+		menu.button(DAYS_SLOT, row(icon(Items.CLOCK, days.copy().withStyle(ChatFormatting.LIGHT_PURPLE),
+			List.of(leaves.copy().withStyle(ChatFormatting.GRAY))), leaves), null);
+		ItemStack info = icon(Items.NETHER_STAR, LegendText.name(guest.getDisplayName(), legend), List.of(legend.loreText().copy().withStyle(ChatFormatting.GRAY)));
+		ChoiceList.info(info, days.copy().withStyle(ChatFormatting.LIGHT_PURPLE), Component.translatable("screen.aliveworkplace.legend_terms.settle_hint"), List.of());
+		menu.button(TERMS_INFO, info, null);
+	}
+
+	/** A terms row (42.3): {@code second} beside its name; no button (the terms are to read). */
+	private static ItemStack row(ItemStack icon, Component second) {
+		return ChoiceList.row(icon, plain(second), null, null, false, false);
 	}
 
 	private static ItemStack icon(net.minecraft.world.item.Item item, Component name, List<Component> lore) {

@@ -3,9 +3,10 @@
 The menus that opened as a plain gray chest of buttons move, one by one, to a list drawn in the Village Hall's look:
 the title and your money at the top, a row of tabs, a list of rows with a button on each, and a hint at the foot. The
 Move Tutor's lessons were the first; the Pokémon Professor's hints, the Rancher's Daycare and the Daycare Keeper followed
-(all Cobblemon). Part of Milestone 42 (One look for every screen).
+(all Cobblemon), then the job menus: the Ball Smith's, Gem Grower's, Habitat Keeper's and Berry Breeder's, a traveler's
+hire screen, a Legend guest's terms and the Research screen. Part of Milestone 42 (One look for every screen).
 
-Roadmap items: 42.1, 42.2
+Roadmap items: 42.1, 42.2, 42.3
 
 ## What a player sees
 
@@ -34,7 +35,28 @@ The Cobblemon menus that followed (42.2) look the same, with their own rows:
   row says how well it'd get along with the one picked), **Unpick** to change your mind; gray rows while you have a pair
   there or she's full.
 
-In all three, pointing at your money shows the menu's own tooltip (what the job does, the price rules, the odds), and a
+The job menus (42.3) follow, with their own rows:
+
+- **The Ball Smith's orders** and **the Gem Grower's orders** (sneak-right-click with an empty hand): what they make or
+  keep at the top right ("Makes any ball", "Keeps the picked beds"), then a row per ball or bed: "Making these" or "Not
+  asked for", the level a ball needs (yellow) or what a bed is planted with, and **Pick**; a picked row is gold with
+  **Unpick**.
+- **The Habitat Keeper's lures**: her lure now at the top right, **Any snack** first, then a row per type and egg group
+  with the berries that season it and **Choose** (her lure gold, "Chosen"); page arrows at the foot when there are more.
+- **The Berry Breeder's book**: how many berries the village has found at the top right, her goal and the step she's on
+  as the footer; **Clear** (her goal) and **Stop** (her plot) first, then a row per berry: "Found", "Not found yet" or
+  "Her goal" (gold), the pair that makes it (yellow when both parents are found) and **Set goal**; page arrows.
+- **A traveler at the inn** (right-click): your money at the top, their row (their level, how long they stay) and **Hire**
+  with the price, red while you can't pay it; it follows your money while open.
+- **A Legend guest's terms** (right-click): how long they stay at the top right, then four rows to read (who they are and
+  their rarity, what they'd bring, how many of their wants are met, when they leave), every line in each row's tooltip.
+- **The Research screen** (sneak-right-click a Scholar, or a Legend with a tree): what's being researched at the top
+  right, the tabs (the scholars', each Legend's tree, the realm's in a capital), then a row per topic: its level, the next
+  level's price ("Fully researched" once done) and **Research**; gold "Under way" while it's worked on, gray with no button
+  while it's locked or done (the reason in its tooltip, and a click still says it). The Great Library's row and topics come
+  after the scholars' own.
+
+In all of them, pointing at the top right line shows the menu's own tooltip (what the job does, the price rules, the odds), and a
 price you can't pay is red.
 
 If your party changes while the screen is open (a Pokémon caught, one sent to the PC) or your money does, the tabs,
@@ -59,6 +81,10 @@ Tutor compares the party and the money with what it last laid out and lays the p
 lesson waiting for Confirm stays chosen unless its Pokémon is gone. The Professor and both daycares do the same
 (`CobblemonTutors.shownFor`), keeping a Pokémon waiting for Confirm or a partner.
 
+**Row order.** Rows are listed in slot order, unless a row carries an order (`ChoiceList.order(icon, n)`, 42.3): lower
+first, slot order among equals. So a menu keeps its slots (and the tests and clicks that know them) while "Any snack",
+"Clear" and "Stop" come first and the Great Library's rows after the scholars' topics.
+
 **Shared pieces.** `TableStyle`'s list-menu section (a text button, a tab, the row's columns and headings, a row, the
 footer hint, the money line) is what the next menus (42.2 to 42.4) and the Trainer screen use.
 
@@ -73,6 +99,15 @@ none (the screen keeps nothing; the lessons, prices and tutor ranks are the Move
 ## Items, blocks, jobs, commands
 
 - `aliveworkplace:choice_list`: the list screen's menu type.
+- New text (42.3): `screen.aliveworkplace.orders.column_order`, `.button_pick`, `.button_unpick`; the smith's
+  `screen.aliveworkplace.ball_smith.mode_any`, `.mode_only`, `.list_hint`, `.column_ball`, `.column_level`; the grower's
+  `screen.aliveworkplace.gem_grower.mode_every`, `.mode_only`, `.list_hint`, `.column_bed`, `.column_planted`; the lures'
+  `message.aliveworkplace.habitat_keeper.lures.any_second`, `.button_choose`, `.button_chosen`, `.about`, `.list_hint`,
+  `.column_lure`, `.column_berries`; the book's `message.aliveworkplace.berry_breeder.book.found_short`, `.lit_short`,
+  `.unfound`, `.wild_short`, `.button_set`, `.button_goal`, `.button_clear`, `.button_stop`, `.column_berry`,
+  `.column_book`, `.column_from`; `screen.aliveworkplace.inn.joins`, `.button_hire`; `screen.aliveworkplace.legend_terms.met`;
+  the research's `screen.aliveworkplace.research.nothing_short`, `.list_hint`, `.column_topic`, `.column_level`,
+  `.column_next`, `.button_research`, `.button_under_way`.
 - New text (42.2): the hints `screen.aliveworkplace.professor.list_hint`, `.column_name`, `.column_notes`,
   `.stone_second`, `.stone_sold_short`, `.button_buy`, `.button_note`; the daycare `screen.aliveworkplace.daycare.list_hint`,
   `.column_pokemon`, `.column_state`, `.in_party`, `.button_collect`, `.button_leave`; the keeper
@@ -99,9 +134,17 @@ none (the screen keeps nothing; the lessons, prices and tutor ranks are the Move
 - 42.2: the boarders and the party share one list with no heading between them (the rows' buttons, Collect or Leave,
   tell them apart), as the list has no section headings yet.
 
+- 42.3: the Research screen is a list, not a grid of framed cells: the topics already sit in their tree's order (what
+  a topic needs comes before it), and a row has room for the level, the price and the button that a cell didn't; what's
+  locked is a gray row with the reason in its tooltip.
+- 42.3: the job menus' top right line says what the job does now (what she makes, her lure, what's researched, the found
+  count, the days left) where no money is spent; the inn's shows your money.
+- 42.3: a Legend guest's terms stay four rows to read (no buttons, as the chest had none); each row's tooltip keeps every
+  line (the ticks and crosses of the wants).
+
 ## Known limits
 
-- The Move Tutor and the Cobblemon menus use it so far; the other chest menus move in 42.3 and 42.4.
+- The Move Tutor, the Cobblemon menus and the job menus use it so far; the builder tools and shops move in 42.4.
 - A daycare's boarders' levels and the keeper's eggs don't change on screen while it's open (they follow the party and
   the money only); reopening shows them.
 - The rows are fixed columns; a very narrow window (a big GUI scale on a small screen) cuts the texts with "…".
@@ -123,4 +166,10 @@ QA's `QaCobblemonListEdges1109eCompatTests` (2, Cobblemon, 42.2: the party reord
 for Confirm keeps it on its Pokémon, a click on the row that moved into its place leaves nobody, and Confirm leaves
 exactly that one; the Keeper's Pick stays on its Pokémon when another takes its place, and Pair leaves the two chosen).
 
-Showcase scenes: `tutor`, `professor`, `daycare`, `daycare_keeper`
+42.3: `JobListMenusGameTests.gemGrowerOrdersAsAList`, `JobListMenusGameTests.innHireAsAList`,
+`JobListMenusGameTests.legendTermsAsAList`, `JobListMenusGameTests.researchAsAList`;
+`JobListMenusCompatTests.smithOrdersAsAList`, `JobListMenusCompatTests.berryBookAsAList`,
+`JobListMenusCompatTests.habitatLuresAsAList` (Cobblemon).
+
+Showcase scenes: `tutor`, `professor`, `daycare`, `daycare_keeper`, `smith_orders`, `gem_orders`, `habitat_lures` (and the
+list in `scholar`'s research still, `innkeeper`'s hire still, `berry_breeder`'s book still and `legend_guest`'s terms)

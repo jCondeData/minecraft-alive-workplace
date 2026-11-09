@@ -31,6 +31,10 @@ import org.jetbrains.annotations.Nullable;
  * </ul>
  * A shown button without a mark is a plain row: its name, its first lore line as the second line, no price, the whole
  * row a button. So a menu moved to the list screen works before it marks anything, and marks only add the columns.
+ *
+ * <p>Rows are listed in slot order, unless a row is given an {@link #order} (ROADMAP 42.3): lower first, slot order among
+ * equals (0 by default). So a menu keeps its slots (and the tests and clicks that know them) and still lists a button that
+ * sits in a later slot first (the Habitat Keeper's "Any snack", the Great Library's row after the scholars' topics).
  */
 public final class ChoiceList {
 	/** The custom data key of an icon's mark. */
@@ -41,7 +45,8 @@ public final class ChoiceList {
 	}
 
 	/** One button's mark, as the client reads it. Texts are null where the menu gave none. */
-	public record Mark(Kind kind, @Nullable Component second, @Nullable Component price, @Nullable Component button, boolean off, boolean on) {
+	public record Mark(Kind kind, @Nullable Component second, @Nullable Component price, @Nullable Component button, boolean off, boolean on,
+		int order) {
 	}
 
 	/** The menu's own line (from its {@link Kind#INFO} icon). */
@@ -63,6 +68,20 @@ public final class ChoiceList {
 		mark.putBoolean("off", off);
 		mark.putBoolean("on", on);
 		return mark(icon, mark);
+	}
+
+	/**
+	 * Where marked row {@code icon} goes in the list (ROADMAP 42.3): lower first, slot order among equals; 0 when not set.
+	 * Call it after {@link #row}. Returns the icon.
+	 */
+	public static ItemStack order(ItemStack icon, int order) {
+		CompoundTag mark = tag(icon);
+		if (mark != null) {
+			mark = mark.copy();
+			mark.putInt("order", order);
+			mark(icon, mark);
+		}
+		return icon;
 	}
 
 	/** Marks {@code icon} as a tab over the list; {@code on} for the open one. */
@@ -110,7 +129,8 @@ public final class ChoiceList {
 		} catch (IllegalArgumentException e) {
 			return null;
 		}
-		return new Mark(kind, get(mark, "second"), get(mark, "price"), get(mark, "button"), Nbt.getBoolean(mark, "off"), Nbt.getBoolean(mark, "on"));
+		return new Mark(kind, get(mark, "second"), get(mark, "price"), get(mark, "button"), Nbt.getBoolean(mark, "off"), Nbt.getBoolean(mark, "on"),
+			Nbt.getInt(mark, "order"));
 	}
 
 	/** The menu's own line from its {@link Kind#INFO} icon, or null for any other icon. */

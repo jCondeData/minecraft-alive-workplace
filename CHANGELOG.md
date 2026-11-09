@@ -24,6 +24,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A raider's arrow whose raider is already gone stays a raider's shot after it bounces off something it can't hurt, such as the builders' item frame, so the bounce no longer knocks the item out of another of their frames or breaks their pot (B1079).
+- The Bandit King's fort always goes up 110 to 150 blocks from the hall; about 1 fort in 40 used to land up to half a block outside that ring (B660).
+- A banner built from an uploaded blueprint file keeps at most the 6 pattern layers a loom gives one, so a wall of banners with thousands of layers each can no longer make a chunk that disconnects every player who comes near (B1073).
+- A head built from an uploaded blueprint file keeps no more of its skin than a player's head could: its name, its id and one real-sized signed skin. A file's head with many or huge skin entries keeps only its name and id, so a wall of them can no longer make a chunk that disconnects every player who comes near (B1077).
+- A sign line from an uploaded blueprint file that repeats its words through nested translations is cut to the 384 letters a player could write, so a short line can no longer show 100,000 letters (or a hundred million) and freeze every client that draws the sign (B1074).
 - Village Hall: one damaged entry in a hall's saved Book of Families (a hand-edited file, or one a crash cut short) no
   longer empties the village's whole family book (every person, parent, partner and trade, the Family Tree page and
   the family names). Only the bad entry is left out, with a warning in the log (B827).
@@ -36,6 +41,7 @@ asks for the steps, `latest.log` and any crash report).
 ### Added
 
 - The Move Tutor's lessons are a list in the Village Hall's look instead of a gray chest: your money at the top, your party as tabs, each move a row with its type, price and a Teach button (Confirm to pay), gray rows for moves the tutor can't teach yet; the screen follows your party and money while it's open (42.1).
+- The job menus are lists in the Village Hall's look too: the Ball Smith's and Gem Grower's orders (Pick and Unpick, what they make or keep at the top), the Habitat Keeper's lures (Any snack first, each lure's berries, Choose), the Berry Breeder's book (found or not, the pair that makes it, Set goal; her goal at the foot), a traveler's hire screen at the inn (your money at the top, Hire with the price in red while you can't pay), a Legend guest's terms, and the Research screen (tabs for each tree, a row per topic with its level, price and Research; gray while locked or done) (42.3).
 - The Pokémon Professor's hints, the Rancher's Daycare and the Daycare Keeper's screen are lists in the same look: your money at the top, each Pokémon a row with a button (Note it, Leave and Confirm, Collect, Pick and Pair, Take back), the Professor's evolution stone a row with its price and Buy, prices red when you can't pay them, gray rows that say why something can't be done; they follow your party and money while open (42.2).
 
 ### Fixed

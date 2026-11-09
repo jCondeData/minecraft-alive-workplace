@@ -110,15 +110,22 @@ public final class BanditFort {
 	@Nullable
 	public static BlockPos site(ServerLevel level, BlockPos hall, int near, int far, RandomSource random) {
 		for (int tries = 0; tries < 16; tries++) {
-			double angle = random.nextDouble() * Math.PI * 2;
-			int distance = near + random.nextInt(Math.max(1, far - near + 1));
-			BlockPos column = hall.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
+			BlockPos column = column(hall, near, far, random);
 			BlockPos ground = ground(level, column);
 			if (ground != null && Math.abs(ground.getY() - hall.getY()) <= 32 && fits(level, ground)) {
 				return ground;
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * A column {@code near} to {@code far} blocks (straight-line, across the ground) from {@code hall} in a random
+	 * direction. Rounding x and z each on its own put about 1 site in 40 up to half a block outside the ring (B660), so
+	 * this goes through {@link io.github.jcondedata.aliveworkplace.story.ArcEffects#ring}, which steps it back inside.
+	 */
+	public static BlockPos column(BlockPos hall, int near, int far, RandomSource random) {
+		return io.github.jcondedata.aliveworkplace.story.ArcEffects.ring(hall, near, Math.max(near, far), random);
 	}
 
 	/** The ground at {@code column} when the fort's whole footprint round it is loaded; else null. */

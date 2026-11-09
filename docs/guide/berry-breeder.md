@@ -30,7 +30,10 @@ of the composter and some farmland round it. A [Berry Nursery](berry-nursery-bui
 Sneak-right-click her with an empty hand: her **berry book** lists every berry Cobblemon has (a data pack's too). The
 ones the village has found are lit; each of the others shows the pair that makes it, grayed while a parent is still
 missing, or "Grows wild: no pair makes it". Click one to make it **her goal**. She works out the chain from the berries
-the village has (in the chests and the plots): "Mira will breed Sitrus. Steps to go: 2."
+the village has (in the chests and the plots): "Mira will breed Sitrus. Steps to go: 2." The book is a list: how many
+berries the village has found at the top, her goal and the step she's on at the foot, **Clear** (her goal) and **Stop**
+(her plot) first, then a row per berry: "Found", "Not found yet" or "Her goal" (gold), the pair that makes it, and **Set
+goal**.
 
 ## Her work
 

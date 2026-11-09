@@ -13,6 +13,7 @@ import io.github.jcondedata.aliveworkplace.realm.RealmResearch;
 import io.github.jcondedata.aliveworkplace.realm.RealmTreasury;
 import io.github.jcondedata.aliveworkplace.realm.Realms;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,10 @@ import org.jetbrains.annotations.Nullable;
  * The research screen (sneak-right-click a Scholar): the village's research tree; click a topic to research it next.
  * While a Legend with a research tree of their own lives in the village (29.11), the bottom row holds a tab for the
  * scholars' tree and one for each Legend's; sneak-right-clicking such a Legend opens their tab.
+ *
+ * <p>Shown as the list screen (ROADMAP 42.3): the tabs over the list, a row per topic (its level, the next level's price,
+ * Research; gray when it's done or locked, gold while it's under way), the Great Library's row and topics after the
+ * scholars' own, and what's under way at the top right (the info book's tooltip on it). The slots and clicks are as before.
  */
 public final class ResearchScreen {
 	static final int INFO = 4;
@@ -95,7 +100,7 @@ public final class ResearchScreen {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.scholar.state.no_hall").withStyle(ChatFormatting.YELLOW));
 			return;
 		}
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.research.title", VillageHalls.name(level, hall)),
+		ChoiceMenu.openList(player, Component.translatable("screen.aliveworkplace.research.title", VillageHalls.name(level, hall)),
 			p -> p.isAlive() && villager.isAlive() && p.distanceToSqr(villager) < 64, menu -> render(menu, level, hall, view));
 	}
 
@@ -144,7 +149,7 @@ public final class ResearchScreen {
 		if (onScholars) {
 			main.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 		}
-		menu.button(TAB_SLOTS[0], main, p -> show(menu, level, hall, view, null));
+		menu.button(TAB_SLOTS[0], ChoiceList.tab(main, onScholars), p -> show(menu, level, hall, view, null));
 		if (capital) {
 			List<Component> realmLore = new ArrayList<>();
 			realmLore.add(line(Component.translatable("screen.aliveworkplace.research.tab.realm.about"), ChatFormatting.GRAY));
@@ -156,7 +161,7 @@ public final class ResearchScreen {
 			if (view.realm) {
 				realmTab.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 			}
-			menu.button(REALM_TAB, realmTab, p -> {
+			menu.button(REALM_TAB, ChoiceList.tab(realmTab, view.realm), p -> {
 				view.realm = true;
 				view.tree = null;
 				render(menu, level, hall, view);
@@ -174,7 +179,7 @@ public final class ResearchScreen {
 			if (t == tree) {
 				tab.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 			}
-			menu.button(TAB_SLOTS[i + 1], tab, p -> show(menu, level, hall, view, t.id()));
+			menu.button(TAB_SLOTS[i + 1], ChoiceList.tab(tab, t == tree), p -> show(menu, level, hall, view, t.id()));
 		}
 	}
 
@@ -205,7 +210,9 @@ public final class ResearchScreen {
 			}
 		}
 		about.add(line(Component.translatable("screen.aliveworkplace.research.how"), ChatFormatting.DARK_GRAY));
-		menu.button(INFO, icon(Items.ENCHANTED_BOOK, Component.translatable("screen.aliveworkplace.research.info"), ChatFormatting.GOLD, about), null);
+		menu.button(INFO, info(icon(Items.ENCHANTED_BOOK, Component.translatable("screen.aliveworkplace.research.info"), ChatFormatting.GOLD, about),
+			current == null ? null : Component.translatable("research.aliveworkplace.level", current.title(), BuilderLevels.levelName(state.level(current) + 1)),
+			current == null ? 0 : Math.round(100f * state.progress() / current.points(state.level(current) + 1))), null);
 		menu.divider(1);
 		renderLibrary(menu, level, hall, entity, view, state);
 		Research.Topic[] topics = Research.Topic.values();
@@ -215,7 +222,11 @@ public final class ResearchScreen {
 				continue; // the Great Library's own topics have only its row (35.14)
 			}
 			int fromCapital = RealmResearch.fromCapital(level, hall, state, topic);
-			menu.button(TOPIC_SLOTS[i], topicIcon(state, topic, topic.cost(state.level(topic) + 1, level, entity), fromCapital), p -> {
+			Research.Cost price = topic.cost(state.level(topic) + 1, level, entity);
+			int lvl = Math.min(topic.maxLevel, Math.max(state.level(topic), fromCapital));
+			boolean done = lvl >= topic.maxLevel;
+			menu.button(TOPIC_SLOTS[i], topicRow(topicIcon(state, topic, price, fromCapital), lvl, topic.maxLevel, done ? null : Research.describe(price),
+				done, !done && topic == state.currentTopic(), !state.available(topic)), p -> {
 				Research.State now = entity.research();
 				Research.Topic busy = now.currentTopic();
 				if (RealmResearch.fromCapital(level, hall, now, topic) >= topic.maxLevel) {
@@ -249,12 +260,18 @@ public final class ResearchScreen {
 			about.add(line(Component.translatable("screen.aliveworkplace.research.library.how"), ChatFormatting.GRAY));
 		}
 		about.add(line(Component.translatable("screen.aliveworkplace.research.library.price"), ChatFormatting.DARK_GRAY));
-		menu.button(LIBRARY_HEADER, icon(open ? Items.ENCHANTING_TABLE : Items.BOOKSHELF, Component.translatable("screen.aliveworkplace.research.library"),
-			open ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.GRAY, about), null);
+		// On the list (42.3) the Great Library's row and its topics come after the scholars' own topics.
+		menu.button(LIBRARY_HEADER, ChoiceList.order(ChoiceList.row(icon(open ? Items.ENCHANTING_TABLE : Items.BOOKSHELF, Component.translatable("screen.aliveworkplace.research.library"),
+			open ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.GRAY, about), about.get(0), null, null, !open, false), 1), null);
 		for (int i = 0; i < LIBRARY_TOPICS.size() && i < LIBRARY_SLOTS.length; i++) {
 			Research.Topic topic = LIBRARY_TOPICS.get(i);
 			int next = Math.max(topic.maxLevel, state.level(topic)) + 1;
-			menu.button(LIBRARY_SLOTS[i], libraryIcon(state, topic, topic.cost(next, level, entity), open), p -> {
+			Research.Cost price = topic.cost(next, level, entity);
+			int lvl = state.level(topic);
+			boolean done = lvl >= topic.top();
+			ItemStack row = topicRow(libraryIcon(state, topic, price, open), lvl, topic.top(), done ? null : Research.describe(price), done,
+				topic == state.currentTopic() && topic.libraryLevel(lvl + 1), !open || lvl < topic.maxLevel || !state.available(topic, true));
+			menu.button(LIBRARY_SLOTS[i], ChoiceList.order(row, 1), p -> {
 				Research.State now = entity.research();
 				Research.Topic busy = now.currentTopic();
 				if (!Research.secondTier(level, hall)) {
@@ -334,12 +351,22 @@ public final class ResearchScreen {
 			}
 		}
 		about.add(line(Component.translatable("screen.aliveworkplace.research.tree_how", legend), ChatFormatting.DARK_GRAY));
-		menu.button(INFO, icon(tree.icon(), tree.name(), ChatFormatting.GOLD, about), null);
+		menu.button(INFO, info(icon(tree.icon(), tree.name(), ChatFormatting.GOLD, about),
+			current.map(c -> (Component) Component.translatable("research.aliveworkplace.level", c.topic().name(),
+				BuilderLevels.levelName(ResearchTrees.level(state, tree, c.topic()) + 1))).orElse(null),
+			current.map(c -> Math.round(100f * c.progress() / c.topic().points(ResearchTrees.level(state, tree, c.topic()) + 1))).orElse(0)), null);
 		menu.divider(1);
 		List<ResearchTree.Topic> topics = tree.topics();
 		for (int i = 0; i < topics.size() && i < TOPIC_SLOTS.length; i++) {
 			ResearchTree.Topic topic = topics.get(i);
-			menu.button(TOPIC_SLOTS[i], treeTopicIcon(level, hall, state, tree, topic), p -> {
+			int lvl = ResearchTrees.level(state, tree, topic);
+			boolean done = lvl >= topic.levels();
+			boolean locked = ResearchTrees.takenRival(state, tree, topic).isPresent()
+				|| (topic.unlock().isPresent() && ResearchTrees.waitsForCounter(level, hall, topic))
+				|| topic.needs().entrySet().stream().anyMatch(need -> tree.topic(need.getKey()).map(o -> ResearchTrees.level(state, tree, o) < need.getValue()).orElse(false));
+			boolean under = current.isPresent() && current.get().topic() == topic;
+			menu.button(TOPIC_SLOTS[i], topicRow(treeTopicIcon(level, hall, state, tree, topic), lvl, topic.levels(),
+				done ? null : Research.describe(topic.cost(lvl + 1)), done, under, locked), p -> {
 				Research.State now = entity.research();
 				Optional<Component> why = ResearchTrees.whyNot(level, hall, now, tree, topic);
 				if (why.isPresent()) {
@@ -378,12 +405,18 @@ public final class ResearchScreen {
 		}
 		about.add(line(Component.translatable("screen.aliveworkplace.research.realm.treasury", RealmTreasury.emeralds(realm.treasury())), ChatFormatting.GRAY));
 		about.add(line(Component.translatable("screen.aliveworkplace.research.realm.how"), ChatFormatting.DARK_GRAY));
-		menu.button(INFO, icon(Items.GOLDEN_HELMET, Realms.title(server, realm), ChatFormatting.GOLD, about), null);
+		menu.button(INFO, info(icon(Items.GOLDEN_HELMET, Realms.title(server, realm), ChatFormatting.GOLD, about),
+			current == null ? null : Component.translatable("research.aliveworkplace.level", current.name(), BuilderLevels.levelName(RealmResearch.level(state, current) + 1)),
+			current == null ? 0 : Math.round(100f * state.progress() / current.points())), null);
 		menu.divider(1);
 		List<RealmResearch.Topic> topics = new ArrayList<>(RealmResearch.all());
 		for (int i = 0; i < topics.size() && i < TOPIC_SLOTS.length; i++) {
 			RealmResearch.Topic topic = topics.get(i);
-			menu.button(TOPIC_SLOTS[i], realmTopicIcon(state, topic), p -> {
+			int lvl = RealmResearch.level(state, topic);
+			boolean done = lvl >= topic.levels();
+			boolean locked = topic.needs().entrySet().stream().anyMatch(need -> RealmResearch.get(need.getKey()).map(o -> RealmResearch.level(state, o) < need.getValue()).orElse(true));
+			menu.button(TOPIC_SLOTS[i], topicRow(realmTopicIcon(state, topic), lvl, topic.levels(), done ? null : realmCost(topic, lvl + 1), done,
+				RealmResearch.current(state) == topic, locked), p -> {
 				Realms.Result result = RealmResearch.choose(level, hall, p, topic);
 				Chat.actionBar(p, result.message().copy().withStyle(result.ok() ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
 				if (result.ok()) {
@@ -393,6 +426,31 @@ public final class ResearchScreen {
 				menu.broadcastChanges();
 			});
 		}
+	}
+
+	/**
+	 * A topic's list row (42.3): its level beside its name, the next level's price ("Fully researched" once done), and
+	 * Research; gray with no button when it's done or {@code locked} (the reason in its tooltip, and a click still says it),
+	 * gold with "Under way" while it's being researched.
+	 */
+	static ItemStack topicRow(ItemStack icon, int lvl, int top, @Nullable Component price, boolean done, boolean under, boolean locked) {
+		boolean off = done || locked;
+		return ChoiceList.row(icon, Component.translatable("screen.aliveworkplace.research.level", lvl, top),
+			done ? Component.translatable("screen.aliveworkplace.research.complete").withStyle(ChatFormatting.GREEN) : price,
+			off ? null : Component.translatable(under ? "screen.aliveworkplace.research.button_under_way" : "screen.aliveworkplace.research.button_research"),
+			off, under && !done);
+	}
+
+	/**
+	 * The info book as the list screen's own line (42.3): what's under way ({@code topic}, {@code percent} done) at the top
+	 * right, its tooltip the book's; the hint and the column headings.
+	 */
+	private static ItemStack info(ItemStack icon, @Nullable Component topic, int percent) {
+		return ChoiceList.info(icon, topic == null ? Component.translatable("screen.aliveworkplace.research.nothing_short")
+				: Component.translatable("screen.aliveworkplace.research.now", topic, percent),
+			Component.translatable("screen.aliveworkplace.research.list_hint"),
+			List.of(Component.translatable("screen.aliveworkplace.research.column_topic"), Component.translatable("screen.aliveworkplace.research.column_level"),
+				Component.translatable("screen.aliveworkplace.research.column_next")));
 	}
 
 	/** "4× Paper, 1× Book and 8 emeralds from the realm treasury". */

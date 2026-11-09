@@ -13,7 +13,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The entities a builder can put up from a blueprint, and what each costs: item frames, glow item frames,
  * paintings and armor stands. They are always put up empty — a blueprint never hands out the items in a
- * frame or the armor on a stand — and never invulnerable or fixed in place.
+ * frame or the armor on a stand — and never invulnerable or fixed in place, and only with the looks a survival
+ * player's would have (B1101).
  */
 public final class BlueprintEntities {
 	private static final Map<String, Item> COST = Map.of(
@@ -24,14 +25,16 @@ public final class BlueprintEntities {
 	);
 
 	/**
-	 * Data that must not be copied: contents, identity, motion and anything that makes it unbreakable. Its facing
-	 * ("Rotation") is kept, so an armour stand faces the way the blueprint draws it (B439).
+	 * B1101: the only data copied, the looks a decoration can have where a player puts it up: what it is, the way it
+	 * faces ("Rotation" for a stand, B439; "Facing" or "facing" and the block it hangs on for a frame or a painting),
+	 * a painting's picture, and the stand looks the mod has always copied (pose, arms, small, base plate). Everything
+	 * else is dropped: contents and identity, and the looks only commands give (attributes such as scale, Glowing,
+	 * Invisible, NoGravity, Silent, Invulnerable, Fixed, a name), so a file made in a creative world can't put up a
+	 * giant, glowing or invisible decoration. An allow-list, so a key Minecraft adds later stays out until chosen.
 	 */
-	private static final Set<String> STRIP = Set.of(
-		"UUID", "Pos", "Motion", "Item", "ItemDropChance", "ArmorItems", "HandItems", "ArmorDropChances",
-		"HandDropChances", "body_armor_item", "body_armor_drop_chance", "Invulnerable", "Fixed", "Tags", "Passengers",
-		"leash", "Leash", "Fire", "Air", "FallDistance", "PortalCooldown", "OnGround", "active_effects", "Brain",
-		"DisabledSlots", "CustomName", "CustomNameVisible"
+	private static final Set<String> KEEP = Set.of(
+		"id", "Rotation", "Facing", "facing", "TileX", "TileY", "TileZ", "variant", "ItemRotation",
+		"Pose", "ShowArms", "Small", "NoBasePlate"
 	);
 
 	/** A copy of {@code nbt} that is safe to build from, or null if it isn't an entity builders put up. */
@@ -41,9 +44,12 @@ public final class BlueprintEntities {
 		if (!COST.containsKey(id) || Nbt.getBoolean(nbt, "Marker")) {
 			return null; // marker armor stands are technical, not decoration
 		}
-		CompoundTag out = nbt.copy();
-		for (String key : STRIP) {
-			out.remove(key);
+		CompoundTag out = new CompoundTag();
+		for (String key : KEEP) {
+			Tag value = nbt.get(key);
+			if (value != null) {
+				out.put(key, value.copy());
+			}
 		}
 		return out;
 	}

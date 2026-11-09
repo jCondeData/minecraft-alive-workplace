@@ -24,8 +24,12 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- An armor stand or item frame in an uploaded or scanned build is put up as you could put it up yourself: a file made in a creative world no longer gives a giant, glowing, invisible or floating stand, or an invisible or glowing frame. Its facing, and a stand's pose, arms, size and base plate, still come along.
 - An item frame or painting that fell when a village fire burned its wall is hung again even when the server restarts in the middle of the repair after another builder has looked round the village; before, it stayed down (B1095).
+- A Trainer Leader's one challenge a day is used up only by a battle that actually starts. Before, pressing Challenge just as another player began battling the Leader (or while you were in a battle, or with no Pokémon) spent your challenge for the day, and once the Leader was free you were told to come back tomorrow (B1091).
+- A village's battle quest ("Beat a trainer of the village") and its battle reform steps now count a trainer only when you win the battle. Before, every press of Challenge on a Trainer Leader counted, even one refused or answered "Come back tomorrow!", while beating an ordinary village trainer counted nothing (B1102).
 - A worker's status card and Village Hall page read as sentences when they wait for a tool or seeds: "Needs a pickaxe", "Needs an axe", "Needs a fishing rod", "Needs seeds" and "Waiting for an axe" instead of a capital letter mid-sentence. The Hall's own request list still reads "Miner: A pickaxe" (B1096).
+- The Storehouse board's messages read as sentences when you hand over a tool or seeds: "Gave a pickaxe to the Miner's chests", "Gave 12 seeds to the Farmer's chests" and "You don't have a pickaxe to give" instead of "Gave 1 A pickaxe" and "You have no A pickaxe to give" (B1098).
 - Clicking a fully researched topic in the Research list, a scholars' topic or one in the Great Library's row, now says it's fully researched instead of that it can't be researched yet (B1090).
 - A Create schematic uploaded again under its name while a builder is half-way through it is no longer finished with holes after a restart: the builder starts the new blueprint from the top, skipping what already stands as drawn, and a site saved while retrying no longer risks an error every tick (B1049).
 - A villager a zombie turns and you cure comes back as the same villager to the mod too: their class, family name, friendship with you, Legend place and marriage are kept (their husband or wife is no longer widowed by the bite, only if the zombie villager is killed). The work they held, such as a builder's site, is still let go when they're bitten (B1081).
@@ -46,6 +50,10 @@ asks for the steps, `latest.log` and any crash report).
 - A sign line from an uploaded blueprint file that goes through the game's own translations (whose words repeat what is
   put in them, or are just long) is now measured by the words the sign really shows and cut to the 384 letters a player
   could write, so it can no longer show over a million letters and freeze every client near it (B1088).
+- A sign line or chest name from an uploaded blueprint file nested thousands of levels deep no longer crashes the server
+  when a builder reaches it: it is built with just its plain words (B1099).
+- A sign line from an uploaded blueprint file made of key-binding parts is measured by the words a player's game shows for
+  them, so it is cut to the 384 letters a player could write instead of showing thousands (B1100).
 - Village Hall: one damaged entry in a hall's saved Book of Families (a hand-edited file, or one a crash cut short) no
   longer empties the village's whole family book (every person, parent, partner and trade, the Family Tree page and
   the family names). Only the bad entry is left out, with a warning in the log (B827).

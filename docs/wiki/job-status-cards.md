@@ -106,5 +106,11 @@ card for a Librarian, a jobless villager, or a Farmer, Fisherman, Lumberjack or 
 level's tag and experience line; a miner's pickaxe and ladders under Needs; an idle Postman; Hall page in a protected
 village for a stranger and for the owner; the card closing when the player walks away or the villager dies; fresh
 numbers on reopening).
+QA (lane B, 2026-11-09): `QaBuilderCardNeeds1109bGameTests` (3), a builder on the stone house with his chests stocked
+from its own materials: everything there reads "Needs: Nothing" in green with no "and N more"; exactly three kinds short
+gives three orange Needs lines, each one of those kinds with its count, and no "and" line; four short gives three lines
+and "and 1 more". Hand mutant killed: "and N more" from three needs on. The `status_card` scene now opens the card a
+step after its staging (a new hall's point of interest is added after the tick that placed it, so the card opened in
+that tick had Hall page grayed).
 
 Showcase scenes: `status_card`

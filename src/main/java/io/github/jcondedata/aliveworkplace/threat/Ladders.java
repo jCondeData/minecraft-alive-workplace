@@ -200,6 +200,44 @@ public final class Ladders {
 		return storm != null && storm.over.contains(mob);
 	}
 
+	/**
+	 * A mob that turned into another in vanilla (a drowned that climbed over; {@link ConvertedMobs}): {@code after} takes
+	 * {@code before}'s place among the raiders over the wall and at their ladders (B1085), so it isn't given the ladder
+	 * again. True if anything changed.
+	 */
+	public static boolean converted(ServerLevel level, UUID before, UUID after) {
+		boolean changed = false;
+		for (Map.Entry<Key, Storm> entry : STORMS.entrySet()) {
+			if (!entry.getKey().dimension().equals(level.dimension())) {
+				continue;
+			}
+			Storm storm = entry.getValue();
+			if (storm.over.remove(before)) {
+				storm.over.add(after);
+				changed = true;
+			}
+			Site site = storm.assigned.remove(before);
+			if (site != null) {
+				storm.assigned.put(after, site);
+				changed = true;
+			}
+			BlockPos sent = storm.sent.remove(before);
+			if (sent != null) {
+				storm.sent.put(after, sent);
+			}
+			Long next = storm.nextTry.remove(before);
+			if (next != null) {
+				storm.nextTry.put(after, next);
+			}
+		}
+		Site climb = CLIMBS.remove(before);
+		if (climb != null) {
+			CLIMBS.put(after, climb);
+			changed = true;
+		}
+		return changed;
+	}
+
 	/** The most paths asked for in one tick for the ladders of that siege (-1: nothing ran yet). */
 	public static int mostPaths(ServerLevel level, BlockPos hall) {
 		Storm storm = STORMS.get(new Key(level.dimension(), hall));

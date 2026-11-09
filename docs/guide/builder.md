@@ -178,6 +178,8 @@ list changes with it. In the sneak-click screen the **Mirror** button flips the 
   size, solid or hollow, and a block you carry, then draw it as a blueprint. Great for walls, towers and domes.
 - **Builds from the internet:** at the Blueprint Table, **Upload a File** lists the build files in your `blueprints`
   folder. Download a build as a `.litematic` or `.schem` file, drop it in, and upload it for everyone on the server.
+  A build from a file holds no more than your own blocks could: a sign keeps up to 384 letters a line, a banner up to
+  6 patterns, and a head its owner's name and one skin.
 
 ![Shape Planner](https://jcondedata.github.io/minecraft-alive-workplace/shapes/still-1.jpg)
 

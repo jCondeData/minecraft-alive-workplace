@@ -51,8 +51,8 @@ card, `aliveworkplace:status_card`, drawn by the client's `StatusCardScreen`); `
 `Builders.refreshMissing` counts what's short afresh first, as the chat status did (the same code, moved out of
 `Builders.statusText`). In chat calls the job's own `Fishers.sendStatus` and the like, unchanged. Hall page finds the hall with `VillageHalls.nearest`,
 checks `VillageProtection.keeper`, and opens `VillageHallScreen.openWorker` (valid while the hall stands, like the
-Ledger's remote screen). A button pressed after the villager died or unloaded does nothing; the card's menu is no longer
-valid then, so it closes on the next tick.
+Ledger's remote screen). A button pressed after the villager died or unloaded, or from more than 24 blocks away, does
+nothing; the card's menu is no longer valid then, so it closes on the next tick.
 
 ## Switches
 
@@ -100,5 +100,11 @@ none (the card reads what the jobs already save)
 `QaStageSixGameTests.emptyHandsStillShowTheStatusLine` and
 `QaWonderPartLines1031GameTests.aPartWaitingBehindAnotherBuildIsNamedByItsWonder` (now through In chat); B1096's need lines in
 `QaJobCard1109cBugTests.qaAMinersPickaxeNeedReadsAsASentence` and `QaJobCard1109cBugTests.otherJobsNeedsReadAsSentences`.
+
+QA (2026-11-09): `QaJobCard1109cGameTests` (only a sneak with an empty hand opens it, an off-hand torch still counts; no
+card for a Librarian, a jobless villager, or a Farmer, Fisherman, Lumberjack or Orchard keeper with nothing to show; every
+level's tag and experience line; a miner's pickaxe and ladders under Needs; an idle Postman; Hall page in a protected
+village for a stranger and for the owner; the card closing when the player walks away or the villager dies; fresh
+numbers on reopening).
 
 Showcase scenes: `status_card`

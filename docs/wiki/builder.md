@@ -287,9 +287,14 @@ under what a client accepts. A line is measured by the letters it shows, countin
 `%s` that uses it as the game does, so a short line that repeats its words through nested translations (100,000 letters
 from 333 characters) is cut to its first 384 letters too and no client freezes drawing it. A translation is measured by
 the game's own text for its key (a vanilla key whose text uses its argument three times showed over a million letters
-when only the key was counted). Test: QA's
+when only the key was counted). A key no language knows is measured by its fallback text, which is what the game shows
+then, and a placeholder the game can't read (a %d, an argument number past the list) leaves the translation's text as
+written, in the game and in the count. Test: QA's
 `QaSignTranslationRepeat1108bBugTests`, `QaSignLanguageKeys1109BugTests` and `QaUploads1109GameTests` (an uploaded line of exactly 384 letters, plain,
-colored or through a repeated argument, stays whole; 386 is cut to 384).
+colored or through a repeated argument, stays whole; 386 is cut to 384), and `QaUploadTextEdges1109bGameTests` (3: a
+fallback repeating its argument ten times, six deep, is cut to 384 letters and a short one shows as written; unreadable
+placeholders neither stop the build nor grow the line, and a %% shows one percent sign; 384 letters through a red
+translation stay whole and red, 385 are cut to 384).
 
 **Banners from a file (B1073).** A banner built from an uploaded or scanned file keeps its first 6 pattern layers, the
 most a loom gives a banner; a file's extra layers are left off, so a chunk full of banners stays under what a client

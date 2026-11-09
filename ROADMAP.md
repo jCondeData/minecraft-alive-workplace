@@ -6471,6 +6471,57 @@ Lane C builds it, in order. Depends on: nothing open.
   refused with a reason; a config switch `moveBuildings` (on) and the guide and wiki pages. Done when: GameTests for
   each refusal and the switch off; the guide page `moving-buildings.md`.
 
+## Milestone 46: Every job crafts its own kind of thing
+
+The owner, 2026-11-09: "the carpenter shouldn't build brewing stands, or anything that doesn't have wood, other jobs
+should take that such as a cleric. Florists should build pots. Leatherworker shouldn't make stained glass ... take a
+peek at the library of items everyone can make and make sure they align with their job; if it's a stretch, make a new
+job." Today the Carpenter and the Mason take any recipe of their kind (`CrafterWork.wants` is true for both), the
+dyer takes anything colored, and Cleric, Shepherd, Florist and Beekeeper craft nothing for builders. The digest's
+review of the 782 vanilla crafting/stonecutting results (by ingredient: wood, stone, metal, textile, glass, magic)
+gives this split, using vanilla's own professions where they fit (vanilla's Shepherd sells beds, carpets, banners
+and paintings), so no new job is needed except possibly a Glassblower (asked of the owner; until he answers, glass
+stays the Mason's):
+
+| Job | Makes for builders (and nothing else) |
+|---|---|
+| Carpenter | things made mostly of wood: planks, slabs, stairs, fences, gates, doors, trapdoors, signs and hanging signs, ladders, chests, barrels, boats, crafting tables, torches, campfires, scaffolding, armor stands, levers, grindstones, smokers, beehives, note blocks, the Shop Counter and the mod's other wooden blocks |
+| Mason | stone, bricks and clay: every stonecutter cut, bricks fired from clay, terracotta and dyed/glazed terracotta, concrete powder and concrete, sandstone, mossy stone, and (for now) glass, panes and stained glass |
+| Tinkerer | metal and redstone: its `tinkering` tag plus rails, tripwire hooks, redstone torches, daylight detectors, copper bulbs, minecarts, chains, lanterns |
+| Shepherd (the weaver) | wool, dyed wool, carpets, beds, banners, banner patterns, paintings (at his loom) |
+| Florist | flower pots and decorated pots, dyes from flowers and bone meal, moss carpet |
+| Cleric | brewing stands, blaze powder, eyes of ender, ender chests, end rods, beacons, glass bottles |
+| Beekeeper | candles and colored candles, honeycomb blocks |
+| Leatherworker | leather goods: item frames and glow item frames, leads, leather from rabbit hide, leather armor (no longer dyes wool, glass or terracotta) |
+| Librarian | as today (books, paper, bookshelves, lecterns) plus enchanting tables and cartography tables |
+
+Rules: the split is data, an item tag per job (`aliveworkplace:crafts/<job>`), so a pack can change it; a modded item in
+no tag goes by its recipe's ingredients (logs/planks tags to the Carpenter, stone/bricks to the Mason, ingots to the
+Tinkerer, wool/dye to the Shepherd), else to the Carpenter only if it contains wood. A builder short of something whose
+job isn't in the village reads "Hire a Cleric to make Brewing Stands" instead of "Nobody here makes". Nothing that is
+made today may become unmakable. Every item: GameTests through a builder's request, save and reload, the job absent;
+the job's guide and wiki pages; its scene where a player sees it; `sessions.py done <id> --review`. Lane B builds it,
+in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed first.
+
+- [ ] **46.1** **Each job's own list.** The tags and the ingredient rule above; Carpenter and Mason no longer take
+  everything; the dyer's colored rule goes; the shortage line names the job to hire. Done when: GameTests that a
+  Carpenter never makes a brewing stand, flower pot, banner, stained glass or lantern, that the Mason makes concrete and
+  dyed terracotta, a modded wooden block goes to the Carpenter by its recipe, and the "Hire a ..." line for each job;
+  a test that every item made by some job before 46.1 still has a job after it.
+- [ ] **46.2** **The Shepherd weaves.** At his loom he makes wool from string, dyes it, and makes carpets, beds,
+  banners, banner patterns and paintings for builders, with the chain steps (the wool first, then the bed). Done when:
+  GameTests for two blue beds from white wool, planks and blue dye, a banner, a missing dye named on the shortage line;
+  scene `weaver` (his loom, the bed going into the builder's chest).
+- [ ] **46.3** **The Florist makes pots and dyes.** Flower pots (the Mason fires the bricks if there are only clay
+  balls), decorated pots, dyes from the flowers she grows, moss carpet; she still fills empty pots. Done when:
+  GameTests for a flower pot from bricks, from clay with a Mason, a dye for the Shepherd's bed; scene `florist_pots`.
+- [ ] **46.4** **The Cleric brews and makes the magic blocks.** Brewing stands, blaze powder, eyes of ender, ender
+  chests, end rods, beacons and glass bottles for builders, besides his potions. Done when: GameTests for a brewing
+  stand from a blaze rod and cobblestone, no blaze rod named on the shortage line; scene `cleric_crafts`.
+- [ ] **46.5** **The Beekeeper makes candles, the Leatherworker leather goods.** Candles (and dyed ones) and
+  honeycomb blocks from the hives' wax; item frames, leads and leather armor from leather. Done when: GameTests for a
+  candle from honeycomb and string, an item frame; scenes `chandler` and `leatherworker_goods`.
+
 ## Notes / blocked
 
 - 2026-11-09 (lane-c-1109-0353, 42.5): **the job-status cards are on 43.3's card**, not a second one. `card/JobCards`

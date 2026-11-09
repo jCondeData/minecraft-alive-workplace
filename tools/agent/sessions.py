@@ -564,7 +564,7 @@ def cmd_review(a):
 #         others' when its own is empty or blocked.
 # The owner hands bugs straight to the bug lane's chat, so b, c and d never take a bug.
 BUG_MILESTONES = (26,)
-QUICK_MILESTONES = (36,)
+QUICK_MILESTONES = (36, 46)
 # Owner, 2026-10-26: the new Village Hall (40) goes to lane c, Waystones (41) to lane d; lane e keeps bug-testing
 # (40's items build on each other, and two lanes on one milestone with no claims would collide).
 # Owner, 2026-11-08: one look for every screen, Milestone 42 to lane c, 43 to lane d, 44 to lane e.

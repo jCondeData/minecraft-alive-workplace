@@ -99,6 +99,15 @@ public class CrafterWork extends Behavior<Villager> {
 
 	private static final Set<Villager> BUSY = Collections.newSetFromMap(new WeakHashMap<>());
 	private static final Map<String, Long> CLAIMS = new HashMap<>();
+	/**
+	 * B1112: the slots a claimed job's makings will take in the chests it delivers to, so two crafters don't both count the
+	 * same empty slot (the Mason's slabs took the one the Carpenter's chest was made for, and it waited for ever). Kept
+	 * under {@link #CLAIMS}' lock, and only while its claim stands.
+	 */
+	private static final Map<String, Promise> PROMISED = new HashMap<>();
+
+	private record Promise(List<BlockPos> chests, long slots) {
+	}
 
 	protected final Crafting.Kind kind;
 	/** Whose title the line above the head shows: "carpenter", "mason", "chef". */
@@ -607,6 +616,7 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 			if (!job.claim().isEmpty()) {
 				claim(job.claim(), level.getGameTime());
+				noteFull(level, job);
 			}
 			deliverWait = FULL_RETRY_TICKS;
 			fullFor = Math.min(FULL_WAIT_TICKS, fullFor + FULL_RETRY_TICKS);
@@ -663,6 +673,27 @@ public class CrafterWork extends Behavior<Villager> {
 		return new Crafting.Plan(item, n, List.of(), Map.of(item, n), Map.of(item, n));
 	}
 
+	/**
+	 * B1112: made but held for want of room, the asking builder's line says so ("No room to bring Chest") instead of
+	 * nothing, or "Nobody here makes" once the note ran out. The claim names the builder ("uuid|item").
+	 */
+	private void noteFull(ServerLevel level, Job job) {
+		int bar = job.claim().indexOf('|');
+		if (!chains() || bar <= 0) {
+			return;
+		}
+		try {
+			if (level.getEntity(java.util.UUID.fromString(job.claim().substring(0, bar))) instanceof Villager builder) {
+				BuildSite site = Builders.activeSite(level, builder);
+				if (site != null) {
+					JobShortages.full(site.id(), job.plan().target(), level.getGameTime());
+				}
+			}
+		} catch (IllegalArgumentException e) {
+			// a claim that isn't a builder's (a stock order's): nobody's line to write on
+		}
+	}
+
 	/** Whether the chests by our workstation can take all of {@code stacks} (B773: with none, taking it home dropped it). */
 	private static boolean roomAtHome(ServerLevel level, BlockPos station, List<ItemStack> stacks) {
 		Map<Item, Integer> left = new LinkedHashMap<>();
@@ -697,11 +728,98 @@ public class CrafterWork extends Behavior<Villager> {
 	 * Whether everything {@code makes} fits in {@code chests} as they are now (B760): empty slots, and room left in stacks
 	 * of the same plain item. Counted low for a slot holding more than a stack, never high.
 	 */
-	static boolean roomFor(ServerLevel level, List<BlockPos> chests, Map<Item, Integer> makes) {
+	public static boolean roomFor(ServerLevel level, List<BlockPos> chests, Map<Item, Integer> makes) {
+		return !chests.isEmpty() && roomFor(level, chests, makes, 0);
+	}
+
+	/**
+	 * Where {@code plan}'s makings go (B1111/B1112): {@code deliverTo} when its chests can take them once {@code plan}'s
+	 * ingredients are out ({@link #roomAfter}), else the first of {@code others} (stores the builder also takes from) that
+	 * can; null when none can. A full Storehouse by the builder's table stalled every request for him without a word.
+	 */
+	@Nullable
+	static BlockPos roomyStore(ServerLevel level, BlockPos deliverTo, List<BlockPos> others, @Nullable BoundingBox area, Crafting.Plan plan,
+		List<BlockPos> sources, String claim) {
+		List<BlockPos> tried = new ArrayList<>();
+		List<BlockPos> stations = new ArrayList<>();
+		stations.add(deliverTo);
+		stations.addAll(others);
+		for (BlockPos station : stations) {
+			List<BlockPos> to = SupplyContainers.find(level, station, area);
+			if (to.isEmpty() || tried.containsAll(to)) {
+				continue; // the same chests as one already tried (the Storehouse by his table)
+			}
+			tried.addAll(to);
+			if (roomAfter(level, to, plan.makes(), plan.takes(), sources, promised(to, claim))) {
+				return station;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Whether {@code makes} fits in {@code chests} once {@code takes} is out (B1111): taken from {@code sources} in order,
+	 * the way the crafter fetches, a stack taken whole from one of {@code chests} leaves its slot free. Counted low, never
+	 * high; a wrong guess is held and retried by {@link #deliver}, never dropped (B760).
+	 */
+	public static boolean roomAfter(ServerLevel level, List<BlockPos> chests, Map<Item, Integer> makes, Map<Item, Integer> takes, List<BlockPos> sources,
+		long promised) {
 		if (chests.isEmpty()) {
 			return false;
 		}
-		long freeSlots = SupplyContainers.freeSlots(level, chests);
+		if (roomFor(level, chests, makes, -promised)) {
+			return true;
+		}
+		long freed = 0;
+		for (Map.Entry<Item, Integer> e : takes.entrySet()) {
+			Item item = e.getKey();
+			long left = e.getValue();
+			for (BlockPos source : sources) {
+				if (left <= 0) {
+					break;
+				}
+				for (ItemStack in : SupplyContainers.peekMatching(level, source, s -> s.is(item))) {
+					if (left <= 0) {
+						break;
+					}
+					long took = Math.min(left, in.getCount());
+					left -= took;
+					if (took == in.getCount() && chests.contains(source)) {
+						freed++;
+					}
+				}
+			}
+		}
+		return freed > 0 && roomFor(level, chests, makes, freed - promised);
+	}
+
+	/** The slots other claimed jobs (not {@code claim}) will fill in any of {@code chests} (B1112). */
+	private static long promised(List<BlockPos> chests, String claim) {
+		long slots = 0;
+		synchronized (CLAIMS) {
+			PROMISED.keySet().retainAll(CLAIMS.keySet());
+			for (Map.Entry<String, Promise> e : PROMISED.entrySet()) {
+				if (!e.getKey().equals(claim) && e.getValue().chests().stream().anyMatch(chests::contains)) {
+					slots += e.getValue().slots();
+				}
+			}
+		}
+		return slots;
+	}
+
+	/** How many stacks {@code items} make, at most a full stack each. */
+	private static long stacksOf(Map<Item, Integer> items) {
+		long n = 0;
+		for (Map.Entry<Item, Integer> e : items.entrySet()) {
+			int max = Math.max(1, new ItemStack(e.getKey()).getMaxStackSize());
+			n += (e.getValue() + max - 1) / max;
+		}
+		return n;
+	}
+
+	/** {@link #roomFor} with {@code extraSlots} more empty slots than the chests have now (fewer, when negative). */
+	private static boolean roomFor(ServerLevel level, List<BlockPos> chests, Map<Item, Integer> makes, long extraSlots) {
+		long freeSlots = SupplyContainers.freeSlots(level, chests) + extraSlots;
 		for (Map.Entry<Item, Integer> e : makes.entrySet()) {
 			ItemStack plain = new ItemStack(e.getKey());
 			int max = Math.max(1, plain.getMaxStackSize());
@@ -756,12 +874,17 @@ public class CrafterWork extends Behavior<Villager> {
 			// village's Storehouse, else another village-mate's chests he takes from; with none of those, nowhere he'd find it.
 			BlockPos deliverTo = sources.isEmpty() ? null : builderStation;
 			BlockPos mateStore = null;
+			// B1111/B1112: the other stores he takes from, in the same order, for when the first is full
+			List<BlockPos> otherStores = new ArrayList<>();
 			for (Village.Stash stash : Village.stashes(level, builder, builderStation, area)) {
 				if (deliverTo == null && stash.job() == ModVillagers.PORTER) {
 					deliverTo = stash.station();
 				}
 				if (mateStore == null && stash.job() != ModVillagers.BUILDER && stash.job() != ModVillagers.PORTER) {
 					mateStore = stash.station();
+				}
+				if (stash.job() != ModVillagers.BUILDER) {
+					otherStores.add(stash.station());
 				}
 				if (stash.job() != ModVillagers.BUILDER) {
 					sources.addAll(stash.chests());
@@ -848,16 +971,23 @@ public class CrafterWork extends Behavior<Villager> {
 					}
 					continue;
 				}
-				if (!roomFor(level, SupplyContainers.find(level, deliverTo, area), made.makes())) {
-					continue; // B760: his store is full; made anyway, it lay on the ground by it and was made again and again
+				// B760: never made into a full store (it lay on the ground by it and was made again and again). B1111/B1112:
+				// counting the slots its makings free there, else into another store he takes from with room, else said.
+				BlockPos into = roomyStore(level, deliverTo, otherStores, area, made, sources, claim);
+				if (into == null) {
+					if (chains()) {
+						JobShortages.full(site.id(), want.getKey(), now);
+					}
+					continue;
 				}
 				if (chains()) {
 					JobShortages.covered(site.id(), want.getKey(), now);
 				}
 				synchronized (CLAIMS) {
 					CLAIMS.put(claim, now + CLAIM_TICKS);
+					PROMISED.put(claim, new Promise(SupplyContainers.find(level, into, area), stacksOf(made.makes())));
 				}
-				return new Job(deliverTo, area, made, claim, sources, guarded);
+				return new Job(into, area, made, claim, sources, guarded);
 			}
 		}
 		return chooseOrder(level, villager, station);

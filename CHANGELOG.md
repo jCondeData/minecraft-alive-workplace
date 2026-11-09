@@ -26,6 +26,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Crafters no longer stop making things for a builder whose Storehouse is full. The Mason and the Carpenter count the slot their ingredients free, take what they make to another store the builder uses when his is full, and no longer both count on the same empty slot; with no room anywhere, the builder's line says "No room to bring Chest: the chests he takes from are full" instead of "Nobody here makes" (B1111, B1112).
 - Workers no longer go to stand on a magma block, and a builder's path or a Steward's road no longer runs over one: its top is solid, but it burns whoever stands on it (B1105).
 - A builder's path to the village and a Steward's road no longer end on a big dripleaf, which tips whoever stands on it into the gap below, and workers now stand on an end portal frame just as paths always did: workers and paths share one rule for what counts as ground.
 - A raider that gets into a walled village during a siege and then turns into another mob, such as a zombie drowning in a pond inside the walls or a skeleton freezing into a stray, now keeps fighting where it is. Before, it turned round and walked back toward the broken gate, and one that had climbed over by a ladder was briefly sent back to the ladder (B1085).

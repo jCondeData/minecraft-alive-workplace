@@ -9,8 +9,10 @@ import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import io.github.jcondedata.aliveworkplace.threat.Threats;
 import io.github.jcondedata.aliveworkplace.threat.VillageFire;
 import java.util.List;
+import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -31,6 +33,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.tags.BlockTags;
 
 /**
  * QA lane B, 2026-11-09: two ways a threat still takes the builders' work, from docs/wiki/sieges.md ("nothing a threat
@@ -146,5 +150,80 @@ public class QaThreatSpare1109bBugTests implements FabricGameTest {
 
 	private static List<ArmorStand> stands(GameTestHelper helper, BlockPos at) {
 		return helper.getLevel().getEntitiesOfClass(ArmorStand.class, new AABB(helper.absolutePos(at)).inflate(1.0), ArmorStand::isAlive);
+	}
+
+	/**
+	 * A village fire (a raider's burning arrow, a chimney spark) burns the builders' roof plank their item frame hangs
+	 * under. The builder puts the plank back (32.16: "a fire never destroys a build for good"), but the frame fell off
+	 * with its plank and nothing hangs it again: Upkeep and BuildPlan.repair put back blocks only, and B1053 spares
+	 * frames from blasts and shots, not from losing their wall. Expected: the frame is back under the roof once the hut
+	 * is repaired, from the item frame in the builder's chest.
+	 */
+	//$ gametest_ticks_batch QaFireGameTests.AREA '4000' '"qaThreatSpare1109bFire"'
+	@GameTest(template = QaFireGameTests.AREA, timeoutTicks = 4000, batch = "qaThreatSpare1109bFire")
+	public void aFrameUnderARoofPlankTheFireBurnedIsHungAgainWithThePlank(GameTestHelper helper) {
+		ServerLevel level = QaFireGameTests.village(helper, QaFireGameTests.HALL, 20);
+		BlockPos hut = QaFireGameTests.HUT;
+		for (int x = 0; x < 5; x++) {
+			for (int z = 0; z < 5; z++) {
+				if ((x == 0 || x == 4) && (z == 0 || z == 4)) {
+					helper.setBlock(hut.offset(x, 0, z), Blocks.OAK_LOG);
+					helper.setBlock(hut.offset(x, 1, z), Blocks.OAK_LOG);
+				}
+				helper.setBlock(hut.offset(x, 2, z), Blocks.OAK_PLANKS);
+			}
+		}
+		BlockPos support = hut.offset(2, 2, 2);
+		BlockPos frameAt = hut.offset(2, 1, 2);
+		ItemFrame hung = new ItemFrame(level, helper.absolutePos(frameAt), Direction.DOWN);
+		helper.assertTrue(hung.survives(), "setup: the frame can't hang under the roof");
+		level.addFreshEntity(hung);
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "qa_fireframe_1109b_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(id).fillFromWorld(level, helper.absolutePos(hut), new Vec3i(5, 3, 5), true, Blocks.STRUCTURE_VOID);
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(hut), Rotation.NONE, Mirror.NONE);
+		boolean was = Upkeep.ENABLED;
+		boolean asks = Upkeep.ASK;
+		Upkeep.ENABLED = true;
+		Upkeep.ASK = false;
+		Leftovers.after(helper, () -> {
+			Upkeep.ENABLED = was;
+			Upkeep.ASK = asks;
+			BuildSiteManager.get(level).forgetFinished(placement);
+		});
+		BlockPos chestPos = new BlockPos(6, 2, 2);
+		helper.setBlock(chestPos, Blocks.CHEST);
+		Container chest = helper.getBlockEntity(chestPos);
+		chest.setItem(0, new ItemStack(Items.OAK_PLANKS, 64));
+		chest.setItem(1, new ItemStack(Items.OAK_LOG, 16));
+		chest.setItem(2, new ItemStack(Items.ITEM_FRAME, 4));
+		BlockPos bench = new BlockPos(2, 2, 2);
+		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Builders.employ(level, builder, helper.absolutePos(bench));
+		BuildSiteManager.get(level).recordFinished(id, placement, builder.getUUID());
+		VillageFire.forgetBuilds();
+		VillageFire.forgetFactors();
+		long[] out = {-1};
+		helper.onEachTick(() -> {
+			if (out[0] >= 0 || helper.getTick() < 2) {
+				return;
+			}
+			BlockState now = level.getBlockState(helper.absolutePos(support));
+			if (!now.is(Blocks.OAK_PLANKS) && !now.is(BlockTags.FIRE)) {
+				level.getGameRules().getRule(GameRules.RULE_DOFIRETICK).set(false, level.getServer());
+				QaFireGameTests.putOut(helper);
+				out[0] = helper.getTick();
+				helper.assertTrue(ThreatData.get(level).damaged().contains(helper.absolutePos(support)), "setup: the burned plank isn't on the repair list");
+			} else if (helper.getTick() % 20 == 0 && level.getBlockState(helper.absolutePos(support.above())).isAir()) {
+				QaFireGameTests.fire(helper, support.above()); // keep the fire on it until the plank burns
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(out[0] >= 0, "(the plank the frame hangs under hasn't burned yet)");
+			helper.assertTrue(level.getBlockState(helper.absolutePos(support)).is(Blocks.OAK_PLANKS), "(the builder hasn't put the plank back yet)");
+			helper.assertTrue(!level.getEntitiesOfClass(ItemFrame.class, new AABB(helper.absolutePos(frameAt)).inflate(0.3), ItemFrame::isAlive).isEmpty(),
+				"the fire burned the plank the builders' frame hung under; the builder put the plank back but not the frame (fire out at tick "
+					+ out[0] + ", now " + helper.getTick() + ")");
+		});
 	}
 }

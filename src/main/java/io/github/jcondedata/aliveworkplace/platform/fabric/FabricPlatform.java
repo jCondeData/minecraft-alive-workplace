@@ -13,6 +13,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
@@ -355,12 +356,91 @@ public final class FabricPlatform implements Platform {
 
 	@Override
 	public <T> Attachment<T> attachment(ResourceLocation id, Codec<T> codec, @Nullable Supplier<T> initial) {
-		return new FabricAttachment<>(AttachmentRegistry.create(id, builder -> {
+		AttachmentType<T> type = AttachmentRegistry.create(id, builder -> {
 			builder.persistent(codec);
 			if (initial != null) {
 				builder.initializer(initial);
 			}
-		}));
+		});
+		synchronized (ATTACHMENTS) {
+			if (ATTACHMENTS.isEmpty()) {
+				listenForConversions();
+			}
+			ATTACHMENTS.add(type);
+		}
+		return new FabricAttachment<>(type);
+	}
+
+	/** Every attachment {@link #attachment} declared, for {@link #carryAttachments}. */
+	private static final List<AttachmentType<?>> ATTACHMENTS = new java.util.ArrayList<>();
+
+	/** Conversions of a mob that died (a villager a zombie killed), carried once its death hooks have run. */
+	private static final java.util.Map<Entity, Entity> DIED_INTO = new java.util.WeakHashMap<>();
+	private static final ResourceLocation AFTER_HOOKS = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("after_hooks");
+
+	/**
+	 * B1081: a mob {@code Mob.convertTo} turns into another (a villager a zombie villager, and cured back) keeps what the
+	 * mod saved on it. Fabric moves an attachment over only when it was declared {@code copyOnDeath}, which also keeps it
+	 * on a player who respawns; ours aren't, so they are carried here, on conversions only.
+	 *
+	 * <p>A villager a zombie kills converts inside its death, before the death hooks (AFTER_DEATH) run: those let go of
+	 * the work it held (a builder's site, a miner's quarry, its bag dropped) and leave its partner be (it isn't dead).
+	 * Its attachments are carried after them, so the zombie villager, and the villager it's cured into, keep who they
+	 * were (class, family, friends, marriage, Legend...) and not a job that was handed back. A mob that didn't die (a
+	 * zombie villager cured) is carried at once. Whatever wasn't carried by the end of the tick is carried then.
+	 */
+	private static void listenForConversions() {
+		ServerLivingEntityEvents.MOB_CONVERSION.register((previous, converted, keepEquipment) -> {
+			if (previous.isDeadOrDying()) {
+				synchronized (DIED_INTO) {
+					DIED_INTO.put(previous, converted);
+				}
+			} else {
+				carryAttachments(previous, converted);
+			}
+		});
+		ServerLivingEntityEvents.AFTER_DEATH.addPhaseOrdering(net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE, AFTER_HOOKS);
+		ServerLivingEntityEvents.AFTER_DEATH.register(AFTER_HOOKS, (entity, source) -> {
+			Entity into;
+			synchronized (DIED_INTO) {
+				into = DIED_INTO.remove(entity);
+			}
+			if (into != null) {
+				carryAttachments(entity, into);
+			}
+		});
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			List<java.util.Map.Entry<Entity, Entity>> left;
+			synchronized (DIED_INTO) {
+				if (DIED_INTO.isEmpty()) {
+					return;
+				}
+				left = List.copyOf(DIED_INTO.entrySet());
+				DIED_INTO.clear();
+			}
+			left.forEach(e -> carryAttachments(e.getKey(), e.getValue()));
+		});
+	}
+
+	/** Puts every attachment {@code before} has on {@code after}; a value {@code after} already has (another listener's) stays. */
+	static void carryAttachments(Entity before, Entity after) {
+		if (before == null || after == null || before == after) {
+			return;
+		}
+		List<AttachmentType<?>> types;
+		synchronized (ATTACHMENTS) {
+			types = List.copyOf(ATTACHMENTS);
+		}
+		for (AttachmentType<?> type : types) {
+			carry(type, before, after);
+		}
+	}
+
+	private static <T> void carry(AttachmentType<T> type, Entity before, Entity after) {
+		T value = before.getAttached(type);
+		if (value != null && !after.hasAttached(type)) {
+			after.setAttached(type, value);
+		}
 	}
 
 	@Override

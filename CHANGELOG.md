@@ -24,6 +24,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- An armor stand or item frame in an uploaded or scanned build is put up as you could put it up yourself: a file made in a creative world no longer gives a giant, glowing, invisible or floating stand, or an invisible or glowing frame. Its facing, and a stand's pose, arms, size and base plate, still come along.
 - An item frame or painting that fell when a village fire burned its wall is hung again even when the server restarts in the middle of the repair after another builder has looked round the village; before, it stayed down (B1095).
 - A worker's status card and Village Hall page read as sentences when they wait for a tool or seeds: "Needs a pickaxe", "Needs an axe", "Needs a fishing rod", "Needs seeds" and "Waiting for an axe" instead of a capital letter mid-sentence. The Hall's own request list still reads "Miner: A pickaxe" (B1096).
 - The Storehouse board's messages read as sentences when you hand over a tool or seeds: "Gave a pickaxe to the Miner's chests", "Gave 12 seeds to the Farmer's chests" and "You don't have a pickaxe to give" instead of "Gave 1 A pickaxe" and "You have no A pickaxe to give" (B1098).

@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101
 
 ## 1. What a player sees
 
@@ -57,7 +57,11 @@ before. Builds saved before this keep the names made from their ids. Shape Plann
 typed, so they're unchanged.
 A scan keeps the box's item frames, glow item frames, paintings and armor stands (B441), saved empty
 (`BlueprintEntities.keepBuildable`): no framed item, no armor or held items on a stand, and nothing else that moves, so a
-villager, a mob, a dropped item or a minecart with its load is never copied. The builder puts them up last, as it does a
+villager, a mob, a dropped item or a minecart with its load is never copied. Each keeps only what it is, the way it
+faces (and the block it hangs on), a painting's picture and a stand's pose, arms, small size and base plate, from a scan,
+an upload or a shipped build alike: an allow-list (B1101), so a creative world's stand saved with a scale attribute,
+Glowing, Invisible, NoGravity or Silent, or an invisible or glowing frame, is put up as a survival player's would be
+(`QaUploadStandLooks1109bBugTests`). The builder puts them up last, as it does a
 starter build's frames, each paid with its item from the chests; one with no item there is left out. Scans saved before
 this have none and load as before.
 Blocks with no item of their own are built from what a player would use (B793, B794): a cake with a candle on it costs

@@ -6440,7 +6440,7 @@ lost by moving it. Every item: GameTests through the player's own clicks, save a
 off, its scene in the harness and `tools/showcase/scenes.py`, `sessions.py done <id> --review`, American English.
 Lane C builds it, in order. Depends on: nothing open.
 
-- [ ] **45.1** **A building's snapshot.** Any building the Village Hall knows (built from a blueprint, grown by the
+- [x] **45.1** (approved auto 2026-11-09) **A building's snapshot.** Any building the Village Hall knows (built from a blueprint, grown by the
   village or the player's own registered house) can be captured as a moving plan: every block state, container
   contents, signs, banners, item frames, armor stands and modded furniture (by block/entity ids, never their classes),
   with its front and its residents' beds and workstations. Done when: GameTests that a captured plan rebuilt

@@ -65,7 +65,7 @@ public final class BuildEntities {
 	}
 
 	/** The entity, turned to match the placement, at its spot (not yet added to the world). */
-	static Optional<Entity> create(ServerLevel level, BuildPlan.EntityStep step) {
+	public static Optional<Entity> create(ServerLevel level, BuildPlan.EntityStep step) {
 		CompoundTag tag = step.nbt().copy();
 		ListTag pos = new ListTag();
 		pos.add(DoubleTag.valueOf(step.pos().x));

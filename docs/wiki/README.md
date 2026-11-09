@@ -9,6 +9,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Villager jobs](villager-jobs.md): how a villager gets a job, what every job shares, and the list of all jobs.
 - [Random jobs at shared blocks](random-jobs.md): a jobless villager taking a block several jobs share gets one of them at random, likeliest the fewest (36.17).
 - [Builder](builder.md): the villager who builds blueprints.
+- [Moving a finished building](moving-buildings.md): the Mover and the building snapshot it moves (Milestone 45, being built).
 - [Job chains](crafter.md): every crafting job makes the builders' parts through whole recipe chains of its own kind, and the builder says what nobody can make (37.14a, which retired the Crafter).
 - [Blueprint library](blueprint-library.md): the Blueprint Table as a collection each village unlocks (26.10).
 - [Workplace looks](workplace-looks.md): the twelve workplaces, each its own building (26.11).

@@ -243,6 +243,41 @@ public final class Couples {
 	}
 
 	/**
+	 * B1082: someone brought back from the grave ({@code Graves.revive}, after a "Bring back my love" request has had its
+	 * say) still has the partner their grave kept, but their death widowed the other. If the other is still alone and
+	 * mourning them, the two are together again (married: a second wedding, as the request's; courting: courting again);
+	 * if the other has someone else now, or mourns someone else, the one brought back is single. A partner who isn't
+	 * loaded wasn't widowed ({@link #onDeath}) and still names them, so that record stays.
+	 */
+	public static void onRevived(ServerLevel level, UUID was, Villager back) {
+		Partner p = ModAttachments.PARTNER.get(back);
+		if (p == null || !(level.getEntity(p.id()) instanceof Villager other)) {
+			return;
+		}
+		Partner theirs = ModAttachments.PARTNER.get(other);
+		if (theirs != null && (theirs.id().equals(was) || theirs.id().equals(back.getUUID()))) {
+			if (!theirs.id().equals(back.getUUID())) { // came back under a new id
+				ModAttachments.PARTNER.set(other, new Partner(back.getUUID(), theirs.name(), theirs.since(), theirs.married()));
+			}
+			return;
+		}
+		LatePartner late = ModAttachments.LATE_PARTNER.get(other);
+		boolean mourned = late != null && (late.id().equals(was) || late.id().equals(back.getUUID()));
+		if (theirs != null || !mourned || !other.isAlive()) {
+			ModAttachments.PARTNER.remove(back);
+			return;
+		}
+		if (p.married()) {
+			io.github.jcondedata.aliveworkplace.story.RequestErrands.remarry(level,
+				VillageHalls.containing(level, other.blockPosition()).orElse(null), other, back);
+		} else {
+			ModAttachments.LATE_PARTNER.remove(other);
+			ModAttachments.WIDOWED_DAY.remove(other);
+			ModAttachments.PARTNER.set(other, new Partner(back.getUUID(), back.getDisplayName(), p.since(), false));
+		}
+	}
+
+	/**
 	 * B1081: a partner turned into a zombie villager, or cured back, is a new entity with a new UUID (vanilla's
 	 * {@code convertTo}); the one they're with now names that one, so the couple is still a couple when they're cured
 	 * (and the one left behind is widowed only if the zombie villager dies).

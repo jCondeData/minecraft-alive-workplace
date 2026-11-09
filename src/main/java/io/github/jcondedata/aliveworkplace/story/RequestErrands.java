@@ -928,13 +928,23 @@ public final class RequestErrands {
 		}
 	}
 
-	/** {@code giver}, widowed and alone, marries {@code back} again: a second wedding. */
-	static void remarry(ServerLevel level, BlockPos hall, Villager giver, Villager back) {
+	/**
+	 * {@code giver}, widowed and alone, marries {@code back} again: a second wedding. Also for anyone an Undertaker
+	 * brings back to a widow(er) still alone ({@link Couples#onRevived}, B1082); outside a village ({@code hall} null)
+	 * they are simply married again, without the village's wedding.
+	 */
+	public static void remarry(ServerLevel level, @Nullable BlockPos hall, Villager giver, Villager back) {
 		if (Couples.partner(giver) != null) {
 			return;
 		}
 		ModAttachments.LATE_PARTNER.remove(giver);
 		ModAttachments.WIDOWED_DAY.remove(giver);
+		if (hall == null) {
+			long today = Chronicle.day(level);
+			ModAttachments.PARTNER.set(giver, new Couples.Partner(back.getUUID(), back.getDisplayName(), today, true));
+			ModAttachments.PARTNER.set(back, new Couples.Partner(giver.getUUID(), giver.getDisplayName(), today, true));
+			return;
+		}
 		Couples.wed(level, hall, giver, back);
 		Chronicle.atHall(level, hall, Chronicle.Kind.WEDDING, Component.translatable("chronicle.aliveworkplace.second_wedding",
 			back.getDisplayName(), giver.getDisplayName()));

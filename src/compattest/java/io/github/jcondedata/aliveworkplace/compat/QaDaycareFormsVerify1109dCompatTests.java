@@ -284,7 +284,7 @@ public class QaDaycareFormsVerify1109dCompatTests implements FabricGameTest {
 	}
 
 	/** Eggs of an Aqua, a Combat and a Blaze Breed Tauros (male only: with Ditto) hatch their own breed and keep their breed after a reload. */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qaDaycareFormsVerify1109dEggs1"'
 	@GameTest(template = AREA, batch = "qaDaycareFormsVerify1109dEggs1")
 	public void qaCobbreedingEggsOfAquaAndCombatTaurosKeepTheirBreed(GameTestHelper helper) {
 		eggsHatch(helper, new String[][] {
@@ -295,7 +295,7 @@ public class QaDaycareFormsVerify1109dCompatTests implements FabricGameTest {
 	}
 
 	/** Eggs of a West and an East Sea Gastrodon hatch Shellos of her sea (West being the random default), kept after a reload. */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qaDaycareFormsVerify1109dEggs2"'
 	@GameTest(template = AREA, batch = "qaDaycareFormsVerify1109dEggs2")
 	public void qaCobbreedingEggsOfGastrodonHatchHerSea(GameTestHelper helper) {
 		eggsHatch(helper, new String[][] {
@@ -306,7 +306,7 @@ public class QaDaycareFormsVerify1109dCompatTests implements FabricGameTest {
 	}
 
 	/** Eggs of a Blue Florges, a Pom-Pom and a Baile Oricorio and a Winter Sawsbuck hatch the mother's flower, style and season. */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qaDaycareFormsVerify1109dEggs3"'
 	@GameTest(template = AREA, batch = "qaDaycareFormsVerify1109dEggs3")
 	public void qaCobbreedingEggsOfOtherChoiceFormsHatchTheMothersForm(GameTestHelper helper) {
 		eggsHatch(helper, new String[][] {
@@ -318,7 +318,7 @@ public class QaDaycareFormsVerify1109dCompatTests implements FabricGameTest {
 	}
 
 	/** The egg of a female Basculegion (B1040 on the pack's path) hatches a White-Striped Basculin. */
-	//$ gametest AREA
+	//$ gametest_batch AREA '"qaDaycareFormsVerify1109dEggs4"'
 	@GameTest(template = AREA, batch = "qaDaycareFormsVerify1109dEggs4")
 	public void qaCobbreedingEggOfAFemaleBasculegionHatchesWhiteStriped(GameTestHelper helper) {
 		eggsHatch(helper, new String[][] {

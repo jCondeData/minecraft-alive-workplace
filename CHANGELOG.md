@@ -26,6 +26,7 @@ asks for the steps, `latest.log` and any crash report).
 
 - A banner built from an uploaded blueprint file keeps at most the 6 pattern layers a loom gives one, so a wall of banners with thousands of layers each can no longer make a chunk that disconnects every player who comes near (B1073).
 - A head built from an uploaded blueprint file keeps no more of its skin than a player's head could: its name, its id and one real-sized signed skin. A file's head with many or huge skin entries keeps only its name and id, so a wall of them can no longer make a chunk that disconnects every player who comes near (B1077).
+- A sign line from an uploaded blueprint file that repeats its words through nested translations is cut to the 384 letters a player could write, so a short line can no longer show 100,000 letters (or a hundred million) and freeze every client that draws the sign (B1074).
 - Village Hall: one damaged entry in a hall's saved Book of Families (a hand-edited file, or one a crash cut short) no
   longer empties the village's whole family book (every person, parent, partner and trade, the Family Tree page and
   the family names). Only the bad entry is left out, with a warning in the log (B827).

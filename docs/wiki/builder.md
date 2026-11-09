@@ -278,12 +278,15 @@ building. The same holds when its chunk
 unloads, or the server restarts, while it is trapped. Tests: `BuilderChaosGameTests` (five seeds, a new trap every 150
 to 300 ticks through the starter cottage) and `QaBuilderStuckGameTests` (each harder trap three times through a build).
 
-**Signs from a file (B1044, B1047, B1062, B1065).** A sign built from an uploaded or scanned file keeps its words and
+**Signs from a file (B1044, B1047, B1062, B1065, B1074).** A sign built from an uploaded or scanned file keeps its words and
 their colors, but no click command, no score, selector or block-data part, and no line longer than 384 letters. Every
 line the game would read as text is cleaned, also one that starts with a comment or Gson's `)]}'` prefix, so nothing
 hidden that way runs when the sign is clicked. A line or name whose saved text runs past 1,024 characters keeps only
 its plain words (a player's longest line, fully styled, stays under that), so a chunk full of such signs stays far
-under what a client accepts.
+under what a client accepts. A line is measured by the letters it shows, counting a translation's argument once for each
+`%s` that uses it as the game does, so a short line that repeats its words through nested translations (100,000 letters
+from 333 characters) is cut to its first 384 letters too and no client freezes drawing it. Test: QA's
+`QaSignTranslationRepeat1108bBugTests`.
 
 **Banners from a file (B1073).** A banner built from an uploaded or scanned file keeps its first 6 pattern layers, the
 most a loom gives a banner; a file's extra layers are left off, so a chunk full of banners stays under what a client

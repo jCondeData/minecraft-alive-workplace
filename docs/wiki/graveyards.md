@@ -5,7 +5,7 @@ field, on a doorstep. Now the village's Undertaker takes each one to the village
 there. The villager can still be brought back from the Graveyard. A village without a Graveyard gets a small plot near
 its hall instead (owner's decision, 2026-10-19).
 
-Roadmap items: B222, B788, B1081, B1082
+Roadmap items: B222, B788, B1081, B1082, B1093, B1094
 
 <!-- Lanes: add each id to the line above in the commit that builds it, and put the new config keys, saved fields,
      tests and scenes in backticks so wikicheck.py checks them. -->
@@ -27,7 +27,8 @@ Graveyard as from anywhere: same name, job, level and trades. Their partner, wid
 (a second wedding, as the "Bring back my love" request has it) if still alone; one who has married someone else
 since, is courting someone else, or mourns someone else, stays with them, and the one brought back is single, free
 to court again (B1082). A couple who were only courting when one died court again. Each death and revival goes the
-same way, so a villager brought back twice is married to the same widow(er) again both times.
+same way, so a villager brought back twice is married to the same widow(er) again both times. A couple who both died
+and are both brought back are married again (or courting again) once the second is back (B1094).
 
 Graves that old saves left scattered round the village are moved the same way, one at a time.
 
@@ -36,8 +37,10 @@ the same villager to the mod too: their class, family name, friendship with play
 partner never widowed by the bite), parents, gift, schooling, retirement, job counts, the day they grew up, Legend
 place and the rest come back with them, even when the zombie villager was saved and loaded in between, and a couple
 who were both turned are still married when both are cured. Only the work they held (a builder's site, a field, a
-quarry, the guild they led) is let go when they're bitten, as a death lets it go. A zombie villager that is
-killed instead of cured leaves their partner widowed then (B1081).
+quarry, the guild they led) is let go when they're bitten, as a death lets it go; a cured former Guild Master is a
+member again. A zombie villager that is killed instead of cured leaves their partner widowed then (B1081). Their
+partner dying while they are a zombie villager widows them all the same: cured, they mourn and are free to court
+again (B1093).
 
 ## How it works
 
@@ -55,12 +58,15 @@ killed instead of cured leaves their partner widowed then (B1081).
   grave is laid before the old one is cleared, so a save at any moment keeps exactly one grave.
 - A villager or zombie villager that vanilla converts (`Mob.convertTo`) is a new entity with a new UUID. The platform
   layer carries every attachment the mod saved on the old one over to the new one; for a villager a zombie killed,
-  after the death hooks have let go of their work. `Couples` points the partner at the new UUID (B1081).
+  after the death hooks have let go of their work. `Couples` points the partner at the new UUID (B1081), and a death
+  widows a partner who is a zombie villager just then as it widows a villager (B1093).
 - After a revival (`Graves.revive`, after the request's own remarriage), `Couples.onRevived` makes both sides agree:
   a partner still widowed by this villager and alone marries them again through `RequestErrands.remarry` (the village's
   wedding at the hall of the partner's village, else just married again), a courting one courts them again; a partner
   with someone else, or mourning someone else, keeps that, and the revived villager's saved partner is cleared. A
-  partner not loaded was never widowed and still names them, so nothing changes (B1082).
+  partner not loaded was never widowed and still names them, so nothing changes (B1082). One brought back with no
+  partner, widowed before they died, whose late partner is back already and still names them, is with that partner
+  again as before, their mourning over (B1094: a couple who both died, revived one after the other).
 - Graves already in a Graveyard's walls, or on the hall plot, stay put. Graves in the Graveyard are tended wherever it
   lies in the village, even beyond the Undertaker's usual 32 blocks.
 
@@ -119,6 +125,11 @@ Nothing new. A moved grave keeps its block entity (`villager`, `name`, `professi
 - B1081: QA's `QaCuredVillager1109eBugTests.aCuredVillagerKeepsHisClassFamilyNameAndFriends` (a Burgher of family 7
   with 500 friendship points, turned and cured, keeps all three) and `QaCuredVillager1109eBugTests.aCuredWifeIsStillMarried`
   (cured Ada and Bea still married to each other, Bea never widowed); the controls in `QaCuredVillager1109eGameTests`.
+- B1093: QA's `QaConvertRevive1109cBugTests.aVillagerCuredAfterTheirSpouseDiedIsNotStillMarriedToTheDead` (Bea killed
+  while Ada is a zombie villager: cured Ada is no longer with Bea) and `QaConvertRevive1109cBugTests.aCuredGuildMasterHasPassedTheGuildOn`
+  (the guild isn't kept through a bite); the controls in `QaConvertRevive1109cGameTests`.
+- B1094: QA's `QaConvertRevive1109cBugTests.aCoupleWhoBothDiedAndAreBothBroughtBackAgree` (Ada and Bea both died,
+  revived Ada first: married to each other again).
 - B1082: QA's `QaRevivedPartner1109eBugTests.aRevivedWifeAndHerWidowerAgreeWhetherTheyAreMarried` (revived Ada and
   her widow Bea married to each other again) and `QaRevivedPartner1109eBugTests.aRevivedWifeWhoseWidowerRemarriedIsNotStillHisWife`
   (Bea married Carl meanwhile: revived Ada is single).

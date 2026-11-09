@@ -9,6 +9,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import net.minecraft.locale.Language;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -162,7 +163,9 @@ final class BlockText {
 	/**
 	 * About the words {@code json} shows: its text, keybinds and translations with their arguments, and the parts after
 	 * it. A translation shows an argument once for each {@code %s} that uses it, as the game does (B1074: ten {@code %1$s}
-	 * nested five deep show 100,000 letters from a short line), so arguments are counted the same way. The count stops a
+	 * nested five deep show 100,000 letters from a short line), so arguments are counted the same way, through the
+	 * language's text for a key it knows (B1088: a vanilla key that uses its argument three times, nested ten deep, showed
+	 * over a million letters while its key measured short). The count stops a
 	 * little past {@link #LIMIT}, so a line built to show billions of letters costs no more to measure than a long one.
 	 */
 	private static String plain(JsonElement json) {
@@ -193,7 +196,10 @@ final class BlockText {
 				}
 			}
 			if (isString(object.get("translate"))) {
-				translate(object.get("translate").getAsString(),
+				String key = object.get("translate").getAsString();
+				String fallback = isString(object.get("fallback")) ? object.get("fallback").getAsString() : key;
+				// the game shows the language's text for a key it knows, not the key (B1088)
+				translate(Language.getInstance().getOrDefault(key, fallback),
 					object.get("with") instanceof JsonArray with ? with : new JsonArray(), out);
 			} else if (object.get("with") instanceof JsonArray with) {
 				plain(with, out);
@@ -204,16 +210,19 @@ final class BlockText {
 		}
 	}
 
-	/** The words a translation shows when its key has no text in the language (the key is its own format, as in the game). */
-	private static void translate(String key, JsonArray with, StringBuilder out) {
+	/**
+	 * The words a translation with the text {@code format} (the language's text for its key, or its fallback or key when the
+	 * language has none, as in the game) shows. A format the game can't read shows as it is, as in the game.
+	 */
+	private static void translate(String format, JsonArray with, StringBuilder out) {
 		// each argument's words are worked out once and repeated, so nesting costs no more than the letters shown
 		String[] args = new String[with.size()];
-		Matcher matcher = FORMAT.matcher(key);
+		Matcher matcher = FORMAT.matcher(format);
 		int next = 0;
 		int start = 0;
 		StringBuilder shown = new StringBuilder();
 		while (matcher.find(start) && shown.length() + out.length() <= LIMIT) {
-			shown.append(key, start, matcher.start());
+			shown.append(format, start, matcher.start());
 			start = matcher.end();
 			String type = matcher.group(2);
 			if ("%".equals(type) && matcher.group(0).equals("%%")) {
@@ -221,13 +230,14 @@ final class BlockText {
 				continue;
 			}
 			if (!"s".equals(type)) {
-				// the game can't format this key and shows it as it is
-				out.append(key);
+				out.append(format, 0, Math.min(format.length(), LIMIT + 1));
 				return;
 			}
-			int index = matcher.group(1) != null ? Integer.parseInt(matcher.group(1)) - 1 : next++;
+			String number = matcher.group(1);
+			// a number too big for an int is no argument (and must not throw here)
+			int index = number == null ? next++ : number.length() > 9 ? -1 : Integer.parseInt(number) - 1;
 			if (index < 0 || index >= args.length) {
-				out.append(key);
+				out.append(format, 0, Math.min(format.length(), LIMIT + 1));
 				return;
 			}
 			if (args[index] == null) {
@@ -238,7 +248,7 @@ final class BlockText {
 			shown.append(args[index]);
 		}
 		if (shown.length() + out.length() <= LIMIT) {
-			shown.append(key, start, key.length());
+			shown.append(format, start, format.length());
 		}
 		out.append(shown);
 	}

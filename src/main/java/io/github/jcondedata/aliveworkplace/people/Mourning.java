@@ -116,7 +116,8 @@ public final class Mourning {
 	 * and years (just the cause outside a village with a hall, or with mourning off).
 	 */
 	public static Component onDeath(ServerLevel level, Villager villager, Component cause, @Nullable BlockPos grave) {
-		if (!ENABLED || !mourned(villager)) {
+		// B1087: a villager a zombie turned isn't dead (cure them): already gone, as the zombie villager, when this runs
+		if (!ENABLED || !mourned(villager) || villager.isRemoved()) {
 			return cause;
 		}
 		// B562: the village is its circle and height, not a ball round the hall (a death on its rim up a hill is its own)

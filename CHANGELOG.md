@@ -22,6 +22,15 @@ asks for the steps, `latest.log` and any crash report).
 - The Pokémon Trader's screen is in the Village Hall's look: the day's offers as rows in a dark list (click anywhere on a row to pick it), your party in framed cells, gold for the picked offer and the Pokémon waiting for its second click, and a hint along the bottom. Every offer, price, tooltip and refusal is as before (43.2).
 - Right-clicking a Nurse or a Fossil Scientist with an empty hand opens a small card in the Village Hall's look. The Nurse's shows your health, the bad effects she'd clear and (with Cobblemon) each Pokémon's HP with a bar, and Heal treats you as the click did; the Fossil Scientist's shows how far along each of your fossils is, and Hand over brings you the ones that are ready. When they can't help right now the button is gray with the reason under it. A fossil in hand is still handed over at once (43.3).
 
+### Fixed
+
+- Village Hall: one damaged entry in a hall's saved Book of Families (a hand-edited file, or one a crash cut short) no
+  longer empties the village's whole family book (every person, parent, partner and trade, the Family Tree page and
+  the family names). Only the bad entry is left out, with a warning in the log (B827).
+- Village Banner: a village whose banner design used a pattern from a mod or datapack taken out of the pack since
+  keeps the design's other layers, as a banner standing in the world does. Before, the village's colors became a plain
+  banner of the base color, so the banners already flying in them stopped counting at festivals (B826).
+
 ## 0.152.0 — 2026-11-08
 
 ### Added

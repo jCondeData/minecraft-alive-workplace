@@ -994,8 +994,12 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		if (Nbt.has(tag, "bannerBase", 8)) {
 			net.minecraft.world.item.DyeColor base = net.minecraft.world.item.DyeColor.byName(Nbt.getString(tag, "bannerBase"), net.minecraft.world.item.DyeColor.WHITE);
 			net.minecraft.world.level.block.entity.BannerPatternLayers patterns = tag.contains("bannerPatterns")
-				? net.minecraft.world.level.block.entity.BannerPatternLayers.CODEC.parse(registries.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), tag.get("bannerPatterns"))
-					.result().orElse(net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY)
+				// Layer by layer, as a vanilla banner reads them: a pattern from a removed mod or datapack drops only its own
+				// layer (with a warning), not the whole design (B826). Written as BannerPatternLayers.CODEC writes it.
+				? io.github.jcondedata.aliveworkplace.mc.Lenient.list(net.minecraft.world.level.block.entity.BannerPatternLayers.Layer.CODEC, "banner pattern layer")
+					.parse(registries.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE), tag.get("bannerPatterns")).result()
+					.map(net.minecraft.world.level.block.entity.BannerPatternLayers::new)
+					.orElse(net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY)
 				: net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY;
 			colours = new VillageBanners.Colours(base, patterns);
 		}

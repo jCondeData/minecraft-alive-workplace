@@ -7,7 +7,7 @@ with every other expansion. It covers: ages, the slower walk, the "quiet old age
 Families, the Family page and the Printer's family tree (34.21), and the seeding of everyone's age when classes switch
 on (34.22, [Classes](classes.md)).
 
-Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187, B380, B442, B885
+Roadmap items: 34.19, 34.19a, 34.20, 34.21, 36.16, B95, B99, B102, B187, B380, B442, B885, B827
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -238,6 +238,8 @@ On the hall: `families`, the Book of Families, a list of {`id`, `name`, `family`
 for the living), `mother`, `father`, `partner` (each absent when unknown), `trade`}; and `familiesNoted`, the families
 whose third generation the chronicle noted. Both absent in halls saved before: the book starts empty and fills at the
 next round.
+One person in `families` that can't be read (a hand-edited or damaged file) is left out with a warning in the log, and
+the rest of the book loads (B827; before, the whole book was lost without a word).
 
 The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.16); an older version reads an unknown kind as `FOUNDED`.
 
@@ -342,6 +344,8 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
   a reload, an older save's villager, an elder made ageless before this version (`aReloadKeepsTheDay`); a child grown up
   in the hall's own round, and an elder noted by it (`aChildGrowingUpIsGrownFromToday`); `villagerAges` off and on again
   (`withVillagerAgesOffNobodyIsAnElder`).
+- QA (B827): `QaHallFamiliesOneBadEntry1102eBugTests`: a hall's two saved people come back after an empty entry is put
+  first in its saved `families`.
 - Showcase scene: `elders` (the day Bram becomes one, his card, his line, the walk beside young Tom).
 - GameTests: `AgelessElderGameTests`: the recipe, tooltip and config (`theCharmIsCraftedAndExplainsItself`); a Master
   through the sneak-right-click, then a Gifted villager, a Legend and a 20-happy-day elder, the charm used up, the gold

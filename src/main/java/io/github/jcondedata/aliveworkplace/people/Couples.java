@@ -225,8 +225,9 @@ public final class Couples {
 	}
 
 	/**
-	 * A villager died (or the zombie villager one became, B1081): their partner, if any, is left to mourn. A villager a
-	 * zombie turned isn't dead (cure them): they are already gone from the world, as the zombie villager, when their
+	 * A villager died (or the zombie villager one became, B1081): their partner, if any, is left to mourn, a villager or,
+	 * while they are one, a zombie villager (B1093: cured, they are widowed and free to court). A villager a zombie turned
+	 * isn't dead (cure them): they are already gone from the world, as the zombie villager, when their
 	 * death hooks run, and their partner stays theirs ({@link #onConversion}).
 	 */
 	public static void onDeath(ServerLevel level, net.minecraft.world.entity.LivingEntity villager) {
@@ -235,7 +236,9 @@ public final class Couples {
 			return;
 		}
 		Entity other = level.getEntity(p.id());
-		if (other instanceof Villager partner && ModAttachments.PARTNER.has(partner)) {
+		// B1093: a partner who is a zombie villager just now is widowed too (they carry the record to their cure)
+		if ((other instanceof Villager || other instanceof net.minecraft.world.entity.monster.ZombieVillager) && ModAttachments.PARTNER.has(other)) {
+			Entity partner = other;
 			ModAttachments.PARTNER.remove(partner);
 			ModAttachments.WIDOWED_DAY.set(partner, Chronicle.day(level));
 			ModAttachments.LATE_PARTNER.set(partner, new LatePartner(villager.getUUID(), villager.getDisplayName().copy())); // who they lost (31.7)

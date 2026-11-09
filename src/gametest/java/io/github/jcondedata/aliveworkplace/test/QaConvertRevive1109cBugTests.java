@@ -1,0 +1,84 @@
+package io.github.jcondedata.aliveworkplace.test;
+
+import io.github.jcondedata.aliveworkplace.people.Couples;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.npc.Villager;
+
+/**
+ * QA (qa-lane-c-1109-0655), the failing half of {@link QaConvertRevive1109cGameTests} (B1093, B1094): couples where the
+ * other one dies while the first is away (a zombie villager, or in a grave). B1082 asks that "after a revival both sides agree", and
+ * B1081 that a cured villager is married to their partner, "not widowed" only because the partner still has them.
+ */
+public class QaConvertRevive1109cBugTests implements FabricGameTest {
+	private static final String AREA = QaConvertRevive1109cGameTests.AREA;
+
+	/**
+	 * Ada is a zombie villager when her husband Bea is killed. Cured, Ada isn't married to a dead man: she is widowed (or
+	 * at least single, free to court), not still married to Bea forever.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaConv1109cDiedMeanwhile"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaConv1109cDiedMeanwhile")
+	public void aVillagerCuredAfterTheirSpouseDiedIsNotStillMarriedToTheDead(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.graves(helper);
+		Villager ada = QaCuredVillager1109eGameTests.farmer(helper, new BlockPos(2, 2, 2), "Ada");
+		Villager bea = QaCuredVillager1109eGameTests.farmer(helper, new BlockPos(6, 2, 2), "Bea");
+		QaCuredVillager1109eGameTests.marry(ada, bea, 3);
+		QaConvertRevive1109cGameTests.turn(helper, ada, zombie -> {
+			bea.kill();
+			helper.runAfterDelay(30, () -> { // Bea's body gone
+				QaConvertRevive1109cGameTests.cure(helper, zombie, "Ada", cured -> {
+					Couples.Partner hers = ModAttachments.PARTNER.get(cured);
+					helper.assertTrue(hers == null || !hers.id().equals(bea.getUUID()),
+						"cured Ada is still " + (hers != null && hers.married() ? "married" : "courting") + " to Bea, who was killed while she was a zombie villager"
+							+ " (widowed " + ModAttachments.WIDOWED_DAY.has(cured) + ", can court " + QaConvertRevive1109cGameTests.single(cured) + ")");
+					// B1093's expected: widowed, Bea her late partner, free to court (as when the spouse dies while she is a villager)
+					Couples.LatePartner late = ModAttachments.LATE_PARTNER.get(cured);
+					helper.assertTrue(ModAttachments.WIDOWED_DAY.has(cured) && late != null && late.id().equals(bea.getUUID())
+							&& QaConvertRevive1109cGameTests.single(cured),
+						"cured Ada isn't Bea's widow free to court: widowed " + ModAttachments.WIDOWED_DAY.get(cured) + ", late partner " + late
+							+ ", can court " + QaConvertRevive1109cGameTests.single(cured));
+					helper.succeed();
+				});
+			});
+		});
+	}
+
+	/**
+	 * B1081's report named "guild master" among what a cured villager keeps; B1093 left it to the bug lane, which decided
+	 * (lane-a-1109-0625) as for the rest of the work a bitten villager held: being turned lets the guild go, as a death
+	 * does (Guilds.onDeath: the most experienced member takes over, guilds.md), so a guild never waits on a zombie
+	 * villager who may never be cured. Ada leads the farmers' guild, is turned and cured: neither the zombie villager nor
+	 * the cured Ada still names herself its master (the guild has passed on).
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaConv1109cGuild"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaConv1109cGuild")
+	public void aCuredGuildMasterHasPassedTheGuildOn(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Villager ada = QaCuredVillager1109eGameTests.farmer(helper, new BlockPos(2, 2, 2), "Ada");
+		io.github.jcondedata.aliveworkplace.hall.Guilds.Master master = new io.github.jcondedata.aliveworkplace.hall.Guilds.Master(
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.id("farmers"), helper.absolutePos(new BlockPos(4, 2, 4)));
+		ModAttachments.GUILD_MASTER.set(ada, master);
+		QaConvertRevive1109cGameTests.turn(helper, ada, zombie -> {
+			helper.assertTrue(!ModAttachments.GUILD_MASTER.has(zombie), "turned, the zombie villager still leads the guild: " + ModAttachments.GUILD_MASTER.get(zombie));
+			QaConvertRevive1109cGameTests.cure(helper, zombie, "Ada", cured -> {
+				helper.assertTrue(!ModAttachments.GUILD_MASTER.has(cured), "cured, Ada names herself the master of a guild that passed on: " + ModAttachments.GUILD_MASTER.get(cured));
+				helper.succeed();
+			});
+		});
+	}
+
+	private static String describe(Couples.Partner p, Villager ada, Villager bea, Villager adaBack, Villager beaBack) {
+		if (p == null) {
+			return "none";
+		}
+		String who = p.id().equals(beaBack.getUUID()) ? "Bea" : p.id().equals(bea.getUUID()) ? "Bea (her old id)"
+			: p.id().equals(adaBack.getUUID()) ? "Ada" : p.id().equals(ada.getUUID()) ? "Ada (her old id)" : p.name().getString();
+		return who + (p.married() ? " (married)" : " (courting)");
+	}
+}

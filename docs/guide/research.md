@@ -21,7 +21,10 @@ changes.
 
 Sneak-right-click the scholar with an empty hand for the village's **research tree**, and click a topic to research it
 next. The scholar takes the cost from the chest (paper, books and emeralds) and works it out at the lectern. Some topics
-open only after others.
+open only after others. The screen is a list: what's being researched at the top, a tab for each Legend's tree (and the
+realm's, in a capital), then a row per topic with its level, the next level's price and **Research** (gold, "Under way",
+while it's worked on; gray while it's locked or done, the reason in its tooltip), and the Great Library's topics after the
+scholars' own.
 
 ## The topics
 

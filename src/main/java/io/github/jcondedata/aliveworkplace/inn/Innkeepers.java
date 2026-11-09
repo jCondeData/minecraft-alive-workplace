@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import io.github.jcondedata.aliveworkplace.wonder.powers.TravellersPower;
@@ -280,19 +281,37 @@ public final class Innkeepers {
 		if (t == null) {
 			return;
 		}
-		ChoiceMenu.open(player, guest.getDisplayName(), p -> p.isAlive() && guest.isAlive() && isTraveller(guest) && p.distanceToSqr(guest) < 64,
-			menu -> render(menu, guest, t));
+		ChoiceMenu.openList(player, guest.getDisplayName(), p -> p.isAlive() && guest.isAlive() && isTraveller(guest) && p.distanceToSqr(guest) < 64,
+			menu -> {
+				render(menu, player, guest, t);
+				watch(menu, player, guest, t);
+			});
 	}
 
 	/** The same screen, not shown to anyone (tests). */
 	public static ChoiceMenu hireMenuForTest(ServerPlayer player, Villager guest) {
-		return ChoiceMenu.detached(player, menu -> render(menu, guest, traveller(guest)));
+		return ChoiceMenu.detached(player, menu -> render(menu, player, guest, traveller(guest)));
 	}
 
 	public static final int INFO_SLOT = 11;
 	public static final int HIRE_SLOT = 15;
+	/** The list screen's own line (42.3): the player's money at the top right, the hint. */
+	public static final int LIST_INFO = 4;
 
-	private static void render(ChoiceMenu menu, Villager guest, Traveller t) {
+	// The money changed while the screen is open: lay it out again, so the price turns red or green (42.3, as the Tutor's).
+	private static void watch(ChoiceMenu menu, ServerPlayer player, Villager guest, Traveller t) {
+		// The text itself, not its string: on a server without our language file the string is the key, whatever the sum.
+		Component[] shown = {Money.balance(player)};
+		menu.everyTick(() -> {
+			Component now = Money.balance(player);
+			if (!now.equals(shown[0])) {
+				shown[0] = now;
+				render(menu, player, guest, t);
+			}
+		});
+	}
+
+	private static void render(ChoiceMenu menu, ServerPlayer player, Villager guest, Traveller t) {
 		menu.clearButtons();
 		ServerLevel level = (ServerLevel) guest.level();
 		long daysLeft = Math.max(1, (STAY - (level.getGameTime() - t.arrived()) + 23999) / 24000);
@@ -318,6 +337,18 @@ public final class Innkeepers {
 			hireLore.add(plain(Component.translatable("screen.aliveworkplace.inn.gifted_price"), ChatFormatting.GOLD));
 		}
 		hire.set(DataComponents.LORE, new ItemLore(List.copyOf(hireLore)));
+		// The list (42.3): the traveler's row (how long they stay; the rest in its tooltip), then Hire with the price, green
+		// when the player can pay it and red when not (the click still says why, as the chest's did); the money at the top.
+		ChoiceList.row(info, Words.counted("screen.aliveworkplace.inn.staying", daysLeft, daysLeft), null, null, false, false);
+		boolean affordable = Money.canAfford(player, dollars(guest, t), emeralds(guest, t));
+		ChoiceList.row(hire, Component.translatable(gifted != null ? "screen.aliveworkplace.inn.gifted_price" : "screen.aliveworkplace.inn.joins"),
+			Money.describe(dollars(guest, t), emeralds(guest, t)).copy().withStyle(affordable ? ChatFormatting.GREEN : ChatFormatting.RED),
+			Component.translatable("screen.aliveworkplace.inn.button_hire"), false, false);
+		ItemStack own = new ItemStack(Items.BOOK);
+		own.set(DataComponents.CUSTOM_NAME, plain(guest.getDisplayName(), ChatFormatting.GOLD));
+		own.set(DataComponents.LORE, new ItemLore(List.of(plain(Words.articled("screen.aliveworkplace.inn.starts_as", 0, BuilderLevels.levelName(t.level())), ChatFormatting.GRAY))));
+		ChoiceList.info(own, Money.balance(player), Component.translatable("screen.aliveworkplace.inn.hire_hint"), List.of());
+		menu.button(LIST_INFO, own, null);
 		menu.button(HIRE_SLOT, hire, p -> {
 			if (hire(p, guest)) {
 				p.closeContainer();

@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.AreaJobs;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -210,7 +211,7 @@ public final class BerryBreeders {
 			return;
 		}
 		int[] page = {0};
-		ChoiceMenu.open(player, Component.translatable("message.aliveworkplace.berry_breeder.book_title", breeder.getDisplayName()),
+		ChoiceMenu.openList(player, Component.translatable("message.aliveworkplace.berry_breeder.book_title", breeder.getDisplayName()),
 			p -> breeder.isAlive() && !breeder.isSleeping() && p.isAlive() && p.distanceTo(breeder) <= REACH,
 			menu -> fill(menu, (ServerLevel) breeder.level(), breeder, page));
 	}
@@ -235,18 +236,18 @@ public final class BerryBreeders {
 				break;
 			}
 			ResourceLocation berry = berries.get(n);
-			menu.button(i, icon(data, berry, mutations, found, berry.equals(goal)), player -> {
+			menu.button(i, bookRow(icon(data, berry, mutations, found, berry.equals(goal)), berry, mutations, found, berry.equals(goal)), player -> {
 				choose(player, breeder, berry);
 				fill(menu, level, breeder, page);
 			});
 		}
 		menu.divider(5);
 		if (pages > 1) {
-			menu.button(45, named(Items.ARROW, Component.translatable("message.aliveworkplace.berry_breeder.book.previous")), p -> {
+			menu.button(45, ChoiceList.page(named(Items.ARROW, Component.translatable("message.aliveworkplace.berry_breeder.book.previous")), false), p -> {
 				page[0]--;
 				fill(menu, level, breeder, page);
 			});
-			menu.button(53, named(Items.ARROW, Component.translatable("message.aliveworkplace.berry_breeder.book.next")), p -> {
+			menu.button(53, ChoiceList.page(named(Items.ARROW, Component.translatable("message.aliveworkplace.berry_breeder.book.next")), true), p -> {
 				page[0]++;
 				fill(menu, level, breeder, page);
 			});
@@ -258,15 +259,22 @@ public final class BerryBreeders {
 			berries.size()).withStyle(ChatFormatting.GRAY));
 		lines.add(goalLine(level, breeder));
 		info.set(DataComponents.LORE, new ItemLore(lines.stream().map(BerryBreeders::plain).toList()));
+		// The list screen's own line (42.3): how many the village has found at the top right (this book's tooltip on it),
+		// her goal and the step she's on as the footer, the headings.
+		ChoiceList.info(info, Component.translatable("message.aliveworkplace.berry_breeder.book.found_short", found.stream().filter(berries::contains).count(),
+			berries.size()), goalLine(level, breeder), List.of(Component.translatable("message.aliveworkplace.berry_breeder.book.column_berry"),
+				Component.translatable("message.aliveworkplace.berry_breeder.book.column_book"), Component.translatable("message.aliveworkplace.berry_breeder.book.column_from")));
 		menu.button(49, info, null);
 		if (goal != null) {
-			menu.button(48, named(Items.BARRIER, Component.translatable("message.aliveworkplace.berry_breeder.book.clear")), p -> {
+			menu.button(48, ChoiceList.order(ChoiceList.row(named(Items.BARRIER, Component.translatable("message.aliveworkplace.berry_breeder.book.clear")),
+				name(goal), null, Component.translatable("message.aliveworkplace.berry_breeder.book.button_clear"), false, false), -1), p -> {
 				setGoal(breeder, null);
 				fill(menu, level, breeder, page);
 			});
 		}
 		if (ModAttachments.BERRY_PLOT.get(breeder) != null) {
-			menu.button(50, named(Items.MAP, Component.translatable("message.aliveworkplace.berry_breeder.book.stop_plot")), p -> {
+			menu.button(50, ChoiceList.order(ChoiceList.row(named(Items.MAP, Component.translatable("message.aliveworkplace.berry_breeder.book.stop_plot")),
+				null, null, Component.translatable("message.aliveworkplace.berry_breeder.book.button_stop"), false, false), -1), p -> {
 				release(level, breeder, p);
 				fill(menu, level, breeder, page);
 			});
@@ -289,6 +297,23 @@ public final class BerryBreeders {
 		BerryChains.Mutation m = step.get();
 		return Component.translatable("message.aliveworkplace.berry_breeder.goal.step", name(goal), name(m.a()), name(m.b()), name(m.result()))
 			.withStyle(ChatFormatting.GOLD);
+	}
+
+	/**
+	 * A berry's list row (42.3): in the book or not (her goal in gold), the first pair that makes it (or "Grows wild"), and
+	 * Set goal; the goal's row gold. Clicking a berry she already has still says so, as the chest did.
+	 */
+	private static ItemStack bookRow(ItemStack icon, ResourceLocation berry, List<BerryChains.Mutation> mutations, Set<ResourceLocation> found, boolean isGoal) {
+		boolean lit = found.contains(berry);
+		Component state = isGoal ? Component.translatable("message.aliveworkplace.berry_breeder.book.goal").withStyle(ChatFormatting.GOLD)
+			: lit ? Component.translatable("message.aliveworkplace.berry_breeder.book.lit_short").withStyle(ChatFormatting.GREEN)
+			: Component.translatable("message.aliveworkplace.berry_breeder.book.unfound");
+		List<BerryChains.Mutation> pairs = BerryChains.madeFrom(mutations, berry);
+		Component from = pairs.isEmpty() ? Component.translatable("message.aliveworkplace.berry_breeder.book.wild_short")
+			: Component.translatable("message.aliveworkplace.berry_breeder.book.pair", name(pairs.get(0).a()), name(pairs.get(0).b()))
+				.withStyle(pairs.get(0).parents(found) ? ChatFormatting.YELLOW : ChatFormatting.DARK_GRAY);
+		return ChoiceList.row(icon, state, from,
+			Component.translatable(isGoal ? "message.aliveworkplace.berry_breeder.book.button_goal" : "message.aliveworkplace.berry_breeder.book.button_set"), false, isGoal);
 	}
 
 	private static ItemStack icon(BerryChains.BerryData data, ResourceLocation berry, List<BerryChains.Mutation> mutations,

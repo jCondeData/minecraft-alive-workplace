@@ -33,7 +33,11 @@ She keeps up to **3 Poké Snacks** set out within 32 blocks of her pasture, taki
 (mark it, then right-click her with it); unmarked, she picks grass 16 to 32 blocks out.
 
 Sneak-right-click her with an empty hand to pick her **lure**: any snack, a type, an egg group or, with Cobblemon 1.8.0 or newer,
-Alphas. She then asks the Camp Cook for snacks seasoned with the berries that draw those Pokémon.
+Alphas. She then asks the Camp Cook for snacks seasoned with the berries that draw those Pokémon. The lures are a list:
+her lure now at the top, **Any snack** first, then a row per lure with the berries that season it and **Choose** (her
+lure gold, "Chosen").
+
+![Choosing the habitat keeper's lure](https://jcondedata.github.io/minecraft-alive-workplace/habitat_lures/still-1.jpg)
 
 ## Honey
 

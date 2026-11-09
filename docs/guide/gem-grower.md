@@ -36,7 +36,10 @@ She finds the beds within 16 blocks of her stonecutter by herself:
   clusters picked and the Gem Block kept. With glass in the chests she also makes Blank TMs from shards, up to 8.
 
 Sneak-right-click her with an empty hand to pick which beds she keeps; with none picked, she keeps every bed she has the
-makings for.
+makings for. The orders are a list: which beds she keeps at the top, then a row per bed with what it's planted with and
+**Pick** (the picked ones gold, with **Unpick**).
+
+![Choosing which gem beds she keeps](https://jcondedata.github.io/minecraft-alive-workplace/gem_orders/still-1.jpg)
 
 ## Trading
 

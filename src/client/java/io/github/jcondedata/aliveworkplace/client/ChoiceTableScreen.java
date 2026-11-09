@@ -790,6 +790,11 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 				}
 			}
 		}
+		// Rows with an order go where it says (ROADMAP 42.3), slot order among equals (the sort is stable).
+		lmRows.sort(java.util.Comparator.comparingInt(slot -> {
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark m = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(slot));
+			return m == null ? 0 : m.order();
+		}));
 		int x = left + 8;
 		int y = top + 22;
 		int right = left + panelW - 8;

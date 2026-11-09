@@ -6343,7 +6343,7 @@ it, in order (42.1 first: the others use its pieces). Depends on: nothing open.
   scene `tutor` shows the new look.
 - [x] **42.2** (review: pending 2026-11-08) **The Cobblemon menus as lists:** Pokemon Professor, Daycare (Rancher), Daycare Keeper. Done when:
   GameTests for each menu's actions; scenes `daycare`, `daycare_keeper` and a new `professor` scene.
-- [ ] **42.3** **The job menus as lists:** Ball Smith, Gem Grower, Habitat Keeper and Berry Breeder orders, the
+- [x] **42.3** (review: pending 2026-11-09) **The job menus as lists:** Ball Smith, Gem Grower, Habitat Keeper and Berry Breeder orders, the
   Innkeeper, a Legend guest's terms, and the Research screen (Scholar and Legend trees: the tree may stay a grid of
   framed cells in the Hall's colors if a list loses its shape; write the choice in the Notes). Done when: GameTests
   for each; scenes `smith_orders` and one per menu without a scene.
@@ -6396,6 +6396,13 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
   scenes `guide` and `config`.
 
 ## Notes / blocked
+
+- 2026-11-09 (lane-c-1109-0052, 42.3): **the Research screen is a list, not a grid.** The tree didn't lose its shape as a
+  list: the topics already come in their tree's order (a topic after what it needs), and a row holds the level, the
+  next level's price and Research, which a cell couldn't; a locked or finished topic is a gray row (the reason in its
+  tooltip, a click still says it), the one under way gold. The tabs (scholars', each Legend's, the realm's) stay tabs.
+  New shared piece: `ChoiceList.order(icon, n)` lists a row before or after slot order (the Great Library's rows after the
+  scholars' topics, "Any snack", "Clear" and "Stop" first), so menus keep their slots. Lanes D/E may use it.
 
 - 2026-11-08 (lane-d-1108-2208, 43.3): **the small card is built, for 42.5 to reuse.** 42.5's status card wasn't there
   yet, so 43.3 built it as a shared piece, as the Milestone 43 intro says: `card/StatusCard` (what a card shows: title

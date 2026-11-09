@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.mc.Recipes;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.PokemonFeatures;
 import java.util.ArrayList;
@@ -108,7 +109,7 @@ public final class GemGrowers {
 			return;
 		}
 		Friends.hire(player, villager);
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.gem_grower.orders", villager.getDisplayName()),
+		ChoiceMenu.openList(player, Component.translatable("screen.aliveworkplace.gem_grower.orders", villager.getDisplayName()),
 			p -> villager.isAlive() && p.isAlive() && p.distanceTo(villager) <= 8,
 			menu -> render(menu, villager));
 	}
@@ -129,6 +130,11 @@ public final class GemGrowers {
 		info.set(DataComponents.LORE, new ItemLore(List.of(
 			Component.translatable(orders(villager).isEmpty() ? "screen.aliveworkplace.gem_grower.every" : "screen.aliveworkplace.gem_grower.only")
 				.withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GRAY)))));
+		// The list screen (42.3): which beds she keeps at the top right (this book's tooltip on it), the hint, the headings.
+		ChoiceList.info(info, Component.translatable(orders(villager).isEmpty() ? "screen.aliveworkplace.gem_grower.mode_every" : "screen.aliveworkplace.gem_grower.mode_only"),
+			Component.translatable("screen.aliveworkplace.gem_grower.list_hint"),
+			List.of(Component.translatable("screen.aliveworkplace.gem_grower.column_bed"), Component.translatable("screen.aliveworkplace.orders.column_order"),
+				Component.translatable("screen.aliveworkplace.gem_grower.column_planted")));
 		menu.button(4, info, null);
 		int slot = FIRST_BED_SLOT;
 		for (GemBeds.Bed bed : GemBeds.beds()) {
@@ -146,6 +152,10 @@ public final class GemGrowers {
 			bed.plantItem().ifPresent(item -> lore.add(Component.translatable("screen.aliveworkplace.gem_grower.planted_with", new ItemStack(item).getHoverName())
 				.withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GRAY))));
 			icon.set(DataComponents.LORE, new ItemLore(lore));
+			// The list row: kept or not, what it's planted with, Pick or Unpick; gold when picked.
+			ChoiceList.row(icon, Component.translatable(on ? "screen.aliveworkplace.gem_grower.on" : "screen.aliveworkplace.gem_grower.off"),
+				bed.plantItem().map(item -> (Component) new ItemStack(item).getHoverName()).orElse(null),
+				Component.translatable(on ? "screen.aliveworkplace.orders.button_unpick" : "screen.aliveworkplace.orders.button_pick"), false, on);
 			ResourceLocation name = bed.name();
 			menu.button(slot++, icon, p -> {
 				toggle(villager, name);

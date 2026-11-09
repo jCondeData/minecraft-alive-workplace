@@ -6546,6 +6546,9 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
+- 2026-11-09 (lane-b-1109-2137): **Milestone 46 waits on B1111 and B1112** (its "Depends on"), both still open and the bug lane's;
+  `sessions.py next` lists 46.1-46.6 anyway, so lane B bug-tested builders instead (B874, B1030, B1105, B1045, B1046 verified;
+  B1119 filed). Lane B starts 46.1 the first run after both fixes land.
 - 2026-11-09 (lane-c-1109-1852, 45.2/45.3): **45.1 and 45.2 pushed after a local suite that ran out of heap** at about 6,290 of
   ~7,900 batches (twice this run, once last run) with no test failing before it; CI's full build is their check. **45.3 (the
   Mover) is on `wip/lane-c-1109-1852`**: job, Mover's Crate (art, recipe, tab), outfit, MoveSite/MoverWork and 6

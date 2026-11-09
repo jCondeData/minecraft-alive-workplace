@@ -4942,13 +4942,17 @@ final class JobScenes {
 					net.minecraft.world.level.block.Mirror.NONE));
 				Showcase.check(site != null, "the builder took the stone house on");
 				subject = mason;
-				io.github.jcondedata.aliveworkplace.card.JobCards.open(player, mason, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.BUILDER);
-				Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m
-					&& m.card().lines().size() >= 3 && m.card().lines().stream().anyMatch(l -> l.label().getString().startsWith("Needs "))
-					&& m.card().button(io.github.jcondedata.aliveworkplace.card.JobCards.HALL).usable(),
-					"the card showed the site, his experience and what he needs, with Hall page ready");
 			},
-			List.of(step("01_status_card", io.github.jcondedata.aliveworkplace.card.JobCards.HALL, 0),
+			// The card opens a step later than the staging: a hall's point of interest is added by a task the server runs
+			// after the tick that placed it, so a card opened in the staging's own tick found no hall (Hall page grayed).
+			List.of(new Step("01_status_card", io.github.jcondedata.aliveworkplace.card.JobCards.HALL, 0, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+					io.github.jcondedata.aliveworkplace.card.JobCards.open(player, subject, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.BUILDER);
+					Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m
+						&& m.card().lines().size() >= 3 && m.card().lines().stream().anyMatch(l -> l.label().getString().startsWith("Needs "))
+						&& m.card().button(io.github.jcondedata.aliveworkplace.card.JobCards.HALL).usable(),
+						"the card showed the site, his experience and what he needs, with Hall page ready");
+				}, 25),
 				new Step("02_status_card_hall", -1, 6, (level, player) -> {
 					if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m) {
 						m.clickMenuButton(player, io.github.jcondedata.aliveworkplace.card.JobCards.HALL);

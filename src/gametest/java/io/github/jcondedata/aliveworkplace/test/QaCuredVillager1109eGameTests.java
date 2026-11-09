@@ -46,6 +46,51 @@ public class QaCuredVillager1109eGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * The control for the other way a villager becomes a new entity: through a Nether portal (a player's boat, a minecart,
+	 * a push) the game copies them into the other dimension. Same UUID, and what the mod saved on them (class, family name,
+	 * friendship, marriage) goes along, there and back.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaCured1109ePortal"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaCured1109ePortal")
+	public void aVillagerThroughThePortalAndBackKeepsWhatTheModKnew(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		ServerLevel nether = level.getServer().getLevel(net.minecraft.world.level.Level.NETHER);
+		helper.assertTrue(nether != null, "setup: no Nether on the test server");
+		Villager ada = farmer(helper, new BlockPos(2, 2, 2), "Ada");
+		Villager bea = farmer(helper, new BlockPos(6, 2, 2), "Bea");
+		UUID player = UUID.fromString("00000000-0000-0000-0000-000000001109");
+		ModAttachments.SOCIAL_CLASS.set(ada, BURGHER);
+		ModAttachments.FAMILY_NAME.set(ada, 7);
+		befriend(ada, player, 500);
+		marry(ada, bea, 3);
+		UUID id = ada.getUUID();
+		net.minecraft.world.phys.Vec3 home = ada.position();
+		BlockPos far = new BlockPos(0, 64, 0);
+		nether.getChunk(far);
+		net.minecraft.world.entity.Entity there = ada.changeDimension(new net.minecraft.world.level.portal.DimensionTransition(nether,
+			net.minecraft.world.phys.Vec3.atBottomCenterOf(far), net.minecraft.world.phys.Vec3.ZERO, 0, 0, net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING));
+		helper.assertTrue(there instanceof Villager && there.level() == nether, "setup: Ada didn't reach the Nether: " + there);
+		Leftovers.after(helper, () -> {
+			net.minecraft.world.entity.Entity left = nether.getEntity(id);
+			if (left != null) {
+				left.discard();
+			}
+		});
+		net.minecraft.world.entity.Entity back = there.changeDimension(new net.minecraft.world.level.portal.DimensionTransition(level, home,
+			net.minecraft.world.phys.Vec3.ZERO, 0, 0, net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING));
+		helper.assertTrue(back instanceof Villager && back.level() == level, "setup: Ada didn't come back: " + back);
+		Villager v = (Villager) back;
+		Couples.Partner hers = ModAttachments.PARTNER.get(v);
+		helper.assertTrue(v.getUUID().equals(id), "Ada came back under another UUID");
+		helper.assertTrue(BURGHER.equals(ModAttachments.SOCIAL_CLASS.get(v)) && Integer.valueOf(7).equals(ModAttachments.FAMILY_NAME.get(v))
+				&& Friendship.points(v, player) == 500 && hers != null && hers.married() && hers.id().equals(bea.getUUID()),
+			"back from the Nether Ada lost something: class " + ModAttachments.SOCIAL_CLASS.get(v) + ", family " + ModAttachments.FAMILY_NAME.get(v)
+				+ ", points " + Friendship.points(v, player) + ", partner " + hers);
+		helper.succeed();
+	}
+
 	// ---- helpers, shared with the bug tests ----------------------------------------------------------------------
 
 	static Villager farmer(GameTestHelper helper, BlockPos at, String name) {

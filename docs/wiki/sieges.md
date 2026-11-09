@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079
 
 ## What a player sees
 
@@ -340,6 +340,12 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   loses its mark when it bounces off a spared frame) and B1080 (a raider's blast breaks an armor stand of a Scan Tool
   build) and B1083 (a fire-burned block comes back without the frame that hung on it), tests on
   `tests/threat-spare-1109`.
+- QA (lane B, 2026-11-09, B1066, B1079): `QaRaiderArrows1109GameTests` (7): a real arrow of a raider who was
+  discarded, killed or unloaded while it flew bounces off the builders' item frame and leaves the diamond in both their
+  frames, and is still a raider's shot after the bounce; a player's arrow and a plain skeleton's (its shooter killed)
+  still knock the diamond out of the builders' frame, as the game does; a raider's mark survives two bounces and a save
+  and reload, never appears on a plain or nobody's arrow that bounces, is dropped for good when a player knocks the
+  arrow back, and stays when another raider takes it over; plus the burning-arrow case on the village fire's page.
 - GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
   and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's
   block breaking (the game's destroy call) never takes a hut block nor one of a build under way, while a wild ravager's does and a raider's on a

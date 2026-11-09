@@ -5,7 +5,7 @@ ROADMAP 32.16. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 chimney spark on a dry day or a raider's burning arrow. The fire spreads by the game's own rules but only through what
 the builders built, a new job, the **Firewarden**, puts it out, and the builders put back what burned.
 
-Roadmap items: 32.16, B218, B152, B1071
+Roadmap items: 32.16, B218, B152, B1071, B1079
 
 ## What a player sees
 
@@ -45,7 +45,9 @@ Roadmap items: 32.16, B218, B152, B1071
   chance; the roof of the finished build nearest the strike catches, on top of its highest wooden block still
   standing. **Burning arrows** (a mixin where an arrow hits a block): only from a raider of a culture (the gunners of
   the pirates, 32.8), only with the mobGriefing game rule on, and only on a builder's wooden block. An arrow a raider
-  shot stays a raider's until it lands, even when its shooter left, was killed or was unloaded while it flew (B1071).
+  shot stays a raider's until it lands, even when its shooter left, was killed or was unloaded while it flew (B1071),
+  and when it bounces off a refused hit with its shooter gone (B1079); one a player knocked back is the player's and
+  lights nothing.
   **The chimney
   spark** is rolled in the hall's round, once a day.
 - **Builders' blocks.** A block counts as the builders' when a finished build's blueprint has a block there and the
@@ -132,6 +134,10 @@ builders put it back after a restart too.
   `FireGameTests.theWaterCarriedSurvivesASave`, `FireGameTests.theBuilderPutsBackWhatBurned`,
   `FireGameTests.switchedOffAFirewardenStandsIdle`, `FireGameTests.everyNewSentenceHasItsText`.
 - `PastureCompatTests.pasturedWaterTypesDouseTheFire` (with Cobblemon): a Squirtle by the grindstone puts a fire out.
+- QA (lane B, 2026-11-09, B1071, B1079): `QaRaiderArrows1109GameTests.aGoneRaidersBurningArrowStillLightsTheRoofAfterABounceButNotWithFiresOff`:
+  a raider's burning arrow whose shooter was discarded, bounced (owner null) and then saved and loaded lights the
+  builders' roof about 1 in 4 with a fixed random; a player's burning arrow and one a player knocked back never do;
+  with `village_fire` off in `disasters` it lights nothing.
 - QA (`QaVillageFixes1104c3GameTests`, B390): a fire set against the outside of a finished hut's corner post is written
   up under the hut's name; a fire on the ground two blocks from the hut is "Fire in the village", and a spot one block
   further out than the wall, or two over the roof, belongs to no build.

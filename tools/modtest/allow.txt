@@ -36,6 +36,8 @@ Dropped an entry of a saved (builder bag|golem load|route filter|courier route|m
 Dropped an entry of a saved (edict|guild charter|reform|found service|furniture look|plan zone|plan road|research level) that no longer loads
 # QaHallFamiliesOneBadEntry1102eBugTests puts one empty entry in a Village Hall's saved families, to prove only that person is dropped (B827).
 Dropped an entry of a saved family book person that no longer loads
+# QaVillageBannerRemovedPattern1102eBugTests loads a hall whose banner design names a removed mod's pattern, to prove only that layer is dropped (B826).
+Dropped an entry of a saved banner pattern layer that no longer loads
 # QaBlockSaveKindsGameTests and QaEveryCodecGameTests load halls with quests that can't be read, to prove each is left out and the hall still loads (B509).
 Left out a saved village quest that can't be read
 # GemGrowerGameTests feeds the bed reader malformed files (from a test pack) to prove each is logged and skipped.

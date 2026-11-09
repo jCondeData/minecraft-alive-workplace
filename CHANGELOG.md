@@ -27,6 +27,9 @@ asks for the steps, `latest.log` and any crash report).
 - Village Hall: one damaged entry in a hall's saved Book of Families (a hand-edited file, or one a crash cut short) no
   longer empties the village's whole family book (every person, parent, partner and trade, the Family Tree page and
   the family names). Only the bad entry is left out, with a warning in the log (B827).
+- Village Banner: a village whose banner design used a pattern from a mod or datapack taken out of the pack since
+  keeps the design's other layers, as a banner standing in the world does. Before, the village's colors became a plain
+  banner of the base color, so the banners already flying in them stopped counting at festivals (B826).
 
 ## 0.152.0 — 2026-11-08
 

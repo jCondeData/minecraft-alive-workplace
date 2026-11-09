@@ -6445,13 +6445,13 @@ lost by moving it. Every item: GameTests through the player's own clicks, save a
 off, its scene in the harness and `tools/showcase/scenes.py`, `sessions.py done <id> --review`, American English.
 Lane C builds it, in order. Depends on: nothing open.
 
-- [ ] **45.1** **A building's snapshot.** Any building the Village Hall knows (built from a blueprint, grown by the
+- [x] **45.1** (approved auto 2026-11-09) **A building's snapshot.** Any building the Village Hall knows (built from a blueprint, grown by the
   village or the player's own registered house) can be captured as a moving plan: every block state, container
   contents, signs, banners, item frames, armor stands and modded furniture (by block/entity ids, never their classes),
   with its front and its residents' beds and workstations. Done when: GameTests that a captured plan rebuilt
   elsewhere matches the original block for block (`MaterialRules.matches`) with every container's items, and that
   rotating it 90/180/270 rotates stairs, doors, beds and furniture correctly.
-- [ ] **45.2** **The Hall's Move page.** In the Village Hall (its look, `TableStyle`), a Buildings list with a Move
+- [x] **45.2** (review: pending 2026-11-09) **The Hall's Move page.** In the Village Hall (its look, `TableStyle`), a Buildings list with a Move
   button on each; then the Hall's map to pick the new spot, a rotate button, and a fit check that says plainly why a
   spot is refused (overlaps a building or a road, outside the village, too steep, under water); a ghost outline in the
   world while choosing; Confirm needs a hired Mover. Done when: GameTests for picking, each refusal line, rotate,
@@ -6545,6 +6545,12 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
+- 2026-11-09 (lane-c-1109-1852, 45.2/45.3): **45.1 and 45.2 pushed after a local suite that ran out of heap** at about 6,290 of
+  ~7,900 batches (twice this run, once last run) with no test failing before it; CI's full build is their check. **45.3 (the
+  Mover) is on `wip/lane-c-1109-1852`**: job, Mover's Crate (art, recipe, tab), outfit, MoveSite/MoverWork and 6
+  MoverGameTests that compile but were never run. Left: run MoverGameTests and GoalPackagesMixinGameTests, fix, the
+  `movers` config switch, full build, merge. Open question for the owner (45.3's "full Storehouse" line): the Mover's
+  crates are the move's saved record, so the Storehouse is never used and can't fill; decided for now to keep crates.
 - 2026-11-09 (lane-c-1109-0353, 42.5): **the job-status cards are on 43.3's card**, not a second one. `card/JobCards`
   builds the card for the seven jobs (what they're doing and what they need are the Hall's own `doing` and
   `Requests.of`); its buttons are In chat (first: a card's first button does what the click did), Hall page

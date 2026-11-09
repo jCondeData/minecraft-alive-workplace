@@ -166,10 +166,12 @@ through reloads). In the pack, Mega Showdown renames Oricorio's styles to `pom-p
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last
-five for the Village Hall. Only wild Pokémon count: a player's own shiny standing by her pasture isn't a sighting. An
+five for the Village Hall. What she has told of is saved with her, so a restart neither tells the same Pokémon again
+nor empties her list. Only wild Pokémon count: a player's own shiny standing by her pasture isn't a sighting. An
 Alpha is a Pokémon with Cobblemon's "alpha" aspect (Cobblemon 1.8). Her Poké Snacks are set out the way a player
 places one: only on a spot a block can go (never into a solid block) and only from a Poké Snack. Tested in
-`HabitatKeeperCompatTests`, `QaHabitatKeeperCompatTests` and `QaHabitatWild1107dCompatTests`.
+`HabitatKeeperCompatTests`, `QaHabitatKeeperCompatTests`, `QaHabitatWild1107dCompatTests` and
+`QaSightedSaves1109eCompatTests`.
 
 ## How it works
 

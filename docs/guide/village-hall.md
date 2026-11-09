@@ -132,6 +132,15 @@ the order: another player's Builder won't, and the page tells you whose it is.
 
 ![The Upgrades page](https://jcondedata.github.io/minecraft-alive-workplace/hall_upgrade/still-1.jpg)
 
+**Moving a building.** The **Move** tab (the piston, under Buildings) lists every finished building in your village. Click
+one and a small map opens: the ground round the building, one square every 4 blocks, north at the top. Click a square to
+put the building's new spot there; a green outline shows it in the world while you choose. Rotate turns it a quarter at a
+time. If a spot won't do, the page says why in plain words: it would overlap another building or a road, part of it would
+be outside the village, the ground is too steep, or it would be under water. Confirm needs a Mover working in your
+village: without one, the page says so and nothing is planned. Cancel leaves the building where it is.
+
+![The Move page](https://jcondedata.github.io/minecraft-alive-workplace/move_plan/still-2.jpg)
+
 ![The Village Hall's screen](https://jcondedata.github.io/minecraft-alive-workplace/hall/still-4.jpg)
 
 The **bell** in the middle calls everyone home: villagers who wandered off are brought back beside the hall.
@@ -150,6 +159,7 @@ The **bell** in the middle calls everyone home: villagers who wandered off are b
 - **Mercenaries** (the iron sword): hire three fighters for a night. See [Threats and defense](defence.md).
 - **Free job blocks** (the crafting table tab): the job blocks nobody works at, and who could take each.
 - **Upgrades** (the bricks tab): your finished homes and workshops that can go up a level, and a Builder to send.
+- **Move** (the piston tab): pick a new spot for a finished building on a map, and a Mover moves it.
 
 ![The chronicle](https://jcondedata.github.io/minecraft-alive-workplace/hall_pages/still-1.jpg)
 

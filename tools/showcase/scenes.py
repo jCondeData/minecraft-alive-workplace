@@ -118,6 +118,11 @@ SCENES = [
       "the table's library showed Starter Cottage IV with its cellar under a faint ground plane, turning, then the Storehouse and its vault, each size line saying how deep it goes", 45,
       [("01_cottage_cellar", "Starter Cottage IV and its cellar"), ("02_cottage_turned", "Turned"),
        ("03_storehouse_vault", "The Storehouse and its vault"), ("04_storehouse_turned", "Turned")]),
+    # 42.5: the job-status card (sneak-right-click with an empty hand on a Builder, Miner, Fisher, Farmer, Lumberjack, Orchard
+    # keeper or Postman): name, job and level, what they're doing, their work, what they need; Hall page opens their page
+    S("status_card", "Builder", "A worker's status card",
+      "a builder's status card showed his site with its progress, his experience and what he needs, and Hall page opened the Village Hall on his page", 45,
+      [("01_status_card", "The status card"), ("02_status_card_hall", "Hall page: his page in the Village Hall")]),
     # 42.4: the builder tools are the list screen: the shapes and blocks as icon cells in their rows, - and + by each size
     S("shapes", "Builder", "Shape Planner", "the Shape Planner opened as the list screen: the shapes and the stone bricks as icon cells in their rows, - and + by each size, Draw", 45,
       [("01_shapes_screen", "Shape Planner"), ("02_shapes_info", "Size and blocks")]),

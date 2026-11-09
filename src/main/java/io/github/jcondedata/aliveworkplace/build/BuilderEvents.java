@@ -226,7 +226,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.mine.Miners.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.MINER); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -297,7 +297,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.orchard.Orchards.orchard(villager) != null) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.orchard.Orchards.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.ORCHARD); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -310,7 +310,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.wood.TreeFarms.farm(villager) != null) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.wood.TreeFarms.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.LUMBERJACK); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -323,7 +323,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.farm.Fields.hasField(villager)) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.farm.Fields.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.FARMER); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -336,7 +336,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.mail.Postmen.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.POSTMAN); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -488,7 +488,7 @@ public final class BuilderEvents {
 			}
 			if (held.isEmpty() && player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.fish.Fishers.isHired(villager)) {
 				if (!level.isClientSide()) {
-					io.github.jcondedata.aliveworkplace.fish.Fishers.sendStatus(player, villager);
+					io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.FISHER); // 42.5: the status card
 				}
 				return InteractionResult.SUCCESS;
 			}
@@ -518,7 +518,7 @@ public final class BuilderEvents {
 		}
 		if (held.isEmpty() && player.isShiftKeyDown()) {
 			if (!level.isClientSide()) {
-				Builders.sendStatus(player, villager);
+				io.github.jcondedata.aliveworkplace.card.JobCards.open((ServerPlayer) player, villager, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.BUILDER); // 42.5: the status card
 			}
 			return InteractionResult.SUCCESS;
 		}

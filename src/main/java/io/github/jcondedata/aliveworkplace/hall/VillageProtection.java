@@ -288,7 +288,7 @@ public final class VillageProtection {
 	}
 
 	/** "Thornholm is Jesse's village: only they and their friends can change things here", in red. */
-	static Component denied(ServerLevel level, BlockPos hall) {
+	public static Component denied(ServerLevel level, BlockPos hall) {
 		String owner = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.ownerName() : "";
 		return Component.translatable("message.aliveworkplace.protection.denied", VillageHalls.name(level, hall), owner).withStyle(ChatFormatting.RED);
 	}

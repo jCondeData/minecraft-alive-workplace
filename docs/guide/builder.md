@@ -50,7 +50,10 @@ they're short of and which chest they're taking from.
 they work at) with a blank Book and Quill: it becomes the whole list for the rest of the build, with what's already in place left
 off and what the chests, the builder's bag and the village storehouse hold ticked off. A Book and Quill you've written in
 is never written over: use a blank one. Sneak-right-click the builder with
-an empty hand to see the same list in chat. A builder with nothing left to place, or no build at all, just tells you so.
+an empty hand for their **status card**: their name, job and level, what they're doing, the build with a bar for how far
+along it is, their experience, and the first things the build is short of. **In chat** puts the whole status and the
+same list in chat (with the **[Cancel]** link), and **Hall page** opens the Village Hall on their own page (gray, with
+the reason, when there's no Village Hall near them). A builder with nothing left to place, or no build at all, just says so on the card.
 
 **Moving a builder to another table.** Stand next to the builder and sneak-right-click the other Blueprint Table with an
 empty hand: they work there from now on, with their build, and the old table stays where it is, free for someone else.

@@ -387,6 +387,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BuilderToolListsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TrainerScreenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.NurseCardGameTests",
+			"io.github.jcondedata.aliveworkplace.test.JobCardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonTradeLayoutGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformStoryGameTests",

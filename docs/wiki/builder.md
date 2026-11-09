@@ -61,7 +61,10 @@ villager, a mob, a dropped item or a minecart with its load is never copied. Eac
 faces (and the block it hangs on), a painting's picture and a stand's pose, arms, small size and base plate, from a scan,
 an upload or a shipped build alike: an allow-list (B1101), so a creative world's stand saved with a scale attribute,
 Glowing, Invisible, NoGravity or Silent, or an invisible or glowing frame, is put up as a survival player's would be
-(`QaUploadStandLooks1109bBugTests`). The builder puts them up last, as it does a
+(`QaUploadStandLooks1109bBugTests`; `QaUploadFixesVerify1109GameTests`: a stand facing its file's way keeps a head
+and arm pose, arms, small size and no base plate, and loses a shown name, silence, invulnerability, fire, locked slots,
+tags, effects, health and scale; a marker stand isn't put up; a glow frame keeps its kind and facing, never fixed,
+silent, named, invisible or glowing). The builder puts them up last, as it does a
 starter build's frames, each paid with its item from the chests; one with no item there is left out. Scans saved before
 this have none and load as before.
 Blocks with no item of their own are built from what a player would use (B793, B794): a cake with a candle on it costs
@@ -301,7 +304,12 @@ longer crash the server (B1099). Test: QA's
 colored or through a repeated argument, stays whole; 386 is cut to 384), and `QaUploadTextEdges1109bGameTests` (3: a
 fallback repeating its argument ten times, six deep, is cut to 384 letters and a short one shows as written; unreadable
 placeholders neither stop the build nor grow the line, and a %% shows one percent sign; 384 letters through a red
-translation stay whole and red, 385 are cut to 384).
+translation stay whole and red, 385 are cut to 384). `QaUploadFixesVerify1109GameTests` (QA, through an upload and a real builder: 384 letters shown
+through plain text, a vanilla key, a keybind to a vanilla key or an unknown key's fallback stay whole, 385 show at most
+384; a mix of a translation, a keybind and words, a fallback repeating its argument seven deep, a %d, a %0$s and indexes
+past an int copy without an error and show at most 384, and a jump keybind stays a keybind; a sign's back line and a
+banner's name 30,000 arrays deep, a 2,500-deep chain of parts, and lines 250 and 260 deep are built showing their
+words, also after a save and reload in the middle of the build).
 
 **Banners from a file (B1073).** A banner built from an uploaded or scanned file keeps its first 6 pattern layers, the
 most a loom gives a banner; a file's extra layers are left off, so a chunk full of banners stays under what a client

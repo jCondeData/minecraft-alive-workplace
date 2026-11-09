@@ -1523,7 +1523,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaUploadTextEdges1109bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploadTextEdges1109bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploadStandLooks1109bBugTests",
-			"io.github.jcondedata.aliveworkplace.test.BlockTextDepthGameTests"
+			"io.github.jcondedata.aliveworkplace.test.BlockTextDepthGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaUploadFixesVerify1109GameTests"
 		]
 	},
 	"depends": {

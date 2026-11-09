@@ -200,5 +200,8 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - B1072: `B1072GameTests`: the desert raiders' Pharaoh drowned into a zombie and then a drowned is still the lair's
   captain (the lair otherwise unchanged), the hall's round leaves the lair standing, and killing the drowned breaks it
   up; a bounty on him moves to the drowned and pays his killer; a zombie nobody tracks drowning changes no lair.
+  `QaConvertedCaptainSaves1109eGameTests`: the same through a restart (the lairs' and bounties' saved data written and
+  read back, the zombie reloaded): the swap marks both to be saved, he is still the captain and the bounty's man, a
+  round after the load neither breaks the lair up nor posts him again, and his death pays his killer once.
 - Showcase scene `camp_cleared`: a bandit camp on a grassy rise, its chief falling, the camp coming down and the rise
   back as it was.

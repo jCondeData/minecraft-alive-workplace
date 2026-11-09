@@ -46,6 +46,11 @@ public class QaFeudGameTests {
 
 	private static Two two(GameTestHelper helper, VillageRanks.Rank... ranks) {
 		Land land = RealmGameTests.land(helper, ranks);
+		// Names no other hall has: a hall an earlier test left within caravan range (a stranger's, so it gets a Declare
+		// button) can carry the same made-up name as one of these, and its button then reads like one for our own village.
+		for (int i = 0; i < ranks.length; i++) {
+			land.entity(i).setCustomName(Component.literal("Feudtest " + land.hall(i).getX() + " " + land.hall(i).getZ()));
+		}
 		MinecraftServer server = land.level().getServer();
 		boolean pacts = Pacts.ENABLED;
 		boolean alliances = Pacts.ALLIANCES;

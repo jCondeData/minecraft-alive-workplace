@@ -244,8 +244,13 @@ public final class Walker {
 	 * {@code Paths.standOn}): a sturdy top, farmland, a dirt path, or a top a little lower than a block and flat all across
 	 * (B981: 13/16 to 15/16, the top sixteenth filled edge to edge, like an end portal frame). A big dripleaf is never
 	 * ground: it tips whoever stands on it into the gap below. A lectern, a chest or an enchanting table is not ground.
+	 * A magma block is never ground either (B1105): its top is sturdy, but it burns whoever stands on it. (A campfire's
+	 * low top already keeps it out.)
 	 */
 	public static boolean isGround(ServerLevel level, BlockPos pos, BlockState ground) {
+		if (ground.getBlock() instanceof net.minecraft.world.level.block.MagmaBlock) {
+			return false;
+		}
 		if (ground.isFaceSturdy(level, pos, Direction.UP)) {
 			return true;
 		}

@@ -24,6 +24,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Workers no longer go to stand on a magma block, and a builder's path or a Steward's road no longer runs over one: its top is solid, but it burns whoever stands on it (B1105).
 - A builder's path to the village and a Steward's road no longer end on a big dripleaf, which tips whoever stands on it into the gap below, and workers now stand on an end portal frame just as paths always did: workers and paths share one rule for what counts as ground.
 - A raider that gets into a walled village during a siege and then turns into another mob, such as a zombie drowning in a pond inside the walls or a skeleton freezing into a stray, now keeps fighting where it is. Before, it turned round and walked back toward the broken gate, and one that had climbed over by a ladder was briefly sent back to the ladder (B1085).
 - An armor stand or item frame in an uploaded or scanned build is put up as you could put it up yourself: a file made in a creative world no longer gives a giant, glowing, invisible or floating stand, or an invisible or glowing frame. Its facing, and a stand's pose, arms, size and base plate, still come along. An invisible stand from an uploaded file is now put up visible, so two punches break it (B1045).

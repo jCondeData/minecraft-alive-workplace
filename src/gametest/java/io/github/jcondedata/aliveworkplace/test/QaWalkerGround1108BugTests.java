@@ -55,4 +55,22 @@ public class QaWalkerGround1108BugTests implements net.fabricmc.fabric.api.gamet
 			"an end portal frame (flat all across, 13/16) isn't ground");
 		helper.succeed();
 	}
+
+	/** B1105: a magma block's top is sturdy, but it burns whoever stands on it; it is ground for neither rule. */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void aMagmaBlockIsGroundForNeitherWorkersNorPaths(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos spot = new BlockPos(3, 2, 3);
+		BlockPos abs = helper.absolutePos(spot);
+		helper.setBlock(spot, Blocks.MAGMA_BLOCK.defaultBlockState());
+		BlockState magma = level.getBlockState(abs);
+		helper.assertFalse(Walker.canStand(level, abs.above()), "a worker may stand on a magma block");
+		helper.assertFalse(Paths.standOn(level, abs, magma), "a path may run over a magma block");
+		// the same spot on stone is ground for both, so the magma block is what keeps them off
+		helper.setBlock(spot, Blocks.STONE.defaultBlockState());
+		helper.assertTrue(Walker.canStand(level, abs.above()) && Paths.standOn(level, abs, level.getBlockState(abs)),
+			"stone isn't ground");
+		helper.succeed();
+	}
 }

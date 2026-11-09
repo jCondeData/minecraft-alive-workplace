@@ -51,7 +51,9 @@ import net.minecraft.world.phys.AABB;
  * top-down and put up turned a quarter at the new spot, block for block ({@link MaterialRules#matches}) with each
  * container's own items and nothing dropped; through a save and reload in every stage; with a block broken half way
  * (whoever broke it has it, nothing duplicated); called off half way (everything goes back up where it was); and with
- * two Movers sharing the job. The job itself: registered under the id the Hall asks for, at its own crate.
+ * two Movers sharing the job; with his Mover's Crate gone (nowhere to pack the building: he waits and says why, and
+ * carries on when it's back); and with config {@code movers} off (he does nothing, and no jobless villager takes the
+ * crate). The job itself: registered under the id the Hall asks for, at its own crate.
  */
 public class MoverGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
@@ -135,10 +137,14 @@ public class MoverGameTests implements FabricGameTest {
 		return new Setup(placement, before, hall, from, to, mover(helper, new BlockPos(12, 2, 12)));
 	}
 
+	/** A Mover at {@code at}, hired at his own Mover's Crate just north of him (where he packs what he takes down). */
 	private static Villager mover(GameTestHelper helper, BlockPos at) {
+		helper.setBlock(at.north(), ModBlocks.MOVERS_CRATE);
 		Villager villager = helper.spawn(EntityType.VILLAGER, at);
 		villager.setNoAi(true);
 		villager.setVillagerData(villager.getVillagerData().setProfession(ModVillagers.MOVER));
+		villager.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE,
+			net.minecraft.core.GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(at.north())));
 		return villager;
 	}
 
@@ -370,5 +376,89 @@ public class MoverGameTests implements FabricGameTest {
 			assertMoved(helper, level, s, List.of());
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * The "full storage" case: what he takes down goes into his own crates, so with his Mover's Crate broken half way
+	 * through taking the house down he has nowhere to pack it. He waits (nothing more comes down, nothing is dropped) and
+	 * his line says why; with a crate back he carries on and the move ends whole.
+	 */
+	//$ gametest_batch AREA '"moverNoCrate"'
+	@GameTest(template = AREA, batch = "moverNoCrate")
+	public void aMoverWithoutHisCrateWaitsAndSaysWhy(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Setup s = setup(helper, "nocrate");
+		BlockPos crate = new BlockPos(12, 2, 11);
+		helper.runAfterDelay(2, () -> {
+			MoveSite site = work(level, s, x -> x.packed() >= 30);
+			int packed = site.packed();
+			helper.assertTrue(site.stage() == MoveSite.Stage.DISMANTLE && packed >= 30, "it didn't get half way down: " + site.stage() + ", " + packed);
+			helper.setBlock(crate, Blocks.AIR); // his crate is gone
+			for (int i = 0; i < 50; i++) {
+				helper.assertFalse(MoverWork.work(level, s.mover(), site), "he took a block down with no crate to pack it in");
+			}
+			helper.assertTrue(site.packed() == packed && site.stage() == MoveSite.Stage.DISMANTLE, "with no crate: " + site.packed() + " packed, " + site.stage());
+			helper.assertTrue(MoverWork.NO_CRATE.equals(site.waiting()), "he doesn't wait: " + site.waiting());
+			var status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(s.mover(), level.getGameTime());
+			helper.assertTrue(status != null && status.line().getString().equals("Waiting for his Mover's Crate: nowhere to pack the building"),
+				"the Mover's line: " + (status == null ? "none" : status.line().getString()));
+			helper.assertTrue(loose(level, helper) == 0, "something was dropped while he waited");
+			helper.setBlock(crate, ModBlocks.MOVERS_CRATE); // a crate again
+			work(level, s, x -> false);
+			helper.assertTrue(site.stage() == MoveSite.Stage.DONE && site.waiting() == null, "the move ended " + site.stage() + ", waiting " + site.waiting());
+			assertMoved(helper, level, s, List.of());
+			helper.assertTrue(loose(level, helper) == 0, "something was dropped");
+			helper.succeed();
+		});
+	}
+
+	/** Config {@code movers} off: a Mover does nothing (the house stands, the move waits) and a jobless villager doesn't take the crate. */
+	//$ gametest_batch AREA '"moverOff"'
+	@GameTest(template = AREA, batch = "moverOff")
+	public void withMoversOffAMoverDoesNothing(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Setup s = setup(helper, "off");
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		Villager jobless = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 12));
+		jobless.setNoAi(true);
+		helper.runAfterDelay(2, () -> {
+			BlockPos crate = helper.absolutePos(new BlockPos(12, 2, 11));
+			var poi = level.getPoiManager().getType(crate).orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("no POI at the crate"));
+			java.util.function.Supplier<Boolean> seen = () -> {
+				Villager before = io.github.jcondedata.aliveworkplace.work.WorkerLimits.thinker();
+				io.github.jcondedata.aliveworkplace.work.WorkerLimits.thinking(jobless);
+				try {
+					return io.github.jcondedata.aliveworkplace.work.WorkerLimits.hideFull(java.util.stream.Stream.of(com.mojang.datafixers.util.Pair.of(poi, crate))).findAny().isPresent();
+				} finally {
+					io.github.jcondedata.aliveworkplace.work.WorkerLimits.thinking(before);
+				}
+			};
+			helper.assertTrue(MoverWork.site(level, s.mover()).isPresent(), "with movers on the Mover has no move to work on (setup)");
+			helper.assertTrue(seen.get(), "with movers on a jobless villager doesn't see the crate (setup)");
+			boolean was = MoverWork.ENABLED;
+			MoverWork.ENABLED = false;
+			try {
+				helper.assertTrue(MoverWork.site(level, s.mover()).isEmpty(), "movers off: the Mover still has a move to work on");
+				helper.assertFalse(seen.get(), "movers off: a jobless villager still sees the Mover's Crate as a workstation");
+				MoveSite site = MoveSites.get(level).forBuilding(s.from()).orElseThrow();
+				for (int i = 0; i < 100; i++) {
+					helper.assertFalse(MoverWork.work(level, s.mover(), site), "movers off: he worked");
+				}
+				helper.assertTrue(site.packed() == 0 && site.stage() == MoveSite.Stage.DISMANTLE, "movers off: " + site.packed() + " packed, " + site.stage());
+			} finally {
+				MoverWork.ENABLED = was;
+			}
+			String wrong = standing(level, s.before(), s.from(), Rotation.NONE, List.of());
+			helper.assertTrue(wrong == null, "movers off, the house: " + wrong);
+			helper.assertTrue(PendingMoves.get(level).forBuilding(s.from()).isPresent(), "movers off, the move doesn't wait");
+			helper.assertTrue(text("aliveworkplace.config.movers").equals("Movers"), "the switch's name");
+			helper.assertTrue(text("aliveworkplace.config.movers.tooltip").contains("Off: no new Movers, those hired stand idle, and moves wait."),
+				"the switch's tooltip: " + text("aliveworkplace.config.movers.tooltip"));
+			helper.succeed();
+		});
+	}
+
+	private static String text(String key) {
+		return net.minecraft.network.chat.Component.translatable(key).getString();
 	}
 }

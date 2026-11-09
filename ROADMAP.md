@@ -6457,7 +6457,7 @@ Lane C builds it, in order. Depends on: nothing open.
   spot is refused (overlaps a building or a road, outside the village, too steep, under water); a ghost outline in the
   world while choosing; Confirm needs a hired Mover. Done when: GameTests for picking, each refusal line, rotate,
   cancel; scene `move_plan`.
-- [ ] **45.3** **The Mover.** A new job with its own workstation (the pixel-art skill; outfit too; a recipe and a
+- [x] **45.3** (review: pending 2026-11-09) **The Mover.** A new job with its own workstation (the pixel-art skill; outfit too; a recipe and a
   creative-tab entry), hired like the Builder. He dismantles top-down into the village Storehouse or his own crates
   (nothing dropped, nothing lost, containers packed with their contents kept apart), then rebuilds at the new spot
   with the Builder's stages (FOUNDATION to DONE), restartable at any tick from `BuildSite`. Two Movers share a job
@@ -6546,19 +6546,17 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
-- 2026-11-09 (lane-c-1109-1852, 45.2/45.3): **45.1 and 45.2 pushed after a local suite that ran out of heap** at about 6,290 of
-  ~7,900 batches (twice this run, once last run) with no test failing before it; CI's full build is their check. **45.3 (the
-  Mover) is on `wip/lane-c-1109-1852`**: job, Mover's Crate (art, recipe, tab), outfit, MoveSite/MoverWork and 6
-  MoverGameTests that compile but were never run. Left: run MoverGameTests and GoalPackagesMixinGameTests, fix, the
-  `movers` config switch, full build, merge. Open question for the owner (45.3's "full Storehouse" line): the Mover's
-  crates are the move's saved record, so the Storehouse is never used and can't fill; decided for now to keep crates.
-- 2026-11-09 (lane-c-1109-1852, 45.3): **question for the owner: the Mover's "full Storehouse".** The Mover packs a
-  building into his own crates, which are the move's saved record (`move/MoveSite`): every block's full state (a door's
-  two halves, a bed's facing, a chest with its items in their slots) is kept exactly, which items in a Storehouse
-  couldn't do. So nothing goes into the Storehouse and it can never be full; the Done when's "a full Storehouse (he
-  waits, says why)" has nothing to wait on. Options: (a) leave it so (decided for now); (b) carry the plain blocks (planks,
-  stone...) as items through the Storehouse and wait when it's full, keeping only blocks with data in the crates. Also
-  not yet done: the move's config switch (`movers`).
+- 2026-11-09 (lane-c-1109-1852 and lane-c-1109-2152, 45.3): **45.3 (the Mover) is merged into `main`** from
+  `wip/lane-c-1109-1852`, with the `movers` config switch and its 8 MoverGameTests run and passing. 45.1 and 45.2 were
+  pushed after a local suite that ran out of heap at about 6,290 of ~7,900 batches with no test failing before it; CI's
+  full build is their check. **Question for the owner: the Mover's "full Storehouse".** The Mover packs a building into
+  his own crates, which are the move's saved record (`move/MoveSite`): every block's full state (a door's two halves, a
+  bed's facing, a chest with its items in their slots) is kept exactly, which items in a Storehouse couldn't do. So
+  nothing goes into the Storehouse and it can never be full. Options: (a) leave it so (decided for now: the Done when's
+  "he waits, says why" is a Mover whose Mover's Crate is gone, so he has nowhere to pack: he waits with "Waiting for his
+  Mover's Crate: nowhere to pack the building" and carries on when it's back, `aMoverWithoutHisCrateWaitsAndSaysWhy`);
+  (b) carry the plain blocks (planks, stone...) as items through the Storehouse and wait when it's full, keeping only
+  blocks with data in the crates.
 - 2026-11-09 (lane-c-1109-0353, 42.5): **the job-status cards are on 43.3's card**, not a second one. `card/JobCards`
   builds the card for the seven jobs (what they're doing and what they need are the Hall's own `doing` and
   `Requests.of`); its buttons are In chat (first: a card's first button does what the click did), Hall page

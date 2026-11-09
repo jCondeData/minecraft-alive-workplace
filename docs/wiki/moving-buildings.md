@@ -28,7 +28,9 @@ a hired Mover in the village (45.3); without one the page says "Needs a hired Mo
 Blueprint Table. Once a move is confirmed, the village's Mover walks over and takes the building down from the top, one
 block at a time, into his crates: chests and barrels packed with their items (each its own), frames, armor stands and
 furniture too, nothing dropped. Then he puts it up at the new spot from the ground up (foundation, structure,
-decoration), turned as picked, and the old spot is left cleared. Two Movers share a move. Called off on the Move page,
+decoration), turned as picked, and the old spot is left cleared. Two Movers share a move. He packs into the crates
+at his Mover's Crate: with his crate broken he can't take anything more down, so he waits, his line saying "Waiting for
+his Mover's Crate: nowhere to pack the building", and carries on once he has one again (putting it up needs none). Called off on the Move page,
 even half way, what went up at the new spot comes down again and everything goes back up where it was. Whoever
 confirmed the move is told when it's over.
 
@@ -78,7 +80,9 @@ a canceled move runs RESTORE_DOWN and RESTORE_UP. Each step looks at the world b
 twice after a restart; blocks come down and go up without neighbor updates (a door's halves, a bed and a wall torch
 stay put) and a container is emptied into its record before it comes down, so nothing spills. `move/MoverWork` is the
 Mover's WORK behavior: the site of the village round his crate (`MoveSites.work`; two Movers get the same site), a
-step every 4 ticks from within 20 blocks of the box worked on. When a move ends, the hall's Finished record follows the
+step every 4 ticks from within 20 blocks of the box worked on. A step that packs (DISMANTLE, RESTORE_DOWN) needs his
+job site to be a Mover's Crate standing now (`MoverWork.hasCrate`); without one the step isn't taken and the site's
+`waiting` (not saved, set again each swing) puts `NO_CRATE` on his line. When a move ends, the hall's Finished record follows the
 building (its placement's origin and turn), and the waiting move is cleared. The Move page's Call off (the
 `PendingMoves` entry gone) cancels a started site.
 
@@ -89,7 +93,8 @@ workstation: planks round a barrel, a lead on top, two iron ingots under it; in 
 
 ## Switches
 
-None yet; the move's config switch comes with the Mover (45.3).
+`movers` (on, 45.3): off, a jobless villager doesn't take a Mover's Crate (`WorkerLimits.hideFull`), Movers already
+hired do nothing, and confirmed moves wait.
 
 ## Saved data
 
@@ -105,7 +110,8 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
 
 - The Mover's crates are the site's saved record, not items in a chest: a block's full state (a door's halves, a bed's
   facing, a chest's items) can't be kept by an item. So the village Storehouse is never used and can't be full; the
-  Done when's "full Storehouse" wait is a question for the owner (ROADMAP Notes).
+  Done when's "full Storehouse" wait is a question for the owner (ROADMAP Notes). Under this decision "he can't store
+  it, so he waits and says why" is a Mover whose Mover's Crate is gone.
 - A block someone breaks before the Mover gets to it isn't put up again: whoever broke it has it.
 - Residents keep their own beds and workstations by vanilla's rules: a bed taken down is let go, and they claim the
   beds put up at the new spot like any free bed.
@@ -128,6 +134,14 @@ its spot and called off.
 `MovePlanGameTests` (4): a captured house rebuilt 14 blocks away matches block for block (`MaterialRules.matches`) with
 its chest, sign, banner, frame and armor stand; the same at 90, 180 and 270 degrees; a building the hall knows
 captured with its front and resident; empty and unknown buildings give no plan.
+
+`MoverGameTests` (8): the job (its id, the crate as its workstation, the recipe, the text); a whole move (taken down
+top-down, the chest and barrel packed apart, put up turned a quarter block for block with each container's own items,
+the item frame, nothing dropped, the hall's record following it); saved and reloaded in every stage; a wall block broken
+half way (whoever broke it has it, not put up again, nothing doubled); called off half way through putting it up
+(everything back, the new spot empty); two Movers sharing one site; his crate broken half way down (he waits, says why,
+and finishes once it's back); config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
+doesn't see the crate).
 
 ## Known limits
 

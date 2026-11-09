@@ -145,6 +145,11 @@ public final class WorkerLimits {
 			// config furnicrafters off (38.12): a jobless villager doesn't see CobbleFurnies' Furnicrafter as a workstation
 			found = found.filter(p -> !p.getFirst().is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.FURNICRAFTER_POI));
 		}
+		if (!io.github.jcondedata.aliveworkplace.move.MoverWork.ENABLED && villager != null
+			&& villager.getVillagerData().getProfession() == VillagerProfession.NONE) {
+			// config movers off (45.3): a jobless villager doesn't see the Mover's Crate as a workstation
+			found = found.filter(p -> !p.getFirst().is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVERS_CRATE_POI));
+		}
 		boolean workers = MAX_PER_VILLAGE > 0;
 		boolean fishermen = FishermanCap.ENABLED;
 		if ((!workers && !fishermen) || villager == null || !(villager.level() instanceof ServerLevel level)

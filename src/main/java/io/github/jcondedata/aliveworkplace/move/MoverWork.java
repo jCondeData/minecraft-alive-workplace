@@ -28,9 +28,16 @@ import net.minecraft.world.phys.Vec3;
  * one block a {@link #STEP_TICKS} ticks, taken down top-down at the old spot and put up again at the new one. They walk
  * to the side of the box being worked on and swing from within {@link #REACH} blocks of its middle. Two Movers of a
  * village work the same site, each with their own swings, so the move goes twice as fast. Nothing is kept on the Mover:
- * everything is on the site, so a Mover replaced, killed or reloaded mid-move leaves nothing behind.
+ * everything is on the site, so a Mover replaced, killed or reloaded mid-move leaves nothing behind. Taking a building
+ * down packs it into the Mover's own crates, so a Mover whose Mover's Crate is gone (broken, or none claimed) waits and
+ * says why ({@link #NO_CRATE}) until he has one again; putting it up needs none. Nothing at all with config
+ * {@code movers} off (Movers already hired stand idle, their moves wait).
  */
 public class MoverWork extends Behavior<Villager> {
+	/** Config {@code movers}: off, no villager takes a Mover's Crate and Movers do nothing. */
+	public static boolean ENABLED = true;
+	/** The Mover's line while he can't pack: his crate is gone. */
+	public static final String NO_CRATE = "message.aliveworkplace.move.status.no_crate";
 	/** Ticks between a Mover's steps. */
 	public static final int STEP_TICKS = 4;
 	/** How near the middle of the box worked on a Mover must stand to work. */
@@ -74,7 +81,7 @@ public class MoverWork extends Behavior<Villager> {
 
 	/** The site this Mover works on now, if any (started from a waiting move if none has). */
 	public static Optional<MoveSite> site(ServerLevel level, Villager villager) {
-		if (!Movers.isMover.test(villager) || villager.isBaby()) {
+		if (!ENABLED || !Movers.isMover.test(villager) || villager.isBaby()) {
 			return Optional.empty();
 		}
 		return hall(level, villager).flatMap(hall -> MoveSites.get(level).work(level, hall));
@@ -118,6 +125,16 @@ public class MoverWork extends Behavior<Villager> {
 
 	/** One swing of the Mover on {@code site}: one block taken down or put up. Whether anything was done. */
 	public static boolean work(ServerLevel level, Villager villager, MoveSite site) {
+		if (!ENABLED) {
+			return false;
+		}
+		boolean packing = site.stage() == MoveSite.Stage.DISMANTLE || site.stage() == MoveSite.Stage.RESTORE_DOWN;
+		if (packing && !hasCrate(level, villager)) {
+			site.setWaiting(NO_CRATE); // nowhere to pack it: nothing comes down until he has his crate again
+			status(villager, site);
+			return false;
+		}
+		site.setWaiting(null);
 		Optional<BlockPos> pos = MoveSites.get(level).step(level, site);
 		status(villager, site);
 		pos.ifPresent(p -> {
@@ -125,6 +142,14 @@ public class MoverWork extends Behavior<Villager> {
 			villager.swing(InteractionHand.MAIN_HAND);
 		});
 		return pos.isPresent();
+	}
+
+	/** Whether {@code villager}'s workstation is a Mover's Crate standing now: where what he takes down is packed. */
+	public static boolean hasCrate(ServerLevel level, Villager villager) {
+		return villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
+			.filter(g -> g.dimension() == level.dimension() && level.isLoaded(g.pos()))
+			.map(g -> level.getBlockState(g.pos()).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.MOVERS_CRATE))
+			.orElse(false);
 	}
 
 	/** The line over the Mover's head: what he's doing and how far along (WorkerStatus). */
@@ -143,6 +168,9 @@ public class MoverWork extends Behavior<Villager> {
 			int up = site.total() - packed - site.skipped();
 			line = net.minecraft.network.chat.Component.translatable("message.aliveworkplace.move.status.up", up, site.total() - site.skipped());
 			progress = 0.5f + 0.5f * up / Math.max(1, site.total() - site.skipped());
+		}
+		if (site.waiting() != null) {
+			line = net.minecraft.network.chat.Component.translatable(site.waiting());
 		}
 		io.github.jcondedata.aliveworkplace.work.WorkerStatus.set(villager, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.move.status"),
 			progress, line);

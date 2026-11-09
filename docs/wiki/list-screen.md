@@ -119,5 +119,8 @@ none (the screen keeps nothing; the lessons, prices and tutor ranks are the Move
 QA's `QaTutorListEdges1108eCompatTests` (4, Cobblemon: the party reordered between Teach and Confirm keeps the lesson
 on its Pokémon and teaches it once; money spent between them turns the price red and Confirm teaches and takes nothing;
 money paid in turns a red price green with no click; a move learned elsewhere before Confirm is not sold).
+QA's `QaCobblemonListEdges1109eCompatTests` (2, Cobblemon, 42.2: the party reordered while the Daycare's Leave waits
+for Confirm keeps it on its Pokémon, a click on the row that moved into its place leaves nobody, and Confirm leaves
+exactly that one; the Keeper's Pick stays on its Pokémon when another takes its place, and Pair leaves the two chosen).
 
 Showcase scenes: `tutor`, `professor`, `daycare`, `daycare_keeper`

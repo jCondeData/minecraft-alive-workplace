@@ -128,4 +128,8 @@ Roadmap items: 31.21
   2048 blocks away is picked, 2049 isn't, a village whose known trainer is no Leader is passed over)
   (`aLeaderAtCaravanRangeIsPickedAndOneBlockPastItIsNot`); with only a Leader past the range, Thessaly comes
   (`withOnlyALeaderPastCaravanRangeThessalyComes`).
+- QA compat GameTests, `QaThesisBall1109dCompatTests` (lane D, 2026-11-09): through Cobblemon's own capture event, a
+  catch is judged where the ball landed: a Ground type caught by a ball at y=100 doesn't count for "below y=0" while its
+  catcher stands below 0, and one caught by a ball below 0 counts (and is noted there) while the catcher stands at
+  y=100 (`aCatchCountsWhereTheBallLandedNotWhereTheCatcherStands`).
 - Showcase scene `professors_thesis` (Cobblemon): the request, a catch counting, the published book.

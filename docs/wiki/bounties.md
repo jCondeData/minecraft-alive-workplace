@@ -162,5 +162,12 @@ edit, a damaged file) is skipped with a warning in the log, and the rest of the 
 - GameTests: `QaBountyMoneySaves1108eGameTests` (B1060 without CobbleDollars: the posting ends "Reward: 18 emeralds.",
   the poster and journal read "Reward: 18 emeralds"; chronicle lines saved by 0.151.8 under the old keys read as before
   after a load; the new `.money` lines, "1 emerald" for one, read the same after a save and a load).
+- QA (lane D, 2026-11-09): `QaWildBattleWins1109dCompatTests` posts Cobblemon's own `BATTLE_VICTORY` with real
+  actors (the player's side, the wild side), which no test did before: a won battle against the rogue pays the bounty
+  once (CobbleDollars adds its own few hundred for any won battle, so the test compares against a plain wild win), and
+  the same win reported again pays no second bounty; a capture's battle (also a victory) pays nothing through the
+  battle and leaves the bounty up for the capture to pay; a battle the player lost pays nothing; for the village's
+  "Defeat 8 wild Pokémon" quest, two wild Pokémon beaten in one won battle count 2, a capture counts 1 (its victory
+  nothing more), a lost battle and a win over another player count nothing.
 - Showcase scene `bounty_rogue` (Cobblemon): the rogue's poster in the Bounties tab, the glowing Rogue Ursaring, the win paid.
 - Showcase scene `bounty`: the board with two posters, the poster in the Bounties tab, the captain and his band, the claim.

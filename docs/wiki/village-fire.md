@@ -5,7 +5,7 @@ ROADMAP 32.16. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 chimney spark on a dry day or a raider's burning arrow. The fire spreads by the game's own rules but only through what
 the builders built, a new job, the **Firewarden**, puts it out, and the builders put back what burned.
 
-Roadmap items: 32.16, B218, B152, B1071, B1083
+Roadmap items: 32.16, B218, B152, B1071, B1083, B1095
 
 ## What a player sees
 
@@ -33,7 +33,8 @@ Roadmap items: 32.16, B218, B152, B1071, B1083
 - **The builders put back what burned** on their next look round the village's buildings, once the fire is out,
   even with `builderRepairs` off (32.16a, see [Sieges](sieges.md)): a fire never destroys a build for good. An item
   frame or painting that fell when its wall burned is hung again with the wall, from one in the builder's chests
-  (B1083); one you took down from a wall that still stands stays down.
+  (B1083), even when the server restarts in the middle of that repair (B1095); one you took down from a wall that
+  still stands stays down.
 
 ## How it works
 
@@ -151,4 +152,9 @@ builders put it back after a restart too.
   one frame from the chest (4 become 3); with no frame in the chests the plank comes back and no frame is made from
   nothing; a frame the player took down from a standing wall stays down through a repair; a burned frame is still hung
   after a save and reload mid-repair.
+- GameTests (B1095): `QaFireFrames1109dBugTests` (3): a burned block that is back stays on the threats' list while a
+  repair of its building is under way (`Upkeep.threatDamage`), so a restart mid-repair, after another builder's look,
+  still hangs the frame that fell with it; a frame a player took down from a standing roof plank still isn't hung by
+  that restarted repair; with no restart and a second builder looking all along, the frame goes up once and the plank
+  comes off the list after the repair ends.
 - Showcase scenes: `fire`.

@@ -6,7 +6,7 @@ they're doing, their work in numbers, what they need, and buttons for the whole 
 Village Hall. It is the same card as the Nurse's and the Fossil Scientist's ([Status cards](status-cards.md)). Part of
 Milestone 42 (One look for every screen).
 
-Roadmap items: 42.5
+Roadmap items: 42.5, B1096
 
 ## What a player sees
 
@@ -27,7 +27,8 @@ working", or what the chat said for an idle builder: "Mason has no building job.
 
 Then for everyone "Experience: 40 / 70 XP" with a green bar to the next level ("Top level" for a Master), and what they
 need: a line per request as the Village Hall lists it, with its icon ("Needs Oak Planks: ×24" in orange; a miner's
-pickaxe or ladders), three at most, then "and 5 more"; or "Needs: Nothing" in green.
+pickaxe or ladders), three at most, then "and 5 more"; or "Needs: Nothing" in green. A tool or seeds read as part of
+the sentence: "Needs a pickaxe", "Needs an axe", "Needs a fishing rod", "Needs seeds" (B1096).
 
 The buttons: **In chat** (gold) puts the old status lines in chat, word for word (the builder's whole material list,
 the coordinates, the routes, the pace and the clickable **[Stop]**/**[Cancel]** link); **Hall page** opens the Village
@@ -50,8 +51,8 @@ card, `aliveworkplace:status_card`, drawn by the client's `StatusCardScreen`); `
 `Builders.refreshMissing` counts what's short afresh first, as the chat status did (the same code, moved out of
 `Builders.statusText`). In chat calls the job's own `Fishers.sendStatus` and the like, unchanged. Hall page finds the hall with `VillageHalls.nearest`,
 checks `VillageProtection.keeper`, and opens `VillageHallScreen.openWorker` (valid while the hall stands, like the
-Ledger's remote screen). A button pressed after the villager died or unloaded does nothing; the card's menu is no longer
-valid then, so it closes on the next tick.
+Ledger's remote screen). A button pressed after the villager died or unloaded, or from more than 24 blocks away, does
+nothing; the card's menu is no longer valid then, so it closes on the next tick.
 
 ## Switches
 
@@ -79,6 +80,9 @@ none (the card reads what the jobs already save)
   no other fallback.
 - 42.5: "what they're doing" and "what they need" are the Hall's own (`doing`, `Requests.of`), so the card and the Hall
   never disagree.
+- B1096: the Hall's request names stand alone in its lists ("Miner: A pickaxe"), so the card's "Needs %s" and the Hall
+  page's "Waiting for %s" wrap them through `Requests.inSentence`, which turns a capitalized tool or seeds name into its
+  `.in_sentence` form ("a pickaxe"); every other name (an item's, "a remedy …") is used as it is.
 - 42.5: Hall page opens the hall from where the player stands (like the Village Ledger), but only for the hall nearest
   the villager and only when the village's protection lets the player in.
 
@@ -94,6 +98,13 @@ none (the card reads what the jobs already save)
 `JobCardGameTests.orchardCardShowsTheOrchard`, `JobCardGameTests.postmanCardShowsTheRoutes`,
 `JobCardGameTests.cardClosesWhenTheVillagerDies`, `JobCardGameTests.cardAfterASaveAndReload`, and the click tests of
 `QaStageSixGameTests.emptyHandsStillShowTheStatusLine` and
-`QaWonderPartLines1031GameTests.aPartWaitingBehindAnotherBuildIsNamedByItsWonder` (now through In chat).
+`QaWonderPartLines1031GameTests.aPartWaitingBehindAnotherBuildIsNamedByItsWonder` (now through In chat); B1096's need lines in
+`QaJobCard1109cBugTests.qaAMinersPickaxeNeedReadsAsASentence` and `QaJobCard1109cBugTests.otherJobsNeedsReadAsSentences`.
+
+QA (2026-11-09): `QaJobCard1109cGameTests` (only a sneak with an empty hand opens it, an off-hand torch still counts; no
+card for a Librarian, a jobless villager, or a Farmer, Fisherman, Lumberjack or Orchard keeper with nothing to show; every
+level's tag and experience line; a miner's pickaxe and ladders under Needs; an idle Postman; Hall page in a protected
+village for a stranger and for the owner; the card closing when the player walks away or the villager dies; fresh
+numbers on reopening).
 
 Showcase scenes: `status_card`

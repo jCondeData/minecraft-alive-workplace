@@ -24,12 +24,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- An item frame or painting that fell when a village fire burned its wall is hung again even when the server restarts in the middle of the repair after another builder has looked round the village; before, it stayed down (B1095).
+- A worker's status card and Village Hall page read as sentences when they wait for a tool or seeds: "Needs a pickaxe", "Needs an axe", "Needs a fishing rod", "Needs seeds" and "Waiting for an axe" instead of a capital letter mid-sentence. The Hall's own request list still reads "Miner: A pickaxe" (B1096).
 - Clicking a fully researched topic in the Research list, a scholars' topic or one in the Great Library's row, now says it's fully researched instead of that it can't be researched yet (B1090).
 - A Create schematic uploaded again under its name while a builder is half-way through it is no longer finished with holes after a restart: the builder starts the new blueprint from the top, skipping what already stands as drawn, and a site saved while retrying no longer risks an error every tick (B1049).
 - A villager a zombie turns and you cure comes back as the same villager to the mod too: their class, family name, friendship with you, Legend place and marriage are kept (their husband or wife is no longer widowed by the bite, only if the zombie villager is killed). The work they held, such as a builder's site, is still let go when they're bitten (B1081).
 - A villager a zombie turns is no longer dated dead in the Book of Families or mourned by the village; cured, they are the same person in the book, still their children's parent and their partner's spouse. A zombie villager never cured (killed or despawned) is dated dead in the book (B1087).
 - A villager whose husband or wife is killed while they are a zombie villager is no longer still married to them once cured: they are widowed, mourn and can court again (B1093).
 - A married couple who both died and are both brought back by the Undertaker are married again; before, the first back stayed married to the second, who came back a widow (B1094).
+- A villager whose partner was turned into a zombie villager is widowed when that zombie villager is gone for good without being killed (every zombie villager is taken away on Peaceful; one that never traded despawns with no player near); before, they stayed married to it forever and never courted again (B1097).
 - A villager the Undertaker brings back from the grave no longer stays married on their own: their husband or wife, widowed by the death, marries them again if still alone, and one who has married someone else since stays with them, leaving the revived villager single and free to court again (B1082).
 - An item frame or painting of a builder's finished build that fell when a village fire burned the block it hung on is
   hung again when the builder puts the block back, from one in the builder's chests (B1083).

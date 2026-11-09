@@ -198,6 +198,10 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   survivor and a hand mutant on the outer. Left: the smoke's every-20-ticks and a particle's place (looks only), the
   loaded check's third corner (all ground loaded in a GameTest), and a standing lair within 24 blocks marking the camp
   in use (masked: a lair's band nearby already guards it; the lairs list isn't reachable from the tests).
+- QA (lane D, 2026-11-09): `QaCampInUse1109dGameTests` closes that gap through the save file: with the band all out on
+  a raid (no man near to guard it), an old camp within 24 blocks of a standing lair (on its fire, exactly 24 east or
+  north) is not swept and one 25 blocks off is; a bounty's hideout keeps its camp the same way, by its spot or its
+  origin within 24 blocks, and once the bounty is gone the camp goes. Four hand mutants on those checks killed.
 - `B225GameTests`: a camp on a grassy slope taken down leaves every block round it as it was before the camp; the same
   after a save and reload before and halfway through the clearing; with `campRuins` the tents stay and every open column
   is as it was; a camp whose record was saved without its ground (before B225) is blended: grass on every top, no

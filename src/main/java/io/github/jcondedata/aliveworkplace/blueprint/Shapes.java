@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -252,10 +253,18 @@ public final class Shapes {
 	public static final int HOLLOW = 38;
 	public static final int INFO = 40;
 	public static final int DRAW = 49;
+	/**
+	 * The list screen's own rows (ROADMAP 42.4): the shape row (the shapes as icon cells), the block row (the blocks as
+	 * icon cells), the Draw row (its Draw button a cell) and the screen's own line (the count at the top, the hint).
+	 */
+	public static final int SHAPE_ROW = 0;
+	public static final int BLOCK_ROW = 8;
+	public static final int DRAW_ROW = 48;
+	public static final int LIST_INFO = 53;
 
-	/** Opens the planner's screen for {@code player}, holding the planner in {@code hand}. */
+	/** Opens the planner's screen for {@code player}, holding the planner in {@code hand}: the list screen (42.4). */
 	public static void open(ServerPlayer player, InteractionHand hand) {
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.shapes"),
+		ChoiceMenu.openList(player, Component.translatable("screen.aliveworkplace.shapes"),
 			p -> p.getItemInHand(hand).is(ModItems.SHAPE_PLANNER), menu -> fill(menu, player, hand));
 	}
 
@@ -265,32 +274,54 @@ public final class Shapes {
 		ItemStack planner = player.getItemInHand(hand);
 		Settings s = planner.getOrDefault(ModComponents.SHAPE, Settings.DEFAULT);
 		Runnable redraw = () -> fill(menu, player, hand);
+		// The list (42.4): a row for the shape with the shapes as icon cells (the chosen one gold), a row for the block with
+		// the blocks carried as icon cells, a row per size with - and +, solid or hollow, the size and Draw. Every button
+		// keeps its slot, its name (the tooltip) and its click.
+		int[] kindSlots = new int[Kind.values().length];
+		for (Kind kind : Kind.values()) {
+			kindSlots[kind.ordinal()] = FIRST_KIND + kind.ordinal();
+		}
+		menu.button(SHAPE_ROW, ChoiceList.cells(ChoiceList.row(label(new ItemStack(s.shape().icon), Component.translatable("screen.aliveworkplace.shapes.shape_row",
+			Component.translatable("shape.aliveworkplace." + s.shape().id())), false), null, null, null, false, false), kindSlots), null);
 		for (Kind kind : Kind.values()) {
 			ItemStack icon = label(new ItemStack(kind.icon), Component.translatable("shape.aliveworkplace." + kind.id()), kind == s.shape());
+			ChoiceList.cell(icon, null, kind == s.shape());
 			menu.button(FIRST_KIND + kind.ordinal(), icon, p -> {
 				set(player, hand, current(player, hand).with(kind));
 				redraw.run();
 			});
 		}
 		List<Item> materials = materials(player);
+		int[] materialSlots = new int[Math.max(1, materials.size())];
+		materialSlots[0] = FIRST_MATERIAL + 4; // (the barrier, when there are none)
+		for (int i = 0; i < materials.size(); i++) {
+			materialSlots[i] = FIRST_MATERIAL + i;
+		}
+		ItemStack blockRow = label(s.material().isPresent() ? new ItemStack(s.block().getBlock()) : new ItemStack(Items.BARRIER), s.material().isPresent()
+			? Component.translatable("screen.aliveworkplace.shapes.block_row", s.block().getBlock().getName())
+			: Component.translatable("screen.aliveworkplace.shapes.block_none"), false);
+		menu.button(BLOCK_ROW, ChoiceList.cells(ChoiceList.row(blockRow, materials.isEmpty() ? Component.translatable("screen.aliveworkplace.shapes.no_blocks") : null,
+			null, null, false, false), materialSlots), null);
 		for (int i = 0; i < materials.size(); i++) {
 			Item item = materials.get(i);
 			boolean chosen = s.material().map(m -> m.equals(BuiltInRegistries.ITEM.getKey(item))).orElse(false);
-			menu.button(FIRST_MATERIAL + i, label(new ItemStack(item), item.getDescription().copy(), chosen), p -> {
+			menu.button(FIRST_MATERIAL + i, ChoiceList.cell(label(new ItemStack(item), item.getDescription().copy(), chosen), null, chosen), p -> {
 				set(player, hand, current(player, hand).material(item));
 				redraw.run();
 			});
 		}
 		if (materials.isEmpty()) {
-			menu.button(FIRST_MATERIAL + 4, label(new ItemStack(Items.BARRIER), Component.translatable("screen.aliveworkplace.shapes.no_blocks"), false), null);
+			menu.button(FIRST_MATERIAL + 4, ChoiceList.cell(label(new ItemStack(Items.BARRIER), Component.translatable("screen.aliveworkplace.shapes.no_blocks"), false),
+				null, false), null);
 		}
 		menu.divider(2);
 		dimension(menu, player, hand, WIDTH, "width", s.width(), (t, v) -> t.size(v, t.height(), t.depth()), Settings::width, redraw);
 		dimension(menu, player, hand, HEIGHT, "height", s.height(), (t, v) -> t.size(t.width(), v, t.depth()), Settings::height, redraw);
 		dimension(menu, player, hand, DEPTH, "depth", s.depth(), (t, v) -> t.size(t.width(), t.height(), v), Settings::depth, redraw);
 		if (s.shape() != Kind.ARCH) {
-			menu.button(HOLLOW, label(new ItemStack(s.hollow() ? Items.GLASS : Items.STONE),
-				Component.translatable(s.hollow() ? "screen.aliveworkplace.shapes.hollow" : "screen.aliveworkplace.shapes.solid"), false), p -> {
+			// (the whole row is the switch, as the chest's icon was)
+			menu.button(HOLLOW, ChoiceList.row(label(new ItemStack(s.hollow() ? Items.GLASS : Items.STONE),
+				Component.translatable(s.hollow() ? "screen.aliveworkplace.shapes.hollow" : "screen.aliveworkplace.shapes.solid"), false), null, null, null, false, false), p -> {
 				Settings t = current(player, hand);
 				set(player, hand, t.hollow(!t.hollow()));
 				redraw.run();
@@ -300,8 +331,16 @@ public final class Shapes {
 			s.width(), s.height(), s.depth()), false);
 		info.set(DataComponents.LORE, new ItemLore(List.of(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.shapes.count", count(s), count(s),
 			s.block().getBlock().getName()).withStyle(ChatFormatting.GRAY))));
-		menu.button(INFO, info, null);
-		menu.button(DRAW, label(new ItemStack(ModItems.BLANK_BLUEPRINT), Component.translatable("screen.aliveworkplace.shapes.draw"), true), p -> {
+		menu.button(INFO, ChoiceList.row(info, null, null, null, false, false), null);
+		// The screen's own line: how many blocks it takes at the top right (the book's tooltip on it), the hint at the foot.
+		ItemStack own = info.copy();
+		ChoiceList.info(own, io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.shapes.count", count(s), count(s),
+			s.block().getBlock().getName()), Component.translatable("screen.aliveworkplace.shapes.list_hint"), List.of());
+		menu.button(LIST_INFO, own, null);
+		menu.button(DRAW_ROW, ChoiceList.cells(ChoiceList.row(label(new ItemStack(ModItems.BLANK_BLUEPRINT), Component.translatable("screen.aliveworkplace.shapes.draw"), false),
+			null, null, null, false, false), DRAW), null);
+		menu.button(DRAW, ChoiceList.cell(label(new ItemStack(ModItems.BLANK_BLUEPRINT), Component.translatable("screen.aliveworkplace.shapes.draw"), true),
+			Component.translatable("screen.aliveworkplace.shapes.button_draw"), true), p -> {
 			Component result = draw(Players.level(player), player, current(player, hand));
 			Chat.chat(player, result);
 			player.closeContainer();
@@ -316,13 +355,16 @@ public final class Shapes {
 								  java.util.function.ToIntFunction<Settings> get, Runnable redraw) {
 		ItemStack shown = label(new ItemStack(Items.PAPER, Math.max(1, Math.min(64, value))),
 			Component.translatable("screen.aliveworkplace.shapes." + name, value), false);
-		menu.button(slot, shown, null);
-		menu.button(slot - 1, label(new ItemStack(Items.RED_STAINED_GLASS_PANE), Component.translatable("screen.aliveworkplace.shapes.less"), false), p -> {
+		// The list (42.4): the size's row with - and + in it (their names, the tooltips, say shift-click for 5).
+		menu.button(slot, ChoiceList.cells(ChoiceList.row(shown, null, null, null, false, false), slot - 1, slot + 1), null);
+		menu.button(slot - 1, ChoiceList.cell(label(new ItemStack(Items.RED_STAINED_GLASS_PANE), Component.translatable("screen.aliveworkplace.shapes.less"), false),
+			Component.literal("-"), false), p -> {
 			Settings t = current(player, hand);
 			set(player, hand, resize.apply(t, get.applyAsInt(t) - (menu.shiftClicked() ? 5 : 1)));
 			redraw.run();
 		});
-		menu.button(slot + 1, label(new ItemStack(Items.LIME_STAINED_GLASS_PANE), Component.translatable("screen.aliveworkplace.shapes.more"), false), p -> {
+		menu.button(slot + 1, ChoiceList.cell(label(new ItemStack(Items.LIME_STAINED_GLASS_PANE), Component.translatable("screen.aliveworkplace.shapes.more"), false),
+			Component.literal("+"), false), p -> {
 			Settings t = current(player, hand);
 			set(player, hand, resize.apply(t, get.applyAsInt(t) + (menu.shiftClicked() ? 5 : 1)));
 			redraw.run();

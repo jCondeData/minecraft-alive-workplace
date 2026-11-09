@@ -73,9 +73,21 @@ public final class Ferrymen {
 			return;
 		}
 		java.util.UUID[] pending = {null};
-		io.github.jcondedata.aliveworkplace.work.ChoiceMenu.open(player, villager.getDisplayName(),
+		// The list screen (ROADMAP 42.4): the money at the top, a row per post the player knows with the fare (red while they
+		// can't pay it) and Buy, then Confirm; it follows the player's money while open.
+		io.github.jcondedata.aliveworkplace.work.ChoiceMenu.openList(player, villager.getDisplayName(),
 			p -> villager.isAlive() && !villager.isSleeping() && p.isAlive() && p.distanceTo(villager) <= 8,
-			menu -> render(menu, player, villager, pending));
+			menu -> {
+				render(menu, player, villager, pending);
+				Component[] shown = {io.github.jcondedata.aliveworkplace.work.Money.balance(player)};
+				menu.everyTick(() -> {
+					Component now = io.github.jcondedata.aliveworkplace.work.Money.balance(player);
+					if (!now.equals(shown[0])) {
+						shown[0] = now;
+						render(menu, player, villager, pending);
+					}
+				});
+			});
 	}
 
 	/** The ferry screen without showing it (tests). */
@@ -110,6 +122,11 @@ public final class Ferrymen {
 			if (chosen) {
 				icon.set(net.minecraft.core.component.DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 			}
+			// The list row (42.4): the fare green or red, Buy (gold Confirm once chosen).
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.row(icon, null,
+				io.github.jcondedata.aliveworkplace.work.Money.describe(dollars, emeralds).copy()
+					.withStyle(io.github.jcondedata.aliveworkplace.work.Money.canAfford(player, dollars, emeralds) ? ChatFormatting.GREEN : ChatFormatting.RED),
+				Component.translatable(chosen ? "message.aliveworkplace.shop.menu.button_confirm" : "message.aliveworkplace.shop.menu.button_buy"), false, chosen);
 			menu.button(FIRST_DESTINATION_SLOT + i, icon, p -> {
 				if (!post.id().equals(pending[0])) {
 					pending[0] = post.id();
@@ -128,6 +145,11 @@ public final class Ferrymen {
 					.withStyle(ChatFormatting.GREEN),
 				Component.translatable("message.aliveworkplace.travel.menu_help").withStyle(ChatFormatting.GRAY))
 			.map(l -> (Component) l.copy().withStyle(st -> st.withItalic(false))).toList()));
+		// The list screen's own line (42.4): the money at the top right (this boat's tooltip on it), the hint, headings.
+		io.github.jcondedata.aliveworkplace.work.ChoiceList.info(info, io.github.jcondedata.aliveworkplace.work.Money.balance(player),
+			Component.translatable("message.aliveworkplace.travel.list_hint"),
+			java.util.List.of(Component.translatable("message.aliveworkplace.travel.column_destination"), Component.empty(),
+				Component.translatable("message.aliveworkplace.travel.column_fare")));
 		menu.button(4, info, null);
 	}
 

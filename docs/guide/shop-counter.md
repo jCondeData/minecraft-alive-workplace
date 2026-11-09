@@ -34,7 +34,9 @@ market street never sell each other's goods; your own counters share their chest
 not a Silver Tongue shopkeeper, not a trade fair. **Sneak-right-click** the counter to see your sales, whatever
 you have in your hand.
 
-With CobbleDollars installed, emerald prices are paid in CobbleDollars (100 per emerald) straight to you, and a
+With CobbleDollars installed, a right-click on the shopkeeper with an empty hand opens the shop as a list: the buyer's
+money at the top, a row per lot in stock with the price and **Buy**, then **Confirm** to pay. Emerald prices are paid in
+CobbleDollars (100 per emerald) straight to you, and a
 [Price Tag](price-tag.md) in the price row sets a price in CobbleDollars directly. Only you, your friends and
 operators can change the prices.
 

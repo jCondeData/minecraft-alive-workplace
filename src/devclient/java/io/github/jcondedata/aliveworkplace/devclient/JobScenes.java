@@ -4917,7 +4917,8 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.travel.Ferrymen.FIRST_DESTINATION_SLOT, player);
 					}
 				}, 25)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu m
+			// 42.4: the ferry is the list screen (the money at the top, the Far Shore's row with its fare and Buy, gold Confirm)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
 				&& m.icon(io.github.jcondedata.aliveworkplace.travel.Ferrymen.FIRST_DESTINATION_SLOT).is(ModItems.TRAVEL_TICKET)));
 		SCREENS.put("shapes", new Screen("the Shape Planner opened with stone bricks to build in", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
@@ -4927,7 +4928,8 @@ final class JobScenes {
 			},
 			List.of(step("01_shapes_screen", io.github.jcondedata.aliveworkplace.blueprint.Shapes.FIRST_KIND + 1, 6),
 				step("02_shapes_info", io.github.jcondedata.aliveworkplace.blueprint.Shapes.INFO, 6)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu m
+			// 42.4: the planner is the list screen (the shapes and blocks as icon cells in their rows, - and + by each size)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
 				&& m.icon(io.github.jcondedata.aliveworkplace.blueprint.Shapes.FIRST_MATERIAL).is(Items.STONE_BRICKS)));
 		SCREENS.put("style_menu", new Screen("the style picker opened, dark oak was chosen and the build mirrored", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
@@ -4946,7 +4948,9 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.blueprint.StylePicker.MIRROR, player);
 					}
 				}, 25)),
-			(level, player) -> BlueprintItem.data(player.getMainHandItem()).map(d -> d.mirrored() && d.structure().equals(
+			// 42.4: the style picker is the list screen (Mirror first, a row per style with Choose)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& BlueprintItem.data(player.getMainHandItem()).map(d -> d.mirrored() && d.structure().equals(
 				io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(StarterBlueprints.STONE_HOUSE.id(), "dark_oak"))).orElse(false)));
 		// The Scan Tool (ROADMAP 22.3): two corners of a little hut marked (the purple box shows while it's held), then
 		// sneak-use saves it as a blueprint.

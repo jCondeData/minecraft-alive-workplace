@@ -28,7 +28,7 @@ A Blueprint is a building on paper. Hand one to a Builder and they build it for 
    blocks while you hold it; the gold edge is the front. Sneak-right-click the ground to turn it, and sneak-right-click
    the air to pick it back up.
 2. **Pick a style** (before placing): sneak-right-click the air for Stonework, Sandstone, Dark Oak, Cherry or, with
-   Cobblemon, Apricorn. The **Mirror** button flips it left to right.
+   Cobblemon, Apricorn: a list with a row per style and **Choose**. The **Mirror** button flips it left to right.
 3. **Check the materials.** Hold Shift over it for the full list, several to a line ("64 Oak Planks · 32 Cobblestone").
    A very big build lists as many as fit in about 20 lines and then says how many more there are; the
    [Blueprint Table](blueprint-table.md) shows all of them. Once it's placed, its tooltip shows only what the builder's

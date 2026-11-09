@@ -20,7 +20,8 @@ Craft **paper**, a **gold nugget** and **string** together, anywhere in the grid
 
 ## Using it
 
-Right-click it to set a price in CobbleDollars, or rename it in an anvil to a number (like 250). Then put it in a
+Right-click it to set a price in CobbleDollars: one row for each size of step (1,000, 100, 10 and 1) with a **-** and a
+**+** button, the price at the top right, and **Done**. Or rename it in an anvil to a number (like 250). Then put it in a
 [Shop Counter](shop-counter.md)'s price row, under the item it's the price of. The tooltip shows the price it holds.
 
 ## How it fits in

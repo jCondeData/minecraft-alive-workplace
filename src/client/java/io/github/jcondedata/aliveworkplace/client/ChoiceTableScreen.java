@@ -782,9 +782,15 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 				case TAB -> lmTabs.add(slot);
 				case PAGE -> lmPages.add(slot);
 				case INFO -> lmInfo = lmInfo < 0 ? slot : lmInfo;
+				case CELL -> {
+					// (drawn inside the row that names it, 42.4)
+				}
 				default -> {
 					lmRows.add(slot);
-					if (mark != null && mark.button() != null) {
+					int[] cells = io.github.jcondedata.aliveworkplace.work.ChoiceList.cells(stack);
+					if (cells.length > 0) {
+						lmButtonW = Math.max(lmButtonW, cellsWidth(cells));
+					} else if (mark != null && mark.button() != null) {
 						lmButtonW = Math.max(lmButtonW, TableStyle.buttonWidth(font, mark.button()));
 					}
 				}
@@ -856,6 +862,11 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 			for (int i = 0; i < lmRows.size(); i++) {
 				int t = lmRowTop(i);
 				if (my >= t && my < t + TableStyle.LIST_ROW) {
+					for (int[] cell : cellBoxes(lmRows.get(i), t)) {
+						if (mx >= cell[1] && mx < cell[1] + cell[3] && my >= cell[2] && my < cell[2] + cell[4]) {
+							return cell[0];
+						}
+					}
 					return lmRows.get(i);
 				}
 			}
@@ -914,7 +925,12 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 			Component second = mark != null ? mark.second() : firstLine(stack).isEmpty() ? null : Component.literal(firstLine(stack));
 			TableStyle.listRow(g, font, columns, lmX + lmW - 8, t, stack.getHoverName(), second, mark == null ? null : mark.price(), off, on, slot == hovered);
 			g.renderItem(stack, columns[0], t + 2);
-			if (mark != null && mark.button() != null) {
+			List<int[]> cellBoxes = cellBoxes(slot, t);
+			if (!cellBoxes.isEmpty()) {
+				for (int[] cell : cellBoxes) {
+					drawCell(g, cell, cell[0] == hovered, off);
+				}
+			} else if (mark != null && mark.button() != null) {
 				TableStyle.button(g, font, mark.button(), columns[4], t + 3, lmButtonW, TableStyle.BUTTON_H, on, slot == hovered, off);
 			}
 		}
@@ -957,6 +973,52 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		return mx >= left && mx < left + panelW && my >= top && my < top + panelH;
 	}
 
+	// A row's cells (ROADMAP 42.4, ChoiceList.cells): small buttons inside the row at its right, each its own slot.
+
+	/** How wide cell {@code slot} is: a small text button, or an icon cell when it has no label. */
+	private int cellWidth(int slot) {
+		io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(slot));
+		return mark != null && mark.button() != null ? Math.max(TableStyle.CELL, font.width(mark.button()) + 10) : TableStyle.CELL - 2;
+	}
+
+	private int cellsWidth(int[] cells) {
+		int w = 0;
+		for (int cell : cells) {
+			w += cellWidth(cell) + 3;
+		}
+		return Math.max(0, w - 3);
+	}
+
+	/** The shown cells of row {@code row} whose top is {@code t}: slot, x, y, width, height. */
+	private List<int[]> cellBoxes(int row, int t) {
+		List<int[]> out = new ArrayList<>();
+		int x = lmColumns()[4];
+		for (int cell : io.github.jcondedata.aliveworkplace.work.ChoiceList.cells(icon(row))) {
+			if (cell < 0 || cell >= ChoiceMenu.SIZE || !shown(icon(cell))) {
+				continue;
+			}
+			int w = cellWidth(cell);
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(cell));
+			boolean text = mark != null && mark.button() != null;
+			out.add(new int[]{cell, x, text ? t + 3 : t + 1, w, text ? TableStyle.BUTTON_H : TableStyle.CELL - 2});
+			x += w + 3;
+		}
+		return out;
+	}
+
+	/** Draws a row's cell (box from {@link #cellBoxes}): its label as a small button, or its icon in a framed cell. */
+	private void drawCell(GuiGraphics g, int[] box, boolean over, boolean off) {
+		ItemStack stack = icon(box[0]);
+		io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(stack);
+		boolean on = mark != null && mark.on();
+		if (mark != null && mark.button() != null) {
+			TableStyle.button(g, font, mark.button(), box[1], box[2], box[3], box[4], on, over, off);
+		} else {
+			TableStyle.cell(g, box[1], box[2], on, over);
+			g.renderItem(stack, box[1] + 1, box[2] + 1);
+		}
+	}
+
 	/** Where button {@code slot}'s middle is in list mode (a row's button if it has one); a row is scrolled into view. */
 	private int[] listCentre(int slot) {
 		listLayout();
@@ -966,11 +1028,27 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 			}
 		}
 		int i = lmRows.indexOf(slot);
+		int inRow = -1;
+		for (int r = 0; i < 0 && r < lmRows.size(); r++) {
+			for (int cell : io.github.jcondedata.aliveworkplace.work.ChoiceList.cells(icon(lmRows.get(r)))) {
+				if (cell == slot) {
+					i = r;
+					inRow = lmRows.get(r);
+				}
+			}
+		}
 		if (i >= 0) {
 			int t = lmRowTop(i);
 			if (t < lmY + lmHead || t + TableStyle.LIST_ROW > lmY + lmH) {
 				lmScroll = Math.max(0, Math.min(lmMaxScroll(), i * TableStyle.LIST_ROW - (lmH - lmHead - TableStyle.LIST_ROW) / 2));
 				t = lmRowTop(i);
+			}
+			if (inRow >= 0) {
+				for (int[] cell : cellBoxes(inRow, t)) {
+					if (cell[0] == slot) {
+						return new int[]{cell[1] + cell[3] / 2, cell[2] + cell[4] / 2};
+					}
+				}
 			}
 			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(slot));
 			int[] columns = lmColumns();

@@ -2312,6 +2312,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick == 100) {
 			shot(mc, "01_shop_menu");
 			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>, "the shop screen opened");
+			// 42.4: as the list screen (the money at the top, a row per lot with its stock, price and Buy)
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceListScreen, "the shop opened as the list screen");
 		}
 		if (tick == 105) {
 			mc.setScreen(null);

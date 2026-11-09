@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.blueprint;
 
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,8 @@ import net.minecraft.world.item.component.ItemLore;
 
 /**
  * The style screen (sneak-right-click the air with a blueprint): the blueprint as drawn and in every style there is;
- * click one and the blueprint in hand is built in that style (see {@link BlueprintStyles}).
+ * click one and the blueprint in hand is built in that style (see {@link BlueprintStyles}). Shown as the list screen
+ * (ROADMAP 42.4): the blueprint's name at the top, Mirror first, then a row per style with its icon and Choose.
  */
 public final class StylePicker {
 	static final int INFO = 4;
@@ -30,7 +32,7 @@ public final class StylePicker {
 	public static final int FIRST = 19;
 
 	public static void open(ServerPlayer player, InteractionHand hand) {
-		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.styles.title"),
+		ChoiceMenu.openList(player, Component.translatable("screen.aliveworkplace.styles.title"),
 			p -> p.isAlive() && p.getItemInHand(hand).getItem() instanceof BlueprintItem, menu -> render(menu, player, hand));
 	}
 
@@ -54,23 +56,29 @@ public final class StylePicker {
 		}
 		ResourceLocation base = BlueprintStyles.base(data.structure());
 		String current = BlueprintStyles.styleOf(data.structure()).orElse("");
-		menu.button(INFO, icon(Items.PAPER, Blueprints.displayName(base), ChatFormatting.GOLD,
-			List.of(line(Component.translatable("screen.aliveworkplace.styles.how"), ChatFormatting.GRAY))), null);
-		menu.button(MIRROR, choice(Items.GLASS_PANE, Component.translatable(data.mirrored() ? "screen.aliveworkplace.styles.mirrored"
-			: "screen.aliveworkplace.styles.mirror"), data.mirrored()), p -> mirror(menu, p, hand));
+		// The list screen's own line (42.4): the blueprint's name at the top right (this paper's tooltip on it), the hint.
+		menu.button(INFO, ChoiceList.info(icon(Items.PAPER, Blueprints.displayName(base), ChatFormatting.GOLD,
+			List.of(line(Component.translatable("screen.aliveworkplace.styles.how"), ChatFormatting.GRAY))),
+			line(Blueprints.displayName(base), ChatFormatting.GOLD), Component.translatable("screen.aliveworkplace.styles.list_hint"), List.of()), null);
+		menu.button(MIRROR, ChoiceList.row(choice(Items.GLASS_PANE, Component.translatable(data.mirrored() ? "screen.aliveworkplace.styles.mirrored"
+			: "screen.aliveworkplace.styles.mirror"), data.mirrored()), null, null,
+			Component.translatable(data.mirrored() ? "screen.aliveworkplace.styles.button_unmirror" : "screen.aliveworkplace.styles.button_mirror"),
+			false, data.mirrored()), p -> mirror(menu, p, hand));
 		menu.divider(1);
 		if (stack.getItem() instanceof io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem) {
 			// A Wonder Plan (35.3): mirrored only; each Wonder keeps its own palette.
-			menu.button(slot(0), icon(Items.PAPER, Component.translatable("screen.aliveworkplace.styles.wonder"), ChatFormatting.GOLD,
-				List.of(line(Component.translatable("screen.aliveworkplace.styles.wonder_how"), ChatFormatting.GRAY))), null);
+			menu.button(slot(0), ChoiceList.row(icon(Items.PAPER, Component.translatable("screen.aliveworkplace.styles.wonder"), ChatFormatting.GOLD,
+				List.of(line(Component.translatable("screen.aliveworkplace.styles.wonder_how"), ChatFormatting.GRAY))),
+				Component.translatable("screen.aliveworkplace.styles.wonder_how"), null, null, false, false), null);
 			return;
 		}
 		List<BlueprintStyles.Style> styles = BlueprintStyles.all();
-		menu.button(slot(0), choice(Items.SPRUCE_LOG, Component.translatable("style.aliveworkplace.as_drawn"), current.isEmpty()),
+		menu.button(slot(0), listed(choice(Items.SPRUCE_LOG, Component.translatable("style.aliveworkplace.as_drawn"), current.isEmpty()), current.isEmpty()),
 			p -> choose(menu, p, hand, ""));
 		for (int i = 0; i < styles.size() && i < 20; i++) {
 			BlueprintStyles.Style style = styles.get(i);
-			menu.button(slot(i + 1), choice(style.iconItem(), style.title(), current.equals(style.name())), p -> choose(menu, p, hand, style.name()));
+			menu.button(slot(i + 1), listed(choice(style.iconItem(), style.title(), current.equals(style.name())), current.equals(style.name())),
+				p -> choose(menu, p, hand, style.name()));
 		}
 	}
 
@@ -103,6 +111,12 @@ public final class StylePicker {
 				.withStyle(ChatFormatting.GREEN));
 			render(menu, player, hand);
 		});
+	}
+
+	/** A style's list row (42.4): its icon and name, Choose, or Chosen in gold for the one it's built in. */
+	private static ItemStack listed(ItemStack choice, boolean chosen) {
+		return ChoiceList.row(choice, null, null,
+			Component.translatable(chosen ? "screen.aliveworkplace.styles.chosen" : "screen.aliveworkplace.styles.button_choose"), false, chosen);
 	}
 
 	private static ItemStack choice(Item item, Component name, boolean chosen) {

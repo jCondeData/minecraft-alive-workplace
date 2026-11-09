@@ -4,9 +4,11 @@ The menus that opened as a plain gray chest of buttons move, one by one, to a li
 the title and your money at the top, a row of tabs, a list of rows with a button on each, and a hint at the foot. The
 Move Tutor's lessons were the first; the Pokémon Professor's hints, the Rancher's Daycare and the Daycare Keeper followed
 (all Cobblemon), then the job menus: the Ball Smith's, Gem Grower's, Habitat Keeper's and Berry Breeder's, a traveler's
-hire screen, a Legend guest's terms and the Research screen. Part of Milestone 42 (One look for every screen).
+hire screen, a Legend guest's terms and the Research screen; then the builder tools and the shops: the Shape Planner, the
+style picker, the Price Tag, and the Shop and the Ferry paid in CobbleDollars. Part of Milestone 42 (One look for every
+screen).
 
-Roadmap items: 42.1, 42.2, 42.3
+Roadmap items: 42.1, 42.2, 42.3, 42.4
 
 ## What a player sees
 
@@ -56,6 +58,26 @@ The job menus (42.3) follow, with their own rows:
   while it's locked or done (the reason in its tooltip, and a click still says it). The Great Library's row and topics come
   after the scholars' own.
 
+The builder tools and the shops (42.4) follow:
+
+- **The Shape Planner** (right-click it): how many blocks the shape takes at the top right, then a **Shape** row with the
+  seven shapes as small icon cells (the chosen one gold) and a **Block** row with the building blocks you carry as icon
+  cells (gray "Carry some building blocks" when you have none). Then a row for the width, the height and the depth, each
+  with **-** and **+** in it (shift-click for 5), the solid or hollow row (click it to switch), the size, and the **Draw**
+  row with its gold **Draw** button. Pointing at a cell shows its name, as the chest did.
+- **The style picker** (sneak-right-click the air with a blueprint): the blueprint's name at the top right, **Mirror**
+  first (gold **Flip back** while it's mirrored), then a row per style with its icon and **Choose**; the style it's built
+  in is gold, "Chosen". A Wonder Plan has one row saying a Wonder keeps its own blocks.
+- **The Price Tag** (right-click it): the price at the top right ("No price yet"), the price's row, then one row per size
+  of step (1,000, 100, 10 and 1) with its **-1000** and **+1000** (and so on) in it, and **Done**.
+- **The Shop** (right-click a shopkeeper with an empty hand, with CobbleDollars): your money at the top, a row per lot in
+  stock with how many are in stock, the price (green when you can pay it, red when not) and **Buy**; Buy turns the row
+  gold with **Confirm**, and Confirm pays. "Nothing in stock right now" at the foot when the chests are empty.
+- **The Ferry** (right-click a ferryman with an empty hand, with CobbleDollars): your money at the top, a row per travel
+  post you know with its fare and **Buy**, then **Confirm**.
+
+Both shops follow your money while they're open: money paid in turns a red price green with no click.
+
 In all of them, pointing at the top right line shows the menu's own tooltip (what the job does, the price rules, the odds), and a
 price you can't pay is red.
 
@@ -88,6 +110,12 @@ first, slot order among equals. So a menu keeps its slots (and the tests and cli
 **Shared pieces.** `TableStyle`'s list-menu section (a text button, a tab, the row's columns and headings, a row, the
 footer hint, the money line) is what the next menus (42.2 to 42.4) and the Trainer screen use.
 
+**Cells in a row (42.4).** A row may hold small cells (`ChoiceList.cells(row, slots...)`): other buttons drawn inside it
+at its right, in place of its one button, each still its own slot and its own chest click. A cell's icon is marked
+`ChoiceList.cell(icon, label, on)`: with a label it's a small text button (the Planner's **-** and **+**, the Price Tag's
+steps, **Draw**), without one the icon itself in a framed cell (the Planner's shapes and blocks), gold when on. A cell is
+never a row of its own. A row with no second line and no price has the room up to its button for its name.
+
 ## Switches
 
 none
@@ -99,6 +127,11 @@ none (the screen keeps nothing; the lessons, prices and tutor ranks are the Move
 ## Items, blocks, jobs, commands
 
 - `aliveworkplace:choice_list`: the list screen's menu type.
+- New text (42.4): the planner's `screen.aliveworkplace.shapes.shape_row`, `.block_row`, `.block_none`, `.button_draw`,
+  `.list_hint`; the styles' `screen.aliveworkplace.styles.button_choose`, `.button_mirror`, `.button_unmirror`,
+  `.list_hint`; the tag's `screen.aliveworkplace.price_tag.steps`, `.list_hint`; the shop's
+  `message.aliveworkplace.shop.menu.button_buy`, `.button_confirm`, `.list_hint`, `.column_goods`, `.column_stock`,
+  `.column_price`; the ferry's `message.aliveworkplace.travel.list_hint`, `.column_destination`, `.column_fare`.
 - New text (42.3): `screen.aliveworkplace.orders.column_order`, `.button_pick`, `.button_unpick`; the smith's
   `screen.aliveworkplace.ball_smith.mode_any`, `.mode_only`, `.list_hint`, `.column_ball`, `.column_level`; the grower's
   `screen.aliveworkplace.gem_grower.mode_every`, `.mode_only`, `.list_hint`, `.column_bed`, `.column_planted`; the lures'
@@ -142,9 +175,16 @@ none (the screen keeps nothing; the lessons, prices and tutor ranks are the Move
 - 42.3: a Legend guest's terms stay four rows to read (no buttons, as the chest had none); each row's tooltip keeps every
   line (the ticks and crosses of the wants).
 
+- 42.4: the Shape Planner keeps its shapes and blocks as icon cells inside two rows ("Shape", "Block") rather than a row
+  each, as the item allowed: seven shapes and up to nine blocks would be sixteen rows for two choices. Each size is one
+  row with its - and + as cells, the Price Tag's steps one row per size of step (- and + side by side), so every button
+  keeps its slot and click.
+- 42.4: the Shop and the Ferry follow the player's money while open (as the inn's hire screen), so a price turns green
+  or red with no click.
+
 ## Known limits
 
-- The Move Tutor, the Cobblemon menus and the job menus use it so far; the builder tools and shops move in 42.4.
+- Every menu that opened as a plain chest uses it now (42.1 to 42.4).
 - A daycare's boarders' levels and the keeper's eggs don't change on screen while it's open (they follow the party and
   the money only); reopening shows them.
 - The rows are fixed columns; a very narrow window (a big GUI scale on a small screen) cuts the texts with "…".
@@ -175,5 +215,9 @@ nothing, one more emerald turns it green while open and hires for all of it; Swi
 "Fully researched" in green, gray with no button, and a click starts nothing; research paid for and half done reads
 "Researching ...: 50%" and Under way after the hall is saved and loaded, and another topic is refused as busy).
 
-Showcase scenes: `tutor`, `professor`, `daycare`, `daycare_keeper`, `smith_orders`, `gem_orders`, `habitat_lures` (and the
+42.4: `BuilderToolListsGameTests.theShapePlannerIsAList`, `BuilderToolListsGameTests.theStylePickerIsAList`,
+`BuilderToolListsGameTests.thePriceTagIsAList`; `ShopListMenusCompatTests.theShopIsAList`,
+`ShopListMenusCompatTests.theFerryIsAList` (CobbleDollars).
+
+Showcase scenes: `shapes`, `style_menu`, `shop`, `ferry_menu` (42.4, and the Price Tag in `counter`), `tutor`, `professor`, `daycare`, `daycare_keeper`, `smith_orders`, `gem_orders`, `habitat_lures` (and the
 list in `scholar`'s research still, `innkeeper`'s hire still, `berry_breeder`'s book still and `legend_guest`'s terms)

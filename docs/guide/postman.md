@@ -42,7 +42,9 @@ To carry only certain things, hold an item in your other hand and right-click th
 to nine); with no list they carry everything but tools, weapons and armor. Hand the note to a postman: when there's no
 mail, they walk the route. A postman keeps up to four routes; hand them a blank note to end them all.
 
-Over their head: how many deliveries, and whose mailbox they're collecting from or delivering to.
+Over their head: how many deliveries, and whose mailbox they're collecting from or delivering to. Sneak-right-click
+them with an empty hand for their status card (parcels delivered, courier routes, their experience, what they need);
+**In chat** lists each route in chat, and **Hall page** opens their page in the Village Hall.
 
 ## How the postman fits in
 

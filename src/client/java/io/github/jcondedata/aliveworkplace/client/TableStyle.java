@@ -227,7 +227,9 @@ public final class TableStyle {
 			g.fill(columns[0] - 2, y, x1, y + LIST_ROW, ROW_OVER);
 		}
 		int ty = y + 6;
-		cell(g, font, name, columns[1], ty, columns[2] - columns[1] - 6, off, NAME);
+		// A row with no second line and no price has the room up to the button for its name (42.4: the Shape Planner's rows).
+		boolean alone = (second == null || second.getString().isEmpty()) && (price == null || price.getString().isEmpty());
+		cell(g, font, name, columns[1], ty, (alone ? columns[4] : columns[2]) - columns[1] - 6, off, NAME);
 		cell(g, font, second, columns[2], ty, columns[3] - columns[2] - 6, off, SUBLINE);
 		cell(g, font, price, columns[3], ty, columns[4] - columns[3] - 6, off, BODY);
 	}

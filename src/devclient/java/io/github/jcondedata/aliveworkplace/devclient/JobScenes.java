@@ -4917,8 +4917,44 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.travel.Ferrymen.FIRST_DESTINATION_SLOT, player);
 					}
 				}, 25)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu m
+			// 42.4: the ferry is the list screen (the money at the top, the Far Shore's row with its fare and Buy, gold Confirm)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
 				&& m.icon(io.github.jcondedata.aliveworkplace.travel.Ferrymen.FIRST_DESTINATION_SLOT).is(ModItems.TRAVEL_TICKET)));
+		// 42.5: a builder's status card (sneak-right-click with an empty hand): his site with its progress bar, Experience,
+		// what he's short of, In chat / Hall page / Close; then Hall page opens the Village Hall on his own page.
+		SCREENS.put("status_card", new Screen("a builder's status card showed his site, experience and what he needs, and Hall page opened the hall on his page",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setDayTime(2000);
+				BlockPos hall = STATION.offset(-4, 0, 1);
+				level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+				io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+				level.setBlockAndUpdate(STATION, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				Villager mason = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+				mason.setNoAi(true);
+				Builders.employ(level, mason, STATION);
+				mason.setCustomName(net.minecraft.network.chat.Component.literal("Mason"));
+				mason.setVillagerData(mason.getVillagerData().setLevel(2));
+				mason.setVillagerXp(40);
+				chest(level, chestPos(), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.OAK_PLANKS, 20));
+				BuildSite site = Builders.start(level, mason, player, StarterBlueprints.STONE_HOUSE.id(), new BlueprintData.Placement(
+					level.dimension().location(), STATION.offset(3, 0, -12), net.minecraft.world.level.block.Rotation.NONE,
+					net.minecraft.world.level.block.Mirror.NONE));
+				Showcase.check(site != null, "the builder took the stone house on");
+				subject = mason;
+				io.github.jcondedata.aliveworkplace.card.JobCards.open(player, mason, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.BUILDER);
+				Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m
+					&& m.card().lines().size() >= 3 && m.card().lines().stream().anyMatch(l -> l.label().getString().startsWith("Needs "))
+					&& m.card().button(io.github.jcondedata.aliveworkplace.card.JobCards.HALL).usable(),
+					"the card showed the site, his experience and what he needs, with Hall page ready");
+			},
+			List.of(step("01_status_card", io.github.jcondedata.aliveworkplace.card.JobCards.HALL, 0),
+				new Step("02_status_card_hall", -1, 6, (level, player) -> {
+					if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m) {
+						m.clickMenuButton(player, io.github.jcondedata.aliveworkplace.card.JobCards.HALL);
+					}
+				}, 25)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("shapes", new Screen("the Shape Planner opened with stone bricks to build in", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				player.getInventory().setItem(1, new ItemStack(Items.STONE_BRICKS, 64));
@@ -4927,7 +4963,8 @@ final class JobScenes {
 			},
 			List.of(step("01_shapes_screen", io.github.jcondedata.aliveworkplace.blueprint.Shapes.FIRST_KIND + 1, 6),
 				step("02_shapes_info", io.github.jcondedata.aliveworkplace.blueprint.Shapes.INFO, 6)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu m
+			// 42.4: the planner is the list screen (the shapes and blocks as icon cells in their rows, - and + by each size)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
 				&& m.icon(io.github.jcondedata.aliveworkplace.blueprint.Shapes.FIRST_MATERIAL).is(Items.STONE_BRICKS)));
 		SCREENS.put("style_menu", new Screen("the style picker opened, dark oak was chosen and the build mirrored", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
@@ -4946,7 +4983,9 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.blueprint.StylePicker.MIRROR, player);
 					}
 				}, 25)),
-			(level, player) -> BlueprintItem.data(player.getMainHandItem()).map(d -> d.mirrored() && d.structure().equals(
+			// 42.4: the style picker is the list screen (Mirror first, a row per style with Choose)
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& BlueprintItem.data(player.getMainHandItem()).map(d -> d.mirrored() && d.structure().equals(
 				io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.styled(StarterBlueprints.STONE_HOUSE.id(), "dark_oak"))).orElse(false)));
 		// The Scan Tool (ROADMAP 22.3): two corners of a little hut marked (the purple box shows while it's held), then
 		// sneak-use saves it as a blueprint.

@@ -46,8 +46,10 @@ are none, the rest goes to the village Storehouse, and ores always get the room 
 Storehouse to make way). When they finish, they tell you how many blocks they
 dug and how many they left (next to water or lava, or too hard for their pickaxe).
 
-Over their head you see the quarry's size and how far along it is. Sneak-right-click them with an empty hand for the
-full status and a **[Stop this quarry]** button: they stop and give the marker back, and what was dug stays dug.
+Over their head you see the quarry's size and how far along it is. Sneak-right-click them with an empty hand for their
+status card: the quarry with a bar for how far along it is, the blocks mined, their experience and what they need (a
+pickaxe, ladders). Its **In chat** button puts the full status in chat with a **[Stop this quarry]** button: they stop
+and give the marker back, and what was dug stays dug. **Hall page** opens their page in the Village Hall.
 
 ## Digging deeper
 

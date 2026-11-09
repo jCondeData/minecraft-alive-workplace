@@ -35,13 +35,17 @@ import org.jetbrains.annotations.Nullable;
  * <p>Rows are listed in slot order, unless a row is given an {@link #order} (ROADMAP 42.3): lower first, slot order among
  * equals (0 by default). So a menu keeps its slots (and the tests and clicks that know them) and still lists a button that
  * sits in a later slot first (the Habitat Keeper's "Any snack", the Great Library's row after the scholars' topics).
+ *
+ * <p>A row may hold small cells (ROADMAP 42.4, {@link #cells}): other buttons drawn inside it at the right, in place of
+ * its one button, each still its own slot and its own chest click (the Shape Planner's − and + beside a size, the Price
+ * Tag's steps). A {@link Kind#CELL} icon is never a row of its own; it shows only in the row that names it.
  */
 public final class ChoiceList {
 	/** The custom data key of an icon's mark. */
 	public static final String KEY = "aliveworkplace_list";
 
 	public enum Kind {
-		ROW, TAB, PAGE, INFO
+		ROW, TAB, PAGE, INFO, CELL
 	}
 
 	/** One button's mark, as the client reads it. Texts are null where the menu gave none. */
@@ -82,6 +86,39 @@ public final class ChoiceList {
 			mark(icon, mark);
 		}
 		return icon;
+	}
+
+	/**
+	 * Gives marked row {@code icon} the cells {@code slots} (ROADMAP 42.4): those buttons are drawn inside the row at its
+	 * right, left to right, in place of a row button; a click on one is that slot's own click. Call it after {@link #row};
+	 * mark each cell's icon with {@link #cell}. Returns the icon.
+	 */
+	public static ItemStack cells(ItemStack icon, int... slots) {
+		CompoundTag mark = tag(icon);
+		if (mark != null) {
+			mark = mark.copy();
+			mark.putIntArray("cells", slots);
+			mark(icon, mark);
+		}
+		return icon;
+	}
+
+	/** The cells of row {@code icon} ({@link #cells}), left to right; none when it has none. */
+	public static int[] cells(ItemStack icon) {
+		CompoundTag mark = tag(icon);
+		return mark == null || !Nbt.has(mark, "cells", Tag.TAG_INT_ARRAY) ? new int[0] : Nbt.getIntArray(mark, "cells");
+	}
+
+	/**
+	 * Marks {@code icon} as a cell inside a row (ROADMAP 42.4): a small button with {@code label} (null: the icon itself in a
+	 * framed cell, the shape pickers' icon cells), gold when {@code on}. Its tooltip is the icon's, as the chest's was.
+	 */
+	public static ItemStack cell(ItemStack icon, @Nullable Component label, boolean on) {
+		CompoundTag mark = new CompoundTag();
+		mark.putString("kind", Kind.CELL.name());
+		put(mark, "button", label);
+		mark.putBoolean("on", on);
+		return mark(icon, mark);
 	}
 
 	/** Marks {@code icon} as a tab over the list; {@code on} for the open one. */

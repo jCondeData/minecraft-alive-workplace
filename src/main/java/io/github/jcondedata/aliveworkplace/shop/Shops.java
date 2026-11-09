@@ -275,9 +275,21 @@ public final class Shops {
 			return;
 		}
 		int[] pending = {-1};
-		io.github.jcondedata.aliveworkplace.work.ChoiceMenu.open(player, villager.getDisplayName(),
+		// The list screen (ROADMAP 42.4): the money at the top, a row per lot with what's in stock, the price (red while the
+		// player can't pay it) and Buy, then Confirm; it follows the player's money while open, as the Inn's does.
+		io.github.jcondedata.aliveworkplace.work.ChoiceMenu.openList(player, villager.getDisplayName(),
 			p -> villager.isAlive() && !villager.isSleeping() && p.isAlive() && p.distanceTo(villager) <= 8,
-			menu -> renderMenu(menu, player, villager, pending));
+			menu -> {
+				renderMenu(menu, player, villager, pending);
+				net.minecraft.network.chat.Component[] shown = {io.github.jcondedata.aliveworkplace.work.Money.balance(player)};
+				menu.everyTick(() -> {
+					net.minecraft.network.chat.Component now = io.github.jcondedata.aliveworkplace.work.Money.balance(player);
+					if (!now.equals(shown[0])) {
+						shown[0] = now;
+						renderMenu(menu, player, villager, pending);
+					}
+				});
+			});
 	}
 
 	/** The shop screen without showing it (tests). */
@@ -324,6 +336,12 @@ public final class Shops {
 			if (chosen) {
 				icon.set(net.minecraft.core.component.DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 			}
+			// The list row (42.4): what's in stock, the price green or red, Buy (gold Confirm once chosen).
+			io.github.jcondedata.aliveworkplace.work.ChoiceList.row(icon,
+				net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.menu.stock", available),
+				priceText(price).copy().withStyle(canPay(player, price) ? net.minecraft.ChatFormatting.GREEN : net.minecraft.ChatFormatting.RED),
+				net.minecraft.network.chat.Component.translatable(chosen ? "message.aliveworkplace.shop.menu.button_confirm" : "message.aliveworkplace.shop.menu.button_buy"),
+				false, chosen);
 			menu.button(FIRST_GOODS_SLOT + column, icon, p -> {
 				if (pending[0] != col) {
 					pending[0] = col;
@@ -346,6 +364,12 @@ public final class Shops {
 					: net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.menu.help").withStyle(net.minecraft.ChatFormatting.GRAY),
 				net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.menu.items").withStyle(net.minecraft.ChatFormatting.DARK_GRAY))
 			.map(l -> (net.minecraft.network.chat.Component) l.copy().withStyle(st -> st.withItalic(false))).toList()));
+		// The list screen's own line (42.4): the money at the top right (this emerald's tooltip on it), the hint, headings.
+		io.github.jcondedata.aliveworkplace.work.ChoiceList.info(info, io.github.jcondedata.aliveworkplace.work.Money.balance(player),
+			net.minecraft.network.chat.Component.translatable(shown == 0 ? "message.aliveworkplace.shop.menu.empty" : "message.aliveworkplace.shop.menu.list_hint"),
+			List.of(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.menu.column_goods"),
+				net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.menu.column_stock"),
+				net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.menu.column_price")));
 		menu.button(INFO_SLOT, info, null);
 	}
 

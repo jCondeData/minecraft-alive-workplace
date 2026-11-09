@@ -3,7 +3,7 @@
 An empty hand on a Nurse or a Fossil Scientist opens a small card in the Village Hall's look instead of acting at once:
 the Nurse's shows your health and your party's, with **Heal**; the Fossil Scientist's shows how far along each of your
 fossils is, with **Hand over**. Each button does exactly what the click did before. The card is the shared piece the
-job-status cards of 42.5 reuse. Part of Milestone 43 (One look for every screen, Pokémon).
+job-status cards of 42.5 reuse ([Job status cards](job-status-cards.md)). Part of Milestone 43 (One look for every screen, Pokémon).
 
 Roadmap items: 43.3
 
@@ -88,5 +88,11 @@ none (the cards read the Fossil Scientist's saved queue and save nothing)
 `StatusCardCompatTests.fossilCardWithNothingHandedOver`, `StatusCardCompatTests.fossilCardAfterASaveAndReload` (Cobblemon),
 the click tests of `QaNurseWait1103dGameTests`, `QaNurseMachine1102dCompatTests` and `QaFossilScientist1102dCompatTests`
 (now through the card's button) and `QaEveryMenuGameTests.everyServerMenuAndItsClientCopyAgreeSlotForSlot`.
+
+QA (lane D, 2026-11-09): `QaPokemonScreens1109dCompatTests` (cards part, 9): Heal with everyone at full health; Heal
+pressed after the Nurse fell asleep with the card open (refused, nothing healed); Heal from a player who walked away;
+Heal pressed twice heals once; Hand over with something else in hand, with another fossil, twice in a row and with a
+full party loses and duplicates nothing; a fossil's progress near and after its end. Mutant killed: the Nurse's asleep
+check skipped.
 
 Showcase scenes: `nurse`, `fossil`

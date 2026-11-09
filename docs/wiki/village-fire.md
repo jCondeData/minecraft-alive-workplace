@@ -140,6 +140,13 @@ builders put it back after a restart too.
 - GameTests (B1083): `QaThreatSpare1109bBugTests.aFrameUnderARoofPlankTheFireBurnedIsHungAgainWithThePlank`: a fire
   burns the roof plank a finished hut's item frame hangs under; the builder puts the plank back and hangs the frame
   again from the one in his chest.
+- QA (lane D, 2026-11-09, B1083): `QaFireFrames1109dGameTests` (3): with one roof plank burned and the frame under
+  another taken down by a player, the repair hangs the burned one's frame again and leaves the player's down, using one
+  item frame from the chest; a painting that fell with its burned post goes back up with it (one painting used, the
+  frames that never fell neither doubled nor lost); with no item frame in any chest the plank still goes back, no frame
+  is conjured and the plank comes off the threats' list. Hand mutants killed: the finished repair's placeAll call
+  dropped, the "can it hang" check dropped, the repair's frame filter dropped. Survivor: the damaged-list check, which
+  led to B1095 (a restart mid-repair after another builder's look loses the frame; test on `tests/fire-frames-1109d`).
 - QA (lane B, 2026-11-09, B1083): `QaBuilderFixes1109bGameTests` (4): a burned frame's wall is repaired with exactly
   one frame from the chest (4 become 3); with no frame in the chests the plank comes back and no frame is made from
   nothing; a frame the player took down from a standing wall stays down through a repair; a burned frame is still hung

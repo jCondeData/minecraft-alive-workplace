@@ -6427,6 +6427,50 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
   with the Hall's sidebar for its chapters). Done when: GameTests for opening each page and changing a setting;
   scenes `guide` and `config`.
 
+## Milestone 45: Move a finished building
+
+The owner, 2026-11-09 (morning digest): "allow people to move buildings within their village after they've been built,
+this is huge and will be a massive QOL feature. It can be done through a new job type similar to builder." His design
+answers the same day: **chosen from the Village Hall only** (no wand); the new **Mover** job **dismantles the building
+top-down and rebuilds it at the new spot with no materials lost**, reusing the Builder's site and stages; **its
+residents and their beds, its chests with their contents, and its decorations and furniture travel with it**. The
+surroundings (paths, fences, garden) don't move; the old spot is left cleared. Nothing a building does today may be
+lost by moving it. Every item: GameTests through the player's own clicks, save and reload mid-move, its config switch
+off, its scene in the harness and `tools/showcase/scenes.py`, `sessions.py done <id> --review`, American English.
+Lane C builds it, in order. Depends on: nothing open.
+
+- [ ] **45.1** **A building's snapshot.** Any building the Village Hall knows (built from a blueprint, grown by the
+  village or the player's own registered house) can be captured as a moving plan: every block state, container
+  contents, signs, banners, item frames, armor stands and modded furniture (by block/entity ids, never their classes),
+  with its front and its residents' beds and workstations. Done when: GameTests that a captured plan rebuilt
+  elsewhere matches the original block for block (`MaterialRules.matches`) with every container's items, and that
+  rotating it 90/180/270 rotates stairs, doors, beds and furniture correctly.
+- [ ] **45.2** **The Hall's Move page.** In the Village Hall (its look, `TableStyle`), a Buildings list with a Move
+  button on each; then the Hall's map to pick the new spot, a rotate button, and a fit check that says plainly why a
+  spot is refused (overlaps a building or a road, outside the village, too steep, under water); a ghost outline in the
+  world while choosing; Confirm needs a hired Mover. Done when: GameTests for picking, each refusal line, rotate,
+  cancel; scene `move_plan`.
+- [ ] **45.3** **The Mover.** A new job with its own workstation (the pixel-art skill; outfit too; a recipe and a
+  creative-tab entry), hired like the Builder. He dismantles top-down into the village Storehouse or his own crates
+  (nothing dropped, nothing lost, containers packed with their contents kept apart), then rebuilds at the new spot
+  with the Builder's stages (FOUNDATION to DONE), restartable at any tick from `BuildSite`. Two Movers share a job
+  like builders. Done when: GameTests for a whole move, a block broken mid-move, save and reload in each stage, a
+  full Storehouse (he waits, says why), the job canceled half way (everything taken down is put back up where it
+  was); scene `mover` (before, half way, after).
+- [ ] **45.4** **The residents move too.** Villagers who live or work in the building keep it: during the move they
+  sleep in the Hall or the inn, then their bed, home and workstation are the new spot's, and the Hall's People page,
+  couples and status cards follow. Done when: GameTests for a family's beds, a worker's workstation, a builder's
+  bench inside a moved house, save and reload; scene `mover` shows them at home after.
+- [ ] **45.5** **Chests, furniture and decorations arrive as they were.** Containers come back with exactly their
+  items (a player's chest included; nothing copied or doubled), furniture from CobbleFurnies/Cozy Home and the mod's
+  furnished homes, banners, signs, item frames and armor stands too. Done when: GameTests with every container kind
+  (chest, barrel, shulker box, a modded storage block by id), a sign's text, a framed item; compat tests for the
+  furniture mods and their absence.
+- [ ] **45.6** **Safe to use on the live server.** Only the village's own buildings can be moved (never another
+  player's claim or a building outside the village); the Hall, a Wonder and a building with a live build site are
+  refused with a reason; a config switch `moveBuildings` (on) and the guide and wiki pages. Done when: GameTests for
+  each refusal and the switch off; the guide page `moving-buildings.md`.
+
 ## Notes / blocked
 
 - 2026-11-09 (lane-c-1109-0353, 42.5): **the job-status cards are on 43.3's card**, not a second one. `card/JobCards`

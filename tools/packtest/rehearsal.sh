@@ -29,6 +29,8 @@ if [ ! -f "$OLD_JAR" ]; then
   grep -q "Rehearsal.init" "$MAIN" || sed -i 's|^\(\t\tio.github.jcondedata.aliveworkplace.command.SeasonSoak.init();.*\)$|\1\n\t\tio.github.jcondedata.aliveworkplace.command.Rehearsal.init();|' "$MAIN"
   grep -q "Rehearsal.init" "$MAIN" || { echo "Couldn't add Rehearsal.init to $MAIN"; exit 1; }
   (cd "$WT" && ./gradlew --max-workers=1 -q :1.21.1:assemble)
+  # Its daemon and compiler worker (~1.5 GB) would stay up through the timed halves and fail the seeding window (lane E, 11-09).
+  (cd "$WT" && ./gradlew --stop -q) || true
   cp "$(ls -t "$WT"/versions/1.21.1/build/libs/alive-workplace-*+1.21.1.jar | grep -v sources | head -1)" "$OLD_JAR"
 fi
 NEW_JAR="${JAR:-$(ls -t versions/1.21.1/build/libs/alive-workplace-*+1.21.1.jar | grep -v sources | head -1)}"

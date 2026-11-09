@@ -202,6 +202,49 @@ public final class Builders {
 	}
 
 	/**
+	 * B1110: a job chosen at the Village Hall while every builder is busy splits a crew. Among {@code candidates} (the
+	 * builders that may take the job), a helper on another build is taken off it: the one from the build with the most
+	 * helpers, the nearest to {@code near} among equals. It leaves that build cleanly (what it carries goes back to the
+	 * lead's chests, its claim is let go, it no longer counts as crew) and is free; the build it leaves keeps its lead and
+	 * goes on. Empty when no build has a helper to spare: a lead is never taken off its own build.
+	 */
+	public static Optional<Split> splitOff(ServerLevel level, List<Villager> candidates, BlockPos near) {
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		Map<UUID, Integer> crews = new java.util.HashMap<>();
+		List<Villager> helpers = new java.util.ArrayList<>();
+		for (Villager v : candidates) {
+			BuilderJob job = ModAttachments.BUILDER_JOB.get(v);
+			BuildSite site = job != null && job.helper() ? manager.get(job.siteId()) : null;
+			if (v.isAlive() && site != null && !site.isDone() && !site.isQueued() && site.wonder() == null // (a Wonder's crew is its own, 35.5)
+				&& site.builder() != null && !site.builder().equals(v.getUUID())) {
+				helpers.add(v);
+				crews.merge(site.id(), 1, Integer::sum);
+			}
+		}
+		if (helpers.isEmpty()) {
+			return Optional.empty();
+		}
+		helpers.sort(java.util.Comparator.<Villager>comparingInt(v -> -crews.get(ModAttachments.BUILDER_JOB.get(v).siteId()))
+			.thenComparingDouble(v -> v.distanceToSqr(near.getX(), near.getY(), near.getZ())));
+		Villager helper = helpers.get(0);
+		BuildSite left = manager.get(ModAttachments.BUILDER_JOB.get(helper).siteId());
+		stopHelping(level, helper);
+		left.leaveCrew(helper.getUUID());
+		return Optional.of(new Split(helper, left));
+	}
+
+	/** A helper taken off {@code left} by {@link #splitOff}. */
+	public record Split(Villager builder, BuildSite left) {
+		/** The new job didn't start after all: back to the crew it left. */
+		public void undo(ServerLevel level) {
+			if (!ModAttachments.BUILDER_JOB.has(builder) && !left.isDone()) {
+				ModAttachments.BUILDER_JOB.set(builder, new BuilderJob(left.id(), true));
+				left.seen(builder.getUUID(), level.getGameTime());
+			}
+		}
+	}
+
+	/**
 	 * B670: a build is over (finished or canceled): its helpers stop now, while the site still names the lead's bench, so
 	 * what they carry goes back to the lead's chests. A helper that only noticed later, once the site was gone, emptied
 	 * its bag at its own bench, out of the lead's reach (the soak's builder stuck for good waiting on lanterns that lay in

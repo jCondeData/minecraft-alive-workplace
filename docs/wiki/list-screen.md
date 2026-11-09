@@ -210,6 +210,14 @@ exactly that one; the Keeper's Pick stays on its Pokémon when another takes its
 `JobListMenusGameTests.legendTermsAsAList`, `JobListMenusGameTests.researchAsAList`;
 `JobListMenusCompatTests.smithOrdersAsAList`, `JobListMenusCompatTests.berryBookAsAList`,
 `JobListMenusCompatTests.habitatLuresAsAList` (Cobblemon).
+QA's `QaJobListEdges1109eGameTests` (3, 42.3: one emerald short of a traveler's price Hire is red and a click takes
+nothing, one more emerald turns it green while open and hires for all of it; Swift Hands at its top reads "Level 3 of 3",
+"Fully researched" in green, gray with no button, and a click starts nothing; research paid for and half done reads
+"Researching ...: 50%" and Under way after the hall is saved and loaded, and another topic is refused as busy).
+QA's `QaJobLists1109cGameTests` (9, 42.3 without Cobblemon: the hire price turns red when money leaves while open and
+Hire then takes nothing; exactly the price hires; a Gifted traveler's doubled price; a second player can't hire a
+traveler already hired and their screen closes; a second Research click on a topic under way restarts nothing; Under
+way survives a save; the Great Library's rows; a Legend tree's tab; every list line's text in American English).
 
 42.4: `BuilderToolListsGameTests.theShapePlannerIsAList`, `BuilderToolListsGameTests.theStylePickerIsAList`,
 `BuilderToolListsGameTests.thePriceTagIsAList`; `ShopListMenusCompatTests.theShopIsAList`,
@@ -220,6 +228,12 @@ Shape Planner says "no blocks" and refuses to draw; forged clicks (slots out of 
 and clone clicks) change nothing; each of the 7 shapes is picked by its cell and an arch has no solid/hollow row; the
 shape, style and price survive a save and reach the blueprint or the tag; the Style picker's first and last rows; the
 screens stop answering once the item leaves the hand. Mutants: 6 of 6 caught.
+QA (lane B, 2026-11-09 later, 42.4): 7 more in `QaBuilderToolLists1109bGameTests`: a 3x3x3 box counts 26 blocks
+hollow and 27 solid, at the top and in the Draw sentence, and takes one Blank Blueprint (none in creative); the Block row
+offers only building blocks carried, each once, at most 9 cells; the Shape Planner and the Price Tag work from the off
+hand; choosing a style keeps the mirror, choosing the chosen one changes nothing and only one row is gold; a Wonder's
+plans show one row and Mirror; the Price Tag stops at 1,000,000,000 and 1 then -1 reads "No price yet". Mutants: 3 of 3
+caught.
 
 Showcase scenes: `shapes`, `style_menu`, `shop`, `ferry_menu` (42.4, and the Price Tag in `counter`), `tutor`, `professor`, `daycare`, `daycare_keeper`, `smith_orders`, `gem_orders`, `habitat_lures` (and the
 list in `scholar`'s research still, `innkeeper`'s hire still, `berry_breeder`'s book still and `legend_guest`'s terms)

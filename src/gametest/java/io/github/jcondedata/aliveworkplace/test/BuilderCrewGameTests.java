@@ -48,6 +48,12 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  * <p>B181: a Village Hall an earlier batch left nearby (halls reach 64 blocks) makes this a village, and its needs and
  * the builders' moods changed their pace from one build to the next (alone 105% of the usual time, crews 89-98%), so the
  * hall is removed first. Each build's line logs every builder's pace and level, the conditions it was measured in.
+ *
+ * <p>B181 (2026-11-09): the slow crews were the mod's. Measured per stage and per builder: helpers dropped a claimed
+ * block once the lead's cursor reached it (the lead then fetched those up alone at the stage's end, 80-200 ticks with
+ * the crew idle), stood about once they had laid the steps ahead of a lead walking after its cursor, and the lead walked
+ * down from the roof to the chests for its last slab. Fixed in BuilderWork: alone 4127 ticks (unchanged), two 2084
+ * (50%, was 2333, 57%), four 1214-1443 (29-35% over 15 builds in 5 launches, was 29-46%).
  */
 public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";

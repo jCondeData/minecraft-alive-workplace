@@ -155,4 +155,6 @@ horn) in their own entity data.
   ground; a dirt block a player set in its box refuses it; its ground is taken 32 blocks below the hall and not 33;
   each stage's men stand on their spots (the yard's four, a pillager on each watchtower); and a man saved with an older
   home tag that has no radius keeps to the fort's 17 blocks.
+- GameTests: `QaBanditFortRing1109dGameTests` (QA, B660): on loaded flat ground round a far-off hall, 1000 fixed seeds
+  through `BanditFort.site` all land 110 to 150 blocks out, and the sites reach both edges of that ring.
 - Showcase scenes `bandit_fort` and `bandit_king`.

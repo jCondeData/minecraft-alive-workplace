@@ -54,6 +54,14 @@ seen:
 
 Our code a tick (the mod's timer): p50 1.3 then 0.8 ms at 64, 1.2 then 0.8 ms at 160.
 
+**Re-run, 0.152.0 (lane E QA, 2026-11-09):** `PERF=true PLOTS=40` on main 62063839e with Create on the pack, 80
+workers on 40 plots (39 of 46 sites working when measured). Idle p50 / p95 1.9 / 3.3; busy 33.6 / 67.8 (103.5), then
+11.7 / 22.0 (23.8); heap after GC 1389 MB; our share 21.2% of 1733 samples; our code a tick p50 2.7 then 2.2 ms, 9
+ticks with over 50 ms of ours (4 on the CPU, worst 513.4 ms in the benchmark's first tick, MinerWork 35.5 ms its
+biggest call). The idle ticks were twice the 10-26 run's too, so this container ran about twice as slow; our share is
+the same, so no regression is read from it. The pack boot before it (`tools/packtest/run.sh`, Java 21) was clean: no
+error or warning from our mod, 136 blueprints, the Repurposed Structures birch village 1 of 5 villagers in our houses.
+
 ## A season under the edicts (30.22)
 
 `SEASON=true tools/packtest/run.sh`: a City of 35 villagers (16 with jobs) on the pack server, 8 in-game days at full

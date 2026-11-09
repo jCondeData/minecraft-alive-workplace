@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098
 
 ## What a player sees
 
@@ -166,10 +166,12 @@ through reloads). In the pack, Mega Showdown renames Oricorio's styles to `pom-p
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last
-five for the Village Hall. Only wild Pokémon count: a player's own shiny standing by her pasture isn't a sighting. An
+five for the Village Hall. What she has told of is saved with her, so a restart neither tells the same Pokémon again
+nor empties her list. Only wild Pokémon count: a player's own shiny standing by her pasture isn't a sighting. An
 Alpha is a Pokémon with Cobblemon's "alpha" aspect (Cobblemon 1.8). Her Poké Snacks are set out the way a player
 places one: only on a spot a block can go (never into a solid block) and only from a Poké Snack. Tested in
-`HabitatKeeperCompatTests`, `QaHabitatKeeperCompatTests` and `QaHabitatWild1107dCompatTests`.
+`HabitatKeeperCompatTests`, `QaHabitatKeeperCompatTests`, `QaHabitatWild1107dCompatTests` and
+`QaSightedSaves1109eCompatTests`.
 
 ## How it works
 
@@ -257,7 +259,10 @@ players can hand things over; the Village Hall lists it too. The board is drawn 
 requests as a list on the left (what, how many, for whom and how far), the store's numbers, the Steward's shopping
 list and the stock orders "at a glance" on the right, and a request under the mouse read out in full. A click hands
 over what you have, as before, and the request drops by that much at once, so a quick second click hands
-nothing more than is still needed (B344). On the stock orders page, the item in your hand (the off hand's when the
+nothing more than is still needed (B344). What the click says reads as a sentence: "Gave 25 Cobblestone to the
+Builder's chests", "Gave a pickaxe to the Miner's chests" and "You don't have a pickaxe to give", never "Gave 1 A
+pickaxe" (B1098, `StorehouseBoardWordsGameTests`; `QaUploadFixesVerify1109GameTests`: the Miner's,
+Lumberjack's, Fisherman's and Farmer's requests, one and many). On the stock orders page, the item in your hand (the off hand's when the
 main hand is empty, B351) gets the "Order" button.
 
 **Miners make their own pickaxe (36.11).** A Miner whose pickaxe wore out, or who has none, first looks in their own

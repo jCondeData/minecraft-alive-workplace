@@ -107,11 +107,10 @@ public final class StorehouseBoard {
 			menu.button(slot++, icon(level, request, store, viewer), p -> {
 				int given = give(p, request);
 				if (given > 0) {
-					Chat.actionBar(p, Component.translatable(request.forBlock() ? "message.aliveworkplace.storehouse.gave_for" : "message.aliveworkplace.storehouse.gave",
-						given, request.what(), job(request)).withStyle(ChatFormatting.GREEN));
+					Chat.actionBar(p, gaveMessage(request, given).withStyle(ChatFormatting.GREEN));
 					level.playSound(null, p.blockPosition(), SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1f);
 				} else {
-					Chat.actionBar(p, Component.translatable("message.aliveworkplace.storehouse.none", request.what()).withStyle(ChatFormatting.YELLOW));
+					Chat.actionBar(p, noneMessage(request).withStyle(ChatFormatting.YELLOW));
 				}
 				render(menu, level, storehouse, p);
 				menu.broadcastChanges();
@@ -292,6 +291,32 @@ public final class StorehouseBoard {
 		return io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, site.structure())
 			.map(b -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(site.placement(), b.size()))
 			.orElse(null);
+	}
+
+	/**
+	 * What a click that handed {@code given} over says. A request named to stand alone ("A pickaxe", "Seeds") is written
+	 * in its mid-sentence form and, for one item, without the count: "Gave a pickaxe to the Miner's chests", "Gave 12
+	 * seeds to the Farmer's chests", never "Gave 1 A pickaxe" (B1098). Other names read as before ("Gave 25 Cobblestone").
+	 */
+	public static MutableComponent gaveMessage(Requests.Request request, int given) {
+		if (request.forBlock()) {
+			return Component.translatable("message.aliveworkplace.storehouse.gave_for", given, request.what(), job(request));
+		}
+		if (Requests.standsAlone(request.what())) {
+			Component what = Requests.inSentence(request.what());
+			return given == 1
+				? Component.translatable("message.aliveworkplace.storehouse.gave_one", what, job(request))
+				: Component.translatable("message.aliveworkplace.storehouse.gave", given, what, job(request));
+		}
+		return Component.translatable("message.aliveworkplace.storehouse.gave", given, request.what(), job(request));
+	}
+
+	/** What a click that handed nothing over says: "You don't have a pickaxe to give", not "You have no A pickaxe" (B1098). */
+	public static MutableComponent noneMessage(Requests.Request request) {
+		if (Requests.standsAlone(request.what())) {
+			return Component.translatable("message.aliveworkplace.storehouse.none_named", Requests.inSentence(request.what()));
+		}
+		return Component.translatable("message.aliveworkplace.storehouse.none", request.what());
 	}
 
 	private static Component job(Requests.Request request) {

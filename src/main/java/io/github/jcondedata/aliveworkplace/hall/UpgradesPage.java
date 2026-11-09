@@ -88,10 +88,11 @@ public final class UpgradesPage {
 
 	/** What a click on a build came to. */
 	public enum Outcome {
-		STARTED, QUEUED, BLOCKED, BUILDING, NOT_ALLOWED, NO_BUILDER, NOT_YOURS, GONE;
+		/** SPLIT (B1110): every Builder busy, a helper was taken off another build's crew for it. */
+		STARTED, SPLIT, QUEUED, BLOCKED, BUILDING, NOT_ALLOWED, NO_BUILDER, NOT_YOURS, GONE;
 
 		public boolean ok() {
-			return this == STARTED || this == QUEUED;
+			return this == STARTED || this == SPLIT || this == QUEUED;
 		}
 	}
 
@@ -264,9 +265,17 @@ public final class UpgradesPage {
 
 	/**
 	 * {@code player} orders the next level of the build on {@code placement}: if they may build in the village and its
-	 * space is free, the nearest free Builder (or the one with the shortest queue) builds it over the old level.
+	 * space is free, the nearest free Builder builds it over the old level; with every Builder busy, a helper taken off
+	 * another build's crew (B1110), else the one with the shortest queue after his current build.
 	 */
 	public static Outcome order(ServerLevel level, BlockPos hall, ServerPlayer player, BlueprintData.Placement placement) {
+		return order(level, hall, player, placement, split -> {
+		});
+	}
+
+	/** {@link #order}, telling {@code onSplit} which crew a helper was taken off (B1110). */
+	static Outcome order(ServerLevel level, BlockPos hall, ServerPlayer player, BlueprintData.Placement placement,
+						 java.util.function.Consumer<Builders.Split> onSplit) {
 		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			return Outcome.GONE;
 		}
@@ -290,13 +299,25 @@ public final class UpgradesPage {
 		}
 		BlockPos centre = BlueprintOutline.bounds(placement, next.get().size()).getCenter();
 		Optional<Villager> builder = builderFor(level, hall, centre, v -> Friends.mayCommand(player, v));
+		UUID owner = entity.owner() != null ? entity.owner() : player.getUUID();
+		String ownerName = entity.owner() != null ? entity.ownerName() : player.getGameProfile().getName();
+		if (builder.isEmpty() || Builders.activeSite(level, builder.get()) != null) {
+			// B1110: every Builder busy: a helper is taken off another build's crew (that build keeps its lead and goes on)
+			Optional<Builders.Split> split = Builders.splitOff(level, builders(level, hall, centre, v -> Friends.mayCommand(player, v)), centre);
+			if (split.isPresent()) {
+				Villager helper = split.get().builder();
+				Builders.start(level, helper, owner, ownerName, upgrade.next(), placement);
+				Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.upgrade_ordered",
+					player.getDisplayName(), helper.getDisplayName(), Blueprints.displayName(upgrade.next()), Blueprints.displayName(upgrade.built().structure())));
+				onSplit.accept(split.get());
+				return Outcome.SPLIT;
+			}
+		}
 		if (builder.isEmpty()) {
 			// B880: with workplaceBuilderOwnership on, another player's hired Builder takes no orders from this one
 			return builderFor(level, hall, centre, v -> true).isPresent() ? Outcome.NOT_YOURS : Outcome.NO_BUILDER;
 		}
 		Villager villager = builder.get();
-		UUID owner = entity.owner() != null ? entity.owner() : player.getUUID();
-		String ownerName = entity.owner() != null ? entity.ownerName() : player.getGameProfile().getName();
 		boolean busy = Builders.activeSite(level, villager) != null;
 		if (busy) {
 			Builders.enqueue(level, villager, owner, ownerName, upgrade.next(), placement);
@@ -315,14 +336,7 @@ public final class UpgradesPage {
 	static Optional<Villager> builderFor(ServerLevel level, BlockPos hall, BlockPos centre, Predicate<Villager> allowed) {
 		Villager best = null;
 		int bestQueue = Integer.MAX_VALUE;
-		List<Villager> builders = level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)).stream()
-			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()))).toList();
-		for (Villager v : builders) {
-			BlockPos bench = Builders.benchPos(v).orElseThrow();
-			if (!io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, bench, centre, Builders.MAX_SITE_DISTANCE)) {
-				continue;
-			}
+		for (Villager v : builders(level, hall, centre, allowed)) {
 			int queue = Builders.activeSite(level, v) == null ? 0 : 1 + Builders.queue(level, v).size();
 			if (queue <= Builders.MAX_QUEUE && queue < bestQueue) {
 				best = v;
@@ -330,6 +344,14 @@ public final class UpgradesPage {
 			}
 		}
 		return Optional.ofNullable(best);
+	}
+
+	/** The village's Builders among those {@code allowed} whose bench reaches a build centred on {@code centre}, nearest first. */
+	static List<Villager> builders(ServerLevel level, BlockPos hall, BlockPos centre, Predicate<Villager> allowed) {
+		return level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
+				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)
+					&& io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).get(), centre, Builders.MAX_SITE_DISTANCE)).stream()
+			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()))).toList();
 	}
 
 	/** The name of whoever hired the village's nearest Builder that {@code player} may not command ("" if none). */
@@ -444,11 +466,14 @@ public final class UpgradesPage {
 	/** A build picked: its next level ordered, or why not; the page again, the row now under way. */
 	static void pick(ChoiceMenu menu, ServerLevel level, BlockPos hall, BlueprintData.Placement placement, ServerPlayer p) {
 		Optional<Upgrade> before = at(level, hall, placement);
-		Outcome outcome = order(level, hall, p, placement);
+		Builders.Split[] split = new Builders.Split[1];
+		Outcome outcome = order(level, hall, p, placement, s -> split[0] = s);
 		Component next = before.map(u -> Blueprints.displayName(u.next())).orElse(Component.empty());
 		Component old = before.map(u -> Blueprints.displayName(u.built().structure())).orElse(Component.empty());
 		Component text = switch (outcome) {
 			case STARTED -> Component.translatable("message.aliveworkplace.upgrades.started", builderName(level, placement), next, old);
+			case SPLIT -> Component.translatable("message.aliveworkplace.upgrades.split", builderName(level, placement),
+				split[0] != null ? Blueprints.displayName(split[0].left().structure()) : Component.empty(), next, old);
 			case QUEUED -> Component.translatable("message.aliveworkplace.upgrades.queued", builderName(level, placement), next, old);
 			case BLOCKED -> Component.translatable("message.aliveworkplace.upgrades.blocked", next,
 				before.map(u -> u.blocker() != null ? blocked(u.blocker()) : Component.empty()).orElse(Component.empty()));

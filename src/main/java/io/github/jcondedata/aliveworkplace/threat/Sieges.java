@@ -1053,6 +1053,40 @@ public final class Sieges {
 		return director != null && director.through.contains(mob);
 	}
 
+	/**
+	 * A mob that turned into another in vanilla (a zombie drowning, a skeleton freezing; {@link ConvertedMobs}): {@code after}
+	 * takes {@code before}'s place in what the directors keep by UUID (B1085). Without it a raider that converted inside the
+	 * walls was no longer counted through, was given the director's orders again and walked back toward the gate. True if
+	 * anything changed.
+	 */
+	public static boolean converted(ServerLevel level, UUID before, UUID after) {
+		boolean changed = false;
+		for (Map.Entry<Key, Director> entry : DIRECTORS.entrySet()) {
+			if (!entry.getKey().dimension().equals(level.dimension())) {
+				continue;
+			}
+			Director director = entry.getValue();
+			if (director.through.remove(before)) {
+				director.through.add(after);
+				changed = true;
+			}
+			if (director.ordered.remove(before)) {
+				director.ordered.add(after);
+				changed = true;
+			}
+			Long blow = director.lastBlow.remove(before);
+			if (blow != null) {
+				director.lastBlow.put(after, blow);
+			}
+		}
+		Order order = ORDERS.remove(before);
+		if (order != null) {
+			ORDERS.put(after, order);
+			changed = true;
+		}
+		return changed;
+	}
+
 	// Where a siege gathers.
 
 	/** Whether {@code culture} lays sieges: its tactics name {@link #TACTIC}, {@link Ladders#TACTIC} or {@link SandRamps#TACTIC}; none at a gentle threat level. */

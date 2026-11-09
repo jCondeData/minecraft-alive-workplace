@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.hall.HallBeds;
 import io.github.jcondedata.aliveworkplace.hall.HallJobs;
 import io.github.jcondedata.aliveworkplace.hall.HallPeople;
 import io.github.jcondedata.aliveworkplace.hall.HallSections;
+import io.github.jcondedata.aliveworkplace.hall.MovePage;
 import io.github.jcondedata.aliveworkplace.hall.HallSections.Section;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
@@ -198,6 +199,13 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	 */
 	@Override
 	public int[] centre(int slot) {
+		if (moveMap()) {
+			for (int[] hit : moveHits) {
+				if (hit[0] == slot) {
+					return new int[]{hit[1] + hit[3] / 2, hit[2] + hit[4] / 2};
+				}
+			}
+		}
 		if (hasSidebar() && onMain() && slot >= 0 && slot < ChoiceMenu.SIZE) {
 			int marks = HallSections.marks(menu.slots.get(slot).getItem());
 			if (marks != 0 && (marks & section().bit()) == 0) {
@@ -297,7 +305,83 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean customBody() {
-		return hasSidebar() && onMain() && section() == Section.PEOPLE;
+		return moveMap() || hasSidebar() && onMain() && section() == Section.PEOPLE;
+	}
+
+	// --- the Move page's picker (45.2): its controls as cells, the fit line, and the map as a grid, north at the top ----
+
+	/** What the picker drew last, for clicks: [slot, x, y, w, h]. */
+	private final List<int[]> moveHits = new ArrayList<>();
+
+	/** Whether the Move page's picker is showing (its map cells carry {@link MovePage#MAP_MARK}). */
+	private boolean moveMap() {
+		net.minecraft.world.item.component.CustomData data = menu.slots.get(MovePage.CENTRE).getItem().get(DataComponents.CUSTOM_DATA);
+		return data != null && data.contains(MovePage.MAP_MARK);
+	}
+
+	private void renderMoveMap(GuiGraphics g, int x, int y, int w, int mouseX, int mouseY) {
+		moveHits.clear();
+		ItemStack tooltip = null;
+		int sx = x;
+		for (int slot = 0; slot < VillageHallScreen.FIRST_ROW; slot++) {
+			ItemStack icon = menu.slots.get(slot).getItem();
+			if (icon.isEmpty() || !ChoiceTableScreen.shown(icon)) {
+				continue;
+			}
+			boolean over = mouseX >= sx && mouseX < sx + 18 && mouseY >= y && mouseY < y + 18;
+			TableStyle.cell(g, sx, y, false, over);
+			g.renderItem(icon, sx + 1, y + 1);
+			moveHits.add(new int[]{slot, sx, y, 18, 18});
+			if (over) {
+				tooltip = icon;
+			}
+			sx += 20;
+		}
+		int ly = y + 24;
+		ItemStack verdict = menu.slots.get(MovePage.VERDICT).getItem();
+		if (!verdict.isEmpty()) {
+			g.drawString(font, TableStyle.trim(font, verdict.getHoverName(), w), x, ly, TableStyle.NAME, false);
+		}
+		ly += 14;
+		int cell = TableStyle.CELL;
+		int mapW = MovePage.COLUMNS * cell;
+		int mx0 = x + Math.max(0, (w - mapW) / 2);
+		g.drawString(font, Component.translatable("screen.aliveworkplace.move.map.north"), mx0, ly, TableStyle.SUBTITLE, false);
+		ly += 11;
+		for (int row = 0; row < MovePage.ROWS; row++) {
+			for (int col = 0; col < MovePage.COLUMNS; col++) {
+				int slot = VillageHallScreen.FIRST_ROW + row * MovePage.COLUMNS + col;
+				ItemStack icon = menu.slots.get(slot).getItem();
+				if (icon.isEmpty()) {
+					continue;
+				}
+				int cx = mx0 + col * cell;
+				int cy = ly + row * cell;
+				boolean over = mouseX >= cx && mouseX < cx + 18 && mouseY >= cy && mouseY < cy + 18;
+				TableStyle.cell(g, cx, cy, slot == MovePage.CENTRE, over);
+				g.renderItem(icon, cx + 1, cy + 1);
+				moveHits.add(new int[]{slot, cx, cy, 18, 18});
+				if (over) {
+					tooltip = icon;
+				}
+			}
+		}
+		if (tooltip != null) {
+			g.renderTooltip(font, tooltip, mouseX, mouseY);
+		}
+	}
+
+	private boolean moveMapClicked(double mx, double my, int button) {
+		for (int[] hit : moveHits) {
+			if (mx >= hit[1] && mx < hit[1] + hit[3] && my >= hit[2] && my < hit[2] + hit[4]) {
+				if (minecraft != null) {
+					minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
+				}
+				press(hit[0], button, false);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** The People section's other buttons (the figures, the recall bell, the page tabs): a strip over the table. */
@@ -596,6 +680,10 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected void renderBody(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
+		if (moveMap()) {
+			renderMoveMap(g, x, y, w, mouseX, mouseY);
+			return;
+		}
 		hits.clear();
 		ItemStack tooltip = null;
 		Component tip = null;
@@ -774,6 +862,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean bodyClicked(double mx, double my, int button) {
+		if (moveMap()) {
+			return moveMapClicked(mx, my, button);
+		}
 		// Buttons first (they sit on an open row's area), then strip and rows.
 		for (int pass = 0; pass < 2; pass++) {
 			for (int[] hit : hits) {
@@ -825,6 +916,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean bodyScrolled(double mx, double my, double scrollY) {
+		if (moveMap()) {
+			return true;
+		}
 		tableScroll = Math.max(0, tableScroll - (int) Math.round(scrollY * RH * 2));
 		return true;
 	}

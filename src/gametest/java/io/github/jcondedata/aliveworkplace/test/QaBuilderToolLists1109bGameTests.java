@@ -379,4 +379,339 @@ public class QaBuilderToolLists1109bGameTests implements FabricGameTest {
 		helper.assertTrue(!menu.stillValid(p), "the tag's screen is still valid without the tag");
 		helper.succeed();
 	}
+
+	// --- Added by lane-b-1109-1237 (second QA pass): what the first pass left open ------------------------------------
+
+	/** A right-click with what's in {@code hand} (sneaking or not), as a client sends it: the list screen it opens. */
+	private static ChoiceMenu use(GameTestHelper helper, ServerPlayer player, boolean sneak, InteractionHand hand) {
+		player.setShiftKeyDown(sneak);
+		player.gameMode.useItem(player, helper.getLevel(), player.getItemInHand(hand), hand);
+		player.setShiftKeyDown(false);
+		helper.assertTrue(player.containerMenu instanceof ChoiceMenu menu && menu.getType() == ModBlocks.CHOICE_LIST_MENU,
+			"a right-click with the " + hand + " didn't open the list: " + player.containerMenu);
+		return (ChoiceMenu) player.containerMenu;
+	}
+
+	/** Every translatable in {@code c} (its arguments too) has an English line. */
+	private static void allTranslated(GameTestHelper helper, Component c, String what) {
+		if (c == null) {
+			return;
+		}
+		if (c.getContents() instanceof TranslatableContents t) {
+			// (a key with a fallback, such as a blueprint's made-up name, reads its fallback: fine)
+			helper.assertTrue(Language.getInstance().has(t.getKey()) || t.getFallback() != null, what + ": no en_us line for " + t.getKey());
+			for (Object arg : t.getArgs()) {
+				if (arg instanceof Component inner) {
+					allTranslated(helper, inner, what);
+				}
+			}
+		}
+		for (Component sibling : c.getSiblings()) {
+			allTranslated(helper, sibling, what);
+		}
+	}
+
+	/** Every name, second line, price, button and top line on the screen resolves to English. */
+	private static void everyLineReads(GameTestHelper helper, ChoiceMenu menu, String what) {
+		for (int slot = 0; slot < ChoiceMenu.SIZE; slot++) {
+			ItemStack icon = menu.icon(slot);
+			if (icon.isEmpty()) {
+				continue;
+			}
+			allTranslated(helper, icon.getHoverName(), what + " slot " + slot);
+			ChoiceList.Mark m = ChoiceList.mark(icon);
+			if (m != null) {
+				allTranslated(helper, m.second(), what + " slot " + slot);
+				allTranslated(helper, m.price(), what + " slot " + slot);
+				allTranslated(helper, m.button(), what + " slot " + slot);
+			}
+			ChoiceList.Info info = ChoiceList.info(icon);
+			if (info != null) {
+				allTranslated(helper, info.money(), what + " top");
+				allTranslated(helper, info.hint(), what + " hint");
+			}
+		}
+	}
+
+	/** Sets the planner's size with its - and + cells from where it is now (as a player clicks them). */
+	private static void sizeTo(ServerPlayer p, ChoiceMenu menu, int w, int h, int d) {
+		int[] want = {w, h, d};
+		int[] rows = {Shapes.WIDTH, Shapes.HEIGHT, Shapes.DEPTH};
+		for (int i = 0; i < 3; i++) {
+			for (int guard = 0; guard < 80; guard++) {
+				Shapes.Settings s = settings(p);
+				int now = i == 0 ? s.width() : i == 1 ? s.height() : s.depth();
+				if (now == want[i]) {
+					break;
+				}
+				click(p, menu, now < want[i] ? rows[i] + 1 : rows[i] - 1, false);
+			}
+		}
+	}
+
+	private static String top(GameTestHelper helper, ChoiceMenu menu) {
+		return JobListMenusGameTests.info(helper, menu).money().getString();
+	}
+
+	/**
+	 * Solid and hollow counts, as the top of the screen promises ("how many blocks the shape takes"): a solid 3x3x3 box is
+	 * 27 blocks, hollow it's the 26 round the middle, a 2x2x2 box has no inside so hollow is still 8. The Draw sentence
+	 * says the same count; in survival Draw takes one Blank Blueprint of three, and in creative it needs none. Every
+	 * sentence read on the way is a real English line.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void solidAndHollowCountsMatchTheDrawnBlueprint(GameTestHelper helper) {
+		QaStageFiveGameTests.Client client = QaStageFiveGameTests.client(helper, GameType.SURVIVAL);
+		ServerPlayer p = client.player();
+		p.getInventory().setItem(9, new ItemStack(Items.STONE_BRICKS, 64));
+		p.getInventory().setItem(10, new ItemStack(ModItems.BLANK_BLUEPRINT, 3));
+		p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.SHAPE_PLANNER));
+		ChoiceMenu menu = use(helper, p, false);
+		click(p, menu, Shapes.FIRST_MATERIAL, false);
+		sizeTo(p, menu, 3, 3, 3);
+		if (!settings(p).hollow()) {
+			click(p, menu, Shapes.HOLLOW, false);
+		}
+		helper.assertTrue(top(helper, menu).equals("26 blocks of Stone Bricks"), "a hollow 3x3x3 box: the top says '" + top(helper, menu) + "'");
+		click(p, menu, Shapes.HOLLOW, false);
+		helper.assertTrue(!settings(p).hollow() && top(helper, menu).equals("27 blocks of Stone Bricks"), "a solid 3x3x3 box: the top says '" + top(helper, menu) + "'");
+		helper.assertTrue(menu.icon(Shapes.INFO).getHoverName().getString().equals("3 × 3 × 3"), "the size row: " + menu.icon(Shapes.INFO).getHoverName().getString());
+		everyLineReads(helper, menu, "the planner");
+		click(p, menu, Shapes.DRAW, false);
+		Component drawn = client.seen().stream().filter(c -> key(c).startsWith("message.aliveworkplace.shapes.drawn")).reduce((a, b) -> b).orElse(null);
+		helper.assertTrue(drawn != null, "nothing said on Draw: " + client.seen());
+		allTranslated(helper, drawn, "the Draw sentence");
+		helper.assertTrue(drawn.getString().startsWith("Drew ") && drawn.getString().contains(": 27 blocks of Stone Bricks."), "the Draw sentence: " + drawn.getString());
+		helper.assertTrue(p.getInventory().countItem(ModItems.BLANK_BLUEPRINT) == 2, "Draw took " + (3 - p.getInventory().countItem(ModItems.BLANK_BLUEPRINT)) + " blanks, not 1");
+		// 2x2x2: nothing inside to hollow out
+		menu = use(helper, p, false);
+		sizeTo(p, menu, 2, 2, 2);
+		click(p, menu, Shapes.HOLLOW, false);
+		helper.assertTrue(settings(p).hollow() && top(helper, menu).equals("8 blocks of Stone Bricks"), "a hollow 2x2x2 box: '" + top(helper, menu) + "'");
+		// creative: no blank needed, none taken
+		p.closeContainer();
+		p.getInventory().setItem(10, ItemStack.EMPTY);
+		p.setGameMode(GameType.CREATIVE);
+		int blueprints = (int) p.getInventory().items.stream().filter(s -> s.getItem() instanceof BlueprintItem).count();
+		menu = use(helper, p, false);
+		click(p, menu, Shapes.DRAW, false);
+		helper.assertTrue(p.getInventory().items.stream().filter(s -> s.getItem() instanceof BlueprintItem).count() == blueprints + 1,
+			"creative Draw without a blank drew nothing: " + client.seen().get(client.seen().size() - 1).getString());
+		helper.succeed();
+	}
+
+	/**
+	 * The block row offers "the building blocks you carry": not sand (it falls) nor a chest, a block in the off hand is
+	 * offered, no block is offered twice, and with more kinds than fit the row still holds only real cells that each
+	 * pick their block.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void theBlockRowOffersOnlyBuildingBlocksCarried(GameTestHelper helper) {
+		ServerPlayer p = QaStageFiveGameTests.client(helper, GameType.SURVIVAL).player();
+		p.getInventory().setItem(9, new ItemStack(Items.SAND, 64));
+		p.getInventory().setItem(10, new ItemStack(Items.CHEST, 4));
+		p.getInventory().setItem(11, new ItemStack(Items.TORCH, 16));
+		p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.SHAPE_PLANNER));
+		ChoiceMenu menu = use(helper, p, false);
+		ChoiceList.Mark row = ChoiceList.mark(menu.icon(Shapes.BLOCK_ROW));
+		helper.assertTrue(row != null && key(row.second()).equals("screen.aliveworkplace.shapes.no_blocks"), "sand, a chest and torches were offered: " + row
+			+ " cells " + Arrays.toString(ChoiceList.cells(menu.icon(Shapes.BLOCK_ROW))));
+		p.closeContainer();
+		p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.COBBLESTONE, 32));
+		p.getInventory().setItem(12, new ItemStack(Items.COBBLESTONE, 64)); // the same block again
+		menu = use(helper, p, false);
+		int[] cells = ChoiceList.cells(menu.icon(Shapes.BLOCK_ROW));
+		helper.assertTrue(cells.length == 1 && menu.icon(cells[0]).is(Items.COBBLESTONE), "the off hand's cobblestone, once: " + Arrays.toString(cells)
+			+ " " + (cells.length > 0 ? menu.icon(cells[0]) : ""));
+		p.closeContainer();
+		List<net.minecraft.world.item.Item> many = List.of(Items.STONE, Items.GRANITE, Items.DIORITE, Items.ANDESITE, Items.BRICKS, Items.OAK_PLANKS,
+			Items.SPRUCE_PLANKS, Items.BIRCH_PLANKS, Items.DEEPSLATE_BRICKS, Items.MOSSY_STONE_BRICKS, Items.SANDSTONE, Items.END_STONE);
+		for (int i = 0; i < many.size(); i++) {
+			p.getInventory().setItem(13 + i, new ItemStack(many.get(i), 8));
+		}
+		menu = use(helper, p, false);
+		cells = ChoiceList.cells(menu.icon(Shapes.BLOCK_ROW));
+		helper.assertTrue(cells.length >= 2 && cells.length <= 9, "the block row with 13 kinds carried has " + cells.length + " cells");
+		java.util.Set<net.minecraft.world.item.Item> seen = new java.util.HashSet<>();
+		for (int cell : cells) {
+			ItemStack icon = menu.icon(cell);
+			ChoiceList.Mark m = ChoiceList.mark(icon);
+			helper.assertTrue(m != null && m.kind() == ChoiceList.Kind.CELL && !icon.isEmpty() && seen.add(icon.getItem())
+				&& (icon.is(Items.COBBLESTONE) || many.contains(icon.getItem())), "cell " + cell + ": " + icon + " " + m);
+		}
+		int lastCell = cells[cells.length - 1];
+		net.minecraft.world.item.Item lastItem = menu.icon(lastCell).getItem();
+		click(p, menu, lastCell, false);
+		helper.assertTrue(settings(p).material().map(id -> id.equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(lastItem))).orElse(false)
+			&& ChoiceList.mark(menu.icon(lastCell)).on(), "the last cell didn't pick " + lastItem + ": " + settings(p));
+		helper.assertTrue(menu.icon(Shapes.BLOCK_ROW).getHoverName().getString().equals("Block: " + lastItem.getDescription().getString()),
+			"the block row says " + menu.icon(Shapes.BLOCK_ROW).getHoverName().getString());
+		helper.succeed();
+	}
+
+	/**
+	 * The Shape Planner held in the off hand: a right-click with it opens the list, and the clicks change the planner in
+	 * the off hand, not the stack in the main hand (whose blocks are offered).
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void theShapePlannerWorksFromTheOffHand(GameTestHelper helper) {
+		ServerPlayer p = QaStageFiveGameTests.client(helper, GameType.SURVIVAL).player();
+		p.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.STONE_BRICKS, 64));
+		p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(ModItems.SHAPE_PLANNER));
+		ChoiceMenu menu = use(helper, p, false, InteractionHand.OFF_HAND);
+		click(p, menu, Shapes.FIRST_KIND + Shapes.Kind.CONE.ordinal(), false);
+		click(p, menu, Shapes.WIDTH + 1, true);
+		int[] cells = ChoiceList.cells(menu.icon(Shapes.BLOCK_ROW));
+		helper.assertTrue(cells.length == 1 && menu.icon(cells[0]).is(Items.STONE_BRICKS), "the main hand's bricks aren't offered: " + Arrays.toString(cells));
+		click(p, menu, cells[0], false);
+		Shapes.Settings s = p.getOffhandItem().getOrDefault(ModComponents.SHAPE, Shapes.Settings.DEFAULT);
+		helper.assertTrue(s.shape() == Shapes.Kind.CONE && s.width() == Shapes.Settings.DEFAULT.width() + 5 && s.material().isPresent(),
+			"the off hand's planner: " + s);
+		helper.assertTrue(p.getMainHandItem().is(Items.STONE_BRICKS) && p.getMainHandItem().getCount() == 64
+			&& p.getMainHandItem().get(ModComponents.SHAPE) == null, "the main hand changed: " + p.getMainHandItem());
+		helper.assertTrue(ChoiceList.mark(menu.icon(Shapes.FIRST_KIND + Shapes.Kind.CONE.ordinal())).on()
+			&& menu.icon(Shapes.WIDTH).getCount() == s.width(), "the screen doesn't follow the off hand's planner");
+		helper.succeed();
+	}
+
+	/**
+	 * The style picker keeps the mirror when a style is chosen (Mirror and the styles are separate choices): mirrored, then
+	 * dark oak, is a mirrored dark oak, Flip back still on Mirror's row. Choosing the chosen style again changes nothing
+	 * and leaves exactly one gold row; the top keeps the blueprint's name through every choice.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void choosingAStyleKeepsTheMirrorAndTheName(GameTestHelper helper) {
+		ServerPlayer p = QaStageFiveGameTests.client(helper, GameType.SURVIVAL).player();
+		p.setItemInHand(InteractionHand.MAIN_HAND, BlueprintItem.create(StarterBlueprints.STONE_HOUSE.id(), StarterBlueprints.STONE_HOUSE.size()));
+		ChoiceMenu menu = use(helper, p, true);
+		String name = top(helper, menu);
+		helper.assertTrue(!name.isBlank() && !name.contains("aliveworkplace"), "the top: " + name);
+		click(p, menu, StylePicker.MIRROR, false);
+		int dark = -1;
+		for (int i = 1; i <= Math.min(20, BlueprintStyles.all().size()); i++) {
+			if (menu.icon(StylePicker.slot(i)).getHoverName().getString().equals("Dark Oak")) {
+				dark = StylePicker.slot(i);
+			}
+		}
+		helper.assertTrue(dark >= 0, "no Dark Oak row");
+		click(p, menu, dark, false);
+		BlueprintData data = BlueprintItem.data(p.getMainHandItem()).orElseThrow();
+		helper.assertTrue(data.structure().equals(BlueprintStyles.styled(StarterBlueprints.STONE_HOUSE.id(), "dark_oak")), "not dark oak: " + data.structure());
+		helper.assertTrue(data.mirrored(), "choosing a style undid the mirror");
+		helper.assertTrue(key(ChoiceList.mark(menu.icon(StylePicker.MIRROR)).button()).equals("screen.aliveworkplace.styles.button_unmirror"),
+			"Mirror's row forgot it's mirrored");
+		click(p, menu, dark, false); // the chosen one again
+		BlueprintData again = BlueprintItem.data(p.getMainHandItem()).orElseThrow();
+		helper.assertTrue(again.structure().equals(data.structure()) && again.mirrored(), "choosing the chosen style changed it: " + again);
+		int gold = 0;
+		for (int i = 0; i <= Math.min(20, BlueprintStyles.all().size()); i++) {
+			ChoiceList.Mark m = ChoiceList.mark(menu.icon(StylePicker.slot(i)));
+			if (m != null && m.on()) {
+				gold++;
+				helper.assertTrue(StylePicker.slot(i) == dark && key(m.button()).equals("screen.aliveworkplace.styles.chosen"), "row " + i + " is gold: " + m);
+			}
+		}
+		helper.assertTrue(gold == 1, gold + " gold style rows");
+		helper.assertTrue(top(helper, menu).equals(name), "the top changed from '" + name + "' to '" + top(helper, menu) + "'");
+		everyLineReads(helper, menu, "the style picker");
+		helper.succeed();
+	}
+
+	/**
+	 * A Wonder Plan's picker has one row saying a Wonder keeps its own blocks (no Choose, no other styles) and Mirror;
+	 * a click on that row changes nothing, Mirror mirrors it.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void aWonderPlansPickerHasOneRowAndMirror(GameTestHelper helper) {
+		ServerPlayer p = QaStageFiveGameTests.client(helper, GameType.SURVIVAL).player();
+		ItemStack plan = new ItemStack(ModItems.WONDER_PLAN);
+		plan.set(ModComponents.BLUEPRINT, new BlueprintData(StarterBlueprints.STONE_HOUSE.id(), java.util.Optional.of(StarterBlueprints.STONE_HOUSE.size()),
+			java.util.Optional.empty()));
+		p.setItemInHand(InteractionHand.MAIN_HAND, plan);
+		ChoiceMenu menu = use(helper, p, true);
+		ChoiceList.Mark row = ChoiceList.mark(menu.icon(StylePicker.slot(0)));
+		helper.assertTrue(row != null && row.kind() == ChoiceList.Kind.ROW && row.button() == null
+			&& menu.icon(StylePicker.slot(0)).getHoverName().getString().equals("A Wonder keeps its own blocks"), "the Wonder's row: " + row + " "
+			+ menu.icon(StylePicker.slot(0)).getHoverName().getString());
+		for (int i = 1; i <= 20; i++) {
+			helper.assertTrue(ChoiceList.mark(menu.icon(StylePicker.slot(i))) == null, "a style row " + i + " on a Wonder: " + menu.icon(StylePicker.slot(i)));
+		}
+		everyLineReads(helper, menu, "the Wonder's picker");
+		click(p, menu, StylePicker.slot(0), false);
+		click(p, menu, StylePicker.slot(1), false);
+		helper.assertTrue(BlueprintItem.data(p.getMainHandItem()).orElseThrow().structure().equals(StarterBlueprints.STONE_HOUSE.id()), "the Wonder was restyled");
+		click(p, menu, StylePicker.MIRROR, false);
+		helper.assertTrue(BlueprintItem.data(p.getMainHandItem()).orElseThrow().mirrored()
+			&& key(ChoiceList.mark(menu.icon(StylePicker.MIRROR)).button()).equals("screen.aliveworkplace.styles.button_unmirror"), "Mirror on a Wonder");
+		helper.succeed();
+	}
+
+	/**
+	 * The Price Tag at its ends: a tag renamed in an anvil to "250" opens at 250 and +1 makes 251; one renamed to a
+	 * billion (the most a tag holds) keeps it after +1000 and +1 (no overflow, not rubbed out), and -1 takes one off;
+	 * -1 at 1 leaves "No price yet". Every line on the screen is English.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void thePriceTagAtItsEnds(GameTestHelper helper) {
+		ServerPlayer p = QaStageFiveGameTests.client(helper, GameType.SURVIVAL).player();
+		ItemStack tag = new ItemStack(ModItems.PRICE_TAG);
+		tag.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal("250"));
+		p.setItemInHand(InteractionHand.MAIN_HAND, tag);
+		ChoiceMenu menu = use(helper, p, false);
+		int first = PriceTagItem.FIRST_STEP_SLOT;
+		helper.assertTrue(menu.icon(PriceTagItem.PRICE_SLOT).getHoverName().getString().contains("250")
+			&& !key(JobListMenusGameTests.info(helper, menu).money()).equals("screen.aliveworkplace.price_tag.none"), "the anvil's 250 isn't shown");
+		everyLineReads(helper, menu, "the Price Tag");
+		click(p, menu, first + 5, false); // +1
+		helper.assertTrue(PriceTagItem.dollars(p.getMainHandItem()) == 251, "250 +1 is " + PriceTagItem.dollars(p.getMainHandItem()));
+		p.closeContainer();
+		p.getMainHandItem().set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal("1000000000"));
+		menu = use(helper, p, false);
+		helper.assertTrue(PriceTagItem.dollars(p.getMainHandItem()) == 1_000_000_000L, "a billion isn't a price: " + p.getMainHandItem().getHoverName().getString());
+		click(p, menu, first + 8, false); // +1000
+		click(p, menu, first + 5, false); // +1
+		long now = PriceTagItem.dollars(p.getMainHandItem());
+		helper.assertTrue(now == 1_000_000_000L, "+1000 and +1 at the most made it " + now + " ('" + p.getMainHandItem().getHoverName().getString() + "')");
+		helper.assertTrue(!key(JobListMenusGameTests.info(helper, menu).money()).equals("screen.aliveworkplace.price_tag.none"), "the top lost the price at the most");
+		click(p, menu, first + 3, false); // -1
+		helper.assertTrue(PriceTagItem.dollars(p.getMainHandItem()) == 999_999_999L, "-1 from the most: " + PriceTagItem.dollars(p.getMainHandItem()));
+		p.closeContainer();
+		p.getMainHandItem().set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal("1"));
+		menu = use(helper, p, false);
+		click(p, menu, first + 3, false); // -1
+		helper.assertTrue(PriceTagItem.dollars(p.getMainHandItem()) == -1
+			&& key(JobListMenusGameTests.info(helper, menu).money()).equals("screen.aliveworkplace.price_tag.none"), "1 - 1 isn't no price");
+		helper.succeed();
+	}
+
+	/**
+	 * A Price Tag in the off hand: a right-click with it opens the list, +10 prices the off hand's tags (the whole stack),
+	 * the main hand's tag keeps its own price, and closing and reopening shows the price again.
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void thePriceTagWorksFromTheOffHand(GameTestHelper helper) {
+		ServerPlayer p = QaStageFiveGameTests.client(helper, GameType.SURVIVAL).player();
+		ItemStack main = new ItemStack(ModItems.PRICE_TAG);
+		main.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal("5"));
+		p.setItemInHand(InteractionHand.MAIN_HAND, main);
+		p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(ModItems.PRICE_TAG, 2));
+		ChoiceMenu menu = use(helper, p, false, InteractionHand.OFF_HAND);
+		helper.assertTrue(key(JobListMenusGameTests.info(helper, menu).money()).equals("screen.aliveworkplace.price_tag.none"),
+			"the off hand's screen shows the main hand's price: " + top(helper, menu));
+		click(p, menu, PriceTagItem.FIRST_STEP_SLOT + 6, false); // +10
+		helper.assertTrue(PriceTagItem.dollars(p.getOffhandItem()) == 10 && p.getOffhandItem().getCount() == 2, "the off hand's tags: " + p.getOffhandItem());
+		helper.assertTrue(PriceTagItem.dollars(p.getMainHandItem()) == 5, "the main hand's tag changed to " + PriceTagItem.dollars(p.getMainHandItem()));
+		click(p, menu, PriceTagItem.DONE_SLOT, false);
+		helper.assertTrue(p.containerMenu == p.inventoryMenu, "Done didn't close");
+		menu = use(helper, p, false, InteractionHand.OFF_HAND);
+		helper.assertTrue(menu.icon(PriceTagItem.PRICE_SLOT).getHoverName().getString().contains("10"), "reopened: " + menu.icon(PriceTagItem.PRICE_SLOT).getHoverName().getString());
+		helper.succeed();
+	}
 }

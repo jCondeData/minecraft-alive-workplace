@@ -4943,13 +4943,17 @@ final class JobScenes {
 					net.minecraft.world.level.block.Mirror.NONE));
 				Showcase.check(site != null, "the builder took the stone house on");
 				subject = mason;
-				io.github.jcondedata.aliveworkplace.card.JobCards.open(player, mason, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.BUILDER);
-				Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m
-					&& m.card().lines().size() >= 3 && m.card().lines().stream().anyMatch(l -> l.label().getString().startsWith("Needs "))
-					&& m.card().button(io.github.jcondedata.aliveworkplace.card.JobCards.HALL).usable(),
-					"the card showed the site, his experience and what he needs, with Hall page ready");
 			},
-			List.of(step("01_status_card", io.github.jcondedata.aliveworkplace.card.JobCards.HALL, 0),
+			// The card opens a step later than the staging: a hall's point of interest is added by a task the server runs
+			// after the tick that placed it, so a card opened in the staging's own tick found no hall (Hall page grayed).
+			List.of(new Step("01_status_card", io.github.jcondedata.aliveworkplace.card.JobCards.HALL, 0, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+					io.github.jcondedata.aliveworkplace.card.JobCards.open(player, subject, io.github.jcondedata.aliveworkplace.card.JobCards.Kind.BUILDER);
+					Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m
+						&& m.card().lines().size() >= 3 && m.card().lines().stream().anyMatch(l -> l.label().getString().startsWith("Needs "))
+						&& m.card().button(io.github.jcondedata.aliveworkplace.card.JobCards.HALL).usable(),
+						"the card showed the site, his experience and what he needs, with Hall page ready");
+				}, 25),
 				new Step("02_status_card_hall", -1, 6, (level, player) -> {
 					if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m) {
 						m.clickMenuButton(player, io.github.jcondedata.aliveworkplace.card.JobCards.HALL);
@@ -5602,6 +5606,47 @@ final class JobScenes {
 					}
 				}, 40)),
 			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
+		// The Hall's Move page (ROADMAP 45.2): a finished Starter Cottage north of the hall; the Move page lists it, its picker
+		// opens with the map of the ground round it, a click two cells west puts the new spot there (it fits: green, and the
+		// ghost outline glows in the world), and Rotate turns it a quarter, its front to the east.
+		SCREENS.put("move_plan", new Screen("the hall's Move page listed the Starter Cottage; its picker showed the map round it, a click on the map put the "
+			+ "new spot to the west (it fits, the ghost outline in green), and Rotate turned it to face east",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos cottage = STATION.offset(-8, 0, -15);
+				level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, cottage, cottage,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(), cottage,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			},
+			List.of(new Step("01_move_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.MovePage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.BRICKS),
+							"the cottage listed on the Move page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("02_new_spot_fits", io.github.jcondedata.aliveworkplace.hall.MovePage.CENTRE, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.CENTRE - 2, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.VERDICT).is(Items.LIME_DYE),
+							"the spot to the west fits: " + m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.VERDICT).getHoverName().getString());
+						Showcase.check(io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.moveGhost(player) != null, "the ghost outline glows");
+					}
+				}, 60),
+				new Step("03_rotated", io.github.jcondedata.aliveworkplace.hall.MovePage.ROTATE, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.ROTATE, player);
+						Showcase.check(io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player)
+								.map(p -> p.rotation() == net.minecraft.world.level.block.Rotation.CLOCKWISE_90).orElse(false),
+							"Rotate turned it a quarter: " + io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).map(p -> p.rotation().name()).orElse("not picking"));
+					}
+				}, 60)),
+			(level, player) -> io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isPresent()));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".

@@ -46,13 +46,13 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 public class QaSandRampEdgeGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
 	private static final ResourceLocation PILERS = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "qa_sand_edge_pilers");
-	private static final BlockPos HALL = new BlockPos(14, 2, 8);
+	static final BlockPos HALL = new BlockPos(14, 2, 8);
 	private static final int WEST = 5;
 	private static final int EAST = 23;
 	private static final int BACK = 4;
 	private static final int FRONT = 15;
 
-	private static Culture pilers(GameTestHelper helper) {
+	static Culture pilers(GameTestHelper helper) {
 		Culture culture = Culture.read(PILERS, com.google.gson.JsonParser.parseString("{\"where\": {\"min_villagers\": 100000}, \"roster\": ["
 			+ "{\"entity\": \"minecraft:husk\", \"share\": 60, \"role\": \"climber\"}, {\"entity\": \"minecraft:husk\", \"share\": 40, \"role\": \"melee\"}],"
 			+ " \"hours\": \"until_noon\", \"tactics\": [\"sand_ramps\"]}").getAsJsonObject());
@@ -66,7 +66,7 @@ public class QaSandRampEdgeGameTests implements FabricGameTest {
 	}
 
 	/** The desert tests' yard: stone brick walls four high, a finished Stone Wall in the front one, a villager shut in a cell. */
-	private static Villager yard(GameTestHelper helper) {
+	static Villager yard(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.finished(helper);
 		ServerLevel level = helper.getLevel();
@@ -119,7 +119,7 @@ public class QaSandRampEdgeGameTests implements FabricGameTest {
 	}
 
 	/** A melee husk of the culture standing still at (x, 2, z): it never walks, so where it stands is exact. */
-	private static Mob still(GameTestHelper helper, Culture culture, Villager villager, double x, double z) {
+	static Mob still(GameTestHelper helper, Culture culture, Villager villager, double x, double z) {
 		ServerLevel level = helper.getLevel();
 		Culture.Member member = culture.roster().stream().filter(m -> m.role() == Culture.Role.MELEE).findFirst().orElseThrow();
 		Mob mob = Threats.create(level, member);

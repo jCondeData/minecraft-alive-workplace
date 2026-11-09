@@ -90,10 +90,13 @@ public class HallPagesGameTests {
 			List<String> added = new ArrayList<>();
 			try {
 				int before = HallPages.all().size();
+				// the next tab: after the tabs shown, or in place of the newest spare page's when the row is full (45.2 filled it)
+				int shownBefore = HallPages.shown().size();
+				int next = VillageHallScreen.PAGE_ROW + (shownBefore < HallPages.ROW ? shownBefore : HallPages.ROW - 1);
 				HallPages.register("test_cup", (level, h) -> named(Items.GOLD_INGOT, "Cup"), (level, h) -> named(Items.GOLD_BLOCK, "The Cup"),
 					(menu, level, h, viewer) -> menu.button(VillageHallScreen.FIRST_ROW, named(Items.DIAMOND, "Winner"), null));
 				added.add("test_cup");
-				helper.assertTrue(HallPages.slot("test_cup") == VillageHallScreen.PAGE_ROW + before, "slot " + HallPages.slot("test_cup"));
+				helper.assertTrue(HallPages.slot("test_cup") == next, "slot " + HallPages.slot("test_cup") + ", not " + next);
 				ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
 				helper.assertTrue(menu.icon(HallPages.slot("test_cup")).is(Items.GOLD_INGOT), "tab: " + menu.icon(HallPages.slot("test_cup")));
 				menu.press(HallPages.slot("test_cup"), player);

@@ -645,6 +645,13 @@ village's last column empties it (B994).
   in the train's chest and nobody free: the logs come back out and arrive once by the timed trip, none left in the chest,
   never doubled; the new driver killed too: a third villager takes the seat and the train still brings the caravan;
   only a baby and a grown Farmer by the train: neither is sat in the seat, and the caravan takes the timed trip.
+- `QaTrainDriverSaves1109eCompatTests` (QA, with Create, B962, saves): the server restarted right after the driver was
+  killed with the caravan's 32 logs in the train's chest: the caravan comes back still in the chest, then the logs come
+  out and arrive once by the timed trip; restarted while the caravan waits for the driverless train, a villager who
+  comes by only afterwards takes the seat and the caravan rides the train in.
+- `QaTrainDriverPlayer1109e2CompatTests` (QA, with Create, B962): the driver killed and a player sitting down in his
+  seat at once, a villager standing by: the player keeps the seat (never put off), the villager isn't sat in it, and the
+  caravan's logs still arrive once by the timed trip (Create never counts a player as a train's driver).
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is
@@ -736,7 +743,13 @@ village's last column empties it (B994).
   left standing. `QaCreateCompatTests` and `QaMechanicSaysCompatTests` (with Create): the lines over the worker and the
   Mechanic, as a player reads them: "Machine work: the Millstone isn't turning", "Machine work: the store is full: the
   Millstone waits", "Mechanic: every machine is in order", "Mechanic: seeing to the Millstone" and "Mechanic: the
-  Millstone has stopped turning".
+  Millstone has stopped turning". `QaCreateSentences1109eCompatTests` (QA, with Create): a farmer's milling trip says
+  "Machine work: fetching Wheat for the Millstone", "Machine work: working the Millstone" and "Machine work: bringing
+  what the Millstone made to the store", in that order, and the flour reaches the store; a Mechanic with a hole and no
+  shaft says "Mechanic: needs Shaft to mend the Mechanic Line 1" (the build named as the table names it); a written
+  Schematic imported says "Create schematic hut.nbt (uploaded by the player): Imported its id (3 × 1 × 3)", with the
+  one-block line for a block of a mod that isn't installed and "and 1 more" after three names for five of four mods. A Mechanic who comes back holding the one cogwheel a hole needs, with the store full to the brim, puts it in
+  the hole; it never goes on the ground (lane E's local mutation of `MechanicWork` line 425).
 - `SavedDataGameTests`: `machine_job` survives a save and load; `ConfigGameTests` and `ExpansionGateGameTests`: the
   `machineWork` switch on the screen and behind the gate.
 

@@ -182,7 +182,8 @@ list changes with it. In the sneak-click screen the **Mirror** button flips the 
 - **Builds from the internet:** at the Blueprint Table, **Upload a File** lists the build files in your `blueprints`
   folder. Download a build as a `.litematic` or `.schem` file, drop it in, and upload it for everyone on the server.
   A build from a file holds no more than your own blocks could: a sign keeps up to 384 letters a line, a banner up to
-  6 patterns, and a head its owner's name and one skin.
+  6 patterns, a head its owner's name and one skin, and an armor stand or item frame is put up as yours would be
+  (never giant, glowing, invisible or floating).
 
 ![Shape Planner](https://jcondedata.github.io/minecraft-alive-workplace/shapes/still-1.jpg)
 

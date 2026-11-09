@@ -262,7 +262,7 @@ public class QaRefreshOldHouseGameTests implements FabricGameTest {
 			String[][] lines = {
 				{Component.translatable("message.aliveworkplace.refreshing", ada, house).getString(), "Ada is bringing the Stone House up to its latest look"},
 				{Component.translatable("message.aliveworkplace.refresh_answer.started", house).getString(), "A Builder is bringing the Stone House up to its latest look"},
-				{Component.translatable("message.aliveworkplace.refresh_answer.waiting", house).getString(), "No Builder is free: the Stone House is refreshed as soon as one is"},
+				{Component.translatable("message.aliveworkplace.refresh_answer.waiting", house).getString(), "Every Builder is busy and none can be spared from a crew: the Stone House is refreshed as soon as one is free"},
 				{Component.translatable("message.aliveworkplace.refresh_answer.nothing", house).getString(), "The Stone House already has its latest look"},
 				{Component.translatable("screen.aliveworkplace.refresh.going", ada, 40).getString(), "Ada is bringing it up to its latest look: 40%"},
 				{Component.translatable("screen.aliveworkplace.refresh.waiting").getString(), "Refresh asked for: waiting for a free Builder"},

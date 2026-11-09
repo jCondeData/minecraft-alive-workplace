@@ -6331,7 +6331,7 @@ Each item: GameTests through the player's own clicks (`QaEveryMenuGameTests` mus
 the harness and `tools/showcase/scenes.py`, `sessions.py done <id> --review`. Text in American English. Lane C builds
 it, in order (42.1 first: the others use its pieces). Depends on: nothing open.
 
-- [x] **42.1** (review: pending 2026-11-08) **The list menu, first on the Move Tutor.** A `ChoiceTableScreen` list mode for the menus opened with
+- [x] **42.1** (review: pending 2026-11-08) (verified 2026-11-09: QaTutorListEdges1108eCompatTests [4, on main 687ec3210]: party reordered between Teach and Confirm keeps the lesson on its Pokemon and teaches once; money spent between them turns the price red, Confirm refused with the too_poor line; money paid in turns a red price green with no click; a move learned elsewhere before Confirm isn't sold [alone kills the mutant dropping give[]'s still-a-lesson check]. Full build green on 0b0b2bf70; wiki list-screen.md and guide move-tutor.md read against them; scene tutor passed in showcase run 42525282689.) **The list menu, first on the Move Tutor.** A `ChoiceTableScreen` list mode for the menus opened with
   `ChoiceMenu.open(...)` (a vanilla 6-row chest today): the title and the player's money at the top, a tab row
   (the Tutor's party), a list of rows (name, second line, price) with a button on each, gray rows for what can't be
   picked, a footer hint, as `docs/design/M42/menu_a.png`. Moves `ChoiceMenu.open` callers to it one by one through

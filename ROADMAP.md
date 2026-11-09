@@ -6502,7 +6502,9 @@ Tinkerer, wool/dye to the Shepherd), else to the Carpenter only if it contains w
 job isn't in the village reads "Hire a Cleric to make Brewing Stands" instead of "Nobody here makes". The
 Storehouse's details pane says who makes each item (owner, 2026-11-09: "maybe it can say who can automatically build it
 in the storehouse"): "Made by: the Carpenter (Ada)" when one works here, "Hire a Cleric to make it" when none does,
-"Nobody makes this: gather it yourself" for raw items. Nothing that is
+and for raw things the jobs that gather them (owner, 2026-11-09: logs and ore are dug up by other jobs, so never
+"gather it yourself" when a job does): "Gathered by: the Lumberjack (Bo)", "Hire a Miner to dig it", and only for
+what no job in the mod gathers or makes, "No job makes or gathers this". Nothing that is
 made today may become unmakable. Every item: GameTests through a builder's request, save and reload, the job absent;
 the job's guide and wiki pages; its scene where a player sees it; `sessions.py done <id> --review`. Lane B builds it,
 in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed first.
@@ -6511,7 +6513,7 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
   everything; the dyer's colored rule goes; the shortage line names the job to hire, and the Storehouse's details pane shows who makes the item (the owner's screenshot: under "You have").
   Done when: GameTests that a
   Carpenter never makes a brewing stand, flower pot, banner, stained glass or lantern, that the Mason makes concrete and
-  dyed terracotta, a modded wooden block goes to the Carpenter by its recipe, and the "Hire a ..." line for each job, the Storehouse's "Made by" / "Hire a" / "Nobody makes" lines;
+  dyed terracotta, a modded wooden block goes to the Carpenter by its recipe, and the "Hire a ..." line for each job, the Storehouse's "Made by" / "Gathered by" / "Hire a" / "No job makes or gathers this" lines (logs, ore, sand, clay and wool name their gatherers);
   a test that every item made by some job before 46.1 still has a job after it.
 - [ ] **46.2** **The Shepherd weaves.** At his loom he makes wool from string, dyes it, and makes carpets, beds,
   banners, banner patterns and paintings for builders, with the chain steps (the wool first, then the bed). Done when:

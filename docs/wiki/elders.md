@@ -346,6 +346,10 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
   (`withVillagerAgesOffNobodyIsAnElder`).
 - QA (B827): `QaHallFamiliesOneBadEntry1102eBugTests`: a hall's two saved people come back after an empty entry is put
   first in its saved `families`.
+- QA (B827, lane E 11-09): `QaHallLenientSaves1109eGameTests`: with a parent's entry damaged in three generations the
+  rest load in the order written in, the orphaned child heads his line (generation 1, his own founder, a family title) and
+  the next save keeps his mother's id; a person with `born` as text is the one left out; every entry damaged is an empty
+  book that writes no `families`.
 - Showcase scene: `elders` (the day Bram becomes one, his card, his line, the walk beside young Tom).
 - GameTests: `AgelessElderGameTests`: the recipe, tooltip and config (`theCharmIsCraftedAndExplainsItself`); a Master
   through the sneak-right-click, then a Gifted villager, a Legend and a 20-happy-day elder, the charm used up, the gold

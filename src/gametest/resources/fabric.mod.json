@@ -384,6 +384,8 @@
 			"io.github.jcondedata.aliveworkplace.test.HallUiGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ChoiceListGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobListMenusGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaJobListEdges1109eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallLenientSaves1109eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderToolListsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TrainerScreenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.NurseCardGameTests",

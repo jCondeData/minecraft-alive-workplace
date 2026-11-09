@@ -1411,7 +1411,7 @@ MineColonies players' most common complaints are builders that get stuck, don't 
 inventories are full, or only work while a player stands nearby. Ours must do none of that. Check what already exists
 first; many items below are "verify and harden", not "build".
 
-- [x] **23.1** (approved 2026-10-04) **The builder soak test.**
+- [x] **23.1** (approved 2026-10-04) (verified 2026-11-09: QaBuilderSoak1027GameTests [5: two builders on wooded hills share a storehouse with every item accounted for, a restart mid-soak, helpers lose nothing, a storehouse emptied mid-run waits then finishes, the 30 s stall line once per stuck stretch] all green in the full local build [7867 + 1414] of 2026-11-09; the soak scene [10 builders, every starter build, nothing duplicated or lost] passed in the nightly showcase of a189f88 [run 42541085576, only city_timelapse failed: B789].) **The builder soak test.**
   - The setup: 10 builders build the full starter set on hilly, forested ground, with materials only in chests and the
     storehouse and no player help, over 2 in-game days.
   - Run it twice. As a long GameTest or pack-server scenario (`tools/packtest`) for the numbers. As a scene in the

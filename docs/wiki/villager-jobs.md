@@ -160,7 +160,9 @@ White-Striped Basculin like the male (B1040). Cobbreeding's `givepokemonegg` get
 well as its form, so a Blaze Breed Tauros's egg hatches a Blaze Breed (B1041).
 Tested in `QaDaycareBugs1103dCompatTests`, `QaDaycareRegional1104d2CompatTests` (11),
 `QaDaycareRegional1104d2BugCompatTests`, `QaDaycareChoiceForms1108cCompatTests` and
-`QaDaycareChoiceForms1108dCompatTests` (5).
+`QaDaycareChoiceForms1108dCompatTests` (5), and `QaDaycareFormsVerify1109dCompatTests` (14: Oricorio, Burmy,
+Wormadam, Deerling, Sawsbuck, Lycanroc, Polteageist, Sinistcha and every Tauros breed, as hatchlings and Cobbreeding eggs,
+through reloads). In the pack, Mega Showdown renames Oricorio's styles to `pom-pom` and `pau` (form "Pa’u").
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last

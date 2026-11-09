@@ -248,3 +248,10 @@ None.
   `ConvertedMobsGameTests` (a raider skeleton frozen into a stray keeps its raider tag, stamp and role; a bandit zombie
   that drowns keeps its band's tags; a skeleton the mod never touched converts with no tag of ours; a zombified lair
   piglin keeps the raid but not the lair).
+- B1054, B1071, B1072 (QA): `QaConvertedThreats1109dGameTests` (a skeleton frozen in powder snow keeps the raid going
+  until killed; a drowned raid zombie leaves at dawn; a converted raider counts only for its own village's raid and still
+  spares builders' blocks; every threat tag survives conversion; a raider's burning arrow still lights a roof after its
+  shooter is killed, unloaded or converted; a drowned lair captain goes home as captain and survives a restart; a
+  converted band member leaves with the band). `QaSiegeConverts1109dGameTests`: a climber that drowns finishes its
+  ladder; killing it ends the siege and takes the ladder away. A raider that converts after getting through the gate is
+  walked back toward it (B1085, open).

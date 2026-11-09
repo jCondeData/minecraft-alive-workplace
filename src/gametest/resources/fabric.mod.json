@@ -385,6 +385,8 @@
 			"io.github.jcondedata.aliveworkplace.test.ChoiceListGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobListMenusGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaJobLists1109cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPriceTagList1109cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderToolListsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderToolLists1109bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TrainerScreenGameTests",

@@ -192,6 +192,12 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   the chests' loot lies on the ground; a new camp is made after and stands; with `campRuins` the camp stays, its fire
   out; a save and reload before and halfway through the clearing carries on; a save from before B209 with a broken
   camp still standing is swept by the hall's round (not while its chief is alive), and only once.
+- QA (lane D, 2026-11-09): `QaCampSweep1109dGameTests`: the sweep's ring includes both its edges: an old camp whose fire
+  is exactly the inner or the outer distance from the hall (20 blocks) is found, one a block inside or outside isn't. A
+  mutation run of CampCleanup (8 mutants against the 6 camp test classes) killed 3; this kills the inner edge's
+  survivor and a hand mutant on the outer. Left: the smoke's every-20-ticks and a particle's place (looks only), the
+  loaded check's third corner (all ground loaded in a GameTest), and a standing lair within 24 blocks marking the camp
+  in use (masked: a lair's band nearby already guards it; the lairs list isn't reachable from the tests).
 - `B225GameTests`: a camp on a grassy slope taken down leaves every block round it as it was before the camp; the same
   after a save and reload before and halfway through the clearing; with `campRuins` the tents stay and every open column
   is as it was; a camp whose record was saved without its ground (before B225) is blended: grass on every top, no

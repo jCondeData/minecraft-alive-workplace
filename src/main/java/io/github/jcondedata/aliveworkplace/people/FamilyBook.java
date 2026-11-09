@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mc.Lenient;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +31,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import org.jetbrains.annotations.Nullable;
@@ -102,12 +106,65 @@ public final class FamilyBook {
 		Person diedOn(long day) {
 			return new Person(id, name, family, born, bornHere, day, mother, father, partner, trade);
 		}
+
+		/** This entry with {@code from} (as themselves, a parent or the partner) named {@code to} instead (B1087). */
+		Person turned(UUID from, UUID to) {
+			return new Person(from.equals(id) ? to : id, name, family, born, bornHere, died, from.equals(mother) ? to : mother,
+				from.equals(father) ? to : father, from.equals(partner) ? to : partner, trade);
+		}
+	}
+
+	/** B1087: someone the book knew as {@code from} is {@code to} now (a villager a zombie turned, or cured back). */
+	record Turn(UUID from, UUID to) {
+		static final Codec<Turn> CODEC = RecordCodecBuilder.create(i -> i.group(
+			UUIDUtil.CODEC.fieldOf("from").forGetter(Turn::from),
+			UUIDUtil.CODEC.fieldOf("to").forGetter(Turn::to)
+		).apply(i, Turn::new));
 	}
 
 	/** A hall's Book of Families, saved with the hall ({@code families}, and {@code familiesNoted}: the families whose third generation is noted). */
 	public static final class Book {
 		private final Map<UUID, Person> people = new LinkedHashMap<>();
 		private final Set<Integer> noted = new TreeSet<>();
+		/** B1087 ({@code familiesTurned}, none in older saves): the ids people had before a zombie turned them, or a cure, to the next. */
+		private final Map<UUID, UUID> turned = new LinkedHashMap<>();
+
+		/**
+		 * The id the person once known as {@code id} has now (they were turned, and maybe cured since), or {@code id}
+		 * itself; null for null.
+		 */
+		@Nullable
+		public UUID now(@Nullable UUID id) {
+			UUID at = id;
+			for (int i = 0; at != null && i < 16 && turned.containsKey(at); i++) {
+				at = turned.get(at);
+			}
+			return at;
+		}
+
+		/**
+		 * B1087: {@code from} became {@code to} (vanilla's conversion gives a new UUID): their entry and every entry naming
+		 * them as a parent or partner follow, in place. Whether the book knew them.
+		 */
+		public boolean turn(UUID from, UUID to) {
+			boolean known = people.containsKey(from) || people.values().stream()
+				.anyMatch(p -> from.equals(p.mother()) || from.equals(p.father()) || from.equals(p.partner()));
+			if (!known || from.equals(to)) {
+				return false;
+			}
+			List<Person> all = List.copyOf(people.values());
+			people.clear();
+			for (Person p : all) {
+				Person q = p.turned(from, to);
+				people.put(q.id(), q);
+			}
+			turned.remove(to);
+			turned.put(from, to);
+			while (turned.size() > MAX) {
+				turned.remove(turned.keySet().iterator().next());
+			}
+			return true;
+		}
 
 		@Nullable
 		public Person get(@Nullable UUID id) {
@@ -159,6 +216,11 @@ public final class FamilyBook {
 			for (int family : Nbt.getIntArray(tag, "familiesNoted")) {
 				noted.add(family);
 			}
+			turned.clear();
+			if (Nbt.has(tag, "familiesTurned", Tag.TAG_LIST)) {
+				Lenient.list(Turn.CODEC, "family book turn").parse(registries.createSerializationContext(NbtOps.INSTANCE), tag.get("familiesTurned")).result()
+					.ifPresent(list -> list.forEach(t -> turned.put(t.from(), t.to())));
+			}
 		}
 
 		public void save(CompoundTag tag, HolderLookup.Provider registries) {
@@ -168,6 +230,11 @@ public final class FamilyBook {
 			}
 			if (!noted.isEmpty()) {
 				tag.putIntArray("familiesNoted", noted.stream().mapToInt(Integer::intValue).toArray());
+			}
+			if (!turned.isEmpty()) {
+				Turn.CODEC.listOf().encodeStart(registries.createSerializationContext(NbtOps.INSTANCE),
+						turned.entrySet().stream().map(e -> new Turn(e.getKey(), e.getValue())).toList()).result()
+					.ifPresent(t -> tag.put("familiesTurned", t));
 			}
 		}
 	}
@@ -290,6 +357,7 @@ public final class FamilyBook {
 		List<Villager> order = new ArrayList<>(village);
 		order.sort(Comparator.comparingInt((Villager v) -> Families.parents(v) == null ? 0 : v.isBaby() ? 2 : 1));
 		for (Villager villager : order) {
+			relink(book, villager); // B1087: a parent or partner turned and cured since this one was last here
 			giveFamily(level, book, villager, village);
 		}
 		List<Villager> newBabies = new ArrayList<>();
@@ -354,7 +422,9 @@ public final class FamilyBook {
 
 	/** A villager died: their entry in the book of the village they lived in is dated (they're written in first if they weren't). */
 	public static void onDeath(ServerLevel level, Villager villager) {
-		if (!ENABLED || passing(villager)) {
+		// B1087: a villager a zombie turned is already gone, as the zombie villager, when their death hooks run: they
+		// aren't dead (cure them), and their entry has followed them ({@link #onConversion})
+		if (!ENABLED || passing(villager) || villager.isRemoved()) {
 			return;
 		}
 		VillageHalls.containing(level, villager.blockPosition()).ifPresent(hall -> {
@@ -366,6 +436,100 @@ public final class FamilyBook {
 				entity.setChanged();
 			}
 		});
+	}
+
+	// --- Turned by a zombie (B1087) -----------------------------------------------------------------------------------
+
+	/** Mobs that converted (and are discarded for it), so their unloading isn't taken for a despawn. Server thread. */
+	private static final Set<Entity> CONVERTED = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+
+	public static void init() {
+		Platform.get().onMobConversion(FamilyBook::onConversion);
+		Platform.get().onEntityUnload(FamilyBook::onUnload);
+	}
+
+	/**
+	 * B1087: a villager a zombie turned, or a zombie villager cured, is a new entity with a new UUID (vanilla's {@code
+	 * convertTo}). Their entry in the book, and every entry and living villager naming them as a parent or partner,
+	 * follow them, so the cured villager is the same person in the book with the same family. One turned into anything
+	 * that can't be cured (a zombie villager drowned, a villager struck by lightning) is lost to the village: the book
+	 * dates their death.
+	 */
+	static void onConversion(Mob before, Mob after) {
+		if (!ENABLED || before == null || after == null || !(after.level() instanceof ServerLevel level)
+			|| !(before instanceof Villager || before instanceof ZombieVillager) || before.getUUID().equals(after.getUUID())) {
+			return;
+		}
+		CONVERTED.add(before);
+		hallOf(level, before.blockPosition()).ifPresent(hall -> {
+			if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && entity.families().turn(before.getUUID(), after.getUUID())) {
+				Book book = entity.families();
+				for (Villager v : VillageHalls.villagers(level, hall)) {
+					relink(book, v);
+				}
+				if (!(after instanceof Villager || after instanceof ZombieVillager)) {
+					lost(level, entity, after.getUUID());
+				}
+				entity.setChanged();
+			}
+		});
+	}
+
+	/**
+	 * B1087: a zombie villager who was one of the village's dies, or despawns (or the game takes them away on Peaceful):
+	 * they can't be cured any more, so the book dates their death. The village isn't told and doesn't grieve again (it lost
+	 * them when they were turned); their partner is widowed ({@link Couples#onDeath}).
+	 */
+	public static void onLost(ServerLevel level, Entity zombie) {
+		if (!ENABLED || !(zombie instanceof ZombieVillager)) {
+			return;
+		}
+		hallOf(level, zombie.blockPosition()).ifPresent(hall -> {
+			if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+				lost(level, entity, zombie.getUUID());
+			}
+		});
+	}
+
+	private static void lost(ServerLevel level, VillageHallBlockEntity entity, UUID id) {
+		Person me = entity.families().get(id);
+		if (me != null && !me.dead()) {
+			entity.families().put(me.diedOn(Chronicle.day(level)));
+			entity.setChanged();
+		}
+	}
+
+	/** A zombie villager discarded without converting (despawned, or Peaceful): lost ({@link #onLost}). */
+	private static void onUnload(Entity entity, ServerLevel level) {
+		if (entity instanceof ZombieVillager && entity.getRemovalReason() == Entity.RemovalReason.DISCARDED && !CONVERTED.remove(entity)) {
+			onLost(level, entity);
+		}
+	}
+
+	/** The hall whose book {@code pos}'s villager is in: the village holding it, else the nearest hall. */
+	private static Optional<BlockPos> hallOf(ServerLevel level, BlockPos pos) {
+		Optional<BlockPos> hall = VillageHalls.containing(level, pos);
+		return hall.isPresent() ? hall : VillageHalls.nearest(level, pos);
+	}
+
+	/** {@code villager}'s parents and partner, by the ids they have now (one may have been turned and cured since). */
+	static void relink(Book book, Villager villager) {
+		Families.Parents p = Families.parents(villager);
+		if (p != null) {
+			UUID mother = book.now(p.motherId());
+			UUID father = book.now(p.fatherId());
+			if (!Objects.equals(mother, p.motherId()) || !Objects.equals(father, p.fatherId())) {
+				ModAttachments.PARENTS.set(villager, new Families.Parents(p.mother(), p.father(), p.motherJob(), p.fatherJob(), p.grownUp(),
+					p.motherSchooledMaster(), p.fatherSchooledMaster(), mother, father));
+			}
+		}
+		Couples.Partner partner = ModAttachments.PARTNER.get(villager);
+		if (partner != null) {
+			UUID now = book.now(partner.id());
+			if (!now.equals(partner.id())) {
+				ModAttachments.PARTNER.set(villager, new Couples.Partner(now, partner.name(), partner.since(), partner.married()));
+			}
+		}
 	}
 
 	// --- Relations ---------------------------------------------------------------------------------------------------

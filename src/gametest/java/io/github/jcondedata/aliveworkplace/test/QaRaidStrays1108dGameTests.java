@@ -34,6 +34,8 @@ public class QaRaidStrays1108dGameTests {
 	static final BlockPos HALL = new BlockPos(15, 2, 15);
 	/** Ticks to wait at most for a forced chunk's raiders to be held by the game (its entity lookup finds them). */
 	static final int WAIT = 300;
+	/** A real server's tick (ms): the wait below is held to this pace, so {@link #WAIT} ticks are at least 15 s of real time. */
+	private static final long TICK_MS = 50;
 
 	/**
 	 * A raider standing at {@code abs} (any distance from the test), its chunk forced loaded while the test runs; it
@@ -67,19 +69,33 @@ public class QaRaidStrays1108dGameTests {
 	/**
 	 * Runs {@code body} once the game holds every one of {@code raiders} in loaded ground (a forced chunk's entities take
 	 * some ticks to count); fails loudly, naming the first not held, after {@link #WAIT} ticks.
+	 * <p>
+	 * A freshly forced chunk's entities come in from the storage thread, in real time, not in ticks. The game test server
+	 * runs its ticks back to back (a few hundred in a tenth of a second when little else runs), so under a full suite's
+	 * load, with the storage thread busy saving, 300 ticks once went by before a raider 200 blocks off was held (B1086).
+	 * While it waits, this keeps the server to a real server's pace (it sleeps whatever the ticks ran ahead of
+	 * {@link #TICK_MS} each), so the wait is the same 15 s a real server would give.
 	 */
 	static void whenHeld(GameTestHelper helper, List<Husk> raiders, Runnable body) {
-		whenHeld(helper, raiders, body, 0);
+		whenHeld(helper, raiders, body, 0, System.nanoTime());
 	}
 
-	static void whenHeld(GameTestHelper helper, List<Husk> raiders, Runnable body, int waited) {
+	private static void whenHeld(GameTestHelper helper, List<Husk> raiders, Runnable body, int waited, long since) {
 		ServerLevel level = helper.getLevel();
 		boolean held = raiders.stream().allMatch(h -> level.getEntity(h.getUUID()) == h && level.isPositionEntityTicking(h.blockPosition()));
 		if (held || waited >= WAIT) {
 			body.run();
 			return;
 		}
-		helper.runAfterDelay(5, () -> whenHeld(helper, raiders, body, waited + 5));
+		long ahead = waited * TICK_MS - (System.nanoTime() - since) / 1_000_000L;
+		if (ahead > 0) {
+			try {
+				Thread.sleep(ahead);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		helper.runAfterDelay(5, () -> whenHeld(helper, raiders, body, waited + 5, since));
 	}
 
 	/** Fails loudly unless the game holds {@code husk} in loaded ground where the raids' counts can see it. */
@@ -87,7 +103,9 @@ public class QaRaidStrays1108dGameTests {
 		ServerLevel level = helper.getLevel();
 		helper.assertTrue(husk.isAlive() && level.isLoaded(husk.blockPosition()) && level.getEntity(husk.getUUID()) == husk,
 			"setup: " + what + " at " + husk.blockPosition().toShortString() + " isn't in loaded ground the game counts (loaded "
-				+ level.isLoaded(husk.blockPosition()) + ", found " + (level.getEntity(husk.getUUID()) != null) + ")");
+				+ level.isLoaded(husk.blockPosition()) + ", found " + (level.getEntity(husk.getUUID()) != null) + ", its chunk's entities loaded "
+				+ level.areEntitiesLoaded(new ChunkPos(husk.blockPosition()).toLong()) + ", entity ticking " + level.isPositionEntityTicking(husk.blockPosition())
+				+ ", alive " + husk.isAlive() + ", removed " + husk.getRemovalReason() + ")");
 	}
 
 	/** Every living mob in the world carrying the raider tag, with where it stands (for the failure messages). */

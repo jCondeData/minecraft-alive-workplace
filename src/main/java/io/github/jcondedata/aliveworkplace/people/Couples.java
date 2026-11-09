@@ -225,8 +225,9 @@ public final class Couples {
 	}
 
 	/**
-	 * A villager died (or the zombie villager one became, B1081): their partner, if any, is left to mourn. A villager a
-	 * zombie turned isn't dead (cure them): they are already gone from the world, as the zombie villager, when their
+	 * A villager died (or the zombie villager one became, B1081): their partner, if any, is left to mourn, a villager or,
+	 * while they are one, a zombie villager (B1093: cured, they are widowed and free to court). A villager a zombie turned
+	 * isn't dead (cure them): they are already gone from the world, as the zombie villager, when their
 	 * death hooks run, and their partner stays theirs ({@link #onConversion}).
 	 */
 	public static void onDeath(ServerLevel level, net.minecraft.world.entity.LivingEntity villager) {
@@ -235,7 +236,9 @@ public final class Couples {
 			return;
 		}
 		Entity other = level.getEntity(p.id());
-		if (other instanceof Villager partner && ModAttachments.PARTNER.has(partner)) {
+		// B1093: a partner who is a zombie villager just now is widowed too (they carry the record to their cure)
+		if ((other instanceof Villager || other instanceof net.minecraft.world.entity.monster.ZombieVillager) && ModAttachments.PARTNER.has(other)) {
+			Entity partner = other;
 			ModAttachments.PARTNER.remove(partner);
 			ModAttachments.WIDOWED_DAY.set(partner, Chronicle.day(level));
 			ModAttachments.LATE_PARTNER.set(partner, new LatePartner(villager.getUUID(), villager.getDisplayName().copy())); // who they lost (31.7)
@@ -251,7 +254,11 @@ public final class Couples {
 	 */
 	public static void onRevived(ServerLevel level, UUID was, Villager back) {
 		Partner p = ModAttachments.PARTNER.get(back);
-		if (p == null || !(level.getEntity(p.id()) instanceof Villager other)) {
+		if (p == null) {
+			rejoin(level, was, back);
+			return;
+		}
+		if (!(level.getEntity(p.id()) instanceof Villager other)) {
 			return;
 		}
 		Partner theirs = ModAttachments.PARTNER.get(other);
@@ -274,6 +281,28 @@ public final class Couples {
 			ModAttachments.LATE_PARTNER.remove(other);
 			ModAttachments.WIDOWED_DAY.remove(other);
 			ModAttachments.PARTNER.set(other, new Partner(back.getUUID(), back.getDisplayName(), p.since(), false));
+		}
+	}
+
+	/**
+	 * B1094: {@code back}, brought back without a partner, was widowed before they died, and the late partner they lost was
+	 * brought back first (with the partner their grave kept: {@code back}, as {@code was}, who wasn't loaded to agree). The
+	 * two are together again as they were; {@code back} mourns no more.
+	 */
+	private static void rejoin(ServerLevel level, UUID was, Villager back) {
+		LatePartner late = ModAttachments.LATE_PARTNER.get(back);
+		if (late == null || !(level.getEntity(late.id()) instanceof Villager other) || !other.isAlive()) {
+			return;
+		}
+		Partner theirs = ModAttachments.PARTNER.get(other);
+		if (theirs == null || !(theirs.id().equals(was) || theirs.id().equals(back.getUUID()))) {
+			return;
+		}
+		ModAttachments.LATE_PARTNER.remove(back);
+		ModAttachments.WIDOWED_DAY.remove(back);
+		ModAttachments.PARTNER.set(back, new Partner(other.getUUID(), other.getDisplayName().copy(), theirs.since(), theirs.married()));
+		if (!theirs.id().equals(back.getUUID())) { // came back under a new id
+			ModAttachments.PARTNER.set(other, new Partner(back.getUUID(), theirs.name(), theirs.since(), theirs.married()));
 		}
 	}
 

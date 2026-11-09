@@ -73,10 +73,11 @@ public final class RepairAsks {
 
 	/** What an answer came to. */
 	public enum Outcome {
-		YES, NOT_NOW, PAUSED, NOT_YOURS, GONE;
+		/** B1110: yes, and a helper was taken off another build's crew for it; yes, but no builder is free or can be spared. */
+		YES, SPLIT, WAITING, NOT_NOW, PAUSED, NOT_YOURS, GONE;
 
 		public boolean ok() {
-			return this == YES || this == NOT_NOW || this == PAUSED;
+			return this == YES || this == SPLIT || this == WAITING || this == NOT_NOW || this == PAUSED;
 		}
 	}
 
@@ -182,11 +183,17 @@ public final class RepairAsks {
 		}
 		Ask ask = manager.repairAsk(f.get().placement());
 		manager.setRepairAsk(f.get().placement(), new Ask(State.YES, ask != null ? ask.missing() : 0));
-		said(player, f.get(), Outcome.YES);
-		if (!going) {
-			startNow(level, f.get());
+		if (going || startNow(level, f.get())) {
+			return said(player, f.get(), Outcome.YES);
 		}
-		return Outcome.YES;
+		// B1110: every builder busy: a helper is taken off another build's crew (that build keeps its lead), else it says so
+		Builders.Split split = splitFor(level, f.get());
+		if (split != null) {
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.repair_answer.split", split.builder().getDisplayName(),
+				Blueprints.displayName(split.left().structure()), Blueprints.displayName(f.get().structure())).withStyle(ChatFormatting.GREEN));
+			return Outcome.SPLIT;
+		}
+		return said(player, f.get(), Outcome.WAITING);
 	}
 
 	/** {@code player} says not now (or stops the repair going on): the build is left as it is, and asked about again once more goes missing. */
@@ -227,8 +234,8 @@ public final class RepairAsks {
 			.map(b -> BuildPlan.repair(b, f.placement(), level, manager.gaveUp(f.placement())).size()).orElse(0);
 	}
 
-	/** After a yes: the nearest free builder who looks after {@code f} looks at once (instead of at their next round). */
-	private static void startNow(ServerLevel level, BuildSiteManager.Finished f) {
+	/** After a yes: the nearest free builder who looks after {@code f} looks at once (instead of at their next round). True if its repair started. */
+	private static boolean startNow(ServerLevel level, BuildSiteManager.Finished f) {
 		BlockPos origin = Builders.spot(level, f.structure(), f.placement()); // B615: measured as placing measures
 		List<Villager> builders = new ArrayList<>(level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
 			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && !ModAttachments.BUILDER_JOB.has(v)
@@ -239,16 +246,37 @@ public final class RepairAsks {
 			if (Builders.activeSite(level, v) == null && !ModAttachments.BUILDER_JOB.has(v)) {
 				Upkeep.look(level, v);
 				if (repairOf(level, f.placement()) != null) {
-					return;
+					return true;
 				}
 			}
 		}
+		return false;
+	}
+
+	/**
+	 * B1110: no builder free for an agreed repair: a helper who looks after {@code f} is taken off another build's crew
+	 * ({@link Builders#splitOff}) and repairs it now. Null when no crew has a helper to spare (or the repair can't start,
+	 * and the helper goes back to its crew).
+	 */
+	@Nullable
+	private static Builders.Split splitFor(ServerLevel level, BuildSiteManager.Finished f) {
+		BlockPos origin = Builders.spot(level, f.structure(), f.placement());
+		List<Villager> builders = level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
+			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && Upkeep.looksAfter(level, v, f.owner())
+				&& Builders.inReach(level, Builders.benchPos(v).get(), f.structure(), f.placement()));
+		Builders.Split split = Builders.splitOff(level, builders, origin).orElse(null);
+		if (split != null && Upkeep.repairNow(level, split.builder(), f) == null) {
+			split.undo(level);
+			return null;
+		}
+		return split;
 	}
 
 	private static Outcome said(ServerPlayer player, @Nullable BuildSiteManager.Finished f, Outcome outcome) {
 		Component name = f != null ? Blueprints.displayName(f.structure()) : Component.empty();
 		Chat.actionBar(player, switch (outcome) {
-			case YES -> Component.translatable("message.aliveworkplace.repair_answer.agreed", name).withStyle(ChatFormatting.GREEN);
+			case YES, SPLIT -> Component.translatable("message.aliveworkplace.repair_answer.agreed", name).withStyle(ChatFormatting.GREEN);
+			case WAITING -> Component.translatable("message.aliveworkplace.repair_answer.waiting", name).withStyle(ChatFormatting.YELLOW);
 			case NOT_NOW -> Component.translatable("message.aliveworkplace.repair_answer.left", name).withStyle(ChatFormatting.YELLOW);
 			case PAUSED -> Component.translatable("message.aliveworkplace.repair_answer.paused", name).withStyle(ChatFormatting.YELLOW);
 			case NOT_YOURS -> Component.translatable("message.aliveworkplace.repair_answer.not_yours", name).withStyle(ChatFormatting.RED);

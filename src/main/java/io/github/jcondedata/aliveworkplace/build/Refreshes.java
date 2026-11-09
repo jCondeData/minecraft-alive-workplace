@@ -344,10 +344,11 @@ public final class Refreshes {
 
 	/** What a click on the button came to. */
 	public enum Outcome {
-		STARTED, WAITING, NOTHING, NOT_YOURS, GONE;
+		/** SPLIT (B1110): a helper was taken off another build's crew for it. */
+		STARTED, SPLIT, WAITING, NOTHING, NOT_YOURS, GONE;
 
 		public boolean ok() {
-			return this == STARTED || this == WAITING;
+			return this == STARTED || this == SPLIT || this == WAITING;
 		}
 	}
 
@@ -381,6 +382,19 @@ public final class Refreshes {
 			if (start(level, v, f.get()) != null) {
 				return said(player, f.get(), Outcome.STARTED);
 			}
+		}
+		// B1110: every builder busy: a helper who looks after it is taken off another build's crew (which keeps its lead)
+		List<Villager> crews = level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
+			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && Upkeep.looksAfter(level, v, f.get().owner())
+				&& Builders.inReach(level, Builders.benchPos(v).get(), f.get().structure(), f.get().placement()));
+		Optional<Builders.Split> split = Builders.splitOff(level, crews, origin);
+		if (split.isPresent()) {
+			if (start(level, split.get().builder(), f.get()) != null) {
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.refresh_answer.split", split.get().builder().getDisplayName(),
+					Blueprints.displayName(split.get().left().structure()), Blueprints.displayName(f.get().structure())).withStyle(ChatFormatting.GREEN));
+				return Outcome.SPLIT;
+			}
+			split.get().undo(level);
 		}
 		return said(player, f.get(), Outcome.WAITING);
 	}
@@ -431,7 +445,7 @@ public final class Refreshes {
 	private static Outcome said(ServerPlayer player, @Nullable BuildSiteManager.Finished f, Outcome outcome) {
 		Component name = f != null ? Blueprints.displayName(f.structure()) : Component.empty();
 		Chat.actionBar(player, switch (outcome) {
-			case STARTED -> Component.translatable("message.aliveworkplace.refresh_answer.started", name).withStyle(ChatFormatting.GREEN);
+			case STARTED, SPLIT -> Component.translatable("message.aliveworkplace.refresh_answer.started", name).withStyle(ChatFormatting.GREEN);
 			case WAITING -> Component.translatable("message.aliveworkplace.refresh_answer.waiting", name).withStyle(ChatFormatting.YELLOW);
 			case NOTHING -> Component.translatable("message.aliveworkplace.refresh_answer.nothing", name).withStyle(ChatFormatting.GRAY);
 			case NOT_YOURS -> Component.translatable("message.aliveworkplace.repair_answer.not_yours", name).withStyle(ChatFormatting.RED);

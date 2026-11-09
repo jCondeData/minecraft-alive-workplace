@@ -621,6 +621,12 @@ public final class BuildSite {
 		crewColumns.remove(who);
 	}
 
+	/** B1110: a helper taken off this crew for another job: its claim let go and no longer counted among the helpers. */
+	public void leaveCrew(UUID who) {
+		release(who);
+		helpersSeen.remove(who);
+	}
+
 	/** Helpers that worked on this site within the last few seconds. */
 	public List<UUID> helpers(long gameTime) {
 		helpersSeen.values().removeIf(t -> gameTime - t > 200);

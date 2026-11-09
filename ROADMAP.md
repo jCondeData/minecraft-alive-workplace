@@ -6481,17 +6481,17 @@ job." Today the Carpenter and the Mason take any recipe of their kind (`CrafterW
 dyer takes anything colored, and Cleric, Shepherd, Florist and Beekeeper craft nothing for builders. The digest's
 review of the 782 vanilla crafting/stonecutting results (by ingredient: wood, stone, metal, textile, glass, magic)
 gives this split, using vanilla's own professions where they fit (vanilla's Shepherd sells beds, carpets, banners
-and paintings), so no new job is needed except possibly a Glassblower (asked of the owner; until he answers, glass
-stays the Mason's):
+and paintings), so the only new job is a Glassblower (owner, 2026-11-09: "adding glassblower is good"):
 
 | Job | Makes for builders (and nothing else) |
 |---|---|
 | Carpenter | things made mostly of wood: planks, slabs, stairs, fences, gates, doors, trapdoors, signs and hanging signs, ladders, chests, barrels, boats, crafting tables, torches, campfires, scaffolding, armor stands, levers, grindstones, smokers, beehives, note blocks, the Shop Counter and the mod's other wooden blocks |
-| Mason | stone, bricks and clay: every stonecutter cut, bricks fired from clay, terracotta and dyed/glazed terracotta, concrete powder and concrete, sandstone, mossy stone, and (for now) glass, panes and stained glass |
+| Mason | stone, bricks and clay: every stonecutter cut, bricks fired from clay, terracotta and dyed/glazed terracotta, concrete powder and concrete, sandstone, mossy stone |
+| Glassblower (new) | glass from sand, panes, stained glass and stained panes, tinted glass, glass bottles |
 | Tinkerer | metal and redstone: its `tinkering` tag plus rails, tripwire hooks, redstone torches, daylight detectors, copper bulbs, minecarts, chains, lanterns |
 | Shepherd (the weaver) | wool, dyed wool, carpets, beds, banners, banner patterns, paintings (at his loom) |
 | Florist | flower pots and decorated pots, dyes from flowers and bone meal, moss carpet |
-| Cleric | brewing stands, blaze powder, eyes of ender, ender chests, end rods, beacons, glass bottles |
+| Cleric | brewing stands, blaze powder, eyes of ender, ender chests, end rods, beacons |
 | Beekeeper | candles and colored candles, honeycomb blocks |
 | Leatherworker | leather goods: item frames and glow item frames, leads, leather from rabbit hide, leather armor (no longer dyes wool, glass or terracotta) |
 | Librarian | as today (books, paper, bookshelves, lecterns) plus enchanting tables and cartography tables |
@@ -6499,15 +6499,19 @@ stays the Mason's):
 Rules: the split is data, an item tag per job (`aliveworkplace:crafts/<job>`), so a pack can change it; a modded item in
 no tag goes by its recipe's ingredients (logs/planks tags to the Carpenter, stone/bricks to the Mason, ingots to the
 Tinkerer, wool/dye to the Shepherd), else to the Carpenter only if it contains wood. A builder short of something whose
-job isn't in the village reads "Hire a Cleric to make Brewing Stands" instead of "Nobody here makes". Nothing that is
+job isn't in the village reads "Hire a Cleric to make Brewing Stands" instead of "Nobody here makes". The
+Storehouse's details pane says who makes each item (owner, 2026-11-09: "maybe it can say who can automatically build it
+in the storehouse"): "Made by: the Carpenter (Ada)" when one works here, "Hire a Cleric to make it" when none does,
+"Nobody makes this: gather it yourself" for raw items. Nothing that is
 made today may become unmakable. Every item: GameTests through a builder's request, save and reload, the job absent;
 the job's guide and wiki pages; its scene where a player sees it; `sessions.py done <id> --review`. Lane B builds it,
 in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed first.
 
 - [ ] **46.1** **Each job's own list.** The tags and the ingredient rule above; Carpenter and Mason no longer take
-  everything; the dyer's colored rule goes; the shortage line names the job to hire. Done when: GameTests that a
+  everything; the dyer's colored rule goes; the shortage line names the job to hire, and the Storehouse's details pane shows who makes the item (the owner's screenshot: under "You have").
+  Done when: GameTests that a
   Carpenter never makes a brewing stand, flower pot, banner, stained glass or lantern, that the Mason makes concrete and
-  dyed terracotta, a modded wooden block goes to the Carpenter by its recipe, and the "Hire a ..." line for each job;
+  dyed terracotta, a modded wooden block goes to the Carpenter by its recipe, and the "Hire a ..." line for each job, the Storehouse's "Made by" / "Hire a" / "Nobody makes" lines;
   a test that every item made by some job before 46.1 still has a job after it.
 - [ ] **46.2** **The Shepherd weaves.** At his loom he makes wool from string, dyes it, and makes carpets, beds,
   banners, banner patterns and paintings for builders, with the chain steps (the wool first, then the bed). Done when:
@@ -6517,11 +6521,20 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
   balls), decorated pots, dyes from the flowers she grows, moss carpet; she still fills empty pots. Done when:
   GameTests for a flower pot from bricks, from clay with a Mason, a dye for the Shepherd's bed; scene `florist_pots`.
 - [ ] **46.4** **The Cleric brews and makes the magic blocks.** Brewing stands, blaze powder, eyes of ender, ender
-  chests, end rods, beacons and glass bottles for builders, besides his potions. Done when: GameTests for a brewing
+  chests, end rods, beacons and for builders, besides his potions. Done when: GameTests for a brewing
   stand from a blaze rod and cobblestone, no blaze rod named on the shortage line; scene `cleric_crafts`.
 - [ ] **46.5** **The Beekeeper makes candles, the Leatherworker leather goods.** Candles (and dyed ones) and
   honeycomb blocks from the hives' wax; item frames, leads and leather armor from leather. Done when: GameTests for a
   candle from honeycomb and string, an item frame; scenes `chandler` and `leatherworker_goods`.
+
+- [ ] **46.6** **The Glassblower** (new job, owner 2026-11-09). His workstation is a new **Glass Kiln** block (a
+  brick kiln with a glowing mouth and a blowpipe; the pixel-art skill, drawn like vanilla's furnaces; a recipe from
+  bricks, a furnace and an iron ingot; creative tab; not a plain furnace, so villagers never take a player's furnaces),
+  an outfit (pixel-art skill, a leather apron and goggles) and a Glassblower's Workshop blueprint (architect skill) the
+  Blueprint Table offers and the Steward can plan. He fires glass from sand (a coal for every eight), then makes panes,
+  stained glass with the Florist's dyes, tinted glass and bottles for builders. Done when: GameTests for panes from
+  sand, stained glass, no fuel named on the shortage line, the job absent ("Hire a Glassblower"); scene `glassblower`;
+  guide and wiki pages.
 
 ## Notes / blocked
 

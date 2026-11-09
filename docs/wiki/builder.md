@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105
 
 ## 1. What a player sees
 
@@ -53,7 +53,9 @@ called that in the saved line, on the blueprint, at the Blueprint Table and in e
 stay plain (`scans/<player>/jesse_s_caf`); the name is kept by id in the world's `aliveworkplace_blueprint_names` data
 (`blueprint/BlueprintNames`) and sent to players as they join. A second build of the same name is "Jesse's Café 2". A name is kept to 128 characters, cut between letters and never through an emoji, so players read the name the server keeps (B578, `QaFixEdges1027GameTests`). An
 uploaded file such as `Zoë's Hut.litematic` keeps its name the same way; a plain `zoe_hut.nbt` is still "Zoe Hut", as
-before. Builds saved before this keep the names made from their ids. Shape Planner builds are named by the mod, never
+before. A name is plain text, as vanilla keeps chat, signs and anvil names: formatting codes and other section signs are
+dropped and a line break becomes a space, so a file `§4§lServer§r Hall.nbt` is "Server Hall" in everyone's list, never
+red and bold (B1046, `QaUploadNames1108BugTests`); a name with nothing left is called by its id. Builds saved before this keep the names made from their ids. Shape Planner builds are named by the mod, never
 typed, so they're unchanged.
 A scan keeps the box's item frames, glow item frames, paintings and armor stands (B441), saved empty
 (`BlueprintEntities.keepBuildable`): no framed item, no armor or held items on a stand, and nothing else that moves, so a
@@ -61,7 +63,11 @@ villager, a mob, a dropped item or a minecart with its load is never copied. Eac
 faces (and the block it hangs on), a painting's picture and a stand's pose, arms, small size and base plate, from a scan,
 an upload or a shipped build alike: an allow-list (B1101), so a creative world's stand saved with a scale attribute,
 Glowing, Invisible, NoGravity or Silent, or an invisible or glowing frame, is put up as a survival player's would be
-(`QaUploadStandLooks1109bBugTests`). The builder puts them up last, as it does a
+(`QaUploadStandLooks1109bBugTests`; `QaUploadFixesVerify1109GameTests`: a stand facing its file's way keeps a head
+and arm pose, arms, small size and no base plate, and loses a shown name, silence, invulnerability, fire, locked slots,
+tags, effects, health and scale; a marker stand isn't put up; a glow frame keeps its kind and facing, never fixed,
+silent, named, invisible or glowing); an invisible stand from an uploaded file is put up visible, so two punches break it
+(B1045, `QaUploadedStands1108BugTests`). The builder puts them up last, as it does a
 starter build's frames, each paid with its item from the chests; one with no item there is left out. Scans saved before
 this have none and load as before.
 Blocks with no item of their own are built from what a player would use (B793, B794): a cake with a candle on it costs
@@ -158,7 +164,9 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   stand (B132, `B132GameTests`).
 
 **Materials.** Each block costs an item (`MaterialRules`; some blocks you cannot hold in survival use their base
-material). A fixed set of blocks is never placed (bedrock, command blocks, spawners, portals, barrier, fire...).
+material: grass, podzol, mycelium, farmland and a dirt path cost dirt; infested stone, cobblestone, deepslate and stone
+bricks cost their plain block, suspicious sand and gravel cost sand and gravel, and a petrified oak slab costs an oak
+slab, each still built as drawn; B874, `QaScanItemless1103BugTests`). A fixed set of blocks is never placed (bedrock, command blocks, spawners, portals, barrier, fire...).
 A Builder takes what it needs from the chests and barrels within `supplyRadius` of the bench (and 4 blocks up or
 down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing than the stretch of work ahead still
 needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
@@ -236,7 +244,7 @@ up again when the Builder is free. Its owner, their friends, the village's leade
 else is told it isn't theirs. Not asked: what threats took (32.16a: a gate a ram broke, a block a village fire burned),
 repaired without asking as before, and a damaged Wonder's parts (35.8). `repairAsk` off: Builders repair by
 themselves, as before 36.15. After a build, it can lay a dirt path to the village bell or hall (at most 96 blocks long). The path skips every 16x16x16 section where a player placed or broke blocks (the Steward's ledger, see
-[Steward](steward.md)), even one built in after the path was planned, and paves the rest of the way. Ground a little lower than a full block (an old dirt path, a vanilla village's own paths round its bell, farmland, mud, soul sand) is walked over and left as it is, and a Steward's road crosses an old dirt path or mud the same way (B981; a road still never takes a field's farmland or soul sand, which aren't natural ground to it); furniture such as a lectern or a chest is never stood on.
+[Steward](steward.md)), even one built in after the path was planned, and paves the rest of the way. Ground a little lower than a full block (an old dirt path, a vanilla village's own paths round its bell, farmland, mud, soul sand) is walked over and left as it is, and a Steward's road crosses an old dirt path or mud the same way (B981; a road still never takes a field's farmland or soul sand, which aren't natural ground to it); furniture such as a lectern or a chest is never stood on, and neither is a big dripleaf, which tips over (B1030), or a magma block, which burns (B1105; workers never stand on one either).
 
 **Safe at height.** A Builder with a build (lead or helper) takes no fall damage: he stands on the build's own
 upper rows (a palisade's stake tops, a tower's platform before its parapet) and can step, jump or be shoved off them.
@@ -301,7 +309,12 @@ longer crash the server (B1099). Test: QA's
 colored or through a repeated argument, stays whole; 386 is cut to 384), and `QaUploadTextEdges1109bGameTests` (3: a
 fallback repeating its argument ten times, six deep, is cut to 384 letters and a short one shows as written; unreadable
 placeholders neither stop the build nor grow the line, and a %% shows one percent sign; 384 letters through a red
-translation stay whole and red, 385 are cut to 384).
+translation stay whole and red, 385 are cut to 384). `QaUploadFixesVerify1109GameTests` (QA, through an upload and a real builder: 384 letters shown
+through plain text, a vanilla key, a keybind to a vanilla key or an unknown key's fallback stay whole, 385 show at most
+384; a mix of a translation, a keybind and words, a fallback repeating its argument seven deep, a %d, a %0$s and indexes
+past an int copy without an error and show at most 384, and a jump keybind stays a keybind; a sign's back line and a
+banner's name 30,000 arrays deep, a 2,500-deep chain of parts, and lines 250 and 260 deep are built showing their
+words, also after a save and reload in the middle of the build).
 
 **Banners from a file (B1073).** A banner built from an uploaded or scanned file keeps its first 6 pattern layers, the
 most a loom gives a banner; a file's extra layers are left off, so a chunk full of banners stays under what a client
@@ -584,7 +597,7 @@ exactly their material list holding no lava). `BuiltEmptyGameTests.aFluidHeldInB
 Create: Create's, Forge's and Fabric's saved fluids are dropped, the tank's size and capacity kept).
 
 GameTests (`src/gametest/java/.../test/`): `BlueprintsStayGameTests.everyBlueprintKeepsItsLampsPathsAndBeds` (B537-B539: in every shipped blueprint no standing lantern, candle or torch is on a top that can't hold it, no dirt path or farmland under a solid block, no half bed; with QaWonderDesignsGameTests' qaWonderStagesStand and qaWonderBedsWhole now run for the Great Library, the Hanging Gardens and the Observatory too), `QaBuildReachGameTests.everyListedBuildsChestsBedsAndJobBlocksCanBeWalkedTo` (QA, from B149: in every build the Table lists but the modded looks, Wonder stages and the two camps of B424, every chest, barrel, bed and job block is within reach of a spot walked to from the ground outside), `QaStageFourBugTests.scanToolMarksACornerOnAChestOrJobBlock` (B335, a Scan Tool click on a chest, barrel, crafting table, furnace, trapdoor or Builder's Bench marks the corner), `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3), `PathLedgerGameTests` (2, B575: the path to the bell keeps out of a section a player built in, planned or laid), `QaBuilderPathsOldPathGameTests` (5, B981: a new path crosses a row of old dirt path and reaches a bell standing in a square of dirt path; routes and a Steward's road cross dirt path, farmland, mud and soul sand; a lectern, enchanting table, chest, fence or cauldron is never ground), QA's `QaBuilderFixes1107bGameTests` (2 here, B981: a finished hut's path crosses bands of farmland, mud and soul sand right across the way, turns none of them into path and reaches the bell; a Steward's road crosses mud and old dirt path but lays none over farmland or soul sand), `QaBuilderPaths1105GameTests` (7, QA: the ground kinds, a pond in the way, the bench fallback, a nearer hall, plants on the path, a planned path through a restart), `QaLedgerFramesHaulGameTests` (QA: the same with the section marked by a player really breaking or placing a block beside a Village Hall, the path's goal; and every blueprint of the mod that hangs a frame or painting, in all four turns plain and mirrored, hangs each one on its wall facing the right way, B439),
-QA's `QaWalkerGroundGameTests` and `QaWalkerGround1108GameTests` (B1017: a worker's spot and a builder's path take the same 56 grounds for ground: every snow depth, slabs, stairs and trapdoors both ways up, mud, soul sand and soil, dirt path and farmland; not a lectern, chest, enchanting table, honey block, powder snow, carpet, composter, cauldron or hopper; a big dripleaf and an end portal frame still differ, B1030).
+QA's `QaWalkerGroundGameTests` and `QaWalkerGround1108GameTests` (B1017: a worker's spot and a builder's path take the same 56 grounds for ground: every snow depth, slabs, stairs and trapdoors both ways up, mud, soul sand and soil, dirt path and farmland; not a lectern, chest, enchanting table, honey block, powder snow, carpet, composter, cauldron or hopper; and `QaWalkerGround1108BugTests.workersAndPathsAgreeOnADripleafAndAnEndPortalFrame` (B1030: a big dripleaf in every tilt is ground for neither, an end portal frame for both; the two rules are now one, `Walker.isGround`). `QaWalkerGround1108BugTests.aMagmaBlockIsGroundForNeitherWorkersNorPaths` (B1105: a magma block's sturdy top is ground for neither; stone in its place is).
 `BuilderChaosGameTests` (5 seeds, stuck recovery), `QaBuilderStuckGameTests` (6, 23.2: a 3-deep hole, an iron-door room, a deep well of water, a lava moat, a fence pen with a shut gate, and the hole through a restart, each three times: out within 600 ticks, nothing placed or of the trap broken, the build whole), `B185GameTests` (6, villagers let out of a block), `QaBuilderBugs1031GameTests` (QA, 8: B185's let-out for a stone put down on a villager, a fence gate shut on one, one loaded inside a block, lava pits round it, a villager on a carpet never moved; B124's level line read through a sneak-click for a Miner and a Builder, and every registered job at every level), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`, `B132BenchGameTests` (2, a neighbor's bench outlasts a build;
 a bench put down and employed at in one command is held),

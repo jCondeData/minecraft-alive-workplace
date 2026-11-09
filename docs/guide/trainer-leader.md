@@ -28,7 +28,9 @@ Some villages already have a **Leader's Hall**.
 
 Right-click the leader with an empty hand: their page opens (see [Trainer](trainer.md)), and **Challenge** starts the
 battle. A leader battles at **Expert** strength from the very start, pays **three times** a trainer's prize, and takes **one challenge a day** from each player: after that,
-Challenge is gray with "come back tomorrow!" and Today says the day's challenge is used.
+Challenge is gray with "come back tomorrow!" and Today says the day's challenge is used. Only a challenge that starts
+a battle uses it up: if you're turned away (the leader is busy with someone else, you're already in a battle, or you
+have no Pokémon with you), try again later the same day. A new day, and a new challenge, starts at sunrise.
 
 A village has one leader: if there's another leader within 64 blocks with more experience, they take the challenges, and
 the other tells you to go to them.

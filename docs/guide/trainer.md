@@ -50,7 +50,8 @@ Cobblemon Trainers installed, their teams follow your level cap; with Mega Showd
 - **Ranks up with:** every battle anyone fights with them, so a village's trainers get tougher as the server plays.
 - **Leads to:** the village's [Trainer Leader](trainer-leader.md), who battles at Expert strength and pays three times
   the prize.
-- **Quests:** the village may post a quest to beat one of its trainers (see [Quests](quests.md)).
+- **Quests:** the village may post a quest to beat one of its trainers (see [Quests](quests.md)). Every battle you win
+  against one of that village's trainers (its leader too) counts; a loss, or pressing Challenge without battling, doesn't.
 - **Needs a heal?** A [Nurse](nurse.md) heals your whole team.
 
 See also [Pokémon and villagers](pokemon.md).

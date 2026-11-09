@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.mc.Lenient;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.ArrayList;
@@ -151,7 +152,8 @@ public final class FamilyBook {
 			people.clear();
 			noted.clear();
 			if (Nbt.has(tag, "families", Tag.TAG_LIST)) {
-				Person.CODEC.listOf().parse(registries.createSerializationContext(NbtOps.INSTANCE), tag.get("families")).result()
+				// One unreadable person is left out with a warning; the rest of the book loads (B827).
+				Lenient.list(Person.CODEC, "family book person").parse(registries.createSerializationContext(NbtOps.INSTANCE), tag.get("families")).result()
 					.ifPresent(list -> list.forEach(p -> people.put(p.id(), p)));
 			}
 			for (int family : Nbt.getIntArray(tag, "familiesNoted")) {

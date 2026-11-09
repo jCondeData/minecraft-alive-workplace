@@ -556,6 +556,13 @@ SCENES = [
       [("01_upgrades_page", "The Upgrades page: the cottage, its next level, cost and free space"),
        ("02_blocked_by_a_fence", "The Stone House II: blocked by a fence where its level III goes"),
        ("03_bram_builds_it", "Clicked: Bram builds the Starter Cottage II")]),
+    # The Hall's Move page (ROADMAP 45.2): the list, the picker's map with a fitting spot and its ghost, then rotated
+    S("move_plan", "Village Hall", "Picking a new spot for a building on the hall's Move page",
+      "the Move page listed the Starter Cottage; its picker showed the map round it, a click put the new spot to the west "
+      "(it fits: green, the ghost outline glowing), and Rotate turned it to face east", 60,
+      [("01_move_page", "The Move page: the cottage, with its Move button"),
+       ("02_new_spot_fits", "The picker: the map, the new spot to the west, \"This spot fits\""),
+       ("03_rotated", "Rotated a quarter: its front faces east")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "

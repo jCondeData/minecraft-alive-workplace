@@ -6448,7 +6448,7 @@ Lane C builds it, in order. Depends on: nothing open.
   with its front and its residents' beds and workstations. Done when: GameTests that a captured plan rebuilt
   elsewhere matches the original block for block (`MaterialRules.matches`) with every container's items, and that
   rotating it 90/180/270 rotates stairs, doors, beds and furniture correctly.
-- [ ] **45.2** **The Hall's Move page.** In the Village Hall (its look, `TableStyle`), a Buildings list with a Move
+- [x] **45.2** (review: pending 2026-11-09) **The Hall's Move page.** In the Village Hall (its look, `TableStyle`), a Buildings list with a Move
   button on each; then the Hall's map to pick the new spot, a rotate button, and a fit check that says plainly why a
   spot is refused (overlaps a building or a road, outside the village, too steep, under water); a ghost outline in the
   world while choosing; Confirm needs a hired Mover. Done when: GameTests for picking, each refusal line, rotate,

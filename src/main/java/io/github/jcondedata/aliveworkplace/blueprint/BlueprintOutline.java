@@ -86,12 +86,49 @@ public final class BlueprintOutline {
 		return glow != null && player.serverLevel().getGameTime() < glow.until();
 	}
 
+	/** A building's new spot picked on the Hall's Move page (45.2): its box, the way its front faces, and whether it fits. */
+	public record MoveGhost(net.minecraft.resources.ResourceLocation dimension, BoundingBox box, Direction front, boolean fits, long until) {
+	}
+
+	private static final java.util.Map<java.util.UUID, MoveGhost> MOVES = new java.util.concurrent.ConcurrentHashMap<>();
+	private static final DustParticleOptions MOVE_FITS = new DustParticleOptions(new Vector3f(0.35f, 0.95f, 0.35f), 1.0f);
+	private static final DustParticleOptions MOVE_REFUSED = new DustParticleOptions(new Vector3f(0.95f, 0.25f, 0.2f), 1.0f);
+
+	/**
+	 * Shows {@code player} the ghost outline of a building's new spot (the Hall's Move page, 45.2) for {@code ticks} ticks, in
+	 * place of the one shown before: green where it fits, red where it's refused, the front edge in gold.
+	 */
+	public static void glowMove(ServerPlayer player, BoundingBox box, Direction front, boolean fits, int ticks) {
+		MOVES.put(player.getUUID(), new MoveGhost(Ids.of(player.serverLevel().dimension()), box, front, fits, player.serverLevel().getGameTime() + ticks));
+	}
+
+	/** Takes the Move page's ghost outline away from {@code player}. */
+	public static void stopMove(ServerPlayer player) {
+		MOVES.remove(player.getUUID());
+	}
+
+	/** The Move page's ghost outline showing to {@code player}, or null (tests). */
+	@org.jetbrains.annotations.Nullable
+	public static MoveGhost moveGhost(ServerPlayer player) {
+		MoveGhost ghost = MOVES.get(player.getUUID());
+		return ghost == null || player.serverLevel().getGameTime() >= ghost.until() ? null : ghost;
+	}
+
 	public static void init() {
 		Platform.get().onLevelTick(level -> {
 			if (level.getGameTime() % INTERVAL != 0) {
 				return;
 			}
 			for (ServerPlayer player : level.players()) {
+				MoveGhost ghost = MOVES.get(player.getUUID());
+				if (ghost != null) {
+					if (level.getGameTime() >= ghost.until()) {
+						MOVES.remove(player.getUUID());
+					} else if (ghost.dimension().equals(Ids.of(level.dimension()))) {
+						box(level, player, ghost.box(), ghost.fits() ? MOVE_FITS : MOVE_REFUSED);
+						frontEdge(level, player, ghost.box(), ghost.front());
+					}
+				}
 				Glow glow = GLOWS.get(player.getUUID());
 				if (glow != null) {
 					if (level.getGameTime() >= glow.until()) {
@@ -175,13 +212,19 @@ public final class BlueprintOutline {
 		line(level, serverPlayer, EDGE, x1, y0, z1, x1, y1, z1);
 
 		// Gold front edge (bottom edge on the side the building faces)
-		Direction front = placement.rotation().rotate(Direction.NORTH);
+		frontEdge(level, serverPlayer, box, placement.rotation().rotate(Direction.NORTH));
+	}
+
+	/** The gold front edge: the bottom edge of {@code box} on the side {@code front} faces. */
+	private static void frontEdge(ServerLevel level, ServerPlayer player, BoundingBox box, Direction front) {
+		double x0 = box.minX(), y0 = box.minY(), z0 = box.minZ();
+		double x1 = box.maxX() + 1, z1 = box.maxZ() + 1;
 		double fy = y0 + 0.05;
 		switch (front) {
-			case NORTH -> line(level, serverPlayer, FRONT, x0, fy, z0, x1, fy, z0);
-			case SOUTH -> line(level, serverPlayer, FRONT, x0, fy, z1, x1, fy, z1);
-			case WEST -> line(level, serverPlayer, FRONT, x0, fy, z0, x0, fy, z1);
-			default -> line(level, serverPlayer, FRONT, x1, fy, z0, x1, fy, z1);
+			case NORTH -> line(level, player, FRONT, x0, fy, z0, x1, fy, z0);
+			case SOUTH -> line(level, player, FRONT, x0, fy, z1, x1, fy, z1);
+			case WEST -> line(level, player, FRONT, x0, fy, z0, x0, fy, z1);
+			default -> line(level, player, FRONT, x1, fy, z0, x1, fy, z1);
 		}
 	}
 

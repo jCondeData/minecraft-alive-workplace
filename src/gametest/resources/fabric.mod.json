@@ -389,6 +389,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJobListEdges1109eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallLenientSaves1109eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MovePlanGameTests",
+			"io.github.jcondedata.aliveworkplace.test.MovePageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1109cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPriceTagList1109cGameTests",

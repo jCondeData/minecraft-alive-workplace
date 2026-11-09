@@ -304,6 +304,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.TrainerScreenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StatusCardCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPokemonScreens1109dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaRctCap1109dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainerScreen1109dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWildBattleWins1109dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaThesisBall1109dCompatTests",

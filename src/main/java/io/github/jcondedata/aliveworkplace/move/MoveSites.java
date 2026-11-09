@@ -26,6 +26,8 @@ public final class MoveSites extends SavedData {
 	public static final String NAME = "aliveworkplace_move_sites";
 
 	private final List<MoveSite> sites = new ArrayList<>();
+	/** Residents of a move that's over who weren't loaded to take their bed or workstation yet (45.4, {@link MoveResidents}). */
+	private final List<MoveResidents.Resident> homecomings = new ArrayList<>();
 
 	public static MoveSites get(ServerLevel level) {
 		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(MoveSites::new, MoveSites::load, null), NAME);
@@ -74,6 +76,7 @@ public final class MoveSites extends SavedData {
 		}
 		MoveSite site = MoveSite.start(move.hall(), move.from(), plan.get(), new BlockPos(box.minX(), box.minY(), box.minZ()), move.to(),
 			move.rotation(), move.by());
+		MoveResidents.begin(level, site, box); // its residents sleep at the inn while it's away (45.4)
 		sites.add(site);
 		setDirty();
 		return Optional.of(site);
@@ -108,6 +111,9 @@ public final class MoveSites extends SavedData {
 		sites.remove(site);
 		PendingMoves.get(level).remove(site.from());
 		tell(level, site);
+		long now = level.getGameTime();
+		homecomings.removeIf(r -> r.until < now);
+		homecomings.addAll(MoveResidents.arrive(level, site)); // its residents' beds and workstations are theirs where it stands (45.4)
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		if (site.canceled() || site.plan().structure() == null) {
 			return;
@@ -124,6 +130,37 @@ public final class MoveSites extends SavedData {
 		manager.forgetFinished(was);
 		manager.recordFinished(old.get().structure(), now, old.get().owner());
 		manager.setFurniture(now, furniture);
+	}
+
+	/** The residents a moved building still waits for (not loaded since it was put up), for the tests and the scene. */
+	public List<MoveResidents.Resident> homecomings() {
+		return List.copyOf(homecomings);
+	}
+
+	/** {@link MoveResidents#tick}: {@code villager}, if a resident of a building on the move or moved, gets what's theirs. */
+	void residentTick(ServerLevel level, net.minecraft.world.entity.npc.Villager villager) {
+		if (sites.isEmpty() && homecomings.isEmpty()) {
+			return;
+		}
+		java.util.UUID id = villager.getUUID();
+		for (MoveSite site : sites) {
+			for (MoveResidents.Resident r : site.residents()) {
+				if (r.id().equals(id)) {
+					MoveResidents.check(level, site, r, villager);
+					setDirty();
+					return;
+				}
+			}
+		}
+		for (java.util.Iterator<MoveResidents.Resident> it = homecomings.iterator(); it.hasNext(); ) {
+			MoveResidents.Resident r = it.next();
+			if (r.id().equals(id)) {
+				MoveResidents.settle(level, r, villager);
+				it.remove();
+				setDirty();
+				return;
+			}
+		}
 	}
 
 	/** Tells whoever confirmed the move that it's over (moved, or put back). */
@@ -145,6 +182,11 @@ public final class MoveSites extends SavedData {
 			list.add(site.save());
 		}
 		tag.put("sites", list);
+		ListTag people = new ListTag();
+		for (MoveResidents.Resident r : homecomings) {
+			people.add(r.save());
+		}
+		tag.put("homecomings", people);
 		return tag;
 	}
 
@@ -153,6 +195,10 @@ public final class MoveSites extends SavedData {
 		ListTag list = Nbt.getList(tag, "sites", Tag.TAG_COMPOUND);
 		for (int i = 0; i < list.size(); i++) {
 			MoveSite.load(Nbt.compoundAt(list, i)).ifPresent(out.sites::add);
+		}
+		ListTag people = Nbt.getList(tag, "homecomings", Tag.TAG_COMPOUND); // (none in a world from before 45.4)
+		for (int i = 0; i < people.size(); i++) {
+			MoveResidents.Resident.load(Nbt.compoundAt(people, i)).ifPresent(out.homecomings::add);
 		}
 		return out;
 	}

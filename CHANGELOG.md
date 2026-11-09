@@ -24,6 +24,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- An item frame or painting that fell when a village fire burned its wall is hung again even when the server restarts in the middle of the repair after another builder has looked round the village; before, it stayed down (B1095).
 - A worker's status card and Village Hall page read as sentences when they wait for a tool or seeds: "Needs a pickaxe", "Needs an axe", "Needs a fishing rod", "Needs seeds" and "Waiting for an axe" instead of a capital letter mid-sentence. The Hall's own request list still reads "Miner: A pickaxe" (B1096).
 - Clicking a fully researched topic in the Research list, a scholars' topic or one in the Great Library's row, now says it's fully researched instead of that it can't be researched yet (B1090).
 - A Create schematic uploaded again under its name while a builder is half-way through it is no longer finished with holes after a restart: the builder starts the new blueprint from the top, skipping what already stands as drawn, and a site saved while retrying no longer risks an error every tick (B1049).

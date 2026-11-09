@@ -4,7 +4,7 @@ Three things a player makes for a village with a Village Hall: a Cradle for its 
 colors and a Harvest Idol for its fields in autumn. Part of 1.4 (Edicts and civic items): switched on in 1.0 with
 every other expansion.
 
-Roadmap items: 30.12, 30.13, 30.14
+Roadmap items: 30.12, 30.13, 30.14, B826
 
 ## What a player sees
 
@@ -65,6 +65,8 @@ the crops within 32 blocks of it grow 25% faster, and golden sparkles rise from 
 ## Saved data
 
 - On the Village Hall: `bannerBase` and `bannerPatterns`, the village's colors (a hall saved before banners has none).
+  A layer of `bannerPatterns` whose pattern no longer exists (its mod or datapack taken out) is left out with a warning
+  in the log and the other layers load, as a vanilla banner reads them (B826; before, the whole design was lost).
 - On a villager: `festival_banner_day`, the day of the last festival enjoyed under the banner (none: a plain festival).
 - The cradle seat entity (`aliveworkplace:cradle_seat`) saves with its child riding it.
 - The calendar's `last_day` (the last day it announced). Idols save nothing of their own: the set is rebuilt from
@@ -108,4 +110,7 @@ the crops within 32 blocks of it grow 25% faster, and golden sparkles rise from 
   design; new colors replace the old and the banner hangs on a wall; harvest season's first and last tick for two
   years at 16 and 8 days, in every dimension; a player places and breaks an idol; carrots, sweet berries and nether
   wart grow a quarter faster; an idol in the Nether doesn't reach the overworld.
+- QA (B826): `QaVillageBannerRemovedPattern1102eBugTests`: a three-layer design whose middle pattern is renamed to a
+  removed mod's id loads with the other two layers, like a vanilla banner with the same design, and that banner still
+  counts as the village's colors.
 - Showcase scenes: `cradle`, `village_banner`, `harvest_idol`.

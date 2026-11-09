@@ -55,7 +55,8 @@ stay plain (`scans/<player>/jesse_s_caf`); the name is kept by id in the world's
 uploaded file such as `Zoë's Hut.litematic` keeps its name the same way; a plain `zoe_hut.nbt` is still "Zoe Hut", as
 before. A name is plain text, as vanilla keeps chat, signs and anvil names: formatting codes and other section signs are
 dropped and a line break becomes a space, so a file `§4§lServer§r Hall.nbt` is "Server Hall" in everyone's list, never
-red and bold (B1046, `QaUploadNames1108BugTests`); a name with nothing left is called by its id. Builds saved before this keep the names made from their ids. Shape Planner builds are named by the mod, never
+red and bold (B1046, `QaUploadNames1108BugTests`); a name with nothing left is called by its id. A name saved with codes before this fix loses them when the world loads
+(`QaBuilderBugs1109bGameTests`: obfuscation, tabs and other control characters go too; accents and other scripts stay). Builds saved before this keep the names made from their ids. Shape Planner builds are named by the mod, never
 typed, so they're unchanged.
 A scan keeps the box's item frames, glow item frames, paintings and armor stands (B441), saved empty
 (`BlueprintEntities.keepBuildable`): no framed item, no armor or held items on a stand, and nothing else that moves, so a
@@ -67,7 +68,8 @@ Glowing, Invisible, NoGravity or Silent, or an invisible or glowing frame, is pu
 and arm pose, arms, small size and no base plate, and loses a shown name, silence, invulnerability, fire, locked slots,
 tags, effects, health and scale; a marker stand isn't put up; a glow frame keeps its kind and facing, never fixed,
 silent, named, invisible or glowing); an invisible stand from an uploaded file is put up visible, so two punches break it
-(B1045, `QaUploadedStands1108BugTests`). The builder puts them up last, as it does a
+(B1045, `QaUploadedStands1108BugTests`; `QaBuilderBugs1109bGameTests`: an invisible, invulnerable one, a scale 16 one
+with no gravity and a marker one come out as plain, breakable stands, the marker left out). The builder puts them up last, as it does a
 starter build's frames, each paid with its item from the chests; one with no item there is left out. Scans saved before
 this have none and load as before.
 Blocks with no item of their own are built from what a player would use (B793, B794): a cake with a candle on it costs
@@ -165,8 +167,9 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
 
 **Materials.** Each block costs an item (`MaterialRules`; some blocks you cannot hold in survival use their base
 material: grass, podzol, mycelium, farmland and a dirt path cost dirt; infested stone, cobblestone, deepslate and stone
-bricks cost their plain block, suspicious sand and gravel cost sand and gravel, and a petrified oak slab costs an oak
-slab, each still built as drawn; B874, `QaScanItemless1103BugTests`). A fixed set of blocks is never placed (bedrock, command blocks, spawners, portals, barrier, fire...).
+bricks (mossy, cracked and chiseled too) cost the same block uninfested, suspicious sand and gravel cost sand and gravel, and a petrified oak slab costs an oak
+slab, each still built as drawn; B874, `QaScanItemless1103BugTests`; `QaBuilderBugs1109bGameTests`: a paid build of all of them
+uses up just those base materials). A fixed set of blocks is never placed (bedrock, command blocks, spawners, portals, barrier, fire...).
 A Builder takes what it needs from the chests and barrels within `supplyRadius` of the bench (and 4 blocks up or
 down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing than the stretch of work ahead still
 needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
@@ -244,7 +247,8 @@ up again when the Builder is free. Its owner, their friends, the village's leade
 else is told it isn't theirs. Not asked: what threats took (32.16a: a gate a ram broke, a block a village fire burned),
 repaired without asking as before, and a damaged Wonder's parts (35.8). `repairAsk` off: Builders repair by
 themselves, as before 36.15. After a build, it can lay a dirt path to the village bell or hall (at most 96 blocks long). The path skips every 16x16x16 section where a player placed or broke blocks (the Steward's ledger, see
-[Steward](steward.md)), even one built in after the path was planned, and paves the rest of the way. Ground a little lower than a full block (an old dirt path, a vanilla village's own paths round its bell, farmland, mud, soul sand) is walked over and left as it is, and a Steward's road crosses an old dirt path or mud the same way (B981; a road still never takes a field's farmland or soul sand, which aren't natural ground to it); furniture such as a lectern or a chest is never stood on, and neither is a big dripleaf, which tips over (B1030), or a magma block, which burns (B1105; workers never stand on one either).
+[Steward](steward.md)), even one built in after the path was planned, and paves the rest of the way. Ground a little lower than a full block (an old dirt path, a vanilla village's own paths round its bell, farmland, mud, soul sand) is walked over and left as it is, and a Steward's road crosses an old dirt path or mud the same way (B981; a road still never takes a field's farmland or soul sand, which aren't natural ground to it); furniture such as a lectern or a chest is never stood on, and neither is a big dripleaf, which tips over (B1030), or a magma block, which burns (B1105; workers never stand on one either, and a path goes round it or not at all), nor a lit
+campfire, a cactus, a pointed dripstone or a lava cauldron (`QaBuilderBugs1109bGameTests`).
 
 **Safe at height.** A Builder with a build (lead or helper) takes no fall damage: he stands on the build's own
 upper rows (a palisade's stake tops, a tower's platform before its parapet) and can step, jump or be shoved off them.

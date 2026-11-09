@@ -286,19 +286,23 @@ its plain words (a player's longest line, fully styled, stays under that), so a 
 under what a client accepts. A line is measured by the letters it shows, counting a translation's argument once for each
 `%s` that uses it as the game does, so a short line that repeats its words through nested translations (100,000 letters
 from 333 characters) is cut to its first 384 letters too and no client freezes drawing it. Test: QA's
-`QaSignTranslationRepeat1108bBugTests`.
+`QaSignTranslationRepeat1108bBugTests` and `QaUploads1109GameTests` (an uploaded line of exactly 384 letters, plain,
+colored or through a repeated argument, stays whole; 386 is cut to 384).
 
 **Banners from a file (B1073).** A banner built from an uploaded or scanned file keeps its first 6 pattern layers, the
 most a loom gives a banner; a file's extra layers are left off, so a chunk full of banners stays under what a client
 accepts. Test: QA's `QaBannerChunkSize1108bBugTests` (48 banners of 5,000 layers from one upload) and
-`BlockDataSizeGameTests.aBannerFromAFileKeepsALoomsLayersAndNoMore` (3 and 6 layers are kept whole).
+`BlockDataSizeGameTests.aBannerFromAFileKeepsALoomsLayersAndNoMore` (3 and 6 layers are kept whole), and
+`QaUploads1109GameTests` (an uploaded banner of 7 layers keeps its first 6 in order, through a save and load).
 
 **Heads from a file (B1077).** A mob or player head built from an uploaded or scanned file keeps what a player's head
 could carry: the owner's name (up to 16 letters), their id and one signed skin (`textures`, up to 4,096 characters, as
 a real player's skin is). A head whose file gives it more skin entries, or a bigger one, keeps only the name and id, and
 the game looks the skin up by name as it does for a head a player names. Test: QA's `QaHeadChunkSize1108eBugTests` (48
-zombie heads with four 60,000-character entries each) and
-`BlockDataSizeGameTests.aHeadFromAFileKeepsARealSkinButNotAHugeOne`.
+zombie heads with four 60,000-character entries each),
+`BlockDataSizeGameTests.aHeadFromAFileKeepsARealSkinButNotAHugeOne` and `QaUploads1109GameTests` (uploaded heads: a real
+signed skin kept through a save and load, a 16-letter name kept and a 17-letter one not, two skins or a non-skin entry
+dropped).
 
 ## 3. Switches
 

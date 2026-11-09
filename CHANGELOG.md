@@ -24,6 +24,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A villager a zombie turns and you cure comes back as the same villager to the mod too: their class, family name, friendship with you, Legend place and marriage are kept (their husband or wife is no longer widowed by the bite, only if the zombie villager is killed). The work they held, such as a builder's site, is still let go when they're bitten (B1081).
 - A raider's arrow whose raider is already gone stays a raider's shot after it bounces off something it can't hurt, such as the builders' item frame, so the bounce no longer knocks the item out of another of their frames or breaks their pot (B1079).
 - The Bandit King's fort always goes up 110 to 150 blocks from the hall; about 1 fort in 40 used to land up to half a block outside that ring (B660).
 - A banner built from an uploaded blueprint file keeps at most the 6 pattern layers a loom gives one, so a wall of banners with thousands of layers each can no longer make a chunk that disconnects every player who comes near (B1073).

@@ -220,10 +220,18 @@ public final class Couples {
 			.findFirst().orElseGet(() -> Festivals.square(level, hall));
 	}
 
-	/** A villager died: their partner, if any, is left to mourn. */
-	public static void onDeath(ServerLevel level, Villager villager) {
-		Partner p = partner(villager);
-		if (p == null) {
+	public static void init() {
+		io.github.jcondedata.aliveworkplace.platform.Platform.get().onMobConversion(Couples::onConversion);
+	}
+
+	/**
+	 * A villager died (or the zombie villager one became, B1081): their partner, if any, is left to mourn. A villager a
+	 * zombie turned isn't dead (cure them): they are already gone from the world, as the zombie villager, when their
+	 * death hooks run, and their partner stays theirs ({@link #onConversion}).
+	 */
+	public static void onDeath(ServerLevel level, net.minecraft.world.entity.LivingEntity villager) {
+		Partner p = ModAttachments.PARTNER.get(villager);
+		if (p == null || villager.isRemoved()) {
 			return;
 		}
 		Entity other = level.getEntity(p.id());
@@ -231,6 +239,23 @@ public final class Couples {
 			ModAttachments.PARTNER.remove(partner);
 			ModAttachments.WIDOWED_DAY.set(partner, Chronicle.day(level));
 			ModAttachments.LATE_PARTNER.set(partner, new LatePartner(villager.getUUID(), villager.getDisplayName().copy())); // who they lost (31.7)
+		}
+	}
+
+	/**
+	 * B1081: a partner turned into a zombie villager, or cured back, is a new entity with a new UUID (vanilla's
+	 * {@code convertTo}); the one they're with now names that one, so the couple is still a couple when they're cured
+	 * (and the one left behind is widowed only if the zombie villager dies).
+	 */
+	static void onConversion(net.minecraft.world.entity.Mob before, net.minecraft.world.entity.Mob after) {
+		Partner p = before == null || after == null ? null : ModAttachments.PARTNER.get(before);
+		if (p == null || !(after.level() instanceof ServerLevel level) || before.getUUID().equals(after.getUUID())) {
+			return;
+		}
+		Entity other = level.getEntity(p.id());
+		Partner theirs = other == null ? null : ModAttachments.PARTNER.get(other);
+		if (theirs != null && theirs.id().equals(before.getUUID())) {
+			ModAttachments.PARTNER.set(other, new Partner(after.getUUID(), theirs.name(), theirs.since(), theirs.married()));
 		}
 	}
 

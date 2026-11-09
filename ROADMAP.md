@@ -1224,6 +1224,10 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B1107** Player-visible (CobbleDollars shop, 42.4 list): a buyer is charged a price the screen never showed. Buy on cobblestone at 2 emeralds (the gold Confirm row reads 200 CobbleDollars), the owner then raises that counter's price to 9 emeralds; the buyer's screen still reads 200 (it re-renders only when their money changes) and Confirm charges 900. Shops.renderMenu's Confirm calls buy(p, villager, col), which reads the price live (the old chest menu did the same; the Ferry captures its fare and is fine). Expected: Confirm charges the price shown, or refuses and re-shows the row at the new price before taking anything. Test: QaJobShopLists1109cBugTests#shopConfirmChargesThePriceTheRowShowed on tests/shop-price-1109c (fails on main d91c53cad; register it in the compat fabric.mod.json with the fix) (found by lane-c-1109-1255) (found by lane-c-1109-1255, 2026-11-09)
 - [ ] **B1108** Player-visible, low (text, B1098 kin): the Storehouse board's click messages for the Undertaker's, Nurse's and Physician's requests don't read as sentences: their request names already carry an article ('a golden apple (or a healing potion)', 'a remedy (honey, milk or a healing potion)', 'a Remedy for the ill'), and B1098's fix rewords only the four stand-alone names, so a hand-over reads 'Gave 1 a golden apple (or a healing potion) to the Undertaker's chests' and an empty-handed click 'You have no a remedy (honey, milk or a healing potion) to give'. Expected: natural sentences, e.g. 'Gave a golden apple (or a healing potion) to the Undertaker's chests', 'You don't have a remedy ... to give'. Test: QaUploadFixesVerify1109BugTests.theStorehouseBoardsMessagesReadAsSentencesForTheUndertakersNursesAndPhysiciansRequests on tests/upload-fixes-1109 (found by qa-lane-b-1109-1537, 2026-11-09)
 - [ ] **B1109** Player-visible, low (text, B1098 kin): the Storehouse board's click messages still break for request names written with their own article: a Nurse's remedy, an Undertaker's revival and a Physician's remedy read 'Gave 1 a remedy (honey, milk or a healing potion) to the Nurse's chests', 'You have no a golden apple (or a healing potion) to give (or their chests are full)', 'Gave 1 a Remedy for the ill to the Physician's chests'. B1098's fix (StorehouseBoard.gaveMessage/noneMessage) covers only Requests.STANDALONE_NAMES (pickaxe, axe, fishing rod, seeds); request.aliveworkplace.remedy, .revival and .remedy_physician (and .compost, 'Gave 16 scraps to compost') fall through to 'Gave %s %s' and 'You have no %s'. Expected: natural sentences for every name a job posts ('Gave a remedy ... to the Nurse's chests', 'You don't have a golden apple ... to give'). Test: QaBoardWords1109cBugTests on tests/board-words-1109 (fails on main 9834a5eb9) (found by lane-c-1109-1553, 2026-11-09)
+- [ ] **B1110** [urgent: owner] Player-visible, live server (Village Hall, upgrade/repair tab): choosing a job there does nothing when every builder is already busy on another job. Expected: it splits the builders: take one builder (preferably the helper of a job that has more than one) off its current job and move it to the new job; the job it leaves keeps going with the rest. Test: all builders busy on site A, set a job on B from the Hall's upgrade tab (and repair tab): one builder, a helper first, now works B, A keeps at least one builder; with one builder only on A, say plainly it can't split. (owner report, 2026-11-09) (found by digest-1109-1354, 2026-11-09)
+- [ ] **B1111** [urgent: owner] Player-visible, live server: the Mason is not making Stone Brick Slab although a builder requests it (the Storehouse list shows Stone Brick Slab 'For the Builder, 1 block away', in storehouse 0, you have none). The Mason usually makes requested blocks, so something regressed or this item is skipped (slab recipe from stone bricks vs stonecutting? stock of the input? request cap?). Expected: the Mason makes the slabs when the store has the materials, or the request says plainly what is missing. Test: a builder request for stone brick slabs with stone bricks in the store: the Mason crafts them (also with only stone in the store, if the Mason's recipes allow it). (owner report, 2026-11-09) (found by digest-1109-1354, 2026-11-09)
+- [ ] **B1112** [urgent: owner] Player-visible, live server: the Carpenter is not making Chest, Oak Ladder or Spruce Door although builders request them (the owner says it has been working well until now, so a likely regression, probably the same cause as the Mason not making Stone Brick Slab: check both together). Expected: the Carpenter makes requested chests, ladders and doors of any wood from the store's planks/sticks, or the request says what is missing. Test: builder requests for a chest, an oak ladder and a spruce door with the planks and sticks in the store: the Carpenter crafts all three. (owner report, 2026-11-09) Also unmade in the same Storehouse list (owner's screenshot): 2 Blue Bed, Brewing Stand, Shop Counter, Flower Pot, Blue Banner, Green Banner, all 'For the Builder, 1 block away', all normally the Carpenter's (beds and banners also the Leatherworker's). So the whole builder crafting chain looks stalled for this builder, not one recipe: check the claim/`wants` path in CrafterWork, whether the builder's chest/Storehouse room check (B760/B721) blocks every job, and B1111 with it. (found by digest-1109-1354, 2026-11-09)
+- [ ] **B1113** workplaceLevelGround and workplaceFoundationDepth changed with /gamerule while a build is under way do nothing until a server restart or a reload of the site (the plan keeps the values it started with): set workplaceLevelGround 0 mid-STRUCTURE and the Builder still fills every pit round the hut; raise workplaceFoundationDepth 0 to 12 while he clears the site and the dip under the hut stays empty. Expected (docs/guide/game-rules.md: the rules 'take effect at once'): the new value applies to the rest of the build, or the guide says it applies to builds started after the change, consistently across restarts; Test: QaBuilderRules1109BugTests.levelGroundSetToZeroMidStructureLeavesThePitsAlone and foundationDepthRaisedFromZeroWhileClearingFillsTheDip on tests/builder-rules-1109 (found by qa-lane-b-1109-1537, 2026-11-09)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -6423,6 +6427,116 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
 - [ ] **44.4** **The Guide and the Settings screen** in the Hall's look (the Guide keeps its pictures and pages,
   with the Hall's sidebar for its chapters). Done when: GameTests for opening each page and changing a setting;
   scenes `guide` and `config`.
+
+## Milestone 45: Move a finished building
+
+The owner, 2026-11-09 (morning digest): "allow people to move buildings within their village after they've been built,
+this is huge and will be a massive QOL feature. It can be done through a new job type similar to builder." His design
+answers the same day: **chosen from the Village Hall only** (no wand); the new **Mover** job **dismantles the building
+top-down and rebuilds it at the new spot with no materials lost**, reusing the Builder's site and stages; **its
+residents and their beds, its chests with their contents, and its decorations and furniture travel with it**. The
+surroundings (paths, fences, garden) don't move; the old spot is left cleared. Nothing a building does today may be
+lost by moving it. Every item: GameTests through the player's own clicks, save and reload mid-move, its config switch
+off, its scene in the harness and `tools/showcase/scenes.py`, `sessions.py done <id> --review`, American English.
+Lane C builds it, in order. Depends on: nothing open.
+
+- [ ] **45.1** **A building's snapshot.** Any building the Village Hall knows (built from a blueprint, grown by the
+  village or the player's own registered house) can be captured as a moving plan: every block state, container
+  contents, signs, banners, item frames, armor stands and modded furniture (by block/entity ids, never their classes),
+  with its front and its residents' beds and workstations. Done when: GameTests that a captured plan rebuilt
+  elsewhere matches the original block for block (`MaterialRules.matches`) with every container's items, and that
+  rotating it 90/180/270 rotates stairs, doors, beds and furniture correctly.
+- [ ] **45.2** **The Hall's Move page.** In the Village Hall (its look, `TableStyle`), a Buildings list with a Move
+  button on each; then the Hall's map to pick the new spot, a rotate button, and a fit check that says plainly why a
+  spot is refused (overlaps a building or a road, outside the village, too steep, under water); a ghost outline in the
+  world while choosing; Confirm needs a hired Mover. Done when: GameTests for picking, each refusal line, rotate,
+  cancel; scene `move_plan`.
+- [ ] **45.3** **The Mover.** A new job with its own workstation (the pixel-art skill; outfit too; a recipe and a
+  creative-tab entry), hired like the Builder. He dismantles top-down into the village Storehouse or his own crates
+  (nothing dropped, nothing lost, containers packed with their contents kept apart), then rebuilds at the new spot
+  with the Builder's stages (FOUNDATION to DONE), restartable at any tick from `BuildSite`. Two Movers share a job
+  like builders. Done when: GameTests for a whole move, a block broken mid-move, save and reload in each stage, a
+  full Storehouse (he waits, says why), the job canceled half way (everything taken down is put back up where it
+  was); scene `mover` (before, half way, after).
+- [ ] **45.4** **The residents move too.** Villagers who live or work in the building keep it: during the move they
+  sleep in the Hall or the inn, then their bed, home and workstation are the new spot's, and the Hall's People page,
+  couples and status cards follow. Done when: GameTests for a family's beds, a worker's workstation, a builder's
+  bench inside a moved house, save and reload; scene `mover` shows them at home after.
+- [ ] **45.5** **Chests, furniture and decorations arrive as they were.** Containers come back with exactly their
+  items (a player's chest included; nothing copied or doubled), furniture from CobbleFurnies/Cozy Home and the mod's
+  furnished homes, banners, signs, item frames and armor stands too. Done when: GameTests with every container kind
+  (chest, barrel, shulker box, a modded storage block by id), a sign's text, a framed item; compat tests for the
+  furniture mods and their absence.
+- [ ] **45.6** **Safe to use on the live server.** Only the village's own buildings can be moved (never another
+  player's claim or a building outside the village); the Hall, a Wonder and a building with a live build site are
+  refused with a reason; a config switch `moveBuildings` (on) and the guide and wiki pages. Done when: GameTests for
+  each refusal and the switch off; the guide page `moving-buildings.md`.
+
+## Milestone 46: Every job crafts its own kind of thing
+
+The owner, 2026-11-09: "the carpenter shouldn't build brewing stands, or anything that doesn't have wood, other jobs
+should take that such as a cleric. Florists should build pots. Leatherworker shouldn't make stained glass ... take a
+peek at the library of items everyone can make and make sure they align with their job; if it's a stretch, make a new
+job." Today the Carpenter and the Mason take any recipe of their kind (`CrafterWork.wants` is true for both), the
+dyer takes anything colored, and Cleric, Shepherd, Florist and Beekeeper craft nothing for builders. The digest's
+review of the 782 vanilla crafting/stonecutting results (by ingredient: wood, stone, metal, textile, glass, magic)
+gives this split, using vanilla's own professions where they fit (vanilla's Shepherd sells beds, carpets, banners
+and paintings), so the only new job is a Glassblower (owner, 2026-11-09: "adding glassblower is good"):
+
+| Job | Makes for builders (and nothing else) |
+|---|---|
+| Carpenter | things made mostly of wood: planks, slabs, stairs, fences, gates, doors, trapdoors, signs and hanging signs, ladders, chests, barrels, boats, crafting tables, torches, campfires, scaffolding, armor stands, levers, grindstones, smokers, beehives, note blocks, the Shop Counter and the mod's other wooden blocks |
+| Mason | stone, bricks and clay: every stonecutter cut, bricks fired from clay, terracotta and dyed/glazed terracotta, concrete powder and concrete, sandstone, mossy stone |
+| Glassblower (new) | glass from sand, panes, stained glass and stained panes, tinted glass, glass bottles |
+| Tinkerer | metal and redstone: its `tinkering` tag plus rails, tripwire hooks, redstone torches, daylight detectors, copper bulbs, minecarts, chains, lanterns |
+| Shepherd (the weaver) | wool, dyed wool, carpets, beds, banners, banner patterns, paintings (at his loom) |
+| Florist | flower pots and decorated pots, dyes from flowers and bone meal, moss carpet |
+| Cleric | brewing stands, blaze powder, eyes of ender, ender chests, end rods, beacons |
+| Beekeeper | candles and colored candles, honeycomb blocks |
+| Leatherworker | leather goods: item frames and glow item frames, leads, leather from rabbit hide, leather armor (no longer dyes wool, glass or terracotta) |
+| Librarian | as today (books, paper, bookshelves, lecterns) plus enchanting tables and cartography tables |
+
+Rules: the split is data, an item tag per job (`aliveworkplace:crafts/<job>`), so a pack can change it; a modded item in
+no tag goes by its recipe's ingredients (logs/planks tags to the Carpenter, stone/bricks to the Mason, ingots to the
+Tinkerer, wool/dye to the Shepherd), else to the Carpenter only if it contains wood. A builder short of something whose
+job isn't in the village reads "Hire a Cleric to make Brewing Stands" instead of "Nobody here makes". The
+Storehouse's details pane says who makes each item (owner, 2026-11-09: "maybe it can say who can automatically build it
+in the storehouse"): "Made by: the Carpenter (Ada)" when one works here, "Hire a Cleric to make it" when none does,
+and for raw things the jobs that gather them (owner, 2026-11-09: logs and ore are dug up by other jobs, so never
+"gather it yourself" when a job does): "Gathered by: the Lumberjack (Bo)", "Hire a Miner to dig it", and only for
+what no job in the mod gathers or makes, "No job makes or gathers this". Nothing that is
+made today may become unmakable. Every item: GameTests through a builder's request, save and reload, the job absent;
+the job's guide and wiki pages; its scene where a player sees it; `sessions.py done <id> --review`. Lane B builds it,
+in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed first.
+
+- [ ] **46.1** **Each job's own list.** The tags and the ingredient rule above; Carpenter and Mason no longer take
+  everything; the dyer's colored rule goes; the shortage line names the job to hire, and the Storehouse's details pane shows who makes the item (the owner's screenshot: under "You have").
+  Done when: GameTests that a
+  Carpenter never makes a brewing stand, flower pot, banner, stained glass or lantern, that the Mason makes concrete and
+  dyed terracotta, a modded wooden block goes to the Carpenter by its recipe, and the "Hire a ..." line for each job, the Storehouse's "Made by" / "Gathered by" / "Hire a" / "No job makes or gathers this" lines (logs, ore, sand, clay and wool name their gatherers);
+  a test that every item made by some job before 46.1 still has a job after it.
+- [ ] **46.2** **The Shepherd weaves.** At his loom he makes wool from string, dyes it, and makes carpets, beds,
+  banners, banner patterns and paintings for builders, with the chain steps (the wool first, then the bed). Done when:
+  GameTests for two blue beds from white wool, planks and blue dye, a banner, a missing dye named on the shortage line;
+  scene `weaver` (his loom, the bed going into the builder's chest).
+- [ ] **46.3** **The Florist makes pots and dyes.** Flower pots (the Mason fires the bricks if there are only clay
+  balls), decorated pots, dyes from the flowers she grows, moss carpet; she still fills empty pots. Done when:
+  GameTests for a flower pot from bricks, from clay with a Mason, a dye for the Shepherd's bed; scene `florist_pots`.
+- [ ] **46.4** **The Cleric brews and makes the magic blocks.** Brewing stands, blaze powder, eyes of ender, ender
+  chests, end rods, beacons and for builders, besides his potions. Done when: GameTests for a brewing
+  stand from a blaze rod and cobblestone, no blaze rod named on the shortage line; scene `cleric_crafts`.
+- [ ] **46.5** **The Beekeeper makes candles, the Leatherworker leather goods.** Candles (and dyed ones) and
+  honeycomb blocks from the hives' wax; item frames, leads and leather armor from leather. Done when: GameTests for a
+  candle from honeycomb and string, an item frame; scenes `chandler` and `leatherworker_goods`.
+
+- [ ] **46.6** **The Glassblower** (new job, owner 2026-11-09). His workstation is a new **Glass Kiln** block (a
+  brick kiln with a glowing mouth and a blowpipe; the pixel-art skill, drawn like vanilla's furnaces; a recipe from
+  bricks, a furnace and an iron ingot; creative tab; not a plain furnace, so villagers never take a player's furnaces),
+  an outfit (pixel-art skill, a leather apron and goggles) and a Glassblower's Workshop blueprint (architect skill) the
+  Blueprint Table offers and the Steward can plan. He fires glass from sand (a coal for every eight), then makes panes,
+  stained glass with the Florist's dyes, tinted glass and bottles for builders. Done when: GameTests for panes from
+  sand, stained glass, no fuel named on the shortage line, the job absent ("Hire a Glassblower"); scene `glassblower`;
+  guide and wiki pages.
 
 ## Notes / blocked
 

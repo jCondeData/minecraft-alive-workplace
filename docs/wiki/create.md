@@ -649,6 +649,9 @@ village's last column empties it (B994).
   killed with the caravan's 32 logs in the train's chest: the caravan comes back still in the chest, then the logs come
   out and arrive once by the timed trip; restarted while the caravan waits for the driverless train, a villager who
   comes by only afterwards takes the seat and the caravan rides the train in.
+- `QaTrainDriverPlayer1109e2CompatTests` (QA, with Create, B962): the driver killed and a player sitting down in his
+  seat at once, a villager standing by: the player keeps the seat (never put off), the villager isn't sat in it, and the
+  caravan's logs still arrive once by the timed trip (Create never counts a player as a train's driver).
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
 - `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is

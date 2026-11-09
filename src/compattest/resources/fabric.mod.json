@@ -133,6 +133,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.TrainDriverCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainDriverEdges1108eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainDriverSaves1109eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaTrainDriverPlayer1109e2CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateTrackCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MechanicCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ConductorCompatTests",

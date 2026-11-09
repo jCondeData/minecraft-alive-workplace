@@ -93,13 +93,28 @@ public final class MaterialRules {
 		Blocks.FROSTED_ICE
 	);
 
-	/** Blocks you cannot hold as an item in survival: the builder uses the base material instead. */
-	private static final Map<Block, Item> SUBSTITUTES = Map.of(
-		Blocks.GRASS_BLOCK, Items.DIRT,
-		Blocks.PODZOL, Items.DIRT,
-		Blocks.MYCELIUM, Items.DIRT,
-		Blocks.FARMLAND, Items.DIRT,
-		Blocks.DIRT_PATH, Items.DIRT
+	/**
+	 * Blocks you cannot hold as an item in survival: the builder uses the base material instead. B874: also the ones a
+	 * player finds but can't pick up as they are: infested stone blocks (a mountain's or a stronghold's silverfish stone)
+	 * cost their stone, suspicious sand and gravel cost sand and gravel, and a petrified oak slab (an old village's or
+	 * mineshaft's) costs an oak slab. Built as drawn, as grass is built from dirt.
+	 */
+	private static final Map<Block, Item> SUBSTITUTES = Map.ofEntries(
+		Map.entry(Blocks.GRASS_BLOCK, Items.DIRT),
+		Map.entry(Blocks.PODZOL, Items.DIRT),
+		Map.entry(Blocks.MYCELIUM, Items.DIRT),
+		Map.entry(Blocks.FARMLAND, Items.DIRT),
+		Map.entry(Blocks.DIRT_PATH, Items.DIRT),
+		Map.entry(Blocks.INFESTED_STONE, Items.STONE),
+		Map.entry(Blocks.INFESTED_COBBLESTONE, Items.COBBLESTONE),
+		Map.entry(Blocks.INFESTED_STONE_BRICKS, Items.STONE_BRICKS),
+		Map.entry(Blocks.INFESTED_MOSSY_STONE_BRICKS, Items.MOSSY_STONE_BRICKS),
+		Map.entry(Blocks.INFESTED_CRACKED_STONE_BRICKS, Items.CRACKED_STONE_BRICKS),
+		Map.entry(Blocks.INFESTED_CHISELED_STONE_BRICKS, Items.CHISELED_STONE_BRICKS),
+		Map.entry(Blocks.INFESTED_DEEPSLATE, Items.DEEPSLATE),
+		Map.entry(Blocks.SUSPICIOUS_SAND, Items.SAND),
+		Map.entry(Blocks.SUSPICIOUS_GRAVEL, Items.GRAVEL),
+		Map.entry(Blocks.PETRIFIED_OAK_SLAB, Items.OAK_SLAB)
 	);
 
 	/**

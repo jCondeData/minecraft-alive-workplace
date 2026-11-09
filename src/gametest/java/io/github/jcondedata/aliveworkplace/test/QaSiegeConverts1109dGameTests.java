@@ -194,9 +194,9 @@ public class QaSiegeConverts1109dGameTests {
 	}
 
 	/**
-	 * A zombie that went over the wall by the ladder (gate still shut) drowns inside. The drowned has a new UUID that the
-	 * ladders don't count over, so Ladders gives it the standing ladder again (seen: about 30 ticks, a short walk to the
-	 * wall behind the ladder, then let go as over once more). What a player must not see: it held there for good (100
+	 * A zombie that went over the wall by the ladder (gate still shut) drowns inside. The drowned has a new UUID; before
+	 * B1085 the ladders didn't count it over and gave it the standing ladder again for about 30 ticks (since B1085 the
+	 * drowned takes the zombie's place among those over, B1085GameTests). What a player must not see: it held there for good (100
 	 * ticks at most), or back out over the wall; 300 ticks on it is counted over again and still inside.
 	 */
 	//$ gametest_ticks_batch AREA '2400' '"qaSiegeConvertsOver1109d"'

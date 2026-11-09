@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -17,6 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.StringUtil;
 import net.minecraft.world.level.saveddata.SavedData;
 
 /**
@@ -71,11 +73,12 @@ public final class BlueprintNames {
 
 	/**
 	 * Remembers {@code name} as what {@code id} is called, saves it with the world and tells every player. A blank name, or
-	 * one that reads the same as the name made from the id, forgets any name it had: it's called by its id.
+	 * one that reads the same as the name made from the id, forgets any name it had: it's called by its id. The name is
+	 * {@link #plain plain text} first, so nobody's file name colors or breaks what others read (B1046).
 	 */
 	public static void put(MinecraftServer server, ResourceLocation id, String name) {
 		ensureLoaded(server);
-		String clean = name == null ? "" : name.strip();
+		String clean = plain(name);
 		if (clean.equals(Blueprints.prettify(id))) {
 			clean = "";
 		}
@@ -97,6 +100,21 @@ public final class BlueprintNames {
 		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 			send(player, sync);
 		}
+	}
+
+	/**
+	 * B1046: {@code name} as plain text, the way vanilla keeps what one player shows to others (chat, signs, anvil names):
+	 * formatting codes ("§4", "§l") and any other section sign are dropped, a line break or other control character
+	 * becomes a space, and runs of spaces become one, so "§4§lServer§r Hall" is "Server Hall". Never null.
+	 */
+	public static String plain(String name) {
+		if (name == null) {
+			return "";
+		}
+		String text = name.replaceAll("\\p{Cntrl}", " ");
+		String stripped = ChatFormatting.stripFormatting(text);
+		text = StringUtil.filterText(stripped == null ? text : stripped);
+		return text.replaceAll(" {2,}", " ").strip();
 	}
 
 	/** A client got names from its server. */
@@ -194,8 +212,9 @@ public final class BlueprintNames {
 			CompoundTag all = Nbt.getCompound(tag, "names");
 			for (String key : Nbt.keys(all)) {
 				ResourceLocation id = ResourceLocation.tryParse(key);
-				if (id != null) {
-					data.names.put(id, Nbt.getString(all, key));
+				String name = plain(Nbt.getString(all, key));
+				if (id != null && !name.isEmpty()) {
+					data.names.put(id, name);
 				}
 			}
 			return data;

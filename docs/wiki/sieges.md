@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085
 
 ## What a player sees
 
@@ -115,6 +115,10 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   breach and strike no blow (B126: a ravager at the next bar stood in the one-block way it had opened). A raider
   with a foe in sight is left to fight. Each raider carries a goal that holds it to the director's order; without it
   their own hunting walks them round the walls after villagers they cannot reach.
+- **A raider that converts** (a zombie drowning, a skeleton freezing: vanilla's `Mob.convertTo` gives it a new UUID)
+  keeps its place (B1085): `ConvertedMobs.swap` moves the new mob into the director's through, ordered and orders, and
+  into the ladders' and sand ramps' over sets and assignments (`Sieges.converted`, `Ladders.converted`,
+  `SandRamps.converted`), so one that got in stays left to its fight instead of being walked back toward the gate.
 - **The portcullis** is found from the blueprint: under every iron bar a gate build's blueprint has, bars are set down
   through the blueprint's air to the floor. The siege remembers each one and takes those still standing away when it
   lifts.

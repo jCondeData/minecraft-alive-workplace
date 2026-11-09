@@ -22,6 +22,10 @@ import net.minecraft.world.entity.Mob;
  * <p>The new mob also gets a new UUID, and what tracks a mob by its UUID lost it (B1072): a lair's captain, a bounty's
  * captain and band, an arc's mob and role. The new mob takes the old one's place in each ({@link #swap}), so killing it
  * still breaks the lair up, ends the bounty or counts in the arc.
+ *
+ * <p>A siege's director and its ladders and sand ramps keep raiders by UUID too (B1085): a raider that went in through
+ * the breach and drowned inside the walls was no longer counted through, got the director's orders again and was walked
+ * back toward the gate. The new mob takes the old one's place there as well: through, ordered, over the wall.
  */
 public final class ConvertedMobs {
 	/** Every tag the mod puts on an entity starts with this. */
@@ -46,13 +50,19 @@ public final class ConvertedMobs {
 		}
 	}
 
-	/** {@code after} takes {@code before}'s place wherever the mod keeps a mob by its UUID ({@code arc}: an arc's mob). */
+	/**
+	 * {@code after} takes {@code before}'s place wherever the mod keeps a mob by its UUID: lairs, bounties, a siege's
+	 * director, ladders and sand ramps ({@code arc}: an arc's mob too).
+	 */
 	public static void swap(ServerLevel level, UUID before, UUID after, boolean arc) {
 		if (before.equals(after)) {
 			return;
 		}
 		Lairs.converted(level, before, after);
 		Bounties.converted(level, before, after);
+		Sieges.converted(level, before, after);
+		Ladders.converted(level, before, after);
+		SandRamps.converted(level, before, after);
 		if (arc) {
 			Arcs.converted(level, before, after);
 		}

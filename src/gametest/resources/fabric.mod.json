@@ -575,6 +575,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCuredVillager1109eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCuredVillager1109eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCuredVillagerEdges1109e2GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCuredVillagerEdges1109e2BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRevivedPartnerEdges1109e2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRevivedPartner1109eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConvertRevive1109cGameTests",

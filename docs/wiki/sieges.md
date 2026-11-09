@@ -338,7 +338,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   its diamond and its log) inside a build still under way, and takes the same frame when no build is there. Mutants
   killed: 2 of 2 (ThreatDamage.sparesHanging off, the shot's tag ignored). Open: B1079 (a raider's arrow whose shooter is gone
   loses its mark when it bounces off a spared frame) and B1080 (a raider's blast breaks an armor stand of a Scan Tool
-  build), tests on `tests/threat-spare-1109`.
+  build) and B1083 (a fire-burned block comes back without the frame that hung on it), tests on
+  `tests/threat-spare-1109`.
 - GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
   and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's
   block breaking (the game's destroy call) never takes a hut block nor one of a build under way, while a wild ravager's does and a raider's on a

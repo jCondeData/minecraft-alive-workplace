@@ -98,12 +98,9 @@ public final class Trainers {
 			Chat.actionBar(player, refused);
 			return;
 		}
-		if (isLeader(trainer)) {
-			io.github.jcondedata.aliveworkplace.hall.VillageQuests.onTrainerBeaten((ServerLevel) trainer.level(), trainer, player);
-			if (challengedToday(player, trainer)) {
-				Chat.actionBar(player, tomorrow(trainer));
-				return;
-			}
+		if (isLeader(trainer) && challengedToday(player, trainer)) {
+			Chat.actionBar(player, tomorrow(trainer));
+			return;
 		}
 		boolean started = TrainerBattles.EXTENSION.call(battles -> battles.challenge(player, trainer), false);
 		if (started && isLeader(trainer)) { // only a challenge that starts a battle uses up the day (B1091)
@@ -230,6 +227,8 @@ public final class Trainers {
 				pay(server, player, tierBefore, trainer);
 			}
 			LeaderBracelets.beaten((ServerLevel) trainer.level(), trainer, player); // every Leader of a realm: a Mega Bracelet (38.6)
+			// the village's battle quest and battle reform steps: only a won battle counts, a Leader's like any trainer's (B1102)
+			io.github.jcondedata.aliveworkplace.hall.VillageQuests.onTrainerBeaten((ServerLevel) trainer.level(), trainer, player);
 		}
 		if (tier(trainer) > tierBefore) {
 			player.sendSystemMessage(io.github.jcondedata.aliveworkplace.work.Words.articled("message.aliveworkplace.trainer.ranked_up", 1, trainer.getDisplayName(),

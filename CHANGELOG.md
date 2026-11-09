@@ -24,6 +24,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Clicking a fully researched topic in the Research list, a scholars' topic or one in the Great Library's row, now says it's fully researched instead of that it can't be researched yet (B1090).
 - A Create schematic uploaded again under its name while a builder is half-way through it is no longer finished with holes after a restart: the builder starts the new blueprint from the top, skipping what already stands as drawn, and a site saved while retrying no longer risks an error every tick (B1049).
 - A villager a zombie turns and you cure comes back as the same villager to the mod too: their class, family name, friendship with you, Legend place and marriage are kept (their husband or wife is no longer widowed by the bite, only if the zombie villager is killed). The work they held, such as a builder's site, is still let go when they're bitten (B1081).
 - A villager the Undertaker brings back from the grave no longer stays married on their own: their husband or wife, widowed by the death, marries them again if still alone, and one who has married someone else since stays with them, leaving the revived villager single and free to court again (B1082).

@@ -231,6 +231,8 @@ public final class ResearchScreen {
 				Research.Topic busy = now.currentTopic();
 				if (RealmResearch.fromCapital(level, hall, now, topic) >= topic.maxLevel) {
 					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.from_capital_done", topic.title()).withStyle(ChatFormatting.AQUA));
+				} else if (now.level(topic) >= topic.maxLevel) { // at its top (B1090): done, not "can't be researched yet"
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.realm_complete", topic.title()).withStyle(ChatFormatting.GREEN));
 				} else if (busy != null && now.paid()) {
 					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.busy", busy.title()).withStyle(ChatFormatting.YELLOW));
 				} else if (!now.available(topic)) {
@@ -274,7 +276,9 @@ public final class ResearchScreen {
 			menu.button(LIBRARY_SLOTS[i], ChoiceList.order(row, 1), p -> {
 				Research.State now = entity.research();
 				Research.Topic busy = now.currentTopic();
-				if (!Research.secondTier(level, hall)) {
+				if (now.level(topic) >= topic.top()) { // at its second tier's top (B1090)
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.realm_complete", libraryTitle(topic)).withStyle(ChatFormatting.GREEN));
+				} else if (!Research.secondTier(level, hall)) {
 					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.needs_library", libraryTitle(topic)).withStyle(ChatFormatting.YELLOW));
 				} else if (busy != null && now.paid()) {
 					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.busy", busy.title()).withStyle(ChatFormatting.YELLOW));

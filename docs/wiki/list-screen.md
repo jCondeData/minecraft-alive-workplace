@@ -8,7 +8,7 @@ hire screen, a Legend guest's terms and the Research screen; then the builder to
 style picker, the Price Tag, and the Shop and the Ferry paid in CobbleDollars. Part of Milestone 42 (One look for every
 screen).
 
-Roadmap items: 42.1, 42.2, 42.3, 42.4
+Roadmap items: 42.1, 42.2, 42.3, 42.4, B1090
 
 ## What a player sees
 

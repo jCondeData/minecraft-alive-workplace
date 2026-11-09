@@ -1413,6 +1413,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderStruckStaleLightGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStruckLight1108BugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaReplacedMidBuild1108GameTests",
+			"io.github.jcondedata.aliveworkplace.test.ReplacedBlueprintGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignCommands1108BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignCommandsLenient1108eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSignChunkSize1108eBugTests",

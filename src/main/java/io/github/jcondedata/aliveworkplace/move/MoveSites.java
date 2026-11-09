@@ -1,0 +1,159 @@
+package io.github.jcondedata.aliveworkplace.move;
+
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
+import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.saveddata.SavedData;
+
+/**
+ * The buildings on the move in a dimension (ROADMAP 45.3), saved as {@code aliveworkplace_move_sites}: one
+ * {@link MoveSite} per building a Mover has started on. A move confirmed on the Hall's Move page waits in
+ * {@link PendingMoves} until a Mover of its village picks it up ({@link #begin}); it stays there while he works, and
+ * calling it off on the Move page (the entry gone) cancels the site, which puts everything back. A world from before
+ * 45.3 loads with none; a site that doesn't read is skipped, never the rest.
+ */
+public final class MoveSites extends SavedData {
+	public static final String NAME = "aliveworkplace_move_sites";
+
+	private final List<MoveSite> sites = new ArrayList<>();
+
+	public static MoveSites get(ServerLevel level) {
+		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(MoveSites::new, MoveSites::load, null), NAME);
+	}
+
+	public List<MoveSite> all() {
+		return List.copyOf(sites);
+	}
+
+	/** The site moving the building whose origin was {@code from}, if one has started. */
+	public Optional<MoveSite> forBuilding(BlockPos from) {
+		return sites.stream().filter(s -> s.from().equals(from)).findFirst();
+	}
+
+	/**
+	 * The site a Mover of the village round {@code hall} works on: one already started (two Movers share it), else the
+	 * oldest move waiting there, started now (its building captured as it stands). Empty: nothing to move.
+	 */
+	public Optional<MoveSite> work(ServerLevel level, BlockPos hall) {
+		for (MoveSite site : sites) {
+			if (site.hall().equals(hall)) {
+				return Optional.of(site);
+			}
+		}
+		for (PendingMoves.Move move : PendingMoves.get(level).of(hall)) {
+			Optional<MoveSite> started = begin(level, move);
+			if (started.isPresent()) {
+				return started;
+			}
+		}
+		return Optional.empty();
+	}
+
+	/** Starts moving the building of {@code move}: captured as it stands now. Empty if the building is gone (the move is dropped). */
+	public Optional<MoveSite> begin(ServerLevel level, PendingMoves.Move move) {
+		Optional<MoveSite> known = forBuilding(move.from());
+		if (known.isPresent()) {
+			return known;
+		}
+		Optional<BuildSiteManager.Finished> building = BuildSiteManager.get(level).finishedAt(level, move.structure(), move.from());
+		BoundingBox box = building.map(f -> MovePlan.box(level, f)).orElse(null);
+		Optional<MovePlan> plan = building.flatMap(f -> MovePlan.capture(level, f));
+		if (box == null || plan.isEmpty()) {
+			PendingMoves.get(level).remove(move.from()); // nothing left to move
+			return Optional.empty();
+		}
+		MoveSite site = MoveSite.start(move.hall(), move.from(), plan.get(), new BlockPos(box.minX(), box.minY(), box.minZ()), move.to(),
+			move.rotation(), move.by());
+		sites.add(site);
+		setDirty();
+		return Optional.of(site);
+	}
+
+	/**
+	 * One step on {@code site} (a Mover's swing); when the move is over the site is put away: the Hall's record of the
+	 * building follows it to its new spot (or stays, canceled) and the waiting move is cleared. Returns the block worked on.
+	 */
+	public Optional<BlockPos> step(ServerLevel level, MoveSite site) {
+		if (!site.canceled() && site.stage() != MoveSite.Stage.DONE && PendingMoves.get(level).forBuilding(site.from()).isEmpty()) {
+			site.cancel(); // called off on the Move page
+		}
+		Optional<BlockPos> worked = site.stage() == MoveSite.Stage.DONE ? Optional.empty() : site.step(level);
+		setDirty();
+		if (site.stage() == MoveSite.Stage.DONE) {
+			finish(level, site);
+		}
+		return worked;
+	}
+
+	/** Cancels the move of the building at {@code from}: everything taken down goes back up where it was. */
+	public boolean cancel(ServerLevel level, BlockPos from) {
+		PendingMoves.get(level).remove(from);
+		Optional<MoveSite> site = forBuilding(from);
+		site.ifPresent(MoveSite::cancel);
+		setDirty();
+		return site.isPresent();
+	}
+
+	private void finish(ServerLevel level, MoveSite site) {
+		sites.remove(site);
+		PendingMoves.get(level).remove(site.from());
+		tell(level, site);
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		if (site.canceled() || site.plan().structure() == null) {
+			return;
+		}
+		Optional<BuildSiteManager.Finished> old = manager.finishedAt(level, site.plan().structure(), site.from());
+		if (old.isEmpty()) {
+			return;
+		}
+		BlueprintData.Placement was = old.get().placement();
+		// the template's corner moves with the building: where it was in the old box, turned, from the new corner
+		BlockPos origin = site.plan().at(was.origin().subtract(site.oldMin()), site.newMin(), site.rotation());
+		BlueprintData.Placement now = new BlueprintData.Placement(was.dimension(), origin, was.rotation().getRotated(site.rotation()), was.mirror());
+		var furniture = manager.furniture(was);
+		manager.forgetFinished(was);
+		manager.recordFinished(old.get().structure(), now, old.get().owner());
+		manager.setFurniture(now, furniture);
+	}
+
+	/** Tells whoever confirmed the move that it's over (moved, or put back). */
+	private static void tell(ServerLevel level, MoveSite site) {
+		net.minecraft.world.entity.player.Player player = site.by() == null ? null : level.getPlayerByUUID(site.by());
+		if (player == null || site.plan().structure() == null) {
+			return;
+		}
+		net.minecraft.network.chat.Component name = io.github.jcondedata.aliveworkplace.blueprint.Blueprints.displayName(site.plan().structure());
+		io.github.jcondedata.aliveworkplace.mc.Chat.chat(player, site.canceled()
+			? net.minecraft.network.chat.Component.translatable("message.aliveworkplace.move.put_back", name)
+			: net.minecraft.network.chat.Component.translatable("message.aliveworkplace.move.done", name, site.total() - site.skipped()));
+	}
+
+	@Override
+	public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+		ListTag list = new ListTag();
+		for (MoveSite site : sites) {
+			list.add(site.save());
+		}
+		tag.put("sites", list);
+		return tag;
+	}
+
+	public static MoveSites load(CompoundTag tag, HolderLookup.Provider registries) {
+		MoveSites out = new MoveSites();
+		ListTag list = Nbt.getList(tag, "sites", Tag.TAG_COMPOUND);
+		for (int i = 0; i < list.size(); i++) {
+			MoveSite.load(Nbt.compoundAt(list, i)).ifPresent(out.sites::add);
+		}
+		return out;
+	}
+}

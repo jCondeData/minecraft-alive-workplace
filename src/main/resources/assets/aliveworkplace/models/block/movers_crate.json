@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/movers_crate_top",
+    "bottom": "aliveworkplace:block/movers_crate_side",
+    "side": "aliveworkplace:block/movers_crate_side",
+    "front": "aliveworkplace:block/movers_crate_front"
+  }
+}

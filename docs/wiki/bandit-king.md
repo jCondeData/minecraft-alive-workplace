@@ -126,15 +126,14 @@ horn) in their own entity data.
 - The camps, Pell and the fort are built or come only once a player is within 96 blocks, as every arc place.
 - With no fit ground within 16 blocks of the arc's column the fort isn't built (the arc logs it and its place is
   skipped).
-- Open bugs found by QA on 2026-10-28 (failing tests on the tests/bandit-king-1028 branch): about 1 fort site in 40 lies up to
-  half a block outside 110 to 150 blocks (`BanditFort.site` rounds each axis on its own, as the camps' ring did before
-  B205); and a player who goes to another dimension while near the King keeps seeing his boss bar.
+- Open bug found by QA on 2026-10-28 (a failing test on the tests/bandit-king-1028 branch): a player who goes to another
+  dimension while near the King keeps seeing his boss bar.
 
 ## Proof
 
 - GameTests: `BanditFortGameTests`: the three stages on uneven ground (`threeStagesPlaceInOrderOnUnevenGround`), the
   arc's way (`theArcPlacesAStageADawn`), the King (`theKingsGearHealthAndBossBar`), the horn
-  (`theHornCallsFourBanditsOnce`), the chest (`theTreasureChestAlwaysHasTheCrown`).
+  (`theHornCallsFourBanditsOnce`), the chest (`theTreasureChestAlwaysHasTheCrown`), the site 110 to 150 blocks out for 1000 seeds (`fortSiteLies110To150Out`, B660).
 - GameTests: `BanditKingStoryGameTests`: the arc walked from the banners to the King's fall with all three allies
   (`banditKingStoryWalk`), the tribute (`banditKingTribute`), the trigger and the saved count (`banditKingTrigger`).
 - GameTests: `QaBanditKing1028GameTests` (QA, from the spec): the fort rule's ring on unloaded ground, the boss bar's

@@ -29,7 +29,8 @@ know a trade: most are Apprentices or Journeymen, now and then an Expert. While 
 
 **Hire one.** Right-click a traveler to see what they'd be and what they cost: 8 emeralds for an Apprentice, 16 for a
 Journeyman, 32 for an Expert (or the same in CobbleDollars). Hired, they stay, take the first free workstation and start
-at their level. Nobody hires them? After two days they move on (while you're standing close by, they wait until you step away).
+at their level. Their screen is a list: your money at the top, the traveler's row (how long they stay), and **Hire**
+with the price (red while you can't pay it). Nobody hires them? After two days they move on (while you're standing close by, they wait until you step away).
 
 ![Hiring a traveler](https://jcondedata.github.io/minecraft-alive-workplace/innkeeper/still-4.jpg)
 

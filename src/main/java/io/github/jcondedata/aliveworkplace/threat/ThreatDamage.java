@@ -54,13 +54,15 @@ public final class ThreatDamage {
 
 	/**
 	 * {@code projectile} was given {@code owner} (shot, thrown, or deflected to a new owner): a raider's shot carries
-	 * {@link #SHOT_TAG} from then on, saved with it; a shot taken over by anyone else drops it.
+	 * {@link #SHOT_TAG} from then on, saved with it; a shot taken over by anyone else drops it. A null owner is no
+	 * take-over (B1079): vanilla ignores {@code setOwner(null)}, and {@code deflect} passes the arrow's own
+	 * {@code getOwner()}, null once its raider is gone, so a bounced raider's shot stays a raider's.
 	 */
 	public static void shot(Projectile projectile, @Nullable Entity owner) {
-		if (projectile.level().isClientSide()) {
+		if (projectile.level().isClientSide() || owner == null) {
 			return;
 		}
-		if (owner != null && owner != projectile && owner.getTags().contains(Threats.RAIDER_TAG)) {
+		if (owner != projectile && owner.getTags().contains(Threats.RAIDER_TAG)) {
 			projectile.addTag(SHOT_TAG);
 		} else {
 			projectile.removeTag(SHOT_TAG);

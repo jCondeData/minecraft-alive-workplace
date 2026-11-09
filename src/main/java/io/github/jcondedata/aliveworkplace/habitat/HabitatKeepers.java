@@ -16,6 +16,7 @@ import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Extension;
 import io.github.jcondedata.aliveworkplace.work.PartnerShows;
@@ -334,12 +335,15 @@ public final class HabitatKeepers {
 	/** Sneak-right-click with an empty hand: the lure picker (a type, an egg group, Alphas on 1.8, or any snack). */
 	public static void openLures(ServerPlayer player, Villager keeper) {
 		int[] page = {0};
-		ChoiceMenu.open(player, Component.translatable("message.aliveworkplace.habitat_keeper.lures_title", keeper.getDisplayName()),
+		ChoiceMenu.openList(player, Component.translatable("message.aliveworkplace.habitat_keeper.lures_title", keeper.getDisplayName()),
 			p -> keeper.isAlive() && p.isAlive() && p.distanceTo(keeper) <= 8,
 			menu -> fillLures(menu, keeper, page));
 	}
 
 	private static final int PER_PAGE = 45;
+	/** The lure picker's "Any snack" button, and the list screen's own line (42.3: her lure now at the top right). */
+	public static final int ANY_SLOT = 49;
+	public static final int LURES_INFO = 47;
 
 	/** Lays out the lure picker (also used by tests, with a detached menu). */
 	public static void fillLures(ChoiceMenu menu, Villager keeper, int[] page) {
@@ -354,7 +358,7 @@ public final class HabitatKeepers {
 				break;
 			}
 			String lure = lures.get(n);
-			menu.button(i, lureIcon(lure, lure.equals(current)), p -> {
+			menu.button(i, lureRow(lureIcon(lure, lure.equals(current)), lure, lure.equals(current)), p -> {
 				setLure(keeper, lure);
 				Chat.actionBar(p, Component.translatable("message.aliveworkplace.habitat_keeper.lure_set", keeper.getDisplayName(), lureName(lure)));
 				fillLures(menu, keeper, page);
@@ -362,11 +366,11 @@ public final class HabitatKeepers {
 		}
 		menu.divider(5);
 		if (pages > 1) {
-			menu.button(45, named(Items.ARROW, Component.translatable("message.aliveworkplace.habitat_keeper.lures.previous")), p -> {
+			menu.button(45, ChoiceList.page(named(Items.ARROW, Component.translatable("message.aliveworkplace.habitat_keeper.lures.previous")), false), p -> {
 				page[0]--;
 				fillLures(menu, keeper, page);
 			});
-			menu.button(53, named(Items.ARROW, Component.translatable("message.aliveworkplace.habitat_keeper.lures.next")), p -> {
+			menu.button(53, ChoiceList.page(named(Items.ARROW, Component.translatable("message.aliveworkplace.habitat_keeper.lures.next")), true), p -> {
 				page[0]++;
 				fillLures(menu, keeper, page);
 			});
@@ -375,11 +379,35 @@ public final class HabitatKeepers {
 			Component.translatable("message.aliveworkplace.habitat_keeper.lures.any"));
 		any.set(DataComponents.LORE, new ItemLore(List.of(plain(Component.translatable("message.aliveworkplace.habitat_keeper.lures.now",
 			lureName(current)).withStyle(ChatFormatting.GRAY)))));
-		menu.button(49, any, p -> {
+		// The list (42.3): "Any snack" first, gold while it's her lure; her lure now at the top right, the hint, the headings.
+		ChoiceList.order(ChoiceList.row(any, Component.translatable("message.aliveworkplace.habitat_keeper.lures.any_second"), null,
+			Component.translatable(current == null ? "message.aliveworkplace.habitat_keeper.lures.button_chosen" : "message.aliveworkplace.habitat_keeper.lures.button_choose"),
+			false, current == null), -1);
+		ItemStack info = named(Items.HONEY_BOTTLE, Component.translatable("message.aliveworkplace.habitat_keeper.lures_title", keeper.getDisplayName()));
+		info.set(DataComponents.LORE, new ItemLore(List.of(plain(Component.translatable("message.aliveworkplace.habitat_keeper.lures.about").withStyle(ChatFormatting.GRAY)))));
+		ChoiceList.info(info, Component.translatable("message.aliveworkplace.habitat_keeper.lures.now", lureName(current)),
+			Component.translatable("message.aliveworkplace.habitat_keeper.lures.list_hint"),
+			List.of(Component.translatable("message.aliveworkplace.habitat_keeper.lures.column_lure"),
+				Component.translatable("message.aliveworkplace.habitat_keeper.lures.column_berries")));
+		menu.button(LURES_INFO, info, null);
+		menu.button(ANY_SLOT, any, p -> {
 			setLure(keeper, null);
 			Chat.actionBar(p, Component.translatable("message.aliveworkplace.habitat_keeper.lure_set", keeper.getDisplayName(), lureName(null)));
 			fillLures(menu, keeper, page);
 		});
+	}
+
+	/** A lure's list row (42.3): the berries that season it, Choose (gold, "Chosen", while it's her lure). */
+	private static ItemStack lureRow(ItemStack icon, String lure, boolean chosen) {
+		net.minecraft.network.chat.MutableComponent list = Component.empty();
+		List<ResourceLocation> berries = berries(lure);
+		for (int i = 0; i < berries.size(); i++) {
+			Item berry = BuiltInRegistries.ITEM.getOptional(berries.get(i)).orElse(Items.AIR);
+			list.append(i == 0 ? Component.empty() : Component.literal(", ")).append(new ItemStack(berry).getHoverName());
+		}
+		return ChoiceList.row(icon, list, null,
+			Component.translatable(chosen ? "message.aliveworkplace.habitat_keeper.lures.button_chosen" : "message.aliveworkplace.habitat_keeper.lures.button_choose"),
+			false, chosen);
 	}
 
 	private static ItemStack lureIcon(String lure, boolean chosen) {

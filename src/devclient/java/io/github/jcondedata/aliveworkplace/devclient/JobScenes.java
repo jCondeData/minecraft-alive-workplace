@@ -4849,7 +4849,57 @@ final class JobScenes {
 						}
 					}
 				}, 25)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu && !io.github.jcondedata.aliveworkplace.smith.BallSmiths.orders(subject).isEmpty()));
+			// 42.3: the orders are the list screen (a row per ball with Pick, the picked one gold with Unpick), not a chest
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& !io.github.jcondedata.aliveworkplace.smith.BallSmiths.orders(subject).isEmpty()));
+		// The Gem Grower's orders as the list screen (ROADMAP 42.3): which beds she keeps at the top, a row per bed with what
+		// it's planted with and Pick; the amethyst bed picked turns gold with Unpick.
+		SCREENS.put("gem_orders", new Screen("the gem grower's orders on the list screen: a row per bed, the amethyst bed picked", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				subject = picked(level, player, STATION, Blocks.STONECUTTER, Items.AMETHYST_SHARD);
+				subject.setNoAi(true);
+				chest(level, chestPos(), new ItemStack(Items.AMETHYST_SHARD, 6));
+				player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+				io.github.jcondedata.aliveworkplace.gem.GemGrowers.openOrders(player, subject);
+			},
+			List.of(new Step("01_gem_orders_screen", 4, 6, (level, player) ->
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU,
+						"the orders opened as the list screen"), 25),
+				new Step("02_gem_orders_picked", io.github.jcondedata.aliveworkplace.gem.GemGrowers.FIRST_BED_SLOT, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.gem.GemGrowers.FIRST_BED_SLOT, player);
+					}
+				}, 25)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& !io.github.jcondedata.aliveworkplace.gem.GemGrowers.orders(subject).isEmpty()));
+		// The Habitat Keeper's lures as the list screen (ROADMAP 42.3, Cobblemon): her lure now at the top, "Any snack" first,
+		// a row per type and egg group with the berries that season it and Choose; Fire chosen turns gold.
+		SCREENS.put("habitat_lures", new Screen("the habitat keeper's lures on the list screen: Any snack first, a row per lure with its berries, Fire chosen",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				net.minecraft.world.level.block.Block pasture = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.PASTURE_BLOCK);
+				BlockState bottom = pastureHalf(ScreenshotHarness.standing(pasture.defaultBlockState()), "bottom");
+				if (bottom.hasProperty(BlockStateProperties.WATERLOGGED)) {
+					bottom = bottom.setValue(BlockStateProperties.WATERLOGGED, false);
+				}
+				subject = picked(level, player, STATION, bottom, Items.HONEY_BOTTLE);
+				level.setBlockAndUpdate(STATION.above(), pastureHalf(bottom, "top"));
+				subject.setNoAi(true);
+				player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+				io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.openLures(player, subject);
+			},
+			List.of(new Step("01_lures_screen", io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ANY_SLOT, 6, (level, player) ->
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU,
+						"the lures opened as the list screen"), 25),
+				new Step("02_lures_fire", Math.max(0, io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.lures().indexOf("typing/fire")), 6, (level, player) -> {
+					int fire = io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.lures().indexOf("typing/fire");
+					if (player.containerMenu instanceof ChoiceMenu m && fire >= 0 && fire < 45) {
+						m.press(fire, player);
+					}
+				}, 25)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.CHOICE_LIST_MENU
+				&& "typing/fire".equals(io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.lure(subject))));
 		SCREENS.put("ferry_menu", new Screen("the ferryman's ticket screen opened with the Far Shore's fare", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				subject = worker(level, STATION, ModBlocks.TRAVEL_POST, ModVillagers.TRAVEL_POST_POI, ModVillagers.FERRYMAN);

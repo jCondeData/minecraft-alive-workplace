@@ -409,6 +409,9 @@ public final class MovePlan {
 		ListTag list = Nbt.getList(tag, "blocks", Tag.TAG_COMPOUND);
 		for (int i = 0; i < list.size(); i++) {
 			CompoundTag entry = Nbt.compoundAt(list, i);
+			if (!Nbt.has(entry, "state", Tag.TAG_INT) || !Nbt.has(entry, "pos", Tag.TAG_LONG)) {
+				continue; // a damaged entry: not a block of the building (it would read as the palette's first state at 0, 0, 0)
+			}
 			int index = Nbt.getInt(entry, "state");
 			if (index < 0 || index >= states.size()) {
 				continue;

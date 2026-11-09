@@ -24,6 +24,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A raider's arrow whose raider is already gone stays a raider's shot after it bounces off something it can't hurt, such as the builders' item frame, so the bounce no longer knocks the item out of another of their frames or breaks their pot (B1079).
 - The Bandit King's fort always goes up 110 to 150 blocks from the hall; about 1 fort in 40 used to land up to half a block outside that ring (B660).
 - A banner built from an uploaded blueprint file keeps at most the 6 pattern layers a loom gives one, so a wall of banners with thousands of layers each can no longer make a chunk that disconnects every player who comes near (B1073).
 - A head built from an uploaded blueprint file keeps no more of its skin than a player's head could: its name, its id and one real-sized signed skin. A file's head with many or huge skin entries keeps only its name and id, so a wall of them can no longer make a chunk that disconnects every player who comes near (B1077).

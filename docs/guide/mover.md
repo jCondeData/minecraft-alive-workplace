@@ -37,6 +37,12 @@ on where he was.
 He packs everything into the crates at his Mover's Crate, so keep it standing: if it's broken he can't take
 anything more down, and he waits ("Waiting for his Mover's Crate") until he has one again.
 
+**The people who live there move too.** Villagers whose bed or workstation is in the building keep them. While it's
+away they sleep in a free bed at the village's inn (or the free bed nearest the Village Hall), and workers keep their
+jobs. The moment the Mover puts a bed or workstation up at the new spot, it's theirs again, held so nobody else takes
+it. The Hall's People page, couples and job cards follow them, and a Builder whose Builder's Bench is in the house keeps
+it, with his queued builds.
+
 If a block of the building is broken before he gets to it, whoever broke it keeps it, and it isn't put up again.
 
 **Calling it off.** Call off on the Move page stops the move, even half way: what he put up at the new spot comes down

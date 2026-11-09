@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,6 +60,8 @@ public final class MoveSite {
 	private final byte[] where;
 	/** Each packed block entity's data as it was taken down (a chest's items as the village left them), by block index. */
 	private final java.util.Map<Integer, CompoundTag> packedData = new java.util.HashMap<>();
+	/** Who lives or works in it (45.4): their beds and workstations follow it ({@link MoveResidents}). */
+	private final List<MoveResidents.Resident> residents = new ArrayList<>();
 	private byte things;
 	private Stage stage;
 	private int skipped;
@@ -202,6 +205,30 @@ public final class MoveSite {
 			}
 		}
 		return out;
+	}
+
+	/** Who lives or works in the building (ROADMAP 45.4), noted as the move started: their beds and workstations follow it. */
+	public List<MoveResidents.Resident> residents() {
+		return residents;
+	}
+
+	/** The box the building stood in before the move. */
+	public BoundingBox oldBox() {
+		net.minecraft.core.Vec3i size = plan.size(Rotation.NONE);
+		return new BoundingBox(oldMin.getX(), oldMin.getY(), oldMin.getZ(), oldMin.getX() + size.getX() - 1, oldMin.getY() + size.getY() - 1,
+			oldMin.getZ() + size.getZ() - 1);
+	}
+
+	/** The box it stands in at the new spot, turned. */
+	public BoundingBox newBox() {
+		net.minecraft.core.Vec3i size = plan.size(rotation);
+		return new BoundingBox(newMin.getX(), newMin.getY(), newMin.getZ(), newMin.getX() + size.getX() - 1, newMin.getY() + size.getY() - 1,
+			newMin.getZ() + size.getZ() - 1);
+	}
+
+	/** Where a position of the building (relative to its old lowest corner) is once the move is over: back where it was if called off. */
+	public BlockPos at(BlockPos rel) {
+		return canceled ? oldMin.offset(rel) : plan.at(rel, newMin, rotation);
 	}
 
 	/** Cancels the move: what was put up at the new spot comes down again and everything goes back up where it was. */
@@ -367,6 +394,7 @@ public final class MoveSite {
 		}
 		level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 		where[i] = PACKED;
+		MoveResidents.taken(this, i);
 	}
 
 	/** Puts block {@code i} up from the crates at {@code pos}, whatever stood there taken out of the way first. */
@@ -386,6 +414,7 @@ public final class MoveSite {
 			}
 		}
 		where[i] = now;
+		MoveResidents.placed(level, this, i, pos, now); // a resident's bed or workstation is theirs again at once (45.4)
 	}
 
 	/** Packs the building's things (frames, armor stands...) standing in its box at {@code min}. */
@@ -424,6 +453,11 @@ public final class MoveSite {
 			packed.add(entry);
 		});
 		tag.put("packed_data", packed);
+		net.minecraft.nbt.ListTag people = new net.minecraft.nbt.ListTag();
+		for (MoveResidents.Resident r : residents) {
+			people.add(r.save());
+		}
+		tag.put("residents", people);
 		return tag;
 	}
 
@@ -462,6 +496,11 @@ public final class MoveSite {
 			if (i >= 0 && i < where.length) {
 				site.packedData.put(i, entry.getCompound("data"));
 			}
+		}
+		// a site saved before 45.4 has no residents noted: nobody follows it
+		net.minecraft.nbt.ListTag people = tag.getList("residents", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		for (int k = 0; k < people.size(); k++) {
+			MoveResidents.Resident.load(people.getCompound(k)).ifPresent(site.residents::add);
 		}
 		return Optional.of(site);
 	}

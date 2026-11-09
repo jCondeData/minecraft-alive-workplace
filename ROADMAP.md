@@ -6470,7 +6470,7 @@ Lane C builds it, in order. Depends on: nothing open.
   like builders. Done when: GameTests for a whole move, a block broken mid-move, save and reload in each stage, a
   full Storehouse (he waits, says why), the job canceled half way (everything taken down is put back up where it
   was); scene `mover` (before, half way, after).
-- [ ] **45.4** **The residents move too.** Villagers who live or work in the building keep it: during the move they
+- [x] **45.4** (review: pending 2026-11-10) **The residents move too.** Villagers who live or work in the building keep it: during the move they
   sleep in the Hall or the inn, then their bed, home and workstation are the new spot's, and the Hall's People page,
   couples and status cards follow. Done when: GameTests for a family's beds, a worker's workstation, a builder's
   bench inside a moved house, save and reload; scene `mover` shows them at home after.
@@ -6552,11 +6552,10 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
-- 2026-11-09 (lane-c-1109-2152, 45.4): **45.4 (residents move too) is written on `wip/lane-c-1109-2152`** but never
-  compiled or run (the run's time went to 45.3's full build, which found 5 gaps, all fixed). Left: compile, run
-  MoverResidentsGameTests and MoverGameTests and the saved-data checks (they will see the new `residents` and
-  `homecomings` lists), Refresh active project, full build, tick, merge. B1120 (lane: c) is the Mover's own crate
-  inside the building he moves.
+- 2026-11-10 (lane-c-1110-0052, 45.4): **45.4 (residents move too) is merged into `main`** from
+  `wip/lane-c-1109-2152`: compiled, MoverResidentsGameTests (5), MoverGameTests and the saved-data checks pass (36/36).
+  Decision: "the Hall or the inn" is a free bed at the inn, else the free bed nearest the Village Hall (the hall has no
+  beds of its own). A resident is noted only if loaded within 128 blocks as the move starts.
 - 2026-11-09 (lane-c-1109-1852 and lane-c-1109-2152, 45.3): **45.3 (the Mover) is merged into `main`** from
   `wip/lane-c-1109-1852`, with the `movers` config switch and its 8 MoverGameTests run and passing. 45.1 and 45.2 were
   pushed after a local suite that ran out of heap at about 6,290 of ~7,900 batches with no test failing before it; CI's

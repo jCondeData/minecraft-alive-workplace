@@ -557,11 +557,13 @@ SCENES = [
        ("02_blocked_by_a_fence", "The Stone House II: blocked by a fence where its level III goes"),
        ("03_bram_builds_it", "Clicked: Bram builds the Starter Cottage II")]),
     # The Hall's Move page (ROADMAP 45.2): the list, the picker's map with a fitting spot and its ghost, then rotated
-    # The Mover (ROADMAP 45.3): the cottage taken down top-down and put up again turned a quarter at its new spot
+    # The Mover (ROADMAP 45.3): the cottage taken down top-down and put up again turned a quarter at its new spot;
+    # its residents move too (45.4): Dara's bed and Tomas's barrel are the new cottage's, and he walks to it
     S("mover", "Mover", "Moving a finished building",
       "the Mover took the Starter Cottage down top-down into his crates and put it up again turned a quarter at its new spot, "
-      "nothing dropped", 240,
-      [START, ("02_half_way", "Half way: half the cottage packed in his crates"), DONE]),
+      "nothing dropped; Dara's bed and her husband Tomas's barrel moved with it, so they live and work there now", 270,
+      [START, ("02_half_way", "Half way: half the cottage packed in his crates"),
+       ("03_at_home", "After: Tomas at his barrel in the moved cottage, Dara's bed is there too"), DONE]),
     S("move_plan", "Village Hall", "Picking a new spot for a building on the hall's Move page",
       "the Move page listed the Starter Cottage; its picker showed the map round it, a click put the new spot to the west "
       "(it fits: green, the ghost outline glowing), and Rotate turned it to face east", 60,

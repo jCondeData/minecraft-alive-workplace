@@ -72,6 +72,25 @@ public final class ModBlocks {
 			new net.minecraft.world.inventory.MenuType<>((id, inventory) -> new io.github.jcondedata.aliveworkplace.work.ChoiceView(ModBlocks.CHOICE_LIST_MENU, id, inventory),
 				net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
 
+	/**
+	 * A small status card (ROADMAP 43.3: the Nurse's and the Fossil Scientist's; 42.5's job cards next): a menu without
+	 * slots, opened with what it shows ({@code StatusCard}); its buttons are menu-button clicks.
+	 */
+	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.card.StatusCardMenu> STATUS_CARD_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("status_card"),
+			io.github.jcondedata.aliveworkplace.platform.Platform.get().menuWithData(
+				(id, inventory, card) -> new io.github.jcondedata.aliveworkplace.card.StatusCardMenu(id, inventory, card),
+				io.github.jcondedata.aliveworkplace.card.StatusCard.STREAM_CODEC));
+	/**
+	 * The Trainer screen (ROADMAP 43.1): a menu without slots, opened with what it shows ({@code TrainerView}); its
+	 * Challenge, Trade and Close are menu-button clicks.
+	 */
+	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.trainer.TrainerMenu> TRAINER_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("trainer"),
+			io.github.jcondedata.aliveworkplace.platform.Platform.get().menuWithData(
+				(id, inventory, view) -> new io.github.jcondedata.aliveworkplace.trainer.TrainerMenu(id, inventory, view),
+				io.github.jcondedata.aliveworkplace.trainer.TrainerView.STREAM_CODEC));
+
 	/** Workstation for the Postman profession: they collect and deliver mail within 64 blocks of it. */
 	public static final BuildersBenchBlock POSTAL_DESK = Reg.block("postal_desk", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE));
 

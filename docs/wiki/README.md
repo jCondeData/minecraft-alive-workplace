@@ -112,6 +112,8 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Screens and words](screens-and-words.md): every screen readable at GUI scales 2 to 4, one name for each job,
   block and item, American spelling, and the checks that keep them so (24.4, 24.5).
 - [The list screen](list-screen.md): the menus that were a gray chest drawn as a list in the Village Hall's look: money at the top, tabs, rows with a button each; the Move Tutor first (42.1).
+- [The Trainer screen](trainer-screen.md): an empty hand on a Trainer or Trainer Leader opens their page: record, rules, prize, the team (half hidden until you win), your party, and Challenge, Trade and Close (43.1).
+- [Status cards](status-cards.md): an empty hand on a Nurse or a Fossil Scientist opens a small card: your health and your party's with Heal, or each fossil's progress with Hand over (43.3).
 - [Big villages stay smooth](performance.md): the benchmark, our own time a tick, and the limits on tree searches and
   build counts (25.1, 25.3).
 

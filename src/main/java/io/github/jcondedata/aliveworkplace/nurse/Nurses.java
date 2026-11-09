@@ -105,6 +105,36 @@ public final class Nurses {
 	}
 
 	/**
+	 * Why {@link #treat} would refuse {@code player} now, or null: the same checks in the same order (asleep, in a battle,
+	 * the wait since the last treatment, her Healing Machine busy), asked without changing anything (the Nurse's card,
+	 * ROADMAP 43.3, grays its Heal button with this).
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static Component refusal(ServerPlayer player, Villager nurse) {
+		ServerLevel level = Players.level(player);
+		if (nurse.isSleeping()) {
+			return Component.translatable("message.aliveworkplace.nurse.asleep", nurse.getDisplayName());
+		}
+		if (COBBLEMON && PokemonHealing.EXTENSION.call(h -> h.inBattle(player), false)) {
+			return Component.translatable("message.aliveworkplace.nurse.in_battle");
+		}
+		long now = level.getGameTime();
+		Treated last = LAST_TREATED.get(player.getUUID());
+		if (last != null) {
+			long ready = Math.min(last.ready(), last.at() + BuilderLevels.delay(COOLDOWN, nurse));
+			if (now < ready) {
+				int seconds = secondsLeft(ready - now);
+				return io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.nurse.wait", seconds, nurse.getDisplayName(), seconds);
+			}
+		}
+		BlockPos machine = machine(level, nurse);
+		if (machine != null && PokemonHealing.EXTENSION.call(h -> h.machineBusy(level, machine), false)) {
+			return Component.translatable("message.aliveworkplace.nurse.machine_busy", nurse.getDisplayName());
+		}
+		return null;
+	}
+
+	/**
 	 * The Healing Machine the nurse works at (ROADMAP 28.7), or null: none (a brewing stand, her own station), no
 	 * Cobblemon, or config {@code nurseHealingMachine} off (then she heals as at any station).
 	 */

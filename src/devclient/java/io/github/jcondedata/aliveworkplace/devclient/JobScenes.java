@@ -92,6 +92,9 @@ final class JobScenes {
 	static volatile String timeoutWhy;
 
 	static final java.util.concurrent.ConcurrentLinkedQueue<String> SHOTS = new java.util.concurrent.ConcurrentLinkedQueue<>();
+	/** The nurse and fossil scenes' villager, for the card shown after the work (43.3). */
+	private static Villager sceneNurse;
+	private static Villager sceneScientist;
 
 	/** One step of a screen scene: optionally act on the server, then point at {@code slot} (-1: nowhere) and shoot. */
 	/** B329: what a Golem Smith's golem is up to, for a scene's timeout message. */
@@ -807,6 +810,10 @@ final class JobScenes {
 
 	private static Job job(String what, int maxTicks, Stage stage) {
 		return new Job(what, maxTicks, CAMERA, TARGET, stage, null);
+	}
+
+	private static Job job(String what, int maxTicks, Stage stage, After after) {
+		return new Job(what, maxTicks, CAMERA, TARGET, stage, after);
 	}
 
 	private static BlockPos chestPos() {
@@ -2980,9 +2987,24 @@ final class JobScenes {
 			Villager ill = EntityType.VILLAGER.spawn(level, new BlockPos(-2, -60, -3), MobSpawnType.COMMAND);
 			ill.setNoAi(true);
 			io.github.jcondedata.aliveworkplace.people.Sickness.fallIll(level, ill);
+			sceneNurse = nurse;
 			return l -> hurt.getHealth() >= hurt.getMaxHealth() - 0.5f && !io.github.jcondedata.aliveworkplace.people.Sickness.isIll(ill)
 				&& n(ModAttachments.VILLAGERS_CURED, nurse) >= 1;
-		}));
+		}, new After("04_nurse_card", (level, player) -> {
+			// 43.3: the player, hurt and poisoned with a hurt and a fainted Pokémon, right-clicks her: her card, the mouse on Heal
+			player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+			player.setHealth(9f);
+			player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.POISON, 2400));
+			party(player, "pikachu level=24", "eevee level=18", "bulbasaur level=12");
+			var team = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player);
+			team.get(0).setCurrentHealth(Math.max(1, team.get(0).getMaxHealth() / 3));
+			team.get(2).setCurrentHealth(0);
+			player.teleportTo(level, sceneNurse.getX() + 1.5, sceneNurse.getY(), sceneNurse.getZ() + 2, 150, 15);
+			io.github.jcondedata.aliveworkplace.nurse.NurseCard.open(player, sceneNurse);
+			Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m
+				&& m.card().lines().size() == 5 && m.card().button(io.github.jcondedata.aliveworkplace.nurse.NurseCard.HEAL).usable(),
+				"the Nurse's card showed the player, the poison and the three Pokémon, with Heal ready");
+		}, io.github.jcondedata.aliveworkplace.nurse.NurseCard.HEAL, 1)));
 		SCENES.put("smelter", job("the armorer smelted the raw iron into ingots", 2400, (level, player) -> {
 			Villager a = worker(level, STATION, Blocks.BLAST_FURNACE, PoiTypes.ARMORER, VillagerProfession.ARMORER);
 			Container c = chest(level, chestPos(), new ItemStack(Items.RAW_IRON, 4), new ItemStack(Items.COAL, 2));
@@ -4088,8 +4110,25 @@ final class JobScenes {
 			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(cobblemonItem("dome_fossil")));
 			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver(player, sci);
 			ScreenshotHarness.hoverLookingAt(player, CAMERA, TARGET);
+			sceneScientist = sci;
 			return l -> n(ModAttachments.FOSSILS_REVIVED, sci) >= 1;
-		}));
+		}, new After("04_fossil_card", (level, player) -> {
+			// 43.3: two more fossils handed over (one done while the player was away, one under way); her card, the mouse on Hand over
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(cobblemonItem("helix_fossil")));
+			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver(player, sceneScientist);
+			player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(cobblemonItem("old_amber_fossil")));
+			io.github.jcondedata.aliveworkplace.fossil.FossilScientists.handOver(player, sceneScientist);
+			var queue = io.github.jcondedata.aliveworkplace.fossil.FossilScientists.queue(sceneScientist);
+			if (queue.size() == 2) {
+				ModAttachments.FOSSIL_REVIVALS.set(sceneScientist, List.of(queue.get(0).worked(queue.get(0).total()),
+					queue.get(1).worked(queue.get(1).total() * 2 / 5)));
+			}
+			player.teleportTo(level, sceneScientist.getX() + 1.5, sceneScientist.getY(), sceneScientist.getZ() + 2, 150, 15);
+			io.github.jcondedata.aliveworkplace.fossil.FossilCard.open(player, sceneScientist);
+			Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu m && m.card().lines().size() == 2
+				&& m.card().button(io.github.jcondedata.aliveworkplace.fossil.FossilCard.HAND_OVER).usable(),
+				"the Fossil Scientist's card showed a ready fossil and one at 40%, with Hand over ready");
+		}, io.github.jcondedata.aliveworkplace.fossil.FossilCard.HAND_OVER, 1)));
 		SCENES.put("camp_cook", job("the camp cook cooked a Poké Snack in the Campfire Pot", 2400, (level, player) -> {
 			// ROADMAP 28.8: Cobblemon's campfire with a red pot on it, picked with Hearty Grains; the makings of a Poké
 			// Snack in the chest beside it. She fills the pot, shuts the lid, and the snack comes out into the chest.
@@ -8956,7 +8995,7 @@ final class JobScenes {
 				}, 40),
 				new Step("02_tree_exclusive", io.github.jcondedata.aliveworkplace.research.ResearchScreen.TOPIC_SLOTS[7], 6, null, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
-		SCREENS.put("leader",new Screen("the Trainer Leader took the challenge and the battle started", new Vec3(-4.5, -57.5, 11.5),
+		SCREENS.put("leader",new Screen("the Trainer screen opened on the Leader and its Challenge started the battle", new Vec3(-4.5, -57.5, 11.5),
 			new Vec3(0.5, -59, 5.5),
 			(level, player) -> {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, level.getServer());
@@ -8967,13 +9006,20 @@ final class JobScenes {
 				party(player, "snorlax level=100", "blissey level=100", "skarmory level=100", "tyranitar level=100", "dragonite level=100",
 					"garchomp level=100");
 			},
-			List.of(new Step("01_leader", -1, 0, null, 40),
+			// 43.1: an empty hand on the Leader opens the Trainer screen (the mouse on Challenge); its Challenge starts the battle.
+			List.of(new Step("01_leader", io.github.jcondedata.aliveworkplace.trainer.TrainerMenu.CHALLENGE, 0, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.trainer.TrainerScreens.open(player, subject);
+					Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.trainer.TrainerMenu m && m.view().canChallenge(),
+						"the Trainer screen opened with Challenge ready");
+				}, 40),
 				new Step("02_leader_battle", -1, 0, (level, player) -> {
 					player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
 					player.getAbilities().flying = false;
 					player.onUpdateAbilities();
+					if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.trainer.TrainerMenu menu) {
+						menu.clickMenuButton(player, io.github.jcondedata.aliveworkplace.trainer.TrainerMenu.CHALLENGE); // the screen's Challenge
+					}
 					player.teleportTo(level, 0.5, -60, -0.5, 0, 10);
-					io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(player, subject);
 				}, 160)),
 			(level, player) -> com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer(player) != null));
 	}

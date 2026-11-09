@@ -6358,7 +6358,7 @@ Same decision as Milestone 42 (owner, 2026-11-08). Lane D builds it, in order; i
 42.1's shared pieces once they land (until then, add what's missing to `TableStyle` in its own section). Cobblemon's
 own battle screen stays Cobblemon's. Depends on: nothing open.
 
-- [ ] **43.1** **The Trainer screen** (`docs/design/M42/trainer_a.png`). An empty hand on a Trainer or Trainer Leader
+- [x] **43.1** (review: pending 2026-11-08) **The Trainer screen** (`docs/design/M42/trainer_a.png`). An empty hand on a Trainer or Trainer Leader
   opens it instead of starting the battle at once: on the left the trainer's name, title and rank, the villager's
   portrait, record, today's state and the rules (singles, the RCT level cap); on the right the reward, the trainer's
   team (the real Pokemon models; the ones not seen yet hidden until the player beats them once), the player's party
@@ -6367,9 +6367,9 @@ own battle screen stays Cobblemon's. Depends on: nothing open.
   busy, no team, not the leader, come back tomorrow, no Cobblemon) shows on the screen with the button grayed out.
   Trade opens today's trades. Done when: compat GameTests for the challenge, each refusal, the team revealed after a
   win, Trade, save and reload; scenes `leader` and `battle` show it.
-- [ ] **43.2** **The Pokemon Trader screen** (`PokemonTradeScreen`) in the Hall's look. Done when: today's
+- [x] **43.2** (review: pending 2026-11-08) **The Pokemon Trader screen** (`PokemonTradeScreen`) in the Hall's look. Done when: today's
   `QaPokemonTradeScreenCompatTests` pass; scene `trader`.
-- [ ] **43.3** **Cards for the Nurse and the Fossil Scientist**, with 42.5's card: the Nurse shows the party's health
+- [x] **43.3** (review: pending 2026-11-08) **Cards for the Nurse and the Fossil Scientist**, with 42.5's card: the Nurse shows the party's health
   and a Heal button (what a click does today); the Fossil Scientist shows each fossil's progress and a Hand over
   button. Done when: compat GameTests for each; scenes `nurse` and `fossil`.
 
@@ -6394,6 +6394,16 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
 
 ## Notes / blocked
 
+- 2026-11-08 (lane-d-1108-2208, 43.3): **the small card is built, for 42.5 to reuse.** 42.5's status card wasn't there
+  yet, so 43.3 built it as a shared piece, as the Milestone 43 intro says: `card/StatusCard` (what a card shows: title
+  and tag, a gray line, a heading over lines with an icon, a value in its color and a bar, buttons each with the reason
+  it's grayed, a footer hint), `card/StatusCardMenu` (menu type `aliveworkplace:status_card`, `StatusCardMenu.open(player,
+  villager, card, action)`; a button closes the card and runs the action, `CLOSE` only closes), the client's
+  `StatusCardScreen`, and the "small-card pieces" section of `TableStyle` (`CARD_W`, `cardHeader`, `cardLine`, `bar`),
+  sized as `trainer_c.png`. Lane C: build 42.5's job cards on it (a `StatusCard` per job, the Hall-page button as a card
+  button), not a second card. Decided too: the empty-hand click opens the card and its first button does what the click
+  did; the click tests that went through the old click now press that button (`QaNurseWait1103d`, `QaNurseMachine1102d`,
+  `QaFossilScientist1102d`, `QaStageFour`, `QaStageSix`), with every assertion unchanged.
 - 2026-11-08 (digest-1108-1353, owner): Jesse approved B854, B962 and B1032, and asked for **custom UI for everything
   that has a UI, such as the Pokemon Trainer, in the same style as the other UIs**. From mockups he picked the Trainer's
   option A (Hall page) and option A (list) for the chest menus, and said "the entire pack should use the same UI
@@ -6410,6 +6420,17 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
   (`button`, `tab`, `listColumns`, `columnHeadings`, `listRow`, `footerHint`, `money`). Moves a Pokémon already knows
   stay off the Tutor's list (its QA test requires it), so the mockup's gray "Already knows" row isn't shown; gray rows
   are lessons beyond the tutor's rank. Type and kind sit in a column, as in the mockup.
+
+- 2026-11-08 (lane-d-1108-2208, 43.1): **the Trainer screen's choices**. A menu without slots
+  (`aliveworkplace:trainer`, `TrainerMenu`) opened with a `TrainerView` (the platform's menu-with-data), buttons as
+  vanilla menu-button clicks; Challenge calls `Trainers.challenge` unchanged, Trade the villager's own interaction.
+  `Trainers.refusal` mirrors challenge's checks without side effects; Cobblemon's half (`TrainerBattles.refusal`,
+  `sides`) fills the team and party. "Not seen yet" = the second half of the team until the player's first win (a
+  per-Pokémon "seen in battle" record would need Cobblemon's battle events). The party's "over the cap" line names the
+  cap but no scaling: our battles never scaled the player's Pokémon (only the trainer's team comes down), and changing
+  that is a battle-rule change for the owner. A fainted Pokémon is no refusal (the battle heals the party, as before;
+  its line says so). Trade is gray when the trainer has nothing to sell (a sneak-click only shakes the head then). New
+  saved field `trainer_records` (wins, losses, last day per player); older saves read as no battles.
 
 - 2026-11-07 (lane-e-1107-1612, QA, saves, the pack with Create): **B1007, B1008, B1009 verified across saves**: QaBagAfterNewJobSaves1107eGameTests (5, 3 of 3 runs and the full build; with the fix reverted the 4 bug cases fail, the control passes): a novice smith or carpenter saved and reloaded before or right after taking a lectern job gives back the sword, iron or logs, one sword in the world, the request freed and built by a new carpenter; a 10-XP smith reloaded mid-carry still mends. **Update rehearsal 0.151.7 (today's release) to main 78fd3e856 with Create passed** ([report](docs/owner/rehearsal-0.151.7-to-main-create.md)): every villager, job, rank, container (2,013 items in 37), parcel and build site kept, takings equal to the control, seeding p95 29.9 ms, log audit clean of ours. langcheck clean. B967 seen again: FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt failed once in this lane's local full build (1 of 1217 compat); a first full build was OOM-killed (exit 137) with two leftover Kotlin compile daemons from the subagent's runs, green-running after `--stop`.
 - 2026-11-07 (lane-e-1107-1313, QA, Create, the pack and saves): **B966/B972 verified across saves** (QaSiegeGatewaySaves1107eGameTests, 5, 4 of 4 runs). Design question for the owner, not a bug by sieges.md: with the middle gate walled up the ram moves on to a side gate, but `Sieges.open` reads only the middle way, so a side gate the ram breaks leaves a real gap the raiders are never sent through (they wait outside till dawn). Untested. **B1015** filed: Create's Mechanical Saw and Mechanical Arm outside a protected village reach in (B993/B994 kin), and a Deployer outside places there (B844's path); bug tests on tests/create-more-machines-1107e, controls on main. Not yet tested: Bearing/Gantry contraptions and the Portable Storage Interface at the edge. B967 seen again: FurnitureSeatsCompatTests.aVillagerWhoCantReachAChairDoesntKeepItFromTheOneBesideIt failed once in this lane's local full build (main 8d70756bc, 1 of 1213 compat), passed on a rerun of the compat suite.

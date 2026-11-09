@@ -271,6 +271,11 @@ public class QaPrinterNurseBard1105cGameTests implements FabricGameTest {
 		player.moveTo(villager.getX() + 1.5, villager.getY(), villager.getZ(), 90f, 0f);
 		player.connection.handleInteract(ServerboundInteractPacket.createInteractionPacket(villager, false, InteractionHand.MAIN_HAND,
 			new Vec3(0, villager.getBbHeight() / 2, 0)));
+		// 43.3: an empty-hand click opens the villager's card; its first button does what the click did, pressed as the client sends it
+		if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu card) {
+			player.connection.handleContainerButtonClick(new net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket(
+				card.containerId, card.card().buttons().get(0).id()));
+		}
 	}
 
 	// ---------------------------------------------------------------- the Printer

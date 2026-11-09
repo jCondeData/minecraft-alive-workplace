@@ -344,7 +344,9 @@ SCENES = [
     S("guard_pokemon", "Guard", "A guard with Pokémon at his side", "the guard and the Pokémon killed the husks", 180,
       [("10_guard_armor", "In armor"), ("frame_*@middle", "Pokémon join in"), ("50_guard_done", "Husks down")],
       cobblemon=True),
-    job("nurse", "Nurse", "Healing and curing villagers", "the nurse healed and cured the villagers"),
+    # Then her card (ROADMAP 43.3): the player's health and poison, the party's HP with bars, Heal
+    job("nurse", "Nurse", "Healing and curing villagers", "the nurse healed and cured the villagers, then her card showed the player and the party with Heal ready",
+        170, [("04_nurse_card", "Her card: your health and your party")], cobblemon=True),
     S("pokemon_center", "Nurse", "The Pokémon Center",
       "both tiers stand in all three looks, and the nurse put the team in her Healing Machine and every Pokémon came out full", 70,
       [("02_pokemon_center_2", "Pokémon Center II"),
@@ -361,8 +363,9 @@ SCENES = [
       [("01_ferry_screen", "Destinations"), ("02_ferry_confirm", "Confirm the fare")]),
     job("bard", "Bard", "Playing at the jukebox", "the bard played music"),
     # Cobblemon
-    S("battle", "Trainer", "A battle with a Master trainer", "the battle ran to the end and a Mega Evolution happened", 420,
-      [("battle_*@first", "Battle starts"), ("battle_*@middle", "Mid-battle"), ("99_battle_end", "Battle over")],
+    # The Trainer screen (ROADMAP 43.1) first: its Challenge starts the battle
+    S("battle", "Trainer", "A battle with a Master trainer", "the Trainer screen opened, its Challenge started the battle, the battle ran to the end and a Mega Evolution happened", 420,
+      [("00_trainer_screen", "The Trainer screen"), ("battle_*@first", "Battle starts"), ("battle_*@middle", "Mid-battle"), ("99_battle_end", "Battle over")],
       cobblemon=True, mega=True),
     # Mega Stones from the village (ROADMAP 38.6): a Journeyman Jeweller cuts a Mega Stone for the village's Master
     job("mega_jeweller", "Jeweler", "Mega Stones: the Jeweler cuts one for the village's Master",
@@ -416,8 +419,9 @@ SCENES = [
       "each of the eight themes' Cup page shows its card and rules, and its fair sells its wares", 50,
       [("0*_page@spread", "The themes' Cup pages"), ("01_blossom_cup_fair", "The Blossom Cup's fair"),
        ("04_workers_cup_page", "The Workers' Cup's rules"), ("08_grand_cup_fair", "The Grand Cup's fair")], cobblemon=True),
-    S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer Leader took the challenge", 90,
-      [("01_leader", "At the podium"), ("02_leader_battle", "The battle starts")], cobblemon=True),
+    # The Trainer screen (ROADMAP 43.1) on the Leader: who they are, the team half hidden, the party, Challenge
+    S("leader", "Trainer Leader", "Challenging the Trainer Leader", "the Trainer screen opened on the Leader and its Challenge started the battle", 90,
+      [("01_leader", "The Trainer screen"), ("02_leader_battle", "The battle starts")], cobblemon=True),
     # The list screen (ROADMAP 42.1): the party as tabs, the lessons as rows with a Teach button, the money at the top
     S("tutor", "Move Tutor", "The Move Tutor's lessons", "the lesson list opened and Teach chose a lesson", 60,
       [("01_tutor_screen", "The lesson list"), ("02_tutor_lesson", "A lesson chosen: Confirm to pay"),
@@ -426,10 +430,12 @@ SCENES = [
       [("01_smith_working", "At the smithing table"), ("02_smith_done", "Balls made")], cobblemon=True),
     S("smith_orders", "Ball Smith", "Choosing which balls to make", "the orders screen opened", 60,
       [("01_orders_screen", "Orders"), ("02_orders_picked", "A ball picked")], cobblemon=True),
-    S("trader", "Pokémon Trader", "The Pokémon Trader's own trade screen", "the trade screen opened", 60,
-      [("01_trader_offer", "The offers as cards"), ("02_trader_party", "A Pokémon that fits"), ("04_trader_confirm", "Click again to trade"), ("05_trader_traded", "Traded: come back tomorrow")],
+    S("trader", "Pokémon Trader", "The Pokémon Trader's trade screen, in the Village Hall's look", "the trade screen opened", 60,
+      [("01_trader_offer", "The day's offers as a list"), ("02_trader_party", "A Pokémon that fits"), ("04_trader_confirm", "Click again to trade"), ("05_trader_traded", "Traded: come back tomorrow")],
       cobblemon=True),
-    job("fossil", "Fossil Scientist", "Reviving a fossil", "the fossil scientist revived the fossil", 150, cobblemon=True),
+    # Then their card (ROADMAP 43.3): each fossil's progress with a bar, Hand over
+    job("fossil", "Fossil Scientist", "Reviving a fossil", "the fossil scientist revived the fossil, then their card showed a ready fossil and one under way with Hand over ready",
+        160, [("04_fossil_card", "Their card: each fossil's progress")], cobblemon=True),
     job("berry_breeder", "Berry Breeder", "Breeding a Lum Berry", "the berry breeder bred a Lum Berry from Oran and Cheri", 150,
         [("04_berry_book", "The berry book")], cobblemon=True),
     job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,

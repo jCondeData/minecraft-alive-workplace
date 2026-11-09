@@ -120,6 +120,11 @@ public class QaFossilScientist1102dCompatTests implements FabricGameTest {
 				&& ItemStack.matches(main, player.getMainHandItem()) && ItemStack.matches(off, player.getOffhandItem())) {
 			player.connection.handleInteract(ServerboundInteractPacket.createInteractionPacket(villager, sneak, InteractionHand.MAIN_HAND));
 		}
+		// 43.3: an empty-hand click opens the villager's card; its first button does what the click did, pressed as the client sends it
+		if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.card.StatusCardMenu card) {
+			player.connection.handleContainerButtonClick(new net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket(
+				card.containerId, card.card().buttons().get(0).id()));
+		}
 		player.setShiftKeyDown(false);
 	}
 

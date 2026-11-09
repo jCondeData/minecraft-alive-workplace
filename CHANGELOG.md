@@ -16,14 +16,17 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+
+- Right-clicking a Trainer or Trainer Leader with an empty hand opens their page in the Village Hall's look instead of starting the battle at once: their rank and village, your record against them, today's state and the rules on the left; the prize, their team with the real Pokémon models (half of it hidden until you beat them once), your party with a line each (ready, fainted, over the level cap) and Challenge, Trade and Close on the right. Challenge starts the battle as the click did; when they can't battle you it's gray with the reason under it (43.1).
+- The Pokémon Trader's screen is in the Village Hall's look: the day's offers as rows in a dark list (click anywhere on a row to pick it), your party in framed cells, gold for the picked offer and the Pokémon waiting for its second click, and a hint along the bottom. Every offer, price, tooltip and refusal is as before (43.2).
+- Right-clicking a Nurse or a Fossil Scientist with an empty hand opens a small card in the Village Hall's look. The Nurse's shows your health, the bad effects she'd clear and (with Cobblemon) each Pokémon's HP with a bar, and Heal treats you as the click did; the Fossil Scientist's shows how far along each of your fossils is, and Hand over brings you the ones that are ready. When they can't help right now the button is gray with the reason under it. A fossil in hand is still handed over at once (43.3).
+
 ## 0.152.0 — 2026-11-08
 
 ### Added
 
-- Right-clicking a Nurse or a Fossil Scientist with an empty hand opens a small card in the Village Hall's look. The Nurse's shows your health, the bad effects she'd clear and (with Cobblemon) each Pokémon's HP with a bar, and Heal treats you as the click did; the Fossil Scientist's shows how far along each of your fossils is, and Hand over brings you the ones that are ready. When they can't help right now the button is gray with the reason under it. A fossil in hand is still handed over at once (43.3).
 - The Move Tutor's lessons are a list in the Village Hall's look instead of a gray chest: your money at the top, your party as tabs, each move a row with its type, price and a Teach button (Confirm to pay), gray rows for moves the tutor can't teach yet; the screen follows your party and money while it's open (42.1).
-- Right-clicking a Trainer or Trainer Leader with an empty hand opens their page in the Village Hall's look instead of starting the battle at once: their rank and village, your record against them, today's state and the rules on the left; the prize, their team with the real Pokémon models (half of it hidden until you beat them once), your party with a line each (ready, fainted, over the level cap) and Challenge, Trade and Close on the right. Challenge starts the battle as the click did; when they can't battle you it's gray with the reason under it (43.1).
-- The Pokémon Trader's screen is in the Village Hall's look: the day's offers as rows in a dark list (click anywhere on a row to pick it), your party in framed cells, gold for the picked offer and the Pokémon waiting for its second click, and a hint along the bottom. Every offer, price, tooltip and refusal is as before (43.2).
 - The Pokémon Professor's hints, the Rancher's Daycare and the Daycare Keeper's screen are lists in the same look: your money at the top, each Pokémon a row with a button (Note it, Leave and Confirm, Collect, Pick and Pair, Take back), the Professor's evolution stone a row with its price and Buy, prices red when you can't pay them, gray rows that say why something can't be done; they follow your party and money while open (42.2).
 
 ### Fixed

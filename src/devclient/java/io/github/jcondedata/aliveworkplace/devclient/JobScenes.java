@@ -4526,6 +4526,44 @@ final class JobScenes {
 				return drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
 			};
 		}, null));
+		// The Mover (ROADMAP 45.3): a Starter Cottage the hall knows, its move confirmed on the Move page (a quarter turn, to
+		// the east); the village's Mover takes it down top-down and puts it up again at the new spot, chest and all.
+		SCENES.put("mover", new Job("the Mover took the Starter Cottage down top-down into his crates and put it up again turned a quarter "
+			+ "at its new spot, nothing dropped", 9000, new Vec3(0.5, -50, 6), new Vec3(0.5, -59, -12), (level, player) -> {
+			level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			BlockPos cottage = STATION.offset(-12, 0, -16);
+			level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, cottage, cottage,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(), cottage,
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			BlockPos crate = STATION.offset(3, 0, -4);
+			level.setBlockAndUpdate(crate, ModBlocks.MOVERS_CRATE.defaultBlockState());
+			Villager mover = EntityType.VILLAGER.spawn(level, crate.south(), MobSpawnType.COMMAND);
+			io.github.jcondedata.aliveworkplace.legend.Gifted.set(mover, null);
+			mover.setVillagerData(mover.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVER).setLevel(2));
+			mover.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), crate));
+			io.github.jcondedata.aliveworkplace.move.PendingMoves.get(level).put(new io.github.jcondedata.aliveworkplace.move.PendingMoves.Move(STATION, cottage,
+				StarterBlueprints.STARTER_COTTAGE.id(), STATION.offset(4, 0, -16), net.minecraft.world.level.block.Rotation.CLOCKWISE_90, player.getUUID()));
+			boolean[] seen = {false, false};
+			return l -> {
+				var site = io.github.jcondedata.aliveworkplace.move.MoveSites.get(l).forBuilding(cottage);
+				if (site.isPresent()) {
+					seen[0] = true;
+					if (!seen[1] && site.get().stage() == io.github.jcondedata.aliveworkplace.move.MoveSite.Stage.DISMANTLE && site.get().packed() * 2 >= site.get().total()) {
+						seen[1] = true; // half of it down
+						SHOTS.add("02_half_way");
+					}
+				}
+				timeoutWhy = "the mover: " + mover.getVillagerData().getProfession() + ", doing " + mover.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ ", site " + site.map(x -> x.stage() + " " + x.packed() + "/" + x.total()).orElse("none");
+				boolean done = seen[0] && site.isEmpty() && io.github.jcondedata.aliveworkplace.move.PendingMoves.get(l).forBuilding(cottage).isEmpty();
+				if (done) {
+					Showcase.check(seen[1], "the cottage was filmed half way down");
+				}
+				return done;
+			};
+		}, null));
 		// Caravans you can see (33.7): Thornholm's caravan leaves for Ashford, then Ashford's comes in, unloads and goes back.
 		SCENES.put("caravan", new Job("Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
 			+ "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 4800,

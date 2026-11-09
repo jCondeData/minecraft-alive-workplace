@@ -199,6 +199,12 @@ public final class ModBlocks {
 	 */
 	public static final BuildersBenchBlock CRAFTERS_WORKBENCH = Reg.block("crafters_workbench", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE));
 
+	/**
+	 * The Mover's job block (ROADMAP 45.3): a packing crate with its hand truck. A jobless villager takes a free one by
+	 * themselves, like the Builder's Bench; the Mover takes down and puts up again the buildings moved on the Hall's Move page.
+	 */
+	public static final BuildersBenchBlock MOVERS_CRATE = Reg.block("movers_crate", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE));
+
 	/** Workstation for the Chef: they cook here, from the chests nearby and the village's storehouse. */
 	public static final BuildersBenchBlock KITCHEN_STOVE = Reg.block("kitchen_stove", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.SMOKER).lightLevel(state -> 7));
 

@@ -6542,6 +6542,13 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
+- 2026-11-09 (lane-c-1109-1852, 45.3): **question for the owner: the Mover's "full Storehouse".** The Mover packs a
+  building into his own crates, which are the move's saved record (`move/MoveSite`): every block's full state (a door's
+  two halves, a bed's facing, a chest with its items in their slots) is kept exactly, which items in a Storehouse
+  couldn't do. So nothing goes into the Storehouse and it can never be full; the Done when's "a full Storehouse (he
+  waits, says why)" has nothing to wait on. Options: (a) leave it so (decided for now); (b) carry the plain blocks (planks,
+  stone...) as items through the Storehouse and wait when it's full, keeping only blocks with data in the crates. Also
+  not yet done: the move's config switch (`movers`).
 - 2026-11-09 (lane-c-1109-0353, 42.5): **the job-status cards are on 43.3's card**, not a second one. `card/JobCards`
   builds the card for the seven jobs (what they're doing and what they need are the Hall's own `doing` and
   `Requests.of`); its buttons are In chat (first: a card's first button does what the click did), Hall page

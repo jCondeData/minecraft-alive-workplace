@@ -332,6 +332,13 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 
 - GameTests (B1053): `QaThreatFrames1108dBugTests`: a raider creeper's blast inside a finished log hut leaves the builders'
   item frame on its wall; a player's hit still breaks it; the same blast still breaks a frame on a hut that isn't the builders'.
+- QA (lane B, 2026-11-09, B1053, B1066): `QaThreatSpare1109bGameTests` (5): a real arrow of a raider already killed
+  flies into the builders' frame and leaves its diamond in it, while the same arrow knocks the diamond out of a frame on
+  a wall that is no build's; a raider's creeper blast leaves a painting on a finished build's wall and a frame (with
+  its diamond and its log) inside a build still under way, and takes the same frame when no build is there. Mutants
+  killed: 2 of 2 (ThreatDamage.sparesHanging off, the shot's tag ignored). Open: B1079 (a raider's arrow whose shooter is gone
+  loses its mark when it bounces off a spared frame) and B1080 (a raider's blast breaks an armor stand of a Scan Tool
+  build), tests on `tests/threat-spare-1109`.
 - GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
   and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's
   block breaking (the game's destroy call) never takes a hut block nor one of a build under way, while a wild ravager's does and a raider's on a

@@ -6347,7 +6347,7 @@ it, in order (42.1 first: the others use its pieces). Depends on: nothing open.
   `openOn(<menu type>)` like the Storehouse; the Move Tutor (`CobblemonTutors`, `Tutors`) moves first. Done when:
   GameTests for teaching a move, too little money, a Pokemon that already knows it, the party changing while open;
   scene `tutor` shows the new look.
-- [x] **42.2** (review: pending 2026-11-08) **The Cobblemon menus as lists:** Pokemon Professor, Daycare (Rancher), Daycare Keeper. Done when:
+- [x] **42.2** (review: pending 2026-11-08) (verified 2026-11-09: QaCobblemonListEdges1109eCompatTests [2, on main 88540e22e]: the party reordered while the Daycare's Leave waits [follows its Pokemon, the moved-in row leaves nobody, Confirm leaves exactly it] and while the Keeper's Pick waits [Pair leaves the two chosen, never the one in the old place]; an order-blind CobblemonTutors.shownFor mutant passes the 42.2 tests and fails both; scenes professor/daycare/daycare_keeper green in showcase runs 42534998823 and 42541085576; full build 7665 + 1352 green) **The Cobblemon menus as lists:** Pokemon Professor, Daycare (Rancher), Daycare Keeper. Done when:
   GameTests for each menu's actions; scenes `daycare`, `daycare_keeper` and a new `professor` scene.
 - [x] **42.3** (review: pending 2026-11-09) **The job menus as lists:** Ball Smith, Gem Grower, Habitat Keeper and Berry Breeder orders, the
   Innkeeper, a Legend guest's terms, and the Research screen (Scholar and Legend trees: the tree may stay a grid of

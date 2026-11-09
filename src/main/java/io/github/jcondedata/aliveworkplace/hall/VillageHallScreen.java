@@ -1017,7 +1017,8 @@ public final class VillageHallScreen {
 			if (i > 0) {
 				out.append(", ");
 			}
-			out.append(r.count() > 1 ? Component.translatable("screen.aliveworkplace.hall.count", r.count(), r.what()) : r.what());
+			Component what = Requests.inSentence(r.what()); // B1096: "Waiting for 12 Oak Planks, a pickaxe"
+			out.append(r.count() > 1 ? Component.translatable("screen.aliveworkplace.hall.count", r.count(), what) : what);
 		}
 		if (requests.size() > 3) {
 			out.append(Component.translatable("screen.aliveworkplace.hall.and_more", requests.size() - 3));

@@ -256,7 +256,7 @@ public final class JobCards {
 			return;
 		}
 		for (Requests.Request r : requests.subList(0, Math.min(NEEDS_SHOWN, requests.size()))) {
-			lines.add(new StatusCard.Line(r.icon().copyWithCount(1), Component.translatable("screen.aliveworkplace.card.job.need", r.what()),
+			lines.add(new StatusCard.Line(r.icon().copyWithCount(1), Component.translatable("screen.aliveworkplace.card.job.need", Requests.inSentence(r.what())),
 				Component.translatable("screen.aliveworkplace.card.job.need_count", r.count()), StatusCard.ORANGE, StatusCard.NO_BAR));
 		}
 		if (requests.size() > NEEDS_SHOWN) {

@@ -24,6 +24,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A worker's status card and Village Hall page read as sentences when they wait for a tool or seeds: "Needs a pickaxe", "Needs an axe", "Needs a fishing rod", "Needs seeds" and "Waiting for an axe" instead of a capital letter mid-sentence. The Hall's own request list still reads "Miner: A pickaxe" (B1096).
 - Clicking a fully researched topic in the Research list, a scholars' topic or one in the Great Library's row, now says it's fully researched instead of that it can't be researched yet (B1090).
 - A Create schematic uploaded again under its name while a builder is half-way through it is no longer finished with holes after a restart: the builder starts the new blueprint from the top, skipping what already stands as drawn, and a site saved while retrying no longer risks an error every tick (B1049).
 - A villager a zombie turns and you cure comes back as the same villager to the mod too: their class, family name, friendship with you, Legend place and marriage are kept (their husband or wife is no longer widowed by the bite, only if the zombie villager is killed). The work they held, such as a builder's site, is still let go when they're bitten (B1081).

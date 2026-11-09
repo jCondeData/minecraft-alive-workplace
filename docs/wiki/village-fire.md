@@ -147,4 +147,8 @@ builders put it back after a restart too.
   is conjured and the plank comes off the threats' list. Hand mutants killed: the finished repair's placeAll call
   dropped, the "can it hang" check dropped, the repair's frame filter dropped. Survivor: the damaged-list check, which
   led to B1095 (a restart mid-repair after another builder's look loses the frame; test on `tests/fire-frames-1109d`).
+- QA (lane B, 2026-11-09, B1083): `QaBuilderFixes1109bGameTests` (4): a burned frame's wall is repaired with exactly
+  one frame from the chest (4 become 3); with no frame in the chests the plank comes back and no frame is made from
+  nothing; a frame the player took down from a standing wall stays down through a repair; a burned frame is still hung
+  after a save and reload mid-repair.
 - Showcase scenes: `fire`.

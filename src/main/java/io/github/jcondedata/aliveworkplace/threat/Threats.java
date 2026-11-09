@@ -113,6 +113,7 @@ public final class Threats implements ResourceManagerReloadListener {
 			ThreatData.serverStarting();
 			Conditions.forgetCoasts();
 		});
+		ConvertedMobs.init(); // what a raider turns into in vanilla is still a raider (B1054)
 		// What already changed the chance of a raid: Curfew and the other civic effects (30.9), and research (29.11).
 		addFactor(AliveWorkplace.id("civic"), (level, hall) -> io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(level, hall).raids());
 		addFactor(AliveWorkplace.id("research"), io.github.jcondedata.aliveworkplace.research.TreeEffects::raidChance);

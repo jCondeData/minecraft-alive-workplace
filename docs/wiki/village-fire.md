@@ -5,7 +5,7 @@ ROADMAP 32.16. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 chimney spark on a dry day or a raider's burning arrow. The fire spreads by the game's own rules but only through what
 the builders built, a new job, the **Firewarden**, puts it out, and the builders put back what burned.
 
-Roadmap items: 32.16, B218, B152
+Roadmap items: 32.16, B218, B152, B1071
 
 ## What a player sees
 
@@ -44,7 +44,9 @@ Roadmap items: 32.16, B218, B152
 - **Lightning** (a mixin on the bolt's strike): a real, not visual-only, bolt in a village while it thunders rolls the
   chance; the roof of the finished build nearest the strike catches, on top of its highest wooden block still
   standing. **Burning arrows** (a mixin where an arrow hits a block): only from a raider of a culture (the gunners of
-  the pirates, 32.8), only with the mobGriefing game rule on, and only on a builder's wooden block. **The chimney
+  the pirates, 32.8), only with the mobGriefing game rule on, and only on a builder's wooden block. An arrow a raider
+  shot stays a raider's until it lands, even when its shooter left, was killed or was unloaded while it flew (B1071).
+  **The chimney
   spark** is rolled in the hall's round, once a day.
 - **Builders' blocks.** A block counts as the builders' when a finished build's blueprint has a block there and the
   world still holds it (the same rule as rams at gates, `MaterialRules.matches`). In a village the fire's burn and
@@ -125,6 +127,7 @@ builders put it back after a restart too.
   them, are all still there after 400 ticks.
 - `FireGameTests.withSiegeDamageOffNothingBurns`, `FireGameTests.theJobStartsFromAGrindstoneAndAWaterBucket`,
   `FireGameTests.lightningSetsTheRoofAlight`, `FireGameTests.aRaidersBurningArrowLightsTheRoof`,
+  `FireGameTests.aRaidersBurningArrowLightsTheRoofAfterItsShooterIsGone`,
   `FireGameTests.aJourneymanCallsABucketBrigade`, `FireGameTests.anEmptyFirewardenRefillsAtWater`,
   `FireGameTests.theWaterCarriedSurvivesASave`, `FireGameTests.theBuilderPutsBackWhatBurned`,
   `FireGameTests.switchedOffAFirewardenStandsIdle`, `FireGameTests.everyNewSentenceHasItsText`.

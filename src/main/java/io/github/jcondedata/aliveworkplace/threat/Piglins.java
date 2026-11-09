@@ -233,7 +233,8 @@ public final class Piglins {
 		}
 		List<String> tags = new ArrayList<>();
 		for (String tag : mob.getTags()) {
-			if (tag.equals(Threats.RAIDER_TAG) || tag.equals(Threats.EXTRA_TAG) || tag.startsWith("aliveworkplace_role_") || tag.equals(Plunder.SHOWN_TAG)) {
+			if (tag.equals(Threats.RAIDER_TAG) || tag.equals(Threats.EXTRA_TAG) || tag.startsWith("aliveworkplace_role_") || tag.equals(Plunder.SHOWN_TAG)
+				|| tag.startsWith(io.github.jcondedata.aliveworkplace.guard.VillageRaids.RAID_STAMP)) {
 				tags.add(tag);
 			}
 		}
@@ -244,6 +245,13 @@ public final class Piglins {
 		// gone instead of zombified (B356); the turned mob is kept the way every other foe is (B208).
 		if (turned == null || !HostileSpawns.keep(level, turned, "band of a fallen Piglin Warlord")) {
 			return null;
+		}
+		// Every conversion carries the mod's tags over (ConvertedMobs, B1054); a band that zombifies is no lair's any
+		// more, so only those listed above stay.
+		for (String tag : List.copyOf(turned.getTags())) {
+			if (tag.startsWith(ConvertedMobs.PREFIX) && !tags.contains(tag)) {
+				turned.removeTag(tag);
+			}
 		}
 		tags.forEach(turned::addTag);
 		if (!plunder.isEmpty()) {

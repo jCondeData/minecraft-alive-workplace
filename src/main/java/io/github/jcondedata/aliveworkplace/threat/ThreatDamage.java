@@ -8,7 +8,9 @@ import io.github.jcondedata.aliveworkplace.mc.Ids;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Explosion;
 import org.jetbrains.annotations.Nullable;
@@ -98,6 +100,19 @@ public final class ThreatDamage {
 			return;
 		}
 		toBlow.removeIf(pos -> !level.getBlockState(pos).isAir() && builders(level, pos));
+	}
+
+	/**
+	 * Whether a threat's {@code source} must leave {@code hanging} on its wall (B1053): a raider's blast or shot (its
+	 * direct or causing entity a threat's) never breaks an item frame or painting hung on the builders' work, as a
+	 * repair can't hang it again. Players' and anything else's damage breaks it as before.
+	 */
+	public static boolean sparesHanging(ServerLevel level, HangingEntity hanging, DamageSource source) {
+		if (!isThreat(source.getDirectEntity()) && !isThreat(source.getEntity())) {
+			return false;
+		}
+		BlockPos on = hanging.getPos().relative(hanging.getDirection().getOpposite());
+		return !level.getBlockState(on).isAir() && builders(level, on);
 	}
 
 	/** Runs {@code blow} as a ram's: the gate block it breaks is the one break a threat is allowed. */

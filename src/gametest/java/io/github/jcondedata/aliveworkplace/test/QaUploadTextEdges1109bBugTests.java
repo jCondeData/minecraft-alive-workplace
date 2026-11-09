@@ -77,6 +77,29 @@ public class QaUploadTextEdges1109bBugTests implements net.fabricmc.fabric.api.g
 		helper.succeed();
 	}
 
+	//$ gametest_ticks_batch HUGE '400' '"qaUploadTextEdges1109bDeepName"'
+	@GameTest(template = HUGE, timeoutTicks = 400, batch = "qaUploadTextEdges1109bDeepName")
+	public void aChestNameNestedThirtyThousandDeepIsCopiedWithoutAnError(GameTestHelper helper) {
+		// A chest from a file keeps only its name (never its contents); the name goes through the same cleaning
+		BlockPos pos = new BlockPos(2, 2, 2);
+		helper.setBlock(pos, Blocks.CHEST);
+		BlockEntity chest = helper.getBlockEntity(pos);
+		CompoundTag nbt = chest.saveWithoutMetadata(helper.getLevel().registryAccess());
+		int depth = 30000;
+		String name = "[".repeat(depth) + "\"Deep chest\"" + "]".repeat(depth);
+		nbt.putString("CustomName", name);
+		CompoundTag clean;
+		try {
+			clean = BlockEntityData.sanitize(helper.getLevel(), helper.absolutePos(pos), chest.getBlockState(), chest, nbt);
+		} catch (StackOverflowError e) {
+			throw new net.minecraft.gametest.framework.GameTestAssertException("copying a chest whose uploaded name is " + depth
+				+ " nested arrays threw a StackOverflowError on the server thread; expected the name cut to its words");
+		}
+		helper.assertTrue(clean == null || clean.getString("CustomName").length() <= 2 * MAX_LINE + 256,
+			"the deep name was kept at " + clean.getString("CustomName").length() + " characters of JSON");
+		helper.succeed();
+	}
+
 	/** The letters a client shows for {@code component}: a keybind with no such binding shows its name's translation. */
 	private static int shownOnAClient(Component component) {
 		int[] count = {0};

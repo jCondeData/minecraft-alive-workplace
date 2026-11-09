@@ -118,11 +118,17 @@ SCENES = [
       "the table's library showed Starter Cottage IV with its cellar under a faint ground plane, turning, then the Storehouse and its vault, each size line saying how deep it goes", 45,
       [("01_cottage_cellar", "Starter Cottage IV and its cellar"), ("02_cottage_turned", "Turned"),
        ("03_storehouse_vault", "The Storehouse and its vault"), ("04_storehouse_turned", "Turned")]),
-    S("shapes", "Builder", "Shape Planner", "the Shape Planner screen opened with its materials", 45,
+    # 42.5: the job-status card (sneak-right-click with an empty hand on a Builder, Miner, Fisher, Farmer, Lumberjack, Orchard
+    # keeper or Postman): name, job and level, what they're doing, their work, what they need; Hall page opens their page
+    S("status_card", "Builder", "A worker's status card",
+      "a builder's status card showed his site with its progress, his experience and what he needs, and Hall page opened the Village Hall on his page", 45,
+      [("01_status_card", "The status card"), ("02_status_card_hall", "Hall page: his page in the Village Hall")]),
+    # 42.4: the builder tools are the list screen: the shapes and blocks as icon cells in their rows, - and + by each size
+    S("shapes", "Builder", "Shape Planner", "the Shape Planner opened as the list screen: the shapes and the stone bricks as icon cells in their rows, - and + by each size, Draw", 45,
       [("01_shapes_screen", "Shape Planner"), ("02_shapes_info", "Size and blocks")]),
     S("scan", "Builder", "The Scan Tool: your own build as a blueprint", "a hut was marked with the Scan Tool and saved as a blueprint", 30,
       [("01_scan_marked", "Two corners marked"), ("02_scan_saved", "Saved as a blueprint")]),
-    S("style_menu", "Builder", "Build it in a style", "the style picker opened, a style was chosen and the build mirrored", 50,
+    S("style_menu", "Builder", "Build it in a style", "the style picker opened as the list screen (Mirror first, a row per style with Choose), dark oak was chosen (gold) and the build mirrored", 50,
       [("01_style_screen", "Style picker"), ("02_style_chosen", "Dark oak chosen"), ("03_style_mirrored", "Mirrored")]),
     # Miner
     S("quarry", "Miner", "A miner digs out a quarry", "the miner dug out the whole quarry", 420,
@@ -354,12 +360,13 @@ SCENES = [
        ("06_plaza", "Sunny Plaza look, both tiers"),
        ("03_healing", "In the Healing Machine")], cobblemon=True),
     # Shopkeeper
-    S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,
+    # 42.4: the shop and the ferry (CobbleDollars) are the list screen: the money at the top, a row per lot with its price and Buy
+    S("shop", "Shopkeeper", "The shop", "the shop opened as the list screen: the money at the top, a row per lot with its stock, its price and Buy", 60,
       [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),
     S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list, the owner's sales log and a Price Tag's screen opened", 55,
       [("01_counter_screen", "Price list"), ("02_counter_price", "A price"), ("03_counter_sales", "Sales log"), ("04_price_tag", "Price Tag")]),
     # Ferryman
-    S("ferry_menu", "Ferryman", "Buying a travel ticket", "the ferryman's ticket screen opened", 45,
+    S("ferry_menu", "Ferryman", "Buying a travel ticket", "the ferryman's tickets opened as the list screen: the Far Shore's row with its fare and Buy, then gold Confirm", 45,
       [("01_ferry_screen", "Destinations"), ("02_ferry_confirm", "Confirm the fare")]),
     job("bard", "Bard", "Playing at the jukebox", "the bard played music"),
     # Cobblemon

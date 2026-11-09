@@ -3,7 +3,7 @@
 An empty hand on a Nurse or a Fossil Scientist opens a small card in the Village Hall's look instead of acting at once:
 the Nurse's shows your health and your party's, with **Heal**; the Fossil Scientist's shows how far along each of your
 fossils is, with **Hand over**. Each button does exactly what the click did before. The card is the shared piece the
-job-status cards of 42.5 reuse. Part of Milestone 43 (One look for every screen, Pokémon).
+job-status cards of 42.5 reuse ([Job status cards](job-status-cards.md)). Part of Milestone 43 (One look for every screen, Pokémon).
 
 Roadmap items: 43.3
 

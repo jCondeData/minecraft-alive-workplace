@@ -89,6 +89,9 @@ public class StationsSpecGameTests implements FabricGameTest {
 		if (!sneaking) {
 			player.connection.handleInteract(ServerboundInteractPacket.createInteractionPacket(villager, false, InteractionHand.MAIN_HAND));
 		}
+		if (sneaking && stack.isEmpty()) {
+			JobCardGameTests.inChat(player); // 42.5: the status card's In chat sends the status lines the click sent before
+		}
 		player.setShiftKeyDown(false);
 	}
 

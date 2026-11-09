@@ -6359,10 +6359,10 @@ it, in order (42.1 first: the others use its pieces). Depends on: nothing open.
   Innkeeper, a Legend guest's terms, and the Research screen (Scholar and Legend trees: the tree may stay a grid of
   framed cells in the Hall's colors if a list loses its shape; write the choice in the Notes). Done when: GameTests
   for each; scenes `smith_orders` and one per menu without a scene.
-- [ ] **42.4** **The builder tools and shops as lists:** Shape Planner, Style picker, Price Tag, and the Shop and Ferry
+- [x] **42.4** (review: pending 2026-11-09) **The builder tools and shops as lists:** Shape Planner, Style picker, Price Tag, and the Shop and Ferry
   menus (CobbleDollars). Shape and style pickers may keep icon cells in the list rows. Done when: GameTests for each;
   scenes `shapes`, `style_menu`, `shop`, `ferry_menu`.
-- [ ] **42.5** **The status card.** The job-status chat lines (sneak + empty hand on a Builder, Miner, Fisher, Farmer,
+- [x] **42.5** (review: pending 2026-11-09) **The status card.** The job-status chat lines (sneak + empty hand on a Builder, Miner, Fisher, Farmer,
   Lumberjack, Orchard keeper, Postman) open a small card in the Hall's look instead (as `trainer_c.png`'s size): the
   villager's name, job and level, what they're doing, what they need, and a button to their Hall page. Done when:
   GameTests for each job's card; a scene `status_card`.
@@ -6408,6 +6408,22 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
   scenes `guide` and `config`.
 
 ## Notes / blocked
+
+- 2026-11-09 (lane-c-1109-0353, 42.5): **the job-status cards are on 43.3's card**, not a second one. `card/JobCards`
+  builds the card for the seven jobs (what they're doing and what they need are the Hall's own `doing` and
+  `Requests.of`); its buttons are In chat (first: a card's first button does what the click did), Hall page
+  (`VillageHallScreen.openWorker`, gray with the reason when no hall is near or the village keeps the player out) and
+  Close. Decided: the chat lines stay behind In chat, word for word, since a 200-pixel card can't hold coordinates,
+  routes, a whole material list or the clickable Stop link. Click tests that read the old lines press In chat through
+  `JobCardGameTests.inChat` (in `StationsSpecGameTests.rightClick`, `BuilderSiteListGameTests`, `QaBuilderBugs1031`,
+  `QaWonderPartWords`, `QaWonderPartLines1031`; `QaStageSix`'s helper already pressed the first button), every
+  assertion unchanged.
+- 2026-11-09 (lane-c-1109-0353, 42.4): **new shared piece, cells in a list row.** `ChoiceList.cells(row, slots...)` draws
+  other buttons inside a row at its right, in place of its one button, each still its own slot and chest click;
+  `ChoiceList.cell(icon, label, on)` marks one (a small text button, or with no label the icon in a framed cell). The
+  Shape Planner's shapes and blocks are icon cells in a "Shape" and a "Block" row, each size a row with - and +; the Price
+  Tag's steps a row per step size. A row with no second line and no price now has the room up to its button for its name.
+  Lanes D/E may use it.
 
 - 2026-11-09 (lane-c-1109-0052, 42.3): **the Research screen is a list, not a grid.** The tree didn't lose its shape as a
   list: the topics already come in their tree's order (a topic after what it needs), and a row holds the level, the

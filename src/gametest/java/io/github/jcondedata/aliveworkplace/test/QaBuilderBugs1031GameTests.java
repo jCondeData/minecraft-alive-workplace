@@ -153,6 +153,7 @@ public class QaBuilderBugs1031GameTests implements FabricGameTest {
 		player.setShiftKeyDown(true);
 		c.seen().clear();
 		InteractionResult r = UseEntityCallback.EVENT.invoker().interact(player, player.level(), InteractionHand.MAIN_HAND, villager, null);
+		JobCardGameTests.inChat(player); // 42.5: the click opens the status card; its In chat sends the status lines
 		List<String> out = new ArrayList<>();
 		for (Component m : c.seen()) {
 			for (String l : m.getString().split("\n")) {

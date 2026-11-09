@@ -143,6 +143,9 @@ public class BuilderSiteListGameTests implements net.fabricmc.fabric.api.gametes
 		player.moveTo(villager.getX() + 1.5, villager.getY(), villager.getZ(), 90f, 0f);
 		player.connection.handleInteract(ServerboundInteractPacket.createInteractionPacket(villager, sneaking, InteractionHand.MAIN_HAND,
 			new Vec3(0, villager.getBbHeight() / 2, 0)));
+		if (sneaking && stack.isEmpty()) {
+			JobCardGameTests.inChat(player); // 42.5: the status card's In chat sends the status and the list the click sent before
+		}
 		player.setShiftKeyDown(false);
 	}
 

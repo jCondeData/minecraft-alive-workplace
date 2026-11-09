@@ -303,6 +303,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaPokemonScreens1109dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonListMenusCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.JobListMenusCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.ShopListMenusCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaNurseMachine1102dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaKingTributeDollars1103dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaNurseMachine1102dBugTests",

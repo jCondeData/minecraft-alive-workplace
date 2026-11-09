@@ -42,7 +42,8 @@ back to bring the catch in, and the boat goes back in the chest. Nightfall bring
 ![A fisher out in a boat](https://jcondedata.github.io/minecraft-alive-workplace/extras/still-1.jpg)
 
 Over their head: how many fish they've caught, and whether they're fishing, out in the boat or bringing in the catch.
-Sneak-right-click them with an empty hand for the full status.
+Sneak-right-click them with an empty hand for their status card (the fish caught, their experience, what they need);
+**In chat** puts the full status in chat, and **Hall page** opens their page in the Village Hall.
 
 ## How the fisherman fits in
 

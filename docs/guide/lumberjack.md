@@ -31,7 +31,10 @@ dirt with leaves that grew there, so your log cabin, a log wall or a pile of log
 warped fungi count as trees too. They never cut inside a build site or a quarry.
 
 Over their head you see how many trees they've felled and what they're doing: looking for grown trees, chopping,
-dropping off logs, planting or giving the saplings bone meal.
+dropping off logs, planting or giving the saplings bone meal. A lumberjack given a tree farm (a Field Marker) shows
+a status card when you sneak-right-click them with an empty hand: the farm's size, the trees felled, the saplings
+planted and what they need; **In chat** puts the full status in chat with how to stop them, and **Hall page** opens
+their page in the Village Hall.
 
 ## Extras that come with the right chests
 

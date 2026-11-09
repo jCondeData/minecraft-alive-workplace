@@ -497,14 +497,7 @@ public final class Builders {
 			text.append(Component.literal("\n  "));
 			text.append(site.detail().copy().withStyle(ChatFormatting.YELLOW));
 		}
-		Optional<BlockPos> supplyBench = villager == null ? Optional.empty() : site.wonder() != null ? siteBench(level, villager, site) : benchPos(villager);
-		if (villager != null && supplyBench.isPresent() && !site.isDeconstruction()) {
-			List<BlockPos> supplies = SupplyContainers.find(level, supplyBench.get(), plan.supplyExclude());
-			BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
-			// B290: what the village's Storehouse and the other workers' chests can spare isn't missing either (counting the
-			// bench's chests only said "Needs" for what the Storehouse held, and left that on the overhead line too)
-			site.setMissing(computeMissing(level, site, plan, bag, supplies, BuilderWork.spareElsewhere(level, villager, site, plan, supplyBench.get())));
-		}
+		Optional<BlockPos> supplyBench = refreshMissing(level, site, plan, villager);
 		if (!site.missing().isEmpty()) {
 			text.append(Component.literal("\n  "));
 			text.append(Component.translatable("message.aliveworkplace.status.needs", formatMissing(site, 6)).withStyle(ChatFormatting.YELLOW));
@@ -536,6 +529,27 @@ public final class Builders {
 		}
 		appendCancel(text, site);
 		return text;
+	}
+
+	/** What {@code site} is short of, counted afresh as the status does (the status card, 42.5, shows it). */
+	public static void refreshMissing(ServerLevel level, BuildSite site, Villager villager) {
+		BuildPlan plan = site.plan(level);
+		if (plan != null) {
+			refreshMissing(level, site, plan, villager);
+		}
+	}
+
+	/** The same; returns the bench whose chests feed the site (empty without a villager or a bench). */
+	private static Optional<BlockPos> refreshMissing(ServerLevel level, BuildSite site, BuildPlan plan, @Nullable Villager villager) {
+		Optional<BlockPos> supplyBench = villager == null ? Optional.empty() : site.wonder() != null ? siteBench(level, villager, site) : benchPos(villager);
+		if (villager != null && supplyBench.isPresent() && !site.isDeconstruction()) {
+			List<BlockPos> supplies = SupplyContainers.find(level, supplyBench.get(), plan.supplyExclude());
+			BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
+			// B290: what the village's Storehouse and the other workers' chests can spare isn't missing either (counting the
+			// bench's chests only said "Needs" for what the Storehouse held, and left that on the overhead line too)
+			site.setMissing(computeMissing(level, site, plan, bag, supplies, BuilderWork.spareElsewhere(level, villager, site, plan, supplyBench.get())));
+		}
+		return supplyBench;
 	}
 
 	/** B297: "Not counting the Storehouse at 10 64 -3: …", the reason in the player's words. */

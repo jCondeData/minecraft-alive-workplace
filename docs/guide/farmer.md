@@ -41,8 +41,9 @@ pumpkins and melons, and carry the harvest to the chests. With nothing else to d
 for bone meal once the chests hold 64. When the field is all tended, they go back to a vanilla farmer's day until
 something ripens.
 
-Over their head: the field's size and how much they've harvested. Sneak-right-click them with an empty hand for the full
-status and how to stop them.
+Over their head: the field's size and how much they've harvested. Sneak-right-click them with an empty hand for their
+status card (the field, the crops harvested, their experience, what they need); **In chat** puts the full status in
+chat with how to stop them, and **Hall page** opens their page in the Village Hall.
 
 ## How the farmer fits in
 

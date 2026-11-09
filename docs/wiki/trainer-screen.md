@@ -89,6 +89,8 @@ none
 - With RCT, the team and the cap are worked out when the screen opens; a cap that rises while it is open shows on the
   next open.
 - A very small window (a big GUI scale) cuts the longer lines with "…".
+- B1104 (open): the team's models are rolled again on each opening (gender and shininess), so one slot can show a
+  female Pokemon one time and a male one the next.
 
 ## Proof
 
@@ -110,3 +112,10 @@ line reads "Singles · no level cap" without RCT; every refusal reads as English
 refusal (asleep, away, busy) skipped on Challenge.
 
 Showcase scenes: `leader`, `battle`
+
+QA (lane D, 2026-11-09, second run): `QaTrainerScreen1109dCompatTests` (11): only an empty main hand opens the
+screen (an off-hand torch is not used); the away-at-the-Cup refusal only for a Leader who entered another village's
+Cup today; the senior Leader may challenge; come back tomorrow ends the next day with the record kept; a reveal
+outlasts the day and stays with its own trainer; hidden slots carry no model, level or scaled mark; forged, stale,
+grayed-out and far-off button presses do nothing; the screen closes when the player walks 30 blocks off or the
+trainer dies; a Leader's day and a loss survive a reload; the screen's labels are American English.

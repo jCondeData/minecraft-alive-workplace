@@ -14,6 +14,7 @@
 			"io.github.jcondedata.aliveworkplace.test.RepeatNewTests",
 			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",
 			"io.github.jcondedata.aliveworkplace.compat.MoverFurnitureCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaGlassblower1110eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystonesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystoneNetworkCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneUnownedHallCompatTests",

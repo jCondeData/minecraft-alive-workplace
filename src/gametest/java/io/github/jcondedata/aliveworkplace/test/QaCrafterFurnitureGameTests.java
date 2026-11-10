@@ -234,7 +234,7 @@ public class QaCrafterFurnitureGameTests {
 		helper.assertTrue(JobShortages.line(level, nobody, missing) == null, "\"nobody makes\" before the jobs had a look");
 		helper.runAfterDelay(610, () -> {
 			Component line = JobShortages.line(level, nobody, missing);
-			helper.assertTrue(line != null && line.getString().equals("Nobody here makes: Barrel, Oak Stairs and 1 more"),
+			helper.assertTrue(line != null && line.getString().equals("Hire a Carpenter to make Barrels, Oak Stairs and 1 more"),
 				"three things nobody makes: " + (line == null ? null : line.getString()));
 			JobShortages.forget(lacking);
 			JobShortages.forget(nobody);

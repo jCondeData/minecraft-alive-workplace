@@ -25,4 +25,13 @@ public class ScribeWork extends CrafterWork {
 	protected boolean wants(Item item) {
 		return MAKES.contains(item);
 	}
+
+	/**
+	 * 46.1: the Librarian's own list ({@code aliveworkplace:crafts/librarian}: {@link #MAKES}, enchanting and cartography
+	 * tables), and until the Cleric crafts (46.4) the Cleric's magic blocks, brewing stands and ender chests.
+	 */
+	@Override
+	protected boolean wants(net.minecraft.server.level.ServerLevel level, Item item) {
+		return CraftJobs.makes(level, CraftJobs.Job.LIBRARIAN, item);
+	}
 }

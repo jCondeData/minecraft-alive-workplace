@@ -91,7 +91,7 @@ public final class Requests {
 	private static final Map<String, BlockPost> BLOCK_POSTS = new java.util.LinkedHashMap<>();
 
 	/** Accepts one plain item (so it can be counted and moved by item). */
-	record ExactItem(Item item) implements Predicate<ItemStack> {
+	public record ExactItem(Item item) implements Predicate<ItemStack> {
 		@Override
 		public boolean test(ItemStack stack) {
 			return stack.is(item);

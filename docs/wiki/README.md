@@ -11,6 +11,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Builder](builder.md): the villager who builds blueprints.
 - [Moving a finished building](moving-buildings.md): the Mover and the building snapshot it moves (Milestone 45, being built).
 - [Job chains](crafter.md): every crafting job makes the builders' parts through whole recipe chains of its own kind, and the builder says what nobody can make (37.14a, which retired the Crafter).
+- [Each job's own list](job-lists.md): which job crafts what (data tags per job), the job to hire on the builder's line, and who makes or gathers each thing on the Storehouse's board (46.1).
 - [Blueprint library](blueprint-library.md): the Blueprint Table as a collection each village unlocks (26.10).
 - [Workplace looks](workplace-looks.md): the twelve workplaces, each its own building (26.11).
 - [Textures and item icons](textures.md): every texture drawn from a recipe in vanilla's style, and the item icons the owner picked (21.1, 21.1b).

@@ -422,6 +422,21 @@ final class JobScenes {
 	/** The bandit_king scene's front: the ground before the fort's gate, where the banners fly and the allies stand. */
 	private static final BlockPos BANDIT_KING_FRONT = new BlockPos(0, -60, -2);
 
+	/** job_lists (46.1): the scene's two builders, one asking for sixteen oak logs, the other for two brewing stands. */
+	private static final Villager[] JOB_LISTS_ASKERS = new Villager[2];
+
+	private static void jobListsAsk() {
+		Item[] wants = {Items.OAK_LOG, Items.BREWING_STAND};
+		int[] counts = {16, 2};
+		for (int i = 0; i < 2; i++) {
+			Villager v = JOB_LISTS_ASKERS[i];
+			if (v != null) {
+				io.github.jcondedata.aliveworkplace.work.Requests.post(v, new ItemStack(wants[i]), counts[i], wants[i].getDescription(),
+					new io.github.jcondedata.aliveworkplace.work.Requests.ExactItem(wants[i]));
+			}
+		}
+	}
+
 	/** The fort's men hold still for the camera. */
 	private static void stillFortMen(ServerLevel level) {
 		for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
@@ -4897,6 +4912,44 @@ final class JobScenes {
 				&& subject.getVillagerData().getLevel() == 1
 				&& subject.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(STATION)).orElse(false)));
+		// ROADMAP 46.1: the Storehouse's board names who gathers or makes each thing a worker asks for, else the job to hire
+		SCREENS.put("job_lists", new Screen("the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Librarian for the brewing stands",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				place(level, STATION.east(3), io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE);
+				for (int i = 0; i < 2; i++) {
+					BlockPos bench = STATION.west(2 * i);
+					place(level, bench, io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH);
+					Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+					builder.setNoAi(true);
+					io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+					JOB_LISTS_ASKERS[i] = builder;
+				}
+				Villager bo = EntityType.VILLAGER.spawn(level, STATION.east(2).south(), MobSpawnType.COMMAND);
+				bo.setNoAi(true);
+				bo.setVillagerData(bo.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK));
+				bo.setCustomName(net.minecraft.network.chat.Component.literal("Bo"));
+				jobListsAsk();
+			},
+			List.of(new Step("01_logs_gathered_by_the_lumberjack", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST, 6,
+					(level, player) -> {
+						jobListsAsk();
+						io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(player, STATION.east(3));
+					}, 30),
+				new Step("02_hire_a_librarian_for_brewing_stands", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST + 1, 6, null, 20)),
+			(level, player) -> {
+				if (!(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu)) {
+					return false;
+				}
+				StringBuilder lore = new StringBuilder();
+				for (int i = 0; i < io.github.jcondedata.aliveworkplace.work.ChoiceMenu.SIZE; i++) {
+					var lines = menu.icon(i).get(net.minecraft.core.component.DataComponents.LORE);
+					if (lines != null) {
+						lines.lines().forEach(l -> lore.append(l.getString()).append('|'));
+					}
+				}
+				return lore.indexOf("Gathered by: the Lumberjack (Bo)") >= 0 && lore.indexOf("Hire a Librarian to make it") >= 0;
+			}));
 		SCREENS.put("daycare", new Screen("the daycare screen opened with a Charmander boarding", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				subject = picked(level, player, STATION, Blocks.SMOKER, Items.SADDLE);

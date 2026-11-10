@@ -815,6 +815,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHouseLooksVerify1108bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendNeedsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendRecordGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLegendPicket1110dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGiftedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftedGameTests",

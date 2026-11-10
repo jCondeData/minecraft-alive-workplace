@@ -9,19 +9,23 @@ Roadmap items: 46.3
 
 - A builder near a Florist who is short of a flower pot, a decorated pot, a dye or moss carpet gets it from her: she
   fetches the makings from the builder's chests (and her own, where the flowers she grew are), makes it at her
-  workstation and puts it in the builder's chest.
-  - A flower pot from three bricks.
+  workstation (a Flower Stand or a composter) and puts it in the builder's chest.
+  - A flower pot from three bricks; a decorated pot from four; three moss carpets from two moss blocks.
   - From clay: with only clay balls (and coal) about, a Mason with a furnace by his stonecutter fires the bricks into
-    the builder's chest first, then she makes the pot.
+    the builder's chest first, then she makes the pot. With no Florist about he fires none (the clay stays) and the
+    line says "Hire a Florist to make Flower Pots".
   - The dye for a Shepherd's bed: with a Florist nearby the Shepherd leaves the dyes to her; she makes the red dye from
-    the poppies in her chest, and he dyes the wool and makes the bed.
+    the poppies in her chest (the blue dye from cornflowers), and he dyes the wool and makes the bed. With no Florist
+    about he makes the dye himself, as before.
 - Over her head while making something: "Florist · 3 made for builders" and what she's making. Between jobs she keeps
   her garden: the garden waits while she makes something, and the making waits while she picks, grows or pots.
 - Missing bricks are named on the builder's line: "Can't be made yet: short of 3 Bricks to make 1 Flower Pot" (the
   bricks, not the clay that makes them).
 - A builder with no Florist nearby reads "Hire a Florist to make Flower Pots"; the Storehouse's board says "Made by:
   the Florist (name)" or "Hire a Florist to make it".
-- A Leatherworker no longer makes pots, dyes or moss carpet, even with the makings at hand.
+- A Leatherworker or a Carpenter never makes pots, dyes or moss carpet, even with the makings at hand.
+- Her workstation broken mid-job loses nothing: after a grace time she lets the job go and what was in her bag goes
+  to the builder's chest.
 
 ## 2. How it works
 
@@ -71,4 +75,9 @@ Nothing new: a Florist's job in hand is the `crafter_job` attachment every craft
 `FloristPotsGameTests`: the list is her own (no stand-in), a flower pot from bricks for a builder, a flower pot from
 clay with the Mason firing the bricks, the red dye from her poppies for the Shepherd's bed, missing bricks named on the
 line (not the clay), a Florist saved and loaded mid-job finishing the pot, and with no Florist the Leatherworker leaving
-the pot alone and the line saying "Hire a Florist to make Flower Pots". Scene `florist_pots`.
+the pot alone and the line saying "Hire a Florist to make Flower Pots". `QaFloristPots1110cGameTests` (QA): a Florist at a composter, a
+decorated pot, moss carpet, no Florist (the Mason fires nothing, the line names her), the whole shortage line word for
+word, a Carpenter leaving the pot alone, one hire line for a decorated pot and moss carpet, the Shepherd dyeing himself
+with no Florist, blue dye from cornflowers, empty pots still filled, her own pot filled without stalling the build, the
+Mason saved and loaded mid-firing, her stand broken mid-job, and the status over her head word for word. Scene
+`florist_pots`.

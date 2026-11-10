@@ -70,17 +70,17 @@ public class MoverGameTests implements FabricGameTest {
 	private static final BlockPos TORCH = new BlockPos(7, 4, 5);
 	private static final BlockPos FRAME = new BlockPos(3, 4, 4);
 	private static final BlockPos HALL = new BlockPos(15, 2, 2);
-	private static final int MAX_STEPS = 5000;
+	static final int MAX_STEPS = 5000;
 
 	private static void set(ServerLevel level, BlockPos abs, BlockState state) {
 		level.setBlock(abs, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 	}
 
 	/** One move set up: the house, the hall's record of it, the move confirmed, its plan as it stood, and a Mover. */
-	private record Setup(BlueprintData.Placement placement, MovePlan before, BlockPos hall, BlockPos from, BlockPos to, Villager mover) {
+	record Setup(BlueprintData.Placement placement, MovePlan before, BlockPos hall, BlockPos from, BlockPos to, Villager mover) {
 	}
 
-	private static Setup setup(GameTestHelper helper, String name) {
+	static Setup setup(GameTestHelper helper, String name) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		for (int x = MIN.getX(); x <= MAX.getX(); x++) {
@@ -149,7 +149,7 @@ public class MoverGameTests implements FabricGameTest {
 	}
 
 	/** Lets the Mover work until {@code stop} says so or the move is over; the site worked on. */
-	private static MoveSite work(ServerLevel level, Setup s, java.util.function.Predicate<MoveSite> stop) {
+	static MoveSite work(ServerLevel level, Setup s, java.util.function.Predicate<MoveSite> stop) {
 		MoveSite site = MoveSites.get(level).work(level, s.hall()).orElseThrow();
 		for (int i = 0; i < MAX_STEPS && site.stage() != MoveSite.Stage.DONE && !stop.test(site); i++) {
 			MoverWork.work(level, s.mover(), site);
@@ -158,7 +158,7 @@ public class MoverGameTests implements FabricGameTest {
 	}
 
 	/** A reload: the saved sites written and read back in place of the live ones; the site picked up again. */
-	private static MoveSite reload(ServerLevel level, Setup s) {
+	static MoveSite reload(ServerLevel level, Setup s) {
 		CompoundTag saved = MoveSites.get(level).save(new CompoundTag(), level.registryAccess());
 		level.getDataStorage().set(MoveSites.NAME, MoveSites.load(saved, level.registryAccess()));
 		return MoveSites.get(level).forBuilding(s.from()).orElseThrow();
@@ -204,7 +204,7 @@ public class MoverGameTests implements FabricGameTest {
 	}
 
 	/** The checks after a whole move: block for block at the new spot, the containers' own items, the old spot empty. */
-	private static void assertMoved(GameTestHelper helper, ServerLevel level, Setup s, List<BlockPos> missing) {
+	static void assertMoved(GameTestHelper helper, ServerLevel level, Setup s, List<BlockPos> missing) {
 		String wrong = standing(level, s.before(), s.to(), Rotation.CLOCKWISE_90, missing);
 		helper.assertTrue(wrong == null, "the house at its new spot: " + wrong);
 		String chest = items(level, turned(s, CHEST, level, helper));
@@ -229,7 +229,7 @@ public class MoverGameTests implements FabricGameTest {
 			"the hall's record didn't follow the building: " + record);
 	}
 
-	private static int loose(ServerLevel level, GameTestHelper helper) {
+	static int loose(ServerLevel level, GameTestHelper helper) {
 		return level.getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(new BlockPos(0, 1, 0))).inflate(30)).size();
 	}
 

@@ -391,6 +391,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallLenientSaves1109eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MovePlanGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverSwitches1110eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverResidentsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverBelongingsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MovePageGameTests",

@@ -6,7 +6,7 @@ place; 46.2 taught the Shepherd to weave at his loom ([The Shepherd weaves](weav
 and dyes ([The Florist makes pots](florist-pots.md)), 46.4 the Cleric to make the magic blocks ([The Cleric makes the
 magic blocks](cleric-crafts.md)), 46.5 the Beekeeper to make candles ([Candles and leather goods](candles-leather.md));
 46.6 brings the Glassblower.
-Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5
+Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5, B1142
 
 ## 1. What a player sees
 
@@ -58,9 +58,10 @@ Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5
   Glassblower, Tinkerer, Shepherd, Florist, Cleric, Beekeeper, Leatherworker, Librarian); else, if a stonecutter
   recipe makes it, the Mason; else its crafting recipe's ingredients: logs or planks (or wooden slabs, stairs,
   fences) to the Carpenter, else stone or bricks to the Mason, else ingots to the Tinkerer, else wool or dye to the
-  Shepherd, else the Carpenter if some ingredient is wood (a stick, a chest). A vanilla item on no list that fits no rule
-  (bread, a diamond helmet) stays with whoever made it before: the Carpenter at the crafting table, the Mason at his
-  kiln. A modded item that fits no rule has no job.
+  Shepherd, else the Carpenter if some ingredient is wood (a stick, a chest). The rule reads the first recipe's first
+  options, and when nothing fits, every option of every crafting recipe for the item. An item from any mod on no list
+  that fits no rule (bread, a diamond helmet, Create's Gearbox) stays with whoever made it before: the Carpenter at the
+  crafting table, the Mason at his kiln (B1142: before the fix, 689 modded items had no job).
 - `maker` is the job that makes it today: the list's job, or its stand-in while that job doesn't craft yet.
 - Each crafting job's `wants` asks `CraftJobs.makes(level, job, item)`; the Mason also keeps crushing gravel and sand.
 - The shortage line checks for a worker of the maker's job within the village's reach of the builder's table.
@@ -98,7 +99,9 @@ before carries on.
 
 ## 7. Known limits
 
-- The ingredient rule reads a modded item's first crafting recipe only, and the first item each ingredient accepts.
+- The ingredient rule only looks past a recipe's first options when those fit no rule, so a modded item whose first
+  options match gets that job even if a later option would fit better. A modded item that fits no rule goes to the
+  Carpenter (Create's mechanical parts too), as before 46.1.
 - Until 46.6 the "Hire a ..." lines for glass name the stand-in ("Hire a Mason to make Glass Panes"), not the
   Glassblower whose list it is.
 - The showcase scene is filmed on GitHub, not in this session.
@@ -109,7 +112,8 @@ before carries on.
 builder's request, the concrete across a reload), an untagged wooden block (the Bounty Board) the Carpenter's by its
 recipe, every item made before 46.1 still has a job, the "Hire a ..." line for each job, the Storehouse's lines, the
 board naming the Lumberjack for a builder short of logs, and a flower pot left unmade and named with its job absent.
-`QaJobCraftListsGameTests` (QA): every row of the Milestone 46 table on its own job's list and made today by that job
+`QaModdedCraftJobs1110eCompatTests` (QA, with the pack's mods): every modded item with a crafting recipe has a
+job, Create's Gearbox by name. `QaJobCraftListsGameTests` (QA): every row of the Milestone 46 table on its own job's list and made today by that job
 or its stand-in, no job making another's things (the Leatherworker no glass, terracotta or concrete), the ingredient
 rule's order and the tag winning over it, every stonecutter cut the Mason's (or, for copper, the Tinkerer's), the "Hire a
 ..." line grouped by job in the plural, the Storehouse's line for every gatherer and only for grown workers in reach,

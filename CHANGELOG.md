@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Builders short of a part from another mod get it crafted again: since villagers got their own crafting lists, hundreds of other mods' items (Create's Gearbox, Millstone and Mechanical Press, Supplementaries and Handcrafted furniture, modded chests and fence gates) had no job to make them; now one that fits no job's list goes to the Carpenter, as before (B1142).
 - A village warned of tomorrow night's raid no longer braces for it after the raid is called off: with the threat level set to 0, Peaceful difficulty or the village set At peace (also after a save and reload), the gates stay open, the portcullis stays up, the guards don't take battle stations and nobody is sent indoors on that day (B1146).
 - A husk that got over a village wall by a sand ramp is no longer ordered back by the siege after a server restart: who got over by a ramp is now saved with the siege, so after the restart it keeps fighting inside the walls instead of being walked back to the gate or the ramp (B1130).
 - A Cleric uses the blaze rods and other makings kept in his own chests (the ones by his brewing stand) for a builder's brewing stand, ender chest or beacon. Before, the builder waited forever, "short of 1 Blaze Rod", with the rod sitting in the Cleric's chest; a Cleric making tonics now also takes their makings from the village's Storehouse (B1144).

@@ -29,8 +29,9 @@ import org.jetbrains.annotations.Nullable;
  * The split is data, an item tag per job ({@code aliveworkplace:crafts/<job>}), so a pack can change it. An item in no
  * tag that some stonecutter recipe makes is the Mason's (every stonecutter cut is his); else it goes by its recipe's
  * ingredients ({@link #byRecipe}): logs or planks to the Carpenter, stone or bricks to the Mason, ingots to the Tinkerer,
- * wool or dye to the Shepherd, else to the Carpenter only if it has some wood in it. A vanilla thing on no list and
- * fitting no rule stays with whoever made it before 46.1 (the Carpenter at the crafting table, the Mason at his kiln).
+ * wool or dye to the Shepherd, else to the Carpenter only if it has some wood in it. A thing on no list and fitting no
+ * rule, from any mod, stays with whoever made it before 46.1 (the Carpenter at the crafting table, the Mason at his
+ * kiln; B1142).
  *
  * <p>The Shepherd weaves his own list at the loom since 46.2 ({@link WeaverWork}), the Florist makes hers at the Flower
  * Stand since 46.3 ({@link FloristCraftWork}), the Cleric his at the brewing stand since 46.4 ({@link ClericCraftWork}),
@@ -152,12 +153,12 @@ public final class CraftJobs {
 			return Job.MASON;
 		}
 		Job byRecipe = byRecipe(level, item);
-		String namespace = BuiltInRegistries.ITEM.getKey(item).getNamespace();
-		if (byRecipe != null || !"minecraft".equals(namespace) && !AliveWorkplace.MOD_ID.equals(namespace)) {
+		if (byRecipe != null) {
 			return byRecipe;
 		}
-		// Nothing made before 46.1 becomes unmakable: a vanilla thing (or one of ours) on no job's list (bread, a diamond
-		// helmet, a Price Tag) stays with whoever made it then, the Carpenter at the crafting table, the Mason at his kiln
+		// Nothing made before 46.1 becomes unmakable: a thing on no job's list fitting no rule (bread, a diamond helmet, a
+		// Price Tag, Create's Gearbox) stays with whoever made it then, the Carpenter at the crafting table, the Mason at
+		// his kiln. That holds for every mod's items: before 46.1 the Carpenter made any crafting recipe (B1142)
 		if (!Crafting.recipesFor(level, Crafting.Kind.CRAFTING, item).isEmpty()) {
 			return Job.CARPENTER;
 		}
@@ -216,6 +217,24 @@ public final class CraftJobs {
 				makings.add(options[0]);
 			}
 		}
+		Job job = byMakings(makings);
+		if (job != null) {
+			return job;
+		}
+		// B1142: the first recipe's first options fit no rule (Create's casings and shafts, a modded chest whose id isn't
+		// "chest"): look at every option of every crafting recipe for the item before giving up
+		List<ItemStack> all = new ArrayList<>();
+		for (RecipeHolder<?> recipe : recipes) {
+			for (Ingredient ingredient : Recipes.ingredients(recipe.value())) {
+				all.addAll(List.of(Recipes.options(ingredient)));
+			}
+		}
+		return byMakings(all);
+	}
+
+	/** The rule of {@link #byRecipe} on a list of ingredients, or null when none fits. */
+	@Nullable
+	private static Job byMakings(List<ItemStack> makings) {
 		if (makings.stream().anyMatch(CraftJobs::isTimber)) {
 			return Job.CARPENTER;
 		}

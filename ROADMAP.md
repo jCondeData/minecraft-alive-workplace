@@ -6550,7 +6550,7 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 - [x] **46.3** (review: pending 2026-11-10) **The Florist makes pots and dyes.** Flower pots (the Mason fires the bricks if there are only clay
   balls), decorated pots, dyes from the flowers she grows, moss carpet; she still fills empty pots. Done when:
   GameTests for a flower pot from bricks, from clay with a Mason, a dye for the Shepherd's bed; scene `florist_pots`.
-- [ ] **46.4** **The Cleric brews and makes the magic blocks.** Brewing stands, blaze powder, eyes of ender, ender
+- [x] **46.4** (review: pending 2026-11-10) **The Cleric brews and makes the magic blocks.** Brewing stands, blaze powder, eyes of ender, ender
   chests, end rods, beacons and for builders, besides his potions. Done when: GameTests for a brewing
   stand from a blaze rod and cobblestone, no blaze rod named on the shortage line; scene `cleric_crafts`.
 - [ ] **46.5** **The Beekeeper makes candles, the Leatherworker leather goods.** Candles (and dyed ones) and

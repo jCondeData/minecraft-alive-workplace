@@ -243,8 +243,8 @@ public class QaJobCraftListsGameTests {
 		single.put(Items.LADDER, "Hire a Carpenter to make Ladders");
 		single.put(Items.GLASS_PANE, "Hire a Mason to make Glass Panes");
 		single.put(Items.GLASS_BOTTLE, "Hire a Mason to make Glass Bottles");
-		single.put(Items.ENDER_EYE, "Hire a Librarian to make Eyes of Ender");
-		single.put(Items.END_ROD, "Hire a Librarian to make End Rods");
+		single.put(Items.ENDER_EYE, "Hire a Cleric to make Eyes of Ender");
+		single.put(Items.END_ROD, "Hire a Cleric to make End Rods");
 		single.put(Items.ENCHANTING_TABLE, "Hire a Librarian to make Enchanting Tables");
 		single.put(Items.CARTOGRAPHY_TABLE, "Hire a Librarian to make Cartography Tables");
 		single.put(Items.RED_BED, "Hire a Shepherd to make Red Beds");

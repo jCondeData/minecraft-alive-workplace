@@ -1369,6 +1369,7 @@
   "message.aliveworkplace.weaver.title": "Shepherd · %s woven",
   "message.aliveworkplace.florist_craft.title": "Florist · %s made for builders",
   "message.aliveworkplace.alchemist.title": "Cleric · %s potions brewed",
+  "message.aliveworkplace.cleric_craft.title": "Cleric · %s made for builders",
   "message.aliveworkplace.alchemist.title.one": "Cleric · %s potion brewed",
   "message.aliveworkplace.alchemist.state.idle": "nothing to brew",
   "message.aliveworkplace.alchemist.state.brewing": "brewing",

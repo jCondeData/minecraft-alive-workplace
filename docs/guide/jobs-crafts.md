@@ -82,7 +82,8 @@ Snacks, Poké Bait and Aprijuice too. The chef's food feeds the village (see [Vi
 *Full article: [Cleric](cleric.md).*
 
 **Clerics** (vanilla, at a brewing stand) brew healing, regeneration and strength potions for the guards, from the
-ingredients in their chest. Guards drink them in a fight. Hire one with a glass bottle.
+ingredients in their chest. Guards drink them in a fight. They also make the magic blocks a builder is waiting for:
+brewing stands, blaze powder, eyes of ender, ender chests, end rods and beacons. Hire one with a glass bottle.
 
 ## Librarian
 

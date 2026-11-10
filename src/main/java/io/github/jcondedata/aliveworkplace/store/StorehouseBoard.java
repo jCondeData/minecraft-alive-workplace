@@ -294,27 +294,30 @@ public final class StorehouseBoard {
 	}
 
 	/**
-	 * What a click that handed {@code given} over says. A request named to stand alone ("A pickaxe", "Seeds") is written
-	 * in its mid-sentence form and, for one item, without the count: "Gave a pickaxe to the Miner's chests", "Gave 12
-	 * seeds to the Farmer's chests", never "Gave 1 A pickaxe" (B1098). Other names read as before ("Gave 25 Cobblestone").
+	 * What a click that handed {@code given} over says. A request a job names itself ({@link Requests#NAMES}: "A pickaxe",
+	 * "a golden apple (or a healing potion)") has its own sentence: "Gave a pickaxe to the Miner's chests", "Gave a golden
+	 * apple (or a healing potion) to the Undertaker's chests", never "Gave 1 A pickaxe" or "Gave 1 a golden apple" (B1098,
+	 * B1108, B1109). An item's name reads as before ("Gave 25 Cobblestone").
 	 */
 	public static MutableComponent gaveMessage(Requests.Request request, int given) {
 		if (request.forBlock()) {
 			return Component.translatable("message.aliveworkplace.storehouse.gave_for", given, request.what(), job(request));
 		}
-		if (Requests.standsAlone(request.what())) {
-			Component what = Requests.inSentence(request.what());
-			return given == 1
-				? Component.translatable("message.aliveworkplace.storehouse.gave_one", what, job(request))
-				: Component.translatable("message.aliveworkplace.storehouse.gave", given, what, job(request));
+		String name = Requests.nameKey(request.what());
+		if (name != null) {
+			return io.github.jcondedata.aliveworkplace.work.Words.counted(name + ".gave", given, given, job(request));
 		}
 		return Component.translatable("message.aliveworkplace.storehouse.gave", given, request.what(), job(request));
 	}
 
-	/** What a click that handed nothing over says: "You don't have a pickaxe to give", not "You have no A pickaxe" (B1098). */
+	/**
+	 * What a click that handed nothing over says: "You don't have a pickaxe to give", never "You have no A pickaxe" or
+	 * "You have no a remedy" (B1098, B1108, B1109).
+	 */
 	public static MutableComponent noneMessage(Requests.Request request) {
-		if (Requests.standsAlone(request.what())) {
-			return Component.translatable("message.aliveworkplace.storehouse.none_named", Requests.inSentence(request.what()));
+		String name = Requests.nameKey(request.what());
+		if (name != null) {
+			return Component.translatable(name + ".none");
 		}
 		return Component.translatable("message.aliveworkplace.storehouse.none", request.what());
 	}

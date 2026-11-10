@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- The Storehouse board's click messages read as sentences for every request a job posts, the Nurse's, Undertaker's, Physician's and Composter's too: "Gave a remedy (honey, milk or a healing potion) to the Nurse's chests", "You don't have a golden apple (or a healing potion) to give", never "Gave 1 a ..." or "You have no a ..." (B1108, B1109).
 - The shop paid in CobbleDollars never charges a price its screen didn't show: an open shop screen redraws when the owner changes a price, and a Confirm pressed after a price change (up or down) takes nothing, says the new price and keeps the row gold at it for a second Confirm (B1107).
 
 ## 0.153.0 — 2026-11-09

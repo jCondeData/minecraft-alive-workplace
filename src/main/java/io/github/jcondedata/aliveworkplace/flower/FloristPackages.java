@@ -8,10 +8,14 @@ import net.minecraft.world.entity.ai.behavior.SetLookAndInteract;
 import net.minecraft.world.entity.ai.behavior.UpdateActivityFromSchedule;
 import net.minecraft.world.entity.npc.Villager;
 
-/** The Florist's WORK activity: grow flowers round the Flower Stand and fill the village's flower pots all shift. */
+/**
+ * The Florist's WORK activity: grow flowers round the Flower Stand and fill the village's flower pots all shift, and make
+ * her list for builders at the stand in between (46.3: pots, dyes, moss carpet; the two take turns).
+ */
 public final class FloristPackages {
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> work(float speed) {
 		return ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>of(
+			Pair.of(0, new io.github.jcondedata.aliveworkplace.craft.FloristCraftWork()),
 			Pair.of(0, new FloristWork()),
 			Pair.of(10, SetLookAndInteract.create(EntityType.PLAYER, 4)),
 			Pair.of(99, UpdateActivityFromSchedule.create())

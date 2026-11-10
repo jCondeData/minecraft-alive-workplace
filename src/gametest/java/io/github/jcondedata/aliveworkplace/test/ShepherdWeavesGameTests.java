@@ -69,8 +69,8 @@ public class ShepherdWeavesGameTests {
 			helper.assertTrue(CraftJobs.maker(level, item) == CraftJobs.Job.SHEPHERD, item + " is made by " + CraftJobs.maker(level, item));
 			helper.assertFalse(CraftJobs.makes(level, CraftJobs.Job.LEATHERWORKER, item), "the Leatherworker still makes " + item);
 		}
-		// the dyes stay the Florist's (her stand-in until 46.3), leather goods the Leatherworker's
-		helper.assertTrue(CraftJobs.maker(level, Items.BLUE_DYE) == CraftJobs.Job.LEATHERWORKER, "blue dye: " + CraftJobs.maker(level, Items.BLUE_DYE));
+		// the dyes stay the Florist's (her own since 46.3), leather goods the Leatherworker's
+		helper.assertTrue(CraftJobs.maker(level, Items.BLUE_DYE) == CraftJobs.Job.FLORIST, "blue dye: " + CraftJobs.maker(level, Items.BLUE_DYE));
 		helper.assertTrue(CraftJobs.maker(level, Items.ITEM_FRAME) == CraftJobs.Job.LEATHERWORKER, "item frame: " + CraftJobs.maker(level, Items.ITEM_FRAME));
 		helper.succeed();
 	}

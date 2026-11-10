@@ -72,7 +72,9 @@ In the showcase, Tomas's barrel arrives with his 16 cod and 5 salmon and the cot
 With Create installed, a Mechanical Crafter, Weighted Ejector, vault or depot arrives with its items once, and a
 belt of any length comes across whole, with the items on it, and runs at the new spot. A Fluid Tank or Item Vault
 built from several blocks arrives as one tank or vault with all its fluid or items, and a canceled move puts it back
-up as one, reachable through any of its blocks (B1135, B1136).
+up as one, reachable through any of its blocks (B1135, B1136). A Mechanical Arm turned with the building still takes
+from and puts on the same depots and belts: its targets turn with it, as on Create's own contraptions. A builder
+building a blueprint turned turns them the same way.
 
 ## How it works
 
@@ -171,7 +173,12 @@ data before any comes down, since taking one makes Create split the rest (a tank
 of the fluid lost, a vault's other block packed as a vault of its own). Its blocks still go up one by one with that
 data: put back where it stood (a cancel), each block's `LastKnownPos` matches and it is the old container again; at the
 new spot Create sees the position changed, frees each block and joins them again, gathering the contents on the new
-controller. `take` counts a joined block as still there whatever shape properties its neighbors gave it. Capture uses `MovePlan.thingsIn` too, so the plan includes outer-wall frames.
+controller. `take` counts a joined block as still there whatever shape properties its neighbors gave it. Some block
+entities keep positions relative to themselves in their data (a Create arm's `InteractionPoints`): after `put` loads the
+data, `build/TurnedBlockEntities` turns it with the building (B1137), and back again for data a canceled move packed at
+the new spot (the packed entry's `turned` flag); `MovePlan.place` and the builder's turned blueprints use it too.
+`compat/create` fills it with Create's `StructureTransform.apply`, which runs each block entity's own transform; without
+it the data goes in as saved, which is right for vanilla blocks. Capture uses `MovePlan.thingsIn` too, so the plan includes outer-wall frames.
 
 ## Items, blocks, jobs, commands
 
@@ -263,6 +270,8 @@ move whose fence reads as an unknown Cozy Home chair (the piece left out, `skipp
 `MoverFurnitureCompatTests` (1, compat suite): CobbleFurnies' chair, table and cabinet, Handcrafted's cupboard, shelf
 and side table, and a Sophisticated Storage chest and barrel (100 iron, 70 emeralds), filled through `ItemStores`,
 moved through a reload half way down: block for block, each store with exactly its items, nothing loose.
+`QaCreateMoverArm1110eCompatTests` (1, compat suite, B1137): a Mechanical Arm taking from a Depot to its west and
+putting on one to its north, moved a quarter turn, still aims at both depots.
 
 `QaBuildingSnapshot1109bGameTests` (4, the QA lane): a 7 × 9 room written to disk and read back, then rebuilt unturned
 and turned 90, 180 and 270 degrees, matches exactly, block for block: a double chest (still one, 54 slots), a named

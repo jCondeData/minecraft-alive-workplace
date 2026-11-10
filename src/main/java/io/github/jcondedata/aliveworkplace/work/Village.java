@@ -68,6 +68,9 @@ public final class Village {
 			|| job == ModVillagers.BERRY_BREEDER || job == ModVillagers.CAMP_COOK || job == ModVillagers.HABITAT_KEEPER || job == ModVillagers.GEM_GROWER || job == ModVillagers.VINTNER || job == ModVillagers.TAILOR || job == ModVillagers.PRINTER
 			|| job == VillagerProfession.TOOLSMITH || job == VillagerProfession.WEAPONSMITH || job == VillagerProfession.FLETCHER
 			|| job == VillagerProfession.SHEPHERD || job == VillagerProfession.BUTCHER || job == VillagerProfession.CARTOGRAPHER
+			// B1144: the Cleric makes builders' brewing stands and beacons (46.4) from his own chests too, and they're only
+			// offered to a builder as a village-mate's stash when his job takes part
+			|| job == VillagerProfession.CLERIC
 			|| Fields.isFarmer(villager) && Fields.hasField(villager)
 			|| Fishers.isFisherman(villager) && Fishers.isHired(villager);
 	}

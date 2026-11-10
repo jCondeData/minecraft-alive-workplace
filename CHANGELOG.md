@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Cleric uses the blaze rods and other makings kept in his own chests (the ones by his brewing stand) for a builder's brewing stand, ender chest or beacon. Before, the builder waited forever, "short of 1 Blaze Rod", with the rod sitting in the Cleric's chest; a Cleric making tonics now also takes their makings from the village's Storehouse (B1144).
 - With Create, the Mover moves a Fluid Tank or Item Vault built from several blocks as one: a two-tall tank arrives with all its water instead of leaving its bottom block behind with 8 of 10 buckets and an empty top block at the new spot, and a canceled move puts a two-block vault back up as one vault with all its items through either block, not as a full vault and an empty one (B1135, B1136).
 - A builder's "Hire a ..." line names countable things in the plural ("Hire a Tinkerer to make Minecarts", "Hire a Cleric to make Beacons"), not "Minecart"; a builder short of concrete with no Mason reads "Hire a Mason to make Red Concrete" instead of nothing; and the Storehouse names the Lumberjack for stripped logs instead of "No job makes or gathers this" (B1132, B1133, B1134).
 - With Create, a Mechanical Arm in a building the Mover turns as it moves it still takes from and puts on the same depots and belts: its targets turn with the building, as on Create's own contraptions, and a Builder building a blueprint turned turns them too. Before, the arm aimed at the wrong spots after the move and stopped moving items (B1137).

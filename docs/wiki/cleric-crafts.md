@@ -3,7 +3,7 @@
 Milestone 46, item 46.4 (owner, 2026-11-09: "the carpenter shouldn't build brewing stands"; each job crafts its own kind
 of thing). The Cleric makes the brewing stands, blaze powder, eyes of ender, ender chests, end rods and beacons builders
 wait for, and is no longer the Librarian's to stand in for. He still brews the guards' potions and the tonics.
-Roadmap items: 46.4
+Roadmap items: 46.4, B1144
 
 ## 1. What a player sees
 
@@ -79,4 +79,5 @@ to make Brewing Stands". Scene `cleric_crafts`.
 star and the missing blaze rod lines word for word, a Carpenter and a Nurse at a brewing stand never making a brewing
 stand (the line names the Cleric), the hire line for two of his things, the ender chest's steps (powder, eye, chest)
 with a save and reload between them, his brewing stand broken mid-job losing nothing, and his status ("Cleric · 1 made
-for builders", "making 1 Brewing Stand", "taking 1 Brewing Stand to the builder").
+for builders", "making 1 Brewing Stand", "taking 1 Brewing Stand to the builder"), and a blaze rod in his own chest making a builder's stand (B1144: the Cleric takes part
+in the village, `Village.takesPart`, so his chests are a stash the builder's requests draw on).

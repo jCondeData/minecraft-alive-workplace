@@ -116,3 +116,5 @@ hung with no wait; a glow item frame asked by its own name; the wait ending at `
 the next job; a job forever on it holding the build no longer than three waits; an older save without
 `decoration_wait_since` loading and finishing. Known gap: during the wait the "Hire a Leatherworker" line isn't shown
 (B1159).
+`QaBuilderDecorStore1110bGameTests` (QA of B1148): a frame in neither the bench's chest nor made by anyone but spare
+in the village Storehouse is fetched from there and hung, and the Storehouse is left without it.

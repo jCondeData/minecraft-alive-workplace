@@ -217,7 +217,7 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.ranch.HerderWork(), v -> !io.github.jcondedata.aliveworkplace.ranch.RanchWork.isBusy(v)));
 		} else if (profession == VillagerProfession.LEATHERWORKER) {
-			// Leatherworkers dye what the builders nearby are waiting for.
+			// Leatherworkers make the leather goods the builders nearby are waiting for (46.5: item frames, leads, armor).
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.craft.DyerWork(), io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
 		} else if (profession == VillagerProfession.CLERIC) {

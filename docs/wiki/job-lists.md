@@ -4,8 +4,9 @@ Milestone 46 (owner, 2026-11-09: "the carpenter shouldn't build brewing stands, 
 Every job that crafts for builders, stock orders and Wonders makes only its own kind of thing. 46.1 puts the lists in
 place; 46.2 taught the Shepherd to weave at his loom ([The Shepherd weaves](weaver.md)), 46.3 the Florist to make pots
 and dyes ([The Florist makes pots](florist-pots.md)), 46.4 the Cleric to make the magic blocks ([The Cleric makes the
-magic blocks](cleric-crafts.md)); 46.5 and 46.6 teach the Beekeeper to craft and bring the Glassblower.
-Roadmap items: 46.1, 46.2, 46.3, 46.4
+magic blocks](cleric-crafts.md)), 46.5 the Beekeeper to make candles ([Candles and leather goods](candles-leather.md));
+46.6 brings the Glassblower.
+Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5
 
 ## 1. What a player sees
 
@@ -18,8 +19,9 @@ Roadmap items: 46.1, 46.2, 46.3, 46.4
   terracotta and concrete need no furnace (he makes them at his bench).
 - The Tinkerer makes metal and redstone: his `tinkering` list plus rails, tripwire hooks, redstone torches, daylight
   detectors, copper bulbs, minecarts, chains and lanterns.
-- The Leatherworker makes leather goods: item frames, leads, leather, leather armor. He no longer takes "anything
-  colored": stained glass, terracotta and concrete are the Mason's.
+- The Leatherworker makes leather goods: item frames and glow item frames, leads, leather from rabbit hide, leather
+  armor. He no longer takes "anything colored": stained glass, terracotta and concrete are the Mason's, and since 46.5
+  candles the Beekeeper's.
 - The Librarian makes books, paper, bookshelves, lecterns, enchanting tables and cartography tables.
 - The Shepherd (since 46.2) weaves at his loom: wool from string, dyed wool, carpets, beds, banners, banner patterns and
   paintings ([The Shepherd weaves](weaver.md)).
@@ -27,10 +29,11 @@ Roadmap items: 46.1, 46.2, 46.3, 46.4
   ([The Florist makes pots](florist-pots.md)).
 - The Cleric (since 46.4) makes brewing stands, blaze powder, eyes of ender, ender chests, end rods and beacons at his
   brewing stand ([The Cleric makes the magic blocks](cleric-crafts.md)).
-- **For now (until 46.5 and 46.6):** the jobs that don't craft yet have a stand-in, the job that made the thing before:
-  - glass, panes, stained glass, tinted glass and bottles (the Glassblower's): the Mason, who fires glass already;
-  - candles, honeycomb blocks (the Beekeeper's): the Leatherworker.
-  So nothing that was made before became unmakable. As each job learns to craft, its list moves to it.
+- The Beekeeper (since 46.5) makes candles, colored candles and honeycomb blocks at her Apiary
+  ([Candles and leather goods](candles-leather.md)).
+- **For now (until 46.6):** the Glassblower, who isn't in the game yet, has a stand-in, the job that made the thing
+  before: glass, panes, stained glass, tinted glass and bottles are made by the Mason, who fires glass already. So
+  nothing that was made before became unmakable. As each job learns to craft, its list moves to it.
 - When nobody in the village makes a part a builder waits for, his line under "Short of" names the job to hire:
   "Hire a Carpenter to make Oak Stairs", "Hire a Cleric to make Brewing Stands" (the Librarian's until 46.4). Things of
   different jobs are grouped: "Hire a Carpenter to make Barrels; Hire a Tinkerer to make Lanterns". Only what no job
@@ -92,8 +95,8 @@ before carries on.
 ## 7. Known limits
 
 - The ingredient rule reads a modded item's first crafting recipe only, and the first item each ingredient accepts.
-- Until 46.5 and 46.6 the "Hire a ..." lines name the stand-in ("Hire a Leatherworker to make Candles"), not the job
-  whose list it is.
+- Until 46.6 the "Hire a ..." lines for glass name the stand-in ("Hire a Mason to make Glass Panes"), not the
+  Glassblower whose list it is.
 - The showcase scene is filmed on GitHub, not in this session.
 
 ## 8. Proof

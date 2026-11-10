@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
  * QA (lane E, 2026-11-10, run 1012), from 45.3's spec and the wiki (moving-buildings.md: "a belt of any length comes
  * across whole, with the items on it, and runs at the new spot"; a canceled move puts everything taken down back up where
  * it was; a save and reload in each stage loses nothing), verifying B1128's fix past its own test: the move called off
- * with the belt packed, a reload with the belt packed, two belts (one five long) in one building, and a sloped belt. Each
+ * with the belt packed, a reload with the belt packed, two belts (one five long) in one building, a sloped and a vertical belt. Each
  * checks every segment stands, the items on the belt, each segment's Controller naming where its controller now stands,
  * that the belt still takes an item, and that nothing lies loose. Helpers: QaCreateMoverContents1110eCompatTests.
  */
@@ -313,6 +313,49 @@ public class QaCreateMoverBelts1110fCompatTests implements FabricGameTest {
 						helper.assertTrue(shape.isEmpty(), "the sloped belt's shape at the new spot: " + shape);
 						helper.assertTrue(looseNow.isEmpty(), "loose after the move: " + looseNow);
 						helper.assertTrue(takes, "the moved sloped belt doesn't take an item on its middle segment");
+					} finally {
+						tidy(helper, s);
+					}
+					helper.succeed();
+				});
+			});
+		});
+	}
+
+	/**
+	 * A vertical belt (three segments straight up; a vertical belt carries no items): it comes across whole, still
+	 * upright (its facing turned with the building), every Controller remapped, and nothing loose.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1110f_belt_vertical"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1110f_belt_vertical")
+	public void aVerticalBeltComesAcrossWholeAndStillUpright(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		Belt up = new Belt(List.of(new BlockPos(5, 3, 5), new BlockPos(5, 4, 5), new BlockPos(5, 5, 5)), "east", "vertical");
+		lay(helper, up);
+		helper.runAfterDelay(3, () -> {
+			Setup s = setupAround(helper, "belt_vertical");
+			helper.runAfterDelay(2, () -> {
+				MoveSite site = work(level, s, x -> false);
+				MoveSite.Stage end = site.stage();
+				int skipped = site.skipped();
+				helper.runAfterDelay(5, () -> {
+					List<BlockPos> at = movedAll(s, up);
+					List<String> wrong = wrong(level, up, at, Items.IRON_INGOT, 0);
+					List<String> shape = new ArrayList<>();
+					for (int i = 0; i < at.size(); i++) {
+						BlockState there = level.getBlockState(at.get(i));
+						BlockState want = up.state(i).rotate(Rotation.CLOCKWISE_90);
+						if (there.is(block("create:belt")) && !there.equals(want)) {
+							shape.add("segment " + i + " is " + there + ", not " + want);
+						}
+					}
+					Map<String, Integer> looseNow = loose(helper);
+					try {
+						helper.assertTrue(end == MoveSite.Stage.DONE && skipped == 0, "the move ended " + end + ", skipped " + skipped);
+						helper.assertTrue(wrong.isEmpty(), "the vertical belt at the new spot: " + wrong);
+						helper.assertTrue(shape.isEmpty(), "the vertical belt's shape at the new spot: " + shape);
+						helper.assertTrue(looseNow.isEmpty(), "loose after the move: " + looseNow);
 					} finally {
 						tidy(helper, s);
 					}

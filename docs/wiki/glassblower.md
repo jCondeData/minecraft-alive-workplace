@@ -19,9 +19,13 @@ Roadmap items: 46.6
   - Glass panes from sand, the glass fired first (a builder with sand and coal gets panes).
   - Stained glass and stained panes with a dye: red stained glass from eight sand, a coal and a red dye.
   - Tinted glass from glass and four amethyst shards; glass bottles for the Storehouse's stock orders.
-- Over his head while making something: "Glassblower · 3 made" and what he's making; the kiln crackles and flames at its
+- Over his head while making something: "Glassblower · 3 made" (a count of things made: sixteen panes count sixteen)
+  and what he's making; the kiln crackles and flames at its
   mouth while he works.
-- With sand but no fuel: "Can't be made yet: short of 1 Coal to make 1 Glass Pane". A missing dye is named as the dye.
+- With sand but no fuel: "Can't be made yet: short of 1 Coal to make 1 Glass Pane". Nine sand on one coal is a coal
+  short too (the ninth glass needs a second one). A missing dye is named as the dye ("short of 1 Red Dye to make 1 Red
+  Stained Glass"), and a missing shard as the shard ("short of 1 Amethyst Shard to make 1 Tinted Glass").
+- His Glass Kiln broken mid-job loses nothing: put back, the panes still come. A nitwit or a child never takes a kiln.
 - With no Glassblower nearby: "Hire a Glassblower to make Glass Panes" (it said "Hire a Mason" before). The Storehouse's
   board says "Made by: the Glassblower (name)" or "Hire a Glassblower to make it".
 - The **Glassblower's Workshop** in the Blueprint Table (13 x 12 x 11, one tier): a brick glasshouse in a spruce frame
@@ -92,3 +96,9 @@ order; no fuel named on the line word for word; no Glassblower ("Hire a Glassblo
 builder taking nothing); saved and loaded mid-job; a jobless villager by a furnace stays jobless while one by a Glass
 Kiln becomes a Glassblower; the kiln's recipe, name and creative tab; the workshop in the Blueprint Table, its size,
 its one kiln and no furnace, on the map, and in two Steward rules. Scene `glassblower`.
+
+`QaJobCrafts1110cGameTests` (QA, from the spec): eight sand on exactly one coal (the spare coal left), nine sand on one
+coal (not built, no sand lost, the line one coal short), a blue stained glass pane from sand, coal and a dye, the
+missing red dye and the missing amethyst shard named word for word with nothing taken, his status title, the kiln
+broken mid-job and put back (the panes still come), saved and loaded between the glass and the stained glass, a nitwit,
+a child and a working Mason leaving a free kiln alone, and the kiln dropping itself when mined.

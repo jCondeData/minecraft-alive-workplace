@@ -20,7 +20,9 @@ Roadmap items: 46.4, B1144
   potion to a guard.
 - A missing blaze rod is named on the builder's line: "Can't be made yet: short of 1 Blaze Rod to make 1 Brewing
   Stand". Blaze rods come from the Nether; no job makes them. A beacon short of its star reads "Can't be made yet: short
-  of 1 Nether Star to make 1 Beacon", and nothing is taken from the chest meanwhile.
+  of 1 Nether Star to make 1 Beacon", and nothing is taken from the chest meanwhile; an ender chest one obsidian short
+  reads "Can't be made yet: short of 1 Obsidian to make 1 Ender Chest". Blaze powder already at hand is used as it is:
+  no blaze rod is needed for the eye of ender then.
 - A builder with no Cleric nearby reads "Hire a Cleric to make Brewing Stands"; the Storehouse's board says "Made by:
   the Cleric (name)" or "Hire a Cleric to make it".
 - A Librarian no longer makes these, even with the makings at hand; he keeps his books, bookshelves, lecterns,
@@ -81,3 +83,6 @@ stand (the line names the Cleric), the hire line for two of his things, the ende
 with a save and reload between them, his brewing stand broken mid-job losing nothing, and his status ("Cleric · 1 made
 for builders", "making 1 Brewing Stand", "taking 1 Brewing Stand to the builder"), and a blaze rod in his own chest making a builder's stand (B1144: the Cleric takes part
 in the village, `Village.takesPart`, so his chests are a stash the builder's requests draw on).
+
+`QaJobCrafts1110cGameTests` (QA): an ender chest one obsidian short (nothing taken, the line word for word), and an
+ender chest made from blaze powder at hand with no blaze rod.

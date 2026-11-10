@@ -233,7 +233,7 @@ In `aliveworkplace_threats` (per dimension), all new and empty by default, so an
 
 | Key | Holds | Default |
 |---|---|---|
-| `sieges` | per hall, the siege laid to it: `began`, `dawn` (the day time the gates open again), `over`, `breached`, `breach` (the gate block the rams go for), `out` (the side the raiders came from), `gates` (the breach's blocks in breaking order: `pos`, `hp`, `state` standing, broken or gone, `lane`, `high`, `dropped`), `portcullis` (every bar dropped), and since 32.5 `ladders` (every rung set, to take away) and `laddered` (the players were told) | none; `ladders` empty and `laddered` false in a siege saved before 32.5 |
+| `sieges` | per hall, the siege laid to it: `began`, `dawn` (the day time the gates open again), `over`, `breached`, `breach` (the gate block the rams go for), `out` (the side the raiders came from), `gates` (the breach's blocks in breaking order: `pos`, `hp`, `state` standing, broken or gone, `lane`, `high`, `dropped`), `portcullis` (every bar dropped), and since 32.5 `ladders` (every rung set, to take away) and `laddered` (the players were told), and since B1126 `over_by_ladder` (the raiders who got over a wall by a ladder, by id) | none; `ladders` empty and `laddered` false in a siege saved before 32.5; nobody over in one saved before B1126 (a raider inside is counted over again once the ladders see it past the wall) |
 | `broken` | per hall, the gate blocks rams broke that wait for a builder | none |
 | `damaged` (32.16a) | every builder's block a threat took (a gate a ram broke, a block a village fire burned) that no builder has put back yet, as packed positions | none |
 | in each of `sieges` (32.6) | `hp_factor` (what gate hit points were multiplied by), `came`, `fled`, `to_guards`, `to_players`, `to_others`, `kills` (guard, count, name), `players` (who killed a raider) | 1, 0, false, 0, 0, 0, none, none |
@@ -449,3 +449,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   within 600 ticks and nothing drops (2 of 2). Failing (B966): at
   the Palisade Gate alone the ram never strikes the gate put back in the breach and nobody gets in,
   QaSiegeRegate1105dGameTests on tests/siege-regate-1105d.
+- Raiders over the wall through saves (QA, lane D, 2026-11-10, B1126): `QaLadderOverSaves1110dGameTests` (4, each 7 of 7
+  runs): after a save and load only the zombie inside is let go and one still outside is sent to the standing ladder; a
+  siege saved without its over_by_ladder list loads with nobody over and goes on (the zombie inside counted over again within
+  about 45 ticks, then saved); a new siege at the same village after a call-off remembers nobody over; two saves in a
+  row keep the set, and one over the wall that died breaks nothing (every rung gone at the call-off).

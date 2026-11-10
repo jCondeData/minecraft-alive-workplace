@@ -63,6 +63,11 @@ SCENES = [
       "the Journeyman Librarian was shown the price, then paid for and retrained as a Novice Builder at the Blueprint Table", 40,
       [("01_librarian", "A Journeyman Librarian by a Blueprint Table"), ("02_offer", "First click: the price"),
        ("03_builder", "Second click: paid, now a Builder")]),
+    # Each job's own list (ROADMAP 46.1): the Storehouse board names who gathers or makes each asked-for thing
+    S("job_lists", "Crafter", "Who makes it: the Storehouse board's new lines",
+      "the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Librarian for the brewing stands", 30,
+      [("01_logs_gathered_by_the_lumberjack", "Oak logs: gathered by the Lumberjack (Bo)"),
+       ("02_hire_a_librarian_for_brewing_stands", "Brewing stands: hire a Librarian to make them")]),
     # Items (ROADMAP 21.1b): the owner's picked icons in a chest and in hand
     S("items", "Items", "Every item's icon", "every item's icon shows in a chest, in the hotbar and in hand", 50,
       [("01_items_chest", "All 14 in a chest"), ("03_hand_blueprint", "Blueprint in hand"),
@@ -572,6 +577,11 @@ SCENES = [
       [("01_move_page", "The Move page: the cottage, with its Move button"),
        ("02_new_spot_fits", "The picker: the map, the new spot to the west, \"This spot fits\""),
        ("03_rotated", "Rotated a quarter: its front faces east")]),
+    S("move_refused", "Village Hall", "A move refused: builders are still working on the building",
+      "the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "
+      "was refused, no picker opened, and the action bar said why in red", 60,
+      [("01_move_page", "The Move page: the cottage, with its Move button"),
+       ("02_refused", "Refused: \"builders are still working on it; move it once they're done\"")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "

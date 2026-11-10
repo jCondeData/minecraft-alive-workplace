@@ -76,6 +76,7 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 - [Quarry](quarry-build.md): the Miner's pit that grows back.
 - [Move Tutor](move-tutor.md): teaches your Pokémon moves (Cobblemon).
 - [Mover](mover.md): moves a finished building to a new spot.
+- [Moving buildings](moving-buildings.md): which buildings can be moved, and where to.
 - [Netherworker](netherworker.md): trips to the Nether.
 - [Nurse](nurse.md): heals you and cures the sick.
 - [Orchard Keeper](orchard-keeper.md): picks fruit.

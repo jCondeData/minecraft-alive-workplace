@@ -8,7 +8,7 @@ Workstation: Stonecutter (vanilla: a jobless villager takes one by themselves)
 Pick it with: a clay ball
 Works for: the builders nearby, and the Storehouse's stock orders
 Needs: stone; a furnace by the stonecutter and coal or charcoal for fired blocks
-Makes: stone bricks, stairs, slabs and walls; gravel, sand, glass, smooth stone, terracotta, bricks
+Makes: stone bricks, stairs, slabs and walls; gravel, sand, glass, glass panes, stained glass, smooth stone, terracotta, dyed terracotta, concrete, bricks
 Pokémon helpers: Fighting, Rock, Steel
 Build: the Mason's Yard
 categories: Jobs, Builder
@@ -31,6 +31,10 @@ too:
 - **Crushing:** cobblestone into gravel, and gravel into sand, at the stonecutter.
 - **Firing**, with a **furnace by the stonecutter**: sand into glass, and stone, smooth stone, terracotta and bricks
   from clay. Each coal or charcoal fires eight.
+- **At the bench**, no furnace needed: **concrete** (they mix the powder from sand, gravel and dye and set it), **dyed
+  terracotta**, and glass panes and stained glass from the glass they have.
+
+Stone, bricks, clay and glass are the mason's work, so the carpenter and the dyer leave them alone.
 
 Over their head: how many blocks they've cut, and what they're working on.
 

@@ -16,12 +16,22 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- A raider who climbed over a village wall by a siege ladder is no longer handed the ladder again after a server restart: who got over the wall is now saved with the siege, so after the restart it doesn't walk back to the wall's inside to "climb" it (B1126).
+- The Storehouse board's click messages read as sentences for every request a job posts, the Nurse's, Undertaker's, Physician's and Composter's too: "Gave a remedy (honey, milk or a healing potion) to the Nurse's chests", "You don't have a golden apple (or a healing potion) to give", never "Gave 1 a ..." or "You have no a ..." (B1108, B1109).
+- The shop paid in CobbleDollars never charges a price its screen didn't show: an open shop screen redraws when the owner changes a price, and a Confirm pressed after a price change (up or down) takes nothing, says the new price and keeps the row gold at it for a second Confirm (B1107).
+### Changed
+
+- Each crafting job makes only its own kind of thing for builders (46.1): the Carpenter wooden things (never a brewing stand, flower pot, banner, stained glass or lantern), the Mason stone, bricks, terracotta and concrete (dyed terracotta and concrete without a furnace), the Tinkerer metal and redstone, the Leatherworker leather goods, the Librarian books and tables. The lists are item tags, `aliveworkplace:crafts/<job>`, so packs can change them, and a modded item in none goes by its recipe. Until the Shepherd, Florist, Cleric, Beekeeper and Glassblower craft, the job that made their things before still does. A builder short of something nobody here makes reads "Hire a Carpenter to make Oak Stairs", and the Storehouse's board says who makes or gathers each thing ("Made by: the Carpenter (Ada)", "Hire a Miner to dig it", "No job makes or gathers this").
 ### Added
 
+- Moving buildings is safe on a shared server: only the village's own buildings can be moved, never one in another player's protected village; the Village Hall, a Wonder and a building the builders are still working on are refused with the reason; a new **Move buildings** setting (on) turns moving off, and a player guide page explains it all
 - A moved building's belongings arrive as they were: every chest, barrel, shulker box and modded store (Sophisticated Storage, furniture cabinets and cupboards) with exactly its items, nothing dropped or doubled, signs with their words, banners, item frames (one hanging on an outer wall too) and armor stands as the village left them, and CobbleFurnies, Handcrafted and Cozy Home furniture; a piece of a furniture mod removed mid-move is left out and the rest still moves (45.5).
 
 ### Fixed
 
+- Moving a building no longer breaks a Mover's Crate standing where the building goes: the Move page refuses a spot over one ("a Mover's Crate stands there"), and a move confirmed before never breaks it
 - A Mover whose own Mover's Crate stands inside the building he's moving no longer packs it with the rest and then waits forever for it: the crate stays where it stands and the move finishes (a move already stuck this way carries on, the crate put back first).
 
 ## 0.153.0 — 2026-11-09

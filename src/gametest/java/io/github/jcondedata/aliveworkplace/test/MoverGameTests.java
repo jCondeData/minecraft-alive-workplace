@@ -464,6 +464,35 @@ public class MoverGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B1129: a move confirmed with the house's new spot over the Mover's own crate (it stays where it stood, B1120). The
+	 * house going up never breaks it: the one wall block that would stand there is skipped, his crate stays his
+	 * workstation, nothing is dropped and the move ends.
+	 */
+	//$ gametest_batch AREA '"moverCrateInTheWay"'
+	@GameTest(template = AREA, batch = "moverCrateInTheWay")
+	public void theHouseGoingUpNeverBreaksHisCrate(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Setup s = setup(helper, "cratetheway");
+		crateInside(helper, s);
+		// two blocks east, not turned: the west wall's plank at (2, 3, 6) lands where his crate stands (6, 3, 6)
+		BlockPos to = helper.absolutePos(new BlockPos(6, 2, 2));
+		PendingMoves.Move pending = PendingMoves.get(level).forBuilding(s.from()).orElseThrow();
+		PendingMoves.get(level).remove(s.from());
+		PendingMoves.get(level).put(new PendingMoves.Move(pending.hall(), pending.from(), pending.structure(), to, Rotation.NONE, null));
+		helper.runAfterDelay(2, () -> {
+			MoveSite site = work(level, s, x -> false);
+			helper.assertTrue(site.stage() == MoveSite.Stage.DONE && site.waiting() == null && !site.canceled(),
+				"the move ended " + site.stage() + ", waiting " + site.waiting());
+			helper.assertTrue(level.getBlockState(helper.absolutePos(OWN_CRATE)).is(ModBlocks.MOVERS_CRATE), "the house going up broke his crate");
+			helper.assertTrue(MoverWork.hasCrate(level, s.mover()), "the Mover lost his crate");
+			helper.assertTrue(site.skipped() == 1, "skipped " + site.skipped() + ", not just the plank where his crate stands");
+			helper.assertTrue(level.getBlockState(helper.absolutePos(new BlockPos(6, 3, 2))).is(Blocks.OAK_PLANKS), "the rest of the west wall isn't up");
+			helper.assertTrue(loose(level, helper) == 0, "something was dropped");
+			helper.succeed();
+		});
+	}
+
+	/**
 	 * B1120 on a save from before the fix: his crate already packed half way down (he was stuck waiting). The next swing
 	 * puts it back where it stood and the move ends as above.
 	 */

@@ -73,6 +73,11 @@ public final class WorkplaceConfig {
 	 * idle, and moves wait.
 	 */
 	public boolean movers = true;
+	/**
+	 * Whether players may move the village's buildings on the Hall's Move page (ROADMAP 45.6). Off: the page refuses every
+	 * building ("Moving buildings is switched off on this server"); a move already confirmed still goes ahead.
+	 */
+	public boolean moveBuildings = true;
 	/** Blocks that grow back in a Quarry build's pit in a Minecraft day (0: none). */
 	public int quarryRegrowth = 100;
 	/** A village takes only so many fishermen (ROADMAP 26.13: storage barrels made most villagers fishermen). Off: vanilla. */
@@ -1054,6 +1059,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.ENABLED = quarryBuild;
 		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.ENABLED = villageWaystones;
 		io.github.jcondedata.aliveworkplace.move.MoverWork.ENABLED = movers;
+		io.github.jcondedata.aliveworkplace.move.MoveRules.ENABLED = moveBuildings;
 		io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.PER_DAY = quarryRegrowth;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.BASE = fishermenPerVillage;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.PER_VILLAGERS = villagersPerFisherman;

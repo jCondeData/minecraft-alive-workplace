@@ -79,6 +79,12 @@ public class TinkererWork extends CrafterWork {
 		return item.builtInRegistryHolder().is(TINKERING);
 	}
 
+	/** 46.1: the Tinkerer's own list ({@code aliveworkplace:crafts/tinkerer}, which holds {@code tinkering}), ingots by recipe. */
+	@Override
+	protected boolean wants(ServerLevel level, Item item) {
+		return CraftJobs.makes(level, CraftJobs.Job.TINKERER, item);
+	}
+
 	/** Crafted from what's there if it can be; else with ore fired first (and the fuel for it). */
 	@Nullable
 	@Override

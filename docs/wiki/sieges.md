@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085, B1126
 
 ## What a player sees
 
@@ -146,7 +146,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   - Every rung is recorded in the siege's saved data before anything else happens to it. Each tick the ladders are
     checked against the world: a rung someone took, and every rung above it, comes off the list and is set again.
     `Ladders.takeAway` runs when the raid ends and again when the siege lifts, and works from the saved list alone, so
-    ladders standing when the server stopped go too.
+    ladders standing when the server stopped go too. The raiders who got over a wall by a ladder are saved with the
+    siege as well (`over_by_ladder`, B1126), so after a restart one already inside isn't handed the ladder again.
 - **Battle stations** (`guard/BattleStations`, 32.6) run beside the director: one watch a siege, every 20 ticks in
   a tick of its own, sending at most 4 guards on their way a tick. A new siege gets its first watch at once: on the
   next tick, or within the tick it began if an archer of the village would fight before then (`BattleStations.postNow`), so no

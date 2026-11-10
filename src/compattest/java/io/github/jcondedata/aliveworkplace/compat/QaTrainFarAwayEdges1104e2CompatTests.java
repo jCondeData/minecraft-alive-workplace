@@ -359,7 +359,7 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 						}
 						startedAt = tick;
 					} else if (tick > 1200) {
-						end("setup: no village train was put together in 1200 ticks");
+						end("setup: no village train was put together in 1200 ticks: " + why());
 					}
 					return;
 				}
@@ -379,6 +379,47 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 					end(result);
 				}
 			});
+		}
+
+		/**
+		 * B1125: why no train was put together, for the setup's failure: each station as Create knows it, whether they're
+		 * on one network, whether the train's blocks stand (or have room), every train with the pair's owner, who would
+		 * drive it, and any open site of the hall's.
+		 */
+		String why() {
+			StringBuilder out = new StringBuilder();
+			for (BlockPos hall : List.of(l.near, l.far)) {
+				out.append(hall.equals(l.near) ? "near" : "far").append(" hall ").append(hall.toShortString()).append(" loaded ").append(level.isLoaded(hall))
+					.append(", stations ").append(data.stations(hall)).append("; ");
+			}
+			for (BlockPos pos : List.of(l.nearStation, l.farStation)) {
+				out.append(pos.equals(l.nearStation) ? "near" : "far").append(" station ").append(pos.toShortString()).append(": ");
+				if (!(level.getBlockEntity(pos) instanceof StationBlockEntity be)) {
+					out.append("no station block (").append(level.getBlockState(pos)).append("); ");
+					continue;
+				}
+				var station = be.getStation();
+				out.append("track ").append(be.edgePoint.hasValidTrack()).append(", ")
+					.append(station == null ? "unknown to Create" : "'" + station.name + "', present train "
+						+ (station.getPresentTrain() == null ? "-" : station.getPresentTrain().id + " owner " + station.getPresentTrain().owner))
+					.append("; ");
+			}
+			BlockPos builds = CaravanTrains.first(l.near, l.far) ? l.nearStation : l.farStation;
+			BlockPos other = builds.equals(l.nearStation) ? l.farStation : l.nearStation;
+			CaravanTrains.Railway rw = CreateTrainCompatTests.railway();
+			out.append("linked ").append(rw.linked(level, builds, other)).append(", built ").append(rw.built(level, builds, other))
+				.append(", room ").append(rw.train(level, builds, other) != null).append(", owner's trains [");
+			for (Train train : Create.RAILWAYS.trains.values()) {
+				if (owner.equals(train.owner)) {
+					out.append(train.id).append(" invalid ").append(train.invalid).append(" derailed ").append(train.derailed).append(' ');
+				}
+			}
+			Villager driver = CaravanTrains.conductorFor(level, builds);
+			out.append("], driver ").append(driver == null ? "none" : driver.blockPosition().toShortString())
+				.append(", open sites ").append(io.github.jcondedata.aliveworkplace.city.Roads.openSegments(level, l.near).stream()
+					.map(s -> s.structure().toString()).toList())
+				.append(", trains on the railway ").append(Create.RAILWAYS.trains.size());
+			return out.toString();
 		}
 
 		/** A name the stop must not follow before the far village has unloaded (else the case tests nothing far away). */

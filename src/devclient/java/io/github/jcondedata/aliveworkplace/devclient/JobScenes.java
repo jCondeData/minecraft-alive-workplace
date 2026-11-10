@@ -422,6 +422,21 @@ final class JobScenes {
 	/** The bandit_king scene's front: the ground before the fort's gate, where the banners fly and the allies stand. */
 	private static final BlockPos BANDIT_KING_FRONT = new BlockPos(0, -60, -2);
 
+	/** job_lists (46.1): the scene's two builders, one asking for sixteen oak logs, the other for two brewing stands. */
+	private static final Villager[] JOB_LISTS_ASKERS = new Villager[2];
+
+	private static void jobListsAsk() {
+		Item[] wants = {Items.OAK_LOG, Items.BREWING_STAND};
+		int[] counts = {16, 2};
+		for (int i = 0; i < 2; i++) {
+			Villager v = JOB_LISTS_ASKERS[i];
+			if (v != null) {
+				io.github.jcondedata.aliveworkplace.work.Requests.post(v, new ItemStack(wants[i]), counts[i], wants[i].getDescription(),
+					new io.github.jcondedata.aliveworkplace.work.Requests.ExactItem(wants[i]));
+			}
+		}
+	}
+
 	/** The fort's men hold still for the camera. */
 	private static void stillFortMen(ServerLevel level) {
 		for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
@@ -4897,6 +4912,44 @@ final class JobScenes {
 				&& subject.getVillagerData().getLevel() == 1
 				&& subject.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(STATION)).orElse(false)));
+		// ROADMAP 46.1: the Storehouse's board names who gathers or makes each thing a worker asks for, else the job to hire
+		SCREENS.put("job_lists", new Screen("the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Librarian for the brewing stands",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				place(level, STATION.east(3), io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE);
+				for (int i = 0; i < 2; i++) {
+					BlockPos bench = STATION.west(2 * i);
+					place(level, bench, io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH);
+					Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+					builder.setNoAi(true);
+					io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+					JOB_LISTS_ASKERS[i] = builder;
+				}
+				Villager bo = EntityType.VILLAGER.spawn(level, STATION.east(2).south(), MobSpawnType.COMMAND);
+				bo.setNoAi(true);
+				bo.setVillagerData(bo.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK));
+				bo.setCustomName(net.minecraft.network.chat.Component.literal("Bo"));
+				jobListsAsk();
+			},
+			List.of(new Step("01_logs_gathered_by_the_lumberjack", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST, 6,
+					(level, player) -> {
+						jobListsAsk();
+						io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(player, STATION.east(3));
+					}, 30),
+				new Step("02_hire_a_librarian_for_brewing_stands", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST + 1, 6, null, 20)),
+			(level, player) -> {
+				if (!(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu)) {
+					return false;
+				}
+				StringBuilder lore = new StringBuilder();
+				for (int i = 0; i < io.github.jcondedata.aliveworkplace.work.ChoiceMenu.SIZE; i++) {
+					var lines = menu.icon(i).get(net.minecraft.core.component.DataComponents.LORE);
+					if (lines != null) {
+						lines.lines().forEach(l -> lore.append(l.getString()).append('|'));
+					}
+				}
+				return lore.indexOf("Gathered by: the Lumberjack (Bo)") >= 0 && lore.indexOf("Hire a Librarian to make it") >= 0;
+			}));
 		SCREENS.put("daycare", new Screen("the daycare screen opened with a Charmander boarding", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				subject = picked(level, player, STATION, Blocks.SMOKER, Items.SADDLE);
@@ -5778,6 +5831,41 @@ final class JobScenes {
 					}
 				}, 60)),
 			(level, player) -> io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isPresent()));
+		// A refused move (ROADMAP 45.6): the same cottage with builders still working on it (an upgrade's site open on it). Its
+		// Move button is refused: no picker opens, and the reason shows in red on the action bar (the hall closed so it shows).
+		SCREENS.put("move_refused", new Screen("the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "
+			+ "was refused, no picker opened, and the action bar said why in red",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos cottage = STATION.offset(-8, 0, -15);
+				level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, cottage, cottage,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), cottage,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, player.getUUID());
+				BuildSiteManager.get(level).create(player.getUUID(), player.getGameProfile().getName(), StarterBlueprints.STARTER_COTTAGE.id(), placement);
+			},
+			List.of(new Step("01_move_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.MovePage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.BRICKS),
+							"the cottage listed on the Move page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("02_refused", 0, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isEmpty(), "no picker opened on the cottage");
+						Component why = io.github.jcondedata.aliveworkplace.move.MoveRules.refusal(level, STATION, STATION.offset(-8, 0, -15), player);
+						Showcase.check(why != null && why.getString().equals(Component.translatable("message.aliveworkplace.move.refused.building").getString()),
+							"refused because builders are working on it: " + (why == null ? null : why.getString()));
+						player.closeContainer(); // the action bar's red line shows over the world
+					}
+				}, 10)),
+			(level, player) -> io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isEmpty()));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".

@@ -26,8 +26,17 @@ public final class JobShortages {
 	/** At most this many things are named on the line. */
 	static final int SHOWN = 2;
 
-	/** A job's note about one thing: when it was made and what's short (null: a job can make it, or is making it). */
-	private record Note(long at, @Nullable Component lack) {
+	/** At most this many things are named as having nowhere to go (B1112: a full Storehouse stalls a whole list). */
+	static final int FULL_SHOWN = 4;
+
+	/**
+	 * A job's note about one thing: when it was made and what's short (null: a job can make it, or is making it), or
+	 * {@code full}: a job could make it, but the chests the builder takes from have no room for it (B1111/B1112).
+	 */
+	private record Note(long at, @Nullable Component lack, boolean full) {
+		Note(long at, @Nullable Component lack) {
+			this(at, lack, false);
+		}
 	}
 
 	private static final Map<UUID, Map<Item, Note>> NOTES = new HashMap<>();
@@ -52,6 +61,29 @@ public final class JobShortages {
 			if (old == null || old.lack() != null || now - old.at() > FRESH_TICKS) {
 				notes.put(item, new Note(now, lack)); // a job that can make it this round wins over one short of something
 			}
+		}
+	}
+
+	/**
+	 * A job could make {@code item} for {@code site} but every store the builder takes from is full (B1111/B1112): made,
+	 * it would have nowhere to go. Like {@link #lacks}, a job that can make it this round wins.
+	 */
+	public static void full(UUID site, Item item, long now) {
+		synchronized (NOTES) {
+			Map<Item, Note> notes = NOTES.computeIfAbsent(site, k -> new HashMap<>());
+			Note old = notes.get(item);
+			if (old == null || old.lack() != null || old.full() || now - old.at() > FRESH_TICKS) {
+				notes.put(item, new Note(now, null, true));
+			}
+		}
+	}
+
+	/** Whether a job could make {@code item} for {@code site} lately but found no room for it (B1111/B1112). */
+	public static boolean fullFor(UUID site, Item item, long now) {
+		synchronized (NOTES) {
+			Map<Item, Note> notes = NOTES.get(site);
+			Note note = notes == null ? null : notes.get(item);
+			return note != null && note.full() && now - note.at() <= FRESH_TICKS;
 		}
 	}
 
@@ -97,15 +129,33 @@ public final class JobShortages {
 		}
 		List<Component> lacks = new ArrayList<>();
 		List<Item> nobody = new ArrayList<>();
+		List<Item> full = new ArrayList<>();
 		List<Map.Entry<Item, Integer>> sorted = new ArrayList<>(missing.entrySet());
 		sorted.sort(Map.Entry.<Item, Integer>comparingByValue().reversed());
 		for (Map.Entry<Item, Integer> e : sorted) {
 			Component lack = lackOf(site, e.getKey(), now);
 			if (lack != null) {
 				lacks.add(lack);
+			} else if (fullFor(site, e.getKey(), now)) {
+				full.add(e.getKey());
 			} else if (!lookedAt(site, e.getKey(), now) && now - waitingSince >= FRESH_TICKS && crafted(level, e.getKey())) {
 				nobody.add(e.getKey());
 			}
+		}
+		// B1111/B1112: what could be made but has nowhere to go comes first: it's the one thing the player can fix at once
+		MutableComponent fullLine = null;
+		if (!full.isEmpty()) {
+			MutableComponent list = Component.empty();
+			for (int i = 0; i < Math.min(FULL_SHOWN, full.size()); i++) {
+				if (i > 0) {
+					list.append(", ");
+				}
+				list.append(full.get(i).getDescription());
+			}
+			if (full.size() > FULL_SHOWN) {
+				list.append(Component.translatable("message.aliveworkplace.status.and_more", full.size() - FULL_SHOWN));
+			}
+			fullLine = Component.translatable("message.aliveworkplace.job_chain.store_full", list);
 		}
 		if (!lacks.isEmpty()) {
 			MutableComponent list = Component.empty();
@@ -115,7 +165,11 @@ public final class JobShortages {
 				}
 				list.append(lacks.get(i));
 			}
-			return Component.translatable("message.aliveworkplace.job_chain.cant_make", list);
+			Component cant = Component.translatable("message.aliveworkplace.job_chain.cant_make", list);
+			return fullLine == null ? cant : fullLine.append(". ").append(cant);
+		}
+		if (fullLine != null) {
+			return fullLine;
 		}
 		if (!nobody.isEmpty()) {
 			MutableComponent list = Component.empty();

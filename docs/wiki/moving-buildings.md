@@ -54,7 +54,8 @@ spot no building covers gives no plan.
 
 A plan can be turned a quarter, a half or three quarters: stairs, doors and beds (both halves), chests, furnaces and
 other facing blocks, standing signs and hanging frames all turn with it, and the lowest corner stays the lowest corner.
-It saves as NBT with a version (a newer or broken plan loads as none), so a move can be saved mid-way.
+It saves as NBT with a version (a plan from a newer version, or one with no version or size, loads as none; a block whose
+state is missing from the plan's palette is left out), so a move can be saved mid-way.
 
 **The fit check (45.2).** `move/MoveFit.check` takes the spot's middle and the turned size: the footprint's four corners
 must be inside the village (`VillageHalls.contains`), its footprint clear of the hall and of every other finished
@@ -142,6 +143,16 @@ half way (whoever broke it has it, not put up again, nothing doubled); called of
 (everything back, the new spot empty); two Movers sharing one site; his crate broken half way down (he waits, says why,
 and finishes once it's back); config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
 doesn't see the crate).
+
+`QaBuildingSnapshot1109bGameTests` (4, the QA lane): a 7 × 9 room written to disk and read back, then rebuilt unturned
+and turned 90, 180 and 270 degrees, matches exactly, block for block: a double chest (still one, 54 slots), a named
+chest, an empty chest (still empty), a barrel, a shulker box and a furnace with all three slots, slot for slot; a sign's
+front and back text and wax, a wall sign, a wall banner's patterns in order, a lectern's book; an open right-hinged
+door, a top trapdoor, upside-down stairs, a sideways log, a bed, a lever and a wall torch, all turned; an item frame
+(its item and its turn), a two-wide painting and an armor stand in full gear, turned and looking the turned way, as
+new entities beside the originals. Capturing twice changes nothing in the room (every block, its data and every
+entity) and gives the same plan. Only frames, paintings and stands are its things (not a cow, a dropped item, a
+minecart or a visitor), and its residents are the villagers whose bed or workstation is in it, wherever they stand.
 
 ## Known limits
 

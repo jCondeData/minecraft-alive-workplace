@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110
 
 ## What a player sees
 
@@ -188,8 +188,13 @@ the row says how many such blocks the Builder clears on the way. A wall, a fence
 the way does: the row turns to a barrier and says what and where ("Blocked: Oak Fence in the way at 120 64 -38", or
 "Blocked by the Smithy: its Stone Bricks at ..."), and a click only says so. The villagers who live there keep their
 beds: the Builder never breaks a bed somebody sleeps in. With no Builder free or with room in his queue, the click
-says so ("No Builder can take the ...: none has a bench near it and room in their queue") and orders nothing; a busy
-Builder gets it queued "after the current build", once however often it is clicked. In a village somebody owns, only
+says so ("No Builder can take the ...: none has a bench near it and room in their queue") and orders nothing. With
+every Builder busy, the hall splits a crew (B1110): a Builder helping on another build (from the build with the most
+helpers) leaves it and builds the next level now ("Bram leaves the crew on the Smithy to build the ..."); the build he
+leaves keeps its lead and goes on. Only when no build has a helper to spare does it wait, saying so plainly ("Every
+Builder is busy and none can be spared from a crew: ... after the current build"), queued once however often it is
+clicked. A Builder is never taken off his own build. Yes on the Repairs page, and Refresh, split a crew the same way
+when no Builder is free, or say plainly that none can be spared and the job waits for the first one free. In a village somebody owns, only
 the owner and their friends can order one. The tab says how many builds can go up a level ("1 build", "2 builds").
 
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day, anywhere in the
@@ -337,7 +342,9 @@ the save; it gets one when its chunk loads, so it shows on the page from then on
 **Upgrades (36.14).** The page reads the village's finished builds (the hall's circle) whose blueprint has a next level
 by name (`<name>_2` after `<name>`, `_3` after `_2`, see `BlueprintUpgrades`), the same list the hall's advice and the
 Steward's upgrade rules use. The order is the same as every other upgrade: a build site of the next level on the old
-one's spot and turn (`Builders.start`, or `enqueue` behind a busy Builder), built only where it differs, recorded over
+one's spot and turn (`Builders.start`; with every Builder busy, a helper taken off another crew by `Builders.splitOff`
+(B1110: what he carries goes back to that build's chests, his claim is let go, he no longer counts as its crew, and
+nothing new is saved: his job is the one `BuilderJob` it always was), else `enqueue` behind a busy Builder), built only where it differs, recorded over
 the old level when done. The cost is what the next level's material list needs more of than the old one's, grouped by
 family as the Builder's lists group them. The space check walks every spot the next level's blueprint fills that the
 old level left empty or doesn't reach (lowest first); a spot holding air, or already the block the next level wants,
@@ -541,6 +548,9 @@ meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockS
 `aFreeUpgradeIsBuilt` by the village's Builder; `aBlockedUpgradeSaysWhatIsInTheWay` with another build's block, a
 fence, a path, then water (natural); `naturalGroundDoesNotBlockAnUpgrade`, all of it cleared;
 `residentsKeepTheirBedsThroughAnUpgrade`; `anOrderedUpgradeSurvivesAReload`; every sentence written).
+`HallCrewSplitGameTests` (B1110: every builder busy on A, a lead and a helper: the Upgrades page's row and the Repairs
+page's Yes take the helper off A, who builds the upgrade or repairs the wall while A goes on with its lead; with one
+builder only, nothing is taken off A and the answer says none can be spared; the split through a save and reload).
 `QaHallFixes1103cGameTests` (B885, B886, B889-B891 beyond their repros: visitors and Doctor Wren never jobless or given a block, a hire ending, the level request called off for every helper and across a save, a scout given No job, a retired elder's forged picks, a new Steward after a retrained one), `QaHallMidActivity1103cGameTests` (job changes mid-alarm, mid-trade and with a tools request open). `QaLaneC1104eGameTests.theHallGivesNoJobToABabyOrANitwitButToAGrownVillager` (QA: the hall's hand-out refuses a baby who is no nitwit and a grown nitwit, the block staying free, and gives it to a grown villager beside them). `HallPeopleGameTests` (40.2: the rows and counts of a village of 8 and of 60 scrolled to its last villager, the
 details of a builder, a guard, a child and a nitwit and Job ▾ on the builder, a villager who dies or leaves while the
 screen is open; scene `hall_people`). `HallPeopleJobGameTests` (40.3, every case through Job ▾'s clicks:

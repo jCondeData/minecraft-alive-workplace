@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112
 
 ## 1. What a player sees
 
@@ -28,8 +28,13 @@ when there are none, the village Storehouse (else another village-mate's chests 
 chest anywhere he looks isn't crafted for, so nothing made for him is left lying by the crafter's bench (B721).
 A builder who has a chest of his own still gets it there, never in the Storehouse, and two chestless builders each get
 theirs.
-A job is only taken when what it makes fits in those chests as they are; with them full, the crafter waits and looks
-again later. If they fill up while he carries the job to them, he keeps it in his bag and tries again every two
+A job is only taken when what it makes fits in those chests: counting a slot the job's own ingredients empty (the last
+two stone bricks in a slot leave room for the four slabs cut from them), and leaving out the room another crafter's
+job already counts on, so two crafters never both count the same empty slot. With the chests by his table full, it
+goes to another store the builder also takes from (another Storehouse in the village) that has room. With no room
+anywhere, the crafter waits and looks again later, and the builder's line says so under "Short of": "No room to bring
+Chest, Ladder: the chests he takes from are full", never "Nobody here makes" (B1111, B1112). Making some room in his
+Storehouse is enough to get things made again. If they fill up while he carries the job to them, he keeps it in his bag and tries again every two
 seconds (for up to two minutes, then takes it home), so nothing is dropped by a full Storehouse and nothing is made
 twice (B760). He only takes it home if the chests by his own bench have room for it; with none there, or full ones,
 he keeps carrying it and trying the Storehouse, so it never ends up on the ground by his bench (B773).
@@ -243,6 +248,12 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   log is crafted and no plank lies on the ground (B760); `CarpenterFullStorehouseB760GameTests`:
   `aFullStorehouseThatFreesUpGetsThePlanksThen` (one log used once there's room, the row built) and
   `aStorehouseFilledOnTheWayIsWaitedFor` (held in the bag, put in once room comes back).
+- `QaStalledCrafting1109bBugTests`: a builder by a full Storehouse gets his stone brick slabs cut (the last bricks
+  free their slot) and the line names what has no room ("No room to bring Chest, Ladder, Spruce Door"), never "Nobody
+  here makes" (B1111, B1112); `QaStalledCrafting1109bGameTests`: with room the Mason and the Carpenter make the slabs,
+  chest, ladder and spruce door, also after a save and reload; `CraftersFullStoreGameTests`: the freed slot counts once
+  (not twice for two crafters, not for part of a stack), the full line's text, and slabs cut into a second Storehouse
+  with room when the one by the table is full.
 - `QaVillageEconomySaves1101BugTests.aStorehouseThatStaysFullAfterHeSetOffLeavesNoPlanksLying`: a Storehouse that fills
   while he carries the planks and stays full never leaves them on the ground, 3200 ticks on (B773).
 - `QaCarpenterFullStore1101cBugTests.planksTakenHomeStillReachTheBuilderWhoAsked`: planks taken home after the long

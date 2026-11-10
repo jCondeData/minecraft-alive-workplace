@@ -4697,11 +4697,12 @@ final class JobScenes {
 			BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(), cottage,
 				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
 			BlockPos crate = STATION.offset(3, 0, -4);
-			level.setBlockAndUpdate(crate, ModBlocks.MOVERS_CRATE.defaultBlockState());
-			Villager mover = EntityType.VILLAGER.spawn(level, crate.south(), MobSpawnType.COMMAND);
+			// hired the way the game hires (Jobs.employ: his crate's ticket, and his brain rebuilt with the Mover's work; setting
+			// the profession alone left him with a jobless villager's brain, idle all scene: showcase B, 2026-11-10)
+			Villager mover = worker(level, crate, ModBlocks.MOVERS_CRATE.defaultBlockState(),
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVERS_CRATE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVER);
 			io.github.jcondedata.aliveworkplace.legend.Gifted.set(mover, null);
-			mover.setVillagerData(mover.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVER).setLevel(2));
-			mover.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), crate));
+			mover.setVillagerData(mover.getVillagerData().setLevel(2));
 			boolean[] seen = {false, false, false};
 			int[] after = {-1};
 			net.minecraft.world.level.levelgen.structure.BoundingBox[] newBox = {null};

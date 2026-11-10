@@ -293,6 +293,13 @@ public final class CraftJobs {
 			lines.add(here.isEmpty()
 				? Component.translatable("screen.aliveworkplace.storehouse.hire_maker", io.github.jcondedata.aliveworkplace.work.Stations.name(maker.profession()))
 				: who(here.get(0), "screen.aliveworkplace.storehouse.made_by_worker", "screen.aliveworkplace.storehouse.made_by_worker_unnamed"));
+		} else if (io.github.jcondedata.aliveworkplace.wood.Trees.unstripped(item) != null) {
+			// B1133: a stripped log (no recipe makes it) is the Lumberjack's: he strips logs for builders at his chests
+			VillagerProfession lumberjack = Gatherer.LUMBERJACK.profession();
+			List<Villager> here = workersNear(level, pos, radius, lumberjack);
+			lines.add(here.isEmpty()
+				? Component.translatable("screen.aliveworkplace.storehouse.hire_maker", io.github.jcondedata.aliveworkplace.work.Stations.name(lumberjack))
+				: who(here.get(0), "screen.aliveworkplace.storehouse.made_by_worker", "screen.aliveworkplace.storehouse.made_by_worker_unnamed"));
 		}
 		if (lines.isEmpty()) {
 			lines.add(Component.translatable("screen.aliveworkplace.storehouse.no_job"));

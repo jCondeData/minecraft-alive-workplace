@@ -390,7 +390,8 @@ public final class MoveSite {
 	/**
 	 * Takes block {@code i} down into the crates, or marks it lost if someone took it first. A block laid whole with its
 	 * neighbours (Create's belt, B1128) comes down whole: taking one segment takes the rest of the belt with it, so every
-	 * segment still standing is packed with its data (the belt's items are on its controller) before any comes down.
+	 * segment still standing is packed with its data (the belt's items are on its controller) before any comes down. So is
+	 * a container joined from several blocks (Create's Fluid Tank and Item Vault, B1135, B1136): see {@link #whole}.
 	 */
 	private void take(ServerLevel level, int i, BlockPos pos, BlockState wanted) {
 		boolean atNew = where[i] == NEW; // taken from the new spot when a canceled move comes down again
@@ -400,7 +401,9 @@ public final class MoveSite {
 		for (int j : group) {
 			BlockPos at = j == i ? pos : atNew ? newPos(j) : oldPos(j);
 			BlockState want = j == i ? wanted : atNew ? newState(j) : plan.blocks().get(j).state();
-			if (want.isAir() || !MaterialRules.matches(level.getBlockState(at), want)) {
+			BlockState actual = level.getBlockState(at);
+			// a block joined into one container with its neighbours (Create's tank) takes its shape from them: still the block
+			if (want.isAir() || !MaterialRules.matches(actual, want) && !(MaterialRules.joined(want) && actual.is(want.getBlock()))) {
 				// gone (someone broke it), or a block of a mod no longer installed (its id reads as air): not moved
 				where[j] = LOST;
 				skipped++;
@@ -441,6 +444,12 @@ public final class MoveSite {
 	/**
 	 * Block {@code i} and, when it's laid whole with its neighbours (Create's belt), every other block of the same kind
 	 * in the building that is {@code in} the same place: they come down and go up together, as a builder lays a belt.
+	 * A block joined into one container with the touching blocks of its kind (Create's Fluid Tank and Item Vault) comes
+	 * down with the blocks it touches, and they with theirs (B1135, B1136): every block of the container is packed with its
+	 * data as the container stands, before taking one makes Create split it (the rest re-shaped, the block taken losing its
+	 * share of the fluid, the others packed as separate containers). They go up one by one, each with the data it had in
+	 * the whole container: put back where it stood it is that container again, and put up at the new spot Create sees its
+	 * blocks have moved and joins them again, the contents gathered on the new controller.
 	 */
 	private List<Integer> whole(int i, byte in) {
 		List<Integer> group = new ArrayList<>();
@@ -450,6 +459,22 @@ public final class MoveSite {
 			for (int j = 0; j < where.length; j++) {
 				if (j != i && where[j] == in && plan.blocks().get(j).state().getBlock() == state.getBlock()) {
 					group.add(j);
+				}
+			}
+		} else if (MaterialRules.joined(state)) {
+			java.util.Map<BlockPos, Integer> kind = new java.util.HashMap<>();
+			for (int j = 0; j < where.length; j++) {
+				if (where[j] == in && plan.blocks().get(j).state().getBlock() == state.getBlock()) {
+					kind.put(plan.blocks().get(j).rel(), j);
+				}
+			}
+			for (int k = 0; k < group.size(); k++) { // the blocks touching the group, until none is left
+				BlockPos rel = plan.blocks().get(group.get(k)).rel();
+				for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+					Integer j = kind.get(rel.relative(d));
+					if (j != null && !group.contains(j)) {
+						group.add(j);
+					}
 				}
 			}
 		}
@@ -467,7 +492,7 @@ public final class MoveSite {
 	 * half there, and each segment's controller is moved to where its controller now stands (B1128).
 	 */
 	private void put(ServerLevel level, int i, BlockPos pos, BlockState state, byte now) {
-		List<Integer> group = now == NEW || now == OLD ? whole(i, PACKED) : List.of(i);
+		List<Integer> group = (now == NEW || now == OLD) && MaterialRules.laidWhole(plan.blocks().get(i).state()) ? whole(i, PACKED) : List.of(i);
 		List<Integer> up = new ArrayList<>();
 		List<BlockPos> ats = new ArrayList<>();
 		List<BlockState> states = new ArrayList<>();

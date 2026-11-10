@@ -2891,13 +2891,31 @@ final class JobScenes {
 			Villager m = worker(level, STATION, Blocks.STONECUTTER, PoiTypes.MASON, VillagerProfession.MASON);
 			return l -> n(ModAttachments.ITEMS_CRAFTED, m) >= 1 && built(l, site, 0.6f);
 		}, null));
-		SCENES.put("dyer", new Job("the dyer made the red wool and carpets the builder needed", 6000,
+		// 46.2: wool, carpets and beds are the Shepherd's at his loom now (the leatherworker dyed them before)
+		SCENES.put("dyer", new Job("the shepherd dyed the red wool and carpets the builder needed at his loom", 6000,
 			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
 			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
 			java.util.UUID site = builderSite(level, StarterBlueprints.MARKET_STALL, new BlockPos(-8, -60, -3),
 				List.of(Items.RED_WOOL, Items.RED_CARPET, Items.WHITE_CARPET), Map.of(Items.WHITE_WOOL, 48, Items.POPPY, 32));
-			Villager d = worker(level, STATION, Blocks.CAULDRON, PoiTypes.LEATHERWORKER, VillagerProfession.LEATHERWORKER);
+			Villager d = worker(level, STATION, Blocks.LOOM, PoiTypes.SHEPHERD, VillagerProfession.SHEPHERD);
 			return l -> n(ModAttachments.ITEMS_CRAFTED, d) >= 1 && built(l, site, 0.6f);
+		}, null));
+		// ROADMAP 46.2: the Shepherd weaves a builder's bed at his loom, from white wool, red dye and planks in the builder's
+		// barrels, step by step (the wool dyed, then the bed), and takes it to them
+		SCENES.put("weaver", new Job("the shepherd made the red bed the builder needed at his loom and took it to the builder's chest", 4000,
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			java.util.UUID site = builderSite(level, StarterBlueprints.STARTER_COTTAGE, new BlockPos(-8, -60, -3),
+				List.of(Items.RED_BED), Map.of(Items.WHITE_WOOL, 3, Items.RED_DYE, 3, Items.OAK_PLANKS, 3));
+			Villager s = worker(level, STATION, Blocks.LOOM, PoiTypes.SHEPHERD, VillagerProfession.SHEPHERD);
+			return l -> {
+				var job = ModAttachments.CRAFTER_JOB.get(s);
+				int carried = ModAttachments.BUILDER_BAG.getOrCreate(s).count(Items.RED_BED);
+				timeoutWhy = "the shepherd made " + n(ModAttachments.ITEMS_CRAFTED, s) + ", job " + (job == null ? "none" : job.phase() + " " + job.target())
+					+ ", carrying " + carried + " red bed(s), site " + (site == null ? "none" : String.valueOf(BuildSiteManager.get(l).get(site) == null ? "done"
+						: BuildSiteManager.get(l).get(site).missing()));
+				return n(ModAttachments.ITEMS_CRAFTED, s) >= 1 && job == null && carried == 0;
+			};
 		}, null));
 		SCENES.put("crew", new Job("four builders built the stone house together, each placing a share of it", 6000,
 			new Vec3(6.5, -51, 12.5), new Vec3(-5, -56, -6), (level, player) -> {

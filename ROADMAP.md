@@ -6533,7 +6533,7 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
   Carpenter never makes a brewing stand, flower pot, banner, stained glass or lantern, that the Mason makes concrete and
   dyed terracotta, a modded wooden block goes to the Carpenter by its recipe, and the "Hire a ..." line for each job, the Storehouse's "Made by" / "Gathered by" / "Hire a" / "No job makes or gathers this" lines (logs, ore, sand, clay and wool name their gatherers);
   a test that every item made by some job before 46.1 still has a job after it.
-- [ ] **46.2** **The Shepherd weaves.** At his loom he makes wool from string, dyes it, and makes carpets, beds,
+- [x] **46.2** (review: pending 2026-11-10) **The Shepherd weaves.** At his loom he makes wool from string, dyes it, and makes carpets, beds,
   banners, banner patterns and paintings for builders, with the chain steps (the wool first, then the bed). Done when:
   GameTests for two blue beds from white wool, planks and blue dye, a banner, a missing dye named on the shortage line;
   scene `weaver` (his loom, the bed going into the builder's chest).
@@ -6558,6 +6558,14 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
+- 2026-11-10 (lane-b-1110-0337, 46.2): **the Shepherd still makes a step's dye or planks; the line names them.** His
+  chains plan with every crafting recipe as every job's do, so with lapis or a cornflower (or logs) in the chests he
+  makes the dye (or planks) a bed needs himself, as the Leatherworker who wove before did: nothing he made became
+  unmakable. Only the shortage line stops at another job's list (`Crafting.lacking(..., raw)`): "short of 6 Blue Dye to
+  make 2 Blue Beds", not the lapis. 46.3 (the Florist makes the dye for his bed) can narrow this. The 1.21.2+ banner
+  patterns (field masoned, bordure indented) don't exist on 1.21.1, so the list keeps vanilla's four. The `dyer`
+  showcase scene (a market stall's red wool and carpets) now films a Shepherd at a loom, since those are his;
+  its catalog group moved to "Shepherd".
 - 2026-11-10 (lane-b-1110-0038, 46.1): **stand-ins until 46.2-46.6.** The Shepherd, Florist, Cleric and Beekeeper
   don't craft yet and the Glassblower isn't in the game, so each list is made meanwhile by the job that made those
   things before 46.1 (`CraftJobs.Job.standIn`): glass, panes, stained and tinted glass, bottles by the Mason; wool,

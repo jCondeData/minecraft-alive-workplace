@@ -585,8 +585,9 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * A builder short of white concrete and red wool: the village's leatherworker dyes the wool (the Shepherd's list, his
-	 * until 46.2) and, since 46.1, the Mason hardens the powder (concrete is the Mason's; the dyer no longer takes it).
+	 * A builder short of white concrete and red wool: since 46.2 the Shepherd dyes the wool at his loom (the red dye from
+	 * the poppies a step of his chain; the leatherworker dyed it before) and, since 46.1, the Mason hardens the powder
+	 * (concrete is the Mason's; the dyer no longer takes it).
 	 */
 	//$ gametest_ticks_batch AREA '3000' '"dyer"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "dyer")
@@ -607,11 +608,11 @@ public class BuilderGameTests implements FabricGameTest {
 		}
 		Setup s = setup(helper, wall, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.WHITE_CONCRETE_POWDER, 3), new ItemStack(Items.WHITE_WOOL, 3),
 			new ItemStack(Items.POPPY, 3));
-		BlockPos cauldron = new BlockPos(14, 2, 2);
-		helper.setBlock(cauldron, Blocks.CAULDRON);
+		BlockPos loom = new BlockPos(14, 2, 2);
+		helper.setBlock(loom, Blocks.LOOM);
 		Villager dyer = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
-		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, dyer, helper.absolutePos(cauldron), net.minecraft.world.entity.ai.village.poi.PoiTypes.LEATHERWORKER,
-			VillagerProfession.LEATHERWORKER);
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, dyer, helper.absolutePos(loom), net.minecraft.world.entity.ai.village.poi.PoiTypes.SHEPHERD,
+			VillagerProfession.SHEPHERD);
 		BlockPos cutter = new BlockPos(14, 2, 6);
 		helper.setBlock(cutter, Blocks.STONECUTTER);
 		Villager mason = helper.spawn(EntityType.VILLAGER, new BlockPos(15, 2, 6));

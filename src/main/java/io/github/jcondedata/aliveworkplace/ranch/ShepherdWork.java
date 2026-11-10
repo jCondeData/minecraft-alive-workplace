@@ -45,6 +45,12 @@ public class ShepherdWork extends RanchWork {
 		return isShepherd(villager);
 	}
 
+	/** The flock waits while he weaves for a builder at the loom (46.2, {@code craft/WeaverWork}): the two share his bag. */
+	@Override
+	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
+		return super.checkExtraStartConditions(level, villager) && !io.github.jcondedata.aliveworkplace.craft.CrafterWork.isBusy(villager);
+	}
+
 	@Override
 	protected Set<EntityType<?>> herd() {
 		return Set.of(EntityType.SHEEP);

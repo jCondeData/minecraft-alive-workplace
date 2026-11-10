@@ -8,12 +8,12 @@ Workstation: Cauldron (vanilla: a jobless villager takes one by themselves)
 Pick it with: leather
 Works for: the builders nearby
 Needs: dyes or flowers, and what's to be dyed
-Makes: colored wool, carpet, beds, banners, candles, dyes, flower pots, item frames, leads and leather armor
+Makes: candles, dyes, flower pots, item frames, leads and leather armor
 categories: Jobs, Builder
 related: jobs-crafts.md, builder.md, florist.md, shepherd.md, carpenter.md
 ```
 
-The Leatherworker is the village's dyer and leather crafter: wool, dyes and leather goods for the builders.
+The Leatherworker is the village's dyer and leather crafter: dyes and leather goods for the builders.
 
 ## Getting a leatherworker
 
@@ -22,16 +22,16 @@ another job, sneak-right-click them with **leather**. (Gravel or sand at a cauld
 
 ## What they do
 
-When a builder nearby is waiting for leather goods (item frames, leads, leather armor) or for wool, carpet, beds,
-banners, paintings, candles, flower pots or the dyes themselves, the dyer makes it from what the builder can get at,
-with the game's own recipes. They make dyes from flowers too. Stained glass, terracotta and concrete are the
-[Mason](mason.md)'s, and wooden things the [Carpenter](carpenter.md)'s.
+When a builder nearby is waiting for leather goods (item frames, leads, leather armor) or for candles, flower pots or
+the dyes themselves, the dyer makes it from what the builder can get at, with the game's own recipes. They make dyes
+from flowers too. Wool, carpet, beds, banners and paintings are the [Shepherd](shepherd.md)'s (at the loom), stained
+glass, terracotta and concrete the [Mason](mason.md)'s, and wooden things the [Carpenter](carpenter.md)'s.
 
 Over their head: how many things they've made, and what they're working on.
 
 ## How the leatherworker fits in
 
-- **Fed by:** the [Florist](florist.md)'s flowers for dyes, the [Shepherd](shepherd.md)'s wool.
+- **Fed by:** the [Florist](florist.md)'s flowers for dyes.
 - **Feeds:** the [Builder](builder.md), straight into their chests.
 
 See also [Crafters and smiths](jobs-crafts.md).

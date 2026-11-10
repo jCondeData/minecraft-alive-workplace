@@ -40,8 +40,9 @@ dyed terracotta, glass panes and stained glass.
 
 *Full article: [Leatherworker](leatherworker-dyer.md).*
 
-**Leatherworkers** (vanilla, at a cauldron) make the wool, carpet, beds, banners, candles, flower pots and dyes a builder
-is waiting for, and leather goods: item frames, leads, leather armor.
+**Leatherworkers** (vanilla, at a cauldron) make the candles, flower pots and dyes a builder is waiting for, and leather
+goods: item frames, leads, leather armor. Wool, carpet, beds, banners and paintings are the
+[Shepherd](shepherd.md)'s, woven at the loom.
 
 ## Tinkerer
 

@@ -72,7 +72,7 @@ public class JobListsGameTests {
 		Map<Item, CraftJobs.Job> own = Map.of(Items.BREWING_STAND, CraftJobs.Job.CLERIC, Items.FLOWER_POT, CraftJobs.Job.FLORIST,
 			Items.BLUE_BANNER, CraftJobs.Job.SHEPHERD, Items.RED_STAINED_GLASS, CraftJobs.Job.GLASSBLOWER, Items.LANTERN, CraftJobs.Job.TINKERER);
 		Map<Item, CraftJobs.Job> today = Map.of(Items.BREWING_STAND, CraftJobs.Job.LIBRARIAN, Items.FLOWER_POT, CraftJobs.Job.LEATHERWORKER,
-			Items.BLUE_BANNER, CraftJobs.Job.LEATHERWORKER, Items.RED_STAINED_GLASS, CraftJobs.Job.MASON, Items.LANTERN, CraftJobs.Job.TINKERER);
+			Items.BLUE_BANNER, CraftJobs.Job.SHEPHERD, Items.RED_STAINED_GLASS, CraftJobs.Job.MASON, Items.LANTERN, CraftJobs.Job.TINKERER);
 		for (Item item : own.keySet()) {
 			helper.assertFalse(CraftJobs.makes(level, CraftJobs.Job.CARPENTER, item), "the Carpenter makes " + item);
 			helper.assertTrue(CraftJobs.of(level, item) == own.get(item), item + " is on " + CraftJobs.of(level, item) + "'s list");

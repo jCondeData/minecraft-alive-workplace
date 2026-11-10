@@ -1,0 +1,7 @@
+{"spots": [
+  {"kind": "bed", "pos": [8, 1, 5], "facing": "north", "wood": "spruce", "colour": "orange", "blocks": [{"at": [0, 0, 0], "state": "minecraft:orange_bed[facing=north,occupied=false,part=foot]"}, {"at": [0, 0, -1], "state": "minecraft:orange_bed[facing=north,occupied=false,part=head]"}], "support": ["floor"]},
+  {"kind": "shelf", "pos": [2, 3, 7], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_slab[type=top,waterlogged=false]"}], "support": ["wall"]},
+  {"kind": "shelf", "pos": [3, 3, 7], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_slab[type=top,waterlogged=false]"}], "support": ["wall"]},
+  {"kind": "crockery", "pos": [2, 4, 7], "facing": "north", "wood": "spruce", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:flower_pot"}], "support": ["floor", "wall"]},
+  {"kind": "crockery", "pos": [3, 4, 7], "facing": "north", "wood": "spruce", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:flower_pot"}], "support": ["floor", "wall"]}
+]}

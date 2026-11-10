@@ -205,6 +205,12 @@ public final class ModBlocks {
 	 */
 	public static final BuildersBenchBlock MOVERS_CRATE = Reg.block("movers_crate", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE));
 
+	/**
+	 * The Glassblower's job block (ROADMAP 46.6): a brick kiln with a glowing mouth and a blowpipe. A jobless villager takes
+	 * a free one by themselves; never a plain furnace, so villagers never take a player's furnaces.
+	 */
+	public static final BuildersBenchBlock GLASS_KILN = Reg.block("glass_kiln", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.BRICKS).lightLevel(state -> 9));
+
 	/** Workstation for the Chef: they cook here, from the chests nearby and the village's storehouse. */
 	public static final BuildersBenchBlock KITCHEN_STOVE = Reg.block("kitchen_stove", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.SMOKER).lightLevel(state -> 7));
 

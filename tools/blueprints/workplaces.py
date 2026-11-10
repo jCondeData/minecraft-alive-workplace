@@ -1107,3 +1107,78 @@ WORKPLACE_BUILDS = {
     "leaders_hall": leaders_hall_build, "ball_workshop": ball_workshop_build, "trade_hall": trade_hall_build,
     "school": school_build,
 }
+
+
+# --- The Glassblower's Workshop (ROADMAP 46.6): a brick glasshouse with its kiln chimney ----------------------------------
+# Main mass x 1-9, z 3-8: brick walls in a spruce frame (posts at 1, 4, 6, 9, the door in the middle bay) on a stone
+# plinth, under a dark oak gable roof (ridge along x) with spruce-boarded gables and a king post. Its trade shows from the
+# street: the front windows are glazed in colored panes (the Glassblower's stained glass), and against the east wall a
+# lower brick kiln house under a slab roof, a tall brick chimney smoking over it and a heap of sand by its open side.
+# Inside the Glass Kiln faces the door with a chest either side (his own), the bed, shelves of pots (his bottles) and a
+# lantern on the tie beam. No furnace (a player's furnace is never his: the kiln is his own block), no other job block.
+GB_FRAME = "spruce_log"
+GB_WALL = "bricks"
+GB_ROOF = DARK_OAK
+
+
+def glassblowers_workshop():
+    """13 x 12 x 11: the Glassblower's glasshouse, its kiln house and chimney."""
+    b = Build(13, 12, 11)
+    plinth(b, 1, 3, 9, 8, STONE_MIX)
+    box(b, 2, 0, 4, 8, 0, 7, "spruce_planks")
+    walls(b, 1, 3, 9, 8, 1, 4, GB_WALL)
+    posts(b, [(1, 3), (4, 3), (6, 3), (9, 3), (1, 8), (4, 8), (6, 8), (9, 8), (1, 5), (1, 6), (9, 5), (9, 6)], 1, 4, GB_FRAME)
+    beam_ring(b, 1, 3, 9, 8, 5, GB_FRAME)
+    for z in range(4, 8):
+        log(b, 5, 5, z, GB_FRAME, axis="z")  # the tie beam the lantern hangs from
+    front_door(b, 5, 3, "spruce_door", SPRUCE, hood=SPRUCE)
+    # the shop windows: colored panes, his own stained glass (one glass type: panes throughout)
+    window(b, 2, 2, 3, "north", width=2, glass="light_blue_stained_glass_pane", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 7, 2, 3, "north", width=2, glass="yellow_stained_glass_pane", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 2, 2, 8, "south", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 7, 2, 8, "south", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 1, 2, 4, "west", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 1, 2, 7, "west", shutters="spruce_trapdoor", sill=SPRUCE)
+    door(b, 9, 1, 6, "spruce_door", "east")  # out to the kiln house
+    gable_roof(b, 0, 10, 2, 9, 6, GB_ROOF, axis="x", gable="spruce_planks", gable_at=(1, 9), ridge=GB_ROOF, eave_trim=SPRUCE)
+    for y in range(6, 9):
+        log(b, 1, y, 5, GB_FRAME)
+        log(b, 1, y, 6, GB_FRAME)
+        log(b, 9, y, 5, GB_FRAME)
+        log(b, 9, y, 6, GB_FRAME)
+    pane(b, 1, 7, 4, "magenta_stained_glass_pane")
+    pane(b, 1, 7, 7, "magenta_stained_glass_pane")
+    # Inside: the kiln facing the door, a chest either side, the bed, shelves of his pots, a lantern on the tie beam
+    b.set(5, 1, 7, "aliveworkplace:glass_kiln", facing="north")
+    b.set(4, 1, 7, "chest", facing="north", type="single", waterlogged=False)
+    b.set(6, 1, 7, "chest", facing="north", type="single", waterlogged=False)
+    b.bed(8, 1, 5, "orange", facing="north")
+    shelf(b, 2, 3, 7, "north", "spruce")
+    shelf(b, 3, 3, 7, "north", "spruce")
+    b.set(2, 1, 4, "spruce_slab", type="double", waterlogged=False)  # the marver, his shaping bench
+    b.set(2, 2, 4, "potted_blue_orchid")
+    lantern(b, 5, 4, 5, hanging=True)
+    # The kiln house: a brick lean-to against the east wall, a slab roof, its chimney smoking, sand heaped inside
+    plinth(b, 10, 4, 12, 7, STONE_MIX)
+    box(b, 11, 0, 5, 11, 0, 6, "packed_mud")  # the kiln house's trodden floor
+    for y in (1, 2, 3):
+        b.set(12, y, 4, GB_WALL)
+        b.set(12, y, 7, GB_WALL)
+        b.set(10, y, 4, GB_WALL)
+        b.set(10, y, 7, GB_WALL)
+        b.set(11, y, 7, GB_WALL)
+    for x in range(10, 13):
+        for z in range(3, 9):
+            slab(b, x, 4, z, BRICK)
+    chimney(b, 11, 7, 4, 8, GB_WALL)
+    for z in (5, 6):
+        b.set(11, 1, z, "sand")
+    b.set(12, 1, 5, "sand")
+    b.set(11, 2, 6, "sand")
+    lantern(b, 11, 3, 4, hanging=True)
+    # Outside: a lantern on a post at the corner, a path to the step
+    lamp_post(b, 0, 0, 1, "spruce_fence", height=2)
+    for z in (0, 1):
+        b.set(5, 0, z, "coarse_dirt" if z else "dirt_path")
+    b.fill_air()
+    return b

@@ -391,6 +391,12 @@ public final class StarterBlueprints {
 	 * facing the door between two chests, and an open store lean-to of logs, planks and slabs against the east wall.
 	 */
 	public static final Entry CRAFTERS_WORKSHOP = new Entry(AliveWorkplace.id("crafters_workshop"), new Vec3i(13, 11, 11));
+
+	/**
+	 * The Glassblower's (ROADMAP 46.6): a brick glasshouse in a spruce frame with colored panes in its front windows, the
+	 * Glass Kiln facing the door between two chests, and a brick kiln house with a smoking chimney against the east wall.
+	 */
+	public static final Entry GLASSBLOWERS_WORKSHOP = new Entry(AliveWorkplace.id("glassblowers_workshop"), new Vec3i(13, 12, 11));
 	/**
 	 * A brick-and-plaster Butcher's Shop under a red-and-white awning, the smoker in its chimney breast, a pen behind, and
 	 * under it an ice-lined freezer down a ladder behind the counter (26.15): one tier, a cellar from the first.
@@ -630,7 +636,7 @@ public final class StarterBlueprints {
 		MANOR, MANOR_2, MANOR_3, MANOR_4);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
-	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY, CRAFTERS_WORKSHOP,
+	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY, CRAFTERS_WORKSHOP, GLASSBLOWERS_WORKSHOP,
 		STORAGE_HALL, TERMINAL_NOOK, WAREHOUSE);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */

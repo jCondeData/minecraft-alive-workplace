@@ -33,8 +33,16 @@ builder's chest. Give a builder only logs, and the carpenter makes the rest.
 *Full article: [Mason](mason.md).*
 
 **Masons** (vanilla, at a stonecutter) cut stone bricks, stairs and walls for the builders, crush cobblestone into gravel
-and sand, and with a furnace by the stonecutter fire glass, smooth stone, terracotta and bricks. They also make concrete,
-dyed terracotta, glass panes and stained glass.
+and sand, and with a furnace by the stonecutter fire smooth stone, terracotta and bricks. They also make concrete and
+dyed terracotta. Glass is the Glassblower's.
+
+## Glassblower
+
+*Full article: [Glassblower](glassblower.md).*
+
+**Glassblowers** work at their own **Glass Kiln** (bricks round a furnace, an iron ingot on top): they fire glass from
+sand, a coal or charcoal for every eight, and make glass panes, stained glass and panes with the Florist's dyes, tinted
+glass and glass bottles for the builders and the Storehouse.
 
 ## Leatherworker
 

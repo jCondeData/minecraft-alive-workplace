@@ -790,6 +790,27 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation GLASS_KILN_ID = AliveWorkplace.id("glass_kiln");
+	public static final ResourceKey<PoiType> GLASS_KILN_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, GLASS_KILN_ID);
+	public static final PoiType GLASS_KILN_POI_TYPE = Platform.get().registerPoi(GLASS_KILN_ID, 1, 1, ModBlocks.GLASS_KILN);
+
+	/**
+	 * Fires glass from sand for the builders and makes their panes, stained glass, tinted glass and bottles (ROADMAP 46.6,
+	 * craft/GlassblowerWork). Hired like the Builder: a jobless villager takes a free Glass Kiln, never a plain furnace.
+	 */
+	public static final VillagerProfession GLASSBLOWER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("glassblower"),
+		new VillagerProfession(
+			"glassblower",
+			holder -> holder.is(GLASS_KILN_POI),
+			holder -> holder.is(GLASS_KILN_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_ARMORER
+		)
+	);
+
 	/**
 	 * Carries water to the village's fields in a drought and keeps its cauldrons full (ROADMAP 32.17): at a cauldron, only
 	 * ever by a shovel, with config {@code wellKeepers}. A jobless villager by a cauldron still becomes a Leatherworker,
@@ -1110,7 +1131,7 @@ public final class ModVillagers {
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER || profession == JEWELLER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
 			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR || profession == PRINTER || profession == WELL_KEEPER
-			|| profession == PHYSICIAN || profession == CRAFTER || profession == MOVER || isMechanic(profession) || isFurnicrafter(profession);
+			|| profession == PHYSICIAN || profession == CRAFTER || profession == MOVER || profession == GLASSBLOWER || isMechanic(profession) || isFurnicrafter(profession);
 	}
 
 	/**

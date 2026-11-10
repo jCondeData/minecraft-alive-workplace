@@ -5,8 +5,8 @@ Every job that crafts for builders, stock orders and Wonders makes only its own 
 place; 46.2 taught the Shepherd to weave at his loom ([The Shepherd weaves](weaver.md)), 46.3 the Florist to make pots
 and dyes ([The Florist makes pots](florist-pots.md)), 46.4 the Cleric to make the magic blocks ([The Cleric makes the
 magic blocks](cleric-crafts.md)), 46.5 the Beekeeper to make candles ([Candles and leather goods](candles-leather.md));
-46.6 brings the Glassblower.
-Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5
+and 46.6 brought the Glassblower ([The Glassblower](glassblower.md)).
+Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5, 46.6
 
 ## 1. What a player sees
 
@@ -31,9 +31,9 @@ Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5
   brewing stand ([The Cleric makes the magic blocks](cleric-crafts.md)).
 - The Beekeeper (since 46.5) makes candles, colored candles and honeycomb blocks at her Apiary
   ([Candles and leather goods](candles-leather.md)).
-- **For now (until 46.6):** the Glassblower, who isn't in the game yet, has a stand-in, the job that made the thing
-  before: glass, panes, stained glass, tinted glass and bottles are made by the Mason, who fires glass already. So
-  nothing that was made before became unmakable. As each job learns to craft, its list moves to it.
+- The Glassblower (since 46.6) fires glass and makes panes, stained glass, tinted glass and bottles at his own Glass
+  Kiln ([The Glassblower](glassblower.md)). Until then the Mason was his stand-in, so nothing that was made before
+  became unmakable; no list has a stand-in today.
 - When nobody in the village makes a part a builder waits for, his line under "Short of" names the job to hire:
   "Hire a Carpenter to make Oak Stairs", "Hire a Cleric to make Brewing Stands" (the Librarian's until 46.4). Things of
   different jobs are grouped: "Hire a Carpenter to make Barrels; Hire a Tinkerer to make Lanterns". Only what no job
@@ -81,13 +81,13 @@ before carries on.
   florist. The Miner's takes `#c:ores` and `#c:raw_materials` when another mod fills them.
 - Text: `message.aliveworkplace.job_chain.hire`, `screen.aliveworkplace.storehouse.made_by_worker(_unnamed)`,
   `hire_maker`, `gathered_by(_unnamed)`, `hire_gatherer.<job>`, `no_job`.
-- No new blocks, items, jobs or commands (the Glassblower comes in 46.6).
+- No new blocks, items, jobs or commands here (the Glassblower and his Glass Kiln came in 46.6).
 
 ## 6. Decisions
 
 - Stand-ins rather than idle lists (46.1 said nothing made today may become unmakable): each list's stand-in is the job
   that made those things before 46.1. The "Hire a ..." lines name the stand-in, since that is who would make it today:
-  never a job that can't (the Glassblower isn't in the game until 46.6).
+  never a job that can't (the Glassblower wasn't in the game until 46.6).
 - Clay and sand are the Miner's to gather (his quarry keeps what it digs).
 - The ingredient rule goes in the spec's order (the first category any ingredient matches), so a cradle of wool,
   planks and sticks is the Carpenter's.
@@ -95,8 +95,8 @@ before carries on.
 ## 7. Known limits
 
 - The ingredient rule reads a modded item's first crafting recipe only, and the first item each ingredient accepts.
-- Until 46.6 the "Hire a ..." lines for glass name the stand-in ("Hire a Mason to make Glass Panes"), not the
-  Glassblower whose list it is.
+- Before 46.6 the "Hire a ..." lines for glass named the stand-in ("Hire a Mason to make Glass Panes"); they name the
+  Glassblower now.
 - The showcase scene is filmed on GitHub, not in this session.
 
 ## 8. Proof

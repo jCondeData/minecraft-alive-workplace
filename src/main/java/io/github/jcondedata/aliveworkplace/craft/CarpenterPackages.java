@@ -24,6 +24,11 @@ public final class CarpenterPackages {
 		return work(new TinkererWork());
 	}
 
+	/** The Glassblower's (46.6): glass fired from sand at the Glass Kiln, and the panes, stained glass and bottles made of it. */
+	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> glassblower(float speed) {
+		return work(new GlassblowerWork());
+	}
+
 	/** The Furnicrafter's (38.12): furniture for the builders and the store, at CobbleFurnies' Furnicrafter. */
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> furnicrafter(float speed) {
 		return work(new FurnicrafterWork());

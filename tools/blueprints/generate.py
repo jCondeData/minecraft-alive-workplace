@@ -196,6 +196,7 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
     quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
     crafters_workshop().save(MAIN_STRUCTURES, "crafters_workshop")  # ROADMAP 37.14: the Crafter's workroom and store
+    glassblowers_workshop().save(MAIN_STRUCTURES, "glassblowers_workshop")  # ROADMAP 46.6: the Glassblower's glasshouse
     save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
     for name, draw in (("fire_station", fire_station), ("well_house", well_house), ("physicians_house", physicians_house)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19

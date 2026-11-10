@@ -6547,6 +6547,10 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
+- 2026-11-09 (qa-lane-b-1109-2137, 45.1, for lane C's 45.3/45.5): the moving plan captures only its box, so **a sign, item frame,
+  banner or torch hung on the outside face of an outer wall** (a shop sign) is outside it and would stay behind in a move, though
+  Milestone 45 says decorations travel. A frame lying face-up keeps its item's turn when the plan turns (vanilla structures do the
+  same). Residents are found within 128 blocks in loaded chunks only. Worth a test in 45.5.
 - 2026-11-09 (lane-b-1109-2137): **Milestone 46 waits on B1111 and B1112** (its "Depends on"), both still open and the bug lane's;
   `sessions.py next` lists 46.1-46.6 anyway, so lane B bug-tested builders instead (B874, B1030, B1105, B1045, B1046 verified;
   B1119 filed). Lane B starts 46.1 the first run after both fixes land.

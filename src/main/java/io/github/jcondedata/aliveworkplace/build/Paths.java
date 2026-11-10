@@ -137,13 +137,19 @@ public final class Paths {
 		return null;
 	}
 
-	/** The feet position of a spot a villager can stand at in {@code pos}'s column (within a block up or down), or null. */
+	/**
+	 * The feet position of a spot a villager can stand at in {@code pos}'s column (within a block up or down), or null. A
+	 * fire, a berry bush or anything else a worker won't stand in ({@link Walker#hurts}) is no such spot (B1119).
+	 */
 	@Nullable
 	public static BlockPos walkable(ServerLevel level, BlockPos pos) {
 		for (int dy : new int[] {0, 1, -1}) {
 			BlockPos feet = pos.above(dy);
 			BlockState ground = level.getBlockState(feet.below());
+			// B1119: never into a fire (on netherrack it burns on; replaceable, but a worker won't stand in it) or anything
+			// else that hurts or traps whoever stands there (Walker.canStand's rule)
 			if (standOn(level, feet.below(), ground) && open(level, feet) && open(level, feet.above())
+				&& !Walker.hurts(level.getBlockState(feet))
 				&& !ground.is(BlockTags.LEAVES) && level.getFluidState(feet.below()).isEmpty()) {
 				return feet.immutable();
 			}

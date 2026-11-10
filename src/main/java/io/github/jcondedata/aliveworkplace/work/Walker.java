@@ -283,8 +283,11 @@ public final class Walker {
 		return state.getCollisionShape(level, pos).isEmpty() || state.getBlock() instanceof net.minecraft.world.level.block.LadderBlock;
 	}
 
-	/** Blocks with no collision that still hurt or trap whoever stands in them. */
-	private static boolean hurts(BlockState state) {
+	/**
+	 * Blocks with no collision that still hurt or trap whoever stands in them: no worker stands in one ({@link #canStand}),
+	 * and no builder's path or Steward's road leads into one ({@code Paths.walkable}, B1119).
+	 */
+	public static boolean hurts(BlockState state) {
 		return state.getBlock() instanceof net.minecraft.world.level.block.SweetBerryBushBlock
 			|| state.getBlock() instanceof net.minecraft.world.level.block.BaseFireBlock
 			|| state.getBlock() instanceof net.minecraft.world.level.block.PowderSnowBlock

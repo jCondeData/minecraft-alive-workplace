@@ -44,7 +44,8 @@ import net.minecraft.world.level.saveddata.SavedData;
  * {@code ramped} (the players were told; all default to none and false). Since 32.6 also the morning report's numbers: {@code hp_factor} (what the gates' hit
  * points were multiplied by; default 1), {@code came}, {@code fled}, {@code to_guards}, {@code to_players},
  * {@code to_others} (default 0 and false), {@code kills} (per guard: {@code guard}, {@code count}, {@code name};
- * default none) and {@code players} (who killed a raider; default none).</li>
+ * default none) and {@code players} (who killed a raider; default none). Since B1126 also {@code over_by_ladder} (the
+ * raiders who climbed over a wall by a ladder, each {@code id}, so a restart doesn't send them back to it; default none).</li>
  * <li>{@code broken} (32.4): per {@code hall}, the gate blocks rams broke that wait for a builder.</li>
  * <li>{@code damaged} (32.16a): every builder's block a threat took (a gate a ram broke, a block a village fire
  * burned) that no builder has put back yet, as packed positions; builders repair these even with {@code builderRepairs}
@@ -158,6 +159,11 @@ public final class ThreatData extends SavedData {
 		public final Map<java.util.UUID, String> names = new LinkedHashMap<>();
 		/** The players who fought: who killed a raider of this siege. */
 		public final Set<java.util.UUID> players = new java.util.LinkedHashSet<>();
+		/**
+		 * The raiders who climbed over a wall by a ladder (32.5; Ladders lets them go). Saved, so a restart doesn't hand them
+		 * the ladder again from inside the walls (B1126).
+		 */
+		public final Set<java.util.UUID> overByLadder = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
 		public Siege(BlockPos hall, long began, long dawn) {
 			this.hall = hall.immutable();
@@ -629,6 +635,13 @@ public final class ThreatData extends SavedData {
 				fought.add(k);
 			}
 			g.put("players", fought);
+			ListTag climbed = new ListTag();
+			for (java.util.UUID id : siege.overByLadder) {
+				CompoundTag k = new CompoundTag();
+				k.putString("id", id.toString());
+				climbed.add(k);
+			}
+			g.put("over_by_ladder", climbed);
 			laid.add(g);
 		}
 		tag.put("sieges", laid);
@@ -777,6 +790,14 @@ public final class ThreatData extends SavedData {
 			for (int j = 0; j < fought.size(); j++) {
 				try {
 					siege.players.add(java.util.UUID.fromString(Nbt.getString(Nbt.compoundAt(fought, j), "id")));
+				} catch (IllegalArgumentException e) {
+					// (not an id: the entry is skipped)
+				}
+			}
+			ListTag climbed = Nbt.getList(g, "over_by_ladder", Tag.TAG_COMPOUND);
+			for (int j = 0; j < climbed.size(); j++) {
+				try {
+					siege.overByLadder.add(java.util.UUID.fromString(Nbt.getString(Nbt.compoundAt(climbed, j), "id")));
 				} catch (IllegalArgumentException e) {
 					// (not an id: the entry is skipped)
 				}

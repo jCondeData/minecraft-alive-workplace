@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A raider who climbed over a village wall by a siege ladder is no longer handed the ladder again after a server restart: who got over the wall is now saved with the siege, so after the restart it doesn't walk back to the wall's inside to "climb" it (B1126).
 - The Storehouse board's click messages read as sentences for every request a job posts, the Nurse's, Undertaker's, Physician's and Composter's too: "Gave a remedy (honey, milk or a healing potion) to the Nurse's chests", "You don't have a golden apple (or a healing potion) to give", never "Gave 1 a ..." or "You have no a ..." (B1108, B1109).
 - The shop paid in CobbleDollars never charges a price its screen didn't show: an open shop screen redraws when the owner changes a price, and a Confirm pressed after a price change (up or down) takes nothing, says the new price and keeps the row gold at it for a second Confirm (B1107).
 

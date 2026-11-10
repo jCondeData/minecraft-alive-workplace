@@ -551,6 +551,9 @@ fence, a path, then water (natural); `naturalGroundDoesNotBlockAnUpgrade`, all o
 `HallCrewSplitGameTests` (B1110: every builder busy on A, a lead and a helper: the Upgrades page's row and the Repairs
 page's Yes take the helper off A, who builds the upgrade or repairs the wall while A goes on with its lead; with one
 builder only, nothing is taken off A and the answer says none can be spared; the split through a save and reload).
+`QaHallCrewSplit1110cGameTests` (QA of B1110: a lone Builder is never taken even when his bench is nearest, a helper
+is; three upgrades in a row against a lead and two helpers split twice and queue the third, every build keeping a
+lead and going on; two lone Builders are never split; the Repairs page's Yes the same; both answers word for word).
 `QaHallFixes1103cGameTests` (B885, B886, B889-B891 beyond their repros: visitors and Doctor Wren never jobless or given a block, a hire ending, the level request called off for every helper and across a save, a scout given No job, a retired elder's forged picks, a new Steward after a retrained one), `QaHallMidActivity1103cGameTests` (job changes mid-alarm, mid-trade and with a tools request open). `QaLaneC1104eGameTests.theHallGivesNoJobToABabyOrANitwitButToAGrownVillager` (QA: the hall's hand-out refuses a baby who is no nitwit and a grown nitwit, the block staying free, and gives it to a grown villager beside them). `HallPeopleGameTests` (40.2: the rows and counts of a village of 8 and of 60 scrolled to its last villager, the
 details of a builder, a guard, a child and a nitwit and Job ▾ on the builder, a villager who dies or leaves while the
 screen is open; scene `hall_people`). `HallPeopleJobGameTests` (40.3, every case through Job ▾'s clicks:

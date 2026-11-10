@@ -225,9 +225,12 @@ public final class JobShortages {
 		return list;
 	}
 
-	/** Whether {@code item} is a crafted part (some crafting-table, stonecutter or furnace recipe makes it). */
+	/**
+	 * Whether {@code item} is a crafted part: on a job's list ({@code aliveworkplace:crafts/<job>}; B1134: concrete is the
+	 * Mason's though no recipe makes it, he sets it in water), or some crafting-table, stonecutter or furnace recipe makes it.
+	 */
 	static boolean crafted(ServerLevel level, Item item) {
-		return !Crafting.recipesFor(level, Crafting.Kind.CRAFTING, item).isEmpty() || !Crafting.recipesFor(level, Crafting.Kind.STONECUTTING, item).isEmpty()
+		return CraftJobs.tagged(item) != null || !Crafting.recipesFor(level, Crafting.Kind.CRAFTING, item).isEmpty() || !Crafting.recipesFor(level, Crafting.Kind.STONECUTTING, item).isEmpty()
 			|| !Crafting.recipesFor(level, Crafting.Kind.KILN, item).isEmpty() || FurnitureRecipes.makes(level.getServer(), item);
 	}
 

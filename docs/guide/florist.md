@@ -36,13 +36,14 @@ composter.
 When a builder nearby is waiting for a **flower pot**, a **decorated pot**, a **dye** or **moss carpet**, the florist
 makes it at their workstation from what the builder can get at (their chests, the village's, and the flowers in the
 florist's own chests) and takes it to the builder's chest. Pots are made from **bricks**: with only clay balls about, a
-[Mason](mason.md) with a furnace by his stonecutter fires the bricks first. The dyes a [Shepherd](shepherd.md)'s beds,
-wool and banners need are the florist's too: with a florist nearby, the Shepherd waits for hers. Short of bricks with no
+[Mason](mason.md) with a furnace by his stonecutter fires the bricks first (only while a florist works near the
+builder). Moss carpet is made from moss blocks. The dyes a [Shepherd](shepherd.md)'s beds, wool and banners need are
+the florist's too: with a florist nearby, the Shepherd waits for hers; with none he makes them himself. Short of bricks with no
 Mason, the builder's line says so ("short of 3 Bricks to make 1 Flower Pot"); with no florist at all it reads "Hire a
-Florist to make Flower Pots".
+Florist to make Flower Pots" (a Carpenter or Leatherworker never makes them).
 
 Over their head: how many flowers they've grown, and whether they're growing, picking, filling a pot or putting the
-flowers away.
+flowers away; while making something for a builder, "Florist · 1 made for builders" and what they're making.
 
 ## How the florist fits in
 

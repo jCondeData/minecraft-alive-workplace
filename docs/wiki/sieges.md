@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085, B1126
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085, B1116, B1126
 
 ## What a player sees
 
@@ -114,7 +114,10 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   any of them is still outside the gate line within 12 blocks, the rams wait 4 blocks out and 4 along the wall from the
   breach and strike no blow (B126: a ravager at the next bar stood in the one-block way it had opened). A raider
   with a foe in sight is left to fight. Each raider carries a goal that holds it to the director's order; without it
-  their own hunting walks them round the walls after villagers they cannot reach.
+  their own hunting walks them round the walls after villagers they cannot reach. A raider over the wall by a ladder
+  or a sand ramp is past the wall like one through the breach and is left to its fight too, the gate shut or not, and
+  after a restart (the ladders' over set is saved with the siege); back outside the gate line it is the director's
+  again (B1116: it was walked to the inside of the shut gate and stood there).
 - **A raider that converts** (a zombie drowning, a skeleton freezing: vanilla's `Mob.convertTo` gives it a new UUID)
   keeps its place (B1085): `ConvertedMobs.swap` moves the new mob into the director's through, ordered and orders, and
   into the ladders' and sand ramps' over sets and assignments (`Sieges.converted`, `Ladders.converted`,

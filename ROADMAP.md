@@ -6474,7 +6474,7 @@ Lane C builds it, in order. Depends on: nothing open.
   sleep in the Hall or the inn, then their bed, home and workstation are the new spot's, and the Hall's People page,
   couples and status cards follow. Done when: GameTests for a family's beds, a worker's workstation, a builder's
   bench inside a moved house, save and reload; scene `mover` shows them at home after.
-- [ ] **45.5** **Chests, furniture and decorations arrive as they were.** Containers come back with exactly their
+- [x] **45.5** (review: pending 2026-11-10) **Chests, furniture and decorations arrive as they were.** Containers come back with exactly their
   items (a player's chest included; nothing copied or doubled), furniture from CobbleFurnies/Cozy Home and the mod's
   furnished homes, banners, signs, item frames and armor stands too. Done when: GameTests with every container kind
   (chest, barrel, shulker box, a modded storage block by id), a sign's text, a framed item; compat tests for the

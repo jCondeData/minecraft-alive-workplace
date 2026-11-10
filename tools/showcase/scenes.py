@@ -558,10 +558,12 @@ SCENES = [
        ("03_bram_builds_it", "Clicked: Bram builds the Starter Cottage II")]),
     # The Hall's Move page (ROADMAP 45.2): the list, the picker's map with a fitting spot and its ghost, then rotated
     # The Mover (ROADMAP 45.3): the cottage taken down top-down and put up again turned a quarter at its new spot;
-    # its residents move too (45.4): Dara's bed and Tomas's barrel are the new cottage's, and he walks to it
+    # its residents move too (45.4): Dara's bed and Tomas's barrel are the new cottage's, and he walks to it;
+    # its belongings arrive as they were (45.5): the barrel's catch and the sign's words
     S("mover", "Mover", "Moving a finished building",
       "the Mover took the Starter Cottage down top-down into his crates and put it up again turned a quarter at its new spot, "
-      "nothing dropped; Dara's bed and her husband Tomas's barrel moved with it, so they live and work there now", 270,
+      "nothing dropped; Dara's bed and her husband Tomas's barrel moved with it, so they live and work there now, "
+      "his barrel still holding his 16 cod and 5 salmon and the cottage's sign still reading \"Dara & Tomas\"", 270,
       [START, ("02_half_way", "Half way: half the cottage packed in his crates"),
        ("03_at_home", "After: Tomas at his barrel in the moved cottage, Dara's bed is there too"), DONE]),
     S("move_plan", "Village Hall", "Picking a new spot for a building on the hall's Move page",

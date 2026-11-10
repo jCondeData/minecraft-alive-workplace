@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+
+- A moved building's belongings arrive as they were: every chest, barrel, shulker box and modded store (Sophisticated Storage, furniture cabinets and cupboards) with exactly its items, nothing dropped or doubled, signs with their words, banners, item frames (one hanging on an outer wall too) and armor stands as the village left them, and CobbleFurnies, Handcrafted and Cozy Home furniture; a piece of a furniture mod removed mid-move is left out and the rest still moves (45.5).
+
 ### Fixed
 
 - A Mover whose own Mover's Crate stands inside the building he's moving no longer packs it with the rest and then waits forever for it: the crate stays where it stands and the move finishes (a move already stuck this way carries on, the crate put back first).

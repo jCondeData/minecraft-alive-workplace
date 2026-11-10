@@ -17,9 +17,55 @@ import org.jetbrains.annotations.Nullable;
 public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	@Nullable
 	private Component name;
-	/** How the village is doing, from the last round (not saved: the first tick counts again). */
+	/** How the village is doing, from the last round (not saved: the first round after a load counts again). */
 	@Nullable
 	private VillageNeeds.Needs needs;
+	/**
+	 * B436: ticks a hall loaded with its chunk waits before its first round. Its villagers come in a tick or more after
+	 * its chunk, and a server that has just started is still loading the world: a round on the first tick counted (and
+	 * seeded) a part of the village, and every hall's round fell in the server's first, slowest ticks.
+	 */
+	public static int FIRST_ROUND_WAIT = 100;
+	/** B436: ticks between the first rounds of two halls loaded together, so they never share a tick. */
+	public static int FIRST_ROUND_GAP = 20;
+	/** The game time of the last first round after a load, of any hall (in memory). */
+	private static long lastFirstRound = Long.MIN_VALUE;
+	/** Whether this hall came from a saved chunk (not placed, or loaded in place by a test or a command); in memory. */
+	private boolean fromSave;
+	/** The game time a hall from a save may have its first round from (-1: its first tick is still to come); in memory. */
+	private long firstRoundFrom = -1;
+
+	/**
+	 * Whether the hall's round runs this tick: at its turn every {@link VillageNeeds#CHECK_EVERY} ticks, and before its
+	 * first. A placed hall has its first on its first tick; one loaded with its chunk {@link #FIRST_ROUND_WAIT} ticks
+	 * later, and at least {@link #FIRST_ROUND_GAP} ticks after any other hall's first (B436), or at its turn if that
+	 * comes sooner.
+	 */
+	boolean roundDue(long gameTime) {
+		if (Math.floorMod(gameTime + worldPosition.hashCode(), VillageNeeds.CHECK_EVERY) == 0) {
+			return true;
+		}
+		if (needs != null) {
+			return false;
+		}
+		if (!fromSave) {
+			return true;
+		}
+		if (firstRoundFrom < 0) {
+			firstRoundFrom = gameTime + Math.max(0, FIRST_ROUND_WAIT);
+		}
+		// Math.abs: another world's clock (a second world opened in the same game) holds nobody back for long.
+		if (gameTime < firstRoundFrom || lastFirstRound != Long.MIN_VALUE && Math.abs(gameTime - lastFirstRound) < FIRST_ROUND_GAP) {
+			return false;
+		}
+		lastFirstRound = gameTime;
+		return true;
+	}
+
+	/** Whether the hall is still waiting for its first round after it was loaded with its chunk (B436). */
+	public boolean awaitingFirstRound() {
+		return fromSave && needs == null;
+	}
 	/** When the last baby was born here (0: never), and how many have been. */
 	private long lastBirth;
 	private int births;
@@ -198,8 +244,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				io.github.jcondedata.aliveworkplace.city.StewardCost.stop(cost, "roads and walls");
 			}
 		}
-		if (level instanceof net.minecraft.server.level.ServerLevel server
-			&& (hall.needs == null || Math.floorMod(level.getGameTime() + pos.hashCode(), VillageNeeds.CHECK_EVERY) == 0)) {
+		if (level instanceof net.minecraft.server.level.ServerLevel server && hall.roundDue(level.getGameTime())) {
 			hall.needs = VillageNeeds.check(server, pos);
 			VillageQuests.tick(server, pos, hall);
 			MarketDays.tick(server, pos, hall);
@@ -987,6 +1032,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	@Override
 	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
 		super.loadAdditional(tag, registries);
+		if (level == null) {
+			fromSave = true; // read with its chunk (B436): a hall placed or loaded in place already has its level
+		}
 		name = Nbt.has(tag, "CustomName", 8) ? parseCustomNameSafe(Nbt.getString(tag, "CustomName"), registries) : null;
 		lastBirth = Nbt.getLong(tag, "lastBirth");
 		births = Nbt.getInt(tag, "births");

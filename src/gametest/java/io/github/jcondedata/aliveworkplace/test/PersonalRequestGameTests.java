@@ -119,8 +119,15 @@ public class PersonalRequestGameTests implements FabricGameTest {
 
 	static ServerPlayer friend(GameTestHelper helper, BlockPos at, Villager villager, int points) {
 		ServerPlayer player = HeartEventGameTests.player(helper, at);
-		Friendship.add(villager, player, points);
+		befriend(helper, villager, player, points);
 		return player;
+	}
+
+	/** {@code player} gets {@code points} with {@code villager}, who has none yet; says what the conditions saw when they don't take (B427). */
+	static void befriend(GameTestHelper helper, Villager villager, ServerPlayer player, int points) {
+		helper.assertTrue(Friendship.eligible(villager), villager.getDisplayName().getString() + " can't make friends " + why(helper, villager, player));
+		int got = Friendship.add(villager, player, points);
+		helper.assertTrue(got == points, villager.getDisplayName().getString() + " took " + got + " of " + points + " points " + why(helper, villager, player));
 	}
 
 	static VillageHallBlockEntity hallEntity(GameTestHelper helper) {

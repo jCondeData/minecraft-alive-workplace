@@ -1553,7 +1553,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStalledCrafting1109bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStalledCrafting1109bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.CraftersFullStoreGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuildingSnapshot1109bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuildingSnapshot1109bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaJobCraftListsGameTests"
 		]
 	},
 	"depends": {

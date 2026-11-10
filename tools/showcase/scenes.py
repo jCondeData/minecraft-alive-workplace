@@ -572,6 +572,11 @@ SCENES = [
       [("01_move_page", "The Move page: the cottage, with its Move button"),
        ("02_new_spot_fits", "The picker: the map, the new spot to the west, \"This spot fits\""),
        ("03_rotated", "Rotated a quarter: its front faces east")]),
+    S("move_refused", "Village Hall", "A move refused: builders are still working on the building",
+      "the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "
+      "was refused, no picker opened, and the action bar said why in red", 60,
+      [("01_move_page", "The Move page: the cottage, with its Move button"),
+       ("02_refused", "Refused: \"builders are still working on it; move it once they're done\"")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "

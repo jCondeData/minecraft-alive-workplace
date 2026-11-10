@@ -958,8 +958,8 @@ public class BuilderWork extends Behavior<Villager> {
 
 	/**
 	 * B508: the build's last look before it's called done. One pass over the structure and decoration: if a block laid
-	 * earlier is gone and its spot is open ({@link BuildPlan#missing}, as the repair round sees it; crops and blocks
-	 * given up for good aside), the lead goes back to the first such block and over the lists again, what still stands
+	 * earlier is gone and its spot is open ({@link BuildPlan#missing}, as the repair round sees it; crops aside, and
+	 * blocks given up earlier, but for a door or a bed that can go in now, B47), the lead goes back to the first such block and over the lists again, what still stands
 	 * passed straight over (at most {@link #MOST_RECHECKS} times a build). After that, what's still gone is counted as
 	 * skipped. True if it went back.
 	 */
@@ -974,7 +974,16 @@ public class BuilderWork extends Behavior<Villager> {
 			List<BuildPlan.Step> steps = plan.steps(stage);
 			for (int i = 0; i < steps.size(); i++) {
 				BuildPlan.Step s = steps.get(i);
-				if (!site.leftOut(s.pos()) && !BuildPlan.isCrop(s.state()) && BuildPlan.missing(level, s)) {
+				if (!BuildPlan.isCrop(s.state()) && BuildPlan.missing(level, s)) {
+					if (site.leftOut(s.pos())) {
+						// B47: a door or a bed given up earlier (something in its other half's cell each time the builder
+						// came to it): if it can go in now it is taken back and laid like a block broken since, rather than
+						// the house called done without its door; anything else given up stays given up (B508)
+						if (site.rechecks() >= MOST_RECHECKS || !canGoInNow(level, s)) {
+							continue;
+						}
+						site.takeBack(s.pos());
+					}
 					if (first == null) {
 						first = stage;
 						at = i;
@@ -991,6 +1000,22 @@ public class BuilderWork extends Behavior<Villager> {
 			site.leftBroken(gone); // broken again and again: left for the repair round, not claimed done
 		}
 		return false;
+	}
+
+	/**
+	 * B47: whether a two-block block given up earlier (a door, a bed, a tall plant) could be laid now: its other half's
+	 * spot (the door's top, the bed's head) is free, as {@link #place} asks, and it has what it stands on. One-block
+	 * blocks given up are never gone back for (B508: a torch given up while its wall was gone is the repair round's).
+	 */
+	private static boolean canGoInNow(ServerLevel level, BuildPlan.Step step) {
+		if (step.secondaryPos() == null) {
+			return false;
+		}
+		BlockState there = level.getBlockState(step.secondaryPos());
+		if (!there.isAir() && !there.canBeReplaced() && !MaterialRules.matches(there, step.secondaryState())) {
+			return false;
+		}
+		return MaterialRules.canStand(level, step.pos(), MaterialRules.grownAs(level, step.pos(), step.state()));
 	}
 
 	/**

@@ -251,6 +251,17 @@ public final class BuildSite {
 	}
 
 	/**
+	 * B47: the door or bed at {@code pos}, given up earlier this build, can go in after all (its other half's spot is
+	 * free again): no longer left out nor counted as skipped, so the last look before DONE goes back for it like a block
+	 * broken since.
+	 */
+	public void takeBack(BlockPos pos) {
+		if (leftOut.remove(pos) && skipped > 0) {
+			skipped--;
+		}
+	}
+
+	/**
 	 * B508: back to {@code stage}'s list at {@code index} (the first block broken since it was laid), to put back what's
 	 * gone before the build is called done; what's still in place is passed straight over.
 	 */

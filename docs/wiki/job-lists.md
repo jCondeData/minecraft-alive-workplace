@@ -99,3 +99,8 @@ before carries on.
 builder's request, the concrete across a reload), an untagged wooden block (the Bounty Board) the Carpenter's by its
 recipe, every item made before 46.1 still has a job, the "Hire a ..." line for each job, the Storehouse's lines, the
 board naming the Lumberjack for a builder short of logs, and a flower pot left unmade and named with its job absent.
+`QaJobCraftListsGameTests` (QA): every row of the Milestone 46 table on its own job's list and made today by that job
+or its stand-in, no job making another's things (the Leatherworker no glass, terracotta or concrete), the ingredient
+rule's order and the tag winning over it, every stonecutter cut the Mason's (or, for copper, the Tinkerer's), the "Hire a
+..." line grouped by job in the plural, the Storehouse's line for every gatherer and only for grown workers in reach,
+and through a builder's request the Mason making stained glass while a Carpenter leaves stained glass and lanterns alone.

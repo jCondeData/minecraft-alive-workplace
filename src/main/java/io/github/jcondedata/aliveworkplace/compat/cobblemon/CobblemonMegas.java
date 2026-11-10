@@ -113,6 +113,7 @@ public final class CobblemonMegas {
 			}
 			Pokemon last = team.get(team.size() - 1);
 			Pokemon ace = species.create(last.getLevel());
+			CobblemonTrainers.settle(ace, new Random(random.nextLong())); // the same look every time (B1104)
 			CobblemonTrainers.train(ace, t, random);
 			ace.swapHeldItem(new ItemStack(stone.get()), false, false);
 			team.set(team.size() - 1, ace);

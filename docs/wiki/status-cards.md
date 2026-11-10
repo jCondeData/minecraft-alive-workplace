@@ -5,7 +5,7 @@ the Nurse's shows your health and your party's, with **Heal**; the Fossil Scient
 fossils is, with **Hand over**. Each button does exactly what the click did before. The card is the shared piece the
 job-status cards of 42.5 reuse ([Job status cards](job-status-cards.md)). Part of Milestone 43 (One look for every screen, Pokémon).
 
-Roadmap items: 43.3
+Roadmap items: 43.3, B1103
 
 ## What a player sees
 
@@ -38,8 +38,10 @@ labeled lines with an icon, a value in its color and a bar, a line for when ther
 each is grayed, a footer hint), worked out on the server. `StatusCardMenu.open` opens the menu type
 `aliveworkplace:status_card` with it (the platform's menu-with-data, as the Trainer screen) and an action for its
 buttons; the client's `StatusCardScreen` draws it with `TableStyle`'s small-card pieces (the header, a line and a bar,
-in their own section) at the size of `docs/design/M42/trainer_c.png`, as tall as its lines. A button press
-closes the card and runs the action; Close only closes.
+in their own section) at the size of `docs/design/M42/trainer_c.png`, as tall as its lines. The buttons always stay
+inside the card (`StatusCard.buttonRow`, B1103): at their roomy width when they fit, else at what their labels need,
+else wrapped onto a second row, a label too long for the card trimmed. A button press closes the card and runs the
+action; Close only closes.
 
 **The Nurse.** `NurseCard` builds her card; Heal calls `Nurses.treat`, unchanged. `Nurses.refusal` asks the same checks
 as `treat`, in the same order, without changing anything (her wait is not moved, the machine is not touched), so Heal
@@ -85,7 +87,7 @@ none (the cards read the Fossil Scientist's saved queue and save nothing)
 `NurseCardGameTests.nurseCardGraysHealWhileSheSleeps`, `NurseCardGameTests.nurseCardNotOnASneakClick`,
 `NurseCardGameTests.nurseCardAfterASaveAndReload`, `StatusCardCompatTests.nurseCardShowsThePartyAndHealHealsIt`,
 `StatusCardCompatTests.nurseCardGraysHealWhileHerMachineIsBusy`, `StatusCardCompatTests.fossilCardShowsProgressAndHandOverDelivers`,
-`StatusCardCompatTests.fossilCardWithNothingHandedOver`, `StatusCardCompatTests.fossilCardAfterASaveAndReload` (Cobblemon),
+`StatusCardCompatTests.fossilCardWithNothingHandedOver`, `StatusCardButtonsGameTests.statusCardButtonsStayInsideTheCard`, `StatusCardCompatTests.fossilCardAfterASaveAndReload` (Cobblemon),
 the click tests of `QaNurseWait1103dGameTests`, `QaNurseMachine1102dCompatTests` and `QaFossilScientist1102dCompatTests`
 (now through the card's button) and `QaEveryMenuGameTests.everyServerMenuAndItsClientCopyAgreeSlotForSlot`.
 

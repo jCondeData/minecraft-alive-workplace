@@ -70,7 +70,7 @@ public class QaThreatSwitches1110dBugTests implements FabricGameTest {
 	private static final long BASE = 10 * VillageNeeds.DAY;
 	private static final double NORTH = -Math.PI / 2;
 
-	private static void threatLevel(int level) {
+	static void threatLevel(int level) {
 		WorkplaceConfig.parse("{\"threatLevel\": " + level + "}").apply();
 		VillageRaids.ENABLED = true; // (apply() turns raids off under GameTests; the after() puts the config back)
 	}
@@ -78,7 +78,7 @@ public class QaThreatSwitches1110dBugTests implements FabricGameTest {
 	// The warning.
 
 	/** A hall (radius 24) whose clock is clear, with a test culture loaded; all put back at the end (as QaWarningGameTests). */
-	private static BlockPos warnedVillage(GameTestHelper helper) {
+	static BlockPos warnedVillage(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
@@ -134,7 +134,7 @@ public class QaThreatSwitches1110dBugTests implements FabricGameTest {
 	}
 
 	/** A villager (no AI) by the hall: the one the warned evening keeps in. */
-	private static Villager townsman(GameTestHelper helper) {
+	static Villager townsman(GameTestHelper helper) {
 		Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(18, 2, 14));
 		v.setNoAi(true);
 		v.setInvulnerable(true);
@@ -142,13 +142,13 @@ public class QaThreatSwitches1110dBugTests implements FabricGameTest {
 	}
 
 	/** Dusk of day 11: the clock sets tomorrow night's attack from the north. */
-	private static void setAttack(ServerLevel level, BlockPos hall) {
+	static void setAttack(ServerLevel level, BlockPos hall) {
 		level.setDayTime(BASE + 12100);
 		ThreatData.get(level).rolled(hall, 11, new ThreatData.Attack(12, BESIEGERS, NORTH, 13600));
 	}
 
 	/** The hall's round, in the hall's own order: the raids' clock, then the day's warning. */
-	private static void hallRound(ServerLevel level, BlockPos hall) {
+	static void hallRound(ServerLevel level, BlockPos hall) {
 		VillageRaids.tick(level, hall, 10, 1, -1, d -> {
 		});
 		Warnings.round(level, hall, 10, 1);

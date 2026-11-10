@@ -132,7 +132,7 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   the repair round. Sand a player puts in a room mid-build is dug out with it (never lost); on a finished hut it stays.
 - FOUNDATION fills under a build standing on uneven ground. How deep is the `workplaceFoundationDepth` rule.
 - `workplaceFoundationDepth` and `workplaceLevelGround` changed with /gamerule take effect at once on a build under way
-  (B1113): the foundation and the leveling still to come follow the new value, as after a restart (`QaBuilderRules1109BugTests`).
+  (B1113): the foundation and the leveling still to come follow the new value, as after a restart (`QaBuilderRules1109BugTests`; QA's `QaBuilderFixesVerify1110GameTests`: the depth lowered to 0 while clearing or halfway through the foundation fills no more of the dip, the leveling switched on mid-STRUCTURE fills every pit, and a change made live holds through a restart).
 - STRUCTURE goes bottom-up so every block has something to stand on. A block a player puts mid-build where the
   drawing has another is taken out into the builder's chests and the drawn block laid (a Steward's build keeps the
   player's block instead; tests `QaBuilderDisruptionGameTests`, `StewardSafetyGameTests`).
@@ -250,7 +250,7 @@ else is told it isn't theirs. Not asked: what threats took (32.16a: a gate a ram
 repaired without asking as before, and a damaged Wonder's parts (35.8). `repairAsk` off: Builders repair by
 themselves, as before 36.15. After a build, it can lay a dirt path to the village bell or hall (at most 96 blocks long). The path skips every 16x16x16 section where a player placed or broke blocks (the Steward's ledger, see
 [Steward](steward.md)), even one built in after the path was planned, and paves the rest of the way. Ground a little lower than a full block (an old dirt path, a vanilla village's own paths round its bell, farmland, mud, soul sand) is walked over and left as it is, and a Steward's road crosses an old dirt path or mud the same way (B981; a road still never takes a field's farmland or soul sand, which aren't natural ground to it); furniture such as a lectern or a chest is never stood on, and neither is a big dripleaf, which tips over (B1030), or a magma block, which burns (B1105; workers never stand on one either, and a path goes round it or not at all), nor a lit
-campfire, a cactus, a pointed dripstone or a lava cauldron (`QaBuilderBugs1109bGameTests`); nor does it lead into a fire, as on a ruined portal's netherrack, where no worker stands (B1119, `QaBuilderBugs1109bBugTests`).
+campfire, a cactus, a pointed dripstone or a lava cauldron (`QaBuilderBugs1109bGameTests`); nor does it lead into a fire, as on a ruined portal's netherrack, where no worker stands (B1119, `QaBuilderBugs1109bBugTests`), nor into a soul fire on soul sand or soul soil, a cobweb, a berry bush, a wither rose or powder snow: a route goes round a soul fire on its causeway and a Steward's road through the one gap in a band of fire (`QaBuilderFixesVerify1110GameTests`).
 
 **Safe at height.** A Builder with a build (lead or helper) takes no fall damage: he stands on the build's own
 upper rows (a palisade's stake tops, a tower's platform before its parapet) and can step, jump or be shoved off them.

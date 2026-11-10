@@ -52,25 +52,25 @@ import net.minecraft.world.level.block.state.BlockState;
 public class WaystonesCompatTests implements FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;
 	private static final ResourceLocation RULE = ResourceLocation.fromNamespaceAndPath("aliveworkplace", "waystone_plaza");
-	private static final BlockPos HALL = new BlockPos(1, 2, 12);
-	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
-	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
-	private static final BlockPos ORIGIN = new BlockPos(9, 2, 3);
+	static final BlockPos HALL = new BlockPos(1, 2, 12);
+	static final BlockPos BENCH = new BlockPos(2, 2, 2);
+	static final BlockPos CHEST = new BlockPos(2, 2, 4);
+	static final BlockPos ORIGIN = new BlockPos(9, 2, 3);
 	/** The stone's spot in the plaza (lower half), as tools/blueprints/waystones.py draws it. */
-	private static final BlockPos STONE = new BlockPos(3, 2, 3);
+	static final BlockPos STONE = new BlockPos(3, 2, 3);
 
-	private static VillageHallBlockEntity hall(GameTestHelper helper, String name) {
+	static VillageHallBlockEntity hall(GameTestHelper helper, String name) {
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		VillageHallBlockEntity hall = helper.getBlockEntity(HALL);
 		hall.setCustomName(Component.literal(name));
 		return hall;
 	}
 
-	private static BlueprintData.Placement placement(GameTestHelper helper) {
+	static BlueprintData.Placement placement(GameTestHelper helper) {
 		return new BlueprintData.Placement(helper.getLevel().dimension().location(), helper.absolutePos(ORIGIN), Rotation.NONE, Mirror.NONE);
 	}
 
-	private static BlockPos stone(GameTestHelper helper) {
+	static BlockPos stone(GameTestHelper helper) {
 		return helper.absolutePos(ORIGIN).offset(STONE);
 	}
 
@@ -82,7 +82,7 @@ public class WaystonesCompatTests implements FabricGameTest {
 	}
 
 	/** Sets every block of the plaza as a finished one stands, and records it finished (owned by {@code owner}). */
-	private static void paste(GameTestHelper helper, ResourceLocation id, java.util.UUID owner) {
+	static void paste(GameTestHelper helper, ResourceLocation id, java.util.UUID owner) {
 		ServerLevel level = helper.getLevel();
 		Blueprint blueprint = BlueprintLibrary.get(level, id).orElseThrow(() -> new GameTestAssertException("no blueprint " + id));
 		BuildPlan plan = BuildPlan.create(blueprint, placement(helper));
@@ -97,14 +97,14 @@ public class WaystonesCompatTests implements FabricGameTest {
 		BuildSiteManager.get(level).recordFinished(id, placement(helper), owner);
 	}
 
-	private static String debug(GameTestHelper helper) {
+	static String debug(GameTestHelper helper) {
 		BlockPos p = stone(helper);
 		return helper.getLevel().getBlockState(p) + " / " + helper.getLevel().getBlockState(p.above()) + " be=" + helper.getLevel().getBlockEntity(p)
 			+ " at=" + WaystonesAPI.getWaystoneAt(helper.getLevel(), p).map(w -> w.getClass().getSimpleName() + " valid=" + w.isValid() + " pos=" + w.getPos() + " name=" + w.getName().getString()).orElse("none")
 			+ " up=" + WaystonesAPI.getWaystoneAt(helper.getLevel(), p.above()).map(w -> w.getClass().getSimpleName() + " valid=" + w.isValid() + " pos=" + w.getPos()).orElse("none");
 	}
 
-	private static Optional<String> nameAt(GameTestHelper helper) {
+	static Optional<String> nameAt(GameTestHelper helper) {
 		return VillageWaystones.EXTENSION.call(s -> s.nameAt(helper.getLevel(), stone(helper)), Optional.<String>empty());
 	}
 

@@ -130,6 +130,18 @@ public final class MaterialRules {
 	}
 
 	/**
+	 * Blocks another mod joins with their touching neighbours of the same block into one container whose contents sit on
+	 * one of them (Create's Fluid Tank and Item Vault, by id): taking one block of it re-shapes the rest and loses its share
+	 * of the contents, so the Mover packs such a container whole before he takes any of it down (B1135, B1136).
+	 */
+	private static final Set<String> JOINED = Set.of("create:fluid_tank", "create:creative_fluid_tank", "create:item_vault");
+
+	/** Whether {@code state} is joined into one container with its touching neighbours of the same block: see {@link #JOINED}. */
+	public static boolean joined(BlockState state) {
+		return JOINED.contains(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
+	}
+
+	/**
 	 * B794: the stem pieces of a plant that has no item of its own, placed with the plant's own item as a player lengthens
 	 * it: cave vines with glow berries, weeping and twisting vines, kelp, and a big dripleaf's stem with a big dripleaf.
 	 * B865: a melon's or pumpkin's grown (attached) stem costs the seeds of its stem ({@link #grownAs}).

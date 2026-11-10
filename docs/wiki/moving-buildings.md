@@ -70,7 +70,9 @@ isn't put back and one put in a chest meanwhile moves too. Furniture from Cobble
 Home moves like any block. A piece of a furniture mod removed from the game mid-move is left out; the rest goes up.
 In the showcase, Tomas's barrel arrives with his 16 cod and 5 salmon and the cottage's sign still reads "Dara & Tomas".
 With Create installed, a Mechanical Crafter, Weighted Ejector, vault or depot arrives with its items once, and a
-belt of any length comes across whole, with the items on it, and runs at the new spot.
+belt of any length comes across whole, with the items on it, and runs at the new spot. A Fluid Tank or Item Vault
+built from several blocks arrives as one tank or vault with all its fluid or items, and a canceled move puts it back
+up as one, reachable through any of its blocks (B1135, B1136).
 
 ## How it works
 
@@ -162,7 +164,14 @@ moves as one piece (B1128): taking one belt segment down makes Create remove the
 of that block still standing (the belt's items are in its controller's data) before any comes down, and `put` sets
 every packed segment before loading any data, moving each segment's `Controller` (a world position) to where that
 block now stands (`MoveSite.withController`), as `MechanicWork.beltData` does for builds. Create's crafter and ejector
-aren't `Clearable` and spill as they come down; the discard above takes those items back (B1127). Capture uses `MovePlan.thingsIn` too, so the plan includes outer-wall frames.
+aren't `Clearable` and spill as they come down; the discard above takes those items back (B1127). A container Create joins from
+touching blocks of one kind (`MaterialRules.joined`: Fluid Tank, Creative Fluid Tank, Item Vault) is packed whole too
+(B1135, B1136): `MoveSite.whole` gathers every touching block of that kind still standing and `take` packs each one's
+data before any comes down, since taking one makes Create split the rest (a tank's other block re-shaped and its share
+of the fluid lost, a vault's other block packed as a vault of its own). Its blocks still go up one by one with that
+data: put back where it stood (a cancel), each block's `LastKnownPos` matches and it is the old container again; at the
+new spot Create sees the position changed, frees each block and joins them again, gathering the contents on the new
+controller. `take` counts a joined block as still there whatever shape properties its neighbors gave it. Capture uses `MovePlan.thingsIn` too, so the plan includes outer-wall frames.
 
 ## Items, blocks, jobs, commands
 

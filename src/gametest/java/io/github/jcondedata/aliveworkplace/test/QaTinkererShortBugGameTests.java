@@ -62,7 +62,7 @@ public class QaTinkererShortBugGameTests {
 			new ItemStack(Items.COAL, 1));
 		Villager tinkerer = QaTinkererShortGameTests.tinkerer(helper);
 		helper.runAfterDelay(1200, () -> {
-			String expected = QaTinkererShortGameTests.cantMake("5", "Raw Gold", "3", "Light Weighted Pressure Plate");
+			String expected = QaTinkererShortGameTests.cantMake("5", "Raw Gold", "3", "Light Weighted Pressure Plates");
 			String text = QaTinkererShortGameTests.line(helper, a);
 			net.minecraft.world.Container chest = helper.getBlockEntity(a.chest());
 			helper.assertTrue(chest.countItem(Items.RAW_GOLD) == 1 && chest.countItem(Items.COAL) == 1, "the chest should hold 1 raw gold and 1 coal still: "

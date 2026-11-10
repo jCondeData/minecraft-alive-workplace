@@ -1190,8 +1190,8 @@ villagers at a stonecutter) do the same with the stonecutter's recipes — stone
 stone — and crush cobblestone into gravel and gravel into sand, and with a furnace by the stonecutter they are the
 village's **kiln**: sand fired into glass, cobblestone into stone and smooth stone, clay into terracotta and bricks
 (laid into brick blocks), netherrack into nether bricks — a coal for every 8 things fired; they go about their usual day
-in between. **Leatherworkers** (vanilla villagers at a cauldron) make the leather goods a builder or the Storehouse is
-waiting for — item frames and glow item frames, leads, leather from rabbit hide, leather armor — the same way, and
+in between, and they harden concrete powder into concrete. **Leatherworkers** (vanilla villagers at a cauldron) make
+the leather goods a builder or the Storehouse is waiting for — item frames and glow item frames, leads, leather from rabbit hide, leather armor — the same way, and
 **Beekeepers** make the candles, colored candles and honeycomb blocks at their hive, in between harvesting it. Villages
 sometimes grow a carpenter's workshop.
 

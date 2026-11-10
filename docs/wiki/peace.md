@@ -121,6 +121,9 @@ Roadmap items: 32.21, B134, B383, B704, B705, B767
   neighbor's too (B856, open): one village's raiders leaving at dawn take the neighbor's desert raiders (hours until
   noon) standing within its reach, and a raid whose own raiders are gone isn't fought off while the neighbor's stand
   in its reach. `threat end` already follows the rule (B849).
+- A village warned of tomorrow's raid that is then set At peace, or the threat level set to 0, has the raid called
+  off but still braces for it on the day: gates shut from noon, battle stations and villagers sent in at dusk (B1146,
+  open).
 
 ## Proof
 
@@ -163,3 +166,5 @@ Roadmap items: 32.21, B134, B383, B704, B705, B767
   `village/camp_broken` advancement, no rest days); a chief a player only wounded before Peaceful took him is no kill
   of that player's.
 - Showcase scenes: `at_peace`.
+- QA (lane D, 2026-11-10): `QaThreatSwitches1110dGameTests` (3): no warning at threat level 0 and one at level 1; a
+  coven hexes nobody at levels 1 and 0 and hexes again at 2 the same night; a hex lifts when the level turns gentle.

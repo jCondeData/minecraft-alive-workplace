@@ -321,6 +321,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainerScreen1109dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainerScreen1109dBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainerTeamsVerify1110dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaTrainerFormsVerify1110dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWildBattleWins1109dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaThesisBall1109dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonListMenusCompatTests",

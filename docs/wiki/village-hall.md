@@ -579,4 +579,12 @@ takers, Dara picked as its Porter), `hall_upgrade` (the Upgrades page: the Start
 blocked by a garden fence, a click sending Bram to build the Starter Cottage II), `hall_people_job` (40.3: Job ▾ on
 Dara's row, Mason clicked once for the price, then paid).
 
+## Which hall is a villager's
+
+A villager's hall is the nearest Village Hall within the hall radius (`VillageHalls.nearest`, found through the hall's
+point of interest). Only a hall that really stands counts: a point of interest left behind with no hall block on it
+(a block swapped without a block update, as region edits and some world-editing mods do) is skipped, so the villager
+keeps the nearest real hall, and with it their hearts, gifts and personal requests (B427, `VillageHalls.standsAt`). A
+point in a chunk that isn't loaded is trusted.
+
 See also: [House looks](house-looks.md), the page the Builds button opens.

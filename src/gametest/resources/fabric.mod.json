@@ -399,6 +399,7 @@
 			"io.github.jcondedata.aliveworkplace.test.MoverResidentsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverResidents1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverBelongingsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverBelongings1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverResidentsAwayGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MovePageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",

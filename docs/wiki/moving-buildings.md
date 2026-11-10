@@ -2,9 +2,10 @@
 
 The owner's Milestone 45: a building the Village Hall knows can be moved within its village by a new Mover job, who
 takes it down top-down and puts it up again at the new spot with nothing lost. Being built in order: the snapshot (45.1), the Hall's Move page that plans a move (45.2), the Mover who carries it
-out (45.3), its residents moving with it (45.4) and its belongings arriving as they were (45.5).
+out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
+it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.3, 45.4, 45.5
+Roadmap items: 45.1, 45.2, 45.3, 45.4, 45.5, 45.6
 
 ## What a player sees
 
@@ -22,6 +23,17 @@ The fit line says plainly why a spot is refused: it would overlap another buildi
 be partly outside the village, the ground rises more than 3 blocks across it, there's water on it, or a Mover's Crate
 stands in it (B1129: a crate never moves with a building, so going up there would break it). Confirm also needs
 a hired Mover in the village (45.3); without one the page says "Needs a hired Mover" and nothing is saved.
+
+**What can't be moved (45.6).** Clicking a building's Move button (and Confirm, asked again) goes through
+`MoveRules.refusal` first; a refused building opens no picker, says why on the action bar in red and the list shows
+again. In order: config `moveBuildings` off ("Moving buildings is switched off on this server"); not one of this hall's
+finished buildings ("that building isn't part of this village"); its footprint reaches into a protected village that
+keeps the player out (the mod's own claims, `VillageProtection.keeper`: operators and the owner's friends are let in;
+the line is the protection's own "X is Y's village..."); its footprint holds the Village Hall ("the Village Hall stays
+where it stands"); a Wonder or a Wonder's part ("a Wonder is built to stay where it stands"); a build site not done at
+its origin or overlapping it, such as an upgrade or repair ("builders are still working on it; move it once they're
+done"). With `moveBuildings` off a move already confirmed still goes ahead (stopping one half way would leave a
+building in pieces); `movers` off is the switch that stops the Movers.
 
 ![The Move page](https://jcondedata.github.io/minecraft-alive-workplace/move_plan/still-2.jpg)
 
@@ -201,12 +213,15 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
 
 ## Proof
 
-`MovePageGameTests` (11), all through the hall's clicks: a map click picks the spot (and the ghost follows, green); a
+`MovePageGameTests` (15), all through the hall's clicks: a map click picks the spot (and the ghost follows, green); a
 spot over another building, on a road, outside the village, too steep, under water and over a Mover's Crate each
 refused with its line;
 Rotate a quarter a click; Cancel forgets the pick and the ghost; Confirm without a Mover refused, nothing saved; with a
 Mover the pending move saved, through a save and reload, an old save and a broken entry, marked on the list, reopened on
-its spot and called off.
+its spot and called off. The rules (45.6): with `moveBuildings` off, a live build site on the hut and the hut in
+another player's protected village, each a click on its Move button refused (no picker, nothing saved, the reason's
+words) and the picker opening once the cause is gone; the Hall's own building, a Wonder and a building outside the
+village each refused with its reason, the village's own hut not.
 
 `MovePlanGameTests` (4): a captured house rebuilt 14 blocks away matches block for block (`MaterialRules.matches`) with
 its chest, sign, banner, frame and armor stand; the same at 90, 180 and 270 degrees; a building the hall knows

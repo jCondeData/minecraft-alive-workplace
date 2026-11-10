@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Added
 
+- Moving buildings is safe on a shared server: only the village's own buildings can be moved, never one in another player's protected village; the Village Hall, a Wonder and a building the builders are still working on are refused with the reason; a new **Move buildings** setting (on) turns moving off, and a player guide page explains it all
 - A moved building's belongings arrive as they were: every chest, barrel, shulker box and modded store (Sophisticated Storage, furniture cabinets and cupboards) with exactly its items, nothing dropped or doubled, signs with their words, banners, item frames (one hanging on an outer wall too) and armor stands as the village left them, and CobbleFurnies, Handcrafted and Cozy Home furniture; a piece of a furniture mod removed mid-move is left out and the rest still moves (45.5).
 
 ### Fixed

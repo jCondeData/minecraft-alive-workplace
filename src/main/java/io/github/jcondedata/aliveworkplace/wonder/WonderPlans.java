@@ -245,7 +245,7 @@ public final class WonderPlans {
 	}
 
 	/** Whether a structure is a Wonder's part or whole blueprint. */
-	static boolean isWonder(ResourceLocation structure) {
+	public static boolean isWonder(ResourceLocation structure) {
 		return structure.getPath().startsWith(WonderBlueprints.FOLDER);
 	}
 

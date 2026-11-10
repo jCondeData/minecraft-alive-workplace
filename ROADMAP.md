@@ -6483,7 +6483,7 @@ Lane C builds it, in order. Depends on: nothing open.
   furnished homes, banners, signs, item frames and armor stands too. Done when: GameTests with every container kind
   (chest, barrel, shulker box, a modded storage block by id), a sign's text, a framed item; compat tests for the
   furniture mods and their absence.
-- [ ] **45.6** **Safe to use on the live server.** Only the village's own buildings can be moved (never another
+- [x] **45.6** (review: pending 2026-11-10) **Safe to use on the live server.** Only the village's own buildings can be moved (never another
   player's claim or a building outside the village); the Hall, a Wonder and a building with a live build site are
   refused with a reason; a config switch `moveBuildings` (on) and the guide and wiki pages. Done when: GameTests for
   each refusal and the switch off; the guide page `moving-buildings.md`.

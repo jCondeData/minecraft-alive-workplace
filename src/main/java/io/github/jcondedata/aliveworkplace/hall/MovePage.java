@@ -170,6 +170,13 @@ public final class MovePage {
 
 	/** The Move button of the building at {@code from}: its plan is taken and the picker opens on it. */
 	static void start(ChoiceMenu menu, ServerLevel level, BlockPos hall, BlockPos from, ServerPlayer player) {
+		Component refused = io.github.jcondedata.aliveworkplace.move.MoveRules.refusal(level, hall, from, player); // 45.6
+		if (refused != null) {
+			Chat.actionBar(player, refused.copy().withStyle(ChatFormatting.RED));
+			level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);
+			backToList(menu, level, hall, player);
+			return;
+		}
 		Optional<BuildSiteManager.Finished> building = BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.filter(f -> f.placement().origin().equals(from)).findFirst();
 		Optional<MovePlan> plan = building.flatMap(f -> MovePlan.capture(level, f));
@@ -342,7 +349,10 @@ public final class MovePage {
 			return;
 		}
 		MoveFit.Fit fit = fit(level, p);
-		Component refusal = !fit.fits() ? fit.line() : !Movers.hired(level, p.hall()) ? Component.translatable("message.aliveworkplace.move.needs_mover") : null;
+		Component refusal = io.github.jcondedata.aliveworkplace.move.MoveRules.refusal(level, p.hall(), p.from(), player); // 45.6: asked again
+		if (refusal == null) {
+			refusal = !fit.fits() ? fit.line() : !Movers.hired(level, p.hall()) ? Component.translatable("message.aliveworkplace.move.needs_mover") : null;
+		}
 		if (refusal != null) {
 			Chat.actionBar(player, refusal.copy().withStyle(ChatFormatting.RED));
 			level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);

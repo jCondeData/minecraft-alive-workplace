@@ -13,15 +13,20 @@ Roadmap items: 46.4
   - A brewing stand from a blaze rod and three cobblestone.
   - An ender chest from a blaze rod, an ender pearl and eight obsidian, step by step: the rod ground to blaze powder,
     the eye of ender made, then the chest.
+  - Four end rods from one blaze rod and one popped chorus fruit.
+  - A beacon from five glass, three obsidian and a nether star.
 - Over his head while making something: "Cleric · 3 made for builders" and what he's making. Between jobs he keeps
   brewing: the potions wait while he makes something, and the making waits while he brews, fills bottles or takes a
   potion to a guard.
 - A missing blaze rod is named on the builder's line: "Can't be made yet: short of 1 Blaze Rod to make 1 Brewing
-  Stand". Blaze rods come from the Nether; no job makes them.
+  Stand". Blaze rods come from the Nether; no job makes them. A beacon short of its star reads "Can't be made yet: short
+  of 1 Nether Star to make 1 Beacon", and nothing is taken from the chest meanwhile.
 - A builder with no Cleric nearby reads "Hire a Cleric to make Brewing Stands"; the Storehouse's board says "Made by:
   the Cleric (name)" or "Hire a Cleric to make it".
 - A Librarian no longer makes these, even with the makings at hand; he keeps his books, bookshelves, lecterns,
-  enchanting and cartography tables.
+  enchanting and cartography tables. Nor does a Carpenter, or a Nurse working at a brewing stand: with only them about
+  the line still says "Hire a Cleric to make Brewing Stands". With two of his things wanted it names both: "Hire a
+  Cleric to make Brewing Stands, End Rods".
 
 ## 2. How it works
 
@@ -59,7 +64,7 @@ Nothing new: a Cleric's job in hand is the `crafter_job` attachment every crafti
 
 ## 7. Known limits
 
-- A beacon needs a nether star, which no job makes or gathers: a player hands it over (no test makes a beacon).
+- A beacon needs a nether star, which no job makes or gathers: a player hands it over.
 - The showcase scene `cleric_crafts` is filmed on GitHub, not in this session.
 
 ## 8. Proof
@@ -69,3 +74,9 @@ builder, an ender chest step by step from a blaze rod, an ender pearl and obsidi
 line (not cobblestone, not "Hire"), a Cleric saved and loaded mid-job finishing the stand, his healing potions brewed
 alongside a builder's stand, and with no Cleric the Librarian leaving the stand alone and the line saying "Hire a Cleric
 to make Brewing Stands". Scene `cleric_crafts`.
+
+`QaClericCrafts1110cGameTests` (QA, from the spec): a beacon and four end rods made for builders, the missing nether
+star and the missing blaze rod lines word for word, a Carpenter and a Nurse at a brewing stand never making a brewing
+stand (the line names the Cleric), the hire line for two of his things, the ender chest's steps (powder, eye, chest)
+with a save and reload between them, his brewing stand broken mid-job losing nothing, and his status ("Cleric · 1 made
+for builders", "making 1 Brewing Stand", "taking 1 Brewing Stand to the builder").

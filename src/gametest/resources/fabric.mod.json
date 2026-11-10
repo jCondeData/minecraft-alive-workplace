@@ -404,6 +404,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FloristPotsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFloristPots1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClericCraftsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClericCrafts1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPriceTagList1109cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderToolListsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderToolLists1109bGameTests",

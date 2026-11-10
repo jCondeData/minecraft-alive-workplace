@@ -108,7 +108,11 @@ public class CaravanRoadGameTests implements net.fabricmc.fabric.api.gametest.v1
 		Leftovers.after(helper, () -> held.forEach(pos -> level.getChunkSource().removeRegionTicket(TICKET, pos, 2, pos)));
 	}
 
-	/** Flat grass on dirt at the area's floor, with room over it, along the line north of the area down to {@code farZ}. */
+	/**
+	 * Flat grass on dirt at the area's floor, with room over it, along the line north of the area down to {@code farZ}.
+	 * The line crosses where earlier batches' tests stood (the grid grows south), whose builds stay; the room goes 16
+	 * up, as high as a road looks for ground ({@code Roads.feet}), so a leftover can't end the road on top of it.
+	 */
 	private static void corridor(GameTestHelper helper, BlockPos hall, int nearZ, int farZ) {
 		ServerLevel level = helper.getLevel();
 		int areaNorth = helper.absolutePos(BlockPos.ZERO).getZ();
@@ -116,7 +120,7 @@ public class CaravanRoadGameTests implements net.fabricmc.fabric.api.gametest.v1
 			for (int x = hall.getX() - SIDE; x <= hall.getX() + SIDE; x++) {
 				level.setBlock(new BlockPos(x, hall.getY() - 2, z), Blocks.DIRT.defaultBlockState(), Block.UPDATE_CLIENTS);
 				level.setBlock(new BlockPos(x, hall.getY() - 1, z), Blocks.GRASS_BLOCK.defaultBlockState(), Block.UPDATE_CLIENTS);
-				for (int y = 0; y <= 7; y++) {
+				for (int y = 0; y <= 16; y++) {
 					level.setBlock(new BlockPos(x, hall.getY() + y, z), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
 				}
 			}

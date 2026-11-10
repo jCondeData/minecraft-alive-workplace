@@ -83,6 +83,27 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every bed (a home point of interest) a villager anywhere in the test area could claim: within vanilla's
+	 * claim range ({@code AcquirePoi.SCAN_RANGE}, 48) of the area. A homeless villager claims the free beds nearest him
+	 * that he can walk to, and a bed an earlier batch's test left outside its own area (never cleared) is one: with the
+	 * Terrace's free beds up a ladder (claimable only when vanilla finds no walk to a bed), the homeless villager of
+	 * QaHallBeds1103cGameTests claimed such a bed 13 blocks past the area's edge and walked off to it (B1084). Call it
+	 * before the test places its own beds. Only for tests alone in their batch.
+	 */
+	static void homes(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB box = helper.getBounds();
+		double halfDiagonal = Math.sqrt(box.getXsize() * box.getXsize() + box.getYsize() * box.getYsize() + box.getZsize() * box.getZsize()) / 2;
+		int reach = net.minecraft.world.entity.ai.behavior.AcquirePoi.SCAN_RANGE + (int) Math.ceil(halfDiagonal);
+		java.util.List<net.minecraft.core.BlockPos> beds = level.getPoiManager().findAll(
+			h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), p -> true, net.minecraft.core.BlockPos.containing(box.getCenter()),
+			reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).map(net.minecraft.core.BlockPos::immutable).toList();
+		for (net.minecraft.core.BlockPos bed : beds) {
+			level.removeBlock(bed, false); // its other half goes with it, as it can't stand alone
+		}
+	}
+
+	/**
 	 * Forgets every build a Steward started from a hall in or near the test area, and removes every Storehouse whose
 	 * village reaches it. Both outlive their test: a site is saved world data, and a Storehouse built outside its own
 	 * area is never cleared. A Steward's rounds visit both, so a Steward test at the same spot as an earlier batch's

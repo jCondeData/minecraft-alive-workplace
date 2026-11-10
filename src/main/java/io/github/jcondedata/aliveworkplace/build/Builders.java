@@ -617,11 +617,31 @@ public final class Builders {
 	}
 
 	/**
-	 * Materials the rest of the build takes (blocks not placed yet), grouped by material family (Chipped variants count as
-	 * their plain block) and keyed by the plain block's item.
+	 * Materials the rest of the build takes (blocks not placed yet, and B1148's item frames, paintings and armor stands not
+	 * up yet), grouped by material family (Chipped variants count as their plain block) and keyed by the plain block's item.
 	 */
 	public static Map<Item, Integer> remainingNeed(ServerLevel level, BuildSite site, BuildPlan plan) {
-		return needOf(level, site.upcoming(plan, Integer.MAX_VALUE));
+		Map<Item, Integer> need = needOf(level, site.upcoming(plan, Integer.MAX_VALUE));
+		if (!site.isDeconstruction()) {
+			decorationNeed(level, plan).forEach((item, n) -> need.merge(item, n, Integer::sum));
+		}
+		return need;
+	}
+
+	/**
+	 * B1148: the blueprint's item frames, paintings and armor stands not up yet, by the item each takes. They go up last,
+	 * from the chests, but are asked for like blocks from the start (the requests board, the jobs that make things, the
+	 * waiting line): counting blocks only, a builder never asked the Leatherworker for a frame or the Shepherd for a
+	 * painting, and at the end left out whatever the chests didn't already hold.
+	 */
+	public static Map<Item, Integer> decorationNeed(ServerLevel level, BuildPlan plan) {
+		Map<Item, Integer> need = new LinkedHashMap<>();
+		for (BuildPlan.EntityStep entity : plan.entities()) {
+			if (!BuildEntities.isPresent(level, entity)) {
+				need.merge(MaterialFamilies.key(entity.cost()), 1, Integer::sum);
+			}
+		}
+		return need;
 	}
 
 	private static Map<Item, Integer> needOf(ServerLevel level, List<BuildPlan.Step> upcoming) {
@@ -665,7 +685,11 @@ public final class Builders {
 		}
 		List<BuildPlan.Step> upcoming = site.upcoming(plan, Integer.MAX_VALUE);
 		BuildBudget.read(level, now, upcoming.size());
-		Map<Item, Integer> need = java.util.Collections.unmodifiableMap(needOf(level, upcoming));
+		Map<Item, Integer> counted = needOf(level, upcoming);
+		if (!site.isDeconstruction()) {
+			decorationNeed(level, plan).forEach((item, n) -> counted.merge(item, n, Integer::sum)); // B1148
+		}
+		Map<Item, Integer> need = java.util.Collections.unmodifiableMap(counted);
 		NEED_CACHE.put(site, new CachedNeed(mark, now + NEED_CACHE_TICKS, need));
 		return need;
 	}
@@ -676,6 +700,11 @@ public final class Builders {
 		for (BuildPlan.Step step : site.upcoming(plan, Integer.MAX_VALUE)) {
 			for (MaterialRules.Requirement r : step.requirements()) {
 				need.merge(MaterialFamilies.key(r.item()), r.count(), Integer::sum);
+			}
+		}
+		if (!site.isDeconstruction()) {
+			for (BuildPlan.EntityStep entity : plan.entities()) { // B1148: its item frames and paintings too
+				need.merge(MaterialFamilies.key(entity.cost()), 1, Integer::sum);
 			}
 		}
 		return need;

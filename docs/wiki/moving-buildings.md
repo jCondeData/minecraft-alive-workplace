@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.3, 45.4, 45.5, 45.6
+Roadmap items: 45.1, 45.2, 45.3, 45.4, 45.5, 45.6, B1154
 
 ## What a player sees
 
@@ -57,7 +57,10 @@ with none free they have no bed until theirs is back. A worker keeps their job w
 moment the Mover puts a bed or a workstation up at the new spot it's theirs again: nobody else can take it, the bed at
 the inn is given back, and the Hall's People page, the census, their home (the moved building), the job-status cards
 and couples all show it straight away. A Builder's bench inside a moved house stays his, and his builds keep taking
-from its chests. A move called off gives everyone their old bed and block back the same way.
+from its chests. A move called off gives everyone their old bed and block back the same way. Someone who lives there
+but is far off when the move starts (out trading, or in a part of the world nobody is near) isn't forgotten: their bed
+and workstation are held for them too, and they get the moved ones when they're back, or the inn meanwhile if they
+come back before the house is up. A bed nobody comes back for within five days is let go for someone else.
 
 ![Tomas at his barrel in the moved cottage](https://jcondedata.github.io/minecraft-alive-workplace/mover/still-3.jpg)
 
@@ -151,6 +154,16 @@ the building), `Builders.benchPos` (the bench, the job-status cards); couples an
 A resident not loaded when their block goes up is settled by the villager tick (`mixin/VillagerMixin` →
 `MoveResidents.tick`, once a second; a stay bed is looked for again every 10 seconds while they have none). One whose
 move is over is kept in `MoveSites`' homecomings for `KEEP_TICKS` (5 days).
+
+Residents too far off to be noted (over 128 blocks, or not loaded; B1154): as the site starts, every occupied bed
+(`PoiTypes.HOME`) or workstation (`VillagerProfession.ALL_ACQUIRABLE_JOBS`) point of interest in the box that no noted
+resident has becomes a `MoveResidents.Claim` on the site (saved as `claims`). `placed` reserves a claim's block as it goes
+up, `taken` clears it. A villager seen during the move whose home or job site memory is in the old box is noted then
+(`MoveResidents.late`): the claim becomes theirs, and they get a stay bed. When the move is over, the claims standing
+again wait in `MoveSites`' `forwards` (saved) with their old spot; a villager whose memory is that old spot (and no bed
+or workstation stands there again) gets the moved block (`MoveResidents.forward`). Forwards are swept once a minute:
+one whose block was broken is dropped, one older than `KEEP_TICKS` has its ticket released, and at most
+`MoveSites.MAX_FORWARDS` (256) are kept, oldest let go first. A world from before the fix has neither list.
 
 **Belongings (45.5).** `MoveSite.take` saves the block entity as it is now (`BlockEntity.saveWithoutMetadata`, by id: a modded
 store's own data), empties it with `Clearable.tryClear`, and after the block is set to air discards any item that

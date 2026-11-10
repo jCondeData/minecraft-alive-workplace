@@ -77,6 +77,8 @@ public final class MoveSite {
 	private List<MovePlan.Thing> packedThings;
 	/** Who lives or works in it (45.4): their beds and workstations follow it ({@link MoveResidents}). */
 	private final List<MoveResidents.Resident> residents = new ArrayList<>();
+	/** Beds and workstations in it that someone not loaded nearby has (B1154): held for them where they go up. */
+	private final List<MoveResidents.Claim> claims = new ArrayList<>();
 	private byte things;
 	private Stage stage;
 	private int skipped;
@@ -225,6 +227,14 @@ public final class MoveSite {
 	/** Who lives or works in the building (ROADMAP 45.4), noted as the move started: their beds and workstations follow it. */
 	public List<MoveResidents.Resident> residents() {
 		return residents;
+	}
+
+	/**
+	 * The beds and workstations in the building that someone had who wasn't noted as it started (too far off, or not
+	 * loaded; B1154): held for whoever remembers them when they're next seen ({@link MoveResidents}).
+	 */
+	public List<MoveResidents.Claim> claims() {
+		return claims;
 	}
 
 	/** The box the building stood in before the move. */
@@ -672,6 +682,11 @@ public final class MoveSite {
 			people.add(r.save());
 		}
 		tag.put("residents", people);
+		net.minecraft.nbt.ListTag held = new net.minecraft.nbt.ListTag();
+		for (MoveResidents.Claim c : claims) {
+			held.add(c.save());
+		}
+		tag.put("claims", held);
 		return tag;
 	}
 
@@ -729,6 +744,11 @@ public final class MoveSite {
 		net.minecraft.nbt.ListTag people = tag.getList("residents", net.minecraft.nbt.Tag.TAG_COMPOUND);
 		for (int k = 0; k < people.size(); k++) {
 			MoveResidents.Resident.load(people.getCompound(k)).ifPresent(site.residents::add);
+		}
+		// a site saved before B1154's fix has no claims: only the residents noted follow it
+		net.minecraft.nbt.ListTag held = tag.getList("claims", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		for (int k = 0; k < held.size(); k++) {
+			MoveResidents.Claim.load(held.getCompound(k)).ifPresent(site.claims::add);
 		}
 		return Optional.of(site);
 	}

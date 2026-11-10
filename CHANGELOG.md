@@ -16,8 +16,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.153.0 — 2026-11-09
+
 ### Added
 
+- A new job, the **Mover**, at his own Mover's Crate (planks round a barrel, a lead on top, two iron ingots under it): he carries out the moves picked on the Village Hall's Move page, taking the building down from the top into his crates (chests packed with their contents, frames and furniture too, nothing dropped) and putting it up again at the new spot from the ground up, turned as picked. Two Movers share a move, a reload mid-move is fine, and Call off, even half way, puts everything back where it was. With his crate broken he waits and says why. Config switch `movers` (45.3).
 - The Village Hall has a Move page (under Buildings): pick a finished building, choose its new spot on a small map of the ground round it (a green ghost outline shows it in the world), turn it a quarter at a time, and see plainly why a spot won't do (another building or a road in the way, outside the village, too steep, under water). Confirming needs a hired Mover, the job that comes next; a confirmed move is saved with the village
 - A building the Village Hall knows can be captured as a moving plan (its blocks, chest contents, signs, banners, frames, armor stands, and its residents' beds and workstations) and turned any quarter: the first step toward moving finished buildings (45.1).
 - Right-clicking a Trainer or Trainer Leader with an empty hand opens their page in the Village Hall's look instead of starting the battle at once: their rank and village, your record against them, today's state and the rules on the left; the prize, their team with the real Pokémon models (half of it hidden until you beat them once), your party with a line each (ready, fainted, over the level cap) and Challenge, Trade and Close on the right. Challenge starts the battle as the click did; when they can't battle you it's gray with the reason under it (43.1).
@@ -26,6 +29,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Choosing a job on the Village Hall's Upgrades or Repairs page while every builder is busy no longer does nothing: a builder helping on another build leaves it for the new job (that build keeps its lead and goes on), and with no helper to spare the hall says plainly that every builder is busy and none can be spared (B1110).
+- Crafters no longer stop making things for a builder whose Storehouse is full. The Mason and the Carpenter count the slot their ingredients free, take what they make to another store the builder uses when his is full, and no longer both count on the same empty slot; with no room anywhere, the builder's line says "No room to bring Chest: the chests he takes from are full" instead of "Nobody here makes" (B1111, B1112).
+- A crew of builders works together better: a helper keeps the block it set out for even once the lead has reached it (it used to drop it half-way and leave it to the lead for the end of the stage), helpers keep finding work ahead while the lead catches up, and the lead takes a block it's short of from a helper close by rather than walking back to the chests for it. Two builders now take half the time of one (was 57%), four about 30% (was up to 46%) (B181).
 - Workers no longer go to stand on a magma block, and a builder's path or a Steward's road no longer runs over one: its top is solid, but it burns whoever stands on it (B1105).
 - A builder's path to the village and a Steward's road no longer end on a big dripleaf, which tips whoever stands on it into the gap below, and workers now stand on an end portal frame just as paths always did: workers and paths share one rule for what counts as ground.
 - A raider that gets into a walled village during a siege and then turns into another mob, such as a zombie drowning in a pond inside the walls or a skeleton freezing into a stray, now keeps fighting where it is. Before, it turned round and walked back toward the broken gate, and one that had climbed over by a ladder was briefly sent back to the ladder (B1085).

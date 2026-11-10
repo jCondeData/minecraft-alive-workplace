@@ -869,7 +869,58 @@ def crafters_workbench():
             side.save(block("crafters_workbench_side"))]
 
 
-DRAW = [cradle, crafters_workbench, harvest_idol, sieve, storehouse, teachers_desk, tinkers_bench, trade_board, training_dummy, training_post, travel_post,
+# --- Mover's Crate ---------------------------------------------------------------------------------------------------
+def movers_crate():
+    """The Mover's (ROADMAP 45.3): a spruce packing crate, the barrel's cousin. Top: the lid's boards nailed down with a
+    stencilled arrow (this way up); front: a hand truck leaning on the crate, its steel frame and two wheels, a rope tied
+    round; side: cross braces of a shipping crate with a paper label."""
+    sp = SPRUCE
+    top = bench_face(511, sp, SPRUCE_EDGE[0])
+    top.paste(grid("""
+        ...c...
+        ..ccc..
+        .ccccc.
+        ...c...
+        ...c...
+        ...c...
+    """, {"c": CREAM[0]}), 5, 4)
+    for x, y in ((2, 2), (13, 2), (2, 13), (13, 13)):
+        top.put(x, y, STEEL[1])                                              # nail heads
+    front = bench_face(513, sp, SPRUCE_EDGE[0])
+    front.paste(grid("""
+        33.....
+        2......
+        2......
+        2......
+        2......
+        2......
+        2......
+        2......
+        2......
+        22222..
+        .0..0..
+        000000.
+        .0..0..
+    """, {}, ramp=STEEL), 3, 1)
+    front.fill(rect(1, 6, 14, 6), ROPE[1])                                    # the rope round the crate
+    front.put(8, 7, ROPE[0])
+    front.put(9, 7, ROPE[2])
+    side = bench_face(515, sp, SPRUCE_EDGE[0])
+    for i in range(1, 15):                                                    # the shipping crate's cross brace
+        side.put(i, i, sp[0])
+        side.put(15 - i, i, sp[0])
+    side.paste(grid("""
+        44444
+        4ii44
+        44444
+        4iii4
+        44444
+    """, {"i": INK}, ramp=PAPER), 9, 2)
+    return [top.save(block("movers_crate_top")), front.save(block("movers_crate_front")),
+            side.save(block("movers_crate_side"))]
+
+
+DRAW = [cradle, crafters_workbench, movers_crate, harvest_idol, sieve, storehouse, teachers_desk, tinkers_bench, trade_board, training_dummy, training_post, travel_post,
         tutors_desk, undertakers_table, village_hall]
 
 if __name__ == "__main__":

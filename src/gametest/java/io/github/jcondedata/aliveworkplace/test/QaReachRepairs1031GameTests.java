@@ -227,7 +227,7 @@ public class QaReachRepairs1031GameTests {
 			helper.assertTrue(outcome == Refreshes.Outcome.WAITING && Refreshes.siteOf(e.level(), e.placement()) == null,
 				String.format("a Refresh of a wall past the reach (centre %.1f off, corner %.1f off) went to the builder: %s", e.centre(), e.origin(), outcome));
 			helper.assertValueEqual(said(e.owner().seen(), "message.aliveworkplace.refresh_answer.waiting"),
-				"No Builder is free: the " + Blueprints.displayName(e.id()).getString() + " is refreshed as soon as one is", "the waiting answer");
+				"Every Builder is busy and none can be spared from a crew: the " + Blueprints.displayName(e.id()).getString() + " is refreshed as soon as one is free", "the waiting answer");
 			Upkeep.look(e.level(), e.builder()[0]);
 			helper.assertTrue(Refreshes.siteOf(e.level(), e.placement()) == null && !ModAttachments.BUILDER_JOB.has(e.builder()[0]),
 				"the builder's round took up a refresh of a wall past his reach");

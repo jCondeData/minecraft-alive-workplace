@@ -194,10 +194,36 @@ public class BuilderWork extends Behavior<Villager> {
 	private static final double PASS_DISTANCE = 8;
 	/** How far ahead of the lead helpers look for work, for each of the crew; also what a helper fetches for at once. */
 	private static final int HELP_WINDOW = 32;
+	/** How many windows ahead of the lead helpers look for steps that still need work (B181). */
+	private static final int LOOK_FOR_OPEN = 2;
 
 	/** How far ahead of the lead helpers look for work: a stretch for each of the crew (23.1a). */
 	private static int helpWindow(ServerLevel level, BuildSite site) {
 		return HELP_WINDOW * (1 + site.helpers(level.getGameTime()).size());
+	}
+
+	/**
+	 * The steps helpers pick from (23.1a): the next {@link #helpWindow} steps ahead of the lead that still need work,
+	 * looking at most twice that far. B181: the window used to be the next steps ahead of the lead whether done or not,
+	 * so once the helpers had laid them they stood about until the lead's cursor came past (a crew of four's helpers
+	 * had nothing to do a fifth of the build, the lead walking after its cursor), and the crew took a third of the time
+	 * of one builder, not a quarter.
+	 */
+	private static List<BuildPlan.Step> helperAhead(ServerLevel level, BuildSite site, BuildPlan plan) {
+		int window = helpWindow(level, site);
+		if (site.stage() == BuildPlan.Stage.DECONSTRUCT) {
+			return site.ahead(plan, window); // (taking down, a step matching the drawing is the work, not done)
+		}
+		List<BuildPlan.Step> out = new java.util.ArrayList<>();
+		for (BuildPlan.Step s : site.ahead(plan, LOOK_FOR_OPEN * window)) {
+			if (out.size() >= window) {
+				break;
+			}
+			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
+				out.add(s);
+			}
+		}
+		return out;
 	}
 	/** A site this far (bench to the site's middle) is far from its chests: stock up before clearing it (B39). */
 	static final int FAR_FROM_CHESTS = 16;
@@ -636,9 +662,14 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		BuildPlan.Step leads = site.current(plan);
 		BlockPos claimed = site.claim(villager.getUUID());
+		BuildPlan.Step held = heldClaim(level, site, plan, claimed, bench);
+		if (held != null) {
+			site.claim(villager.getUUID(), held.pos(), level.getGameTime());
+			return held;
+		}
 		BuildPlan.Step pick = null;
 		double pickDistance = Double.MAX_VALUE;
-		for (BuildPlan.Step candidate : site.ahead(plan, helpWindow(level, site))) {
+		for (BuildPlan.Step candidate : helperAhead(level, site, plan)) {
 			BlockPos pos = candidate.pos();
 			if (avoid.contains(pos) || leads != null && leads.pos().equals(pos) || site.claimedByOther(villager.getUUID(), pos)) {
 				continue;
@@ -666,6 +697,27 @@ public class BuilderWork extends Behavior<Villager> {
 			site.claim(villager.getUUID(), pick.pos(), level.getGameTime());
 		}
 		return pick;
+	}
+
+	/**
+	 * B181: the block a helper has claimed, while it still needs work, wherever the lead's cursor is. The lead leaves a
+	 * claimed block to its helper (it puts it off, or while going back over the stage waits for it), but the helper
+	 * looked for it only ahead of the lead's cursor: once the cursor had reached or passed it, the helper dropped it for
+	 * another, half-way there, and the lead walked back for it at the end of the stage while the crew stood about (a
+	 * crew of four's structure ended with 100-200 ticks of the lead fetching up three or four such blocks).
+	 */
+	@Nullable
+	private BuildPlan.Step heldClaim(ServerLevel level, BuildSite site, BuildPlan plan, @Nullable BlockPos claimed, BlockPos bench) {
+		if (claimed == null || avoid.contains(claimed) || site.stage() == BuildPlan.Stage.DONE || site.stage() == BuildPlan.Stage.DECONSTRUCT) {
+			return null;
+		}
+		for (BuildPlan.Step s : plan.columns(site.stage()).getOrDefault(plan.column(claimed), List.of())) {
+			if (s.pos().equals(claimed)) {
+				Action a = actionFor(level, site, s, bench);
+				return a == Action.PLACE || a == Action.BREAK && site.digs(claimed) < MOST_REDIGS ? s : null;
+			}
+		}
+		return null;
 	}
 
 	// --- a Wonder's crew (35.5) -----------------------------------------------------------------
@@ -882,7 +934,7 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		BuildPlan.Step pick = null;
 		double best = REACH;
-		for (BuildPlan.Step candidate : site.ahead(plan, helpWindow(level, site))) {
+		for (BuildPlan.Step candidate : helperAhead(level, site, plan)) {
 			double d = villager.getEyePosition().distanceTo(Vec3.atCenterOf(candidate.pos()));
 			if (d > best || avoid.contains(candidate.pos()) || site.claimedByOther(villager.getUUID(), candidate.pos())) {
 				continue;
@@ -1552,6 +1604,13 @@ public class BuilderWork extends Behavior<Villager> {
 		if (source == null) {
 			return;
 		}
+		// B181: the lead of a crew, short of what a helper working close by carries spare of, has it passed over rather
+		// than walk to the chests: the crew had laid everything else of the stage, and stood about while the lead walked
+		// down from the roof and back for one slab (180 ticks, an eighth of a crew of four's build).
+		if (!helping && villager.distanceToSqr(Vec3.atCenterOf(source)) > PASS_DISTANCE * PASS_DISTANCE
+			&& takeFromCrewmate(level, villager, site, plan, bag, requirement.item(), needed, true)) {
+			return;
+		}
 		if (!moveInReach(level, villager, site, plan, source, CONTAINER_REACH, false)) {
 			return;
 		}
@@ -1709,7 +1768,7 @@ public class BuilderWork extends Behavior<Villager> {
 		if (crew && self != null) {
 			return crewShare(level, site, plan);
 		}
-		for (BuildPlan.Step s : site.ahead(plan, helpWindow(level, site))) {
+		for (BuildPlan.Step s : helperAhead(level, site, plan)) {
 			if (out.size() >= HELP_WINDOW) {
 				break;
 			}
@@ -1786,7 +1845,7 @@ public class BuilderWork extends Behavior<Villager> {
 		if (claim == null) {
 			return null;
 		}
-		for (BuildPlan.Step s : site.ahead(plan, HELP_WINDOW * (1 + io.github.jcondedata.aliveworkplace.hall.Guilds.MOST_HELPERS))) {
+		for (BuildPlan.Step s : site.ahead(plan, LOOK_FOR_OPEN * HELP_WINDOW * (1 + io.github.jcondedata.aliveworkplace.hall.Guilds.MOST_HELPERS))) {
 			if (s.pos().equals(claim)) {
 				return s;
 			}
@@ -1880,12 +1939,19 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	private boolean takeFromCrewmate(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, Item item, int needed) {
+		return takeFromCrewmate(level, villager, site, plan, bag, item, needed, false);
+	}
+
+	/** Takes {@code item} from a crewmate's spares; with {@code closeOnly}, only from one within {@link #PASS_DISTANCE} (B181). */
+	private boolean takeFromCrewmate(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, Item item, int needed,
+									 boolean closeOnly) {
 		List<java.util.UUID> crew = new java.util.ArrayList<>(site.helpers(level.getGameTime()));
 		if (site.builder() != null) {
 			crew.add(0, site.builder());
 		}
 		for (java.util.UUID id : crew) {
-			if (id.equals(villager.getUUID()) || !(level.getEntity(id) instanceof Villager mate) || !mate.isAlive()) {
+			if (id.equals(villager.getUUID()) || !(level.getEntity(id) instanceof Villager mate) || !mate.isAlive()
+				|| closeOnly && villager.distanceToSqr(mate) > PASS_DISTANCE * PASS_DISTANCE) {
 				continue;
 			}
 			BuilderBag mateBag = ModAttachments.BUILDER_BAG.getOrCreate(mate);

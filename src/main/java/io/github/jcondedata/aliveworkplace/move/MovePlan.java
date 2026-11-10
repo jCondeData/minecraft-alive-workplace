@@ -238,6 +238,13 @@ public final class MovePlan {
 			&& !(entity instanceof LightningBolt) && !entity.isPassenger();
 	}
 
+	/** The box a finished building stands in (its blueprint's size at its placement), or null if its blueprint is gone. */
+	@Nullable
+	public static BoundingBox box(ServerLevel level, BuildSiteManager.Finished building) {
+		Vec3i size = size(level, building.structure());
+		return size == null ? null : BlueprintOutline.bounds(building.placement(), size);
+	}
+
 	@Nullable
 	private static Vec3i size(ServerLevel level, ResourceLocation id) {
 		try {
@@ -316,6 +323,11 @@ public final class MovePlan {
 				level.sendBlockUpdated(p.pos(), p.state(), p.state(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
 			}
 		}
+		return placeThings(level, min, rotation);
+	}
+
+	/** Puts the plan's entities (frames, armor stands, furniture) up at {@code min}; how many couldn't be (see {@link #place}). */
+	public int placeThings(ServerLevel level, BlockPos min, Rotation rotation) {
 		int left = 0;
 		for (Thing t : things) {
 			Vec3 pos = turn(t.rel(), rotation).add(min.getX(), min.getY(), min.getZ());
@@ -397,6 +409,9 @@ public final class MovePlan {
 		ListTag list = Nbt.getList(tag, "blocks", Tag.TAG_COMPOUND);
 		for (int i = 0; i < list.size(); i++) {
 			CompoundTag entry = Nbt.compoundAt(list, i);
+			if (!Nbt.has(entry, "state", Tag.TAG_INT) || !Nbt.has(entry, "pos", Tag.TAG_LONG)) {
+				continue; // a damaged entry: not a block of the building (it would read as the palette's first state at 0, 0, 0)
+			}
 			int index = Nbt.getInt(entry, "state");
 			if (index < 0 || index >= states.size()) {
 				continue;

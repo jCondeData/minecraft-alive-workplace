@@ -1853,3 +1853,27 @@ DRAW += [crafter]   # 37.14
 
 if __name__ == "__main__":
     run(DRAW)
+
+
+def mover():
+    """The Mover (ROADMAP 45.3): a red knit beanie, denim dungarees (a bib with brass buttons over the shirt), padded
+    work gloves, and an orange lifting strap slung across the chest; a folded moving blanket hangs at the hip."""
+    t = vg.VillagerTexture()
+    vg.hat(t, vg.cloth("#9a2f2a"), style="beanie", crown=2, noise=0.04)
+    denim = vg.cloth("#3d5a80")
+    vg.apron(t, denim, top=2, bottom=18, left=1, right=6, ties=False)
+    apron_back(t, denim)
+    front = t.face("jacket", "front")
+    paint(front, ((1, 2), (6, 2)), BRASS[3])            # the bib's buttons
+    vg.belt(t, LEATHER, buckle=STEEL[2])
+    vg.sleeves(t, vg.cloth("#7d6a52"), gloves=vg.cloth("#b48a4a", n=4))
+    strap_diagonal(front, 0, 3, 7, 9, "#d9772a", width=1)   # the lifting strap across the chest
+    w = t.face("jacket", "west")                         # a folded blanket at the hip: quilted grey-blue
+    for y in range(11, 15):
+        for x in range(1, 4):
+            w.put(x, y, "#6f8199" if (x + y) % 2 else "#55657c")
+    paint(w, ((1, 11), (2, 11), (3, 11)), "#8a9bb2")
+    return t.save_profession(ASSETS, "mover", hat="full")
+
+
+DRAW += [mover]   # 45.3

@@ -1,11 +1,10 @@
 # Moving a finished building
 
 The owner's Milestone 45: a building the Village Hall knows can be moved within its village by a new Mover job, who
-takes it down top-down and puts it up again at the new spot with nothing lost. Being built in order; so far only the
-first two steps exist: the snapshot (45.1) and the Hall's Move page that plans a move (45.2); the Mover who carries it
-out comes next (45.3).
+takes it down top-down and puts it up again at the new spot with nothing lost. Being built in order: the snapshot (45.1), the Hall's Move page that plans a move (45.2) and the Mover who carries it
+out (45.3).
 
-Roadmap items: 45.1, 45.2
+Roadmap items: 45.1, 45.2, 45.3
 
 ## What a player sees
 
@@ -21,10 +20,21 @@ finished buildings, each with where it is and, once planned, where it's going. A
 While choosing, a ghost outline of the new spot glows in the world for the player (green or red, its front edge gold).
 The fit line says plainly why a spot is refused: it would overlap another building (named) or the hall, sit on a road,
 be partly outside the village, the ground rises more than 3 blocks across it, or there's water on it. Confirm also needs
-a hired Mover in the village; until 45.3 adds the job no village has one, so the page says "Needs a hired Mover" and
-nothing is saved.
+a hired Mover in the village (45.3); without one the page says "Needs a hired Mover" and nothing is saved.
 
 ![The Move page](https://jcondedata.github.io/minecraft-alive-workplace/move_plan/still-2.jpg)
+
+**The Mover (45.3).** A villager without a job takes a free **Mover's Crate** by themselves, as a builder takes a
+Blueprint Table. Once a move is confirmed, the village's Mover walks over and takes the building down from the top, one
+block at a time, into his crates: chests and barrels packed with their items (each its own), frames, armor stands and
+furniture too, nothing dropped. Then he puts it up at the new spot from the ground up (foundation, structure,
+decoration), turned as picked, and the old spot is left cleared. Two Movers share a move. He packs into the crates
+at his Mover's Crate: with his crate broken he can't take anything more down, so he waits, his line saying "Waiting for
+his Mover's Crate: nowhere to pack the building", and carries on once he has one again (putting it up needs none). Called off on the Move page,
+even half way, what went up at the new spot comes down again and everything goes back up where it was. Whoever
+confirmed the move is told when it's over.
+
+![The Mover half way](https://jcondedata.github.io/minecraft-alive-workplace/mover/still-2.jpg)
 
 ## How it works
 
@@ -44,7 +54,8 @@ spot no building covers gives no plan.
 
 A plan can be turned a quarter, a half or three quarters: stairs, doors and beds (both halves), chests, furnaces and
 other facing blocks, standing signs and hanging frames all turn with it, and the lowest corner stays the lowest corner.
-It saves as NBT with a version (a newer or broken plan loads as none), so a move can be saved mid-way.
+It saves as NBT with a version (a plan from a newer version, or one with no version or size, loads as none; a block whose
+state is missing from the plan's palette is left out), so a move can be saved mid-way.
 
 **The fit check (45.2).** `move/MoveFit.check` takes the spot's middle and the turned size: the footprint's four corners
 must be inside the village (`VillageHalls.contains`), its footprint clear of the hall and of every other finished
@@ -60,21 +71,51 @@ open and forgotten when it closes or on Cancel. The client draws the picker's ma
 (`VillageHallMenuScreen`, by the cells' `MAP_MARK`). The ghost is `BlueprintOutline.glowMove`. A Mover is a villager whose
 profession id is `aliveworkplace:mover` (`move/Movers`; 45.3 registers the job under that id).
 
+**The Mover's site (45.3).** `move/MoveSites` (saved) holds a `move/MoveSite` per building on the move: the plan
+captured when the Mover starts (`MoveSites.begin`, from the waiting `PendingMoves` entry and the hall's Finished record),
+the old and new lowest corners, the turn, and where each block is now: standing at the old spot, packed (in the
+Mover's crates: the site's record, with each block entity's data as it was taken down), standing at the new spot, or
+lost (someone broke it before he got to it). The stages are the Builder's: DISMANTLE (top-down, what hangs on others
+first), FOUNDATION (the plan's bottom layer), STRUCTURE (solid blocks), DECORATION (the rest, then the things) and DONE;
+a canceled move runs RESTORE_DOWN and RESTORE_UP. Each step looks at the world before it acts, so a step is never done
+twice after a restart; blocks come down and go up without neighbor updates (a door's halves, a bed and a wall torch
+stay put) and a container is emptied into its record before it comes down, so nothing spills. `move/MoverWork` is the
+Mover's WORK behavior: the site of the village round his crate (`MoveSites.work`; two Movers get the same site), a
+step every 4 ticks from within 20 blocks of the box worked on. A step that packs (DISMANTLE, RESTORE_DOWN) needs his
+job site to be a Mover's Crate standing now (`MoverWork.hasCrate`); without one the step isn't taken and the site's
+`waiting` (not saved, set again each swing) puts `NO_CRATE` on his line. When a move ends, the hall's Finished record follows the
+building (its placement's origin and turn), and the waiting move is cleared. The Move page's Call off (the
+`PendingMoves` entry gone) cancels a started site.
+
 ## Items, blocks, jobs, commands
 
-The Village Hall's Move tab (45.2). The Mover job comes in 45.3.
+The Village Hall's Move tab (45.2). The Mover job and the **Mover's Crate** (`aliveworkplace:movers_crate`, its
+workstation: planks round a barrel, a lead on top, two iron ingots under it; in the creative tab) (45.3).
 
 ## Switches
 
-None yet; the move's config switch comes with the Mover (45.3).
+`movers` (on, 45.3): off, a jobless villager doesn't take a Mover's Crate (`WorkerLimits.hideFull`), Movers already
+hired do nothing, and confirmed moves wait.
 
 ## Saved data
+
+A move under way is saved per dimension in `aliveworkplace_move_sites` (`move/MoveSites`): each site's plan, corners,
+turn, stage, where each block is, packed block entity data, and whether it was canceled. A world from before 45.3 loads
+with none; a site that doesn't read is skipped.
 
 A confirmed move is saved per dimension in `aliveworkplace_pending_moves` (`move/PendingMoves`): the hall, the building's
 origin and blueprint, its new lowest corner, its turn and who confirmed it; one per building. A world from before 45.2
 loads with none, and an entry that doesn't read is skipped, never the rest. A plan's NBT (`MovePlan.save`, `version` 1: a block-state palette, blocks, things, beds, workstations, residents) is what the Mover's site will keep mid-move.
 
 ## Decisions
+
+- The Mover's crates are the site's saved record, not items in a chest: a block's full state (a door's halves, a bed's
+  facing, a chest's items) can't be kept by an item. So the village Storehouse is never used and can't be full; the
+  Done when's "full Storehouse" wait is a question for the owner (ROADMAP Notes). Under this decision "he can't store
+  it, so he waits and says why" is a Mover whose Mover's Crate is gone.
+- A block someone breaks before the Mover gets to it isn't put up again: whoever broke it has it.
+- Residents keep their own beds and workstations by vanilla's rules: a bed taken down is let go, and they claim the
+  beds put up at the new spot like any free bed.
 
 - The picker's map is a grid in the hall's screen, not the vanilla map item the hall draws: a map item can't be clicked.
 - A building may turn in place or shift onto part of its own old spot: the Mover takes it down first.
@@ -94,6 +135,24 @@ its spot and called off.
 `MovePlanGameTests` (4): a captured house rebuilt 14 blocks away matches block for block (`MaterialRules.matches`) with
 its chest, sign, banner, frame and armor stand; the same at 90, 180 and 270 degrees; a building the hall knows
 captured with its front and resident; empty and unknown buildings give no plan.
+
+`MoverGameTests` (8): the job (its id, the crate as its workstation, the recipe, the text); a whole move (taken down
+top-down, the chest and barrel packed apart, put up turned a quarter block for block with each container's own items,
+the item frame, nothing dropped, the hall's record following it); saved and reloaded in every stage; a wall block broken
+half way (whoever broke it has it, not put up again, nothing doubled); called off half way through putting it up
+(everything back, the new spot empty); two Movers sharing one site; his crate broken half way down (he waits, says why,
+and finishes once it's back); config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
+doesn't see the crate).
+
+`QaBuildingSnapshot1109bGameTests` (4, the QA lane): a 7 × 9 room written to disk and read back, then rebuilt unturned
+and turned 90, 180 and 270 degrees, matches exactly, block for block: a double chest (still one, 54 slots), a named
+chest, an empty chest (still empty), a barrel, a shulker box and a furnace with all three slots, slot for slot; a sign's
+front and back text and wax, a wall sign, a wall banner's patterns in order, a lectern's book; an open right-hinged
+door, a top trapdoor, upside-down stairs, a sideways log, a bed, a lever and a wall torch, all turned; an item frame
+(its item and its turn), a two-wide painting and an armor stand in full gear, turned and looking the turned way, as
+new entities beside the originals. Capturing twice changes nothing in the room (every block, its data and every
+entity) and gives the same plan. Only frames, paintings and stands are its things (not a cow, a dropped item, a
+minecart or a visitor), and its residents are the villagers whose bed or workstation is in it, wherever they stand.
 
 ## Known limits
 

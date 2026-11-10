@@ -357,9 +357,12 @@ public class QaStalledCrafting1109bGameTests implements net.fabricmc.fabric.api.
 				return;
 			}
 			String line = said.get();
-			// "Says plainly what is missing": the line names every wanted thing still unbuilt, and never claims nobody here
-			// makes what a crafter at work here does make
+			// "Says plainly what is missing": the line names every wanted thing still unbuilt and still asked for, and never
+			// claims nobody here makes what a crafter at work here does make. (B1112's fix: a thing made and waiting in his
+			// store or bag is no longer asked for, so the line, which lists only what's missing, can't name it: it was made.)
+			BuildSite asked = BuildSiteManager.get(run.level()).get(run.site().id());
 			boolean namesAll = line != null && want.entrySet().stream().filter(e -> placed(helper, e.getKey()) < e.getValue())
+				.filter(e -> asked == null || asked.missing().containsKey(e.getKey().asItem()))
 				.allMatch(e -> line.contains(e.getKey().getName().getString()));
 			if (run.tick() >= sayBy && namesAll && !line.contains("Nobody here makes")) {
 				helper.getLevel().getServer().sendSystemMessage(Component.literal("[qa1109b] said instead: " + line));

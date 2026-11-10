@@ -183,8 +183,27 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 			}
 			return out;
 		}));
+		// MoveSite#load refuses a site whose "where" (one byte per block of its plan) isn't as long as its plan, and drops
+		// packed data for a block index outside it.
+		TIED.put("move.MoveSites.sites", new Tie("a site's where has one byte per block of its plan, packed data only for those blocks (MoveSite#load)", (d, made, m) -> {
+			for (Object site : (List<?>) made) {
+				int blocks = ((List<?>) part(part(site, "plan"), "blocks")).size();
+				byte[] where = new byte[blocks];
+				java.util.Arrays.fill(where, (byte) 1);
+				Field f = site.getClass().getDeclaredField("where");
+				f.setAccessible(true);
+				f.set(site, where);
+				Map<?, ?> packed = (Map<?, ?>) part(site, "packedData");
+				packed.keySet().removeIf(i -> (Integer) i >= blocks);
+			}
+			return made;
+		}));
 		for (String f : List.of("plan", "status", "missing", "shortfallStale", "trips", "detail", "claims", "helpersSeen", "lastNotified")) {
 			INNER_NOT_SAVED.put("build.BuildSite." + f, "in BuildSite's block of fields marked \"Transient, recomputed as needed\"");
+		}
+		INNER_NOT_SAVED.put("move.MoveSite.waiting", "why the Mover waits, for his status line: set again at his next step (MoverWork#work)");
+		for (String f : List.of("downOrder", "upOrder")) {
+			INNER_NOT_SAVED.put("move.MoveSite." + f, "a cache of the plan's blocks in taking-down or putting-up order, worked out again from the plan when first needed (MoveSite#" + f + ")");
 		}
 		INNER_NOT_SAVED.put("mine.QuarrySite.lastNotified", "when the owner was last told of a missing pickaxe or ladders, in memory (a restart may tell him once more)");
 		INNER_NOT_SAVED.put("build.BuildSite.leadClaim", "says so: the block the lead is on away from his cursor, not saved");
@@ -498,6 +517,9 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 			}
 			if (raw == int[].class) {
 				return new int[] {3 + k, 7 + k++ % 5, 2};
+			}
+			if (raw == byte[].class) {
+				return new byte[] {(byte) (1 + k++ % 3)};
 			}
 			if (raw == long[].class) {
 				return new long[] {5_000_000_000L + k++, 42L};

@@ -768,6 +768,28 @@ public final class ModVillagers {
 		)
 	);
 
+	public static final ResourceLocation MOVERS_CRATE_ID = AliveWorkplace.id("movers_crate");
+	public static final ResourceKey<PoiType> MOVERS_CRATE_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, MOVERS_CRATE_ID);
+	public static final PoiType MOVERS_CRATE_POI_TYPE = Platform.get().registerPoi(MOVERS_CRATE_ID, 1, 1, ModBlocks.MOVERS_CRATE);
+
+	/**
+	 * Moves a finished building (ROADMAP 45.3): takes it down top-down and puts it up again at the spot picked on the
+	 * Hall's Move page (move/MoverWork). Hired like the Builder: a jobless villager takes a free Mover's Crate. Its id is
+	 * the one move/Movers asks for.
+	 */
+	public static final VillagerProfession MOVER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		io.github.jcondedata.aliveworkplace.move.Movers.PROFESSION,
+		new VillagerProfession(
+			"mover",
+			holder -> holder.is(MOVERS_CRATE_POI),
+			holder -> holder.is(MOVERS_CRATE_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_MASON
+		)
+	);
+
 	/**
 	 * Carries water to the village's fields in a drought and keeps its cauldrons full (ROADMAP 32.17): at a cauldron, only
 	 * ever by a shovel, with config {@code wellKeepers}. A jobless villager by a cauldron still becomes a Leatherworker,
@@ -1088,7 +1110,7 @@ public final class ModVillagers {
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER || profession == JEWELLER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
 			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR || profession == PRINTER || profession == WELL_KEEPER
-			|| profession == PHYSICIAN || profession == CRAFTER || isMechanic(profession) || isFurnicrafter(profession);
+			|| profession == PHYSICIAN || profession == CRAFTER || profession == MOVER || isMechanic(profession) || isFurnicrafter(profession);
 	}
 
 	/**

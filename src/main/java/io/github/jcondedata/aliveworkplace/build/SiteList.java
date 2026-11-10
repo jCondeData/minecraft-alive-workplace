@@ -43,12 +43,8 @@ public final class SiteList {
 			return new BlueprintSupplies.Checklist(Optional.ofNullable(site.bench()), List.of());
 		}
 		Map<Item, Integer> need = new LinkedHashMap<>();
+		// (item frames, paintings and armor stands included: B1148 counts them in remainingNeed)
 		Builders.remainingNeed(level, site, plan).forEach((item, n) -> need.merge(BlueprintSupplies.key(item), n, Integer::sum));
-		for (BuildPlan.EntityStep entity : plan.entities()) { // item frames, paintings, armour stands go up last
-			if (!BuildEntities.isPresent(level, entity)) {
-				need.merge(BlueprintSupplies.key(entity.cost()), 1, Integer::sum);
-			}
-		}
 		Optional<BlockPos> bench = builder != null ? Builders.siteBench(level, builder, site) : Optional.ofNullable(site.bench());
 		List<BlockPos> supplies = bench.map(b -> SupplyContainers.find(level, b, plan.supplyExclude())).orElse(List.of());
 		List<BuilderBag> bags = bags(level, site, builder);

@@ -271,7 +271,7 @@ public final class Requests {
 		}
 		out.addAll(io.github.jcondedata.aliveworkplace.legend.StrangeMoods.requests(level, worker)); // a strange mood's materials (29.10)
 		BuildSite site = Builders.activeSite(level, worker);
-		if (site != null && !site.isDone() && !site.isDeconstruction()) {
+		if (site != null && (!site.isDone() || site.isGettingDecorations()) && !site.isDeconstruction()) { // (B1148: its frames too)
 			// B636: what the build is short of is asked for while the builder works on with what he has (BuilderWork keeps
 			// the list fresh), not only once he stands waiting at the block that needs it. B499's scaffolding is on it too.
 			site.missing().entrySet().stream()

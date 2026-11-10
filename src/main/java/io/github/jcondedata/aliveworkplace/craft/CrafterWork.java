@@ -857,7 +857,8 @@ public class CrafterWork extends Behavior<Villager> {
 		for (Villager builder : builders) {
 			BuildSite site = Builders.activeSite(level, builder);
 			// B636: a builder short of something is served while he builds on, not only once he stands waiting
-			if (site == null || site.isDone() || site.isDeconstruction() || site.missing().isEmpty()) {
+			// (B1148: and a finished build still getting its item frames and paintings)
+			if (site == null || site.isDone() && !site.isGettingDecorations() || site.isDeconstruction() || site.missing().isEmpty()) {
 				continue;
 			}
 			BuildPlan plan = site.plan(level);

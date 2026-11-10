@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:book",
+    "minecraft:paper",
+    "minecraft:bookshelf",
+    "minecraft:chiseled_bookshelf",
+    "minecraft:lectern",
+    "minecraft:writable_book",
+    "minecraft:enchanting_table",
+    "minecraft:cartography_table"
+  ]
+}

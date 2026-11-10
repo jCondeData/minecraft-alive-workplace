@@ -16,10 +16,22 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+
+- Each crafting job makes only its own kind of thing for builders (46.1): the Carpenter wooden things (never a brewing stand, flower pot, banner, stained glass or lantern), the Mason stone, bricks, terracotta and concrete (dyed terracotta and concrete without a furnace), the Tinkerer metal and redstone, the Leatherworker leather goods, the Librarian books and tables. The lists are item tags, `aliveworkplace:crafts/<job>`, so packs can change them, and a modded item in none goes by its recipe. Until the Shepherd, Florist, Cleric, Beekeeper and Glassblower craft, the job that made their things before still does. A builder short of something nobody here makes reads "Hire a Carpenter to make Oak Stairs", and the Storehouse's board says who makes or gathers each thing ("Made by: the Carpenter (Ada)", "Hire a Miner to dig it", "No job makes or gathers this").
+### Added
+
+- A moved building's belongings arrive as they were: every chest, barrel, shulker box and modded store (Sophisticated Storage, furniture cabinets and cupboards) with exactly its items, nothing dropped or doubled, signs with their words, banners, item frames (one hanging on an outer wall too) and armor stands as the village left them, and CobbleFurnies, Handcrafted and Cozy Home furniture; a piece of a furniture mod removed mid-move is left out and the rest still moves (45.5).
+
+### Fixed
+
+- A Mover whose own Mover's Crate stands inside the building he's moving no longer packs it with the rest and then waits forever for it: the crate stays where it stands and the move finishes (a move already stuck this way carries on, the crate put back first).
+
 ## 0.153.0 — 2026-11-09
 
 ### Added
 
+- A moved building's residents move with it: while it's away they sleep in a free bed at the inn (or by the Village Hall), workers keep their jobs, and the moment the Mover puts a bed or workstation up at the new spot it's theirs again, held so nobody else takes it; the Hall's People page, their home, couples and the job cards follow, and a Builder's bench in a moved house stays his (45.4).
 - A new job, the **Mover**, at his own Mover's Crate (planks round a barrel, a lead on top, two iron ingots under it): he carries out the moves picked on the Village Hall's Move page, taking the building down from the top into his crates (chests packed with their contents, frames and furniture too, nothing dropped) and putting it up again at the new spot from the ground up, turned as picked. Two Movers share a move, a reload mid-move is fine, and Call off, even half way, puts everything back where it was. With his crate broken he waits and says why. Config switch `movers` (45.3).
 - The Village Hall has a Move page (under Buildings): pick a finished building, choose its new spot on a small map of the ground round it (a green ghost outline shows it in the world), turn it a quarter at a time, and see plainly why a spot won't do (another building or a road in the way, outside the village, too steep, under water). Confirming needs a hired Mover, the job that comes next; a confirmed move is saved with the village
 - A building the Village Hall knows can be captured as a moving plan (its blocks, chest contents, signs, banners, frames, armor stands, and its residents' beds and workstations) and turned any quarter: the first step toward moving finished buildings (45.1).

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:brewing_stand",
+    "minecraft:blaze_powder",
+    "minecraft:ender_eye",
+    "minecraft:ender_chest",
+    "minecraft:end_rod",
+    "minecraft:beacon"
+  ]
+}

@@ -183,7 +183,7 @@ public final class BuilderStatusSync {
 		lines.add(missingLine(missing));
 		// 37.14a: what the village's jobs can't make of it (a raw material short), or that nobody here makes
 		if (io.github.jcondedata.aliveworkplace.Expansions.isOpen("M37") && site.status() == BuildSite.Status.WAITING_FOR_MATERIALS && !missing.isEmpty()) {
-			Component cant = io.github.jcondedata.aliveworkplace.craft.JobShortages.line(level, site.id(), missing);
+			Component cant = io.github.jcondedata.aliveworkplace.craft.JobShortages.line(level, site.id(), missing, bench);
 			if (cant != null) {
 				lines.add(cant.copy().withStyle(ChatFormatting.GOLD));
 			}

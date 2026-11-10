@@ -63,6 +63,11 @@ SCENES = [
       "the Journeyman Librarian was shown the price, then paid for and retrained as a Novice Builder at the Blueprint Table", 40,
       [("01_librarian", "A Journeyman Librarian by a Blueprint Table"), ("02_offer", "First click: the price"),
        ("03_builder", "Second click: paid, now a Builder")]),
+    # Each job's own list (ROADMAP 46.1): the Storehouse board names who gathers or makes each asked-for thing
+    S("job_lists", "Crafter", "Who makes it: the Storehouse board's new lines",
+      "the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Librarian for the brewing stands", 30,
+      [("01_logs_gathered_by_the_lumberjack", "Oak logs: gathered by the Lumberjack (Bo)"),
+       ("02_hire_a_librarian_for_brewing_stands", "Brewing stands: hire a Librarian to make them")]),
     # Items (ROADMAP 21.1b): the owner's picked icons in a chest and in hand
     S("items", "Items", "Every item's icon", "every item's icon shows in a chest, in the hotbar and in hand", 50,
       [("01_items_chest", "All 14 in a chest"), ("03_hand_blueprint", "Blueprint in hand"),
@@ -557,11 +562,15 @@ SCENES = [
        ("02_blocked_by_a_fence", "The Stone House II: blocked by a fence where its level III goes"),
        ("03_bram_builds_it", "Clicked: Bram builds the Starter Cottage II")]),
     # The Hall's Move page (ROADMAP 45.2): the list, the picker's map with a fitting spot and its ghost, then rotated
-    # The Mover (ROADMAP 45.3): the cottage taken down top-down and put up again turned a quarter at its new spot
+    # The Mover (ROADMAP 45.3): the cottage taken down top-down and put up again turned a quarter at its new spot;
+    # its residents move too (45.4): Dara's bed and Tomas's barrel are the new cottage's, and he walks to it;
+    # its belongings arrive as they were (45.5): the barrel's catch and the sign's words
     S("mover", "Mover", "Moving a finished building",
       "the Mover took the Starter Cottage down top-down into his crates and put it up again turned a quarter at its new spot, "
-      "nothing dropped", 240,
-      [START, ("02_half_way", "Half way: half the cottage packed in his crates"), DONE]),
+      "nothing dropped; Dara's bed and her husband Tomas's barrel moved with it, so they live and work there now, "
+      "his barrel still holding his 16 cod and 5 salmon and the cottage's sign still reading \"Dara & Tomas\"", 270,
+      [START, ("02_half_way", "Half way: half the cottage packed in his crates"),
+       ("03_at_home", "After: Tomas at his barrel in the moved cottage, Dara's bed is there too"), DONE]),
     S("move_plan", "Village Hall", "Picking a new spot for a building on the hall's Move page",
       "the Move page listed the Starter Cottage; its picker showed the map round it, a click put the new spot to the west "
       "(it fits: green, the ghost outline glowing), and Rotate turned it to face east", 60,

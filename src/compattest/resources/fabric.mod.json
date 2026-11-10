@@ -13,6 +13,7 @@
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.RepeatNewTests",
 			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",
+			"io.github.jcondedata.aliveworkplace.compat.MoverFurnitureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystonesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystoneNetworkCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneUnownedHallCompatTests",
@@ -162,6 +163,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateBuildsTurnedCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicFilesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSentences1109eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverContents1110eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicLimitsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPlayersTrainCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicReachCompatTests",

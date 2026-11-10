@@ -36,13 +36,14 @@ builder's chest. Give a builder only logs, and the carpenter makes the rest.
 and sand, and with a furnace by the stonecutter fire glass, smooth stone, terracotta and bricks. They also make concrete,
 dyed terracotta, glass panes and stained glass.
 
-## Leatherworker (the dyer)
+## Leatherworker
 
 *Full article: [Leatherworker](leatherworker-dyer.md).*
 
-**Leatherworkers** (vanilla, at a cauldron) make the candles a builder is waiting for, and leather goods: item frames,
-leads, leather armor. Wool, carpet, beds, banners and paintings are the [Shepherd](shepherd.md)'s, woven at the loom;
-flower pots, decorated pots, dyes and moss carpet the [Florist](florist.md)'s.
+**Leatherworkers** (vanilla, at a cauldron) make leather goods for builders and the Storehouse: item frames and glow
+item frames, leads, leather from rabbit hide, and leather armor. They dye nothing: wool, carpet, beds, banners and
+paintings are the [Shepherd](shepherd.md)'s, woven at the loom; flower pots, decorated pots, dyes and moss carpet the
+[Florist](florist.md)'s; candles the [Beekeeper](beekeeper.md)'s.
 
 ## Tinkerer
 

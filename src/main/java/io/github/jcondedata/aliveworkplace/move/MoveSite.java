@@ -387,35 +387,73 @@ public final class MoveSite {
 		return packed != null ? packed : plan.blocks().get(i).data();
 	}
 
-	/** Takes block {@code i} down into the crates, or marks it lost if someone took it first. */
+	/**
+	 * Takes block {@code i} down into the crates, or marks it lost if someone took it first. A block laid whole with its
+	 * neighbours (Create's belt, B1128) comes down whole: taking one segment takes the rest of the belt with it, so every
+	 * segment still standing is packed with its data (the belt's items are on its controller) before any comes down.
+	 */
 	private void take(ServerLevel level, int i, BlockPos pos, BlockState wanted) {
-		BlockState actual = level.getBlockState(pos);
-		if (wanted.isAir() || !MaterialRules.matches(actual, wanted)) {
-			// gone (someone broke it), or a block of a mod no longer installed (its id reads as air): not moved
-			where[i] = LOST;
-			skipped++;
-			return;
+		boolean atNew = where[i] == NEW; // taken from the new spot when a canceled move comes down again
+		List<Integer> group = whole(i, atNew ? NEW : OLD);
+		List<Integer> taken = new ArrayList<>();
+		List<BlockPos> spills = new ArrayList<>();
+		for (int j : group) {
+			BlockPos at = j == i ? pos : atNew ? newPos(j) : oldPos(j);
+			BlockState want = j == i ? wanted : atNew ? newState(j) : plan.blocks().get(j).state();
+			if (want.isAir() || !MaterialRules.matches(level.getBlockState(at), want)) {
+				// gone (someone broke it), or a block of a mod no longer installed (its id reads as air): not moved
+				where[j] = LOST;
+				skipped++;
+				continue;
+			}
+			BlockEntity be = level.getBlockEntity(at);
+			if (be != null) {
+				// the block entity as it is now (a chest the village used since the plan was made): packed with its items
+				packedData.put(j, be.saveWithoutMetadata(level.registryAccess()));
+				Clearable.tryClear(be); // so nothing spills when it comes down
+				spills.add(at);
+			}
+			taken.add(j);
 		}
-		BlockEntity be = level.getBlockEntity(pos);
-		List<net.minecraft.world.entity.item.ItemEntity> before = null;
-		if (be != null) {
-			// the block entity as it is now (a chest the village used since the plan was made): packed with its items
-			packedData.put(i, be.saveWithoutMetadata(level.registryAccess()));
-			Clearable.tryClear(be); // so nothing spills when it comes down
-			before = loose(level, pos);
+		java.util.Set<net.minecraft.world.entity.item.ItemEntity> before = new java.util.HashSet<>();
+		for (BlockPos at : spills) {
+			before.addAll(loose(level, at));
 		}
-		level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-		if (before != null) {
-			// 45.5: a modded store that isn't a vanilla Container (nothing to clear) may still spill its items as it goes;
-			// they're packed with the block's data, so what it spilled is taken back rather than left to be doubled
-			for (net.minecraft.world.entity.item.ItemEntity spilled : loose(level, pos)) {
+		for (int j : taken) {
+			level.setBlock(j == i ? pos : atNew ? newPos(j) : oldPos(j), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+		}
+		// 45.5: a modded store that isn't a vanilla Container (nothing to clear) may still spill its items as it goes
+		// (Create's crafter, ejector and belt, B1127); they're packed with the block's data, so what it spilled is taken
+		// back rather than left to be doubled
+		for (BlockPos at : spills) {
+			for (net.minecraft.world.entity.item.ItemEntity spilled : loose(level, at)) {
 				if (!before.contains(spilled)) {
 					spilled.discard();
 				}
 			}
 		}
-		where[i] = PACKED;
-		MoveResidents.taken(this, i);
+		for (int j : taken) {
+			where[j] = PACKED;
+			MoveResidents.taken(this, j);
+		}
+	}
+
+	/**
+	 * Block {@code i} and, when it's laid whole with its neighbours (Create's belt), every other block of the same kind
+	 * in the building that is {@code in} the same place: they come down and go up together, as a builder lays a belt.
+	 */
+	private List<Integer> whole(int i, byte in) {
+		List<Integer> group = new ArrayList<>();
+		group.add(i);
+		BlockState state = plan.blocks().get(i).state();
+		if (MaterialRules.laidWhole(state)) {
+			for (int j = 0; j < where.length; j++) {
+				if (j != i && where[j] == in && plan.blocks().get(j).state().getBlock() == state.getBlock()) {
+					group.add(j);
+				}
+			}
+		}
+		return group;
 	}
 
 	/** Loose items in and round the block at {@code pos}: where a block's contents land if it spills them. */
@@ -423,37 +461,91 @@ public final class MoveSite {
 		return level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new AABB(pos).inflate(1));
 	}
 
-	/** Puts block {@code i} up from the crates at {@code pos}, whatever stood there taken out of the way first. */
+	/**
+	 * Puts block {@code i} up from the crates at {@code pos}, whatever stood there taken out of the way first. A block
+	 * laid whole (Create's belt) goes up whole: every packed segment stands before any gets its data, so the belt is never
+	 * half there, and each segment's controller is moved to where its controller now stands (B1128).
+	 */
 	private void put(ServerLevel level, int i, BlockPos pos, BlockState state, byte now) {
-		if (state.isAir()) {
-			// a block of a mod removed since it was packed (its id reads as air): nothing to put up
-			where[i] = LOST;
-			skipped++;
-			return;
+		List<Integer> group = now == NEW || now == OLD ? whole(i, PACKED) : List.of(i);
+		List<Integer> up = new ArrayList<>();
+		List<BlockPos> ats = new ArrayList<>();
+		List<BlockState> states = new ArrayList<>();
+		for (int j : group) {
+			BlockPos at = j == i ? pos : now == NEW ? newPos(j) : oldPos(j);
+			BlockState st = j == i ? state : now == NEW ? newState(j) : plan.blocks().get(j).state();
+			if (st.isAir()) {
+				// a block of a mod removed since it was packed (its id reads as air): nothing to put up
+				where[j] = LOST;
+				skipped++;
+				continue;
+			}
+			BlockState there = level.getBlockState(at);
+			if (stays(there) && !stays(st)) {
+				// B1129: a Mover's Crate stands there (it stays where it stood, B1120; the fit check refuses such a spot, but a
+				// move confirmed before that check may still meet one). Never broken: it's a Mover's workstation. Not put up.
+				where[j] = LOST;
+				skipped++;
+				continue;
+			}
+			if (!there.isAir() && !there.canBeReplaced()) {
+				level.destroyBlock(at, true); // something in the way (the fit check cleared the spot; a player built since)
+			}
+			level.setBlock(at, st, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			up.add(j);
+			ats.add(at);
+			states.add(st);
 		}
-		BlockState there = level.getBlockState(pos);
-		if (stays(there) && !stays(state)) {
-			// B1129: a Mover's Crate stands there (it stays where it stood, B1120; the fit check refuses such a spot, but a
-			// move confirmed before that check may still meet one). Never broken: it's a Mover's workstation. Not put up.
-			where[i] = LOST;
-			skipped++;
-			return;
+		for (int k = 0; k < up.size(); k++) {
+			int j = up.get(k);
+			BlockPos at = ats.get(k);
+			CompoundTag data = data(j);
+			if (data != null) {
+				BlockEntity be = level.getBlockEntity(at);
+				if (be != null) {
+					be.loadWithComponents(group.size() > 1 ? withController(data.copy(), now) : data.copy(), level.registryAccess());
+					be.setChanged();
+					level.sendBlockUpdated(at, states.get(k), states.get(k), Block.UPDATE_CLIENTS);
+				}
+			}
+			where[j] = now;
+			MoveResidents.placed(level, this, j, at, now); // a resident's bed or workstation is theirs again at once (45.4)
 		}
-		if (!there.isAir() && !there.canBeReplaced()) {
-			level.destroyBlock(pos, true); // something in the way (the fit check cleared the spot; a player built since)
+	}
+
+	/**
+	 * A belt segment's data with its {@code Controller} (a world position) moved along with the building: from the spot
+	 * it was packed at (the old one, or the new one when a canceled move puts it back) to where that block now goes up.
+	 */
+	private CompoundTag withController(CompoundTag data, byte now) {
+		net.minecraft.nbt.Tag tag = data.get("Controller");
+		BlockPos from = null;
+		if (tag instanceof net.minecraft.nbt.IntArrayTag array && array.getAsIntArray().length == 3) {
+			int[] p = array.getAsIntArray();
+			from = new BlockPos(p[0], p[1], p[2]);
+		} else if (tag instanceof CompoundTag xyz && xyz.contains("X") && xyz.contains("Y") && xyz.contains("Z")) {
+			from = new BlockPos(io.github.jcondedata.aliveworkplace.mc.Nbt.getInt(xyz, "X"), io.github.jcondedata.aliveworkplace.mc.Nbt.getInt(xyz, "Y"),
+				io.github.jcondedata.aliveworkplace.mc.Nbt.getInt(xyz, "Z"));
 		}
-		level.setBlock(pos, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-		CompoundTag data = data(i);
-		if (data != null) {
-			BlockEntity be = level.getBlockEntity(pos);
-			if (be != null) {
-				be.loadWithComponents(data.copy(), level.registryAccess());
-				be.setChanged();
-				level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+		if (from == null) {
+			return data;
+		}
+		for (int j = 0; j < where.length; j++) {
+			if ((now == NEW ? oldPos(j) : newPos(j)).equals(from)) {
+				BlockPos to = now == NEW ? newPos(j) : oldPos(j);
+				if (tag instanceof CompoundTag) {
+					CompoundTag xyz = new CompoundTag();
+					xyz.putInt("X", to.getX());
+					xyz.putInt("Y", to.getY());
+					xyz.putInt("Z", to.getZ());
+					data.put("Controller", xyz);
+				} else {
+					data.put("Controller", new net.minecraft.nbt.IntArrayTag(new int[] {to.getX(), to.getY(), to.getZ()}));
+				}
+				break;
 			}
 		}
-		where[i] = now;
-		MoveResidents.placed(level, this, i, pos, now); // a resident's bed or workstation is theirs again at once (45.4)
+		return data;
 	}
 
 	/** Packs the building's things (frames, armor stands...) standing in its box at {@code min}. */

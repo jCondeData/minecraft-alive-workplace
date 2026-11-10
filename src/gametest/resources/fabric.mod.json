@@ -402,6 +402,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderToolLists1109bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TrainerScreenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.NurseCardGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StatusCardButtonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobCardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonTradeLayoutGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReformGameTests",
@@ -1539,6 +1540,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeConverts1109dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.B1085GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderOver1109dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLadderOverShutGate1109dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampConverts1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaZoglinRam1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploads1109GameTests",
@@ -1553,7 +1555,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStalledCrafting1109bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStalledCrafting1109bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.CraftersFullStoreGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuildingSnapshot1109bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuildingSnapshot1109bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaJobCraftListsGameTests"
 		]
 	},
 	"depends": {

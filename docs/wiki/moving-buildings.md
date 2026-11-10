@@ -69,6 +69,8 @@ stands go up with what they held when the Mover packed them, so an item a player
 isn't put back and one put in a chest meanwhile moves too. Furniture from CobbleFurnies, Handcrafted and Lucky's Cozy
 Home moves like any block. A piece of a furniture mod removed from the game mid-move is left out; the rest goes up.
 In the showcase, Tomas's barrel arrives with his 16 cod and 5 salmon and the cottage's sign still reads "Dara & Tomas".
+With Create installed, a Mechanical Crafter, Weighted Ejector, vault or depot arrives with its items once, and a
+belt of any length comes across whole, with the items on it, and runs at the new spot.
 
 ## How it works
 
@@ -155,7 +157,12 @@ without this). `put` loads the saved data into the new block entity. The things 
 it (a frame on an outer wall, whose position is just outside the box), each saved as it is then (`MovePlan.thing`) in
 the site's packed things and discarded; `MoveSite.placeThings` puts those up at the end of DECORATION (or back on a cancel),
 not the plan's older picture. A plan block whose state reads as air (its mod's id is unknown since the save) is marked
-lost by `take` or `put` and counted in `skipped`. Capture uses `MovePlan.thingsIn` too, so the plan includes outer-wall frames.
+lost by `take` or `put` and counted in `skipped`. A block laid whole with its neighbors (`MaterialRules.laidWhole`, Create's belt)
+moves as one piece (B1128): taking one belt segment down makes Create remove the whole belt, so `take` packs every segment
+of that block still standing (the belt's items are in its controller's data) before any comes down, and `put` sets
+every packed segment before loading any data, moving each segment's `Controller` (a world position) to where that
+block now stands (`MoveSite.withController`), as `MechanicWork.beltData` does for builds. Create's crafter and ejector
+aren't `Clearable` and spill as they come down; the discard above takes those items back (B1127). Capture uses `MovePlan.thingsIn` too, so the plan includes outer-wall frames.
 
 ## Items, blocks, jobs, commands
 

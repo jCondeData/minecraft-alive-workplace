@@ -45,7 +45,8 @@ Roadmap items: 41.1, 41.2, 41.3
   found a waystone broken and are walking the road instead".
 - **A broken stone** is a hole in a finished build: the builder's upkeep puts it back like any other block (asking the
   owner first, as with every repair, under `repairAsk`), from a waystone in the chest; the new stone is registered and
-  named again.
+  named again, with the village's name as it is then (a village renamed while its stone lay broken gets a stone with
+  the new name; QaWaystoneRenamedBroken1110dCompatTests).
 
 ## How it works
 

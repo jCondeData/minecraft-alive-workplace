@@ -33,8 +33,9 @@ bottle** or **shears**. Put a chest within 8 blocks of the hive.
   Beekeeper fetches the makings from the builder's chests (and her own), makes them at her hive with the game's own
   recipes, and takes them to the builder: a candle from a honeycomb and a string, a red candle from a candle and a red
   dye (the candle first, then the color), a honeycomb block from four honeycomb. She does this in between the hives:
-  the two take turns. Short of something, the builder's line names it ("Can't be made yet: short of 1 String to make
-  1 Candle"); with no Beekeeper nearby it reads "Hire a Beekeeper to make Candles".
+  the two take turns. She fills the Storehouse's stock orders for candles the same way. Short of something, she takes nothing and
+  the builder's line names it ("Can't be made yet: short of 1 String to make 1 Candle", or "short of 1 Red Dye to make 1
+  Red Candle"); with no Beekeeper nearby it reads "Hire a Beekeeper to make Candles". No other job makes them.
 
 Over their head: how many harvests (or, while making something, "Beekeeper · 3 made for builders"), and whether they're harvesting, planting flowers, feeding bees or putting the honey
 away. "No beehives within 16 blocks" or "needs a chest by the beehive" tells you what's missing.

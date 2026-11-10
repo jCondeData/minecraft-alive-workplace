@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.move;
 
 import io.github.jcondedata.aliveworkplace.build.MaterialRules;
+import io.github.jcondedata.aliveworkplace.build.TurnedBlockEntities;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -63,6 +64,11 @@ public final class MoveSite {
 	private final byte[] where;
 	/** Each packed block entity's data as it was taken down (a chest's items as the village left them), by block index. */
 	private final java.util.Map<Integer, CompoundTag> packedData = new java.util.HashMap<>();
+	/**
+	 * The blocks whose packed data was taken at the new spot (a canceled move coming down again), so it's turned with the
+	 * building: putting it back at the old spot turns it back (B1137). All other data is as it stood at the old spot.
+	 */
+	private final java.util.Set<Integer> packedTurned = new java.util.HashSet<>();
 	/**
 	 * The building's things (frames, paintings, armor stands, furniture entities) as they were when packed (45.5): their
 	 * items as the village left them, not as the plan saw them. Null on a site saved before 45.5, which puts the plan's up.
@@ -413,6 +419,11 @@ public final class MoveSite {
 			if (be != null) {
 				// the block entity as it is now (a chest the village used since the plan was made): packed with its items
 				packedData.put(j, be.saveWithoutMetadata(level.registryAccess()));
+				if (atNew) {
+					packedTurned.add(j);
+				} else {
+					packedTurned.remove(j);
+				}
 				Clearable.tryClear(be); // so nothing spills when it comes down
 				spills.add(at);
 			}
@@ -529,6 +540,8 @@ public final class MoveSite {
 				BlockEntity be = level.getBlockEntity(at);
 				if (be != null) {
 					be.loadWithComponents(group.size() > 1 ? withController(data.copy(), now) : data.copy(), level.registryAccess());
+					// B1137: data holding positions relative to the block (a Create arm's targets) turns with the building
+					TurnedBlockEntities.apply(be, net.minecraft.world.level.block.Mirror.NONE, dataTurn(j, now));
 					be.setChanged();
 					level.sendBlockUpdated(at, states.get(k), states.get(k), Block.UPDATE_CLIENTS);
 				}
@@ -536,6 +549,15 @@ public final class MoveSite {
 			where[j] = now;
 			MoveResidents.placed(level, this, j, at, now); // a resident's bed or workstation is theirs again at once (45.4)
 		}
+	}
+
+	/** How block {@code j}'s packed data has to turn to stand {@code now}: with the move at the new spot, back again at the old one. */
+	private Rotation dataTurn(int j, byte now) {
+		boolean turned = packedTurned.contains(j) && packedData.containsKey(j);
+		if (now == NEW) {
+			return turned ? Rotation.NONE : rotation;
+		}
+		return turned ? TurnedBlockEntities.inverse(rotation) : Rotation.NONE;
 	}
 
 	/**
@@ -627,6 +649,9 @@ public final class MoveSite {
 			CompoundTag entry = new CompoundTag();
 			entry.putInt("i", i);
 			entry.put("data", data.copy());
+			if (packedTurned.contains(i)) {
+				entry.putBoolean("turned", true);
+			}
 			packed.add(entry);
 		});
 		tag.put("packed_data", packed);
@@ -684,6 +709,9 @@ public final class MoveSite {
 			int i = entry.getInt("i");
 			if (i >= 0 && i < where.length) {
 				site.packedData.put(i, entry.getCompound("data"));
+				if (entry.getBoolean("turned")) { // false on a site saved before B1137's fix
+					site.packedTurned.add(i);
+				}
 			}
 		}
 		// a site saved before 45.5 has no packed things: the plan's go up

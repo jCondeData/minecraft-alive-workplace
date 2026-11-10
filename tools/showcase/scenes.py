@@ -27,7 +27,7 @@ import sys
 GROUPS = [
     "Picking a job", "Items", "Builder", "Mover", "Miner", "Lumberjack", "Orchard Keeper", "Farmer", "Beekeeper", "Florist", "Scholar", "Sifter",
     "Tinkerer", "Composter", "Netherworker", "Undertaker", "Innkeeper", "Teacher", "Rancher", "Fisherman", "Porter",
-    "Carpenter", "Crafter", "Mason", "Leatherworker", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
+    "Carpenter", "Crafter", "Mason", "Glassblower", "Leatherworker", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
     "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Furnicrafter", "Mechanic", "Create", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
@@ -300,6 +300,8 @@ SCENES = [
     job("cleric_crafts", "Cleric (alchemist)", "Making a brewing stand for a builder", "the cleric made the brewing stand the builder needed and took it to the builder's chest", 200),
     # The Beekeeper makes candles (ROADMAP 46.5): a builder's graveyard candles made from honeycomb and string at her Apiary, taken to the builder
     job("chandler", "Beekeeper", "Making candles for a builder", "the beekeeper made the candles the builder needed and took them to the builder's chest", 200),
+    # The Glassblower (ROADMAP 46.6): a builder's glass panes fired from sand on coal at his Glass Kiln, taken to the builder
+    job("glassblower", "Glassblower", "Firing glass panes for a builder", "the glassblower fired the builder's sand into glass at his glass kiln, made the glass panes the builder needed and took them to the builder's chest", 200),
     # The Leatherworker makes leather goods (ROADMAP 46.5): the Storehouse's stock orders for item frames and leads, made at his cauldron
     job("leatherworker_goods", "Leatherworker", "Making item frames and leads", "the leatherworker made the item frames and leads the storehouse ordered and put them in its store", 180),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone

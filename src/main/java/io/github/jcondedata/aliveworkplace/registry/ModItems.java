@@ -168,6 +168,7 @@ public final class ModItems {
 				output.accept(ModBlocks.TRAINING_POST);
 				output.accept(ModBlocks.STOREHOUSE);
 				output.accept(ModBlocks.MOVERS_CRATE);
+				output.accept(ModBlocks.GLASS_KILN);
 				output.accept(ModBlocks.TRAINING_DUMMY);
 				output.accept(ModBlocks.VILLAGE_HALL);
 				output.accept(ModBlocks.DROP_BOX);

@@ -72,7 +72,7 @@ public class JobListsGameTests {
 		Map<Item, CraftJobs.Job> own = Map.of(Items.BREWING_STAND, CraftJobs.Job.CLERIC, Items.FLOWER_POT, CraftJobs.Job.FLORIST,
 			Items.BLUE_BANNER, CraftJobs.Job.SHEPHERD, Items.RED_STAINED_GLASS, CraftJobs.Job.GLASSBLOWER, Items.LANTERN, CraftJobs.Job.TINKERER);
 		Map<Item, CraftJobs.Job> today = Map.of(Items.BREWING_STAND, CraftJobs.Job.CLERIC, Items.FLOWER_POT, CraftJobs.Job.FLORIST,
-			Items.BLUE_BANNER, CraftJobs.Job.SHEPHERD, Items.RED_STAINED_GLASS, CraftJobs.Job.MASON, Items.LANTERN, CraftJobs.Job.TINKERER);
+			Items.BLUE_BANNER, CraftJobs.Job.SHEPHERD, Items.RED_STAINED_GLASS, CraftJobs.Job.GLASSBLOWER, Items.LANTERN, CraftJobs.Job.TINKERER);
 		for (Item item : own.keySet()) {
 			helper.assertFalse(CraftJobs.makes(level, CraftJobs.Job.CARPENTER, item), "the Carpenter makes " + item);
 			helper.assertTrue(CraftJobs.of(level, item) == own.get(item), item + " is on " + CraftJobs.of(level, item) + "'s list");
@@ -159,7 +159,7 @@ public class JobListsGameTests {
 			Items.ITEM_FRAME, "Hire a Leatherworker to make Item Frames",
 			Items.BOOKSHELF, "Hire a Librarian to make Bookshelves",
 			Items.BREWING_STAND, "Hire a Cleric to make Brewing Stands",
-			Items.RED_STAINED_GLASS, "Hire a Mason to make Red Stained Glass");
+			Items.RED_STAINED_GLASS, "Hire a Glassblower to make Red Stained Glass");
 		Map<Item, UUID> sites = expected.keySet().stream().collect(Collectors.toMap(i -> i, i -> UUID.randomUUID()));
 		sites.forEach((item, site) -> helper.assertTrue(JobShortages.line(level, site, Map.of(item, 3)) == null, "a line before the jobs looked"));
 		helper.runAfterDelay(610, () -> {

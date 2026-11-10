@@ -57,7 +57,7 @@ drops from noon. The hall's guards icon shows the coming attack. Without a looko
 
 **A quieter world.** Whoever runs the server can turn the [**Threat Level**](threat-level.md) setting down: at 0 no raiders or bandit camps
 come at all, at 1 they come half as often. At 3 they come half again as often, and a quarter more raiders come each
-time. On **Peaceful** difficulty no raiders come, whatever the setting says. The hall's guards icon tells you when
+time. On **Peaceful** difficulty no raiders come, whatever the setting says. An attack you were already warned of is called off too: the gates stay open and nobody is sent indoors. The hall's guards icon tells you when
 nothing will come. Operators can also start and end raids themselves for an event with [`/workplace threat`](command-threat.md) (see
 [Threat settings](settings-threats.md)).
 

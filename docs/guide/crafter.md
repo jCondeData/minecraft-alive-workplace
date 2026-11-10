@@ -22,7 +22,8 @@ kind of thing, all at once for one builder if they need it.
 - The **Mason**: stone, from the stonecutter; with a furnace by it, the kiln too: clay balls fired into bricks, laid
   into brick blocks and cut into stairs, a coal burnt for every eight things fired.
 - The **Librarian**: books, paper, bookshelves and lecterns. The **Tinkerer**: metal, raw iron fired into ingots, then
-  bars, chains or a lantern. The **Toolsmith**: tools. The **dyer**: dyed wool and concrete.
+  bars, chains or a lantern. The **Toolsmith**: tools. The **Shepherd**: dyed wool, carpets, beds and
+  banners; the **Mason** also mixes concrete and dyes terracotta, and the **Leatherworker** makes only leather goods.
 - With CobbleFurnies, the **Furnicrafter**: its furniture, the planks and sticks first, then the piece.
 
 ![Three jobs filling one builder's list](https://jcondedata.github.io/minecraft-alive-workplace/job_chains/still-3.jpg)

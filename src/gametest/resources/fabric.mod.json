@@ -407,6 +407,8 @@
 			"io.github.jcondedata.aliveworkplace.test.ClericCraftsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClericCrafts1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ChandlerLeatherGameTests",
+			"io.github.jcondedata.aliveworkplace.test.GlassblowerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaChandlerLeather1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPriceTagList1109cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderToolListsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderToolLists1109bGameTests",
@@ -1554,8 +1556,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLadderOver1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderOverShutGate1109dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderOverVerify1110dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLadderOverVerify1110dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderOverSaves1110dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSwitches1110dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatSwitches1110dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampConverts1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaZoglinRam1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploads1109GameTests",
@@ -1572,7 +1576,8 @@
 			"io.github.jcondedata.aliveworkplace.test.CraftersFullStoreGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildingSnapshot1109bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobCraftListsGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaJobCraftListsBugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaJobCraftListsBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaJobLists1110cGameTests"
 		]
 	},
 	"depends": {

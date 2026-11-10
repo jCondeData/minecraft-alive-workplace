@@ -108,6 +108,7 @@ work, like villagers you trade with, and every level makes them faster. Villages
 | [Cartographer](cartographer.md) | Cartography Table | (vanilla) | [Jobs on the land](jobs-land.md) |
 | [Carpenter](carpenter.md) | Crafting Table | planks | [Crafters and smiths](jobs-crafts.md) |
 | [Mason](mason.md) | Stonecutter | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
+| [Glassblower](glassblower.md) | Glass Kiln | (its own block) | [Crafters and smiths](jobs-crafts.md) |
 | [Leatherworker](leatherworker-dyer.md) | Cauldron | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
 | [Tinkerer](tinkerer.md) | Smithing Table | redstone | [Crafters and smiths](jobs-crafts.md) |
 | [Armorer](armorer.md) | Blast Furnace | (vanilla) | [Crafters and smiths](jobs-crafts.md) |

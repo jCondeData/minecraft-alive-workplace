@@ -13,15 +13,21 @@ Roadmap items: 46.5
   - A candle from a honeycomb and a string.
   - A red candle from a honeycomb, a string and a red dye, step by step: the candle first, then the color.
   - A honeycomb block from four honeycomb.
+  - A blue candle from a plain candle and a blue dye already in the chest: only the color step.
+  - A candle block holding three candles takes three candles (three honeycomb and three string).
+- She fills the Storehouse's stock orders for candles the same way, from the store's honeycomb and string.
 - Over her head while making something: "Beekeeper · 3 made for builders" and what she's making. Between jobs she keeps
   her hives: harvesting, planting flowers and breeding bees wait while she makes something, and the making waits while
   she is at a hive.
 - A missing string is named on the builder's line: "Can't be made yet: short of 1 String to make 1 Candle". A missing
-  dye is named as the dye ("short of 1 Red Dye"), as a player hands it over.
-- A builder with no Beekeeper nearby reads "Hire a Beekeeper to make Candles"; the Storehouse's board says "Made by:
-  the Beekeeper (name)" or "Hire a Beekeeper to make it".
-- The Leatherworker makes item frames, glow item frames, leads, leather from rabbit hide and leather armor, for builders
-  and the Storehouse's stock orders, and no longer candles. Over his head: "Leatherworker · 3 made for builders" (it
+  dye is named as the dye ("Can't be made yet: short of 1 Red Dye to make 1 Red Candle"), as a player hands it over;
+  missing honeycomb reads "Can't be made yet: short of 1 Honeycomb to make 1 Candle". Nothing is taken while something
+  is short.
+- A builder with no Beekeeper nearby reads "Hire a Beekeeper to make Candles" (both of hers wanted: "Hire a Beekeeper to
+  make Candles, Honeycomb Blocks"); no other job makes them, not the Carpenter, the Shepherd or the Leatherworker. The
+  Storehouse's board says "Made by: the Beekeeper (name)" or "Hire a Beekeeper to make it".
+- The Leatherworker makes item frames, glow item frames, leads, leather from rabbit hide and leather armor (horse armor
+  too), for builders and the Storehouse's stock orders, and no longer candles or honeycomb blocks. Over his head: "Leatherworker · 3 made for builders" (it
   said "Dyer" before). With no Leatherworker, the line reads "Hire a Leatherworker to make Item Frames".
 
 ## 2. How it works
@@ -78,3 +84,12 @@ candle, and with no Beekeeper the Leatherworker leaving the candle alone and the
 Candles"; item frames from leather and sticks, a glow item frame step by step, leather from rabbit hide for a frame,
 leads and a leather helmet for stock orders, and with no Leatherworker the store untouched and the line saying "Hire a
 Leatherworker to make Item Frames". Scenes `chandler` and `leatherworker_goods`.
+
+`QaChandlerLeather1110cGameTests` (QA, from the spec): a blue candle from a plain candle and a dye, a block of three
+candles from three honeycomb and string, a red candle's two steps with a save and reload between them, the missing
+honeycomb and the missing dye named word for word with nothing taken, the Carpenter, the Shepherd and the Leatherworker
+leaving candles alone (each line "Hire a Beekeeper to make ..."), both of her things named on one hire line, a stock order
+for candles filled by her, the Leatherworker leaving a honeycomb block order alone and making leather horse armor, her
+Apiary broken mid-job losing nothing, the head lines ("Beekeeper · 1 made for builders", "making 1 Candle", "taking 1
+Candle to the builder"; "Leatherworker · N made for builders", never "Dyer") and the Storehouse's "Made by" and "Hire a
+... to make it" lines.

@@ -144,8 +144,8 @@ public class QaCreateMoverMultiblock1110e2CompatTests implements FabricGameTest 
 	}
 
 	/** A two-block vault holding 48 emeralds is moved a quarter turned: one vault at the new spot, all 48 in it once. */
-	//$ gametest_batch AREA '"qa_e1110b_mover_vault2"'
-	@GameTest(template = AREA, batch = "qa_e1110b_mover_vault2", timeoutTicks = 400)
+	//$ gametest_ticks_batch AREA '400' '"qa_e1110b_mover_vault2"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1110b_mover_vault2")
 	public void aMovedTwoBlockVaultIsStillOneVaultWithItsItems(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		PartnerShowsCompatTests.clearLeftovers(helper);
@@ -174,8 +174,8 @@ public class QaCreateMoverMultiblock1110e2CompatTests implements FabricGameTest 
 	}
 
 	/** The control: a one-block Fluid Tank with eight buckets of water (all it holds) is moved; the eight come across. */
-	//$ gametest_batch AREA '"qa_e1110b_mover_tank1"'
-	@GameTest(template = AREA, batch = "qa_e1110b_mover_tank1", timeoutTicks = 400)
+	//$ gametest_ticks_batch AREA '400' '"qa_e1110b_mover_tank1"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1110b_mover_tank1")
 	public void aMovedOneBlockFluidTankKeepsItsWater(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		PartnerShowsCompatTests.clearLeftovers(helper);
@@ -209,8 +209,8 @@ public class QaCreateMoverMultiblock1110e2CompatTests implements FabricGameTest 
 	}
 
 	/** Saved and reloaded with the vault packed in the Mover's crates: the vault comes across once, whole. */
-	//$ gametest_batch AREA '"qa_e1110b_mover_vault_reload"'
-	@GameTest(template = AREA, batch = "qa_e1110b_mover_vault_reload", timeoutTicks = 400)
+	//$ gametest_ticks_batch AREA '400' '"qa_e1110b_mover_vault_reload"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1110b_mover_vault_reload")
 	public void aMoveReloadedWithTheVaultPackedLosesAndDoublesNothing(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		PartnerShowsCompatTests.clearLeftovers(helper);

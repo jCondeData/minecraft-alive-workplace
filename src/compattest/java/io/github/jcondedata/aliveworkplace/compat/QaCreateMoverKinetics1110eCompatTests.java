@@ -44,8 +44,8 @@ public class QaCreateMoverKinetics1110eCompatTests implements FabricGameTest {
 	}
 
 	/** A motor turning two shafts, moved a quarter turned: the shafts turn at the new spot, as fast as before. */
-	//$ gametest_batch AREA '"qa_e1110b_mover_kinetic"'
-	@GameTest(template = AREA, batch = "qa_e1110b_mover_kinetic", timeoutTicks = 600)
+	//$ gametest_ticks_batch AREA '600' '"qa_e1110b_mover_kinetic"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa_e1110b_mover_kinetic")
 	public void aMovedMotorAndShaftsStillTurn(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		place(helper);
@@ -77,8 +77,8 @@ public class QaCreateMoverKinetics1110eCompatTests implements FabricGameTest {
 	}
 
 	/** The same moved, then its motor broken: the shafts stop (nothing turns on without a source at its old spot). */
-	//$ gametest_batch AREA '"qa_e1110b_mover_kinetic_stop"'
-	@GameTest(template = AREA, batch = "qa_e1110b_mover_kinetic_stop", timeoutTicks = 600)
+	//$ gametest_ticks_batch AREA '600' '"qa_e1110b_mover_kinetic_stop"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa_e1110b_mover_kinetic_stop")
 	public void aMovedShaftStopsWhenItsMotorIsBroken(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		place(helper);

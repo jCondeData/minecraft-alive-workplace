@@ -60,6 +60,21 @@ public class QaClericCrafts1110cGameTests {
 	private record Asker(Villager builder, BuildSite site, BuildPlan plan, BlockPos chest) {
 	}
 
+	/** The blaze rod in the Cleric's own chest, the cobblestone in the builder's: he takes from both and the stand is built. */
+	//$ gametest_ticks_batch AREA '2400' '"qaClericOwnRod"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qaClericOwnRod")
+	public void theBlazeRodFromHisOwnChestMakesTheStand(GameTestHelper helper) {
+		prepare(helper);
+		Asker a = asker(helper, single(helper, Blocks.BREWING_STAND, "ownrod"), new ItemStack(Items.COBBLESTONE, 3));
+		Villager cleric = cleric(helper, new ItemStack(Items.BLAZE_ROD, 1));
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, a);
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(cleric, 0) >= 1, "the Cleric made " + ModAttachments.ITEMS_CRAFTED.getOrElse(cleric, 0));
+			Container own = helper.getBlockEntity(STAND.east());
+			helper.assertTrue(own.countItem(Items.BLAZE_ROD) == 0, "his blaze rod is still in his chest");
+		});
+	}
+
 	/** A beacon from five glass, three obsidian and a nether star in the builder's chest: he makes it and it's placed. */
 	//$ gametest_ticks_batch AREA '2400' '"qaClericBeacon"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qaClericBeacon")

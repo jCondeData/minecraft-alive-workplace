@@ -22,6 +22,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Moving a building no longer breaks a Mover's Crate standing where the building goes: the Move page refuses a spot over one ("a Mover's Crate stands there"), and a move confirmed before never breaks it
 - A Mover whose own Mover's Crate stands inside the building he's moving no longer packs it with the rest and then waits forever for it: the crate stays where it stands and the move finishes (a move already stuck this way carries on, the crate put back first).
 
 ## 0.153.0 — 2026-11-09

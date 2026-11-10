@@ -1971,6 +1971,7 @@
   "screen.aliveworkplace.move.fit.steep": "Refused: the ground there is too steep",
   "screen.aliveworkplace.move.fit.water": "Refused: it would be under water",
   "screen.aliveworkplace.move.fit.water.at": "Refused: it would be under water (at %s, %s, %s)",
+  "screen.aliveworkplace.move.fit.crate.at": "Refused: a Mover's Crate stands there (at %s, %s, %s); it doesn't move with buildings",
   "screen.aliveworkplace.move.map.spot": "New spot: %s",
   "screen.aliveworkplace.move.map.now": "Where it stands now",
   "screen.aliveworkplace.move.map.outside": "Outside the village",

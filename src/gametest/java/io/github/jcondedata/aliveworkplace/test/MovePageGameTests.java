@@ -229,6 +229,21 @@ public class MovePageGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Refused (B1129): a Mover's Crate on the spot, with where. It never moves with a building, so going up there would break it. */
+	//$ gametest_ticks_batch AREA '100' '"movePageCrate"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "movePageCrate")
+	public void aSpotOverAMoversCrateIsRefused(GameTestHelper helper) {
+		Village v = stage(helper);
+		helper.setBlock(new BlockPos(13, 2, 5), ModBlocks.MOVERS_CRATE);
+		helper.runAfterDelay(2, () -> {
+			ChoiceMenu menu = openPicker(helper, v);
+			menu.press(EAST, v.player());
+			BlockPos at = helper.absolutePos(new BlockPos(13, 2, 5));
+			assertVerdict(helper, menu, Component.translatable("screen.aliveworkplace.move.fit.crate.at", at.getX(), at.getY(), at.getZ()));
+			helper.succeed();
+		});
+	}
+
 	/** Rotate: a quarter turn a click (the header and ghost face east, then south, west, north); turning where it stands fits. */
 	//$ gametest_ticks_batch AREA '100' '"movePageRotate"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "movePageRotate")

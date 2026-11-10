@@ -432,6 +432,13 @@ public final class MoveSite {
 			return;
 		}
 		BlockState there = level.getBlockState(pos);
+		if (stays(there) && !stays(state)) {
+			// B1129: a Mover's Crate stands there (it stays where it stood, B1120; the fit check refuses such a spot, but a
+			// move confirmed before that check may still meet one). Never broken: it's a Mover's workstation. Not put up.
+			where[i] = LOST;
+			skipped++;
+			return;
+		}
 		if (!there.isAir() && !there.canBeReplaced()) {
 			level.destroyBlock(pos, true); // something in the way (the fit check cleared the spot; a player built since)
 		}

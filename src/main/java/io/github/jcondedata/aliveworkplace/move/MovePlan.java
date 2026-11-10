@@ -197,12 +197,8 @@ public final class MovePlan {
 		}
 		AABB area = AABB.of(box);
 		List<Thing> things = new ArrayList<>();
-		for (Entity entity : level.getEntities((Entity) null, area, MovePlan::movesWithBuilding)) {
-			CompoundTag data = entity.saveWithoutId(new CompoundTag());
-			data.putString("id", EntityType.getKey(entity.getType()).toString());
-			data.remove("UUID");
-			data.remove("Passengers");
-			things.add(new Thing(entity.position().subtract(min.getX(), min.getY(), min.getZ()), data));
+		for (Entity entity : thingsIn(level, box)) {
+			things.add(thing(entity, min));
 		}
 		List<UUID> residents = new ArrayList<>();
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, area.inflate(128))) {
@@ -221,6 +217,32 @@ public final class MovePlan {
 		}
 		Vec3i size = new Vec3i(box.getXSpan(), box.getYSpan(), box.getZSpan());
 		return Optional.of(new MovePlan(structure, size, front, blocks, things, beds, workstations, residents));
+	}
+
+	/**
+	 * The things that belong to the building standing in {@code box}: every one {@link #movesWithBuilding} inside it, and
+	 * (45.5) a frame or painting hanging on one of its blocks from outside, on an outer wall, which would fall off with it.
+	 */
+	public static List<Entity> thingsIn(ServerLevel level, BoundingBox box) {
+		AABB area = AABB.of(box);
+		List<Entity> out = new ArrayList<>();
+		for (Entity entity : level.getEntities((Entity) null, area.inflate(1), MovePlan::movesWithBuilding)) {
+			boolean hangsOnIt = entity instanceof net.minecraft.world.entity.decoration.HangingEntity hanging
+				&& box.isInside(hanging.getPos().relative(hanging.getDirection().getOpposite()));
+			if (hangsOnIt || area.contains(entity.position())) {
+				out.add(entity);
+			}
+		}
+		return out;
+	}
+
+	/** A thing as the plan keeps it: by id, without its UUID or riders, its position relative to {@code min}. */
+	public static Thing thing(Entity entity, BlockPos min) {
+		CompoundTag data = entity.saveWithoutId(new CompoundTag());
+		data.putString("id", EntityType.getKey(entity.getType()).toString());
+		data.remove("UUID");
+		data.remove("Passengers");
+		return new Thing(entity.position().subtract(min.getX(), min.getY(), min.getZ()), data);
 	}
 
 	private static boolean inside(ServerLevel level, BoundingBox box, Optional<GlobalPos> pos) {
@@ -328,8 +350,13 @@ public final class MovePlan {
 
 	/** Puts the plan's entities (frames, armor stands, furniture) up at {@code min}; how many couldn't be (see {@link #place}). */
 	public int placeThings(ServerLevel level, BlockPos min, Rotation rotation) {
+		return placeThings(level, things, min, rotation);
+	}
+
+	/** Puts {@code list} (things of this plan, unturned, relative to its lowest corner) up at {@code min}; how many couldn't be. */
+	public int placeThings(ServerLevel level, List<Thing> list, BlockPos min, Rotation rotation) {
 		int left = 0;
-		for (Thing t : things) {
+		for (Thing t : list) {
 			Vec3 pos = turn(t.rel(), rotation).add(min.getX(), min.getY(), min.getZ());
 			Optional<Entity> made = BuildEntities.create(level, new BuildPlan.EntityStep(pos, t.data(), Items.AIR, rotation, Mirror.NONE));
 			if (made.isEmpty()) {

@@ -84,5 +84,8 @@ with a save and reload between them, his brewing stand broken mid-job losing not
 for builders", "making 1 Brewing Stand", "taking 1 Brewing Stand to the builder"), and a blaze rod in his own chest making a builder's stand (B1144: the Cleric takes part
 in the village, `Village.takesPart`, so his chests are a stash the builder's requests draw on).
 
+`QaClericOwnChest1110bGameTests` (QA of B1144): of two blaze rods in his chest only one is used for one stand, and a
+stand whose rod and cobblestone are all in his own chest is built with the builder's chest empty (two cobblestone left).
+
 `QaJobCrafts1110cGameTests` (QA): an ender chest one obsidian short (nothing taken, the line word for word), and an
 ender chest made from blaze powder at hand with no blaze rod.

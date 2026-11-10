@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.153.0 — 2026-11-09
+
 ### Added
 
 - A new job, the **Mover**, at his own Mover's Crate (planks round a barrel, a lead on top, two iron ingots under it): he carries out the moves picked on the Village Hall's Move page, taking the building down from the top into his crates (chests packed with their contents, frames and furniture too, nothing dropped) and putting it up again at the new spot from the ground up, turned as picked. Two Movers share a move, a reload mid-move is fine, and Call off, even half way, puts everything back where it was. With his crate broken he waits and says why. Config switch `movers` (45.3).

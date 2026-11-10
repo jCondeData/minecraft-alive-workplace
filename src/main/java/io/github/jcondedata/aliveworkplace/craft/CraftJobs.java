@@ -32,11 +32,11 @@ import org.jetbrains.annotations.Nullable;
  * wool or dye to the Shepherd, else to the Carpenter only if it has some wood in it. A vanilla thing on no list and
  * fitting no rule stays with whoever made it before 46.1 (the Carpenter at the crafting table, the Mason at his kiln).
  *
- * <p>The Shepherd weaves his own list at the loom since 46.2 ({@link WeaverWork}). Until 46.3-46.6 teach the Florist,
- * Cleric and Beekeeper to craft and bring the Glassblower, what their lists name is made by a stand-in
- * ({@link Job#standIn}) who made it before, so nothing that was made becomes unmakable: the Mason for the Glassblower's
- * glass (he fires it already), the Leatherworker (the village's dyer) for the Florist's and Beekeeper's, and the
- * Librarian for the Cleric's. Players read the job that makes it today ({@link #maker}).
+ * <p>The Shepherd weaves his own list at the loom since 46.2 ({@link WeaverWork}), the Florist makes hers at the Flower
+ * Stand since 46.3 ({@link FloristCraftWork}). Until 46.4-46.6 teach the Cleric and Beekeeper to craft and bring the
+ * Glassblower, what their lists name is made by a stand-in ({@link Job#standIn}) who made it before, so nothing that was
+ * made becomes unmakable: the Mason for the Glassblower's glass (he fires it already), the Leatherworker (the village's
+ * dyer) for the Beekeeper's, and the Librarian for the Cleric's. Players read the job that makes it today ({@link #maker}).
  *
  * <p>What a job gathers rather than makes is data too ({@code aliveworkplace:gathers/<job>}): the Storehouse's details
  * pane names the gatherer (logs the Lumberjack, ore, sand and clay the Miner, wool the Shepherd).
@@ -49,7 +49,7 @@ public final class CraftJobs {
 		GLASSBLOWER("glassblower", () -> null, "mason"),
 		TINKERER("tinkerer", () -> ModVillagers.TINKERER, null),
 		SHEPHERD("shepherd", () -> VillagerProfession.SHEPHERD, null),
-		FLORIST("florist", () -> ModVillagers.FLORIST, "leatherworker"),
+		FLORIST("florist", () -> ModVillagers.FLORIST, null),
 		CLERIC("cleric", () -> VillagerProfession.CLERIC, "librarian"),
 		BEEKEEPER("beekeeper", () -> ModVillagers.BEEKEEPER, "leatherworker"),
 		LEATHERWORKER("leatherworker", () -> VillagerProfession.LEATHERWORKER, null),

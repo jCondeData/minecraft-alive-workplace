@@ -50,7 +50,8 @@ import org.jetbrains.annotations.Nullable;
  * the chests on the grass there brings up the flowers of the biome (and grass, which is weeded out), bone meal on a tall
  * flower (sunflower, lilac, rose bush, peony) gives another. The small flowers are picked into the chests — for the dyer
  * and the builders nearby, while there are fewer than {@link #KEEP_FLOWERS} there — and empty flower pots within
- * {@link #POT_RANGE} blocks of the stand get a flower each.
+ * {@link #POT_RANGE} blocks of the stand get a flower each. Between these she makes her list for builders at the stand
+ * (46.3, {@code craft/FloristCraftWork}): the two take turns.
  */
 public class FloristWork extends Behavior<Villager> {
 	/** The garden round the Flower Stand. */
@@ -91,9 +92,32 @@ public class FloristWork extends Behavior<Villager> {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.FLORIST;
 	}
 
+	/** Florists on a task in the garden (46.3: her crafting at the stand waits for it, {@code craft/FloristCraftWork}). */
+	private static final java.util.Set<Villager> BUSY = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+
+	/** Whether this Florist is on a task in the garden (picking, growing, filling a pot, putting flowers away). */
+	public static boolean isBusy(Villager villager) {
+		synchronized (BUSY) {
+			return BUSY.contains(villager);
+		}
+	}
+
+	private static void setBusy(Villager villager, boolean busy) {
+		synchronized (BUSY) {
+			if (busy) {
+				BUSY.add(villager);
+			} else {
+				BUSY.remove(villager);
+			}
+		}
+	}
+
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		return !villager.isSleeping() && isFlorist(villager) && Builders.benchPos(villager).isPresent();
+		// 46.3: the garden waits while she makes something for a builder at the stand (the two share her bag), a job
+		// loaded from a save included
+		return !villager.isSleeping() && isFlorist(villager) && Builders.benchPos(villager).isPresent()
+			&& !io.github.jcondedata.aliveworkplace.craft.CrafterWork.isBusy(villager) && ModAttachments.CRAFTER_JOB.get(villager) == null;
 	}
 
 	@Override
@@ -110,11 +134,17 @@ public class FloristWork extends Behavior<Villager> {
 	@Override
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
 		task = Task.NONE;
+		setBusy(villager, false);
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 	}
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
+		work(level, villager, gameTime);
+		setBusy(villager, task != Task.NONE);
+	}
+
+	private void work(ServerLevel level, Villager villager, long gameTime) {
 		BlockPos station = Builders.benchPos(villager).orElse(null);
 		if (station == null) {
 			return;

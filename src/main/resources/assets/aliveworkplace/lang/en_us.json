@@ -1367,6 +1367,7 @@
   "message.aliveworkplace.herder.hired": "%s keeps your herd now: the animals within %s blocks of the smoker are bred up to %s of each kind, and the extra grown ones go for meat.",
   "message.aliveworkplace.dyer.title": "Dyer · %s made",
   "message.aliveworkplace.weaver.title": "Shepherd · %s woven",
+  "message.aliveworkplace.florist_craft.title": "Florist · %s made for builders",
   "message.aliveworkplace.alchemist.title": "Cleric · %s potions brewed",
   "message.aliveworkplace.alchemist.title.one": "Cleric · %s potion brewed",
   "message.aliveworkplace.alchemist.state.idle": "nothing to brew",

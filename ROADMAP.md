@@ -6558,7 +6558,7 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
   banners, banner patterns and paintings for builders, with the chain steps (the wool first, then the bed). Done when:
   GameTests for two blue beds from white wool, planks and blue dye, a banner, a missing dye named on the shortage line;
   scene `weaver` (his loom, the bed going into the builder's chest).
-- [x] **46.3** (review: pending 2026-11-10) **The Florist makes pots and dyes.** Flower pots (the Mason fires the bricks if there are only clay
+- [x] **46.3** (review: pending 2026-11-10) (verified 2026-11-10: QaFloristPots1110cGameTests, 14 passing [commit 65c3af441]: composter workstation, decorated pot, moss carpet, Mason fires nothing without a Florist + 'Hire a Florist to make Flower Pots', bricks shortage line word for word, Carpenter never makes pots, two-item hire line, Shepherd dyes himself with no Florist, blue dye from cornflowers for a blue bed, empty pots still filled, Mason reloaded mid-firing, stand broken mid-job loses nothing, status line word for word; full suite run twice [only known flakes B860/B1092/B1121 failed]; wiki and guide pages fixed. Not done: mutation/repeats [nightly], scene not filmed locally) **The Florist makes pots and dyes.** Flower pots (the Mason fires the bricks if there are only clay
   balls), decorated pots, dyes from the flowers she grows, moss carpet; she still fills empty pots. Done when:
   GameTests for a flower pot from bricks, from clay with a Mason, a dye for the Shepherd's bed; scene `florist_pots`.
 - [x] **46.4** (review: pending 2026-11-10) **The Cleric brews and makes the magic blocks.** Brewing stands, blaze powder, eyes of ender, ender

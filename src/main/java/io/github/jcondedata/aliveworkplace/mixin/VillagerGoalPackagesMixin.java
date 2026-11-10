@@ -221,9 +221,10 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.craft.DyerWork(), io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
 		} else if (profession == VillagerProfession.CLERIC) {
-			// Clerics brew potions for the guards at their brewing stand.
+			// Clerics brew potions for the guards at their brewing stand, and make the magic blocks for builders there (46.4).
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
-				new io.github.jcondedata.aliveworkplace.brew.AlchemistWork(), v -> !io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isBusy(v)));
+				new io.github.jcondedata.aliveworkplace.craft.ClericCraftWork(), new io.github.jcondedata.aliveworkplace.brew.AlchemistWork(),
+				v -> !io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isBusy(v) && io.github.jcondedata.aliveworkplace.craft.CrafterWork.vanillaMayRun(v)));
 		} else if (profession == VillagerProfession.LIBRARIAN) {
 			// Librarians make books for the builders and enchant the village's gear.
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),

@@ -2935,6 +2935,23 @@ final class JobScenes {
 				return n(ModAttachments.ITEMS_CRAFTED, f) >= 1 && job == null && carried == 0;
 			};
 		}, null));
+		// ROADMAP 46.4: the Cleric makes the brewing stand a builder's healing center needs at his own brewing stand, from
+		// the blaze rod and cobblestone in the builder's barrels, and takes it to them
+		SCENES.put("cleric_crafts", new Job("the cleric made the brewing stand the builder needed at his brewing stand and took it to the builder's chest", 4000,
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			java.util.UUID site = builderSite(level, StarterBlueprints.HEALING_CENTER, new BlockPos(-8, -60, -3),
+				List.of(Items.BREWING_STAND), Map.of(Items.BLAZE_ROD, 2, Items.COBBLESTONE, 6));
+			Villager c = worker(level, STATION, Blocks.BREWING_STAND, PoiTypes.CLERIC, VillagerProfession.CLERIC);
+			return l -> {
+				var job = ModAttachments.CRAFTER_JOB.get(c);
+				int carried = ModAttachments.BUILDER_BAG.getOrCreate(c).count(Items.BREWING_STAND);
+				timeoutWhy = "the cleric made " + n(ModAttachments.ITEMS_CRAFTED, c) + ", job " + (job == null ? "none" : job.phase() + " " + job.target())
+					+ ", carrying " + carried + " brewing stand(s), site " + (site == null ? "none" : String.valueOf(BuildSiteManager.get(l).get(site) == null ? "done"
+						: BuildSiteManager.get(l).get(site).missing()));
+				return n(ModAttachments.ITEMS_CRAFTED, c) >= 1 && job == null && carried == 0;
+			};
+		}, null));
 		SCENES.put("crew", new Job("four builders built the stone house together, each placing a share of it", 6000,
 			new Vec3(6.5, -51, 12.5), new Vec3(-5, -56, -6), (level, player) -> {
 			// 23.1a: the builder and three helpers from benches nearby, at the normal build speed, from exactly the house's

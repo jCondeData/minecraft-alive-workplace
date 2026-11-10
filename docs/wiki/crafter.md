@@ -17,7 +17,8 @@ go into the builder's chest and the build carries on. A Mason with a furnace by 
 brick stairs the same way (fired, laid, cut, a coal burnt for every eight fired). The Librarian makes the bookish parts,
 the Tinkerer the metal ones (raw iron fired into ingots, then bars or a lantern), the Toolsmith tools, the
 Leatherworker leather goods (and meanwhile candles), the Shepherd wool, carpets, beds and banners at his loom
-(since 46.2), the Florist pots, dyes and moss carpet (since 46.3), and, with CobbleFurnies, the
+(since 46.2), the Florist pots, dyes and moss carpet (since 46.3), the Cleric brewing stands, ender chests and
+beacons at his brewing stand (since 46.4), and, with CobbleFurnies, the
 Furnicrafter its furniture (the planks and sticks first, then the piece). A big order is made a bagful at a time until
 there's enough. Which job makes what is each job's own list since 46.1 ([Each job's own list](job-lists.md)).
 

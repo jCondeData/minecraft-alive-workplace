@@ -25,10 +25,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -41,7 +43,7 @@ import net.minecraft.world.level.block.state.properties.BedPart;
  * QA (lane c, 2026-11-10) for 45.4 "The residents move too", written from the spec: villagers who live or work in the
  * moved building keep it, and nobody else is touched. Edges the builder's tests leave out: a neighbor living elsewhere,
  * a resident asleep in the house when the move starts, a worker who sleeps elsewhere, a village with no inn (they sleep
- * by the Hall), and a save and reload while the house is away.
+ * by the Hall), a save and reload while the house is away, and a resident far off when the move starts.
  */
 public class QaMoverResidents1110cGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
@@ -311,6 +313,45 @@ public class QaMoverResidents1110cGameTests implements FabricGameTest {
 			helper.assertTrue(remembers(level, b, MemoryModuleType.HOME, moved(s, BED_B)), "Dara's bed is " + memory(b, MemoryModuleType.HOME));
 			helper.assertTrue(remembers(level, a, MemoryModuleType.JOB_SITE, moved(s, LECTERN)), "Tomas's lectern is " + memory(a, MemoryModuleType.JOB_SITE));
 			helper.assertTrue(a.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN, "Tomas lost his job");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * A resident who is far off (out trading, over 128 blocks away) when the move starts still lives there: once the house
+	 * stands at its new spot and they are back, their bed is the moved one, not the empty spot where it stood.
+	 */
+	//$ gametest_batch AREA '"qaMoverResidentsAway"'
+	@GameTest(template = AREA, batch = "qaMoverResidentsAway")
+	public void aResidentFarAwayDuringTheMoveStillGetsTheMovedBed(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Setup s = setup(helper, "away", true);
+		helper.runAfterDelay(2, () -> {
+			confirm(helper, s);
+			BlockPos far = helper.absolutePos(new BlockPos(10, 2, 3)).offset(200, 0, 0);
+			ChunkPos chunk = new ChunkPos(far);
+			level.setChunkForced(chunk.x, chunk.z, true);
+			Villager away = EntityType.VILLAGER.spawn(level, far, MobSpawnType.COMMAND);
+			try {
+				helper.assertTrue(away != null, "setup: couldn't spawn the traveler");
+				away.setNoAi(true);
+				helper.assertTrue(HallBeds.moveIn(level, away, helper.absolutePos(BED_A)), "setup: the traveler didn't get her bed");
+				MoveSite site = start(level, s);
+				work(level, s, site, x -> false);
+				helper.assertTrue(site.stage() == MoveSite.Stage.DONE, "the move ended " + site.stage());
+				// back home: she walks in and her villager ticks run
+				away.teleportTo(helper.absolutePos(new BlockPos(10, 2, 3)).getX() + 0.5, helper.absolutePos(new BlockPos(10, 2, 3)).getY(), helper.absolutePos(new BlockPos(10, 2, 3)).getZ() + 0.5);
+				away.tickCount = 13;
+				io.github.jcondedata.aliveworkplace.move.MoveResidents.tick(away);
+				BlockPos bed = moved(s, BED_A);
+				helper.assertTrue(remembers(level, away, MemoryModuleType.HOME, bed),
+					"a resident 200 blocks off when the move started has her bed at " + memory(away, MemoryModuleType.HOME) + ", not the moved bed " + bed.toShortString());
+			} finally {
+				if (away != null) {
+					away.discard();
+				}
+				level.setChunkForced(chunk.x, chunk.z, false);
+			}
 			helper.succeed();
 		});
 	}

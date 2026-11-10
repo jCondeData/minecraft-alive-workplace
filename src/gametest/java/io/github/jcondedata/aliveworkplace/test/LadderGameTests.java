@@ -442,6 +442,75 @@ public class LadderGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B325: after a restart nothing holds the climber to its ladder until the ladders' next step, and by then it may be
+	 * somewhere else (its own goals walk it, or the siege's director calls it to the gate). Here it is outside the east
+	 * wall when the ladders next look, more than {@link Ladders#SHARE} blocks from the ladder that came back half up with
+	 * the siege, and for a while it can't leave (a pen, so its path to the hall ends at the east wall whatever the
+	 * pathfinder tries): it never begins a second ladder there, and once the pen is gone it goes back to the first one,
+	 * finishes it and gets over.
+	 */
+	//$ gametest_ticks_batch AREA '1150' '"ladderRestartAway"'
+	@GameTest(template = AREA, timeoutTicks = 1150, batch = "ladderRestartAway")
+	public void aClimberAwayFromItsLadderAfterARestartFinishesItInsteadOfASecond(GameTestHelper helper) {
+		Yard yard = yard(helper);
+		ServerLevel level = yard.level();
+		Map<BlockPos, BlockState> before = blocks(helper);
+		BlockPos foot = helper.absolutePos(FOOT);
+		BlockPos base = helper.absolutePos(BlockPos.ZERO);
+		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 21.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
+		// The pen: three by three against the east wall's outer face, level with the hall, its walls two high.
+		List<BlockPos> pen = new ArrayList<>();
+		for (int y = 2; y <= 3; y++) {
+			for (int x = EAST + 1; x <= EAST + 4; x++) {
+				pen.add(new BlockPos(x, y, HALL.getZ() - 2));
+				pen.add(new BlockPos(x, y, HALL.getZ() + 2));
+			}
+			for (int z = HALL.getZ() - 1; z <= HALL.getZ() + 1; z++) {
+				pen.add(new BlockPos(EAST + 4, y, z));
+			}
+		}
+		long[] seen = {-1}; // the restart
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			List<BlockPos> rungs = Ladders.rungs(level, yard.hall());
+			List<BlockPos> elsewhere = raiderLadders(helper, before).stream().filter(p -> p.getX() != foot.getX() || p.getZ() != foot.getZ()).toList();
+			helper.assertTrue(elsewhere.isEmpty(), "a second ladder was begun at " + elsewhere + " (the first, at " + foot.toShortString() + ", has "
+				+ (rungs.size() - elsewhere.size()) + " rungs), the climber at " + climber.position() + ", tick " + tick + " (restart at " + seen[0] + ")");
+			if (seen[0] < 0) {
+				if (tick > 400) {
+					helper.fail("no ladder half up within 400 ticks: " + rungs.size() + " rungs, the climber at " + climber.position());
+				}
+				if (rungs.size() == 3) {
+					seen[0] = tick;
+					ThreatData.get(level).roundTrip(level.registryAccess());
+					Sieges.forget();
+					Ladders.forget();
+					pen.forEach(p -> helper.setBlock(p, Blocks.STONE_BRICKS));
+					climber.getNavigation().stop();
+					climber.teleportTo(base.getX() + EAST + 2.5, base.getY() + 2, base.getZ() + HALL.getZ() + 0.5);
+					helper.assertTrue(climber.blockPosition().distSqr(foot) > Ladders.SHARE * Ladders.SHARE, "the climber is still near its ladder");
+				}
+				return;
+			}
+			if (tick < seen[0] + 120) {
+				helper.assertTrue(rungs.size() == 3, "the ladder half up has " + rungs.size() + " rungs with its climber penned in: " + rungs);
+				return;
+			}
+			if (tick == seen[0] + 120) {
+				pen.forEach(p -> helper.setBlock(p, Blocks.AIR));
+			}
+			if (inside(helper, climber)) {
+				helper.assertTrue(rungs.size() == RUNGS && raiderLadders(helper, before).size() == RUNGS, "over a ladder of " + rungs.size() + " rungs: " + rungs);
+				helper.assertTrue(Ladders.over(level, yard.hall(), climber.getUUID()), "in, but not by the ladder");
+				helper.succeed();
+			} else if (tick > seen[0] + 700) {
+				helper.fail("the climber didn't get over within 700 ticks of the restart: it is at " + climber.position() + ", " + rungs.size() + " rungs: " + rungs);
+			}
+		});
+	}
+
+	/**
 	 * A player breaks the wall behind the ladder when it is nearly up. The game drops that rung; the ones above it come
 	 * down with it, the climbers set them again, and the climber still gets over. When the raid ends no ladder is left.
 	 */

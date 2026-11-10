@@ -55,7 +55,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **Ladders go up the walls** (32.5). Raiders who carry ladders (the pillagers of the warband, 32.7) walk to the wall
   in their way and set a ladder up its outer face, a rung every half second, with the sound of a ladder being placed.
   When the first one stands the chat says "Ladders at the walls of Oakbrook! A guard on the wall can throw them down."
-  They climb it, cross the wall's top and drop inside; the other raiders follow up the same ladder while the gate is
+  A ladder left half up (after a server restart, or when the raider raising it fell) is finished before a new one is
+  begun. They climb it, cross the wall's top and drop inside; the other raiders follow up the same ladder while the gate is
   still shut. Once the gate is open, one still on its way to a ladder turns and goes in by the gate instead.
 - **A guard on the walkway throws a ladder down** when he is within 2 blocks of its top: the whole ladder breaks away
   at once, whoever is on it falls, and the raiders need 10 seconds before they raise it again.
@@ -136,6 +137,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
     first thing at least two blocks high. A ladder already within 8 blocks of that spot is used; otherwise a new one is
     begun there, or up to 3 blocks to either side, wherever every rung goes into air or a wild plant it buries (`threat/Buriable`: vanilla's `#minecraft:replaceable`
     blocks without fluids, fire, vines, glow lichen, hanging roots, light and structure void). At most 3 ladders a siege.
+    Before any of that, a climber without a ladder takes the nearest one left half up (some rungs, not all, and no
+    climber assigned: a restart forgets the assignments, B325), however far off it is.
   - The ladder reaches to where the wall's column leaves two blocks free, at most 10 rungs: over a Stone Wall's
     crenel that is 5 rungs, over a merlon 6. One rung is set every 10 ticks while a climber stands within 3 blocks of
     the foot.
@@ -413,6 +416,9 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   `sieges` off; a ring of Stone Walls, with the gathering point beyond it from 16 sides and a started raid's raiders
   all outside, every one counted and on ground where mobs move (B176; the test keeps the ground east of its area live
   with a ticket of its own that lapses by itself, never the forced chunks the batches share).
+- `LadderGameTests.aClimberAwayFromItsLadderAfterARestartFinishesItInsteadOfASecond` (B325): after a save and load with
+  the ladder 3 rungs up, the climber stands penned outside another wall, more than 8 blocks away; no second ladder is
+  begun there, and once let out it goes back, finishes the first (5 rungs) and gets over.
 - `LadderGameTests.aLadderGoesUpInAirBesideAPlayersBlockNotOverIt`: a player's hay bale where the ladder would go is
   never replaced; the ladder goes up in air beside it and the climber is still over the wall within 600 ticks.
 - Showcase scene `siege_gate`: a ravager breaking a Palisade Gate, the cracks showing.

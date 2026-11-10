@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- In a siege, raiders finish the ladder they began after a server restart: before, a ladder-carrier who had stepped away from a half-raised ladder when the server came back could start a second ladder on another stretch of wall and leave the first standing unfinished (B325).
 - A house is no longer called done without its door: a door (or a bed) the Builder gave up because something stood in its upper half's spot each time he came to it, such as a block a player put there for a while, is set at the build's last look once that spot is free, and is then no longer counted as skipped; before, the build finished with an empty doorway and "1 skipped". A block that stays in the way still keeps the door out, counted once, and is never broken for it (B47).
 - A builder's path from a finished build and a Steward's road never lead into a fire (one burning on a ruined portal's netherrack, or soul fire), where no worker will stand; before, the path could take the fire's spot (B1119).
 - The builder game rules `workplaceFoundationDepth` and `workplaceLevelGround` take effect at once on a build under way, as the guide says: set the leveling ring to 0 mid-build and the Builder leaves the pits round the house alone; raise the foundation depth while he clears the site and the dip under the house is filled. Before, a build kept the values it started with until a server restart (B1113).

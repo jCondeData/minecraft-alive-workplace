@@ -5200,6 +5200,7 @@
   "plural.aliveworkplace.minecraft.light_blue_candle": "Light Blue Candles",
   "plural.aliveworkplace.minecraft.light_blue_carpet": "Light Blue Carpets",
   "plural.aliveworkplace.minecraft.light_blue_stained_glass_pane": "Light Blue Stained Glass Panes",
+  "plural.aliveworkplace.minecraft.magenta_stained_glass_pane": "Magenta Stained Glass Panes",
   "plural.aliveworkplace.minecraft.light_gray_banner": "Light Gray Banners",
   "plural.aliveworkplace.minecraft.light_gray_bed": "Light Gray Beds",
   "plural.aliveworkplace.minecraft.light_gray_carpet": "Light Gray Carpets",
@@ -8562,5 +8563,13 @@
   "screen.aliveworkplace.research.column_level": "Level",
   "screen.aliveworkplace.research.column_next": "Next level",
   "screen.aliveworkplace.research.button_research": "Research",
-  "screen.aliveworkplace.research.button_under_way": "Under way"
+  "screen.aliveworkplace.research.button_under_way": "Under way",
+  "block.aliveworkplace.glass_kiln": "Glass Kiln",
+  "plural.aliveworkplace.aliveworkplace.glass_kiln": "Glass Kilns",
+  "entity.minecraft.villager.glassblower": "Glassblower",
+  "entity.minecraft.zombie_villager.glassblower": "Zombie Glassblower",
+  "plural.aliveworkplace.profession.aliveworkplace.glassblower": "Glassblowers",
+  "message.aliveworkplace.glassblower.title": "Glassblower · %s made",
+  "blueprint.aliveworkplace.glassblowers_workshop": "Glassblower's Workshop",
+  "steward.aliveworkplace.why.glassblower": "%2$s villagers and nobody to make glass for the builders"
 }

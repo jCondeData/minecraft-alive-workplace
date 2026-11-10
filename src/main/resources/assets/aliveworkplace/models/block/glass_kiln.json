@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "aliveworkplace:block/glass_kiln_top",
+    "bottom": "aliveworkplace:block/glass_kiln_side",
+    "side": "aliveworkplace:block/glass_kiln_side",
+    "front": "aliveworkplace:block/glass_kiln_front"
+  }
+}

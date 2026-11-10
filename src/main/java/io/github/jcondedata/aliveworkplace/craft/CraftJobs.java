@@ -34,9 +34,10 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>The Shepherd weaves his own list at the loom since 46.2 ({@link WeaverWork}), the Florist makes hers at the Flower
  * Stand since 46.3 ({@link FloristCraftWork}), the Cleric his at the brewing stand since 46.4 ({@link ClericCraftWork}),
- * the Beekeeper hers at the Apiary since 46.5 ({@link BeekeeperCraftWork}). Until 46.6 brings the Glassblower, what her
- * list names is made by a stand-in ({@link Job#standIn}) who made it before, so nothing that was made becomes
- * unmakable: the Mason, who fires glass already. Players read the job that makes it today ({@link #maker}).
+ * the Beekeeper hers at the Apiary since 46.5 ({@link BeekeeperCraftWork}), and the Glassblower, a job of his own since
+ * 46.6, his glass at the Glass Kiln ({@link GlassblowerWork}; the Mason fired it until then). A job not in the game yet
+ * may still name a stand-in ({@link Job#standIn}) who makes its list meanwhile, so nothing that was made becomes
+ * unmakable; none does today. Players read the job that makes it today ({@link #maker}).
  *
  * <p>What a job gathers rather than makes is data too ({@code aliveworkplace:gathers/<job>}): the Storehouse's details
  * pane names the gatherer (logs the Lumberjack, ore, sand and clay the Miner, wool the Shepherd).
@@ -46,7 +47,7 @@ public final class CraftJobs {
 	public enum Job {
 		CARPENTER("carpenter", () -> ModVillagers.CARPENTER, null),
 		MASON("mason", () -> VillagerProfession.MASON, null),
-		GLASSBLOWER("glassblower", () -> null, "mason"),
+		GLASSBLOWER("glassblower", () -> ModVillagers.GLASSBLOWER, null),
 		TINKERER("tinkerer", () -> ModVillagers.TINKERER, null),
 		SHEPHERD("shepherd", () -> VillagerProfession.SHEPHERD, null),
 		FLORIST("florist", () -> ModVillagers.FLORIST, null),
@@ -76,7 +77,7 @@ public final class CraftJobs {
 			return tag;
 		}
 
-		/** The villager job, or null for one that isn't in the game yet (the Glassblower until 46.6). */
+		/** The villager job, or null for one that isn't in the game yet (the Glassblower was, until 46.6). */
 		@Nullable
 		public VillagerProfession profession() {
 			return profession.get();

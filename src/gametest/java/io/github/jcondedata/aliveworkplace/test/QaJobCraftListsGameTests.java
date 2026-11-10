@@ -230,7 +230,7 @@ public class QaJobCraftListsGameTests {
 
 	/**
 	 * The shortage line for things with no job here: one "Hire a ..." per job, the things of a job together and in the
-	 * plural, and the jobs that make things today named (never one that doesn't craft yet, such as the Glassblower).
+	 * plural, and the jobs that make things today named (never one that doesn't craft yet, as the Glassblower was until 46.6).
 	 */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '700' '"qaJobListsHire"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 700, batch = "qaJobListsHire")
@@ -241,8 +241,8 @@ public class QaJobCraftListsGameTests {
 		single.put(Items.RAIL, "Hire a Tinkerer to make Rails");
 		single.put(Items.TORCH, "Hire a Carpenter to make Torches");
 		single.put(Items.LADDER, "Hire a Carpenter to make Ladders");
-		single.put(Items.GLASS_PANE, "Hire a Mason to make Glass Panes");
-		single.put(Items.GLASS_BOTTLE, "Hire a Mason to make Glass Bottles");
+		single.put(Items.GLASS_PANE, "Hire a Glassblower to make Glass Panes");
+		single.put(Items.GLASS_BOTTLE, "Hire a Glassblower to make Glass Bottles");
 		single.put(Items.ENDER_EYE, "Hire a Cleric to make Eyes of Ender");
 		single.put(Items.END_ROD, "Hire a Cleric to make End Rods");
 		single.put(Items.ENCHANTING_TABLE, "Hire a Librarian to make Enchanting Tables");
@@ -312,7 +312,7 @@ public class QaJobCraftListsGameTests {
 		lines(helper, pos, Items.COD, "Hire a Fisherman to catch it", wrong);
 		lines(helper, pos, Items.HONEYCOMB, "Hire a Beekeeper to collect it", wrong);
 		lines(helper, pos, Items.POPPY, "Hire a Florist to grow it", wrong);
-		lines(helper, pos, Items.GLASS, "Hire a Mason to make it", wrong);
+		lines(helper, pos, Items.GLASS, "Hire a Glassblower to make it", wrong); // the Mason's until 46.6
 		lines(helper, pos, Items.LANTERN, "Hire a Tinkerer to make it", wrong);
 		lines(helper, pos, Items.BARRIER, "No job makes or gathers this", wrong);
 		// a child carpenter and a grown one out of reach don't count
@@ -325,7 +325,9 @@ public class QaJobCraftListsGameTests {
 		worker(helper, ModVillagers.CARPENTER, "Zed", new BlockPos(1, 2, 6));
 		lines(helper, pos, Items.OAK_STAIRS, "Made by: the Carpenter (Ada)", wrong);
 		worker(helper, VillagerProfession.MASON, null, new BlockPos(1, 2, 2));
-		lines(helper, pos, Items.GLASS, "Made by: the Mason", wrong);
+		lines(helper, pos, Items.GLASS, "Hire a Glassblower to make it", wrong); // a Mason no longer fires it (46.6)
+		worker(helper, ModVillagers.GLASSBLOWER, null, new BlockPos(1, 2, 4));
+		lines(helper, pos, Items.GLASS, "Made by: the Glassblower", wrong);
 		lines(helper, pos, Items.RED_CONCRETE, "Made by: the Mason", wrong);
 		worker(helper, VillagerProfession.FARMER, "Fern", new BlockPos(1, 2, 2));
 		lines(helper, pos, Items.WHEAT, "Gathered by: the Farmer (Fern)", wrong);
@@ -334,17 +336,17 @@ public class QaJobCraftListsGameTests {
 	}
 
 	/**
-	 * Through a builder's real request: stained glass (the Glassblower's, made by the Mason until 46.6, the dyer before
-	 * 46.1) is still made, by a Mason from glass and dye, so it didn't become unmakable.
+	 * Through a builder's real request: stained glass (the Glassblower's since 46.6, made by the Mason before, the dyer
+	 * before 46.1) is still made, by the Glassblower from glass and dye, so it didn't become unmakable.
 	 */
 	//$ gametest_ticks_batch AREA '2400' '"qaJobListsStainedGlass"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "qaJobListsStainedGlass")
-	public void aMasonMakesStainedGlassForABuilder(GameTestHelper helper) {
+	public void aGlassblowerMakesStainedGlassForABuilder(GameTestHelper helper) {
 		prepare(helper);
 		Asker a = asker(helper, Blocks.RED_STAINED_GLASS, new ItemStack(Items.GLASS, 8), new ItemStack(Items.RED_DYE, 1));
-		helper.setBlock(STATION, Blocks.STONECUTTER);
-		Villager mason = helper.spawn(EntityType.VILLAGER, STATION.south());
-		Jobs.employ(helper.getLevel(), mason, helper.absolutePos(STATION), PoiTypes.MASON, VillagerProfession.MASON);
+		helper.setBlock(STATION, ModBlocks.GLASS_KILN);
+		Villager glassblower = helper.spawn(EntityType.VILLAGER, STATION.south());
+		Jobs.employ(helper.getLevel(), glassblower, helper.absolutePos(STATION), ModVillagers.GLASS_KILN_POI, ModVillagers.GLASSBLOWER);
 		helper.succeedWhen(() -> {
 			ServerLevel level = helper.getLevel();
 			helper.assertTrue(BuildSiteManager.get(level).get(a.site().id()) == null,

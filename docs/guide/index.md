@@ -71,7 +71,8 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 - [Leatherworker](leatherworker-dyer.md): item frames, leads and leather armor for the builders.
 - [Librarian](librarian.md): enchants the village's gear.
 - [Lumberjack](lumberjack.md): fells and replants trees.
-- [Mason](mason.md): stone, glass and bricks for the builders.
+- [Mason](mason.md): stone and bricks for the builders, and the sand for the glass.
+- [Glassblower](glassblower.md): glass fired from sand, panes, stained glass and bottles for the builders.
 - [Miner](miner.md): quarries and strip mines.
 - [Quarry](quarry-build.md): the Miner's pit that grows back.
 - [Move Tutor](move-tutor.md): teaches your Pokémon moves (Cobblemon).

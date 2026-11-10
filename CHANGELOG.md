@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A village warned of tomorrow night's raid no longer braces for it after the raid is called off: with the threat level set to 0, Peaceful difficulty or the village set At peace (also after a save and reload), the gates stay open, the portcullis stays up, the guards don't take battle stations and nobody is sent indoors on that day (B1146).
 - A husk that got over a village wall by a sand ramp is no longer ordered back by the siege after a server restart: who got over by a ramp is now saved with the siege, so after the restart it keeps fighting inside the walls instead of being walked back to the gate or the ramp (B1130).
 - A Cleric uses the blaze rods and other makings kept in his own chests (the ones by his brewing stand) for a builder's brewing stand, ender chest or beacon. Before, the builder waited forever, "short of 1 Blaze Rod", with the rod sitting in the Cleric's chest; a Cleric making tonics now also takes their makings from the village's Storehouse (B1144).
 - With Create, the Mover moves a Fluid Tank or Item Vault built from several blocks as one: a two-tall tank arrives with all its water instead of leaving its bottom block behind with 8 of 10 buckets and an empty top block at the new spot, and a canceled move puts a two-block vault back up as one vault with all its items through either block, not as a full vault and an empty one (B1135, B1136).

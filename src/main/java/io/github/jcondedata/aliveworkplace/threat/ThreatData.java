@@ -336,6 +336,19 @@ public final class ThreatData extends SavedData {
 		}
 	}
 
+	/**
+	 * Calls off every attack on the clock of the village round {@code hall} (32.21: a quiet village, or the threats
+	 * cleared), and the warning of one with them (B1146): nothing braces on the day for an attack that won't come.
+	 */
+	public void callOff(BlockPos hall) {
+		drop(hall, Long.MAX_VALUE, false);
+		Clock clock = clocks.get(hall);
+		if (clock != null && clock.warned >= 0) {
+			clock.warned = -1;
+			setDirty();
+		}
+	}
+
 	/** The day of the attack the village round {@code hall} was warned of (32.14), or -1. */
 	public long warned(BlockPos hall) {
 		Clock clock = clocks.get(hall);

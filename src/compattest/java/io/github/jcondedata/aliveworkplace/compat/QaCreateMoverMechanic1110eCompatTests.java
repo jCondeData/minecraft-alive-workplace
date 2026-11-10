@@ -38,8 +38,8 @@ public class QaCreateMoverMechanic1110eCompatTests implements FabricGameTest {
 	static final int PARTS = 8;
 
 	/** The Mechanic's Toolbox, holding 8 iron ingots, in a moved house: his at the new spot, the 8 in it once. */
-	//$ gametest_batch AREA '"qa_e1110b_mover_mechanic"'
-	@GameTest(template = AREA, batch = "qa_e1110b_mover_mechanic", timeoutTicks = 400)
+	//$ gametest_ticks_batch AREA '400' '"qa_e1110b_mover_mechanic"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1110b_mover_mechanic")
 	public void aMechanicKeepsHisToolboxAndItsPartsThroughTheMove(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		PartnerShowsCompatTests.clearLeftovers(helper);

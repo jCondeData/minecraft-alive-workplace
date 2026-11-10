@@ -378,7 +378,8 @@ sites are remembered). Each site (`BuildSite.save`) holds:
 - `steward`, `hall` (a Steward's build from a Village Hall; absent for a player's own), `waiting_since` (absent:
   not waiting) and `player_blocks` (0): used by Stewards (27.19).
 - `rechecks` (0): how often the build went back for blocks broken mid-build; `left_out` (empty): the structure and
-  decoration blocks given up for good, which that look leaves be (B508; older saves have neither).
+  decoration blocks given up for good, which that look leaves be (B508; older saves have neither), but for a door or
+  bed whose other half's spot is free again (B47).
 - `clear_passes` (0): CLEAR's passes for what fell in, dig-outs included (B837); `dig_out` (absent: false): the build is
   back in CLEAR only to dig out sand fallen into its rooms (B869).
 
@@ -436,7 +437,12 @@ claims and trip counts.
   it mid-build; the same test the repair round uses, crops aside), the Builder goes back to the first such block and
   over the lists again, passing what still stands, and lays what's missing. It goes back at most twice a build; a
   block broken again after that is counted in skipped and left for the repair round. Blocks already given up
-  (deferred, then skipped) are not gone back for (B508, `aPlankBrokenMidBuildIsBackWhenTheBuildEnds`).
+  (deferred, then skipped) are not gone back for (B508, `aPlankBrokenMidBuildIsBackWhenTheBuildEnds`), but for one
+  kind: a door, bed or other two-block block given up because something stood in its other half's spot (a player's
+  block in a door's upper cell each time the Builder came to it). If that spot is free at the last look and the block
+  can stand, it is taken out of `left_out` and of skipped, and the Builder goes back and sets it, so a house is not
+  called done without its door; a block that stays in the way keeps it out, counted in skipped once (B47,
+  `B47GameTests`).
 - An upgrade is a whole new blueprint on the same spot. Where its new room's roof runs in under the old roof's edge,
   the wall is carried up to that edge, so the roofs meet with no open blocks between them; `tools/blueprints/holes.py`
   checks every blueprint for roof holes, gaps between roofs and stray empty blocks (owner's report, 2026-10-14).

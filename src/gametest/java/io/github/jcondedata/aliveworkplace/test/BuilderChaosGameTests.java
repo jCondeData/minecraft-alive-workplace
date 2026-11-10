@@ -217,7 +217,9 @@ public class BuilderChaosGameTests {
 				"still building: stage " + site.stage() + ", " + site.placed() + " placed; seed " + seed + ", " + log);
 			List<BlockPos> unfinished = plan.unfinished(level);
 			helper.assertTrue(unfinished.isEmpty(), unfinished.size() + " block(s) wrong after the build, e.g. "
-				+ unfinished.stream().limit(3).map(p -> helper.relativePos(p) + "=" + level.getBlockState(p)).toList() + "; seed " + seed);
+				+ unfinished.stream().limit(3).map(p -> helper.relativePos(p) + " (blueprint cell "
+					+ p.subtract(placement.origin()).toShortString() + ", drawn " + wanted.get(p) + ")=" + level.getBlockState(p)).toList()
+				+ ", " + site.skipped() + " skipped; seed " + seed + ", " + log); // B47: the cell as the blueprint has it, and the traps
 			helper.assertTrue(traps[0] >= MIN_TRAPS, "only " + traps[0] + " traps before the build was done; seed " + seed);
 			helper.assertTrue(site.skipped() == 0, site.skipped() + " step(s) skipped; seed " + seed + ", " + log);
 			AliveWorkplace.LOG.info("[chaos] builder seed {} finished in {} ticks: {}", seed, ticks[0], log);

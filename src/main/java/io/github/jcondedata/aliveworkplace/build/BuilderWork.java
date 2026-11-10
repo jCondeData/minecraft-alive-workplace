@@ -174,6 +174,13 @@ public class BuilderWork extends Behavior<Villager> {
 	 * it (nobody could lay that one): without it the column above waited for good (B139).
 	 */
 	private static final int GIVEN_UP_WAIT = 200;
+	/**
+	 * B1148: how long a finished build waits for an item frame, painting or armor stand it is short of when no job is on
+	 * it and none is spare in the village (one a job is making, or one spare somewhere, is waited for as long as that
+	 * lasts). After it the build ends without it, as it always did, and the owner is told what wasn't put up. Not final:
+	 * tests shorten it.
+	 */
+	public static int DECORATION_WAIT = 2400;
 	/** True while this builder works on a Wonder with a crew, in columns (35.5). */
 	private boolean crew;
 	/** True while the lead works on a block away from its cursor, this tick (23.1a). */
@@ -518,6 +525,9 @@ public class BuilderWork extends Behavior<Villager> {
 			lastMark = site.progressMark(); // B270: giving those up isn't the crew moving on: the stand-still goes on
 		}
 		if (!helping && site.isDone()) {
+			if (getDecorations(level, villager, site, plan, bag, bench, free)) {
+				return; // B1148: the item frames, paintings and armor stands first, like any material
+			}
 			Builders.finish(level, villager, site);
 			return;
 		}
@@ -2076,6 +2086,59 @@ public class BuilderWork extends Behavior<Villager> {
 		site.supplied();
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.EntityTracker(lead, true));
 		TossSounds.play(level, villager.blockPosition()); // 23.1b: only a sound, capped server-wide
+		return false;
+	}
+
+	/**
+	 * B1148: the build is finished but short of an item frame, painting or armor stand that neither the chests by the
+	 * bench nor the bag hold. The builder gets it like any material: from what the village can spare, else waiting by
+	 * the bench with it on the waiting line and the board, where the jobs that make it (the Leatherworker's frames, the
+	 * Shepherd's paintings, the Carpenter's armor stands) see it. He waits while one is spare somewhere, while a job is on it, or
+	 * for {@link #DECORATION_WAIT} from when the wait began (saved on the site, so a reload keeps it), and never past three
+	 * times that. True while he is
+	 * at it; false once the build may end, what's still short left out and the owner told (Builders.finish).
+	 */
+	private boolean getDecorations(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench,
+								   boolean free) {
+		if (free || site.isDeconstruction() || site.isRepair() || plan.entities().isEmpty()) {
+			return false;
+		}
+		Map<Item, Integer> need = Builders.decorationNeed(level, plan);
+		if (need.isEmpty()) {
+			return false;
+		}
+		long now = level.getGameTime();
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, null); // the chests Builders.finish puts them up from
+		Map<Item, Long> elsewhere = null;
+		for (Map.Entry<Item, Integer> e : need.entrySet()) {
+			Item item = e.getKey();
+			long inChests = SupplyContainers.count(level, supplies, item);
+			if (inChests + bag.count(item) >= e.getValue()) {
+				continue;
+			}
+			if (site.decorationWaitSince() == BuildSite.NOT_WAITING || site.decorationWaitSince() > now) {
+				site.setDecorationWaitSince(now);
+				// the list as it stands now the blocks are all in (it may still name blocks laid since its last count)
+				site.setMissing(Builders.computeMissing(level, site, plan, bag, supplies, spareElsewhere(level, villager, site, plan, bench)));
+			}
+			long waited = now - site.decorationWaitSince();
+			if (waited >= 3L * DECORATION_WAIT) {
+				return false; // never for good: a job that keeps saying it's on it, or a spare one out of reach, ends too
+			}
+			boolean worthIt = waited < DECORATION_WAIT
+				|| io.github.jcondedata.aliveworkplace.craft.JobShortages.coveredFor(site.id(), item, now);
+			if (!worthIt) {
+				if (elsewhere == null) {
+					elsewhere = spareElsewhere(level, villager, site, plan, bench);
+				}
+				worthIt = elsewhere.getOrDefault(MaterialFamilies.key(item), 0L) > 0;
+			}
+			if (worthIt) {
+				// the bag's count plus what the chests are short of: fetch takes the rest from the village, or waits for it
+				fetch(level, villager, site, plan, bag, bench, new MaterialRules.Requirement(item, (int) Math.min(64, e.getValue() - inChests)));
+				return true;
+			}
+		}
 		return false;
 	}
 

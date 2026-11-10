@@ -393,6 +393,7 @@ public class QaHallBeds1103cGameTests implements net.fabricmc.fabric.api.gametes
 	@GameTest(template = AREA_HUGE, timeoutTicks = 1200, batch = "qaHbTerraceTurned")
 	public void aHomelessVillagerSleepsUpTheOtherLadderOfATurnedTerrace(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.homes(helper); // B1084: an earlier batch's bed he can walk to would be claimed before these up a ladder
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		Terrace t = terrace(helper, new BlockPos(20, 2, 8), Rotation.CLOCKWISE_90, 3042L);

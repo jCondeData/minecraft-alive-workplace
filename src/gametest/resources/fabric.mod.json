@@ -397,6 +397,7 @@
 			"io.github.jcondedata.aliveworkplace.test.MoverResidentsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverResidents1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverBelongingsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.MoverResidentsAwayGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MovePageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1109cGameTests",
@@ -1582,7 +1583,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuildingSnapshot1109bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobCraftListsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobCraftListsBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaJobLists1110cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaJobLists1110cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.BuilderAsksForFramesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGlassblower1110eGameTests"
 		]
 	},
 	"depends": {

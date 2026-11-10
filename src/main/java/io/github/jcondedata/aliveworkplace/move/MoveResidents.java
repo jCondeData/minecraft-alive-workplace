@@ -25,6 +25,7 @@ import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
@@ -47,6 +48,12 @@ import org.jetbrains.annotations.Nullable;
  * {@link #tick}); one whose move is over is kept for {@link #KEEP_TICKS} in {@link MoveSites}' homecomings. A move
  * called off puts them back the same way, at the old spot. Nothing changes for a world from before 45.4: a site saved
  * then has no residents noted.
+ * <p>
+ * Someone who lives or works there but is too far off to be noted as it starts (over 128 blocks, or not loaded; B1154)
+ * isn't forgotten: every bed and workstation in it that's taken but by nobody noted is a {@link Claim}, held for them
+ * where it goes up. Seen during the move (their home or job site memory in the old box), they're noted then; seen after
+ * it, their memory of the old spot is turned into the moved block ({@link #forward}). A claim nobody comes back for is
+ * let go after {@link #KEEP_TICKS}, and one whose block is broken meanwhile is dropped.
  */
 public final class MoveResidents {
 	/** How long a resident who hasn't been loaded since their move ended is still waited for: five days. */
@@ -146,6 +153,64 @@ public final class MoveResidents {
 		}
 	}
 
+	/**
+	 * A bed or workstation in a building on the move that's taken, but by nobody noted as it started (B1154): its spot
+	 * relative to the building's lowest corner, whether it's a bed (else a workstation), and where it's held now (null:
+	 * not standing yet). Once the move is over it waits in {@link MoveSites}' forwards with its old spot and the game time
+	 * it's given up after.
+	 */
+	public static final class Claim {
+		final BlockPos rel;
+		final boolean bed;
+		@Nullable
+		BlockPos at;
+		@Nullable
+		BlockPos old;
+		long until;
+
+		Claim(BlockPos rel, boolean bed) {
+			this.rel = rel.immutable();
+			this.bed = bed;
+		}
+
+		/** Where it's held for its owner now; null: not standing. */
+		@Nullable
+		public BlockPos at() {
+			return at;
+		}
+
+		/** Whether it's a bed (else a workstation). */
+		public boolean bed() {
+			return bed;
+		}
+
+		CompoundTag save() {
+			CompoundTag tag = new CompoundTag();
+			tag.put("rel", NbtUtils.writeBlockPos(rel));
+			tag.putBoolean("bed", bed);
+			if (at != null) {
+				tag.put("at", NbtUtils.writeBlockPos(at));
+			}
+			if (old != null) {
+				tag.put("old", NbtUtils.writeBlockPos(old));
+			}
+			tag.putLong("until", until);
+			return tag;
+		}
+
+		static Optional<Claim> load(CompoundTag tag) {
+			Optional<BlockPos> rel = NbtUtils.readBlockPos(tag, "rel");
+			if (rel.isEmpty()) {
+				return Optional.empty();
+			}
+			Claim c = new Claim(rel.get(), tag.getBoolean("bed"));
+			c.at = NbtUtils.readBlockPos(tag, "at").orElse(null);
+			c.old = NbtUtils.readBlockPos(tag, "old").orElse(null);
+			c.until = tag.getLong("until");
+			return Optional.of(c);
+		}
+	}
+
 	// ---- the move starts
 
 	/**
@@ -155,20 +220,73 @@ public final class MoveResidents {
 	static void begin(ServerLevel level, MoveSite site, BoundingBox box) {
 		BlockPos min = new BlockPos(box.minX(), box.minY(), box.minZ());
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, AABB.of(box).inflate(128))) {
-			BlockPos bed = inside(level, box, villager.getBrain().getMemory(MemoryModuleType.HOME)).map(p -> p.subtract(min)).orElse(null);
-			BlockPos job = inside(level, box, villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)).map(p -> p.subtract(min)).orElse(null);
-			if (bed == null && job == null) {
-				continue;
-			}
-			Resident resident = new Resident(villager.getUUID(), bed, job);
-			site.residents().add(resident);
-			if (job != null && villager.getVillagerXp() == 0) {
-				villager.setVillagerXp(1); // keeps the job while the block is packed (as a hire gets, Jobs.employ)
-			}
-			if (bed != null) {
-				shelter(level, site, resident, villager);
+			note(level, site, box, min, villager);
+		}
+		// beds and workstations someone has who isn't here to be noted (far off, or not loaded): held for them (B1154)
+		BlockPos center = box.getCenter();
+		int radius = Math.max(box.getXSpan(), box.getZSpan()) / 2 + 1;
+		level.getPoiManager().getInSquare(MoveResidents::claimable, center, radius, PoiManager.Occupancy.IS_OCCUPIED)
+			.filter(p -> box.isInside(p.getPos()))
+			.sorted(Comparator.comparingLong(p -> p.getPos().asLong()))
+			.forEach(p -> {
+				BlockPos rel = p.getPos().subtract(min);
+				boolean bed = p.getPoiType().is(PoiTypes.HOME);
+				boolean noted = site.residents().stream().anyMatch(r -> rel.equals(bed ? r.bed : r.job));
+				if (!noted) {
+					site.claims().add(new Claim(rel, bed));
+				}
+			});
+	}
+
+	private static boolean claimable(Holder<PoiType> type) {
+		return type.is(PoiTypes.HOME) || VillagerProfession.ALL_ACQUIRABLE_JOBS.test(type);
+	}
+
+	/**
+	 * Notes {@code villager} as a resident of {@code site} if their bed or workstation is in {@code box} (the building as
+	 * it stood, its lowest corner {@code min}). Returns the resident, or null if they don't live or work there.
+	 */
+	@Nullable
+	private static Resident note(ServerLevel level, MoveSite site, BoundingBox box, BlockPos min, Villager villager) {
+		BlockPos bed = inside(level, box, villager.getBrain().getMemory(MemoryModuleType.HOME)).map(p -> p.subtract(min)).orElse(null);
+		BlockPos job = inside(level, box, villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)).map(p -> p.subtract(min)).orElse(null);
+		if (bed == null && job == null) {
+			return null;
+		}
+		Resident resident = new Resident(villager.getUUID(), bed, job);
+		site.residents().add(resident);
+		// a claim held for them since the move started is theirs: what of it stands again is held already
+		for (java.util.Iterator<Claim> it = site.claims().iterator(); it.hasNext(); ) {
+			Claim c = it.next();
+			if (c.rel.equals(c.bed ? bed : job)) {
+				if (c.bed) {
+					resident.bedAt = c.at;
+				} else {
+					resident.jobAt = c.at;
+				}
+				it.remove();
 			}
 		}
+		if (job != null && villager.getVillagerXp() == 0) {
+			villager.setVillagerXp(1); // keeps the job while the block is packed (as a hire gets, Jobs.employ)
+		}
+		if (bed != null && resident.bedAt == null && site.stage() != MoveSite.Stage.DONE) {
+			shelter(level, site, resident, villager);
+		}
+		return resident;
+	}
+
+	/**
+	 * {@code villager} wasn't noted as {@code site} started (too far off, or not loaded) but lives or works in the building
+	 * (their memory says so): noted now, and given what of theirs stands again. False if they don't live or work there.
+	 */
+	static boolean late(ServerLevel level, MoveSite site, Villager villager) {
+		Resident r = note(level, site, site.oldBox(), site.oldMin(), villager);
+		if (r == null) {
+			return false;
+		}
+		check(level, site, r, villager);
+		return true;
 	}
 
 	private static Optional<BlockPos> inside(ServerLevel level, BoundingBox box, Optional<GlobalPos> pos) {
@@ -216,6 +334,11 @@ public final class MoveResidents {
 				r.jobHome = false;
 			}
 		}
+		for (Claim c : site.claims()) {
+			if (rel.equals(c.rel)) {
+				c.at = null;
+			}
+		}
 	}
 
 	/**
@@ -244,6 +367,11 @@ public final class MoveResidents {
 			}
 			if (!r.home() && level.getEntity(r.id) instanceof Villager villager) {
 				settle(level, r, villager);
+			}
+		}
+		for (Claim c : site.claims()) {
+			if (rel.equals(c.rel) && reserve(level, pos)) {
+				c.at = pos.immutable(); // held for whoever has it, when they're next seen (B1154)
 			}
 		}
 	}
@@ -327,6 +455,90 @@ public final class MoveResidents {
 			}
 		}
 		return waiting;
+	}
+
+	/**
+	 * {@code site}'s move is over: its claims that stand again wait for their owners, each with its old spot and kept for
+	 * {@link #KEEP_TICKS} (B1154). A claim not standing (a move called off before it came down) is dropped: its owner
+	 * still has it where it was.
+	 */
+	static List<Claim> forwards(ServerLevel level, MoveSite site) {
+		List<Claim> out = new java.util.ArrayList<>();
+		for (Claim c : site.claims()) {
+			if (c.at != null) {
+				c.old = site.oldMin().offset(c.rel);
+				c.until = level.getGameTime() + KEEP_TICKS;
+				out.add(c);
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * {@code villager}, seen after a move, remembers {@code c}'s old spot as their home or job site: it's the moved block
+	 * now (held for them since it went up). True if the claim is used up: it was theirs, given or not (its block broken
+	 * meanwhile: their memory is left for vanilla to forget, as for any bed gone).
+	 */
+	static boolean forward(ServerLevel level, Claim c, Villager villager) {
+		if (c.old == null || c.at == null) {
+			return true;
+		}
+		MemoryModuleType<GlobalPos> memory = c.bed ? MemoryModuleType.HOME : MemoryModuleType.JOB_SITE;
+		if (!villager.getBrain().getMemory(memory).filter(g -> g.equals(GlobalPos.of(level.dimension(), c.old))).isPresent()) {
+			return false;
+		}
+		if (c.old.equals(c.at)) {
+			return true; // a move called off: theirs where it was, held already
+		}
+		if (poiAt(level, c.old).isPresent()) {
+			return false; // a bed or workstation stands at the old spot again: what they remember is that one
+		}
+		if (!standing(level, c)) {
+			return true;
+		}
+		PoiManager poi = level.getPoiManager();
+		if (poi.getFreeTickets(c.at) > 0 && !reserve(level, c.at)) {
+			return true;
+		}
+		GlobalPos target = GlobalPos.of(level.dimension(), c.at);
+		if (c.bed) {
+			if (villager.isSleeping()) {
+				villager.stopSleeping();
+			}
+			villager.getBrain().setMemory(MemoryModuleType.HOME, target); // (their old bed is gone: nothing to let go)
+		} else {
+			Stations.forgetWalkedTo(villager, target);
+			villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, target);
+			JobSiteTickets.hold(level, villager);
+			if (villager.getVillagerXp() == 0) {
+				villager.setVillagerXp(1);
+			}
+		}
+		return true;
+	}
+
+	/** Whether {@code c}'s block still stands where it's held: a bed or a workstation, as it was, with its point of interest. */
+	static boolean standing(ServerLevel level, Claim c) {
+		return c.at != null && level.getPoiManager().getType(c.at).isPresent()
+			&& poiAt(level, c.at).filter(t -> c.bed ? t.is(PoiTypes.HOME) : claimable(t) && !t.is(PoiTypes.HOME)).isPresent();
+	}
+
+	/**
+	 * The point of interest at {@code pos}: by the block there if its chunk is loaded (the level files a block's change
+	 * after the tick's work, B132, so a bed broken this tick is still filed), else as filed.
+	 */
+	private static Optional<Holder<PoiType>> poiAt(ServerLevel level, BlockPos pos) {
+		return level.isLoaded(pos) ? PoiTypes.forState(level.getBlockState(pos)) : level.getPoiManager().getType(pos);
+	}
+
+	/**
+	 * {@code c} is given up (nobody came back for it in time, or there are too many): its hold is let go so another
+	 * villager can have it. One whose block was broken has nothing to let go.
+	 */
+	static void giveUp(ServerLevel level, Claim c) {
+		if (standing(level, c) && level.getPoiManager().getFreeTickets(c.at) == 0) {
+			level.getPoiManager().release(c.at);
+		}
 	}
 
 	private static boolean remembers(ServerLevel level, @Nullable Villager villager, MemoryModuleType<GlobalPos> memory, BlockPos at) {

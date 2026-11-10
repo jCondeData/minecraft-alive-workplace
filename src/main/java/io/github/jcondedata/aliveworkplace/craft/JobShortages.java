@@ -87,6 +87,15 @@ public final class JobShortages {
 		}
 	}
 
+	/** B1148: whether a job said lately it can make {@code item} for {@code site}, or is making it (not short, not full). */
+	public static boolean coveredFor(UUID site, Item item, long now) {
+		synchronized (NOTES) {
+			Map<Item, Note> notes = NOTES.get(site);
+			Note note = notes == null ? null : notes.get(item);
+			return note != null && note.lack() == null && !note.full() && now - note.at() <= FRESH_TICKS;
+		}
+	}
+
 	/** Forgets everything about {@code site} (the build is over). */
 	public static void forget(UUID site) {
 		synchronized (NOTES) {

@@ -25,10 +25,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -41,42 +43,42 @@ import net.minecraft.world.level.block.state.properties.BedPart;
  * QA (lane c, 2026-11-10) for 45.4 "The residents move too", written from the spec: villagers who live or work in the
  * moved building keep it, and nobody else is touched. Edges the builder's tests leave out: a neighbor living elsewhere,
  * a resident asleep in the house when the move starts, a worker who sleeps elsewhere, a village with no inn (they sleep
- * by the Hall), and a save and reload while the house is away.
+ * by the Hall), a save and reload while the house is away, and a resident far off when the move starts.
  */
 public class QaMoverResidents1110cGameTests implements FabricGameTest {
-	private static final String AREA = "aliveworkplace_test:huge_area";
-	private static final BlockPos MIN = new BlockPos(2, 2, 2);
-	private static final BlockPos MAX = new BlockPos(8, 6, 8);
-	private static final BlockPos TO = new BlockPos(16, 2, 16);
-	private static final BlockPos BED_A = new BlockPos(3, 3, 7);
-	private static final BlockPos BED_B = new BlockPos(5, 3, 7);
-	private static final BlockPos LECTERN = new BlockPos(7, 3, 4);
-	private static final BlockPos HALL = new BlockPos(15, 2, 2);
-	private static final BlockPos INN = new BlockPos(25, 2, 3);
-	private static final BlockPos INN_BED_1 = new BlockPos(24, 2, 6);
-	private static final BlockPos INN_BED_2 = new BlockPos(27, 2, 6);
+	static final String AREA = "aliveworkplace_test:huge_area";
+	static final BlockPos MIN = new BlockPos(2, 2, 2);
+	static final BlockPos MAX = new BlockPos(8, 6, 8);
+	static final BlockPos TO = new BlockPos(16, 2, 16);
+	static final BlockPos BED_A = new BlockPos(3, 3, 7);
+	static final BlockPos BED_B = new BlockPos(5, 3, 7);
+	static final BlockPos LECTERN = new BlockPos(7, 3, 4);
+	static final BlockPos HALL = new BlockPos(15, 2, 2);
+	static final BlockPos INN = new BlockPos(25, 2, 3);
+	static final BlockPos INN_BED_1 = new BlockPos(24, 2, 6);
+	static final BlockPos INN_BED_2 = new BlockPos(27, 2, 6);
 	/** A bed and a lectern outside the house, for the neighbor and the commuter. */
-	private static final BlockPos OUT_BED = new BlockPos(12, 2, 26);
-	private static final BlockPos OUT_LECTERN = new BlockPos(14, 2, 26);
+	static final BlockPos OUT_BED = new BlockPos(12, 2, 26);
+	static final BlockPos OUT_LECTERN = new BlockPos(14, 2, 26);
 	/** A bed by the Hall, the fallback when the village has no inn. */
-	private static final BlockPos HALL_BED = new BlockPos(17, 2, 6);
-	private static final int MAX_STEPS = 5000;
+	static final BlockPos HALL_BED = new BlockPos(17, 2, 6);
+	static final int MAX_STEPS = 5000;
 
-	private record Setup(MovePlan before, BlockPos hall, BlockPos from, BlockPos to, Villager mover, ResourceLocation id) {
+	record Setup(MovePlan before, BlockPos hall, BlockPos from, BlockPos to, Villager mover, ResourceLocation id) {
 	}
 
-	private static void set(ServerLevel level, BlockPos abs, BlockState state) {
+	static void set(ServerLevel level, BlockPos abs, BlockState state) {
 		level.setBlock(abs, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 	}
 
-	private static void bed(GameTestHelper helper, BlockPos head) {
+	static void bed(GameTestHelper helper, BlockPos head) {
 		BlockState bed = Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.SOUTH);
 		set(helper.getLevel(), helper.absolutePos(head.north()), bed.setValue(BedBlock.PART, BedPart.FOOT));
 		set(helper.getLevel(), helper.absolutePos(head), bed.setValue(BedBlock.PART, BedPart.HEAD));
 	}
 
 	/** A walled 7 × 5 × 7 house with two beds and a lectern, the hall's record of it, an inn (unless {@code inn} is false). */
-	private static Setup setup(GameTestHelper helper, String name, boolean inn) {
+	static Setup setup(GameTestHelper helper, String name, boolean inn) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		for (int x = MIN.getX(); x <= MAX.getX(); x++) {
@@ -132,41 +134,41 @@ public class QaMoverResidents1110cGameTests implements FabricGameTest {
 		return new Setup(before, hall, from, to, mover, id);
 	}
 
-	private static void confirm(GameTestHelper helper, Setup s) {
+	static void confirm(GameTestHelper helper, Setup s) {
 		PendingMoves.get(helper.getLevel()).put(new PendingMoves.Move(s.hall(), s.from(), s.id(), s.to(), Rotation.CLOCKWISE_90, null));
 	}
 
-	private static Villager villager(GameTestHelper helper, BlockPos at, String name) {
+	static Villager villager(GameTestHelper helper, BlockPos at, String name) {
 		Villager villager = helper.spawn(EntityType.VILLAGER, at);
 		villager.setNoAi(true);
 		villager.setCustomName(net.minecraft.network.chat.Component.literal(name));
 		return villager;
 	}
 
-	private static MoveSite start(ServerLevel level, Setup s) {
+	static MoveSite start(ServerLevel level, Setup s) {
 		return MoveSites.get(level).work(level, s.hall()).orElseThrow();
 	}
 
-	private static MoveSite work(ServerLevel level, Setup s, MoveSite site, Predicate<MoveSite> stop) {
+	static MoveSite work(ServerLevel level, Setup s, MoveSite site, Predicate<MoveSite> stop) {
 		for (int i = 0; i < MAX_STEPS && site.stage() != MoveSite.Stage.DONE && !stop.test(site); i++) {
 			MoverWork.work(level, s.mover(), site);
 		}
 		return site;
 	}
 
-	private static BlockPos moved(Setup s, BlockPos helperPos) {
+	static BlockPos moved(Setup s, BlockPos helperPos) {
 		return s.before().at(helperPos.subtract(MIN), s.to(), Rotation.CLOCKWISE_90);
 	}
 
-	private static String memory(Villager villager, MemoryModuleType<GlobalPos> memory) {
+	static String memory(Villager villager, MemoryModuleType<GlobalPos> memory) {
 		return villager.getBrain().getMemory(memory).map(g -> g.pos().toShortString()).orElse("none");
 	}
 
-	private static boolean remembers(ServerLevel level, Villager villager, MemoryModuleType<GlobalPos> memory, BlockPos pos) {
+	static boolean remembers(ServerLevel level, Villager villager, MemoryModuleType<GlobalPos> memory, BlockPos pos) {
 		return villager.getBrain().getMemory(memory).filter(g -> g.equals(GlobalPos.of(level.dimension(), pos))).isPresent();
 	}
 
-	private static boolean noted(MoveSite site, Villager villager) {
+	static boolean noted(MoveSite site, Villager villager) {
 		return site.residents().stream().anyMatch(r -> r.id().equals(villager.getUUID()));
 	}
 
@@ -311,6 +313,45 @@ public class QaMoverResidents1110cGameTests implements FabricGameTest {
 			helper.assertTrue(remembers(level, b, MemoryModuleType.HOME, moved(s, BED_B)), "Dara's bed is " + memory(b, MemoryModuleType.HOME));
 			helper.assertTrue(remembers(level, a, MemoryModuleType.JOB_SITE, moved(s, LECTERN)), "Tomas's lectern is " + memory(a, MemoryModuleType.JOB_SITE));
 			helper.assertTrue(a.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN, "Tomas lost his job");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * A resident who is far off (out trading, over 128 blocks away) when the move starts still lives there: once the house
+	 * stands at its new spot and they are back, their bed is the moved one, not the empty spot where it stood.
+	 */
+	//$ gametest_batch AREA '"qaMoverResidentsAway"'
+	@GameTest(template = AREA, batch = "qaMoverResidentsAway")
+	public void aResidentFarAwayDuringTheMoveStillGetsTheMovedBed(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Setup s = setup(helper, "away", true);
+		helper.runAfterDelay(2, () -> {
+			confirm(helper, s);
+			BlockPos far = helper.absolutePos(new BlockPos(10, 2, 3)).offset(200, 0, 0);
+			ChunkPos chunk = new ChunkPos(far);
+			level.setChunkForced(chunk.x, chunk.z, true);
+			Villager away = EntityType.VILLAGER.spawn(level, far, MobSpawnType.COMMAND);
+			try {
+				helper.assertTrue(away != null, "setup: couldn't spawn the traveler");
+				away.setNoAi(true);
+				helper.assertTrue(HallBeds.moveIn(level, away, helper.absolutePos(BED_A)), "setup: the traveler didn't get her bed");
+				MoveSite site = start(level, s);
+				work(level, s, site, x -> false);
+				helper.assertTrue(site.stage() == MoveSite.Stage.DONE, "the move ended " + site.stage());
+				// back home: she walks in and her villager ticks run
+				away.teleportTo(helper.absolutePos(new BlockPos(10, 2, 3)).getX() + 0.5, helper.absolutePos(new BlockPos(10, 2, 3)).getY(), helper.absolutePos(new BlockPos(10, 2, 3)).getZ() + 0.5);
+				away.tickCount = 13;
+				io.github.jcondedata.aliveworkplace.move.MoveResidents.tick(away);
+				BlockPos bed = moved(s, BED_A);
+				helper.assertTrue(remembers(level, away, MemoryModuleType.HOME, bed),
+					"a resident 200 blocks off when the move started has her bed at " + memory(away, MemoryModuleType.HOME) + ", not the moved bed " + bed.toShortString());
+			} finally {
+				if (away != null) {
+					away.discard();
+				}
+				level.setChunkForced(chunk.x, chunk.z, false);
+			}
 			helper.succeed();
 		});
 	}

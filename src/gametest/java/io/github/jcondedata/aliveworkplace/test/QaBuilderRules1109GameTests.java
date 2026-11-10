@@ -389,8 +389,8 @@ public class QaBuilderRules1109GameTests {
 	 * or -1, workplaceBuildDelay takes 1 but not 0, workplaceFoundationDepth takes 0 but not -1. A refused value leaves the
 	 * rule as it was.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaRules1109GameruleBounds"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaRules1109GameruleBounds")
 	public void gameruleCommandKeepsEachBuilderRuleInsideTheGuidesBounds(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		GameRules rules = level.getGameRules();

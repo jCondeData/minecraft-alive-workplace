@@ -208,9 +208,10 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.craft.FletcherWork(), io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
 		} else if (profession == VillagerProfession.SHEPHERD) {
-			// Shepherds shear and breed the sheep around their loom.
+			// Shepherds shear and breed the sheep around their loom, and weave for the builders at it (46.2).
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
-				new io.github.jcondedata.aliveworkplace.ranch.ShepherdWork(), v -> !io.github.jcondedata.aliveworkplace.ranch.RanchWork.isBusy(v)));
+				new io.github.jcondedata.aliveworkplace.craft.WeaverWork(), new io.github.jcondedata.aliveworkplace.ranch.ShepherdWork(),
+				v -> !io.github.jcondedata.aliveworkplace.ranch.RanchWork.isBusy(v) && io.github.jcondedata.aliveworkplace.craft.CrafterWork.vanillaMayRun(v)));
 		} else if (profession == VillagerProfession.BUTCHER) {
 			// Butchers look after the cows, pigs, chickens and rabbits around their smoker.
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),

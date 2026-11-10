@@ -291,7 +291,9 @@ SCENES = [
       [("*_crafter_furniture@first", "Start: a table and oak logs in the chest"), ("*_crafter_furniture@middle", "Sawing, cutting and crafting"),
        ("30_crafter_furniture_corner", "The dining corner, built")], cobblemon=True, furniture=True),
     job("mason", "Mason", "Cutting stone for a builder", "the mason cut stone bricks the builder needed", 240),
-    job("dyer", "Leatherworker (dyer)", "Dyeing wool for a builder", "the dyer made colored wool the builder needed", 240),
+    job("dyer", "Shepherd", "Dyeing wool for a builder", "the shepherd dyed the colored wool the builder needed at his loom", 240),
+    # The Shepherd weaves (ROADMAP 46.2): a builder's bed made at his loom, the wool dyed first, then taken to the builder
+    job("weaver", "Shepherd", "Weaving a bed for a builder", "the shepherd made the red bed the builder needed and took it to the builder's chest", 200),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone
     job("crew", "Builder", "A crew of four on one build", "four builders built the stone house together, each placing a share of it", 150),
     # Scaffolding (ROADMAP 35.6, 35.6a): a 14-high pillar with an overhanging cap, built from a column of vanilla

@@ -2,8 +2,9 @@
 
 Milestone 46 (owner, 2026-11-09: "the carpenter shouldn't build brewing stands, or anything that doesn't have wood").
 Every job that crafts for builders, stock orders and Wonders makes only its own kind of thing. 46.1 puts the lists in
-place; 46.2 to 46.6 teach the Shepherd, Florist, Cleric and Beekeeper to craft and bring the Glassblower.
-Roadmap items: 46.1
+place; 46.2 taught the Shepherd to weave at his loom ([The Shepherd weaves](weaver.md)); 46.3 to 46.6 teach the
+Florist, Cleric and Beekeeper to craft and bring the Glassblower.
+Roadmap items: 46.1, 46.2
 
 ## 1. What a player sees
 
@@ -19,10 +20,12 @@ Roadmap items: 46.1
 - The Leatherworker makes leather goods: item frames, leads, leather, leather armor. He no longer takes "anything
   colored": stained glass, terracotta and concrete are the Mason's.
 - The Librarian makes books, paper, bookshelves, lecterns, enchanting tables and cartography tables.
-- **For now (until 46.2 to 46.6):** the jobs that don't craft yet have a stand-in, the job that made the thing before:
+- The Shepherd (since 46.2) weaves at his loom: wool from string, dyed wool, carpets, beds, banners, banner patterns and
+  paintings ([The Shepherd weaves](weaver.md)).
+- **For now (until 46.3 to 46.6):** the jobs that don't craft yet have a stand-in, the job that made the thing before:
   - glass, panes, stained glass, tinted glass and bottles (the Glassblower's): the Mason, who fires glass already;
-  - wool, carpets, beds, banners, paintings (the Shepherd's), flower pots, decorated pots, dyes, moss carpet (the
-    Florist's) and candles, honeycomb blocks (the Beekeeper's): the Leatherworker;
+  - flower pots, decorated pots, dyes, moss carpet (the Florist's) and candles, honeycomb blocks (the Beekeeper's): the
+    Leatherworker;
   - brewing stands, blaze powder, eyes of ender, ender chests, end rods, beacons (the Cleric's): the Librarian.
   So nothing that was made before became unmakable. As each job learns to craft, its list moves to it.
 - When nobody in the village makes a part a builder waits for, his line under "Short of" names the job to hire:
@@ -86,7 +89,7 @@ before carries on.
 ## 7. Known limits
 
 - The ingredient rule reads a modded item's first crafting recipe only, and the first item each ingredient accepts.
-- Until 46.2 to 46.6 the "Hire a ..." lines name the stand-in ("Hire a Librarian to make Brewing Stands"), not the job
+- Until 46.3 to 46.6 the "Hire a ..." lines name the stand-in ("Hire a Librarian to make Brewing Stands"), not the job
   whose list it is.
 - The showcase scene is filmed on GitHub, not in this session.
 

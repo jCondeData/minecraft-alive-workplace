@@ -80,6 +80,9 @@ public final class BuildSite {
 	// Transient, recomputed as needed
 	@Nullable
 	private BuildPlan plan;
+	/** B1113: the foundation depth and levelling margin {@link #plan} was worked out with (game rules of that moment). */
+	private int planDepth;
+	private int planMargin;
 	private Status status = Status.STARTING;
 	private Map<Item, Integer> missing = Map.of();
 	/** B636: {@link #missing} predates materials the crew has taken since (not saved). */
@@ -364,6 +367,15 @@ public final class BuildSite {
 
 	@Nullable
 	public BuildPlan plan(ServerLevel level) {
+		int depth = foundation && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
+		int margin = levelGround && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
+		if (plan != null && !deconstruct && !repair && (depth != planDepth || margin != planMargin)) {
+			// B1113: workplaceFoundationDepth or workplaceLevelGround changed with /gamerule while the build is under way. They
+			// "take effect at once" (game-rules.md), as after a restart: the plan is worked out again with the new values. Only
+			// the foundation and landscaping lists depend on them, and those restart from the top when worked out again in
+			// their stage (below); the other lists, and the cursor in them, stay as they are.
+			plan = null;
+		}
 		if (plan == null) {
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(level.getServer(), structure);
 			if (blueprint.isEmpty()) {
@@ -381,8 +393,8 @@ public final class BuildSite {
 			if (cellarOnly) {
 				blueprint = Optional.of(Cellars.cellarOnly(blueprint.get())); // 36.7: the cellar and the way down, nothing above
 			}
-			int depth = foundation && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
-			int margin = levelGround && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
+			planDepth = depth;
+			planMargin = margin;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
 				: repair && refresh != null ? Refreshes.plan(level, drawn, structure, refresh, placement, furniture) // B642: furnished as built, and anew
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level, BuildSiteManager.get(level).gaveUp(placement))

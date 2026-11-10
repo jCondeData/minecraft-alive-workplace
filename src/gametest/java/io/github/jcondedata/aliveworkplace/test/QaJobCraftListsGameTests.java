@@ -247,8 +247,8 @@ public class QaJobCraftListsGameTests {
 		single.put(Items.END_ROD, "Hire a Librarian to make End Rods");
 		single.put(Items.ENCHANTING_TABLE, "Hire a Librarian to make Enchanting Tables");
 		single.put(Items.CARTOGRAPHY_TABLE, "Hire a Librarian to make Cartography Tables");
-		single.put(Items.RED_BED, "Hire a Leatherworker to make Red Beds");
-		single.put(Items.RED_BANNER, "Hire a Leatherworker to make Red Banners");
+		single.put(Items.RED_BED, "Hire a Shepherd to make Red Beds");
+		single.put(Items.RED_BANNER, "Hire a Shepherd to make Red Banners");
 		single.put(Items.CANDLE, "Hire a Leatherworker to make Candles");
 		single.put(Items.DECORATED_POT, "Hire a Leatherworker to make Decorated Pots");
 		Map<Item, UUID> sites = new LinkedHashMap<>();

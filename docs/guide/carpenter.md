@@ -47,7 +47,7 @@ the builders are waiting for" when all's well.
 
 - **Fed by:** the [Lumberjack](lumberjack.md)'s logs, from their chests or the storehouse. Give a
   [Builder](builder.md) only logs, and the carpenter makes the rest.
-- **Works beside:** the [Mason](mason.md) (stone), the [Leatherworker](leatherworker-dyer.md) (wool, dyes, beds and leather goods), the
+- **Works beside:** the [Mason](mason.md) (stone), the [Shepherd](shepherd.md) (wool, carpets, beds), the [Leatherworker](leatherworker-dyer.md) (leather goods), the
   [Tinkerer](tinkerer.md) (redstone and iron parts) and the [Librarian](librarian.md) (books and bookshelves): each
   leaves the others' work to them.
 - **Faster with:** the **Craftsmanship** research (15% faster a level; see [Scholar](scholar.md)).

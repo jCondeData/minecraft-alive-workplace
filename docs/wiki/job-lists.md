@@ -20,8 +20,10 @@ Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5
 - The Tinkerer makes metal and redstone: his `tinkering` list plus rails, tripwire hooks, redstone torches, daylight
   detectors, copper bulbs, minecarts, chains and lanterns.
 - The Leatherworker makes leather goods: item frames and glow item frames, leads, leather from rabbit hide, leather
-  armor. He no longer takes "anything colored": stained glass, terracotta and concrete are the Mason's, and since 46.5
-  candles the Beekeeper's.
+  armor. He no longer takes "anything colored": wool, carpets, beds and banners are the Shepherd's, stained glass the
+  Glassblower's (made by the Mason until 46.6), terracotta and concrete the Mason's, and since 46.5 candles the
+  Beekeeper's. A Leatherworker by a builder short of red wool, with white wool and red dye in the chest, leaves them
+  alone: the builder's line reads "Hire a Shepherd to make Red Wool".
 - The Librarian makes books, paper, bookshelves, lecterns, enchanting tables and cartography tables.
 - The Shepherd (since 46.2) weaves at his loom: wool from string, dyed wool, carpets, beds, banners, banner patterns and
   paintings ([The Shepherd weaves](weaver.md)).
@@ -99,6 +101,10 @@ before carries on.
 ## 7. Known limits
 
 - The ingredient rule reads a modded item's first crafting recipe only, and the first item each ingredient accepts.
+- An item on two lists is the first list's: the lever is on the Carpenter's list and in the Tinkerer's `tinkering` tag,
+  and only the Carpenter makes it. A pack that takes the lever off the Carpenter's list hands it to the Tinkerer.
+- A thing a pack adds to a list reads by the game's own name on the hire line when the mod has no plural for it
+  ("Hire a Cleric to make Fire Charge").
 - Until 46.6 the "Hire a ..." lines for glass name the stand-in ("Hire a Mason to make Glass Panes"), not the
   Glassblower whose list it is.
 - The showcase scene is filmed on GitHub, not in this session.
@@ -117,3 +123,10 @@ and through a builder's request the Mason making stained glass while a Carpenter
 `QaJobCraftListsBugTests` (QA, B1132-B1134): the hire line in the plural for countable things that had no plural
 (minecarts, redstone torches, copper bulbs, panes, beacons, paintings, leads, glow item frames), the Storehouse naming
 the Lumberjack for stripped logs, and "Hire a Mason to make Red Concrete".
+`QaJobLists1110cGameTests` (QA): a pack's tag (the test mod's data puts a fire charge on the Cleric's list: only the
+Cleric makes it, and the Storehouse and the hire line name him), the hire line for more of every job's list (plurals,
+mass nouns as named, leather pants and boots not doubled, concrete and another color's powder on one Mason line), the
+gatherer of every wood, the nether stems, ores, sand, gravel, clay and wool (by name, unnamed, never a child or one out
+of reach), stripped logs of six woods naming the Lumberjack, all sixteen colors of every colored kind on its own job's
+list and never the Leatherworker's, every listed thing made by exactly one job, a Leatherworker leaving red wool to the
+Shepherd through a builder's request, and the Storehouse board for stripped birch logs and lime concrete.

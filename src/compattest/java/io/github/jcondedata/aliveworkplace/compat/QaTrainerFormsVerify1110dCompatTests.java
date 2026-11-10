@@ -32,25 +32,13 @@ public class QaTrainerFormsVerify1110dCompatTests implements FabricGameTest {
 	/** The Master from B1122's report, whose team has a Wormadam. */
 	private static final UUID WORMADAM_MASTER = UUID.fromString("00000000-1287-488b-0000-054066443ace");
 
-	/** B1140's species, whose paint or letter still changes between builds (open bug, its test on tests/trainer-teams-1110d). */
-	private static final Set<String> B1140 = Set.of("smeargle", "unown");
-
-	/**
-	 * Everything a Master's member shows or fights with that the fix settles: species, form, look, item, moves, nature, IVs,
-	 * EVs. For B1140's species the form and aspects are left out (everything else still counts); with them in, an open
-	 * Cup's Smeargle failed here too (rainbow-cyan, then rainbow-green; the unfiltered test is on
-	 * tests/trainer-forms-verify-1110).
-	 */
+	/** Everything a Master's member shows or fights with that the fix settles: species, form, look, item, moves, nature, IVs, EVs. */
 	static String full(Pokemon p) {
 		StringBuilder stats = new StringBuilder();
 		for (Stats s : List.of(Stats.HP, Stats.ATTACK, Stats.DEFENCE, Stats.SPECIAL_ATTACK, Stats.SPECIAL_DEFENCE, Stats.SPEED)) {
 			stats.append(' ').append(p.getIvs().get(s)).append('/').append(p.getEvs().get(s));
 		}
-		String look = QaTrainerTeamsVerify1110dCompatTests.look(p);
-		if (B1140.contains(p.getSpecies().getName().toLowerCase())) {
-			look = look.replace("/" + p.getForm().getName() + new TreeSet<>(p.getAspects()), "/(B1140)");
-		}
-		return look + " " + p.getNature().getName() + stats;
+		return QaTrainerTeamsVerify1110dCompatTests.look(p) + " " + p.getNature().getName() + stats;
 	}
 
 	static List<String> fulls(List<Pokemon> team) {

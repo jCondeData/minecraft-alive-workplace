@@ -6587,6 +6587,7 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
+- 2026-11-10 (qa-lane-c-1110-1552, B1110 QA): **five passing tests wait on `qa/hall-crew-split-1110`** (QaHallCrewSplit1110cGameTests and a village-hall.md line; full build green on b321f597d, 8168 + 1508). main brought in mod code (the Mover, CrafterWork, Requests) after that build and the run ran out of time to build again, so it is not on main: the next lane-c run ships it with `git switch qa/hall-crew-split-1110 && python3 tools/agent/sessions.py ship --as <you>`, then verifies B1110. Also this run: 46.4 verified; 46.6 waits on B1156 (tests/glassblower-own-chest-1110).
 - 2026-11-10 (lane-b-1110-0638, 46.3): **jobs help each other with makings, in two pairs.** A job makes what another
   job here lacks from its own list for a builder's thing (`CrafterWork.helps`, which plans the shortfall of the
   maker's chain with other jobs' things counted raw, into the builder's chest, its own claim): the Mason fires bricks for

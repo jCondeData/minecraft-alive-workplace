@@ -258,7 +258,11 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   here makes" (B1111, B1112); `QaStalledCrafting1109bGameTests`: with room the Mason and the Carpenter make the slabs,
   chest, ladder and spruce door, also after a save and reload; `CraftersFullStoreGameTests`: the freed slot counts once
   (not twice for two crafters, not for part of a stack), the full line's text, and slabs cut into a second Storehouse
-  with room when the one by the table is full.
+  with room when the one by the table is full. QA's `QaBuilderFixesVerify1110GameTests` (5 here): a full Storehouse
+  holding exactly one batch's ingredients still gets a chest, ladder and birch door (Carpenter), a blue bed and a green
+  banner (Shepherd) and stone brick slabs from 2 stone (Mason); with no free slot the line reads exactly "No room to
+  bring Stone Brick Slab: the chests he takes from are full" (and for a chest), nothing is made or dropped, and one slot
+  emptied gets them made and built.
 - `QaVillageEconomySaves1101BugTests.aStorehouseThatStaysFullAfterHeSetOffLeavesNoPlanksLying`: a Storehouse that fills
   while he carries the planks and stays full never leaves them on the ground, 3200 ticks on (B773).
 - `QaCarpenterFullStore1101cBugTests.planksTakenHomeStillReachTheBuilderWhoAsked`: planks taken home after the long

@@ -694,6 +694,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWalkerGround1108BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugs1109bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugs1109bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixesVerify1110GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDisruptionBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderRecheck1026GameTests",

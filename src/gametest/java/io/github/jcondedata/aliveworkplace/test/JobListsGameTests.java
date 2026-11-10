@@ -71,7 +71,7 @@ public class JobListsGameTests {
 		ServerLevel level = helper.getLevel();
 		Map<Item, CraftJobs.Job> own = Map.of(Items.BREWING_STAND, CraftJobs.Job.CLERIC, Items.FLOWER_POT, CraftJobs.Job.FLORIST,
 			Items.BLUE_BANNER, CraftJobs.Job.SHEPHERD, Items.RED_STAINED_GLASS, CraftJobs.Job.GLASSBLOWER, Items.LANTERN, CraftJobs.Job.TINKERER);
-		Map<Item, CraftJobs.Job> today = Map.of(Items.BREWING_STAND, CraftJobs.Job.LIBRARIAN, Items.FLOWER_POT, CraftJobs.Job.FLORIST,
+		Map<Item, CraftJobs.Job> today = Map.of(Items.BREWING_STAND, CraftJobs.Job.CLERIC, Items.FLOWER_POT, CraftJobs.Job.FLORIST,
 			Items.BLUE_BANNER, CraftJobs.Job.SHEPHERD, Items.RED_STAINED_GLASS, CraftJobs.Job.MASON, Items.LANTERN, CraftJobs.Job.TINKERER);
 		for (Item item : own.keySet()) {
 			helper.assertFalse(CraftJobs.makes(level, CraftJobs.Job.CARPENTER, item), "the Carpenter makes " + item);
@@ -158,7 +158,7 @@ public class JobListsGameTests {
 			Items.IRON_BARS, "Hire a Tinkerer to make Iron Bars",
 			Items.ITEM_FRAME, "Hire a Leatherworker to make Item Frames",
 			Items.BOOKSHELF, "Hire a Librarian to make Bookshelves",
-			Items.BREWING_STAND, "Hire a Librarian to make Brewing Stands",
+			Items.BREWING_STAND, "Hire a Cleric to make Brewing Stands",
 			Items.RED_STAINED_GLASS, "Hire a Mason to make Red Stained Glass");
 		Map<Item, UUID> sites = expected.keySet().stream().collect(Collectors.toMap(i -> i, i -> UUID.randomUUID()));
 		sites.forEach((item, site) -> helper.assertTrue(JobShortages.line(level, site, Map.of(item, 3)) == null, "a line before the jobs looked"));
@@ -189,7 +189,7 @@ public class JobListsGameTests {
 		assertLines(helper, pos, Items.CLAY_BALL, "Hire a Miner to dig it");
 		assertLines(helper, pos, Items.WHITE_WOOL, "Hire a Shepherd to shear it");
 		assertLines(helper, pos, Items.OAK_STAIRS, "Hire a Carpenter to make it");
-		assertLines(helper, pos, Items.BREWING_STAND, "Hire a Librarian to make it");
+		assertLines(helper, pos, Items.BREWING_STAND, "Hire a Cleric to make it");
 		assertLines(helper, pos, Items.DRAGON_EGG, "No job makes or gathers this");
 		worker(helper, ModVillagers.LUMBERJACK, "Bo");
 		worker(helper, ModVillagers.CARPENTER, "Ada");
@@ -202,7 +202,7 @@ public class JobListsGameTests {
 
 	/**
 	 * Through a builder's request: a Carpenter by a builder short of brewing stands, with the cobblestone and blaze rods in
-	 * his chest, makes none and takes nothing; the builder's line names the job to hire (the Librarian until 46.4).
+	 * his chest, makes none and takes nothing; the builder's line names the job to hire (the Cleric since 46.4).
 	 */
 	//$ gametest_ticks_batch AREA '1400' '"jobListsBrewingStand"'
 	@GameTest(template = AREA, timeoutTicks = 1400, batch = "jobListsBrewingStand")
@@ -217,7 +217,7 @@ public class JobListsGameTests {
 			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(carpenter, 0) == 0, "the carpenter made " + ModAttachments.ITEMS_CRAFTED.getOrElse(carpenter, 0));
 			Component line = JobShortages.line(helper.getLevel(), a.site().id(), a.site().missing(), helper.absolutePos(BENCH));
 			String text = line == null ? null : line.getString();
-			helper.assertTrue("Hire a Librarian to make Brewing Stands".equals(text), "the builder's line: " + text);
+			helper.assertTrue("Hire a Cleric to make Brewing Stands".equals(text), "the builder's line: " + text);
 			helper.succeed();
 		});
 	}

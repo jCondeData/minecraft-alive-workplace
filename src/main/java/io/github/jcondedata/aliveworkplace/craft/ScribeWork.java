@@ -28,7 +28,7 @@ public class ScribeWork extends CrafterWork {
 
 	/**
 	 * 46.1: the Librarian's own list ({@code aliveworkplace:crafts/librarian}: {@link #MAKES}, enchanting and cartography
-	 * tables), and until the Cleric crafts (46.4) the Cleric's magic blocks, brewing stands and ender chests.
+	 * tables). The Cleric's magic blocks, brewing stands and ender chests, are his own since 46.4 ({@link ClericCraftWork}).
 	 */
 	@Override
 	protected boolean wants(net.minecraft.server.level.ServerLevel level, Item item) {

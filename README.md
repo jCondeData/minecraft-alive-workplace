@@ -893,7 +893,7 @@ placed keep working, so old worlds are fine.
 | Porter | Storehouse | empty chests: the village's store | nothing | any |
 | Carpenter | Crafting Table + planks | — (uses the builders' wood) | nothing | any |
 | Mason | Stonecutter (vanilla) | — (uses the builders' stone) | nothing | any |
-| Leatherworker (dyer) | Cauldron (vanilla) | — (uses the builders' wool, flowers, powder...) | nothing | any |
+| Leatherworker (dyer) | Cauldron (vanilla) | — (uses the builders' leather, sticks, string, honeycomb...) | nothing | any |
 | Chef | Smoker + raw beef, pork, chicken, mutton, rabbit, cod, salmon or a potato | the makings: wheat, raw meat and fish, potatoes... | nothing | Artisan |
 | Armorer (smelter) | Blast Furnace (vanilla) | ore and coal (or nothing: they fetch it) | nothing — or sneak-right-click with coal to hire them | any |
 | Toolsmith | Smithing Table (vanilla) | diamonds, if you want diamond tools | nothing — or sneak-right-click with an iron ingot to hire them | any |
@@ -1190,10 +1190,10 @@ villagers at a stonecutter) do the same with the stonecutter's recipes — stone
 stone — and crush cobblestone into gravel and gravel into sand, and with a furnace by the stonecutter they are the
 village's **kiln**: sand fired into glass, cobblestone into stone and smooth stone, clay into terracotta and bricks
 (laid into brick blocks), netherrack into nether bricks — a coal for every 8 things fired; they go about their usual day
-in between. **Leatherworkers** (vanilla villagers at a cauldron) are the village's dyers: anything coloured a builder is
-waiting for — wool, carpet, stained glass, terracotta, candles, beds, dyes from flowers — they make the same way, and
-they harden concrete powder into concrete in the cauldron (mixing the powder from sand, gravel and dye first if need
-be). Villages sometimes grow a carpenter's workshop.
+in between, and they harden concrete powder into concrete. **Leatherworkers** (vanilla villagers at a cauldron) make a
+builder's leather goods the same way — item frames, leads, leather and leather armor — and, until the Beekeeper makes
+her own, candles and honeycomb blocks. Wool, carpets, beds and banners are the Shepherd's at his loom, dyes and flower
+pots the Florist's. Villages sometimes grow a carpenter's workshop.
 
 ## Armorers, toolsmiths, weaponsmiths and fletchers
 Every **Armorer** (the vanilla villager at a blast furnace) with a chest within 8 blocks of their blast furnace smelts

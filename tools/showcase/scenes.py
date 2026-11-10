@@ -297,7 +297,7 @@ SCENES = [
     # The Florist makes pots (ROADMAP 46.3): a builder's flower pots made from bricks at her Flower Stand, taken to the builder
     job("florist_pots", "Florist", "Making flower pots for a builder", "the florist made the flower pots the builder needed and took them to the builder's chest", 200),
     # The Cleric makes the magic blocks (ROADMAP 46.4): a builder's brewing stand made from a blaze rod and cobblestone at his brewing stand, taken to the builder
-    job("cleric_crafts", "Cleric", "Making a brewing stand for a builder", "the cleric made the brewing stand the builder needed and took it to the builder's chest", 200),
+    job("cleric_crafts", "Cleric (alchemist)", "Making a brewing stand for a builder", "the cleric made the brewing stand the builder needed and took it to the builder's chest", 200),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone
     job("crew", "Builder", "A crew of four on one build", "four builders built the stone house together, each placing a share of it", 150),
     # Scaffolding (ROADMAP 35.6, 35.6a): a 14-high pillar with an overhanging cap, built from a column of vanilla

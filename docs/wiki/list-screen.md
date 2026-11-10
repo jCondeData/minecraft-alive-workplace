@@ -82,7 +82,9 @@ Both shops follow your money while they're open: money paid in turns a red price
 a lot or its price, the rows are redrawn. If the price changed between Buy and Confirm (raised or lowered), Confirm takes
 nothing: "The price changed: 16 Cobblestone now costs 900 CobbleDollars. Click Confirm again to buy at that price." and
 the row stays gold at the new price, so a second Confirm buys at what the screen shows. A lot taken off the counter
-says "Cobblestone isn't for sale anymore." and a lot sold out says so; neither takes anything.
+says "Cobblestone isn't for sale anymore." and a lot sold out says so; neither takes anything. A smaller lot or other goods at the
+same price are refused the same way (the message still says "The price changed"). Each buyer pays what their own
+screen shows: two buyers on one counter are charged separately, and clicking Confirm twice charges once.
 
 In all of them, pointing at the top right line shows the menu's own tooltip (what the job does, the price rules, the odds), and a
 price you can't pay is red.
@@ -231,6 +233,10 @@ way survives a save; the Great Library's rows; a Legend tree's tab; every list l
 B1107: `QaJobShopLists1109cBugTests` (4, CobbleDollars): a price raised on an open screen is shown before Confirm can
 charge it; Confirm after a raise or a cut takes nothing and redraws the row gold at the new price, and the next Confirm
 charges it; a lot sold out or taken off the counter between Buy and Confirm takes nothing.
+QA (lane D, 2026-11-10, B1107): `QaShopPriceVerify1110dCompatTests` (8, CobbleDollars): two buyers each charged
+what their own screen showed; a price raised and put back; a smaller lot and the last lot between two buyers; a raised
+price the buyer can't pay; Confirm twice; reopening shows the new price; swapped goods, an item price and a withdrawn
+lot; both new sentences read right. 5 hand mutants on `Shops` killed.
 QA (lane B, 2026-11-09, 42.4): `QaBuilderToolLists1109bGameTests` (9): every builder tool sentence in American English
 and the Price Tag's steps read "Steps of 1,000 / 100 / 10 / 1"; shape sizes stop at 1 and at 32; with no blocks the
 Shape Planner says "no blocks" and refuses to draw; forged clicks (slots out of range, button-only rows, swap, throw

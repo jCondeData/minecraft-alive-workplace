@@ -743,7 +743,13 @@ village's last column empties it (B994).
   left standing. `QaCreateCompatTests` and `QaMechanicSaysCompatTests` (with Create): the lines over the worker and the
   Mechanic, as a player reads them: "Machine work: the Millstone isn't turning", "Machine work: the store is full: the
   Millstone waits", "Mechanic: every machine is in order", "Mechanic: seeing to the Millstone" and "Mechanic: the
-  Millstone has stopped turning".
+  Millstone has stopped turning". `QaCreateSentences1109eCompatTests` (QA, with Create): a farmer's milling trip says
+  "Machine work: fetching Wheat for the Millstone", "Machine work: working the Millstone" and "Machine work: bringing
+  what the Millstone made to the store", in that order, and the flour reaches the store; a Mechanic with a hole and no
+  shaft says "Mechanic: needs Shaft to mend the Mechanic Line 1" (the build named as the table names it); a written
+  Schematic imported says "Create schematic hut.nbt (uploaded by the player): Imported its id (3 × 1 × 3)", with the
+  one-block line for a block of a mod that isn't installed and "and 1 more" after three names for five of four mods. A Mechanic who comes back holding the one cogwheel a hole needs, with the store full to the brim, puts it in
+  the hole; it never goes on the ground (lane E's local mutation of `MechanicWork` line 425).
 - `SavedDataGameTests`: `machine_job` survives a save and load; `ConfigGameTests` and `ExpansionGateGameTests`: the
   `machineWork` switch on the screen and behind the gate.
 

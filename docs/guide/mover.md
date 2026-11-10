@@ -11,7 +11,7 @@ Moves: the building picked on the Village Hall's Move page
 Nothing lost: every block, chest contents and decorations travel in his crates
 Crew: two Movers share a move
 categories: Jobs, Village Hall
-related: village-hall.md, builder.md
+related: moving-buildings.md, village-hall.md, builder.md
 ```
 
 The Mover moves a finished building to a new spot in its village, with nothing lost on the way.
@@ -23,7 +23,8 @@ village. A villager without a job takes it by themselves, as a builder takes a B
 
 ## Moving a building
 
-Pick the building and its new spot on the Village Hall's **Move** page, turn it if you like, and Confirm. The Mover:
+Pick the building and its new spot on the Village Hall's **Move** page, turn it if you like, and Confirm (what can
+be moved, and where: [Moving buildings](moving-buildings.md)). The Mover:
 
 - takes it down from the top, one block at a time, into his crates. Chests, barrels, shulker boxes and modded storage
   (Sophisticated Storage, furniture cabinets and cupboards) are packed with what's in them, each in its own crate;

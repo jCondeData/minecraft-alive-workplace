@@ -2,9 +2,10 @@
 
 The owner's Milestone 45: a building the Village Hall knows can be moved within its village by a new Mover job, who
 takes it down top-down and puts it up again at the new spot with nothing lost. Being built in order: the snapshot (45.1), the Hall's Move page that plans a move (45.2), the Mover who carries it
-out (45.3), its residents moving with it (45.4) and its belongings arriving as they were (45.5).
+out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
+it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.3, 45.4, 45.5
+Roadmap items: 45.1, 45.2, 45.3, 45.4, 45.5, 45.6
 
 ## What a player sees
 
@@ -19,8 +20,20 @@ finished buildings, each with where it is and, once planned, where it's going. A
 
 While choosing, a ghost outline of the new spot glows in the world for the player (green or red, its front edge gold).
 The fit line says plainly why a spot is refused: it would overlap another building (named) or the hall, sit on a road,
-be partly outside the village, the ground rises more than 3 blocks across it, or there's water on it. Confirm also needs
+be partly outside the village, the ground rises more than 3 blocks across it, there's water on it, or a Mover's Crate
+stands in it (B1129: a crate never moves with a building, so going up there would break it). Confirm also needs
 a hired Mover in the village (45.3); without one the page says "Needs a hired Mover" and nothing is saved.
+
+**What can't be moved (45.6).** Clicking a building's Move button (and Confirm, asked again) goes through
+`MoveRules.refusal` first; a refused building opens no picker, says why on the action bar in red and the list shows
+again. In order: config `moveBuildings` off ("Moving buildings is switched off on this server"); not one of this hall's
+finished buildings ("that building isn't part of this village"); its footprint reaches into a protected village that
+keeps the player out (the mod's own claims, `VillageProtection.keeper`: operators and the owner's friends are let in;
+the line is the protection's own "X is Y's village..."); its footprint holds the Village Hall ("the Village Hall stays
+where it stands"); a Wonder or a Wonder's part ("a Wonder is built to stay where it stands"); a build site not done at
+its origin or overlapping it, such as an upgrade or repair ("builders are still working on it; move it once they're
+done"). With `moveBuildings` off a move already confirmed still goes ahead (stopping one half way would leave a
+building in pieces); `movers` off is the switch that stops the Movers.
 
 ![The Move page](https://jcondedata.github.io/minecraft-alive-workplace/move_plan/still-2.jpg)
 
@@ -186,6 +199,8 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
 - A Mover's Crate inside the building stays where it stands rather than moving last or refusing the move (B1120): moved,
   it would leave its Mover without a workstation for the whole rebuild (vanilla can take his job away), and a refusal
   would make the player break the crate, which loses the job the same way.
+- Since it stays, a new spot over a Mover's Crate is refused on the Move page (B1129). A move confirmed before that check
+  that still meets one never breaks it: the one block that would stand there is skipped (counted in `skipped`).
 - Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
   free for a neighbor to claim first. During the move they sleep at the inn, else by the hall (the spec's "the Hall or
   the inn": the Village Hall has no beds of its own, so "the Hall" is the free bed nearest it).
@@ -205,23 +220,28 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
 
 ## Proof
 
-`MovePageGameTests` (10), all through the hall's clicks: a map click picks the spot (and the ghost follows, green); a
-spot over another building, on a road, outside the village, too steep and under water each refused with its line;
+`MovePageGameTests` (15), all through the hall's clicks: a map click picks the spot (and the ghost follows, green); a
+spot over another building, on a road, outside the village, too steep, under water and over a Mover's Crate each
+refused with its line;
 Rotate a quarter a click; Cancel forgets the pick and the ghost; Confirm without a Mover refused, nothing saved; with a
 Mover the pending move saved, through a save and reload, an old save and a broken entry, marked on the list, reopened on
-its spot and called off.
+its spot and called off. The rules (45.6): with `moveBuildings` off, a live build site on the hut and the hut in
+another player's protected village, each a click on its Move button refused (no picker, nothing saved, the reason's
+words) and the picker opening once the cause is gone; the Hall's own building, a Wonder and a building outside the
+village each refused with its reason, the village's own hut not.
 
 `MovePlanGameTests` (4): a captured house rebuilt 14 blocks away matches block for block (`MaterialRules.matches`) with
 its chest, sign, banner, frame and armor stand; the same at 90, 180 and 270 degrees; a building the hall knows
 captured with its front and resident; empty and unknown buildings give no plan.
 
-`MoverGameTests` (10): the job (its id, the crate as its workstation, the recipe, the text); a whole move (taken down
+`MoverGameTests` (11): the job (its id, the crate as its workstation, the recipe, the text); a whole move (taken down
 top-down, the chest and barrel packed apart, put up turned a quarter block for block with each container's own items,
 the item frame, nothing dropped, the hall's record following it); saved and reloaded in every stage; a wall block broken
 half way (whoever broke it has it, not put up again, nothing doubled); called off half way through putting it up
 (everything back, the new spot empty); two Movers sharing one site; his crate broken half way down (he waits, says why,
 and finishes once it's back); his own crate inside the house (it stays standing, the house moves without it and the move
-ends), also on a save from before the fix with the crate already packed (put back, the move ends); config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
+ends), also on a save from before the fix with the crate already packed (put back, the move ends); a move confirmed onto
+the spot where his crate stands (B1129: the crate isn't broken, only the one plank there is skipped, nothing dropped); config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
 doesn't see the crate).
 
 `MoverBelongingsGameTests` (4, 45.5): a house with a chest (a named sword in it), a double chest, a barrel, a shulker

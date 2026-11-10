@@ -5831,6 +5831,41 @@ final class JobScenes {
 					}
 				}, 60)),
 			(level, player) -> io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isPresent()));
+		// A refused move (ROADMAP 45.6): the same cottage with builders still working on it (an upgrade's site open on it). Its
+		// Move button is refused: no picker opens, and the reason shows in red on the action bar (the hall closed so it shows).
+		SCREENS.put("move_refused", new Screen("the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "
+			+ "was refused, no picker opened, and the action bar said why in red",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos cottage = STATION.offset(-8, 0, -15);
+				level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, cottage, cottage,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), cottage,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, player.getUUID());
+				BuildSiteManager.get(level).create(player.getUUID(), player.getGameProfile().getName(), StarterBlueprints.STARTER_COTTAGE.id(), placement);
+			},
+			List.of(new Step("01_move_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.MovePage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.BRICKS),
+							"the cottage listed on the Move page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("02_refused", 0, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isEmpty(), "no picker opened on the cottage");
+						Component why = io.github.jcondedata.aliveworkplace.move.MoveRules.refusal(level, STATION, STATION.offset(-8, 0, -15), player);
+						Showcase.check(why != null && why.getString().equals(Component.translatable("message.aliveworkplace.move.refused.building").getString()),
+							"refused because builders are working on it: " + (why == null ? null : why.getString()));
+						player.closeContainer(); // the action bar's red line shows over the world
+					}
+				}, 10)),
+			(level, player) -> io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isEmpty()));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".

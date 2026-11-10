@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * Whether a building fits a new spot (ROADMAP 45.2): the Hall's Move page asks this for the spot picked on its map and
  * says plainly why one is refused. In order: the whole footprint inside the village, clear of the village's other
  * buildings (finished or going up) and the hall, no road or path under it, no water on it, and ground no steeper than
- * {@link #MAX_STEP} blocks from its lowest to its highest column. The building's own old spot counts as its ground (the
+ * {@link #MAX_STEP} blocks from its lowest to its highest column, and no Mover's Crate in its box (B1129). The building's own old spot counts as its ground (the
  * Mover takes it down first), so a building can shift a little or turn where it stands.
  */
 public final class MoveFit {
@@ -35,7 +35,7 @@ public final class MoveFit {
 	public static final int MAX_STEP = 3;
 
 	public enum Reason {
-		FITS, SAME_SPOT, OUTSIDE, BUILDING, ROAD, STEEP, WATER;
+		FITS, SAME_SPOT, OUTSIDE, BUILDING, ROAD, STEEP, WATER, CRATE;
 
 		public String key() {
 			return name().toLowerCase();
@@ -57,7 +57,7 @@ public final class MoveFit {
 			if (reason == Reason.BUILDING && what != null) {
 				return Component.translatable(key, what);
 			}
-			if (at != null && (reason == Reason.ROAD || reason == Reason.WATER)) {
+			if (at != null && (reason == Reason.ROAD || reason == Reason.WATER || reason == Reason.CRATE)) {
 				return Component.translatable(key + ".at", at.getX(), at.getY(), at.getZ());
 			}
 			return Component.translatable(key);
@@ -120,6 +120,11 @@ public final class MoveFit {
 				return new Fit(Reason.BUILDING, min, box, other.name(), new BlockPos(other.box().minX(), other.box().minY(), other.box().minZ()));
 			}
 		}
+		BlockPos crate = crateIn(level, box);
+		if (crate != null) {
+			// B1129: a Mover's Crate stays where it stands (B1120), so the building going up there would break it
+			return new Fit(Reason.CRATE, min, box, null, crate);
+		}
 		if (road != null) {
 			return new Fit(Reason.ROAD, min, box, null, road);
 		}
@@ -130,6 +135,20 @@ public final class MoveFit {
 			return new Fit(Reason.STEEP, min, box, null, null);
 		}
 		return new Fit(Reason.FITS, min, box, null, null);
+	}
+
+	/**
+	 * A Mover's Crate standing in {@code box} (null: none). A Mover's Crate never moves with a building (B1120), so a
+	 * new spot over one would break it and leave its Mover without his workstation (B1129).
+	 */
+	@Nullable
+	static BlockPos crateIn(ServerLevel level, BoundingBox box) {
+		for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+			if (MoveSite.stays(level.getBlockState(pos))) {
+				return pos.immutable();
+			}
+		}
+		return null;
 	}
 
 	/**

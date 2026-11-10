@@ -105,9 +105,9 @@ public class QaRequestsLeaderboardGameTests implements FabricGameTest {
 			ServerPlayer me = listener(helper, mine, "qa-me", new BlockPos(5, 2, 6));
 			ServerPlayer other = listener(helper, others, "qa-other", new BlockPos(6, 2, 6));
 			ServerPlayer low = listener(helper, lows, "qa-low", new BlockPos(7, 2, 6));
-			Friendship.add(dara, me, 300);
-			Friendship.add(dara, other, 300);
-			Friendship.add(dara, low, 299);
+			PersonalRequestGameTests.befriend(helper, dara, me, 300);
+			PersonalRequestGameTests.befriend(helper, dara, other, 300);
+			PersonalRequestGameTests.befriend(helper, dara, low, 299);
 			Quest quest = PersonalRequestGameTests.resolve(helper, "level_up", dara, me);
 			helper.assertTrue(quest != null, "Dara has nothing to ask " + (quest == null ? PersonalRequestGameTests.why(helper, dara, me) : ""));
 			PersonalRequests.propose(level, helper.absolutePos(HALL), dara, me, quest, Chronicle.day(level));
@@ -146,6 +146,45 @@ public class QaRequestsLeaderboardGameTests implements FabricGameTest {
 				helper.assertTrue(words(heard).stream().anyMatch(s -> s.startsWith("You helped Dara: Next level before the festival. You earned ") && s.contains("6")
 					&& !s.contains("%")), "a helper read: " + words(heard));
 			}
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B427: a Village Hall point of interest left behind with no hall under it, nearer Dara than her hall, doesn't hide
+	 * the hall: she is still of the village, makes friends and has her request to ask. (It used to be taken for the
+	 * nearest hall, and with no hall there she had none: "Dara has nothing to ask".)
+	 */
+	//$ gametest_ticks_batch AREA '80' '"qaRequestStaleHallPoint"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "qaRequestStaleHallPoint")
+	public void aHallPointWithNoHallDoesntHideTheHall(GameTestHelper helper) {
+		PersonalRequestGameTests.village(helper, () -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos stale = helper.absolutePos(new BlockPos(5, 3, 6));
+			helper.assertTrue(level.getBlockState(stale).isAir(), "the stale point's block isn't air");
+			level.getPoiManager().add(stale, net.minecraft.core.registries.BuiltInRegistries.POINT_OF_INTEREST_TYPE
+				.getHolderOrThrow(io.github.jcondedata.aliveworkplace.registry.ModVillagers.VILLAGE_HALL_POI));
+			Leftovers.after(helper, () -> {
+				if (level.getPoiManager().getType(stale).isPresent()) {
+					level.getPoiManager().remove(stale);
+				}
+				io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+			});
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+			io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+			Villager dara = PersonalRequestGameTests.worker(helper, new BlockPos(5, 2, 4), "Dara", "minecraft:farmer", 1);
+			helper.assertTrue(level.getPoiManager().getType(stale).isPresent(), "the stale point didn't go in");
+			helper.assertTrue(stale.distSqr(dara.blockPosition()) < helper.absolutePos(HALL).distSqr(dara.blockPosition()), "the stale point isn't nearer than the hall");
+			ServerPlayer me = PersonalRequestGameTests.friend(helper, new BlockPos(5, 2, 7), dara, 300);
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, dara.blockPosition()).filter(helper.absolutePos(HALL)::equals).isPresent(),
+				"Dara's nearest hall isn't her hall " + PersonalRequestGameTests.why(helper, dara, me));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.VillageHalls.containing(level, dara.blockPosition()).filter(helper.absolutePos(HALL)::equals).isPresent(),
+				"Dara isn't within her hall's village");
+			Quest quest = PersonalRequestGameTests.resolve(helper, "level_up", dara, me);
+			helper.assertTrue(quest != null, "Dara has nothing to ask " + (quest == null ? PersonalRequestGameTests.why(helper, dara, me) : ""));
+			// and Leftovers.halls takes such a point away for the next batch
+			Leftovers.halls(helper);
+			helper.assertTrue(level.getPoiManager().getType(stale).isEmpty(), "Leftovers.halls left the point with no hall");
 			helper.succeed();
 		});
 	}
@@ -210,8 +249,8 @@ public class QaRequestsLeaderboardGameTests implements FabricGameTest {
 			Villager odo = PersonalRequestGameTests.worker(helper, new BlockPos(7, 2, 4), "Odo", "minecraft:farmer", 1);
 			List<Component> mine = new ArrayList<>();
 			ServerPlayer me = listener(helper, mine, "qa-mourner", new BlockPos(5, 2, 6));
-			Friendship.add(dara, me, 300);
-			Friendship.add(odo, me, 300);
+			PersonalRequestGameTests.befriend(helper, dara, me, 300);
+			PersonalRequestGameTests.befriend(helper, odo, me, 300);
 			Quest quest = PersonalRequestGameTests.accepted(helper, "level_up", dara, me);
 			Quest odos = PersonalRequestGameTests.resolve(helper, "level_up", odo, me);
 			PersonalRequests.propose(level, hall, odo, me, odos, Chronicle.day(level));

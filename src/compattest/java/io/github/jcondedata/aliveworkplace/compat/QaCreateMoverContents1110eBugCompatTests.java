@@ -17,26 +17,10 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * QA (lane E, 2026-11-10), failing on main: the Mover (45.3, "nothing dropped, nothing lost") moving a building with
- * Create blocks whose items aren't cleared when he takes them down. A Mechanical Crafter's and a Weighted Ejector's items
- * spill on the ground as he takes the block down and come across in the block too (doubled); a three-segment belt loses
- * its other two segments and the items on them the moment he takes the first. Helpers and the passing controls (vault,
- * depot): QaCreateMoverContents1110eCompatTests.
+ * a Create belt (B1128): a three-segment belt loses its other two segments and the item on them the moment he takes the
+ * first. Helpers and the passing tests (vault, depot, crafter, ejector): QaCreateMoverContents1110eCompatTests.
  */
 public class QaCreateMoverContents1110eBugCompatTests implements FabricGameTest {
-	/** A Mechanical Crafter holding an iron ingot in its slot. */
-	//$ gametest_batch AREA '"qa_e1110_mover_crafter"'
-	@GameTest(template = AREA, batch = "qa_e1110_mover_crafter")
-	public void aMovedMechanicalCrafterKeepsItsItemOnce(GameTestHelper helper) {
-		movesOnce(helper, "crafter", block("create:mechanical_crafter").defaultBlockState(), Items.IRON_INGOT, 1);
-	}
-
-	/** A Weighted Ejector with 16 gold ingots on it (unpowered: it holds them). */
-	//$ gametest_batch AREA '"qa_e1110_mover_ejector"'
-	@GameTest(template = AREA, batch = "qa_e1110_mover_ejector")
-	public void aMovedWeightedEjectorKeepsItsItemsOnce(GameTestHelper helper) {
-		movesOnce(helper, "ejector", block("create:weighted_ejector").defaultBlockState(), Items.GOLD_INGOT, 16);
-	}
-
 	/**
 	 * A three-segment belt running east along the house's floor (its controller the west end), with an iron ingot on
 	 * each end (the middle left free): moved, every segment comes across, nothing is dropped, the ingots are on it at the new spot and it still takes

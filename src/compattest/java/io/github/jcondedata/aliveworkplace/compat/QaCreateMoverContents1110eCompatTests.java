@@ -46,8 +46,9 @@ import net.minecraft.world.phys.AABB;
  * puts one kind of Create block holding items in a small house the hall knows, has a hired Mover move it a quarter
  * turned to a new spot, and counts every one of those items in the world afterwards: in the block at its new spot, and
  * lying loose round the test. The vault and the depot (whose block entities the owner's port makes {@code Clearable})
- * pass here; the Mechanical Crafter, the Weighted Ejector and a belt are in QaCreateMoverContents1110eBugCompatTests (on
- * tests/create-mover-1110e: they fail on main, B-numbers in ROADMAP).
+ * were the control. The Mechanical Crafter and the Weighted Ejector hold their items in Create's own inventories, which
+ * Create spills as the block comes down: B1127, doubled before 45.5 (89a20402c) took what a block spills back. A belt is
+ * in QaCreateMoverContents1110eBugCompatTests (B1128, on tests/create-mover-1110e: it fails on main).
  */
 public class QaCreateMoverContents1110eCompatTests implements FabricGameTest {
 	static final String AREA = "aliveworkplace_compat:huge_area";
@@ -271,6 +272,20 @@ public class QaCreateMoverContents1110eCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, batch = "qa_e1110_mover_depot")
 	public void aMovedDepotKeepsItsItemsOnce(GameTestHelper helper) {
 		movesOnce(helper, "depot", block("create:depot").defaultBlockState(), Items.DIAMOND, 16);
+	}
+
+	/** A Mechanical Crafter holding an iron ingot in its slot. */
+	//$ gametest_batch AREA '"qa_e1110_mover_crafter"'
+	@GameTest(template = AREA, batch = "qa_e1110_mover_crafter")
+	public void aMovedMechanicalCrafterKeepsItsItemOnce(GameTestHelper helper) {
+		movesOnce(helper, "crafter", block("create:mechanical_crafter").defaultBlockState(), Items.IRON_INGOT, 1);
+	}
+
+	/** A Weighted Ejector with 16 gold ingots on it (unpowered: it holds them). */
+	//$ gametest_batch AREA '"qa_e1110_mover_ejector"'
+	@GameTest(template = AREA, batch = "qa_e1110_mover_ejector")
+	public void aMovedWeightedEjectorKeepsItsItemsOnce(GameTestHelper helper) {
+		movesOnce(helper, "ejector", block("create:weighted_ejector").defaultBlockState(), Items.GOLD_INGOT, 16);
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})

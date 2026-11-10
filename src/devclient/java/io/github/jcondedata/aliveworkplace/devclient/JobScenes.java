@@ -4542,14 +4542,58 @@ final class JobScenes {
 			};
 		}, null));
 		// The Mover (ROADMAP 45.3): a Starter Cottage the hall knows, its move confirmed on the Move page (a quarter turn, to
-		// the east); the village's Mover takes it down top-down and puts it up again at the new spot, chest and all.
+		// the east); the village's Mover takes it down top-down and puts it up again at the new spot, chest and all. Its
+		// residents move too (45.4): Dara, who sleeps in its bed, and her husband Tomas, a fisherman at its barrel; after
+		// the move her bed and his barrel are the new cottage's, and he walks to it.
 		SCENES.put("mover", new Job("the Mover took the Starter Cottage down top-down into his crates and put it up again turned a quarter "
-			+ "at its new spot, nothing dropped", 9000, new Vec3(0.5, -50, 6), new Vec3(0.5, -59, -12), (level, player) -> {
+			+ "at its new spot, nothing dropped; Dara's bed and her husband Tomas's barrel moved with it, so they live and work there now, "
+			+ "his barrel still holding his 16 cod and 5 salmon and the cottage's sign still reading \"Dara & Tomas\"",
+			9000, new Vec3(0.5, -50, 6), new Vec3(0.5, -59, -12), (level, player) -> {
 			level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
 			BlockPos cottage = STATION.offset(-12, 0, -16);
-			level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, cottage, cottage,
+			var cottageTemplate = level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
+			cottageTemplate.placeInWorld(level, cottage, cottage,
 				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			// its residents: Dara in its bed, Tomas a fisherman at its barrel (given them once the level has filed the blocks)
+			BlockPos[] bedAndBarrel = {null, null};
+			net.minecraft.core.Vec3i cottageSize = cottageTemplate.getSize();
+			for (BlockPos p : BlockPos.betweenClosed(cottage, cottage.offset(cottageSize.getX() - 1, cottageSize.getY() - 1, cottageSize.getZ() - 1))) {
+				BlockState st = level.getBlockState(p);
+				if (bedAndBarrel[0] == null && st.getBlock() instanceof net.minecraft.world.level.block.BedBlock
+					&& st.getValue(net.minecraft.world.level.block.BedBlock.PART) == net.minecraft.world.level.block.state.properties.BedPart.HEAD) {
+					bedAndBarrel[0] = p.immutable();
+				}
+				if (bedAndBarrel[1] == null && st.is(Blocks.BARREL)) {
+					bedAndBarrel[1] = p.immutable();
+				}
+			}
+			// 45.5: his barrel holds the day's catch, and a sign by the cottage says whose it is; both arrive as they were
+			if (bedAndBarrel[1] != null && level.getBlockEntity(bedAndBarrel[1]) instanceof net.minecraft.world.Container barrelItems) {
+				barrelItems.setItem(0, new ItemStack(Items.COD, 16));
+				barrelItems.setItem(1, new ItemStack(Items.SALMON, 5));
+			}
+			BlockPos[] sign = {null};
+			for (BlockPos p : BlockPos.betweenClosed(cottage.above(), cottage.offset(cottageSize.getX() - 1, cottageSize.getY() - 1, cottageSize.getZ() - 1))) {
+				if (level.getBlockState(p).isAir() && level.getBlockState(p.below()).isFaceSturdy(level, p.below(), Direction.UP)) {
+					sign[0] = p.immutable();
+					break;
+				}
+			}
+			if (sign[0] != null) {
+				level.setBlockAndUpdate(sign[0], Blocks.OAK_SIGN.defaultBlockState());
+				((net.minecraft.world.level.block.entity.SignBlockEntity) level.getBlockEntity(sign[0])).setText(new net.minecraft.world.level.block.entity.SignText()
+					.setMessage(1, Component.literal("Dara & Tomas")), true);
+			}
+			Villager dara = EntityType.VILLAGER.spawn(level, cottage.offset(-2, 0, 2), MobSpawnType.COMMAND);
+			Villager tomas = EntityType.VILLAGER.spawn(level, cottage.offset(-2, 0, 4), MobSpawnType.COMMAND);
+			io.github.jcondedata.aliveworkplace.legend.Gifted.set(dara, null);
+			io.github.jcondedata.aliveworkplace.legend.Gifted.set(tomas, null);
+			dara.setCustomName(Component.literal("Dara"));
+			tomas.setCustomName(Component.literal("Tomas"));
+			dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.NITWIT)); // (so she doesn't take his barrel)
+			ModAttachments.PARTNER.set(dara, new io.github.jcondedata.aliveworkplace.people.Couples.Partner(tomas.getUUID(), tomas.getDisplayName(), 0L, true));
+			ModAttachments.PARTNER.set(tomas, new io.github.jcondedata.aliveworkplace.people.Couples.Partner(dara.getUUID(), dara.getDisplayName(), 0L, true));
 			BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(), cottage,
 				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
 			BlockPos crate = STATION.offset(3, 0, -4);
@@ -4558,13 +4602,35 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.legend.Gifted.set(mover, null);
 			mover.setVillagerData(mover.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVER).setLevel(2));
 			mover.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), crate));
-			io.github.jcondedata.aliveworkplace.move.PendingMoves.get(level).put(new io.github.jcondedata.aliveworkplace.move.PendingMoves.Move(STATION, cottage,
-				StarterBlueprints.STARTER_COTTAGE.id(), STATION.offset(4, 0, -16), net.minecraft.world.level.block.Rotation.CLOCKWISE_90, player.getUUID()));
-			boolean[] seen = {false, false};
+			boolean[] seen = {false, false, false};
+			int[] after = {-1};
+			net.minecraft.world.level.levelgen.structure.BoundingBox[] newBox = {null};
+			BlockPos[] signNow = {null};
 			return l -> {
+				if (!seen[2]) {
+					seen[2] = true; // the residents get their bed and barrel, then the move is confirmed
+					for (BlockPos p : bedAndBarrel) {
+						if (p != null && l.getPoiManager().getType(p).isEmpty()) {
+							PoiTypes.forState(l.getBlockState(p)).ifPresent(type -> l.getPoiManager().add(p, type));
+						}
+					}
+					if (bedAndBarrel[0] != null) {
+						io.github.jcondedata.aliveworkplace.hall.HallBeds.moveIn(l, dara, bedAndBarrel[0]);
+					}
+					if (bedAndBarrel[1] != null) {
+						Jobs.employ(l, tomas, bedAndBarrel[1], PoiTypes.FISHERMAN, VillagerProfession.FISHERMAN);
+					}
+					io.github.jcondedata.aliveworkplace.move.PendingMoves.get(l).put(new io.github.jcondedata.aliveworkplace.move.PendingMoves.Move(STATION, cottage,
+						StarterBlueprints.STARTER_COTTAGE.id(), STATION.offset(4, 0, -16), net.minecraft.world.level.block.Rotation.CLOCKWISE_90, player.getUUID()));
+					return false;
+				}
 				var site = io.github.jcondedata.aliveworkplace.move.MoveSites.get(l).forBuilding(cottage);
 				if (site.isPresent()) {
 					seen[0] = true;
+					newBox[0] = site.get().newBox();
+					if (sign[0] != null) {
+						signNow[0] = site.get().at(sign[0].subtract(site.get().oldMin()));
+					}
 					if (!seen[1] && site.get().stage() == io.github.jcondedata.aliveworkplace.move.MoveSite.Stage.DISMANTLE && site.get().packed() * 2 >= site.get().total()) {
 						seen[1] = true; // half of it down
 						SHOTS.add("02_half_way");
@@ -4572,11 +4638,39 @@ final class JobScenes {
 				}
 				timeoutWhy = "the mover: " + mover.getVillagerData().getProfession() + ", doing " + mover.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
 					+ ", site " + site.map(x -> x.stage() + " " + x.packed() + "/" + x.total()).orElse("none");
-				boolean done = seen[0] && site.isEmpty() && io.github.jcondedata.aliveworkplace.move.PendingMoves.get(l).forBuilding(cottage).isEmpty();
-				if (done) {
-					Showcase.check(seen[1], "the cottage was filmed half way down");
+				boolean moved = seen[0] && site.isEmpty() && io.github.jcondedata.aliveworkplace.move.PendingMoves.get(l).forBuilding(cottage).isEmpty();
+				if (!moved) {
+					return false;
 				}
-				return done;
+				if (after[0] < 0) {
+					after[0] = 0;
+					Showcase.check(seen[1], "the cottage was filmed half way down");
+					// 45.4: her bed and his barrel are the new cottage's (the Hall's People page reads the same memories)
+					BlockPos bed = io.github.jcondedata.aliveworkplace.hall.VillageNeeds.bed(l, dara);
+					BlockPos barrel = tomas.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+						.map(net.minecraft.core.GlobalPos::pos).orElse(null);
+					Showcase.check(bedAndBarrel[0] != null && (bed != null && newBox[0] != null && newBox[0].isInside(bed)),
+						"Dara's bed is the moved cottage's (" + (bed == null ? "none" : bed.toShortString()) + ")");
+					Showcase.check(bedAndBarrel[1] != null && (barrel != null && newBox[0] != null && newBox[0].isInside(barrel) && l.getBlockState(barrel).is(Blocks.BARREL)),
+						"Tomas's barrel is the moved cottage's (" + (barrel == null ? "none" : barrel.toShortString()) + ")");
+					Showcase.check(tomas.getVillagerData().getProfession() == VillagerProfession.FISHERMAN, "Tomas is still a fisherman");
+					// 45.5: the barrel's catch and the sign's words came with the cottage
+					boolean catchThere = barrel != null && l.getBlockEntity(barrel) instanceof net.minecraft.world.Container c
+						&& c.countItem(Items.COD) >= 16 && c.countItem(Items.SALMON) >= 5;
+					Showcase.check(catchThere, "Tomas's barrel still holds his 16 cod and 5 salmon");
+					Showcase.check(signNow[0] != null && l.getBlockEntity(signNow[0]) instanceof net.minecraft.world.level.block.entity.SignBlockEntity sb
+						&& sb.getFrontText().getMessage(1, false).getString().equals("Dara & Tomas"), "the cottage's sign still reads \"Dara & Tomas\"");
+				}
+				after[0]++;
+				// he walks to his barrel at the new spot (or, on a slow runner, the shot is taken anyway after 30 s)
+				BlockPos barrel = tomas.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.map(net.minecraft.core.GlobalPos::pos).orElse(null);
+				boolean there = barrel != null && tomas.position().distanceTo(Vec3.atCenterOf(barrel)) < 4;
+				if (after[0] < 100000 && (there || after[0] >= 600)) {
+					SHOTS.add("03_at_home");
+					after[0] = 100000;
+				}
+				return after[0] >= 100040;
 			};
 		}, null));
 		// Caravans you can see (33.7): Thornholm's caravan leaves for Ashford, then Ashford's comes in, unloads and goes back.

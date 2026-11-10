@@ -1,10 +1,10 @@
 # Moving a finished building
 
 The owner's Milestone 45: a building the Village Hall knows can be moved within its village by a new Mover job, who
-takes it down top-down and puts it up again at the new spot with nothing lost. Being built in order: the snapshot (45.1), the Hall's Move page that plans a move (45.2) and the Mover who carries it
-out (45.3).
+takes it down top-down and puts it up again at the new spot with nothing lost. Being built in order: the snapshot (45.1), the Hall's Move page that plans a move (45.2), the Mover who carries it
+out (45.3), its residents moving with it (45.4) and its belongings arriving as they were (45.5).
 
-Roadmap items: 45.1, 45.2, 45.3
+Roadmap items: 45.1, 45.2, 45.3, 45.4, 45.5
 
 ## What a player sees
 
@@ -30,11 +30,32 @@ block at a time, into his crates: chests and barrels packed with their items (ea
 furniture too, nothing dropped. Then he puts it up at the new spot from the ground up (foundation, structure,
 decoration), turned as picked, and the old spot is left cleared. Two Movers share a move. He packs into the crates
 at his Mover's Crate: with his crate broken he can't take anything more down, so he waits, his line saying "Waiting for
-his Mover's Crate: nowhere to pack the building", and carries on once he has one again (putting it up needs none). Called off on the Move page,
+his Mover's Crate: nowhere to pack the building", and carries on once he has one again (putting it up needs none). A
+Mover's Crate inside the building being moved stays where it stands (it's where he packs), so the building goes up at
+its new spot without it and the Mover keeps his workstation; move the crate yourself afterward if you like. Called off on the Move page,
 even half way, what went up at the new spot comes down again and everything goes back up where it was. Whoever
 confirmed the move is told when it's over.
 
 ![The Mover half way](https://jcondedata.github.io/minecraft-alive-workplace/mover/still-2.jpg)
+
+**The residents move too (45.4).** Whoever sleeps or works in the building keeps it. While it's away, those with a bed
+in it sleep in a free bed at the village's inn (round an Inn Counter), or else the free bed nearest the Village Hall;
+with none free they have no bed until theirs is back. A worker keeps their job while their workstation is packed. The
+moment the Mover puts a bed or a workstation up at the new spot it's theirs again: nobody else can take it, the bed at
+the inn is given back, and the Hall's People page, the census, their home (the moved building), the job-status cards
+and couples all show it straight away. A Builder's bench inside a moved house stays his, and his builds keep taking
+from its chests. A move called off gives everyone their old bed and block back the same way.
+
+![Tomas at his barrel in the moved cottage](https://jcondedata.github.io/minecraft-alive-workplace/mover/still-3.jpg)
+
+**Its belongings arrive as they were (45.5).** Every chest, double chest, barrel, shulker box and modded store
+(Sophisticated Storage chests and barrels, CobbleFurnies' cabinets, Handcrafted's cupboards and shelves) comes out at
+the new spot with exactly the items it held, slot for slot, nothing dropped and nothing doubled; signs keep their words
+on both sides, banners their patterns; item frames (one hanging on the building's outer wall too), paintings and armor
+stands go up with what they held when the Mover packed them, so an item a player took off after confirming the move
+isn't put back and one put in a chest meanwhile moves too. Furniture from CobbleFurnies, Handcrafted and Lucky's Cozy
+Home moves like any block. A piece of a furniture mod removed from the game mid-move is left out; the rest goes up.
+In the showcase, Tomas's barrel arrives with his 16 cod and 5 salmon and the cottage's sign still reads "Dara & Tomas".
 
 ## How it works
 
@@ -83,9 +104,45 @@ stay put) and a container is emptied into its record before it comes down, so no
 Mover's WORK behavior: the site of the village round his crate (`MoveSites.work`; two Movers get the same site), a
 step every 4 ticks from within 20 blocks of the box worked on. A step that packs (DISMANTLE, RESTORE_DOWN) needs his
 job site to be a Mover's Crate standing now (`MoverWork.hasCrate`); without one the step isn't taken and the site's
-`waiting` (not saved, set again each swing) puts `NO_CRATE` on his line. When a move ends, the hall's Finished record follows the
+`waiting` (not saved, set again each swing) puts `NO_CRATE` on his line. A Mover's Crate in the plan
+(`MoveSite.stays`) is marked `STAYS` (4 in the saved `where` array) when DISMANTLE reaches it and is never packed, put
+up or counted in `total()` (B1120: packing his own crate left him waiting forever). A site saved before that fix with
+the crate already packed puts it back where it stood on the next swing (`MoveSite.crateToPutBack`, which also lets that swing
+through without a crate). When a move ends, the hall's Finished record follows the
 building (its placement's origin and turn), and the waiting move is cleared. The Move page's Call off (the
 `PendingMoves` entry gone) cancels a started site.
+
+**The residents (45.4).** `move/MoveResidents`. As a site starts (`MoveSites.begin`), every loaded villager within 128
+blocks whose home (`MemoryModuleType.HOME`, a bed's head) or job site (`JOB_SITE`) is in the building's box is noted on
+the site as a `Resident`: their bed and workstation relative to the box's lowest corner. A worker with no experience
+gets 1 (as `Jobs.employ` does), so vanilla's profession reset doesn't take the job while the block is packed. One with a
+bed moves into a stay bed (`MoveResidents.stayBed`: the nearest free bed round each Inn Counter in the village, nearest the hall
+first, else the free bed nearest the hall, never a wagon bed or one in the old or new box) through `HallBeds.moveIn`,
+which lets their own bed go. When `MoveSite.put` puts a block up (at the new spot, or back at the old one on a cancel),
+`MoveResidents.placed` runs: a Builder's build whose bench was that block's other position follows it
+(`BuildSite.setBench`); a resident's bed or workstation is reserved (its point of interest filed at once if the level
+hasn't yet, as `Builders.employ` does, B132, and its one ticket taken) and, if the resident is loaded, settled: home
+memory set (the stay bed released with vanilla's `Villager.releasePoi`), job site set (any other site they took meanwhile released
+with `Stations.releaseOld`), `JobSiteTickets.hold`. `MoveSite.take` clears a resident's reservation when their block
+comes down again. At the end (`MoveSites.finish`), `arrive` reserves anything still standing where the building is
+now that the Mover didn't put up (a move called off before it came down) and settles everyone loaded. Everything else
+reads those memories: `VillageNeeds.bed` (the People page and census), `Homes` (by the Finished record that follows
+the building), `Builders.benchPos` (the bench, the job-status cards); couples and households are kept by UUID.
+
+A resident not loaded when their block goes up is settled by the villager tick (`mixin/VillagerMixin` →
+`MoveResidents.tick`, once a second; a stay bed is looked for again every 10 seconds while they have none). One whose
+move is over is kept in `MoveSites`' homecomings for `KEEP_TICKS` (5 days).
+
+**Belongings (45.5).** `MoveSite.take` saves the block entity as it is now (`BlockEntity.saveWithoutMetadata`, by id: a modded
+store's own data), empties it with `Clearable.tryClear`, and after the block is set to air discards any item that
+appeared in and round its cell during that call: a store that isn't a vanilla `Container` (Sophisticated Storage) spills
+its contents when it's removed even though they're in its saved data, which doubled them (the compat test fails
+without this). `put` loads the saved data into the new block entity. The things are packed when DISMANTLE starts
+(`MoveSite.packThings`): `MovePlan.thingsIn` finds every thing in the box plus any hanging entity whose supporting block is in
+it (a frame on an outer wall, whose position is just outside the box), each saved as it is then (`MovePlan.thing`) in
+the site's packed things and discarded; `MoveSite.placeThings` puts those up at the end of DECORATION (or back on a cancel),
+not the plan's older picture. A plan block whose state reads as air (its mod's id is unknown since the save) is marked
+lost by `take` or `put` and counted in `skipped`. Capture uses `MovePlan.thingsIn` too, so the plan includes outer-wall frames.
 
 ## Items, blocks, jobs, commands
 
@@ -101,7 +158,12 @@ hired do nothing, and confirmed moves wait.
 
 A move under way is saved per dimension in `aliveworkplace_move_sites` (`move/MoveSites`): each site's plan, corners,
 turn, stage, where each block is, packed block entity data, and whether it was canceled. A world from before 45.3 loads
-with none; a site that doesn't read is skipped.
+with none; a site that doesn't read is skipped. Since 45.4 each site also saves its `residents` (each villager's UUID,
+bed and workstation relative to the building, their stay bed, where their bed and workstation are held for them and
+whether they're settled), and `MoveSites` saves its `homecomings` (residents of moves already over, with the game time
+they're given up after). A site or world saved before 45.4 loads with no residents and no homecomings. Since 45.5 a site
+saves `packed_things` once its things are packed (each thing's relative position and data); a site saved before 45.5
+has none and puts up the plan's things as before.
 
 A confirmed move is saved per dimension in `aliveworkplace_pending_moves` (`move/PendingMoves`): the hall, the building's
 origin and blueprint, its new lowest corner, its turn and who confirmed it; one per building. A world from before 45.2
@@ -114,8 +176,18 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   Done when's "full Storehouse" wait is a question for the owner (ROADMAP Notes). Under this decision "he can't store
   it, so he waits and says why" is a Mover whose Mover's Crate is gone.
 - A block someone breaks before the Mover gets to it isn't put up again: whoever broke it has it.
-- Residents keep their own beds and workstations by vanilla's rules: a bed taken down is let go, and they claim the
-  beds put up at the new spot like any free bed.
+- A Mover's Crate inside the building stays where it stands rather than moving last or refusing the move (B1120): moved,
+  it would leave its Mover without a workstation for the whole rebuild (vanilla can take his job away), and a refusal
+  would make the player break the crate, which loses the job the same way.
+- Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
+  free for a neighbor to claim first. During the move they sleep at the inn, else by the hall (the spec's "the Hall or
+  the inn": the Village Hall has no beds of its own, so "the Hall" is the free bed nearest it).
+- A resident whose bed was broken by someone before the Mover got to it keeps the bed at the inn.
+- Belongings move as they are when packed, not as the plan saw them when the move started (45.5): the plan's picture
+  would bring back an item a player has taken off a frame since, doubling it.
+- Items a block spills as it's taken down are taken back, since its saved data already holds them (45.5). Contents
+  aren't drained through `ItemStores` first: a store whose items live outside its block data would lose them.
+- A block or chest a player places inside the box after the move started isn't in the plan, so it isn't moved.
 
 - The picker's map is a grid in the hall's screen, not the vanilla map item the hall draws: a map item can't be clicked.
 - A building may turn in place or shift onto part of its own old spot: the Mover takes it down first.
@@ -136,13 +208,25 @@ its spot and called off.
 its chest, sign, banner, frame and armor stand; the same at 90, 180 and 270 degrees; a building the hall knows
 captured with its front and resident; empty and unknown buildings give no plan.
 
-`MoverGameTests` (8): the job (its id, the crate as its workstation, the recipe, the text); a whole move (taken down
+`MoverGameTests` (10): the job (its id, the crate as its workstation, the recipe, the text); a whole move (taken down
 top-down, the chest and barrel packed apart, put up turned a quarter block for block with each container's own items,
 the item frame, nothing dropped, the hall's record following it); saved and reloaded in every stage; a wall block broken
 half way (whoever broke it has it, not put up again, nothing doubled); called off half way through putting it up
 (everything back, the new spot empty); two Movers sharing one site; his crate broken half way down (he waits, says why,
-and finishes once it's back); config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
+and finishes once it's back); his own crate inside the house (it stays standing, the house moves without it and the move
+ends), also on a save from before the fix with the crate already packed (put back, the move ends); config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
 doesn't see the crate).
+
+`MoverBelongingsGameTests` (4, 45.5): a house with a chest (a named sword in it), a double chest, a barrel, a shulker
+box, a two-sided sign, a banner, a frame inside and one on the outer wall, and an armor stand in a helmet, moved a
+quarter turn by a Mover: every store slot for slot, the sign's text, both frames (the outer one turned to face east
+with its clock), the stand's helmet, nothing loose and every item in the area counted the same before and after; the
+frame's diamond and the stand's helmet taken and an apple put in the chest after the move started (the changes move,
+not the plan's picture); saved and reloaded half way down (the packed things in the save) and half way up; a saved
+move whose fence reads as an unknown Cozy Home chair (the piece left out, `skipped` 1, everything else arrives).
+`MoverFurnitureCompatTests` (1, compat suite): CobbleFurnies' chair, table and cabinet, Handcrafted's cupboard, shelf
+and side table, and a Sophisticated Storage chest and barrel (100 iron, 70 emeralds), filled through `ItemStores`,
+moved through a reload half way down: block for block, each store with exactly its items, nothing loose.
 
 `QaBuildingSnapshot1109bGameTests` (4, the QA lane): a 7 × 9 room written to disk and read back, then rebuilt unturned
 and turned 90, 180 and 270 degrees, matches exactly, block for block: a double chest (still one, 54 slots), a named
@@ -154,9 +238,24 @@ new entities beside the originals. Capturing twice changes nothing in the room (
 entity) and gives the same plan. Only frames, paintings and stands are its things (not a cow, a dropped item, a
 minecart or a visitor), and its residents are the villagers whose bed or workstation is in it, wherever they stand.
 
+`MoverResidentsGameTests` (5), a house with a married couple's two beds, a Librarian's lectern and a Builder's Bench
+moved a quarter turn: the couple sleep at the inn while it's away and then in the new house's beds (remembered, held,
+seen by the census, their home the moved house, still one married household, the inn's beds given back); the librarian,
+a Novice with no experience, keeps his job with his lectern packed even when his job site is forgotten, and the lectern
+is held for him the moment it's put up; the builder's bench is his the moment it's put up, and his queued build's bench
+follows it; all of it through a save and reload every 7 steps (the residents and their inn beds survive); and a move
+called off half way gives everyone their old bed, lectern and bench back.
+
+The `mover` scene: Dara (the cottage's bed) and her husband Tomas (a fisherman at its barrel) move with it; its checks
+say her bed and his barrel are the moved cottage's and he's still a fisherman, and its third still is Tomas back at his
+barrel at the new spot.
+
 ## Known limits
 
 - The pick (spot and turn) is not saved: closing the hall's screen forgets it. Only a confirmed move is.
+
+- A resident is noted only if loaded within 128 blocks as the move starts; one far away keeps memories of blocks that
+  are gone and finds new ones by vanilla's rules.
 
 - A player's own house has no record the hall knows (nothing registers one yet), so it is captured only as a box.
 - `place()` puts everything up at once; the Mover's step-by-step rebuild (45.3) must empty the original containers so nothing is doubled.

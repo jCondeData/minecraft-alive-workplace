@@ -52,7 +52,7 @@ import net.minecraft.world.phys.AABB;
  * container's own items and nothing dropped; through a save and reload in every stage; with a block broken half way
  * (whoever broke it has it, nothing duplicated); called off half way (everything goes back up where it was); and with
  * two Movers sharing the job; with his Mover's Crate gone (nowhere to pack the building: he waits and says why, and
- * carries on when it's back); and with config {@code movers} off (he does nothing, and no jobless villager takes the
+ * carries on when it's back); with his own crate inside the house (it stays standing, B1120); and with config {@code movers} off (he does nothing, and no jobless villager takes the
  * crate). The job itself: registered under the id the Hall asks for, at its own crate.
  */
 public class MoverGameTests implements FabricGameTest {
@@ -408,6 +408,100 @@ public class MoverGameTests implements FabricGameTest {
 			helper.assertTrue(site.stage() == MoveSite.Stage.DONE && site.waiting() == null, "the move ended " + site.stage() + ", waiting " + site.waiting());
 			assertMoved(helper, level, s, List.of());
 			helper.assertTrue(loose(level, helper) == 0, "something was dropped");
+			helper.succeed();
+		});
+	}
+
+	/** The house with the Mover's own crate inside it (helper coordinates), his workstation there and none outside. */
+	private static final BlockPos OWN_CRATE = new BlockPos(6, 3, 6);
+
+	private static void crateInside(GameTestHelper helper, Setup s) {
+		helper.setBlock(new BlockPos(12, 2, 11), Blocks.AIR); // no crate outside: his only one is in the house
+		helper.setBlock(OWN_CRATE, ModBlocks.MOVERS_CRATE);
+		s.mover().getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE,
+			net.minecraft.core.GlobalPos.of(helper.getLevel().dimension(), helper.absolutePos(OWN_CRATE)));
+	}
+
+	/** After a move with the Mover's crate inside the house: the house at its new spot without it, the crate where it stood. */
+	private static void assertMovedLeavingCrate(GameTestHelper helper, ServerLevel level, Setup s, MoveSite site) {
+		helper.assertTrue(site.stage() == MoveSite.Stage.DONE && site.waiting() == null && !site.canceled(),
+			"the move with his crate inside ended " + site.stage() + ", waiting " + site.waiting());
+		helper.assertTrue(site.total() == s.before().blocks().size() && site.skipped() == 0,
+			"the crate counted in the move: " + site.total() + " of " + s.before().blocks().size() + ", skipped " + site.skipped());
+		helper.assertTrue(level.getBlockState(helper.absolutePos(OWN_CRATE)).is(ModBlocks.MOVERS_CRATE), "his crate didn't stay where it stood");
+		helper.assertTrue(MoverWork.hasCrate(level, s.mover()), "the Mover lost his crate");
+		helper.assertTrue(level.getBlockState(turned(s, OWN_CRATE, level, helper)).isAir(), "a second crate went up at the new spot");
+		String wrong = standing(level, s.before(), s.to(), Rotation.CLOCKWISE_90, List.of());
+		helper.assertTrue(wrong == null, "the house at its new spot: " + wrong);
+		String chest = items(level, turned(s, CHEST, level, helper));
+		helper.assertTrue(chest.equals("0=12 minecraft:bread;26=64 minecraft:emerald;"), "the chest moved with " + chest);
+		for (BlockPos pos : BlockPos.betweenClosed(helper.absolutePos(MIN), helper.absolutePos(MAX))) {
+			if (!pos.equals(helper.absolutePos(OWN_CRATE)) && !level.getBlockState(pos).isAir()) {
+				helper.fail("the old spot still has " + level.getBlockState(pos) + " at " + pos);
+			}
+		}
+		helper.assertTrue(PendingMoves.get(level).forBuilding(s.from()).isEmpty() && MoveSites.get(level).forBuilding(s.from()).isEmpty(),
+			"the move wasn't put away");
+		helper.assertTrue(loose(level, helper) == 0, "something was dropped");
+	}
+
+	/**
+	 * B1120: the Mover's own Mover's Crate stands inside the house he moves. It stays where it stands (it's where he packs),
+	 * so he never packs it away and waits for it forever: the house moves without it and the move ends.
+	 */
+	//$ gametest_batch AREA '"moverOwnCrate"'
+	@GameTest(template = AREA, batch = "moverOwnCrate")
+	public void aMoverLeavesHisOwnCrateStandingAndFinishes(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Setup s = setup(helper, "owncrate");
+		crateInside(helper, s);
+		helper.runAfterDelay(2, () -> {
+			helper.assertTrue(MoverWork.hasCrate(level, s.mover()), "his crate in the house isn't his workstation (setup)");
+			MoveSite site = work(level, s, x -> false);
+			assertMovedLeavingCrate(helper, level, s, site);
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B1120 on a save from before the fix: his crate already packed half way down (he was stuck waiting). The next swing
+	 * puts it back where it stood and the move ends as above.
+	 */
+	//$ gametest_batch AREA '"moverOwnCrateSaved"'
+	@GameTest(template = AREA, batch = "moverOwnCrateSaved")
+	public void aCratePackedBeforeTheFixIsPutBackAndTheMoveEnds(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Setup s = setup(helper, "owncratesaved");
+		crateInside(helper, s);
+		helper.runAfterDelay(2, () -> {
+			MoveSite site = work(level, s, x -> x.packed() >= 30);
+			helper.assertTrue(site.stage() == MoveSite.Stage.DISMANTLE, "it didn't stop half way down: " + site.stage());
+			int crate = -1;
+			for (int i = 0; i < site.plan().blocks().size(); i++) {
+				if (MoveSite.stays(site.plan().blocks().get(i).state())) {
+					crate = i;
+				}
+			}
+			helper.assertTrue(crate >= 0, "his crate isn't in the plan");
+			// what the old code did: the crate packed with the rest, gone from the world
+			CompoundTag saved = MoveSites.get(level).save(new CompoundTag(), level.registryAccess());
+			net.minecraft.nbt.ListTag list = saved.getList("sites", net.minecraft.nbt.Tag.TAG_COMPOUND);
+			for (int k = 0; k < list.size(); k++) {
+				CompoundTag tag = list.getCompound(k);
+				if (net.minecraft.nbt.NbtUtils.readBlockPos(tag, "from").orElseThrow().equals(s.from())) {
+					byte[] where = tag.getByteArray("where");
+					where[crate] = 1; // PACKED
+					tag.putByteArray("where", where);
+				}
+			}
+			helper.setBlock(OWN_CRATE, Blocks.AIR);
+			level.getDataStorage().set(MoveSites.NAME, MoveSites.load(saved, level.registryAccess()));
+			site = MoveSites.get(level).forBuilding(s.from()).orElseThrow();
+			helper.assertTrue(site.crateToPutBack(), "the old save's packed crate isn't seen");
+			helper.assertTrue(MoverWork.work(level, s.mover(), site), "he still waits for the crate that's in the move");
+			helper.assertTrue(level.getBlockState(helper.absolutePos(OWN_CRATE)).is(ModBlocks.MOVERS_CRATE), "his crate wasn't put back first");
+			site = work(level, s, x -> false);
+			assertMovedLeavingCrate(helper, level, s, site);
 			helper.succeed();
 		});
 	}

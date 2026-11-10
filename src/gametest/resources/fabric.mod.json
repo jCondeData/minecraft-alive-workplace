@@ -395,6 +395,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoverSwitches1110eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCancelReload1110fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverResidentsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverResidents1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverBelongingsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MovePageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",

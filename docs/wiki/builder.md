@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181
 
 ## 1. What a player sees
 
@@ -219,7 +219,13 @@ begins a whole wait at the rule (B845: under a huge rule he used to place one bl
 
 **Queue and crew.** A Builder takes up to 5 more blueprints on top of its current one (`MAX_QUEUE`). Up to 3 idle
 Builders (`MAX_HELPERS`; Guilds can change this) help one site, each claiming steps ahead of the lead. A helper that dies drops only its bag; the steps it claimed go back to the crew and the lead finishes the build (B516). The owner
-asked that time shrink with each Builder: tested at 2 builders = 50%, 4 = 29% of the time alone (ROADMAP 23.1a).
+asked that time shrink with each Builder: tested at 2 builders = 50%, 4 = 29-35% of the time alone (ROADMAP 23.1a). A
+helper keeps the step it claimed even after the lead has caught up with it, helpers pick only steps that still need work
+(looking up to twice as far ahead), and a lead short of something a helper close by carries takes it from the helper
+instead of walking to the chests (B181; QA's `QaCrewBusy1110bGameTests`, 6: a material only the helper carries used
+exactly once, the helper never without a claim for long while open steps remain, the roof slabs passed over, a helper
+killed holding a claim, a player breaking and blocking the helper's claims, and a restart mid-STRUCTURE, each finishing
+from exactly the list).
 
 **Who may order.** With `workplaceBuilderOwnership` on, a Builder takes orders only from the player who hired it,
 their friends (`/workplace friend add|remove|list`) and operators. That includes orders from the Village Hall: the

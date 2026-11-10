@@ -250,7 +250,7 @@ public class QaJobCraftListsGameTests {
 		single.put(Items.RED_BED, "Hire a Shepherd to make Red Beds");
 		single.put(Items.RED_BANNER, "Hire a Shepherd to make Red Banners");
 		single.put(Items.CANDLE, "Hire a Leatherworker to make Candles");
-		single.put(Items.DECORATED_POT, "Hire a Leatherworker to make Decorated Pots");
+		single.put(Items.DECORATED_POT, "Hire a Florist to make Decorated Pots");
 		Map<Item, UUID> sites = new LinkedHashMap<>();
 		single.keySet().forEach(i -> sites.put(i, UUID.randomUUID()));
 		UUID sameJob = UUID.randomUUID();

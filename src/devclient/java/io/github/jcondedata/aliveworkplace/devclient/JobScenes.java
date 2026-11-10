@@ -2917,6 +2917,24 @@ final class JobScenes {
 				return n(ModAttachments.ITEMS_CRAFTED, s) >= 1 && job == null && carried == 0;
 			};
 		}, null));
+		// ROADMAP 46.3: the Florist makes the flower pots a builder's cottage needs at her Flower Stand, from the bricks in
+		// the builder's barrels, and takes them to them
+		SCENES.put("florist_pots", new Job("the florist made the flower pots the builder needed at her flower stand and took them to the builder's chest", 4000,
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			java.util.UUID site = builderSite(level, StarterBlueprints.STARTER_COTTAGE, new BlockPos(-8, -60, -3),
+				List.of(Items.FLOWER_POT), Map.of(Items.BRICK, 12));
+			Villager f = worker(level, STATION, io.github.jcondedata.aliveworkplace.registry.ModBlocks.FLOWER_STAND,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.FLOWER_STAND_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FLORIST);
+			return l -> {
+				var job = ModAttachments.CRAFTER_JOB.get(f);
+				int carried = ModAttachments.BUILDER_BAG.getOrCreate(f).count(Items.FLOWER_POT);
+				timeoutWhy = "the florist made " + n(ModAttachments.ITEMS_CRAFTED, f) + ", job " + (job == null ? "none" : job.phase() + " " + job.target())
+					+ ", carrying " + carried + " flower pot(s), site " + (site == null ? "none" : String.valueOf(BuildSiteManager.get(l).get(site) == null ? "done"
+						: BuildSiteManager.get(l).get(site).missing()));
+				return n(ModAttachments.ITEMS_CRAFTED, f) >= 1 && job == null && carried == 0;
+			};
+		}, null));
 		SCENES.put("crew", new Job("four builders built the stone house together, each placing a share of it", 6000,
 			new Vec3(6.5, -51, 12.5), new Vec3(-5, -56, -6), (level, player) -> {
 			// 23.1a: the builder and three helpers from benches nearby, at the normal build speed, from exactly the house's

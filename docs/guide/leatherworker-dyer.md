@@ -22,16 +22,16 @@ another job, sneak-right-click them with **leather**. (Gravel or sand at a cauld
 
 ## What they do
 
-When a builder nearby is waiting for leather goods (item frames, leads, leather armor) or for candles, flower pots or
-the dyes themselves, the dyer makes it from what the builder can get at, with the game's own recipes. They make dyes
-from flowers too. Wool, carpet, beds, banners and paintings are the [Shepherd](shepherd.md)'s (at the loom), stained
+When a builder nearby is waiting for leather goods (item frames, leads, leather armor) or for candles, the dyer makes
+it from what the builder can get at, with the game's own recipes. Wool, carpet, beds, banners and paintings are the
+[Shepherd](shepherd.md)'s (at the loom), flower pots, decorated pots and dyes the [Florist](florist.md)'s, stained
 glass, terracotta and concrete the [Mason](mason.md)'s, and wooden things the [Carpenter](carpenter.md)'s.
 
 Over their head: how many things they've made, and what they're working on.
 
 ## How the leatherworker fits in
 
-- **Fed by:** the [Florist](florist.md)'s flowers for dyes.
+- **Fed by:** the makings in the builder's chests.
 - **Feeds:** the [Builder](builder.md), straight into their chests.
 
 See also [Crafters and smiths](jobs-crafts.md).

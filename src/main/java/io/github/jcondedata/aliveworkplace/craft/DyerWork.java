@@ -14,10 +14,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A Leatherworker's crafting for builders (at their cauldron): leather goods, item frames and leads (46.1, the
- * {@code aliveworkplace:crafts/leatherworker} tag), and until the Florist and Beekeeper craft (46.3, 46.5) their lists
- * too, as the village's dyer who made them before: dyes, flower pots and candles, with the game's recipes. Wool, carpets,
- * beds, banners and paintings are the Shepherd's at his loom since 46.2 ({@link WeaverWork}); stained glass, terracotta
- * and concrete the Mason's ({@link CraftJobs}).
+ * {@code aliveworkplace:crafts/leatherworker} tag), and until the Beekeeper crafts (46.5) her list too, as the village's
+ * dyer who made it before: candles, with the game's recipes. Wool, carpets, beds, banners and paintings are the
+ * Shepherd's at his loom since 46.2 ({@link WeaverWork}), dyes and pots the Florist's since 46.3
+ * ({@link FloristCraftWork}); stained glass, terracotta and concrete the Mason's ({@link CraftJobs}).
  */
 public class DyerWork extends CrafterWork {
 	private static final List<String> COLOURS = java.util.Arrays.stream(DyeColor.values()).map(DyeColor::getName).toList();
@@ -46,8 +46,8 @@ public class DyerWork extends CrafterWork {
 
 	/**
 	 * 46.1: the Leatherworker's own list ({@code aliveworkplace:crafts/leatherworker}), and meanwhile, as the village's
-	 * dyer who made them before, the Florist's and Beekeeper's (until 46.3 and 46.5 teach those jobs; the Shepherd weaves
-	 * his own since 46.2).
+	 * dyer who made it before, the Beekeeper's (until 46.5 teaches that job; the Shepherd weaves his own since 46.2, the
+	 * Florist makes hers since 46.3).
 	 */
 	@Override
 	protected boolean wants(ServerLevel level, Item item) {

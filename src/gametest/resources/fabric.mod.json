@@ -399,6 +399,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1109cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobListsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShepherdWeavesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.FloristPotsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPriceTagList1109cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderToolListsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderToolLists1109bGameTests",

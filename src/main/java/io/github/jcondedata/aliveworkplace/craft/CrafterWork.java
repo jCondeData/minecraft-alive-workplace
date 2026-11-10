@@ -945,6 +945,12 @@ public class CrafterWork extends Behavior<Villager> {
 			missing.sort(Map.Entry.<Item, Integer>comparingByValue().reversed());
 			for (Map.Entry<Item, Integer> want : missing) {
 				if (!wants(level, want.getKey())) {
+					// 46.3: what another job here needs from our list to make it (the Florist's pot short of the bricks we fire)
+					Job help = chains() ? makingsFor(level, builder, builderStation, radius, site, want.getKey(), want.getValue(), usable, deliverTo,
+						otherStores, area, sources, guarded, now) : null;
+					if (help != null) {
+						return help;
+					}
 					continue;
 				}
 				String claim = builder.getUUID() + "|" + BuiltInRegistries.ITEM.getKey(want.getKey());
@@ -994,6 +1000,61 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 		}
 		return chooseOrder(level, villager, station);
+	}
+
+	/**
+	 * Whether this job makes the makings {@code maker} lacks for a builder's thing (46.3): the Mason fires the bricks for
+	 * the Florist's flower pots, the Florist makes the dyes for the Shepherd's beds. None by default.
+	 */
+	protected boolean helps(CraftJobs.Job maker) {
+		return false;
+	}
+
+	/**
+	 * A job making what {@code item}'s own maker, at work near the builder, lacks of it from our list (46.3): the shortfall
+	 * of that maker's chain with every other job's thing counted raw ({@link Crafting#lacking(ServerLevel, Crafting.Kind,
+	 * Item, int, Map, java.util.function.Predicate)}), the first of those we make, made from what the builder can spare and
+	 * taken to his chests, where the maker finds it. Null when there's nothing of ours to make for it.
+	 */
+	@Nullable
+	private Job makingsFor(ServerLevel level, Villager builder, BlockPos builderStation, int radius, BuildSite site, Item item, int count,
+			Map<Item, Long> usable, BlockPos deliverTo, List<BlockPos> otherStores, @Nullable BoundingBox area, List<BlockPos> sources,
+			Map<BlockPos, Guard> guarded, long now) {
+		CraftJobs.Job maker = CraftJobs.maker(level, item);
+		if (maker == null || !maker.craftsNow() || !helps(maker) || Crafting.planningSpent(level)
+				|| CraftJobs.workersNear(level, builderStation, radius, maker.profession()).isEmpty()) {
+			return null;
+		}
+		Map<Item, Integer> lack = JobShortages.positive(Crafting.lacking(level, Crafting.Kind.CRAFTING, item,
+			Math.min(Math.max(1, count), Crafting.MAX_CRAFTS), usable, i -> {
+				CraftJobs.Job job = CraftJobs.tagged(i);
+				return job != null && job != maker;
+			}));
+		for (Map.Entry<Item, Integer> making : lack.entrySet()) {
+			if (!wants(level, making.getKey())) {
+				continue;
+			}
+			String claim = builder.getUUID() + "|" + BuiltInRegistries.ITEM.getKey(item) + ">" + BuiltInRegistries.ITEM.getKey(making.getKey());
+			synchronized (CLAIMS) {
+				if (CLAIMS.containsKey(claim)) {
+					continue;
+				}
+			}
+			Crafting.Plan made = planFor(level, making.getKey(), making.getValue(), usable);
+			if (!fits(made)) {
+				continue;
+			}
+			BlockPos into = roomyStore(level, deliverTo, otherStores, area, made, sources, claim);
+			if (into == null) {
+				continue;
+			}
+			synchronized (CLAIMS) {
+				CLAIMS.put(claim, now + CLAIM_TICKS);
+				PROMISED.put(claim, new Promise(SupplyContainers.find(level, into, area), stacksOf(made.makes())));
+			}
+			return new Job(into, area, made, claim, sources, guarded);
+		}
+		return null;
 	}
 
 	/**

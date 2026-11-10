@@ -71,7 +71,7 @@ public class JobListsGameTests {
 		ServerLevel level = helper.getLevel();
 		Map<Item, CraftJobs.Job> own = Map.of(Items.BREWING_STAND, CraftJobs.Job.CLERIC, Items.FLOWER_POT, CraftJobs.Job.FLORIST,
 			Items.BLUE_BANNER, CraftJobs.Job.SHEPHERD, Items.RED_STAINED_GLASS, CraftJobs.Job.GLASSBLOWER, Items.LANTERN, CraftJobs.Job.TINKERER);
-		Map<Item, CraftJobs.Job> today = Map.of(Items.BREWING_STAND, CraftJobs.Job.LIBRARIAN, Items.FLOWER_POT, CraftJobs.Job.LEATHERWORKER,
+		Map<Item, CraftJobs.Job> today = Map.of(Items.BREWING_STAND, CraftJobs.Job.LIBRARIAN, Items.FLOWER_POT, CraftJobs.Job.FLORIST,
 			Items.BLUE_BANNER, CraftJobs.Job.SHEPHERD, Items.RED_STAINED_GLASS, CraftJobs.Job.MASON, Items.LANTERN, CraftJobs.Job.TINKERER);
 		for (Item item : own.keySet()) {
 			helper.assertFalse(CraftJobs.makes(level, CraftJobs.Job.CARPENTER, item), "the Carpenter makes " + item);
@@ -246,7 +246,7 @@ public class JobListsGameTests {
 		helper.succeedWhen(() -> assertBuilt(helper, a));
 	}
 
-	/** Without a Leatherworker a Carpenter still won't make a flower pot: the job absent leaves it unmade, and named. */
+	/** Without a Florist (46.3: her own list) a Carpenter still won't make a flower pot: the job absent leaves it unmade, and named. */
 	//$ gametest_ticks_batch AREA '1400' '"jobListsFlowerPot"'
 	@GameTest(template = AREA, timeoutTicks = 1400, batch = "jobListsFlowerPot")
 	public void withTheJobAbsentTheFlowerPotWaitsAndIsNamed(GameTestHelper helper) {
@@ -259,7 +259,7 @@ public class JobListsGameTests {
 			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(carpenter, 0) == 0, "the carpenter made a pot");
 			Component line = JobShortages.line(helper.getLevel(), a.site().id(), a.site().missing(), helper.absolutePos(BENCH));
 			String text = line == null ? null : line.getString();
-			helper.assertTrue("Hire a Leatherworker to make Flower Pots".equals(text), "the builder's line: " + text);
+			helper.assertTrue("Hire a Florist to make Flower Pots".equals(text), "the builder's line: " + text);
 			helper.succeed();
 		});
 	}

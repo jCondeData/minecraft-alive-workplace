@@ -42,7 +42,7 @@ public class QaJobCraftListsBugTests {
 		expected.put(Items.BEACON, "Hire a Cleric to make Beacons");
 		expected.put(Items.ENDER_CHEST, "Hire a Cleric to make Ender Chests");
 		expected.put(Items.PAINTING, "Hire a Shepherd to make Paintings");
-		expected.put(Items.HONEYCOMB_BLOCK, "Hire a Leatherworker to make Honeycomb Blocks");
+		expected.put(Items.HONEYCOMB_BLOCK, "Hire a Beekeeper to make Honeycomb Blocks"); // the Beekeeper's since 46.5
 		expected.put(Items.LEAD, "Hire a Leatherworker to make Leads");
 		expected.put(Items.GLOW_ITEM_FRAME, "Hire a Leatherworker to make Glow Item Frames");
 		Map<Item, UUID> sites = new LinkedHashMap<>();
